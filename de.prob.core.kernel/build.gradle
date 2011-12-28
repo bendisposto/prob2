@@ -1,0 +1,94 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply from: 'https://raw.github.com/gist/1527604/c0376aa40de59a0481cb33f17ebe5a26ee4f59d0/emma.gradle'
+apply from: 'https://raw.github.com/gist/1527612/2ac4518309ceb95034fe4b2e11ac84d605a9dbee/findbugs.gradle'
+
+project.group = 'de.prob'
+gradle_version = '1.0-milestone-3'
+sourceCompatibility = 1.6
+
+project.version = '1.0.0-SNAPSHOT'
+
+repositories {
+    maven {
+      name "cobra"
+      url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
+    }
+}
+
+dependencies {
+
+	compile 'com.google.guava:guava:r09'
+	compile 'commons-cli:commons-cli:1.2'
+
+	compile 'org.codehaus.groovy:groovy:1.8.0'
+	compile 'org.fusesource.jansi:jansi:1.5'
+	compile 'jline:jline:0.9.94'
+
+	compile 'de.prob:animationscriptparser:2.0.175'
+	compile 'de.prob:answerparser:2.0.175'
+	compile 'de.prob:bparser:2.0.175'
+	compile 'de.prob:cliparser:2.0.175'	
+	compile 'de.prob:ltlparser:2.0.175'
+	compile 'de.prob:parserbase:2.0.175'		
+	compile 'de.prob:prologlib:2.0.175'
+	compile 'de.prob:unicode:2.0.175'
+
+	compile 'com.google.inject:guice:3.0'
+	compile 'com.google.inject.extensions:guice-assistedinject:3.0'
+	compile 'org.slf4j:slf4j-api:1.6.1'
+	compile 'ch.qos.logback:logback-core:0.9.29'
+	compile 'ch.qos.logback:logback-classic:0.9.29'
+	compile 'net.sf.jung:jung-graph-impl:2.0.1'
+
+	testCompile 'junit:junit:4.8.2'
+	testCompile 'org.mockito:mockito-core:1.8.5'
+}
+
+task createBuildConstants  {
+	doFirst {
+		def buildconstants_class = """
+version=${project.version}"""
+		File f = file("src/main/resources/build.properties")
+		f.delete()
+		f <<  buildconstants_class
+	}
+}
+
+compileJava {
+	dependsOn createBuildConstants
+}
+
+task pack(type: Jar, dependsOn: [jar]) {
+	baseName = project.name + '-standalone'
+	deps = configurations.runtime + configurations.archives.allArtifacts.files
+	depClasses = {
+		deps.collect {
+			it.isDirectory() ? it : zipTree(it)
+		}
+	}
+	from(depClasses) {
+		exclude 'META-INF/MANIFEST.MF'
+	}
+	manifest {
+		attributes 'Main-Class': 'de.prob.Main'
+	}
+	doLast{
+		println "Created archive: "+archivePath
+	}
+}
+
+task deploy(dependsOn: [jar, test,javadoc,pack], group: 'Build') {
+	description = 'Assembles the uberjar, runs all tests and builds the javadoc.'
+}
+
+
+test.doFirst {
+	systemProperties['integrationtest'] = 'true'
+}
+
+javadoc {
+	title="ProB Core "+project.version
+}
+s

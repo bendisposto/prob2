@@ -1,0 +1,18 @@
+build/
+bin/
+.classpath
+.project
+.settings/org.eclipse.jdt.core.prefs
+.gradle/
+logs/
+*.swp
+*.log
+*~
+! .gitkeep
+.DS_Store
+tmp/
+PROB_LOGFILE_IS_UNDEFINED
+.settings/org.eclipse.jdt.ui.prefs
+src/main/resources/build.properties
+config.groovy
+.cache
