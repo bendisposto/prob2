@@ -117,7 +117,7 @@ class Shell {
 	public void run() {
 		prepareBindings();
 		String banner = banner();
-		System.out.println(banner);
+		System.out.println("Welcome to the ProB interactive shell.\n");
 		logger.trace("Run Init Script");
 		runInitScript(engine.getFactory().getExtensions());
 		logger.trace("Start Console");
