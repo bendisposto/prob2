@@ -1,15 +1,9 @@
-# The ProB Model Checker and Animator
+# Experimental ProB core
 
-The ProB source code is distributed under the EPL license (http://www.eclipse.org/org/documents/epl-v10.html).
-(C) 2000-2011 Michael Leuschel and many others.
+This project contains experiments for the new ProB Core API. It is intended for internal usage only. 
 
-For updates please visit the ProB website: http://www.stups.uni-duesseldorf.de/ProB/
+The ProB sourcecode is located in https://github.com/bendisposto/prob.
 
-ProB comes with ABSOLUTELY NO WARRANTY OF ANY KIND ! This software is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY. The author(s) do not accept responsibility to anyone for the consequences of using it or for whether it serves any particular purpose or works at all. No warranty is made about the software or its performance.
-
-The ProB binary and source distributions contain the nauty library (http://cs.anu.edu.au/~bdm/nauty/) which imply further restrictions: the ProB model checker with nauty symmetry reduction cannot be used for applications with nontrivial military significance. 
-
-For availability of commercial support, please contact Formal Mind (http://www.formalmind.com).
-
+(c) 2011 Jens Bendisposto, all rights reserved
 
 
