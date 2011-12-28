@@ -116,7 +116,8 @@ class Shell {
 
 	public void run() {
 		prepareBindings();
-		System.out.println(banner());
+		String banner = banner();
+		System.out.println(banner);
 		logger.trace("Run Init Script");
 		runInitScript(engine.getFactory().getExtensions());
 		logger.trace("Start Console");
