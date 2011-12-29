@@ -117,7 +117,7 @@ class Shell {
 	public void run() {
 		prepareBindings();
 		String banner = banner();
-		System.out.println("Welcome to the ProB interactive shell.\n");
+		print(banner);
 		logger.trace("Run Init Script");
 		runInitScript(engine.getFactory().getExtensions());
 		logger.trace("Start Console");
@@ -145,7 +145,7 @@ class Shell {
 					resulting = evaluate(line);
 					String result = (resulting == null) ? "null" : resulting
 							.toString();
-					System.out.println(result);
+					print(result);
 				} catch (ScriptException e) {
 					System.out.println(e.getLocalizedMessage());
 					logger.debug(e.getMessage(), e);
@@ -154,6 +154,11 @@ class Shell {
 		} catch (IOException e) {
 			logger.error("Read-Error", e);
 		}
+	}
+	
+	private void print(String s) {
+		PrintStream o = System.out;
+		if (o != null) o.println(s);
 	}
 
 }
