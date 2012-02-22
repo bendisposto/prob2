@@ -17,17 +17,8 @@ import de.prob.prolog.term.PrologTerm;
  * @author plagge
  */
 public class StateError {
-	/**
-	 * @uml.property  name="event"
-	 */
 	private final String event;
-	/**
-	 * @uml.property  name="shortDescription"
-	 */
 	private final String shortDescription;
-	/**
-	 * @uml.property  name="longDescription"
-	 */
 	private final String longDescription;
 
 	public StateError(final String event, final String shortDescription,
@@ -44,26 +35,14 @@ public class StateError {
 		this.longDescription = PrologTerm.atomicString(term.getArgument(3));
 	}
 
-	/**
-	 * @return
-	 * @uml.property  name="event"
-	 */
 	public String getEvent() {
 		return event;
 	}
 
-	/**
-	 * @return
-	 * @uml.property  name="shortDescription"
-	 */
 	public String getShortDescription() {
 		return shortDescription;
 	}
 
-	/**
-	 * @return
-	 * @uml.property  name="longDescription"
-	 */
 	public String getLongDescription() {
 		return longDescription;
 	}
