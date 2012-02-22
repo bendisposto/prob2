@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'groovy'
 apply plugin: 'maven'
 apply from: 'https://raw.github.com/gist/1527604/c0376aa40de59a0481cb33f17ebe5a26ee4f59d0/emma.gradle'
 

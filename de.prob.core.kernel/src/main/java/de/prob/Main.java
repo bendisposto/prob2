@@ -47,7 +47,7 @@ public class Main {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {
-				shellProvider.get().run();
+				shellProvider.get().repl();
 			}
 		} catch (ParseException exp) {
 			HelpFormatter formatter = new HelpFormatter();
