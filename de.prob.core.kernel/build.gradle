@@ -2,7 +2,6 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply from: 'https://raw.github.com/gist/1527604/c0376aa40de59a0481cb33f17ebe5a26ee4f59d0/emma.gradle'
-apply from: 'https://raw.github.com/gist/1527612/2ac4518309ceb95034fe4b2e11ac84d605a9dbee/findbugs.gradle'
 
 project.group = 'de.prob'
 gradle_version = '1.0-milestone-3'
@@ -17,6 +16,8 @@ repositories {
     }
 }
 
+def parser_version = '2.1.2-SNAPSHOT'
+
 dependencies {
 
 	compile 'com.google.guava:guava:r09'
@@ -26,14 +27,13 @@ dependencies {
 	compile 'org.fusesource.jansi:jansi:1.5'
 	compile 'jline:jline:0.9.94'
 
-	compile 'de.prob:animationscriptparser:2.0.175'
-	compile 'de.prob:answerparser:2.0.175'
-	compile 'de.prob:bparser:2.0.175'
-	compile 'de.prob:cliparser:2.0.175'	
-	compile 'de.prob:ltlparser:2.0.175'
-	compile 'de.prob:parserbase:2.0.175'		
-	compile 'de.prob:prologlib:2.0.175'
-	compile 'de.prob:unicode:2.0.175'
+	compile 'de.prob:answerparser:'+parser_version 
+	compile 'de.prob:bparser:'+parser_version
+	compile 'de.prob:cliparser:'+parser_version	
+	compile 'de.prob:ltlparser:'+parser_version
+	compile 'de.prob:parserbase:'+parser_version		
+	compile 'de.prob:prologlib:'+parser_version
+	compile 'de.prob:unicode:'+parser_version
 
 	compile 'com.google.inject:guice:3.0'
 	compile 'com.google.inject.extensions:guice-assistedinject:3.0'

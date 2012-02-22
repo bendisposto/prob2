@@ -17,11 +17,9 @@ public class ModuleCli extends AbstractModule {
 
 	@Override
 	protected void configure() {
-
 		bind(ProBInstance.class).toProvider(ProBInstanceProvider.class);
 		bind(OsSpecificInfo.class).toProvider(OsInfoProvider.class)
 				.asEagerSingleton();
-		bind(PrologProcessProvider.class);
 	}
 
 	@Provides

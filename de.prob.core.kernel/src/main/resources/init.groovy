@@ -14,4 +14,7 @@ console_reader.addCompletor(new org.codehaus.groovy.tools.shell.util.ClassNameCo
 
 //api.b_def()
 
-println "Goodbye from Groovy!!!"
+def s = api.b_def()
+
+println "Goodbye from Groovy!!! allalaxxxx"
+

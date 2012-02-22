@@ -3,12 +3,8 @@ package de.prob.model;
 import java.io.File;
 
 import de.prob.ProBException;
-import de.prob.animator.command.GetMachineObjectsCommand;
-import de.prob.animator.command.ICommand;
+import de.prob.animator.IAnimator;
 
 public interface IModelFactory {
-	ICommand getLoadCommand(File file, String name) throws ProBException;
-
-	StateTemplate generate(GetMachineObjectsCommand getInfo);
-
+	StaticInfo load(IAnimator animator, File f) throws ProBException;
 }

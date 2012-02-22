@@ -20,7 +20,7 @@ public class Main {
 		if (System.getProperty("PROB_LOG_CONFIG") == null) {
 			System.setProperty("PROB_LOG_CONFIG", "production.xml");
 		}
-		System.setProperty("PROB_LOG_CONFIG", "fulltrace.xml");
+		// System.setProperty("PROB_LOG_CONFIG", "fulltrace.xml");
 	}
 
 	public final static Injector INJECTOR = Guice
@@ -62,8 +62,11 @@ public class Main {
 		System.setProperty("PROB_LOG_CONFIG", "fulltrace.xml");
 		Injector injector = Guice.createInjector(new MainModule());
 		Main main = injector.getInstance(Main.class);
+
+		// IStateSpace instance = injector.getInstance(IStateSpace.class);
+
 		main.run(args);
-		System.exit(0);
+		// System.exit(0);
 	}
 
 }

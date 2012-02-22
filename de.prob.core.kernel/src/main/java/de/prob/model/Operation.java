@@ -20,4 +20,19 @@ public class Operation {
 		return name + "(" + params + ")";
 	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj instanceof Operation) {
+			Operation that = (Operation) obj;
+			boolean b = that.id.equals(id);
+			return b;
+		} else
+			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
 }

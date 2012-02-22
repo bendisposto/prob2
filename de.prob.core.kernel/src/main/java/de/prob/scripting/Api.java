@@ -8,10 +8,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.ProBException;
-import de.prob.animator.command.GetMachineObjectsCommand;
 import de.prob.cli.ProBInstance;
-import de.prob.model.ClassicalBModelFactory;
-import de.prob.model.IModelFactory;
+import de.prob.model.IStateSpace;
 import de.prob.model.StateSpace;
 
 public class Api {
@@ -33,7 +31,7 @@ public class Api {
 		x.shutdown();
 	}
 
-	public StateSpace b_def() {
+	public IStateSpace b_def() {
 		File f = null;
 		try {
 
@@ -49,34 +47,25 @@ public class Api {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		return b_open_file(f, "scheduler");
+		return open_file(f);
 	}
 
-	public StateSpace b_open_file(final File f, final String name) {
-		final IModelFactory classicalBFactory = new ClassicalBModelFactory();
+	public IStateSpace open_file(final File f) {
 		StateSpace stateSpace = animationProvider.get();
-
-		try {
-			stateSpace.execute(classicalBFactory.getLoadCommand(f, name));
-			GetMachineObjectsCommand getInfo = new GetMachineObjectsCommand();
-			stateSpace.execute(getInfo);
-			stateSpace.setStateTemplate(classicalBFactory.generate(getInfo));
-			stateSpace.exploreState("root");
-		} catch (ProBException e) {
-			e.printStackTrace();
-		}
+		stateSpace.load(f);
 		return stateSpace;
 	}
 
-	public StateSpace load_b(final String dir, final String name,
+	public IStateSpace load_b(final String dir, final String name,
 			final String ext) {
 		File f = new File(dir + File.separator + name + "." + ext);
-		return b_open_file(f, name);
+		return open_file(f);
 	}
 
-	public String getCurrentId(final StateSpace animation) throws ProBException {
-		//		new ICom<GetCurrentStateIdCommand>(new GetCurrentStateIdCommand())
-		//				.executeOn(animation);
+	public String getCurrentId(final IStateSpace animation)
+			throws ProBException {
+		// new ICom<GetCurrentStateIdCommand>(new GetCurrentStateIdCommand())
+		// .executeOn(animation);
 		return null;
 	}
 
