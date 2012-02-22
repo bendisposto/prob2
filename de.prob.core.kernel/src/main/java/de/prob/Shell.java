@@ -61,7 +61,10 @@ class Shell {
 			try {
 				logger.trace("Evaluate Init Script");
 				String scriptcontent = slurp(script);
-				engine.eval(scriptcontent, context);
+				String[] lines = scriptcontent.split("\n");
+				for (String line : lines) {
+					engine.eval(line, context);
+				}
 				logger.trace("Evaluated Init Script");
 			} catch (ScriptException e) {
 				logger.error("Error in init script.", e);
@@ -113,12 +116,12 @@ class Shell {
 		engine.put("api", api);
 		engine.put("console_reader", reader);
 		// FIXME this is for debugging only!
-		try {
-			engine.put("s", engine.eval("s = api.b_def()"));
-			engine.put("exec", engine.eval("exec = s.&exec"));
-		} catch (ScriptException e) {
-			e.printStackTrace();
-		}
+		// try {
+		// engine.put("s", engine.eval("s = api.b_def()"));
+		// engine.put("exec", engine.eval("exec = s.&exec"));
+		// } catch (ScriptException e) {
+		// e.printStackTrace();
+		// }
 
 	}
 
