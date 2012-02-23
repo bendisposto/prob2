@@ -46,6 +46,8 @@ extends Shell {
 
 	private static final MessageSource messages = new MessageSource(Groovysh.class)
 
+	private static final long serialVersionUID = -9047891508993732223L;
+
 	final BufferManager buffers = new BufferManager()
 
 	final Parser parser
