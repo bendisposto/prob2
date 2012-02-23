@@ -17,6 +17,8 @@ repositories {
     }
 }
 
+
+
 project.findbugs.ignoreFailures = true
 
 sourceSets.main.java.srcDirs = [] // ie there's no stand-alone java source
@@ -26,12 +28,15 @@ def parser_version = '2.1.2-SNAPSHOT'
 
 dependencies {
 
-	groovy 'org.codehaus.groovy:groovy:1.8.0'
+	groovy 'org.codehaus.groovy:groovy:1.8.4'
 
+	
+	
+	
 	compile 'com.google.guava:guava:r09'
 	compile 'commons-cli:commons-cli:1.2'
 
-	compile 'org.codehaus.groovy:groovy:1.8.0'
+	compile 'org.codehaus.groovy:groovy:1.8.4'
 	compile 'org.fusesource.jansi:jansi:1.5'
 	compile 'jline:jline:0.9.94'
 
