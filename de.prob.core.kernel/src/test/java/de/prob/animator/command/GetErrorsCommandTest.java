@@ -1,6 +1,8 @@
 package de.prob.animator.command;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,13 +36,12 @@ public class GetErrorsCommandTest {
 
 	@Test
 	public void testProcessResults() {
-		ISimplifiedROMap<String, PrologTerm> map = new ISimplifiedROMap<String, PrologTerm>() {
-			@Override
-			public PrologTerm get(final String arg0) {
-				return new ListPrologTerm(new CompoundPrologTerm("foobar"));
 
-			}
-		};
+		@SuppressWarnings("unchecked")
+		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
+
+		when(map.get(anyString())).thenReturn(
+				new ListPrologTerm(new CompoundPrologTerm("foobar")));
 
 		GetErrorsCommand command = new GetErrorsCommand();
 		command.processResult(map);
