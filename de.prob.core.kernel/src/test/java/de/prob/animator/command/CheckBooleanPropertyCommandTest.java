@@ -52,7 +52,7 @@ public class CheckBooleanPropertyCommandTest {
 		assertFalse(cmd.getResult());
 	}
 
-	@Test(expected = ProBException.class)
+	@Test(expected = IllegalStateException.class)
 	public void testProcessResultNull() throws ProBException {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
@@ -61,6 +61,11 @@ public class CheckBooleanPropertyCommandTest {
 
 		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(
 				"BLAH_BLAH", "root");
-		cmd.processResult(map);
+		try {
+			cmd.processResult(map);
+		} catch (ProBException e) {
+
+		}
+		cmd.getResult();
 	}
 }
