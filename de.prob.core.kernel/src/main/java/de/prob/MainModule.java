@@ -1,12 +1,11 @@
 package de.prob;
 
 import static java.io.File.*;
+import groovy.lang.Binding;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import javax.script.ScriptEngineManager;
 
 import jline.ConsoleReader;
 
@@ -15,17 +14,18 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.codehaus.groovy.tools.shell.Interpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
 import de.prob.animator.AnimatorModule;
 import de.prob.annotations.Home;
-import de.prob.annotations.Language;
 import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
@@ -49,14 +49,11 @@ public class MainModule extends AbstractModule {
 		install(new ModelModule());
 		bind(Api.class);
 		bind(CommandLineParser.class).to(PosixParser.class).in(Singleton.class);
-		bind(String.class).annotatedWith(Language.class).toInstance("groovy");
 		bind(String.class).annotatedWith(Version.class).toInstance(
 				buildConstants.getProperty("version", "0.0.0"));
 		bind(ConsoleReader.class);
-		bind(ClassLoader.class).annotatedWith(Names.named("Shell")).toInstance(
-				Shell.class.getClassLoader());
-		bind(Shell.class);
-		bind(ScriptEngineManager.class);
+		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
+				.toInstance(Main.class.getClassLoader());
 	}
 
 	@Provides
@@ -64,6 +61,13 @@ public class MainModule extends AbstractModule {
 	public String getProBDirectory() {
 		return System.getProperty("user.home") + separator + ".prob"
 				+ separator;
+	}
+
+	@Provides
+	public Interpreter getInterpreter(
+			final @Named("Classloader") ClassLoader classloader,
+			final Binding binding) {
+		return new Interpreter(classloader, binding);
 	}
 
 	@Provides

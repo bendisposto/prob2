@@ -2,8 +2,8 @@ package de.prob;
 
 import groovy.lang.Binding;
 
-import org.codehaus.groovy.tools.shell.Groovysh;
 import org.codehaus.groovy.tools.shell.IO;
+import org.codehaus.groovy.tools.shell.PShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +28,7 @@ class Shell {
 		// io.setVerbosity(Verbosity.QUIET);
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
-		Groovysh shell = new Groovysh(this.getClass().getClassLoader(),
-				binding, io);
+		PShell shell = new PShell(this.getClass().getClassLoader(), binding, io);
 		shell.run();
 	}
 

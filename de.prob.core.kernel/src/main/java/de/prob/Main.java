@@ -9,7 +9,6 @@ import org.codehaus.groovy.tools.shell.util.HelpFormatter;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Provider;
 
 import de.prob.animator.IAnimator;
 import de.prob.annotations.Logfile;
@@ -32,22 +31,23 @@ public class Main {
 
 	private final CommandLineParser parser;
 	private final Options options;
-	private final Provider<Shell> shellProvider;
+	private Shell shell;
 
 	@Inject
 	public Main(@Logfile final String logfile, final CommandLineParser parser,
-			final Options options, final Provider<Shell> shellProvider) {
+			final Options options, final Shell shell) {
 		this.parser = parser;
 		this.options = options;
-		this.shellProvider = shellProvider;
+		this.shell = shell;
 		System.setProperty("PROB_LOGFILE", logfile);
 	}
 
 	void run(final String[] args) {
+
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {
-				shellProvider.get().repl();
+				shell.repl();
 			}
 		} catch (ParseException exp) {
 			HelpFormatter formatter = new HelpFormatter();

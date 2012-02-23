@@ -1,6 +1,5 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'groovy'
+apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply from: 'https://raw.github.com/gist/1527604/c0376aa40de59a0481cb33f17ebe5a26ee4f59d0/emma.gradle'
 
@@ -17,9 +16,15 @@ repositories {
     }
 }
 
+
+sourceSets.main.java.srcDirs = [] // ie there's no stand-alone java source
+sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
+
 def parser_version = '2.1.2-SNAPSHOT'
 
 dependencies {
+
+	groovy 'org.codehaus.groovy:groovy:1.8.0'
 
 	compile 'com.google.guava:guava:r09'
 	compile 'commons-cli:commons-cli:1.2'
