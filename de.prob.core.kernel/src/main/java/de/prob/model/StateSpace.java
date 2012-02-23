@@ -4,9 +4,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -22,9 +19,6 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 		implements IStateSpace {
 
-	private transient final Logger logger = LoggerFactory
-			.getLogger(StateSpace.class);
-
 	private static final long serialVersionUID = -9047891508993732222L;
 	private transient IAnimator animator;
 	private transient StaticInfo info;
@@ -37,6 +31,10 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 	public StateSpace(final Provider<IAnimator> ap) {
 		this.ap = ap;
 		addVertex("root");
+	}
+
+	public StaticInfo getInfo() {
+		return info;
 	}
 
 	/**
