@@ -63,7 +63,7 @@ class AnimatorImpl implements IAnimator {
 				} else {
 					// we cannot call getErrors.processResult directly because
 					// the wrapping ComposedCommand may have mapped the bindings
-					cmds.reprocessResult(getErrors, bindings);
+					cmds.getResultForCommand(getErrors, bindings);
 				}
 				errors = getErrors.getErrors();
 			}
