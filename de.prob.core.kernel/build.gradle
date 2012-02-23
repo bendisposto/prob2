@@ -2,9 +2,10 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply from: 'https://raw.github.com/gist/1527604/c0376aa40de59a0481cb33f17ebe5a26ee4f59d0/emma.gradle'
+apply plugin: 'findbugs'
 
 project.group = 'de.prob'
-gradle_version = '1.0-milestone-3'
+gradle_version = '1.0-milestone-8'
 sourceCompatibility = 1.6
 
 project.version = '1.0.0-SNAPSHOT'
@@ -97,3 +98,8 @@ test.doFirst {
 javadoc {
 	title="ProB Core "+project.version
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.0-milestone-8'
+}
+
