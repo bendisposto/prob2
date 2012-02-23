@@ -22,15 +22,16 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 		implements IStateSpace {
 
-	private final Logger logger = LoggerFactory.getLogger(StateSpace.class);
+	private transient final Logger logger = LoggerFactory
+			.getLogger(StateSpace.class);
 
 	private static final long serialVersionUID = -9047891508993732222L;
 	private transient IAnimator animator;
-	private StaticInfo info;
+	private transient StaticInfo info;
 
-	private String currentState = "root";
+	private transient String currentState = "root";
 
-	private final Provider<IAnimator> ap;
+	private transient final Provider<IAnimator> ap;
 
 	@Inject
 	public StateSpace(final Provider<IAnimator> ap) {
@@ -38,6 +39,13 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 		addVertex("root");
 	}
 
+	/**
+	 * Takes a state id and calculates the successor states, the invariant,
+	 * timeout, etc.
+	 * 
+	 * @param id
+	 * @throws ProBException
+	 */
 	public void explore(final String id) throws ProBException {
 		ExploreStateCommand command = new ExploreStateCommand(id);
 		animator.execute(command);
