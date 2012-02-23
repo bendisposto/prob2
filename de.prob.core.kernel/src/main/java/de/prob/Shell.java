@@ -29,7 +29,7 @@ class Shell {
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
 		PShell shell = new PShell(this.getClass().getClassLoader(), binding, io);
-		shell.run();
+		shell.run("");
 	}
 
 }
