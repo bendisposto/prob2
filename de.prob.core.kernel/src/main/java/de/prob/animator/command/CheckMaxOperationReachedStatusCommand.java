@@ -18,10 +18,9 @@ public final class CheckMaxOperationReachedStatusCommand extends
 		super(PROPERTY_NAME, stateId);
 	}
 
-	public static boolean maxOperationReached(final IAnimator a,
-			final String stateId) throws ProBException {
-		return CheckBooleanPropertyCommand.isPropertyTrue(a, PROPERTY_NAME,
-				stateId);
+	public boolean maxOperationReached(final IAnimator a, final String stateId)
+			throws ProBException {
+		return super.getResult();
 	}
 
 }

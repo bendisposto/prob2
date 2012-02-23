@@ -18,10 +18,9 @@ public final class CheckTimeoutStatusCommand extends
 		super(PROPERTY_NAME, stateId);
 	}
 
-	public static boolean isTimeout(final IAnimator a, final String stateId)
+	public boolean isTimeout(final IAnimator a, final String stateId)
 			throws ProBException {
-		return CheckBooleanPropertyCommand.isPropertyTrue(a, PROPERTY_NAME,
-				stateId);
+		return super.getResult();
 	}
 
 }

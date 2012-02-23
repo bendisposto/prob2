@@ -6,22 +6,17 @@
 
 package de.prob.animator.command;
 
-import de.prob.ProBException;
-import de.prob.animator.IAnimator;
-
 public final class CheckInitialisationStatusCommand extends
 		CheckBooleanPropertyCommand {
 
 	private static final String IS_INITIALISED_STATE = "isInitialisedState";
 
-	public static boolean isInitialized(final IAnimator a, final String stateId)
-			throws ProBException {
-		return CheckBooleanPropertyCommand.isPropertyTrue(a,
-				IS_INITIALISED_STATE, stateId);
+	public CheckInitialisationStatusCommand(final String stateId) {
+		super(IS_INITIALISED_STATE, stateId);
 	}
 
-	public CheckInitialisationStatusCommand(final String stateId) {
-		super("initialised", stateId);
+	public boolean isInitialized() {
+		return super.getResult();
 	}
 
 }

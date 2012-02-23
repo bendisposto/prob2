@@ -40,14 +40,7 @@ public class CheckBooleanPropertyCommand implements ICommand {
 		this.stateId = stateId;
 	}
 
-	public static boolean isPropertyTrue(final IAnimator a,
-			final String propertyName, final String stateId)
-			throws ProBException {
-		CheckBooleanPropertyCommand checkPropertyCommand = new CheckBooleanPropertyCommand(
-				propertyName, stateId);
-		a.execute(checkPropertyCommand);
-		return checkPropertyCommand.getResult();
-	}
+
 
 	//
 	// IComposableCommand
