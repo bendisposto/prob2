@@ -29,7 +29,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 	private transient IAnimator animator;
 	private transient StaticInfo info;
 
-	private transient String currentState = "root";
+	private String currentState = "root";
 
 	private transient final Provider<IAnimator> ap;
 

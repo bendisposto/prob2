@@ -2,9 +2,11 @@ package de.prob.cli;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +43,9 @@ public class ProBConnection implements IProBConnection {
 		try {
 			socket = new Socket(InetAddress.getByName(null), port);
 			inputStream = new BufferedInputStream(socket.getInputStream());
-			outputStream = new PrintStream(socket.getOutputStream());
+			OutputStream outstream = socket.getOutputStream();
+			outputStream = new PrintStream(outstream, false, Charset
+					.defaultCharset().name());
 			logger.debug("Connected");
 		} catch (final IOException e) {
 			if (socket != null) {
@@ -59,6 +63,7 @@ public class ProBConnection implements IProBConnection {
 		}
 	}
 
+	@Override
 	public String send(final String term) throws ProBException {
 		logger.trace(term);
 		if (shutingDown) {
@@ -132,6 +137,7 @@ public class ProBConnection implements IProBConnection {
 		return true;
 	}
 
+	@Override
 	public void disconnect() {
 		shutingDown = true;
 	}
