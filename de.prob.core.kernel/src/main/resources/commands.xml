@@ -30,7 +30,9 @@
 
     <command>org.codehaus.groovy.tools.shell.commands.ShowCommand</command>
 
-     <command>org.codehaus.groovy.tools.shell.commands.PurgeCommand</command>
+    <command>org.codehaus.groovy.tools.shell.commands.InspectCommand</command>
+
+    <command>org.codehaus.groovy.tools.shell.commands.PurgeCommand</command>
 
     <command>org.codehaus.groovy.tools.shell.commands.EditCommand</command>
 
