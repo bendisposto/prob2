@@ -21,8 +21,13 @@ repositories {
 
 project.findbugs {
 	ignoreFailures = true
-	excludes=['SE_NO_SERIALVERSIONID']
 }
+
+def  ft = findbugsMain.classes
+ft.exclude '**/org/codehaus/groovy/tools/shell/*'
+findbugsMain.classes = files(ft.files) // explicit list of files
+
+
 
 sourceSets.main.java.srcDirs = [] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
