@@ -19,9 +19,10 @@ repositories {
 }
 
 
-
-project.findbugs.ignoreFailures = true
-project.findbugs.excludes=['SE_NO_SERIALVERSIONID']
+project.findbugs {
+	ignoreFailures = true
+	excludes=['SE_NO_SERIALVERSIONID']
+}
 
 sourceSets.main.java.srcDirs = [] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
