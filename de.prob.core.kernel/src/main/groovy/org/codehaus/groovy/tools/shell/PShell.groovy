@@ -77,17 +77,13 @@ extends Shell {
 		registrar.call(this)
 	}
 
-	private static Closure createDefaultRegistrar() {
-		return { shell ->
-			def r = new XmlCommandRegistrar(shell, classLoader)
-
-			def resource = de.prob.Main.class.getClassLoader().getResource('commands.xml')
-			r.register(resource)
-		}
-	}
 
 	PShell(final ClassLoader classLoader, final Binding binding, final IO io) {
-		this(classLoader, binding, io, createDefaultRegistrar())
+		this(classLoader, binding, io, { shell ->
+			def r = new XmlCommandRegistrar(shell, classLoader)
+			def resource = de.prob.Main.class.getClassLoader().getResource('commands.xml')
+			r.register(resource)
+		})
 	}
 
 	PShell(final Binding binding, final IO io) {
