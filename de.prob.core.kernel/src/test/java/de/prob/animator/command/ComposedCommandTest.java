@@ -38,6 +38,7 @@ public class ComposedCommandTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testProcessResult() throws ProBException {
 		ICommand foo = mock(ICommand.class);
 		ICommand bar = mock(ICommand.class);
