@@ -120,10 +120,8 @@ public class ProBConnection implements IProBConnection {
 				// trim white spaces and append
 				// instead of removing the last byte trim is used, because on
 				// windows prob uses \r\n as new line.
-				String s = new String(buffer, 0, count); // FIXME findbugs
-															// complains about
-															// Decoding, see
-															// CharsetDecoder
+				String s = new String(buffer, 0, count, Charset
+						.defaultCharset().name());
 				result.append(s.trim());
 			} else {
 				done = true;

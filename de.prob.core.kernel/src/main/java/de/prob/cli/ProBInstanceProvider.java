@@ -3,6 +3,7 @@ package de.prob.cli;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	private final PrologProcessProvider processProvider;
 
+	@Override
 	public ProBInstance get() {
 		try {
 			return create();
@@ -49,7 +51,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		Process process = processTuple.getProcess();
 		String key = processTuple.getKey();
 		final BufferedReader stream = new BufferedReader(new InputStreamReader(
-				process.getInputStream()));
+				process.getInputStream(), Charset.defaultCharset()));
 
 		Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> cliInformation = extractCliInformation(stream);
 

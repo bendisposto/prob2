@@ -14,8 +14,6 @@ import de.prob.prolog.term.PrologTerm;
 
 public class CheckBooleanPropertyCommandTest {
 
-	final String K = "BLAH_BLAH";
-
 	@Test
 	public void testWriteCommand() {
 		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(
@@ -33,7 +31,7 @@ public class CheckBooleanPropertyCommandTest {
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "true");
 
-		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(K,
+		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand("BLAH_BLAH",
 				"root");
 		cmd.processResult(map);
 		assertTrue(cmd.getResult());
@@ -43,7 +41,7 @@ public class CheckBooleanPropertyCommandTest {
 	public void testProcessResultFalse() throws ProBException {
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "false");
-		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(K,
+		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand("BLAH_BLAH",
 				"root");
 		cmd.processResult(map);
 		assertFalse(cmd.getResult());
@@ -51,9 +49,9 @@ public class CheckBooleanPropertyCommandTest {
 
 	@Test(expected = ProBException.class)
 	public void testProcessIllegalResult() throws ProBException {
-		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(K,
+		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock("BLAH_BLAH",
 				"foo");
-		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(K,
+		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand("BLAH_BLAH",
 				"root");
 		cmd.processResult(map);
 	}
