@@ -4,21 +4,28 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.animator.command;
+package de.prob.animator.command.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.ProBException;
-import de.prob.animator.IAnimator;
+import de.prob.animator.command.CheckInitialisationStatusCommand;
+import de.prob.animator.command.CheckInvariantStatusCommand;
+import de.prob.animator.command.CheckMaxOperationReachedStatusCommand;
+import de.prob.animator.command.CheckTimeoutStatusCommand;
+import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-/*
- * This class is quasi abstract, do not instantiate this class. Use the derived
- * classes or the static methods to retrieve the boolean values
+/**
+ * Command to retrieve a state property. Most likely you rather want one of the
+ * specialized versions {@link CheckInitialisationStatusCommand},
+ * {@link CheckInvariantStatusCommand} ,
+ * {@link CheckMaxOperationReachedStatusCommand} or
+ * {@link CheckTimeoutStatusCommand}
  */
 public class CheckBooleanPropertyCommand implements ICommand {
 
@@ -39,12 +46,6 @@ public class CheckBooleanPropertyCommand implements ICommand {
 		this.propertyName = propertyName;
 		this.stateId = stateId;
 	}
-
-
-
-	//
-	// IComposableCommand
-	//
 
 	@Override
 	public void processResult(

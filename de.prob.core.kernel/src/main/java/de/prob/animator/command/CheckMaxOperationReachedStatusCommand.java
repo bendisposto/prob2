@@ -7,7 +7,7 @@
 package de.prob.animator.command;
 
 import de.prob.ProBException;
-import de.prob.animator.IAnimator;
+import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 
 public final class CheckMaxOperationReachedStatusCommand extends
 		CheckBooleanPropertyCommand {
@@ -18,8 +18,7 @@ public final class CheckMaxOperationReachedStatusCommand extends
 		super(PROPERTY_NAME, stateId);
 	}
 
-	public boolean maxOperationReached(final IAnimator a, final String stateId)
-			throws ProBException {
+	public boolean maxOperationReached() throws ProBException {
 		return super.getResult();
 	}
 

@@ -1,4 +1,4 @@
-package de.prob.animator.command;
+package de.prob.animator.command.internal;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -6,13 +6,15 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
+import test.TestHelper;
 import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class CheckBooleanPropertyCommandTest {
+
+	final String K = "BLAH_BLAH";
 
 	@Test
 	public void testWriteCommand() {
@@ -28,44 +30,38 @@ public class CheckBooleanPropertyCommandTest {
 
 	@Test
 	public void testProcessResultTrue() throws ProBException {
-		@SuppressWarnings("unchecked")
-		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
+		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
+				"PropResult", "true");
 
-		when(map.get(anyString())).thenReturn(new CompoundPrologTerm("true"));
-
-		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(
-				"BLAH_BLAH", "root");
+		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(K,
+				"root");
 		cmd.processResult(map);
 		assertTrue(cmd.getResult());
 	}
 
 	@Test
 	public void testProcessResultFalse() throws ProBException {
-		@SuppressWarnings("unchecked")
-		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
-
-		when(map.get(anyString())).thenReturn(new CompoundPrologTerm("false"));
-
-		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(
-				"BLAH_BLAH", "root");
+		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
+				"PropResult", "false");
+		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(K,
+				"root");
 		cmd.processResult(map);
 		assertFalse(cmd.getResult());
 	}
 
+	@Test(expected = ProBException.class)
+	public void testProcessIllegalResult() throws ProBException {
+		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(K,
+				"foo");
+		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(K,
+				"root");
+		cmd.processResult(map);
+	}
+
 	@Test(expected = IllegalStateException.class)
 	public void testProcessResultNull() throws ProBException {
-		@SuppressWarnings("unchecked")
-		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
-
-		when(map.get(anyString())).thenReturn(new CompoundPrologTerm("no"));
-
 		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(
 				"BLAH_BLAH", "root");
-		try {
-			cmd.processResult(map);
-		} catch (ProBException e) {
-
-		}
 		cmd.getResult();
 	}
 }
