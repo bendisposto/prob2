@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.ProBException;
-import de.prob.animator.IAnimator;
 import de.prob.cli.StateError;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -38,17 +37,6 @@ public class GetStateBasedErrorsCommand implements ICommand {
 	public GetStateBasedErrorsCommand(final String stateId) {
 		this.stateId = stateId;
 	}
-
-	public static Collection<StateError> getStateValues(final IAnimator a,
-			final String id) throws ProBException {
-		GetStateBasedErrorsCommand command = new GetStateBasedErrorsCommand(id);
-		a.execute(command);
-		return command.getResult();
-	}
-
-	//
-	// ComposableCommand
-	//
 
 	@Override
 	public void processResult(

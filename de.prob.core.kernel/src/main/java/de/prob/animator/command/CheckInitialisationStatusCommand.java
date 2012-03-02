@@ -6,6 +6,9 @@
 
 package de.prob.animator.command;
 
+import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
+
+
 public final class CheckInitialisationStatusCommand extends
 		CheckBooleanPropertyCommand {
 
