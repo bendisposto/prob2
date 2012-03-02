@@ -1,5 +1,6 @@
 package de.prob.animator.command;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -47,5 +48,32 @@ public class ComposedCommandTest {
 		cmd.processResult(map);
 		verify(foo).processResult(any(ISimplifiedROMap.class));
 		verify(bar).processResult(any(ISimplifiedROMap.class));
+	}
+
+	@Test
+	public void testPrefix() throws Exception {
+		ComposedCommand command = new ComposedCommand();
+		int i = 0;
+		char[] letters = ComposedCommand.LETTERS;
+		for (char c : letters) {
+			String prefix = command.createPrefix(i);
+			assertEquals(prefix.charAt(0), c);
+			assertEquals(1, prefix.length());
+			i++;
+		}
+	}
+
+	@Test
+	public void testMorePrefix() throws Exception {
+		ComposedCommand command = new ComposedCommand();
+		char[] letters = ComposedCommand.LETTERS;
+		int i = letters.length;
+		for (char c : letters) {
+			String prefix = command.createPrefix(i);
+			assertEquals(prefix.charAt(0), c);
+			assertEquals(prefix.charAt(1), '1');
+			assertEquals(2, prefix.length());
+			i++;
+		}
 	}
 }

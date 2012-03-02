@@ -21,7 +21,7 @@ import de.prob.prolog.term.PrologTerm;
  * 
  */
 public class ComposedCommand implements ICommand {
-	private static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	public static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			.toCharArray();
 
 	private final ICommand[] cmds;
@@ -65,7 +65,7 @@ public class ComposedCommand implements ICommand {
 		cmds[i].writeCommand(pto);
 	}
 
-	private static String createPrefix(final int i) {
+	public String createPrefix(final int i) {
 		if (i < LETTERS.length)
 			return String.valueOf(LETTERS[i]);
 		else {
