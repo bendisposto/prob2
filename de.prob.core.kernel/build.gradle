@@ -2,7 +2,7 @@
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
-apply from: 'https://raw.github.com/gist/1527604/c0376aa40de59a0481cb33f17ebe5a26ee4f59d0/emma.gradle'
+apply from: 'https://raw.github.com/gist/1527604/4080ebed7b141d10610825aebd70942fcd301105/emma.gradle'
 apply plugin: 'findbugs'
 
 project.group = 'de.prob'
