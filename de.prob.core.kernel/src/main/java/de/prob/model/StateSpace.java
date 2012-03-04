@@ -124,4 +124,9 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 		return new ClassicalBModelFactory();
 	}
 
+	@Override
+	public void execute(final ICommand... commands) throws ProBException {
+		animator.execute(commands);
+	}
+
 }

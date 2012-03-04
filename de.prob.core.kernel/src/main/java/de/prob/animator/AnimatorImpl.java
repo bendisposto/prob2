@@ -108,4 +108,9 @@ class AnimatorImpl implements IAnimator {
 				.toString();
 	}
 
+	@Override
+	public void execute(final ICommand... commands) throws ProBException {
+		execute(new ComposedCommand(commands));
+	}
+
 }
