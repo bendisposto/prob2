@@ -15,6 +15,9 @@ import de.prob.prolog.term.PrologTerm;
 
 public class ComposedCommandTest {
 
+	private static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			.toCharArray();
+
 	@Test
 	public void testWriteCommand() throws ProBException {
 		ICommand foo = mock(ICommand.class);
@@ -54,7 +57,7 @@ public class ComposedCommandTest {
 	public void testPrefix() throws Exception {
 		ComposedCommand command = new ComposedCommand();
 		int i = 0;
-		char[] letters = ComposedCommand.LETTERS;
+		char[] letters = LETTERS;
 		for (char c : letters) {
 			String prefix = command.createPrefix(i);
 			assertEquals(prefix.charAt(0), c);
@@ -66,7 +69,7 @@ public class ComposedCommandTest {
 	@Test
 	public void testMorePrefix() throws Exception {
 		ComposedCommand command = new ComposedCommand();
-		char[] letters = ComposedCommand.LETTERS;
+		char[] letters = LETTERS;
 		int i = letters.length;
 		for (char c : letters) {
 			String prefix = command.createPrefix(i);

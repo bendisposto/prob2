@@ -21,7 +21,8 @@ import de.prob.prolog.term.PrologTerm;
  * 
  */
 public class ComposedCommand implements ICommand {
-	static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+	private static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			.toCharArray();
 
 	private final ICommand[] cmds;
 
