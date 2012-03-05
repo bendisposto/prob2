@@ -34,7 +34,6 @@ public class AnimatorImplTest {
 		animator = new AnimatorImpl(cli, processor, getErrors);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test(expected = ProBException.class)
 	public void testCommandThrowsProBExceptionOnWrite() throws ProBException {
 		doThrow(new ProBException()).when(cmd).writeCommand(
@@ -50,7 +49,6 @@ public class AnimatorImplTest {
 		animator.execute(cmd);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test(expected = ProBException.class)
 	public void testCommandThrowsRuntimeExceptionOnWrite() throws ProBException {
 
@@ -69,7 +67,6 @@ public class AnimatorImplTest {
 		animator.execute(cmd);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test(expected = ProBException.class)
 	public void testGetErrorsThrowsRuntimeExceptionOnWrite()
 			throws ProBException {
@@ -89,14 +86,12 @@ public class AnimatorImplTest {
 		animator.execute(cmd);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test(expected = ProBException.class)
 	public void testCommandsReturnsNullAsErrors() throws ProBException {
 		when(getErrors.getErrors()).thenReturn(null);
 		animator.execute(cmd);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test(expected = ProBException.class)
 	public void testCommandsHasSomeErrors() throws ProBException {
 		when(getErrors.getErrors()).thenReturn(
@@ -104,7 +99,6 @@ public class AnimatorImplTest {
 		animator.execute(cmd);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test(expected = ProBException.class)
 	public void testCommandsHasNoErrors() throws ProBException {
 		when(getErrors.getErrors()).thenReturn(Arrays.asList(new String[] {}));

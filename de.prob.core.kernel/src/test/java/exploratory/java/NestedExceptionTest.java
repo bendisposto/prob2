@@ -7,9 +7,11 @@ import org.junit.Test;
 public class NestedExceptionTest {
 
 	static class ExceptionOne extends Exception {
+		private static final long serialVersionUID = -6723739469084198030L;
 	}
 
 	static class ExceptionTwo extends Exception {
+		private static final long serialVersionUID = 2383431696698789083L;
 	}
 
 	public void raise(final Exception e) throws Exception {
