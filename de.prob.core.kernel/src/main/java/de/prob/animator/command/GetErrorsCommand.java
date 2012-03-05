@@ -1,5 +1,6 @@
 package de.prob.animator.command;
 
+import java.util.Collections;
 import java.util.List;
 
 import de.prob.parser.ISimplifiedROMap;
@@ -20,6 +21,7 @@ public class GetErrorsCommand implements ICommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
+		errors = Collections.emptyList();
 		pto.openTerm("getErrorMessages").printVariable(ERRORS_VARIABLE)
 				.closeTerm();
 	}

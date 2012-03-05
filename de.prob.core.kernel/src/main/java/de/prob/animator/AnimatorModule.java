@@ -7,5 +7,6 @@ public class AnimatorModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(IAnimator.class).to(AnimatorImpl.class);
+		bind(CommandProcessor.class);
 	}
 }
