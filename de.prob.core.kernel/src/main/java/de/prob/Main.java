@@ -19,7 +19,7 @@ public class Main {
 		if (System.getProperty("PROB_LOG_CONFIG") == null) {
 			System.setProperty("PROB_LOG_CONFIG", "production.xml");
 		}
-		// System.setProperty("PROB_LOG_CONFIG", "fulltrace.xml");
+		System.setProperty("PROB_LOG_CONFIG", "fulltrace.xml");
 	}
 
 	public final static Injector INJECTOR = Guice
