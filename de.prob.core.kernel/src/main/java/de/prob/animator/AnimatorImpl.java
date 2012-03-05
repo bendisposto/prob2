@@ -36,9 +36,6 @@ class AnimatorImpl implements IAnimator {
 	@Override
 	public void execute(final ICommand command) throws ProBException {
 		ISimplifiedROMap<String, PrologTerm> bindings = null;
-		ISimplifiedROMap<String, PrologTerm> errorbindings = null;
-
-		List<String> errors = null;
 		try {
 			bindings = processor.sendCommand(command);
 			command.processResult(bindings);
@@ -46,19 +43,25 @@ class AnimatorImpl implements IAnimator {
 			logger.error("Runtime error while executing query.", e);
 			throw new ProBException();
 		} finally {
-			try {
-				errorbindings = processor.sendCommand(getErrors);
-				getErrors.processResult(errorbindings);
-			} catch (RuntimeException e) {
-				logger.error("Runtime error while executing query.", e);
-				throw new ProBException();
-			}
-			errors = getErrors.getErrors();
-			if (errors != null && !errors.isEmpty()) {
-				logger.error("ProB raised exception(s):\n", Joiner.on('\n')
-						.join(errors));
-				throw new ProBException();
-			}
+			getErrors();
+		}
+	}
+
+	private void getErrors() throws ProBException {
+		ISimplifiedROMap<String, PrologTerm> errorbindings;
+		List<String> errors;
+		try {
+			errorbindings = processor.sendCommand(getErrors);
+			getErrors.processResult(errorbindings);
+		} catch (RuntimeException e) {
+			logger.error("Runtime error while executing query.", e);
+			throw new ProBException();
+		}
+		errors = getErrors.getErrors();
+		if (errors != null && !errors.isEmpty()) {
+			logger.error("ProB raised exception(s):\n",
+					Joiner.on('\n').join(errors));
+			throw new ProBException();
 		}
 	}
 
