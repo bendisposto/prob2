@@ -46,7 +46,7 @@ public class RefactoredNestedExceptionTest {
 	}
 
 	private int call1(final int n) throws Exception {
-		if (n % 2 == 1) {
+		if (n == 1 || n == 3) {
 			if (n == 1) {
 				raise(new ExceptionOne());
 			} else
