@@ -16,3 +16,4 @@ PROB_LOGFILE_IS_UNDEFINED
 src/main/resources/build.properties
 config.groovy
 .cache
+.groovy/
