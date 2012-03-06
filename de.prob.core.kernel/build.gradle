@@ -6,7 +6,7 @@ apply from: 'https://raw.github.com/gist/1527604/4080ebed7b141d10610825aebd70942
 apply plugin: 'findbugs'
 
 project.group = 'de.prob'
-gradle_version = '1.0-milestone-8'
+gradle_version = '1.0-milestone-8a'
 sourceCompatibility = 1.6
 
 project.version = '1.0.0-SNAPSHOT'
@@ -114,6 +114,6 @@ javadoc {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.0-milestone-8'
+    gradleVersion = '1.0-milestone-8a'
 }
 
