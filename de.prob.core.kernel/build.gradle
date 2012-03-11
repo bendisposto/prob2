@@ -28,7 +28,7 @@ ft.exclude '**/org/codehaus/groovy/tools/shell/*','**/SpockDomWalkerTest.class'
 findbugsMain.classes = files(ft.files) // explicit list of files
 
 def  ftc = findbugsTest.classes
-ftc.exclude '**/SpockDomWalkerTest.class'
+ftc.exclude '**/SpockDomWalkerTest*'
 findbugsTest.classes = files(ftc.files) // explicit list of files
 
 
