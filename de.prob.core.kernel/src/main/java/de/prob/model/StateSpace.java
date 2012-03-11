@@ -13,6 +13,8 @@ import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.OpInfo;
 import de.prob.animator.command.Variable;
+import de.prob.model.languages.ClassicalBMachine;
+import de.prob.model.languages.DomBuilder;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
@@ -121,7 +123,8 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 	}
 
 	private IModelFactory selectFactoryFromFileExtension(final File f) {
-		return new ClassicalBModelFactory();
+		return new ClassicalBModelFactory(new DomBuilder(
+				new ClassicalBMachine()));
 	}
 
 	@Override

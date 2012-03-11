@@ -1,27 +1,64 @@
 package de.prob.model.languages;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ClassicalBMachine implements IModel {
+public class ClassicalBMachine {
 
-	private List<Variable> variables;
-	private List<Constant> constants;
-	private List<Predicate> predicates;
-	private List<Operation> operations;
-	
-	public List<Constant> getConstants() {
+	private String name;
+
+	private final List<NamedEntity> variables = new ArrayList<NamedEntity>();
+	private final List<NamedEntity> constants = new ArrayList<NamedEntity>();
+	private Predicate invariant;
+	private final List<Predicate> assertions = new ArrayList<Predicate>();
+	private final List<Operation> operations = new ArrayList<Operation>();
+
+	public List<NamedEntity> getConstants() {
 		return constants;
 	}
-	
-	public List<Variable> getVariables() {
+
+	public List<NamedEntity> getVariables() {
 		return variables;
 	}
-	
-	public List<Predicate> getPredicates() {
-		return predicates;
+
+	public Predicate getInvariant() {
+		return invariant;
 	}
-	
+
+	public List<Predicate> getAssertions() {
+		return assertions;
+	}
+
 	public List<Operation> getOperations() {
 		return operations;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	public void addVariable(final NamedEntity v) {
+		this.variables.add(v);
+	}
+
+	public void addConstant(final NamedEntity v) {
+		this.constants.add(v);
+	}
+
+	public void addAssertion(final Predicate p) {
+		this.assertions.add(p);
+	}
+
+	public void addOperation(final Operation o) {
+		this.operations.add(o);
+	}
+
+	public void setInvariant(final Predicate invariant) {
+		this.invariant = invariant;
+	}
+
 }

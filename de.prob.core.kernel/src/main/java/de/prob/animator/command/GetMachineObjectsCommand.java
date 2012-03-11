@@ -9,7 +9,6 @@
  */
 package de.prob.animator.command;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -34,99 +33,88 @@ public class GetMachineObjectsCommand implements ICommand {
 	private List<String> variables;
 
 	// FIXME refactor me!
-	//	private static Section[] getSections(
-	//			final ISimplifiedROMap<String, PrologTerm> binding, final String var)
-	//			throws CommandException {
-	//		PrologTerm term = getNotNullTerm(binding, var);
-	//		if (term.isList()) {
-	//			final ListPrologTerm list = (ListPrologTerm) term;
-	//			Section[] result = new Section[list.size()];
-	//			for (int i = 0; i < list.size(); i++) {
-	//				final PrologTerm elem = list.get(i);
-	//				final SectionType sectionType;
-	//				if (elem.hasFunctor("model", 1)) {
-	//					sectionType = SectionType.MODEL;
-	//				} else if (elem.hasFunctor("context", 1)) {
-	//					sectionType = SectionType.CONTEXT;
-	//				} else {
-	//					CommandException cmdException = new CommandException(
-	//							"Prolog section list contains non-atomic component");
-	//					cmdException.notifyUserOnce();
-	//					throw cmdException;
-	//				}
-	//				final PrologTerm arg1 = ((CompoundPrologTerm) elem)
-	//						.getArgument(1);
-	//				final String name = PrologTerm.atomicString(arg1);
-	//				result[i] = new Section(sectionType, name);
-	//			}
-	//			return result;
-	//		} else {
-	//			CommandException cmdException = new CommandException(
-	//					"Expected section list, but received a term that is not a list");
-	//			cmdException.notifyUserOnce();
-	//			throw cmdException;
-	//		}
-	//	}
+	// private static Section[] getSections(
+	// final ISimplifiedROMap<String, PrologTerm> binding, final String var)
+	// throws CommandException {
+	// PrologTerm term = getNotNullTerm(binding, var);
+	// if (term.isList()) {
+	// final ListPrologTerm list = (ListPrologTerm) term;
+	// Section[] result = new Section[list.size()];
+	// for (int i = 0; i < list.size(); i++) {
+	// final PrologTerm elem = list.get(i);
+	// final SectionType sectionType;
+	// if (elem.hasFunctor("model", 1)) {
+	// sectionType = SectionType.MODEL;
+	// } else if (elem.hasFunctor("context", 1)) {
+	// sectionType = SectionType.CONTEXT;
+	// } else {
+	// CommandException cmdException = new CommandException(
+	// "Prolog section list contains non-atomic component");
+	// cmdException.notifyUserOnce();
+	// throw cmdException;
+	// }
+	// final PrologTerm arg1 = ((CompoundPrologTerm) elem)
+	// .getArgument(1);
+	// final String name = PrologTerm.atomicString(arg1);
+	// result[i] = new Section(sectionType, name);
+	// }
+	// return result;
+	// } else {
+	// CommandException cmdException = new CommandException(
+	// "Expected section list, but received a term that is not a list");
+	// cmdException.notifyUserOnce();
+	// throw cmdException;
+	// }
+	// }
 
-	/*	private static TypedIdentifier[] createTypedIdentifiers(
-				final ISimplifiedROMap<String, PrologTerm> binding, final String var)
-				throws CommandException {
-			TypedIdentifier[] result;
-			final PrologTerm term = getNotNullTerm(binding, var);
-			if (term.isList()) {
-				result = TypedIdentifierGenerator.extract((ListPrologTerm) term);
-			} else {
-				CommandException cmdException = new CommandException(
-						"Expected list in Prolog variable " + var + ", but was: "
-								+ term.toString());
-				cmdException.notifyUserOnce();
-				throw cmdException;
-			}
-			return result;
-		}*/
+	/*
+	 * private static TypedIdentifier[] createTypedIdentifiers( final
+	 * ISimplifiedROMap<String, PrologTerm> binding, final String var) throws
+	 * CommandException { TypedIdentifier[] result; final PrologTerm term =
+	 * getNotNullTerm(binding, var); if (term.isList()) { result =
+	 * TypedIdentifierGenerator.extract((ListPrologTerm) term); } else {
+	 * CommandException cmdException = new CommandException(
+	 * "Expected list in Prolog variable " + var + ", but was: " +
+	 * term.toString()); cmdException.notifyUserOnce(); throw cmdException; }
+	 * return result; }
+	 */
 
-	/*	private static PrologTerm getNotNullTerm(
-				final ISimplifiedROMap<String, PrologTerm> binding, final String var)
-				throws CommandException {
-			PrologTerm term = binding.get(var);
-			if (term == null) {
-				CommandException cmdException = new CommandException(
-						"Prolog variable " + var + " has no associated value");
-				cmdException.notifyUserOnce();
-				throw cmdException;
-			}
-			return term;
-		}*/
+	/*
+	 * private static PrologTerm getNotNullTerm( final ISimplifiedROMap<String,
+	 * PrologTerm> binding, final String var) throws CommandException {
+	 * PrologTerm term = binding.get(var); if (term == null) { CommandException
+	 * cmdException = new CommandException( "Prolog variable " + var +
+	 * " has no associated value"); cmdException.notifyUserOnce(); throw
+	 * cmdException; } return term; }
+	 */
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
-		//	PrologTerm constants = bindings.get("Constants");
-		//	PrologTerm variables = bindings.get("Variables");
+		PrologTerm constants = bindings.get("Constants");
+		PrologTerm variables = bindings.get("Variables");
+
+		System.out.println(constants);
+		System.out.println(variables);
 
 		//
-		//		sections = getSections(bindings, "Sections");
-		//		setElements = createTypedIdentifiers(bindings, "SetElements");
-		//		constants = createTypedIdentifiers(bindings, "Constants");
-		//		variables = createTypedIdentifiers(bindings, "Variables");
-		//		operations = createTypedIdentifiers(bindings, "Operations");
-		//		machineObjectsResult = new MachineObjectsResult(sections, setElements,
-		//				constants, variables, operations);
-
-		constants = Arrays.asList("x", "y", "z");
-		variables = Arrays.asList("a", "b", "c");
+		// sections = getSections(bindings, "Sections");
+		// setElements = createTypedIdentifiers(bindings, "SetElements");
+		// constants = createTypedIdentifiers(bindings, "Constants");
+		// variables = createTypedIdentifiers(bindings, "Variables");
+		// operations = createTypedIdentifiers(bindings, "Operations");
+		// machineObjectsResult = new MachineObjectsResult(sections,
+		// setElements,
+		// constants, variables, operations);
 
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		//		pto.openTerm("get_machine_objects").printVariable("Sections")
-		//				.printVariable("SetElements").printVariable("Constants")
-		//				.printVariable("Variables").printVariable("Operations")
-		//				.closeTerm();
-
-		logger.error("This needs an implementation!!!");
+		pto.openTerm("get_classicalb_machine_objects")
+				.printVariable("Constants").printVariable("Variables")
+				.closeTerm();
 	}
 
 	public List<String> getConstants() {

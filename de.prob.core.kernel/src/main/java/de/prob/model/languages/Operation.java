@@ -1,21 +1,20 @@
 package de.prob.model.languages;
 
-public class Operation implements Name {
+public class Operation {
 
-	private String identifier;
+	private String name;
 	private Predicate guard;
-	
-	public Operation(String identifier, Predicate guard) {
-		this.identifier = identifier;
+
+	public Operation(final String name, final Predicate guard) {
+		this.name = name;
 		this.guard = guard;
 	}
-	
-	@Override
-	public String getIdentifier() {
-		return identifier;
+
+	public String getName() {
+		return name;
 	}
-	
+
 	public Predicate getGuard() {
 		return guard;
-	}	
+	}
 }

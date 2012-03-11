@@ -1,21 +1,19 @@
 package de.prob.model.languages;
 
-public class Predicate implements Name {
+public class Predicate {
 
-	private String identifier;
 	private String predicate;
-	
-	public Predicate(String identifier, String predicate) {
-		this.identifier = identifier;
+
+	public Predicate(final String predicate) {
 		this.predicate = predicate;
 	}
-	
-	@Override
-	public String getIdentifier() {
-		return identifier;
-	}
-	
+
 	public String getPredicate() {
+		return predicate;
+	}
+
+	@Override
+	public String toString() {
 		return predicate;
 	}
 
