@@ -13,7 +13,7 @@ import de.prob.model.languages.DomBuilder
 class SpockDomWalkerTest extends Specification {
 
 
-	private static final long serialVersionUID = -9047892808993422222L;
+	def static serialVersionUID = -9047892808993422222L;
 
 	private Start parse(final String testMachine) throws BException {
 		final BParser parser = new BParser("testcase");
