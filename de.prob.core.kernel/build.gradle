@@ -27,6 +27,9 @@ def  ft = findbugsMain.classes
 ft.exclude '**/org/codehaus/groovy/tools/shell/*','**/SpockDomWalkerTest.class'
 findbugsMain.classes = files(ft.files) // explicit list of files
 
+def  ftc = findbugsTest.classes
+ftc.exclude '**/SpockDomWalkerTest.class'
+findbugsTest.classes = files(ftc.files) // explicit list of files
 
 
 sourceSets.main.java.srcDirs = [] // ie there's no stand-alone java source
