@@ -24,8 +24,7 @@ project.findbugs {
 }
 
 def  ft = findbugsMain.classes
-ft.exclude '**/org/codehaus/groovy/tools/shell/*'
-ft.exclude '**/src/test/*'
+ft.exclude '**/*.groovy'
 findbugsMain.classes = files(ft.files) // explicit list of files
 
 
