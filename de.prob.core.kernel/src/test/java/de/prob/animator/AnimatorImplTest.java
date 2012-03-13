@@ -18,6 +18,11 @@ import de.prob.prolog.output.IPrologTermOutput;
 
 public class AnimatorImplTest {
 
+	private static class EverythingIsOkThisExceptionIsExpectedException extends
+			RuntimeException {
+		private static final long serialVersionUID = -1410219187561661442L;
+	}
+
 	private ICommand cmd;
 	private ProBInstance cli;
 	private CommandProcessor processor;
@@ -52,8 +57,8 @@ public class AnimatorImplTest {
 	@Test(expected = ProBException.class)
 	public void testCommandThrowsRuntimeExceptionOnWrite() throws ProBException {
 
-		doThrow(new NullPointerException()).when(cmd).writeCommand(
-				any(IPrologTermOutput.class));
+		doThrow(new EverythingIsOkThisExceptionIsExpectedException()).when(cmd)
+				.writeCommand(any(IPrologTermOutput.class));
 
 		animator.execute(cmd);
 	}
@@ -62,8 +67,8 @@ public class AnimatorImplTest {
 	@Test(expected = ProBException.class)
 	public void testCommandThrowsRuntimeExceptionOnProcess()
 			throws ProBException {
-		doThrow(new NullPointerException()).when(cmd).processResult(
-				any(ISimplifiedROMap.class));
+		doThrow(new EverythingIsOkThisExceptionIsExpectedException()).when(cmd)
+				.processResult(any(ISimplifiedROMap.class));
 		animator.execute(cmd);
 	}
 
@@ -71,8 +76,8 @@ public class AnimatorImplTest {
 	public void testGetErrorsThrowsRuntimeExceptionOnWrite()
 			throws ProBException {
 
-		doThrow(new NullPointerException()).when(getErrors).writeCommand(
-				any(IPrologTermOutput.class));
+		doThrow(new EverythingIsOkThisExceptionIsExpectedException()).when(
+				getErrors).writeCommand(any(IPrologTermOutput.class));
 
 		animator.execute(cmd);
 	}
@@ -81,8 +86,8 @@ public class AnimatorImplTest {
 	@Test(expected = ProBException.class)
 	public void testGetErrorsThrowsRuntimeExceptionOnProcess()
 			throws ProBException {
-		doThrow(new NullPointerException()).when(getErrors).processResult(
-				any(ISimplifiedROMap.class));
+		doThrow(new EverythingIsOkThisExceptionIsExpectedException()).when(
+				getErrors).processResult(any(ISimplifiedROMap.class));
 		animator.execute(cmd);
 	}
 

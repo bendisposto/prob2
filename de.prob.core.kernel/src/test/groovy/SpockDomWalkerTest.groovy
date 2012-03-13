@@ -1,5 +1,4 @@
 import static org.junit.Assert.*
-import spock.lang.Ignore
 import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.exceptions.BException
@@ -20,7 +19,7 @@ class SpockDomWalkerTest extends Specification {
 		return parser.parse(testMachine, false);
 	}
 
-	def machine;
+	def ClassicalBMachine machine;
 
 	def setup() {
 		String testmachine = """
@@ -34,8 +33,7 @@ class SpockDomWalkerTest extends Specification {
           END
 		"""
 		def ast = parse(testmachine)
-		machine = new ClassicalBMachine()
-		new DomBuilder(machine).build(ast)
+		machine = new DomBuilder().build(ast)
 	}
 
 
@@ -56,11 +54,5 @@ class SpockDomWalkerTest extends Specification {
 		def r = machine.getConstants().collect { it.getIdentifier() }
 		then:
 		r == ['dd', 'e', 'Ff']
-	}
-
-	@Ignore
-	def "test the invariant"() {
-		expect:
-		machine.invariant == "aa : Z"
 	}
 }

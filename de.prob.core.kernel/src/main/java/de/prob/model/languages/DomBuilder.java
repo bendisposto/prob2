@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.google.common.base.Joiner;
-import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.AConstantsMachineClause;
@@ -17,21 +16,16 @@ import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 
 public class DomBuilder extends DepthFirstAdapter {
 
-	private final ClassicalBMachine machine;
-
-	@Inject
-	public DomBuilder(final ClassicalBMachine machine) {
-		this.machine = machine;
-	}
+	private final ClassicalBMachine machine = null;
 
 	public ClassicalBMachine build(final Start ast) {
 		ast.apply(this);
-		return getMachine();
+		return machine;
 	}
 
 	@Override
 	public void outAMachineHeader(final AMachineHeader node) {
-		getMachine().setName(extractIdentifierName(node.getName()));
+		machine.setName(extractIdentifierName(node.getName()));
 	}
 
 	private String extractIdentifierName(
@@ -56,7 +50,7 @@ public class DomBuilder extends DepthFirstAdapter {
 			if (pExpression instanceof AIdentifierExpression) {
 				AIdentifierExpression id = (AIdentifierExpression) pExpression;
 				String name = extractIdentifierName(id.getIdentifier());
-				getMachine().addVariable(new NamedEntity(name, id));
+				machine.addVariable(new NamedEntity(name, id));
 			}
 		}
 	}
@@ -68,13 +62,9 @@ public class DomBuilder extends DepthFirstAdapter {
 			if (pExpression instanceof AIdentifierExpression) {
 				AIdentifierExpression id = (AIdentifierExpression) pExpression;
 				String name = extractIdentifierName(id.getIdentifier());
-				getMachine().addConstant(new NamedEntity(name, id));
+				machine.addConstant(new NamedEntity(name, id));
 			}
 		}
-	}
-
-	public ClassicalBMachine getMachine() {
-		return machine;
 	}
 
 }

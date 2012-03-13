@@ -1,11 +1,9 @@
 package de.prob.model;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 import de.prob.ProBException;
 import de.prob.animator.IAnimator;
@@ -13,30 +11,21 @@ import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.OpInfo;
 import de.prob.animator.command.Variable;
-import de.prob.model.languages.ClassicalBMachine;
-import de.prob.model.languages.DomBuilder;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class StateSpace extends DirectedSparseMultigraph<String, Operation>
-		implements IStateSpace {
+		implements IAnimator {
 
 	private static final long serialVersionUID = -9047891508993732222L;
 	private transient IAnimator animator;
-	private transient StaticInfo info;
 
 	private String currentState = "root";
 
-	private transient final Provider<IAnimator> ap;
-
 	@Inject
-	public StateSpace(final Provider<IAnimator> ap) {
-		this.ap = ap;
+	public StateSpace(final IAnimator animator) {
+		this.animator = animator;
 		addVertex("root");
-	}
-
-	public StaticInfo getInfo() {
-		return info;
 	}
 
 	/**
@@ -99,32 +88,6 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 	@Override
 	public void execute(final ICommand command) throws ProBException {
 		animator.execute(command);
-	}
-
-	public void load(final File f) {
-		clearGraph();
-		clearStaticInfo();
-		animator = ap.get();
-		IModelFactory factory = selectFactoryFromFileExtension(f);
-		try {
-			info = factory.load(animator, f);
-			explore("root");
-		} catch (ProBException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void clearStaticInfo() {
-		info = null;
-	}
-
-	private void clearGraph() {
-		// clean Graph
-	}
-
-	private IModelFactory selectFactoryFromFileExtension(final File f) {
-		return new ClassicalBModelFactory(new DomBuilder(
-				new ClassicalBMachine()));
 	}
 
 	@Override

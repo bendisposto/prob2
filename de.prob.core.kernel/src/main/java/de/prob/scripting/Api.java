@@ -5,22 +5,23 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 import de.prob.ProBException;
 import de.prob.cli.ProBInstance;
-import de.prob.model.IStateSpace;
 import de.prob.model.StateSpace;
+import de.prob.model.languages.ClassicalBFactory;
+import de.prob.model.languages.ClassicalBMachine;
 
 public class Api {
-	// private static final Logger logger = LoggerFactory.getLogger(Api.class);
 
-	private Provider<StateSpace> animationProvider;
+	private final FactoryProvider modelFactoryProvider;
 
 	@Inject
-	public Api(final Provider<StateSpace> animationFactory) {
-		this.animationProvider = animationFactory;
+	public Api(final FactoryProvider modelFactoryProvider) {
+		this.modelFactoryProvider = modelFactoryProvider;
 	}
+
+	// private static final Logger logger = LoggerFactory.getLogger(Api.class);
 
 	public void raise() {
 		// logger.error("Fataaaaal!");
@@ -31,39 +32,53 @@ public class Api {
 		x.shutdown();
 	}
 
-	public IStateSpace b_def() {
+	public ClassicalBMachine b_def() throws ProBException {
+		ClassLoader classLoader = getClass().getClassLoader();
+		URL resource = classLoader.getResource("examples/scheduler.mch");
 		File f = null;
 		try {
-
-			ClassLoader classLoader = getClass().getClassLoader();
-			System.out.println(classLoader);
-
-			URL resource = classLoader.getResource("examples/scheduler.mch");
-
-			System.out.println(resource);
-
 			f = new File(resource.toURI());
-			System.out.println(f);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		return open_file(f);
+		ClassicalBFactory bFactory = modelFactoryProvider
+				.getClassicalBFactory();
+
+		return bFactory.load(f);
 	}
 
-	public IStateSpace open_file(final File f) {
-		StateSpace stateSpace = animationProvider.get();
-		stateSpace.load(f);
-		return stateSpace;
-	}
+	// public IStateSpace b_def() {
+	// File f = null;
+	// try {
+	//
+	// ClassLoader classLoader = getClass().getClassLoader();
+	// System.out.println(classLoader);
+	//
+	// URL resource = classLoader.getResource("examples/scheduler.mch");
+	//
+	// System.out.println(resource);
+	//
+	// f = new File(resource.toURI());
+	// System.out.println(f);
+	// } catch (URISyntaxException e) {
+	// e.printStackTrace();
+	// }
+	// return open_file(f);
+	// }
+	//
+	// public IStateSpace open_file(final File f) {
+	// StateSpace stateSpace = animationProvider.get();
+	// stateSpace.load(f);
+	// return stateSpace;
+	// }
+	//
+	// public IStateSpace load_b(final String dir, final String name,
+	// final String ext) {
+	// File f = new File(dir + File.separator + name + "." + ext);
+	// return open_file(f);
+	// }
 
-	public IStateSpace load_b(final String dir, final String name,
-			final String ext) {
-		File f = new File(dir + File.separator + name + "." + ext);
-		return open_file(f);
-	}
-
-	public String getCurrentId(final IStateSpace animation)
-			throws ProBException {
+	public String getCurrentId(final StateSpace animation) throws ProBException {
 		// new ICom<GetCurrentStateIdCommand>(new GetCurrentStateIdCommand())
 		// .executeOn(animation);
 		return null;

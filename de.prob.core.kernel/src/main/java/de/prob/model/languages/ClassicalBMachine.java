@@ -3,7 +3,13 @@ package de.prob.model.languages;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassicalBMachine {
+import de.prob.model.StateSpace;
+
+public class ClassicalBMachine extends AbstractModel {
+
+	public ClassicalBMachine(final StateSpace statespace) {
+		this.statespace = statespace;
+	}
 
 	private String name;
 
