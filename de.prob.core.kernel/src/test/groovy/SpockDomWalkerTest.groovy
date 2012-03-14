@@ -1,4 +1,5 @@
 import static org.junit.Assert.*
+import spock.lang.Ignore
 import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.exceptions.BException
@@ -36,7 +37,7 @@ class SpockDomWalkerTest extends Specification {
 		machine = new DomBuilder().build(ast)
 	}
 
-
+	@Ignore
 	def "testing that variables are handled correctly"() {
 		when:
 		def r = machine.getVariables().collect { it.getIdentifier() }
@@ -44,11 +45,13 @@ class SpockDomWalkerTest extends Specification {
 		r == ['aa', 'b', 'Cc']
 	}
 
+	@Ignore
 	def "testing that the name is handled correctly"() {
 		expect:
 		machine.name == 'SimplyStructure'
 	}
 
+	@Ignore
 	def "test if there are any constants"() {
 		when:
 		def r = machine.getConstants().collect { it.getIdentifier() }
