@@ -1,21 +1,15 @@
 
 import spock.lang.Specification
 
-import com.google.inject.Provider
+import com.google.inject.Guice
 
-import de.prob.model.StateSpace
-import de.prob.model.languages.ClassicalBFactory
+import de.prob.MainModule
+import de.prob.scripting.FactoryProvider
 
 
 class ClassicalBMachineConstructionTest extends Specification{
 
 	def machine;
-
-	Provider<StateSpace> p = new Provider<StateSpace>(){
-		def get() {
-			return new StateSpace();
-		}
-	};
 
 	def setup() {
 		String testmachine = """
@@ -28,8 +22,8 @@ class ClassicalBMachineConstructionTest extends Specification{
 		  SETS GGG; Hhh; JJ = {dada, dudu, TUTUT}; iII; kkk = {LLL}
 		  END
 		"""
-		ClassicalBFactory f = new ClassicalBFactory(p);
-		machine = f.load(testmachine);
+		def FactoryProvider fp   = Guice.createInjector(new MainModule()).getInstance(FactoryProvider.class)
+		machine = fp.getClassicalBFactory().load(testmachine);
 	}
 
 	def "test invariant"() {
