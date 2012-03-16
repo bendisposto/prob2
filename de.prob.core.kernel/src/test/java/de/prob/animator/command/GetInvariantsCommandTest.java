@@ -59,17 +59,15 @@ public class GetInvariantsCommandTest {
 		prologTermOutput.fullstop().flush();
 		Collection<PrologTerm> sentences = prologTermOutput.getSentences();
 		PrologTerm next = sentences.iterator().next();
+		
 		assertNotNull(next);
 		assertTrue(next instanceof CompoundPrologTerm);
 		CompoundPrologTerm t = (CompoundPrologTerm) next;
+
 		assertEquals("get_invariants", t.getFunctor());
-		
-		// why is arity 2? could iterate even further?
 		assertEquals(2, t.getArity());
 		PrologTerm argument = t.getArgument(1);
-		// is it variable?
 		assertTrue(argument.isVariable());
-		// second argument is?
 		PrologTerm argument2 = t.getArgument(2);
 		assertTrue(argument2.isVariable());
 	}
