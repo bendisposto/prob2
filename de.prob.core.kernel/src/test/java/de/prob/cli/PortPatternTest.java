@@ -32,7 +32,7 @@ public class PortPatternTest extends AbstractUnitTest {
 		String line = "Port: ";
 		PortPattern pattern = new PortPattern();
 		boolean matches = pattern.matchesLine(line);
-		assertFalse("Pattern does not match", matches);
+		assertFalse("Pattern matches, but should not", matches);
 	}
 
 	@Test
@@ -40,7 +40,7 @@ public class PortPatternTest extends AbstractUnitTest {
 		String line = "";
 		PortPattern pattern = new PortPattern();
 		boolean matches = pattern.matchesLine(line);
-		assertFalse("Pattern does not match", matches);
+		assertFalse("Pattern matches empty string", matches);
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class PortPatternTest extends AbstractUnitTest {
 		String line = null;
 		PortPattern pattern = new PortPattern();
 		boolean matches = pattern.matchesLine(line);
-		assertFalse("Pattern does not match", matches);
+		assertFalse("Pattern matches null input", matches);
 	}
 
 	@Test
