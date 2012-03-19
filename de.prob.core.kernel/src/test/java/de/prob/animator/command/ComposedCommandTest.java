@@ -79,4 +79,19 @@ public class ComposedCommandTest {
 			i++;
 		}
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testCommandNotKnown() throws ProBException {
+		ICommand foo = mock(ICommand.class);
+		ICommand bar = mock(ICommand.class);
+		ComposedCommand cmd = new ComposedCommand(foo, bar);
+		cmd.writeCommand(mock(IPrologTermOutput.class));
+		verify(foo).writeCommand(any(IPrologTermOutput.class));
+		verify(bar).writeCommand(any(IPrologTermOutput.class));
+		
+		ICommand baz = mock(ICommand.class);
+		@SuppressWarnings("unchecked")
+		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
+		cmd.getResultForCommand(baz, map);
+	}
 }

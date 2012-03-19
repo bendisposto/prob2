@@ -9,7 +9,7 @@ import java.util.Collections;
 import org.junit.Test;
 
 import de.prob.ProBException;
-import de.prob.cli.StateError;
+
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
