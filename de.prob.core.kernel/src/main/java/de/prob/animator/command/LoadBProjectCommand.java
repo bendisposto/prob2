@@ -90,7 +90,7 @@ public final class LoadBProjectCommand implements ICommand {
 	}
 
 	private PrologTerm collectSentencesInList(final StructuredPrologOutput po) {
-		List<PrologTerm> parserOutput = po.getSentences();
+		List<PrologTerm> parserOutput =  po.getSentences();
 		StructuredPrologOutput loadCommandTerm = new StructuredPrologOutput();
 		loadCommandTerm.openList();
 		// skip the first two sentences (parser version + filepath)
