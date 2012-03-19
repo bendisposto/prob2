@@ -79,7 +79,8 @@ public class ComposedCommand implements ICommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
 		final int index = indexOf(command);
-		if (index >= 0) {
+		// added second condition in case command is not included in cmds
+		if (index >= 0 && !(index == cmds.length)) {
 			final PrefixMap<PrologTerm> prefixMap = new PrefixMap<PrologTerm>(
 					bindings);
 			processPrefixedCommand(prefixMap, index);
@@ -95,6 +96,7 @@ public class ComposedCommand implements ICommand {
 				break;
 			}
 		}
+		System.out.println(index);
 		return index;
 	}
 

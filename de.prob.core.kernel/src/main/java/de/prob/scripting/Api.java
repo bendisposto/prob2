@@ -9,8 +9,7 @@ import com.google.inject.Inject;
 import de.prob.ProBException;
 import de.prob.cli.ProBInstance;
 import de.prob.model.StateSpace;
-import de.prob.model.languages.ClassicalBFactory;
-import de.prob.model.languages.ClassicalBMachine;
+import de.prob.model.representation.ClassicalBMachine;
 
 public class Api {
 

@@ -2,7 +2,6 @@ package de.prob.scripting;
 
 import com.google.inject.Inject;
 
-import de.prob.model.languages.ClassicalBFactory;
 
 public class FactoryProvider {
 
