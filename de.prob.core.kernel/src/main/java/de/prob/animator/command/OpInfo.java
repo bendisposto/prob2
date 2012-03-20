@@ -15,4 +15,25 @@ public class OpInfo {
 		this.dest = dest;
 		this.params = params;
 	}
+	
+//	FIXME: Implement this for OpInfo. Should it be a static method?
+//	public static Operation fromPrologTerm(final PrologTerm rawOpTerm) {
+//		final CompoundPrologTerm opTerm = (CompoundPrologTerm) rawOpTerm;
+//
+//		final IntegerPrologTerm pInt = (IntegerPrologTerm) opTerm
+//				.getArgument(ID);
+//		final long id = pInt.getValue().longValue();
+//		final String name = PrologTerm.atomicString(opTerm.getArgument(NAME));
+//		final EventType type = SPECIAL_EVENTS.get(name);
+//		final String destId = getIdFromPrologTerm(opTerm.getArgument(DST));
+//		final String srcId = getIdFromPrologTerm(opTerm.getArgument(SRC));
+//		final List<PrologTerm> args = (ListPrologTerm) opTerm.getArgument(ARGS);
+//		final List<String> pargs = create_pretty_arguments((ListPrologTerm) opTerm
+//				.getArgument(ARGS_PRETTY));
+//		final List<EventStackElement> eventStack = createEventStack((ListPrologTerm) opTerm
+//				.getArgument(INFOS));
+//
+//		return new Operation(id, type, name, destId, srcId, args, pargs,
+//				eventStack);
+//	}
 }
