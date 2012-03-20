@@ -6,8 +6,8 @@
 
 package de.prob.animator.command;
 
-import java.util.Iterator;
-import java.util.List;
+//import java.util.Iterator;
+//import java.util.List;
 
 //import de.prob.animator.IAnimator;
 //import de.prob.core.Animator;
