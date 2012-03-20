@@ -47,7 +47,7 @@ public final class ConsistencyCheckingCommand implements ICommand {
 		this.options = options;
 	}
 
-	private ModelCheckingResult<Result> getResult() {
+	public ModelCheckingResult<Result> getResult() {
 		return result;
 	}
 
