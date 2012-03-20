@@ -16,7 +16,11 @@ import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 
 public class DomBuilder extends DepthFirstAdapter {
 
-	private final ClassicalBMachine machine = null;
+	private final ClassicalBMachine machine;
+
+	public DomBuilder(final ClassicalBMachine machine) {
+		this.machine = machine;
+	}
 
 	public ClassicalBMachine build(final Start ast) {
 		ast.apply(this);
