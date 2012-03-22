@@ -95,4 +95,8 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 		animator.execute(commands);
 	}
 
+	public String getCurrentState() {
+		return currentState;
+	}
+
 }
