@@ -66,33 +66,33 @@ public class SetTraceCommand implements ICommand {
 
 	public void setTraceInHistory(/*final Animator animator,*/
 			final Integer currentPosition) {
-		//FIXME IMPLEMENT!!!!
-	/*	if (!hasBeenProcessed) {
-			throw new IllegalStateException(
-					"command must be sent to ProB before calling setTraceInHistory.");
-		}
-		final History history = animator.getHistory();
-		history.reset();
-		Operation curOp = null;
-		State curState = null;
-		// let's start in the root state
-		final State rootState = exploreStateCmds[0].getState();
-		history.add(rootState, null);
-		if (currentPosition != null && currentPosition == 0) {
-			curState = rootState;
-		}
-		int pos = 1;
-		for (final Operation operation : operations) {
-			final State state = exploreStateCmds[pos].getState();
-			history.add(state, operation);
-			if (currentPosition != null && pos == currentPosition) {
-				curOp = operation;
-				curState = state;
-			}
-			pos++;
-		}
-		if (curState != null) {
-			animator.announceCurrentStateChanged(curState, curOp);
-		}*/
+//		FIXME IMPLEMENT!!!!
+//		if (!hasBeenProcessed) {
+//			throw new IllegalStateException(
+//					"command must be sent to ProB before calling setTraceInHistory.");
+//		}
+//		final History history = animator.getHistory();
+//		history.reset();
+//		Operation curOp = null;
+//		State curState = null;
+//		// let's start in the root state
+//		final State rootState = exploreStateCmds[0].getState();
+//		history.add(rootState, null);
+//		if (currentPosition != null && currentPosition == 0) {
+//			curState = rootState;
+//		}
+//		int pos = 1;
+//		for (final Operation operation : operations) {
+//			final State state = exploreStateCmds[pos].getState();
+//			history.add(state, operation);
+//			if (currentPosition != null && pos == currentPosition) {
+//				curOp = operation;
+//				curState = state;
+//			}
+//			pos++;
+//		}
+//		if (curState != null) {
+//			animator.announceCurrentStateChanged(curState, curOp);
+//		}
 	}
 }
