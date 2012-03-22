@@ -3,13 +3,16 @@ package de.prob.scripting;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import com.google.inject.Inject;
 
 import de.prob.ProBException;
+import de.prob.animator.command.GetOperationNamesCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.model.StateSpace;
 import de.prob.model.representation.ClassicalBMachine;
+import de.prob.model.representation.Operation;
 
 public class Api {
 
@@ -44,6 +47,12 @@ public class Api {
 				.getClassicalBFactory();
 
 		return bFactory.load(f);
+	}
+
+	public List<Operation> testX(final StateSpace s) throws ProBException {
+		GetOperationNamesCommand command = new GetOperationNamesCommand();
+		s.execute(command);
+		return command.getOperations();
 	}
 
 	// public IStateSpace b_def() {
