@@ -21,9 +21,9 @@ import de.prob.prolog.term.PrologTerm;
  * @author plagge
  */
 public class ConstraintBasedDeadlockCheckCommand implements ICommand {
-	
 
-	Logger logger = LoggerFactory.getLogger(ConstraintBasedDeadlockCheckCommand.class);
+	Logger logger = LoggerFactory
+			.getLogger(ConstraintBasedDeadlockCheckCommand.class);
 
 	public static enum ResultType {
 		DEADLOCK_FOUND, NO_DEADLOCK, ERROR, INTERRUPTED
@@ -76,7 +76,8 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException{
+			final ISimplifiedROMap<String, PrologTerm> bindings)
+			throws ProBException {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
 		final ResultType result;
 		if (resultTerm.hasFunctor("no_deadlock_found", 0)) {
@@ -86,16 +87,20 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 		} else if (resultTerm.hasFunctor("interrupted", 0)) {
 			result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("deadlock", 2)) {
-			CompoundPrologTerm deadlockTerm = (CompoundPrologTerm) resultTerm;
-			result = ResultType.DEADLOCK_FOUND;
-//			FIXME: IMPLEMENT fromPrologTerm method for OpInfo
 			try {
-				deadlockOperation = new OpInfo(BindingGenerator.getCompoundTerm(deadlockTerm.getArgument(1),7));
+				CompoundPrologTerm deadlockTerm = BindingGenerator
+						.getCompoundTerm(resultTerm, 2);
+				result = ResultType.DEADLOCK_FOUND;
+
+				deadlockOperation = new OpInfo(
+						BindingGenerator.getCompoundTerm(
+								deadlockTerm.getArgument(1), 7));
+				deadlockStateId = deadlockTerm.getArgument(2).toString();
 			} catch (ResultParserException e) {
 				logger.error("Result from Prolog was not as expected.", e);
 				throw new ProBException();
 			}
-			deadlockStateId = deadlockTerm.getArgument(2).toString();
+			
 		} else {
 			logger.error("unexpected result from deadlock check: " + resultTerm);
 			throw new ProBException();

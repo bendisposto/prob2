@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package de.prob.animator.command;
 
 import de.prob.parser.ISimplifiedROMap;
