@@ -32,7 +32,7 @@ public class ClearMachineCommand implements ICommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
 		cmd.processResult(bindings);
-		// FIXME: REFACTOR for new animator!
+//		 FIXME: REFACTOR for new animator!
 //		final Animator animator = Animator.getAnimator();
 //		animator.setRandomSeed(getRandomSeed.getSeed());
 	}

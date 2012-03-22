@@ -39,16 +39,16 @@ public final class ExecuteOperationCommand implements ICommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException {
 		cmds.processResult(bindings);
 		
-		/* FIXME: REFACTOR!!!
-		final Animator animator = Animator.getAnimator();
-		final State state = exloreStateCmd.getState();
-
-		// Change history in Animator
-		animator.getHistory().add(state, operation);
-
-		if (fireCurrentStateChanged) {
-			animator.announceCurrentStateChanged(state, operation);
-		}*/
+//		FIXME: REFACTOR!!!
+//		final Animator animator = Animator.getAnimator();
+//		final State state = exloreStateCmd.getState();
+//
+//		// Change history in Animator
+//		animator.getHistory().add(state, operation);
+//
+//		if (fireCurrentStateChanged) {
+//			animator.announceCurrentStateChanged(state, operation);
+//		}
 	}
 
 	public void writeCommand(final IPrologTermOutput pto) throws ProBException{
