@@ -1,9 +1,5 @@
 package de.prob.animator.command;
 
-/**
- * 
- */
-
 import java.util.List;
 
 import de.prob.ProBException;
