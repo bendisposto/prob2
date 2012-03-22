@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.ProBException;
+import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -87,10 +89,13 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 			CompoundPrologTerm deadlockTerm = (CompoundPrologTerm) resultTerm;
 			result = ResultType.DEADLOCK_FOUND;
 //			FIXME: IMPLEMENT fromPrologTerm method for OpInfo
-//			deadlockOperation = Operation
-//					.fromPrologTerm((CompoundPrologTerm) deadlockTerm
-//							.getArgument(1));
-//			deadlockStateId = deadlockTerm.getArgument(2).toString();
+			try {
+				deadlockOperation = new OpInfo(BindingGenerator.getCompoundTerm(deadlockTerm.getArgument(1),7));
+			} catch (ResultParserException e) {
+				logger.error("Result from Prolog was not as expected.", e);
+				throw new ProBException();
+			}
+			deadlockStateId = deadlockTerm.getArgument(2).toString();
 		} else {
 			logger.error("unexpected result from deadlock check: " + resultTerm);
 			throw new ProBException();
