@@ -6,7 +6,7 @@
 
 package de.prob.animator.command;
 
-import java.util.List;
+//import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -222,13 +222,13 @@ public final class LtlCheckingCommand implements ICommand {
 			final ListPrologTerm operationIds = (ListPrologTerm) term
 					.getArgument(3);
 			initPath = new OpInfo[operationIds.size()];
-			int i = 0;
-			for (final PrologTerm opTerm : operationIds) {
-				
-				//FIXME: Implement method from de.prob.core.domainobjects.Operation
-				//initPath[i] = Operation.fromPrologTerm(opTerm);
-				i++;
-			}
+//			int i = 0;
+//			for (final PrologTerm opTerm : operationIds) {
+//				
+//				FIXME: Implement method from de.prob.core.domainobjects.Operation
+//				initPath[i] = Operation.fromPrologTerm(opTerm);
+//				i++;
+//			}
 		} else {
 			counterexample = null;
 			pathType = null;

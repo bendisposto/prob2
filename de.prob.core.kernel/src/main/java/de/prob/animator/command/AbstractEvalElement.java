@@ -44,9 +44,9 @@ public abstract class AbstractEvalElement {
 
 	private synchronized String evaluate(final String stateId) {
 //		try {
-//			// FIXME: REFACTOR!!!
-////			return EvaluateRawExpressionsCommand.evaluate(animator, this,
-////					stateId);
+//			 FIXME: REFACTOR!!!
+//			return EvaluateRawExpressionsCommand.evaluate(animator, this,
+//					stateId);
 //		} catch (ProBException e) {
 //			
 //		}
