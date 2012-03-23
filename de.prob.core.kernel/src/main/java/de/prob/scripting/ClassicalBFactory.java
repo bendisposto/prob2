@@ -2,9 +2,6 @@ package de.prob.scripting;
 
 import java.io.File;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -21,8 +18,6 @@ import de.prob.model.representation.Predicate;
 public class ClassicalBFactory {
 
 	private final Provider<StateSpace> statespaceProvider;
-	private final Logger logger = LoggerFactory
-			.getLogger(ClassicalBFactory.class);
 
 	@Inject
 	public ClassicalBFactory(final Provider<StateSpace> statespaceProvider) {
