@@ -12,4 +12,3 @@ The tool requires you to have a recent copy of the probcli binary (together with
 The binaries can be downloaded from http://nightly.cobra.cs.uni-duesseldorf.de/cli/
 
 (c) 2011 Jens Bendisposto, all rights reserved
-blah blah blah
