@@ -1,6 +1,5 @@
 package de.prob.model;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -12,14 +11,13 @@ import com.google.inject.Inject;
 import de.prob.ProBException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.ExploreStateCommand;
-import de.prob.animator.command.GetInvariantsCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.OpInfo;
 import de.prob.animator.command.Variable;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
-public class StateSpace extends DirectedSparseMultigraph<String, Operation>
+public class StateSpace extends DirectedSparseMultigraph<String, String>
 		implements IAnimator {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
@@ -27,8 +25,8 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 	private static final long serialVersionUID = -9047891508993732222L;
 	private transient IAnimator animator;
 	private HashSet<String> explored = new HashSet<String>();
-
-	private String currentState = "root";
+	private History history = new History();
+	private HashSet<Operation> ops = new HashSet<Operation>();
 
 	@Inject
 	public StateSpace(final IAnimator animator) {
@@ -51,8 +49,9 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 		// (id,name,src,dest,args)
 		for (OpInfo ops : enabledOperations) {
 			Operation op = new Operation(ops.id, ops.name, ops.params);
-			if (!containsEdge(op)) {
-				addEdge(op, ops.src, ops.dest, EdgeType.DIRECTED);
+			if (!containsEdge(op.getId())) {
+				this.ops.add(op);
+				addEdge(op.getId(), ops.src, ops.dest, EdgeType.DIRECTED);
 			}
 
 		}
@@ -66,26 +65,49 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 				.println("======================================================");
 	}
 
-	public void exec(final int i) throws ProBException {
-		String opId = String.valueOf(i);
-		Collection<Operation> outEdges = getOutEdges(currentState);
-		String dst = null;
-		for (Operation operation : outEdges) {
-			if (operation.getId().equals(opId)) {
-				dst = getDest(operation);
+	public void animationStep(String opId) throws ProBException {
+		if (history.isPreviousTransition(opId))
+			history.back();
+		else if (history.isNextTransition(opId))
+			history.forward();
+		else if (getOutEdges(getCurrentState()).contains(opId)) {
+			String newState = getDest(opId);
+			if (!isExplored(newState)) {
+				try {
+					explore(newState);
+				} catch (ProBException e) {
+					logger.error("Could not explore state with StateId "
+							+ newState);
+					throw new ProBException();
+				}
 			}
+			history.add(opId);
 		}
-		if (dst != null) {
-			explore(dst);
-		} else {
-			System.out.println("Error: Illegal Operation");
-		}
+		
+	}
 
-		currentState = dst;
-		Collection<Operation> out = getOutEdges(currentState);
-		for (Operation operation : out) {
-			System.out.println(operation.getId() + ": " + operation);
-		}
+	public void exec(final int i) throws ProBException {
+		// String opId = String.valueOf(i);
+		// Collection<Operation> outEdges =
+		// getOutEdges(history.getCurrentTransition());
+		// String dst = null;
+		// for (Operation operation : outEdges) {
+		// if (operation.getId().equals(opId)) {
+		// dst = getDest(operation);
+		// }
+		// }
+		// if (dst != null) {
+		// explore(dst);
+		// } else {
+		// System.out.println("Error: Illegal Operation");
+		// }
+		//
+		// //data.currentState = dst;
+		// Collection<Operation> out =
+		// getOutEdges(history.getCurrentTransition());
+		// for (Operation operation : out) {
+		// System.out.println(operation.getId() + ": " + operation);
+		// }
 
 	}
 
@@ -105,7 +127,10 @@ public class StateSpace extends DirectedSparseMultigraph<String, Operation>
 	}
 
 	public String getCurrentState() {
-		return currentState;
+		String currentTransitionId = history.getCurrentTransition();
+		if( currentTransitionId == null)
+			return "root";
+		return getDest(currentTransitionId);
 	}
 
 	public boolean isDeadlock(String stateid) throws ProBException {
