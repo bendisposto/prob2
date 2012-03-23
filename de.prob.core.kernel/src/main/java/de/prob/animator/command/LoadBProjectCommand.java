@@ -21,18 +21,15 @@ import de.prob.prolog.term.PrologTerm;
 
 public final class LoadBProjectCommand implements ICommand {
 	private final File model;
-	private final String name;
 	Logger logger = LoggerFactory.getLogger(LoadBProjectCommand.class);
 
-	public LoadBProjectCommand(final File f, final String name) {
+	public LoadBProjectCommand(final File f) {
 		this.model = f;
-		this.name = name;
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
-		pto.openTerm("load_b_project");
-		pto.printAtom(name);
+		pto.openTerm("load_classical_b");
 		pto.printTerm(getLoadTerm(model));
 		pto.printVariable("Errors");
 		pto.closeTerm();
@@ -90,7 +87,7 @@ public final class LoadBProjectCommand implements ICommand {
 	}
 
 	private PrologTerm collectSentencesInList(final StructuredPrologOutput po) {
-		List<PrologTerm> parserOutput =  po.getSentences();
+		List<PrologTerm> parserOutput = po.getSentences();
 		StructuredPrologOutput loadCommandTerm = new StructuredPrologOutput();
 		loadCommandTerm.openList();
 		// skip the first two sentences (parser version + filepath)
