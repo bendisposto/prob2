@@ -30,7 +30,7 @@ public class ClassicalBFactory {
 	}
 
 	public ClassicalBMachine load(final String s) throws ProBException {
-		ICommand loadCommand = new LoadBProjectFromStringCommand(s, "scheduler");
+		ICommand loadCommand = new LoadBProjectFromStringCommand(s);
 		return load(loadCommand);
 	}
 
