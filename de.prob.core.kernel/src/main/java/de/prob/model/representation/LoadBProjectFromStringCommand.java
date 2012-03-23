@@ -8,17 +8,13 @@ import de.prob.prolog.term.PrologTerm;
 
 public class LoadBProjectFromStringCommand implements ICommand {
 
-	private final String input;
-	private final String name;
-
-	public LoadBProjectFromStringCommand(final String input, final String name) {
-		this.input = input;
-		this.name = name;
+	public LoadBProjectFromStringCommand(final String input) {
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
-		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Not yet implemented");
 
 	}
 
@@ -26,7 +22,7 @@ public class LoadBProjectFromStringCommand implements ICommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
-		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Not yet implemented");
 
 	}
 
