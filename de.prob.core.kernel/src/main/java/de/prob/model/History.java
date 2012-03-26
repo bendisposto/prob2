@@ -3,14 +3,11 @@ package de.prob.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Joiner;
 
 public class History {
 
-	Logger logger = LoggerFactory.getLogger(History.class);
+	// Logger logger = LoggerFactory.getLogger(History.class);
 	public List<String> history = new ArrayList<String>();
 	public int current = -1;
 
