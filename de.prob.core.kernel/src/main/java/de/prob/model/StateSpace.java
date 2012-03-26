@@ -43,6 +43,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	 */
 	public void explore(final String id) throws ProBException {
 		ExploreStateCommand command = new ExploreStateCommand(id);
+				
 		animator.execute(command);
 		explored.add(id);
 		List<OpInfo> enabledOperations = command.getEnabledOperations();
@@ -51,7 +52,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 			Operation op = new Operation(ops.id, ops.name, ops.params);
 			if (!containsEdge(op.getId())) {
 				this.ops.add(op);
-				addEdge(op.getId(), ops.src, ops.dest, EdgeType.DIRECTED);
+				addEdge(op.getId(), ops.src, ops.dest);
 			}
 
 		}
@@ -61,15 +62,18 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 		for (Variable variable : variables) {
 			System.out.println(variable);
 		}
+		
+
+		
 		System.out
 				.println("======================================================");
 	}
 
-	public void animationStep(String opId) throws ProBException {
-		if (history.isPreviousTransition(opId))
-			history.back();
+	public void step(String opId) throws ProBException {
+		if (history.isLastTransition(opId))
+			back();
 		else if (history.isNextTransition(opId))
-			history.forward();
+			forward();
 		else if (getOutEdges(getCurrentState()).contains(opId)) {
 			String newState = getDest(opId);
 			if (!isExplored(newState)) {
@@ -84,31 +88,21 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 			history.add(opId);
 		}
 		
+		System.out.println(history.toString());
+		
+	}
+	
+	public void back() {
+		history.back();
+	}
+	
+	public void forward() {
+		history.forward();
 	}
 
-	public void exec(final int i) throws ProBException {
-		// String opId = String.valueOf(i);
-		// Collection<Operation> outEdges =
-		// getOutEdges(history.getCurrentTransition());
-		// String dst = null;
-		// for (Operation operation : outEdges) {
-		// if (operation.getId().equals(opId)) {
-		// dst = getDest(operation);
-		// }
-		// }
-		// if (dst != null) {
-		// explore(dst);
-		// } else {
-		// System.out.println("Error: Illegal Operation");
-		// }
-		//
-		// //data.currentState = dst;
-		// Collection<Operation> out =
-		// getOutEdges(history.getCurrentTransition());
-		// for (Operation operation : out) {
-		// System.out.println(operation.getId() + ": " + operation);
-		// }
-
+	public void step(final int i) throws ProBException {
+		String opId = String.valueOf(i);
+		step(opId);
 	}
 
 	public void explore(final int i) throws ProBException {
@@ -144,6 +138,10 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 
 	private boolean isExplored(String stateid) {
 		return explored.contains(stateid);
+	}
+	
+	public boolean addEdge(String opId, String src, String dest) {
+		return addEdge(opId,src,dest,EdgeType.DIRECTED);
 	}
 
 }
