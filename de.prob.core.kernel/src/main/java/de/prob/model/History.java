@@ -79,14 +79,8 @@ public class History {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
 		String list = Joiner.on(", ").join(history);
-		sb.append("[");
-		sb.append(list);
-		sb.append("] ");
-		sb.append("current Transition: ");
-		sb.append(getCurrentTransition());
-		return sb.toString();
+		return "[" + list + "] " + "current Transition: "
+				+ getCurrentTransition();
 	}
-
 }
