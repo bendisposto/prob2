@@ -27,7 +27,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	private transient IAnimator animator;
 	private HashSet<String> explored = new HashSet<String>();
 	private History history = new History();
-	private HashSet<Operation> ops = new HashSet<Operation>();
+	// private HashSet<Operation> ops = new HashSet<Operation>();
 	private HashMap<String, HashMap<String, String>> variables = new HashMap<String, HashMap<String, String>>();
 	private HashMap<String, Boolean> invariantOk = new HashMap<String, Boolean>();
 	private HashMap<String, Boolean> timeoutOccured = new HashMap<String, Boolean>();
@@ -56,7 +56,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 		for (OpInfo ops : enabledOperations) {
 			Operation op = new Operation(ops.id, ops.name, ops.params);
 			if (!containsEdge(op.getId())) {
-				this.ops.add(op);
+				// this.ops.add(op);
 				addEdge(op.getId(), ops.src, ops.dest);
 			}
 
