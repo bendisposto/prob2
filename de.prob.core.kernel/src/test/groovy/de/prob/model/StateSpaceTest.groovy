@@ -50,8 +50,19 @@ class StateSpaceTest extends Specification {
 		s.isExplored("1") == true
 	}
 
-	def "The node is not explored"() {
-		expect:
+	def "The stateid is unknown"() {
+		when:
+		s.isExplored("7")
+		
+		then:
+		thrown IllegalArgumentException
+	}
+	
+	def "The state is not explored"() {
+		when:
+		s.addVertex("7")
+		
+		then:
 		s.isExplored("7") == false
 	}
 

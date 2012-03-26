@@ -128,20 +128,27 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	}
 
 	public boolean isDeadlock(String stateid) throws ProBException {
-		if (!containsVertex(stateid))
-			throw new IllegalArgumentException("Unknown State id");
 		if (!isExplored(stateid))
 			explore(stateid);
-
 		return getOutEdges(stateid).isEmpty();
 	}
 
 	private boolean isExplored(String stateid) {
+		if (!containsVertex(stateid))
+			throw new IllegalArgumentException("Unknown State id");
 		return explored.contains(stateid);
 	}
 	
 	public boolean addEdge(String opId, String src, String dest) {
 		return addEdge(opId,src,dest,EdgeType.DIRECTED);
+	}
+	
+	public boolean canGoBack() {
+		return history.canGoBack();
+	}
+	
+	public boolean canGoForward() {
+		return history.canGoForward();
 	}
 
 }
