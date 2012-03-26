@@ -29,7 +29,7 @@ public final class ExploreStateCommand implements ICommand {
 	private final GetEnabledOperationsCommand getOpsCmd;
 	private final GetStateValuesCommand getValuesCmd;
 	private final CheckBooleanPropertyCommand checkInitialisedCmd;
-	private final CheckBooleanPropertyCommand checkInvCmd;
+	private final CheckInvariantStatusCommand checkInvCmd;
 	private final CheckBooleanPropertyCommand checkMaxOpCmd;
 	private final CheckBooleanPropertyCommand checkTimeoutCmd;
 	private final GetStateBasedErrorsCommand getStateErrCmd;
@@ -79,7 +79,7 @@ public final class ExploreStateCommand implements ICommand {
 		allCommands.processResult(bindings);
 
 		initialised = checkInitialisedCmd.getResult();
-		invariantOk = checkInvCmd.getResult();
+		invariantOk = !checkInvCmd.isInvariantViolated();
 		timeoutOccured = checkTimeoutCmd.getResult();
 		maxOperationsReached = checkMaxOpCmd.getResult();
 		enabledOperations = getOpsCmd.getEnabledOperations();
@@ -126,7 +126,7 @@ public final class ExploreStateCommand implements ICommand {
 		return stateErrors;
 	}
 
-	public Set<String> getTimeouts() {
+	public Set<String> getOperationsWithTimeout() {
 		return timeouts;
 	}
 }
