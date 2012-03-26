@@ -3,6 +3,7 @@ package de.prob.model;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,10 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	private HashSet<String> explored = new HashSet<String>();
 	private History history = new History();
 	private HashSet<Operation> ops = new HashSet<Operation>();
-	private HashMap<String,HashMap<String,String>> variables = new HashMap<String, HashMap<String,String>>();
+	private HashMap<String, HashMap<String, String>> variables = new HashMap<String, HashMap<String, String>>();
+	private HashMap<String, Boolean> invariantOk = new HashMap<String, Boolean>();
+	private HashMap<String, Boolean> timeoutOccured = new HashMap<String, Boolean>();
+	private HashMap<String, Set<String>> operationsWithTimeout = new HashMap<String, Set<String>>();
 
 	@Inject
 	public StateSpace(final IAnimator animator) {
@@ -44,7 +48,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	 */
 	public void explore(final String stateId) throws ProBException {
 		ExploreStateCommand command = new ExploreStateCommand(stateId);
-				
+
 		animator.execute(command);
 		explored.add(stateId);
 		List<OpInfo> enabledOperations = command.getEnabledOperations();
@@ -59,11 +63,16 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 		}
 
 		variables.put(stateId, command.getVariables());
+		invariantOk.put(stateId, command.isInvariantOk());
+		timeoutOccured.put(stateId, command.isTimeoutOccured());
+		operationsWithTimeout.put(stateId, command.getOperationsWithTimeout());
+
 		System.out.println("State: " + stateId);
 		System.out.println(variables.toString());
-		
+		System.out.println(invariantOk.toString());
+		System.out.println(timeoutOccured.toString());
+		System.out.println(operationsWithTimeout.toString());
 
-		
 		System.out
 				.println("======================================================");
 	}
@@ -86,15 +95,15 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 			}
 			history.add(opId);
 		}
-		
+
 		System.out.println(history.toString());
-		
+
 	}
-	
+
 	public void back() {
 		history.back();
 	}
-	
+
 	public void forward() {
 		history.forward();
 	}
@@ -121,7 +130,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 
 	public String getCurrentState() {
 		String currentTransitionId = history.getCurrentTransition();
-		if( currentTransitionId == null)
+		if (currentTransitionId == null)
 			return "root";
 		return getDest(currentTransitionId);
 	}
@@ -137,25 +146,38 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 			throw new IllegalArgumentException("Unknown State id");
 		return explored.contains(stateid);
 	}
-	
+
 	public boolean addEdge(String opId, String src, String dest) {
-		return addEdge(opId,src,dest,EdgeType.DIRECTED);
+		return addEdge(opId, src, dest, EdgeType.DIRECTED);
 	}
-	
+
 	public boolean canGoBack() {
 		return history.canGoBack();
 	}
-	
+
 	public boolean canGoForward() {
 		return history.canGoForward();
 	}
-	
-	public HashMap<String,String> getState(String stateId) {
+
+	public HashMap<String, String> getState(String stateId) {
 		return variables.get(stateId);
 	}
-	
-	public HashMap<String,String> getState(final int stateId) {
+
+	public HashMap<String, String> getState(final int stateId) {
 		String id = String.valueOf(stateId);
 		return getState(id);
 	}
+
+	public HashMap<String, Boolean> getInvariantOk() {
+		return invariantOk;
+	}
+
+	public HashMap<String, Boolean> getTimeoutOccured() {
+		return timeoutOccured;
+	}
+
+	public HashMap<String, Set<String>> getOperationsWithTimeout() {
+		return operationsWithTimeout;
+	}
+
 }
