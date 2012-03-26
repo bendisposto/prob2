@@ -14,7 +14,8 @@ import de.prob.animator.IAnimator;
 public abstract class AbstractEvalElement {
 
 	private String value = null;
-	private IAnimator animator;
+
+	// private IAnimator animator;
 
 	public abstract Start getPrologAst();
 
@@ -35,7 +36,7 @@ public abstract class AbstractEvalElement {
 
 	public synchronized String getValue(final IAnimator animator,
 			final String stateId) {
-		this.animator = animator;
+		// this.animator = animator;
 		if (value == null) {
 			value = evaluate(stateId);
 		}
@@ -43,13 +44,13 @@ public abstract class AbstractEvalElement {
 	}
 
 	private synchronized String evaluate(final String stateId) {
-//		try {
-//			 FIXME: REFACTOR!!!
-//			return EvaluateRawExpressionsCommand.evaluate(animator, this,
-//					stateId);
-//		} catch (ProBException e) {
-//			
-//		}
+		// try {
+		// FIXME: REFACTOR!!!
+		// return EvaluateRawExpressionsCommand.evaluate(animator, this,
+		// stateId);
+		// } catch (ProBException e) {
+		//
+		// }
 		return "unknown value";
 	}
 }
