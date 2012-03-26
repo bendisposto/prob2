@@ -2,34 +2,24 @@ package de.prob.model
 
 
 import static org.junit.Assert.*
-
-import org.spockframework.compiler.model.ExpectBlock;
-
+import static org.mockito.Mockito.*
 import spock.lang.Specification
-import de.prob.ProBException;
-import de.prob.model.StateSpace
+import de.prob.ProBException
 import de.prob.animator.IAnimator
-import edu.uci.ics.jung.graph.util.EdgeType;
-import de.prob.model.Operation
-import de.prob.animator.AnimatorImpl
-import de.prob.animator.command.ICommand;
+import edu.uci.ics.jung.graph.util.EdgeType
 
 class StateSpaceTest extends Specification {
 
-	private class NewAnimator implements IAnimator {
-		public void execute(ICommand command) throws ProBException {
-			throw new ProBException();
-		}
-		public void execute(ICommand... commands) throws ProBException {
-			throw new ProBException();
-		}
-	}
 
 	def StateSpace s
 
 	def setup() {
 
-		s = new StateSpace(new NewAnimator())
+		def mock = mock(IAnimator.class)
+
+		doThrow(new ProBException()).when(mock).execute(any(Object.class));
+
+		s = new StateSpace(mock)
 
 		s.addVertex("1")
 		s.explored.add("1")
