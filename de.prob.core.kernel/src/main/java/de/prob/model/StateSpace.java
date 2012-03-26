@@ -26,7 +26,9 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	private static final long serialVersionUID = -9047891508993732222L;
 	private transient IAnimator animator;
 	private HashSet<String> explored = new HashSet<String>();
-	private History history = new History();
+	private transient History history = new History(); // FIXME maybe this
+														// should be
+														// serializable
 	// private HashSet<Operation> ops = new HashSet<Operation>();
 	private HashMap<String, HashMap<String, String>> variables = new HashMap<String, HashMap<String, String>>();
 	private HashMap<String, Boolean> invariantOk = new HashMap<String, Boolean>();
@@ -77,12 +79,12 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 				.println("======================================================");
 	}
 
-	public void step(String opId) throws ProBException {
-		if (history.isLastTransition(opId))
+	public void step(final String opId) throws ProBException {
+		if (history.isLastTransition(opId)) {
 			back();
-		else if (history.isNextTransition(opId))
+		} else if (history.isNextTransition(opId)) {
 			forward();
-		else if (getOutEdges(getCurrentState()).contains(opId)) {
+		} else if (getOutEdges(getCurrentState()).contains(opId)) {
 			String newState = getDest(opId);
 			if (!isExplored(newState)) {
 				try {
@@ -135,19 +137,22 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 		return getDest(currentTransitionId);
 	}
 
-	public boolean isDeadlock(String stateid) throws ProBException {
-		if (!isExplored(stateid))
+	public boolean isDeadlock(final String stateid) throws ProBException {
+		if (!isExplored(stateid)) {
 			explore(stateid);
+		}
 		return getOutEdges(stateid).isEmpty();
 	}
 
-	private boolean isExplored(String stateid) {
+	private boolean isExplored(final String stateid) {
 		if (!containsVertex(stateid))
 			throw new IllegalArgumentException("Unknown State id");
 		return explored.contains(stateid);
 	}
 
-	public boolean addEdge(String opId, String src, String dest) {
+	@Override
+	public boolean addEdge(final String opId, final String src,
+			final String dest) {
 		return addEdge(opId, src, dest, EdgeType.DIRECTED);
 	}
 
@@ -159,7 +164,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 		return history.canGoForward();
 	}
 
-	public HashMap<String, String> getState(String stateId) {
+	public HashMap<String, String> getState(final String stateId) {
 		return variables.get(stateId);
 	}
 
