@@ -6,7 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
+import com.google.common.base.Joiner;
 
 public class History {
 
@@ -41,7 +41,7 @@ public class History {
 	}
 	
 	// forward
-	public void forward() throws ProBException {
+	public void forward(){
 		if (current < history.size()-1)
 			current++;
 	}
@@ -53,9 +53,9 @@ public class History {
 		return history.get(current);
 	}
 
-	public boolean isPreviousTransition(String id) {
+	public boolean isLastTransition(String id) {
 		if (current>0)
-			return history.get(current - 1).equals(id);
+			return history.get(current).equals(id);
 		return false;
 	}
 
@@ -63,6 +63,17 @@ public class History {
 		if (current < history.size()-1)
 			return history.get(current + 1).equals(id);
 		return false;
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		String list = Joiner.on(", ").join(history);
+		sb.append("[");
+		sb.append(list);
+		sb.append("] ");
+		sb.append("current Transition: ");
+		sb.append(getCurrentTransition());
+		return sb.toString();
 	}
 
 }

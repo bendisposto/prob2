@@ -109,7 +109,7 @@ class HistoryTest extends Specification {
 	
 	def "test isPreviousTransition"() {
 		expect:
-		h.isPreviousTransition("4") == true
+		h.isLastTransition("5") == true
 	}
 	
 	def "test isPreviousTransition 2"() {
@@ -117,7 +117,7 @@ class HistoryTest extends Specification {
 		h.goToPos(-1)
 		
 		then:
-		h.isPreviousTransition("") == false
+		h.isLastTransition("") == false
 	}
 	
 	def "test isPreviousTransition 3"() {
@@ -125,7 +125,7 @@ class HistoryTest extends Specification {
 		h.goToPos(0)
 		
 		then:
-		h.isPreviousTransition("") == false
+		h.isLastTransition("") == false
 	}
 	
 	def "test isNextTransition"() {
@@ -149,5 +149,10 @@ class HistoryTest extends Specification {
 		then:
 		h.isNextTransition("1") == true
 		h.isNextTransition("5") == false
+	}
+	
+	def "test toString method"() {
+		expect:
+		h.toString() == "[1, 2, 3, 4, 5] current Transition: 5"
 	}
 }
