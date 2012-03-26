@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -35,9 +36,9 @@ public class GetStateValuesCommandTest {
 		GetStateValuesCommand command = new GetStateValuesCommand("stateID");
 		command.processResult(map);
 
-		List<Variable> list = command.getResult();
-		assertEquals("foo->hummelbummel", list.get(0).toString());
-		assertEquals("bli->blub", list.get(1).toString());
+		HashMap<String, String> hmap = command.getResult();
+		assertEquals("hummelbummel", hmap.get("foo"));
+		assertEquals("blub", hmap.get("bli"));
 	}
 	
 	@Test(expected = ProBException.class)

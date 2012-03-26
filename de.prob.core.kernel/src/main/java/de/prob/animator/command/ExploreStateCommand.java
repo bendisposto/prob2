@@ -7,6 +7,7 @@
 package de.prob.animator.command;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +46,7 @@ public final class ExploreStateCommand implements ICommand {
 
 	private List<OpInfo> enabledOperations;
 
-	private List<Variable> variables;
+	private HashMap<String, String> variables;
 
 	private Collection<StateError> stateErrors;
 
@@ -117,7 +118,7 @@ public final class ExploreStateCommand implements ICommand {
 		return enabledOperations;
 	}
 
-	public List<Variable> getVariables() {
+	public HashMap<String, String> getVariables() {
 		return variables;
 	}
 

@@ -6,8 +6,7 @@
 
 package de.prob.animator.command;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,22 +26,16 @@ public final class GetStateValuesCommand implements ICommand {
 			.getLogger(GetStateBasedErrorsCommand.class);
 
 	private final String stateId;
-	private List<Variable> result;
+	private HashMap<String, String> values = new HashMap<String, String>();
 
 	public GetStateValuesCommand(final String stateID) {
 		stateId = stateID;
-	}
-
-	public List<Variable> getResult() {
-		return result;
 	}
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
-		final List<Variable> variables = new ArrayList<Variable>();
-
 		ListPrologTerm list;
 		try {
 			list = BindingGenerator.getList(bindings, "Bindings");
@@ -60,15 +53,38 @@ public final class GetStateValuesCommand implements ICommand {
 				logger.error(e.getLocalizedMessage(), e);
 				throw new ProBException();
 			}
-			variables.add(new Variable(compoundTerm));
+			addValue(compoundTerm);
 		}
-		result = variables;
+	}
+
+	private void addValue(CompoundPrologTerm cpt) throws ProBException {
+		if (cpt.getFunctor().equals("binding")) {
+			try {
+				String name = BindingGenerator.getCompoundTerm(
+						cpt.getArgument(1), 0).getFunctor();
+				String value = BindingGenerator.getCompoundTerm(
+						cpt.getArgument(3), 0).getFunctor();
+				values.put(name, value);
+			} catch (ResultParserException e) {
+				logger.error("Result from Prolog was not as expected.", e);
+				throw new ProBException();
+			}
+		} else {
+			String msg = "Unexpected functor in Prolog answer. Expected 'binding' but was '"
+					+ cpt.getFunctor() + "'";
+			logger.error(msg);
+			throw new IllegalArgumentException(msg);
+		}
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("getStateValues").printAtomOrNumber(stateId)
 				.printVariable("Bindings").closeTerm();
+	}
+	
+	public HashMap<String,String> getResult() {
+		return values;
 	}
 
 }
