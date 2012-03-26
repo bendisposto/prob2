@@ -36,13 +36,13 @@ public class History {
 
 	// back
 	public void back() {
-		if (current>=0)
+		if (canGoBack())
 			current--;
 	}
 	
 	// forward
 	public void forward(){
-		if (current < history.size()-1)
+		if (canGoForward())
 			current++;
 	}
 
@@ -60,9 +60,17 @@ public class History {
 	}
 
 	public boolean isNextTransition(String id) {
-		if (current < history.size()-1)
+		if (canGoForward())
 			return history.get(current + 1).equals(id);
 		return false;
+	}
+	
+	public boolean canGoForward() {
+		return current < history.size()-1;
+	}
+	
+	public boolean canGoBack() {
+		return current >= 0;
 	}
 	
 	public String toString() {
