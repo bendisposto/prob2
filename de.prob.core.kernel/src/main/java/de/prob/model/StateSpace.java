@@ -1,5 +1,6 @@
 package de.prob.model;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import de.prob.animator.IAnimator;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.OpInfo;
-import de.prob.animator.command.Variable;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
@@ -27,6 +27,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	private HashSet<String> explored = new HashSet<String>();
 	private History history = new History();
 	private HashSet<Operation> ops = new HashSet<Operation>();
+	private HashMap<String,HashMap<String,String>> variables = new HashMap<String, HashMap<String,String>>();
 
 	@Inject
 	public StateSpace(final IAnimator animator) {
@@ -38,14 +39,14 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	 * Takes a state id and calculates the successor states, the invariant,
 	 * timeout, etc.
 	 * 
-	 * @param id
+	 * @param stateId
 	 * @throws ProBException
 	 */
-	public void explore(final String id) throws ProBException {
-		ExploreStateCommand command = new ExploreStateCommand(id);
+	public void explore(final String stateId) throws ProBException {
+		ExploreStateCommand command = new ExploreStateCommand(stateId);
 				
 		animator.execute(command);
-		explored.add(id);
+		explored.add(stateId);
 		List<OpInfo> enabledOperations = command.getEnabledOperations();
 		// (id,name,src,dest,args)
 		for (OpInfo ops : enabledOperations) {
@@ -57,11 +58,9 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 
 		}
 
-		List<Variable> variables = command.getVariables();
-		System.out.println("State: " + id);
-		for (Variable variable : variables) {
-			System.out.println(variable);
-		}
+		variables.put(stateId, command.getVariables());
+		System.out.println("State: " + stateId);
+		System.out.println(variables.toString());
 		
 
 		
@@ -150,5 +149,13 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	public boolean canGoForward() {
 		return history.canGoForward();
 	}
-
+	
+	public HashMap<String,String> getState(String stateId) {
+		return variables.get(stateId);
+	}
+	
+	public HashMap<String,String> getState(final int stateId) {
+		String id = String.valueOf(stateId);
+		return getState(id);
+	}
 }
