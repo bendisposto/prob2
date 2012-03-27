@@ -1,5 +1,6 @@
 package de.prob.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,13 +30,18 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	private transient History history = new History(); // FIXME maybe this
 														// should be
 														// serializable
-	// private HashSet<Operation> ops = new HashSet<Operation>();
+	private HashMap<String, Operation> ops = new HashMap<String,Operation>();
 	private HashMap<String, HashMap<String, String>> variables = new HashMap<String, HashMap<String, String>>();
 	private HashMap<String, Boolean> invariantOk = new HashMap<String, Boolean>();
 	private HashMap<String, Boolean> timeoutOccured = new HashMap<String, Boolean>();
 	private HashMap<String, Set<String>> operationsWithTimeout = new HashMap<String, Set<String>>();
+	
+	private List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
+	private List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
-	@Inject
+	
+	
+	@Inject 
 	public StateSpace(final IAnimator animator) {
 		this.animator = animator;
 		addVertex("root");
@@ -55,13 +61,13 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 		explored.add(stateId);
 		List<OpInfo> enabledOperations = command.getEnabledOperations();
 		// (id,name,src,dest,args)
-		for (OpInfo ops : enabledOperations) {
-			Operation op = new Operation(ops.id, ops.name, ops.params);
+		for (OpInfo operations : enabledOperations) {
+			Operation op = new Operation(operations.id, operations.name, operations.params);
 			if (!containsEdge(op.getId())) {
-				// this.ops.add(op);
-				addEdge(op.getId(), ops.src, ops.dest);
+				ops.put(operations.id, op);
+				notifyStateSpaceChange(operations.id, containsVertex(operations.dest));
+				addEdge(op.getId(), operations.src, operations.dest);
 			}
-
 		}
 
 		variables.put(stateId, command.getVariables());
@@ -79,11 +85,22 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 				.println("======================================================");
 	}
 
+	
+	/*public void goToState(final String stateId)
+	{
+		if(!containsVertex(stateId))
+				throw new IllegalArgumentException("state does not exist");
+		// FIXME: requires refactoring
+		// notifyAnimationChange(getCurrentState, stateId, null);
+		// history.add(getCurrentState(), stateId, null)
+	}*/
+	
+	
 	public void step(final String opId) throws ProBException {
 		if (history.isLastTransition(opId)) {
-			back();
+			back(opId);
 		} else if (history.isNextTransition(opId)) {
-			forward();
+			forward(opId);
 		} else if (getOutEdges(getCurrentState()).contains(opId)) {
 			String newState = getDest(opId);
 			if (!isExplored(newState)) {
@@ -96,17 +113,20 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 				}
 			}
 			history.add(opId);
+			notifyAnimationChange(getSource(opId), getDest(opId), opId);
 		}
 
 		System.out.println(history.toString());
 
 	}
 
-	public void back() {
+	public void back(String opId) {
+		notifyAnimationChange(getDest(opId), getSource(opId), null);
 		history.back();
 	}
 
-	public void forward() {
+	public void forward(String opId) {
+		notifyAnimationChange(getSource(opId), getDest(opId), opId); 
 		history.forward();
 	}
 
@@ -132,6 +152,7 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 
 	public String getCurrentState() {
 		String currentTransitionId = history.getCurrentTransition();
+		// FIXME: probably will require refactoring, as null does not implicate root anymore
 		if (currentTransitionId == null)
 			return "root";
 		return getDest(currentTransitionId);
@@ -184,5 +205,27 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	public HashMap<String, Set<String>> getOperationsWithTimeout() {
 		return operationsWithTimeout;
 	}
+	
+	public void registerAnimationListener(IAnimationListener l){
+		animationListeners.add(l);
+	}
+	
+	public void registerStateSpaceListener(IStateSpaceChangeListener l){
+		stateSpaceListeners.add(l);
+	}
+	
+	private void notifyAnimationChange(String fromState, String toState, String withOp){
+		for (IAnimationListener listener : animationListeners) {
+			listener.currentStateChanged(fromState, toState, withOp);
+		}
+	}
+	
+	private void notifyStateSpaceChange(String opName, boolean isDestStateNew){
+		for (IStateSpaceChangeListener listener : stateSpaceListeners) {
+			listener.newTransition(opName, isDestStateNew);
+		}		
+	}
+	
+	
 
 }
