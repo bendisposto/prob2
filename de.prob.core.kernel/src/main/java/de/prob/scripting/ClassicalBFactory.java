@@ -1,19 +1,18 @@
 package de.prob.scripting;
 
 import java.io.File;
+import java.util.List;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.ProBException;
 import de.prob.animator.command.GetInvariantsCommand;
-import de.prob.animator.command.ICommand;
 import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.StateSpace;
+import de.prob.model.StringWithLocation;
 import de.prob.model.representation.ClassicalBMachine;
-import de.prob.model.representation.LoadBProjectFromStringCommand;
-import de.prob.model.representation.Predicate;
 
 public class ClassicalBFactory {
 
@@ -25,26 +24,24 @@ public class ClassicalBFactory {
 	}
 
 	public ClassicalBMachine load(final File f) throws ProBException {
-		ICommand loadCommand = new LoadBProjectCommand(f);
+		LoadBProjectCommand loadCommand = new LoadBProjectCommand(f);
 		return load(loadCommand);
 	}
 
-	public ClassicalBMachine load(final String s) throws ProBException {
-		ICommand loadCommand = new LoadBProjectFromStringCommand(s);
-		return load(loadCommand);
-	}
-
-	public ClassicalBMachine load(final ICommand loadCommand)
+	public ClassicalBMachine load(final LoadBProjectCommand loadCommand)
 			throws ProBException {
 		StateSpace stateSpace = statespaceProvider.get();
-		ClassicalBMachine classicalBMachine = new ClassicalBMachine(stateSpace);
+		ClassicalBMachine classicalBMachine = new ClassicalBMachine(stateSpace,
+				loadCommand.getNodeIdMapping());
 
 		GetInvariantsCommand getInvariantsCommand = new GetInvariantsCommand();
 		stateSpace.execute(loadCommand, new StartAnimationCommand(),
 				getInvariantsCommand);
 
-		classicalBMachine.setInvariant(new Predicate(getInvariantsCommand
-				.getInvariant()));
+		List<StringWithLocation> list = getInvariantsCommand.getInvariant();
+		for (StringWithLocation string : list) {
+			System.out.println("@" + string);
+		}
 
 		return classicalBMachine;
 
