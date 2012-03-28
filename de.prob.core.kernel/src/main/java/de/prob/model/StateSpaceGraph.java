@@ -157,7 +157,11 @@ public class StateSpaceGraph implements MultiGraph<String, String>,
 
 	@Override
 	public boolean equals(final Object obj) {
-		return graph.equals(obj);
+		if (obj instanceof StateSpaceGraph) {
+			StateSpaceGraph g = (StateSpaceGraph) obj;
+			return graph.equals(g.graph);
+		}
+		return false;
 	}
 
 	@Override
