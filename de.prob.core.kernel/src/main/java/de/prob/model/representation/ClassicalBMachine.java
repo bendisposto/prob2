@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
+import de.be4.classicalb.core.parser.node.Node;
 import de.prob.model.StateSpace;
 
 public class ClassicalBMachine extends AbstractModel {
@@ -14,6 +15,10 @@ public class ClassicalBMachine extends AbstractModel {
 			final NodeIdAssignment nodeIdAssignment) {
 		this.statespace = statespace;
 		this.astMapping = nodeIdAssignment;
+	}
+
+	public Node getNode(final int i) {
+		return astMapping.lookupById(i);
 	}
 
 	private String name;

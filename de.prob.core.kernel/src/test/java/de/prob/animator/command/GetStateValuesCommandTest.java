@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -25,13 +24,14 @@ public class GetStateValuesCommandTest {
 
 		when(map.get("Bindings")).thenReturn(
 				new ListPrologTerm(
-					new CompoundPrologTerm("binding",
-						new CompoundPrologTerm("foo"), new CompoundPrologTerm("bar"),
-						new CompoundPrologTerm("hummelbummel")),
-					new CompoundPrologTerm("binding",
-						new CompoundPrologTerm("bli"), new CompoundPrologTerm("bla"),
-						new CompoundPrologTerm("blub"))
-				));
+						new CompoundPrologTerm("binding",
+								new CompoundPrologTerm("foo"),
+								new CompoundPrologTerm("bar"),
+								new CompoundPrologTerm("hummelbummel")),
+						new CompoundPrologTerm("binding",
+								new CompoundPrologTerm("bli"),
+								new CompoundPrologTerm("bla"),
+								new CompoundPrologTerm("blub"))));
 
 		GetStateValuesCommand command = new GetStateValuesCommand("stateID");
 		command.processResult(map);
@@ -40,7 +40,7 @@ public class GetStateValuesCommandTest {
 		assertEquals("hummelbummel", hmap.get("foo"));
 		assertEquals("blub", hmap.get("bli"));
 	}
-	
+
 	@Test(expected = ProBException.class)
 	public void testErrorProcessResult1() throws ProBException {
 		@SuppressWarnings("unchecked")
@@ -52,23 +52,22 @@ public class GetStateValuesCommandTest {
 		command.processResult(map);
 	}
 
-	
 	@Test(expected = ProBException.class)
 	public void testErrorProcessResult2() throws ProBException {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 
-		when(map.get("Bindings")).thenReturn(
-				new ListPrologTerm(
-					new CompoundPrologTerm("scampi",
-						new CompoundPrologTerm("foo"), new CompoundPrologTerm("bar"),
-						new CompoundPrologTerm("hummelbummel"))
-				));
-		
+		when(map.get("Bindings"))
+				.thenReturn(
+						new ListPrologTerm(new CompoundPrologTerm("scampi",
+								new CompoundPrologTerm("foo"),
+								new CompoundPrologTerm("bar"),
+								new CompoundPrologTerm("hummelbummel"))));
+
 		GetStateValuesCommand command = new GetStateValuesCommand("stateID");
 		command.processResult(map);
 	}
-	
+
 	@Test
 	public void testWriteCommand() throws ProBException {
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
@@ -81,7 +80,7 @@ public class GetStateValuesCommandTest {
 		assertTrue(next instanceof CompoundPrologTerm);
 		CompoundPrologTerm t = (CompoundPrologTerm) next;
 		assertEquals("getStateValues", t.getFunctor());
-		
+
 		assertEquals(2, t.getArity());
 		PrologTerm argument = t.getArgument(1);
 		assertTrue(argument.isAtom());

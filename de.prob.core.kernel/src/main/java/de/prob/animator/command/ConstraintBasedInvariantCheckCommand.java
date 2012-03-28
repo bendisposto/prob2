@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -26,7 +25,7 @@ import de.prob.prolog.term.PrologTerm;
 public class ConstraintBasedInvariantCheckCommand implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(GetCurrentStateIdCommand.class);
-	
+
 	public static enum ResultType {
 		VIOLATION_FOUND, NO_VIOLATION_FOUND, INTERRUPTED
 	};
@@ -106,7 +105,8 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings)
+			throws ProBException {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
 		final ResultType result;
 		final Collection<InvariantCheckCounterExample> counterexamples;
@@ -120,7 +120,8 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 			counterexamples = Collections
 					.unmodifiableCollection(extractExamples(ceTerm));
 		} else {
-			logger.error("unexpected result from invariant check: " + resultTerm);
+			logger.error("unexpected result from invariant check: "
+					+ resultTerm);
 			throw new ProBException();
 		}
 		this.result = result;
@@ -130,19 +131,20 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 	private Collection<InvariantCheckCounterExample> extractExamples(
 			final ListPrologTerm ceTerm) {
 		Collection<InvariantCheckCounterExample> examples = new ArrayList<ConstraintBasedInvariantCheckCommand.InvariantCheckCounterExample>();
-		for (final PrologTerm t : ceTerm) {
-			final CompoundPrologTerm term = (CompoundPrologTerm) t;
-			final String eventName = PrologTerm.atomicString(term
-					.getArgument(1));
-//			FIXME: Implement method fromPrologTerm for OpInfo
-//			final OpInfo step1 = Operation
-//					.fromPrologTerm((CompoundPrologTerm) term.getArgument(2));
-//			final OpInfo step2 = Operation
-//					.fromPrologTerm((CompoundPrologTerm) term.getArgument(3));
-//			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(
-//					eventName, step1, step2);
-//			examples.add(ce);
-		}
+		// for (final PrologTerm t : ceTerm) {
+		// final CompoundPrologTerm term = (CompoundPrologTerm) t;
+		// final String eventName = PrologTerm.atomicString(term
+		// .getArgument(1));
+		// FIXME: Implement method fromPrologTerm for OpInfo
+		// final OpInfo step1 = Operation
+		// .fromPrologTerm((CompoundPrologTerm) term.getArgument(2));
+		// final OpInfo step2 = Operation
+		// .fromPrologTerm((CompoundPrologTerm) term.getArgument(3));
+		// final InvariantCheckCounterExample ce = new
+		// InvariantCheckCounterExample(
+		// eventName, step1, step2);
+		// examples.add(ce);
+		// }
 		return examples;
 	}
 }
