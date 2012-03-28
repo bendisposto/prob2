@@ -8,6 +8,9 @@ package de.prob.animator.command;
 
 //import java.util.List;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +32,7 @@ public final class LtlCheckingCommand implements ICommand {
 	private static final String VARIABLE_NAME_ATOMICS = "A";
 	private static final String VARIABLE_NAME_STRUCTURE = "S";
 	private static final String VARIABLE_NAME_RESULT = "R";
-	
+
 	Logger logger = LoggerFactory.getLogger(LtlCheckingCommand.class);
 
 	public static enum StartMode {
@@ -160,8 +163,8 @@ public final class LtlCheckingCommand implements ICommand {
 			return loopEntry;
 		}
 
-		public OpInfo[] getInitPathOps() {
-			return initPathOps;
+		public List<OpInfo> getInitPathOps() {
+			return Arrays.asList(initPathOps);
 		}
 	}
 
@@ -183,7 +186,8 @@ public final class LtlCheckingCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings)
+			throws ProBException {
 		CompoundPrologTerm term = (CompoundPrologTerm) bindings
 				.get(VARIABLE_NAME_RESULT);
 
@@ -217,18 +221,17 @@ public final class LtlCheckingCommand implements ICommand {
 						+ loopStatus);
 				throw new ProBException();
 			}
-				
-				
+
 			final ListPrologTerm operationIds = (ListPrologTerm) term
 					.getArgument(3);
 			initPath = new OpInfo[operationIds.size()];
-//			int i = 0;
-//			for (final PrologTerm opTerm : operationIds) {
-//				
-//				FIXME: Implement method from de.prob.core.domainobjects.Operation
-//				initPath[i] = Operation.fromPrologTerm(opTerm);
-//				i++;
-//			}
+			// int i = 0;
+			// for (final PrologTerm opTerm : operationIds) {
+			//
+			// FIXME: Implement method from de.prob.core.domainobjects.Operation
+			// initPath[i] = Operation.fromPrologTerm(opTerm);
+			// i++;
+			// }
 		} else {
 			counterexample = null;
 			pathType = null;
@@ -243,7 +246,7 @@ public final class LtlCheckingCommand implements ICommand {
 				&& ((ListPrologTerm) structure).isEmpty();
 
 		result = new Result(status, atomics, noStructure ? null : structure,
-				counterexample, pathType, loopEntry, initPath);
+				counterexample, pathType, loopEntry, initPath.clone());
 	}
 
 	@Override
