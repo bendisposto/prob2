@@ -16,21 +16,20 @@ import de.prob.animator.IAnimator;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.OpInfo;
+import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import edu.uci.ics.jung.graph.MultiGraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
-public class StateSpace extends DirectedSparseMultigraph<String, String>
-		implements IAnimator {
+public class StateSpace extends StateSpaceGraph implements IAnimator,
+		DirectedGraph<String, String>, MultiGraph<String, String> {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 
-	private static final long serialVersionUID = -9047891508993732222L;
-	private transient IAnimator animator;
+	private IAnimator animator;
 	private HashSet<String> explored = new HashSet<String>();
-	private transient History history = new History(); // FIXME maybe this
-														// should be
-														// serializable
-	private transient HashMap<String, Operation> ops = new HashMap<String, Operation>();
+	private History history = new History();
+	private HashMap<String, Operation> ops = new HashMap<String, Operation>();
 	private HashMap<String, HashMap<String, String>> variables = new HashMap<String, HashMap<String, String>>();
 	private HashMap<String, Boolean> invariantOk = new HashMap<String, Boolean>();
 	private HashMap<String, Boolean> timeoutOccured = new HashMap<String, Boolean>();
@@ -40,7 +39,9 @@ public class StateSpace extends DirectedSparseMultigraph<String, String>
 	private List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
 	@Inject
-	public StateSpace(final IAnimator animator) {
+	public StateSpace(final IAnimator animator,
+			final DirectedSparseMultigraph<String, String> graph) {
+		super(graph);
 		this.animator = animator;
 		addVertex("root");
 	}

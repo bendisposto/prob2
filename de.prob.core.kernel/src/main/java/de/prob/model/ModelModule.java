@@ -2,6 +2,8 @@ package de.prob.model;
 
 import com.google.inject.AbstractModule;
 
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+
 public class ModelModule extends AbstractModule {
 
 	@Override
@@ -11,5 +13,6 @@ public class ModelModule extends AbstractModule {
 		// .build(PaymentFactory.class));
 
 		bind(StateSpace.class);
+		bind(DirectedSparseMultigraph.class);
 	}
 }
