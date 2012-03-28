@@ -3,20 +3,25 @@ package de.prob.model.representation;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.prob.model.StateSpace;
 
 public class ClassicalBMachine extends AbstractModel {
 
-	public ClassicalBMachine(final StateSpace statespace) {
+	private final NodeIdAssignment astMapping;
+
+	public ClassicalBMachine(final StateSpace statespace,
+			final NodeIdAssignment nodeIdAssignment) {
 		this.statespace = statespace;
+		this.astMapping = nodeIdAssignment;
 	}
 
 	private String name;
 
 	private final List<NamedEntity> variables = new ArrayList<NamedEntity>();
 	private final List<NamedEntity> constants = new ArrayList<NamedEntity>();
-	private Predicate invariant;
-	private final List<Predicate> assertions = new ArrayList<Predicate>();
+	private final List<NamedEntity> invariant = new ArrayList<NamedEntity>();
+	private final List<NamedEntity> assertions = new ArrayList<NamedEntity>();
 	private final List<Operation> operations = new ArrayList<Operation>();
 
 	public List<NamedEntity> getConstants() {
@@ -27,11 +32,11 @@ public class ClassicalBMachine extends AbstractModel {
 		return variables;
 	}
 
-	public Predicate getInvariant() {
+	public List<NamedEntity> getInvariant() {
 		return invariant;
 	}
 
-	public List<Predicate> getAssertions() {
+	public List<NamedEntity> getAssertions() {
 		return assertions;
 	}
 
@@ -55,16 +60,16 @@ public class ClassicalBMachine extends AbstractModel {
 		this.constants.add(v);
 	}
 
-	public void addAssertion(final Predicate p) {
+	public void addAssertion(final NamedEntity p) {
+		this.assertions.add(p);
+	}
+
+	public void addInvariant(final NamedEntity p) {
 		this.assertions.add(p);
 	}
 
 	public void addOperation(final Operation o) {
 		this.operations.add(o);
-	}
-
-	public void setInvariant(final Predicate invariant) {
-		this.invariant = invariant;
 	}
 
 }

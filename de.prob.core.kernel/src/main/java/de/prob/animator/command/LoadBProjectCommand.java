@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
@@ -19,9 +20,10 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public final class LoadBProjectCommand implements ICommand {
+public class LoadBProjectCommand implements ICommand {
 	private final File model;
 	Logger logger = LoggerFactory.getLogger(LoadBProjectCommand.class);
+	private NodeIdAssignment nodeIdMapping;
 
 	public LoadBProjectCommand(final File f) {
 		this.model = f;
@@ -64,6 +66,7 @@ public final class LoadBProjectCommand implements ICommand {
 		parserOutput = new StructuredPrologOutput();
 		logger.trace("Done with parsing '{}'", model.getAbsolutePath());
 		rml.printAsProlog(parserOutput);
+		nodeIdMapping = rml.getNodeIdMapping();
 		return collectSentencesInList(parserOutput);
 	}
 
@@ -103,4 +106,7 @@ public final class LoadBProjectCommand implements ICommand {
 		return result;
 	}
 
+	public NodeIdAssignment getNodeIdMapping() {
+		return nodeIdMapping;
+	}
 }
