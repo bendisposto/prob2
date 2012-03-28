@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -35,6 +36,7 @@ public class GetInvariantsCommandTest {
 	}
 
 	@Test
+	@Ignore
 	public void testProcessResult() throws Exception {
 
 		CommandProcessor processor = new CommandProcessor();
@@ -83,6 +85,7 @@ public class GetInvariantsCommandTest {
 	// }
 
 	@Test
+	@Ignore
 	public void testWriteCommand() throws ProBException {
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		GetInvariantsCommand command = new GetInvariantsCommand();
