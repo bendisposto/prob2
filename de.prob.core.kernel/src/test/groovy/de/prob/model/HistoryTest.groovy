@@ -172,6 +172,8 @@ class HistoryTest extends Specification {
 		
 		then:
 		h.history.size() == 7;
+		h.getCurrentState() == "7";
+		h.getCurrentTransition() == "bla"
 	}
 	
 	def "test null with isLastTransition"()
@@ -181,5 +183,20 @@ class HistoryTest extends Specification {
 		
 		then:
 		h.isLastTransition("any") == false
+	}
+	
+	def "test overwriting null transition"()
+	{
+		when:
+		h.add("6", null)
+		h.back()
+		h.add("7", "op")
+		
+		then:
+		h.isNextTransition(null) == false
+		h.isLastTransition(null) == false
+		h.history.size() == 6
+		h.getCurrentState() == "7"
+		h.getCurrentTransition() == "op"
 	}
 }

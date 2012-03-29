@@ -1,9 +1,9 @@
 package de.prob.model;
 
 public class HistoryElement {
-	String src;
-	String dest;
-	String edge;
+	private String src;
+	private String dest;
+	private String edge;
 	
 	HistoryElement(String src, String dest, String edge)
 	{
