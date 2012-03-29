@@ -3,29 +3,39 @@ package de.prob.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Joiner;
-
 public class History {
 
 	// Logger logger = LoggerFactory.getLogger(History.class);
-	public List<String> history = new ArrayList<String>();
-	public int current = -1;
-
+	public List<HistoryElement> history = new ArrayList<HistoryElement>();
+	private int current = -1;
+	
 	// add
-	public void add(final String id) {
+	public void add(final String dest, final String op) {
+		if(op == null && isLastTransition(null))
+		{
+			// if current state is "root", we can't go back anyway
+			// hence we will not add another case for this
+			back();
+		}
+		
 		if (current == -1) {
+			String src = "root";
+			final HistoryElement elem = new HistoryElement(src, dest, op);
 			history.clear();
-			history.add(id);
+			history.add(elem);
 			current++;
 		} else {
 			if (history.size() != current) {
 				history = history.subList(0, current + 1);
 			}
-			history.add(id);
+			String src = getCurrentState();
+			final HistoryElement elem = new HistoryElement(src, dest, op);
+			
+			history.add(elem);
 			current++;
 		}
 	}
-
+	
 	// goToPos
 	public void goToPos(final int pos) {
 		if (pos >= -1 && pos < history.size()) {
@@ -51,19 +61,33 @@ public class History {
 	public String getCurrentTransition() {
 		if (current == -1)
 			return null;
-		return history.get(current);
+		return history.get(current).getOp();
 	}
 
 	public boolean isLastTransition(final String id) {
-		if (current > 0)
-			return history.get(current).equals(id);
-		return false;
+		if(current <= 0)
+			return false;
+		
+		String currentOp = history.get(current).getOp();
+		if (id == null)
+			return currentOp == null;
+		if (currentOp == null)
+			return id == null;
+		
+		return currentOp.equals(id);
 	}
 
 	public boolean isNextTransition(final String id) {
-		if (canGoForward())
-			return history.get(current + 1).equals(id);
-		return false;
+		if(!canGoForward())
+			return false;
+		
+		String nextOp = history.get(current + 1).getOp();
+		if (id == null)
+			return nextOp == null;
+		if (nextOp == null)
+			return id == null;
+		
+		return nextOp.equals(id);
 	}
 
 	public boolean canGoForward() {
@@ -76,8 +100,22 @@ public class History {
 
 	@Override
 	public String toString() {
-		String list = Joiner.on(", ").join(history);
-		return "[" + list + "] " + "current Transition: "
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < history.size(); i++)
+		{
+			sb.append((history.get(i).getOp()) + ", ");
+		}
+		String content = sb.toString();
+
+		// delete the last ", "
+		content = content.substring(0, content.length() - 2);
+		
+		return "[" + content + "] " + "current Transition: "
 				+ getCurrentTransition();
+	}
+	
+	public String getCurrentState()
+	{
+		return history.get(current ).getDest();
 	}
 }

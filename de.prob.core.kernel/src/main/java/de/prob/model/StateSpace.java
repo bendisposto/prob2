@@ -86,13 +86,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 				.println("======================================================");
 	}
 
-	/*
-	 * public void goToState(final String stateId) {
-	 * if(!containsVertex(stateId)) throw new
-	 * IllegalArgumentException("state does not exist"); // FIXME: requires
-	 * refactoring // notifyAnimationChange(getCurrentState, stateId, null); //
-	 * history.add(getCurrentState(), stateId, null) }
-	 */
+
+	public void goToState(final String stateId) {
+		if(!containsVertex(stateId))
+			throw new IllegalArgumentException("state does not exist");
+		notifyAnimationChange(getCurrentState(), stateId, null);
+		history.add(stateId, null);
+	}
 
 	public void step(final String opId) throws ProBException {
 		if (history.isLastTransition(opId)) {
@@ -110,7 +110,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 					throw new ProBException();
 				}
 			}
-			history.add(opId);
+			history.add(newState, opId);
 			notifyAnimationChange(getSource(opId), getDest(opId), opId);
 		}
 
@@ -149,12 +149,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	}
 
 	public String getCurrentState() {
-		String currentTransitionId = history.getCurrentTransition();
-		// FIXME: probably will require refactoring, as null does not implicate
-		// root anymore
-		if (currentTransitionId == null)
-			return "root";
-		return getDest(currentTransitionId);
+		return history.getCurrentState();
 	}
 
 	public boolean isDeadlock(final String stateid) throws ProBException {
