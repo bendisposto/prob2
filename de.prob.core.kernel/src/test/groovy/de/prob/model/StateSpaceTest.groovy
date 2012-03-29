@@ -31,8 +31,8 @@ class StateSpaceTest extends Specification {
 		s.addEdge("d","3","4")
 		s.addEdge("e","3","5")
 
-		s.history.add("b")
-		s.history.add("c")
+		s.history.add("2", "b")
+		s.history.add("3", "c")
 
 		s.explored.add("2")
 		s.explored.add("3")
