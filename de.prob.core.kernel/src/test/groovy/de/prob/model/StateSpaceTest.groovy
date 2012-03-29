@@ -167,6 +167,7 @@ class StateSpaceTest extends Specification {
 		
 		then:	
 		s.getCurrentState() == "2"
+		s.history.history.size() == 4;
 	}
 		
 	def "test multiple goToState"()
@@ -206,8 +207,35 @@ class StateSpaceTest extends Specification {
 		s.forward()
 		
 		then:
+		s.history.history.size() == 3;
 		s.getCurrentState() == "5"
 		s.history.isLastTransition(null) == true
 		s.history.isNextTransition("any") == false
 	}
+	
+	def "null is neither the last or next transition if we are at the end"()
+	{
+		expect:
+		s.history.isLastTransition(null) == false;
+		s.history.isNextTransition(null) == false;
+		s.history.history.size == 2;
+	}
+	
+	def "navigation with single goToState call"()
+	{
+		when:
+		s.goToState("2")
+		s.step("c")
+		s.back()
+		s.back()
+		s.forward()
+		
+		then:
+		s.history.history.size == 4;
+		s.getCurrentState() == "2"
+		s.history.isLastTransition(null) == true
+		s.history.isNextTransition("c") == true
+	}
+	
+
 }

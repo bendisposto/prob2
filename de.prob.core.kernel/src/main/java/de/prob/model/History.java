@@ -8,10 +8,10 @@ public class History {
 	// Logger logger = LoggerFactory.getLogger(History.class);
 	public List<HistoryElement> history = new ArrayList<HistoryElement>();
 	private int current = -1;
-
+	
 	// add
 	public void add(final String dest, final String op) {
-		if(isLastTransition(null))
+		if(op == null && isLastTransition(null))
 		{
 			// if current state is "root", we can't go back anyway
 			// hence we will not add another case for this
@@ -65,22 +65,29 @@ public class History {
 	}
 
 	public boolean isLastTransition(final String id) {
-		if (current > 0 && id == null)
-			return history.get(current).getOp() == null;
+		if(current <= 0)
+			return false;
 		
-		if (current > 0)
-			return history.get(current).getOp().equals(id);
-		return false;
+		String currentOp = history.get(current).getOp();
+		if (id == null)
+			return currentOp == null;
+		if (currentOp == null)
+			return id == null;
+		
+		return currentOp.equals(id);
 	}
 
 	public boolean isNextTransition(final String id) {
-		if (id == null && canGoForward())
-		{
-			return history.get(current + 1).getOp() == null;
-		}
-		if (canGoForward())
-			return history.get(current + 1).getOp().equals(id);
-		return false;
+		if(!canGoForward())
+			return false;
+		
+		String nextOp = history.get(current + 1).getOp();
+		if (id == null)
+			return nextOp == null;
+		if (nextOp == null)
+			return id == null;
+		
+		return nextOp.equals(id);
 	}
 
 	public boolean canGoForward() {

@@ -163,4 +163,23 @@ class HistoryTest extends Specification {
 		expect:
 		h.toString() == "[a, b, c, d, e] current Transition: e"
 	}
+	
+	def "test null as transition"()
+	{
+		when:
+		h.add("6", null)
+		h.add("7", "bla")
+		
+		then:
+		h.history.size() == 7;
+	}
+	
+	def "test null with isLastTransition"()
+	{
+		when:
+		h.add("6", null)
+		
+		then:
+		h.isLastTransition("any") == false
+	}
 }
