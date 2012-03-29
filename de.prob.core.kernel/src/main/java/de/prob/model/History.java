@@ -3,8 +3,6 @@ package de.prob.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Joiner;
-
 public class History {
 
 	// Logger logger = LoggerFactory.getLogger(History.class);
@@ -37,29 +35,6 @@ public class History {
 			current++;
 		}
 	}
-	
-	/*public void add(final String src, final String dest, final String op) {
-		final HistoryElement elem = new HistoryElement(src, dest, op);
-		
-		if(isLastTransition(null))
-		{
-			// if current state is "root", we can't go back anyway
-			// hence we will not add another case for this
-			back();
-		}
-		
-		if (current == -1) {
-			history.clear();
-			history.add(elem);
-			current++;
-		} else {
-			if (history.size() != current) {
-				history = history.subList(0, current + 1);
-			}
-			history.add(elem);
-			current++;
-		}
-	}*/
 	
 	// goToPos
 	public void goToPos(final int pos) {
@@ -117,10 +92,10 @@ public class History {
 			sb.append((history.get(i).getOp()) + ", ");
 		}
 		String content = sb.toString();
+
 		// delete the last ", "
 		content = content.substring(0, content.length() - 2);
 		
-		//String list = Joiner.on(", ").join(history);
 		return "[" + content + "] " + "current Transition: "
 				+ getCurrentTransition();
 	}

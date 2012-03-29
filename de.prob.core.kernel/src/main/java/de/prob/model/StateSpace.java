@@ -149,12 +149,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	}
 
 	public String getCurrentState() {
-		/*String currentTransitionId = history.getCurrentTransition();
-		// FIXME: probably will require refactoring, as null does not implicate
-		// root anymore
-		if (currentTransitionId == null)
-			return "root";
-		return getDest(currentTransitionId);*/
 		return history.getCurrentState();
 	}
 
