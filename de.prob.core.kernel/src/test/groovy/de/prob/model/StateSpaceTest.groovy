@@ -158,4 +158,56 @@ class StateSpaceTest extends Specification {
 		then:
 		thrown ProBException
 	}
+	
+	def "test simple goToState"()
+	{
+		when:
+		s.step("e")
+		s.goToState("2")
+		
+		then:	
+		s.getCurrentState() == "2"
+	}
+		
+	def "test multiple goToState"()
+	{
+		when:
+		s.goToState("2")
+		s.goToState("4")
+		s.goToState("5")
+		
+		then:
+		s.getCurrentState() == "5"
+	}
+	
+	def "navigation with multiple goToState calls"()
+	{
+		when:
+		s.goToState("2")
+		s.goToState("4")
+		s.goToState("5")
+		s.back()
+		
+		then:
+		// is this the intended behaviour?
+		s.getCurrentState() == "3"
+		s.history.isLastTransition(null) == false
+		s.history.isLastTransition("c") == true
+		s.history.isNextTransition(null) == true
+	}
+	
+	def "navigation with multiple goToState calls 2"()
+	{
+		when:
+		s.goToState("2")
+		s.goToState("4")
+		s.goToState("5")
+		s.back()
+		s.forward()
+		
+		then:
+		s.getCurrentState() == "5"
+		s.history.isLastTransition(null) == true
+		s.history.isNextTransition("any") == false
+	}
 }

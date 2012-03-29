@@ -65,12 +65,19 @@ public class History {
 	}
 
 	public boolean isLastTransition(final String id) {
+		if (current > 0 && id == null)
+			return history.get(current).getOp() == null;
+		
 		if (current > 0)
 			return history.get(current).getOp().equals(id);
 		return false;
 	}
 
 	public boolean isNextTransition(final String id) {
+		if (id == null && canGoForward())
+		{
+			return history.get(current + 1).getOp() == null;
+		}
 		if (canGoForward())
 			return history.get(current + 1).getOp().equals(id);
 		return false;
