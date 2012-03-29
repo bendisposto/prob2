@@ -35,13 +35,13 @@ public class ClassicalBFactory {
 				loadCommand.getNodeIdMapping());
 
 		GetInvariantsCommand getInvariantsCommand = new GetInvariantsCommand();
-		stateSpace.execute(loadCommand, new StartAnimationCommand(),
-				getInvariantsCommand);
+		stateSpace.execute(loadCommand, new StartAnimationCommand());
 
 		List<StringWithLocation> list = getInvariantsCommand.getInvariant();
-		for (StringWithLocation string : list) {
-			System.out.println("@" + string);
-		}
+		System.out.println("foo".equals(null));
+		// for (StringWithLocation string : list) {
+		// System.out.println("@" + string);
+		// }
 
 		return classicalBMachine;
 
