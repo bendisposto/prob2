@@ -103,13 +103,16 @@ public class History {
 		for (int i = 0; i < history.size() - 1; i++) {
 			sb.append((history.get(i).getOp()) + ", ");
 		}
-		sb.append(history.get(history.size() - 1).getOp());
+		if(history.size() != 0)
+			sb.append(history.get(history.size() - 1).getOp());
 		String content = sb.toString();
 		return "[" + content + "] " + "current Transition: "
 				+ getCurrentTransition();
 	}
 
 	public String getCurrentState() {
+		if(current == -1)
+			return "root";
 		return history.get(current).getDest();
 	}
 }
