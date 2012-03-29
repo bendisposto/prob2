@@ -8,6 +8,7 @@ import java.util.List;
 import com.google.inject.Inject;
 
 import de.prob.ProBException;
+import de.prob.animator.command.EvaluateCommand;
 import de.prob.animator.command.GetOperationNamesCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.model.StateSpace;
@@ -53,6 +54,13 @@ public class Api {
 		GetOperationNamesCommand command = new GetOperationNamesCommand();
 		s.execute(command);
 		return command.getOperations();
+	}
+
+	public String eval(final String text, final StateSpace s)
+			throws ProBException {
+		EvaluateCommand command = new EvaluateCommand(text);
+		s.execute(command);
+		return command.getResult();
 	}
 
 	// public IStateSpace b_def() {
