@@ -36,7 +36,6 @@ public class GetInvariantsCommandTest {
 	}
 
 	@Test
-	@Ignore
 	public void testProcessResult() throws Exception {
 
 		CommandProcessor processor = new CommandProcessor();
@@ -44,7 +43,7 @@ public class GetInvariantsCommandTest {
 		ProBInstance cli = mock(ProBInstance.class);
 
 		when(cli.send(startsWith("get_invariants"))).thenReturn(cliAnswer);
-		when(cli.send(startsWith("true"))).thenReturn(
+		when(cli.send(startsWith("getErr"))).thenReturn(
 				"yes('.'(=('Errors',[]),[])).");
 
 		Logger logger = mock(Logger.class);
