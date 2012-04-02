@@ -22,6 +22,7 @@ public class GetInvariantsCommandTest {
 
 	String cliAnswer = "yes('.'(=('LIST','.'(inv('ready /\\ waiting = {}',46),'.'(inv('active /\\ (ready \\/ waiting) = {}',51),'.'(inv('card(active) <= 1',58),'.'(inv('active = {} => waiting = {}',62),[]))))),[]))";
 
+	@Ignore
 	@Test(expected = ProBException.class)
 	public void testErrorProcessResults() throws ProBException {
 		@SuppressWarnings("unchecked")
@@ -32,6 +33,7 @@ public class GetInvariantsCommandTest {
 		// command.processResult(map);
 	}
 
+	@Ignore
 	@Test
 	public void testProcessResult() throws Exception {
 
