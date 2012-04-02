@@ -42,6 +42,11 @@ class StateSpaceTest extends Specification {
 		s.addEdge("f", "4", "6")
 	}
 
+	def "history current equals 1"() {
+		expect:
+		s.history.current == 1
+	}
+	
 	def "The node is a deadlock"() {
 		expect:
 		s.isDeadlock("1") == true
@@ -68,11 +73,10 @@ class StateSpaceTest extends Specification {
 		s.isExplored("7") == false
 	}
 
-	@Ignore
 	def "The node is not a deadlock"() {
 		def op = new Operation("a", "Blah", null);
-		s.addEdge(op, "1", "2", EdgeType.DIRECTED);
-
+		s.addEdge("blaOp", "1", "2")
+		
 		expect:
 		s.isDeadlock("1") == false
 	}
@@ -96,6 +100,7 @@ class StateSpaceTest extends Specification {
 		s.forward()
 
 		then:
+		s.history.current == 1;
 		s.getCurrentState() == "3"
 	}
 

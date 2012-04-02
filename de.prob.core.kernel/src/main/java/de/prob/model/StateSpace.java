@@ -92,13 +92,14 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			throw new IllegalArgumentException("state does not exist");
 		notifyAnimationChange(getCurrentState(), stateId, null);
 		history.add(stateId, null);
+	//  TODO: we should explore the state, but then we have to deal with exceptions in tests 
 	}
 
 	public void step(final String opId) throws ProBException {
 		if (history.isLastTransition(opId)) {
-			back(opId);
+			back();
 		} else if (history.isNextTransition(opId)) {
-			forward(opId);
+			forward();
 		} else if (getOutEdges(getCurrentState()).contains(opId)) {
 			String newState = getDest(opId);
 			if (!isExplored(newState)) {
@@ -118,16 +119,36 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 	}
 
-	public void back(final String opId) {
-		notifyAnimationChange(getDest(opId), getSource(opId), null);
+	public void back()
+	{
+		if(!canGoBack())
+			return;
+
+		String oldState = getCurrentState();
+		String opId = history.getCurrentTransition();
 		history.back();
+		
+		if(opId != null)
+			notifyAnimationChange(getDest(opId), getSource(opId), opId);
+		else
+			notifyAnimationChange(oldState, getCurrentState(), null);
 	}
+	
+	public void forward()
+	{
+		if(!canGoForward())
+			return;
 
-	public void forward(final String opId) {
-		notifyAnimationChange(getSource(opId), getDest(opId), opId);
+		String oldState = getCurrentState();
 		history.forward();
+		String opId = history.getCurrentTransition();
+		if(opId != null)
+			notifyAnimationChange(getSource(opId), getDest(opId), opId);
+		else
+			notifyAnimationChange(oldState, getCurrentState(), null);
 	}
 
+	
 	public void step(final int i) throws ProBException {
 		String opId = String.valueOf(i);
 		step(opId);
