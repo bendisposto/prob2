@@ -69,8 +69,8 @@ public class ClassicalBMachine extends AbstractModel {
 		this.assertions.add(p);
 	}
 
-	public void addInvariant(final NamedEntity p) {
-		this.assertions.add(p);
+	public void addInvariants(final List<NamedEntity> l) {
+		this.invariant.addAll(l);
 	}
 
 	public void addOperation(final Operation o) {

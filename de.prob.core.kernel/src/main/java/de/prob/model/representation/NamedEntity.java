@@ -1,13 +1,13 @@
 package de.prob.model.representation;
 
-import de.be4.classicalb.core.parser.node.AIdentifierExpression;
+import de.be4.classicalb.core.parser.node.Node;
 
 public class NamedEntity {
 
 	private String identifier;
-	private final AIdentifierExpression astPart;
+	private final Node astPart;
 
-	public NamedEntity(final String name, final AIdentifierExpression id) {
+	public NamedEntity(final String name, final Node id) {
 		this.identifier = name;
 		this.astPart = id;
 	}
@@ -16,8 +16,13 @@ public class NamedEntity {
 		return identifier;
 	}
 
-	public AIdentifierExpression getIdentifierExpression() {
+	public Node getIdentifierExpression() {
 		return astPart;
+	}
+
+	@Override
+	public String toString() {
+		return identifier + "->" + astPart.getClass().getSimpleName();
 	}
 
 }

@@ -1,4 +1,4 @@
-package de.prob.animator.command;
+package de.prob.animator.command.representation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
+import de.be4.classicalb.core.parser.node.Node;
 import de.prob.ProBException;
-import de.prob.model.StringWithLocation;
+import de.prob.animator.command.ICommand;
+import de.prob.model.representation.NamedEntity;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
@@ -20,7 +23,12 @@ public class GetInvariantsCommand implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(GetInvariantsCommand.class);
 	private static final String LIST = "LIST";
-	List<StringWithLocation> invariant;
+	List<NamedEntity> invariant;
+	private final NodeIdAssignment nodeIdMapping;
+
+	public GetInvariantsCommand(final NodeIdAssignment nodeIdMapping) {
+		this.nodeIdMapping = nodeIdMapping;
+	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
@@ -31,7 +39,7 @@ public class GetInvariantsCommand implements ICommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
-		ArrayList<StringWithLocation> r = new ArrayList<StringWithLocation>();
+		ArrayList<NamedEntity> r = new ArrayList<NamedEntity>();
 
 		try {
 
@@ -40,9 +48,10 @@ public class GetInvariantsCommand implements ICommand {
 			for (PrologTerm invTerm : invs) {
 				CompoundPrologTerm inv = BindingGenerator.getCompoundTerm(
 						invTerm, 2);
-				System.out.print(inv.getArgument(2));
-				System.out.print(" -> ");
-				System.out.println(inv.getArgument(1));
+				int id = Integer.parseInt(inv.getArgument(2).toString());
+				String name = inv.getArgument(1).toString();
+				Node ID = nodeIdMapping.lookupById(id);
+				r.add(new NamedEntity(name, ID));
 			}
 
 		} catch (ResultParserException e) {
@@ -53,7 +62,7 @@ public class GetInvariantsCommand implements ICommand {
 		}
 	}
 
-	public List<StringWithLocation> getInvariant() {
+	public List<NamedEntity> getInvariants() {
 		return invariant;
 	}
 
