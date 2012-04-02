@@ -68,11 +68,10 @@ class StateSpaceTest extends Specification {
 		s.isExplored("7") == false
 	}
 
-	@Ignore
 	def "The node is not a deadlock"() {
 		def op = new Operation("a", "Blah", null);
-		s.addEdge(op, "1", "2", EdgeType.DIRECTED);
-
+		s.addEdge("blaOp", "1", "2")
+		
 		expect:
 		s.isDeadlock("1") == false
 	}

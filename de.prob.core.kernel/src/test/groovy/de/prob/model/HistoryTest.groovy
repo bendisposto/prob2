@@ -22,10 +22,9 @@ class HistoryTest extends Specification {
 		h.add("5", "e")
 	}
 
-	@Ignore
-	def "test add method"() {
+	def "test add method via toString() method "() {
 		expect:
-		h.history == ["1", "2", "3", "4", "5"]
+		h.toString() == "[a, b, c, d, e] current Transition: e" 
 	}
 
 	def "test add method when current state not on end"() {

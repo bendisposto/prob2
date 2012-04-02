@@ -67,7 +67,8 @@ public class History {
 		if (current <= 0)
 			return false;
 
-		String currentOp = history.get(current).getOp();
+		//String currentOp = history.get(current).getOp();
+		String currentOp = getCurrentTransition();
 		if (id == null)
 			return currentOp == null;
 		if (currentOp == null)
