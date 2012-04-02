@@ -6,7 +6,9 @@ import java.util.List;
 public class History {
 
 	// Logger logger = LoggerFactory.getLogger(History.class);
-	public List<HistoryElement> history = new ArrayList<HistoryElement>();
+	// maybe we want to refactor that again, so we can test better
+	// just save two/three lists, (src), dest, ops?
+	private List<HistoryElement> history = new ArrayList<HistoryElement>();
 	private int current = -1;
 
 	// add

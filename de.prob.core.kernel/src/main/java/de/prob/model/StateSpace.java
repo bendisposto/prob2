@@ -127,7 +127,37 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		notifyAnimationChange(getSource(opId), getDest(opId), opId);
 		history.forward();
 	}
+/*	
+	public void back()
+	{
+		if(!canGoBack())
+			return;
 
+		String oldState = getCurrentState();
+		String opId = history.getCurrentTransition();
+		history.back();
+		
+		if(opId != null)
+			notifyAnimationChange(getDest(opId), getSource(opId), opId);
+		else
+			notifyAnimationChange(oldState, getCurrentState(), null);
+	}
+	
+	public void forward()
+	{
+		if(!canGoForward())
+			return;
+
+		String oldState = getCurrentState();
+		history.back();
+		String opId = history.getCurrentTransition();
+		if(opId != null)
+			notifyAnimationChange(getSource(opId), getDest(opId), opId);
+		else
+			notifyAnimationChange(oldState, getCurrentState(), null);
+	}
+*/
+	
 	public void step(final int i) throws ProBException {
 		String opId = String.valueOf(i);
 		step(opId);

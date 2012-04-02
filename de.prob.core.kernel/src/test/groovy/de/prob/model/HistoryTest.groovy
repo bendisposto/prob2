@@ -33,14 +33,15 @@ class HistoryTest extends Specification {
 		h.add(b, "bar")
 		then:
 		h.history.size() == c
+		h.toString() == d
 
 		where:
-		a 	| b 	| c
-		2 	| "6"   | 4
-		0 	| "10" 	| 2
-		-1 	| "10" 	| 1
-		4 	| "6" 	| 6
-		42 	| "7" 	| 6
+		a 	| b 	| c	| d
+		2 	| "6"   | 4	| "[a, b, c, bar] current Transition: bar"
+		0 	| "10" 	| 2	| "[a, bar] current Transition: bar"
+		-1 	| "10" 	| 1	| "[bar] current Transition: bar"
+		4 	| "6" 	| 6	| "[a, b, c, d, e, bar] current Transition: bar"
+		42 	| "7" 	| 6	| "[a, b, c, d, e, bar] current Transition: bar"
 	}
 
 	def "test goToPos"() {
