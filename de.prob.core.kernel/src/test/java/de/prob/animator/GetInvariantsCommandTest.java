@@ -7,7 +7,8 @@ import de.prob.ProBException;
 
 public class GetInvariantsCommandTest {
 
-	String cliAnswer = "yes('.'(=('LIST','.'(inv('ready /\\ waiting = {}',46),'.'(inv('active /\\ (ready \\/ waiting) = {}',51),'.'(inv('card(active) <= 1',58),'.'(inv('active = {} => waiting = {}',62),[]))))),[]))";
+	// String cliAnswer =
+	// "yes('.'(=('LIST','.'(inv('ready /\\ waiting = {}',46),'.'(inv('active /\\ (ready \\/ waiting) = {}',51),'.'(inv('card(active) <= 1',58),'.'(inv('active = {} => waiting = {}',62),[]))))),[]))";
 
 	@Ignore
 	@Test(expected = ProBException.class)
