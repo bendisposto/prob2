@@ -51,13 +51,15 @@ dependencies {
 	compile 'org.fusesource.jansi:jansi:1.5'
 	compile 'jline:jline:0.9.94'
 
-	compile 'de.prob:answerparser:'+parser_version 
-	compile 'de.prob:bparser:'+parser_version
-	compile 'de.prob:cliparser:'+parser_version	
-	compile 'de.prob:ltlparser:'+parser_version
-	compile 'de.prob:parserbase:'+parser_version		
-	compile 'de.prob:prologlib:'+parser_version
-	compile 'de.prob:unicode:'+parser_version
+
+ compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
+ compile group: "de.prob", name: "bparser", version: parser_version , changing: true
+ compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
+ compile group: "de.prob", name: "ltlparser", version: parser_version , changing: true
+ compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
+ compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
+ compile group: "de.prob", name: "unicode", version: parser_version , changing: true
+
 
 	compile 'com.google.inject:guice:3.0'
 	compile 'com.google.inject.extensions:guice-assistedinject:3.0'
