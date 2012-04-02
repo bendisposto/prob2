@@ -119,16 +119,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 	}
 
-	public void back(final String opId) {
-		notifyAnimationChange(getDest(opId), getSource(opId), null);
-		history.back();
-	}
-
-	public void forward(final String opId) {
-		notifyAnimationChange(getSource(opId), getDest(opId), opId);
-		history.forward();
-	}
-
 	public void back()
 	{
 		if(!canGoBack())
