@@ -5,7 +5,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -13,9 +12,7 @@ import org.slf4j.Logger;
 
 import de.prob.ProBException;
 import de.prob.animator.command.GetErrorsCommand;
-import de.prob.animator.command.GetInvariantsCommand;
 import de.prob.cli.ProBInstance;
-import de.prob.model.StringWithLocation;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -31,8 +28,8 @@ public class GetInvariantsCommandTest {
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 		when(map.get(anyString()))
 				.thenReturn(new CompoundPrologTerm("bang!!!"));
-		GetInvariantsCommand command = new GetInvariantsCommand();
-		command.processResult(map);
+		// GetInvariantsCommand command = new GetInvariantsCommand();
+		// command.processResult(map);
 	}
 
 	@Test
@@ -50,12 +47,12 @@ public class GetInvariantsCommandTest {
 		processor.configure(cli, logger);
 
 		AnimatorImpl a = new AnimatorImpl(cli, processor, getErrors);
-		GetInvariantsCommand command = new GetInvariantsCommand();
-		a.execute(command);
-		List<StringWithLocation> invariant = command.getInvariant();
-		for (StringWithLocation s : invariant) {
-			System.out.println(s);
-		}
+		// GetInvariantsCommand command = new GetInvariantsCommand();
+		// a.execute(command);
+		// List<StringWithLocation> invariant = command.getInvariant();
+		// for (StringWithLocation s : invariant) {
+		// System.out.println(s);
+		// }
 
 	}
 
@@ -87,8 +84,8 @@ public class GetInvariantsCommandTest {
 	@Ignore
 	public void testWriteCommand() throws ProBException {
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
-		GetInvariantsCommand command = new GetInvariantsCommand();
-		command.writeCommand(prologTermOutput);
+		// GetInvariantsCommand command = new GetInvariantsCommand();
+		// command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();
 		Collection<PrologTerm> sentences = prologTermOutput.getSentences();
 		PrologTerm next = sentences.iterator().next();
