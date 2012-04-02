@@ -3,12 +3,10 @@ package de.prob.model
 
 import static org.junit.Assert.*
 import static org.mockito.Mockito.*
-import spock.lang.Ignore
 import spock.lang.Specification
 import de.prob.ProBException
 import de.prob.animator.IAnimator
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
-import edu.uci.ics.jung.graph.util.EdgeType
 
 class StateSpaceTest extends Specification {
 
@@ -46,7 +44,7 @@ class StateSpaceTest extends Specification {
 		expect:
 		s.history.current == 1
 	}
-	
+
 	def "The node is a deadlock"() {
 		expect:
 		s.isDeadlock("1") == true
@@ -76,7 +74,7 @@ class StateSpaceTest extends Specification {
 	def "The node is not a deadlock"() {
 		def op = new Operation("a", "Blah", null);
 		s.addEdge("blaOp", "1", "2")
-		
+
 		expect:
 		s.isDeadlock("1") == false
 	}
@@ -163,37 +161,34 @@ class StateSpaceTest extends Specification {
 		then:
 		thrown ProBException
 	}
-	
-	def "test simple goToState"()
-	{
+
+	def "test simple goToState"() {
 		when:
 		s.step("e")
 		s.goToState("2")
-		
-		then:	
+
+		then:
 		s.getCurrentState() == "2"
 		s.history.history.size() == 4;
 	}
-		
-	def "test multiple goToState"()
-	{
+
+	def "test multiple goToState"() {
 		when:
 		s.goToState("2")
 		s.goToState("4")
 		s.goToState("5")
-		
+
 		then:
 		s.getCurrentState() == "5"
 	}
-	
-	def "navigation with multiple goToState calls"()
-	{
+
+	def "navigation with multiple goToState calls"() {
 		when:
 		s.goToState("2")
 		s.goToState("4")
 		s.goToState("5")
 		s.back()
-		
+
 		then:
 		// is this the intended behaviour?
 		s.getCurrentState() == "3"
@@ -201,46 +196,41 @@ class StateSpaceTest extends Specification {
 		s.history.isLastTransition("c") == true
 		s.history.isNextTransition(null) == true
 	}
-	
-	def "navigation with multiple goToState calls 2"()
-	{
+
+	def "navigation with multiple goToState calls 2"() {
 		when:
 		s.goToState("2")
 		s.goToState("4")
 		s.goToState("5")
 		s.back()
 		s.forward()
-		
+
 		then:
 		s.history.history.size() == 3;
 		s.getCurrentState() == "5"
 		s.history.isLastTransition(null) == true
 		s.history.isNextTransition("any") == false
 	}
-	
-	def "null is neither the last or next transition if we are at the end"()
-	{
+
+	def "null is neither the last or next transition if we are at the end"() {
 		expect:
 		s.history.isLastTransition(null) == false;
 		s.history.isNextTransition(null) == false;
-		s.history.history.size == 2;
+		s.history.history.size() == 2;
 	}
-	
-	def "navigation with single goToState call"()
-	{
+
+	def "navigation with single goToState call"() {
 		when:
 		s.goToState("2")
 		s.step("c")
 		s.back()
 		s.back()
 		s.forward()
-		
+
 		then:
-		s.history.history.size == 4;
+		s.history.history.size() == 4;
 		s.getCurrentState() == "2"
 		s.history.isLastTransition(null) == true
 		s.history.isNextTransition("c") == true
 	}
-	
-
 }
