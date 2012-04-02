@@ -15,8 +15,9 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class EvaluateRawExpressionsCommand implements ICommand {
-	
-	Logger logger = LoggerFactory.getLogger(GetInvariantsCommand.class);
+
+	Logger logger = LoggerFactory
+			.getLogger(EvaluateRawExpressionsCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
 	private final List<AbstractEvalElement> evalElements;
@@ -29,20 +30,23 @@ public class EvaluateRawExpressionsCommand implements ICommand {
 		this.stateId = id;
 	}
 
-//	public static List<String> evaluate(final Animator animator,
-//			final List<AbstractEvalElement> evalElements, final String id) {
-//		EvaluateRawExpressionsCommand command = new EvaluateRawExpressionsCommand(
-//				evalElements, id);
-//		animator.execute(command);
-//		return command.getValues();
-//	}
+	// public static List<String> evaluate(final Animator animator,
+	// final List<AbstractEvalElement> evalElements, final String id) {
+	// EvaluateRawExpressionsCommand command = new
+	// EvaluateRawExpressionsCommand(
+	// evalElements, id);
+	// animator.execute(command);
+	// return command.getValues();
+	// }
 
 	public List<String> getValues() {
 		return values;
 	}
 
+	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException{
+			final ISimplifiedROMap<String, PrologTerm> bindings)
+			throws ProBException {
 		try {
 			ListPrologTerm prologTerm = BindingGenerator.getList(bindings
 					.get(EVALUATE_TERM_VARIABLE));
@@ -54,6 +58,7 @@ public class EvaluateRawExpressionsCommand implements ICommand {
 
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
 		pout.openTerm("evaluate_raw_expressions");
 		pout.printAtomOrNumber(stateId);
