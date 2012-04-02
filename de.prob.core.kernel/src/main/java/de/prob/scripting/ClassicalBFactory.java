@@ -40,9 +40,9 @@ public class ClassicalBFactory {
 		stateSpace.execute(getInvariantsCommand);
 
 		List<StringWithLocation> list = getInvariantsCommand.getInvariant();
-		// for (StringWithLocation string : list) {
-		// System.out.println("@" + string);
-		// }
+		for (StringWithLocation string : list) {
+			System.out.println("@" + string);
+		}
 
 		return classicalBMachine;
 
