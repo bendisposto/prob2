@@ -1,11 +1,15 @@
 /**
  * 
  */
-package de.prob.animator.command;
+package de.prob.animator.command.notImplemented;
 
 import java.util.Collection;
 
 import de.prob.ProBException;
+import de.prob.animator.command.ComposedCommand;
+import de.prob.animator.command.ExploreStateCommand;
+import de.prob.animator.command.ICommand;
+import de.prob.animator.command.OpInfo;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;

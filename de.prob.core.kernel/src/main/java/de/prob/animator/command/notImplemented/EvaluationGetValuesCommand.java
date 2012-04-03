@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.prob.animator.command;
+package de.prob.animator.command.notImplemented;
 
 //import java.util.ArrayList;
 //import java.util.Collection;
@@ -19,6 +19,8 @@ package de.prob.animator.command;
 //import de.prob.core.domainobjects.State;
 //import de.prob.eventb.translator.FormulaTranslator;
 //import de.prob.exceptions.ProBException;
+import de.prob.animator.command.EvaluationExpandCommand;
+import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 //import de.prob.prolog.term.CompoundPrologTerm;

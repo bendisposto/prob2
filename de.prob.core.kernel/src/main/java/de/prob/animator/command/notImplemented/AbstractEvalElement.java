@@ -4,7 +4,7 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.animator.command;
+package de.prob.animator.command.notImplemented;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.exceptions.BException;
