@@ -8,8 +8,8 @@ import java.util.List;
 import com.google.inject.Inject;
 
 import de.prob.ProBException;
-import de.prob.animator.command.EvaluateCommand;
-import de.prob.animator.command.GetOperationNamesCommand;
+import de.prob.animator.command.notImplemented.EvaluateCommand;
+import de.prob.animator.command.notImplemented.GetOperationNamesCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.model.StateSpace;
 import de.prob.model.representation.ClassicalBMachine;

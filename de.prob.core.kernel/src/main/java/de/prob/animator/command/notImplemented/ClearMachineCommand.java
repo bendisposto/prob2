@@ -8,7 +8,6 @@ package de.prob.animator.command.notImplemented;
 
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.ComposedCommand;
-import de.prob.animator.command.GetPrologRandomSeed;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;

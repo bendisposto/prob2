@@ -4,8 +4,9 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.animator.command;
+package de.prob.animator.command.notImplemented;
 
+import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;

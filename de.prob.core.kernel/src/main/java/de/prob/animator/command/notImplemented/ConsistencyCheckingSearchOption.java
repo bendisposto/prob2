@@ -7,7 +7,7 @@
 /**
  * 
  */
-package de.prob.animator.command;
+package de.prob.animator.command.notImplemented;
 
 import java.util.EnumSet;
 import java.util.HashMap;

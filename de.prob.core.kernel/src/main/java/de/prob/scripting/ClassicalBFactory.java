@@ -7,8 +7,8 @@ import com.google.inject.Provider;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.prob.ProBException;
-import de.prob.animator.command.LoadBProjectCommand;
-import de.prob.animator.command.StartAnimationCommand;
+import de.prob.animator.command.notImplemented.LoadBProjectCommand;
+import de.prob.animator.command.notImplemented.StartAnimationCommand;
 import de.prob.animator.command.representation.GetInvariantsCommand;
 import de.prob.animator.command.representation.GetModelNameCommand;
 import de.prob.model.StateSpace;
