@@ -4,7 +4,7 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.animator.command;
+package de.prob.animator.command.notImplemented;
 
 //import java.util.Iterator;
 //import java.util.List;

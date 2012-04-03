@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.ProBException;
+import de.prob.animator.command.notImplemented.EvaluationGetTopLevelCommand;
+import de.prob.animator.command.notImplemented.EvaluationGetValuesCommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;

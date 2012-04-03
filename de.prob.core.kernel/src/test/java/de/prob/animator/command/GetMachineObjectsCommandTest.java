@@ -7,6 +7,7 @@ import java.util.Collection;
 import org.junit.Test;
 
 import de.prob.ProBException;
+import de.prob.animator.command.notImplemented.GetMachineObjectsCommand;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
