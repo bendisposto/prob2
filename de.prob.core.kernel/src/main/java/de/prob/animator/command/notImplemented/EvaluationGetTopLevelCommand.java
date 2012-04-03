@@ -1,7 +1,6 @@
 
 package de.prob.animator.command.notImplemented;
 
-import de.prob.animator.command.EvaluationExpandCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;

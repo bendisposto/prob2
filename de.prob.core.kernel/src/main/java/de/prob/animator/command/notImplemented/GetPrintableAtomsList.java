@@ -1,6 +1,8 @@
-package de.prob.animator.command;
+package de.prob.animator.command.notImplemented;
 
 import java.util.List;
+
+import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;

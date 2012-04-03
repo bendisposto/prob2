@@ -1,4 +1,4 @@
-package de.prob.animator.command;
+package de.prob.animator.command.notImplemented;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

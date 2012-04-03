@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.prob.animator.command;
+package de.prob.animator.command.notImplemented;
 
 import java.util.EnumSet;
 import java.util.HashMap;

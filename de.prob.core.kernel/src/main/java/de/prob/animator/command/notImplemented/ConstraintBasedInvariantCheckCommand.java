@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.ProBException;
-import de.prob.animator.command.GetCurrentStateIdCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.OpInfo;
 import de.prob.parser.ISimplifiedROMap;
