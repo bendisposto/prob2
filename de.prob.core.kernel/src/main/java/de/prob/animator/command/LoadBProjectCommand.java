@@ -1,4 +1,4 @@
-package de.prob.animator.command.notImplemented;
+package de.prob.animator.command;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,6 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.ProBException;
-import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
