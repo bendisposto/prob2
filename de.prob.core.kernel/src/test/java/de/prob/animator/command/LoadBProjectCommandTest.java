@@ -9,8 +9,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.List;
-
 import org.junit.Test;
 import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
