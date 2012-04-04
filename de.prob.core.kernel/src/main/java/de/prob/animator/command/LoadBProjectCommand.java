@@ -85,7 +85,7 @@ public class LoadBProjectCommand implements ICommand {
 			logger.error("Parser Error. {}.", e.getLocalizedMessage());
 			logger.debug("Details", e);
 			throw new ProBException();
-		}
+		} 
 		return ast;
 	}
 
