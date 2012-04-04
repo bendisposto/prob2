@@ -1,11 +1,14 @@
 package de.prob;
 
+import static java.io.File.*;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.codehaus.groovy.tools.shell.util.HelpFormatter;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -16,14 +19,19 @@ import de.prob.annotations.Logfile;
 public class Main {
 
 	static {
+		System.setProperty("PROB_LOGFILE", log());
 		if (System.getProperty("PROB_LOG_CONFIG") == null) {
 			System.setProperty("PROB_LOG_CONFIG", "production.xml");
 		}
-		System.setProperty("PROB_LOG_CONFIG", "fulltrace.xml");
 	}
 
-	public final static Injector INJECTOR = Guice
-			.createInjector(new MainModule());
+	private static String log() {
+		String userhome = System.getProperty("user.home");
+		String[] log = { userhome, ".prob", "logs", "ProB.txt" };
+		return Joiner.on(separator).join(log);
+	}
+
+	private static Injector INJECTOR;
 
 	public IAnimator getAnimator() {
 		return INJECTOR.getInstance(IAnimator.class);
@@ -56,12 +64,8 @@ public class Main {
 	}
 
 	public static void main(final String[] args) {
-		if (System.getProperty("PROB_LOG_CONFIG") == null) {
-			System.setProperty("PROB_LOG_CONFIG", "production.xml");
-		}
-		System.setProperty("PROB_LOG_CONFIG", "fulltrace.xml");
-		Injector injector = Guice.createInjector(new MainModule());
-		Main main = injector.getInstance(Main.class);
+		INJECTOR = Guice.createInjector(new MainModule());
+		Main main = INJECTOR.getInstance(Main.class);
 
 		// IStateSpace instance = injector.getInstance(IStateSpace.class);
 
