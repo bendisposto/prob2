@@ -50,6 +50,13 @@ public class Api {
 		return bFactory.load(f);
 	}
 
+	public ClassicalBMachine b_load(final String file) throws ProBException {
+		File f = new File(file);
+		ClassicalBFactory bFactory = modelFactoryProvider
+				.getClassicalBFactory();
+		return bFactory.load(f);
+	}
+
 	public List<Operation> testX(final StateSpace s) throws ProBException {
 		GetOperationNamesCommand command = new GetOperationNamesCommand();
 		s.execute(command);
