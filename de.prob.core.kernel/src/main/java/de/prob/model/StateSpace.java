@@ -28,17 +28,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 
-	private IAnimator animator;
-	private HashSet<String> explored = new HashSet<String>();
-	private History history = new History();
-	private HashMap<String, Operation> ops = new HashMap<String, Operation>();
-	private HashMap<String, HashMap<String, String>> variables = new HashMap<String, HashMap<String, String>>();
-	private HashMap<String, Boolean> invariantOk = new HashMap<String, Boolean>();
-	private HashMap<String, Boolean> timeoutOccured = new HashMap<String, Boolean>();
-	private HashMap<String, Set<String>> operationsWithTimeout = new HashMap<String, Set<String>>();
+	private final IAnimator animator;
+	private final HashSet<String> explored = new HashSet<String>();
+	private final History history = new History();
+	private final HashMap<String, Operation> ops = new HashMap<String, Operation>();
+	private final HashMap<String, HashMap<String, String>> variables = new HashMap<String, HashMap<String, String>>();
+	private final HashMap<String, Boolean> invariantOk = new HashMap<String, Boolean>();
+	private final HashMap<String, Boolean> timeoutOccured = new HashMap<String, Boolean>();
+	private final HashMap<String, Set<String>> operationsWithTimeout = new HashMap<String, Set<String>>();
 
-	private List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
-	private List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
+	private final List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
+	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
 	@Inject
 	public StateSpace(final IAnimator animator,
@@ -232,14 +232,16 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 	}
 
-	public void printOps() {
+	public String printOps() {
+		StringBuilder sb = new StringBuilder();
 		String current = getCurrentState();
 		Collection<String> opIds = getOutEdges(current);
-		System.out.println("Operations: ");
+		sb.append("Operations: \n");
 		for (String opId : opIds) {
 			Operation op = ops.get(opId);
-			System.out.println("  " + op.getId() + ": " + op.getName());
+			sb.append("  " + op.getId() + ": " + op.getName() + "\n");
 		}
+		return sb.toString();
 	}
 
 	public String printState() {
