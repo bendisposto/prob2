@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -78,13 +79,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		operationsWithTimeout.put(stateId, command.getOperationsWithTimeout());
 	}
 
-
 	public void goToState(final String stateId) {
-		if(!containsVertex(stateId))
+		if (!containsVertex(stateId))
 			throw new IllegalArgumentException("state does not exist");
 		notifyAnimationChange(getCurrentState(), stateId, null);
 		history.add(stateId, null);
-	//  TODO: we should explore the state, but then we have to deal with exceptions in tests 
+		// TODO: we should explore the state, but then we have to deal with
+		// exceptions in tests
 	}
 
 	public void step(final String opId) throws ProBException {
@@ -108,36 +109,35 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 	}
 
-	public void back()
-	{
-		if(!canGoBack())
+	public void back() {
+		if (!canGoBack())
 			return;
 
 		String oldState = getCurrentState();
 		String opId = history.getCurrentTransition();
 		history.back();
-		
-		if(opId != null)
+
+		if (opId != null) {
 			notifyAnimationChange(getDest(opId), getSource(opId), opId);
-		else
+		} else {
 			notifyAnimationChange(oldState, getCurrentState(), null);
+		}
 	}
-	
-	public void forward()
-	{
-		if(!canGoForward())
+
+	public void forward() {
+		if (!canGoForward())
 			return;
 
 		String oldState = getCurrentState();
 		history.forward();
 		String opId = history.getCurrentTransition();
-		if(opId != null)
+		if (opId != null) {
 			notifyAnimationChange(getSource(opId), getDest(opId), opId);
-		else
+		} else {
 			notifyAnimationChange(oldState, getCurrentState(), null);
+		}
 	}
 
-	
 	public void step(final int i) throws ProBException {
 		String opId = String.valueOf(i);
 		step(opId);
@@ -231,24 +231,30 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			listener.newTransition(opName, isDestStateNew);
 		}
 	}
-	
+
 	public void printOps() {
 		String current = getCurrentState();
 		Collection<String> opIds = getOutEdges(current);
 		System.out.println("Operations: ");
 		for (String opId : opIds) {
 			Operation op = ops.get(opId);
-			System.out.println("  "+op.getId()+": "+op.getName());
+			System.out.println("  " + op.getId() + ": " + op.getName());
 		}
 	}
-	
-	public void printState() {
-		System.out.println("Current State Id: "+ getCurrentState());
-		HashMap<String,String> currentState = variables.get(getCurrentState());
-		//FIXME: Find a way to get the names of the variables so that they can be retrieved from the map
-		System.out.println(currentState);
-	}
-	
-	
 
+	public String printState() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Current State Id: " + getCurrentState() + "\n");
+		HashMap<String, String> currentState = variables.get(getCurrentState());
+		// FIXME: Find a way to get the names of the variables so that they can
+		// be retrieved from the map
+		Set<Entry<String, String>> entrySet = currentState.entrySet();
+		for (Entry<String, String> entry : entrySet) {
+			sb.append(entry.getKey());
+			sb.append(" -> ");
+			sb.append(entry.getValue());
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
 }
