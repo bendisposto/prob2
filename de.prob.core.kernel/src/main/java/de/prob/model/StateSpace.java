@@ -1,6 +1,7 @@
 package de.prob.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,15 +76,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		invariantOk.put(stateId, command.isInvariantOk());
 		timeoutOccured.put(stateId, command.isTimeoutOccured());
 		operationsWithTimeout.put(stateId, command.getOperationsWithTimeout());
-
-		System.out.println("State: " + stateId);
-		System.out.println(variables.toString());
-		System.out.println(invariantOk.toString());
-		System.out.println(timeoutOccured.toString());
-		System.out.println(operationsWithTimeout.toString());
-
-		System.out
-				.println("======================================================");
 	}
 
 
@@ -114,9 +106,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			history.add(newState, opId);
 			notifyAnimationChange(getSource(opId), getDest(opId), opId);
 		}
-
-		System.out.println(history.toString());
-
 	}
 
 	public void back()
@@ -242,5 +231,24 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			listener.newTransition(opName, isDestStateNew);
 		}
 	}
+	
+	public void printOps() {
+		String current = getCurrentState();
+		Collection<String> opIds = getOutEdges(current);
+		System.out.println("Operations: ");
+		for (String opId : opIds) {
+			Operation op = ops.get(opId);
+			System.out.println("  "+op.getId()+": "+op.getName());
+		}
+	}
+	
+	public void printState() {
+		System.out.println("Current State Id: "+ getCurrentState());
+		HashMap<String,String> currentState = variables.get(getCurrentState());
+		//FIXME: Find a way to get the names of the variables so that they can be retrieved from the map
+		System.out.println(currentState);
+	}
+	
+	
 
 }
