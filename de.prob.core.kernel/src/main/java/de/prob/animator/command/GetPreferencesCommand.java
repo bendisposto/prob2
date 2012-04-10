@@ -4,7 +4,7 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.animator.command.notImplemented;
+package de.prob.animator.command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.ProBException;
-import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
