@@ -17,7 +17,6 @@ import de.prob.animator.command.CheckTimeoutStatusCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
@@ -33,9 +32,6 @@ public class CheckBooleanPropertyCommand implements ICommand {
 			.getLogger(CheckBooleanPropertyCommand.class);
 
 	private static final String PROP_RESULT = "PropResult";
-	private static final PrologTerm PROLOG_TRUE = new CompoundPrologTerm("true");
-	private static final PrologTerm PROLOG_FALSE = new CompoundPrologTerm(
-			"false");
 
 	private final String stateId;
 	private final String propertyName;
@@ -51,14 +47,16 @@ public class CheckBooleanPropertyCommand implements ICommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
-		PrologTerm answer = bindings.get(PROP_RESULT);
-		if (PROLOG_TRUE.equals(answer)) {
-			result = true;
-		} else if (PROLOG_FALSE.equals(answer)) {
-			result = false;
-		} else {
+
+		String functor = bindings.get(PROP_RESULT).getFunctor();
+		checkIfBoolean(functor);
+		result = Boolean.valueOf(functor);
+	}
+
+	private void checkIfBoolean(final String functor) throws ProBException {
+		if (!"true".equals(functor) && !"false".equals(functor)) {
 			result = null;
-			logger.error("Expected true or false, but was: {}", answer);
+			logger.error("Expected true or false, but was: {}", functor);
 			throw new ProBException();
 		}
 	}

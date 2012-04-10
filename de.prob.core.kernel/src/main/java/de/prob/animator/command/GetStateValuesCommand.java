@@ -57,18 +57,11 @@ public final class GetStateValuesCommand implements ICommand {
 		}
 	}
 
-	private void addValue(CompoundPrologTerm cpt) throws ProBException {
+	private void addValue(final CompoundPrologTerm cpt) throws ProBException {
 		if (cpt.getFunctor().equals("binding")) {
-			try {
-				String name = BindingGenerator.getCompoundTerm(
-						cpt.getArgument(1), 0).getFunctor();
-				String value = BindingGenerator.getCompoundTerm(
-						cpt.getArgument(3), 0).getFunctor();
-				values.put(name, value);
-			} catch (ResultParserException e) {
-				logger.error("Result from Prolog was not as expected.", e);
-				throw new ProBException();
-			}
+			String name = cpt.getArgument(1).getFunctor();
+			String value = cpt.getArgument(3).getFunctor();
+			values.put(name, value);
 		} else {
 			String msg = "Unexpected functor in Prolog answer. Expected 'binding' but was '"
 					+ cpt.getFunctor() + "'";
@@ -82,8 +75,8 @@ public final class GetStateValuesCommand implements ICommand {
 		pto.openTerm("getStateValues").printAtomOrNumber(stateId)
 				.printVariable("Bindings").closeTerm();
 	}
-	
-	public HashMap<String,String> getResult() {
+
+	public HashMap<String, String> getResult() {
 		return values;
 	}
 

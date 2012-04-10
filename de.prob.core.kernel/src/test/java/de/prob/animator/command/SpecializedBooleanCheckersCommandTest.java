@@ -11,7 +11,6 @@ import de.prob.prolog.term.PrologTerm;
 
 public class SpecializedBooleanCheckersCommandTest {
 
-
 	@Test
 	public void testCheckInitialisationStatusCommandTrue() throws ProBException {
 		boolean b = true;
@@ -22,9 +21,10 @@ public class SpecializedBooleanCheckersCommandTest {
 		command.processResult(map);
 		assertEquals(b, command.isInitialized());
 	}
-	
+
 	@Test
-	public void testCheckInitialisationStatusCommandFalse() throws ProBException {
+	public void testCheckInitialisationStatusCommandFalse()
+			throws ProBException {
 		boolean b = false;
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "" + b);
@@ -44,7 +44,7 @@ public class SpecializedBooleanCheckersCommandTest {
 		command.processResult(map);
 		assertEquals(b, command.isInvariantViolated());
 	}
-	
+
 	@Test
 	public void testCheckInvariantStatusCommandFalse() throws ProBException {
 		boolean b = false;
@@ -67,7 +67,7 @@ public class SpecializedBooleanCheckersCommandTest {
 		command.processResult(map);
 		assertEquals(b, command.maxOperationReached());
 	}
-	
+
 	@Test
 	public void testCheckMaxOperationReachedStatusCommandFalse()
 			throws ProBException {

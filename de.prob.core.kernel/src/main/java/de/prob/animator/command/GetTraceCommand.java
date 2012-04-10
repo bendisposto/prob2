@@ -49,20 +49,20 @@ public final class GetTraceCommand implements ICommand {
 
 	private List<String> trace;
 
-	private GetTraceCommand() {
-	}
-
 	public List<String> getTrace() {
 		return trace;
 	}
 
+	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings)
+			throws ProBException {
 		List<Occurence> res = new LinkedList<Occurence>();
 
 		try {
-			ListPrologTerm list = BindingGenerator.getList(bindings.get(TRACE_VARIABLE));
-		
+			ListPrologTerm list = BindingGenerator.getList(bindings
+					.get(TRACE_VARIABLE));
+
 			Occurence current = null;
 			for (PrologTerm term : list) {
 				if (current == null || !current.text.equals(term.toString())) {
@@ -84,9 +84,9 @@ public final class GetTraceCommand implements ICommand {
 			throw new ProBException();
 		}
 
-		
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("find_shortest_trace_to_current_state")
 				.printVariable(TRACE_VARIABLE).closeTerm();

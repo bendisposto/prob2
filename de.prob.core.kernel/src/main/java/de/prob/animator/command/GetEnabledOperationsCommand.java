@@ -12,8 +12,6 @@ import java.util.List;
 
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -36,25 +34,11 @@ public final class GetEnabledOperationsCommand implements ICommand {
 		final ListPrologTerm prologTerm = (ListPrologTerm) bindings
 				.get(OPERATIONS_VARIABLE);
 		for (PrologTerm op : prologTerm) {
-			final CompoundPrologTerm cpt = (CompoundPrologTerm) op;
-
-			String id = ((IntegerPrologTerm) cpt.getArgument(1)).getValue()
-					.toString();
-
-			String name = PrologTerm.atomicString(cpt.getArgument(2));
-
-			String src = "root";
-			if (!(cpt.getArgument(3) instanceof CompoundPrologTerm)) {
-				src = ((IntegerPrologTerm) cpt.getArgument(3)).getValue()
-						.toString();
-
-			}
-
-			String dest = ((IntegerPrologTerm) cpt.getArgument(4)).getValue()
-					.toString();
-
-			String args = cpt.getArgument(6).toString();
-
+			String id = op.getArgument(1).getFunctor();
+			String name = op.getArgument(2).getFunctor();
+			String src = op.getArgument(3).getFunctor();
+			String dest = op.getArgument(4).getFunctor();
+			String args = op.getArgument(6).toString();
 			enabledOperations.add(new OpInfo(id, name, src, dest, args));
 		}
 	}
