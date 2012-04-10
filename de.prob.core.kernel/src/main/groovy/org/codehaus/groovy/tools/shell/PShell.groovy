@@ -26,7 +26,6 @@ import org.codehaus.groovy.tools.shell.util.Preferences
 import org.codehaus.groovy.tools.shell.util.XmlCommandRegistrar
 import org.fusesource.jansi.Ansi
 import org.fusesource.jansi.AnsiConsole
-import org.fusesource.jansi.AnsiRenderer
 
 /**
  * An interactive shell for evaluating Groovy code from the command-line (aka. groovysh).
@@ -194,7 +193,8 @@ extends Shell {
 	private String renderPrompt() {
 		def lineNum = formatLineNumber(buffers.current().size())
 
-		return AnsiRenderer.render("@|bold ProB:|@${lineNum}@|bold >|@ ")
+		//return AnsiRenderer.render("@|bold ProB:|@${lineNum}@|bold >|@ ")
+		return "ProB:"+lineNum+">";
 	}
 
 	/**
