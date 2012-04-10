@@ -9,17 +9,20 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.prob.annotations.Version;
 import de.prob.scripting.Api;
 
 class Shell {
 
 	private final Logger logger = LoggerFactory.getLogger(Shell.class);
 	private final Api api;
+	private final String version;
 
 	@Inject
-	public Shell(final Api api) {
+	public Shell(final Api api, @Version final String version) {
 
 		this.api = api;
+		this.version = version;
 	}
 
 	public void repl() {
@@ -28,7 +31,8 @@ class Shell {
 		// io.setVerbosity(Verbosity.QUIET);
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
-		PShell shell = new PShell(this.getClass().getClassLoader(), binding, io);
+		PShell shell = new PShell(this.getClass().getClassLoader(), binding,
+				io, version);
 		shell.run("");
 	}
 

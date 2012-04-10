@@ -19,7 +19,6 @@ package org.codehaus.groovy.tools.shell
 import jline.History
 import jline.Terminal
 
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.codehaus.groovy.tools.shell.util.MessageSource
 import org.codehaus.groovy.tools.shell.util.Preferences
@@ -55,6 +54,8 @@ extends Shell {
 
 	final List imports = []
 
+	final version
+
 	InteractiveShellRunner runner
 
 	History history
@@ -62,7 +63,7 @@ extends Shell {
 	boolean historyFull  // used as a workaround for GROOVY-2177
 	String evictedLine  // remembers the command which will get evicted if history is full
 
-	PShell(final ClassLoader classLoader, final Binding binding, final IO io, final Closure registrar) {
+	PShell(final ClassLoader classLoader, final Binding binding, final IO io, final Closure registrar, String version) {
 		super(io)
 
 		assert classLoader
@@ -72,30 +73,19 @@ extends Shell {
 		parser = new Parser()
 
 		interp = new Interpreter(classLoader, binding)
-
+		this.version = version
 		registrar.call(this)
 	}
 
 
-	PShell(final ClassLoader classLoader, final Binding binding, final IO io) {
+	PShell(final ClassLoader classLoader, final Binding binding, final IO io, String version) {
 		this(classLoader, binding, io, { shell ->
 			def r = new XmlCommandRegistrar(shell, classLoader)
 			def resource = de.prob.Main.class.getClassLoader().getResource('commands.xml')
 			r.register(resource)
-		})
+		}, version)
 	}
 
-	PShell(final Binding binding, final IO io) {
-		this(Thread.currentThread().contextClassLoader, binding, io)
-	}
-
-	PShell(final IO io) {
-		this(new Binding(), io)
-	}
-
-	PShell() {
-		this(new IO())
-	}
 
 	//
 	// Execution
@@ -182,7 +172,7 @@ extends Shell {
 		buffer.eachWithIndex { line, index ->
 			def lineNum = formatLineNumber(index)
 
-			io.out.println(" ${lineNum}@|bold >|@ $line")
+			io.out.println(" ${lineNum}  >  $line")
 		}
 	}
 
@@ -194,7 +184,7 @@ extends Shell {
 		def lineNum = formatLineNumber(buffers.current().size())
 
 		//return AnsiRenderer.render("@|bold ProB:|@${lineNum}@|bold >|@ ")
-		return "ProB:"+lineNum+">";
+		return "ProB:"+lineNum+"> ";
 	}
 
 	/**
@@ -289,7 +279,7 @@ extends Shell {
 
 		if (showLastResult) {
 			// Need to use String.valueOf() here to avoid icky exceptions causes by GString coercion
-			io.out.println("@|bold ===>|@ ${String.valueOf(result)}")
+			io.out.println(String.valueOf(result))
 		}
 	}
 
@@ -314,8 +304,8 @@ extends Shell {
 	final Closure defaultErrorHook = { Throwable cause ->
 		assert cause != null
 
-		io.err.println("@|bold,red ERROR|@ ${cause.class.name}:")
-		io.err.println("@|bold,red ${cause.message}|@")
+		io.err.println("ERROR ${cause.class.name}:")
+		io.err.println("  ${cause.message}")
 
 		maybeRecordError(cause)
 
@@ -336,13 +326,13 @@ extends Shell {
 			def buff = new StringBuffer()
 
 			for (e in trace) {
-				buff << "        @|bold at|@ ${e.className}.${e.methodName} (@|bold "
+				buff << "         at ${e.className}.${e.methodName} ( "
 
 				buff << (e.nativeMethod ? 'Native Method' :
 						(e.fileName != null && e.lineNumber != -1 ? "${e.fileName}:${e.lineNumber}" :
 						(e.fileName != null ? e.fileName : 'Unknown Source')))
 
-				buff << '|@)'
+				buff << ')'
 
 				io.err.println(buff)
 
@@ -350,7 +340,7 @@ extends Shell {
 
 				// Stop the trace once we find the root of the evaluated script
 				if (e.className == Interpreter.SCRIPT_FILENAME && e.methodName == 'run') {
-					io.err.println('        @|bold ...|@')
+					io.err.println('         ...')
 					break
 				}
 			}
@@ -433,8 +423,9 @@ extends Shell {
 						width = 80
 					}
 
-					io.out.println(messages.format('startup_banner.0', InvokerHelper.version, System.properties['java.version']))
-					io.out.println(messages['startup_banner.1'])
+					//io.out.println(messages.format('startup_banner.0', InvokerHelper.version, System.properties['java.version']))
+					io.out.println("ProB Shell "+version)
+					io.out.println("Type 'help' for help.")
 					io.out.println('-' * (width - 1))
 				}
 
