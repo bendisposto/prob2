@@ -13,6 +13,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.prob.ProBException;
+import de.prob.animator.domainobjects.ProBPreference;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;

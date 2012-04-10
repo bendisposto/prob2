@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.prob.animator.command;
+package de.prob.animator.domainobjects;
 
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;

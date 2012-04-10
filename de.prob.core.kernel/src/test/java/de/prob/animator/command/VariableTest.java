@@ -3,6 +3,7 @@ package de.prob.animator.command;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.prob.animator.domainobjects.Variable;
 import de.prob.prolog.term.CompoundPrologTerm;
 
 public class VariableTest {
