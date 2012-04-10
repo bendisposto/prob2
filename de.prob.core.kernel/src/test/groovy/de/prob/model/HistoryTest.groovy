@@ -198,5 +198,6 @@ class HistoryTest extends Specification {
 		h.history.size() == 6
 		h.getCurrentState() == "7"
 		h.getCurrentTransition() == "op"
+		h.history.get(5).getSrc() == "5"
 	}
 }
