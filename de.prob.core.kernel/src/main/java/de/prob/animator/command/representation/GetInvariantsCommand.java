@@ -49,7 +49,7 @@ public class GetInvariantsCommand implements ICommand {
 				CompoundPrologTerm inv = BindingGenerator.getCompoundTerm(
 						invTerm, 2);
 				int id = Integer.parseInt(inv.getArgument(2).toString());
-				String name = inv.getArgument(1).toString();
+				String name = inv.getArgument(1).getFunctor();
 				Node ID = nodeIdMapping.lookupById(id);
 				r.add(new NamedEntity(name, ID));
 			}
