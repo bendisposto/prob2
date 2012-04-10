@@ -79,6 +79,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		operationsWithTimeout.put(stateId, command.getOperationsWithTimeout());
 	}
 
+	public void goToState(int id) {
+      goToState(String.valueOf(id));
+	}
+
 	public void goToState(final String stateId) {
 		if (!containsVertex(stateId))
 			throw new IllegalArgumentException("state does not exist");
