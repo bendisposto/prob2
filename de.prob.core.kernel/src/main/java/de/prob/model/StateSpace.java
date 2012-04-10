@@ -17,7 +17,7 @@ import de.prob.ProBException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
-import de.prob.animator.command.OpInfo;
+import de.prob.animator.domainobjects.OpInfo;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.MultiGraph;

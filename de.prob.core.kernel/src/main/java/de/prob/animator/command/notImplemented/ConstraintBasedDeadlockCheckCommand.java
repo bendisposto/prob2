@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
-import de.prob.animator.command.OpInfo;
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
