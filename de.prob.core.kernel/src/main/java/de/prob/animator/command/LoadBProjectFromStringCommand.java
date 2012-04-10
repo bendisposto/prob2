@@ -26,12 +26,12 @@ public class LoadBProjectFromStringCommand implements ICommand {
 			.getLogger(LoadBProjectFromStringCommand.class);
 	private NodeIdAssignment nodeIdMapping;
 
-	public LoadBProjectFromStringCommand(String s) {
+	public LoadBProjectFromStringCommand(final String s) {
 		this.model = s;
 	}
 
 	@Override
-	public void writeCommand(IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
 		pto.openTerm("load_classical_b");
 		pto.printTerm(getLoadTerm(model));
 		pto.printVariable("Errors");
@@ -39,7 +39,8 @@ public class LoadBProjectFromStringCommand implements ICommand {
 	}
 
 	@Override
-	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings)
+	public void processResult(
+			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
 		ListPrologTerm e = (ListPrologTerm) bindings.get("Errors");
 		if (!e.isEmpty()) {
@@ -51,18 +52,19 @@ public class LoadBProjectFromStringCommand implements ICommand {
 	}
 
 	private PrologTerm getLoadTerm(final String model) throws ProBException {
-	
+
 		BParser bparser = new BParser();
 		Start ast = parseString(model, bparser);
 		final RecursiveMachineLoader rml = new RecursiveMachineLoader(".");
 		try {
-			rml.loadAllMachines(new File(""), ast, null, bparser.getDefinitions());
+			rml.loadAllMachines(new File(""), ast, null,
+					bparser.getDefinitions(), bparser.getPragmas());
 		} catch (BException e) {
 			logger.error("Parser Error. {}.", e.getLocalizedMessage());
 			logger.debug("Details", e);
 			throw new ProBException();
 		}
-		
+
 		StructuredPrologOutput parserOutput = new StructuredPrologOutput();
 		logger.trace("Done with parsing '{}'", model);
 		rml.printAsProlog(parserOutput);
@@ -70,7 +72,8 @@ public class LoadBProjectFromStringCommand implements ICommand {
 		return collectSentencesInList(parserOutput);
 	}
 
-	private Start parseString(final String model, final BParser bparser) throws ProBException {
+	private Start parseString(final String model, final BParser bparser)
+			throws ProBException {
 		logger.trace("Parsing file from String", model);
 
 		Start ast = null;

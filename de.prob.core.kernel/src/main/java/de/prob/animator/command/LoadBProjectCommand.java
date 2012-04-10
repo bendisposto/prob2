@@ -57,7 +57,8 @@ public class LoadBProjectCommand implements ICommand {
 		final RecursiveMachineLoader rml = new RecursiveMachineLoader(
 				model.getParent());
 		try {
-			rml.loadAllMachines(model, ast, null, bparser.getDefinitions());
+			rml.loadAllMachines(model, ast, null, bparser.getDefinitions(),
+					bparser.getPragmas());
 		} catch (BException e) {
 			logger.error("Parser Error. {}.", e.getLocalizedMessage());
 			logger.debug("Details", e);
@@ -85,7 +86,7 @@ public class LoadBProjectCommand implements ICommand {
 			logger.error("Parser Error. {}.", e.getLocalizedMessage());
 			logger.debug("Details", e);
 			throw new ProBException();
-		} 
+		}
 		return ast;
 	}
 
