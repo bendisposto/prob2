@@ -77,4 +77,30 @@ public class ClassicalBMachine extends AbstractModel {
 		this.operations.add(o);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\nVariables:\n");
+		for (NamedEntity var : variables) {
+			sb.append("  " + var.getIdentifier() + "\n");
+		}
+		sb.append("Constants:\n");
+		for (NamedEntity constant : constants) {
+			sb.append("  " + constant.getIdentifier() + "\n");
+		}
+		sb.append("Invariants:\n");
+		for (NamedEntity inv : invariant) {
+			sb.append("  " + inv.getIdentifier() + "\n");
+		}
+		sb.append("Assertions:\n");
+		for (NamedEntity assertion : assertions) {
+			sb.append("  " + assertion.getIdentifier() + "\n");
+		}
+		sb.append("Operations:\n");
+		for (Operation op : operations) {
+			sb.append("  " + op.getName() + "\n");
+		}
+		return sb.toString();
+	}
+
 }
