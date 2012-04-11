@@ -13,11 +13,11 @@ import de.be4.classicalb.core.parser.node.Start;
 public class ClassicalBEvalElement {
 
 	private final String code;
-	private final String type;
+	private EvalElementType type;
 
 	public ClassicalBEvalElement(final String code, final EvalElementType type) {
 		this.code = code;
-		this.type = type.toString();
+		this.type = type;
 	}
 
 	public ClassicalBEvalElement(final String code) {
@@ -29,16 +29,24 @@ public class ClassicalBEvalElement {
 		if (type != null)
 			return tryparse(type);
 		try {
-			return tryparse("EXPRESSION");
+			Start res = tryparse(EvalElementType.EXPRESSION);
+			type = EvalElementType.EXPRESSION;
+			return res;
 		} catch (BException e) {
-			return tryparse("PREDICATE");
+			Start res = tryparse(EvalElementType.PREDICATE);
+			type = EvalElementType.PREDICATE;
+			return res;
 		}
 	}
 
-	public Start tryparse(final String prefix) throws BException {
+	public Start tryparse(final EvalElementType type) throws BException {
 		final BParser parser = new BParser();
-		final Start modelAst = parser.parse("#" + prefix + " " + code, false);
+		final Start modelAst = parser.parse(type + " " + code, false);
 		return modelAst;
+	}
+
+	public EvalElementType getType() {
+		return type;
 	}
 
 }

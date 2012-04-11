@@ -1,10 +1,7 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +12,7 @@ import org.junit.Test;
 import de.prob.ProBException;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvalElementType;
+import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -33,7 +31,7 @@ public class EvaluateRawExpressionsCommandTest {
 				EvalElementType.EXPRESSION));
 
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
-		EvaluateRawExpressionsCommand command = new EvaluateRawExpressionsCommand(
+		EvaluateFormulaCommand command = new EvaluateFormulaCommand(
 				evalElements, "root");
 		command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();
@@ -42,7 +40,7 @@ public class EvaluateRawExpressionsCommandTest {
 		PrologTerm t = sentences.iterator().next();
 		assertNotNull(t);
 		assertTrue(t instanceof CompoundPrologTerm);
-		assertEquals("evaluate_raw_expressions", t.getFunctor());
+		assertEquals("evaluate_formulas", t.getFunctor());
 		assertEquals(3, t.getArity());
 		PrologTerm t1 = t.getArgument(1);
 		assertEquals("root", t1.getFunctor());
@@ -69,18 +67,18 @@ public class EvaluateRawExpressionsCommandTest {
 				new CompoundPrologTerm("true"), new CompoundPrologTerm("false"));
 		when(map.get("Val")).thenReturn(lpt);
 
-		EvaluateRawExpressionsCommand command = new EvaluateRawExpressionsCommand(
+		EvaluateFormulaCommand command = new EvaluateFormulaCommand(
 				evalElements, "root");
 		command.processResult(map);
 
-		List<String> vals = command.getValues();
+		List<EvaluationResult> vals = command.getValues();
 
 		assertEquals(vals.size(), 4);
 
-		assertEquals(vals.get(0), "true");
-		assertEquals(vals.get(1), "false");
-		assertEquals(vals.get(2), "true");
-		assertEquals(vals.get(3), "false");
+		assertEquals(vals.get(0).value, "true");
+		assertEquals(vals.get(1).value, "false");
+		assertEquals(vals.get(2).value, "true");
+		assertEquals(vals.get(3).value, "false");
 	}
 
 }
