@@ -1,6 +1,6 @@
 package exploratory.java;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -21,13 +21,15 @@ public class RefactoredNestedExceptionTest {
 	public String exceptional(final int n) throws Exception {
 		try {
 			int call1 = call1(n);
-			System.out.println("R1: " + call1);
+			if (call1 == 1)
+				;
 		} catch (RuntimeException e) {
 			throw new ExceptionOne();
 		} finally {
 			try {
 				int call2 = call2(n);
-				System.out.println("R1: " + call2);
+				if (call2 == 2)
+					;
 			} catch (RuntimeException e) {
 				throw new ExceptionTwo();
 			}
