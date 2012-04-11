@@ -18,7 +18,7 @@ public class OpInfo {
 	public final String params;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
-	
+
 	public OpInfo(final String id, final String name, final String src,
 			final String dest, final String params) {
 		this.id = id;
@@ -32,32 +32,31 @@ public class OpInfo {
 	public OpInfo(final CompoundPrologTerm opTerm) throws ProBException {
 		// final CompoundPrologTerm opTerm = (CompoundPrologTerm) rawOpTerm;
 
-		IntegerPrologTerm intTerm;
-
-		String id;
+		String id = null, src = null, dest = null;
 		try {
-			intTerm = BindingGenerator.getInteger(opTerm.getArgument(1));
-			id = BindingGenerator.getCompoundTerm(intTerm, 0).getFunctor();
+			id = getIdFromPrologTerm(opTerm.getArgument(1));
+			src = getIdFromPrologTerm(opTerm.getArgument(3));
+			dest = getIdFromPrologTerm(opTerm.getArgument(4));
 		} catch (ResultParserException e) {
 			logger.error("Result from Prolog was not as expected.", e);
 			throw new ProBException();
 		}
-		
-		
+
 		this.id = id;
 		this.name = PrologTerm.atomicString(opTerm.getArgument(2));
-		this.src = getIdFromPrologTerm(opTerm.getArgument(3));
-		this.dest = getIdFromPrologTerm(opTerm.getArgument(4));
+		this.src = src;
+		this.dest = dest;
 		this.params = null;
 		// final List<PrologTerm> args = (ListPrologTerm)
 		// opTerm.getArgument(5);
 		// FIXME: so what is params?
 	}
 
-	private static String getIdFromPrologTerm(final PrologTerm destTerm) {
+	public static String getIdFromPrologTerm(final PrologTerm destTerm)
+			throws ResultParserException {
 		if (destTerm instanceof IntegerPrologTerm) {
-			return ((IntegerPrologTerm) destTerm).getValue().toString();
+			return BindingGenerator.getInteger(destTerm).getValue().toString();
 		}
-		return ((CompoundPrologTerm) destTerm).getFunctor();
+		return destTerm.getFunctor();
 	}
 }
