@@ -1,10 +1,7 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +28,7 @@ public class EvaluateRawExpressionsCommandTest {
 				EvalElementType.PREDICATE));
 		evalElements.add(new ClassicalBEvalElement("3",
 				EvalElementType.EXPRESSION));
+
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		EvaluateRawExpressionsCommand command = new EvaluateRawExpressionsCommand(
 				evalElements, "root");
@@ -58,11 +56,14 @@ public class EvaluateRawExpressionsCommandTest {
 				EvalElementType.PREDICATE));
 		evalElements.add(new ClassicalBEvalElement("3",
 				EvalElementType.EXPRESSION));
+		evalElements.add(new ClassicalBEvalElement("1>3"));
+		evalElements.add(new ClassicalBEvalElement("99"));
 
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 		ListPrologTerm lpt = new ListPrologTerm(new CompoundPrologTerm("true"),
-				new CompoundPrologTerm("false"));
+				new CompoundPrologTerm("false"),
+				new CompoundPrologTerm("true"), new CompoundPrologTerm("false"));
 		when(map.get("Val")).thenReturn(lpt);
 
 		EvaluateRawExpressionsCommand command = new EvaluateRawExpressionsCommand(
@@ -71,13 +72,12 @@ public class EvaluateRawExpressionsCommandTest {
 
 		List<String> vals = command.getValues();
 
-		assertEquals(vals.size(), 2);
+		assertEquals(vals.size(), 4);
 
-		String val1 = vals.get(0);
-		assertEquals(val1, "true");
-
-		String val2 = vals.get(1);
-		assertEquals(val2, "false");
+		assertEquals(vals.get(0), "true");
+		assertEquals(vals.get(1), "false");
+		assertEquals(vals.get(2), "true");
+		assertEquals(vals.get(3), "false");
 	}
 
 }
