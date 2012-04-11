@@ -51,7 +51,7 @@ public class EvaluateRawExpressionsCommand implements ICommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pout) {
+	public void writeCommand(final IPrologTermOutput pout) throws ProBException {
 		pout.openTerm("evaluate_raw_expressions");
 		pout.printAtomOrNumber(stateId);
 		pout.openList();
@@ -64,6 +64,7 @@ public class EvaluateRawExpressionsCommand implements ICommand {
 			}
 		} catch (BException e) {
 			logger.error("Parse error", e);
+			throw new ProBException();
 		} finally {
 			pout.closeList();
 			pout.printVariable(EVALUATE_TERM_VARIABLE);
