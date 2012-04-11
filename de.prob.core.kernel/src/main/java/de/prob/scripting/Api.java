@@ -50,6 +50,10 @@ public class Api {
 		return bFactory.load(f);
 	}
 
+	public StateSpace s() throws ProBException {
+		return b_def().getStatespace();
+	}
+
 	public ClassicalBMachine b_load(final String file) throws ProBException {
 		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
