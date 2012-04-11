@@ -24,7 +24,7 @@ import de.prob.prolog.term.PrologTerm;
 public class EvaluateRawExpressionsCommandTest {
 
 	@Test
-	public void testWriteCommand() {
+	public void testWriteCommand() throws ProBException {
 
 		List<ClassicalBEvalElement> evalElements = new ArrayList<ClassicalBEvalElement>();
 		evalElements.add(new ClassicalBEvalElement("1<3",
