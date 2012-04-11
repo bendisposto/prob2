@@ -15,8 +15,10 @@ import com.google.inject.Inject;
 
 import de.prob.ProBException;
 import de.prob.animator.IAnimator;
+import de.prob.animator.command.EvaluateRawExpressionsCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
+import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
@@ -80,7 +82,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	}
 
 	public void goToState(int id) {
-      goToState(String.valueOf(id));
+		goToState(String.valueOf(id));
 	}
 
 	public void goToState(final String stateId) {
@@ -262,5 +264,18 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			sb.append("\n");
 		}
 		return sb.toString();
+	}
+
+	public List<String> evaluate(String... code) throws ProBException {
+		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
+				code.length);
+		for (String c : code) {
+			list.add(new ClassicalBEvalElement(c));
+		}
+		EvaluateRawExpressionsCommand command = new EvaluateRawExpressionsCommand(
+				list, getCurrentState());
+		execute(command);
+
+		return command.getValues();
 	}
 }
