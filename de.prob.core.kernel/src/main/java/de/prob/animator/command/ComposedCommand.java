@@ -92,7 +92,6 @@ public class ComposedCommand implements ICommand {
 				break;
 			}
 		}
-		System.out.println(index);
 		return index;
 	}
 
