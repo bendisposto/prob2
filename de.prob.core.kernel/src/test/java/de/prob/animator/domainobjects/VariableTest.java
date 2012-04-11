@@ -1,4 +1,4 @@
-package de.prob.animator.command;
+package de.prob.animator.domainobjects;
 
 import org.junit.Assert;
 import org.junit.Test;

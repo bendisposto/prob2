@@ -19,10 +19,10 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class EvaluateRawExpressionsCommandTest {
+public class EvaluateFormulasCommandTest {
 
 	@Test
-	public void testWriteCommand() {
+	public void testWriteCommand() throws ProBException {
 
 		List<ClassicalBEvalElement> evalElements = new ArrayList<ClassicalBEvalElement>();
 		evalElements.add(new ClassicalBEvalElement("1<3",
@@ -31,7 +31,7 @@ public class EvaluateRawExpressionsCommandTest {
 				EvalElementType.EXPRESSION));
 
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
-		EvaluateFormulaCommand command = new EvaluateFormulaCommand(
+		EvaluateFormulasCommand command = new EvaluateFormulasCommand(
 				evalElements, "root");
 		command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();
@@ -62,12 +62,11 @@ public class EvaluateRawExpressionsCommandTest {
 
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
-		ListPrologTerm lpt = new ListPrologTerm(new CompoundPrologTerm("true"),
-				new CompoundPrologTerm("false"),
-				new CompoundPrologTerm("true"), new CompoundPrologTerm("false"));
+		ListPrologTerm lpt = new ListPrologTerm(mk_result("true"),
+				mk_result("false"), mk_result("true"), mk_result("false"));
 		when(map.get("Val")).thenReturn(lpt);
 
-		EvaluateFormulaCommand command = new EvaluateFormulaCommand(
+		EvaluateFormulasCommand command = new EvaluateFormulasCommand(
 				evalElements, "root");
 		command.processResult(map);
 
@@ -79,6 +78,11 @@ public class EvaluateRawExpressionsCommandTest {
 		assertEquals(vals.get(1).value, "false");
 		assertEquals(vals.get(2).value, "true");
 		assertEquals(vals.get(3).value, "false");
+	}
+
+	private CompoundPrologTerm mk_result(final String r) {
+		return new CompoundPrologTerm("result", new CompoundPrologTerm(r),
+				new CompoundPrologTerm(""));
 	}
 
 }

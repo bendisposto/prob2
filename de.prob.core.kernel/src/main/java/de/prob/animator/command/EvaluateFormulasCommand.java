@@ -18,17 +18,16 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class EvaluateFormulaCommand implements ICommand {
+public class EvaluateFormulasCommand implements ICommand {
 
-	Logger logger = LoggerFactory
-			.getLogger(EvaluateFormulaCommand.class);
+	Logger logger = LoggerFactory.getLogger(EvaluateFormulasCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
 	private final List<ClassicalBEvalElement> evalElements;
 	private final String stateId;
 	private final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
 
-	public EvaluateFormulaCommand(
+	public EvaluateFormulasCommand(
 			final List<ClassicalBEvalElement> evalElements, final String id) {
 		this.evalElements = evalElements;
 		this.stateId = id;
@@ -60,7 +59,7 @@ public class EvaluateFormulaCommand implements ICommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pout) {
+	public void writeCommand(final IPrologTermOutput pout) throws ProBException {
 		pout.openTerm("evaluate_formulas");
 		pout.printAtomOrNumber(stateId);
 		pout.openList();
@@ -76,6 +75,7 @@ public class EvaluateFormulaCommand implements ICommand {
 			}
 		} catch (BException e) {
 			logger.error("Parse error", e);
+			throw new ProBException();
 		} finally {
 			pout.closeList();
 			pout.printVariable(EVALUATE_TERM_VARIABLE);

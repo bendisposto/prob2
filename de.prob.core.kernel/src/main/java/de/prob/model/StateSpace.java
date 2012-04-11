@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 
 import de.prob.ProBException;
 import de.prob.animator.IAnimator;
-import de.prob.animator.command.EvaluateFormulaCommand;
+import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
@@ -273,7 +273,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
 		}
-		EvaluateFormulaCommand command = new EvaluateFormulaCommand(
+		EvaluateFormulasCommand command = new EvaluateFormulasCommand(
 				list, getCurrentState());
 		execute(command);
 
