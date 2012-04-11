@@ -15,10 +15,11 @@ import com.google.inject.Inject;
 
 import de.prob.ProBException;
 import de.prob.animator.IAnimator;
-import de.prob.animator.command.EvaluateRawExpressionsCommand;
+import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
+import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.OpInfo;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
@@ -81,7 +82,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		operationsWithTimeout.put(stateId, command.getOperationsWithTimeout());
 	}
 
-	public void goToState(int id) {
+	public void goToState(final int id) {
 		goToState(String.valueOf(id));
 	}
 
@@ -266,13 +267,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		return sb.toString();
 	}
 
-	public List<String> evaluate(String... code) throws ProBException {
+	public List<EvaluationResult> evaluate(final String... code) throws ProBException {
 		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
 				code.length);
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
 		}
-		EvaluateRawExpressionsCommand command = new EvaluateRawExpressionsCommand(
+		EvaluateFormulasCommand command = new EvaluateFormulasCommand(
 				list, getCurrentState());
 		execute(command);
 
