@@ -1,4 +1,4 @@
-package de.prob.animator;
+package de.prob.animator.command.representation;
 
 import org.junit.Ignore;
 import org.junit.Test;
