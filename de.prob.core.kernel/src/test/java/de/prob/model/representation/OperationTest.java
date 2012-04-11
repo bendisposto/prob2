@@ -1,5 +1,7 @@
 package de.prob.model.representation;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 
 import junit.framework.Assert;
@@ -17,4 +19,11 @@ public class OperationTest {
 
 	}
 
+	@Test
+	public void test2() {
+		Operation a = new Operation("=D", null, new Predicate("=)"));
+		assertEquals("=D", a.getName());
+		assertEquals(new Predicate("=)"), a.getGuard());
+
+	}
 }
