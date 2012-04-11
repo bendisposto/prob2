@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -267,16 +268,54 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		return sb.toString();
 	}
 
-	public List<EvaluationResult> evaluate(final String... code) throws ProBException {
+	public List<EvaluationResult> evaluate(final String... code)
+			throws ProBException {
 		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
 				code.length);
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
 		}
-		EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-				list, getCurrentState());
+		EvaluateFormulasCommand command = new EvaluateFormulasCommand(list,
+				getCurrentState());
 		execute(command);
 
 		return command.getValues();
+	}
+
+	public void randomAnim(final int steps) throws ProBException {
+		if (steps <= 0)
+			return;
+
+		final String state = getCurrentState();
+
+		boolean deadlock = true;
+		try {
+			deadlock = isDeadlock(state);
+		} catch (ProBException e) {
+			logger.error("Could not explore state with StateId " + state);
+		}
+
+		if (deadlock)
+			return;
+
+		final Collection<String> operations = getOutEdges(state);
+		final Iterator<String> it = operations.iterator();
+		final int size = operations.size();
+
+		String nextOp = it.next();
+		int thresh = (int) (Math.random() * size);
+
+		for (int i = 0; i < thresh; i++)
+			if (it.hasNext())
+				nextOp = it.next();
+
+		step(nextOp);
+
+		final boolean boo = invariantOk.get(state);
+
+		if (!boo)
+			return;
+
+		randomAnim(steps - 1);
 	}
 }
