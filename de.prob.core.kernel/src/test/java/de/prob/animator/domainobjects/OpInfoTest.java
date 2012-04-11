@@ -47,10 +47,9 @@ public class OpInfoTest {
 
 	@Test
 	public void testGetIdFromPrologTerm() throws ResultParserException {
-		OpInfo info = new OpInfo(null, null, null, null, null);
 		IntegerPrologTerm idPT = new IntegerPrologTerm(1);
 		VariablePrologTerm vPT = new VariablePrologTerm("root");
-		assertEquals("1", info.getIdFromPrologTerm(idPT));
-		assertEquals("root", info.getIdFromPrologTerm(vPT));
+		assertEquals("1", OpInfo.getIdFromPrologTerm(idPT));
+		assertEquals("root", OpInfo.getIdFromPrologTerm(vPT));
 	}
 }
