@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -304,22 +303,16 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			return;
 
 		final Collection<String> operations = getOutEdges(state);
-		final Iterator<String> it = operations.iterator();
-		final int size = operations.size();
-
-		String nextOp = it.next();
+		int size = operations.size();
+		String[] op = operations.toArray(new String[size]);
 		int thresh = randomGenerator.nextInt(size);
-
-		for (int i = 0; i < thresh; i++)
-			if (it.hasNext()) {
-				nextOp = it.next();
-			}
+		String nextOp = op[thresh];
 
 		step(nextOp);
 
-		final boolean boo = invariantOk.get(state);
+		final boolean invariantPreserved = invariantOk.get(state);
 
-		if (!boo)
+		if (!invariantPreserved)
 			return;
 
 		randomAnim(steps - 1);
