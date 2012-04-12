@@ -3,6 +3,9 @@ package de.prob.model
 
 import static org.junit.Assert.*
 import static org.mockito.Mockito.*
+
+import java.util.Random
+
 import spock.lang.Specification
 import de.prob.ProBException
 import de.prob.animator.IAnimator
@@ -232,5 +235,156 @@ class StateSpaceTest extends Specification {
 		s.getCurrentState() == "2"
 		s.history.isLastTransition(null) == true
 		s.history.isNextTransition("c") == true
+	}
+
+	def "testing random animation method"() {
+		setup:
+		def animmock = mock(IAnimator.class)
+		doThrow(new ProBException()).when(animmock).execute(any(Object.class));
+
+		def r = mock(Random.class)
+		// take path: b, c, e, i, j, k
+		when(r.nextInt(anyInt())).thenReturn(0, 0, 1, 2, 0, 0);
+
+
+		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r)
+
+		s.addEdge("b","root","2")
+		s.addEdge("c","2","3")
+		s.addEdge("d","3","4")
+		s.addEdge("e","3","5")
+		s.addEdge("f", "4", "6")
+		s.addEdge("g", "5", "7")
+		s.addEdge("h", "5", "8")
+		s.addEdge("i", "5", "9")
+		s.addEdge("j", "9", "10")
+		s.addEdge("k", "10", "11")
+
+		s.explored.add("root")
+		s.explored.add("2")
+		s.explored.add("3")
+		s.explored.add("4")
+		s.explored.add("5")
+		s.explored.add("6")
+		s.explored.add("7")
+		s.explored.add("8")
+		s.explored.add("9")
+		s.explored.add("10")
+		s.explored.add("11")
+
+		s.invariantOk.put("root", true)
+		s.invariantOk.put("1", true)
+		s.invariantOk.put("2", true)
+		s.invariantOk.put("3", true)
+		s.invariantOk.put("4", true)
+		s.invariantOk.put("5", true)
+		s.invariantOk.put("6", true)
+		s.invariantOk.put("7", true)
+		s.invariantOk.put("8", true)
+		s.invariantOk.put("9", true)
+		s.invariantOk.put("10", true)
+		s.invariantOk.put("11", true)
+
+		when:
+		s.randomAnim(6);
+
+		then:
+		s.history.history.size() == 6;
+		s.history.history.get(0).getOp() == "b"
+		s.history.history.get(1).getOp() == "c"
+		s.history.history.get(2).getOp() == "e"
+		s.history.history.get(3).getOp() == "i"
+		s.history.history.get(4).getOp() == "j"
+		s.history.history.get(5).getOp() == "k"
+	}
+
+	def "testing random animation method with invariant violation"() {
+		setup:
+		def animmock = mock(IAnimator.class)
+		doThrow(new ProBException()).when(animmock).execute(any(Object.class));
+
+		def r = mock(Random.class)
+		// take path: b, c, e, i, j, k
+		when(r.nextInt(anyInt())).thenReturn(0, 0, 1, 2, 0, 0);
+
+
+		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r)
+
+		s.addEdge("b","root","2")
+		s.addEdge("c","2","3")
+		s.addEdge("d","3","4")
+		s.addEdge("e","3","5")
+		s.addEdge("f", "4", "6")
+		s.addEdge("g", "5", "7")
+		s.addEdge("h", "5", "8")
+		s.addEdge("i", "5", "9")
+		s.addEdge("j", "9", "10")
+		s.addEdge("k", "10", "11")
+
+		s.explored.add("root")
+		s.explored.add("2")
+		s.explored.add("3")
+		s.explored.add("4")
+		s.explored.add("5")
+		s.explored.add("6")
+		s.explored.add("7")
+		s.explored.add("8")
+		s.explored.add("9")
+		s.explored.add("10")
+		s.explored.add("11")
+
+		s.invariantOk.put("root", true)
+		s.invariantOk.put("1", true)
+		s.invariantOk.put("2", true)
+		s.invariantOk.put("3", false)
+		s.invariantOk.put("4", true)
+		s.invariantOk.put("5", true)
+		s.invariantOk.put("6", true)
+		s.invariantOk.put("7", true)
+		s.invariantOk.put("8", true)
+		s.invariantOk.put("9", true)
+		s.invariantOk.put("10", true)
+		s.invariantOk.put("11", true)
+
+		when:
+		s.randomAnim(6);
+
+		then:
+		s.history.history.size() == 2;
+		s.history.history.get(0).getOp() == "b"
+		s.history.history.get(1).getOp() == "c"
+	}
+
+	def "testing random animation method with deadlocked state 3"() {
+		setup:
+		def animmock = mock(IAnimator.class)
+		doThrow(new ProBException()).when(animmock).execute(any(Object.class));
+
+		def r = mock(Random.class)
+		// take path: b, c, deadlock.
+		when(r.nextInt(anyInt())).thenReturn(0, 0, 0, 0, 0, 0);
+
+
+		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r)
+
+		s.addEdge("b","root","2")
+		s.addEdge("c","2","3")
+
+		s.explored.add("root")
+		s.explored.add("2")
+		s.explored.add("3")
+
+		s.invariantOk.put("root", true)
+		s.invariantOk.put("1", true)
+		s.invariantOk.put("2", true)
+		s.invariantOk.put("3", true)
+
+		when:
+		s.randomAnim(6);
+
+		then:
+		s.history.history.size() == 2;
+		s.history.history.get(0).getOp() == "b"
+		s.history.history.get(1).getOp() == "c"
 	}
 }
