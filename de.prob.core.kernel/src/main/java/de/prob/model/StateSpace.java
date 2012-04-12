@@ -313,12 +313,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		int thresh = randomGenerator.nextInt(size);
 		String nextOp = op[thresh];
 
-		step(nextOp);
-
 		final boolean invariantPreserved = invariantOk.get(state);
 
 		if (!invariantPreserved)
 			return;
+
+		step(nextOp);
 
 		randomAnim(steps - 1);
 	}
