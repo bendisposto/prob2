@@ -1,7 +1,12 @@
 package de.prob;
 
 import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.tools.shell.IO;
 import org.codehaus.groovy.tools.shell.PShell;
 import org.slf4j.Logger;
@@ -36,4 +41,12 @@ class Shell {
 		shell.run("");
 	}
 
+	public void runScript(final File script) throws CompilationFailedException,
+			IOException {
+		logger.trace("Running " + script.getAbsolutePath());
+		Binding binding = new Binding();
+		binding.setVariable("api", api);
+		GroovyShell s = new GroovyShell(binding);
+		s.evaluate(script);
+	}
 }

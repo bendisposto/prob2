@@ -2,11 +2,15 @@ package de.prob;
 
 import static java.io.File.*;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Guice;
@@ -57,9 +61,17 @@ public class Main {
 			if (line.hasOption("shell")) {
 				shell.repl();
 			}
+			if (line.hasOption("test")) {
+				String value = line.getOptionValue("test");
+				shell.runScript(new File(value));
+			}
 		} catch (ParseException exp) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("java -jar probcli-deploy.jar", options);
+			formatter.printHelp("java -jar probcli.jar", options);
+		} catch (CompilationFailedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

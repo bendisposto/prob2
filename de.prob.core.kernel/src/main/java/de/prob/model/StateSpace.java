@@ -274,13 +274,18 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 	public List<EvaluationResult> evaluate(final String... code)
 			throws ProBException {
+		return eval(getCurrentState(), code);
+	}
+
+	public List<EvaluationResult> eval(final String state, final String... code)
+			throws ProBException {
 		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
 				code.length);
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
 		}
 		EvaluateFormulasCommand command = new EvaluateFormulasCommand(list,
-				getCurrentState());
+				state);
 		execute(command);
 
 		return command.getValues();

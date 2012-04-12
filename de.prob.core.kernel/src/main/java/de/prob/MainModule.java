@@ -11,6 +11,7 @@ import jline.ConsoleReader;
 
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
@@ -80,13 +81,19 @@ public class MainModule extends AbstractModule {
 	public Options getCommandlineOptions() {
 		Options options = new Options();
 		Option shell = new Option("s", "shell", false,
-				"start ProB-Python shell");
-		Option modelcheck = new Option("mc", "modelcheck", false,
-				"start ProB model checking");
+				"start ProB's Groovy shell");
+
+		@SuppressWarnings("static-access")
+		Option test = OptionBuilder.withArgName("test").hasArg()
+				.withDescription("run a Groovy test script").create("find");
+
+		// Option modelcheck = new Option("mc", "modelcheck", false,
+		// "start ProB model checking");
 		OptionGroup mode = new OptionGroup();
 		mode.setRequired(true);
-		mode.addOption(modelcheck);
+		// mode.addOption(modelcheck);
 		mode.addOption(shell);
+		mode.addOption(test);
 		options.addOptionGroup(mode);
 		return options;
 	}
