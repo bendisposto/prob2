@@ -6,6 +6,7 @@ import groovy.lang.GroovyShell;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.tools.shell.IO;
@@ -42,8 +43,7 @@ class Shell {
 		shell.run("");
 	}
 
-	public void runScript(final String dir, final File script)
-			throws CompilationFailedException, IOException {
+	public void runScript(final String dir, final File script) {
 		if (script.isDirectory()) {
 			File[] files = script.listFiles(new FilenameFilter() {
 				@Override
@@ -59,18 +59,25 @@ class Shell {
 		}
 	}
 
-	private void runSingleScript(final String dir, final File script)
-			throws IOException {
-		logger.trace("Running " + script.getAbsolutePath());
+	private void runSingleScript(final String dir, final File script) {
+		System.out.println("Running " + script.getAbsolutePath());
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
 		binding.setVariable("dir", dir);
 		GroovyShell s = new GroovyShell(binding);
-		s.evaluate(script);
+		try {
+			s.evaluate("script = new File('"
+					+ script.getAbsolutePath()
+					+ "'); try { evaluate(script.getText()) } catch (Throwable t) {t.printStackTrace(); System.exit(-1)} finally {}");
+			s.run(script, new ArrayList<String>());
+		} catch (CompilationFailedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void runScript(final File file) throws CompilationFailedException,
-			IOException {
+	public void runScript(final File file) {
 		runScript(file.getAbsolutePath(), file);
 	}
 }

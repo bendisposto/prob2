@@ -3,14 +3,12 @@ package de.prob;
 import static java.io.File.*;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Guice;
@@ -68,10 +66,6 @@ public class Main {
 		} catch (ParseException exp) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("java -jar probcli.jar", options);
-		} catch (CompilationFailedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
