@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*
 
 import java.util.Random
 
+import spock.lang.Ignore;
 import spock.lang.Specification
 import de.prob.ProBException
 import de.prob.animator.IAnimator
@@ -386,5 +387,27 @@ class StateSpaceTest extends Specification {
 		s.history.history.size() == 2;
 		s.history.history.get(0).getOp() == "b"
 		s.history.history.get(1).getOp() == "c"
+	}
+
+	@Ignore
+	def "testing multiple steps of looping edge"() {
+		setup:
+		s.addEdge("loop","3","3")
+
+		expect:
+		s.history.isLastTransition("c") == true
+		s.history.history.size() == 2
+		s.history.current == 1
+
+		when:
+		s.step("loop")
+		s.step("loop")
+		s.step("loop")
+		s.step("loop")
+
+		then:
+		s.history.isLastTransition("loop") == true
+		s.history.history.size() == 3
+		s.history.current == 2
 	}
 }
