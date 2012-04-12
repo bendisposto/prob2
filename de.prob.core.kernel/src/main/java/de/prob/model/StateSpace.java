@@ -65,7 +65,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 */
 	public void explore(final String stateId) throws ProBException {
 		ExploreStateCommand command = new ExploreStateCommand(stateId);
-
 		animator.execute(command);
 		explored.add(stateId);
 		List<OpInfo> enabledOperations = command.getEnabledOperations();
@@ -105,7 +104,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 		notifyAnimationChange(getCurrentState(), stateId, null);
 		history.add(stateId, null);
-
 	}
 
 	public void step(final String opId) throws ProBException {
@@ -124,6 +122,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 					throw new ProBException();
 				}
 			}
+			System.out.println("newState: " + newState);
 			history.add(newState, opId);
 			notifyAnimationChange(getSource(opId), getDest(opId), opId);
 		}
