@@ -105,7 +105,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 		notifyAnimationChange(getCurrentState(), stateId, null);
 		history.add(stateId, null);
-
 	}
 
 	public void step(final String opId) throws ProBException {
