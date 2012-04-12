@@ -109,6 +109,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	}
 
 	public void step(final String opId) throws ProBException {
+		// FIXME: should loops be saved in History? If not, figure out a way to
+		// save them correctly
 		if (history.isLastTransition(opId)) {
 			back();
 		} else if (history.isNextTransition(opId)) {

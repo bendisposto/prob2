@@ -69,7 +69,7 @@ public class History {
 		if (current <= 0)
 			return false;
 
-		//String currentOp = history.get(current).getOp();
+		// String currentOp = history.get(current).getOp();
 		String currentOp = getCurrentTransition();
 		if (id == null)
 			return currentOp == null;
@@ -106,7 +106,7 @@ public class History {
 		for (int i = 0; i < history.size() - 1; i++) {
 			sb.append((history.get(i).getOp()) + ", ");
 		}
-		if(history.size() != 0)
+		if (history.size() != 0)
 			sb.append(history.get(history.size() - 1).getOp());
 		String content = sb.toString();
 		return "[" + content + "] " + "current Transition: "
@@ -114,7 +114,7 @@ public class History {
 	}
 
 	public String getCurrentState() {
-		if(current == -1)
+		if (current == -1)
 			return "root";
 		return history.get(current).getDest();
 	}
