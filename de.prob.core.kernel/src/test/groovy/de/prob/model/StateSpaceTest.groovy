@@ -19,7 +19,7 @@ class StateSpaceTest extends Specification {
 
 		doThrow(new ProBException()).when(mock).execute(any(Object.class));
 
-		s = new StateSpace(mock, new DirectedSparseMultigraph<String, String>())
+		s = new StateSpace(mock, new DirectedSparseMultigraph<String, String>(), new Random())
 
 		s.addVertex("1")
 		s.explored.add("1")
