@@ -43,7 +43,7 @@ public class Main {
 
 	private final CommandLineParser parser;
 	private final Options options;
-	private Shell shell;
+	private final Shell shell;
 
 	@Inject
 	public Main(@Logfile final String logfile, final CommandLineParser parser,
