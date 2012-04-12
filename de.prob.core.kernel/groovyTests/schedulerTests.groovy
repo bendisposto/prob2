@@ -1,4 +1,4 @@
-c = api.b_load("/home/joy/code/probcore/build/resources/main/examples/scheduler.mch")
+c = api.b_load(dir+"/machines/scheduler.mch")
 s = c.statespace
 s.explore "root"
 s.step 0

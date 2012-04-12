@@ -82,7 +82,7 @@ public class Main {
 		// IStateSpace instance = injector.getInstance(IStateSpace.class);
 
 		main.run(args);
-		// System.exit(0);
+		System.exit(0);
 	}
 
 }

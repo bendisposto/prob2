@@ -123,3 +123,10 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.0-milestone-8a'
 }
 
+task integrationtests(dependsOn: 'classes', type:JavaExec){
+	main = 'de.prob.Main'
+	classpath = sourceSets.main.runtimeClasspath
+	args = ['-test','groovyTests']
+}
+
+

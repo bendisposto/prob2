@@ -4,6 +4,7 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -41,12 +42,35 @@ class Shell {
 		shell.run("");
 	}
 
-	public void runScript(final File script) throws CompilationFailedException,
-			IOException {
+	public void runScript(final String dir, final File script)
+			throws CompilationFailedException, IOException {
+		if (script.isDirectory()) {
+			File[] files = script.listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(final File arg0, final String arg1) {
+					return arg1.endsWith(".groovy");
+				}
+			});
+			for (File file : files) {
+				runScript(script.getAbsolutePath(), file);
+			}
+		} else {
+			runSingleScript(dir, script);
+		}
+	}
+
+	private void runSingleScript(final String dir, final File script)
+			throws IOException {
 		logger.trace("Running " + script.getAbsolutePath());
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
+		binding.setVariable("dir", dir);
 		GroovyShell s = new GroovyShell(binding);
 		s.evaluate(script);
+	}
+
+	public void runScript(final File file) throws CompilationFailedException,
+			IOException {
+		runScript(file.getAbsolutePath(), file);
 	}
 }
