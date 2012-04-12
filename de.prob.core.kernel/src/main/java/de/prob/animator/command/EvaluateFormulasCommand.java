@@ -6,6 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
+
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.ProBException;
@@ -47,9 +49,19 @@ public class EvaluateFormulasCommand implements ICommand {
 					.get(EVALUATE_TERM_VARIABLE));
 
 			for (PrologTerm term : prologTerm) {
-				String value = term.getArgument(1).getFunctor();
-				String solution = term.getArgument(2).getFunctor();
-				values.add(new EvaluationResult(value, solution));
+				if (term instanceof ListPrologTerm) {
+					ListPrologTerm lpt = (ListPrologTerm) term;
+					ArrayList<String> list = new ArrayList<String>();
+					for (PrologTerm e : lpt) {
+						list.add(e.getArgument(1).getFunctor());
+					}
+					values.add(new EvaluationResult("", "", Joiner.on(", ")
+							.join(list)));
+				} else {
+					String value = term.getArgument(1).getFunctor();
+					String solution = term.getArgument(2).getFunctor();
+					values.add(new EvaluationResult(value, solution, ""));
+				}
 			}
 
 		} catch (ResultParserException e) {
