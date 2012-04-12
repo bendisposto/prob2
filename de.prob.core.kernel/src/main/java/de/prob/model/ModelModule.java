@@ -1,5 +1,7 @@
 package de.prob.model;
 
+import java.util.Random;
+
 import com.google.inject.AbstractModule;
 
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
@@ -14,5 +16,6 @@ public class ModelModule extends AbstractModule {
 
 		bind(StateSpace.class);
 		bind(DirectedSparseMultigraph.class);
+		bind(Random.class);
 	}
 }

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -44,11 +45,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	private final List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
 	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
+	private final Random randomGenerator;
+
 	@Inject
 	public StateSpace(final IAnimator animator,
-			final DirectedSparseMultigraph<String, String> graph) {
+			final DirectedSparseMultigraph<String, String> graph,
+			final Random randomGenerator) {
 		super(graph);
 		this.animator = animator;
+		this.randomGenerator = randomGenerator;
 		addVertex("root");
 	}
 
@@ -303,11 +308,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		final int size = operations.size();
 
 		String nextOp = it.next();
-		int thresh = (int) (Math.random() * size);
+		int thresh = randomGenerator.nextInt(size);
 
 		for (int i = 0; i < thresh; i++)
-			if (it.hasNext())
+			if (it.hasNext()) {
 				nextOp = it.next();
+			}
 
 		step(nextOp);
 
