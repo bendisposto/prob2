@@ -87,17 +87,25 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		operationsWithTimeout.put(stateId, command.getOperationsWithTimeout());
 	}
 
-	public void goToState(final int id) {
+	public void goToState(final int id) throws ProBException {
 		goToState(String.valueOf(id));
 	}
 
-	public void goToState(final String stateId) {
+	public void goToState(final String stateId) throws ProBException {
 		if (!containsVertex(stateId))
 			throw new IllegalArgumentException("state does not exist");
+		if (!isExplored(stateId)) {
+			try {
+				explore(stateId);
+			} catch (ProBException e) {
+				logger.error("Could not explore state with StateId " + stateId);
+				throw new ProBException();
+			}
+		}
+
 		notifyAnimationChange(getCurrentState(), stateId, null);
 		history.add(stateId, null);
-		// TODO: we should explore the state, but then we have to deal with
-		// exceptions in tests
+
 	}
 
 	public void step(final String opId) throws ProBException {

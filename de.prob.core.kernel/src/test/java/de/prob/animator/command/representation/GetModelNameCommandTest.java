@@ -33,6 +33,7 @@ public class GetModelNameCommandTest {
 
 	@Test
 	public void testProcessResult() throws ProBException {
+		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 		when(map.get("Name")).thenReturn(new CompoundPrologTerm("=P"));
 		GetModelNameCommand gmnc = new GetModelNameCommand();
