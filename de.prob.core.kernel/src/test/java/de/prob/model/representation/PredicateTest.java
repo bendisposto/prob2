@@ -13,6 +13,8 @@ public class PredicateTest {
 		assertFalse(a.equals("I am not a Predicate!"));
 		assertEquals("=D", a.getPredicate());
 		assertEquals("=D", a.toString());
+
+		assertEquals(1959, a.hashCode());
 	}
 
 }
