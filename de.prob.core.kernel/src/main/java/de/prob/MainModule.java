@@ -84,8 +84,8 @@ public class MainModule extends AbstractModule {
 				"start ProB's Groovy shell");
 
 		@SuppressWarnings("static-access")
-		Option test = OptionBuilder.withArgName("test").hasArg()
-				.withDescription("run a Groovy test script").create("find");
+		Option test = OptionBuilder.withArgName("script").hasArg()
+				.withDescription("run a Groovy test script").create("test");
 
 		// Option modelcheck = new Option("mc", "modelcheck", false,
 		// "start ProB model checking");
