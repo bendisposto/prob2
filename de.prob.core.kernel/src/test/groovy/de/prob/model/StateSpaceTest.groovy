@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*
 
 import java.util.Random
 
-import spock.lang.Ignore;
 import spock.lang.Specification
 import de.prob.ProBException
 import de.prob.animator.IAnimator
@@ -35,6 +34,7 @@ class StateSpaceTest extends Specification {
 
 		s.history.add("2", "b")
 		s.history.add("3", "c")
+
 
 		s.explored.add("2")
 		s.explored.add("3")
@@ -127,15 +127,6 @@ class StateSpaceTest extends Specification {
 	def "c is the previous transition"() {
 		expect:
 		s.history.isLastTransition("c") == true
-	}
-
-	def "user can step to node 2"() {
-		when:
-		s.step("c")
-
-		then:
-		s.getCurrentState() == "2"
-		s.history.getCurrentTransition() == "b"
 	}
 
 	def "user cannot step to node root"() {
@@ -389,7 +380,6 @@ class StateSpaceTest extends Specification {
 		s.history.history.get(1).getOp() == "c"
 	}
 
-	@Ignore
 	def "testing multiple steps of looping edge"() {
 		setup:
 		s.addEdge("loop","3","3")
@@ -407,7 +397,63 @@ class StateSpaceTest extends Specification {
 
 		then:
 		s.history.isLastTransition("loop") == true
-		s.history.history.size() == 3
-		s.history.current == 2
+		s.history.history.size() == 6
+		s.history.current == 5
+	}
+
+	def "testing if canGoBack works"() {
+		when:
+		s.back()
+		s.back()
+		s.back()
+		s.back()
+
+		then:
+		s.getCurrentState() == "root"
+		s.history.current == -1
+	}
+
+	def "testing if canGoForward works"() {
+		expect:
+		s.getCurrentState() == "3"
+		s.history.current == 1
+
+		when:
+		s.forward();
+
+		then:
+		s.getCurrentState() == "3"
+		s.history.current == 1
+	}
+
+	def "testing if step works for integer opId"() {
+		expect:
+		s.getCurrentState() == "3"
+
+		when:
+		s.addEdge("3", "3", "10")
+		s.explored.add("10")
+		s.step(3)
+
+		then:
+		s.getCurrentState() == "10"
+	}
+
+	def "test register animation listener"() {
+		when:
+		def l = mock(IAnimationListener.class)
+		s.registerAnimationListener(l)
+
+		then:
+		s.animationListeners.contains(l)
+	}
+
+	def "test register StateSpaceChangeListener"() {
+		when:
+		def l = mock(IStateSpaceChangeListener.class)
+		s.registerStateSpaceListener(l)
+
+		then:
+		s.stateSpaceListeners.contains(l)
 	}
 }
