@@ -35,6 +35,8 @@ import de.prob.scripting.Api;
 
 public class MainModule extends AbstractModule {
 
+	private static final String DEFAULT_HOME = System.getProperty("user.home")
+			+ separator + ".prob" + separator;
 	private static final Logger logger = LoggerFactory
 			.getLogger(MainModule.class);
 	private final Properties buildConstants;
@@ -60,8 +62,8 @@ public class MainModule extends AbstractModule {
 	@Provides
 	@Home
 	public String getProBDirectory() {
-		return System.getProperty("user.home") + separator + ".prob"
-				+ separator;
+		String homedir = System.getProperty("PROB_HOME");
+		return homedir != null ? homedir : DEFAULT_HOME;
 	}
 
 	@Provides
