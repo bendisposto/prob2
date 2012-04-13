@@ -106,14 +106,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		history.add(stateId, null);
 	}
 
+	// step takes a operationId
+	// If the opId is contained in the outgoing edges (it is enabled)
+	// explore it (if not explored) and add state to history
 	public void step(final String opId) throws ProBException {
-		// FIXME: should loops be saved in History? If not, figure out a way to
-		// save them correctly
-		if (history.isLastTransition(opId)) {
-			back();
-		} else if (history.isNextTransition(opId)) {
-			forward();
-		} else if (getOutEdges(getCurrentState()).contains(opId)) {
+		if (getOutEdges(getCurrentState()).contains(opId)) {
 			String newState = getDest(opId);
 			if (!isExplored(newState)) {
 				try {
@@ -124,38 +121,35 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 					throw new ProBException();
 				}
 			}
-			System.out.println("newState: " + newState);
 			history.add(newState, opId);
 			notifyAnimationChange(getSource(opId), getDest(opId), opId);
 		}
 	}
 
 	public void back() {
-		if (!canGoBack())
-			return;
+		if (canGoBack()) {
+			String oldState = getCurrentState();
+			String opId = history.getCurrentTransition();
+			history.back();
 
-		String oldState = getCurrentState();
-		String opId = history.getCurrentTransition();
-		history.back();
-
-		if (opId != null) {
-			notifyAnimationChange(getDest(opId), getSource(opId), opId);
-		} else {
-			notifyAnimationChange(oldState, getCurrentState(), null);
+			if (opId != null) {
+				notifyAnimationChange(getDest(opId), getSource(opId), opId);
+			} else {
+				notifyAnimationChange(oldState, getCurrentState(), null);
+			}
 		}
 	}
 
 	public void forward() {
-		if (!canGoForward())
-			return;
-
-		String oldState = getCurrentState();
-		history.forward();
-		String opId = history.getCurrentTransition();
-		if (opId != null) {
-			notifyAnimationChange(getSource(opId), getDest(opId), opId);
-		} else {
-			notifyAnimationChange(oldState, getCurrentState(), null);
+		if (canGoForward()) {
+			String oldState = getCurrentState();
+			history.forward();
+			String opId = history.getCurrentTransition();
+			if (opId != null) {
+				notifyAnimationChange(getSource(opId), getDest(opId), opId);
+			} else {
+				notifyAnimationChange(oldState, getCurrentState(), null);
+			}
 		}
 	}
 
