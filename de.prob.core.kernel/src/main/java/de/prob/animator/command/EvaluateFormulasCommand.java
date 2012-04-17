@@ -52,15 +52,20 @@ public class EvaluateFormulasCommand implements ICommand {
 				if (term instanceof ListPrologTerm) {
 					ListPrologTerm lpt = (ListPrologTerm) term;
 					ArrayList<String> list = new ArrayList<String>();
-					for (PrologTerm e : lpt) {
-						list.add(e.getArgument(1).getFunctor());
+
+					String code = lpt.get(1).getFunctor();
+
+					for (int i = 2; i <= lpt.size(); i++) {
+						list.add(lpt.get(i).getArgument(1).getFunctor());
 					}
-					values.add(new EvaluationResult("", "", Joiner.on(", ")
-							.join(list)));
+
+					values.add(new EvaluationResult(code, "", "", Joiner.on(
+							", ").join(list)));
 				} else {
 					String value = term.getArgument(1).getFunctor();
 					String solution = term.getArgument(2).getFunctor();
-					values.add(new EvaluationResult(value, solution, ""));
+					String code = term.getArgument(3).getFunctor();
+					values.add(new EvaluationResult(code, value, solution, ""));
 				}
 			}
 
@@ -83,6 +88,7 @@ public class EvaluateFormulasCommand implements ICommand {
 				final ASTProlog prolog = new ASTProlog(pout, null);
 				term.parse().apply(prolog);
 				pout.printAtom(term.getType().toString());
+				pout.printAtom(term.getCode());
 				pout.closeTerm();
 			}
 		} catch (BException e) {

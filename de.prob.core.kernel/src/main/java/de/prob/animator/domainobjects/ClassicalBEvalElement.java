@@ -49,4 +49,7 @@ public class ClassicalBEvalElement {
 		return type;
 	}
 
+	public String getCode() {
+		return code;
+	}
 }

@@ -5,9 +5,11 @@ public class EvaluationResult {
 	public final String value;
 	public final String solution;
 	public final String errors;
+	private final String code;
 
-	public EvaluationResult(final String value, final String solution,
-			final String errors) {
+	public EvaluationResult(final String code, final String value,
+			final String solution, final String errors) {
+		this.code = code;
 		this.value = value;
 		this.solution = solution;
 		this.errors = errors;
@@ -23,6 +25,10 @@ public class EvaluationResult {
 			else
 				return value + " Solution: " + solution;
 		}
+	}
+
+	public String getCode() {
+		return code;
 	}
 
 }
