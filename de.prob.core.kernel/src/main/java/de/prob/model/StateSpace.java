@@ -41,6 +41,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	private final HashMap<String, Boolean> timeoutOccured = new HashMap<String, Boolean>();
 	private final HashMap<String, Set<String>> operationsWithTimeout = new HashMap<String, Set<String>>();
 
+	private final List<String> formulas = new ArrayList<String>();
 	private final List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
 	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
@@ -102,6 +103,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			}
 		}
 
+		evaluateFormulas();
 		notifyAnimationChange(getCurrentState(), stateId, null);
 		history.add(stateId, null);
 	}
@@ -122,6 +124,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 				}
 			}
 			history.add(newState, opId);
+			evaluateFormulas();
 			notifyAnimationChange(getSource(opId), getDest(opId), opId);
 		}
 	}
@@ -130,7 +133,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		if (canGoBack()) {
 			String oldState = getCurrentState();
 			String opId = history.getCurrentTransition();
+
 			history.back();
+			evaluateFormulas();
 
 			if (opId != null) {
 				notifyAnimationChange(getDest(opId), getSource(opId), opId);
@@ -143,7 +148,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	public void forward() {
 		if (canGoForward()) {
 			String oldState = getCurrentState();
+
 			history.forward();
+			evaluateFormulas();
+
 			String opId = history.getCurrentTransition();
 			if (opId != null) {
 				notifyAnimationChange(getSource(opId), getDest(opId), opId);
@@ -324,5 +332,37 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		step(nextOp);
 
 		randomAnim(steps - 1);
+	}
+
+	public void addUserFormula(String formula) {
+		formulas.add(formula);
+		try {
+			List<EvaluationResult> result = evaluate(formula);
+			HashMap<String, String> varsAtState = variables
+					.get(getCurrentState());
+			for (EvaluationResult evaluationResult : result) {
+				varsAtState.put(evaluationResult.code, evaluationResult.value);
+			}
+		} catch (ProBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void evaluateFormulas() {
+		String[] array = formulas.toArray(new String[formulas.size()]);
+
+		try {
+			List<EvaluationResult> evaluate = evaluate(array);
+			HashMap<String, String> varsAtCurrentState = variables
+					.get(getCurrentState());
+			for (EvaluationResult result : evaluate) {
+				if (!varsAtCurrentState.containsKey(result.code))
+					varsAtCurrentState.put(result.code, result.value);
+			}
+		} catch (ProBException e) {
+			logger.error("Could not evaluate user formulas for state "
+					+ getCurrentState());
+		}
 	}
 }
