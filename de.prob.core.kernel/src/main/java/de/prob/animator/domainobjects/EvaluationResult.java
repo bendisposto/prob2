@@ -5,7 +5,7 @@ public class EvaluationResult {
 	public final String value;
 	public final String solution;
 	public final String errors;
-	private final String code;
+	public final String code;
 
 	public EvaluationResult(final String code, final String value,
 			final String solution, final String errors) {
@@ -25,10 +25,6 @@ public class EvaluationResult {
 			else
 				return value + " Solution: " + solution;
 		}
-	}
-
-	public String getCode() {
-		return code;
 	}
 
 }
