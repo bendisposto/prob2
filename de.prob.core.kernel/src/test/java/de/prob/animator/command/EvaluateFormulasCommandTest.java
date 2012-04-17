@@ -82,7 +82,7 @@ public class EvaluateFormulasCommandTest {
 
 	private CompoundPrologTerm mk_result(final String r) {
 		return new CompoundPrologTerm("result", new CompoundPrologTerm(r),
-				new CompoundPrologTerm(""));
+				new CompoundPrologTerm(""), new CompoundPrologTerm("foo"));
 	}
 
 }
