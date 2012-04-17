@@ -10,7 +10,9 @@ public class Variable {
 
 	public final String name;
 	public final String value;
-
+	
+	
+	
 	public Variable(final CompoundPrologTerm compoundTerm) {
 		if (compoundTerm.getFunctor().equals("binding")) {
 			name = ((CompoundPrologTerm) compoundTerm.getArgument(1))
