@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import de.prob.ProBException;
 import de.prob.animator.command.notImplemented.EvaluateCommand;
 import de.prob.animator.command.notImplemented.GetOperationNamesCommand;
+import de.prob.annotations.Home;
 import de.prob.cli.ProBInstance;
 import de.prob.model.StateSpace;
 import de.prob.model.representation.ClassicalBMachine;
@@ -18,10 +19,13 @@ import de.prob.model.representation.Operation;
 public class Api {
 
 	private final FactoryProvider modelFactoryProvider;
+	private final String home;
 
 	@Inject
-	public Api(final FactoryProvider modelFactoryProvider) {
+	public Api(final FactoryProvider modelFactoryProvider,
+			@Home final String home) {
 		this.modelFactoryProvider = modelFactoryProvider;
+		this.home = home;
 	}
 
 	// private static final Logger logger = LoggerFactory.getLogger(Api.class);
