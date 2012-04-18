@@ -17,4 +17,3 @@ src/main/resources/build.properties
 config.groovy
 .cache
 .groovy/
-probcli/
