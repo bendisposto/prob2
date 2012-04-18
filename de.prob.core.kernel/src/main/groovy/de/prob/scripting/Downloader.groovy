@@ -43,6 +43,11 @@ class Downloader {
 
 		// Unzip file to correct directory (probhome)
 		File.metaClass.unzip = { String dest ->
+
+			/**
+			 *
+			 */
+			final long serialVersionUID = -1922971116345833625L;
 			//in metaclass added methods, 'delegate' is the object on which
 			//the method is called. Here it's the file to unzip
 			def result = new ZipInputStream(new FileInputStream(delegate))
