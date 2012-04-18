@@ -5,6 +5,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import de.prob.ProBException;
@@ -18,6 +21,8 @@ import de.prob.model.representation.Operation;
 
 public class Api {
 
+	Logger logger = LoggerFactory.getLogger(Api.class);
+
 	private final FactoryProvider modelFactoryProvider;
 	private final String home;
 
@@ -27,8 +32,6 @@ public class Api {
 		this.modelFactoryProvider = modelFactoryProvider;
 		this.home = home;
 	}
-
-	// private static final Logger logger = LoggerFactory.getLogger(Api.class);
 
 	public void raise() {
 		// logger.error("Fataaaaal!");
@@ -78,41 +81,22 @@ public class Api {
 		return command.getResult();
 	}
 
-	// public IStateSpace b_def() {
-	// File f = null;
-	// try {
-	//
-	// ClassLoader classLoader = getClass().getClassLoader();
-	// System.out.println(classLoader);
-	//
-	// URL resource = classLoader.getResource("examples/scheduler.mch");
-	//
-	// System.out.println(resource);
-	//
-	// f = new File(resource.toURI());
-	// System.out.println(f);
-	// } catch (URISyntaxException e) {
-	// e.printStackTrace();
-	// }
-	// return open_file(f);
-	// }
-	//
-	// public IStateSpace open_file(final File f) {
-	// StateSpace stateSpace = animationProvider.get();
-	// stateSpace.load(f);
-	// return stateSpace;
-	// }
-	//
-	// public IStateSpace load_b(final String dir, final String name,
-	// final String ext) {
-	// File f = new File(dir + File.separator + name + "." + ext);
-	// return open_file(f);
-	// }
-
 	public String getCurrentId(final StateSpace animation) throws ProBException {
 		// new ICom<GetCurrentStateIdCommand>(new GetCurrentStateIdCommand())
 		// .executeOn(animation);
 		return null;
 	}
 
+	public String upgrade() {
+		Downloader dl = new Downloader();
+		try {
+			dl.downloadCli(home);
+		} catch (ProBException e) {
+			logger.error(
+					"Could not download files for the given operating system",
+					e);
+		}
+
+		return "--UPGRADE COMPLETE--";
+	}
 }
