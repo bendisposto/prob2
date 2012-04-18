@@ -18,7 +18,7 @@ class Downloader {
 		// Choose operating system
 		String os = null;
 		String osName = System.getProperty("os.name");
-		if (osName.equals("Windows")) {
+		if (osName.startsWith("Windows")) {
 			os = "win32";
 		} else if (osName.equals("Mac")) {
 			os = "leopard";
@@ -30,7 +30,7 @@ class Downloader {
 				os = "linux64";
 			}
 		} else {
-			ProBException();
+			throw new ProBException();
 		}
 
 
