@@ -43,6 +43,33 @@ public class MainModule extends AbstractModule {
 
 	public MainModule() {
 		buildConstants = loadBuildConstants();
+		setProBHome();
+	}
+
+	private void setProBHome() {
+		String os = null;
+		String osName = System.getProperty("os.name");
+		if (osName.equals("Windows")) {
+			os = "windows";
+		} else if (osName.equals("Mac")) {
+			os = "macos";
+		} else if (osName.equals("Linux")) {
+			String osArch = System.getProperty("os.arch");
+			if (osArch.equals("i386")) {
+				os = "linux";
+			} else if (osArch.equals("amd64")) {
+				os = "linux64";
+			}
+		}
+
+		// only set the PROB_HOME property if the correct operating system is
+		// identified
+		if (os != null) {
+			String path = System.getProperty("user.dir") + separator
+					+ "probcli" + separator + os + separator;
+			System.setProperty("PROB_HOME", path);
+		}
+
 	}
 
 	@Override
