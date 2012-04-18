@@ -6,6 +6,8 @@ import java.util.zip.ZipInputStream
 
 import de.prob.ProBException
 
+
+
 class Downloader {
 	def download(address,target) {
 		def file = new FileOutputStream(target)
@@ -18,9 +20,9 @@ class Downloader {
 		// Choose operating system
 		String os = null;
 		String osName = System.getProperty("os.name");
-		if (osName.equals("Windows")) {
+		if (osName.startsWith("Windows")) {
 			os = "win32";
-		} else if (osName.equals("Mac")) {
+		} else if (osName.startsWith("Mac")) {
 			os = "leopard";
 		} else if (osName.equals("Linux")) {
 			String osArch = System.getProperty("os.arch");
@@ -30,7 +32,7 @@ class Downloader {
 				os = "linux64";
 			}
 		} else {
-			ProBException();
+			throw new ProBException();
 		}
 
 
