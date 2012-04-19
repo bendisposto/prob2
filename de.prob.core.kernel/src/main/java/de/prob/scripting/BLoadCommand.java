@@ -9,8 +9,6 @@ import org.codehaus.groovy.tools.shell.CommandSupport;
 import org.codehaus.groovy.tools.shell.PShell;
 import org.codehaus.groovy.tools.shell.Shell;
 
-import de.prob.ProBException;
-
 public class BLoadCommand extends CommandSupport {
 
 	protected BLoadCommand(final Shell shell) {
@@ -25,12 +23,7 @@ public class BLoadCommand extends CommandSupport {
 	@Override
 	public Object execute(@SuppressWarnings("rawtypes") final List args) {
 		Api api = ((PShell) shell).getApi();
-		try {
-			return api.b_load((String) args.get(0));
-		} catch (ProBException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return api.b_load((String) args.get(0));
 	}
 
 }
