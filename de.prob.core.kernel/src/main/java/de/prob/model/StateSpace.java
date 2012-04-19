@@ -344,8 +344,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 				varsAtState.put(evaluationResult.code, evaluationResult.value);
 			}
 		} catch (ProBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Formula not added successfully", e);
 		}
 	}
 
