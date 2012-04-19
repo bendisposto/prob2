@@ -42,7 +42,7 @@ public class Api {
 		x.shutdown();
 	}
 
-	public ClassicalBMachine b_def() throws ProBException {
+	public ClassicalBMachine b_def() {
 		ClassLoader classLoader = getClass().getClassLoader();
 		URL resource = classLoader.getResource("examples/scheduler.mch");
 		File f = null;
@@ -54,18 +54,27 @@ public class Api {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 
-		return bFactory.load(f);
+		try {
+			return bFactory.load(f);
+		} catch (ProBException e) {
+			return null;
+		}
 	}
 
 	public StateSpace s() throws ProBException {
-		return b_def().getStatespace();
+		final ClassicalBMachine b = b_def();
+		return (b != null) ? b.getStatespace() : null;
 	}
 
-	public ClassicalBMachine b_load(final String file) throws ProBException {
+	public ClassicalBMachine b_load(final String file) {
 		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
-		return bFactory.load(f);
+		try {
+			return bFactory.load(f);
+		} catch (ProBException e) {
+			return null;
+		}
 	}
 
 	public List<Operation> testX(final StateSpace s) throws ProBException {

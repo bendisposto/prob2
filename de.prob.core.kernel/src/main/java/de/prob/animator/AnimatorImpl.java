@@ -2,6 +2,8 @@ package de.prob.animator;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +27,7 @@ class AnimatorImpl implements IAnimator {
 	private final GetErrorsCommand getErrors;
 
 	@Inject
-	public AnimatorImpl(final ProBInstance cli,
+	public AnimatorImpl(@Nullable final ProBInstance cli,
 			final CommandProcessor processor, final GetErrorsCommand getErrors) {
 		this.cli = cli;
 		this.processor = processor;
@@ -35,6 +37,11 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public void execute(final ICommand command) throws ProBException {
+		if (cli == null) {
+			// System.out.println("Probcli is missing. Try \"upgrade\".");
+			logger.error("Probcli is missing. Try \"upgrade\".");
+			throw new ProBException();
+		}
 		ISimplifiedROMap<String, PrologTerm> bindings = null;
 		try {
 			bindings = processor.sendCommand(command);
