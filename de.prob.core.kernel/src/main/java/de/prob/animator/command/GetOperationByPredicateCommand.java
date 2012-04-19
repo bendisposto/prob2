@@ -4,7 +4,7 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.animator.command.notImplemented;
+package de.prob.animator.command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.ProBException;
-import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.BindingGenerator;
@@ -43,11 +42,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	private List<OpInfo> operation;
 	private final int nrOfSolutions;
 
-	private GetOperationByPredicateCommand() {
-		throw new UnsupportedOperationException("Do not call this constructor");
-	}
-
-	private GetOperationByPredicateCommand(final String stateId,
+	public GetOperationByPredicateCommand(final String stateId,
 			final String name, final String predicate, final int nrOfSolutions) {
 		this.stateId = stateId;
 		this.name = name;
@@ -119,7 +114,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 		}
 	}
 
-	public List<OpInfo> getOperation() {
+	public List<OpInfo> getOperations() {
 		return operation;
 	}
 
