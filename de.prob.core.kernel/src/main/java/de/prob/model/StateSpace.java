@@ -18,6 +18,7 @@ import de.prob.ProBException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
+import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvaluationResult;
@@ -85,6 +86,26 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		invariantOk.put(stateId, command.isInvariantOk());
 		timeoutOccured.put(stateId, command.isTimeoutOccured());
 		operationsWithTimeout.put(stateId, command.getOperationsWithTimeout());
+	}
+
+	public void opFromPredicate(final String stateId, final String name,
+			final String predicate, final int nrOfSolutions)
+			throws ProBException {
+		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
+				stateId, name, predicate, nrOfSolutions);
+		animator.execute(command);
+		List<OpInfo> newOps = command.getOperations();
+		// (id,name,src,dest,args)
+		for (OpInfo operations : newOps) {
+			Operation op = new Operation(operations.id, operations.name,
+					operations.params);
+			if (!containsEdge(op.getId())) {
+				ops.put(operations.id, op);
+				notifyStateSpaceChange(operations.id,
+						containsVertex(operations.dest));
+				addEdge(op.getId(), operations.src, operations.dest);
+			}
+		}
 	}
 
 	public void goToState(final int id) throws ProBException {
@@ -364,4 +385,5 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 					+ getCurrentState());
 		}
 	}
+
 }
