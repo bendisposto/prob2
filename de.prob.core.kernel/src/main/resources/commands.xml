@@ -54,5 +54,7 @@
     
     <command>de.prob.scripting.BLoadCommand</command>
     
+    <command>de.prob.scripting.UpgradeCommand</command>
+    
 </commands>
 
