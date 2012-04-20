@@ -51,8 +51,8 @@ public class GetEnabledOperationsCommandTest {
 						new IntegerPrologTerm(24),
 						new CompoundPrologTerm("foo"), new CompoundPrologTerm(
 								"root"), new IntegerPrologTerm(27),
-						new CompoundPrologTerm("sproing"),
-						new CompoundPrologTerm("ding"))));
+						new CompoundPrologTerm("sproing"), new ListPrologTerm(
+								new CompoundPrologTerm("ding")))));
 
 		GetEnabledOperationsCommand command = new GetEnabledOperationsCommand(
 				"state");
@@ -64,7 +64,7 @@ public class GetEnabledOperationsCommandTest {
 		assertEquals("foo", io.name);
 		assertEquals("root", io.src);
 		assertEquals("27", io.dest);
-		assertEquals("ding", io.params);
+		assertTrue(io.params.contains("ding"));
 
 	}
 
@@ -78,8 +78,8 @@ public class GetEnabledOperationsCommandTest {
 						new IntegerPrologTerm(24),
 						new CompoundPrologTerm("foo"),
 						new IntegerPrologTerm(50), new IntegerPrologTerm(27),
-						new CompoundPrologTerm("sproing"),
-						new CompoundPrologTerm("ding"))));
+						new CompoundPrologTerm("sproing"), new ListPrologTerm(
+								new CompoundPrologTerm("ding")))));
 
 		GetEnabledOperationsCommand command = new GetEnabledOperationsCommand(
 				"state");
@@ -91,7 +91,7 @@ public class GetEnabledOperationsCommandTest {
 		assertEquals("foo", io.name);
 		assertEquals("50", io.src);
 		assertEquals("27", io.dest);
-		assertEquals("ding", io.params);
+		assertTrue(io.params.contains("ding"));
 
 	}
 
