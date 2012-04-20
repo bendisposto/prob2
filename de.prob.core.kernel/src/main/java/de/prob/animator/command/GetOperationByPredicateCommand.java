@@ -39,7 +39,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	private final ClassicalBEvalElement evalElement;
 	private final String stateId;
 	private final String name;
-	private List<OpInfo> operation;
+	private final List<OpInfo> operation = new ArrayList<OpInfo>();
 	private final int nrOfSolutions;
 
 	public GetOperationByPredicateCommand(final String stateId,
@@ -90,23 +90,21 @@ public final class GetOperationByPredicateCommand implements ICommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
 
+		operation.clear();
+
 		try {
 			ListPrologTerm list = BindingGenerator.getList(bindings
 					.get(NEW_STATE_ID_VARIABLE));
 
-			if (list.isEmpty()) {
-				operation = null;
-			} else {
-				ArrayList<OpInfo> result = new ArrayList<OpInfo>();
+			if (!list.isEmpty()) {
 				for (PrologTerm prologTerm : list) {
 					String id = prologTerm.getArgument(1).getFunctor();
 					String name = prologTerm.getArgument(2).getFunctor();
 					String src = prologTerm.getArgument(3).getFunctor();
 					String dest = prologTerm.getArgument(4).getFunctor();
 					String args = prologTerm.getArgument(6).toString();
-					result.add(new OpInfo(id, name, src, dest, args));
+					operation.add(new OpInfo(id, name, src, dest, args));
 				}
-				operation = result;
 			}
 		} catch (ResultParserException e) {
 			logger.error("Result from Prolog was not as expected.", e);
