@@ -14,9 +14,10 @@ public class Operation {
 			final List<String> params2) {
 		this.id = id;
 		this.name = name;
-		for (String string : params2) {
-			params.add(string);
-		}
+
+		if (params2 != null)
+			for (String string : params2)
+				params.add(string);
 	}
 
 	public String getId() {
