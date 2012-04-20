@@ -57,7 +57,8 @@ public class GetOperationByPredicateCommandTest {
 		ListPrologTerm lpt = new ListPrologTerm(new CompoundPrologTerm("term",
 				new CompoundPrologTerm("blaH"), new CompoundPrologTerm("blAh"),
 				new CompoundPrologTerm("bLah"), new CompoundPrologTerm("Blah"),
-				new CompoundPrologTerm("blah"), new CompoundPrologTerm("BLAH")));
+				new CompoundPrologTerm("blah"), new ListPrologTerm(
+						new CompoundPrologTerm("BLAH"))));
 
 		when(map.get(anyString())).thenReturn(lpt);
 
@@ -72,7 +73,7 @@ public class GetOperationByPredicateCommandTest {
 		assertEquals("blAh", element.name);
 		assertEquals("bLah", element.src);
 		assertEquals("Blah", element.dest);
-		assertEquals("'BLAH'", element.params);
+		assertTrue(element.params.contains("BLAH"));
 
 	}
 

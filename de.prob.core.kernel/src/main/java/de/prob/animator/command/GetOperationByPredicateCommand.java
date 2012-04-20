@@ -21,6 +21,7 @@ import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -98,12 +99,9 @@ public final class GetOperationByPredicateCommand implements ICommand {
 
 			if (!list.isEmpty()) {
 				for (PrologTerm prologTerm : list) {
-					String id = prologTerm.getArgument(1).getFunctor();
-					String name = prologTerm.getArgument(2).getFunctor();
-					String src = prologTerm.getArgument(3).getFunctor();
-					String dest = prologTerm.getArgument(4).getFunctor();
-					String args = prologTerm.getArgument(6).toString();
-					operation.add(new OpInfo(id, name, src, dest, args));
+					CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
+							prologTerm, 6);
+					operation.add(new OpInfo(cpt));
 				}
 			}
 		} catch (ResultParserException e) {

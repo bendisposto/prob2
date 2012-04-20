@@ -10,13 +10,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.prob.ProBException;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public final class GetEnabledOperationsCommand implements ICommand {
+
+	Logger logger = LoggerFactory.getLogger(GetEnabledOperationsCommand.class);
 
 	private static final String OPERATIONS_VARIABLE = "PLOps";
 	private final String id;
@@ -29,18 +38,22 @@ public final class GetEnabledOperationsCommand implements ICommand {
 	// [op(id,name,src,dest,[Arguments], [ArgsPrettyPrint],[Infos])]
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
+			final ISimplifiedROMap<String, PrologTerm> bindings)
+			throws ProBException {
 		enabledOperations = new ArrayList<OpInfo>();
 
 		final ListPrologTerm prologTerm = (ListPrologTerm) bindings
 				.get(OPERATIONS_VARIABLE);
 		for (PrologTerm op : prologTerm) {
-			String id = op.getArgument(1).getFunctor();
-			String name = op.getArgument(2).getFunctor();
-			String src = op.getArgument(3).getFunctor();
-			String dest = op.getArgument(4).getFunctor();
-			String args = op.getArgument(6).toString();
-			enabledOperations.add(new OpInfo(id, name, src, dest, args));
+			CompoundPrologTerm cpt;
+			try {
+				cpt = BindingGenerator.getCompoundTerm(op, 6);
+				enabledOperations.add(new OpInfo(cpt));
+			} catch (ResultParserException e) {
+				logger.error("Result from Prolog was not as expected.", e);
+				throw new ProBException();
+			}
+
 		}
 	}
 

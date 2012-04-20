@@ -1,5 +1,8 @@
 package de.prob.animator.domainobjects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +11,7 @@ import de.prob.parser.BindingGenerator;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class OpInfo {
@@ -15,17 +19,21 @@ public class OpInfo {
 	public final String name;
 	public final String src;
 	public final String dest;
-	public final String params;
+	public final List<String> params = new ArrayList<String>();
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
 	public OpInfo(final String id, final String name, final String src,
-			final String dest, final String params) {
+			final String dest, final List<String> params) {
 		this.id = id;
 		this.name = name;
 		this.src = src;
 		this.dest = dest;
-		this.params = params;
+		if (params != null) {
+			for (String string : params) {
+				this.params.add(string);
+			}
+		}
 	}
 
 	// FIXME: Implement this for OpInfo. Should it be a static method?
@@ -37,6 +45,11 @@ public class OpInfo {
 			id = getIdFromPrologTerm(opTerm.getArgument(1));
 			src = getIdFromPrologTerm(opTerm.getArgument(3));
 			dest = getIdFromPrologTerm(opTerm.getArgument(4));
+			ListPrologTerm lpt = BindingGenerator
+					.getList(opTerm.getArgument(6));
+			for (PrologTerm prologTerm : lpt) {
+				params.add(prologTerm.getFunctor());
+			}
 		} catch (ResultParserException e) {
 			logger.error("Result from Prolog was not as expected.", e);
 			throw new ProBException();
@@ -46,10 +59,9 @@ public class OpInfo {
 		this.name = PrologTerm.atomicString(opTerm.getArgument(2));
 		this.src = src;
 		this.dest = dest;
-		this.params = null;
 		// final List<PrologTerm> args = (ListPrologTerm)
 		// opTerm.getArgument(5);
-		// FIXME: so what is params?
+		// so what is params?
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm)
