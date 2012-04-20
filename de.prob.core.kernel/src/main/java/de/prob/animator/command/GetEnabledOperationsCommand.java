@@ -47,7 +47,7 @@ public final class GetEnabledOperationsCommand implements ICommand {
 		for (PrologTerm op : prologTerm) {
 			CompoundPrologTerm cpt;
 			try {
-				cpt = BindingGenerator.getCompoundTerm(op, 6);
+				cpt = BindingGenerator.getCompoundTerm(op, 7);
 				enabledOperations.add(new OpInfo(cpt));
 			} catch (ResultParserException e) {
 				logger.error("Result from Prolog was not as expected.", e);

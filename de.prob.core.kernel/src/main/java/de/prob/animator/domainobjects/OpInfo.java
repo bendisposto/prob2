@@ -36,10 +36,7 @@ public class OpInfo {
 		}
 	}
 
-	// FIXME: Implement this for OpInfo. Should it be a static method?
 	public OpInfo(final CompoundPrologTerm opTerm) throws ProBException {
-		// final CompoundPrologTerm opTerm = (CompoundPrologTerm) rawOpTerm;
-
 		String id = null, src = null, dest = null;
 		try {
 			id = getIdFromPrologTerm(opTerm.getArgument(1));
@@ -59,9 +56,6 @@ public class OpInfo {
 		this.name = PrologTerm.atomicString(opTerm.getArgument(2));
 		this.src = src;
 		this.dest = dest;
-		// final List<PrologTerm> args = (ListPrologTerm)
-		// opTerm.getArgument(5);
-		// so what is params?
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm)

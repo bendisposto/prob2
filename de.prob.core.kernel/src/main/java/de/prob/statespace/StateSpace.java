@@ -283,7 +283,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		sb.append("Operations: \n");
 		for (String opId : opIds) {
 			Operation op = ops.get(opId);
-			sb.append("  " + op.getId() + ": " + op.getName() + "\n");
+			sb.append("  " + op.getId() + ": " + op.toString() + "\n");
 		}
 		return sb.toString();
 	}
