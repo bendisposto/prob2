@@ -52,7 +52,8 @@ public class GetEnabledOperationsCommandTest {
 						new CompoundPrologTerm("foo"), new CompoundPrologTerm(
 								"root"), new IntegerPrologTerm(27),
 						new CompoundPrologTerm("sproing"), new ListPrologTerm(
-								new CompoundPrologTerm("ding")))));
+								new CompoundPrologTerm("ding")),
+						new CompoundPrologTerm("dummy"))));
 
 		GetEnabledOperationsCommand command = new GetEnabledOperationsCommand(
 				"state");
@@ -79,7 +80,8 @@ public class GetEnabledOperationsCommandTest {
 						new CompoundPrologTerm("foo"),
 						new IntegerPrologTerm(50), new IntegerPrologTerm(27),
 						new CompoundPrologTerm("sproing"), new ListPrologTerm(
-								new CompoundPrologTerm("ding")))));
+								new CompoundPrologTerm("ding")),
+						new CompoundPrologTerm("dummy"))));
 
 		GetEnabledOperationsCommand command = new GetEnabledOperationsCommand(
 				"state");
@@ -94,5 +96,4 @@ public class GetEnabledOperationsCommandTest {
 		assertTrue(io.params.contains("ding"));
 
 	}
-
 }
