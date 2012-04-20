@@ -21,7 +21,9 @@ public class UpgradeCommand extends CommandSupport {
 		Api api = ((PShell) shell).getApi();
 		List<WeakReference<ProBInstance>> clis = ProBInstanceProvider.getClis();
 		for (WeakReference<ProBInstance> weakReference : clis) {
-			api.shutdown(weakReference.get());
+			final ProBInstance p = weakReference.get();
+			if (p != null)
+				api.shutdown(p);
 		}
 		System.out.println(api.upgrade());
 		return null;
