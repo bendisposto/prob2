@@ -1,4 +1,4 @@
-package de.prob.model;
+package de.prob.statespace;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -355,7 +355,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		randomAnim(steps - 1);
 	}
 
-	public void addUserFormula(String formula) {
+	public void addUserFormula(final String formula) {
 		formulas.add(formula);
 		try {
 			List<EvaluationResult> result = evaluate(formula);
@@ -377,8 +377,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			HashMap<String, String> varsAtCurrentState = variables
 					.get(getCurrentState());
 			for (EvaluationResult result : evaluate) {
-				if (!varsAtCurrentState.containsKey(result.code))
+				if (!varsAtCurrentState.containsKey(result.code)) {
 					varsAtCurrentState.put(result.code, result.value);
+				}
 			}
 		} catch (ProBException e) {
 			logger.error("Could not evaluate user formulas for state "

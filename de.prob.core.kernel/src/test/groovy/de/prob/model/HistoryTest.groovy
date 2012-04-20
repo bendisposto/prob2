@@ -1,6 +1,7 @@
 package de.prob.model;
 
 import static org.junit.Assert.*;
+import de.prob.statespace.History;
 import spock.lang.Specification
 
 class HistoryTest extends Specification {

@@ -1,4 +1,4 @@
-package de.prob.model;
+package de.prob.statespace;
 
 import java.util.ArrayList;
 import java.util.List;

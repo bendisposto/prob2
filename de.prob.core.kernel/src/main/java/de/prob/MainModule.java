@@ -30,8 +30,8 @@ import de.prob.annotations.Home;
 import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
-import de.prob.model.ModelModule;
 import de.prob.scripting.Api;
+import de.prob.statespace.ModelModule;
 
 public class MainModule extends AbstractModule {
 

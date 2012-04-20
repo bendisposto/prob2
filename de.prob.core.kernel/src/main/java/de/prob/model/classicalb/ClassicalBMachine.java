@@ -1,11 +1,14 @@
-package de.prob.model.representation;
+package de.prob.model.classicalb;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.Node;
-import de.prob.model.StateSpace;
+import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.NamedEntity;
+import de.prob.model.representation.Operation;
+import de.prob.statespace.StateSpace;
 
 public class ClassicalBMachine extends AbstractModel {
 

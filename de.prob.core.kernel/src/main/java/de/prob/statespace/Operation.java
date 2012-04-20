@@ -1,4 +1,4 @@
-package de.prob.model;
+package de.prob.statespace;
 
 public class Operation {
 	private final String id;

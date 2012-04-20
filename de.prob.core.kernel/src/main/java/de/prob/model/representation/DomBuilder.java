@@ -13,6 +13,7 @@ import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.prob.model.classicalb.ClassicalBMachine;
 
 public class DomBuilder extends DepthFirstAdapter {
 

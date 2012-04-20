@@ -4,7 +4,7 @@ import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.be4.classicalb.core.parser.node.Start
-import de.prob.model.representation.ClassicalBMachine
+import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.representation.DomBuilder
 
 class SpockDomWalkerTest extends Specification {

@@ -9,6 +9,10 @@ import java.util.Random
 import spock.lang.Specification
 import de.prob.ProBException
 import de.prob.animator.IAnimator
+import de.prob.statespace.IAnimationListener;
+import de.prob.statespace.IStateSpaceChangeListener;
+import de.prob.statespace.Operation;
+import de.prob.statespace.StateSpace;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
 class StateSpaceTest extends Specification {

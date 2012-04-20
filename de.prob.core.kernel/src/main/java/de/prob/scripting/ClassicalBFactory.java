@@ -11,8 +11,8 @@ import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.notImplemented.StartAnimationCommand;
 import de.prob.animator.command.representation.GetInvariantsCommand;
 import de.prob.animator.command.representation.GetModelNameCommand;
-import de.prob.model.StateSpace;
-import de.prob.model.representation.ClassicalBMachine;
+import de.prob.model.classicalb.ClassicalBMachine;
+import de.prob.statespace.StateSpace;
 
 public class ClassicalBFactory {
 

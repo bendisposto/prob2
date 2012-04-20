@@ -1,8 +1,7 @@
-package de.prob.model;
+package de.prob.model.classicalb;
 
 import java.util.Collection;
 
-import de.prob.model.representation.ClassicalBMachine;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.MultiGraph;

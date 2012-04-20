@@ -1,6 +1,6 @@
 package de.prob.model.representation;
 
-import de.prob.model.StateSpace;
+import de.prob.statespace.StateSpace;
 
 public abstract class AbstractModel {
 

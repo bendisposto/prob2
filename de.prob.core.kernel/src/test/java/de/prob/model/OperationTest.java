@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import de.prob.statespace.Operation;
+
 public class OperationTest {
 
 	@Test

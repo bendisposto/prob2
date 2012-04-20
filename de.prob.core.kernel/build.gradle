@@ -15,7 +15,7 @@ repositories {
     maven {
       name "cobra"
       url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-    }
+    } 
 }
 
 

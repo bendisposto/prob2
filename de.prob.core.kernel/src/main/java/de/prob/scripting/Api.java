@@ -15,9 +15,9 @@ import de.prob.animator.command.notImplemented.EvaluateCommand;
 import de.prob.animator.command.notImplemented.GetOperationNamesCommand;
 import de.prob.annotations.Home;
 import de.prob.cli.ProBInstance;
-import de.prob.model.StateSpace;
-import de.prob.model.representation.ClassicalBMachine;
+import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.representation.Operation;
+import de.prob.statespace.StateSpace;
 
 public class Api {
 
