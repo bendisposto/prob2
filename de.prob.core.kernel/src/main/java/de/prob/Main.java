@@ -17,6 +17,7 @@ import com.google.inject.Injector;
 
 import de.prob.animator.IAnimator;
 import de.prob.annotations.Logfile;
+import de.prob.cli.ProBInstanceProvider;
 
 public class Main {
 
@@ -53,6 +54,10 @@ public class Main {
 	}
 
 	void run(final String[] args) {
+		getAnimator();
+		if (ProBInstanceProvider.getClis().isEmpty())
+			System.out
+					.println("No cli detected. Try \"upgrade\" to download the current version.");
 
 		try {
 			CommandLine line = parser.parse(options, args);
