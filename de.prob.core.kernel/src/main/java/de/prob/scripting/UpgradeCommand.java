@@ -23,7 +23,7 @@ public class UpgradeCommand extends CommandSupport {
 		for (WeakReference<ProBInstance> weakReference : clis) {
 			final ProBInstance p = weakReference.get();
 			if (p != null)
-				api.shutdown(p);
+				p.shutdown();
 		}
 		System.out.println(api.upgrade());
 		return null;
