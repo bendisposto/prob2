@@ -18,8 +18,9 @@ public class UpgradeCommand extends CommandSupport {
 
 	@Override
 	public Object execute(@SuppressWarnings("rawtypes") final List args) {
-		Api api = ((PShell) shell).getApi();
-		List<WeakReference<ProBInstance>> clis = ProBInstanceProvider.getClis();
+		final Api api = ((PShell) shell).getApi();
+		final List<WeakReference<ProBInstance>> clis = ProBInstanceProvider
+				.getClis();
 		for (WeakReference<ProBInstance> weakReference : clis) {
 			final ProBInstance p = weakReference.get();
 			if (p != null)
