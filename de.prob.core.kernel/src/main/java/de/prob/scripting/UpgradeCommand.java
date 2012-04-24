@@ -26,7 +26,10 @@ public class UpgradeCommand extends CommandSupport {
 			if (p != null)
 				p.shutdown();
 		}
-		System.out.println(api.upgrade());
-		return null;
+		if (args.isEmpty()) {
+			return "Command usage: upgrade <version> \n \n"
+					+ api.listVersions();
+		}
+		return api.upgrade((String) args.get(0));
 	}
 }
