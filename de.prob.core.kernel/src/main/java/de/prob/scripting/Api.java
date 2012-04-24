@@ -96,16 +96,20 @@ public class Api {
 		return null;
 	}
 
-	public String upgrade() {
+	public String upgrade(final String targetVersion) {
 		Downloader dl = new Downloader();
 		try {
-			dl.downloadCli(home);
+			return dl.downloadCli(home, targetVersion);
 		} catch (ProBException e) {
 			logger.error(
 					"Could not download files for the given operating system",
 					e);
 		}
+		return "--Upgrade Failed--";
+	}
 
-		return "--UPGRADE COMPLETE--";
+	public String listVersions() {
+		Downloader dl = new Downloader();
+		return dl.listVersions(home);
 	}
 }
