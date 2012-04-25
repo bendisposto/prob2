@@ -29,6 +29,12 @@ public class ModuleCli extends AbstractModule {
 	}
 
 	@Provides
+	@OsArch
+	public String getOsArch() {
+		return System.getProperty("os.arch");
+	}
+
+	@Provides
 	@DebuggingKey
 	public String createDebuggingKey() {
 		Random random;
@@ -50,6 +56,12 @@ public class ModuleCli extends AbstractModule {
 	@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD })
 	@BindingAnnotation
 	@interface DebuggingKey {
+	}
+
+	@Retention(RUNTIME)
+	@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD })
+	@BindingAnnotation
+	@interface OsArch {
 	}
 
 }

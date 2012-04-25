@@ -5,10 +5,23 @@ import static java.io.File.*;
 import java.util.zip.ZipInputStream
 
 import de.prob.ProBException
+import de.prob.annotations.Home
+import de.prob.cli.OsSpecificInfo;
 
+import com.google.inject.Inject;
 
 
 class Downloader {
+
+	def OsSpecificInfo osInfo
+	def String probhome
+
+	@Inject
+	public Downloader(final OsSpecificInfo osInfo, @Home final String probhome) {
+		this.osInfo = osInfo
+		this.probhome = probhome
+	}
+
 	def download(address,target) {
 		def file = new FileOutputStream(target)
 		def out = new BufferedOutputStream(file)
@@ -16,27 +29,7 @@ class Downloader {
 		out.close()
 	}
 
-	def String chooseOS(){
-		// Choose operating system
-		String os = null;
-		String osName = System.getProperty("os.name");
-		if (osName.startsWith("Windows")) {
-			os = "win32";
-		} else if (osName.startsWith("Mac")) {
-			os = "leopard";
-		} else if (osName.equals("Linux")) {
-			String osArch = System.getProperty("os.arch");
-			if (osArch.equals("i386")) {
-				os = "linux";
-			} else if (osArch.equals("amd64")) {
-				os = "linux64";
-			}
-		} else {
-			throw new ProBException();
-		}
-	}
-
-	def ConfigObject downloadConfig(final String probhome) {
+	def ConfigObject downloadConfig() {
 		// download config
 		def configurl = "http://nightly.cobra.cs.uni-duesseldorf.de/tmp/config.groovy"
 		def file = probhome + "config.groovy"
@@ -47,18 +40,19 @@ class Downloader {
 		return config
 	}
 
-	def String listVersions(probhome){
+	def String listVersions(){
 		StringBuilder sb = new StringBuilder()
 		sb.append("Possible Versions are:\n")
 		def config = downloadConfig(probhome)
 		config.each {
 			sb.append("  ")
 			sb.append(it.getKey())
-			sb.append("\n")}
+			sb.append("\n")
+		}
 		return sb.toString()
 	}
 
-	def String downloadCli(final String probhome, final String targetVersion) throws ProBException{
+	def String downloadCli(final String targetVersion) throws ProBException{
 		def config = downloadConfig(probhome)
 		if( !config.containsKey(targetVersion)) {
 			return "There is no version available for version name <"+targetVersion+">\n"+listVersions()
@@ -67,7 +61,7 @@ class Downloader {
 
 
 		// Use operating system to download the correct zip file
-		def os = chooseOS()
+		def os = osInfo.dirName
 		def targetzip = probhome+"probcli_${os}.zip"
 		def url = versionurl + "probcli_${os}.zip"
 		download(url,targetzip)

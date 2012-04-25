@@ -30,6 +30,7 @@ import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
 import de.prob.scripting.Api;
+import de.prob.scripting.Downloader;
 import de.prob.statespace.ModelModule;
 
 public class MainModule extends AbstractModule {
@@ -57,6 +58,7 @@ public class MainModule extends AbstractModule {
 		bind(ConsoleReader.class);
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
 				.toInstance(Main.class.getClassLoader());
+		bind(Downloader.class);
 	}
 
 	@Provides
