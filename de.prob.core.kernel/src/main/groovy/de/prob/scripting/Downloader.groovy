@@ -16,7 +16,7 @@ class Downloader {
 		out.close()
 	}
 
-	def downloadCli(final String probhome) throws ProBException{
+	def String chooseOS(){
 		// Choose operating system
 		String os = null;
 		String osName = System.getProperty("os.name");
@@ -34,22 +34,40 @@ class Downloader {
 		} else {
 			throw new ProBException();
 		}
+	}
 
-
+	def ConfigObject downloadConfig(final String probhome) {
 		// download config
 		def configurl = "http://nightly.cobra.cs.uni-duesseldorf.de/tmp/config.groovy"
 		def file = probhome + "config.groovy"
 		download(configurl, file)
 		File g = new File(file)
+		def config = new ConfigSlurper().parse(g.toURI().toURL())
+		g.delete()
+		return config
+	}
 
-		// get location of desired cli version
-		def config = new ConfigSlurper().parse(g.toURL())
-		def versionurl = config."latest".url
-		//def versionurl = config."1.3.4-test".url
-		g.delete();
+	def String listVersions(probhome){
+		StringBuilder sb = new StringBuilder()
+		sb.append("Possible Versions are:\n")
+		def config = downloadConfig(probhome)
+		config.each {
+			sb.append("  ")
+			sb.append(it.getKey())
+			sb.append("\n")}
+		return sb.toString()
+	}
+
+	def String downloadCli(final String probhome, final String targetVersion) throws ProBException{
+		def config = downloadConfig(probhome)
+		if( !config.containsKey(targetVersion)) {
+			return "There is no version available for version name <"+targetVersion+">\n"+listVersions()
+		}
+		def versionurl = config.get(targetVersion).url
 
 
 		// Use operating system to download the correct zip file
+		def os = chooseOS()
 		def targetzip = probhome+"probcli_${os}.zip"
 		def url = versionurl + "probcli_${os}.zip"
 		download(url,targetzip)
@@ -89,5 +107,7 @@ class Downloader {
 		File f = new File(targetzip)
 		f.unzip(probhome)
 		f.delete()
+
+		return "--Upgrade to version: "+targetVersion+" successful.--"
 	}
 }
