@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
@@ -51,7 +50,8 @@ public class MainModule extends AbstractModule {
 		install(new AnimatorModule());
 		install(new ModelModule());
 		bind(Api.class);
-		bind(CommandLineParser.class).to(PosixParser.class).in(Singleton.class);
+		bind(CommandLineParser.class).to(PosixParser.class);
+
 		bind(String.class).annotatedWith(Version.class).toInstance(
 				buildConstants.getProperty("version", "0.0.0"));
 		bind(ConsoleReader.class);
