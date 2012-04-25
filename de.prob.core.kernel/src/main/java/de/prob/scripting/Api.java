@@ -13,7 +13,6 @@ import com.google.inject.Inject;
 import de.prob.ProBException;
 import de.prob.animator.command.notImplemented.EvaluateCommand;
 import de.prob.animator.command.notImplemented.GetOperationNamesCommand;
-import de.prob.annotations.Home;
 import de.prob.cli.ProBInstance;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.representation.Operation;
@@ -24,13 +23,13 @@ public class Api {
 	Logger logger = LoggerFactory.getLogger(Api.class);
 
 	private final FactoryProvider modelFactoryProvider;
-	private final String home;
+	private final Downloader downloader;
 
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
-			@Home final String home) {
+			final Downloader downloader) {
 		this.modelFactoryProvider = modelFactoryProvider;
-		this.home = home;
+		this.downloader = downloader;
 	}
 
 	public void raise() {
@@ -97,9 +96,8 @@ public class Api {
 	}
 
 	public String upgrade(final String targetVersion) {
-		Downloader dl = new Downloader();
 		try {
-			return dl.downloadCli(home, targetVersion);
+			return downloader.downloadCli(targetVersion);
 		} catch (ProBException e) {
 			logger.error(
 					"Could not download files for the given operating system",
@@ -109,7 +107,6 @@ public class Api {
 	}
 
 	public String listVersions() {
-		Downloader dl = new Downloader();
-		return dl.listVersions(home);
+		return downloader.listVersions();
 	}
 }
