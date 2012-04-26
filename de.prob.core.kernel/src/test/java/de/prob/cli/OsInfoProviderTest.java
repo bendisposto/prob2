@@ -37,8 +37,8 @@ public class OsInfoProviderTest extends AbstractUnitTest {
 	@Test
 	public void testSupportedOS() throws ProBException {
 		for (Entry<String, String> entry : supported.entrySet()) {
-			assertEquals(entry.getValue(),
-					new OsInfoProvider(entry.getKey()).get().name);
+			assertEquals(entry.getValue(), new OsInfoProvider(entry.getKey(),
+					"i386").get().name);
 		}
 	}
 
@@ -46,7 +46,7 @@ public class OsInfoProviderTest extends AbstractUnitTest {
 	public void testUnsupportedOS() {
 		String[] unsupported2 = unsupported;
 		for (String string : unsupported2) {
-			new OsInfoProvider(string).get();
+			new OsInfoProvider(string, "i386").get();
 		}
 	}
 
