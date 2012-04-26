@@ -18,22 +18,18 @@ import com.google.inject.Inject;
 
 import de.prob.annotations.Version;
 import de.prob.scripting.Api;
-import de.prob.scripting.InteractiveObj;
 
 class Shell {
 
 	private final Logger logger = LoggerFactory.getLogger(Shell.class);
 	private final Api api;
 	private final String version;
-	private final InteractiveObj interactiveObj;
 
 	@Inject
-	public Shell(final Api api, @Version final String version,
-			final InteractiveObj interactive) {
+	public Shell(final Api api, @Version final String version) {
 
 		this.api = api;
 		this.version = version;
-		this.interactiveObj = interactive;
 	}
 
 	public void repl() {
@@ -42,7 +38,6 @@ class Shell {
 		// io.setVerbosity(Verbosity.QUIET);
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
-		binding.setVariable("interactiveObj", interactiveObj);
 		PShell shell = new PShell(this.getClass().getClassLoader(), binding,
 				io, version);
 		shell.run("");

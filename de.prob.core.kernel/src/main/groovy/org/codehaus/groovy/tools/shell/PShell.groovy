@@ -464,4 +464,8 @@ extends Shell {
 	void add(String s) {
 		this << s
 	}
+
+	void addVariable(String name, Object obj) {
+		binding.setVariable(name, obj);
+	}
 }
