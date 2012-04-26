@@ -94,11 +94,6 @@ extends Shell {
 	Api getApi() {
 		return binding.getVariable("api"); }
 
-
-	//
-	// Execution
-	//
-
 	/**
 	 * Execute a single line, where the line may be a command or Groovy code (complete or incomplete).
 	 */
@@ -442,6 +437,8 @@ extends Shell {
 
 				// And let 'er rip... :-)
 				runner.run()
+
+
 			}
 
 			code = 0
@@ -461,5 +458,10 @@ extends Shell {
 		assert code != null // This should never happen
 
 		return code
+	}
+
+	//can be used to define new variables that are recognized throughout the whole shell
+	void add(String s) {
+		this << s
 	}
 }

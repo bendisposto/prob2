@@ -56,5 +56,7 @@
     
     <command>de.prob.scripting.UpgradeCommand</command>
     
+    <command>de.prob.scripting.InteractiveCommand</command>
+    
 </commands>
 

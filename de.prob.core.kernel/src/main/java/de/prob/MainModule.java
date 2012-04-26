@@ -31,6 +31,7 @@ import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
 import de.prob.scripting.Api;
 import de.prob.scripting.Downloader;
+import de.prob.scripting.InteractiveObj;
 import de.prob.statespace.ModelModule;
 
 public class MainModule extends AbstractModule {
@@ -59,6 +60,7 @@ public class MainModule extends AbstractModule {
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
 				.toInstance(Main.class.getClassLoader());
 		bind(Downloader.class);
+		bind(InteractiveObj.class);
 	}
 
 	@Provides
