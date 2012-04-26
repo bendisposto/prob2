@@ -1,7 +1,7 @@
 MACHINE scheduler
 
 SETS
-	PID 
+	PID = {PID1,PID2,PID3}
 
 /* LTL Formulas:
   G (e(del) -> {card(ready \\/ waiting)>0})  TRUE
