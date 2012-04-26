@@ -108,6 +108,28 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 	}
 
+	public Operation execOneOp(String opName, String predicate)
+			throws ProBException {
+		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
+				getCurrentState(), opName, predicate, 1);
+		animator.execute(command);
+		OpInfo newOp = command.getOperations().get(0);
+		Operation op = new Operation(newOp.id, newOp.name, newOp.params);
+		if (!containsEdge(op.getId())) {
+			ops.put(newOp.id, op);
+			notifyStateSpaceChange(newOp.id, containsVertex(newOp.dest));
+			addEdge(op.getId(), newOp.src, newOp.dest);
+		}
+
+		return op;
+	}
+
+	public void stepWithOp(String opName, String predicate)
+			throws ProBException {
+		Operation op = execOneOp(opName, predicate);
+		step(op.getId());
+	}
+
 	public void goToState(final int id) throws ProBException {
 		goToState(String.valueOf(id));
 	}

@@ -109,4 +109,8 @@ public class Api {
 	public String listVersions() {
 		return downloader.listVersions();
 	}
+
+	public void interactive(StateSpace s) {
+		System.out.println("successful");
+	}
 }
