@@ -35,7 +35,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 	private final IAnimator animator;
 	private final HashSet<String> explored = new HashSet<String>();
-	private final History history = new History();
+	private final History history;
 	private final HashMap<String, Operation> ops = new HashMap<String, Operation>();
 	private final HashMap<String, HashMap<String, String>> variables = new HashMap<String, HashMap<String, String>>();
 	private final HashMap<String, Boolean> invariantOk = new HashMap<String, Boolean>();
@@ -51,10 +51,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	@Inject
 	public StateSpace(final IAnimator animator,
 			final DirectedSparseMultigraph<String, String> graph,
-			final Random randomGenerator) {
+			final Random randomGenerator, final History history) {
 		super(graph);
 		this.animator = animator;
 		this.randomGenerator = randomGenerator;
+		this.history = history;
 		addVertex("root");
 	}
 
@@ -173,7 +174,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	}
 
 	public void back() {
-		if (canGoBack()) {
+		if (history.canGoBack()) {
 			String oldState = getCurrentState();
 			String opId = history.getCurrentTransition();
 
@@ -189,7 +190,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	}
 
 	public void forward() {
-		if (canGoForward()) {
+		if (history.canGoForward()) {
 			String oldState = getCurrentState();
 
 			history.forward();
@@ -245,14 +246,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	public boolean addEdge(final String opId, final String src,
 			final String dest) {
 		return addEdge(opId, src, dest, EdgeType.DIRECTED);
-	}
-
-	public boolean canGoBack() {
-		return history.canGoBack();
-	}
-
-	public boolean canGoForward() {
-		return history.canGoForward();
 	}
 
 	public HashMap<String, String> getState(final String stateId) {
