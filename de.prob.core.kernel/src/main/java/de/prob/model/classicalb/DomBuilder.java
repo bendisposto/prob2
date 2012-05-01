@@ -1,4 +1,4 @@
-package de.prob.model.representation;
+package de.prob.model.classicalb;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,7 +13,6 @@ import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
-import de.prob.model.classicalb.ClassicalBMachine;
 
 public class DomBuilder extends DepthFirstAdapter {
 
@@ -55,7 +54,7 @@ public class DomBuilder extends DepthFirstAdapter {
 			if (pExpression instanceof AIdentifierExpression) {
 				AIdentifierExpression id = (AIdentifierExpression) pExpression;
 				String name = extractIdentifierName(id.getIdentifier());
-				machine.addVariable(new NamedEntity(name, id));
+				machine.addVariable(new ClassicalBEntity(name, id));
 			}
 		}
 	}
@@ -67,7 +66,7 @@ public class DomBuilder extends DepthFirstAdapter {
 			if (pExpression instanceof AIdentifierExpression) {
 				AIdentifierExpression id = (AIdentifierExpression) pExpression;
 				String name = extractIdentifierName(id.getIdentifier());
-				machine.addConstant(new NamedEntity(name, id));
+				machine.addConstant(new ClassicalBEntity(name, id));
 			}
 		}
 	}

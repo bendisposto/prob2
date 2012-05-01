@@ -24,7 +24,6 @@ public class Api {
 
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;
-	private StateSpace statespace = null;
 
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
@@ -56,17 +55,10 @@ public class Api {
 
 		try {
 			ClassicalBMachine machine = bFactory.load(f);
-			statespace = machine.getStatespace();
 			return machine;
 		} catch (ProBException e) {
 			return null;
 		}
-	}
-
-	public StateSpace getStatespace() throws ProBException {
-		if (statespace == null)
-			statespace = s();
-		return statespace;
 	}
 
 	public StateSpace s() throws ProBException {
