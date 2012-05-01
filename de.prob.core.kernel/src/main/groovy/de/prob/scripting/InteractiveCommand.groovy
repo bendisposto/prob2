@@ -16,6 +16,9 @@ class InteractiveCommand extends CommandSupport {
 
 	@Override
 	public Object execute(List args) {
+		if(args.isEmpty()) {
+			return "Command Usage: interactive <StateSpace>\nPlease include a reference to a StateSpace object as an argument"
+		}
 		PShell newShell = (PShell) shell
 		String stateSpace = args.get(0);
 		def opNames = [
@@ -28,6 +31,6 @@ class InteractiveCommand extends CommandSupport {
 		opNames.each {
 			newShell.add("${it}={ String pred -> ${stateSpace}.stepWithOp('${it}',pred)}")
 		}
-		return null;
+		return "-+-commands successfully added-+-";
 	}
 }
