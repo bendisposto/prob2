@@ -17,9 +17,11 @@ repositories {
     } 
 }
 
-project.findbugs {
-	ignoreFailures = true
+
+tasks.withType(FindBugs){
+ignoreFailures = true
 }
+
 
 def  ft = findbugsMain.classes
 ft.exclude '**/org/codehaus/groovy/tools/shell/*','**/SpockDomWalkerTest.class',"**/de/prob/scripting/Downloader*.class"
