@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.prob.ProBException;
-import de.prob.model.representation.NamedEntity;
+import de.prob.model.classicalb.ClassicalBEntity;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -61,7 +61,7 @@ public class GetInvariantsCommandTest {
 		GetInvariantsCommand command = new GetInvariantsCommand(nia);
 		command.processResult(map);
 
-		List<NamedEntity> invariants = command.getInvariants();
+		List<ClassicalBEntity> invariants = command.getInvariants();
 		assertEquals("active /\\ waiting", invariants.get(0).getIdentifier());
 		assertNull(invariants.get(0).getIdentifierExpression());
 		assertEquals("active /\\ ready", invariants.get(1).getIdentifier());
