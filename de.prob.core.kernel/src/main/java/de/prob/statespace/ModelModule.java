@@ -4,6 +4,8 @@ import java.util.Random;
 
 import com.google.inject.AbstractModule;
 
+import de.prob.model.classicalb.ClassicalBModel;
+
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 public class ModelModule extends AbstractModule {
@@ -19,5 +21,6 @@ public class ModelModule extends AbstractModule {
 		bind(Random.class);
 		bind(History.class);
 		bind(StateSpaceInfo.class);
+		bind(ClassicalBModel.class);
 	}
 }

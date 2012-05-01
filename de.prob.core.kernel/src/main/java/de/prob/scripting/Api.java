@@ -14,7 +14,8 @@ import de.prob.ProBException;
 import de.prob.animator.command.notImplemented.EvaluateCommand;
 import de.prob.animator.command.notImplemented.GetOperationNamesCommand;
 import de.prob.cli.ProBInstance;
-import de.prob.model.classicalb.ClassicalBMachine;
+import de.prob.model.classicalb.ClassicalBFactory;
+import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.representation.Operation;
 import de.prob.statespace.StateSpace;
 
@@ -41,7 +42,7 @@ public class Api {
 		x.shutdown();
 	}
 
-	public ClassicalBMachine b_def() {
+	public ClassicalBModel b_def() {
 		ClassLoader classLoader = getClass().getClassLoader();
 		URL resource = classLoader.getResource("examples/scheduler.mch");
 		File f = null;
@@ -54,7 +55,7 @@ public class Api {
 				.getClassicalBFactory();
 
 		try {
-			ClassicalBMachine machine = bFactory.load(f);
+			ClassicalBModel machine = bFactory.load(f);
 			return machine;
 		} catch (ProBException e) {
 			return null;
@@ -62,11 +63,11 @@ public class Api {
 	}
 
 	public StateSpace s() throws ProBException {
-		final ClassicalBMachine b = b_def();
+		final ClassicalBModel b = b_def();
 		return (b != null) ? b.getStatespace() : null;
 	}
 
-	public ClassicalBMachine b_load(final String file) {
+	public ClassicalBModel b_load(final String file) {
 		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();

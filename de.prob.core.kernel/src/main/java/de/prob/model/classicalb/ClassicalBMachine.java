@@ -7,15 +7,12 @@ import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Operation;
-import de.prob.statespace.StateSpace;
 
 public class ClassicalBMachine extends AbstractModel {
 
 	private final NodeIdAssignment astMapping;
 
-	public ClassicalBMachine(final StateSpace statespace,
-			final NodeIdAssignment nodeIdAssignment) {
-		this.statespace = statespace;
+	public ClassicalBMachine(final NodeIdAssignment nodeIdAssignment) {
 		this.astMapping = nodeIdAssignment;
 	}
 
