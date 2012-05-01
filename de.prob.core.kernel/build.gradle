@@ -22,7 +22,7 @@ project.findbugs {
 }
 
 def  ft = findbugsMain.classes
-ft.exclude '**/org/codehaus/groovy/tools/shell/*','**/SpockDomWalkerTest.class',"**/de/prob/scripting/Downloader*.class"
+ft.exclude '**/org/codehaus/groovy/tools/shell/*','**/SpockDomWalkerTest.class',"**/de/prob/scripting/Downloader*.class","**/de/prob/scripting/InteractiveCommand.class"
 findbugsMain.classes = files(ft.files) // explicit list of files
 
 def  ftc = findbugsTest.classes
