@@ -36,11 +36,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	private final IAnimator animator;
 	private final HashSet<String> explored = new HashSet<String>();
 	private final History history;
-	private final HashMap<String, Operation> ops = new HashMap<String, Operation>();
-	private final HashMap<String, HashMap<String, String>> variables = new HashMap<String, HashMap<String, String>>();
-	private final HashMap<String, Boolean> invariantOk = new HashMap<String, Boolean>();
-	private final HashMap<String, Boolean> timeoutOccured = new HashMap<String, Boolean>();
-	private final HashMap<String, Set<String>> operationsWithTimeout = new HashMap<String, Set<String>>();
+	private final StateSpaceInfo info;
 
 	private final List<String> formulas = new ArrayList<String>();
 	private final List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
@@ -51,14 +47,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	@Inject
 	public StateSpace(final IAnimator animator,
 			final DirectedSparseMultigraph<String, String> graph,
-			final Random randomGenerator, final History history) {
+			final Random randomGenerator, final History history,
+			final StateSpaceInfo info) {
 		super(graph);
 		this.animator = animator;
 		this.randomGenerator = randomGenerator;
 		this.history = history;
+		this.info = info;
 		addVertex("root");
 	}
 
+	// MAKE CHANGES TO THE STATESPACE GRAPH
 	/**
 	 * Takes a state id and calculates the successor states, the invariant,
 	 * timeout, etc.
@@ -76,37 +75,42 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			Operation op = new Operation(operations.id, operations.name,
 					operations.params);
 			if (!containsEdge(op.getId())) {
-				ops.put(operations.id, op);
+				info.add(operations.id, op);
 				notifyStateSpaceChange(operations.id,
 						containsVertex(operations.dest));
 				addEdge(op.getId(), operations.src, operations.dest);
 			}
 		}
 
-		variables.put(stateId, command.getVariables());
-		invariantOk.put(stateId, command.isInvariantOk());
-		timeoutOccured.put(stateId, command.isTimeoutOccured());
-		operationsWithTimeout.put(stateId, command.getOperationsWithTimeout());
+		info.add(stateId, command);
 	}
 
-	public void opFromPredicate(final String stateId, final String name,
-			final String predicate, final int nrOfSolutions)
+	public void explore(final int i) throws ProBException {
+		String si = String.valueOf(i);
+		explore(si);
+	}
+
+	public List<Operation> opFromPredicate(final String stateId,
+			final String name, final String predicate, final int nrOfSolutions)
 			throws ProBException {
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId, name, predicate, nrOfSolutions);
 		animator.execute(command);
 		List<OpInfo> newOps = command.getOperations();
+		List<Operation> ops = new ArrayList<Operation>();
 		// (id,name,src,dest,args)
 		for (OpInfo operations : newOps) {
 			Operation op = new Operation(operations.id, operations.name,
 					operations.params);
 			if (!containsEdge(op.getId())) {
-				ops.put(operations.id, op);
+				info.add(operations.id, op);
 				notifyStateSpaceChange(operations.id,
 						containsVertex(operations.dest));
 				addEdge(op.getId(), operations.src, operations.dest);
 			}
+			ops.add(op);
 		}
+		return ops;
 	}
 
 	public Operation execOneOp(String opName, String predicate)
@@ -117,7 +121,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		OpInfo newOp = command.getOperations().get(0);
 		Operation op = new Operation(newOp.id, newOp.name, newOp.params);
 		if (!containsEdge(op.getId())) {
-			ops.put(newOp.id, op);
+			info.add(newOp.id, op);
 			notifyStateSpaceChange(newOp.id, containsVertex(newOp.dest));
 			addEdge(op.getId(), newOp.src, newOp.dest);
 		}
@@ -125,9 +129,30 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		return op;
 	}
 
+	public boolean isDeadlock(final String stateid) throws ProBException {
+		if (!isExplored(stateid)) {
+			explore(stateid);
+		}
+		return getOutEdges(stateid).isEmpty();
+	}
+
+	private boolean isExplored(final String stateid) {
+		if (!containsVertex(stateid))
+			throw new IllegalArgumentException("Unknown State id");
+		return explored.contains(stateid);
+	}
+
+	@Override
+	public boolean addEdge(final String opId, final String src,
+			final String dest) {
+		return addEdge(opId, src, dest, EdgeType.DIRECTED);
+	}
+
+	// MOVE WITHIN STATESPACE
 	public void stepWithOp(String opName, String predicate)
 			throws ProBException {
-		Operation op = execOneOp(opName, predicate);
+		Operation op = opFromPredicate(getCurrentState(), opName, predicate, 1)
+				.get(0);
 		step(op.getId());
 	}
 
@@ -173,6 +198,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 	}
 
+	public void step(final int i) throws ProBException {
+		String opId = String.valueOf(i);
+		step(opId);
+	}
+
 	public void back() {
 		if (history.canGoBack()) {
 			String oldState = getCurrentState();
@@ -205,139 +235,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 	}
 
-	public void step(final int i) throws ProBException {
-		String opId = String.valueOf(i);
-		step(opId);
-	}
-
-	public void explore(final int i) throws ProBException {
-		String si = String.valueOf(i);
-		explore(si);
-	}
-
-	@Override
-	public void execute(final ICommand command) throws ProBException {
-		animator.execute(command);
-	}
-
-	@Override
-	public void execute(final ICommand... commands) throws ProBException {
-		animator.execute(commands);
-	}
-
 	public String getCurrentState() {
 		return history.getCurrentState();
 	}
 
-	public boolean isDeadlock(final String stateid) throws ProBException {
-		if (!isExplored(stateid)) {
-			explore(stateid);
-		}
-		return getOutEdges(stateid).isEmpty();
-	}
-
-	private boolean isExplored(final String stateid) {
-		if (!containsVertex(stateid))
-			throw new IllegalArgumentException("Unknown State id");
-		return explored.contains(stateid);
-	}
-
-	@Override
-	public boolean addEdge(final String opId, final String src,
-			final String dest) {
-		return addEdge(opId, src, dest, EdgeType.DIRECTED);
-	}
-
-	public HashMap<String, String> getState(final String stateId) {
-		return variables.get(stateId);
-	}
-
-	public HashMap<String, String> getState(final int stateId) {
-		String id = String.valueOf(stateId);
-		return getState(id);
-	}
-
-	public HashMap<String, Boolean> getInvariantOk() {
-		return invariantOk;
-	}
-
-	public HashMap<String, Boolean> getTimeoutOccured() {
-		return timeoutOccured;
-	}
-
-	public HashMap<String, Set<String>> getOperationsWithTimeout() {
-		return operationsWithTimeout;
-	}
-
-	public void registerAnimationListener(final IAnimationListener l) {
-		animationListeners.add(l);
-	}
-
-	public void registerStateSpaceListener(final IStateSpaceChangeListener l) {
-		stateSpaceListeners.add(l);
-	}
-
-	private void notifyAnimationChange(final String fromState,
-			final String toState, final String withOp) {
-		for (IAnimationListener listener : animationListeners) {
-			listener.currentStateChanged(fromState, toState, withOp);
-		}
-	}
-
-	private void notifyStateSpaceChange(final String opName,
-			final boolean isDestStateNew) {
-		for (IStateSpaceChangeListener listener : stateSpaceListeners) {
-			listener.newTransition(opName, isDestStateNew);
-		}
-	}
-
-	public String printOps() {
-		StringBuilder sb = new StringBuilder();
-		String current = getCurrentState();
-		Collection<String> opIds = getOutEdges(current);
-		sb.append("Operations: \n");
-		for (String opId : opIds) {
-			Operation op = ops.get(opId);
-			sb.append("  " + op.getId() + ": " + op.toString() + "\n");
-		}
-		return sb.toString();
-	}
-
-	public String printState() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Current State Id: " + getCurrentState() + "\n");
-		HashMap<String, String> currentState = variables.get(getCurrentState());
-		// FIXME: Find a way to get the names of the variables so that they can
-		// be retrieved from the map
-		Set<Entry<String, String>> entrySet = currentState.entrySet();
-		for (Entry<String, String> entry : entrySet) {
-			sb.append(entry.getKey());
-			sb.append(" -> ");
-			sb.append(entry.getValue());
-			sb.append("\n");
-		}
-		return sb.toString();
-	}
-
-	public List<EvaluationResult> evaluate(final String... code)
-			throws ProBException {
-		return eval(getCurrentState(), code);
-	}
-
-	public List<EvaluationResult> eval(final String state, final String... code)
-			throws ProBException {
-		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
-				code.length);
-		for (String c : code) {
-			list.add(new ClassicalBEvalElement(c));
-		}
-		EvaluateFormulasCommand command = new EvaluateFormulasCommand(list,
-				state);
-		execute(command);
-
-		return command.getValues();
-	}
-
+	// AUTOMATED ANIMATION IN STATESPACE
 	public void randomAnim(final int steps) throws ProBException {
 		if (steps <= 0)
 			return;
@@ -360,7 +262,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		int thresh = randomGenerator.nextInt(size);
 		String nextOp = op[thresh];
 
-		final boolean invariantPreserved = invariantOk.get(state);
+		final boolean invariantPreserved = info.getInvariantOk().get(state);
 
 		if (!invariantPreserved)
 			return;
@@ -370,12 +272,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		randomAnim(steps - 1);
 	}
 
+	// EVALUATE PART OF STATESPACE
 	public void addUserFormula(final String formula) {
 		formulas.add(formula);
 		try {
 			List<EvaluationResult> result = evaluate(formula);
-			HashMap<String, String> varsAtState = variables
-					.get(getCurrentState());
+			HashMap<String, String> varsAtState = info
+					.getState(getCurrentState());
 			for (EvaluationResult evaluationResult : result) {
 				varsAtState.put(evaluationResult.code, evaluationResult.value);
 			}
@@ -389,8 +292,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 		try {
 			List<EvaluationResult> evaluate = evaluate(array);
-			HashMap<String, String> varsAtCurrentState = variables
-					.get(getCurrentState());
+			HashMap<String, String> varsAtCurrentState = info
+					.getState(getCurrentState());
 			for (EvaluationResult result : evaluate) {
 				if (!varsAtCurrentState.containsKey(result.code)) {
 					varsAtCurrentState.put(result.code, result.value);
@@ -400,6 +303,100 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			logger.error("Could not evaluate user formulas for state "
 					+ getCurrentState());
 		}
+	}
+
+	public List<EvaluationResult> evaluate(final String... code)
+			throws ProBException {
+		return eval(getCurrentState(), code);
+	}
+
+	public List<EvaluationResult> eval(final String state, final String... code)
+			throws ProBException {
+		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
+				code.length);
+		for (String c : code) {
+			list.add(new ClassicalBEvalElement(c));
+		}
+		EvaluateFormulasCommand command = new EvaluateFormulasCommand(list,
+				state);
+		execute(command);
+
+		return command.getValues();
+	}
+
+	@Override
+	public void execute(final ICommand command) throws ProBException {
+		animator.execute(command);
+	}
+
+	@Override
+	public void execute(final ICommand... commands) throws ProBException {
+		animator.execute(commands);
+	}
+
+	// NOTIFICATION SYSTEM
+	public void registerAnimationListener(final IAnimationListener l) {
+		animationListeners.add(l);
+	}
+
+	public void registerStateSpaceListener(final IStateSpaceChangeListener l) {
+		stateSpaceListeners.add(l);
+	}
+
+	private void notifyAnimationChange(final String fromState,
+			final String toState, final String withOp) {
+		for (IAnimationListener listener : animationListeners) {
+			listener.currentStateChanged(fromState, toState, withOp);
+		}
+	}
+
+	private void notifyStateSpaceChange(final String opName,
+			final boolean isDestStateNew) {
+		for (IStateSpaceChangeListener listener : stateSpaceListeners) {
+			listener.newTransition(opName, isDestStateNew);
+		}
+	}
+
+	// INFORMATION ABOUT THE STATE
+	@Override
+	public String toString() {
+		String result = "";
+		result += printState();
+		result += printOps();
+		result += super.toString();
+		return result;
+	}
+
+	public String printState() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Current State Id: " + getCurrentState() + "\n");
+		HashMap<String, String> currentState = info.getState(getCurrentState());
+		// FIXME: Find a way to get the names of the variables so that they can
+		// be retrieved from the map
+		if (currentState != null) {
+			Set<Entry<String, String>> entrySet = currentState.entrySet();
+			for (Entry<String, String> entry : entrySet) {
+				sb.append("  " + entry.getKey() + " -> " + entry.getValue()
+						+ "\n");
+			}
+		}
+		return sb.toString();
+	}
+
+	public String printOps() {
+		StringBuilder sb = new StringBuilder();
+		String current = getCurrentState();
+		Collection<String> opIds = getOutEdges(current);
+		sb.append("Operations: \n");
+		for (String opId : opIds) {
+			Operation op = info.getOp(opId);
+			sb.append("  " + op.getId() + ": " + op.toString() + "\n");
+		}
+		return sb.toString();
+	}
+
+	public String printInfo() {
+		return info.toString();
 	}
 
 }

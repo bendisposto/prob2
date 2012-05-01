@@ -10,7 +10,7 @@ import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
-import de.prob.model.representation.NamedEntity;
+import de.prob.model.classicalb.ClassicalBEntity;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
@@ -23,7 +23,7 @@ public class GetInvariantsCommand implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(GetInvariantsCommand.class);
 	private static final String LIST = "LIST";
-	List<NamedEntity> invariant;
+	List<ClassicalBEntity> invariant;
 	private final NodeIdAssignment nodeIdMapping;
 
 	public GetInvariantsCommand(final NodeIdAssignment nodeIdMapping) {
@@ -39,7 +39,7 @@ public class GetInvariantsCommand implements ICommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws ProBException {
-		ArrayList<NamedEntity> r = new ArrayList<NamedEntity>();
+		ArrayList<ClassicalBEntity> r = new ArrayList<ClassicalBEntity>();
 
 		try {
 
@@ -51,7 +51,7 @@ public class GetInvariantsCommand implements ICommand {
 				int id = Integer.parseInt(inv.getArgument(2).toString());
 				String name = inv.getArgument(1).getFunctor();
 				Node ID = nodeIdMapping.lookupById(id);
-				r.add(new NamedEntity(name, ID));
+				r.add(new ClassicalBEntity(name, ID));
 			}
 
 		} catch (ResultParserException e) {
@@ -62,7 +62,7 @@ public class GetInvariantsCommand implements ICommand {
 		}
 	}
 
-	public List<NamedEntity> getInvariants() {
+	public List<ClassicalBEntity> getInvariants() {
 		return invariant;
 	}
 

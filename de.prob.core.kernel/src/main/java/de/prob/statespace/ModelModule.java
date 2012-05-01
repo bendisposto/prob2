@@ -18,5 +18,6 @@ public class ModelModule extends AbstractModule {
 		bind(DirectedSparseMultigraph.class);
 		bind(Random.class);
 		bind(History.class);
+		bind(StateSpaceInfo.class);
 	}
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.NamedEntity;
 import de.prob.model.representation.Operation;
 import de.prob.statespace.StateSpace;
 
@@ -26,25 +25,25 @@ public class ClassicalBMachine extends AbstractModel {
 
 	private String name;
 
-	private final List<NamedEntity> variables = new ArrayList<NamedEntity>();
-	private final List<NamedEntity> constants = new ArrayList<NamedEntity>();
-	private final List<NamedEntity> invariant = new ArrayList<NamedEntity>();
-	private final List<NamedEntity> assertions = new ArrayList<NamedEntity>();
+	private final List<ClassicalBEntity> variables = new ArrayList<ClassicalBEntity>();
+	private final List<ClassicalBEntity> constants = new ArrayList<ClassicalBEntity>();
+	private final List<ClassicalBEntity> invariant = new ArrayList<ClassicalBEntity>();
+	private final List<ClassicalBEntity> assertions = new ArrayList<ClassicalBEntity>();
 	private final List<Operation> operations = new ArrayList<Operation>();
 
-	public List<NamedEntity> getConstants() {
+	public List<ClassicalBEntity> getConstants() {
 		return constants;
 	}
 
-	public List<NamedEntity> getVariables() {
+	public List<ClassicalBEntity> getVariables() {
 		return variables;
 	}
 
-	public List<NamedEntity> getInvariant() {
+	public List<ClassicalBEntity> getInvariant() {
 		return invariant;
 	}
 
-	public List<NamedEntity> getAssertions() {
+	public List<ClassicalBEntity> getAssertions() {
 		return assertions;
 	}
 
@@ -60,19 +59,19 @@ public class ClassicalBMachine extends AbstractModel {
 		this.name = name;
 	}
 
-	public void addVariable(final NamedEntity v) {
+	public void addVariable(final ClassicalBEntity v) {
 		this.variables.add(v);
 	}
 
-	public void addConstant(final NamedEntity v) {
+	public void addConstant(final ClassicalBEntity v) {
 		this.constants.add(v);
 	}
 
-	public void addAssertion(final NamedEntity p) {
+	public void addAssertion(final ClassicalBEntity p) {
 		this.assertions.add(p);
 	}
 
-	public void addInvariants(final List<NamedEntity> l) {
+	public void addInvariants(final List<ClassicalBEntity> l) {
 		this.invariant.addAll(l);
 	}
 
@@ -84,19 +83,19 @@ public class ClassicalBMachine extends AbstractModel {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\nVariables:\n");
-		for (NamedEntity var : variables) {
+		for (ClassicalBEntity var : variables) {
 			sb.append("  " + var.getIdentifier() + "\n");
 		}
 		sb.append("Constants:\n");
-		for (NamedEntity constant : constants) {
+		for (ClassicalBEntity constant : constants) {
 			sb.append("  " + constant.getIdentifier() + "\n");
 		}
 		sb.append("Invariants:\n");
-		for (NamedEntity inv : invariant) {
+		for (ClassicalBEntity inv : invariant) {
 			sb.append("  " + inv.getIdentifier() + "\n");
 		}
 		sb.append("Assertions:\n");
-		for (NamedEntity assertion : assertions) {
+		for (ClassicalBEntity assertion : assertions) {
 			sb.append("  " + assertion.getIdentifier() + "\n");
 		}
 		sb.append("Operations:\n");
