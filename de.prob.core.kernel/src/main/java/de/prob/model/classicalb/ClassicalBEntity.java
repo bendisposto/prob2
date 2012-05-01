@@ -1,13 +1,13 @@
-package de.prob.model.representation;
+package de.prob.model.classicalb;
 
 import de.be4.classicalb.core.parser.node.Node;
 
-public class NamedEntity {
+public class ClassicalBEntity {
 
 	private String identifier;
 	private final Node astPart;
 
-	public NamedEntity(final String name, final Node id) {
+	public ClassicalBEntity(final String name, final Node id) {
 		this.identifier = name;
 		this.astPart = id;
 	}
