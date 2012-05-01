@@ -6,7 +6,6 @@ apply from: 'https://raw.github.com/gist/1527604/4080ebed7b141d10610825aebd70942
 apply plugin: 'findbugs'
 
 project.group = 'de.prob'
-gradle_version = '1.0-milestone-8a'
 sourceCompatibility = 1.6
 
 project.version = '2.0.0-milestone-2-SNAPSHOT'
@@ -17,7 +16,6 @@ repositories {
       url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
     } 
 }
-
 
 project.findbugs {
 	ignoreFailures = true
@@ -89,8 +87,8 @@ compileJava {
 
 task pack(type: Jar, dependsOn: [jar]) {
 	baseName = project.name + '-standalone'
-	deps = configurations.runtime + configurations.archives.allArtifacts.files
-	depClasses = {
+	def deps = configurations.runtime + configurations.archives.allArtifacts.files
+	def depClasses = {
 		deps.collect {
 			it.isDirectory() ? it : zipTree(it)
 		}
