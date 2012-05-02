@@ -1,4 +1,3 @@
-
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
@@ -7,6 +6,7 @@ apply plugin: 'findbugs'
 
 project.group = 'de.prob'
 sourceCompatibility = 1.6
+def gradle_version = '1.0-rc-3'
 
 project.version = '2.0.0-milestone-2-SNAPSHOT'
 
@@ -120,7 +120,7 @@ javadoc {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.0-milestone-8a'
+    gradleVersion = gradle_version
 }
 
 task integrationtests(dependsOn: 'classes', type:JavaExec){
