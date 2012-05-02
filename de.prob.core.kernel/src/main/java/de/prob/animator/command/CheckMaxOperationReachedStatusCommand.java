@@ -9,6 +9,14 @@ package de.prob.animator.command;
 import de.prob.ProBException;
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 
+//FIXME: Is this actually what the command does?
+/**
+ * Checks to see if the max number of operations has been reached for a given
+ * state
+ * 
+ * @author joy
+ * 
+ */
 public final class CheckMaxOperationReachedStatusCommand extends
 		CheckBooleanPropertyCommand {
 

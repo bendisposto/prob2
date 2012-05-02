@@ -1,11 +1,8 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -13,7 +10,6 @@ import java.net.URL;
 import java.util.Collection;
 
 import org.junit.Test;
-import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
@@ -43,8 +39,8 @@ public class LoadBProjectCommandTest {
 		ClassicalBFactory factory = new ClassicalBFactory(null);
 		BParser bparser = new BParser();
 		Start ast = factory.parseFile(f, bparser);
-		RecursiveMachineLoader rml = factory.parseAllMachines(ast,f,bparser);
-		
+		RecursiveMachineLoader rml = factory.parseAllMachines(ast, f, bparser);
+
 		LoadBProjectCommand command = new LoadBProjectCommand(rml);
 		command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();

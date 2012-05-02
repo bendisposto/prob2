@@ -14,6 +14,14 @@ import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * Stores the information for a given Operation. This includes operation id
+ * (id), operation name (name), the source state (src), and the destination
+ * state (dest), as well as a list of parameters.
+ * 
+ * @author joy
+ * 
+ */
 public class OpInfo {
 	public final String id;
 	public final String name;

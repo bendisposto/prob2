@@ -19,6 +19,12 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+
+/**
+ * Extracts the string representation of the invariants from ProB
+ * @author joy
+ *
+ */
 public class GetInvariantsCommand implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(GetInvariantsCommand.class);

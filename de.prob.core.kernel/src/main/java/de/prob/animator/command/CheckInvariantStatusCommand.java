@@ -9,6 +9,12 @@ package de.prob.animator.command;
 import de.prob.ProBException;
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 
+/**
+ * Checks to see if the invariant at a specific state is violated.
+ * 
+ * @author joy
+ * 
+ */
 public final class CheckInvariantStatusCommand extends
 		CheckBooleanPropertyCommand {
 

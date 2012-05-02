@@ -20,6 +20,12 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * Calculates the values of Classical-B Predicates and Expressions.
+ * 
+ * @author joy
+ * 
+ */
 public class EvaluateFormulasCommand implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(EvaluateFormulasCommand.class);
@@ -29,6 +35,7 @@ public class EvaluateFormulasCommand implements ICommand {
 	private final String stateId;
 	private final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
 
+	// FIXME: Why does this command need access to the id?
 	public EvaluateFormulasCommand(
 			final List<ClassicalBEvalElement> evalElements, final String id) {
 		this.evalElements = evalElements;
