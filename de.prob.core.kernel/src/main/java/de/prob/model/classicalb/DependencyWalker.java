@@ -21,8 +21,10 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 public class DependencyWalker extends DepthFirstAdapter {
 
 	private final DirectedSparseMultigraph<String, RefType> graph;
+	@SuppressWarnings("unused")
+	// FIXME: Fix this
 	private final File folder;
-	private String src;
+	private final String src;
 
 	public DependencyWalker(String name, File file,
 			DirectedSparseMultigraph<String, RefType> graph) {
@@ -33,14 +35,12 @@ public class DependencyWalker extends DepthFirstAdapter {
 
 	@Override
 	public void caseASeesMachineClause(ASeesMachineClause node) {
-		registerMachineNames(node.getMachineNames(),
-				new RefType(ERefType.SEES));
+		registerMachineNames(node.getMachineNames(), new RefType(ERefType.SEES));
 	}
 
 	@Override
 	public void caseAUsesMachineClause(AUsesMachineClause node) {
-		registerMachineNames(node.getMachineNames(),
-				new RefType(ERefType.USES));
+		registerMachineNames(node.getMachineNames(), new RefType(ERefType.USES));
 	}
 
 	@Override
