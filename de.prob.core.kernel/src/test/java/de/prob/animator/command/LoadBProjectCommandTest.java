@@ -1,6 +1,8 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -9,8 +11,15 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
+
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+
+import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
+import de.be4.classicalb.core.parser.node.Start;
 import de.prob.ProBException;
+import de.prob.model.classicalb.ClassicalBFactory;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -31,7 +40,12 @@ public class LoadBProjectCommandTest {
 		}
 
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
-		LoadBProjectCommand command = new LoadBProjectCommand(f);
+		ClassicalBFactory factory = new ClassicalBFactory(null);
+		BParser bparser = new BParser();
+		Start ast = factory.parseFile(f, bparser);
+		RecursiveMachineLoader rml = factory.parseAllMachines(ast,f,bparser);
+		
+		LoadBProjectCommand command = new LoadBProjectCommand(rml);
 		command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();
 		Collection<PrologTerm> sentences = prologTermOutput.getSentences();

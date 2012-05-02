@@ -43,7 +43,7 @@ class Downloader {
 	def String listVersions(){
 		StringBuilder sb = new StringBuilder()
 		sb.append("Possible Versions are:\n")
-		def config = downloadConfig(probhome)
+		def config = downloadConfig()
 		config.each {
 			sb.append("  ")
 			sb.append(it.getKey())

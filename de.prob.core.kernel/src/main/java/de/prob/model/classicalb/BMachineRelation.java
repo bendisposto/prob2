@@ -1,5 +1,5 @@
 package de.prob.model.classicalb;
 
-public enum ClassicalBDependencyType {
+public enum BMachineRelation {
 	REFINES, SEES, USES, INCLUDES;
 }

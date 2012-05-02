@@ -1,4 +1,4 @@
-package de.prob.model
+package de.prob.statespace
 
 
 import static org.junit.Assert.*
@@ -26,7 +26,7 @@ class StateSpaceTest extends Specification {
 
 		doThrow(new ProBException()).when(mock).execute(any(Object.class));
 
-		s = new StateSpace(mock, new DirectedSparseMultigraph<String, String>(), new Random())
+		s = new StateSpace(mock, new DirectedSparseMultigraph<String, String>(), new Random(), new History(), new StateSpaceInfo())
 
 		s.addVertex("1")
 		s.explored.add("1")
@@ -243,7 +243,7 @@ class StateSpaceTest extends Specification {
 		when(r.nextInt(anyInt())).thenReturn(0, 0, 1, 2, 0, 0);
 
 
-		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r)
+		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r,new History(),new StateSpaceInfo())
 
 		s.addEdge("b","root","2")
 		s.addEdge("c","2","3")
@@ -268,18 +268,18 @@ class StateSpaceTest extends Specification {
 		s.explored.add("10")
 		s.explored.add("11")
 
-		s.invariantOk.put("root", true)
-		s.invariantOk.put("1", true)
-		s.invariantOk.put("2", true)
-		s.invariantOk.put("3", true)
-		s.invariantOk.put("4", true)
-		s.invariantOk.put("5", true)
-		s.invariantOk.put("6", true)
-		s.invariantOk.put("7", true)
-		s.invariantOk.put("8", true)
-		s.invariantOk.put("9", true)
-		s.invariantOk.put("10", true)
-		s.invariantOk.put("11", true)
+		s.info.addInvOk("root", true)
+		s.info.addInvOk("1", true)
+		s.info.addInvOk("2", true)
+		s.info.addInvOk("3", true)
+		s.info.addInvOk("4", true)
+		s.info.addInvOk("5", true)
+		s.info.addInvOk("6", true)
+		s.info.addInvOk("7", true)
+		s.info.addInvOk("8", true)
+		s.info.addInvOk("9", true)
+		s.info.addInvOk("10", true)
+		s.info.addInvOk("11", true)
 
 		when:
 		s.randomAnim(6);
@@ -304,7 +304,7 @@ class StateSpaceTest extends Specification {
 		when(r.nextInt(anyInt())).thenReturn(0, 0, 1, 2, 0, 0);
 
 
-		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r)
+		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r,new History(),new StateSpaceInfo())
 
 		s.addEdge("b","root","2")
 		s.addEdge("c","2","3")
@@ -329,18 +329,18 @@ class StateSpaceTest extends Specification {
 		s.explored.add("10")
 		s.explored.add("11")
 
-		s.invariantOk.put("root", true)
-		s.invariantOk.put("1", true)
-		s.invariantOk.put("2", true)
-		s.invariantOk.put("3", false)
-		s.invariantOk.put("4", true)
-		s.invariantOk.put("5", true)
-		s.invariantOk.put("6", true)
-		s.invariantOk.put("7", true)
-		s.invariantOk.put("8", true)
-		s.invariantOk.put("9", true)
-		s.invariantOk.put("10", true)
-		s.invariantOk.put("11", true)
+		s.info.addInvOk("root", true)
+		s.info.addInvOk("1", true)
+		s.info.addInvOk("2", true)
+		s.info.addInvOk("3", false)
+		s.info.addInvOk("4", true)
+		s.info.addInvOk("5", true)
+		s.info.addInvOk("6", true)
+		s.info.addInvOk("7", true)
+		s.info.addInvOk("8", true)
+		s.info.addInvOk("9", true)
+		s.info.addInvOk("10", true)
+		s.info.addInvOk("11", true)
 
 		when:
 		s.randomAnim(6);
@@ -361,7 +361,7 @@ class StateSpaceTest extends Specification {
 		when(r.nextInt(anyInt())).thenReturn(0, 0, 0, 0, 0, 0);
 
 
-		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r)
+		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r,new History(),new StateSpaceInfo())
 
 		s.addEdge("b","root","2")
 		s.addEdge("c","2","3")
@@ -370,10 +370,10 @@ class StateSpaceTest extends Specification {
 		s.explored.add("2")
 		s.explored.add("3")
 
-		s.invariantOk.put("root", true)
-		s.invariantOk.put("1", true)
-		s.invariantOk.put("2", true)
-		s.invariantOk.put("3", true)
+		s.info.addInvOk("root", true)
+		s.info.addInvOk("1", true)
+		s.info.addInvOk("2", true)
+		s.info.addInvOk("3", true)
 
 		when:
 		s.randomAnim(6);

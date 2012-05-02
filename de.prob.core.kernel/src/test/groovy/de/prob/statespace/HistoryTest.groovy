@@ -1,4 +1,4 @@
-package de.prob.model;
+package de.prob.statespace;
 
 import static org.junit.Assert.*;
 import de.prob.statespace.History;

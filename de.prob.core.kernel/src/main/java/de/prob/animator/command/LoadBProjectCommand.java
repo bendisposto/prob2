@@ -1,17 +1,12 @@
 package de.prob.animator.command;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
-import de.be4.classicalb.core.parser.exceptions.BException;
-import de.be4.classicalb.core.parser.node.Start;
 import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -21,18 +16,18 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class LoadBProjectCommand implements ICommand {
-	private final File model;
 	Logger logger = LoggerFactory.getLogger(LoadBProjectCommand.class);
 	private NodeIdAssignment nodeIdMapping;
+	private final RecursiveMachineLoader rml;
 
-	public LoadBProjectCommand(final File f) {
-		this.model = f;
+	public LoadBProjectCommand(final RecursiveMachineLoader rml) {
+		this.rml = rml;
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
 		pto.openTerm("load_classical_b");
-		pto.printTerm(getLoadTerm(model));
+		pto.printTerm(getLoadTerm(rml));
 		pto.printVariable("Errors");
 		pto.closeTerm();
 	}
@@ -50,45 +45,14 @@ public class LoadBProjectCommand implements ICommand {
 		}
 	}
 
-	private PrologTerm getLoadTerm(final File model) throws ProBException {
-		BParser bparser = new BParser();
-		StructuredPrologOutput parserOutput = null;
-		Start ast = parseFile(model, bparser);
-		final RecursiveMachineLoader rml = new RecursiveMachineLoader(
-				model.getParent());
-		try {
-			rml.loadAllMachines(model, ast, null, bparser.getDefinitions(),
-					bparser.getPragmas());
-		} catch (BException e) {
-			logger.error("Parser Error. {}.", e.getLocalizedMessage());
-			logger.debug("Details", e);
-			throw new ProBException();
-		}
-		parserOutput = new StructuredPrologOutput();
-		logger.trace("Done with parsing '{}'", model.getAbsolutePath());
+	private PrologTerm getLoadTerm(final RecursiveMachineLoader rml) throws ProBException {
+		StructuredPrologOutput parserOutput = new StructuredPrologOutput();
 		rml.printAsProlog(parserOutput);
 		nodeIdMapping = rml.getNodeIdMapping();
 		return collectSentencesInList(parserOutput);
 	}
 
-	private Start parseFile(final File model, final BParser bparser)
-			throws ProBException {
-		logger.trace("Parsing main file '{}'", model.getAbsolutePath());
 
-		Start ast = null;
-		try {
-			ast = bparser.parseFile(model, false);
-		} catch (IOException e) {
-			logger.error("IO Error {}.", e.getLocalizedMessage());
-			logger.debug("Details", e);
-			throw new ProBException();
-		} catch (BException e) {
-			logger.error("Parser Error. {}.", e.getLocalizedMessage());
-			logger.debug("Details", e);
-			throw new ProBException();
-		}
-		return ast;
-	}
 
 	private PrologTerm collectSentencesInList(final StructuredPrologOutput po) {
 		List<PrologTerm> parserOutput = po.getSentences();
