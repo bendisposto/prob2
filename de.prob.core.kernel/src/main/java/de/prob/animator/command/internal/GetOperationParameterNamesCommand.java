@@ -12,6 +12,12 @@ import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * Finds the name of the parameter for the given operation name
+ * 
+ * @author joy
+ * 
+ */
 public class GetOperationParameterNamesCommand implements ICommand {
 
 	Logger logger = LoggerFactory

@@ -1,8 +1,6 @@
 package de.prob.model.classicalb;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,8 +22,8 @@ public class ClassicalBModel {
 		this.statespace = statespace;
 	}
 
-	public DirectedSparseMultigraph<String, RefType> initialize(
-			Start ast, File f) throws ProBException {
+	public DirectedSparseMultigraph<String, RefType> initialize(Start ast,
+			File f) throws ProBException {
 
 		DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 
@@ -37,7 +35,7 @@ public class ClassicalBModel {
 		graph.addVertex(name);
 		content.put(name, mainMachine);
 
-		ast.apply(new DependencyWalker(name,f.getParentFile(), graph));
+		ast.apply(new DependencyWalker(name, f.getParentFile(), graph));
 		return graph;
 	}
 

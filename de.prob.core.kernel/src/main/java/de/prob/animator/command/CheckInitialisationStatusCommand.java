@@ -8,7 +8,13 @@ package de.prob.animator.command;
 
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 
-
+//FIXME: Is it the state itself that is initialized? How can a state be initialized?
+/**
+ * Checks to see if the given state is initialized.
+ * 
+ * @author joy
+ * 
+ */
 public final class CheckInitialisationStatusCommand extends
 		CheckBooleanPropertyCommand {
 

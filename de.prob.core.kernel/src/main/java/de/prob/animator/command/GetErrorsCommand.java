@@ -8,6 +8,12 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * Gets a list of the errors from ProB
+ * 
+ * @author joy
+ * 
+ */
 public class GetErrorsCommand implements ICommand {
 	public static final String ERRORS_VARIABLE = "Errors";
 	private List<String> errors;

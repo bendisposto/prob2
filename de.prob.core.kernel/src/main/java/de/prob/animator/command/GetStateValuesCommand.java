@@ -20,13 +20,19 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * Calculates the state values for a given state id
+ * 
+ * @author joy
+ * 
+ */
 public final class GetStateValuesCommand implements ICommand {
 
 	private final Logger logger = LoggerFactory
 			.getLogger(GetStateBasedErrorsCommand.class);
 
 	private final String stateId;
-	private HashMap<String, String> values = new HashMap<String, String>();
+	private final HashMap<String, String> values = new HashMap<String, String>();
 
 	public GetStateValuesCommand(final String stateID) {
 		stateId = stateID;

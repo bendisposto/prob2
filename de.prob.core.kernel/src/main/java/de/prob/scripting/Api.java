@@ -67,6 +67,12 @@ public class Api {
 		return (b != null) ? b.getStatespace() : null;
 	}
 
+	/**
+	 * Takes path of a Classical B Machine and loads it into the ClassicalBModel
+	 * 
+	 * @param file
+	 * @return
+	 */
 	public ClassicalBModel b_load(final String file) {
 		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
@@ -97,6 +103,12 @@ public class Api {
 		return null;
 	}
 
+	/**
+	 * Upgrades the ProB Cli to the given target version
+	 * 
+	 * @param targetVersion
+	 * @return
+	 */
 	public String upgrade(final String targetVersion) {
 		try {
 			return downloader.downloadCli(targetVersion);
@@ -108,11 +120,12 @@ public class Api {
 		return "--Upgrade Failed--";
 	}
 
+	/**
+	 * Lists the versions of ProB Cli that are available for download
+	 * 
+	 * @return
+	 */
 	public String listVersions() {
 		return downloader.listVersions();
-	}
-
-	public void interactive(StateSpace s) {
-		System.out.println("successful");
 	}
 }

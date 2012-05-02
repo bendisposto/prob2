@@ -12,6 +12,12 @@ import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * Finds the operations that have a timeout for a specific state
+ * 
+ * @author joy
+ * 
+ */
 public class GetOperationsWithTimeout implements ICommand {
 
 	private final Logger logger = LoggerFactory

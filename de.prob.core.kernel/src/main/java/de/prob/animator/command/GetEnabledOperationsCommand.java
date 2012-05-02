@@ -23,6 +23,12 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * Calculates the enabled operations for a given state id
+ * 
+ * @author joy
+ * 
+ */
 public final class GetEnabledOperationsCommand implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(GetEnabledOperationsCommand.class);
