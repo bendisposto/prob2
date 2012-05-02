@@ -15,6 +15,13 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * Loads a Classical B machine that has already been parsed and put into a
+ * Recursive Machine Loader
+ * 
+ * @author joy
+ * 
+ */
 public class LoadBProjectCommand implements ICommand {
 	Logger logger = LoggerFactory.getLogger(LoadBProjectCommand.class);
 	private NodeIdAssignment nodeIdMapping;
@@ -45,14 +52,13 @@ public class LoadBProjectCommand implements ICommand {
 		}
 	}
 
-	private PrologTerm getLoadTerm(final RecursiveMachineLoader rml) throws ProBException {
+	private PrologTerm getLoadTerm(final RecursiveMachineLoader rml)
+			throws ProBException {
 		StructuredPrologOutput parserOutput = new StructuredPrologOutput();
 		rml.printAsProlog(parserOutput);
 		nodeIdMapping = rml.getNodeIdMapping();
 		return collectSentencesInList(parserOutput);
 	}
-
-
 
 	private PrologTerm collectSentencesInList(final StructuredPrologOutput po) {
 		List<PrologTerm> parserOutput = po.getSentences();

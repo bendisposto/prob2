@@ -28,6 +28,27 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.MultiGraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 
+/**
+ * 
+ * The StateSpace is where the animation of a given model is carried out. The
+ * methods in the StateSpace allow the user to:
+ * 
+ * 1) Find new states and operations
+ * 
+ * 2) Move between states within the StateSpace to inspect them
+ * 
+ * 3) Perform random animation steps
+ * 
+ * 4) Evaluate custom predicates and expressions -
+ * 
+ * 5) Register listeners that are notified of animation steps/new states and
+ * operations.
+ * 
+ * 6) View information about the current state
+ * 
+ * @author joy
+ * 
+ */
 public class StateSpace extends StateSpaceGraph implements IAnimator,
 		DirectedGraph<String, String>, MultiGraph<String, String> {
 
@@ -90,6 +111,18 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		explore(si);
 	}
 
+	/**
+	 * Takes the name of an operation and a predicate and finds Operations that
+	 * satisfy the name and predicate at the given stateId. New Operations are
+	 * added to the graph.
+	 * 
+	 * @param stateId
+	 * @param name
+	 * @param predicate
+	 * @param nrOfSolutions
+	 * @return
+	 * @throws ProBException
+	 */
 	public List<Operation> opFromPredicate(final String stateId,
 			final String name, final String predicate, final int nrOfSolutions)
 			throws ProBException {
@@ -113,22 +146,27 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		return ops;
 	}
 
-	public Operation execOneOp(String opName, String predicate)
+	/**
+	 * Finds one Operation that satisfies the operation name and predicate at
+	 * the current state
+	 * 
+	 * @param opName
+	 * @param predicate
+	 * @return
+	 * @throws ProBException
+	 */
+	public Operation findOneOp(String opName, String predicate)
 			throws ProBException {
-		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				getCurrentState(), opName, predicate, 1);
-		animator.execute(command);
-		OpInfo newOp = command.getOperations().get(0);
-		Operation op = new Operation(newOp.id, newOp.name, newOp.params);
-		if (!containsEdge(op.getId())) {
-			info.add(newOp.id, op);
-			notifyStateSpaceChange(newOp.id, containsVertex(newOp.dest));
-			addEdge(op.getId(), newOp.src, newOp.dest);
-		}
-
-		return op;
+		return opFromPredicate(getCurrentState(), opName, predicate, 1).get(0);
 	}
 
+	/**
+	 * Checks if the state with stateId is a deadlock
+	 * 
+	 * @param stateid
+	 * @return
+	 * @throws ProBException
+	 */
 	public boolean isDeadlock(final String stateid) throws ProBException {
 		if (!isExplored(stateid)) {
 			explore(stateid);
@@ -136,6 +174,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		return getOutEdges(stateid).isEmpty();
 	}
 
+	/**
+	 * Checks if the state with stateId has been explored yet
+	 * 
+	 * @param stateid
+	 * @return
+	 */
 	private boolean isExplored(final String stateid) {
 		if (!containsVertex(stateid))
 			throw new IllegalArgumentException("Unknown State id");
@@ -149,10 +193,18 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	}
 
 	// MOVE WITHIN STATESPACE
+
+	/**
+	 * Finds an Operation with opName and predicate and carries out one
+	 * animation step with that Operation
+	 * 
+	 * @param opName
+	 * @param predicate
+	 * @throws ProBException
+	 */
 	public void stepWithOp(String opName, String predicate)
 			throws ProBException {
-		Operation op = opFromPredicate(getCurrentState(), opName, predicate, 1)
-				.get(0);
+		Operation op = findOneOp(opName, predicate);
 		step(op.getId());
 	}
 
@@ -160,6 +212,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		goToState(String.valueOf(id));
 	}
 
+	/**
+	 * Moves from the current state to the state at stateId.
+	 * 
+	 * @param stateId
+	 * @throws ProBException
+	 */
 	public void goToState(final String stateId) throws ProBException {
 		if (!containsVertex(stateId))
 			throw new IllegalArgumentException("state does not exist");
@@ -177,9 +235,14 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		history.add(stateId, null);
 	}
 
-	// step takes a operationId
-	// If the opId is contained in the outgoing edges (it is enabled)
-	// explore it (if not explored) and add state to history
+	/**
+	 * Carries out one step in the animation with the id from an Operation. If
+	 * the opId is contained in the outgoing edges (it is enabled) explore it
+	 * (if not explored) and add state to history
+	 * 
+	 * @param opId
+	 * @throws ProBException
+	 */
 	public void step(final String opId) throws ProBException {
 		if (getOutEdges(getCurrentState()).contains(opId)) {
 			String newState = getDest(opId);
@@ -203,6 +266,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		step(opId);
 	}
 
+	/**
+	 * Moves one step back in the animation if this is possible.
+	 */
 	public void back() {
 		if (history.canGoBack()) {
 			String oldState = getCurrentState();
@@ -219,6 +285,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 	}
 
+	/**
+	 * Moves one step forward in the animation if this is possible
+	 */
 	public void forward() {
 		if (history.canGoForward()) {
 			String oldState = getCurrentState();
@@ -235,11 +304,22 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 	}
 
+	/**
+	 * returns the state id of the current state in the animation
+	 * 
+	 * @return
+	 */
 	public String getCurrentState() {
 		return history.getCurrentState();
 	}
 
 	// AUTOMATED ANIMATION IN STATESPACE
+	/**
+	 * Performs int number of animation steps randomly
+	 * 
+	 * @param steps
+	 * @throws ProBException
+	 */
 	public void randomAnim(final int steps) throws ProBException {
 		if (steps <= 0)
 			return;
@@ -273,6 +353,14 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	}
 
 	// EVALUATE PART OF STATESPACE
+
+	/**
+	 * Adds an expression or predicate to the list of user formulas. This
+	 * expression or predicate is evaluated and the result is added to the map
+	 * of variables in the info object.
+	 * 
+	 * @param formula
+	 */
 	public void addUserFormula(final String formula) {
 		formulas.add(formula);
 		try {
@@ -287,6 +375,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 	}
 
+	/**
+	 * Evaluates all the user formulas for the current state and updates the map
+	 * of variables in the info object accordingly
+	 */
 	public void evaluateFormulas() {
 		String[] array = formulas.toArray(new String[formulas.size()]);
 
@@ -305,11 +397,28 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 	}
 
+	/**
+	 * Evaluates a single formula or an array of formulas (represented as
+	 * strings) and returns a list of EvaluationResults for the current state.
+	 * 
+	 * @param code
+	 * @return
+	 * @throws ProBException
+	 */
 	public List<EvaluationResult> evaluate(final String... code)
 			throws ProBException {
 		return eval(getCurrentState(), code);
 	}
 
+	/**
+	 * Evaluates a single formula or an array of formulas (represented as
+	 * strings) for the given state. Returns as list of EvaluationResults.
+	 * 
+	 * @param state
+	 * @param code
+	 * @return
+	 * @throws ProBException
+	 */
 	public List<EvaluationResult> eval(final String state, final String... code)
 			throws ProBException {
 		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
@@ -317,6 +426,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
 		}
+		// FIXME: Should we check if a state is valid?
 		EvaluateFormulasCommand command = new EvaluateFormulasCommand(list,
 				state);
 		execute(command);
@@ -335,10 +445,24 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	}
 
 	// NOTIFICATION SYSTEM
+	/**
+	 * Adds an IAnimationListener to the list of animationListeners. This
+	 * listener will be notified whenever an animation step is performed
+	 * (whenever the current state changes).
+	 * 
+	 * @param l
+	 */
 	public void registerAnimationListener(final IAnimationListener l) {
 		animationListeners.add(l);
 	}
 
+	/**
+	 * Adds an IStateSpaceChangeListener to the list of StateSpaceListeners.
+	 * This listener will be notified whenever a new operation or a new state is
+	 * added to the graph.
+	 * 
+	 * @param l
+	 */
 	public void registerStateSpaceListener(final IStateSpaceChangeListener l) {
 		stateSpaceListeners.add(l);
 	}

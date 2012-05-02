@@ -29,6 +29,10 @@ class Downloader {
 		out.close()
 	}
 
+	/**
+	 * Finds the valid versions that are available for download
+	 * @return
+	 */
 	def ConfigObject downloadConfig() {
 		// download config
 		def configurl = "http://nightly.cobra.cs.uni-duesseldorf.de/tmp/config.groovy"
@@ -40,6 +44,10 @@ class Downloader {
 		return config
 	}
 
+	/**
+	 * Lists the possible versions of the ProB Cli that are available for download
+	 * @return
+	 */
 	def String listVersions(){
 		StringBuilder sb = new StringBuilder()
 		sb.append("Possible Versions are:\n")
@@ -52,6 +60,14 @@ class Downloader {
 		return sb.toString()
 	}
 
+	/**
+	 * Checks if the given targetVersion is valid. If it is, the targetVersion of 
+	 * the ProB Cli is downloaded, unzipped, and saved in probhome
+	 * 
+	 * @param targetVersion
+	 * @return
+	 * @throws ProBException
+	 */
 	def String downloadCli(final String targetVersion) throws ProBException{
 		def config = downloadConfig(probhome)
 		if( !config.containsKey(targetVersion)) {

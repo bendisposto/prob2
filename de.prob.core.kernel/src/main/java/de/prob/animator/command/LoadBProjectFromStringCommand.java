@@ -19,6 +19,12 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * Loads a Classical B Machine from a string
+ * 
+ * @author joy
+ * 
+ */
 public class LoadBProjectFromStringCommand implements ICommand {
 
 	private final String model;

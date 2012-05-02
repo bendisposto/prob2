@@ -22,6 +22,13 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+//FIXME: Is this what this command does?
+/**
+ * Gets the eclipse preferences from ProB
+ * 
+ * @author joy
+ * 
+ */
 public final class GetPreferencesCommand implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(GetPreferencesCommand.class);
@@ -32,7 +39,8 @@ public final class GetPreferencesCommand implements ICommand {
 		return prefs;
 	}
 
-	private ProBPreference verifyTerm(final PrologTerm term) throws ProBException{
+	private ProBPreference verifyTerm(final PrologTerm term)
+			throws ProBException {
 		CompoundPrologTerm compoundTerm;
 		try {
 			compoundTerm = BindingGenerator.getCompoundTerm(term, "preference",
@@ -44,11 +52,14 @@ public final class GetPreferencesCommand implements ICommand {
 		return new ProBPreference(compoundTerm);
 	}
 
+	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException{
-		
+			final ISimplifiedROMap<String, PrologTerm> bindings)
+			throws ProBException {
+
 		try {
-			ListPrologTerm p = BindingGenerator.getList(bindings.get(PREFS_VARIABLE));
+			ListPrologTerm p = BindingGenerator.getList(bindings
+					.get(PREFS_VARIABLE));
 			prefs = new ArrayList<ProBPreference>();
 			for (PrologTerm term : p) {
 				ProBPreference preference = null;
@@ -58,10 +69,11 @@ public final class GetPreferencesCommand implements ICommand {
 		} catch (ResultParserException e) {
 			logger.error("Result from Prolog was not as expected.", e);
 			throw new ProBException();
-		} 
-		
+		}
+
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("list_eclipse_preferences").printVariable(PREFS_VARIABLE)
 				.closeTerm();

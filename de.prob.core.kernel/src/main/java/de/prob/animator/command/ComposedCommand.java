@@ -10,8 +10,8 @@ import de.prob.prolog.term.PrologTerm;
 
 /**
  * A ComposedCommand contains several other commands and writes their query
- * strings in one pass to the ProB process. It ensures that no name clashes of
- * the variables of the several commands occur.
+ * strings in one pass to the ProB process. It ensures that there are no name
+ * clashes in the variables of the different commands.
  * 
  * @author plagge
  * 

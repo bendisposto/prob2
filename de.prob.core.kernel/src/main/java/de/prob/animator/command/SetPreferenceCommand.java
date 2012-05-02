@@ -10,6 +10,13 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
+//FIXME: Is this what this does?
+/**
+ * Sets a preference for eclipse
+ * 
+ * @author joy
+ * 
+ */
 public final class SetPreferenceCommand implements ICommand {
 
 	private final String key;
@@ -20,11 +27,13 @@ public final class SetPreferenceCommand implements ICommand {
 		this.value = value;
 	}
 
+	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings){
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		// no result
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("set_eclipse_preference").printAtom(key).printAtom(value)
 				.closeTerm();
