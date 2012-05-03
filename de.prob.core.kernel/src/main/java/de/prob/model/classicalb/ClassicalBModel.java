@@ -1,11 +1,11 @@
 package de.prob.model.classicalb;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.HashSet;
 
 import com.google.inject.Inject;
 
+import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.ProBException;
 import de.prob.statespace.StateSpace;
@@ -15,27 +15,40 @@ public class ClassicalBModel {
 
 	private final StateSpace statespace;
 	private ClassicalBMachine mainMachine = null;
-	Map<String, ClassicalBMachine> content = new HashMap<String, ClassicalBMachine>();
+	private HashSet<String> done = new HashSet<String>();
+	private DirectedSparseMultigraph<String, RefType> graph;
 
 	@Inject
 	public ClassicalBModel(StateSpace statespace) {
 		this.statespace = statespace;
 	}
 
-	public DirectedSparseMultigraph<String, RefType> initialize(Start ast,
-			File f) throws ProBException {
+	public DirectedSparseMultigraph<String, RefType> initialize(Start mainast,
+			RecursiveMachineLoader rml) throws ProBException {
 
 		DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 
 		mainMachine = new ClassicalBMachine(null);
 		DomBuilder d = new DomBuilder(mainMachine);
-		d.build(ast);
-
+		d.build(mainast);
 		String name = mainMachine.getName();
 		graph.addVertex(name);
-		content.put(name, mainMachine);
 
-		ast.apply(new DependencyWalker(name, f.getParentFile(), graph));
+		boolean fpReached;
+
+		do {
+			fpReached = true;
+			Collection<String> vertices = graph.getVertices();
+			for (String machine : vertices) {
+				Start ast = rml.getParsedMachines().get(machine);
+				if (!done.contains(machine)) {
+					ast.apply(new DependencyWalker(machine, graph));
+					done.add(machine);
+					fpReached = false;
+				}
+			}
+		} while (!fpReached);
+		this.graph = graph;
 		return graph;
 	}
 

@@ -33,7 +33,8 @@ public class ClassicalBFactory {
 		Start ast = parseFile(f, bparser);
 		final RecursiveMachineLoader rml = parseAllMachines(
 				ast, f, bparser);
-		classicalBModel.initialize(ast, f);
+		
+		classicalBModel.initialize(ast, rml);
 		startAnimation(classicalBModel, rml);
 		return classicalBModel;
 	}

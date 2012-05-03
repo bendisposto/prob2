@@ -1,6 +1,5 @@
 package de.prob.model.classicalb;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,15 +20,11 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 public class DependencyWalker extends DepthFirstAdapter {
 
 	private final DirectedSparseMultigraph<String, RefType> graph;
-	@SuppressWarnings("unused")
-	// FIXME: Fix this
-	private final File folder;
 	private final String src;
 
-	public DependencyWalker(String name, File file,
+	public DependencyWalker(String name,
 			DirectedSparseMultigraph<String, RefType> graph) {
 		src = name;
-		this.folder = file;
 		this.graph = graph;
 	}
 
