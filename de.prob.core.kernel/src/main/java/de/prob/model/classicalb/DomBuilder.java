@@ -15,6 +15,7 @@ import de.be4.classicalb.core.parser.node.AEnumeratedSetSet;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.AInvariantMachineClause;
 import de.be4.classicalb.core.parser.node.AMachineHeader;
+import de.be4.classicalb.core.parser.node.AOperation;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
 import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
 import de.be4.classicalb.core.parser.node.Node;
@@ -22,6 +23,7 @@ import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.prob.model.representation.Operation;
 
 public class DomBuilder extends DepthFirstAdapter {
 
@@ -88,6 +90,15 @@ public class DomBuilder extends DepthFirstAdapter {
 		addPredicates(node, machine.assertions());
 	}
 	
+	@Override
+	public void inAOperation(AOperation node) {
+		String name = extractIdentifierName(node.getOpName());
+		Operation op = new Operation(name,node);
+		addIdentifiers(node.getParameters(), op.parameters());
+		addIdentifiers(node.getReturnValues(), op.output());
+		machine.operations().add(op);
+	}
+	 
 	
 	// -------------------
 

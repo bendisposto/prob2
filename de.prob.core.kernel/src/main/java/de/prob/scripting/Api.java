@@ -3,7 +3,6 @@ package de.prob.scripting;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +11,9 @@ import com.google.inject.Inject;
 
 import de.prob.ProBException;
 import de.prob.animator.command.notImplemented.EvaluateCommand;
-import de.prob.animator.command.notImplemented.GetOperationNamesCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.model.classicalb.ClassicalBFactory;
 import de.prob.model.classicalb.ClassicalBModel;
-import de.prob.model.representation.Operation;
 import de.prob.statespace.StateSpace;
 
 public class Api {
@@ -84,11 +81,7 @@ public class Api {
 		}
 	}
 
-	public List<Operation> testX(final StateSpace s) throws ProBException {
-		GetOperationNamesCommand command = new GetOperationNamesCommand();
-		s.execute(command);
-		return command.getOperations();
-	}
+	
 
 	public String eval(final String text, final StateSpace s)
 			throws ProBException {
