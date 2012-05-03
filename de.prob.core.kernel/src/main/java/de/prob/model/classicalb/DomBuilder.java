@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.common.base.Joiner;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
+import de.be4.classicalb.core.parser.node.AAssertionsMachineClause;
 import de.be4.classicalb.core.parser.node.AConstantsMachineClause;
 import de.be4.classicalb.core.parser.node.AConstraintsMachineClause;
 import de.be4.classicalb.core.parser.node.ADeferredSetSet;
@@ -81,6 +82,12 @@ public class DomBuilder extends DepthFirstAdapter {
 	public void outAEnumeratedSetSet(AEnumeratedSetSet node) {
 		machine.sets().add(new ClassicalBEntity(extractIdentifierName(node.getIdentifier()), node));
 	}
+	
+	@Override
+	public void outAAssertionsMachineClause(AAssertionsMachineClause node) {
+		addPredicates(node, machine.assertions());
+	}
+	
 	
 	// -------------------
 
