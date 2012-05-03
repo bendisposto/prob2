@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
-import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.AImplementationMachineParseUnit;
 import de.be4.classicalb.core.parser.node.AImportsMachineClause;
@@ -27,7 +26,8 @@ public class DependencyWalker extends DepthFirstAdapter {
 	private final Map<String, Start> map;
 
 	public DependencyWalker(ClassicalBMachine machine,
-			DirectedSparseMultigraph<ClassicalBMachine, RefType> graph2, Map<String, Start> map) {
+			DirectedSparseMultigraph<ClassicalBMachine, RefType> graph2,
+			Map<String, Start> map) {
 		src = machine;
 		this.graph = graph2;
 		this.map = map;
@@ -55,6 +55,8 @@ public class DependencyWalker extends DepthFirstAdapter {
 	}
 
 	private ClassicalBMachine makeMachine(String dest) {
+		// FIXME: find the NodeIdAssignment and initialize the ClassicalBMachine
+		// with it
 		ClassicalBMachine dst = new ClassicalBMachine(null);
 		DomBuilder builder = new DomBuilder(dst);
 		Start start = map.get(dest);
