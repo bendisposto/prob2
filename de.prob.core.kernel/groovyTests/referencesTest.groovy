@@ -1,4 +1,6 @@
-import de.be4.classicalb.core.parser.BParser
+/*
+ import de.be4.classicalb.core.parser.BParser
+
 import de.prob.model.classicalb.*
 import de.prob.model.classicalb.RefType.ERefType;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
@@ -16,3 +18,4 @@ assert graph.findEdge("Foo", "B").relationship == ERefType.USES
 assert graph.findEdge("Foo", "C").relationship == ERefType.INCLUDES
 assert graph.findEdge("Foo", "D").relationship == ERefType.INCLUDES
 assert graph.findEdge("Foo", "E").relationship == ERefType.IMPORTS
+*/

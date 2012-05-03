@@ -5,8 +5,11 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.classicalb.RefType.ERefType
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
+import spock.lang.Ignore;
 import spock.lang.Specification
 
+
+@Ignore
 class ClassicalBModelTest extends Specification {
 
 	def File model
