@@ -47,8 +47,7 @@ public class ClassicalBFactory {
 	public RecursiveMachineLoader parseAllMachines(final Start ast,
 			final File f, final BParser bparser)
 			throws ProBException {
-		final RecursiveMachineLoader rml = new RecursiveMachineLoader(
-				f.getParent());
+		final RecursiveMachineLoader rml = new RecursiveMachineLoader(f.getParent(), bparser.getContentProvider() );
 		try {
 			rml.loadAllMachines(f, ast, null, bparser.getDefinitions(),
 					bparser.getPragmas());

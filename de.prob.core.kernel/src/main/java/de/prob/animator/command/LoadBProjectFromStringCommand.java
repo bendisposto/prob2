@@ -61,7 +61,7 @@ public class LoadBProjectFromStringCommand implements ICommand {
 
 		BParser bparser = new BParser();
 		Start ast = parseString(model, bparser);
-		final RecursiveMachineLoader rml = new RecursiveMachineLoader(".");
+		final RecursiveMachineLoader rml = new RecursiveMachineLoader(".",bparser.getContentProvider());
 		try {
 			rml.loadAllMachines(new File(""), ast, null,
 					bparser.getDefinitions(), bparser.getPragmas());
