@@ -28,7 +28,7 @@ class ClassicalBModelTest extends Specification {
 		bparser = new BParser();
 		ast = bparser.parse(model,false)
 		graph = new DirectedSparseMultigraph<String, RefType>();
-		dw = new DependencyWalker("Foo", null, graph)
+		dw = new DependencyWalker("Foo",  graph)
 		ast.apply(dw)
 	}
 
