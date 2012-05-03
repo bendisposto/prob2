@@ -4,7 +4,7 @@ import de.prob.model.classicalb.RefType.ERefType;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 c = new ClassicalBModel(null)
 bparser = new BParser();
-f = new File("/Users/bendisposto/Desktop/simple.mch")
+f = new File(dir+"/machines/references.mch")
 ast = bparser.parseFile(f,false)
 graph = new DirectedSparseMultigraph<String, RefType>();
 dw = new DependencyWalker("Foo", null, graph)
