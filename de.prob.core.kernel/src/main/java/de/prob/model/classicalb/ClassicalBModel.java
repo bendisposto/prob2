@@ -31,7 +31,6 @@ public class ClassicalBModel {
 		mainMachine = new ClassicalBMachine(null);
 		DomBuilder d = new DomBuilder(mainMachine);
 		d.build(mainast);
-		String name = mainMachine.name();
 		graph.addVertex(mainMachine);
 
 		boolean fpReached;
