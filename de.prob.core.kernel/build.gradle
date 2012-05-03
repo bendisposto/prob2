@@ -35,7 +35,7 @@ findbugsTest.classes = files(ftc.files) // explicit list of files
 sourceSets.main.java.srcDirs = [] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
 
-def parser_version = '2.4.2-SNAPSHOT'
+def parser_version = '2.4.6-SNAPSHOT'
 
 dependencies {
 
