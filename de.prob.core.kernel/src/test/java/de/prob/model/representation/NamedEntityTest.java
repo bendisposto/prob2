@@ -14,7 +14,7 @@ public class NamedEntityTest {
 	public void test() {
 		Node astPart = mock(Node.class);
 		ClassicalBEntity ne = new ClassicalBEntity("name", astPart);
-		assertEquals("name->" + astPart.getClass().getSimpleName(),
+		assertEquals("name",
 				ne.toString());
 	}
 }
