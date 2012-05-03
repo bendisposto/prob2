@@ -15,34 +15,34 @@ public class ClassicalBModel {
 
 	private final StateSpace statespace;
 	private ClassicalBMachine mainMachine = null;
-	private HashSet<String> done = new HashSet<String>();
-	private DirectedSparseMultigraph<String, RefType> graph;
+	private HashSet<ClassicalBMachine> done = new HashSet<ClassicalBMachine>();
+	private DirectedSparseMultigraph<ClassicalBMachine, RefType> graph;
 
 	@Inject
 	public ClassicalBModel(StateSpace statespace) {
 		this.statespace = statespace;
 	}
 
-	public DirectedSparseMultigraph<String, RefType> initialize(Start mainast,
+	public DirectedSparseMultigraph<ClassicalBMachine, RefType> initialize(Start mainast,
 			RecursiveMachineLoader rml) throws ProBException {
 
-		DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
+		DirectedSparseMultigraph<ClassicalBMachine, RefType> graph = new DirectedSparseMultigraph<ClassicalBMachine, RefType>();
 
 		mainMachine = new ClassicalBMachine(null);
 		DomBuilder d = new DomBuilder(mainMachine);
 		d.build(mainast);
 		String name = mainMachine.getName();
-		graph.addVertex(name);
+		graph.addVertex(mainMachine);
 
 		boolean fpReached;
 
 		do {
 			fpReached = true;
-			Collection<String> vertices = graph.getVertices();
-			for (String machine : vertices) {
-				Start ast = rml.getParsedMachines().get(machine);
+			Collection<ClassicalBMachine> vertices = graph.getVertices();
+			for (ClassicalBMachine machine : vertices) {
+				Start ast = rml.getParsedMachines().get(machine.getName());
 				if (!done.contains(machine)) {
-					ast.apply(new DependencyWalker(machine, graph));
+					ast.apply(new DependencyWalker(machine, graph, rml.getParsedMachines()));
 					done.add(machine);
 					fpReached = false;
 				}

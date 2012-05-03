@@ -1,10 +1,11 @@
 package de.prob.model.classicalb
 
+import spock.lang.Ignore
+import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.classicalb.RefType.ERefType
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
-import spock.lang.Specification
 
 class ClassicalBModelTest extends Specification {
 	def String model = '''REFINEMENT Foo 
@@ -32,6 +33,7 @@ class ClassicalBModelTest extends Specification {
 		ast.apply(dw)
 	}
 
+	@Ignore
 	def "all the machine names are now saved in the graph"() {
 		expect:
 		graph.getVertices().containsAll([
@@ -45,6 +47,7 @@ class ClassicalBModelTest extends Specification {
 		])
 	}
 
+	@Ignore
 	def "the correct RefType connects the different machines"() {
 		setup:
 		def c = [

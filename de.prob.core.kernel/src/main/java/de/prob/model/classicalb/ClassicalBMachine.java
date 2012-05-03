@@ -76,8 +76,13 @@ public class ClassicalBMachine extends AbstractModel {
 		this.operations.add(o);
 	}
 
+	
 	@Override
 	public String toString() {
+		return name;
+	}
+	
+	public String fullRepresentation() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\nVariables:\n");
 		for (ClassicalBEntity var : variables) {
@@ -101,5 +106,20 @@ public class ClassicalBMachine extends AbstractModel {
 		}
 		return sb.toString();
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ClassicalBMachine) {
+			ClassicalBMachine that = (ClassicalBMachine) obj;
+			return that.name.equals(name);
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
 
 }
