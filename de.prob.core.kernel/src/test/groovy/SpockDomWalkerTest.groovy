@@ -37,7 +37,7 @@ class SpockDomWalkerTest extends Specification {
 	@Ignore
 	def "testing that variables are handled correctly"() {
 		when:
-		def r = machine.getVariables().collect { it.getIdentifier() }
+		def r = machine.variables().collect { it.getIdentifier() }
 		then:
 		r == ['aa', 'b', 'Cc']
 	}
@@ -51,7 +51,7 @@ class SpockDomWalkerTest extends Specification {
 	@Ignore
 	def "test if there are any constants"() {
 		when:
-		def r = machine.getConstants().collect { it.getIdentifier() }
+		def r = machine.constants().collect { it.getIdentifier() }
 		then:
 		r == ['dd', 'e', 'Ff']
 	}

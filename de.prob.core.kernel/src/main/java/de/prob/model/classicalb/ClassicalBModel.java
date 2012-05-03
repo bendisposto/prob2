@@ -31,6 +31,7 @@ public class ClassicalBModel {
 		mainMachine = new ClassicalBMachine(null);
 		DomBuilder d = new DomBuilder(mainMachine);
 		d.build(mainast);
+		String name = mainMachine.name();
 		graph.addVertex(mainMachine);
 
 		boolean fpReached;
@@ -39,7 +40,7 @@ public class ClassicalBModel {
 			fpReached = true;
 			Collection<ClassicalBMachine> vertices = graph.getVertices();
 			for (ClassicalBMachine machine : vertices) {
-				Start ast = rml.getParsedMachines().get(machine.getName());
+				Start ast = rml.getParsedMachines().get(machine.name());
 				if (!done.contains(machine)) {
 					ast.apply(new DependencyWalker(machine, graph, rml
 							.getParsedMachines()));
