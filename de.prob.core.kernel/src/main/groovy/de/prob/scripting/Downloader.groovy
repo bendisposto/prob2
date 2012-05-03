@@ -69,7 +69,7 @@ class Downloader {
 	 * @throws ProBException
 	 */
 	def String downloadCli(final String targetVersion) throws ProBException{
-		def config = downloadConfig(probhome)
+		def config = downloadConfig()
 		if( !config.containsKey(targetVersion)) {
 			return "There is no version available for version name <"+targetVersion+">\n"+listVersions()
 		}
