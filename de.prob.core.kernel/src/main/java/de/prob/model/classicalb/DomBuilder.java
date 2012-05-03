@@ -9,7 +9,10 @@ import com.google.common.base.Joiner;
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.AConstantsMachineClause;
 import de.be4.classicalb.core.parser.node.AConstraintsMachineClause;
+import de.be4.classicalb.core.parser.node.ADeferredSetSet;
+import de.be4.classicalb.core.parser.node.AEnumeratedSetSet;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
+import de.be4.classicalb.core.parser.node.AInvariantMachineClause;
 import de.be4.classicalb.core.parser.node.AMachineHeader;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
 import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
@@ -45,8 +48,8 @@ public class DomBuilder extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void outAVariablesMachineClause(final AVariablesMachineClause node) {
-		addIdentifiers(node.getIdentifiers(), machine.variables());
+	public void outAConstraintsMachineClause(AConstraintsMachineClause node) {
+		addPredicates(node, machine.constraints());
 	}
 
 	@Override
@@ -55,17 +58,30 @@ public class DomBuilder extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void outAConstraintsMachineClause(AConstraintsMachineClause node) {
-		addPredicates(node, machine.constraints());
-	}
-
-	
-	@Override
 	public void outAPropertiesMachineClause(APropertiesMachineClause node) {
 		addPredicates(node, machine.properties());
 	}
 
+	@Override
+	public void outAVariablesMachineClause(final AVariablesMachineClause node) {
+		addIdentifiers(node.getIdentifiers(), machine.variables());
+	}
 
+	@Override
+	public void outAInvariantMachineClause(AInvariantMachineClause node) {
+		addPredicates(node, machine.invariant());
+	}
+	
+	@Override
+	public void outADeferredSetSet(ADeferredSetSet node) {
+		machine.sets().add(new ClassicalBEntity(extractIdentifierName(node.getIdentifier()), node));
+	}
+	
+	@Override
+	public void outAEnumeratedSetSet(AEnumeratedSetSet node) {
+		machine.sets().add(new ClassicalBEntity(extractIdentifierName(node.getIdentifier()), node));
+	}
+	
 	// -------------------
 
 	private String prettyprint(PPredicate predicate) {
@@ -91,8 +107,7 @@ public class DomBuilder extends DepthFirstAdapter {
 		PredicateConjunctionSplitter s = new PredicateConjunctionSplitter();
 		node.apply(s);
 		for (PPredicate predicate : s.getPredicates()) {
-			to.add(new ClassicalBEntity(prettyprint(predicate),
-					predicate));
+			to.add(new ClassicalBEntity(prettyprint(predicate), predicate));
 		}
 	}
 

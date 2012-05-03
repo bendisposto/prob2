@@ -23,6 +23,7 @@ public class ClassicalBMachine extends AbstractModel {
 
 	private String name;
 	private boolean locked = false;
+	private final List<ClassicalBEntity> sets = new ArrayList<ClassicalBEntity>();
 	private final List<ClassicalBEntity> parameters = new ArrayList<ClassicalBEntity>();
 	private final List<ClassicalBEntity> constraints = new ArrayList<ClassicalBEntity>();
 	private final List<ClassicalBEntity> constants = new ArrayList<ClassicalBEntity>();
@@ -64,6 +65,10 @@ public class ClassicalBMachine extends AbstractModel {
 		if (locked)
 			return Collections.unmodifiableList(operations);
 		return operations;
+	}
+
+	public List<ClassicalBEntity> sets() {
+		return lock(sets);
 	}
 
 	public String name() {
