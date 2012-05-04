@@ -22,7 +22,7 @@ public class ClassicalBEntity {
 
 	@Override
 	public String toString() {
-		return identifier + "->" + astPart.getClass().getSimpleName();
+		return identifier;
 	}
 
 }
