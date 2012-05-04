@@ -32,7 +32,8 @@ public class PrettyPrinterTest {
 			"UNION(z).(x<y|E)", "INTER(z).(x<y|E)", "perm([a,b,c])", "conc(S)",
 			"TRUE", "MAXINT", "MININT", "{}", "INTEGER", "NATURAL", "NATURAL1",
 			"NAT", "NAT1", "INT", "BOOL", "STRING", "\"a String\"",
-			"foo(bar,3)", "succ <+ {1|->1, 3|->3}(3)" };
+			"foo(bar,3)", "succ <+ {1|->1, 3|->3}(3)", "ll(dd'right_sect)",
+			"x", "rec(left_sect:River1,right_sect:Lock1)" };
 
 	private static final String PREFIX = "#EXPRESSION ";
 

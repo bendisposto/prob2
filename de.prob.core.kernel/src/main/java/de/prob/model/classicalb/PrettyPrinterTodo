@@ -1,7 +1,0 @@
-
-??? {quantified_set} quantified_set [identifiers]:expression_list dot_par [predicates]:predicate_top right_par {-> New expression.prover_comprehension_set([identifiers.expression], predicates.predicate)}  |
-
-{struct} struct left_par [entries]:rec_entry_list right_par {-> New expression.struct([entries.rec_entry])} |
-{rec} rec left_par [entries]:rec_entry_list right_par {-> New expression.rec([entries.rec_entry])} |
-{record_field} [record]:expression_p231 single_quotation [identifier]:expression_atomic {-> New expression.record_field(record.expression, identifier.expression)} |
-rec_entry {-> rec_entry} = [identifier]:expression_top element_of [value]:expression_in_par {-> New rec_entry(identifier.expression, value.expression)} ;

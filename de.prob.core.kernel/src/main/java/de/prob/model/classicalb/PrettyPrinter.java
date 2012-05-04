@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.collections15.map.HashedMap;
+
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;
 
@@ -1287,7 +1289,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		printExprList(node.getParameters());
 		sb.append(")");
 	}
-	
+
 	@Override
 	public void caseAFunctionExpression(AFunctionExpression node) {
 		node.getIdentifier().apply(this);
@@ -1295,5 +1297,36 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		printExprList(node.getParameters());
 		sb.append(")");
 	}
+
+	@Override
+	public void caseARecExpression(ARecExpression node) {
+		sb.append("rec(");
+		List<PRecEntry> list = node.getEntries();
+		for (final Iterator<PRecEntry> iterator = list.iterator(); iterator
+				.hasNext();) {
+			final PRecEntry e = iterator.next();
+			e.apply(this);
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+		}
+		sb.append(")");
+	}
+
+	@Override
+	public void caseARecEntry(ARecEntry node) {
+		node.getIdentifier().apply(this);
+		sb.append(":");
+		node.getValue().apply(this);
+	}
+
+	@Override
+	public void caseARecordFieldExpression(ARecordFieldExpression node) {
+		node.getRecord().apply(this);
+		sb.append("'");
+		node.getIdentifier().apply(this);
+	}
+
+	HashedMap<Class<? extends Node>, Integer> prio = new HashedMap<Class<? extends Node>, Integer>();
 
 }
