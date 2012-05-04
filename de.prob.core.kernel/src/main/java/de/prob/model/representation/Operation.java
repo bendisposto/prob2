@@ -5,17 +5,16 @@ import java.util.List;
 
 import com.google.common.base.Joiner;
 
-import de.be4.classicalb.core.parser.node.AOperation;
 import de.prob.model.classicalb.ClassicalBEntity;
 
 public class Operation {
 
-	private ClassicalBEntity name;
+	private String name;
 	private List<ClassicalBEntity> output = new ArrayList<ClassicalBEntity>();
 	private List<ClassicalBEntity> parameters = new ArrayList<ClassicalBEntity>();
 
-	public Operation(String name, AOperation node) {
-		this.name = new ClassicalBEntity(name, node);
+	public Operation(String name) {
+		this.name =name;
 	}
 
 	public List<ClassicalBEntity> output() {

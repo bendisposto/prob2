@@ -22,7 +22,9 @@ public class ClassicalBEntity {
 
 	@Override
 	public String toString() {
-		return identifier;
+		PrettyPrinter prettyPrinter = new PrettyPrinter();
+		astPart.apply(prettyPrinter);
+		return prettyPrinter.getPrettyPrint();
 	}
 
 }

@@ -93,7 +93,7 @@ public class DomBuilder extends DepthFirstAdapter {
 	@Override
 	public void inAOperation(AOperation node) {
 		String name = extractIdentifierName(node.getOpName());
-		Operation op = new Operation(name,node);
+		Operation op = new Operation(name);
 		addIdentifiers(node.getParameters(), op.parameters());
 		addIdentifiers(node.getReturnValues(), op.output());
 		machine.operations().add(op);
