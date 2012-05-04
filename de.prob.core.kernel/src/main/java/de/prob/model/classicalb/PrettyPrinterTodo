@@ -1,10 +1,7 @@
 {bfalse} bfalse {-> New predicate.falsity()} |
 {bracketed} left_par [predicate]:predicate_top right_par {-> predicate.predicate} |
-{negation} not left_par [predicate]:predicate_top right_par {-> New predicate.negation(predicate.predicate)} |
 
 {definition} [def_literal]:def_literal_predicate [parameters]:def_call_params? {-> New predicate.definition(def_literal, [parameters.expression])} ;
-
-
 
 {quantified_set} quantified_set [identifiers]:expression_list dot_par [predicates]:predicate_top right_par {-> New expression.prover_comprehension_set([identifiers.expression], predicates.predicate)}  |
 
@@ -23,11 +20,6 @@ expression_func {-> expression} =
 	{function} [function]:expression_p230 left_par [parameters]:expression_list right_par {-> New expression.function(function.expression, [parameters.expression])} |
 	{next_level} expression_atomic {-> expression_atomic.expression} ;
 
-{string} [content]:string_literal {-> New expression.string(content)} |
-
 {successor} succ {-> New expression.successor()} |
 {predecessor} pred {-> New expression.predecessor()} |
 
-expression_list {-> expression*} =
-{single} [expression]:expression_top {-> [expression.expression]} |
-{multiple} [rest]:expression_list comma [last]:expression_top {-> [rest.expression, last.expression]} ;

@@ -1230,5 +1230,31 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		}
 		sb.append(")");
 	}
+	
+	
+	@Override
+	public void caseANegationPredicate(ANegationPredicate node) {
+		sb.append("not(");
+		if (node.getPredicate() != null) {
+			node.getPredicate().apply(this);
+		}
+		sb.append(")");
+	}
+	
+	@Override
+	public void caseAStringExpression(AStringExpression node) {
+		sb.append("\"");
+		if (node.getContent() != null) {
+			sb.append(node.getContent().getText());
+		}
+		sb.append("\"");
+		sb.append("\"");
+		if (node.getContent() != null) {
+			sb.append(node.getContent().getText());
+		}
+		sb.append("\"");
+	}
+	
+	
 
 }
