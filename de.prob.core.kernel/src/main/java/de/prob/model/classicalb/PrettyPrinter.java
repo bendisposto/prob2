@@ -1049,7 +1049,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	public void caseAImplicationPredicate(AImplicationPredicate node) {
 		if (node.getLeft() != null)
 			node.getLeft().apply(this);
-		sb.append("=>");
+		sb.append(" => ");
 
 		if (node.getRight() != null)
 			node.getRight().apply(this);
@@ -1059,7 +1059,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	public void caseADisjunctPredicate(ADisjunctPredicate node) {
 		if (node.getLeft() != null)
 			node.getLeft().apply(this);
-		sb.append("or");
+		sb.append(" or ");
 
 		if (node.getRight() != null)
 			node.getRight().apply(this);
@@ -1069,7 +1069,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	public void caseAEquivalencePredicate(AEquivalencePredicate node) {
 		if (node.getLeft() != null)
 			node.getLeft().apply(this);
-		sb.append("<=>");
+		sb.append(" <=> ");
 
 		if (node.getRight() != null)
 			node.getRight().apply(this);
