@@ -118,6 +118,6 @@ class Downloader {
 		f.unzip(probhome)
 		f.delete()
 
-		return "--Upgrade to version: "+targetVersion+" successful.--"
+		return "--Upgrade to version: ${targetVersion} (${url})  successful.--"
 	}
 }
