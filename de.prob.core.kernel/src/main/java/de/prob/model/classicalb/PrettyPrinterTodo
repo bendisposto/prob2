@@ -1,0 +1,33 @@
+{bfalse} bfalse {-> New predicate.falsity()} |
+{bracketed} left_par [predicate]:predicate_top right_par {-> predicate.predicate} |
+{negation} not left_par [predicate]:predicate_top right_par {-> New predicate.negation(predicate.predicate)} |
+
+{definition} [def_literal]:def_literal_predicate [parameters]:def_call_params? {-> New predicate.definition(def_literal, [parameters.expression])} ;
+
+
+
+{quantified_set} quantified_set [identifiers]:expression_list dot_par [predicates]:predicate_top right_par {-> New expression.prover_comprehension_set([identifiers.expression], predicates.predicate)}  |
+
+{struct} struct left_par [entries]:rec_entry_list right_par {-> New expression.struct([entries.rec_entry])} |
+{rec} rec left_par [entries]:rec_entry_list right_par {-> New expression.rec([entries.rec_entry])} |
+{record_field} [record]:expression_p231 single_quotation [identifier]:expression_atomic {-> New expression.record_field(record.expression, identifier.expression)} |
+
+rec_entry {-> rec_entry} = [identifier]:expression_top element_of [value]:expression_in_par {-> New rec_entry(identifier.expression, value.expression)} ;
+
+rec_entry_list {-> rec_entry*} =
+	{single} [entry]:rec_entry {-> [entry.rec_entry]} |
+	{multi} [rest]:rec_entry_list comma [last]:rec_entry {-> [rest.rec_entry, last.rec_entry]};
+
+
+expression_func {-> expression} =
+	{function} [function]:expression_p230 left_par [parameters]:expression_list right_par {-> New expression.function(function.expression, [parameters.expression])} |
+	{next_level} expression_atomic {-> expression_atomic.expression} ;
+
+{string} [content]:string_literal {-> New expression.string(content)} |
+
+{successor} succ {-> New expression.successor()} |
+{predecessor} pred {-> New expression.predecessor()} |
+
+expression_list {-> expression*} =
+{single} [expression]:expression_top {-> [expression.expression]} |
+{multiple} [rest]:expression_list comma [last]:expression_top {-> [rest.expression, last.expression]} ;
