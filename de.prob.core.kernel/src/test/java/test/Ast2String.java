@@ -1,6 +1,7 @@
 package test;
 
 import de.be4.classicalb.core.parser.analysis.ExtendedDFAdapter;
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.Token;
@@ -63,5 +64,11 @@ public class Ast2String extends ExtendedDFAdapter {
 		node.getPParseUnit().apply(this);
 		node.getEOF().apply(this);
 		outStart(node);
+	}
+
+	public static String getTreeAsString(final Start startNode) throws BException {
+		final Ast2String ast2String = new Ast2String();
+		startNode.apply(ast2String);
+		return ast2String.toString();
 	}
 }

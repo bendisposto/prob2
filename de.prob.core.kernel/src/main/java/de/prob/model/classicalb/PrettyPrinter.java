@@ -2,6 +2,7 @@ package de.prob.model.classicalb;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
@@ -1230,8 +1231,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		}
 		sb.append(")");
 	}
-	
-	
+
 	@Override
 	public void caseANegationPredicate(ANegationPredicate node) {
 		sb.append("not(");
@@ -1240,7 +1240,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		}
 		sb.append(")");
 	}
-	
+
 	@Override
 	public void caseAStringExpression(AStringExpression node) {
 		sb.append("\"");
@@ -1248,13 +1248,52 @@ public class PrettyPrinter extends DepthFirstAdapter {
 			sb.append(node.getContent().getText());
 		}
 		sb.append("\"");
-		sb.append("\"");
-		if (node.getContent() != null) {
-			sb.append(node.getContent().getText());
+
+	}
+
+	@Override
+	public void caseASuccessorExpression(ASuccessorExpression node) {
+		sb.append("succ");
+	}
+
+	@Override
+	public void caseAPredecessorExpression(APredecessorExpression node) {
+		sb.append("pred");
+	}
+
+	@Override
+	public void caseADefinitionExpression(ADefinitionExpression node) {
+		String defLiteral = node.getDefLiteral().getText();
+		sb.append(defLiteral + "(");
+		printExprList(node.getParameters());
+		sb.append(")");
+	}
+
+	private void printExprList(LinkedList<PExpression> parameters) {
+		for (final Iterator<PExpression> iterator = parameters.iterator(); iterator
+				.hasNext();) {
+			final PExpression e = iterator.next();
+			e.apply(this);
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
 		}
-		sb.append("\"");
+	}
+
+	@Override
+	public void caseADefinitionPredicate(ADefinitionPredicate node) {
+		String defLiteral = node.getDefLiteral().getText();
+		sb.append(defLiteral + "(");
+		printExprList(node.getParameters());
+		sb.append(")");
 	}
 	
-	
+	@Override
+	public void caseAFunctionExpression(AFunctionExpression node) {
+		node.getIdentifier().apply(this);
+		sb.append("(");
+		printExprList(node.getParameters());
+		sb.append(")");
+	}
 
 }

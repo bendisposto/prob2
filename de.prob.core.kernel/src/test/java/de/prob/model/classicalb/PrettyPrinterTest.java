@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import test.Ast2String;
 import test.PolySuite;
 import test.PolySuite.Config;
 import test.PolySuite.Configuration;
@@ -30,7 +31,10 @@ public class PrettyPrinterTest {
 			"prj1(S,T)", "prj2(S,T)", "iterate(A<->B,5)", "{x,y|x<y&x<5}",
 			"UNION(z).(x<y|E)", "INTER(z).(x<y|E)", "perm([a,b,c])", "conc(S)",
 			"TRUE", "MAXINT", "MININT", "{}", "INTEGER", "NATURAL", "NATURAL1",
-			"NAT", "NAT1", "INT", "BOOL", "STRING" };
+			"NAT", "NAT1", "INT", "BOOL", "STRING", "\"a String\"",
+			"foo(bar,3)", "succ <+ {1|->1, 3|->3}(3)" };
+
+	private static final String PREFIX = "#EXPRESSION ";
 
 	String theString;
 
@@ -40,11 +44,16 @@ public class PrettyPrinterTest {
 
 	@Test
 	public void testExpression() throws Exception {
-		String toParse = "#EXPRESSION " + theString;
-		Start parse = BParser.parse(toParse);
+		Start parse = BParser.parse(PREFIX + theString);
 		PrettyPrinter prettyprinter = new PrettyPrinter();
 		parse.apply(prettyprinter);
-		assertEquals(theString, prettyprinter.getPrettyPrint());
+		String prettyPrint = prettyprinter.getPrettyPrint();
+		Start parse2 = BParser.parse(PREFIX + prettyPrint);
+		PrettyPrinter prettyprinter2 = new PrettyPrinter();
+		parse2.apply(prettyprinter2);
+		assertEquals(Ast2String.getTreeAsString(parse),
+				Ast2String.getTreeAsString(parse2));
+		assertEquals(prettyPrint, prettyprinter2.getPrettyPrint());
 	}
 
 	/*
