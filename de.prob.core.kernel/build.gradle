@@ -41,9 +41,6 @@ dependencies {
 
 	groovy 'org.codehaus.groovy:groovy:1.8.5'
 
-	
-	
-	
 	compile 'com.google.guava:guava:r09'
 	compile 'commons-cli:commons-cli:1.2'
 
@@ -59,7 +56,6 @@ dependencies {
  compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
  compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
  compile group: "de.prob", name: "unicode", version: parser_version , changing: true
-
 
 	compile 'com.google.inject:guice:3.0'
 	compile 'com.google.inject.extensions:guice-assistedinject:3.0'
