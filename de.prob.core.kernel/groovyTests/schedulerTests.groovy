@@ -7,7 +7,7 @@ s.step 3
 assert s.getCurrentState() == "2"
 assert s.explored.contains("2")
 assert !s.explored.contains("5")
-//assert s.ops.containsKey("1")
+assert s.info.ops.containsKey("1")
 assert !s.getOutEdges(s.getCurrentState()).contains("1")
 s.step 8
 idAt8 = s.getCurrentState()
@@ -18,11 +18,9 @@ assert s.explored.contains("6")
 assert s.explored.contains("root")
 assert !s.explored.contains("5")
 assert s.containsVertex("5")
-//varsAt6 = s.getState(6)
-//assert varsAt6.get("waiting") == "{}"
-//assert varsAt6.get("active") == "{PID2}"
-//assert varsAt6.get("ready") == "{}"
+varsAt6 = s.info.getState(6)
+assert varsAt6.get("waiting") == "{}"
+assert varsAt6.get("active") == "{PID2}"
+assert varsAt6.get("ready") == "{}"
 s.addUserFormula("1+1=2")
-//assert s.variables.get(s.getCurrentState()).get("1+1=2") == "TRUE"
-
-println "SOME ASSERTIONS IGNORED"
+assert s.info.variables.get(s.getCurrentState()).get("1+1=2") == "TRUE"
