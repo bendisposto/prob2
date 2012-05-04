@@ -30,7 +30,7 @@ class OsInfoProvider implements Provider<OsSpecificInfo> {
 					"send_user_interrupt.exe", "Windows", osString, "win32");
 		if (os.indexOf("mac") >= 0)
 			return new OsSpecificInfo("probcli.sh", "sh",
-					"send_user_interrupt", "MacOs", osString, "leopard");
+					"send_user_interrupt", "MacOs", osString, "leopard64");
 		if (os.indexOf("linux") >= 0) {
 			if (osArch.equals("i386")) {
 				return new OsSpecificInfo("probcli.sh", "sh",
