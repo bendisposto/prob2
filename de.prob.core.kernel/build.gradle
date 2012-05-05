@@ -83,6 +83,10 @@ compileJava {
 	dependsOn createBuildConstants
 }
 
+jar {
+	from sourceSets.main.allJava
+ }
+
 task pack(type: Jar, dependsOn: [jar]) {
 	baseName = project.name + '-standalone'
 	def deps = configurations.runtime + configurations.archives.allArtifacts.files
