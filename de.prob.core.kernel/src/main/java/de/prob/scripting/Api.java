@@ -81,14 +81,6 @@ public class Api {
 		}
 	}
 
-	
-
-	public String eval(final String text, final StateSpace s)
-			throws ProBException {
-		EvaluateCommand command = new EvaluateCommand(text);
-		s.execute(command);
-		return command.getResult();
-	}
 
 	public String getCurrentId(final StateSpace animation) throws ProBException {
 		// new ICom<GetCurrentStateIdCommand>(new GetCurrentStateIdCommand())
