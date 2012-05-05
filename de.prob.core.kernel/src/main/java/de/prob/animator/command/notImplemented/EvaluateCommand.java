@@ -17,8 +17,8 @@ public class EvaluateCommand implements ICommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
-		pto.printAtom("evaluate").printAtom(expression).printVariable("Result")
-				.printVariable("Warnings");
+		pto.openTerm("evaluate").printAtom(expression).printVariable("Result")
+				.printVariable("Warnings").closeTerm();
 	}
 
 	@Override
