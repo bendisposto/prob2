@@ -29,6 +29,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 	@Inject
 	public PrologProcessProvider(final OsSpecificInfo osInfo,
 			@DebuggingKey final String debuggingKey, @Home final String path) {
+		System.out.println("$$$$$$$$$$$$" + path);
 		this.osInfo = osInfo;
 		this.debuggingKey = debuggingKey;
 		this.dir = checkCliPath(path);
