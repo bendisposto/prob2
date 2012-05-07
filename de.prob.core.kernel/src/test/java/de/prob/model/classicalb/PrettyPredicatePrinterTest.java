@@ -22,8 +22,6 @@ public class PrettyPredicatePrinterTest {
 			"x>=y", "!X,Y.(X:NAT&Y:NAT=>x<y)", "#X,Y.(X:NAT&Y:NAT=>x<y)",
 			"1=4 or 12=19", "1=4 => 12=19", "1=4 <=> 12=19", "not(7=3)" };
 
-	// , "A=>B", "A or B", "A<=>B",
-
 	String theString;
 
 	public PrettyPredicatePrinterTest(String theString) {
@@ -34,13 +32,15 @@ public class PrettyPredicatePrinterTest {
 	public void testExpression() throws Exception {
 		Start parse = BParser.parse(PREFIX + theString);
 		PrettyPrinter prettyprinter = new PrettyPrinter();
+		prettyprinter.setup();
 		parse.apply(prettyprinter);
 		String prettyPrint = prettyprinter.getPrettyPrint();
 		Start parse2 = BParser.parse(PREFIX + prettyPrint);
 		PrettyPrinter prettyprinter2 = new PrettyPrinter();
+		prettyprinter2.setup();
 		parse2.apply(prettyprinter2);
-
-		assertEquals(Ast2String.getTreeAsString(parse), Ast2String.getTreeAsString(parse2));
+		assertEquals(Ast2String.getTreeAsString(parse),
+				Ast2String.getTreeAsString(parse2));
 		assertEquals(prettyPrint, prettyprinter2.getPrettyPrint());
 	}
 
