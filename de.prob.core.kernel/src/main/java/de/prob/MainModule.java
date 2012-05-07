@@ -64,8 +64,13 @@ public class MainModule extends AbstractModule {
 	@Provides
 	@Home
 	public String getProBDirectory() {
-		String homedir = System.getProperty("PROB_HOME");
-		return homedir != null ? homedir : DEFAULT_HOME;
+		String homedir = System.getProperty("prob.home");
+		if (homedir != null)
+			return homedir;
+		String env = System.getenv("PROB_HOME");
+		if (env != null)
+			return env;
+		return DEFAULT_HOME;
 	}
 
 	@Provides
