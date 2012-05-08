@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.prob.ProBException;
-import de.prob.animator.command.notImplemented.EvaluateCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.model.classicalb.ClassicalBFactory;
 import de.prob.model.classicalb.ClassicalBModel;
