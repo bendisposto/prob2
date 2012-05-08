@@ -11,6 +11,10 @@ import de.be4.classicalb.core.parser.node.*;
 
 public class PrettyPrinter extends DepthFirstAdapter {
 
+	public PrettyPrinter() {
+		setup();
+	}
+
 	StringBuffer sb = new StringBuffer();
 
 	public String getPrettyPrint() {
@@ -18,14 +22,18 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	public void leftPar(Node node, Node right) {
-		Integer priority = prio.get(right.getClass());
-		if (priority != null && priority <= prio.get(node.getClass()))
+		Integer priorityNode = prio.get(node.getClass());
+		Integer priorityRight = prio.get(right.getClass());
+		if (priorityNode != null && priorityRight != null
+				&& priorityRight <= priorityNode)
 			sb.append("(");
 	}
 
 	public void rightPar(Node node, Node right) {
-		Integer priority = prio.get(right.getClass());
-		if (priority != null && priority <= prio.get(node.getClass()))
+		Integer priorityNode = prio.get(node.getClass());
+		Integer priorityRight = prio.get(right.getClass());
+		if (priorityNode != null && priorityRight != null
+				&& priorityRight <= priorityNode)
 			sb.append(")");
 	}
 
