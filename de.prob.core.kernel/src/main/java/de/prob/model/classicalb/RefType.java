@@ -15,4 +15,8 @@ public class RefType {
 	public String toString() {
 		return relationship.toString();
 	}
+
+	public ERefType getRelationship() {
+		return relationship;
+	}
 }
