@@ -5,11 +5,9 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.classicalb.RefType.ERefType
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
-import spock.lang.Ignore;
 import spock.lang.Specification
 
 
-@Ignore
 class ClassicalBModelTest extends Specification {
 
 	def File model
@@ -58,19 +56,47 @@ class ClassicalBModelTest extends Specification {
 		"Baz"|false
 	}
 
-	def "the correct RefType connects the different machines"() {
+	def "the user can access machines from the string name"() {
 		setup:
-		def machine1 = new ClassicalBMachine(null)
-		def machine2 = new ClassicalBMachine(null)
-
-		expect:
+		def machine = new ClassicalBMachine(null)
 
 		when:
-		machine1.setName(a)
-		machine2.setName(b)
+		machine.setName(a)
 
 		then:
-		graph.findEdge(machine1,machine2).relationship == etype
+		c.getVertex(a) == machine
+
+		where:
+		a <<[
+			"A",
+			"E",
+			"A",
+			"Foo",
+			"B",
+			"C",
+			"Bar"
+		]
+	}
+
+	def "when a machine is not in the graph, null is returned"() {
+		expect:
+		c.getVertex(b) == null
+
+		where:
+		b <<[
+			"I",
+			"am",
+			"not",
+			"in",
+			"the",
+			"graph"
+		]
+	}
+
+	def "the correct RefType connects the different machines"() {
+
+		expect:
+		c.getEdge(a, b) == etype
 
 		where:
 		a	|	b	| 	etype
@@ -80,5 +106,49 @@ class ClassicalBModelTest extends Specification {
 		"Foo"| "C"	|	ERefType.INCLUDES
 		"Foo"| "D"	|	ERefType.INCLUDES
 		"Foo"| "E"	|	ERefType.IMPORTS
+	}
+
+	def "If an edge is not in the graph, null is returned"() {
+		expect:
+		c.getEdge(a, b) == null
+
+		where:
+		a	|	b
+		"A"	|	"B"
+		"B"	|	"C"
+		"Blah"| "A"
+		"A"	| 	"Blah"
+	}
+
+	def "getVertex and getMachine are the same"() {
+		expect:
+		c.getVertex(a) == c.getMachine(a)
+
+		where:
+		a <<[
+			"Foo",
+			"Bar",
+			"A",
+			"Z",
+			"NOT"
+		]
+	}
+
+	def "getRelationship and getEdge are the same"() {
+		expect:
+		c.getRelationship(a,b) == c.getEdge(a,b)
+
+		where:
+		a	|	b
+		"Foo"| "Bar"
+		"Foo"| "A"
+		"Foo"| "B"
+		"Foo"| "C"
+		"Foo"| "D"
+		"Foo"| "E"
+		"A"	|	"B"
+		"B"	| 	"C"
+		"Blah"|	"A"
+		"A"	|	"Blah"
 	}
 }
