@@ -96,4 +96,9 @@ public class ClassicalBModel {
 		return edge.getRelationship();
 	}
 
+	@Override
+	public String toString() {
+		return graph.toString();
+	}
+
 }
