@@ -19,12 +19,6 @@ import de.prob.cli.ProBInstanceProvider;
 
 public class Main {
 
-	static {
-		if (System.getProperty("PROB_LOG_CONFIG") == null) {
-			System.setProperty("PROB_LOG_CONFIG", "production.xml");
-		}
-	}
-
 	private static Injector INJECTOR;
 
 	public IAnimator getAnimator() {
@@ -34,6 +28,10 @@ public class Main {
 	private final CommandLineParser parser;
 	private final Options options;
 	private final Shell shell;
+	public final static String PROB_HOME = getProBDirectory();
+	public final static String LOG_CONFIG = System
+			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
+			.getProperty("PROB_LOG_CONFIG");
 
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
@@ -64,10 +62,10 @@ public class Main {
 		}
 	}
 
-	private static String getProBDirectory() {
+	public static String getProBDirectory() {
 		String homedir = System.getProperty("prob.home");
 		if (homedir != null)
-			return homedir;
+			return homedir + separator;
 		String env = System.getenv("PROB_HOME");
 		if (env != null)
 			return env + separator;
@@ -76,12 +74,13 @@ public class Main {
 	}
 
 	public static void main(final String[] args) {
-		String str = getProBDirectory() + "logs" + separator + "ProB.txt";
-		System.setProperty("PROB_LOGFILE", str);
+
+		System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
+		System.setProperty("PROB_LOGFILE", PROB_HOME + "logs" + separator
+				+ "ProB.txt");
+		
 		INJECTOR = Guice.createInjector(new MainModule());
 		Main main = INJECTOR.getInstance(Main.class);
-
-		// IStateSpace instance = injector.getInstance(IStateSpace.class);
 
 		main.run(args);
 		System.exit(0);

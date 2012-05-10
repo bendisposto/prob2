@@ -35,8 +35,6 @@ import de.prob.statespace.ModelModule;
 
 public class MainModule extends AbstractModule {
 
-	private static final String DEFAULT_HOME = System.getProperty("user.home")
-			+ separator + ".prob" + separator;
 	private static final Logger logger = LoggerFactory
 			.getLogger(MainModule.class);
 	private final Properties buildConstants;
@@ -64,13 +62,7 @@ public class MainModule extends AbstractModule {
 	@Provides
 	@Home
 	public String getProBDirectory() {
-		String homedir = System.getProperty("prob.home");
-		if (homedir != null)
-			return homedir;
-		String env = System.getenv("PROB_HOME");
-		if (env != null)
-			return env;
-		return DEFAULT_HOME;
+		return Main.getProBDirectory();
 	}
 
 	@Provides
