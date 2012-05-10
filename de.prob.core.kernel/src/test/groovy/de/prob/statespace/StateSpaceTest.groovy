@@ -138,8 +138,7 @@ class StateSpaceTest extends Specification {
 		s.step("b")
 
 		then:
-		s.getCurrentState() == "3"
-		s.history.getCurrentTransition() == "c"
+		thrown IllegalArgumentException
 	}
 
 	def "when user steps back, user can step forward"() {

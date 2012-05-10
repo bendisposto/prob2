@@ -88,11 +88,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 */
 	public void explore(final String stateId) throws ProBException {
+		if (!containsVertex(stateId))
+			throw new IllegalArgumentException("state " + stateId
+					+ " does not exist");
+
 		ExploreStateCommand command = new ExploreStateCommand(stateId);
 		animator.execute(command);
 		explored.add(stateId);
 		List<OpInfo> enabledOperations = command.getEnabledOperations();
-		// (id,name,src,dest,args)
+
 		for (OpInfo operations : enabledOperations) {
 			Operation op = new Operation(operations.id, operations.name,
 					operations.params);
@@ -249,21 +253,22 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 */
 	public void step(final String opId) throws ProBException {
-		if (getOutEdges(getCurrentState()).contains(opId)) {
-			String newState = getDest(opId);
-			if (!isExplored(newState)) {
-				try {
-					explore(newState);
-				} catch (ProBException e) {
-					logger.error("Could not explore state with StateId "
-							+ newState);
-					throw new ProBException();
-				}
+		if (!getOutEdges(getCurrentState()).contains(opId))
+			throw new IllegalArgumentException(opId
+					+ " is not a valid operation on this state");
+
+		String newState = getDest(opId);
+		if (!isExplored(newState)) {
+			try {
+				explore(newState);
+			} catch (ProBException e) {
+				logger.error("Could not explore state with StateId " + newState);
+				throw new ProBException();
 			}
-			history.add(newState, opId);
-			evaluateFormulas();
-			notifyAnimationChange(getSource(opId), getDest(opId), opId);
 		}
+		history.add(newState, opId);
+		evaluateFormulas();
+		notifyAnimationChange(getSource(opId), getDest(opId), opId);
 	}
 
 	public void step(final int i) throws ProBException {
@@ -386,7 +391,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * of variables in the info object accordingly
 	 */
 	public void evaluateFormulas() {
-		//FIXME Can a BException occur in this method?
+		// FIXME Can a BException occur in this method?
 		String[] array = formulas.toArray(new String[formulas.size()]);
 
 		try {
@@ -432,12 +437,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 */
 	public List<EvaluationResult> eval(final String state, final String... code)
 			throws ProBException, BException {
+		if (!containsVertex(state))
+			throw new IllegalArgumentException("state does not exist");
+
 		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
 				code.length);
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
 		}
-		// FIXME: Should we check if a state is valid?
+
 		EvaluateFormulasCommand command = new EvaluateFormulasCommand(list,
 				state);
 		execute(command);
