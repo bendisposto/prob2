@@ -4,6 +4,7 @@ package de.prob.model.classicalb;
 import spock.lang.Specification;
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.node.Start;
+import spock.lang.Ignore
 
 
 public class PrettyPrintTest extends Specification {
@@ -49,6 +50,25 @@ public class PrettyPrintTest extends Specification {
 		"x=1 => y=2" | "x=1 => y=2"
 		"x=1 => y=2 => (z=3)" | "x=1 => y=2 => z=3"
 		"x=1 => (y=2 => z=3)" | "x=1 => (y=2 => z=3)"
+	}
+
+	//FIXME: This is a reproduction of the odd behavior of the parsing of the sets
+	@Ignore
+	def "test pretty printing for sets"() {
+		when:
+		String toParse = '''MACHINE scheduler
+							SETS
+								PID = {PID1,PID2,PID3}
+							END'''
+		Start parse = BParser.parse(toParse);
+		PrettyPrinter prettyprinter = new PrettyPrinter();
+
+		parse.apply(prettyprinter);
+		String prettyPrint = prettyprinter.getPrettyPrint();
+
+
+		then:
+		prettyPrint == "PID={PID1,PID2,PID3}"
 	}
 }
 
