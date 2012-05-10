@@ -1103,6 +1103,38 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		node.getIdentifier().apply(this);
 	}
 
+	@Override
+	public void caseAEnumeratedSetSet(AEnumeratedSetSet node) {
+		final List<TIdentifierLiteral> copy = new ArrayList<TIdentifierLiteral>(
+				node.getIdentifier());
+
+		for (final Iterator<TIdentifierLiteral> iterator = copy.iterator(); iterator
+				.hasNext();) {
+			final TIdentifierLiteral e = iterator.next();
+			e.apply(this);
+
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+		}
+		sb.append("=");
+
+		final List<PExpression> copy2 = new ArrayList<PExpression>(
+				node.getElements());
+		sb.append("{");
+		for (final Iterator<PExpression> iterator = copy2.iterator(); iterator
+				.hasNext();) {
+			final PExpression e = iterator.next();
+			e.apply(this);
+
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+		}
+		sb.append("}");
+
+	}
+
 	HashMap<Class<? extends Node>, Integer> prio = new HashMap<Class<? extends Node>, Integer>();
 
 	public void setup() {
