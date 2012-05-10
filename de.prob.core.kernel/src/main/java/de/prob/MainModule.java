@@ -114,7 +114,8 @@ public class MainModule extends AbstractModule {
 	}
 
 	private Properties loadBuildConstants() {
-		InputStream stream = MainModule.class.getClassLoader()
+		ClassLoader classLoader = MainModule.class.getClassLoader();
+		InputStream stream = classLoader
 				.getResourceAsStream("build.properties");
 		Properties properties = new Properties();
 		try {

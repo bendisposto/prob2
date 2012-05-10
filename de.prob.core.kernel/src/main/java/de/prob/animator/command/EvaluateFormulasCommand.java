@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.ProBException;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvaluationResult;
@@ -89,22 +88,16 @@ public class EvaluateFormulasCommand implements ICommand {
 		pout.openList();
 
 		// print parsed expressions/predicates
-		try {
-			for (ClassicalBEvalElement term : evalElements) {
-				pout.openTerm("eval");
-				final ASTProlog prolog = new ASTProlog(pout, null);
-				term.parse().apply(prolog);
-				pout.printAtom(term.getType().toString());
-				pout.printAtom(term.getCode());
-				pout.closeTerm();
-			}
-		} catch (BException e) {
-			logger.error("Parse error", e);
-			throw new ProBException();
-		} finally {
-			pout.closeList();
-			pout.printVariable(EVALUATE_TERM_VARIABLE);
+		for (ClassicalBEvalElement term : evalElements) {
+			pout.openTerm("eval");
+			final ASTProlog prolog = new ASTProlog(pout, null);
+			term.getAst().apply(prolog);
+			pout.printAtom(term.getType().toString());
+			pout.printAtom(term.getCode());
 			pout.closeTerm();
 		}
+		pout.closeList();
+		pout.printVariable(EVALUATE_TERM_VARIABLE);
+		pout.closeTerm();
 	}
 }

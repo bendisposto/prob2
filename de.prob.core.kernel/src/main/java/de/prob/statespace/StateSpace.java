@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.ProBException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.EvaluateFormulasCommand;
@@ -121,13 +122,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @param predicate
 	 * @param nrOfSolutions
 	 * @return
+	 * @throws BException
 	 * @throws ProBException
 	 */
 	public List<Operation> opFromPredicate(final String stateId,
 			final String name, final String predicate, final int nrOfSolutions)
-			throws ProBException {
+			throws BException, ProBException {
+		ClassicalBEvalElement pred = new ClassicalBEvalElement(predicate);
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				stateId, name, predicate, nrOfSolutions);
+				stateId, name, pred, nrOfSolutions);
 		animator.execute(command);
 		List<OpInfo> newOps = command.getOperations();
 		List<Operation> ops = new ArrayList<Operation>();
@@ -154,9 +157,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @param predicate
 	 * @return
 	 * @throws ProBException
+	 * @throws BException
 	 */
 	public Operation findOneOp(String opName, String predicate)
-			throws ProBException {
+			throws ProBException, BException {
 		return opFromPredicate(getCurrentState(), opName, predicate, 1).get(0);
 	}
 
@@ -201,9 +205,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @param opName
 	 * @param predicate
 	 * @throws ProBException
+	 * @throws BException
 	 */
 	public void stepWithOp(String opName, String predicate)
-			throws ProBException {
+			throws ProBException, BException {
 		Operation op = findOneOp(opName, predicate);
 		step(op.getId());
 	}
@@ -360,8 +365,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * of variables in the info object.
 	 * 
 	 * @param formula
+	 * @throws BException
 	 */
-	public void addUserFormula(final String formula) {
+	public void addUserFormula(final String formula) throws BException {
 		formulas.add(formula);
 		try {
 			List<EvaluationResult> result = evaluate(formula);
@@ -380,6 +386,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * of variables in the info object accordingly
 	 */
 	public void evaluateFormulas() {
+		//FIXME Can a BException occur in this method?
 		String[] array = formulas.toArray(new String[formulas.size()]);
 
 		try {
@@ -394,6 +401,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		} catch (ProBException e) {
 			logger.error("Could not evaluate user formulas for state "
 					+ getCurrentState());
+		} catch (BException e) {
+			logger.error("Parse Exception in formula");
 		}
 	}
 
@@ -404,9 +413,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @param code
 	 * @return
 	 * @throws ProBException
+	 * @throws BException
 	 */
 	public List<EvaluationResult> evaluate(final String... code)
-			throws ProBException {
+			throws ProBException, BException {
 		return eval(getCurrentState(), code);
 	}
 
@@ -418,9 +428,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @param code
 	 * @return
 	 * @throws ProBException
+	 * @throws BException
 	 */
 	public List<EvaluationResult> eval(final String state, final String... code)
-			throws ProBException {
+			throws ProBException, BException {
 		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
 				code.length);
 		for (String c : code) {

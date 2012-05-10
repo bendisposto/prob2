@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.prob.ProBException;
+import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
@@ -20,10 +21,11 @@ import de.prob.prolog.term.PrologTerm;
 public class GetOperationByPredicateCommandTest {
 
 	@Test
-	public void testWriteCommand() throws ProBException {
+	public void testWriteCommand() throws Exception {
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
+		ClassicalBEvalElement pred = new ClassicalBEvalElement("1<3");
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				"blA", "bLa", "1<3", 23);
+				"blA", "bLa", pred, 23);
 		command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();
 		Collection<PrologTerm> sentences = prologTermOutput.getSentences();

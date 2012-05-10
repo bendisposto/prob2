@@ -9,9 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.ProBException;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
-import de.prob.animator.domainobjects.EvalElementType;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
@@ -22,13 +20,11 @@ import de.prob.prolog.term.PrologTerm;
 public class EvaluateFormulasCommandTest {
 
 	@Test
-	public void testWriteCommand() throws ProBException {
+	public void testWriteCommand() throws Exception {
 
 		List<ClassicalBEvalElement> evalElements = new ArrayList<ClassicalBEvalElement>();
-		evalElements.add(new ClassicalBEvalElement("1<3",
-				EvalElementType.PREDICATE));
-		evalElements.add(new ClassicalBEvalElement("3",
-				EvalElementType.EXPRESSION));
+		evalElements.add(new ClassicalBEvalElement("1<3"));
+		evalElements.add(new ClassicalBEvalElement("3"));
 
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		EvaluateFormulasCommand command = new EvaluateFormulasCommand(
@@ -51,12 +47,10 @@ public class EvaluateFormulasCommandTest {
 	}
 
 	@Test
-	public void testProcessResult() throws ProBException {
+	public void testProcessResult() throws Exception {
 		List<ClassicalBEvalElement> evalElements = new ArrayList<ClassicalBEvalElement>();
-		evalElements.add(new ClassicalBEvalElement("1<3",
-				EvalElementType.PREDICATE));
-		evalElements.add(new ClassicalBEvalElement("3",
-				EvalElementType.EXPRESSION));
+		evalElements.add(new ClassicalBEvalElement("1<3"));
+		evalElements.add(new ClassicalBEvalElement("3"));
 		evalElements.add(new ClassicalBEvalElement("1>3"));
 		evalElements.add(new ClassicalBEvalElement("99"));
 
