@@ -10,28 +10,19 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.google.common.base.Joiner;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import de.prob.animator.IAnimator;
-import de.prob.annotations.Logfile;
 import de.prob.cli.ProBInstanceProvider;
 
 public class Main {
 
 	static {
-		System.setProperty("PROB_LOGFILE", log());
 		if (System.getProperty("PROB_LOG_CONFIG") == null) {
 			System.setProperty("PROB_LOG_CONFIG", "production.xml");
 		}
-	}
-
-	private static String log() {
-		String userhome = System.getProperty("user.home");
-		String[] log = { userhome, ".prob", "logs", "ProB.txt" };
-		return Joiner.on(separator).join(log);
 	}
 
 	private static Injector INJECTOR;
@@ -45,12 +36,11 @@ public class Main {
 	private final Shell shell;
 
 	@Inject
-	public Main(@Logfile final String logfile, final CommandLineParser parser,
-			final Options options, final Shell shell) {
+	public Main(final CommandLineParser parser, final Options options,
+			final Shell shell) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
-		System.setProperty("PROB_LOGFILE", logfile);
 	}
 
 	void run(final String[] args) {
@@ -74,7 +64,20 @@ public class Main {
 		}
 	}
 
+	private static String getProBDirectory() {
+		String homedir = System.getProperty("prob.home");
+		if (homedir != null)
+			return homedir;
+		String env = System.getenv("PROB_HOME");
+		if (env != null)
+			return env + separator;
+		return System.getProperty("user.home") + separator + ".prob"
+				+ separator;
+	}
+
 	public static void main(final String[] args) {
+		String str = getProBDirectory() + "logs" + separator + "ProB.txt";
+		System.setProperty("PROB_LOGFILE", str);
 		INJECTOR = Guice.createInjector(new MainModule());
 		Main main = INJECTOR.getInstance(Main.class);
 

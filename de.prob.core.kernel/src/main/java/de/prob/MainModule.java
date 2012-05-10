@@ -83,7 +83,9 @@ public class MainModule extends AbstractModule {
 	@Provides
 	@Logfile
 	public String getProBLogfile() {
-		return getProBDirectory() + "logs" + separator + "ProB.txt";
+		String str = getProBDirectory() + "logs" + separator + "ProB.txt";
+		System.setProperty("PROB_LOGFILE", str);
+		return str;
 	}
 
 	@Provides
