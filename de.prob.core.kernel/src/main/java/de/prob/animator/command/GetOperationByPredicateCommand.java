@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.ProBException;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
@@ -44,11 +43,12 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	private final int nrOfSolutions;
 
 	public GetOperationByPredicateCommand(final String stateId,
-			final String name, final String predicate, final int nrOfSolutions) {
+			final String name, final ClassicalBEvalElement predicate,
+			final int nrOfSolutions) {
 		this.stateId = stateId;
 		this.name = name;
 		this.nrOfSolutions = nrOfSolutions;
-		this.evalElement = new ClassicalBEvalElement(predicate);
+		this.evalElement = predicate;
 	}
 
 	/**
@@ -64,17 +64,11 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
 		pto.openTerm("execute_custom_operations").printAtomOrNumber(stateId)
 				.printAtom(name);
-		try {
-			final ASTProlog prolog = new ASTProlog(pto, null);
-			evalElement.parse().apply(prolog);
-		} catch (BException e) {
-			logger.error("Parse error", e);
-			throw new ProBException();
-		} finally {
-			pto.printNumber(nrOfSolutions);
-			pto.printVariable(NEW_STATE_ID_VARIABLE);
-			pto.printVariable("Errors").closeTerm();
-		}
+		final ASTProlog prolog = new ASTProlog(pto, null);
+		evalElement.getAst().apply(prolog);
+		pto.printNumber(nrOfSolutions);
+		pto.printVariable(NEW_STATE_ID_VARIABLE);
+		pto.printVariable("Errors").closeTerm();
 	}
 
 	/**
