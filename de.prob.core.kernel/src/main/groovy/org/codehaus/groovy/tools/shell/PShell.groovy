@@ -351,7 +351,10 @@ extends Shell {
 		}
 	}
 
-	Closure errorHook = defaultErrorHook
+	Closure newErrorHook = { Throwable cause }
+
+	//Closure errorHook = defaultErrorHook
+	Closure errorHook = newErrorHook
 
 	private void displayError(final Throwable cause) {
 		if (errorHook == null) {
