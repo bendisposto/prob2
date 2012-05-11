@@ -9,8 +9,7 @@ public interface ProBInstance {
 
 	public abstract void shutdown();
 
-	public abstract void sendUserInterruptReference(String home,
-			OsSpecificInfo osInfo);
+	public abstract void sendInterrupt();
 
 	public abstract String send(String term) throws ProBException;
 

@@ -20,6 +20,7 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import de.prob.ProBException;
+import de.prob.annotations.Home;
 
 @Singleton
 public final class ProBInstanceProvider implements Provider<ProBInstance> {
@@ -29,6 +30,8 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 			.getLogger(ProBInstanceProvider.class);
 
 	private final PrologProcessProvider processProvider;
+	private final String home;
+	private final OsSpecificInfo osInfo;
 
 	@Override
 	public ProBInstance get() {
@@ -40,8 +43,11 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 	}
 
 	@Inject
-	public ProBInstanceProvider(final PrologProcessProvider processProvider) {
+	public ProBInstanceProvider(final PrologProcessProvider processProvider,
+			@Home String home, OsSpecificInfo osInfo) {
 		this.processProvider = processProvider;
+		this.home = home;
+		this.osInfo = osInfo;
 	}
 
 	public ProBInstanceImpl create() throws ProBException {
@@ -69,7 +75,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		ProBConnection connection = new ProBConnection(key, port);
 
 		ProBInstanceImpl cli = new ProBInstanceImpl(process, stream,
-				userInterruptReference, connection);
+				userInterruptReference, connection, home, osInfo);
 		return cli;
 	}
 
