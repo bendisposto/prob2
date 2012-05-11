@@ -16,6 +16,7 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.ProBException;
+import de.prob.SignalHandlerImpl;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
@@ -77,6 +78,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		this.history = history;
 		this.info = info;
 		addVertex("root");
+		setUpSignalHandler();
 	}
 
 	// MAKE CHANGES TO THE STATESPACE GRAPH
@@ -466,6 +468,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	@Override
 	public void sendInterrupt() {
 		animator.sendInterrupt();
+	}
+
+	public void setUpSignalHandler() {
+		SignalHandlerImpl.install("TERM", this);
+		SignalHandlerImpl.install("INT", this);
+		SignalHandlerImpl.install("ABRT", this);
 	}
 
 	// NOTIFICATION SYSTEM

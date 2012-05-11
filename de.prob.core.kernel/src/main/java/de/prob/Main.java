@@ -78,7 +78,7 @@ public class Main {
 		System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
 		System.setProperty("PROB_LOGFILE", PROB_HOME + "logs" + separator
 				+ "ProB.txt");
-		
+
 		INJECTOR = Guice.createInjector(new MainModule());
 		Main main = INJECTOR.getInstance(Main.class);
 
