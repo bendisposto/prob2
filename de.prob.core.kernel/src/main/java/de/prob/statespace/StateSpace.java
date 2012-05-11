@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
+import de.prob.Main;
 import de.prob.ProBException;
 import de.prob.SignalHandlerImpl;
 import de.prob.animator.IAnimator;
@@ -78,7 +79,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		this.history = history;
 		this.info = info;
 		addVertex("root");
-		setUpSignalHandler();
+		if (Main.isShellMode()) setUpSignalHandler();
 	}
 
 	// MAKE CHANGES TO THE STATESPACE GRAPH

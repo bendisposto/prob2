@@ -20,6 +20,7 @@ import de.prob.cli.ProBInstanceProvider;
 public class Main {
 
 	private static Injector INJECTOR;
+	private static boolean shellMode;
 
 	public IAnimator getAnimator() {
 		return INJECTOR.getInstance(IAnimator.class);
@@ -50,6 +51,7 @@ public class Main {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {
+				Main.shellMode = true;
 				shell.repl();
 			}
 			if (line.hasOption("test")) {
@@ -84,6 +86,10 @@ public class Main {
 
 		main.run(args);
 		System.exit(0);
+	}
+
+	public static boolean isShellMode() {
+		return shellMode;
 	}
 
 }
