@@ -10,7 +10,6 @@ import com.google.common.base.Objects;
 import com.google.inject.Inject;
 
 import de.prob.ProBException;
-import de.prob.annotations.Home;
 
 class ProBInstanceImpl implements ProBInstance {
 
@@ -25,11 +24,18 @@ class ProBInstanceImpl implements ProBInstance {
 
 	private final ProBConnection connection;
 
+	private final String home;
+
+	private final OsSpecificInfo osInfo;
+
 	public ProBInstanceImpl(final Process process, final BufferedReader stream,
-			final Long userInterruptReference, final ProBConnection connection)
+			final Long userInterruptReference, final ProBConnection connection,
+			final String home, final OsSpecificInfo osInfo)
 			throws ProBException {
 		this.process = process;
 		this.connection = connection;
+		this.home = home;
+		this.osInfo = osInfo;
 		this.userInterruptReference = userInterruptReference.longValue();
 		thread = makeOutputPublisher(stream);
 		thread.start();
@@ -52,8 +58,7 @@ class ProBInstanceImpl implements ProBInstance {
 	}
 
 	@Inject
-	public void sendUserInterruptReference(@Home final String home,
-			final OsSpecificInfo osInfo) {
+	public void sendInterrupt() {
 		try {
 			final String command = home + osInfo.userInterruptCmd;
 			String[] cmd = new String[] { command,

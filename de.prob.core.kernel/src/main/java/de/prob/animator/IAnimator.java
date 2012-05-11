@@ -22,4 +22,8 @@ public interface IAnimator {
 	 * @throws ProBException
 	 */
 	public abstract void execute(ICommand... commands) throws ProBException;
+	
+	
+	public void sendInterrupt();
+	
 }

@@ -83,4 +83,9 @@ class AnimatorImpl implements IAnimator {
 		execute(new ComposedCommand(commands));
 	}
 
+	@Override
+	public void sendInterrupt() {
+		cli.sendInterrupt();
+	}
+
 }

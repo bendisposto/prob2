@@ -23,7 +23,7 @@ public class ProBInstanceImplTest extends AbstractUnitTest {
 		reader = mock(BufferedReader.class);
 		connection = mock(ProBConnection.class);
 		try {
-			cli = new ProBInstanceImpl(process, reader, 12345L, connection);
+			cli = new ProBInstanceImpl(process, reader, 12345L, connection, "", null);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

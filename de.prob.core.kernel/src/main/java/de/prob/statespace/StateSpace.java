@@ -463,6 +463,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		animator.execute(commands);
 	}
 
+	@Override
+	public void sendInterrupt() {
+		animator.sendInterrupt();
+	}
+
 	// NOTIFICATION SYSTEM
 	/**
 	 * Adds an IAnimationListener to the list of animationListeners. This

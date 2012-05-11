@@ -16,7 +16,7 @@ public class ProBInstanceProviderTest extends AbstractUnitTest {
 	@Test
 	public void testExtractCliInformation() throws Exception {
 		PrologProcessProvider ppp = mock(PrologProcessProvider.class);
-		ProBInstanceProvider factory = new ProBInstanceProvider(ppp);
+		ProBInstanceProvider factory = new ProBInstanceProvider(ppp, "", null);
 
 		String text = "No file to process\nStarting Socket Server\n"
 				+ "Application Path: /Users/bendisposto/.prob\nPort: 61013\n"
