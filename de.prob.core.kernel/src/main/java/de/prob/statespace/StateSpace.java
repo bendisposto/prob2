@@ -60,7 +60,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	private final History history;
 	private final StateSpaceInfo info;
 
-	private final List<String> formulas = new ArrayList<String>();
+	private final List<ClassicalBEvalElement> formulas = new ArrayList<ClassicalBEvalElement>();
 	private final List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
 	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
@@ -163,7 +163,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 * @throws BException
 	 */
-	public Operation findOneOp(String opName, String predicate)
+	public Operation findOneOp(final String opName, final String predicate)
 			throws ProBException, BException {
 		return opFromPredicate(getCurrentState(), opName, predicate, 1).get(0);
 	}
@@ -211,7 +211,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 * @throws BException
 	 */
-	public void stepWithOp(String opName, String predicate)
+	public void stepWithOp(final String opName, final String predicate)
 			throws ProBException, BException {
 		Operation op = findOneOp(opName, predicate);
 		step(op.getId());
@@ -239,9 +239,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			}
 		}
 
+		history.add(stateId, null);
 		evaluateFormulas();
 		notifyAnimationChange(getCurrentState(), stateId, null);
-		history.add(stateId, null);
 	}
 
 	/**
@@ -373,9 +373,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws BException
 	 */
 	public void addUserFormula(final String formula) throws BException {
-		formulas.add(formula);
+		formulas.add(new ClassicalBEvalElement(formula));
 		try {
-			List<EvaluationResult> result = evaluate(formula);
+			List<EvaluationResult> result = evaluate(formulas);
 			HashMap<String, String> varsAtState = info
 					.getState(getCurrentState());
 			for (EvaluationResult evaluationResult : result) {
@@ -391,17 +391,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * of variables in the info object accordingly
 	 */
 	public void evaluateFormulas() {
-		// FIXME Can a BException occur in this method?
-		String[] array = formulas.toArray(new String[formulas.size()]);
-
 		try {
-			List<EvaluationResult> evaluate = evaluate(array);
+			List<EvaluationResult> evaluate = evaluate(formulas);
 			HashMap<String, String> varsAtCurrentState = info
 					.getState(getCurrentState());
 			for (EvaluationResult result : evaluate) {
-				if (!varsAtCurrentState.containsKey(result.code)) {
-					varsAtCurrentState.put(result.code, result.value);
-				}
+				varsAtCurrentState.put(result.code, result.value);
 			}
 		} catch (ProBException e) {
 			logger.error("Could not evaluate user formulas for state "
@@ -420,9 +415,26 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 * @throws BException
 	 */
+	public List<EvaluationResult> evaluate(
+			final List<ClassicalBEvalElement> code) throws ProBException,
+			BException {
+		return eval(getCurrentState(), code);
+	}
+
+	public List<EvaluationResult> evaluate(final ClassicalBEvalElement code)
+			throws ProBException, BException {
+		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>();
+		list.add(code);
+		return evaluate(list);
+	}
+
 	public List<EvaluationResult> evaluate(final String... code)
 			throws ProBException, BException {
-		return eval(getCurrentState(), code);
+		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>();
+		for (String c : code) {
+			list.add(new ClassicalBEvalElement(c));
+		}
+		return evaluate(list);
 	}
 
 	/**
@@ -435,22 +447,26 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 * @throws BException
 	 */
-	public List<EvaluationResult> eval(final String state, final String... code)
-			throws ProBException, BException {
+	public List<EvaluationResult> eval(final String state,
+			final List<ClassicalBEvalElement> code) throws ProBException,
+			BException {
 		if (!containsVertex(state))
 			throw new IllegalArgumentException("state does not exist");
 
-		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>(
-				code.length);
-		for (String c : code) {
-			list.add(new ClassicalBEvalElement(c));
-		}
-
-		EvaluateFormulasCommand command = new EvaluateFormulasCommand(list,
+		EvaluateFormulasCommand command = new EvaluateFormulasCommand(code,
 				state);
 		execute(command);
 
 		return command.getValues();
+	}
+
+	public List<EvaluationResult> eval(final String state, final String... code)
+			throws BException, ProBException {
+		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>();
+		for (String c : code) {
+			list.add(new ClassicalBEvalElement(c));
+		}
+		return eval(state, list);
 	}
 
 	@Override

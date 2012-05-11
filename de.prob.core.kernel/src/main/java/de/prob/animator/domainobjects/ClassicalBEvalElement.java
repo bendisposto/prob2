@@ -6,11 +6,11 @@
 
 package de.prob.animator.domainobjects;
 
+import static de.prob.animator.domainobjects.EvalElementType.*;
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.Start;
-import static de.prob.animator.domainobjects.EvalElementType.*;
 
 public class ClassicalBEvalElement {
 
@@ -33,6 +33,11 @@ public class ClassicalBEvalElement {
 
 	public Start getAst() {
 		return ast;
+	}
+
+	@Override
+	public String toString() {
+		return code;
 	}
 
 }
