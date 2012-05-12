@@ -3,6 +3,8 @@ package de.prob;
 import static java.io.File.*;
 
 import java.io.File;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -33,6 +35,8 @@ public class Main {
 	public final static String LOG_CONFIG = System
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
 			.getProperty("PROB_LOG_CONFIG");
+
+	public static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
 
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
@@ -76,6 +80,16 @@ public class Main {
 	}
 
 	public static void main(final String[] args) {
+
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				Set<Process> keySet = Main.processes.keySet();
+				for (Process process : keySet) {
+					process.destroy();
+				}
+			}
+		});
 
 		System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
 		System.setProperty("PROB_LOGFILE", PROB_HOME + "logs" + separator
