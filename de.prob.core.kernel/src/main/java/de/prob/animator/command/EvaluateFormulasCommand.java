@@ -59,9 +59,9 @@ public class EvaluateFormulasCommand implements ICommand {
 					ListPrologTerm lpt = (ListPrologTerm) term;
 					ArrayList<String> list = new ArrayList<String>();
 
-					String code = lpt.get(1).getFunctor();
+					String code = lpt.get(0).getFunctor();
 
-					for (int i = 2; i <= lpt.size(); i++) {
+					for (int i = 1; i < lpt.size(); i++) {
 						list.add(lpt.get(i).getArgument(1).getFunctor());
 					}
 
