@@ -40,7 +40,7 @@ class AnimatorImpl implements IAnimator {
 		if (cli == null) {
 			// System.out.println("Probcli is missing. Try \"upgrade\".");
 			logger.error("Probcli is missing. Try \"upgrade\".");
-			throw new ProBException();
+			throw new ProBException("no cli found");
 		}
 		ISimplifiedROMap<String, PrologTerm> bindings = null;
 		try {
@@ -48,7 +48,7 @@ class AnimatorImpl implements IAnimator {
 			command.processResult(bindings);
 		} catch (RuntimeException e) {
 			logger.error("Runtime error while executing query.", e);
-			throw new ProBException();
+			throw new ProBException(e);
 		} finally {
 			getErrors();
 		}
@@ -62,13 +62,14 @@ class AnimatorImpl implements IAnimator {
 			getErrors.processResult(errorbindings);
 		} catch (RuntimeException e) {
 			logger.error("Runtime error while executing query.", e);
-			throw new ProBException();
+			throw new ProBException(e);
 		}
 		errors = getErrors.getErrors();
 		if (errors != null && !errors.isEmpty()) {
+			String msg = Joiner.on('\n').join(errors);
 			logger.error("ProB raised exception(s):\n",
-					Joiner.on('\n').join(errors));
-			throw new ProBException();
+					msg);
+			throw new ProBException(msg);
 		}
 	}
 
