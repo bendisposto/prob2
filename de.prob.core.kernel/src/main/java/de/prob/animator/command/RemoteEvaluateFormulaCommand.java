@@ -7,9 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.ProBException;
-import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -17,25 +15,22 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
- * Calculates the values of Classical-B Predicates and Expressions.
+ * Calculates the values of a formula. Uses the Prolog Parser, not the Java
+ * Parser
  * 
- * @author joy
+ * @author bendisposto
  * 
  */
-public class EvaluateTautologyCommand implements ICommand {
+public class RemoteEvaluateFormulaCommand implements ICommand {
 
-	Logger logger = LoggerFactory.getLogger(EvaluateTautologyCommand.class);
+	Logger logger = LoggerFactory.getLogger(RemoteEvaluateFormulaCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
-	private final ClassicalBEvalElement tautology;
-	private final String stateId;
+	private final String formula;
 	private EvaluationResult value;
 
-	// FIXME: Why does this command need access to the id?
-	public EvaluateTautologyCommand(final ClassicalBEvalElement tautology,
-			final String id) {
-		this.tautology = tautology;
-		this.stateId = id;
+	public RemoteEvaluateFormulaCommand(final String formula) {
+		this.formula = formula;
 	}
 
 	public EvaluationResult getValue() {
@@ -64,17 +59,15 @@ public class EvaluateTautologyCommand implements ICommand {
 		} else {
 			String v = term.getArgument(1).getFunctor();
 			String solution = term.getArgument(2).getFunctor();
-			value = new EvaluationResult(tautology.getCode(), v, solution, "",
-					false);
+			value = new EvaluationResult(formula, v, solution, "", true);
 		}
 
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) throws ProBException {
-		pout.openTerm("evaluate_tautology");
-		pout.printAtomOrNumber(stateId);
-		pout.printString(tautology.getCode());
+		pout.openTerm("evaluate_formula");
+		pout.printString(formula);
 		pout.printVariable(EVALUATE_TERM_VARIABLE);
 		pout.closeTerm();
 	}
