@@ -21,16 +21,24 @@ import de.prob.prolog.term.PrologTerm;
  * @author bendisposto
  * 
  */
-public class RemoteEvaluateFormulaCommand implements ICommand {
+public class RemoteEvaluateCommand implements ICommand {
 
-	Logger logger = LoggerFactory.getLogger(RemoteEvaluateFormulaCommand.class);
+	public enum EEvaluationStrategy {
+		evaluate_formula, evaluate_tautology
+	}
+
+	Logger logger = LoggerFactory.getLogger(RemoteEvaluateCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
 	private final String formula;
 	private EvaluationResult value;
 
-	public RemoteEvaluateFormulaCommand(final String formula) {
+	private final EEvaluationStrategy quantifier;
+
+	public RemoteEvaluateCommand(final String formula,
+			EEvaluationStrategy quantifier) {
 		this.formula = formula;
+		this.quantifier = quantifier;
 	}
 
 	public EvaluationResult getValue() {
@@ -66,7 +74,7 @@ public class RemoteEvaluateFormulaCommand implements ICommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) throws ProBException {
-		pout.openTerm("evaluate_formula");
+		pout.openTerm(quantifier.name());
 		pout.printString(formula);
 		pout.printVariable(EVALUATE_TERM_VARIABLE);
 		pout.closeTerm();
