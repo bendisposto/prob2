@@ -45,7 +45,7 @@ implements Runnable {
 
 		this.reader = new ConsoleReader(shell.io.inputStream, new PrintWriter(shell.io.outputStream, true))
 
-		reader.addCompletor(new ReflectionCompletor(shell))
+		reader.addCompletor(new PReflectionCompletor(shell))
 		this.completor = new CommandsMultiCompletor()
 
 		reader.addCompletor(completor)

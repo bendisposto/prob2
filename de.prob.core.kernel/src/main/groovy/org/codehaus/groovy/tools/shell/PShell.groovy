@@ -60,7 +60,7 @@ extends Shell {
 
 	final version
 
-	InteractiveShellRunner runner
+	PInteractiveShellRunner runner
 
 	History history
 
