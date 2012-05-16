@@ -43,8 +43,7 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 	/**
 	 * @param predicate
 	 *            is a parsed predicate or <code>null</code>
-	 * @see LanguageDependendAnimationPart#parsePredicate(IPrologTermOutput,
-	 *      String, boolean)
+	 * 
 	 */
 	public ConstraintBasedDeadlockCheckCommand(final PrologTerm predicate) {
 		this.predicate = predicate;
@@ -104,7 +103,7 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 				logger.error("Result from Prolog was not as expected.", e);
 				throw new ProBException();
 			}
-			
+
 		} else {
 			logger.error("unexpected result from deadlock check: " + resultTerm);
 			throw new ProBException();

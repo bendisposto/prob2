@@ -79,7 +79,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		this.history = history;
 		this.info = info;
 		addVertex("root");
-		if (Main.isShellMode()) setUpSignalHandler();
+		if (Main.isShellMode()) {
+			setUpSignalHandler();
+		}
 	}
 
 	// MAKE CHANGES TO THE STATESPACE GRAPH
@@ -128,7 +130,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @param name
 	 * @param predicate
 	 * @param nrOfSolutions
-	 * @return
+	 * @return list of operations
 	 * @throws BException
 	 * @throws ProBException
 	 */
@@ -162,7 +164,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * 
 	 * @param opName
 	 * @param predicate
-	 * @return
+	 * @return one operations that meets the specifications
 	 * @throws ProBException
 	 * @throws BException
 	 */
@@ -175,7 +177,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * Checks if the state with stateId is a deadlock
 	 * 
 	 * @param stateid
-	 * @return
+	 * @return returns if a specific state is deadlocked
 	 * @throws ProBException
 	 */
 	public boolean isDeadlock(final String stateid) throws ProBException {
@@ -189,7 +191,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * Checks if the state with stateId has been explored yet
 	 * 
 	 * @param stateid
-	 * @return
+	 * @return returns if a specific state is explored
 	 */
 	private boolean isExplored(final String stateid) {
 		if (!containsVertex(stateid))
@@ -320,7 +322,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	/**
 	 * returns the state id of the current state in the animation
 	 * 
-	 * @return
+	 * @return returns the current state from the animation
 	 */
 	public String getCurrentState() {
 		return history.getCurrentState();
@@ -414,7 +416,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * strings) and returns a list of EvaluationResults for the current state.
 	 * 
 	 * @param code
-	 * @return
+	 * @return returns a list of evalutation results
 	 * @throws ProBException
 	 * @throws BException
 	 */
@@ -446,7 +448,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * 
 	 * @param state
 	 * @param code
-	 * @return
+	 * @return returns a list of evaluation results
 	 * @throws ProBException
 	 * @throws BException
 	 */

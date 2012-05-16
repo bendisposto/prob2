@@ -26,7 +26,7 @@ import de.prob.prolog.term.PrologTerm;
 
 /**
  * Command to execute an event that has not been enumerated by ProB, for further
- * information see ({@link #getOperation})
+ * information see ({@link #getOperations})
  * 
  * @author Jens Bendisposto
  * 
@@ -58,7 +58,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	 * 
 	 * @throws ProBException
 	 * 
-	 * @see de.prob.core.command.IComposableCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
+	 * @see de.prob.animator.command.ICommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
@@ -78,7 +78,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	 * 
 	 * @throws ProBException
 	 * 
-	 * @see de.prob.core.command.IComposableCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
+	 * @see de.prob.animator.command.ICommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
 	@Override
 	public void processResult(
