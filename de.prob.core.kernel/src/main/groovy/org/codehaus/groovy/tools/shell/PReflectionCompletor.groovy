@@ -20,11 +20,13 @@ class PReflectionCompletor implements Completor {
 	int complete(String buffer, int cursor, List candidates) {
 
 		int identifierStart = findIdentifierStart(buffer, cursor)
+		//FIXME: Figure out a new way to get the identifier prefix
+		//It should be the substring before the last '.' or '('
 		String identifierPrefix = identifierStart != -1 ? buffer.substring(identifierStart, cursor) : ""
 		int lastDot = buffer.lastIndexOf('.')
 
 		// if there are no dots, and there is a valid identifier prefix
-		if (lastDot == -1 ) {
+		if (lastDot == -1 || noDotsBeforeParentheses(buffer, cursor) ) {
 			if (identifierStart != -1) {
 				List myCandidates = findMatchingVariables(identifierPrefix)
 				if (myCandidates.size() > 0) {
@@ -33,13 +35,14 @@ class PReflectionCompletor implements Completor {
 
 				}
 			}
-		}
-		else {
+		} else {
 			// there are 1 or more dots
 			// if ends in a dot, or if there is a valid identifier prefix
 			if (lastDot == cursor-1 || identifierStart != -1){
 				// evaluate the part before the dot to get an instance
-				String instanceRefExpression = buffer.substring(0, lastDot)
+				int predecessorStart=findIdentifierStart(buffer,lastDot)
+
+				String instanceRefExpression = buffer.substring(predecessorStart, lastDot)
 				def instance = shell.interp.evaluate([instanceRefExpression])
 				if (instance != null) {
 					// look for public methods/fields that match the prefix
@@ -69,7 +72,7 @@ class PReflectionCompletor implements Completor {
 			return -1
 		// if the last character is not valid then there is no expression
 		char lastChar = buffer.charAt(endingAt-1)
-		if (!Character.isJavaIdentifierPart(lastChar))
+		if (!Character.isJavaIdentifierPart(lastChar) )
 			return -1
 		// scan backwards until the beginning of the expression is found
 		int startIndex = endingAt-1
@@ -115,5 +118,14 @@ class PReflectionCompletor implements Completor {
 			if (varName.startsWith(prefix))
 				matches << varName
 		return matches
+	}
+
+	Boolean noDotsBeforeParentheses(String buffer, int endingAt) {
+		int lastDotIndex = buffer.lastIndexOf('.')
+		int lastParanIndex = buffer.lastIndexOf('(')
+
+		if(lastDotIndex==-1&&lastParanIndex==-1)
+			return true;
+		return lastDotIndex < lastParanIndex
 	}
 }
