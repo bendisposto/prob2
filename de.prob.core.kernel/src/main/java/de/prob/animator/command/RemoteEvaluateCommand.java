@@ -24,7 +24,15 @@ import de.prob.prolog.term.PrologTerm;
 public class RemoteEvaluateCommand implements ICommand {
 
 	public enum EEvaluationStrategy {
-		evaluate_formula, evaluate_tautology
+		EXISTENTIAL("evaluate_formula", true), UNIVERSAL("evaluate_tautology",
+				false);
+		private final String prolog;
+		private final boolean existential;
+
+		EEvaluationStrategy(String prolog, boolean existential) {
+			this.prolog = prolog;
+			this.existential = existential;
+		}
 	}
 
 	Logger logger = LoggerFactory.getLogger(RemoteEvaluateCommand.class);
@@ -67,14 +75,15 @@ public class RemoteEvaluateCommand implements ICommand {
 		} else {
 			String v = term.getArgument(1).getFunctor();
 			String solution = term.getArgument(2).getFunctor();
-			value = new EvaluationResult(formula, v, solution, "", true);
+			value = new EvaluationResult(formula, v, solution, "",
+					quantifier.existential);
 		}
 
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) throws ProBException {
-		pout.openTerm(quantifier.name());
+		pout.openTerm(quantifier.prolog);
 		pout.printString(formula);
 		pout.printVariable(EVALUATE_TERM_VARIABLE);
 		pout.closeTerm();
