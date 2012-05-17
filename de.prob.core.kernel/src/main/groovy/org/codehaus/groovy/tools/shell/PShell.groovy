@@ -60,7 +60,7 @@ extends Shell {
 
 	final version
 
-	InteractiveShellRunner runner
+	PInteractiveShellRunner runner
 
 	History history
 
@@ -413,7 +413,7 @@ extends Shell {
 				loadUserScript('groovysh.rc')
 
 				// Setup the interactive runner
-				runner = new InteractiveShellRunner(this, this.&renderPrompt as Closure)
+				runner = new PInteractiveShellRunner(this, this.&renderPrompt as Closure)
 
 				// Setup the history
 				runner.history = history = new History()

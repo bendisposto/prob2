@@ -18,7 +18,7 @@ public class StateSpaceInfo {
 	 * @param id
 	 * @param op
 	 */
-	public void add(String id, Operation op) {
+	public void add(final String id, final Operation op) {
 		ops.put(id, op);
 	}
 
@@ -28,7 +28,7 @@ public class StateSpaceInfo {
 	 * @param id
 	 * @param vars
 	 */
-	public void add(String id, HashMap<String, String> vars) {
+	public void add(final String id, final HashMap<String, String> vars) {
 		variables.put(id, vars);
 	}
 
@@ -38,7 +38,7 @@ public class StateSpaceInfo {
 	 * @param id
 	 * @param invOK
 	 */
-	public void addInvOk(String id, Boolean invOK) {
+	public void addInvOk(final String id, final Boolean invOK) {
 		invariantOk.put(id, invOK);
 	}
 
@@ -48,7 +48,7 @@ public class StateSpaceInfo {
 	 * @param id
 	 * @param tOccured
 	 */
-	public void addTimeOcc(String id, Boolean tOccured) {
+	public void addTimeOcc(final String id, final Boolean tOccured) {
 		// FIXME is this id a state id or an operation id
 		timeoutOccured.put(id, tOccured);
 	}
@@ -60,7 +60,7 @@ public class StateSpaceInfo {
 	 * @param id
 	 * @param opsWT
 	 */
-	public void add(String id, Set<String> opsWT) {
+	public void add(final String id, final Set<String> opsWT) {
 		operationsWithTimeout.put(id, opsWT);
 	}
 
@@ -71,7 +71,7 @@ public class StateSpaceInfo {
 	 * @param stateId
 	 * @param command
 	 */
-	public void add(String stateId, ExploreStateCommand command) {
+	public void add(final String stateId, final ExploreStateCommand command) {
 		variables.put(stateId, command.getVariables());
 		invariantOk.put(stateId, command.isInvariantOk());
 		timeoutOccured.put(stateId, command.isTimeoutOccured());
@@ -94,7 +94,7 @@ public class StateSpaceInfo {
 	 * Returns the map representation of the variables for the given state id
 	 * 
 	 * @param stateId
-	 * @return
+	 * @return returns the variables at the given state
 	 */
 	public HashMap<String, String> getState(final String stateId) {
 		return variables.get(stateId);

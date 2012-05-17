@@ -67,7 +67,7 @@ public class Api {
 	 * Takes path of a Classical B Machine and loads it into the ClassicalBModel
 	 * 
 	 * @param file
-	 * @return
+	 * @return classicalBModel
 	 */
 	public ClassicalBModel b_load(final String file) {
 		File f = new File(file);
@@ -80,7 +80,6 @@ public class Api {
 		}
 	}
 
-
 	public String getCurrentId(final StateSpace animation) throws ProBException {
 		// new ICom<GetCurrentStateIdCommand>(new GetCurrentStateIdCommand())
 		// .executeOn(animation);
@@ -91,7 +90,7 @@ public class Api {
 	 * Upgrades the ProB Cli to the given target version
 	 * 
 	 * @param targetVersion
-	 * @return
+	 * @return String with the version of the upgrade
 	 */
 	public String upgrade(final String targetVersion) {
 		try {
@@ -107,7 +106,7 @@ public class Api {
 	/**
 	 * Lists the versions of ProB Cli that are available for download
 	 * 
-	 * @return
+	 * @return String with list of possible versions
 	 */
 	public String listVersions() {
 		return downloader.listVersions();
