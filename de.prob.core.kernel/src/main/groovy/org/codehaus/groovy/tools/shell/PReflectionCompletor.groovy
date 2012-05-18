@@ -35,6 +35,7 @@ class PReflectionCompletor implements Completor {
 
 				}
 			}
+			return -1
 		} else {
 			// there are 1 or more dots
 			// if ends in a dot, or if there is a valid identifier prefix
