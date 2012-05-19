@@ -13,7 +13,7 @@ public class StateSpaceInfo {
 	private final HashMap<String, Set<String>> operationsWithTimeout = new HashMap<String, Set<String>>();
 
 	/**
-	 * Records an Operation (op) that corresponding to the given state id.
+	 * Records an Operation (op) that corresponding to the given operation id.
 	 * 
 	 * @param id
 	 * @param op
