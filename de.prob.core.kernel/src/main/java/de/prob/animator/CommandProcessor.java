@@ -37,6 +37,7 @@ class CommandProcessor {
 			bindings = BindingGenerator.createBindingMustNotFail(query, ast);
 		} catch (ResultParserException e) {
 			logger.error("Non well-formed answer '{}'", result);
+			throw new ProBException(e);
 		}
 		return new SimplifiedROMap<String, PrologTerm>(bindings);
 	}
