@@ -35,6 +35,7 @@ class PReflectionCompletor implements Completor {
 
 				}
 			}
+			return -1
 		} else {
 			// there are 1 or more dots
 			// if ends in a dot, or if there is a valid identifier prefix
@@ -42,21 +43,25 @@ class PReflectionCompletor implements Completor {
 				// evaluate the part before the dot to get an instance
 				int predecessorStart=findIdentifierStart(buffer,lastDot)
 
-				String instanceRefExpression = buffer.substring(predecessorStart, lastDot)
-				def instance = shell.interp.evaluate([instanceRefExpression])
-				if (instance != null) {
-					// look for public methods/fields that match the prefix
-					List myCandidates = getPublicFieldsAndMethods(instance, identifierPrefix)
-					if (myCandidates.size() > 0) {
-						candidates.addAll(myCandidates)
-						return lastDot+1
+				if(predecessorStart!=-1){
+					String instanceRefExpression = buffer.substring(predecessorStart, lastDot)
+					if(shell.interp.context.variables.keySet().contains(instanceRefExpression)) {
+						def instance = shell.interp.evaluate([instanceRefExpression])
+						if (instance != null) {
+							// look for public methods/fields that match the prefix
+							List myCandidates = getPublicFieldsAndMethods(instance, identifierPrefix)
+							if (myCandidates.size() > 0) {
+								candidates.addAll(myCandidates)
+								return lastDot+1
+							}
+						}
 					}
 				}
 			}
-		}
 
-		// no candidates
-		return -1
+			// no candidates
+			return -1
+		}
 	}
 
 	/**
