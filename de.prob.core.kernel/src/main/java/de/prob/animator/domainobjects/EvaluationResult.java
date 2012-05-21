@@ -14,7 +14,11 @@ public class EvaluationResult {
 		this.value = value;
 		this.solution = solution;
 		this.errors = errors;
-		this.explanation = solutionMode ? " Solution: " : " Counterexample: ";
+		if (!solutionMode && "TRUE".equals(value))
+			this.explanation = "Solution";
+		else
+			this.explanation = solutionMode ? " Solution: "
+					: " Counterexample: ";
 	}
 
 	@Override
