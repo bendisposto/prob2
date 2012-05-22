@@ -78,7 +78,7 @@ public class EvaluateFormulasCommand implements ICommand {
 
 		} catch (ResultParserException e) {
 			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
+			throw new ProBException(e);
 		}
 	}
 

@@ -8,11 +8,11 @@ public final class ProBException extends Exception {
 	private final static Logger logger = LoggerFactory
 			.getLogger(ProBException.class);
 
-	public ProBException(Throwable e) {
+	public ProBException(final Throwable e) {
 		super(e);
 	}
 
-	public ProBException(String msg) {
+	public ProBException(final String msg) {
 		super(msg);
 	}
 

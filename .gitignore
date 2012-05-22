@@ -17,3 +17,5 @@ src/main/resources/build.properties
 config.groovy
 .cache
 .groovy/
+**/*.dot
+**/*.prob
