@@ -29,7 +29,6 @@ import de.prob.animator.domainobjects.OpInfo;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.MultiGraph;
-import edu.uci.ics.jung.graph.util.EdgeType;
 
 /**
  * 
@@ -53,7 +52,7 @@ import edu.uci.ics.jung.graph.util.EdgeType;
  * 
  */
 public class StateSpace extends StateSpaceGraph implements IAnimator,
-		DirectedGraph<String, String>, MultiGraph<String, String> {
+		DirectedGraph<StateId, OperationId>, MultiGraph<StateId, OperationId> {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 
@@ -70,7 +69,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 	@Inject
 	public StateSpace(final IAnimator animator,
-			final DirectedSparseMultigraph<String, String> graph,
+			final DirectedSparseMultigraph<StateId, OperationId> graph,
 			final Random randomGenerator, final History history,
 			final StateSpaceInfo info) {
 		super(graph);
@@ -78,7 +77,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		this.randomGenerator = randomGenerator;
 		this.history = history;
 		this.info = info;
-		addVertex("root");
+		addVertex(new StateId("root"));
 		if (Main.isShellMode()) {
 			setUpSignalHandler();
 		}
@@ -109,7 +108,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 				info.add(operations.id, op);
 				notifyStateSpaceChange(operations.id,
 						containsVertex(operations.dest));
-				addEdge(op.getId(), operations.src, operations.dest);
+				addEdge(new OperationId(op.getId()),
+						new StateId(operations.src), new StateId(
+								operations.dest));
 			}
 		}
 
@@ -151,7 +152,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 				info.add(operations.id, op);
 				notifyStateSpaceChange(operations.id,
 						containsVertex(operations.dest));
-				addEdge(op.getId(), operations.src, operations.dest);
+				addEdge(new OperationId(op.getId()),
+						new StateId(operations.src), new StateId(
+								operations.dest));
 			}
 			ops.add(op);
 		}
@@ -197,12 +200,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		if (!containsVertex(stateid))
 			throw new IllegalArgumentException("Unknown State id");
 		return explored.contains(stateid);
-	}
-
-	@Override
-	public boolean addEdge(final String opId, final String src,
-			final String dest) {
-		return addEdge(opId, src, dest, EdgeType.DIRECTED);
 	}
 
 	// MOVE WITHIN STATESPACE
@@ -258,22 +255,23 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 */
 	public void step(final String opId) throws ProBException {
-		if (!getOutEdges(getCurrentState()).contains(opId))
+		if (!getOutEdges(getCurrentState()).contains(new OperationId(opId)))
 			throw new IllegalArgumentException(opId
 					+ " is not a valid operation on this state");
 
-		String newState = getDest(opId);
-		if (!isExplored(newState)) {
+		StateId newState = getDest(opId);
+		if (!isExplored(newState.getId())) {
 			try {
-				explore(newState);
+				explore(newState.getId());
 			} catch (ProBException e) {
 				logger.error("Could not explore state with StateId " + newState);
 				throw new ProBException();
 			}
 		}
-		history.add(newState, opId);
+		history.add(newState.getId(), opId);
 		evaluateFormulas();
-		notifyAnimationChange(getSource(opId), getDest(opId), opId);
+		notifyAnimationChange(getSource(opId).getId(), getDest(opId).getId(),
+				opId);
 	}
 
 	public void step(final int i) throws ProBException {
@@ -293,7 +291,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			evaluateFormulas();
 
 			if (opId != null) {
-				notifyAnimationChange(getDest(opId), getSource(opId), opId);
+				notifyAnimationChange(getDest(opId).getId(), getSource(opId)
+						.getId(), opId);
 			} else {
 				notifyAnimationChange(oldState, getCurrentState(), null);
 			}
@@ -312,7 +311,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 			String opId = history.getCurrentTransition();
 			if (opId != null) {
-				notifyAnimationChange(getSource(opId), getDest(opId), opId);
+				notifyAnimationChange(getSource(opId).getId(), getDest(opId)
+						.getId(), opId);
 			} else {
 				notifyAnimationChange(oldState, getCurrentState(), null);
 			}
@@ -351,18 +351,18 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		if (deadlock)
 			return;
 
-		final Collection<String> operations = getOutEdges(state);
+		final Collection<OperationId> operations = getOutEdges(state);
 		int size = operations.size();
-		String[] op = operations.toArray(new String[size]);
+		OperationId[] op = operations.toArray(new OperationId[size]);
 		int thresh = randomGenerator.nextInt(size);
-		String nextOp = op[thresh];
+		OperationId nextOp = op[thresh];
 
 		final boolean invariantPreserved = info.getInvariantOk().get(state);
 
 		if (!invariantPreserved)
 			return;
 
-		step(nextOp);
+		step(nextOp.getId());
 
 		randomAnim(steps - 1);
 	}
@@ -561,9 +561,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	public String printOps() {
 		StringBuilder sb = new StringBuilder();
 		String current = getCurrentState();
-		Collection<String> opIds = getOutEdges(current);
+		Collection<OperationId> opIds = getOutEdges(current);
 		sb.append("Operations: \n");
-		for (String opId : opIds) {
+		for (OperationId opId : opIds) {
 			Operation op = info.getOp(opId);
 			sb.append("  " + op.getId() + ": " + op.toString() + "\n");
 		}
