@@ -6,18 +6,18 @@ s.step 0
 idAt0 = s.getCurrentState()
 s.step 3
 assert s.getCurrentState() == "2"
-assert s.explored.contains("2")
-assert !s.explored.contains("5")
+assert s.isExplored("2")
+assert !s.isExplored("5")
 assert s.info.ops.containsKey(new OperationId("1"))
 assert !s.isOutEdge(new StateId(s.getCurrentState()),new OperationId("1"))
 s.step 8
 idAt8 = s.getCurrentState()
 assert idAt0 == idAt8
 s.goToState 6
-assert s.explored.contains("0")
-assert s.explored.contains("6")
-assert s.explored.contains("root")
-assert !s.explored.contains("5")
+assert s.isExplored("0")
+assert s.isExplored("6")
+assert s.isExplored("root")
+assert !s.isExplored("5")
 assert s.containsVertex("5")
 varsAt6 = s.info.getState(6)
 assert varsAt6.get("waiting") == "{}"
