@@ -357,7 +357,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		int thresh = randomGenerator.nextInt(size);
 		OperationId nextOp = op[thresh];
 
-		final boolean invariantPreserved = info.getInvariantOk().get(state);
+		final boolean invariantPreserved = info.getInvariantOk().get(
+				new StateId(state));
 
 		if (!invariantPreserved)
 			return;
@@ -572,6 +573,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 	public String printInfo() {
 		return info.toString();
+	}
+
+	// assert !s.getOutEdges(s.getCurrentState()).contains(new OperationId("1"))
+	public boolean isOutEdge(final StateId sId, final OperationId oId) {
+		return getOutEdges(sId).contains(oId);
+	}
+
+	public boolean isOutEdge(final String stateId, final String opId) {
+		return isOutEdge(new StateId(stateId), new OperationId(opId));
 	}
 
 }

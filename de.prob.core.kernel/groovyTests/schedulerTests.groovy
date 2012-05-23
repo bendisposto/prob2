@@ -9,7 +9,7 @@ assert s.getCurrentState() == "2"
 assert s.explored.contains("2")
 assert !s.explored.contains("5")
 assert s.info.ops.containsKey(new OperationId("1"))
-//assert !s.getOutEdges(s.getCurrentState()).contains(new OperationId("1"))
+assert !s.isOutEdge(new StateId(s.getCurrentState()),new OperationId("1"))
 s.step 8
 idAt8 = s.getCurrentState()
 assert idAt0 == idAt8
@@ -24,4 +24,4 @@ assert varsAt6.get("waiting") == "{}"
 assert varsAt6.get("active") == "{PID2}"
 assert varsAt6.get("ready") == "{}"
 s.addUserFormula("1+1=2")
-//assert s.info.variables.get(new StateId(s.getCurrentState())).get("1+1=2") == "TRUE"
+assert s.info.getVariable(s.getCurrentState(),"1+1=2") == "TRUE"

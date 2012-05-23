@@ -130,4 +130,7 @@ public class StateSpaceInfo {
 		return result;
 	}
 
+	public String getVariable(final String stateId, final String variable) {
+		return variables.get(new StateId(stateId)).get(variable);
+	}
 }

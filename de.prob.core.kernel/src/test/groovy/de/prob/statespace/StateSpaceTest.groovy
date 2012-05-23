@@ -28,13 +28,13 @@ class StateSpaceTest extends Specification {
 
 		s = new StateSpace(mock, new DirectedSparseMultigraph<String, String>(), new Random(), new History(), new StateSpaceInfo())
 
-		s.addVertex("1")
+		s.addVertex(new StateId("1"))
 		s.explored.add("1")
 
-		s.addEdge("b","root","2")
-		s.addEdge("c","2","3")
-		s.addEdge("d","3","4")
-		s.addEdge("e","3","5")
+		s.addEdge(new OperationId("b"),new StateId("root"),new StateId("2"))
+		s.addEdge(new OperationId("c"),new StateId("2"),new StateId("3"))
+		s.addEdge(new OperationId("d"),new StateId("3"),new StateId("4"))
+		s.addEdge(new OperationId("e"),new StateId("3"),new StateId("5"))
 
 		s.history.add("2", "b")
 		s.history.add("3", "c")
@@ -45,7 +45,7 @@ class StateSpaceTest extends Specification {
 		s.explored.add("4")
 		s.explored.add("5")
 
-		s.addEdge("f", "4", "6")
+		s.addEdge(new OperationId("f"), new StateId("4"), new StateId("6"))
 	}
 
 	def "history current equals 1"() {
@@ -73,7 +73,7 @@ class StateSpaceTest extends Specification {
 
 	def "The state is not explored"() {
 		when:
-		s.addVertex("7")
+		s.addVertex(new StateId("7"))
 
 		then:
 		s.isExplored("7") == false
@@ -81,7 +81,7 @@ class StateSpaceTest extends Specification {
 
 	def "The node is not a deadlock"() {
 		def op = new Operation("a", "Blah", null);
-		s.addEdge("blaOp", "1", "2")
+		s.addEdge(new OperationId("blaOp"), new StateId("1"), new StateId("2"))
 
 		expect:
 		s.isDeadlock("1") == false
@@ -244,16 +244,17 @@ class StateSpaceTest extends Specification {
 
 		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r,new History(),new StateSpaceInfo())
 
-		s.addEdge("b","root","2")
-		s.addEdge("c","2","3")
-		s.addEdge("d","3","4")
-		s.addEdge("e","3","5")
-		s.addEdge("f", "4", "6")
-		s.addEdge("g", "5", "7")
-		s.addEdge("h", "5", "8")
-		s.addEdge("i", "5", "9")
-		s.addEdge("j", "9", "10")
-		s.addEdge("k", "10", "11")
+		s.addEdge(new OperationId("b"),new StateId("root"),new StateId("2"))
+		s.addEdge(new OperationId("c"),new StateId("2"),new StateId("3"))
+		s.addEdge(new OperationId("d"),new StateId("3"),new StateId("4"))
+		s.addEdge(new OperationId("d"),new StateId("3"),new StateId("4"))
+		s.addEdge(new OperationId("e"),new StateId("3"),new StateId("5"))
+		s.addEdge(new OperationId("f"),new StateId("4"),new StateId("6"))
+		s.addEdge(new OperationId("g"),new StateId("5"),new StateId("7"))
+		s.addEdge(new OperationId("h"),new StateId("5"),new StateId("8"))
+		s.addEdge(new OperationId("i"),new StateId("5"),new StateId("9"))
+		s.addEdge(new OperationId("j"),new StateId("9"),new StateId("10"))
+		s.addEdge(new OperationId("k"),new StateId("10"),new StateId("11"))
 
 		s.explored.add("root")
 		s.explored.add("2")
@@ -305,16 +306,17 @@ class StateSpaceTest extends Specification {
 
 		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r,new History(),new StateSpaceInfo())
 
-		s.addEdge("b","root","2")
-		s.addEdge("c","2","3")
-		s.addEdge("d","3","4")
-		s.addEdge("e","3","5")
-		s.addEdge("f", "4", "6")
-		s.addEdge("g", "5", "7")
-		s.addEdge("h", "5", "8")
-		s.addEdge("i", "5", "9")
-		s.addEdge("j", "9", "10")
-		s.addEdge("k", "10", "11")
+		s.addEdge(new OperationId("b"),new StateId("root"),new StateId("2"))
+		s.addEdge(new OperationId("c"),new StateId("2"),new StateId("3"))
+		s.addEdge(new OperationId("d"),new StateId("3"),new StateId("4"))
+		s.addEdge(new OperationId("d"),new StateId("3"),new StateId("4"))
+		s.addEdge(new OperationId("e"),new StateId("3"),new StateId("5"))
+		s.addEdge(new OperationId("f"),new StateId("4"),new StateId("6"))
+		s.addEdge(new OperationId("g"),new StateId("5"),new StateId("7"))
+		s.addEdge(new OperationId("h"),new StateId("5"),new StateId("8"))
+		s.addEdge(new OperationId("i"),new StateId("5"),new StateId("9"))
+		s.addEdge(new OperationId("j"),new StateId("9"),new StateId("10"))
+		s.addEdge(new OperationId("k"),new StateId("10"),new StateId("11"))
 
 		s.explored.add("root")
 		s.explored.add("2")
@@ -362,8 +364,8 @@ class StateSpaceTest extends Specification {
 
 		s = new StateSpace(animmock, new DirectedSparseMultigraph<String, String>(), r,new History(),new StateSpaceInfo())
 
-		s.addEdge("b","root","2")
-		s.addEdge("c","2","3")
+		s.addEdge(new OperationId("b"),new StateId("root"),new StateId("2"))
+		s.addEdge(new OperationId("c"),new StateId("2"),new StateId("3"))
 
 		s.explored.add("root")
 		s.explored.add("2")
@@ -385,7 +387,7 @@ class StateSpaceTest extends Specification {
 
 	def "testing multiple steps of looping edge"() {
 		setup:
-		s.addEdge("loop","3","3")
+		s.addEdge(new OperationId("loop"),new StateId("3"),new StateId("3"))
 
 		expect:
 		s.history.isLastTransition("c") == true
@@ -434,7 +436,7 @@ class StateSpaceTest extends Specification {
 		s.getCurrentState() == "3"
 
 		when:
-		s.addEdge("3", "3", "10")
+		s.addEdge(new OperationId("3"),new StateId("3"),new StateId("10"))
 		s.explored.add("10")
 		s.step(3)
 
