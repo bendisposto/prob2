@@ -5,6 +5,14 @@ import java.util.Set;
 
 import de.prob.animator.command.ExploreStateCommand;
 
+/**
+ * Contains the information about the StateSpace. This includes the Operations
+ * for a given OperationId and the variables, invariant, timeouts, and
+ * operations with timeout for a given StateId.
+ * 
+ * @author joy
+ * 
+ */
 public class StateSpaceInfo {
 	private final HashMap<OperationId, Operation> ops = new HashMap<OperationId, Operation>();
 	private final HashMap<StateId, HashMap<String, String>> variables = new HashMap<StateId, HashMap<String, String>>();
@@ -106,14 +114,51 @@ public class StateSpaceInfo {
 		return getState(id);
 	}
 
+	/**
+	 * The value of the variable at the given state is found and returned.
+	 * 
+	 * @param stateId
+	 * @param variable
+	 * @return gets the value of the variable for the given state
+	 */
+	public String getVariable(final String stateId, final String variable) {
+		return variables.get(new StateId(stateId)).get(variable);
+	}
+
+	/**
+	 * Returns if the given state has a specified variable
+	 * 
+	 * @param stateId
+	 * @param variable
+	 * @return if the given state has a variable with name variable
+	 */
+	public boolean stateHasVariable(final String stateId, final String variable) {
+		return getState(stateId).containsKey(variable);
+	}
+
 	public HashMap<OperationId, Operation> getOps() {
 		return ops;
 	}
 
+	/**
+	 * Returns the operation string operation Id corresponding to the
+	 * OperationId stored in the ops map
+	 * 
+	 * @param opId
+	 *            (String)
+	 * @return operation for the given operation id
+	 */
 	public Operation getOp(final String opId) {
 		return getOp(new OperationId(opId));
 	}
 
+	/**
+	 * Returns the operation for the given operation id
+	 * 
+	 * @param opId
+	 *            (OperationId)
+	 * @return operation for the given operation id
+	 */
 	public Operation getOp(final OperationId opId) {
 		return ops.get(opId);
 	}
@@ -130,11 +175,4 @@ public class StateSpaceInfo {
 		return result;
 	}
 
-	public String getVariable(final String stateId, final String variable) {
-		return variables.get(new StateId(stateId)).get(variable);
-	}
-
-	public boolean stateHasVariable(final String stateId, final String variable) {
-		return getState(stateId).containsKey(variable);
-	}
 }

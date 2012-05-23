@@ -5,13 +5,19 @@ import java.util.List;
 
 public class History {
 
-	// Logger logger = LoggerFactory.getLogger(History.class);
-	// maybe we want to refactor that again, so we can test better
-	// just save two/three lists, (src), dest, ops?
 	private List<HistoryElement> history = new ArrayList<HistoryElement>();
 	private int current = -1;
 
-	// add
+	/**
+	 * Adds a new transition (History Element) to the History object. Takes the
+	 * operation id and adds it to the list. If the current position in the
+	 * history is the end of the list, it simply appends the new element to the
+	 * list. If it is not at the end of the list, the new History Element
+	 * overwrites the element at the current position.
+	 * 
+	 * @param dest
+	 * @param op
+	 */
 	public void add(final String dest, final String op) {
 		if (op == null && isLastTransition(null)) {
 			// if current state is "root", we can't go back anyway
@@ -106,8 +112,9 @@ public class History {
 		for (int i = 0; i < history.size() - 1; i++) {
 			sb.append((history.get(i).getOp()) + ", ");
 		}
-		if (history.size() != 0)
+		if (history.size() != 0) {
 			sb.append(history.get(history.size() - 1).getOp());
+		}
 		String content = sb.toString();
 		return "[" + content + "] " + "current Transition: "
 				+ getCurrentTransition();
