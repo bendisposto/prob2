@@ -133,4 +133,8 @@ public class StateSpaceInfo {
 	public String getVariable(final String stateId, final String variable) {
 		return variables.get(new StateId(stateId)).get(variable);
 	}
+
+	public boolean stateHasVariable(final String stateId, final String variable) {
+		return getState(stateId).containsKey(variable);
+	}
 }
