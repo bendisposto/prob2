@@ -67,6 +67,8 @@ public class Visualization {
 	private void positionVertexAt(final Object vertex, final int x, final int y) {
 		DefaultGraphCell cell = modelAdapter.getVertexCell(vertex);
 		AttributeMap attr = cell.getAttributes();
+		System.out.println(cell);
+		System.out.println(attr);
 		Rectangle2D b = GraphConstants.getBounds(attr);
 
 		b.setFrame(x, y, b.getWidth(), b.getHeight());
