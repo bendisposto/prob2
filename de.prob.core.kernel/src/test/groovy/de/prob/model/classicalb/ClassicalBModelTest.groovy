@@ -1,10 +1,11 @@
 package de.prob.model.classicalb
 
+import org.jgrapht.graph.DirectedMultigraph
+
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.classicalb.RefType.ERefType
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 import spock.lang.Specification
 
 
@@ -15,7 +16,7 @@ class ClassicalBModelTest extends Specification {
 	def BParser bparser
 	def Start ast
 	def DependencyWalker dw
-	def DirectedSparseMultigraph<ClassicalBMachine,RefType> graph
+	def DirectedMultigraph<ClassicalBMachine,RefType> graph
 
 	def setup() {
 		model = new File(System.getProperties().get("user.dir")+"/groovyTests/machines/references/Foo.mch")
@@ -42,7 +43,7 @@ class ClassicalBModelTest extends Specification {
 		machine.setName(a)
 
 		then:
-		graph.getVertices().contains(machine) == b
+		graph.vertexSet().contains(machine) == b
 
 		where:
 		a  	| b

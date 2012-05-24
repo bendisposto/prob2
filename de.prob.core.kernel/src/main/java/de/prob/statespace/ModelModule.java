@@ -6,8 +6,6 @@ import com.google.inject.AbstractModule;
 
 import de.prob.model.classicalb.ClassicalBModel;
 
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-
 public class ModelModule extends AbstractModule {
 
 	@Override
@@ -17,7 +15,7 @@ public class ModelModule extends AbstractModule {
 		// .build(PaymentFactory.class));
 
 		bind(StateSpace.class);
-		bind(DirectedSparseMultigraph.class);
+		bind(DirectedMultigraphProvider.class);
 		bind(Random.class);
 		bind(History.class);
 		bind(StateSpaceInfo.class);

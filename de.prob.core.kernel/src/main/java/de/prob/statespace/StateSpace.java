@@ -26,9 +26,6 @@ import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.OpInfo;
-import edu.uci.ics.jung.graph.DirectedGraph;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-import edu.uci.ics.jung.graph.MultiGraph;
 
 /**
  * 
@@ -51,8 +48,7 @@ import edu.uci.ics.jung.graph.MultiGraph;
  * @author joy
  * 
  */
-public class StateSpace extends StateSpaceGraph implements IAnimator,
-		DirectedGraph<StateId, OperationId>, MultiGraph<StateId, OperationId> {
+public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 
@@ -69,10 +65,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 	@Inject
 	public StateSpace(final IAnimator animator,
-			final DirectedSparseMultigraph<StateId, OperationId> graph,
+			final DirectedMultigraphProvider graphProvider,
 			final Random randomGenerator, final History history,
 			final StateSpaceInfo info) {
-		super(graph);
+		super(graphProvider.get());
 		this.animator = animator;
 		this.randomGenerator = randomGenerator;
 		this.history = history;
@@ -92,7 +88,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 */
 	public void explore(final String stateId) throws ProBException {
-		if (!containsVertex(stateId))
+		if (!containsVertex(new StateId(stateId)))
 			throw new IllegalArgumentException("state " + stateId
 					+ " does not exist");
 
@@ -104,13 +100,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		for (OpInfo operations : enabledOperations) {
 			Operation op = new Operation(operations.id, operations.name,
 					operations.params);
-			if (!containsEdge(op.getId())) {
+			if (!containsEdge(new OperationId(op.getId()))) {
 				info.add(operations.id, op);
 				notifyStateSpaceChange(operations.id,
-						containsVertex(operations.dest));
-				addEdge(new OperationId(op.getId()),
-						new StateId(operations.src), new StateId(
-								operations.dest));
+						containsVertex(new StateId(operations.dest)));
+				addEdge(new StateId(operations.src), new StateId(
+						operations.dest), new OperationId(op.getId()));
 			}
 		}
 
@@ -148,13 +143,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		for (OpInfo operations : newOps) {
 			Operation op = new Operation(operations.id, operations.name,
 					operations.params);
-			if (!containsEdge(op.getId())) {
+			if (!containsEdge(new OperationId(op.getId()))) {
 				info.add(operations.id, op);
 				notifyStateSpaceChange(operations.id,
-						containsVertex(operations.dest));
-				addEdge(new OperationId(op.getId()),
-						new StateId(operations.src), new StateId(
-								operations.dest));
+						containsVertex(new StateId(operations.dest)));
+				addEdge(new StateId(operations.src), new StateId(
+						operations.dest), new OperationId(op.getId()));
 			}
 			ops.add(op);
 		}
@@ -187,7 +181,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		if (!isExplored(stateid)) {
 			explore(stateid);
 		}
-		return getOutEdges(stateid).isEmpty();
+		return outDegreeOf(new StateId(stateid)) == 0;
 	}
 
 	/**
@@ -197,7 +191,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @return returns if a specific state is explored
 	 */
 	private boolean isExplored(final String stateid) {
-		if (!containsVertex(stateid))
+		if (!containsVertex(new StateId(stateid)))
 			throw new IllegalArgumentException("Unknown State id");
 		return explored.contains(stateid);
 	}
@@ -230,7 +224,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 */
 	public void goToState(final String stateId) throws ProBException {
-		if (!containsVertex(stateId))
+		if (!containsVertex(new StateId(stateId)))
 			throw new IllegalArgumentException("state does not exist");
 		if (!isExplored(stateId)) {
 			try {
@@ -255,11 +249,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	 * @throws ProBException
 	 */
 	public void step(final String opId) throws ProBException {
-		if (!getOutEdges(getCurrentState()).contains(new OperationId(opId)))
+		if (!outgoingEdgesOf(new StateId(getCurrentState())).contains(
+				new OperationId(opId)))
 			throw new IllegalArgumentException(opId
 					+ " is not a valid operation on this state");
 
-		StateId newState = getDest(opId);
+		StateId newState = getEdgeTarget(new OperationId(opId));
 		if (!isExplored(newState.getId())) {
 			try {
 				explore(newState.getId());
@@ -270,8 +265,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		}
 		history.add(newState.getId(), opId);
 		evaluateFormulas();
-		notifyAnimationChange(getSource(opId).getId(), getDest(opId).getId(),
-				opId);
+		notifyAnimationChange(getEdgeSource(new OperationId(opId)).getId(),
+				getEdgeTarget(new OperationId(opId)).getId(), opId);
 	}
 
 	public void step(final int i) throws ProBException {
@@ -291,8 +286,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 			evaluateFormulas();
 
 			if (opId != null) {
-				notifyAnimationChange(getDest(opId).getId(), getSource(opId)
-						.getId(), opId);
+				notifyAnimationChange(getEdgeSource(new OperationId(opId))
+						.getId(), getEdgeTarget(new OperationId(opId)).getId(),
+						opId);
 			} else {
 				notifyAnimationChange(oldState, getCurrentState(), null);
 			}
@@ -311,8 +307,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 			String opId = history.getCurrentTransition();
 			if (opId != null) {
-				notifyAnimationChange(getSource(opId).getId(), getDest(opId)
-						.getId(), opId);
+				notifyAnimationChange(getEdgeSource(new OperationId(opId))
+						.getId(), getEdgeTarget(new OperationId(opId)).getId(),
+						opId);
 			} else {
 				notifyAnimationChange(oldState, getCurrentState(), null);
 			}
@@ -351,7 +348,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 		if (deadlock)
 			return;
 
-		final Collection<OperationId> operations = getOutEdges(state);
+		final Set<OperationId> operations = outgoingEdgesOf(new StateId(state));
 		int size = operations.size();
 		OperationId[] op = operations.toArray(new OperationId[size]);
 		int thresh = randomGenerator.nextInt(size);
@@ -456,7 +453,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	public List<EvaluationResult> eval(final String state,
 			final List<ClassicalBEvalElement> code) throws ProBException,
 			BException {
-		if (!containsVertex(state))
+		if (!containsVertex(new StateId(state)))
 			throw new IllegalArgumentException("state does not exist");
 
 		EvaluateFormulasCommand command = new EvaluateFormulasCommand(code,
@@ -562,7 +559,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 	public String printOps() {
 		StringBuilder sb = new StringBuilder();
 		String current = getCurrentState();
-		Collection<OperationId> opIds = getOutEdges(current);
+		Collection<OperationId> opIds = outgoingEdgesOf(new StateId(current));
 		sb.append("Operations: \n");
 		for (OperationId opId : opIds) {
 			Operation op = info.getOp(opId);
@@ -577,7 +574,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator,
 
 	// assert !s.getOutEdges(s.getCurrentState()).contains(new OperationId("1"))
 	public boolean isOutEdge(final StateId sId, final OperationId oId) {
-		return getOutEdges(sId).contains(oId);
+		return outgoingEdgesOf(sId).contains(oId);
 	}
 
 	public boolean isOutEdge(final String stateId, final String opId) {

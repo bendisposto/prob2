@@ -1,282 +1,146 @@
 package de.prob.statespace;
 
 import java.util.Collection;
+import java.util.Set;
 
-import edu.uci.ics.jung.graph.DirectedGraph;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-import edu.uci.ics.jung.graph.MultiGraph;
-import edu.uci.ics.jung.graph.util.EdgeType;
-import edu.uci.ics.jung.graph.util.Pair;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.EdgeFactory;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DirectedMultigraph;
 
-public class StateSpaceGraph implements MultiGraph<StateId, OperationId>,
+public class StateSpaceGraph implements Graph<StateId, OperationId>,
 		DirectedGraph<StateId, OperationId> {
 
-	private final DirectedSparseMultigraph<StateId, OperationId> graph;
+	private final DirectedMultigraph<StateId, OperationId> graph;
 
-	public StateSpaceGraph(
-			final DirectedSparseMultigraph<StateId, OperationId> graph) {
+	public StateSpaceGraph(final DirectedMultigraph<StateId, OperationId> graph) {
 		this.graph = graph;
 	}
 
 	@Override
-	public boolean addEdge(final OperationId edge,
-			final Collection<? extends StateId> vertices) {
-		return graph.addEdge(edge, vertices);
+	public int inDegreeOf(final StateId arg0) {
+		return graph.inDegreeOf(arg0);
 	}
 
 	@Override
-	public boolean addEdge(final OperationId edge,
-			final Collection<? extends StateId> vertices,
-			final EdgeType edgeType) {
-		return graph.addEdge(edge, vertices, edgeType);
+	public Set<OperationId> incomingEdgesOf(final StateId arg0) {
+		return graph.incomingEdgesOf(arg0);
 	}
 
 	@Override
-	public EdgeType getDefaultEdgeType() {
-		return graph.getDefaultEdgeType();
+	public int outDegreeOf(final StateId arg0) {
+		return graph.outDegreeOf(arg0);
 	}
 
 	@Override
-	public EdgeType getEdgeType(final OperationId e) {
-		return graph.getEdgeType(e);
+	public Set<OperationId> outgoingEdgesOf(final StateId arg0) {
+		return graph.outgoingEdgesOf(arg0);
 	}
 
 	@Override
-	public Collection<OperationId> getEdges(final EdgeType edge_type) {
-		return graph.getEdges(edge_type);
+	public OperationId addEdge(final StateId arg0, final StateId arg1) {
+		return graph.addEdge(arg0, arg1);
 	}
 
 	@Override
-	public int getEdgeCount(final EdgeType edge_type) {
-		return graph.getEdgeCount(edge_type);
+	public boolean addEdge(final StateId arg0, final StateId arg1,
+			final OperationId arg2) {
+		return graph.addEdge(arg0, arg1, arg2);
 	}
 
 	@Override
-	public boolean addEdge(final OperationId e, final StateId v1,
-			final StateId v2) {
-		return graph.addEdge(e, v1, v2, EdgeType.DIRECTED);
+	public boolean addVertex(final StateId arg0) {
+		return graph.addVertex(arg0);
 	}
 
 	@Override
-	public Collection<OperationId> getEdges() {
-		return graph.getEdges();
+	public boolean containsEdge(final OperationId arg0) {
+		return graph.containsEdge(arg0);
 	}
 
 	@Override
-	public boolean addEdge(final OperationId e, final StateId v1,
-			final StateId v2, final EdgeType edge_type) {
-		return graph.addEdge(e, v1, v2, edge_type);
+	public boolean containsEdge(final StateId arg0, final StateId arg1) {
+		return graph.containsEdge(arg0, arg1);
 	}
 
 	@Override
-	public Collection<StateId> getVertices() {
-		return graph.getVertices();
-	}
-
-	public boolean addEdge(final OperationId edge,
-			final Pair<? extends StateId> endpoints) {
-		return graph.addEdge(edge, endpoints);
+	public boolean containsVertex(final StateId arg0) {
+		return graph.containsVertex(arg0);
 	}
 
 	@Override
-	public boolean containsVertex(final StateId vertex) {
-		return graph.containsVertex(vertex);
-	}
-
-	public boolean containsVertex(final String vertex) {
-		return containsVertex(new StateId(vertex));
+	public Set<OperationId> edgeSet() {
+		return graph.edgeSet();
 	}
 
 	@Override
-	public boolean containsEdge(final OperationId edge) {
-		return graph.containsEdge(edge);
-	}
-
-	public boolean containsEdge(final String edge) {
-		return containsEdge(new OperationId(edge));
+	public Set<OperationId> edgesOf(final StateId arg0) {
+		return graph.edgesOf(arg0);
 	}
 
 	@Override
-	public boolean addVertex(final StateId vertex) {
-		return graph.addVertex(vertex);
+	public Set<OperationId> getAllEdges(final StateId arg0, final StateId arg1) {
+		return graph.getAllEdges(arg0, arg1);
 	}
 
 	@Override
-	public Collection<OperationId> getInEdges(final StateId vertex) {
-		return graph.getInEdges(vertex);
+	public OperationId getEdge(final StateId arg0, final StateId arg1) {
+		return graph.getEdge(arg0, arg1);
 	}
 
 	@Override
-	public int getPredecessorCount(final StateId vertex) {
-		return graph.getPredecessorCount(vertex);
+	public EdgeFactory<StateId, OperationId> getEdgeFactory() {
+		return graph.getEdgeFactory();
 	}
 
 	@Override
-	public Collection<OperationId> getOutEdges(final StateId vertex) {
-		return graph.getOutEdges(vertex);
-	}
-
-	public Collection<OperationId> getOutEdges(final String vertex) {
-		return graph.getOutEdges(new StateId(vertex));
+	public StateId getEdgeSource(final OperationId arg0) {
+		return graph.getEdgeSource(arg0);
 	}
 
 	@Override
-	public int getSuccessorCount(final StateId vertex) {
-		return graph.getSuccessorCount(vertex);
+	public StateId getEdgeTarget(final OperationId arg0) {
+		return graph.getEdgeTarget(arg0);
 	}
 
 	@Override
-	public Collection<StateId> getPredecessors(final StateId vertex) {
-		return graph.getPredecessors(vertex);
+	public double getEdgeWeight(final OperationId arg0) {
+		return graph.getEdgeWeight(arg0);
 	}
 
 	@Override
-	public Collection<StateId> getSuccessors(final StateId vertex) {
-		return graph.getSuccessors(vertex);
+	public boolean removeAllEdges(final Collection<? extends OperationId> arg0) {
+		return graph.removeAllEdges(arg0);
 	}
 
 	@Override
-	public int getNeighborCount(final StateId vertex) {
-		return graph.getNeighborCount(vertex);
+	public Set<OperationId> removeAllEdges(final StateId arg0,
+			final StateId arg1) {
+		return graph.removeAllEdges(arg0, arg1);
 	}
 
 	@Override
-	public Collection<StateId> getNeighbors(final StateId vertex) {
-		return graph.getNeighbors(vertex);
+	public boolean removeAllVertices(final Collection<? extends StateId> arg0) {
+		return graph.removeAllVertices(arg0);
 	}
 
 	@Override
-	public int degree(final StateId vertex) {
-		return graph.degree(vertex);
+	public boolean removeEdge(final OperationId arg0) {
+		return graph.removeEdge(arg0);
 	}
 
 	@Override
-	public int getIncidentCount(final OperationId edge) {
-		return graph.getIncidentCount(edge);
+	public OperationId removeEdge(final StateId arg0, final StateId arg1) {
+		return graph.removeEdge(arg0, arg1);
 	}
 
 	@Override
-	public Collection<OperationId> getIncidentEdges(final StateId vertex) {
-		return graph.getIncidentEdges(vertex);
+	public boolean removeVertex(final StateId arg0) {
+		return graph.removeVertex(arg0);
 	}
 
 	@Override
-	public StateId getOpposite(final StateId vertex, final OperationId edge) {
-		return graph.getOpposite(vertex, edge);
+	public Set<StateId> vertexSet() {
+		return graph.vertexSet();
 	}
-
-	public boolean addEdge(final OperationId edge,
-			final Pair<? extends StateId> endpoints, final EdgeType edgeType) {
-		return graph.addEdge(edge, endpoints, edgeType);
-	}
-
-	@Override
-	public OperationId findEdge(final StateId v1, final StateId v2) {
-		return graph.findEdge(v1, v2);
-	}
-
-	@Override
-	public Collection<OperationId> findEdgeSet(final StateId v1,
-			final StateId v2) {
-		return graph.findEdgeSet(v1, v2);
-	}
-
-	@Override
-	public StateId getSource(final OperationId edge) {
-		return graph.getSource(edge);
-	}
-
-	public StateId getSource(final String edge) {
-		return graph.getSource(new OperationId(edge));
-	}
-
-	@Override
-	public Collection<StateId> getIncidentVertices(final OperationId edge) {
-		return graph.getIncidentVertices(edge);
-	}
-
-	@Override
-	public StateId getDest(final OperationId edge) {
-		return graph.getDest(edge);
-	}
-
-	public StateId getDest(final String edge) {
-		return graph.getDest(new OperationId(edge));
-	}
-
-	@Override
-	public Pair<StateId> getEndpoints(final OperationId edge) {
-		return graph.getEndpoints(edge);
-	}
-
-	@Override
-	public int getEdgeCount() {
-		return graph.getEdgeCount();
-	}
-
-	@Override
-	public int getVertexCount() {
-		return graph.getVertexCount();
-	}
-
-	@Override
-	public int hashCode() {
-		return graph.hashCode();
-	}
-
-	@Override
-	public boolean removeVertex(final StateId vertex) {
-		return graph.removeVertex(vertex);
-	}
-
-	@Override
-	public boolean removeEdge(final OperationId edge) {
-		return graph.removeEdge(edge);
-	}
-
-	@Override
-	public int inDegree(final StateId vertex) {
-		return graph.inDegree(vertex);
-	}
-
-	@Override
-	public int outDegree(final StateId vertex) {
-		return graph.outDegree(vertex);
-	}
-
-	@Override
-	public boolean isPredecessor(final StateId v1, final StateId v2) {
-		return graph.isPredecessor(v1, v2);
-	}
-
-	@Override
-	public boolean isSuccessor(final StateId v1, final StateId v2) {
-		return graph.isSuccessor(v1, v2);
-	}
-
-	@Override
-	public boolean isNeighbor(final StateId v1, final StateId v2) {
-		return graph.isNeighbor(v1, v2);
-	}
-
-	@Override
-	public boolean isIncident(final StateId vertex, final OperationId edge) {
-		return graph.isIncident(vertex, edge);
-	}
-
-	@Override
-	public boolean isSource(final StateId vertex, final OperationId edge) {
-		return graph.isSource(vertex, edge);
-	}
-
-	@Override
-	public String toString() {
-		return graph.toString();
-	}
-
-	@Override
-	public boolean isDest(final StateId vertex, final OperationId edge) {
-		return graph.isDest(vertex, edge);
-	}
-
 }

@@ -1,7 +1,10 @@
 package de.prob.model.classicalb;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
+
+import org.jgrapht.graph.ClassBasedEdgeFactory;
+import org.jgrapht.graph.DirectedMultigraph;
 
 import com.google.inject.Inject;
 
@@ -10,24 +13,26 @@ import de.be4.classicalb.core.parser.node.Start;
 import de.prob.ProBException;
 import de.prob.model.classicalb.RefType.ERefType;
 import de.prob.statespace.StateSpace;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 public class ClassicalBModel {
 
 	private final StateSpace statespace;
 	private ClassicalBMachine mainMachine = null;
 	private final HashSet<ClassicalBMachine> done = new HashSet<ClassicalBMachine>();
-	private DirectedSparseMultigraph<ClassicalBMachine, RefType> graph;
+	private DirectedMultigraph<ClassicalBMachine, RefType> graph;
 
 	@Inject
-	public ClassicalBModel(StateSpace statespace) {
+	public ClassicalBModel(final StateSpace statespace) {
 		this.statespace = statespace;
 	}
 
-	public DirectedSparseMultigraph<ClassicalBMachine, RefType> initialize(
-			Start mainast, RecursiveMachineLoader rml) throws ProBException {
+	public DirectedMultigraph<ClassicalBMachine, RefType> initialize(
+			final Start mainast, final RecursiveMachineLoader rml)
+			throws ProBException {
 
-		DirectedSparseMultigraph<ClassicalBMachine, RefType> graph = new DirectedSparseMultigraph<ClassicalBMachine, RefType>();
+		DirectedMultigraph<ClassicalBMachine, RefType> graph = new DirectedMultigraph<ClassicalBMachine, RefType>(
+				new ClassBasedEdgeFactory<ClassicalBMachine, RefType>(
+						RefType.class));
 
 		mainMachine = new ClassicalBMachine(null);
 		DomBuilder d = new DomBuilder(mainMachine);
@@ -38,7 +43,7 @@ public class ClassicalBModel {
 
 		do {
 			fpReached = true;
-			Collection<ClassicalBMachine> vertices = graph.getVertices();
+			Set<ClassicalBMachine> vertices = graph.vertexSet();
 			for (ClassicalBMachine machine : vertices) {
 				Start ast = rml.getParsedMachines().get(machine.name());
 				if (!done.contains(machine)) {
@@ -61,7 +66,7 @@ public class ClassicalBModel {
 		return mainMachine;
 	}
 
-	public DirectedSparseMultigraph<ClassicalBMachine, RefType> getGraph() {
+	public DirectedMultigraph<ClassicalBMachine, RefType> getGraph() {
 		return graph;
 	}
 
@@ -74,7 +79,7 @@ public class ClassicalBModel {
 	}
 
 	public ClassicalBMachine getVertex(final String machineName) {
-		final Collection<ClassicalBMachine> vertices = graph.getVertices();
+		final Set<ClassicalBMachine> vertices = graph.vertexSet();
 		for (ClassicalBMachine classicalBMachine : vertices) {
 			if (classicalBMachine.name().equals(machineName))
 				return classicalBMachine;
@@ -89,7 +94,7 @@ public class ClassicalBModel {
 		if (m1 == null || m2 == null)
 			return null;
 
-		final RefType edge = graph.findEdge(m1, m2);
+		final RefType edge = graph.getEdge(m1, m2);
 		if (edge == null)
 			return null;
 
