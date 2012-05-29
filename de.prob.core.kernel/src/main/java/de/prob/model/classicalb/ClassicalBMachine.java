@@ -92,7 +92,7 @@ public class ClassicalBMachine extends AbstractModel {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (obj instanceof ClassicalBMachine) {
 			ClassicalBMachine that = (ClassicalBMachine) obj;
 			return that.name.equals(name);
@@ -105,7 +105,7 @@ public class ClassicalBMachine extends AbstractModel {
 		return name.hashCode();
 	}
 
-	private List<ClassicalBEntity> lock(List<ClassicalBEntity> p) {
+	private List<ClassicalBEntity> lock(final List<ClassicalBEntity> p) {
 		if (locked)
 			return Collections.unmodifiableList(p);
 		return p;

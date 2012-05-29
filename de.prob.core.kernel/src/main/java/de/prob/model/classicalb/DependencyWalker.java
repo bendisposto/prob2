@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jgrapht.graph.DirectedMultigraph;
+
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.AImplementationMachineParseUnit;
@@ -17,44 +19,45 @@ import de.be4.classicalb.core.parser.node.PMachineReference;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.model.classicalb.RefType.ERefType;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 public class DependencyWalker extends DepthFirstAdapter {
 
-	private final DirectedSparseMultigraph<ClassicalBMachine, RefType> graph;
+	private final DirectedMultigraph<ClassicalBMachine, RefType> graph;
 	private final ClassicalBMachine src;
 	private final Map<String, Start> map;
 
-	public DependencyWalker(ClassicalBMachine machine,
-			DirectedSparseMultigraph<ClassicalBMachine, RefType> graph2,
-			Map<String, Start> map) {
+	public DependencyWalker(final ClassicalBMachine machine,
+			final DirectedMultigraph<ClassicalBMachine, RefType> graph2,
+			final Map<String, Start> map) {
 		src = machine;
 		this.graph = graph2;
 		this.map = map;
 	}
 
 	@Override
-	public void caseASeesMachineClause(ASeesMachineClause node) {
+	public void caseASeesMachineClause(final ASeesMachineClause node) {
 		registerMachineNames(node.getMachineNames(), new RefType(ERefType.SEES));
 	}
 
 	@Override
-	public void caseAUsesMachineClause(AUsesMachineClause node) {
+	public void caseAUsesMachineClause(final AUsesMachineClause node) {
 		registerMachineNames(node.getMachineNames(), new RefType(ERefType.USES));
 	}
 
 	@Override
-	public void caseAImportsMachineClause(AImportsMachineClause node) {
+	public void caseAImportsMachineClause(final AImportsMachineClause node) {
 		LinkedList<PMachineReference> machineReferences = node
 				.getMachineReferences();
 		for (PMachineReference r : machineReferences) {
 			String dest = extractMachineName(((AMachineReference) r)
 					.getMachineName());
-			graph.addEdge(new RefType(ERefType.IMPORTS), src, makeMachine(dest));
+			ClassicalBMachine newMachine = makeMachine(dest);
+			graph.addVertex(newMachine);
+			graph.addEdge(src, newMachine, new RefType(ERefType.IMPORTS));
 		}
 	}
 
-	private ClassicalBMachine makeMachine(String dest) {
+	private ClassicalBMachine makeMachine(final String dest) {
 		// FIXME: find the NodeIdAssignment and initialize the ClassicalBMachine
 		// with it
 		ClassicalBMachine dst = new ClassicalBMachine(null);
@@ -65,39 +68,46 @@ public class DependencyWalker extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAMachineReference(AMachineReference node) {
+	public void caseAMachineReference(final AMachineReference node) {
 		String dest = extractMachineName(node.getMachineName());
-		graph.addEdge(new RefType(ERefType.INCLUDES), src, makeMachine(dest));
+		ClassicalBMachine newMachine = makeMachine(dest);
+		graph.addVertex(newMachine);
+		graph.addEdge(src, newMachine, new RefType(ERefType.INCLUDES));
 	}
 
 	@Override
-	public void outARefinementMachineParseUnit(ARefinementMachineParseUnit node) {
+	public void outARefinementMachineParseUnit(
+			final ARefinementMachineParseUnit node) {
 		registerRefinementMachine(node.getRefMachine());
 	}
 
 	@Override
 	public void outAImplementationMachineParseUnit(
-			AImplementationMachineParseUnit node) {
+			final AImplementationMachineParseUnit node) {
 		registerRefinementMachine(node.getRefMachine());
 	}
 
-	private void registerRefinementMachine(TIdentifierLiteral refMachine) {
+	private void registerRefinementMachine(final TIdentifierLiteral refMachine) {
 		String dest = refMachine.getText();
-		graph.addEdge(new RefType(ERefType.REFINES), src, makeMachine(dest));
+		ClassicalBMachine newMachine = makeMachine(dest);
+		graph.addVertex(newMachine);
+		graph.addEdge(src, newMachine, new RefType(ERefType.REFINES));
 	}
 
-	private void registerMachineNames(List<PExpression> machineNames,
-			RefType depType) {
+	private void registerMachineNames(final List<PExpression> machineNames,
+			final RefType depType) {
 		for (PExpression machineName : machineNames) {
 			if (machineName instanceof AIdentifierExpression) {
 				AIdentifierExpression identifier = (AIdentifierExpression) machineName;
 				String dest = extractMachineName(identifier.getIdentifier());
-				graph.addEdge(depType, src, makeMachine(dest));
+				ClassicalBMachine newMachine = makeMachine(dest);
+				graph.addVertex(newMachine);
+				graph.addEdge(src, newMachine, depType);
 			}
 		}
 	}
 
-	private String extractMachineName(LinkedList<TIdentifierLiteral> list) {
+	private String extractMachineName(final LinkedList<TIdentifierLiteral> list) {
 		return list.getLast().getText();
 	}
 

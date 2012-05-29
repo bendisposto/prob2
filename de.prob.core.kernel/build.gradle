@@ -69,10 +69,10 @@ dependencies {
 	
 	
 	
-	compile 'net.sf.jung:jung-graph-impl:2.0.1'	
-	compile 'net.sf.jung:jung-jai:2.0.1'
-//	compile 'jgrapht:jgrapht:0.8.3'
-//	compile 'jgraph:jgraph:5.13.0.0'
+//	compile 'net.sf.jung:jung-graph-impl:2.0.1'	
+//	compile 'net.sf.jung:jung-jai:2.0.1'
+	compile 'jgrapht:jgrapht:0.8.3'
+	compile 'jgraph:jgraph:5.13.0.0'
 	
 	testCompile 'junit:junit:4.8.2'
 	testCompile 'org.mockito:mockito-core:1.8.5'
