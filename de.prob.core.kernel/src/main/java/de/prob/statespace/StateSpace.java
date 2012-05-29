@@ -75,7 +75,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		this.info = info;
 		addVertex(new StateId("root"));
 		if (Main.isShellMode()) {
-			setUpSignalHandler();
+//			setUpSignalHandler();
 		}
 	}
 
