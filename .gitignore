@@ -19,3 +19,5 @@ config.groovy
 .groovy/
 **/*.dot
 **/*.prob
+*.dot
+*.prob
