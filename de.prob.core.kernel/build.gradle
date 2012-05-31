@@ -136,8 +136,20 @@ def download(address,target) {
 	out.close()
 }
 
+public  String getProBDirectory() {
+		String homedir = System.getProperty("prob.home");
+		if (homedir != null)
+			return homedir + separator;
+		String env = System.getenv("PROB_HOME");
+		if (env != null)
+			return env + separator;
+		return System.getProperty("user.home") + separator + ".prob"
+				+ separator;
+	}
+
+
 task downloadCli << {
-		dir = System.getenv("PROB_HOME");
+		dir = getProBDirectory();
 		delete file(dir)
 	    new File(dir).mkdirs() 
 		targetdir = dir
