@@ -75,7 +75,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		this.info = info;
 		addVertex(new StateId("root"));
 		if (Main.isShellMode()) {
-//			setUpSignalHandler();
+			// setUpSignalHandler();
 		}
 	}
 
@@ -104,6 +104,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				info.add(operations.id, op);
 				notifyStateSpaceChange(operations.id,
 						containsVertex(new StateId(operations.dest)));
+				addVertex(new StateId(operations.dest));
 				addEdge(new StateId(operations.src), new StateId(
 						operations.dest), new OperationId(op.getId()));
 			}
