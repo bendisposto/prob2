@@ -129,7 +129,31 @@ task wrapper(type: Wrapper) {
     gradleVersion = gradle_version
 }
 
-task integrationtests(dependsOn: 'classes', type:JavaExec){
+def download(address,target) {
+	def file = new FileOutputStream(target)
+	def out = new BufferedOutputStream(file)
+	out << new URL(address).openStream()
+	out.close()
+}
+
+task downloadCli << {
+		dir = System.getenv("PROB_HOME");
+		delete file(dir)
+	    new File(dir).mkdirs() 
+		targetdir = dir
+		targetzip = dir+"probcli_linux.zip"
+		url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_linux.zip"
+		download(url,targetzip)
+	    FileTree zip = zipTree(targetzip)
+	    copy {
+		   from zip
+		   into targetdir
+	    }
+		delete file(targetzip)
+}
+
+
+task integrationtests(dependsOn: ['classes','downloadCli'], type:JavaExec){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ['-test','groovyTests']
