@@ -18,7 +18,7 @@ assert s.isExplored("0")
 assert s.isExplored("6")
 assert s.isExplored("root")
 assert !s.isExplored("5")
-assert s.containsVertex("5")
+assert s.containsVertex(new StateId("5"))
 varsAt6 = s.info.getState(6)
 assert varsAt6.get("waiting") == "{}"
 assert varsAt6.get("active") == "{PID2}"
