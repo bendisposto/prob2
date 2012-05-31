@@ -2,16 +2,17 @@ package de.prob.cli;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import org.slf4j.Logger;
 
 final class ConsoleListener implements Runnable {
-	private final ProBInstance cli;
+	private final WeakReference<ProBInstance> cli;
 	private final BufferedReader stream;
 	private final Logger logger;
 
 	ConsoleListener(ProBInstance cli, BufferedReader stream, Logger logger) {
-		this.cli = cli;
+		this.cli = new WeakReference<ProBInstance>(cli);
 		this.stream = stream;
 		this.logger = logger;
 	}
@@ -36,10 +37,11 @@ final class ConsoleListener implements Runnable {
 
 	void logLines() throws IOException {
 		String line = null;
-		if (!cli.isShuttingDown()) {
+		if (cli.get() != null && !cli.get().isShuttingDown()) {
 			do {
 				line = readAndLog();
-			} while (line != null && !cli.isShuttingDown());
+			} while (line != null && cli.get() != null
+					&& !cli.get().isShuttingDown());
 		}
 	}
 
