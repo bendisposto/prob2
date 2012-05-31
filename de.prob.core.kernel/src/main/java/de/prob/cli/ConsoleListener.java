@@ -37,12 +37,14 @@ final class ConsoleListener implements Runnable {
 
 	void logLines() throws IOException {
 		String line = null;
-		if (cli.get() != null && !cli.get().isShuttingDown()) {
-			do {
-				line = readAndLog();
-			} while (line != null && cli.get() != null
-					&& !cli.get().isShuttingDown());
-		}
+		ProBInstance instance;
+		do {
+			if ((instance = cli.get()) == null || instance.isShuttingDown()) {
+				return;
+			}
+			instance = null;
+			line = readAndLog();
+		} while (line != null);
 	}
 
 	String readAndLog() throws IOException {
