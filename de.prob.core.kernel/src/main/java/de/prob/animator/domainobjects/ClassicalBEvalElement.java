@@ -8,11 +8,13 @@ package de.prob.animator.domainobjects;
 
 import static de.prob.animator.domainobjects.EvalElementType.*;
 import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.Start;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class ClassicalBEvalElement {
+public class ClassicalBEvalElement implements IEvalElement {
 
 	private final String code;
 	private final Start ast;
@@ -27,6 +29,7 @@ public class ClassicalBEvalElement {
 				: PREDICATE;
 	}
 
+	@Override
 	public String getCode() {
 		return code;
 	}
@@ -38,6 +41,15 @@ public class ClassicalBEvalElement {
 	@Override
 	public String toString() {
 		return code;
+	}
+
+	@Override
+	public void printProlog(final IPrologTermOutput pout) {
+		pout.openTerm("eval");
+		final ASTProlog prolog = new ASTProlog(pout, null);
+		getAst().apply(prolog);
+		pout.printAtom(getType().toString());
+		pout.printAtom(getCode());
 	}
 
 }

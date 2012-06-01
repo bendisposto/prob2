@@ -16,6 +16,10 @@
 
 package org.codehaus.groovy.tools.shell
 
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
+
 import jline.History
 import jline.Terminal
 
@@ -27,6 +31,7 @@ import org.fusesource.jansi.Ansi
 import org.fusesource.jansi.AnsiConsole
 
 import de.prob.ProBException
+import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.Api
 
 
@@ -143,7 +148,30 @@ extends Shell {
 			// Evaluate the current buffer w/imports and dummy statement
 				def buff = imports + ['true']+ current
 
-				lastResult = result = interp.evaluate(buff)
+
+
+				def ex = Executors.newSingleThreadExecutor();
+
+				Future<Object> r = ex.submit(new Callable<Object>() {
+							public Object call() {
+								return interp.evaluate(buff);
+							}});
+
+			//				lastResult = result = interp.evaluate(buff)
+
+				while (!r.isDone()) {
+					def c = System.in.available()
+					if (c >0) {
+						r.cancel(true)
+						ProBInstanceProvider.getClis().each {
+							if (it.get() != null) it.get().sendInterrupt()
+						}
+						ex.shutdown();
+					}
+				}
+
+				lastResult = result = (r.isCancelled() ? "CANCELED" : r.get());
+
 				buffers.clearSelected()
 				break
 
