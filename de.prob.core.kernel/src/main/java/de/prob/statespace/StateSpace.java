@@ -25,6 +25,7 @@ import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 
 /**
@@ -57,7 +58,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final History history;
 	private final StateSpaceInfo info;
 
-	private final List<ClassicalBEvalElement> formulas = new ArrayList<ClassicalBEvalElement>();
+	private final List<IEvalElement> formulas = new ArrayList<IEvalElement>();
 	private final List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
 	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
@@ -419,22 +420,21 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @throws ProBException
 	 * @throws BException
 	 */
-	public List<EvaluationResult> evaluate(
-			final List<ClassicalBEvalElement> code) throws ProBException,
-			BException {
+	public List<EvaluationResult> evaluate(final List<IEvalElement> code)
+			throws ProBException, BException {
 		return eval(getCurrentState(), code);
 	}
 
-	public List<EvaluationResult> evaluate(final ClassicalBEvalElement code)
+	public List<EvaluationResult> evaluate(final IEvalElement code)
 			throws ProBException, BException {
-		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>();
+		List<IEvalElement> list = new ArrayList<IEvalElement>();
 		list.add(code);
 		return evaluate(list);
 	}
 
 	public List<EvaluationResult> evaluate(final String... code)
 			throws ProBException, BException {
-		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>();
+		List<IEvalElement> list = new ArrayList<IEvalElement>();
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
 		}
@@ -452,8 +452,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @throws BException
 	 */
 	public List<EvaluationResult> eval(final String state,
-			final List<ClassicalBEvalElement> code) throws ProBException,
-			BException {
+			final List<IEvalElement> code) throws ProBException, BException {
 		if (!containsVertex(new StateId(state)))
 			throw new IllegalArgumentException("state does not exist");
 
@@ -466,7 +465,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	public List<EvaluationResult> eval(final String state, final String... code)
 			throws BException, ProBException {
-		List<ClassicalBEvalElement> list = new ArrayList<ClassicalBEvalElement>();
+		List<IEvalElement> list = new ArrayList<IEvalElement>();
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
 		}

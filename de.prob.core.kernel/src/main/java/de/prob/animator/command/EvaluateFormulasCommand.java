@@ -8,10 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.ProBException;
-import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
@@ -30,13 +29,13 @@ public class EvaluateFormulasCommand implements ICommand {
 	Logger logger = LoggerFactory.getLogger(EvaluateFormulasCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
-	private final List<ClassicalBEvalElement> evalElements;
+	private final List<IEvalElement> evalElements;
 	private final String stateId;
 	private final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
 
 	// FIXME: Why does this command need access to the id?
-	public EvaluateFormulasCommand(
-			final List<ClassicalBEvalElement> evalElements, final String id) {
+	public EvaluateFormulasCommand(final List<IEvalElement> evalElements,
+			final String id) {
 		this.evalElements = evalElements;
 		this.stateId = id;
 	}
@@ -89,12 +88,8 @@ public class EvaluateFormulasCommand implements ICommand {
 		pout.openList();
 
 		// print parsed expressions/predicates
-		for (ClassicalBEvalElement term : evalElements) {
-			pout.openTerm("eval");
-			final ASTProlog prolog = new ASTProlog(pout, null);
-			term.getAst().apply(prolog);
-			pout.printAtom(term.getType().toString());
-			pout.printAtom(term.getCode());
+		for (IEvalElement term : evalElements) {
+			term.printProlog(pout);
 			pout.closeTerm();
 		}
 		pout.closeList();

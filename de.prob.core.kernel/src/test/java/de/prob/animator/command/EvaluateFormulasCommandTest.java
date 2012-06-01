@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -22,7 +23,7 @@ public class EvaluateFormulasCommandTest {
 	@Test
 	public void testWriteCommand() throws Exception {
 
-		List<ClassicalBEvalElement> evalElements = new ArrayList<ClassicalBEvalElement>();
+		List<IEvalElement> evalElements = new ArrayList<IEvalElement>();
 		evalElements.add(new ClassicalBEvalElement("1<3"));
 		evalElements.add(new ClassicalBEvalElement("3"));
 
@@ -48,7 +49,7 @@ public class EvaluateFormulasCommandTest {
 
 	@Test
 	public void testProcessResult() throws Exception {
-		List<ClassicalBEvalElement> evalElements = new ArrayList<ClassicalBEvalElement>();
+		List<IEvalElement> evalElements = new ArrayList<IEvalElement>();
 		evalElements.add(new ClassicalBEvalElement("1<3"));
 		evalElements.add(new ClassicalBEvalElement("3"));
 		evalElements.add(new ClassicalBEvalElement("1>3"));
