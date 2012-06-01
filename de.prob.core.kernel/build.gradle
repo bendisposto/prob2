@@ -129,7 +129,43 @@ task wrapper(type: Wrapper) {
     gradleVersion = gradle_version
 }
 
-task integrationtests(dependsOn: 'classes', type:JavaExec){
+def download(address,target) {
+	def file = new FileOutputStream(target)
+	def out = new BufferedOutputStream(file)
+	out << new URL(address).openStream()
+	out.close()
+}
+
+public  String getProBDirectory() {
+		String homedir = System.getProperty("prob.home");
+		if (homedir != null)
+			return homedir + java.io.File.separator;
+		String env = System.getenv("PROB_HOME");
+		if (env != null)
+			return env + java.io.File.separator;
+		return System.getProperty("user.home") + java.io.File.separator + ".prob"
+				+ java.io.File.separator;
+	}
+
+
+task downloadCli << {
+		dir = getProBDirectory();
+		delete file(dir)
+	    new File(dir).mkdirs() 
+		targetdir = dir
+		targetzip = dir+"probcli_linux.zip"
+		url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_linux.zip"
+		download(url,targetzip)
+	    FileTree zip = zipTree(targetzip)
+	    copy {
+		   from zip
+		   into targetdir
+	    }
+		delete file(targetzip)
+}
+
+
+task integrationtests(dependsOn: ['classes','downloadCli'], type:JavaExec){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ['-test','groovyTests']

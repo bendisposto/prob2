@@ -43,7 +43,8 @@ public class ClassicalBModel {
 
 		do {
 			fpReached = true;
-			Set<ClassicalBMachine> vertices = graph.vertexSet();
+			Set<ClassicalBMachine> vertices = new HashSet<ClassicalBMachine>();
+			vertices.addAll(graph.vertexSet());
 			for (ClassicalBMachine machine : vertices) {
 				Start ast = rml.getParsedMachines().get(machine.name());
 				if (!done.contains(machine)) {
