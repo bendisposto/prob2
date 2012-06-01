@@ -1,10 +1,12 @@
 package de.prob.visualization;
 
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.JFrame;
 
 import org.jgraph.JGraph;
+import org.jgraph.graph.AttributeMap.SerializableRectangle2D;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphLayoutCache;
@@ -31,6 +33,7 @@ public class Visualization {
 		init(model);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void init(final ClassicalBModel model) {
 		JFrame jf = new JFrame();
 
@@ -39,15 +42,12 @@ public class Visualization {
 		VertexView.renderer = new MachineRenderer();
 		jf.setSize(600, 600);
 
-		ClassicalBMachine mainMachine = model.getMainMachine();
 		JGraphLayout layout = new JGraphHierarchicalLayout(true);
 		JGraphFacade f = new JGraphFacade(jgraph,
 				new ClassicalBMachine[] { model.getMainMachine() });
 		layout.run(f);
-		System.out.println(f.getAttributes());
 
 		Map nested = f.createNestedMap(true, true);
-		System.out.println(nested);
 		GraphLayoutCache glc = jgraph.getGraphLayoutCache();
 		change(nested, glc);
 		glc.edit(nested);
@@ -56,6 +56,7 @@ public class Visualization {
 		jf.setVisible(true);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void change(final Map nested, final GraphLayoutCache glc) {
 		CellView[] allViews = glc.getCellViews();
 		for (CellView cellView : allViews) {
@@ -64,16 +65,18 @@ public class Visualization {
 				if (cell.getUserObject() instanceof ClassicalBMachine) {
 					ClassicalBMachine m = (ClassicalBMachine) cell
 							.getUserObject();
-					int width = 100;
-					int height = 1 + m.variables().size()
-							+ m.constants().size() + m.operations().size();
-					Object object = nested.get(cell);
-					System.out.println(((java.util.Hashtable) object)
-							.contains("bounds"));
-					System.out.println(object.getClass());
-					System.out.println(m.name());
-					System.out.println(nested.containsKey(cell));
-					System.out.println(nested.keySet());
+					MachineConstants cons = new MachineConstants(m);
+					if (nested != null) {
+						Hashtable hashtable = (Hashtable) nested.get(cell);
+						double y = ((SerializableRectangle2D) hashtable
+								.get("bounds")).getY();
+						((SerializableRectangle2D) hashtable.get("bounds"))
+								.setWidth(cons.calculateWidth());
+						((SerializableRectangle2D) hashtable.get("bounds"))
+								.setHeight(cons.calculateHeight());
+						((SerializableRectangle2D) hashtable.get("bounds"))
+								.setY(y * 3);
+					}
 				}
 			}
 		}

@@ -3,7 +3,8 @@ package de.prob.visualization;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -32,83 +33,114 @@ public class MachineRenderer extends VertexRenderer {
 		DefaultGraphCell cell = (DefaultGraphCell) this.view.getCell();
 		ClassicalBMachine m = (ClassicalBMachine) cell.getUserObject();
 
-		// String[][] data = new String[1 + m.constants().size()
-		// + m.variables().size() + m.operations().size()][1];
-		//
-		// data[0][0] = m.name();
-		// int row = 1;
-		// for (ClassicalBEntity e : m.constants()) {
-		// data[row++][0] = e.getIdentifier();
-		// }
-		// for (ClassicalBEntity e : m.variables()) {
-		// data[row++][0] = e.getIdentifier();
-		// }
-		// for (Operation e : m.operations()) {
-		// data[row++][0] = e.toString();
-		// }
-		//
-		// JTable t = new JTable(data, new String[] { "M" });
-		// t.setOpaque(true);
-		// t.setBackground(Color.ORANGE);
-		// t.setForeground(Color.BLACK);
-		// t.setGridColor(Color.WHITE);
-
 		JPanel box = createVertexRep(m);
 
 		Rectangle2D oldBounds = this.view.getBounds();
 		oldBounds.setRect(oldBounds.getX(), oldBounds.getY(), box.getWidth(),
 				box.getHeight());
 		this.view.setBounds(oldBounds);
-		System.out.println(this.view.getBounds());
 		return box;
 	}
 
 	public JPanel createVertexRep(final ClassicalBMachine m) {
-		JPanel box = new JPanel(new GridLayout(calcNumOfRows(m), 1));
-		JLabel name = new JLabel(m.name());
-		box.add(name);
-		if (!m.variables().isEmpty()) {
-			JPanel variables = new JPanel(new FlowLayout());
-			variables.add(new JLabel("Variables"));
-			for (ClassicalBEntity var : m.variables()) {
-				variables.add(new JLabel(" " + var.getIdentifier()));
-			}
-			box.add(variables);
-		}
-		if (!m.constants().isEmpty()) {
-			JPanel constants = new JPanel(new GridLayout(1 + m.constants()
-					.size(), 1));
-			constants.add(new JLabel("Constants"));
-			for (ClassicalBEntity constant : m.constants()) {
-				constants.add(new JLabel(" " + constant.getIdentifier()));
-			}
-			box.add(constants);
-		}
-		if (!m.operations().isEmpty()) {
-			JPanel operations = new JPanel(new GridLayout(1 + m.operations()
-					.size(), 1));
-			operations.add(new JLabel("Operations"));
-			for (Operation op : m.operations()) {
-				operations.add(new JLabel(" " + op.toString()));
-			}
-		}
-		box.setSize(new Dimension(100, (1 + m.variables().size()
-				+ m.constants().size() + m.operations().size()) * 25));
-		return box;
-	}
+		MachineConstants cons = new MachineConstants(m);
 
-	public int calcNumOfRows(final ClassicalBMachine m) {
-		int nr = 1;
+		JPanel box = new JPanel(new GridBagLayout());
+		int width = cons.calculateWidth();
+		box.setSize(new Dimension(width, cons.calculateHeight()));
+		GridBagConstraints c = new GridBagConstraints();
+
+		c.gridx = 0;
+		c.gridy = 0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		box.add(new JLabel(m.name(), CENTER), c);
+		int row = 1;
 		if (!m.variables().isEmpty()) {
-			nr++;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = row;
+			box.add(new JLabel("Variables:", CENTER), c);
+			row++;
+			int maxIntValue = cons.getLargestVar();
+			JPanel vars = new JPanel(new FlowLayout());
+			int col = 0;
+			for (ClassicalBEntity var : m.variables()) {
+				vars.add(new JLabel(var.getIdentifier()));
+				col++;
+				if (col * maxIntValue > 100) {
+					c.fill = GridBagConstraints.HORIZONTAL;
+					c.gridx = 0;
+					c.gridy = row;
+					box.add(vars, c);
+					vars = new JPanel(new FlowLayout());
+					col = 0;
+					row++;
+				}
+			}
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = row;
+			box.add(vars, c);
+			row++;
 		}
 		if (!m.constants().isEmpty()) {
-			nr++;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = row;
+			box.add(new JLabel("Constants:", CENTER), c);
+			row++;
+			int maxIntValue = cons.getLargestConstant();
+			JPanel cs = new JPanel(new FlowLayout());
+			int col = 0;
+			for (ClassicalBEntity constant : m.constants()) {
+				cs.add(new JLabel(constant.getIdentifier()));
+				col++;
+				if (col * maxIntValue > 100) {
+					c.fill = GridBagConstraints.HORIZONTAL;
+					c.gridx = 0;
+					c.gridy = row;
+					box.add(cs, c);
+					cs = new JPanel(new FlowLayout());
+					col = 0;
+					row++;
+				}
+			}
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = row;
+			box.add(cs, c);
+			row++;
 		}
 		if (!m.operations().isEmpty()) {
-			nr++;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = row;
+			box.add(new JLabel("Operations:", CENTER), c);
+			row++;
+			int maxIntValue = cons.getLargestOp();
+			int col = 0;
+			JPanel ops = new JPanel(new FlowLayout());
+			for (Operation op : m.operations()) {
+				ops.add(new JLabel(op.toString()));
+				col++;
+				if (col * maxIntValue > 100) {
+					c.fill = GridBagConstraints.HORIZONTAL;
+					c.gridx = 0;
+					c.gridy = row;
+					box.add(ops, c);
+					ops = new JPanel(new FlowLayout());
+					col = 0;
+					row++;
+				}
+			}
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = row;
+			box.add(ops, c);
+			row++;
 		}
-		return nr;
+
+		return box;
 	}
 
 	@Override

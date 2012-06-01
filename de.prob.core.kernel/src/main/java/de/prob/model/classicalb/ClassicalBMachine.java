@@ -151,5 +151,4 @@ public class ClassicalBMachine extends AbstractModel {
 		}
 		return sb.toString();
 	}
-
 }
