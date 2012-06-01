@@ -6,4 +6,6 @@ public interface IEvalElement {
 	public String getCode();
 
 	public void printProlog(IPrologTermOutput pout);
+
+	public String getType();
 }

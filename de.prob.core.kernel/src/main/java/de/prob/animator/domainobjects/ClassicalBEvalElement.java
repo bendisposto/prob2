@@ -24,9 +24,10 @@ public class ClassicalBEvalElement implements IEvalElement {
 		this.ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
 	}
 
-	public EvalElementType getType() {
+	@Override
+	public String getType() {
 		return ast.getPParseUnit() instanceof AExpressionParseUnit ? EXPRESSION
-				: PREDICATE;
+				.toString() : PREDICATE.toString();
 	}
 
 	@Override
@@ -45,11 +46,8 @@ public class ClassicalBEvalElement implements IEvalElement {
 
 	@Override
 	public void printProlog(final IPrologTermOutput pout) {
-		pout.openTerm("eval");
 		final ASTProlog prolog = new ASTProlog(pout, null);
 		getAst().apply(prolog);
-		pout.printAtom(getType().toString());
-		pout.printAtom(getCode());
 	}
 
 }
