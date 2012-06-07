@@ -53,7 +53,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 
-	private final IAnimator animator;
+	private transient final IAnimator animator;
 	private final HashSet<String> explored = new HashSet<String>();
 	private final History history;
 	private final StateSpaceInfo info;
