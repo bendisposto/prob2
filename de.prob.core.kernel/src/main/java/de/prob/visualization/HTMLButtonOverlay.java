@@ -22,11 +22,11 @@ public class HTMLButtonOverlay extends JButton implements mxICellOverlay {
 
 	protected Object align = mxConstants.ALIGN_RIGHT;
 	protected Object verticalAlign = mxConstants.ALIGN_BOTTOM;
-	protected double defaultOverlap = 1;
 
-	public HTMLButtonOverlay(final String html) {
+	public HTMLButtonOverlay(final String html, final int width,
+			final int height) {
 		super(html);
-		setSize(50, 50);
+		setSize(width, height);
 	}
 
 	@Override
@@ -37,9 +37,7 @@ public class HTMLButtonOverlay extends JButton implements mxICellOverlay {
 		mxPoint pt = null;
 
 		int w = getWidth();
-		System.out.println(w);
 		int h = getHeight();
-		System.out.println(h);
 
 		if (isEdge) {
 			int n = state.getAbsolutePointCount();
@@ -72,14 +70,12 @@ public class HTMLButtonOverlay extends JButton implements mxICellOverlay {
 				pt.setY(state.getY() + state.getHeight());
 			}
 		}
-
-		// return new mxRectangle(pt.getX() - w * defaultOverlap * s, pt.getY()
-		// - h * defaultOverlap * s, w * s, h * s);
-		return new mxRectangle(pt.getX() - 40, pt.getY() - 40, w, h);
+		return new mxRectangle(pt.getX() - w * s, pt.getY() - h * s, w, h);
 	}
 
 	public static void main(final String[] args) {
-		String html = "<html><b>Foo</b><br><b>variables</b><br><b>constants</b><br><b>operations</b></html>";
+		// String html =
+		// "<html><b>Foo</B><br><b>variables</b><br><b>constants</b><br><b>operations</b><br>not bold</html>";
 		List<String> ss = new ArrayList<String>();
 		ss.add("a");
 		ss.add("b");
@@ -90,12 +86,12 @@ public class HTMLButtonOverlay extends JButton implements mxICellOverlay {
 		ss.add("was langes");
 		ss.add("was richtig langes");
 		int right = "was richtig langes".length() * 15;
-		System.out.println(right);
 		HTMLgenerator g = new HTMLgenerator(right);
+		g.writeHeading("Variables");
 		g.writeList(ss);
 		g.end();
-		System.out.println(g.get());
-		HTMLButtonOverlay overlay = new HTMLButtonOverlay(g.get());
+		// HTMLButtonOverlay overlay = new HTMLButtonOverlay(html);
+		HTMLButtonOverlay overlay = new HTMLButtonOverlay(g.get(), right, 100);
 		overlay.setVisible(true);
 		JFrame frame = new JFrame("=)");
 		frame.add(overlay);

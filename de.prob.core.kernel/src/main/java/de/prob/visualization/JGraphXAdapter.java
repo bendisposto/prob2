@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 import javax.swing.JFrame;
 
-import org.jgraph.graph.DefaultEdge;
 import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
@@ -128,14 +128,8 @@ public class JGraphXAdapter<V, E> extends mxGraph {
 		g.addEdge("v2", "v4");
 		g.addEdge("v1", "v5");
 
-		System.out.println(g);
-		System.out.println(g.getClass());
-
 		JGraphXAdapter<String, DefaultEdge> graph = new JGraphXAdapter<String, DefaultEdge>(
 				g);
-
-		System.out.println(graph);
-		System.out.println(graph.getDefaultParent());
 
 		JFrame frame = new JFrame();
 		mxGraphComponent graphComponent = new mxGraphComponent(graph);
@@ -144,13 +138,11 @@ public class JGraphXAdapter<V, E> extends mxGraph {
 		frame.setSize(400, 320);
 		frame.setVisible(true);
 
-		System.out.println(graph.getDefaultParent());
-
 		mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
 
 		for (mxCell cell : graph.getVertexToCellMap().values()) {
 			graphComponent.addCellOverlay(cell, new HTMLButtonOverlay(
-					"<html>Moo<br>Bar</html>"));
+					"<html>Moo<br>Bar</html>", 40, 40));
 		}
 
 		// mxGraphHierarchyModel model = new mxGraphHierarchyModel(layout, null,
