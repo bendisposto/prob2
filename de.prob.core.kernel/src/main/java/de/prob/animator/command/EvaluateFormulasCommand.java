@@ -65,13 +65,13 @@ public class EvaluateFormulasCommand implements ICommand {
 					}
 
 					values.add(new EvaluationResult(code, "", "", Joiner.on(
-							", ").join(list), true));
+							", ").join(list), "exists", new ArrayList<String>()));
 				} else {
 					String value = term.getArgument(1).getFunctor();
 					String solution = term.getArgument(2).getFunctor();
 					String code = term.getArgument(3).getFunctor();
 					values.add(new EvaluationResult(code, value, solution, "",
-							true));
+							"exists", new ArrayList<String>()));
 				}
 			}
 
