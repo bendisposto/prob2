@@ -13,7 +13,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
@@ -56,33 +55,28 @@ public final class GetTraceCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			throws ResultParserException {
 		List<Occurence> res = new LinkedList<Occurence>();
 
-		try {
-			ListPrologTerm list = BindingGenerator.getList(bindings
-					.get(TRACE_VARIABLE));
+		ListPrologTerm list = BindingGenerator.getList(bindings
+				.get(TRACE_VARIABLE));
 
-			Occurence current = null;
-			for (PrologTerm term : list) {
-				if (current == null || !current.text.equals(term.toString())) {
-					current = new Occurence(term.toString());
-					res.add(current);
-				} else {
-					current.inc();
-				}
+		Occurence current = null;
+		for (PrologTerm term : list) {
+			if (current == null || !current.text.equals(term.toString())) {
+				current = new Occurence(term.toString());
+				res.add(current);
+			} else {
+				current.inc();
 			}
-
-			final List<String> actions = new ArrayList<String>();
-			for (Occurence occurence : res) {
-				actions.add(occurence.toString());
-			}
-
-			this.trace = actions;
-		} catch (ResultParserException e) {
-			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
 		}
+
+		final List<String> actions = new ArrayList<String>();
+		for (Occurence occurence : res) {
+			actions.add(occurence.toString());
+		}
+
+		this.trace = actions;
 
 	}
 

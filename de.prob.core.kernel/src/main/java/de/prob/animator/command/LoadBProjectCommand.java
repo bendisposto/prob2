@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
-import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
@@ -32,7 +31,7 @@ public class LoadBProjectCommand implements ICommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("load_classical_b");
 		pto.printTerm(getLoadTerm(rml));
 		pto.printVariable("Errors");
@@ -41,8 +40,7 @@ public class LoadBProjectCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm e = (ListPrologTerm) bindings.get("Errors");
 		if (!e.isEmpty()) {
 			for (PrologTerm prologTerm : e) {
@@ -52,8 +50,7 @@ public class LoadBProjectCommand implements ICommand {
 		}
 	}
 
-	private PrologTerm getLoadTerm(final RecursiveMachineLoader rml)
-			throws ProBException {
+	private PrologTerm getLoadTerm(final RecursiveMachineLoader rml) {
 		StructuredPrologOutput parserOutput = new StructuredPrologOutput();
 		rml.printAsProlog(parserOutput);
 		nodeIdMapping = rml.getNodeIdMapping();

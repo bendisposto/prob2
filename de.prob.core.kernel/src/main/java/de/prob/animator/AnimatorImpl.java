@@ -11,11 +11,12 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.inject.Inject;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.GetErrorsCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.cli.ProBInstance;
+import de.prob.exception.CliException;
+import de.prob.exception.UnexpectedResultException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
 
@@ -36,11 +37,11 @@ class AnimatorImpl implements IAnimator {
 	}
 
 	@Override
-	public void execute(final ICommand command) throws ProBException {
+	public void execute(final ICommand command) {
 		if (cli == null) {
 			// System.out.println("Probcli is missing. Try \"upgrade\".");
 			logger.error("Probcli is missing. Try \"upgrade\".");
-			throw new ProBException("no cli found");
+			throw new CliException("no cli found");
 		}
 		ISimplifiedROMap<String, PrologTerm> bindings = null;
 		try {
@@ -54,7 +55,7 @@ class AnimatorImpl implements IAnimator {
 		}
 	}
 
-	private void getErrors() throws ProBException {
+	private void getErrors() {
 		ISimplifiedROMap<String, PrologTerm> errorbindings;
 		List<String> errors;
 		try {
@@ -67,8 +68,7 @@ class AnimatorImpl implements IAnimator {
 		errors = getErrors.getErrors();
 		if (errors != null && !errors.isEmpty()) {
 			String msg = Joiner.on('\n').join(errors);
-			logger.error("ProB raised exception(s):\n",
-					msg);
+			logger.error("ProB raised exception(s):\n", msg);
 			throw new ProBException(msg);
 		}
 	}
@@ -80,7 +80,8 @@ class AnimatorImpl implements IAnimator {
 	}
 
 	@Override
-	public void execute(final ICommand... commands) throws ProBException {
+	public void execute(final ICommand... commands) throws ProBException,
+			UnexpectedResultException {
 		execute(new ComposedCommand(commands));
 	}
 

@@ -1,14 +1,13 @@
 package de.prob.scripting
 
-import static java.io.File.*;
+import static java.io.File.*
 
 import java.util.zip.ZipInputStream
 
-import de.prob.ProBException
-import de.prob.annotations.Home
-import de.prob.cli.OsSpecificInfo;
+import com.google.inject.Inject
 
-import com.google.inject.Inject;
+import de.prob.annotations.Home
+import de.prob.cli.OsSpecificInfo
 
 
 class Downloader {
@@ -68,7 +67,7 @@ class Downloader {
 	 * @return
 	 * @throws ProBException
 	 */
-	def String downloadCli(final String targetVersion) throws ProBException{
+	def String downloadCli(final String targetVersion) {
 		def config = downloadConfig()
 		if( !config.containsKey(targetVersion)) {
 			return "There is no version available for version name <"+targetVersion+">\n"+listVersions()

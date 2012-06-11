@@ -22,7 +22,7 @@ class CommandProcessor {
 	private Logger logger;
 
 	public ISimplifiedROMap<String, PrologTerm> sendCommand(
-			final ICommand command) throws ProBException {
+			final ICommand command) {
 
 		PrologTermStringOutput pto = new PrologTermStringOutput();
 		command.writeCommand(pto);
@@ -42,8 +42,7 @@ class CommandProcessor {
 		return new SimplifiedROMap<String, PrologTerm>(bindings);
 	}
 
-	private Start parseResult(final String input) throws ProBException,
-			ResultParserException {
+	private Start parseResult(final String input) throws ResultParserException {
 		if (input == null)
 			return null;
 		else

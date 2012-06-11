@@ -11,7 +11,6 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
@@ -41,29 +40,18 @@ public final class GetStateValuesCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			throws ResultParserException {
 		ListPrologTerm list;
-		try {
-			list = BindingGenerator.getList(bindings, "Bindings");
-		} catch (ResultParserException e) {
-			logger.error(e.getLocalizedMessage(), e);
-			throw new ProBException();
-		}
+		list = BindingGenerator.getList(bindings, "Bindings");
 
 		for (PrologTerm term : list) {
 			CompoundPrologTerm compoundTerm;
-			try {
-				compoundTerm = BindingGenerator.getCompoundTerm(term,
-						"binding", 3);
-			} catch (ResultParserException e) {
-				logger.error(e.getLocalizedMessage(), e);
-				throw new ProBException();
-			}
+			compoundTerm = BindingGenerator.getCompoundTerm(term, "binding", 3);
 			addValue(compoundTerm);
 		}
 	}
 
-	private void addValue(final CompoundPrologTerm cpt) throws ProBException {
+	private void addValue(final CompoundPrologTerm cpt) {
 		if (cpt.getFunctor().equals("binding")) {
 			String name = cpt.getArgument(1).getFunctor();
 			String value = cpt.getArgument(3).getFunctor();

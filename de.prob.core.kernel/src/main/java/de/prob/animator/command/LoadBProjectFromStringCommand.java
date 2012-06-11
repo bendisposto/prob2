@@ -11,7 +11,6 @@ import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
@@ -37,7 +36,7 @@ public class LoadBProjectFromStringCommand implements ICommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("load_classical_b");
 		pto.printTerm(getLoadTerm(model));
 		pto.printVariable("Errors");
@@ -46,8 +45,7 @@ public class LoadBProjectFromStringCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm e = (ListPrologTerm) bindings.get("Errors");
 		if (!e.isEmpty()) {
 			for (PrologTerm prologTerm : e) {
@@ -57,11 +55,12 @@ public class LoadBProjectFromStringCommand implements ICommand {
 		}
 	}
 
-	private PrologTerm getLoadTerm(final String model) throws ProBException {
+	private PrologTerm getLoadTerm(final String model) {
 
 		BParser bparser = new BParser();
 		Start ast = parseString(model, bparser);
-		final RecursiveMachineLoader rml = new RecursiveMachineLoader(".",bparser.getContentProvider());
+		final RecursiveMachineLoader rml = new RecursiveMachineLoader(".",
+				bparser.getContentProvider());
 		try {
 			rml.loadAllMachines(new File(""), ast, null,
 					bparser.getDefinitions(), bparser.getPragmas());
@@ -78,8 +77,7 @@ public class LoadBProjectFromStringCommand implements ICommand {
 		return collectSentencesInList(parserOutput);
 	}
 
-	private Start parseString(final String model, final BParser bparser)
-			throws ProBException {
+	private Start parseString(final String model, final BParser bparser) {
 		logger.trace("Parsing file from String", model);
 
 		Start ast = null;

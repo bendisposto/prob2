@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -44,20 +43,14 @@ public class OpInfo {
 		}
 	}
 
-	public OpInfo(final CompoundPrologTerm opTerm) throws ProBException {
+	public OpInfo(final CompoundPrologTerm opTerm) throws ResultParserException {
 		String id = null, src = null, dest = null;
-		try {
-			id = getIdFromPrologTerm(opTerm.getArgument(1));
-			src = getIdFromPrologTerm(opTerm.getArgument(3));
-			dest = getIdFromPrologTerm(opTerm.getArgument(4));
-			ListPrologTerm lpt = BindingGenerator
-					.getList(opTerm.getArgument(6));
-			for (PrologTerm prologTerm : lpt) {
-				params.add(prologTerm.getFunctor());
-			}
-		} catch (ResultParserException e) {
-			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
+		id = getIdFromPrologTerm(opTerm.getArgument(1));
+		src = getIdFromPrologTerm(opTerm.getArgument(3));
+		dest = getIdFromPrologTerm(opTerm.getArgument(4));
+		ListPrologTerm lpt = BindingGenerator.getList(opTerm.getArgument(6));
+		for (PrologTerm prologTerm : lpt) {
+			params.add(prologTerm.getFunctor());
 		}
 
 		this.id = id;

@@ -12,7 +12,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.domainobjects.ProBPreference;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -40,35 +39,24 @@ public final class GetPreferencesCommand implements ICommand {
 	}
 
 	private ProBPreference verifyTerm(final PrologTerm term)
-			throws ProBException {
+			throws ResultParserException {
 		CompoundPrologTerm compoundTerm;
-		try {
-			compoundTerm = BindingGenerator.getCompoundTerm(term, "preference",
-					5);
-		} catch (ResultParserException e) {
-			logger.error(e.getLocalizedMessage());
-			throw new ProBException();
-		}
+		compoundTerm = BindingGenerator.getCompoundTerm(term, "preference", 5);
 		return new ProBPreference(compoundTerm);
 	}
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			throws ResultParserException {
 
-		try {
-			ListPrologTerm p = BindingGenerator.getList(bindings
-					.get(PREFS_VARIABLE));
-			prefs = new ArrayList<ProBPreference>();
-			for (PrologTerm term : p) {
-				ProBPreference preference = null;
-				preference = verifyTerm(term);
-				prefs.add(preference);
-			}
-		} catch (ResultParserException e) {
-			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
+		ListPrologTerm p = BindingGenerator.getList(bindings
+				.get(PREFS_VARIABLE));
+		prefs = new ArrayList<ProBPreference>();
+		for (PrologTerm term : p) {
+			ProBPreference preference = null;
+			preference = verifyTerm(term);
+			prefs.add(preference);
 		}
 
 	}

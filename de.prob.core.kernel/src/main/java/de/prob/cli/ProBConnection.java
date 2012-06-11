@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
-import de.prob.ProBException;
-
-public class ProBConnection implements IProBConnection {
+public class ProBConnection {
 
 	private Socket socket;
 	private BufferedInputStream inputStream;
@@ -25,11 +23,9 @@ public class ProBConnection implements IProBConnection {
 	private final String key;
 	private final int port;
 
-	public ProBConnection(final String key, final int port)
-			throws ProBException {
+	public ProBConnection(final String key, final int port) {
 		this.key = key;
 		this.port = port;
-		connect();
 	}
 
 	@Override
@@ -38,38 +34,39 @@ public class ProBConnection implements IProBConnection {
 				.add("port", port).toString();
 	}
 
-	private void connect() throws ProBException {
+	public void connect() throws IOException {
 		logger.debug("Connecting to port {} using key {}", port, key);
-		try {
-			socket = new Socket(InetAddress.getByName(null), port);
-			inputStream = new BufferedInputStream(socket.getInputStream());
-			OutputStream outstream = socket.getOutputStream();
-			outputStream = new PrintStream(outstream, false, Charset
-					.defaultCharset().name());
-			logger.debug("Connected");
-		} catch (final IOException e) {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (final IOException e2) {
-				} finally {
-					socket = null;
-					inputStream = null;
-					outputStream = null;
-				}
-			}
-			logger.error("Opening connection to ProB server failed", e);
-			throw new ProBException();
-		}
+		// try {
+		socket = new Socket(InetAddress.getByName(null), port);
+		inputStream = new BufferedInputStream(socket.getInputStream());
+		OutputStream outstream = socket.getOutputStream();
+		outputStream = new PrintStream(outstream, false, Charset
+				.defaultCharset().name());
+		logger.debug("Connected");
+		// } catch (final IOException e) {
+		// if (socket != null) {
+		// try {
+		// socket.close();
+		// } catch (final IOException e2) {
+		// } finally {
+		// socket = null;
+		// inputStream = null;
+		// outputStream = null;
+		// }
+		// }
+		// logger.error("Opening connection to ProB server failed", e);
+		// throw new ProBException();
+		// }
 	}
 
-	@Override
-	public String send(final String term) throws ProBException {
+	public String send(final String term) throws IOException {
 		logger.trace(term);
 		if (shutingDown) {
 			final String message = "probcli is currently shutting down";
 			logger.error(message);
-			throw new ProBException();
+			throw new IllegalStateException(
+					"ProB has been shut down. It does not accept messages. Received: "
+							+ term);
 		}
 		if (isStreamReady()) {
 			outputStream.println(term);
@@ -80,18 +77,12 @@ public class ProBConnection implements IProBConnection {
 		return answer;
 	}
 
-	private String getAnswer() throws ProBException {
+	private String getAnswer() throws IOException {
 		String input = null;
-		try {
-			input = readAnswer();
-			if (input == null)
-				throw new IOException(
-						"ProB binary returned nothing - it might have crashed");
-		} catch (final IOException e) {
-			String message = "Exception while reading from socket";
-			logger.error(message, e);
-			throw new ProBException();
-		}
+		input = readAnswer();
+		if (input == null)
+			throw new IOException(
+					"ProB binary returned nothing - it might have crashed");
 		return input;
 	}
 
@@ -139,7 +130,6 @@ public class ProBConnection implements IProBConnection {
 		return true;
 	}
 
-	@Override
 	public void disconnect() {
 		shutingDown = true;
 	}

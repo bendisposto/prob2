@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.prob.ProBException;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.BindingGenerator;
@@ -61,7 +60,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	 * @see de.prob.animator.command.ICommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("execute_custom_operations").printAtomOrNumber(stateId)
 				.printAtom(name);
 		final ASTProlog prolog = new ASTProlog(pto, null);
@@ -76,32 +75,29 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	 * The method is called by the Animator class, most likely it is not
 	 * interesting for other classes.
 	 * 
-	 * @throws ProBException
+	 * @throws ResultParserException
+	 * 
 	 * 
 	 * @see de.prob.animator.command.ICommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			throws ResultParserException {
 
 		operation.clear();
 
-		try {
-			ListPrologTerm list = BindingGenerator.getList(bindings
-					.get(NEW_STATE_ID_VARIABLE));
+		ListPrologTerm list = BindingGenerator.getList(bindings
+				.get(NEW_STATE_ID_VARIABLE));
 
-			if (!list.isEmpty()) {
-				for (PrologTerm prologTerm : list) {
-					CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
-							prologTerm, 6);
-					operation.add(new OpInfo(cpt));
-				}
+		if (!list.isEmpty()) {
+			for (PrologTerm prologTerm : list) {
+				CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
+						prologTerm, 6);
+				operation.add(new OpInfo(cpt));
 			}
-		} catch (ResultParserException e) {
-			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
 		}
+
 	}
 
 	public List<OpInfo> getOperations() {

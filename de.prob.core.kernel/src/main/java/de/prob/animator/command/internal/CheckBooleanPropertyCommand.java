@@ -9,7 +9,6 @@ package de.prob.animator.command.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.CheckInvariantStatusCommand;
 import de.prob.animator.command.CheckMaxOperationReachedStatusCommand;
@@ -45,15 +44,14 @@ public class CheckBooleanPropertyCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 
 		String functor = bindings.get(PROP_RESULT).getFunctor();
 		checkIfBoolean(functor);
 		result = Boolean.valueOf(functor);
 	}
 
-	private void checkIfBoolean(final String functor) throws ProBException {
+	private void checkIfBoolean(final String functor) {
 		if (!"true".equals(functor) && !"false".equals(functor)) {
 			result = null;
 			logger.error("Expected true or false, but was: {}", functor);

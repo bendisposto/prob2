@@ -15,11 +15,11 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.ISimplifiedROMap;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
@@ -84,8 +84,7 @@ public final class ExploreStateCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) throws ResultParserException {
 		allCommands.processResult(bindings);
 
 		initialised = checkInitialisedCmd.getResult();
@@ -104,7 +103,7 @@ public final class ExploreStateCommand implements ICommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto) {
 		allCommands.writeCommand(pto);
 	}
 
