@@ -34,6 +34,11 @@ public class RemoteEvaluateCommand implements ICommand {
 			this.prolog = prolog;
 			this.existential = existential;
 		}
+
+		public boolean isExistential() {
+			return existential;
+		}
+
 	}
 
 	Logger logger = LoggerFactory.getLogger(RemoteEvaluateCommand.class);
@@ -72,15 +77,17 @@ public class RemoteEvaluateCommand implements ICommand {
 			}
 
 			value = new EvaluationResult(code, "", "", Joiner.on(", ").join(
-					list), "error", new ArrayList<String>());
+					list), "error", new ArrayList<String>(), false);
 		} else {
 			String v = term.getArgument(1).getFunctor();
 			String solution = term.getArgument(2).getFunctor();
 			String resultType = term.getArgument(3).getFunctor();
 			List<String> atomicStrings = ListPrologTerm
 					.atomicStrings((ListPrologTerm) term.getArgument(4));
+			boolean enumerationWarnings = "true".equals(term.getArgument(5)
+					.getFunctor());
 			value = new EvaluationResult(formula, v, solution, "", resultType,
-					atomicStrings);
+					atomicStrings, enumerationWarnings);
 		}
 
 	}
