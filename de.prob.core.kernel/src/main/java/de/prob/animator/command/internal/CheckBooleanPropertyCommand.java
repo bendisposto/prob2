@@ -15,6 +15,7 @@ import de.prob.animator.command.CheckMaxOperationReachedStatusCommand;
 import de.prob.animator.command.CheckTimeoutStatusCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
@@ -55,7 +56,7 @@ public class CheckBooleanPropertyCommand implements ICommand {
 		if (!"true".equals(functor) && !"false".equals(functor)) {
 			result = null;
 			logger.error("Expected true or false, but was: {}", functor);
-			throw new ProBException();
+			throw new ResultParserException("Expected true or false, but was: "+functor,null);
 		}
 	}
 

@@ -47,9 +47,6 @@ class AnimatorImpl implements IAnimator {
 		try {
 			bindings = processor.sendCommand(command);
 			command.processResult(bindings);
-		} catch (RuntimeException e) {
-			logger.error("Runtime error while executing query.", e);
-			throw new ProBException(e);
 		} finally {
 			getErrors();
 		}
@@ -58,13 +55,8 @@ class AnimatorImpl implements IAnimator {
 	private void getErrors() {
 		ISimplifiedROMap<String, PrologTerm> errorbindings;
 		List<String> errors;
-		try {
-			errorbindings = processor.sendCommand(getErrors);
-			getErrors.processResult(errorbindings);
-		} catch (RuntimeException e) {
-			logger.error("Runtime error while executing query.", e);
-			throw new ProBException(e);
-		}
+		errorbindings = processor.sendCommand(getErrors);
+		getErrors.processResult(errorbindings);
 		errors = getErrors.getErrors();
 		if (errors != null && !errors.isEmpty()) {
 			String msg = Joiner.on('\n').join(errors);

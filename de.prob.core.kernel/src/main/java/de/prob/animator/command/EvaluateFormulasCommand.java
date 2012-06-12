@@ -46,8 +46,7 @@ public class EvaluateFormulasCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-
-			throws ProBException {
+ {
 		try {
 
 			ListPrologTerm prologTerm = BindingGenerator.getList(bindings

@@ -42,7 +42,7 @@ class CommandProcessor {
 		return new SimplifiedROMap<String, PrologTerm>(bindings);
 	}
 
-	private Start parseResult(final String input) throws ResultParserException {
+	private Start parseResult(final String input) {
 		if (input == null)
 			return null;
 		else

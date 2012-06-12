@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -40,7 +39,7 @@ public final class GetStateValuesCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ResultParserException {
+			 {
 		ListPrologTerm list;
 		list = BindingGenerator.getList(bindings, "Bindings");
 

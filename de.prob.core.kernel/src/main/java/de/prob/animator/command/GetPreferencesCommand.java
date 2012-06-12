@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import de.prob.animator.domainobjects.ProBPreference;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -39,7 +38,7 @@ public final class GetPreferencesCommand implements ICommand {
 	}
 
 	private ProBPreference verifyTerm(final PrologTerm term)
-			throws ResultParserException {
+			 {
 		CompoundPrologTerm compoundTerm;
 		compoundTerm = BindingGenerator.getCompoundTerm(term, "preference", 5);
 		return new ProBPreference(compoundTerm);
@@ -48,7 +47,7 @@ public final class GetPreferencesCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ResultParserException {
+			 {
 
 		ListPrologTerm p = BindingGenerator.getList(bindings
 				.get(PREFS_VARIABLE));

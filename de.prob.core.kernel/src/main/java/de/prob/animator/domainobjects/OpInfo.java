@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.parser.BindingGenerator;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -43,7 +42,7 @@ public class OpInfo {
 		}
 	}
 
-	public OpInfo(final CompoundPrologTerm opTerm) throws ResultParserException {
+	public OpInfo(final CompoundPrologTerm opTerm)  {
 		String id = null, src = null, dest = null;
 		id = getIdFromPrologTerm(opTerm.getArgument(1));
 		src = getIdFromPrologTerm(opTerm.getArgument(3));
@@ -60,7 +59,7 @@ public class OpInfo {
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm)
-			throws ResultParserException {
+			 {
 		if (destTerm instanceof IntegerPrologTerm) {
 			return BindingGenerator.getInteger(destTerm).getValue().toString();
 		}

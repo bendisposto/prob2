@@ -17,7 +17,6 @@ import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -75,7 +74,6 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	 * The method is called by the Animator class, most likely it is not
 	 * interesting for other classes.
 	 * 
-	 * @throws ResultParserException
 	 * 
 	 * 
 	 * @see de.prob.animator.command.ICommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
@@ -83,7 +81,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ResultParserException {
+			 {
 
 		operation.clear();
 

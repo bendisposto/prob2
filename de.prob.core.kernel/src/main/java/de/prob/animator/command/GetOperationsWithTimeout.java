@@ -4,7 +4,6 @@ import java.util.List;
 
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -28,7 +27,7 @@ public class GetOperationsWithTimeout implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ResultParserException {
+			 {
 		ListPrologTerm list = BindingGenerator.getList(bindings,
 				TIMEOUT_VARIABLE);
 		timeouts = PrologTerm.atomicStrings(list);

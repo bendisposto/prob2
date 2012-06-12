@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -55,7 +54,7 @@ public final class GetTraceCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ResultParserException {
+			{
 		List<Occurence> res = new LinkedList<Occurence>();
 
 		ListPrologTerm list = BindingGenerator.getList(bindings
