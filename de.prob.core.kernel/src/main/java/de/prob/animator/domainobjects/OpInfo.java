@@ -2,6 +2,7 @@ package de.prob.animator.domainobjects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class OpInfo {
 	public final String name;
 	public final String src;
 	public final String dest;
+	public final String state;
 	public final List<String> params = new ArrayList<String>();
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
@@ -42,6 +44,15 @@ public class OpInfo {
 				this.params.add(string);
 			}
 		}
+
+		this.state = getString();
+	}
+
+	private String getString() {
+		byte[] arr = new byte[20];
+		Random r = new Random();
+		r.nextBytes(arr);
+		return new String(arr);
 	}
 
 	public OpInfo(final CompoundPrologTerm opTerm) throws ProBException {
@@ -64,6 +75,7 @@ public class OpInfo {
 		this.name = PrologTerm.atomicString(opTerm.getArgument(2));
 		this.src = src;
 		this.dest = dest;
+		this.state = getString();
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm)
