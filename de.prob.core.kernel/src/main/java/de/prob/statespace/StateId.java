@@ -1,5 +1,8 @@
 package de.prob.statespace;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class StateId {
 	private final String id;
 	private final String hash;
@@ -34,6 +37,16 @@ public class StateId {
 	}
 
 	public String hash(final String vars) {
-		return null;
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-1");
+			final String str = new String(md.digest(vars.getBytes()));
+			return str;
+		} catch (NoSuchAlgorithmException e) {
+			return vars;
+		}
+	}
+
+	public String getHash() {
+		return hash;
 	}
 }
