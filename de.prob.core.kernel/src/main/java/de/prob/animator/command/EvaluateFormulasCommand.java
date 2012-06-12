@@ -46,20 +46,33 @@ public class EvaluateFormulasCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ResultParserException {
 
-		ListPrologTerm prologTerm = BindingGenerator.getList(bindings
-				.get(EVALUATE_TERM_VARIABLE));
+			throws ProBException {
+		try {
 
-		for (PrologTerm term : prologTerm) {
-			if (term instanceof ListPrologTerm) {
-				ListPrologTerm lpt = (ListPrologTerm) term;
-				ArrayList<String> list = new ArrayList<String>();
+			ListPrologTerm prologTerm = BindingGenerator.getList(bindings
+					.get(EVALUATE_TERM_VARIABLE));
 
-				String code = lpt.get(0).getFunctor();
+			for (PrologTerm term : prologTerm) {
+				if (term instanceof ListPrologTerm) {
+					ListPrologTerm lpt = (ListPrologTerm) term;
+					ArrayList<String> list = new ArrayList<String>();
 
-				for (int i = 1; i < lpt.size(); i++) {
-					list.add(lpt.get(i).getArgument(1).getFunctor());
+					String code = lpt.get(0).getFunctor();
+
+					for (int i = 1; i < lpt.size(); i++) {
+						list.add(lpt.get(i).getArgument(1).getFunctor());
+					}
+
+					values.add(new EvaluationResult(code, "", "", Joiner.on(
+							", ").join(list), "exists",
+							new ArrayList<String>(), false));
+				} else {
+					String value = term.getArgument(1).getFunctor();
+					String solution = term.getArgument(2).getFunctor();
+					String code = term.getArgument(3).getFunctor();
+					values.add(new EvaluationResult(code, value, solution, "",
+							"exists", new ArrayList<String>(), false));
 				}
 
 				values.add(new EvaluationResult(code, "", "", Joiner.on(", ")
