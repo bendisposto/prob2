@@ -10,9 +10,9 @@ import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
@@ -107,8 +107,7 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
 		final ResultType result;
 		final Collection<InvariantCheckCounterExample> counterexamples;
@@ -122,9 +121,10 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 			counterexamples = Collections
 					.unmodifiableCollection(extractExamples(ceTerm));
 		} else {
-			logger.error("unexpected result from invariant check: "
-					+ resultTerm);
-			throw new ProBException();
+			String msg = "unexpected result from invariant check: "
+					+ resultTerm;
+			logger.error(msg);
+			throw new ProBError(msg);
 		}
 		this.result = result;
 		this.counterexamples = counterexamples;

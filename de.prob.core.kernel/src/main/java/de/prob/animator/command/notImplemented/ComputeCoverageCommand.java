@@ -13,7 +13,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -83,26 +82,20 @@ public final class ComputeCoverageCommand implements ICommand {
 	}
 
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 
 		IntegerPrologTerm totalNodeNr = (IntegerPrologTerm) bindings
 				.get("TotalNodeNr");
 		IntegerPrologTerm totalTransNr = (IntegerPrologTerm) bindings
 				.get("TotalTransSum");
 
-		
-		try {
-			ListPrologTerm ops = BindingGenerator.getList(bindings.get("OpStat"));
-			ListPrologTerm nodes = BindingGenerator.getList(bindings.get("NodeStat"));
-			ListPrologTerm uncovered = BindingGenerator.getList(bindings.get("Uncovered"));
-			coverageResult = new ComputeCoverageResult(totalNodeNr, totalTransNr,
-					ops, nodes, uncovered);
-		} catch (ResultParserException e) {
-			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
-		}
-				
-		
+		ListPrologTerm ops = BindingGenerator.getList(bindings.get("OpStat"));
+		ListPrologTerm nodes = BindingGenerator.getList(bindings
+				.get("NodeStat"));
+		ListPrologTerm uncovered = BindingGenerator.getList(bindings
+				.get("Uncovered"));
+		coverageResult = new ComputeCoverageResult(totalNodeNr, totalTransNr,
+				ops, nodes, uncovered);
 
 	}
 

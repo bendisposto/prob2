@@ -12,7 +12,6 @@ import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.ProBException;
 
 public class ClearMachineCommand implements ICommand {
 
@@ -26,13 +25,13 @@ public class ClearMachineCommand implements ICommand {
 	}
 
 	public void clearMachine(final IAnimator animator)
-			throws ProBException {
+			 {
 		animator.execute(new ClearMachineCommand());
 	}
 
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			 {
 		cmd.processResult(bindings);
 //		 FIXME: REFACTOR for new animator!
 //		final Animator animator = Animator.getAnimator();
@@ -40,7 +39,7 @@ public class ClearMachineCommand implements ICommand {
 	}
 
 	public void writeCommand(final IPrologTermOutput pto)
-			throws ProBException {
+			 {
 		cmd.writeCommand(pto);
 	}
 

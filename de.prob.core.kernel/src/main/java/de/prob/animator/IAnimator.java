@@ -3,7 +3,6 @@ package de.prob.animator;
 import com.google.inject.ImplementedBy;
 
 import de.prob.animator.command.ICommand;
-import de.prob.exception.UnexpectedResultException;
 
 @ImplementedBy(AnimatorImpl.class)
 public interface IAnimator {

@@ -11,7 +11,6 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
@@ -34,20 +33,12 @@ public class LoadBProjectCommand implements ICommand {
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("load_classical_b");
 		pto.printTerm(getLoadTerm(rml));
-		pto.printVariable("Errors");
 		pto.closeTerm();
 	}
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		ListPrologTerm e = (ListPrologTerm) bindings.get("Errors");
-		if (!e.isEmpty()) {
-			for (PrologTerm prologTerm : e) {
-				logger.error("Error from Prolog: '{}'", prologTerm);
-			}
-			throw new ProBException();
-		}
 	}
 
 	private PrologTerm getLoadTerm(final RecursiveMachineLoader rml) {

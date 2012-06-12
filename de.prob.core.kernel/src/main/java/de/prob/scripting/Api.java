@@ -1,6 +1,7 @@
 package de.prob.scripting;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -9,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.ProBException;
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.cli.ProBInstance;
 import de.prob.model.classicalb.ClassicalBFactory;
 import de.prob.model.classicalb.ClassicalBModel;
@@ -38,7 +39,7 @@ public class Api {
 		x.shutdown();
 	}
 
-	public ClassicalBModel b_def() {
+	public ClassicalBModel b_def() throws IOException, BException {
 		ClassLoader classLoader = getClass().getClassLoader();
 		URL resource = classLoader.getResource("examples/scheduler.mch");
 		File f = null;
@@ -50,16 +51,19 @@ public class Api {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 
-		try {
-			ClassicalBModel machine = bFactory.load(f);
-			return machine;
-		} catch (ProBException e) {
-			return null;
-		}
+		ClassicalBModel machine = bFactory.load(f);
+		return machine;
 	}
 
-	public StateSpace s() throws ProBException {
-		final ClassicalBModel b = b_def();
+	public StateSpace s() {
+		ClassicalBModel b = null;
+		try {
+			b = b_def();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BException e) {
+			e.printStackTrace();
+		}
 		return (b != null) ? b.getStatespace() : null;
 	}
 
@@ -68,19 +72,18 @@ public class Api {
 	 * 
 	 * @param file
 	 * @return classicalBModel
+	 * @throws BException
+	 * @throws IOException
 	 */
-	public ClassicalBModel b_load(final String file) {
+	public ClassicalBModel b_load(final String file) throws IOException,
+			BException {
 		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
-		try {
-			return bFactory.load(f);
-		} catch (ProBException e) {
-			return null;
-		}
+		return bFactory.load(f);
 	}
 
-	public String getCurrentId(final StateSpace animation) throws ProBException {
+	public String getCurrentId(final StateSpace animation) {
 		// new ICom<GetCurrentStateIdCommand>(new GetCurrentStateIdCommand())
 		// .executeOn(animation);
 		return null;
@@ -93,14 +96,7 @@ public class Api {
 	 * @return String with the version of the upgrade
 	 */
 	public String upgrade(final String targetVersion) {
-		try {
-			return downloader.downloadCli(targetVersion);
-		} catch (ProBException e) {
-			logger.error(
-					"Could not download files for the given operating system",
-					e);
-		}
-		return "--Upgrade Failed--";
+		return downloader.downloadCli(targetVersion);
 	}
 
 	/**

@@ -20,7 +20,7 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import de.prob.annotations.Home;
-import de.prob.exception.CliException;
+import de.prob.exception.CliError;
 
 @Singleton
 public final class ProBInstanceProvider implements Provider<ProBInstance> {
@@ -111,12 +111,12 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 			final String message = "Problem while starting ProB. Cannot read from input stream.";
 			logger.error(message);
 			logger.debug(message, e);
-			throw new CliException(message, e);
+			throw new CliError(message, e);
 		}
 		for (AbstractCliPattern<?> p : patterns) {
 			p.notifyNotFound();
 			if (p.notFoundIsFatal())
-				throw new CliException("Missing info from CLI "
+				throw new CliError("Missing info from CLI "
 						+ p.getClass().getSimpleName());
 		}
 	}

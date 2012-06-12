@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import org.junit.Test;
 
 import test.AbstractUnitTest;
-import de.prob.ProBException;
 
 public class OsInfoProviderTest extends AbstractUnitTest {
 
@@ -35,7 +34,7 @@ public class OsInfoProviderTest extends AbstractUnitTest {
 	}
 
 	@Test
-	public void testSupportedOS() throws ProBException {
+	public void testSupportedOS() {
 		for (Entry<String, String> entry : supported.entrySet()) {
 			assertEquals(entry.getValue(), new OsInfoProvider(entry.getKey(),
 					"i386").get().name);

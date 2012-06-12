@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Objects;
 import com.google.inject.Inject;
 
+import de.prob.exception.CliError;
+
 public class ProBInstance {
 
 	private final Thread thread;
@@ -66,8 +68,13 @@ public class ProBInstance {
 		}
 	}
 
-	public String send(final String term) throws IOException {
-		return connection.send(term);
+	public String send(final String term) {
+		try {
+			return connection.send(term);
+		} catch (IOException e) {
+			throw new CliError("Error during communicating with Prolog core.",
+					e);
+		}
 	}
 
 	public boolean isShuttingDown() {

@@ -16,7 +16,6 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.Main;
-import de.prob.ProBException;
 import de.prob.SignalHandlerImpl;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.EvaluateFormulasCommand;
@@ -86,9 +85,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * timeout, etc.
 	 * 
 	 * @param stateId
-	 * @throws ProBException
 	 */
-	public void explore(final String stateId) throws ProBException {
+	public void explore(final String stateId) {
 		if (!containsVertex(new StateId(stateId)))
 			throw new IllegalArgumentException("state " + stateId
 					+ " does not exist");
@@ -114,7 +112,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		info.add(stateId, command);
 	}
 
-	public void explore(final int i) throws ProBException {
+	public void explore(final int i) {
 		String si = String.valueOf(i);
 		explore(si);
 	}
@@ -130,11 +128,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @param nrOfSolutions
 	 * @return list of operations
 	 * @throws BException
-	 * @throws ProBException
+	 *             @
 	 */
 	public List<Operation> opFromPredicate(final String stateId,
 			final String name, final String predicate, final int nrOfSolutions)
-			throws BException, ProBException {
+			throws BException {
 		ClassicalBEvalElement pred = new ClassicalBEvalElement(predicate);
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId, name, pred, nrOfSolutions);
@@ -163,12 +161,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param opName
 	 * @param predicate
-	 * @return one operations that meets the specifications
-	 * @throws ProBException
-	 * @throws BException
+	 * @return one operations that meets the specifications @ * @throws
+	 *         BException
 	 */
 	public Operation findOneOp(final String opName, final String predicate)
-			throws ProBException, BException {
+			throws BException {
 		return opFromPredicate(getCurrentState(), opName, predicate, 1).get(0);
 	}
 
@@ -176,10 +173,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * Checks if the state with stateId is a deadlock
 	 * 
 	 * @param stateid
-	 * @return returns if a specific state is deadlocked
-	 * @throws ProBException
+	 * @return returns if a specific state is deadlocked @
 	 */
-	public boolean isDeadlock(final String stateid) throws ProBException {
+	public boolean isDeadlock(final String stateid) {
 		if (!isExplored(stateid)) {
 			explore(stateid);
 		}
@@ -206,16 +202,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param opName
 	 * @param predicate
-	 * @throws ProBException
-	 * @throws BException
+	 *            @ * @throws BException
 	 */
 	public void stepWithOp(final String opName, final String predicate)
-			throws ProBException, BException {
+			throws BException {
 		Operation op = findOneOp(opName, predicate);
 		step(op.getId());
 	}
 
-	public void goToState(final int id) throws ProBException {
+	public void goToState(final int id) {
 		goToState(String.valueOf(id));
 	}
 
@@ -223,18 +218,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * Moves from the current state to the state at stateId.
 	 * 
 	 * @param stateId
-	 * @throws ProBException
+	 *            @
 	 */
-	public void goToState(final String stateId) throws ProBException {
+	public void goToState(final String stateId) {
 		if (!containsVertex(new StateId(stateId)))
 			throw new IllegalArgumentException("state does not exist");
 		if (!isExplored(stateId)) {
-			try {
-				explore(stateId);
-			} catch (ProBException e) {
-				logger.error("Could not explore state with StateId " + stateId);
-				throw new ProBException();
-			}
+			explore(stateId);
 		}
 
 		history.add(stateId, null);
@@ -248,9 +238,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * (if not explored) and add state to history
 	 * 
 	 * @param opId
-	 * @throws ProBException
+	 *            @
 	 */
-	public void step(final String opId) throws ProBException {
+	public void step(final String opId) {
 		if (!outgoingEdgesOf(new StateId(getCurrentState())).contains(
 				new OperationId(opId)))
 			throw new IllegalArgumentException(opId
@@ -258,12 +248,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		StateId newState = getEdgeTarget(new OperationId(opId));
 		if (!isExplored(newState.getId())) {
-			try {
-				explore(newState.getId());
-			} catch (ProBException e) {
-				logger.error("Could not explore state with StateId " + newState);
-				throw new ProBException();
-			}
+			explore(newState.getId());
 		}
 		history.add(newState.getId(), opId);
 		evaluateFormulas();
@@ -271,7 +256,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				getEdgeTarget(new OperationId(opId)).getId(), opId);
 	}
 
-	public void step(final int i) throws ProBException {
+	public void step(final int i) {
 		String opId = String.valueOf(i);
 		step(opId);
 	}
@@ -332,20 +317,16 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * Performs int number of animation steps randomly
 	 * 
 	 * @param steps
-	 * @throws ProBException
+	 *            @
 	 */
-	public void randomAnim(final int steps) throws ProBException {
+	public void randomAnim(final int steps) {
 		if (steps <= 0)
 			return;
 
 		final String state = getCurrentState();
 
 		boolean deadlock = true;
-		try {
-			deadlock = isDeadlock(state);
-		} catch (ProBException e) {
-			logger.error("Could not explore state with StateId " + state);
-		}
+		deadlock = isDeadlock(state);
 
 		if (deadlock)
 			return;
@@ -379,15 +360,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public void addUserFormula(final String formula) throws BException {
 		formulas.add(new ClassicalBEvalElement(formula));
-		try {
-			List<EvaluationResult> result = evaluate(formulas);
-			HashMap<String, String> varsAtState = info
-					.getState(getCurrentState());
-			for (EvaluationResult evaluationResult : result) {
-				varsAtState.put(evaluationResult.code, evaluationResult.value);
-			}
-		} catch (ProBException e) {
-			logger.error("Formula not added successfully", e);
+		List<EvaluationResult> result = evaluate(formulas);
+		HashMap<String, String> varsAtState = info.getState(getCurrentState());
+		for (EvaluationResult evaluationResult : result) {
+			varsAtState.put(evaluationResult.code, evaluationResult.value);
 		}
 	}
 
@@ -403,9 +379,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			for (EvaluationResult result : evaluate) {
 				varsAtCurrentState.put(result.code, result.value);
 			}
-		} catch (ProBException e) {
-			logger.error("Could not evaluate user formulas for state "
-					+ getCurrentState());
 		} catch (BException e) {
 			logger.error("Parse Exception in formula");
 		}
@@ -416,24 +389,22 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * strings) and returns a list of EvaluationResults for the current state.
 	 * 
 	 * @param code
-	 * @return returns a list of evalutation results
-	 * @throws ProBException
-	 * @throws BException
+	 * @return returns a list of evalutation results @ * @throws BException
 	 */
 	public List<EvaluationResult> evaluate(final List<IEvalElement> code)
-			throws ProBException, BException {
+			throws BException {
 		return eval(getCurrentState(), code);
 	}
 
 	public List<EvaluationResult> evaluate(final IEvalElement code)
-			throws ProBException, BException {
+			throws BException {
 		List<IEvalElement> list = new ArrayList<IEvalElement>();
 		list.add(code);
 		return evaluate(list);
 	}
 
 	public List<EvaluationResult> evaluate(final String... code)
-			throws ProBException, BException {
+			throws BException {
 		List<IEvalElement> list = new ArrayList<IEvalElement>();
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
@@ -447,15 +418,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param state
 	 * @param code
-	 * @return returns a list of evaluation results
-	 * @throws ProBException
-	 * @throws BException
+	 * @return returns a list of evaluation results @ * @throws BException
 	 */
 	public List<EvaluationResult> eval(final String state,
-			final List<IEvalElement> code) throws ProBException, BException {
+			final List<IEvalElement> code) throws BException {
 		if (!containsVertex(new StateId(state)))
 			throw new IllegalArgumentException("state does not exist");
 
+		if (code.isEmpty()) return new ArrayList<EvaluationResult>();
+		
 		EvaluateFormulasCommand command = new EvaluateFormulasCommand(code,
 				state);
 		execute(command);
@@ -464,7 +435,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public List<EvaluationResult> eval(final String state, final String... code)
-			throws BException, ProBException {
+			throws BException {
 		List<IEvalElement> list = new ArrayList<IEvalElement>();
 		for (String c : code) {
 			list.add(new ClassicalBEvalElement(c));
@@ -473,12 +444,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	@Override
-	public void execute(final ICommand command) throws ProBException {
+	public void execute(final ICommand command) {
 		animator.execute(command);
 	}
 
 	@Override
-	public void execute(final ICommand... commands) throws ProBException {
+	public void execute(final ICommand... commands) {
 		animator.execute(commands);
 	}
 

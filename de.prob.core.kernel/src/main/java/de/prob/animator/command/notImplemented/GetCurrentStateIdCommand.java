@@ -17,12 +17,11 @@ import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.ProBException;
 
 public final class GetCurrentStateIdCommand implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(GetCurrentStateIdCommand.class);
-	
+
 	private String getStateID(final PrologTerm term) {
 		final String result;
 		if (term.isAtom()) {
@@ -51,8 +50,7 @@ public final class GetCurrentStateIdCommand implements ICommand {
 	}
 
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		currentID = getStateID(bindings.get("ID"));
 	}
 

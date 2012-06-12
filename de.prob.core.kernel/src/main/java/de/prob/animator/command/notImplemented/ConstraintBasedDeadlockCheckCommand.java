@@ -6,9 +6,9 @@ package de.prob.animator.command.notImplemented;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.exception.ProBError;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
@@ -77,8 +77,7 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
 		final ResultType result;
 		if (resultTerm.hasFunctor("no_deadlock_found", 0)) {
@@ -89,24 +88,18 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 			result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("deadlock", 2)) {
 
-			try {
-				CompoundPrologTerm deadlockTerm = BindingGenerator
-						.getCompoundTerm(resultTerm, 2);
-				result = ResultType.DEADLOCK_FOUND;
+			CompoundPrologTerm deadlockTerm = BindingGenerator.getCompoundTerm(
+					resultTerm, 2);
+			result = ResultType.DEADLOCK_FOUND;
 
-				deadlockOperation = new OpInfo(
-						BindingGenerator.getCompoundTerm(
-								deadlockTerm.getArgument(1), 7));
-				deadlockStateId = deadlockTerm.getArgument(2).toString();
-
-			} catch (ResultParserException e) {
-				logger.error("Result from Prolog was not as expected.", e);
-				throw new ProBException();
-			}
+			deadlockOperation = new OpInfo(BindingGenerator.getCompoundTerm(
+					deadlockTerm.getArgument(1), 7));
+			deadlockStateId = deadlockTerm.getArgument(2).toString();
 
 		} else {
-			logger.error("unexpected result from deadlock check: " + resultTerm);
-			throw new ProBException();
+			String msg = "unexpected result from deadlock check: " + resultTerm;
+			logger.error(msg);
+			throw new ProBError(msg);
 		}
 		this.result = result;
 

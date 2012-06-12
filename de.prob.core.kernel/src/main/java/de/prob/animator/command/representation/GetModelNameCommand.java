@@ -1,6 +1,5 @@
 package de.prob.animator.command.representation;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -17,7 +16,7 @@ public class GetModelNameCommand implements ICommand {
 	private String name;
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto)  {
 		pto.openTerm("get_name").printVariable(NAME).closeTerm();
 
 	}
@@ -25,7 +24,7 @@ public class GetModelNameCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			 {
 		name = PrologTerm.atomicString(bindings.get(NAME));
 	}
 

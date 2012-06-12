@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.ProBException;
 import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.ISimplifiedROMap;
@@ -51,7 +50,7 @@ public class GetOperationByPredicateCommandTest {
 	}
 
 	@Test
-	public void testProcessResults() throws ProBException {
+	public void testProcessResults() {
 
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);

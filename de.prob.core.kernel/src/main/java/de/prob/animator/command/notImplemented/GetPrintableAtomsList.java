@@ -2,7 +2,6 @@ package de.prob.animator.command.notImplemented;
 
 import java.util.List;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;

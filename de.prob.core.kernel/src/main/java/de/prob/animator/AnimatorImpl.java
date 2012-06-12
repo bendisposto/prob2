@@ -15,8 +15,8 @@ import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.GetErrorsCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.cli.ProBInstance;
-import de.prob.exception.CliException;
-import de.prob.exception.UnexpectedResultException;
+import de.prob.exception.CliError;
+import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
 
@@ -33,7 +33,7 @@ class AnimatorImpl implements IAnimator {
 		this.cli = cli;
 		this.processor = processor;
 		this.getErrors = getErrors;
-		processor.configure(cli, logger);
+		processor.configure(cli);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ class AnimatorImpl implements IAnimator {
 		if (cli == null) {
 			// System.out.println("Probcli is missing. Try \"upgrade\".");
 			logger.error("Probcli is missing. Try \"upgrade\".");
-			throw new CliException("no cli found");
+			throw new CliError("no cli found");
 		}
 		ISimplifiedROMap<String, PrologTerm> bindings = null;
 		try {
@@ -61,7 +61,7 @@ class AnimatorImpl implements IAnimator {
 		if (errors != null && !errors.isEmpty()) {
 			String msg = Joiner.on('\n').join(errors);
 			logger.error("ProB raised exception(s):\n", msg);
-			throw new ProBException(msg);
+			throw new ProBError(msg);
 		}
 	}
 
@@ -72,8 +72,7 @@ class AnimatorImpl implements IAnimator {
 	}
 
 	@Override
-	public void execute(final ICommand... commands) throws ProBException,
-			UnexpectedResultException {
+	public void execute(final ICommand... commands) {
 		execute(new ComposedCommand(commands));
 	}
 
