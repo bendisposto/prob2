@@ -162,11 +162,22 @@ extends Shell {
 				while (!r.isDone()) {
 					def c = System.in.available()
 					if (c >0) {
-						r.cancel(true)
-						ProBInstanceProvider.getClis().each {
-							if (it.get() != null) it.get().sendInterrupt()
+						def a = System.in.read()
+						if( a == 97 ) {
+							def b = System.in.read()
+							if( b == 10 ) {
+								r.cancel(true)
+								ProBInstanceProvider.getClis().each {
+									if (it.get() != null) it.get().sendInterrupt()
+								}
+								ex.shutdown();
+							} else {
+								print(Character.toChars(b))
+							}
+						} else {
+							print(Character.toChars(a))
 						}
-						ex.shutdown();
+
 					}
 				}
 
