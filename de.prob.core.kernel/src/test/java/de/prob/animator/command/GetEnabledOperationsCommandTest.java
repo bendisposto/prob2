@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.ProBException;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
@@ -20,7 +19,7 @@ import de.prob.prolog.term.PrologTerm;
 public class GetEnabledOperationsCommandTest {
 
 	@Test
-	public void testWriteCommand() throws ProBException {
+	public void testWriteCommand()  {
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		GetEnabledOperationsCommand command = new GetEnabledOperationsCommand(
 				"id");
@@ -42,7 +41,7 @@ public class GetEnabledOperationsCommandTest {
 	}
 
 	@Test
-	public void testProcessResult1() throws ProBException {
+	public void testProcessResult1()  {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 
@@ -70,7 +69,7 @@ public class GetEnabledOperationsCommandTest {
 	}
 
 	@Test
-	public void testProcessResult2() throws ProBException {
+	public void testProcessResult2()  {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 

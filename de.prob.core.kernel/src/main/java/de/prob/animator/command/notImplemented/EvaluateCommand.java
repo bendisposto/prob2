@@ -1,6 +1,5 @@
 package de.prob.animator.command.notImplemented;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -16,7 +15,7 @@ public class EvaluateCommand implements ICommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto){
 		pto.openTerm("evaluate").printAtom(expression).printVariable("Result")
 				.printVariable("Warnings").closeTerm();
 	}
@@ -24,7 +23,7 @@ public class EvaluateCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			 {
 
 		result = PrologTerm.atomicString(bindings.get("Result"));
 

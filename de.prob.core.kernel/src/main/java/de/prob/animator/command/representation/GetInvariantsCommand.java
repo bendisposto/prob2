@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.Node;
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.model.classicalb.ClassicalBEntity;
 import de.prob.parser.BindingGenerator;
@@ -19,11 +18,11 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-
 /**
  * Extracts the string representation of the invariants from ProB
+ * 
  * @author joy
- *
+ * 
  */
 public class GetInvariantsCommand implements ICommand {
 
@@ -37,14 +36,13 @@ public class GetInvariantsCommand implements ICommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("get_invariants").printVariable(LIST).closeTerm();
 	}
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ArrayList<ClassicalBEntity> r = new ArrayList<ClassicalBEntity>();
 
 		try {
@@ -60,9 +58,6 @@ public class GetInvariantsCommand implements ICommand {
 				r.add(new ClassicalBEntity(name, ID));
 			}
 
-		} catch (ResultParserException e) {
-			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
 		} finally {
 			invariant = r;
 		}

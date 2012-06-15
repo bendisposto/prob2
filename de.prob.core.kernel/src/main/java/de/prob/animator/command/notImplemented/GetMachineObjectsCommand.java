@@ -14,7 +14,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -91,8 +90,7 @@ public class GetMachineObjectsCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		PrologTerm constants = bindings.get("Constants");
 		PrologTerm variables = bindings.get("Variables");
 

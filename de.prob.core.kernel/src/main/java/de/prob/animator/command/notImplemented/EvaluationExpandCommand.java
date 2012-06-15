@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -27,7 +26,7 @@ public class EvaluationExpandCommand implements ICommand {
 	private static final String CHILDREN_VARNAME = "Chs";
 
 	private final PrologTerm evaluationElement;
-	
+
 	Logger logger = LoggerFactory.getLogger(EvaluationExpandCommand.class);
 
 	private String label;
@@ -38,15 +37,11 @@ public class EvaluationExpandCommand implements ICommand {
 	}
 
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException{
-		try {
-			label = BindingGenerator.getCompoundTerm(bindings.get(LABEL_VARNAME), 0).getFunctor();
-			children = BindingGenerator.getList(bindings.get(CHILDREN_VARNAME));
-		} catch (ResultParserException e) {
-			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
-		}
-		
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
+		label = BindingGenerator
+				.getCompoundTerm(bindings.get(LABEL_VARNAME), 0).getFunctor();
+		children = BindingGenerator.getList(bindings.get(CHILDREN_VARNAME));
+
 	}
 
 	public void writeCommand(final IPrologTermOutput pto) {

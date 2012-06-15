@@ -8,14 +8,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.prob.ProBException;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -28,9 +23,6 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class GetStateBasedErrorsCommand implements ICommand {
 
-	private final Logger logger = LoggerFactory
-			.getLogger(GetStateBasedErrorsCommand.class);
-
 	private final String stateId;
 	private Collection<StateError> stateErrors;
 
@@ -40,16 +32,10 @@ public class GetStateBasedErrorsCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final List<StateError> errors;
 		ListPrologTerm list;
-		try {
-			list = BindingGenerator.getList(bindings, "Errors");
-		} catch (ResultParserException e) {
-			logger.error(e.getLocalizedMessage(), e);
-			throw new ProBException();
-		}
+		list = BindingGenerator.getList(bindings, "Errors");
 
 		if (list.isEmpty()) {
 			errors = Collections.emptyList();
@@ -57,13 +43,8 @@ public class GetStateBasedErrorsCommand implements ICommand {
 			errors = new ArrayList<StateError>();
 			for (PrologTerm term : list) {
 				CompoundPrologTerm compoundTerm;
-				try {
-					compoundTerm = BindingGenerator.getCompoundTerm(term,
-							"error", 3);
-				} catch (ResultParserException e) {
-					logger.error(e.getLocalizedMessage(), e);
-					throw new ProBException();
-				}
+				compoundTerm = BindingGenerator.getCompoundTerm(term, "error",
+						3);
 				errors.add(new StateError(compoundTerm));
 			}
 		}

@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import test.AbstractUnitTest;
-import de.prob.ProBException;
 
 public class PortPatternTest extends AbstractUnitTest {
 
@@ -28,7 +27,7 @@ public class PortPatternTest extends AbstractUnitTest {
 	}
 
 	@Test
-	public void testFailingMatch1() throws ProBException {
+	public void testFailingMatch1()  {
 		String line = "Port: ";
 		PortPattern pattern = new PortPattern();
 		boolean matches = pattern.matchesLine(line);
@@ -36,7 +35,7 @@ public class PortPatternTest extends AbstractUnitTest {
 	}
 
 	@Test
-	public void testEmptyInput() throws ProBException {
+	public void testEmptyInput()  {
 		String line = "";
 		PortPattern pattern = new PortPattern();
 		boolean matches = pattern.matchesLine(line);
@@ -44,7 +43,7 @@ public class PortPatternTest extends AbstractUnitTest {
 	}
 
 	@Test
-	public void testNullInput() throws ProBException {
+	public void testNullInput()  {
 		String line = null;
 		PortPattern pattern = new PortPattern();
 		boolean matches = pattern.matchesLine(line);
@@ -52,7 +51,7 @@ public class PortPatternTest extends AbstractUnitTest {
 	}
 
 	@Test
-	public void testTrailingChars() throws ProBException {
+	public void testTrailingChars()  {
 		String line = "    Port: 3422 ";
 		PortPattern pattern = new PortPattern();
 		boolean matches = pattern.matchesLine(line);

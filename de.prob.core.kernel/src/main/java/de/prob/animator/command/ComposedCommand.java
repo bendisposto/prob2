@@ -2,8 +2,8 @@ package de.prob.animator.command;
 
 import java.util.List;
 
-import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.PrologTermDelegate;
 import de.prob.prolog.term.PrologTerm;
@@ -32,8 +32,7 @@ public class ComposedCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings)  {
 		final PrefixMap<PrologTerm> prefixMap = new PrefixMap<PrologTerm>(
 				bindings);
 		for (int i = 0; i < cmds.length; i++) {
@@ -42,13 +41,13 @@ public class ComposedCommand implements ICommand {
 	}
 
 	private void processPrefixedCommand(final PrefixMap<PrologTerm> prefixMap,
-			final int i) throws ProBException {
+			final int i)  {
 		prefixMap.prefix = createPrefix(i);
 		cmds[i].processResult(prefixMap);
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput orig) throws ProBException {
+	public void writeCommand(final IPrologTermOutput orig) {
 		PrologPrefixVarOutput pto = new PrologPrefixVarOutput(orig);
 		for (int i = 0; i < cmds.length; i++) {
 			writePrefixedCommand(pto, i);
@@ -56,7 +55,7 @@ public class ComposedCommand implements ICommand {
 	}
 
 	private void writePrefixedCommand(final PrologPrefixVarOutput pto,
-			final int i) throws ProBException {
+			final int i) {
 		pto.prefix = createPrefix(i);
 		cmds[i].writeCommand(pto);
 	}
@@ -72,8 +71,7 @@ public class ComposedCommand implements ICommand {
 	}
 
 	public void getResultForCommand(final ICommand command,
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings)  {
 		final int index = indexOf(command);
 		// added second condition in case command is not included in cmds
 		if (index >= 0 && !(index == cmds.length)) {

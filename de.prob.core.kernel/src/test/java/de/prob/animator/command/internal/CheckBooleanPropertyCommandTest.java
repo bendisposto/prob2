@@ -7,8 +7,8 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import test.TestHelper;
-import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
@@ -27,7 +27,7 @@ public class CheckBooleanPropertyCommandTest {
 	}
 
 	@Test
-	public void testProcessResultTrue() throws ProBException {
+	public void testProcessResultTrue() {
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "true");
 
@@ -38,7 +38,7 @@ public class CheckBooleanPropertyCommandTest {
 	}
 
 	@Test
-	public void testProcessResultFalse() throws ProBException {
+	public void testProcessResultFalse() {
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "false");
 		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(
@@ -47,8 +47,8 @@ public class CheckBooleanPropertyCommandTest {
 		assertFalse(cmd.getResult());
 	}
 
-	@Test(expected = ProBException.class)
-	public void testProcessIllegalResult() throws ProBException {
+	@Test(expected = ResultParserException.class)
+	public void testProcessIllegalResult() {
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "fff");
 		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(
@@ -57,7 +57,7 @@ public class CheckBooleanPropertyCommandTest {
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testProcessResultNull() throws ProBException {
+	public void testProcessResultNull() {
 		CheckBooleanPropertyCommand cmd = new CheckBooleanPropertyCommand(
 				"BLAH_BLAH", "root");
 		cmd.getResult();

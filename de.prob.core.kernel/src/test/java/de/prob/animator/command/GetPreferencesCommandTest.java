@@ -1,20 +1,17 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.ProBException;
 import de.prob.animator.domainobjects.ProBPreference;
 import de.prob.parser.ISimplifiedROMap;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -29,7 +26,7 @@ public class GetPreferencesCommandTest {
 	}
 
 	@Test
-	public void testProcessResults() throws ProBException {
+	public void testProcessResults() {
 
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
@@ -86,8 +83,8 @@ public class GetPreferencesCommandTest {
 		assertTrue(argument.isVariable());
 	}
 
-	@Test(expected = ProBException.class)
-	public void testProcessResultsFail() throws ProBException {
+	@Test(expected = ResultParserException.class)
+	public void testProcessResultsFail() {
 
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
@@ -99,8 +96,8 @@ public class GetPreferencesCommandTest {
 		command.processResult(map);
 	}
 
-	@Test(expected = ProBException.class)
-	public void testProcessResultsFail2() throws ProBException {
+	@Test(expected = ResultParserException.class)
+	public void testProcessResultsFail2() {
 
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);

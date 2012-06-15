@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-import de.prob.ProBException;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -61,8 +60,7 @@ public class RemoteEvaluateCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 
 		PrologTerm term = bindings.get(EVALUATE_TERM_VARIABLE);
 
@@ -93,7 +91,7 @@ public class RemoteEvaluateCommand implements ICommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pout) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pout) {
 		pout.openTerm(quantifier.prolog);
 		pout.printString(formula);
 		pout.printVariable(EVALUATE_TERM_VARIABLE);

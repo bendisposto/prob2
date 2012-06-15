@@ -6,13 +6,9 @@ import static org.mockito.Mockito.*
 
 import java.util.Random
 
-
 import spock.lang.Specification
-import de.prob.ProBException
 import de.prob.animator.IAnimator
-import de.prob.statespace.IAnimationListener;
-import de.prob.statespace.IStateSpaceChangeListener;
-import de.prob.statespace.StateSpace;
+import de.prob.exception.ProBError
 
 class StateSpaceTest extends Specification {
 
@@ -23,7 +19,7 @@ class StateSpaceTest extends Specification {
 
 		def mock = mock(IAnimator.class)
 
-		doThrow(new ProBException()).when(mock).execute(any(Object.class));
+		doThrow(new ProBError("XXX")).when(mock).execute(any(Object.class));
 
 		s = new StateSpace(mock, new DirectedMultigraphProvider(), new Random(), new History(), new StateSpaceInfo())
 
@@ -170,7 +166,7 @@ class StateSpaceTest extends Specification {
 		s.step("f")
 
 		then:
-		thrown ProBException
+		thrown ProBError 
 	}
 
 	def "test simple goToState"() {
@@ -247,7 +243,7 @@ class StateSpaceTest extends Specification {
 
 	def randomAnimSetup() {
 		def animmock = mock(IAnimator.class)
-		doThrow(new ProBException()).when(animmock).execute(any(Object.class));
+		doThrow(new IllegalStateException()).when(animmock).execute(any(Object.class));
 
 		def r = mock(Random.class)
 		// take path: b, c, e, i, j, k
@@ -352,7 +348,7 @@ class StateSpaceTest extends Specification {
 	def "testing random animation method with deadlocked state 3"() {
 		setup:
 		def animmock = mock(IAnimator.class)
-		doThrow(new ProBException()).when(animmock).execute(any(Object.class));
+		doThrow(new IllegalStateException()).when(animmock).execute(any(Object.class));
 
 		def r = mock(Random.class)
 		// take path: b, c, deadlock.

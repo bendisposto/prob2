@@ -10,7 +10,6 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.ProBException;
 import de.prob.model.classicalb.RefType.ERefType;
 import de.prob.statespace.StateSpace;
 
@@ -27,8 +26,7 @@ public class ClassicalBModel {
 	}
 
 	public DirectedMultigraph<ClassicalBMachine, RefType> initialize(
-			final Start mainast, final RecursiveMachineLoader rml)
-			throws ProBException {
+			final Start mainast, final RecursiveMachineLoader rml) {
 
 		DirectedMultigraph<ClassicalBMachine, RefType> graph = new DirectedMultigraph<ClassicalBMachine, RefType>(
 				new ClassBasedEdgeFactory<ClassicalBMachine, RefType>(

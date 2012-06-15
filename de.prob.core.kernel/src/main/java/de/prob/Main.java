@@ -15,9 +15,11 @@ import org.apache.commons.cli.ParseException;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.ProvisionException;
 
 import de.prob.animator.IAnimator;
 import de.prob.cli.ProBInstanceProvider;
+import de.prob.exception.CliError;
 
 public class Main {
 
@@ -47,10 +49,14 @@ public class Main {
 	}
 
 	void run(final String[] args) {
-		getAnimator();
-		if (ProBInstanceProvider.getClis().isEmpty())
+		try {
+			getAnimator();
+		} catch (ProvisionException e) {
+			if (e.getCause() instanceof CliError)
 			System.out
 					.println("No cli detected. Try \"upgrade\" to download the current version.");
+			else throw e;
+		}
 
 		try {
 			CommandLine line = parser.parse(options, args);

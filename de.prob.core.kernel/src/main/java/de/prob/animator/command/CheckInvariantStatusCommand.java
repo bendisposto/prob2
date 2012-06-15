@@ -6,7 +6,6 @@
 
 package de.prob.animator.command;
 
-import de.prob.ProBException;
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 
 /**
@@ -24,7 +23,7 @@ public final class CheckInvariantStatusCommand extends
 		super(PROPERTY_NAME, stateId);
 	}
 
-	public boolean isInvariantViolated() throws ProBException {
+	public boolean isInvariantViolated() {
 		return super.getResult();
 	}
 

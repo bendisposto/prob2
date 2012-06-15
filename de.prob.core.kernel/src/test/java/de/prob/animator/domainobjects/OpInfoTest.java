@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import de.prob.ProBException;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -24,7 +22,7 @@ public class OpInfoTest {
 	}
 
 	@Test
-	public void testConstructor2() throws ProBException {
+	public void testConstructor2()  {
 		IntegerPrologTerm idPT = new IntegerPrologTerm(1);
 		CompoundPrologTerm namePT = new CompoundPrologTerm("blah");
 		IntegerPrologTerm srcPT = new IntegerPrologTerm(2);
@@ -49,7 +47,7 @@ public class OpInfoTest {
 	}
 
 	@Test
-	public void testGetIdFromPrologTerm() throws ResultParserException {
+	public void testGetIdFromPrologTerm() {
 		IntegerPrologTerm idPT = new IntegerPrologTerm(1);
 		VariablePrologTerm vPT = new VariablePrologTerm("root");
 		assertEquals("1", OpInfo.getIdFromPrologTerm(idPT));

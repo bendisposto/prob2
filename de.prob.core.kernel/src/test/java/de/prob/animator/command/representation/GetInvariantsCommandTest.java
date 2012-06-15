@@ -1,12 +1,8 @@
 package de.prob.animator.command.representation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,7 +10,6 @@ import java.util.List;
 import org.junit.Test;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
-import de.prob.ProBException;
 import de.prob.model.classicalb.ClassicalBEntity;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
@@ -26,7 +21,7 @@ import de.prob.prolog.term.PrologTerm;
 public class GetInvariantsCommandTest {
 
 	@Test
-	public void testWriteCommand() throws ProBException {
+	public void testWriteCommand()  {
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		GetInvariantsCommand command = new GetInvariantsCommand(
 				new NodeIdAssignment());
@@ -46,7 +41,7 @@ public class GetInvariantsCommandTest {
 	}
 
 	@Test
-	public void testProcessResult() throws ProBException {
+	public void testProcessResult()  {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 		ListPrologTerm lpt = new ListPrologTerm(new CompoundPrologTerm("inv1",

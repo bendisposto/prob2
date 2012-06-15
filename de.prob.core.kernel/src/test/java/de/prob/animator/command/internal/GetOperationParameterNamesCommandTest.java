@@ -1,16 +1,12 @@
 package de.prob.animator.command.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Collection;
 
 import org.junit.Test;
 
-import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -20,7 +16,7 @@ import de.prob.prolog.term.PrologTerm;
 public class GetOperationParameterNamesCommandTest {
 
 	@Test
-	public void testProcessResult() throws ProBException {
+	public void testProcessResult()  {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 
@@ -37,7 +33,7 @@ public class GetOperationParameterNamesCommandTest {
 	}
 
 	@Test
-	public void testWriteCommand() throws ProBException {
+	public void testWriteCommand()  {
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		GetOperationParameterNamesCommand command = new GetOperationParameterNamesCommand(
 				"name");

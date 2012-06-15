@@ -5,7 +5,6 @@ package de.prob.animator.command.notImplemented;
 
 import java.util.Collection;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
@@ -53,14 +52,13 @@ public class SetTraceCommand implements ICommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto) {
 		compExplore.writeCommand(pto);
 	}
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		compExplore.processResult(bindings);
 		// hasBeenProcessed = true;
 	}
