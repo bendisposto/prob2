@@ -25,15 +25,14 @@ public class StateId {
 	public boolean equals(final Object obj) {
 		if (obj instanceof StateId) {
 			StateId that = (StateId) obj;
-			return that.getId().equals(id);
+			return that.getHash().equals(hash);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		// if (hash == null)
-		return id.hashCode();
+		return hash.hashCode();
 	}
 
 	public String hash(final String vars) {
