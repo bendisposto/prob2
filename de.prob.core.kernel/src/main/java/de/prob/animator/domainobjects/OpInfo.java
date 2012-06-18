@@ -26,15 +26,18 @@ public class OpInfo {
 	public final String src;
 	public final String dest;
 	public final List<String> params = new ArrayList<String>();
+	public final String targetState;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
 	public OpInfo(final String id, final String name, final String src,
-			final String dest, final List<String> params) {
+			final String dest, final List<String> params,
+			final String targetState) {
 		this.id = id;
 		this.name = name;
 		this.src = src;
 		this.dest = dest;
+		this.targetState = targetState;
 		if (params != null) {
 			for (String string : params) {
 				this.params.add(string);
@@ -42,7 +45,7 @@ public class OpInfo {
 		}
 	}
 
-	public OpInfo(final CompoundPrologTerm opTerm)  {
+	public OpInfo(final CompoundPrologTerm opTerm) {
 		String id = null, src = null, dest = null;
 		id = getIdFromPrologTerm(opTerm.getArgument(1));
 		src = getIdFromPrologTerm(opTerm.getArgument(3));
@@ -51,15 +54,16 @@ public class OpInfo {
 		for (PrologTerm prologTerm : lpt) {
 			params.add(prologTerm.getFunctor());
 		}
+		targetState = getIdFromPrologTerm(opTerm.getArgument(8));
 
 		this.id = id;
 		this.name = PrologTerm.atomicString(opTerm.getArgument(2));
 		this.src = src;
 		this.dest = dest;
+
 	}
 
-	public static String getIdFromPrologTerm(final PrologTerm destTerm)
-			 {
+	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
 		if (destTerm instanceof IntegerPrologTerm) {
 			return BindingGenerator.getInteger(destTerm).getValue().toString();
 		}

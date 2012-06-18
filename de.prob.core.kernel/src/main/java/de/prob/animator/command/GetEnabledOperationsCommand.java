@@ -50,7 +50,7 @@ public final class GetEnabledOperationsCommand implements ICommand {
 				.get(OPERATIONS_VARIABLE);
 		for (PrologTerm op : prologTerm) {
 			CompoundPrologTerm cpt;
-			cpt = BindingGenerator.getCompoundTerm(op, 7);
+			cpt = BindingGenerator.getCompoundTerm(op, 8);
 			enabledOperations.add(new OpInfo(cpt));
 		}
 	}
