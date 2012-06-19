@@ -3,7 +3,6 @@
  */
 package de.prob.animator.command.notImplemented;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -105,15 +104,14 @@ public class EvaluationInsertFormulaCommand implements ICommand {
 	// }
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		// TODO Auto-generated method stub
 
 	}

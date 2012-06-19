@@ -11,7 +11,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -24,7 +23,7 @@ public final class ConsistencyCheckingCommand implements ICommand {
 	private final int time;
 	private final List<String> options;
 	private ModelCheckingResult<Result> result;
-	
+
 	Logger logger = LoggerFactory.getLogger(ConsistencyCheckingCommand.class);
 
 	public static enum Result {
@@ -53,16 +52,12 @@ public final class ConsistencyCheckingCommand implements ICommand {
 	}
 
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException {
-		//Should the arity of this be 0?
-		try {
-			CompoundPrologTerm term = BindingGenerator.getCompoundTerm(bindings.get("Result"),0);
-			result = new ModelCheckingResult<Result>(Result.class, term);
-		} catch (ResultParserException e) {
-			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
-		}
-		
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
+		// Should the arity of this be 0?
+		CompoundPrologTerm term = BindingGenerator.getCompoundTerm(
+				bindings.get("Result"), 0);
+		result = new ModelCheckingResult<Result>(Result.class, term);
+
 	}
 
 	public void writeCommand(final IPrologTermOutput pto) {

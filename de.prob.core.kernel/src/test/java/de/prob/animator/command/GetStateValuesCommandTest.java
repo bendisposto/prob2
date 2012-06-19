@@ -8,8 +8,8 @@ import java.util.HashMap;
 
 import org.junit.Test;
 
-import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -18,7 +18,7 @@ import de.prob.prolog.term.PrologTerm;
 public class GetStateValuesCommandTest {
 
 	@Test
-	public void testProcessResult() throws ProBException {
+	public void testProcessResult() {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 
@@ -41,8 +41,8 @@ public class GetStateValuesCommandTest {
 		assertEquals("blub", hmap.get("bli"));
 	}
 
-	@Test(expected = ProBException.class)
-	public void testErrorProcessResult1() throws ProBException {
+	@Test(expected = ResultParserException.class)
+	public void testErrorProcessResult1() {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 
@@ -52,8 +52,8 @@ public class GetStateValuesCommandTest {
 		command.processResult(map);
 	}
 
-	@Test(expected = ProBException.class)
-	public void testErrorProcessResult2() throws ProBException {
+	@Test(expected = ResultParserException.class)
+	public void testErrorProcessResult2() {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 
@@ -69,7 +69,7 @@ public class GetStateValuesCommandTest {
 	}
 
 	@Test
-	public void testWriteCommand() throws ProBException {
+	public void testWriteCommand() {
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		GetStateValuesCommand command = new GetStateValuesCommand("stateID");
 		command.writeCommand(prologTermOutput);

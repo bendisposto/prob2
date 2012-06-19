@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -16,7 +15,7 @@ import de.prob.prolog.term.PrologTerm;
 public class GetModelNameCommandTest {
 
 	@Test
-	public void testWriteCommand() throws ProBException {
+	public void testWriteCommand()  {
 		StructuredPrologOutput spo = new StructuredPrologOutput();
 		GetModelNameCommand gmnc = new GetModelNameCommand();
 		gmnc.writeCommand(spo);
@@ -32,7 +31,7 @@ public class GetModelNameCommandTest {
 	}
 
 	@Test
-	public void testProcessResult() throws ProBException {
+	public void testProcessResult()  {
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 		when(map.get("Name")).thenReturn(new CompoundPrologTerm("=P"));

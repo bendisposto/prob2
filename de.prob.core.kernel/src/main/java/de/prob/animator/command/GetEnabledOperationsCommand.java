@@ -13,11 +13,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -45,21 +43,15 @@ public final class GetEnabledOperationsCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
+			 {
 		enabledOperations = new ArrayList<OpInfo>();
 
 		final ListPrologTerm prologTerm = (ListPrologTerm) bindings
 				.get(OPERATIONS_VARIABLE);
 		for (PrologTerm op : prologTerm) {
 			CompoundPrologTerm cpt;
-			try {
-				cpt = BindingGenerator.getCompoundTerm(op, 7);
-				enabledOperations.add(new OpInfo(cpt));
-			} catch (ResultParserException e) {
-				logger.error("Result from Prolog was not as expected.", e);
-				throw new ProBException();
-			}
-
+			cpt = BindingGenerator.getCompoundTerm(op, 8);
+			enabledOperations.add(new OpInfo(cpt));
 		}
 	}
 

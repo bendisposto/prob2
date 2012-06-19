@@ -6,7 +6,6 @@
 
 package de.prob.animator.command;
 
-import de.prob.ProBException;
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 
 /**
@@ -24,7 +23,7 @@ public final class CheckTimeoutStatusCommand extends
 		super(PROPERTY_NAME, stateId);
 	}
 
-	public boolean isTimeout() throws ProBException {
+	public boolean isTimeout() {
 		return super.getResult();
 	}
 

@@ -11,12 +11,10 @@ import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
@@ -27,49 +25,35 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class LoadBProjectFromStringCommand implements ICommand {
 
-	private final String model;
+	private final PrologTerm model;
 	Logger logger = LoggerFactory
 			.getLogger(LoadBProjectFromStringCommand.class);
 	private NodeIdAssignment nodeIdMapping;
 
-	public LoadBProjectFromStringCommand(final String s) {
-		this.model = s;
+	public LoadBProjectFromStringCommand(final String s) throws BException {
+		this.model = getLoadTerm(s);
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException {
+	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("load_classical_b");
-		pto.printTerm(getLoadTerm(model));
-		pto.printVariable("Errors");
+		pto.printTerm(model);
 		pto.closeTerm();
 	}
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
-		ListPrologTerm e = (ListPrologTerm) bindings.get("Errors");
-		if (!e.isEmpty()) {
-			for (PrologTerm prologTerm : e) {
-				logger.error("Error from Prolog: '{}'", prologTerm);
-			}
-			throw new ProBException();
-		}
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 	}
 
-	private PrologTerm getLoadTerm(final String model) throws ProBException {
+	private PrologTerm getLoadTerm(final String model) throws BException {
 
 		BParser bparser = new BParser();
 		Start ast = parseString(model, bparser);
-		final RecursiveMachineLoader rml = new RecursiveMachineLoader(".",bparser.getContentProvider());
-		try {
-			rml.loadAllMachines(new File(""), ast, null,
-					bparser.getDefinitions(), bparser.getPragmas());
-		} catch (BException e) {
-			logger.error("Parser Error. {}.", e.getLocalizedMessage());
-			logger.debug("Details", e);
-			throw new ProBException();
-		}
+		final RecursiveMachineLoader rml = new RecursiveMachineLoader(".",
+				bparser.getContentProvider());
+		rml.loadAllMachines(new File(""), ast, null, bparser.getDefinitions(),
+				bparser.getPragmas());
 
 		StructuredPrologOutput parserOutput = new StructuredPrologOutput();
 		logger.trace("Done with parsing '{}'", model);
@@ -79,17 +63,11 @@ public class LoadBProjectFromStringCommand implements ICommand {
 	}
 
 	private Start parseString(final String model, final BParser bparser)
-			throws ProBException {
+			throws BException {
 		logger.trace("Parsing file from String", model);
 
 		Start ast = null;
-		try {
-			ast = bparser.parse(model, false);
-		} catch (BException e) {
-			logger.error("Parser Error. {}.", e.getLocalizedMessage());
-			logger.debug("Details", e);
-			throw new ProBException();
-		}
+		ast = bparser.parse(model, false);
 		return ast;
 	}
 

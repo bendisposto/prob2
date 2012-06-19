@@ -6,7 +6,6 @@
 
 package de.prob.animator.command.notImplemented;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.ICommand;
@@ -26,11 +25,8 @@ public final class ExecuteOperationCommand implements ICommand {
 	private ExecuteOperationCommand(final OpInfo operation) {
 		this(operation, false);
 	}
-	
-	
 
-	private ExecuteOperationCommand(final OpInfo operation,
-			final boolean silent) {
+	private ExecuteOperationCommand(final OpInfo operation, final boolean silent) {
 		this.operation = operation;
 		this.fireCurrentStateChanged = !silent;
 		final String stateId = operation.dest;
@@ -40,23 +36,24 @@ public final class ExecuteOperationCommand implements ICommand {
 	}
 
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		cmds.processResult(bindings);
-		
-//		FIXME: REFACTOR!!!
-//		final Animator animator = Animator.getAnimator();
-//		final State state = exloreStateCmd.getState();
-//
-//		// Change history in Animator
-//		animator.getHistory().add(state, operation);
-//
-//		if (fireCurrentStateChanged) {
-//			animator.announceCurrentStateChanged(state, operation);
-//		}
+
+		// FIXME: REFACTOR!!!
+		// final Animator animator = Animator.getAnimator();
+		// final State state = exloreStateCmd.getState();
+		//
+		// // Change history in Animator
+		// animator.getHistory().add(state, operation);
+		//
+		// if (fireCurrentStateChanged) {
+		// animator.announceCurrentStateChanged(state, operation);
+		// }
 	}
 
-	public void writeCommand(final IPrologTermOutput pto) throws ProBException{
-	//	LimitedLogger.getLogger().log("execute operation", operation.getName(),null);
+	public void writeCommand(final IPrologTermOutput pto) {
+		// LimitedLogger.getLogger().log("execute operation",
+		// operation.getName(),null);
 		cmds.writeCommand(pto);
 	}
 

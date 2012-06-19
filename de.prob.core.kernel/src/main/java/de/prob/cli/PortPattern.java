@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * This {@link AbstractCliPattern} looks for a network port number where the
  * executable listens for commands.
  * 
- * If no port number is found, {@link #notFound()} throws a {@link CliException}
+ * If no port number is found, {@link #notFound()} throws a {@link CliError}
  * 
  * @author plagge
  */

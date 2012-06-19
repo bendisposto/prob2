@@ -8,7 +8,7 @@ project.group = 'de.prob'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
-project.version = '2.0.0-milestone-3-SNAPSHOT'
+project.version = '2.0.0-milestone-4-SNAPSHOT'
 
 repositories {
     maven {

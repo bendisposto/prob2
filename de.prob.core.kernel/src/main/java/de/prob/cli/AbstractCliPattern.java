@@ -59,7 +59,7 @@ abstract class AbstractCliPattern<T> {
 	 * This method is called if no line matched on this pattern and the start of
 	 * the command loop is reached.
 	 * 
-	 * @throws CliException
+	 * @throws CliError
 	 */
 	public abstract void notifyNotFound();
 

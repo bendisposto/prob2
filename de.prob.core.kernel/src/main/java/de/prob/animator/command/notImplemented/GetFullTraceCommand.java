@@ -14,11 +14,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -26,7 +24,7 @@ import de.prob.prolog.term.PrologTerm;
 public final class GetFullTraceCommand implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(GetFullTraceCommand.class);
-	
+
 	private static final String IDS_VARIABLE = "IDs";
 	private static final String ACTIONS_VARIABLE = "Actions";
 
@@ -35,10 +33,11 @@ public final class GetFullTraceCommand implements ICommand {
 		private final List<String> states;
 
 		public TraceResult(final List<String> operations,
-				final List<String> states) throws ProBException {
-			if(!(operations.size() == states.size())){
-				logger.error("Operations and states must be the same size");
-				throw new ProBException();
+				final List<String> states) {
+			if (!(operations.size() == states.size())) {
+				String msg = "Operations and states must be the same size";
+				logger.error(msg);
+				throw new IllegalArgumentException(msg);
 			}
 			this.operations = Collections.unmodifiableList(operations);
 			this.states = Collections.unmodifiableList(states);
@@ -63,20 +62,16 @@ public final class GetFullTraceCommand implements ICommand {
 	}
 
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		List<String> operations = PrologTerm
 				.atomicStrings((ListPrologTerm) bindings.get(ACTIONS_VARIABLE));
 		List<String> states;
-		try {
-			states = getStateIDs(BindingGenerator.getList(bindings.get(IDS_VARIABLE)));
-		} catch (ResultParserException e) {
-			logger.error("Result from Prolog was not as expected.", e);
-			throw new ProBException();
-		}
+		states = getStateIDs(BindingGenerator.getList(bindings
+				.get(IDS_VARIABLE)));
 		trace = new TraceResult(operations, states);
-		
+
 	}
-	
+
 	// TODO: Should these methods be saved in some other class?
 	private List<String> getStateIDs(final Collection<PrologTerm> terms) {
 		final List<String> ids = new ArrayList<String>(terms.size());
@@ -85,7 +80,7 @@ public final class GetFullTraceCommand implements ICommand {
 		}
 		return ids;
 	}
-	
+
 	private String getStateID(final PrologTerm term) {
 		final String result;
 		if (term.isAtom()) {

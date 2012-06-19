@@ -6,7 +6,6 @@
 
 package de.prob.animator.command.notImplemented;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -34,72 +33,74 @@ import de.prob.prolog.term.PrologTerm;
 public final class SetPreferencesCommand implements ICommand {
 
 	// FIXME: REFACTOR!!!!
-//	private static final String PROB_ANIMATION_PREFERENCES = "prob_animation_preferences";
-//	private static final Collection<String> INVALID_PROPERTIES = Collections
-//			.unmodifiableCollection(new HashSet<String>(Arrays.asList("title",
-//					"project", "machine")));
+	// private static final String PROB_ANIMATION_PREFERENCES =
+	// "prob_animation_preferences";
+	// private static final Collection<String> INVALID_PROPERTIES = Collections
+	// .unmodifiableCollection(new HashSet<String>(Arrays.asList("title",
+	// "project", "machine")));
 
-//	private final Preferences preferences;
-//	private final ICommand cmds;
+	// private final Preferences preferences;
+	// private final ICommand cmds;
 
-//	public static Preferences getPreferences() {
-//		return Platform.getPreferencesService().getRootNode()
-//				.node(InstanceScope.SCOPE).node(PROB_ANIMATION_PREFERENCES);
-//	}
-//
-//	public SetPreferencesCommand() {
-//		this(getPreferences());
-//	}
-//
-//	public SetPreferencesCommand(final Preferences customConfiguration) {
-//		preferences = customConfiguration;
-//		String[] names;
-//		try {
-//			names = preferences.keys();
-//		} catch (BackingStoreException e) {
-//			names = new String[0];
-//			Logger.notifyUser("Error while storing ProB Preferences", e);
-//		}
-//		final List<IComposableCommand> commands = new ArrayList<IComposableCommand>(
-//				names.length);
-//		for (String k : names) {
-//			if (validCommand(k)) {
-//				String value = preferences.get(k, null);
-//				commands.add(new SetPreferenceCommand(k, value));
-//			}
-//		}
-//		this.cmds = new ComposedCommand(
-//				commands.toArray(IComposableCommand.EMPTY_ARRAY));
-//	}
-//
-//	public static void setPreferences(final Animator a) throws ProBException {
-//		final SetPreferencesCommand c = createSetPreferencesCommand(a);
-//		a.execute(c);
-//	}
-//
-//	public static SetPreferencesCommand createSetPreferencesCommand(
-//			final Animator a) {
-//		SetPreferencesCommand c;
-//		if (a.getCustomConfiguration() != null) {
-//			c = new SetPreferencesCommand(a.getCustomConfiguration());
-//		} else {
-//			c = new SetPreferencesCommand();
-//		}
-//		return c;
-//	}
-//
-//	private boolean validCommand(final String key) {
-//		return !INVALID_PROPERTIES.contains(key);
-//	}
+	// public static Preferences getPreferences() {
+	// return Platform.getPreferencesService().getRootNode()
+	// .node(InstanceScope.SCOPE).node(PROB_ANIMATION_PREFERENCES);
+	// }
+	//
+	// public SetPreferencesCommand() {
+	// this(getPreferences());
+	// }
+	//
+	// public SetPreferencesCommand(final Preferences customConfiguration) {
+	// preferences = customConfiguration;
+	// String[] names;
+	// try {
+	// names = preferences.keys();
+	// } catch (BackingStoreException e) {
+	// names = new String[0];
+	// Logger.notifyUser("Error while storing ProB Preferences", e);
+	// }
+	// final List<IComposableCommand> commands = new
+	// ArrayList<IComposableCommand>(
+	// names.length);
+	// for (String k : names) {
+	// if (validCommand(k)) {
+	// String value = preferences.get(k, null);
+	// commands.add(new SetPreferenceCommand(k, value));
+	// }
+	// }
+	// this.cmds = new ComposedCommand(
+	// commands.toArray(IComposableCommand.EMPTY_ARRAY));
+	// }
+	//
+	// public static void setPreferences(final Animator a) throws ProBException
+	// {
+	// final SetPreferencesCommand c = createSetPreferencesCommand(a);
+	// a.execute(c);
+	// }
+	//
+	// public static SetPreferencesCommand createSetPreferencesCommand(
+	// final Animator a) {
+	// SetPreferencesCommand c;
+	// if (a.getCustomConfiguration() != null) {
+	// c = new SetPreferencesCommand(a.getCustomConfiguration());
+	// } else {
+	// c = new SetPreferencesCommand();
+	// }
+	// return c;
+	// }
+	//
+	// private boolean validCommand(final String key) {
+	// return !INVALID_PROPERTIES.contains(key);
+	// }
 
 	@Override
-	public void writeCommand(IPrologTermOutput pto) throws ProBException {
-//		cmds.processResult(bindings);
+	public void writeCommand(IPrologTermOutput pto) {
+		// cmds.processResult(bindings);
 	}
 
 	@Override
-	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings)
-			throws ProBException {
-//		cmds.writeCommand(pto);
+	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
+		// cmds.writeCommand(pto);
 	}
 }

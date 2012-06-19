@@ -11,11 +11,12 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.inject.Inject;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.GetErrorsCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.cli.ProBInstance;
+import de.prob.exception.CliError;
+import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
 
@@ -32,44 +33,35 @@ class AnimatorImpl implements IAnimator {
 		this.cli = cli;
 		this.processor = processor;
 		this.getErrors = getErrors;
-		processor.configure(cli, logger);
+		processor.configure(cli);
 	}
 
 	@Override
-	public void execute(final ICommand command) throws ProBException {
+	public void execute(final ICommand command) {
 		if (cli == null) {
 			// System.out.println("Probcli is missing. Try \"upgrade\".");
 			logger.error("Probcli is missing. Try \"upgrade\".");
-			throw new ProBException("no cli found");
+			throw new CliError("no cli found");
 		}
 		ISimplifiedROMap<String, PrologTerm> bindings = null;
 		try {
 			bindings = processor.sendCommand(command);
 			command.processResult(bindings);
-		} catch (RuntimeException e) {
-			logger.error("Runtime error while executing query.", e);
-			throw new ProBException(e);
 		} finally {
 			getErrors();
 		}
 	}
 
-	private void getErrors() throws ProBException {
+	private void getErrors() {
 		ISimplifiedROMap<String, PrologTerm> errorbindings;
 		List<String> errors;
-		try {
-			errorbindings = processor.sendCommand(getErrors);
-			getErrors.processResult(errorbindings);
-		} catch (RuntimeException e) {
-			logger.error("Runtime error while executing query.", e);
-			throw new ProBException(e);
-		}
+		errorbindings = processor.sendCommand(getErrors);
+		getErrors.processResult(errorbindings);
 		errors = getErrors.getErrors();
 		if (errors != null && !errors.isEmpty()) {
 			String msg = Joiner.on('\n').join(errors);
-			logger.error("ProB raised exception(s):\n",
-					msg);
-			throw new ProBException(msg);
+			logger.error("ProB raised exception(s):\n", msg);
+			throw new ProBError(msg);
 		}
 	}
 
@@ -80,7 +72,7 @@ class AnimatorImpl implements IAnimator {
 	}
 
 	@Override
-	public void execute(final ICommand... commands) throws ProBException {
+	public void execute(final ICommand... commands) {
 		execute(new ComposedCommand(commands));
 	}
 

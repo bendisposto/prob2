@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.ProBException;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -22,7 +21,7 @@ import de.prob.prolog.term.PrologTerm;
 public final class GetPrologRandomSeed implements ICommand {
 
 	Logger logger = LoggerFactory.getLogger(GetPrologRandomSeed.class);
-	
+
 	private RandomSeed randomSeed;
 
 	public RandomSeed getSeed() {
@@ -30,17 +29,12 @@ public final class GetPrologRandomSeed implements ICommand {
 	}
 
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) throws ProBException {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		BigInteger x, y, z, b;
-		try {
-			x = BindingGenerator.getInteger(bindings.get("X")).getValue();
-			y = BindingGenerator.getInteger(bindings.get("Y")).getValue();
-			z = BindingGenerator.getInteger(bindings.get("Z")).getValue();
-			b = BindingGenerator.getInteger(bindings.get("B")).getValue();
-		} catch (ResultParserException e) {
-			logger.error(e.getLocalizedMessage());
-			throw new ProBException();
-		}
+		x = BindingGenerator.getInteger(bindings.get("X")).getValue();
+		y = BindingGenerator.getInteger(bindings.get("Y")).getValue();
+		z = BindingGenerator.getInteger(bindings.get("Z")).getValue();
+		b = BindingGenerator.getInteger(bindings.get("B")).getValue();
 
 		randomSeed = new RandomSeed(x, y, z, b);
 	}

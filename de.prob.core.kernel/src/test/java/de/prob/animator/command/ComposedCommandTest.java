@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import de.prob.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -19,7 +18,7 @@ public class ComposedCommandTest {
 			.toCharArray();
 
 	@Test
-	public void testWriteCommand() throws ProBException {
+	public void testWriteCommand()  {
 		ICommand foo = mock(ICommand.class);
 		ICommand bar = mock(ICommand.class);
 		ComposedCommand cmd = new ComposedCommand(foo, bar);
@@ -29,7 +28,7 @@ public class ComposedCommandTest {
 	}
 
 	@Test
-	public void testWriteCommandAlternateConstructor() throws ProBException {
+	public void testWriteCommandAlternateConstructor()  {
 		ICommand foo = mock(ICommand.class);
 		ICommand bar = mock(ICommand.class);
 		ArrayList<ICommand> list = new ArrayList<ICommand>();
@@ -43,7 +42,7 @@ public class ComposedCommandTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testProcessResult() throws ProBException {
+	public void testProcessResult()  {
 		ICommand foo = mock(ICommand.class);
 		ICommand bar = mock(ICommand.class);
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
@@ -81,7 +80,7 @@ public class ComposedCommandTest {
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void testCommandNotKnown() throws ProBException {
+	public void testCommandNotKnown()  {
 		ICommand foo = mock(ICommand.class);
 		ICommand bar = mock(ICommand.class);
 		ComposedCommand cmd = new ComposedCommand(foo, bar);

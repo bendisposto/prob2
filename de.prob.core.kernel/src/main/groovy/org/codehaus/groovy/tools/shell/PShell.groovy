@@ -30,8 +30,7 @@ import org.codehaus.groovy.tools.shell.util.XmlCommandRegistrar
 import org.fusesource.jansi.Ansi
 import org.fusesource.jansi.AnsiConsole
 
-import de.prob.ProBException
-import de.prob.cli.ProBInstanceProvider;
+import de.prob.cli.ProBInstanceProvider
 import de.prob.scripting.Api
 
 
@@ -392,8 +391,9 @@ extends Shell {
 	}
 
 	Closure newErrorHook = { Throwable cause ->
-		if(!(cause instanceof ProBException))
-			defaultErrorHook.call(cause) }
+		//		if(!(cause instanceof ProBException))
+		defaultErrorHook.call(cause)
+	}
 
 	//Closure errorHook = defaultErrorHook
 	Closure errorHook = newErrorHook
