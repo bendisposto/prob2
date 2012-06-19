@@ -1,4 +1,4 @@
-s = api.s()
+s = api.b_load(dir+"/machines/scheduler.mch").statespace
 s.explore "root"
 s.step 0
 s.step 4
