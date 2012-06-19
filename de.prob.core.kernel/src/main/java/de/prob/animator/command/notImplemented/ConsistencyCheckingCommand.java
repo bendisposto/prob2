@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -51,6 +50,7 @@ public final class ConsistencyCheckingCommand implements ICommand {
 		return result;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		// Should the arity of this be 0?
@@ -60,6 +60,7 @@ public final class ConsistencyCheckingCommand implements ICommand {
 
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("do_modelchecking").printNumber(time).openList();
 		for (String o : options) {

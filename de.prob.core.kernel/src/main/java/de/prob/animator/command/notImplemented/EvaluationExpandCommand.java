@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
@@ -36,6 +35,7 @@ public class EvaluationExpandCommand implements ICommand {
 		this.evaluationElement = evaluationElement;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		label = BindingGenerator
@@ -44,6 +44,7 @@ public class EvaluationExpandCommand implements ICommand {
 
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("evaluation_expand_formula");
 		evaluationElement.toTermOutput(pto);

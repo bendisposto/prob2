@@ -3,7 +3,6 @@ package de.prob.animator.command;
 import java.util.List;
 
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.PrologTermDelegate;
 import de.prob.prolog.term.PrologTerm;
@@ -32,7 +31,7 @@ public class ComposedCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)  {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrefixMap<PrologTerm> prefixMap = new PrefixMap<PrologTerm>(
 				bindings);
 		for (int i = 0; i < cmds.length; i++) {
@@ -41,7 +40,7 @@ public class ComposedCommand implements ICommand {
 	}
 
 	private void processPrefixedCommand(final PrefixMap<PrologTerm> prefixMap,
-			final int i)  {
+			final int i) {
 		prefixMap.prefix = createPrefix(i);
 		cmds[i].processResult(prefixMap);
 	}
@@ -71,7 +70,7 @@ public class ComposedCommand implements ICommand {
 	}
 
 	public void getResultForCommand(final ICommand command,
-			final ISimplifiedROMap<String, PrologTerm> bindings)  {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final int index = indexOf(command);
 		// added second condition in case command is not included in cmds
 		if (index >= 0 && !(index == cmds.length)) {

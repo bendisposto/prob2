@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -81,6 +80,7 @@ public final class ComputeCoverageCommand implements ICommand {
 		return coverageResult;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 
@@ -99,6 +99,7 @@ public final class ComputeCoverageCommand implements ICommand {
 
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("compute_coverage").printVariable("TotalNodeNr")
 				.printVariable("TotalTransSum").printVariable("NodeStat")

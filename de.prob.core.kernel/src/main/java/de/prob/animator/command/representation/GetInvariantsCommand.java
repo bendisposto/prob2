@@ -12,7 +12,6 @@ import de.prob.animator.command.ICommand;
 import de.prob.model.classicalb.ClassicalBEntity;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
-import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
