@@ -3,9 +3,7 @@ s.explore "root"
 s.step 0
 s.step 4
 s.step 6
-println 'hier'
 a = s.getCurrentState()
-println 'daaaaa'
 assert a == s.states.get("4")
 assert a.class == de.prob.statespace.StateId
 assert !s.info.stateHasVariable(a,"waiting\\/ready")
