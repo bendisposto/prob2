@@ -132,7 +132,8 @@ public class StateSpaceInfo {
 	 * @return if the given state has a variable with name variable
 	 */
 	public boolean stateHasVariable(final StateId stateId, final String variable) {
-		return getState(stateId).containsKey(variable);
+		HashMap<String, String> state = getState(stateId);
+		return state.containsKey(variable);
 	}
 
 	public HashMap<OperationId, Operation> getOps() {

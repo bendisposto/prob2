@@ -97,7 +97,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
 
-		ExploreStateCommand command = new ExploreStateCommand(state.toString());
+		ExploreStateCommand command = new ExploreStateCommand(state.getId());
 		animator.execute(command);
 		explored.add(state);
 		List<OpInfo> enabledOperations = command.getEnabledOperations();
@@ -113,7 +113,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 						operations.state);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
-				addEdge(getVertex(operations.src), getVertex(operations.dest),
+				addEdge(states.get(operations.src),
+						states.get(operations.dest),
 						new OperationId(op.getId()));
 			}
 		}
@@ -148,7 +149,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			throws BException, ProBException {
 		ClassicalBEvalElement pred = new ClassicalBEvalElement(predicate);
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				stateId.toString(), name, pred, nrOfSolutions);
+				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
 		List<OpInfo> newOps = command.getOperations();
 		List<Operation> ops = new ArrayList<Operation>();
@@ -256,7 +257,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			}
 		}
 
-		history.add(stateId.toString(), null);
+		history.add(stateId.getId(), null);
 		evaluateFormulas();
 		notifyAnimationChange(getCurrentState(), stateId, null);
 	}
@@ -341,7 +342,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 
 	public StateId getCurrentState() {
-		return states.get(history.getCurrentState());
+		String currentState = history.getCurrentState();
+		StateId stateId = states.get(currentState);
+		return stateId;
 	}
 
 	// AUTOMATED ANIMATION IN STATESPACE
@@ -438,7 +441,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public List<EvaluationResult> evaluate(final List<IEvalElement> code)
 			throws ProBException, BException {
-		return eval(getCurrentState().toString(), code);
+		return eval(getCurrentState().getId(), code);
 	}
 
 	public List<EvaluationResult> evaluate(final IEvalElement code)

@@ -18,7 +18,7 @@ public class StateId {
 
 	@Override
 	public String toString() {
-		return id;
+		return id + " " + hash;
 	}
 
 	@Override
