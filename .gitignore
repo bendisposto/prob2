@@ -22,3 +22,7 @@ config.groovy
 *.dot
 *.prob
 src/main/generated/
+META-INF/MANIFEST.MF
+build.properties
+plugin.properties
+plugin.xml
