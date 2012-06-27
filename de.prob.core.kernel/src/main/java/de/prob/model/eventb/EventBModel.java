@@ -1,5 +1,7 @@
 package de.prob.model.eventb;
 
+import org.eclipse.emf.common.util.EList;
+import org.eventb.emf.core.EventBNamedCommentedComponentElement;
 import org.eventb.emf.core.Project;
 
 import com.google.inject.Inject;
@@ -20,7 +22,10 @@ public class EventBModel {
 	}
 
 	public void initialize(final Project p) {
-		// TODO Auto-generated method stub
-
+		EList<EventBNamedCommentedComponentElement> components = p
+				.getComponents();
+		for (EventBNamedCommentedComponentElement element : components) {
+			System.out.println(element);
+		}
 	}
 }

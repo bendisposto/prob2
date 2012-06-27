@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eventb.emf.core.CorePackage;
 import org.eventb.emf.core.Project;
 
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.model.eventb.EventBModel;
@@ -17,6 +18,7 @@ public class EventBFactory {
 
 	private final Provider<EventBModel> modelProvider;
 
+	@Inject
 	public EventBFactory(final Provider<EventBModel> modelProvider) {
 		this.modelProvider = modelProvider;
 	}
