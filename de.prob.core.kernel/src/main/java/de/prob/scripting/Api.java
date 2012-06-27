@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.eventb.emf.core.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +82,11 @@ public class Api {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 		return bFactory.load(f);
+	}
+
+	public Project eb_load(final String content) throws IOException, BException {
+		EventBFactory bFactory = modelFactoryProvider.getEventBFactory();
+		return bFactory.load(content);
 	}
 
 	public String getCurrentId(final StateSpace animation) {
