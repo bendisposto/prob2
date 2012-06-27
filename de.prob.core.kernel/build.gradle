@@ -114,7 +114,7 @@ task pack(type: Jar, dependsOn: [jar]) {
 		}
 	}
 	from(depClasses) {
-		exclude 'META-INF/MANIFEST.MF'
+		excludes= ['META-INF/*.MF','META-INF/*.SF'] 
 	}
 	manifest {
 		attributes 'Main-Class': 'de.prob.Main'
