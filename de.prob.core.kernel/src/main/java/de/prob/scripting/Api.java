@@ -94,10 +94,10 @@ public class Api {
 		return bFactory.load(f);
 	}
 
-	public EventBModel eb_load(final String content) throws IOException,
+	public EventBModel eb_load(final String filename) throws IOException,
 			BException {
 		EventBFactory bFactory = modelFactoryProvider.getEventBFactory();
-		return bFactory.load(content);
+		return bFactory.load(new File(filename));
 	}
 
 	public String getCurrentId(final StateSpace animation) {
