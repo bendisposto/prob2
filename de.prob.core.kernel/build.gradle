@@ -135,6 +135,7 @@ test.doFirst {
 
 javadoc {
 	title="ProB Core "+project.version
+	options.tags = ["ordered", "model", "generated"]
 }
 
 task wrapper(type: Wrapper) {
