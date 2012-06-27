@@ -97,21 +97,8 @@ version=${project.version}"""
 	}
 }
 
-task patchUri << {
-
-	println "Patching"	
-	// ant.patch(patchfile: 'patches/parserPerformance.patch', originalfile: 'build/temp/de/be4/classicalb/core/parser/parser/Parser.java', failonerror:'true' )
-}
-
-task generateModel {
-	doFirst {
-				
-	}
-}
-
-
 compileJava {
-	dependsOn= [createBuildConstants, generateModel, patchUri]
+	dependsOn= [createBuildConstants]
 }
 
 jar {
