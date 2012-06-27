@@ -36,7 +36,7 @@ ftc.exclude '**/SpockDomWalkerTest*'
 findbugsTest.classes = files(ftc.files) // explicit list of files
 
 
-sourceSets.main.java.srcDirs = [] // ie there's no stand-alone java source
+sourceSets.main.java.srcDirs = ['src/main/generated'] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
 
 def parser_version = '2.4.6-SNAPSHOT'
@@ -78,6 +78,12 @@ dependencies {
 	compile 'stax:stax:1.2.0_rc2-dev'
 	compile 'org.codehaus.jettison:jettison:1.3.1'
 	compile 'org.reflections:reflections:0.9.8'
+	compile 'emf:ecore:2.3.0'
+	compile 'emf:common:2.3.0'
+	compile 'emf:xmi:2.7.0'
+
+	 compile 'commons-codec:commons-codec:1.6'
+	
 	
 }
 
@@ -91,8 +97,21 @@ version=${project.version}"""
 	}
 }
 
+task patchUri << {
+
+	println "Patching"	
+	// ant.patch(patchfile: 'patches/parserPerformance.patch', originalfile: 'build/temp/de/be4/classicalb/core/parser/parser/Parser.java', failonerror:'true' )
+}
+
+task generateModel {
+	doFirst {
+				
+	}
+}
+
+
 compileJava {
-	dependsOn createBuildConstants
+	dependsOn= [createBuildConstants, generateModel, patchUri]
 }
 
 jar {
@@ -176,6 +195,9 @@ task integrationtests(dependsOn: ['classes','downloadCli'], type:JavaExec){
 	classpath = sourceSets.main.runtimeClasspath
 	args = ['-test','groovyTests']
 }
+
+
+
 
 
 
