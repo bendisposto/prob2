@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.eventb.emf.core.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +24,7 @@ import de.prob.animator.IAnimator;
 import de.prob.cli.ProBInstance;
 import de.prob.model.classicalb.ClassicalBFactory;
 import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.eventb.EventBModel;
 import de.prob.statespace.StateSpace;
 
 public class Api {
@@ -94,7 +94,8 @@ public class Api {
 		return bFactory.load(f);
 	}
 
-	public Project eb_load(final String content) throws IOException, BException {
+	public EventBModel eb_load(final String content) throws IOException,
+			BException {
 		EventBFactory bFactory = modelFactoryProvider.getEventBFactory();
 		return bFactory.load(content);
 	}
@@ -153,8 +154,9 @@ public class Api {
 			String tmp;
 
 			try {
-				while ((tmp = br.readLine()) != null)
+				while ((tmp = br.readLine()) != null) {
 					sb.append(tmp);
+				}
 				in.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
