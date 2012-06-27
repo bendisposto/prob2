@@ -1,10 +1,15 @@
 package de.prob.statespace;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class StateId {
 	private final String id;
+	private final String hash;
 
-	public StateId(final String id) {
+	public StateId(final String id, final String state) {
 		this.id = id;
+		this.hash = hash(state);
 	}
 
 	public String getId() {
@@ -13,20 +18,34 @@ public class StateId {
 
 	@Override
 	public String toString() {
-		return id;
+		return id + " " + hash;
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj instanceof StateId) {
 			StateId that = (StateId) obj;
-			return that.getId().equals(id);
+			return that.getHash().equals(hash);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return id.hashCode();
+		return hash.hashCode();
+	}
+
+	public String hash(final String vars) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-1");
+			final String str = new String(md.digest(vars.getBytes()));
+			return str;
+		} catch (NoSuchAlgorithmException e) {
+			return vars;
+		}
+	}
+
+	public String getHash() {
+		return hash;
 	}
 }

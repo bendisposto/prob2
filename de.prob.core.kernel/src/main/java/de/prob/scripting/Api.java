@@ -1,7 +1,14 @@
 package de.prob.scripting;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -10,8 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
+import de.prob.animator.IAnimator;
 import de.prob.cli.ProBInstance;
 import de.prob.model.classicalb.ClassicalBFactory;
 import de.prob.model.classicalb.ClassicalBModel;
@@ -112,5 +122,51 @@ public class Api {
 	 */
 	public String listVersions() {
 		return downloader.listVersions();
+	}
+
+	public void toFile(final StateSpace s) {
+		XStream xstream = new XStream(new JettisonMappedXmlDriver());
+		xstream.omitField(IAnimator.class, "animator");
+		// xstream.omitField(History.class, "history");
+		String xml = xstream.toXML(s);
+		// System.out.println(xml);
+		try {
+			FileWriter fw = new FileWriter("statespace.xml");
+			final BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(xml);
+			bw.close();
+		} catch (IOException e1) {
+			System.out.println("could not create file");
+		}
+	}
+
+	public StateSpace readFile() {
+		FileInputStream fstream;
+		StringBuffer sb = new StringBuffer();
+		try {
+			fstream = new FileInputStream("statespace.xml");
+
+			final DataInputStream in = new DataInputStream(fstream);
+			final BufferedReader br = new BufferedReader(new InputStreamReader(
+					in));
+
+			String tmp;
+
+			try {
+				while ((tmp = br.readLine()) != null)
+					sb.append(tmp);
+				in.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+		}
+		XStream xstream = new XStream(new JettisonMappedXmlDriver());
+		// xstream.omitField(IAnimator.class, "animator");
+
+		StateSpace t = (StateSpace) xstream.fromXML(sb.toString());
+
+		return t;
 	}
 }

@@ -18,7 +18,6 @@ import com.google.inject.Injector;
 import com.google.inject.ProvisionException;
 
 import de.prob.animator.IAnimator;
-import de.prob.cli.ProBInstanceProvider;
 import de.prob.exception.CliError;
 
 public class Main {
@@ -53,9 +52,10 @@ public class Main {
 			getAnimator();
 		} catch (ProvisionException e) {
 			if (e.getCause() instanceof CliError)
-			System.out
-					.println("No cli detected. Try \"upgrade\" to download the current version.");
-			else throw e;
+				System.out
+						.println("No cli detected. Try \"upgrade\" to download the current version.");
+			else
+				throw e;
 		}
 
 		try {

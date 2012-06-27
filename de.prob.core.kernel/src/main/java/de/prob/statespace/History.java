@@ -5,7 +5,7 @@ import java.util.List;
 
 public class History {
 
-	private List<HistoryElement> history = new ArrayList<HistoryElement>();
+	private final List<HistoryElement> history = new ArrayList<HistoryElement>();
 	private int current = -1;
 
 	/**
@@ -33,7 +33,9 @@ public class History {
 			current++;
 		} else {
 			if (history.size() != current) {
-				history = history.subList(0, current + 1);
+				while (history.size() > current + 1) {
+					history.remove(current + 1);
+				}
 			}
 			String src = getCurrentState();
 			final HistoryElement elem = new HistoryElement(src, dest, op);

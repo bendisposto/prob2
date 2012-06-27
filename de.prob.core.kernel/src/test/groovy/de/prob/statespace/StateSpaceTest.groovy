@@ -23,32 +23,41 @@ class StateSpaceTest extends Specification {
 
 		s = new StateSpace(mock, new DirectedMultigraphProvider(), new Random(), new History(), new StateSpaceInfo())
 
-		s.addVertex(new StateId("1"))
-		s.explored.add("1")
+		def states = [
+			new StateId("1", "lorem"),
+			new StateId("root", "lorem2"),
+			new StateId("2", "ipsum"),
+			new StateId("3", "dolor"),
+			new StateId("4", "sit"),
+			new StateId("5", "amit"),
+			new StateId("6", "consetetur")
+		]
 
-		addVertices([
-			"root",
-			"2",
-			"3",
-			"4",
-			"5",
-			"6"
-		],s)
-		s.addEdge(new StateId("root"),new StateId("2"),new OperationId("b"))
-		s.addEdge(new StateId("2"),new StateId("3"),new OperationId("c"))
-		s.addEdge(new StateId("3"),new StateId("4"),new OperationId("d"))
-		s.addEdge(new StateId("3"),new StateId("5"),new OperationId("e"))
+		states.each { it ->
+			s.addVertex(it)
+		}
+		states.each { it ->
+			s.states.put(it.getId(),it)
+		}
+		s.explored.add(s.states.get("1"))
+
+
+
+		s.addEdge(s.states.get("root"), s.states.get("2"), new OperationId("b"))
+		s.addEdge(s.states.get("2"), s.states.get("3"), new OperationId("c"))
+		s.addEdge(s.states.get("3"), s.states.get("4"), new OperationId("d"))
+		s.addEdge(s.states.get("3"), s.states.get("5"), new OperationId("e"))
 
 		s.history.add("2", "b")
 		s.history.add("3", "c")
 
 
-		s.explored.add("2")
-		s.explored.add("3")
-		s.explored.add("4")
-		s.explored.add("5")
+		s.explored.add(s.states.get("2"))
+		s.explored.add(s.states.get("3"))
+		s.explored.add(s.states.get("4"))
+		s.explored.add(s.states.get("5"))
 
-		s.addEdge( new StateId("4"), new StateId("6"),new OperationId("f"))
+		s.addEdge(s.states.get("4"), s.states.get("6"),new OperationId("f"))
 	}
 
 	def addVertices(List<String> ids, StateSpace s) {
@@ -69,12 +78,12 @@ class StateSpaceTest extends Specification {
 
 	def "The node is explored"() {
 		expect:
-		s.isExplored("1") == true
+		s.isExplored(s.states.get("1")) == true
 	}
 
 	def "The stateid is unknown"() {
 		when:
-		s.isExplored("7")
+		s.isExplored(s.states.get("7"))
 
 		then:
 		thrown IllegalArgumentException
@@ -82,15 +91,17 @@ class StateSpaceTest extends Specification {
 
 	def "The state is not explored"() {
 		when:
-		s.addVertex(new StateId("7"))
+		def a = new StateId("7", "bla")
+		s.addVertex(a)
+		s.states.put(a.getId(),a)
 
 		then:
-		s.isExplored("7") == false
+		s.isExplored(s.states.get("7")) == false
 	}
 
 	def "The node is not a deadlock"() {
 		def op = new Operation("a", "Blah", null);
-		s.addEdge(new StateId("1"), new StateId("2"),new OperationId("blaOp"))
+		s.addEdge(s.states.get("1"), s.states.get("2"), new OperationId("blaOp"))
 
 		expect:
 		s.isDeadlock("1") == false
@@ -98,7 +109,7 @@ class StateSpaceTest extends Specification {
 
 	def "current state is 3"() {
 		expect:
-		s.getCurrentState() == "3"
+		s.getCurrentState() == s.states.get("3")
 	}
 
 	def "previous state is 2"(){
@@ -106,7 +117,7 @@ class StateSpaceTest extends Specification {
 		s.back()
 
 		then:
-		s.getCurrentState() == "2"
+		s.getCurrentState() == s.states.get("2")
 	}
 
 	def "forward state after moving backwards is 3"() {
@@ -116,7 +127,7 @@ class StateSpaceTest extends Specification {
 
 		then:
 		s.history.current == 1;
-		s.getCurrentState() == "3"
+		s.getCurrentState() == s.states.get("3")
 	}
 
 	def "user can step to node 4"() {
@@ -124,7 +135,7 @@ class StateSpaceTest extends Specification {
 		s.step("d")
 
 		then:
-		s.getCurrentState() == "4"
+		s.getCurrentState() == s.states.get("4")
 		s.history.getCurrentTransition() == "d"
 	}
 
@@ -133,7 +144,7 @@ class StateSpaceTest extends Specification {
 		s.step("e")
 
 		then:
-		s.getCurrentState() == "5"
+		s.getCurrentState() == s.states.get("5")
 		s.history.getCurrentTransition() == "e"
 	}
 
@@ -156,7 +167,7 @@ class StateSpaceTest extends Specification {
 		s.step("c")
 
 		then:
-		s.getCurrentState() == "3"
+		s.getCurrentState() == s.states.get("3")
 		s.history.getCurrentTransition() == "c"
 	}
 
@@ -166,7 +177,7 @@ class StateSpaceTest extends Specification {
 		s.step("f")
 
 		then:
-		thrown ProBError 
+		thrown ProBError
 	}
 
 	def "test simple goToState"() {
@@ -175,7 +186,7 @@ class StateSpaceTest extends Specification {
 		s.goToState("2")
 
 		then:
-		s.getCurrentState() == "2"
+		s.getCurrentState() == s.states.get("2")
 		s.history.history.size() == 4;
 	}
 
@@ -186,7 +197,7 @@ class StateSpaceTest extends Specification {
 		s.goToState("5")
 
 		then:
-		s.getCurrentState() == "5"
+		s.getCurrentState() == s.states.get("5")
 	}
 
 	def "navigation with multiple goToState calls"() {
@@ -198,7 +209,7 @@ class StateSpaceTest extends Specification {
 
 		then:
 		// is this the intended behaviour?
-		s.getCurrentState() == "3"
+		s.getCurrentState() == s.states.get("3")
 		s.history.isLastTransition(null) == false
 		s.history.isLastTransition("c") == true
 		s.history.isNextTransition(null) == true
@@ -214,7 +225,7 @@ class StateSpaceTest extends Specification {
 
 		then:
 		s.history.history.size() == 3;
-		s.getCurrentState() == "5"
+		s.getCurrentState() == s.states.get("5")
 		s.history.isLastTransition(null) == true
 		s.history.isNextTransition("any") == false
 	}
@@ -236,7 +247,7 @@ class StateSpaceTest extends Specification {
 
 		then:
 		s.history.history.size() == 4;
-		s.getCurrentState() == "2"
+		s.getCurrentState() == s.states.get("2")
 		s.history.isLastTransition(null) == true
 		s.history.isNextTransition("c") == true
 	}
@@ -252,60 +263,65 @@ class StateSpaceTest extends Specification {
 
 		s = new StateSpace(animmock, new DirectedMultigraphProvider(), r,new History(),new StateSpaceInfo())
 
-		addVertices([
-			"root",
-			"2",
-			"3",
-			"4",
-			"5",
-			"6",
-			"7",
-			"8",
-			"9",
-			"10",
-			"11"
-		],s)
+		def states = [
+			new StateId("root", "bla"),
+			new StateId("1", "argh"),
+			new StateId("2", "blah"),
+			new StateId("3", "blabla"),
+			new StateId("4", "blahblah"),
+			new StateId("5", "foo"),
+			new StateId("6", "bar"),
+			new StateId("7", "moo"),
+			new StateId("8", "baz"),
+			new StateId("9", "moobar"),
+			new StateId("10", "foobar"),
+			new StateId("11", "plop")
+		]
 
-		s.addEdge(new StateId("root"),new StateId("2"),new OperationId("b"))
-		s.addEdge(new StateId("2"),new StateId("3"),new OperationId("c"))
-		s.addEdge(new StateId("3"),new StateId("4"),new OperationId("d"))
-		s.addEdge(new StateId("3"),new StateId("4"),new OperationId("d"))
-		s.addEdge(new StateId("3"),new StateId("5"),new OperationId("e"))
-		s.addEdge(new StateId("4"),new StateId("6"),new OperationId("f"))
-		s.addEdge(new StateId("5"),new StateId("7"),new OperationId("g"))
-		s.addEdge(new StateId("5"),new StateId("8"),new OperationId("h"))
-		s.addEdge(new StateId("5"),new StateId("9"),new OperationId("i"))
-		s.addEdge(new StateId("9"),new StateId("10"),new OperationId("j"))
-		s.addEdge(new StateId("10"),new StateId("11"),new OperationId("k"))
+		states.each { it -> s.addVertex(it) }
+		states.each { it -> s.states.put(it.getId(),it) }
 
-		s.explored.add("root")
-		s.explored.add("2")
-		s.explored.add("3")
-		s.explored.add("4")
-		s.explored.add("5")
-		s.explored.add("6")
-		s.explored.add("7")
-		s.explored.add("8")
-		s.explored.add("9")
-		s.explored.add("10")
-		s.explored.add("11")
+
+		s.addEdge(s.states.get("root"),s.states.get("2"),new OperationId("b"))
+		s.addEdge(s.states.get("2"),  s.states.get("3"),new OperationId("c"))
+		s.addEdge(s.states.get("3"),  s.states.get("4"),new OperationId("d"))
+		s.addEdge(s.states.get("3"),  s.states.get("4"),new OperationId("d"))
+		s.addEdge(s.states.get("3"),  s.states.get("5"),new OperationId("e"))
+		s.addEdge(s.states.get("4"),  s.states.get("6"),new OperationId("f"))
+		s.addEdge(s.states.get("5"),  s.states.get("7"),new OperationId("g"))
+		s.addEdge(s.states.get("5"),  s.states.get("8"),new OperationId("h"))
+		s.addEdge(s.states.get("5"),  s.states.get("9"),new OperationId("i"))
+		s.addEdge(s.states.get("9"),  s.states.get("10"),new OperationId("j"))
+		s.addEdge(s.states.get("10"), s.states.get("11"),new OperationId("k"))
+
+		s.explored.add(s.states.get("root"))
+		s.explored.add(s.states.get("2"))
+		s.explored.add(s.states.get("3"))
+		s.explored.add(s.states.get("4"))
+		s.explored.add(s.states.get("5"))
+		s.explored.add(s.states.get("6"))
+		s.explored.add(s.states.get("7"))
+		s.explored.add(s.states.get("8"))
+		s.explored.add(s.states.get("9"))
+		s.explored.add(s.states.get("10"))
+		s.explored.add(s.states.get("11"))
 	}
 
 	def "testing random animation method"() {
 		setup:
 		randomAnimSetup()
-		s.info.addInvOk("root", true)
-		s.info.addInvOk("1", true)
-		s.info.addInvOk("2", true)
-		s.info.addInvOk("3", true)
-		s.info.addInvOk("4", true)
-		s.info.addInvOk("5", true)
-		s.info.addInvOk("6", true)
-		s.info.addInvOk("7", true)
-		s.info.addInvOk("8", true)
-		s.info.addInvOk("9", true)
-		s.info.addInvOk("10", true)
-		s.info.addInvOk("11", true)
+		s.info.addInvOk(s.states.get("root"), true)
+		s.info.addInvOk(s.states.get("1"), true)
+		s.info.addInvOk(s.states.get("2"), true)
+		s.info.addInvOk(s.states.get("3"), true)
+		s.info.addInvOk(s.states.get("4"), true)
+		s.info.addInvOk(s.states.get("5"), true)
+		s.info.addInvOk(s.states.get("6"), true)
+		s.info.addInvOk(s.states.get("7"), true)
+		s.info.addInvOk(s.states.get("8"), true)
+		s.info.addInvOk(s.states.get("9"), true)
+		s.info.addInvOk(s.states.get("10"), true)
+		s.info.addInvOk(s.states.get("11"), true)
 
 		when:
 		s.randomAnim(6);
@@ -323,18 +339,18 @@ class StateSpaceTest extends Specification {
 	def "testing random animation method with invariant violation"() {
 		setup:
 		randomAnimSetup()
-		s.info.addInvOk("root", true)
-		s.info.addInvOk("1", true)
-		s.info.addInvOk("2", true)
-		s.info.addInvOk("3", false)
-		s.info.addInvOk("4", true)
-		s.info.addInvOk("5", true)
-		s.info.addInvOk("6", true)
-		s.info.addInvOk("7", true)
-		s.info.addInvOk("8", true)
-		s.info.addInvOk("9", true)
-		s.info.addInvOk("10", true)
-		s.info.addInvOk("11", true)
+		s.info.addInvOk(s.states.get("root"), true)
+		s.info.addInvOk(s.states.get("1"), true)
+		s.info.addInvOk(s.states.get("2"), true)
+		s.info.addInvOk(s.states.get("3"), false)
+		s.info.addInvOk(s.states.get("4"), true)
+		s.info.addInvOk(s.states.get("5"), true)
+		s.info.addInvOk(s.states.get("6"), true)
+		s.info.addInvOk(s.states.get("7"), true)
+		s.info.addInvOk(s.states.get("8"), true)
+		s.info.addInvOk(s.states.get("9"), true)
+		s.info.addInvOk(s.states.get("10"), true)
+		s.info.addInvOk(s.states.get("11"), true)
 
 		when:
 		s.randomAnim(6);
@@ -357,19 +373,30 @@ class StateSpaceTest extends Specification {
 
 		s = new StateSpace(animmock, new DirectedMultigraphProvider(), r,new History(),new StateSpaceInfo())
 
-		addVertices(["root", "2", "3"],s)
+		def states = [
+			new StateId("root", "blah"),
+			new StateId("1", "arrr"),
+			new StateId("2", "blahblah"),
+			new StateId("3", "moo")
+		]
 
-		s.addEdge(new StateId("root"),new StateId("2"),new OperationId("b"))
-		s.addEdge(new StateId("2"),new StateId("3"),new OperationId("c"))
+		states.each { it -> s.addVertex(it)}
+		states.each{ it -> s.states.put(it.getId(),it) }
 
-		s.explored.add("root")
-		s.explored.add("2")
-		s.explored.add("3")
 
-		s.info.addInvOk("root", true)
-		s.info.addInvOk("1", true)
-		s.info.addInvOk("2", true)
-		s.info.addInvOk("3", true)
+
+
+		s.addEdge(s.states.get("root"), s.states.get("2"),new OperationId("b"))
+		s.addEdge(s.states.get("2"), s.states.get("3"),new OperationId("c"))
+
+		s.explored.add(s.states.get("root"))
+		s.explored.add(s.states.get("2"))
+		s.explored.add(s.states.get("3"))
+
+		s.info.addInvOk(s.states.get("root"), true)
+		s.info.addInvOk(s.states.get("1"), true)
+		s.info.addInvOk(s.states.get("2"), true)
+		s.info.addInvOk(s.states.get("3"), true)
 
 		when:
 		s.randomAnim(6);
@@ -382,8 +409,8 @@ class StateSpaceTest extends Specification {
 
 	def "testing multiple steps of looping edge"() {
 		setup:
-		s.addVertex(new StateId("3"))
-		s.addEdge(new StateId("3"),new StateId("3"),new OperationId("loop"))
+		s.addVertex(new StateId("3", "blaaah"))
+		s.addEdge(s.states.get("3"), s.states.get("3"),new OperationId("loop"))
 
 		expect:
 		s.history.isLastTransition("c") == true
@@ -410,35 +437,37 @@ class StateSpaceTest extends Specification {
 		s.back()
 
 		then:
-		s.getCurrentState() == "root"
+		s.getCurrentState() == s.states.get("root")
 		s.history.current == -1
 	}
 
 	def "testing if canGoForward works"() {
 		expect:
-		s.getCurrentState() == "3"
+		s.getCurrentState() == s.states.get("3")
 		s.history.current == 1
 
 		when:
 		s.forward();
 
 		then:
-		s.getCurrentState() == "3"
+		s.getCurrentState() == s.states.get("3")
 		s.history.current == 1
 	}
 
 	def "testing if step works for integer opId"() {
 		expect:
-		s.getCurrentState() == "3"
+		s.getCurrentState() == s.states.get("3")
 
 		when:
-		s.addVertex(new StateId("10"))
-		s.addEdge(new StateId("3"),new StateId("10"),new OperationId("3"))
-		s.explored.add("10")
+		def a = new StateId("10", "plop")
+		s.addVertex(a)
+		s.states.put(a.getId(), a)
+		s.addEdge(s.states.get("3"), s.states.get("10"),new OperationId("3"))
+		s.explored.add(s.states.get("10"))
 		s.step(3)
 
 		then:
-		s.getCurrentState() == "10"
+		s.getCurrentState() == s.states.get("10")
 	}
 
 	def "test register animation listener"() {
