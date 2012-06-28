@@ -20,6 +20,7 @@ public class EventBModel {
 	private final StateSpace statespace;
 	private DirectedMultigraph<String, EventBRefType> graph;
 	private final HashMap<String, EventBNamedCommentedComponentElement> components = new HashMap<String, EventBNamedCommentedComponentElement>();
+	private String mainComponent;
 
 	@Inject
 	public EventBModel(final StateSpace statespace) {
@@ -30,7 +31,8 @@ public class EventBModel {
 		return statespace;
 	}
 
-	public void initialize(final Project p) {
+	public void initialize(final Project p, String mainComponent) {
+		this.mainComponent = mainComponent;
 		graph = new DirectedMultigraph<String, EventBRefType>(
 				new ClassBasedEdgeFactory<String, EventBRefType>(
 						EventBRefType.class));
@@ -111,4 +113,9 @@ public class EventBModel {
 	public String toString() {
 		return graph.toString();
 	}
+
+	public String getMainComponentName() {
+		return mainComponent;
+	}
+
 }

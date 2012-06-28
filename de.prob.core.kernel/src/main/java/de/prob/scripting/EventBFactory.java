@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import org.eventb.emf.core.Project;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.notImplemented.StartAnimationCommand;
 import de.prob.model.eventb.EventBModel;
@@ -30,7 +28,7 @@ public class EventBFactory {
 
 	private final Provider<EventBModel> modelProvider;
 	private final Pattern p1 = Pattern
-			.compile("^model\\(\\\"(.*?)\\\"\\)\\.");
+			.compile("^emf_model\\('(.*?)',\\\"(.*?)\\\"\\)\\.");
 	private final Pattern p2 = Pattern
 			.compile("^package\\((.*?)\\)\\.");
 
@@ -42,29 +40,30 @@ public class EventBFactory {
 	CorePackage f = CorePackage.eINSTANCE; // As a side effect the EMF stuff is
 											// initialized! Hurray
 
-	public EventBModel load(final String s) throws IOException {
+	public EventBModel load(final String s, String mainComponent) throws IOException {
 		EventBModel eventBModel = modelProvider.get();
 		byte[] bytes = Base64.decodeBase64(s.getBytes());
 		XMLResourceImpl r2 = new XMLResourceImpl();
 		r2.load(new ByteArrayInputStream(bytes), new HashMap<Object, Object>());
 		Project p = (Project) r2.getContents().get(0);
-		eventBModel.initialize(p);
+		eventBModel.initialize(p,mainComponent);
 		return eventBModel;
 	}
 
 	public EventBModel load(final File f) throws IOException {
 		List<String> lines = readFile(f);
-		String loadcmd = null, emfmodel = null;
+		String loadcmd = null, emfmodel = null, mainmodel = null;
 		for (String string : lines) {
 			Matcher m1 = p1.matcher(string);
 			Matcher m2 = p2.matcher(string);
 			if (m1.find()) {
-				emfmodel = m1.group(1);
+				mainmodel = m1.group(1);
+				emfmodel = m1.group(2);
 			} else if (m2.find()) {
-				loadcmd = m2.group(1);;
+				loadcmd = m2.group(1);
 			}
 		}
-		EventBModel res = load(emfmodel);
+		EventBModel res = load(emfmodel,mainmodel);
 		
 		res.getStatespace().execute(new LoadEventBCommand(loadcmd));
 		res.getStatespace().execute(new StartAnimationCommand());
