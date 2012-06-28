@@ -20,13 +20,16 @@ import de.prob.statespace.StateSpace;
 
 public class EventBModel extends AbstractModel {
 
+	private String mainComponent;
+
 	@Inject
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
 		this.components = new HashMap<String, AbstractElement>();
 	}
 
-	public void initialize(final Project p) {
+	public void initialize(final Project p, final String mainComponent) {
+		this.mainComponent = mainComponent;
 		graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
@@ -78,4 +81,9 @@ public class EventBModel extends AbstractModel {
 		return components.containsKey(componentName) ? (EventBComponent) components
 				.get(componentName) : null;
 	}
+
+	public String getMainComponentName() {
+		return mainComponent;
+	}
+
 }

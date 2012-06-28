@@ -5,8 +5,8 @@ import org.jgrapht.graph.DirectedMultigraph
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.node.Start
-import de.prob.model.classicalb.RefType.ERefType
 import de.prob.model.representation.RefType;
+import de.prob.model.representation.RefType.ERefType
 import spock.lang.Specification
 
 
