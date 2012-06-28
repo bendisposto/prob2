@@ -11,11 +11,11 @@ import com.google.inject.Inject;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.RefType.ERefType;
+import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.StateSpace;
 
-public class ClassicalBModel {
+public class ClassicalBModel extends AbstractModel {
 
-	private final StateSpace statespace;
 	private ClassicalBMachine mainMachine = null;
 	private final HashSet<ClassicalBMachine> done = new HashSet<ClassicalBMachine>();
 	private DirectedMultigraph<ClassicalBMachine, RefType> graph;
@@ -55,10 +55,6 @@ public class ClassicalBModel {
 		} while (!fpReached);
 		this.graph = graph;
 		return graph;
-	}
-
-	public StateSpace getStatespace() {
-		return statespace;
 	}
 
 	public ClassicalBMachine getMainMachine() {

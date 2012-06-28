@@ -13,21 +13,17 @@ import org.jgrapht.graph.DirectedMultigraph;
 import com.google.inject.Inject;
 
 import de.prob.model.eventb.EventBRefType.EEBRefType;
+import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.StateSpace;
 
-public class EventBModel {
+public class EventBModel extends AbstractModel {
 
-	private final StateSpace statespace;
 	private DirectedMultigraph<String, EventBRefType> graph;
 	private final HashMap<String, EventBNamedCommentedComponentElement> components = new HashMap<String, EventBNamedCommentedComponentElement>();
 
 	@Inject
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
-	}
-
-	public StateSpace getStatespace() {
-		return statespace;
 	}
 
 	public void initialize(final Project p) {
