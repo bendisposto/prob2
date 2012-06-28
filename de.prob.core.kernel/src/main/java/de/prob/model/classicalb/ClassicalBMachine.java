@@ -6,10 +6,10 @@ import java.util.List;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.Node;
-import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Operation;
 
-public class ClassicalBMachine extends AbstractModel {
+public class ClassicalBMachine implements AbstractElement {
 
 	private final NodeIdAssignment astMapping;
 
@@ -150,5 +150,37 @@ public class ClassicalBMachine extends AbstractModel {
 			sb.append("  " + operation.toString() + "\n");
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public List<String> getVariables() {
+		List<String> vars = new ArrayList<String>();
+		for (ClassicalBEntity var : variables) {
+			vars.add(var.getIdentifier());
+		}
+		return vars;
+	}
+
+	@Override
+	public List<String> getConstants() {
+		List<String> cons = new ArrayList<String>();
+		for (ClassicalBEntity con : constants) {
+			cons.add(con.getIdentifier());
+		}
+		return cons;
+	}
+
+	@Override
+	public List<String> getOperations() {
+		List<String> ops = new ArrayList<String>();
+		for (Operation op : operations) {
+			ops.add(op.toString());
+		}
+		return ops;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 }

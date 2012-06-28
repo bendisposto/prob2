@@ -1,34 +1,24 @@
 package de.prob.visualization;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.model.classicalb.ClassicalBEntity;
-import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.representation.Operation;
+import de.prob.model.representation.AbstractElement;
 
 public class MachineConstants {
 	private final String name;
-	private final List<String> variables = new ArrayList<String>();
-	private final List<String> constants = new ArrayList<String>();
-	private final List<String> operations = new ArrayList<String>();
+	private final List<String> variables;
+	private final List<String> constants;
+	private final List<String> operations;
 	private final int width;
 	private int lines;
 	private final String html;
 	private final int height;
 
-	public MachineConstants(final ClassicalBMachine m) {
-		this.name = m.name();
-
-		for (ClassicalBEntity var : m.variables()) {
-			variables.add(var.getIdentifier());
-		}
-		for (ClassicalBEntity constant : m.constants()) {
-			constants.add(constant.getIdentifier());
-		}
-		for (Operation op : m.operations()) {
-			operations.add(op.toString());
-		}
+	public MachineConstants(final AbstractElement abstractElement) {
+		this.name = abstractElement.getName();
+		this.variables = abstractElement.getVariables();
+		this.constants = abstractElement.getConstants();
+		this.operations = abstractElement.getOperations();
 		width = calculateWidth();
 		html = generateHTML();
 		height = calculateHeight();

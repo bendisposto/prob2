@@ -9,17 +9,19 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 
-import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.classicalb.ClassicalBModel;
-import de.prob.model.classicalb.RefType;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.RefType;
 
 public class HierarchyVisualization {
 
-	HashMap<mxCell, MachineConstants> constants = new HashMap<mxCell, MachineConstants>();
-
-	public HierarchyVisualization(final ClassicalBModel model) {
-		JGraphXAdapter<ClassicalBMachine, RefType> graph = new JGraphXAdapter<ClassicalBMachine, RefType>(
+	public HierarchyVisualization(final AbstractModel model) {
+		JGraphXAdapter<String, RefType> graph = new JGraphXAdapter<String, RefType>(
 				model.getGraph());
+
+		final HashMap<mxCell, MachineConstants> constants = new HashMap<mxCell, MachineConstants>();
+		final HashMap<String, AbstractElement> components = model
+				.getComponents();
 
 		JFrame frame = new JFrame();
 		mxGraphComponent graphComponent = new mxGraphComponent(graph);
@@ -32,13 +34,15 @@ public class HierarchyVisualization {
 
 		for (mxCell cell : graph.getVertexToCellMap().values()) {
 			Object value = cell.getValue();
-			if (value instanceof ClassicalBMachine) {
-				ClassicalBMachine machine = (ClassicalBMachine) value;
-				MachineConstants cons = new MachineConstants(machine);
-				constants.put(cell, cons);
-				graphComponent.addCellOverlay(cell,
-						new HTMLButtonOverlay(cons.getHtml(), cons.getWidth(),
-								cons.getHeight()));
+			if (value instanceof String) {
+				String elementName = (String) value;
+				if (components.containsKey(elementName)) {
+					MachineConstants cons = new MachineConstants(
+							components.get(elementName));
+					constants.put(cell, cons);
+					graphComponent.addCellOverlay(cell, new HTMLButtonOverlay(
+							cons.getHtml(), cons.getWidth(), cons.getHeight()));
+				}
 			}
 		}
 

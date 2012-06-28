@@ -1,5 +1,6 @@
 package de.prob.model.classicalb;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,19 +19,24 @@ import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PMachineReference;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
-import de.prob.model.classicalb.RefType.ERefType;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.RefType;
+import de.prob.model.representation.RefType.ERefType;
 
 public class DependencyWalker extends DepthFirstAdapter {
 
-	private final DirectedMultigraph<ClassicalBMachine, RefType> graph;
-	private final ClassicalBMachine src;
+	private final DirectedMultigraph<String, RefType> graph;
+	private final String src;
 	private final Map<String, Start> map;
+	private final HashMap<String, AbstractElement> components;
 
-	public DependencyWalker(final ClassicalBMachine machine,
-			final DirectedMultigraph<ClassicalBMachine, RefType> graph2,
+	public DependencyWalker(final String machine,
+			final HashMap<String, AbstractElement> comps,
+			final DirectedMultigraph<String, RefType> graph,
 			final Map<String, Start> map) {
 		src = machine;
-		this.graph = graph2;
+		this.components = comps;
+		this.graph = graph;
 		this.map = map;
 	}
 
@@ -52,8 +58,10 @@ public class DependencyWalker extends DepthFirstAdapter {
 			String dest = extractMachineName(((AMachineReference) r)
 					.getMachineName());
 			ClassicalBMachine newMachine = makeMachine(dest);
-			graph.addVertex(newMachine);
-			graph.addEdge(src, newMachine, new RefType(ERefType.IMPORTS));
+			String name = newMachine.name();
+			components.put(name, newMachine);
+			graph.addVertex(name);
+			graph.addEdge(src, name, new RefType(ERefType.IMPORTS));
 		}
 	}
 
@@ -71,8 +79,10 @@ public class DependencyWalker extends DepthFirstAdapter {
 	public void caseAMachineReference(final AMachineReference node) {
 		String dest = extractMachineName(node.getMachineName());
 		ClassicalBMachine newMachine = makeMachine(dest);
-		graph.addVertex(newMachine);
-		graph.addEdge(src, newMachine, new RefType(ERefType.INCLUDES));
+		String name = newMachine.name();
+		components.put(name, newMachine);
+		graph.addVertex(name);
+		graph.addEdge(src, name, new RefType(ERefType.INCLUDES));
 	}
 
 	@Override
@@ -90,8 +100,10 @@ public class DependencyWalker extends DepthFirstAdapter {
 	private void registerRefinementMachine(final TIdentifierLiteral refMachine) {
 		String dest = refMachine.getText();
 		ClassicalBMachine newMachine = makeMachine(dest);
-		graph.addVertex(newMachine);
-		graph.addEdge(src, newMachine, new RefType(ERefType.REFINES));
+		String name = newMachine.name();
+		components.put(name, newMachine);
+		graph.addVertex(name);
+		graph.addEdge(src, name, new RefType(ERefType.REFINES));
 	}
 
 	private void registerMachineNames(final List<PExpression> machineNames,
@@ -101,8 +113,10 @@ public class DependencyWalker extends DepthFirstAdapter {
 				AIdentifierExpression identifier = (AIdentifierExpression) machineName;
 				String dest = extractMachineName(identifier.getIdentifier());
 				ClassicalBMachine newMachine = makeMachine(dest);
-				graph.addVertex(newMachine);
-				graph.addEdge(src, newMachine, depType);
+				String name = newMachine.name();
+				components.put(name, newMachine);
+				graph.addVertex(name);
+				graph.addEdge(src, name, depType);
 			}
 		}
 	}

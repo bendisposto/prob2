@@ -12,31 +12,30 @@ import org.jgrapht.graph.DirectedMultigraph;
 
 import com.google.inject.Inject;
 
-import de.prob.model.eventb.EventBRefType.EEBRefType;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.RefType;
+import de.prob.model.representation.RefType.ERefType;
 import de.prob.statespace.StateSpace;
 
 public class EventBModel extends AbstractModel {
 
-	private DirectedMultigraph<String, EventBRefType> graph;
-	private final HashMap<String, EventBNamedCommentedComponentElement> components = new HashMap<String, EventBNamedCommentedComponentElement>();
-
 	@Inject
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
+		this.components = new HashMap<String, AbstractElement>();
 	}
 
 	public void initialize(final Project p) {
-		graph = new DirectedMultigraph<String, EventBRefType>(
-				new ClassBasedEdgeFactory<String, EventBRefType>(
-						EventBRefType.class));
+		graph = new DirectedMultigraph<String, RefType>(
+				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
 		EList<EventBNamedCommentedComponentElement> cmpnnts = p.getComponents();
 		for (EventBNamedCommentedComponentElement element : cmpnnts) {
 			String name = element.doGetName();
 			graph.addVertex(name);
 			if (!components.containsKey(name)) {
-				components.put(name, element);
+				components.put(name, new EventBComponent(element));
 			}
 
 			if (element instanceof Context) {
@@ -46,10 +45,9 @@ public class EventBModel extends AbstractModel {
 					String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, context);
+						components.put(ctxName, new EventBComponent(context));
 					}
-					graph.addEdge(name, ctxName, new EventBRefType(
-							EEBRefType.EXTENDS));
+					graph.addEdge(name, ctxName, new RefType(ERefType.EXTENDS));
 				}
 			}
 			if (element instanceof Machine) {
@@ -59,52 +57,25 @@ public class EventBModel extends AbstractModel {
 					String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, context);
+						components.put(ctxName, new EventBComponent(context));
 					}
-					graph.addEdge(name, ctxName, new EventBRefType(
-							EEBRefType.SEES));
+					graph.addEdge(name, ctxName, new RefType(ERefType.SEES));
 				}
 				EList<Machine> refines = m.getRefines();
 				for (Machine machine : refines) {
 					String mName = machine.doGetName();
 					if (!components.containsKey(mName)) {
 						graph.addVertex(mName);
-						components.put(mName, machine);
+						components.put(mName, new EventBComponent(machine));
 					}
-					graph.addEdge(name, mName, new EventBRefType(
-							EEBRefType.REFINES));
+					graph.addEdge(name, mName, new RefType(ERefType.REFINES));
 				}
 			}
 		}
 	}
 
-	public DirectedMultigraph<String, EventBRefType> getGraph() {
-		return graph;
-	}
-
-	public HashMap<String, EventBNamedCommentedComponentElement> getComponents() {
-		return components;
-	}
-
-	public EventBNamedCommentedComponentElement getComponent(
-			final String componentName) {
-		return components.get(componentName);
-	}
-
-	public EEBRefType getRelationship(final String comp1, final String comp2) {
-		return getEdge(comp1, comp2);
-	}
-
-	public EEBRefType getEdge(final String comp1, final String comp2) {
-		final EventBRefType edge = graph.getEdge(comp1, comp2);
-		if (edge == null)
-			return null;
-
-		return edge.getRelationship();
-	}
-
-	@Override
-	public String toString() {
-		return graph.toString();
+	public EventBComponent getComponent(final String componentName) {
+		return components.containsKey(componentName) ? (EventBComponent) components
+				.get(componentName) : null;
 	}
 }

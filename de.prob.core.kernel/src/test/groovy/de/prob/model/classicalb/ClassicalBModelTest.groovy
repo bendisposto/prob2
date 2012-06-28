@@ -6,6 +6,7 @@ import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.classicalb.RefType.ERefType
+import de.prob.model.representation.RefType;
 import spock.lang.Specification
 
 
