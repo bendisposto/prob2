@@ -37,14 +37,8 @@ class ClassicalBModelTest extends Specification {
 	}
 
 	def "all the machine names are now saved in the graph"() {
-		setup:
-		def machine = new ClassicalBMachine(null)
-
-		when:
-		machine.setName(a)
-
-		then:
-		graph.vertexSet().contains(machine) == b
+		expect:
+		graph.vertexSet().contains(a) == b
 
 		where:
 		a  	| b
@@ -66,7 +60,7 @@ class ClassicalBModelTest extends Specification {
 		machine.setName(a)
 
 		then:
-		c.getVertex(a) == machine
+		c.getMachine(a) == machine
 
 		where:
 		a <<[
@@ -82,7 +76,7 @@ class ClassicalBModelTest extends Specification {
 
 	def "when a machine is not in the graph, null is returned"() {
 		expect:
-		c.getVertex(b) == null
+		c.getMachine(b) == null
 
 		where:
 		b <<[
@@ -120,20 +114,6 @@ class ClassicalBModelTest extends Specification {
 		"B"	|	"C"
 		"Blah"| "A"
 		"A"	| 	"Blah"
-	}
-
-	def "getVertex and getMachine are the same"() {
-		expect:
-		c.getVertex(a) == c.getMachine(a)
-
-		where:
-		a <<[
-			"Foo",
-			"Bar",
-			"A",
-			"Z",
-			"NOT"
-		]
 	}
 
 	def "getRelationship and getEdge are the same"() {
