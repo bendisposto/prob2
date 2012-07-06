@@ -11,7 +11,7 @@
 package org.eventb.emf.core;
 
 import org.eclipse.emf.common.util.EList;
-
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 
@@ -93,9 +93,9 @@ public interface EventBObject extends EObject {
 	 * <!-- end-model-doc -->
 	 * @model kind="operation" required="true"
 	 *        annotation="http://www.eclipse.org/emf/2002/GenModel body='if (eIsProxy()){\n\treturn ((InternalEObject)this).eProxyURI();\n}else{\n\treturn eResource().getURI();\n}'"
-	 * @generated
+	 * @generated not
 	 */
-	<URI> URI getURI();
+	 URI getURI();
 
 	/**
 	 * <!-- begin-user-doc -->

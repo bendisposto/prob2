@@ -114,7 +114,7 @@ public abstract class EventBObjectImpl extends EObjectImpl implements EventBObje
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * @generated not
 	 */
 	public  URI getURI() {
 		if (eIsProxy()){
