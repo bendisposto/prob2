@@ -33,8 +33,13 @@ public class EventBModel extends AbstractModel {
 		graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
-		EList<EventBNamedCommentedComponentElement> cmpnnts = p.getComponents();
-		for (EventBNamedCommentedComponentElement element : cmpnnts) {
+		EventBNamedCommentedComponentElement element = null;
+		for (EventBNamedCommentedComponentElement cmpt : p.getComponents()) {
+			if (mainComponent.equals(cmpt.doGetName())) {
+				element = cmpt;
+			}
+		}
+		if (element != null) {
 			String name = element.doGetName();
 			graph.addVertex(name);
 			if (!components.containsKey(name)) {
