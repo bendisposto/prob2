@@ -7,23 +7,23 @@ class StateId {
 
 	def id;
 	def hash;
-	def StateSpaceInfo space;
+	def StateSpace space;
+
 
 	def invokeMethod(String method, Object params) {
-		println "MOPHandler was asked to invoke ${method}"
-		if(params != null){
-			params.each{ println "\twith parameter ${it}" }
-		}
+		Operation op = space.opFromPredicate(this, method, params[0], 1)[0];
+        space.step(op.getId())
+		return space.getCurrentState()
 	}
 
 	def getProperty(String property){
-		return space.getVariable(this, property);
+		return space.info.getVariable(this, property);
 	}
 
-	def StateId(id, hash,  info) {
+	def StateId(id, hash, space) {
 		this.id = id;
 		this.hash = hash;
-		this.space = info;
+		this.space = space;
 	}
 
 	def String toString() {
