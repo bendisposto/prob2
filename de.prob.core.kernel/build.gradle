@@ -15,6 +15,10 @@ repositories {
       name "cobra"
       url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
     } 
+    maven {
+    	name "spock snapshot"
+    	url "http://oss.sonatype.org/content/repositories/snapshots/"
+    } 
 }
 
 
@@ -43,12 +47,12 @@ def parser_version = '2.4.6-SNAPSHOT'
 
 dependencies {
 
-	groovy 'org.codehaus.groovy:groovy:1.8.5'
+	groovy 'org.codehaus.groovy:groovy-all:2.0.0'
 
 	compile 'com.google.guava:guava:r09'
 	compile 'commons-cli:commons-cli:1.2'
 
-	compile 'org.codehaus.groovy:groovy:1.8.5'
+	compile 'org.codehaus.groovy:groovy:2.0.0'
 	compile 'org.fusesource.jansi:jansi:1.5'
 	compile 'jline:jline:0.9.94'
 
@@ -72,7 +76,7 @@ dependencies {
 	
 	testCompile 'junit:junit:4.8.2'
 	testCompile 'org.mockito:mockito-core:1.8.5'
-	testCompile 'org.spockframework:spock-core:0.6-groovy-1.8'
+	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0-SNAPSHOT'
 	
 	compile 'xstream:xstream:1.2.2'
 	compile 'stax:stax:1.2.0_rc2-dev'
