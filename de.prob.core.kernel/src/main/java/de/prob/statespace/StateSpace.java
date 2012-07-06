@@ -73,7 +73,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		this.randomGenerator = randomGenerator;
 		this.history = history;
 		this.info = info;
-		StateId root = new StateId("root", "1");
+		StateId root = new StateId("root", "1", this.info);
 		addVertex(root);
 		states.put(root.getId(), root);
 	}
@@ -103,7 +103,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				notifyStateSpaceChange(operations.id,
 						containsVertex(getVertex(operations.dest)));
 				StateId newState = new StateId(operations.dest,
-						operations.targetState);
+						operations.targetState, this.info);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
 				addEdge(states.get(operations.src),
