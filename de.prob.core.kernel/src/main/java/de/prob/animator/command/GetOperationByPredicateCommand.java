@@ -91,7 +91,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 		if (!list.isEmpty()) {
 			for (PrologTerm prologTerm : list) {
 				CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
-						prologTerm, 6);
+						prologTerm, 8);
 				operation.add(new OpInfo(cpt));
 			}
 		}
