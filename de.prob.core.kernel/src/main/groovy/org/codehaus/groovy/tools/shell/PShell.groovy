@@ -153,7 +153,12 @@ extends Shell {
 
 				Future<Object> r = ex.submit(new Callable<Object>() {
 							public Object call() {
-								return interp.evaluate(buff);
+								def oldbindings = new HashSet();
+								oldbindings.addAll(binding.getVariables().keySet())
+								result = interp.evaluate(buff);
+								def newbindings = binding.getVariables().keySet()
+								newbindings.each {if (!oldbindings.contains(it) && !it.startsWith("this") && !it.startsWith("__"))  { println it; }}
+								return result
 							}});
 
 			//				lastResult = result = interp.evaluate(buff)
