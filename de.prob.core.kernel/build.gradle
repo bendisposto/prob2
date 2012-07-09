@@ -52,7 +52,7 @@ dependencies {
 	compile 'com.google.guava:guava:r09'
 	compile 'commons-cli:commons-cli:1.2'
 
-	compile 'org.codehaus.groovy:groovy:2.0.0'
+	compile 'org.codehaus.groovy:groovy-all:2.0.0'
 	compile 'org.fusesource.jansi:jansi:1.5'
 	compile 'jline:jline:0.9.94'
 
