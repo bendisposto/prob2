@@ -24,13 +24,13 @@ class StateSpaceTest extends Specification {
 		s = new StateSpace(mock, new DirectedMultigraphProvider(), new Random(), new History(), new StateSpaceInfo())
 
 		def states = [
-			new StateId("1", "lorem"),
-			new StateId("root", "lorem2"),
-			new StateId("2", "ipsum"),
-			new StateId("3", "dolor"),
-			new StateId("4", "sit"),
-			new StateId("5", "amit"),
-			new StateId("6", "consetetur")
+			new StateId("1", "lorem",s),
+			new StateId("root", "lorem2",s),
+			new StateId("2", "ipsum",s),
+			new StateId("3", "dolor",s),
+			new StateId("4", "sit",s),
+			new StateId("5", "amit",s),
+			new StateId("6", "consetetur",s)
 		]
 
 		states.each { it ->
@@ -91,7 +91,7 @@ class StateSpaceTest extends Specification {
 
 	def "The state is not explored"() {
 		when:
-		def a = new StateId("7", "bla")
+		def a = new StateId("7", "bla",s)
 		s.addVertex(a)
 		s.states.put(a.getId(),a)
 
@@ -264,18 +264,18 @@ class StateSpaceTest extends Specification {
 		s = new StateSpace(animmock, new DirectedMultigraphProvider(), r,new History(),new StateSpaceInfo())
 
 		def states = [
-			new StateId("root", "bla"),
-			new StateId("1", "argh"),
-			new StateId("2", "blah"),
-			new StateId("3", "blabla"),
-			new StateId("4", "blahblah"),
-			new StateId("5", "foo"),
-			new StateId("6", "bar"),
-			new StateId("7", "moo"),
-			new StateId("8", "baz"),
-			new StateId("9", "moobar"),
-			new StateId("10", "foobar"),
-			new StateId("11", "plop")
+			new StateId("root", "bla",s),
+			new StateId("1", "argh",s),
+			new StateId("2", "blah",s),
+			new StateId("3", "blabla",s),
+			new StateId("4", "blahblah",s),
+			new StateId("5", "foo",s),
+			new StateId("6", "bar",s),
+			new StateId("7", "moo",s),
+			new StateId("8", "baz",s),
+			new StateId("9", "moobar",s),
+			new StateId("10", "foobar",s),
+			new StateId("11", "plop",s)
 		]
 
 		states.each { it -> s.addVertex(it) }
@@ -374,10 +374,10 @@ class StateSpaceTest extends Specification {
 		s = new StateSpace(animmock, new DirectedMultigraphProvider(), r,new History(),new StateSpaceInfo())
 
 		def states = [
-			new StateId("root", "blah"),
-			new StateId("1", "arrr"),
-			new StateId("2", "blahblah"),
-			new StateId("3", "moo")
+			new StateId("root", "blah",s),
+			new StateId("1", "arrr",s),
+			new StateId("2", "blahblah",s),
+			new StateId("3", "moo",s)
 		]
 
 		states.each { it -> s.addVertex(it)}
@@ -409,7 +409,7 @@ class StateSpaceTest extends Specification {
 
 	def "testing multiple steps of looping edge"() {
 		setup:
-		s.addVertex(new StateId("3", "blaaah"))
+		s.addVertex(new StateId("3", "blaaah",s))
 		s.addEdge(s.states.get("3"), s.states.get("3"),new OperationId("loop"))
 
 		expect:
@@ -459,7 +459,7 @@ class StateSpaceTest extends Specification {
 		s.getCurrentState() == s.states.get("3")
 
 		when:
-		def a = new StateId("10", "plop")
+		def a = new StateId("10", "plop",s)
 		s.addVertex(a)
 		s.states.put(a.getId(), a)
 		s.addEdge(s.states.get("3"), s.states.get("10"),new OperationId("3"))

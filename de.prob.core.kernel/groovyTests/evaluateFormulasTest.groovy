@@ -5,7 +5,7 @@ s.step 4
 s.step 6
 a = s.getCurrentState()
 assert a == s.states.get("4")
-assert a.class == de.prob.statespace.StateId
+assert a.getClass() == de.prob.statespace.StateId
 assert !s.info.stateHasVariable(a,"waiting\\/ready")
 s.addUserFormula("waiting\\/ready")
 assert s.info.stateHasVariable(s.getCurrentState(),"waiting\\/ready")

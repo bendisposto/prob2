@@ -103,6 +103,10 @@ extends Shell {
 	 * Execute a single line, where the line may be a command or Groovy code (complete or incomplete).
 	 */
 	Object execute(final String line) {
+	 return execute(line,false);	
+	}
+	
+	Object execute(final String line, boolean silent) {
 		assert line != null
 
 		// Ignore empty lines
@@ -153,7 +157,12 @@ extends Shell {
 
 				Future<Object> r = ex.submit(new Callable<Object>() {
 							public Object call() {
-								return interp.evaluate(buff);
+								def oldbindings = new HashSet();
+								oldbindings.addAll(binding.getVariables().keySet())
+								result = interp.evaluate(buff);
+								def newbindings = binding.getVariables().keySet()
+								newbindings.each {if (!oldbindings.contains(it) && !it.startsWith("this") && !it.startsWith("__"))  { println it; }}
+								return result
 							}});
 
 			//				lastResult = result = interp.evaluate(buff)
@@ -438,18 +447,8 @@ extends Shell {
 		def code
 
 		try {
-			loadUserScript('groovysh.profile')
 
 
-
-			// if args were passed in, just execute as a command
-			// (but cygwin gives an empty string, so ignore that)
-			if (commandLine != null && commandLine.trim().size() > 0) {
-				// Run the given commands
-				execute(commandLine)
-			}
-			else {
-				loadUserScript('groovysh.rc')
 
 				// Setup the interactive runner
 				runner = new PInteractiveShellRunner(this, this.&renderPrompt as Closure)
@@ -480,11 +479,13 @@ extends Shell {
 					io.out.println('-' * (width - 1))
 				}
 
+				// initial code goes here
+				// execute("", true) 
+				
 				// And let 'er rip... :-)
 				runner.run()
 
 
-			}
 
 			code = 0
 		}
