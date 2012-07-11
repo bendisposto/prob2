@@ -11,9 +11,12 @@ class StateId {
 
 
 	def invokeMethod(String method, Object params) {
-		Operation op = space.opFromPredicate(this, method, params[0], 1)[0];
-        space.step(op.getId())
-		return space.getCurrentState()
+		String predicate = params[0];
+		Operation op = space.opFromPredicate(this, method,predicate , 1)[0];
+		OperationId opid = new OperationId(op.getId());
+		StateId newState = space.getEdgeTarget(opid);
+		space.explore(newState);
+		return newState;
 	}
 
 	def getProperty(String property){
