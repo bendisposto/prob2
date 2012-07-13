@@ -16,6 +16,11 @@ function onHandle(line, report) {
 				msg : data.output,
 				className : "jquery-console-message-value"
 			}]);
+			
+			var impdiv = $("#imports")[0];   
+			impdiv.innerHTML = data.imports;
+			var bindings = $("#bindings")[0];   
+			bindings.innerHTML += " "+data.newBindings;
 			}
 		else { controller.lePrompt = true; report(); }
 	});

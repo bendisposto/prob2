@@ -66,6 +66,12 @@
 		<div class="sixteen columns">
 			<div id="console" class="console"></div>
 		</div>
+		<div class="sixteen columns">
+			Imported: <div id="imports"></div>
+		</div>
+		<div class="sixteen columns">
+			Defined: <div id="bindings">api </div>
+		</div>
 
 
 		<div class="sixteen columns">
