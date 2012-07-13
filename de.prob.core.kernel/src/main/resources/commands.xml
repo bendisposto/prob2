@@ -22,7 +22,7 @@
 
     <command>org.codehaus.groovy.tools.shell.commands.ExitCommand</command>
 
-    <command>org.codehaus.groovy.tools.shell.commands.ImportCommand</command>
+<!--    <command>org.codehaus.groovy.tools.shell.commands.ImportCommand</command> -->
 
     <command>org.codehaus.groovy.tools.shell.commands.DisplayCommand</command>
 

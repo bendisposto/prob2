@@ -32,6 +32,7 @@ import de.prob.cli.ModuleCli;
 import de.prob.scripting.Api;
 import de.prob.scripting.Downloader;
 import de.prob.statespace.ModelModule;
+import de.prob.webconsole.WebModule;
 
 public class MainModule extends AbstractModule {
 
@@ -48,6 +49,7 @@ public class MainModule extends AbstractModule {
 		install(new ModuleCli());
 		install(new AnimatorModule());
 		install(new ModelModule());
+		install(new WebModule());
 		bind(Api.class);
 		bind(CommandLineParser.class).to(PosixParser.class);
 

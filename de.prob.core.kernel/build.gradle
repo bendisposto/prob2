@@ -90,7 +90,15 @@ dependencies {
 	compile 'emf:xmi:2.7.0'
 
 	 compile 'commons-codec:commons-codec:1.6'
-	
+	compile 'com.google.inject.extensions:guice-servlet:3.0'
+	compile 'com.google.code.gson:gson:1.7.1'
+
+	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3'
+	compile 'org.eclipse.jetty:jetty-server:8.0.0.M3'
+	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3'
+	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3'
+	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3'
+	compile 'org.mortbay.jetty:jsp-2.1-glassfish:2.1.v20100127'
 	
 }
 
