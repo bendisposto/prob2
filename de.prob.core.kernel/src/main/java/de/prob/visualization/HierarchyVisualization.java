@@ -26,7 +26,7 @@ public class HierarchyVisualization {
 		JFrame frame = new JFrame();
 		mxGraphComponent graphComponent = new mxGraphComponent(graph);
 		frame.getContentPane().add(graphComponent);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setSize(600, 400);
 		frame.setVisible(true);
 
