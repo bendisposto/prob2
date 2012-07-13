@@ -30,8 +30,8 @@ public class EvaluationServlet extends HttpServlet {
 
 	private static final String NL = System.getProperty("line.separator");
 
-
 	private final ArrayList<String> inputs = new ArrayList<String>();
+	private final ArrayList<String> imports = new ArrayList<String>();
 
 	private final Interpreter interpreter;
 
@@ -50,33 +50,37 @@ public class EvaluationServlet extends HttpServlet {
 		System.setOut(new PrintStream(sideeffects));
 	}
 
-
+	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 		String input = req.getParameter("input");
 
-		if (input == null)
+		if (input == null) {
 			return;
-		
-
-
-
-		else {
+		} else {
 			ResultObject result = new ResultObject();
 			Object evaluate = null;
-
-			inputs.add(input);
-
-			ParseCode parseCode = parser.parse(inputs).getCode();
+			ParseCode parseCode;
+			if (input.startsWith("import ")) {
+				imports.add(input);
+				parseCode = parser.parse(imports).getCode();
+			} else {
+				inputs.add(input);
+				parseCode = parser.parse(inputs).getCode();
+			}
 
 			if (parseCode.equals(ParseCode.getINCOMPLETE())) {
 				result.setContinued(true);
 				result.setOutput("");
 			} else {
 				try {
-					evaluate = interpreter.evaluate(inputs);
+					ArrayList<String> eval = new ArrayList<String>();
+					eval.addAll(imports);
+					eval.addAll(inputs);
+					evaluate = interpreter.evaluate(eval);
 				} catch (Exception e) {
+					imports.remove(input);
 					sideeffects.write(e.getMessage().getBytes());
 				} finally {
 					inputs.clear();
