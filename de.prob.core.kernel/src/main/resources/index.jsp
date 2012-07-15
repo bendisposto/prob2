@@ -73,6 +73,30 @@
 			Defined: <div id="bindings">api </div>
 		</div>
 
+		<div class="sixteen columns">
+<table id="variables">
+    <thead>
+        <tr>
+            <th>Variable-Name</th>
+            <th>Type</th>
+            <th>.toString()</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>api</td>
+            <td>de.prob.scripting.Api</td>
+            <td>...</td>
+        </tr>
+        <tr>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+            <td>etc</td>
+        </tr>
+    </tbody>
+</table>
+		</div>
+
 
 		<div class="sixteen columns">
 			<hr style="margin-top: 20px;" />
@@ -124,6 +148,7 @@
 	<script
 		src="javascripts/jquery.console.prob.js"></script>
 
+	<script src="javascripts/jquery.dataTables.min.js"></script>
 	<script src="javascripts/prob.js"></script>
 	
 

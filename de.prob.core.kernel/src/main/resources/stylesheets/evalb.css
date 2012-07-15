@@ -1,5 +1,5 @@
 #console {
- height: 520px;
+ height: 380px;
  background: #ebeac7;
  margin: 10px;
  border-radius: 5px;
@@ -9,7 +9,7 @@
 
 #console div.jquery-console-inner { 
  width:98.5%;
- height:500px; 
+ height:360px; 
  margin: 10px 10px;
  overflow:auto; 
  text-align:left;

@@ -50,7 +50,7 @@ function initialize() {
 	   levela.innerHTML = data.output;	
 	});
 	
-	
+//	$('#table').dataTable();
 	controller = $("#console").console({
 		welcomeMessage : 'ProB 2.0 console',
 		promptLabel : 'ProB> ',
