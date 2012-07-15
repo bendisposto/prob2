@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="2.0">
+	<wb-module deploy-name="probcore">
+		<property name="context-root" value="probcore"/>
+		<wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/resources"/>
+		<wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/generated"/>
+		<wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/groovy"/>
+		<wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/java"/>
+		<wb-resource deploy-path="/" source-path="src/main/webapp"/>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/ch.qos.logback/logback-classic/0.9.29/jar/f69dbab16e4cf256bdc397d7a745e86507f3a98b/logback-classic-0.9.29.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/jline/jline/0.9.94/jar/99a18e9a44834afdebc467294e1138364c207402/jline-0.9.94.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jdt.core.compiler/ecj/3.5.1/jar/eba10a38162466bb1efc9f45a4d35e9703550d2d/ecj-3.5.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/com.google.guava/guava/11.0.2/jar/35a3c69e19d72743cac83778aecbee68680f63eb/guava-11.0.2.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/commons-codec/commons-codec/1.6/jar/b7f0fc8f61ecadeb3695f0b9464755eee44374d4/commons-codec-1.6.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/javax.inject/javax.inject/1/jar/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jetty/jetty-server/8.0.0.M3/jar/6c0c514abeffef73e1ff19e9d88d5c2ebad15e2a/jetty-server-8.0.0.M3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.mortbay.jetty/servlet-api/3.0.20100224/jar/96229fb45e5ec5668e16a58240d1caeed2ca43a5/servlet-api-3.0.20100224.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.mortbay.jetty/jsp-api-2.1-glassfish/2.1.v20100127/jar/98e90faaff0df6a0b117f405032e1fa92e33114f/jsp-api-2.1-glassfish-2.1.v20100127.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/com.google.code.findbugs/jsr305/1.3.9/jar/40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf/jsr305-1.3.9.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/ch.qos.logback/logback-core/0.9.29/jar/96bf09771ee37a15e8e096dbf4a586e964c2f91f/logback-core-0.9.29.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.slf4j/slf4j-api/1.6.1/jar/6f3b8a24bf970f17289b234284c94f43eb42f0e4/slf4j-api-1.6.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/junit/junit/3.8.1/jar/99129f16442844f6a4a11ae22fbbee40b14d774f/junit-3.8.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jetty/jetty-io/8.0.0.M3/jar/8e2a5bfdd7096f66eeee78ba830301984cfb591d/jetty-io-8.0.0.M3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/jgraphx/jgraphx/1.10.1.0/jar/e88cab433100fc404f9edc45ae525f4a0ab7e692/jgraphx-1.10.1.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.codehaus.jettison/jettison/1.3.1/bundle/56dcc8480ecd2c03ec004aa76278d1f2d621561/jettison-1.3.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/de.prob/answerparser/2.4.6-SNAPSHOT/jar/c0155c7ef79dbeba673baaf8eb39858966ee0864/answerparser-2.4.6-SNAPSHOT.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jetty/jetty-http/8.0.0.M3/jar/88146d4c5116c473df8240a05e082d487972ba81/jetty-http-8.0.0.M3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.reflections/reflections/0.9.8/jar/f723abb59bf512952bfc503838f70f81487a6993/reflections-0.9.8.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/stax/stax/1.2.0_rc2-dev/jar/e5135b425785563b7fbfdd743df0151439df199c/stax-1.2.0_rc2-dev.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/aopalliance/aopalliance/1.0/jar/235ba8b489512805ac13a8f9ea77a1ca5ebe3e8/aopalliance-1.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/de.prob/cliparser/2.4.6-SNAPSHOT/jar/a37cd3bcbdf9f9fe3d717d20158eab433b44f5d/cliparser-2.4.6-SNAPSHOT.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jetty/jetty-continuation/8.0.0.M3/jar/9529ad553dd14a907e0200a95fabbcfda1b096a0/jetty-continuation-8.0.0.M3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/xml-apis/xml-apis/1.0.b2/jar/3136ca936f64c9d68529f048c2618bd356bf85c9/xml-apis-1.0.b2.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jetty/jetty-webapp/8.0.0.M3/jar/a331b1d46e749be541815ad8b9b31fbc7bd6924f/jetty-webapp-8.0.0.M3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/de.prob/bparser/2.4.6-SNAPSHOT/jar/e76aef04347383bc2176cd588feb430856d9b689/bparser-2.4.6-SNAPSHOT.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.codehaus.groovy/groovy-all/2.0.0/jar/f382b10ca07a4cd47c502fa0eba2be911606af0d/groovy-all-2.0.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/commons-cli/commons-cli/1.2/jar/2bf96b7aa8b611c177d329452af1dc933e14501c/commons-cli-1.2.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/javassist/javassist/3.12.1.GA/jar/526633327faa61aee448a519e8a4d53ec3057885/javassist-3.12.1.GA.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/ant/ant/1.6.5/jar/7d18faf23df1a5c3a43613952e0e8a182664564b/ant-1.6.5.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jetty/jetty-servlet/8.0.0.M3/jar/ced4e86f8cd15d8d417b08eb3494d7f969bafbfe/jetty-servlet-8.0.0.M3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/com.google.inject.extensions/guice-assistedinject/3.0/jar/544449ddb19f088dcde44f055d30a08835a954a7/guice-assistedinject-3.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/xpp3/xpp3_min/1.1.3.4.O/jar/cbb9d21eed484a16e0c0bd712830a80c75970753/xpp3_min-1.1.3.4.O.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/de.prob/prologlib/2.4.6-SNAPSHOT/jar/2d47c5b2d41523ae7b51b6ed0ff76d1c6b033253/prologlib-2.4.6-SNAPSHOT.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/emf/ecore/2.3.0/jar/313a466c6fd28b4f4d0088b8d685d2d5b7233fd3/ecore-2.3.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/de.prob/parserbase/2.4.6-SNAPSHOT/jar/d8dbba5c3b2963b28fb4c63c737391ef0a8ed595/parserbase-2.4.6-SNAPSHOT.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/dom4j/dom4j/1.6.1/jar/5d3ccc056b6f056dbf0dddfdf43894b9065a8f94/dom4j-1.6.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/com.google.inject.extensions/guice-servlet/3.0/jar/610cde0e8da5a8b7d8efb8f0b8987466ffebaaf9/guice-servlet-3.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/com.google.code.gson/gson/1.7.1/jar/697e3a1fa094a983cd12f7f6f61abf9c6ea52e2/gson-1.7.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/emf/xmi/2.7.0/jar/f4a51e17af5b0c14631d3a3a2e58022098e35a4b/xmi-2.7.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.mortbay.jetty/jsp-2.1-glassfish/2.1.v20100127/jar/55036d8978a94b5b16d81e26b9056c12ad1ea489/jsp-2.1-glassfish-2.1.v20100127.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/de.prob/unicode/2.4.6-SNAPSHOT/jar/32b85304ce943cdaf5a463af7fcb222f619a79df/unicode-2.4.6-SNAPSHOT.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.sonatype.sisu.inject/cglib/2.2.1-v20090111/jar/7ce5e983fd0e6c78346f4c9cbfa39d83049dda2/cglib-2.2.1-v20090111.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/de.prob/ltlparser/2.4.6-SNAPSHOT/jar/76037d2a7e98f863e62c82743975ef935633b5ff/ltlparser-2.4.6-SNAPSHOT.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jetty/jetty-xml/8.0.0.M3/jar/6ce7a5333f5f070f68e3aefed18a76dec91d3764/jetty-xml-8.0.0.M3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/com.google.inject/guice/3.0/jar/9d84f15fe35e2c716a02979fb62f50a29f38aefa/guice-3.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/stax/stax-api/1.0.1/jar/49c100caf72d658aca8e58bd74a4ba90fa2b0d70/stax-api-1.0.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/asm/asm/3.1/jar/c157def142714c544bdea2e6144645702adf7097/asm-3.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/jgrapht/jgrapht/0.8.3/jar/b47cbdf1abc4da9206e62d6c8f03afe6bf4c74dc/jgrapht-0.8.3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/emf/common/2.3.0/jar/60dfecf5e6f8d209168ae26232aff122891ebba2/common-2.3.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.fusesource.jansi/jansi/1.5/jar/e91d05da2b2401b0d39a9be894cbc148e37763ed/jansi-1.5.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jetty/jetty-security/8.0.0.M3/jar/26bb88e02827e96894661412a149b4986692fe85/jetty-security-8.0.0.M3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/org.eclipse.jetty/jetty-util/8.0.0.M3/jar/61db08708af50a1e94cd48281a896fa3ee0135f/jetty-util-8.0.0.M3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/bendisposto/.gradle/caches/artifacts-13/filestore/com.thoughtworks.xstream/xstream/1.2.2/jar/40c19ec03a2063bcc04d7066f4b607d5aa336192/xstream-1.2.2.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+	</wb-module>
+</project-modules>
