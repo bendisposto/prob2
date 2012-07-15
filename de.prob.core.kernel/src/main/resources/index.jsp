@@ -22,14 +22,12 @@
 
 <!-- CSS
     ================================================== -->
-<link rel="stylesheet"
-	href="stylesheets/base.css">
-<link rel="stylesheet"
-	href="stylesheets/skeleton.css">
-<link rel="stylesheet"
-	href="stylesheets/layout.css">
-<link rel="stylesheet"
-	href="stylesheets/evalb.css">
+<link rel="stylesheet" href="stylesheets/base.css">
+<link rel="stylesheet" href="stylesheets/skeleton.css">
+<link rel="stylesheet" href="stylesheets/layout.css">
+<link rel="stylesheet" href="stylesheets/evalb.css">
+<link rel="stylesheet" href="stylesheets/pepper.css">
+<link rel="stylesheet" href="stylesheets/table_jui.css">
 
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
@@ -61,40 +59,40 @@
 		<h2 style="margin-top: 5px">The Model Checker and Animator</h2>
 		<hr />
 		<div class="sixteen columns">
-			Current Log-Level: <a id="loglevel" href="javascript:switchLogLevel()">Trace</a>
+			Current Log-Level: <a id="loglevel"
+				href="javascript:switchLogLevel()">Trace</a>
 		</div>
 		<div class="sixteen columns">
 			<div id="console" class="console"></div>
 		</div>
+
 		<div class="sixteen columns">
-			Imported: <div id="imports"></div>
-		</div>
-		<div class="sixteen columns">
-			Defined: <div id="bindings">api </div>
+			<hr style="margin-top: 20px;" />
+			<h3>Global variables</h3>
+			<div>
+				<table id="bindings">
+					<thead>
+						<tr>
+							<th>Variable-Name</th>
+							<th>Type</th>
+							<th>Value</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
 		</div>
 
 		<div class="sixteen columns">
-<table id="variables">
-    <thead>
-        <tr>
-            <th>Variable-Name</th>
-            <th>Type</th>
-            <th>.toString()</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>api</td>
-            <td>de.prob.scripting.Api</td>
-            <td>...</td>
-        </tr>
-        <tr>
-            <td>Row 2 Data 1</td>
-            <td>Row 2 Data 2</td>
-            <td>etc</td>
-        </tr>
-    </tbody>
-</table>
+		<h3 style="margin-top: 20px;">Imported</h3>
+			<textarea id="imports" style="width: 99%; font-family: monospace;"></textarea>
 		</div>
 
 
@@ -142,15 +140,13 @@
 	<!-- JS
       ================================================== -->
 	<!-- <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script> -->
-	<script src="javascripts/tabs.js"></script>
-	<script
-		src="javascripts/jquery-1.7.2.min.js"></script>
-	<script
-		src="javascripts/jquery.console.prob.js"></script>
+	<script src="javascripts/jquery-1.7.2.min.js"></script>
+	<script src="javascripts/jquery.console.prob.js"></script>
 
 	<script src="javascripts/jquery.dataTables.min.js"></script>
 	<script src="javascripts/prob.js"></script>
-	
+
+
 
 	<!-- End Document
   ================================================== -->

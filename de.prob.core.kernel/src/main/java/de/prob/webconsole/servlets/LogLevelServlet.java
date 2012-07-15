@@ -23,25 +23,22 @@ import de.prob.webconsole.ResultObject;
 @Singleton
 public class LogLevelServlet extends HttpServlet {
 
-
 	private ResultObject setLogLevel(Level level) {
-		ResultObject result = new ResultObject();
 		StaticLoggerBinder singleton = StaticLoggerBinder.getSingleton();
 		LoggerContext loggerFactory = (LoggerContext) singleton
 				.getLoggerFactory();
 		Logger root = (Logger) loggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 		root.setLevel(level);
-		result.setOutput(level.levelStr);
-		return result;
+		return new ResultObject(level.levelStr);
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 		String input = req.getParameter("input");
-		
+
 		Level level = Level.valueOf(input);
-		
+
 		sendResult(out, setLogLevel(level));
 	}
 

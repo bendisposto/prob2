@@ -16,6 +16,10 @@ import de.prob.model.representation.RefType;
 public class HierarchyVisualization {
 
 	public HierarchyVisualization(final AbstractModel model) {
+
+		if (model == null)
+			throw new IllegalArgumentException("Model must not be null");
+
 		JGraphXAdapter<String, RefType> graph = new JGraphXAdapter<String, RefType>(
 				model.getGraph());
 
