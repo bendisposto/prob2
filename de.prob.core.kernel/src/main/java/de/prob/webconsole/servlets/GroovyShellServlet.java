@@ -27,9 +27,19 @@ import com.google.inject.Singleton;
 import de.prob.scripting.Api;
 import de.prob.webconsole.ResultObject;
 
+/**
+ * This servlet takes a line from the web interface and evaluates it using
+ * Groovy. The Groovy interpreter does not remember import statements, i.e., the
+ * input 'import foo.Bar; x = new Bar' will work, but spliting it into two
+ * separate lines won't. We thus collect any import statement and prefix every
+ * command with all the imports.
+ * 
+ * @author bendisposto
+ * 
+ */
 @SuppressWarnings("serial")
 @Singleton
-public class EvaluationServlet extends HttpServlet {
+public class GroovyShellServlet extends HttpServlet {
 
 	private static final String NL = System.getProperty("line.separator");
 
@@ -37,20 +47,20 @@ public class EvaluationServlet extends HttpServlet {
 	private final ArrayList<String> imports = new ArrayList<String>();
 
 	private final Interpreter interpreter;
-	private final Interpreter try_interpreter;
+	private Interpreter try_interpreter;
 
 	private final Parser parser;
 
 	private ByteArrayOutputStream sideeffects;
 
 	@Inject
-	public EvaluationServlet(Api api) {
+	public GroovyShellServlet(Api api) {
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
 		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
 				binding);
 		this.try_interpreter = new Interpreter(
-				this.getClass().getClassLoader(), binding);
+				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
 		sideeffects = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(sideeffects));
@@ -61,31 +71,39 @@ public class EvaluationServlet extends HttpServlet {
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 		String input = req.getParameter("input");
-
 		collectImports(input);
-
-		eval(out, input);
+		ResultObject result = eval(input);
+		out.println(toJson(result));
+		out.close();
 	}
 
+	/**
+	 * Split the line into different commands and find out, if there was a valid
+	 * import statement.
+	 * 
+	 * @param input
+	 */
 	private void collectImports(String input) {
 		String[] split = input.split(";");
 		for (String string : split) {
 			if (string.startsWith("import ")) {
 				try {
 					try_interpreter.evaluate(Collections.singletonList(string));
-					imports.add(string + ";");
+					imports.add(string + ";"); // if try_interpreter does not
+												// throw an exception, it was a
+												// valid import statement
 				} catch (Exception e) {
+					this.try_interpreter = new Interpreter(this.getClass()
+							.getClassLoader(), new Binding());
 				}
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void eval(PrintWriter out, String input) throws IOException {
-		if (input == null) {
-			return;
-		} else {
-			ResultObject result = new ResultObject();
+	private ResultObject eval(String input) throws IOException {
+		ResultObject result = new ResultObject();
+		if (input != null) {
 			Object evaluate = null;
 			ParseCode parseCode;
 			inputs.add(input);
@@ -101,10 +119,11 @@ public class EvaluationServlet extends HttpServlet {
 			} else {
 				try {
 					HashSet<String> oldBindings = new HashSet<String>();
-					oldBindings.addAll(interpreter.getContext().getVariables().keySet());
+					oldBindings.addAll(interpreter.getContext().getVariables()
+							.keySet());
 					evaluate = interpreter.evaluate(eval);
-					for (String v : (Set<String>) interpreter.getContext().getVariables()
-							.keySet()) {
+					for (String v : (Set<String>) interpreter.getContext()
+							.getVariables().keySet()) {
 						if (!oldBindings.contains(v) && !v.startsWith("this")
 								&& !v.startsWith("__"))
 							result.addBindings(v);
@@ -127,15 +146,19 @@ public class EvaluationServlet extends HttpServlet {
 				result.setContinued(false);
 				result.setImports(imports);
 			}
-
-			sendResult(out, result);
 		}
+		return result;
 	}
 
-	private void sendResult(PrintWriter out, ResultObject result) {
+	/**
+	 * Converts the ResultObject into a JSON representation
+	 * 
+	 * @param result
+	 * @return
+	 */
+	private String toJson(ResultObject result) {
 		Gson g = new Gson();
 		String json = g.toJson(result);
-		out.println(json);
-		out.close();
+		return json;
 	}
 }
