@@ -3,9 +3,9 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 apply from: 'https://raw.github.com/gist/1527604/4080ebed7b141d10610825aebd70942fcd301105/emma.gradle'
 apply plugin: 'findbugs'
-apply plugin: 'eclipse-wtp'
-apply plugin: 'war'
-apply plugin: 'jetty'
+//apply plugin: 'eclipse-wtp'
+//apply plugin: 'war'
+//apply plugin: 'jetty'
 
 
 project.group = 'de.prob'
@@ -120,31 +120,35 @@ compileJava {
 	dependsOn= [createBuildConstants]
 }
 
-jar {
-	from sourceSets.main.allJava
- }
-
-task pack(type: Jar, dependsOn: [jar]) {
-	baseName = project.name + '-standalone'
-	def deps = configurations.runtime + configurations.archives.allArtifacts.files
-	def depClasses = {
-		deps.collect {
-			it.isDirectory() ? it : zipTree(it)
-		}
-	}
-	from(depClasses) {
-		excludes= ['META-INF/*.MF','META-INF/*.SF'] 
-	}
-	manifest {
-		attributes 'Main-Class': 'de.prob.Main'
-	}
-	doLast{
-		println "Created archive: "+archivePath
-	}
+def listJars() {
+	def cp = sourceSets.main.runtimeClasspath
+	def deps = cp.collect { it.getName() }
+	def jars = deps.findAll {it.endsWith(".jar")}
+	def prefix = jars.collect { "lib/"+it }
+	return prefix.inject(".") {str, item -> str + " " +item}
 }
 
-task deploy(dependsOn: [jar, test,javadoc,pack], group: 'Build') {
+
+jar {
+	from sourceSets.main.allJava
+	manifest {
+		attributes 'Main-Class': 'de.prob.Main'
+		attributes 'Class-Path': listJars()
+	}
+ }
+
+
+task pack(type: Sync) {
+    from configurations.runtime
+    into "$buildDir/libs/lib"
+}
+
+task deploy(dependsOn: [jar, test,javadoc,pack], group: 'Build', type: Zip) {
 	description = 'Assembles the uberjar, runs all tests and builds the javadoc.'
+	from "$buildDir/libs/"
+	doLast {
+		println "Created install-zip in build/distributions"
+	}
 }
 
 
