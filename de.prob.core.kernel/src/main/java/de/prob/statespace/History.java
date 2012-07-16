@@ -62,6 +62,12 @@ public class History {
 		}
 	}
 
+	public void goToPos(final int pos) {
+		if (pos >= -1 && pos < history.size()) {
+			current = pos;
+		}
+	}
+
 	/**
 	 * Moves one step back in the animation if this is possible.
 	 */

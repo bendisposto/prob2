@@ -1,20 +1,16 @@
 package de.prob.statespace;
 
-import static org.junit.Assert.*;
-import de.prob.statespace.History;
+import static org.junit.Assert.*
+import static org.mockito.Mockito.*
 import spock.lang.Specification
 
 class HistoryTest extends Specification {
 	def History h
+	def StateSpace s
 
 	def setup() {
-		h = new History()
-		/*h.add("1")
-		 h.add("2")
-		 h.add("3")
-		 h.add("4")
-		 h.add("5")*/
-		// numbers are states, characters are ops here
+		s = mock(StateSpace.class);
+		h = new History(s)
 		h.add("1", "a")
 		h.add("2", "b")
 		h.add("3", "c")
@@ -22,7 +18,7 @@ class HistoryTest extends Specification {
 		h.add("5", "e")
 	}
 
-	def "test add method via toString() method "() {
+	def "test toString() method "() {
 		expect:
 		h.toString() == "[a, b, c, d, e] current Transition: e"
 	}
@@ -175,14 +171,6 @@ class HistoryTest extends Specification {
 		h.getCurrentTransition() == "bla"
 	}
 
-	def "test null with isLastTransition"() {
-		when:
-		h.add("6", null)
-
-		then:
-		h.isLastTransition("any") == false
-	}
-
 	def "test overwriting null transition"() {
 		when:
 		h.add("6", null)
@@ -204,14 +192,5 @@ class HistoryTest extends Specification {
 
 		expect:
 		h.getCurrentState() == "root"
-	}
-
-	def "test isNextTransition for null"() {
-		setup:
-		h.add("3",null)
-		h.back()
-
-		expect:
-		h.isNextTransition("irgendwas") == false
 	}
 }
