@@ -59,6 +59,10 @@ class Downloader {
 		return sb.toString()
 	}
 
+	def String downloadCli() {
+		return listVersions();
+	}
+
 	/**
 	 * Checks if the given targetVersion is valid. If it is, the targetVersion of 
 	 * the ProB Cli is downloaded, unzipped, and saved in probhome

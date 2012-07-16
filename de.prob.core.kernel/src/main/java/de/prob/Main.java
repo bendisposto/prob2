@@ -19,6 +19,7 @@ import com.google.inject.ProvisionException;
 
 import de.prob.animator.IAnimator;
 import de.prob.exception.CliError;
+import de.prob.webconsole.WebConsole;
 
 public class Main {
 
@@ -61,8 +62,11 @@ public class Main {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {
-				Main.shellMode = true;
-				shell.repl();
+				try {
+					WebConsole.run();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			if (line.hasOption("test")) {
 				String value = line.getOptionValue("test");

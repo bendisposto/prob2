@@ -30,7 +30,7 @@ class StateId {
 	}
 
 	def String toString() {
-		return id + " " + hash;
+		return id;
 	}
 
 

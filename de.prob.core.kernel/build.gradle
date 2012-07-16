@@ -3,6 +3,10 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply from: 'https://raw.github.com/gist/1527604/4080ebed7b141d10610825aebd70942fcd301105/emma.gradle'
 apply plugin: 'findbugs'
+//apply plugin: 'eclipse-wtp'
+//apply plugin: 'war'
+//apply plugin: 'jetty'
+
 
 project.group = 'de.prob'
 sourceCompatibility = 1.6
@@ -90,7 +94,15 @@ dependencies {
 	compile 'emf:xmi:2.7.0'
 
 	 compile 'commons-codec:commons-codec:1.6'
-	
+	compile 'com.google.inject.extensions:guice-servlet:3.0'
+	compile 'com.google.code.gson:gson:1.7.1'
+
+	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3'
+	compile 'org.eclipse.jetty:jetty-server:8.0.0.M3'
+	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3'
+	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3'
+	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3'
+	compile 'org.mortbay.jetty:jsp-2.1-glassfish:2.1.v20100127'
 	
 }
 
@@ -108,31 +120,35 @@ compileJava {
 	dependsOn= [createBuildConstants]
 }
 
-jar {
-	from sourceSets.main.allJava
- }
-
-task pack(type: Jar, dependsOn: [jar]) {
-	baseName = project.name + '-standalone'
-	def deps = configurations.runtime + configurations.archives.allArtifacts.files
-	def depClasses = {
-		deps.collect {
-			it.isDirectory() ? it : zipTree(it)
-		}
-	}
-	from(depClasses) {
-		excludes= ['META-INF/*.MF','META-INF/*.SF'] 
-	}
-	manifest {
-		attributes 'Main-Class': 'de.prob.Main'
-	}
-	doLast{
-		println "Created archive: "+archivePath
-	}
+def listJars() {
+	def cp = sourceSets.main.runtimeClasspath
+	def deps = cp.collect { it.getName() }
+	def jars = deps.findAll {it.endsWith(".jar")}
+	def prefix = jars.collect { "lib/"+it }
+	return prefix.inject(".") {str, item -> str + " " +item}
 }
 
-task deploy(dependsOn: [jar, test,javadoc,pack], group: 'Build') {
+
+jar {
+	from sourceSets.main.allJava
+	manifest {
+		attributes 'Main-Class': 'de.prob.Main'
+		attributes 'Class-Path': listJars()
+	}
+ }
+
+
+task pack(type: Sync) {
+    from configurations.runtime
+    into "$buildDir/libs/lib"
+}
+
+task deploy(dependsOn: [jar, test,javadoc,pack], group: 'Build', type: Zip) {
 	description = 'Assembles the uberjar, runs all tests and builds the javadoc.'
+	from "$buildDir/libs/"
+	doLast {
+		println "Created install-zip in build/distributions"
+	}
 }
 
 

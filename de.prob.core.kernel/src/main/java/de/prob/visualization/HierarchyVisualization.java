@@ -16,6 +16,10 @@ import de.prob.model.representation.RefType;
 public class HierarchyVisualization {
 
 	public HierarchyVisualization(final AbstractModel model) {
+
+		if (model == null)
+			throw new IllegalArgumentException("Model must not be null");
+
 		JGraphXAdapter<String, RefType> graph = new JGraphXAdapter<String, RefType>(
 				model.getGraph());
 
@@ -26,7 +30,7 @@ public class HierarchyVisualization {
 		JFrame frame = new JFrame();
 		mxGraphComponent graphComponent = new mxGraphComponent(graph);
 		frame.getContentPane().add(graphComponent);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setSize(600, 400);
 		frame.setVisible(true);
 

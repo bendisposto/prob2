@@ -17,6 +17,10 @@ public class StateSpaceGraph implements Graph<StateId, OperationId>,
 		this.graph = graph;
 	}
 
+	public DirectedMultigraph<StateId, OperationId> getGraph() {
+		return graph;
+	}
+
 	@Override
 	public int inDegreeOf(final StateId arg0) {
 		return graph.inDegreeOf(arg0);
