@@ -1,9 +1,12 @@
 package de.prob.statespace;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +53,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final HashSet<StateId> explored = new HashSet<StateId>();
 	private final StateSpaceInfo info;
 
+	private final HashMap<String, String> forms = new HashMap<String, String>();
 	private final List<IEvalElement> formulas = new ArrayList<IEvalElement>();
 	private final List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
 	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
@@ -197,15 +201,30 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @param formula
 	 * @throws BException
 	 */
-	// public void addUserFormula(final String formula) throws BException {
-	// formulas.add(new ClassicalBEvalElement(formula));
-	// List<EvaluationResult> result = evaluate(formulas);
-	// HashMap<String, String> varsAtState = getInfo().getState(
-	// getCurrentState());
-	// for (EvaluationResult evaluationResult : result) {
-	// varsAtState.put(evaluationResult.code, evaluationResult.value);
-	// }
-	// }
+	public String addUserFormula(final String formula) throws BException {
+		formulas.add(new ClassicalBEvalElement(formula));
+		int i = 0;
+		do {
+			i++;
+		} while (forms.keySet().contains("f" + i));
+		forms.put("f" + i, formula);
+		return "f" + i;
+	}
+
+	/**
+	 * Adds an expression or predicate to the list of user formulas. This
+	 * expression or predicate is evaluated and the result is added to the map
+	 * of variables in the info object.
+	 * 
+	 * @param formula
+	 * @throws BException
+	 */
+	public String addUserFormula(final String name, final String formula)
+			throws BException {
+		formulas.add(new ClassicalBEvalElement(formula));
+		forms.put(name, formula);
+		return name;
+	}
 
 	/**
 	 * Evaluates a single formula or an array of formulas (represented as
@@ -213,7 +232,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param state
 	 * @param code
-	 * @return returns a list of evaluation results @ * @throws BException
+	 * @return returns a list of evaluation results
+	 * @throws BException
 	 */
 	public List<EvaluationResult> eval(final String state,
 			final List<IEvalElement> code) throws BException {
@@ -330,6 +350,39 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	public StateSpaceInfo getInfo() {
 		return info;
+	}
+
+	public StateId getState(final OperationId op) {
+		final StateId edgeTarget = getEdgeTarget(op);
+		if (!isExplored(edgeTarget)) {
+			explore(edgeTarget);
+		}
+		return edgeTarget;
+	}
+
+	public String printOps(final StateId state) {
+		StringBuilder sb = new StringBuilder();
+		Collection<OperationId> opIds = outgoingEdgesOf(state);
+		sb.append("Operations: \n");
+		for (OperationId opId : opIds) {
+			Operation op = getInfo().getOp(opId);
+			sb.append("  " + op.getId() + ": " + op.toString() + "\n");
+		}
+		return sb.toString();
+	}
+
+	public String printState(final StateId state) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Current State Id: " + state + "\n");
+		HashMap<String, String> currentState = getInfo().getState(state);
+		if (currentState != null) {
+			Set<Entry<String, String>> entrySet = currentState.entrySet();
+			for (Entry<String, String> entry : entrySet) {
+				sb.append("  " + entry.getKey() + " -> " + entry.getValue()
+						+ "\n");
+			}
+		}
+		return sb.toString();
 	}
 
 }

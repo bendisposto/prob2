@@ -1,7 +1,5 @@
 package de.prob.statespace;
 
-import java.util.Random;
-
 import com.google.inject.AbstractModule;
 
 import de.prob.model.classicalb.ClassicalBModel;
@@ -17,8 +15,6 @@ public class ModelModule extends AbstractModule {
 
 		bind(StateSpace.class);
 		bind(DirectedMultigraphProvider.class);
-		bind(Random.class);
-		bind(History.class);
 		bind(StateSpaceInfo.class);
 		bind(ClassicalBModel.class);
 		bind(EventBModel.class);

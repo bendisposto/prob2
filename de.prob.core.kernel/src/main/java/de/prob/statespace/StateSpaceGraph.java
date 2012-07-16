@@ -156,4 +156,9 @@ public class StateSpaceGraph implements Graph<StateId, OperationId>,
 		}
 		return null;
 	}
+
+	@Override
+	public String toString() {
+		return graph.toString();
+	}
 }
