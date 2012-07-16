@@ -7,27 +7,27 @@ import java.net.ServerSocket;
 import java.net.URI;
 import java.security.ProtectionDomain;
 
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 /**
  * @author bendisposto
- *
+ * 
  */
 public class WebConsole {
 
-	
-	
 	/**
-	 * Taken from Apache MINA 
+	 * Taken from Apache MINA
+	 * 
 	 * @param port
 	 * @return next available port
 	 */
-	public static boolean available(int port) {
-		if (port < 8080 || port > 8180) {
+	public static boolean available(final int port) {
+		if (port < 8080 || port > 8180)
 			throw new IllegalArgumentException("Invalid start port: " + port);
-		}
 
 		ServerSocket ss = null;
 		DatagramSocket ds = null;
@@ -64,8 +64,15 @@ public class WebConsole {
 		while (!available(port)) {
 			port++;
 		}
+		Server server = new Server();
 
-		Server server = new Server(port);
+		Connector connector = new SelectChannelConnector();
+		connector.setPort(port);
+		connector.setServer(server);
+		String hostname = System.getProperty("prob.host", "127.0.0.1");
+		connector.setHost(hostname);
+
+		server.setConnectors(new Connector[] { connector });
 
 		ProtectionDomain protectionDomain = WebConsole.class
 				.getProtectionDomain();
