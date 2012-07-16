@@ -45,7 +45,9 @@
         // Constants
         // Some are enums, data types, others just for optimisation
         var keyCodes = {
-	    // left
+	    // tab
+        9: tabPressed,		
+        // left
 	    37: moveBackward,
 	    // right
 	    39: moveForward,
@@ -541,6 +543,16 @@
 	    }
 	    return false;
 	};
+	
+	function tabPressed() {
+		var suggestions = config.completionHandle(promptText)
+		if (suggestions.length == 1) { 
+	        var originalText = promptText
+			promptText = suggestions[0];
+			moveColumn(promptText.length-originalText.length)
+			updatePromptDisplay();
+		}
+	}
 
 	function moveToStart() {
             if (moveColumn(-column))

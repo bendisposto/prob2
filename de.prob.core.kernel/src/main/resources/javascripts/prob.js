@@ -33,6 +33,10 @@ function onValidate(line) {
 	return true;
 };
 
+function onComplete(line) {
+	return [];
+};
+
 function onHandle(line, report) {
 	$.getJSON("evaluate", {
 		input : line
@@ -101,6 +105,7 @@ function initialize() {
 		continuedPromptLabel : '----| ',
 		commandValidate : onValidate,
 		commandHandle : onHandle,
+		completionHandle: onComplete,
 		autofocus : true,
 		animateScroll : true,
 		promptHistory : true
