@@ -127,7 +127,6 @@
 				(C) 2012, <a href="http://www.stups.uni-duesseldorf.de">STUPS
 					Group</a>, HHU Duesseldorf
 			</div>
-			<div class="version"><%=de.prob.webconsole.servlets.VersionInfo.getVersion()%></div>
 		</div>
 
 		<div id="selectioneval"
