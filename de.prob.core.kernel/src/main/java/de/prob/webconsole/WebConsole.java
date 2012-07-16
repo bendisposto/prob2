@@ -22,7 +22,7 @@ public class WebConsole {
 	/**
 	 * Taken from Apache MINA 
 	 * @param port
-	 * @return
+	 * @return next available port
 	 */
 	public static boolean available(int port) {
 		if (port < 8080 || port > 8180) {
