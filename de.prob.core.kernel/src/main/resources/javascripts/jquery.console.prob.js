@@ -545,7 +545,10 @@
 	};
 	
 	function tabPressed() {
-		var suggestions = config.completionHandle(promptText)
+		var suggestions = config.completionHandle(promptText,performComplete)
+	}
+	
+	function performComplete(suggestions) {
 		if (suggestions.length == 1) { 
 	        var originalText = promptText
 			promptText = suggestions[0];
@@ -553,6 +556,7 @@
 			updatePromptDisplay();
 		}
 	}
+	
 
 	function moveToStart() {
             if (moveColumn(-column))

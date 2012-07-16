@@ -25,7 +25,7 @@ $('#activityCodeDataTable').dataTable();
 
 function reattach_clickhandlers() {
 	$("#bindings tbody tr").click(function(e) {
-//		alert(e.srcElement.innerText);
+		// alert(e.srcElement.innerText);
 	});
 }
 
@@ -33,8 +33,13 @@ function onValidate(line) {
 	return true;
 };
 
-function onComplete(line) {
-	return [];
+function onComplete(line, perform) {
+	var result;
+	$.getJSON("complete", {
+		input : line
+	}, function(json) {
+		perform(json);
+	});
 };
 
 function onHandle(line, report) {
@@ -88,16 +93,17 @@ function initialize() {
 		"bFilter" : true,
 		"bSort" : true,
 		"aaSorting" : [ [ 0, "asc" ] ],
-		"aoColumns" : [
-		               { sWidth: '50px' },
-		               { sWidth: '100px' },
-		               { sWidth: '120px' }]
+		"aoColumns" : [ {
+			sWidth : '50px'
+		}, {
+			sWidth : '100px'
+		}, {
+			sWidth : '120px'
+		} ]
 	});
 
-
-	
 	bindingTable.fnReloadAjax()
-	$('#bindings_filter label input').prop('type','search')
+	$('#bindings_filter label input').prop('type', 'search')
 
 	controller = $("#console").console({
 		welcomeMessage : 'ProB 2.0 console',
@@ -105,7 +111,7 @@ function initialize() {
 		continuedPromptLabel : '----| ',
 		commandValidate : onValidate,
 		commandHandle : onHandle,
-		completionHandle: onComplete,
+		completionHandle : onComplete,
 		autofocus : true,
 		animateScroll : true,
 		promptHistory : true
