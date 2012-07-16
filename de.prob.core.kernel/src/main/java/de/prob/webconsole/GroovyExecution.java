@@ -16,6 +16,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.scripting.Api;
+import de.prob.scripting.Downloader;
 
 /**
  * This servlet takes a line from the web interface and evaluates it using
@@ -45,13 +46,18 @@ public class GroovyExecution {
 	private boolean continued;
 
 	private String outputs;
+	
+	
 
 	@Inject
-	public GroovyExecution(Api api) {
+	public GroovyExecution(Api api, Downloader downloader) {
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
+		binding.setVariable("downloader", downloader);
 		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
 				binding);
+		interpreter.evaluate(Collections.singletonList("upgrade = downloader.&downloadCli"));
+		
 		this.try_interpreter = new Interpreter(
 				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
