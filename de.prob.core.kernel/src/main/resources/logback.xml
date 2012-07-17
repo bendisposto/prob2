@@ -1,3 +1,3 @@
 <configuration>
-    <include resource="${PROB_LOG_CONFIG}"/>
+    <include resource="fulltrace.xml"/>
 </configuration>
