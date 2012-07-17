@@ -352,6 +352,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return info;
 	}
 
+	public StateId getState(final StateId state) {
+		if (!isExplored(state)) {
+			explore(state);
+		}
+		return state;
+	}
+
 	public StateId getState(final OperationId op) {
 		final StateId edgeTarget = getEdgeTarget(op);
 		if (!isExplored(edgeTarget)) {
