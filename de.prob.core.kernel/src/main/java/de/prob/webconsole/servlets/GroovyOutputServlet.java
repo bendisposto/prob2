@@ -1,5 +1,6 @@
 package de.prob.webconsole.servlets;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -13,7 +14,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.webconsole.GroovyExecution;
-import de.prob.webconsole.ResultObject;
 
 /**
  * This servlet takes a line from the web interface and evaluates it using
@@ -27,12 +27,14 @@ import de.prob.webconsole.ResultObject;
  */
 @SuppressWarnings("serial")
 @Singleton
-public class GroovyShellServlet extends HttpServlet {
+public class GroovyOutputServlet extends HttpServlet {
+
+	private static final String NL = System.getProperty("line.separator");
 
 	private final GroovyExecution executor;
 
 	@Inject
-	public GroovyShellServlet(GroovyExecution executor) {
+	public GroovyOutputServlet(GroovyExecution executor) {
 		this.executor = executor;
 	}
 
@@ -40,25 +42,12 @@ public class GroovyShellServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
-		String input = req.getParameter("input");
-		String result = executor.evaluate(input);
 
-		ResultObject r = new ResultObject(result, executor.isContinued());
-
-		out.println(toJson(r));
+		ByteArrayOutputStream sideeffects = executor.getSideeffects();
+		String outputs = sideeffects.toString();
+		executor.renewSideeffects();
+		out.println(new Gson().toJson(outputs));
 		out.close();
-	}
-
-	/**
-	 * Converts the ResultObject into a JSON representation
-	 * 
-	 * @param result
-	 * @return
-	 */
-	private String toJson(ResultObject result) {
-		Gson g = new Gson();
-		String json = g.toJson(result);
-		return json;
 	}
 
 }

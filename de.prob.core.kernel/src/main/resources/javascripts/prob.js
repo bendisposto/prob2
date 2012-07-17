@@ -21,8 +21,6 @@ $.fn.dataTableExt.oApi.fnReloadAjax = function(oSettings, sNewSource) {
 	});
 }
 
-$('#activityCodeDataTable').dataTable();
-
 function reattach_clickhandlers() {
 	$("#bindings tbody tr").click(function(e) {
 		// alert(e.srcElement.innerText);
@@ -49,6 +47,26 @@ function updateImports() {
 	});
 }
 
+// function onHandle(line, report) {
+// $.getJSON("evaluate", {
+// input : line
+// }, function(data) {
+// bindingTable.fnReloadAjax()
+// updateImports()
+// if (!data.continued) {
+// controller.lePrompt = false;
+// report([ {
+// msg : data.output,
+// className : "jquery-console-message-value"
+// } ]);
+//
+// } else {
+// controller.lePrompt = true;
+// report();
+// }
+// });
+// };
+
 function onHandle(line, report) {
 	$.getJSON("evaluate", {
 		input : line
@@ -72,8 +90,9 @@ function onHandle(line, report) {
 function switchLogLevel() {
 	var level = "ERROR";
 	var levela = $("#loglevel")[0];
-	if (loglevel == "ERROR")
+	if (loglevel == "ERROR") {
 		level = "TRACE";
+	}
 	$.getJSON("loglevel", {
 		input : level
 	}, function(data) {
@@ -122,4 +141,17 @@ function initialize() {
 		animateScroll : true,
 		promptHistory : true
 	});
+
+	// setup output polling
+	setInterval(function() {
+		$.ajax({
+			url : "outputs",
+			success : function(data) {
+				if (data != "") {
+					$("#system_out").append(data)
+				}
+			},
+			dataType : "json"
+		});
+	}, 100);
 }

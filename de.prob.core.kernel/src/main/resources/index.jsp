@@ -29,9 +29,6 @@
 <link rel="stylesheet" href="stylesheets/pepper.css">
 <link rel="stylesheet" href="stylesheets/table_jui.css">
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-</script>
 
 <!--[if lt IE 9]>
           <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -64,6 +61,11 @@
 		</div>
 		<div class="sixteen columns">
 			<div id="console" class="console"></div>
+		</div>
+		<div class="sixteen columns">
+			<hr style="margin-top: 20px;" />
+			<h3>System.out</h3>
+			<textarea id="system_out" style="width: 99%; font-family: monospace;"></textarea>
 		</div>
 
 		<div class="sixteen columns">

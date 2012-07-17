@@ -5,12 +5,12 @@ public class ResultObject {
 	public final String output;
 	public final boolean continued;
 
-	public ResultObject(String output, boolean continued, String[] imports) {
+	public ResultObject(String output, boolean continued) {
 		this.output = output;
 		this.continued = continued;
 	}
 
 	public ResultObject(String output) {
-		this(output, false, new String[0]);
+		this(output, false);
 	}
 }

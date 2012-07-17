@@ -31,8 +31,6 @@ import de.prob.scripting.Downloader;
 @Singleton
 public class GroovyExecution {
 
-	private static final String NL = System.getProperty("line.separator");
-
 	private final ArrayList<String> inputs = new ArrayList<String>();
 	private final ArrayList<String> imports = new ArrayList<String>();
 
@@ -46,8 +44,6 @@ public class GroovyExecution {
 	private boolean continued;
 
 	private String outputs;
-	
-	
 
 	@Inject
 	public GroovyExecution(Api api, Downloader downloader) {
@@ -56,8 +52,9 @@ public class GroovyExecution {
 		binding.setVariable("downloader", downloader);
 		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
 				binding);
-		interpreter.evaluate(Collections.singletonList("upgrade = downloader.&downloadCli"));
-		
+		interpreter.evaluate(Collections
+				.singletonList("upgrade = downloader.&downloadCli"));
+
 		this.try_interpreter = new Interpreter(
 				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
@@ -71,11 +68,19 @@ public class GroovyExecution {
 		return eval(input);
 	}
 
+	public Object tryevaluate(String input) throws IOException {
+		assert input != null;
+		ArrayList<String> eval = new ArrayList<String>();
+		eval.addAll(imports);
+		eval.addAll(Collections.singletonList(input));
+		return try_interpreter.evaluate(eval);
+	}
+
 	public String[] getImports() {
 		String[] result = new String[imports.size()];
 		int c = 0;
 		for (String string : imports) {
-			result[c++] = " "+string.substring(7, string.length() - 1).trim();
+			result[c++] = " " + string.substring(7, string.length() - 1).trim();
 		}
 		return result;
 	}
@@ -90,6 +95,10 @@ public class GroovyExecution {
 
 	public boolean isContinued() {
 		return continued;
+	}
+
+	public ByteArrayOutputStream getSideeffects() {
+		return sideeffects;
 	}
 
 	/**
@@ -145,14 +154,14 @@ public class GroovyExecution {
 			} finally {
 				inputs.clear();
 			}
-			outputs = sideeffects.toString();
-			if (!outputs.endsWith(NL) && !outputs.isEmpty())
-				outputs += NL;
-			sideeffects = new ByteArrayOutputStream();
-			System.setOut(new PrintStream(sideeffects));
-
+			while(sideeffects.size()>0) {}
 			return evaluate == null ? "null" : evaluate.toString();
 		}
+	}
+
+	public void renewSideeffects() {
+		sideeffects = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(sideeffects));
 	}
 
 }

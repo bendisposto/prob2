@@ -4,6 +4,7 @@ import com.google.inject.servlet.ServletModule;
 
 import de.prob.webconsole.servlets.CompletionServlet;
 import de.prob.webconsole.servlets.GroovyBindingsServlet;
+import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.GroovyShellServlet;
 import de.prob.webconsole.servlets.ImportsServlet;
 import de.prob.webconsole.servlets.LogLevelServlet;
@@ -18,5 +19,6 @@ public class WebModule extends ServletModule {
 		serve("/bindings*").with(GroovyBindingsServlet.class);
 		serve("/complete*").with(CompletionServlet.class);
 		serve("/imports*").with(ImportsServlet.class);
+		serve("/outputs*").with(GroovyOutputServlet.class);
 	}
 }
