@@ -5,6 +5,7 @@ import com.google.inject.servlet.ServletModule;
 import de.prob.webconsole.servlets.CompletionServlet;
 import de.prob.webconsole.servlets.GroovyBindingsServlet;
 import de.prob.webconsole.servlets.GroovyShellServlet;
+import de.prob.webconsole.servlets.ImportsServlet;
 import de.prob.webconsole.servlets.LogLevelServlet;
 
 public class WebModule extends ServletModule {
@@ -16,5 +17,6 @@ public class WebModule extends ServletModule {
 		serve("/loglevel*").with(LogLevelServlet.class);
 		serve("/bindings*").with(GroovyBindingsServlet.class);
 		serve("/complete*").with(CompletionServlet.class);
+		serve("/imports*").with(ImportsServlet.class);
 	}
 }

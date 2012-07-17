@@ -42,20 +42,25 @@ function onComplete(line, perform) {
 	});
 };
 
+function updateImports() {
+	var impdiv = $("#imports")[0];
+	$.getJSON("imports", {}, function(data) {
+		impdiv.value = data;
+	});
+}
+
 function onHandle(line, report) {
 	$.getJSON("evaluate", {
 		input : line
 	}, function(data) {
 		bindingTable.fnReloadAjax()
+		updateImports()
 		if (!data.continued) {
 			controller.lePrompt = false;
 			report([ {
 				msg : data.output,
 				className : "jquery-console-message-value"
 			} ]);
-
-			var impdiv = $("#imports")[0];
-			impdiv.value = data.imports;
 
 		} else {
 			controller.lePrompt = true;
@@ -102,7 +107,8 @@ function initialize() {
 		} ]
 	});
 
-	bindingTable.fnReloadAjax()
+	updateImports();
+	bindingTable.fnReloadAjax();
 	$('#bindings_filter label input').prop('type', 'search')
 
 	controller = $("#console").console({
