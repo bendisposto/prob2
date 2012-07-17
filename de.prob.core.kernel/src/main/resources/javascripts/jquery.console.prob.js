@@ -555,6 +555,13 @@
 			moveColumn(promptText.length-originalText.length)
 			updatePromptDisplay();
 		}
+		if (suggestions.length > 1) {
+			var originalText = promptText
+			var msg = suggestions.join(" ");
+			commandResult(msg);
+			promptText = originalText;
+			updatePromptDisplay();
+		}
 	}
 	
 
