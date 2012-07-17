@@ -130,6 +130,7 @@ public class GroovyExecution {
 			outputs = "";
 			return "";
 		} else {
+			continued = false;
 			try {
 				evaluate = interpreter.evaluate(eval);
 			} catch (Throwable e) {
