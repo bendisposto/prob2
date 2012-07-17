@@ -32,7 +32,7 @@ import de.prob.webconsole.GroovyExecution;
 @Singleton
 public class GroovyBindingsServlet extends HttpServlet {
 
-	private static class JSonResult {
+	static class JSonResult {
 		public final String[][] aaData;
 
 		public JSonResult(String[][] aaData) {
