@@ -110,7 +110,7 @@ public class GroovyExecution {
 	private void collectImports(String input) {
 		String[] split = input.split(";");
 		for (String string : split) {
-			if (string.startsWith("import ")) {
+			if (string.trim().startsWith("import ")) {
 				try {
 					try_interpreter.evaluate(Collections.singletonList(string));
 					imports.add(string + ";"); // if try_interpreter does not
