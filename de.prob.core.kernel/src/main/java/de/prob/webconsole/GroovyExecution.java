@@ -108,7 +108,7 @@ public class GroovyExecution {
 	 * @param input
 	 */
 	private void collectImports(String input) {
-		String[] split = input.split(";");
+		String[] split = input.split(";|\n");
 		for (String string : split) {
 			if (string.trim().startsWith("import ")) {
 				try {
