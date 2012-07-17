@@ -63,6 +63,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final Random randomGenerator;
 
+	public final StateId root;
+
 	@Inject
 	public StateSpace(final IAnimator animator,
 			final DirectedMultigraphProvider graphProvider,
@@ -73,7 +75,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		this.randomGenerator = randomGenerator;
 		this.history = history;
 		this.info = info;
-		StateId root = new StateId("root", "1", this);
+		root = new StateId("root", "1", this);
 		addVertex(root);
 		states.put(root.getId(), root);
 	}

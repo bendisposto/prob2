@@ -20,7 +20,11 @@ class StateId {
 	}
 
 	def getProperty(String property){
-		return space.info.getVariable(this, property);
+		def result = space.info.getVariable(this, property);
+		if (result == null) {
+			throw NoSuchElementException("Missing attribute "+property);
+		}
+		return result;
 	}
 
 	def StateId(id, hash, space) {
@@ -61,4 +65,20 @@ class StateId {
 	public String getHash() {
 		return hash;
 	}
+	
+	
+	def StateId anyOperation() {
+		def ops = new ArrayList()
+		ops.addAll(space.outgoingEdgesOf(this));
+		Collections.shuffle(ops)
+		def op = ops.get(0)
+		def ns = space.getEdgeTarget(op)
+		space.explore(ns)
+		return ns;
+	}
+	
+	def StateId anyEvent() {
+		return anyOperation();
+	}
+	
 }
