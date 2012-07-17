@@ -65,20 +65,32 @@ class StateId {
 	public String getHash() {
 		return hash;
 	}
-	
-	
-	def StateId anyOperation() {
+
+
+	def StateId anyOperation(filter) {
+		def spaceInfo = space.info
 		def ops = new ArrayList()
 		ops.addAll(space.outgoingEdgesOf(this));
+		if (filter != null && filter instanceof String) {
+			ops=ops.findAll {
+				def opinfo = spaceInfo.getOp(it)
+				def name = opinfo.getName()
+				name.matches(filter);
+			}
+		}
+		if (filter != null && filter instanceof ArrayList) {
+			ops=ops.findAll {
+				def opinfo = spaceInfo.getOp(it)
+				def name = opinfo.getName()
+				filter.contains(name)
+			}
+		}
 		Collections.shuffle(ops)
 		def op = ops.get(0)
 		def ns = space.getEdgeTarget(op)
 		space.explore(ns)
 		return ns;
 	}
-	
-	def StateId anyEvent() {
-		return anyOperation();
-	}
-	
+
+	def anyEvent = this.&anyOperation;
 }
