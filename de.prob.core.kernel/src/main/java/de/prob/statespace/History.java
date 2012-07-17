@@ -1,130 +1,125 @@
 package de.prob.statespace;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.be4.classicalb.core.parser.exceptions.BException;
 
 public class History {
 
-	private final List<HistoryElement> history = new ArrayList<HistoryElement>();
-	private int current = -1;
+	private final HistoryElement current;
+	private final HistoryElement head;
+
+	private final StateSpace s;
+
+	public History(final StateSpace s) {
+		this.s = s;
+		head = new HistoryElement(s.getState(s.getVertex("root")));
+		current = head;
+	}
+
+	public History(final StateSpace s, final HistoryElement head) {
+		this.s = s;
+		this.head = head;
+		this.current = head;
+	}
+
+	public History(final StateSpace s, final HistoryElement head,
+			final HistoryElement current) {
+		this.s = s;
+		this.head = head;
+		this.current = current;
+	}
+
+	public History add(final String opId) {
+		OperationId op = new OperationId(opId);
+		if (!s.outgoingEdgesOf(current.getCurrentState()).contains(op))
+			throw new IllegalArgumentException(opId
+					+ " is not a valid operation on this state");
+
+		StateId newState = s.getState(op);
+		s.evaluateFormulas(current.getCurrentState());
+
+		return new History(s, new HistoryElement(current.getCurrentState(),
+				newState, op, current));
+	}
+
+	public History add(final int i) {
+		String opId = String.valueOf(i);
+		return add(opId);
+	}
 
 	/**
-	 * Adds a new transition (History Element) to the History object. Takes the
-	 * operation id and adds it to the list. If the current position in the
-	 * history is the end of the list, it simply appends the new element to the
-	 * list. If it is not at the end of the list, the new History Element
-	 * overwrites the element at the current position.
-	 * 
-	 * @param dest
-	 * @param op
+	 * Moves one step back in the animation if this is possible.
 	 */
-	public void add(final String dest, final String op) {
-		if (op == null && isLastTransition(null)) {
-			// if current state is "root", we can't go back anyway
-			// hence we will not add another case for this
-			back();
-		}
-
-		if (current == -1) {
-			String src = "root";
-			final HistoryElement elem = new HistoryElement(src, dest, op);
-			history.clear();
-			history.add(elem);
-			current++;
-		} else {
-			if (history.size() != current) {
-				while (history.size() > current + 1) {
-					history.remove(current + 1);
-				}
-			}
-			String src = getCurrentState();
-			final HistoryElement elem = new HistoryElement(src, dest, op);
-
-			history.add(elem);
-			current++;
-		}
+	public History back() {
+		if (canGoBack())
+			return new History(s, head, current.getPrevious());
+		return this;
 	}
 
-	// goToPos
-	public void goToPos(final int pos) {
-		if (pos >= -1 && pos < history.size()) {
-			current = pos;
-		}
-	}
-
-	// back
-	public void back() {
-		if (canGoBack()) {
-			current--;
-		}
-	}
-
-	// forward
-	public void forward() {
+	/**
+	 * Moves one step forward in the animation if this is possible
+	 * 
+	 * @return
+	 */
+	public History forward() {
 		if (canGoForward()) {
-			current++;
+			HistoryElement p = head;
+			while (p.getPrevious() != current) {
+				p = p.getPrevious();
+			}
+			return new History(s, head, p);
 		}
-	}
-
-	// getCurrentTransition
-	public String getCurrentTransition() {
-		if (current == -1)
-			return null;
-		return history.get(current).getOp();
-	}
-
-	public boolean isLastTransition(final String id) {
-		if (current <= 0)
-			return false;
-
-		// String currentOp = history.get(current).getOp();
-		String currentOp = getCurrentTransition();
-		if (id == null)
-			return currentOp == null;
-		if (currentOp == null)
-			return id == null;
-
-		return currentOp.equals(id);
-	}
-
-	public boolean isNextTransition(final String id) {
-		if (!canGoForward())
-			return false;
-
-		String nextOp = history.get(current + 1).getOp();
-		if (id == null)
-			return nextOp == null;
-		if (nextOp == null)
-			return id == null;
-
-		return nextOp.equals(id);
+		return this;
 	}
 
 	public boolean canGoForward() {
-		return current < history.size() - 1;
+		return current != head;
 	}
 
 	public boolean canGoBack() {
-		return current >= 0;
+		return current.getPrevious() != null;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < history.size() - 1; i++) {
-			sb.append((history.get(i).getOp()) + ", ");
-		}
-		if (history.size() != 0) {
-			sb.append(history.get(history.size() - 1).getOp());
-		}
-		String content = sb.toString();
-		return "[" + content + "] " + "current Transition: "
-				+ getCurrentTransition();
+		return head.getRepresentation() + "] Current Transition is: "
+				+ current.getOp();
 	}
 
-	public String getCurrentState() {
-		if (current == -1)
-			return "root";
-		return history.get(current).getDest();
+	/**
+	 * Carries out one step in the animation with the id from an Operation. If
+	 * the opId is contained in the outgoing edges (it is enabled) explore it
+	 * (if not explored) and add state to history
+	 * 
+	 * @param opId
+	 */
+
+	/**
+	 * Finds one Operation that satisfies the operation name and predicate at
+	 * the current state
+	 * 
+	 * @param opName
+	 * @param predicate
+	 * @return one operations that meets the specifications @ * @throws
+	 *         BException
+	 */
+	public Operation findOneOp(final String opName, final String predicate)
+			throws BException {
+		return s.opFromPredicate(current.getCurrentState(), opName, predicate,
+				1).get(0);
 	}
+
+	/**
+	 * Finds an Operation with opName and predicate and carries out one
+	 * animation step with that Operation
+	 * 
+	 * @param opName
+	 * @param predicate
+	 * @throws BException
+	 */
+	public void execOp(final String opName, final String predicate)
+			throws BException {
+		Operation op = findOneOp(opName, predicate);
+		add(op.getId());
+	}
+
 }

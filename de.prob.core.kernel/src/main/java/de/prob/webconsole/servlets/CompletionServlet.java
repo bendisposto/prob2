@@ -41,7 +41,9 @@ public class CompletionServlet extends HttpServlet {
 
 	private ArrayList<String> computeCompletions(String input) {
 		ArrayList<String> result = new ArrayList<String>();
-		result.add(input + " ");
+		result.add(" foo");
+		result.add(" bar");
+		result.add(" baz");
 		return result;
 	}
 
