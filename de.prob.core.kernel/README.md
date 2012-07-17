@@ -8,7 +8,14 @@ The sourcecode of the current ProB release is located at https://github.com/bend
 Building:
  `./gradlew deploy`
 
+You can also use an installed version of gradle (http://www.gradle.org)
+
 Running:
- `java -jar build/libs/probcli-standalone-VERSION.jar`
+ `java -jar build/libs/probcli-standalone-VERSION.jar -s`
+
+Be sure to install the latest Prolog binaries. You can do that from within the groovy shell. The command is `upgrade "latest"`. 
+
+ 
+
   
 (c) 2011 Jens Bendisposto, all rights reserved
