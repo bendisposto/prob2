@@ -62,10 +62,15 @@ public class Main {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {
-				try {
-					WebConsole.run();
-				} catch (Exception e) {
-					e.printStackTrace();
+				if ("old".equals(System.getProperty("shell"))) {
+					Main.shellMode = true;
+					shell.repl();
+				} else {
+					try {
+						WebConsole.run();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			if (line.hasOption("test")) {
