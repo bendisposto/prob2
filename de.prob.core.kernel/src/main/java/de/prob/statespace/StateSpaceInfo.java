@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import de.prob.animator.command.ExploreStateCommand;
+import de.prob.animator.domainobjects.EvaluationResult;
 
 /**
  * Contains the information about the StateSpace. This includes the Operations
@@ -37,7 +38,20 @@ public class StateSpaceInfo {
 	 * @param vars
 	 */
 	public void add(final StateId id, final HashMap<String, String> vars) {
-		variables.put(id, vars);
+		HashMap<String, String> hashMap = variables.get(id);
+		if (hashMap == null)
+			hashMap = new HashMap<String, String>();
+		hashMap.putAll(vars);
+		variables.put(id, hashMap);
+	}
+
+	public void add(StateId id, String var, EvaluationResult val) {
+		HashMap<String, String> hashMap = variables.get(id);
+		if (hashMap == null)
+			hashMap = new HashMap<String, String>();
+		hashMap.put(var, val.value);
+		variables.put(id, hashMap);
+
 	}
 
 	/**

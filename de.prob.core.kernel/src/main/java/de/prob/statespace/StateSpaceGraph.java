@@ -148,14 +148,7 @@ public class StateSpaceGraph implements Graph<StateId, OperationId>,
 		return graph.vertexSet();
 	}
 
-	public StateId getVertex(final String stateId) {
-		final Set<StateId> set = vertexSet();
-		for (StateId element : set) {
-			if (element.getId().equals(stateId))
-				return element;
-		}
-		return null;
-	}
+
 
 	@Override
 	public String toString() {

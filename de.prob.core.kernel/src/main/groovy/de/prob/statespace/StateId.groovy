@@ -29,12 +29,8 @@ class StateId {
 			if (evalElement == null)
 				throw NoSuchElementException("Missing attribute "+property);
 
-			def known = space.info.variables.get(this)
-			if (known.keySet().contains(evalElement.getCode())) {
-				return known.get(evalElement.getCode())
-			}
-
 			result = space.eval(getId(), new SingletonList<IEvalElement>(evalElement))
+			space.info.add(this, property, result[0]);
 		}
 		return result;
 	}

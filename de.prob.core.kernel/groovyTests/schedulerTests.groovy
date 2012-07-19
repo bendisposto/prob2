@@ -28,4 +28,4 @@ assert varsAt6.get("active") == "{PID2}"
 assert varsAt6.get("ready") == "{}"
 s.addUserFormula("1+1=2")
 h.current.getCurrentState().f1
-assert s.info.getVariable(h.current.getCurrentState(),"1+1=2") == "TRUE"
+assert s.info.getVariable(h.current.getCurrentState(),"f1") == "TRUE"

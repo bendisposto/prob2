@@ -118,6 +118,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		getInfo().add(state, command);
 	}
 
+	public StateId getVertex(String key) {
+		return states.get(key);
+	}
+
 	public void explore(final String state) {
 		explore(states.get(state));
 	}
@@ -254,29 +258,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		List<EvaluationResult> values = command.getValues();
 
-		HashMap<String, String> varsAtCurrentState = info.getState(stateId);
-		if (varsAtCurrentState == null) {
-			varsAtCurrentState = new HashMap<String, String>();
-			info.add(stateId, varsAtCurrentState);
-		}
-
-		for (EvaluationResult result : values) {
-			varsAtCurrentState.put(result.code, result.value);
-		}
 		return values;
 	}
 
 	public void evaluateFormulas(final StateId state) {
-		try {
-			final List<IEvalElement> formulaList = new ArrayList<IEvalElement>(
-					formulas.values());
-			List<EvaluationResult> evaluate = eval(state.getId(), formulaList);
-			HashMap<String, String> varsAtCurrentState = info.getState(state);
-			for (EvaluationResult result : evaluate) {
-				varsAtCurrentState.put(result.code, result.value);
-			}
-		} catch (BException e) {
-			logger.error("Parse Exception in formula");
+		Set<Entry<String, IEvalElement>> entrySet = formulas.entrySet();
+		for (Entry<String, IEvalElement> entry : entrySet) {
+			state.getProperty(entry.getKey());
 		}
 	}
 
