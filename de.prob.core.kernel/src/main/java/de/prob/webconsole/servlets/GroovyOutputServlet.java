@@ -29,8 +29,6 @@ import de.prob.webconsole.GroovyExecution;
 @Singleton
 public class GroovyOutputServlet extends HttpServlet {
 
-	private static final String NL = System.getProperty("line.separator");
-
 	private final GroovyExecution executor;
 
 	@Inject
