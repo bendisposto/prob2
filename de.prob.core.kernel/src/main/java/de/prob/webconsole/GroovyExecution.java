@@ -69,11 +69,14 @@ public class GroovyExecution {
 	}
 
 	public Object tryevaluate(String input) throws IOException {
+		Interpreter tinterpreter = new Interpreter(this.getClass()
+				.getClassLoader(), interpreter.getContext());
+
 		assert input != null;
 		ArrayList<String> eval = new ArrayList<String>();
 		eval.addAll(imports);
 		eval.addAll(Collections.singletonList(input));
-		return try_interpreter.evaluate(eval);
+		return tinterpreter.evaluate(eval);
 	}
 
 	public String[] getImports() {

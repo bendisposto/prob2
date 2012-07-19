@@ -560,6 +560,7 @@
 			var msg = suggestions.join(" ");
 			commandResult(msg);
 			promptText = originalText;
+			moveColumn(promptText.length)
 			updatePromptDisplay();
 		}
 	}
