@@ -3,8 +3,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply from: 'https://raw.github.com/gist/1527604/4080ebed7b141d10610825aebd70942fcd301105/emma.gradle'
 apply plugin: 'findbugs'
-//apply plugin: 'eclipse-wtp'
-//apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'war'
 //apply plugin: 'jetty'
 
 
@@ -54,55 +54,53 @@ def parser_version = '2.4.6-SNAPSHOT'
 
 dependencies {
 
-	groovy 'org.codehaus.groovy:groovy-all:2.0.0'
+	groovy 'org.codehaus.groovy:groovy-all:2.0.0' 
 
-	compile 'com.google.guava:guava:r09'
-	compile 'commons-cli:commons-cli:1.2'
+	compile 'com.google.guava:guava:r09' // Apache Licence 2.0
+	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
 
-	compile 'org.codehaus.groovy:groovy-all:2.0.0'
-	compile 'org.fusesource.jansi:jansi:1.5'
-	compile 'jline:jline:0.9.94'
+	compile 'org.codehaus.groovy:groovy-all:2.0.0' // Apache Licence 2.0
+	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
+	compile 'jline:jline:0.9.94' // BSD
 
-
- compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
- compile group: "de.prob", name: "bparser", version: parser_version , changing: true
- compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
- compile group: "de.prob", name: "ltlparser", version: parser_version , changing: true
- compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
- compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
- compile group: "de.prob", name: "unicode", version: parser_version , changing: true
-
-	compile 'com.google.inject:guice:3.0'
-	compile 'com.google.inject.extensions:guice-assistedinject:3.0'
-	compile 'org.slf4j:slf4j-api:1.6.1'
-	compile 'ch.qos.logback:logback-core:0.9.29'
-	compile 'ch.qos.logback:logback-classic:0.9.29'
+	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
+	compile 'com.google.inject.extensions:guice-assistedinject:3.0' // Apache Licence 2.0
+	compile 'org.slf4j:slf4j-api:1.6.1' // MIT
+	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
+	compile 'ch.qos.logback:logback-classic:0.9.29' // EPL
 	
-	compile 'jgrapht:jgrapht:0.8.3'
-	compile 'jgraphx:jgraphx:1.10.1.0'
+	compile 'jgrapht:jgrapht:0.8.3' // LGPL <---
+	compile 'jgraphx:jgraphx:1.10.1.0' // BSD
 	
+	compile 'xstream:xstream:1.2.2' // BSD
+	compile 'stax:stax:1.2.0_rc2-dev' // Apache Licence 2.0
+	compile 'org.codehaus.jettison:jettison:1.3.1' // Apache Licence 2.0
+	compile 'emf:ecore:2.3.0' // EPL
+	compile 'emf:common:2.3.0' // EPL
+	compile 'emf:xmi:2.7.0' // EPL
+
+	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
+	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
+	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
+
+	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3' // EPL
+	compile 'org.eclipse.jetty:jetty-server:8.0.0.M3' // EPL
+	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3' // EPL
+	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3' // EPL
+	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3' // EPL
+	compile 'org.mortbay.jetty:jsp-2.1-glassfish:2.1.v20100127' // EPL
+
+    compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
+    compile group: "de.prob", name: "bparser", version: parser_version , changing: true
+    compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
+    compile group: "de.prob", name: "ltlparser", version: parser_version , changing: true
+    compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
+    compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
+    compile group: "de.prob", name: "unicode", version: parser_version , changing: true
+
 	testCompile 'junit:junit:4.8.2'
 	testCompile 'org.mockito:mockito-core:1.8.5'
 	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0-SNAPSHOT'
-	
-	compile 'xstream:xstream:1.2.2'
-	compile 'stax:stax:1.2.0_rc2-dev'
-	compile 'org.codehaus.jettison:jettison:1.3.1'
-	compile 'org.reflections:reflections:0.9.8'
-	compile 'emf:ecore:2.3.0'
-	compile 'emf:common:2.3.0'
-	compile 'emf:xmi:2.7.0'
-
-	 compile 'commons-codec:commons-codec:1.6'
-	compile 'com.google.inject.extensions:guice-servlet:3.0'
-	compile 'com.google.code.gson:gson:1.7.1'
-
-	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3'
-	compile 'org.eclipse.jetty:jetty-server:8.0.0.M3'
-	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3'
-	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3'
-	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3'
-	compile 'org.mortbay.jetty:jsp-2.1-glassfish:2.1.v20100127'
 	
 }
 
