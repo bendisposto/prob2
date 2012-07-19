@@ -1,6 +1,6 @@
 package de.prob;
 
-import static java.io.File.*;
+import static java.io.File.separator;
 
 import java.io.File;
 import java.util.Set;
@@ -15,10 +15,8 @@ import org.apache.commons.cli.ParseException;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.ProvisionException;
 
 import de.prob.animator.IAnimator;
-import de.prob.exception.CliError;
 import de.prob.webconsole.WebConsole;
 
 public class Main {
@@ -26,7 +24,7 @@ public class Main {
 	private static Injector INJECTOR;
 	private static boolean shellMode;
 
-	public IAnimator getAnimator() {
+	public static IAnimator getAnimator() {
 		return INJECTOR.getInstance(IAnimator.class);
 	}
 
@@ -49,16 +47,6 @@ public class Main {
 	}
 
 	void run(final String[] args) {
-		try {
-			getAnimator();
-		} catch (ProvisionException e) {
-			if (e.getCause() instanceof CliError)
-				System.out
-						.println("No cli detected. Try \"upgrade\" to download the current version.");
-			else
-				throw e;
-		}
-
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {

@@ -8,6 +8,7 @@ import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.GroovyShellServlet;
 import de.prob.webconsole.servlets.ImportsServlet;
 import de.prob.webconsole.servlets.LogLevelServlet;
+import de.prob.webconsole.servlets.VersionServlet;
 
 public class WebModule extends ServletModule {
 
@@ -20,5 +21,6 @@ public class WebModule extends ServletModule {
 		serve("/complete*").with(CompletionServlet.class);
 		serve("/imports*").with(ImportsServlet.class);
 		serve("/outputs*").with(GroovyOutputServlet.class);
+		serve("/versions*").with(VersionServlet.class);
 	}
 }

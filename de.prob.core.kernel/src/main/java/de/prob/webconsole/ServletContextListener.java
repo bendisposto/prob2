@@ -13,9 +13,12 @@ import de.prob.MainModule;
 
 public class ServletContextListener extends GuiceServletContextListener {
 
+	public static final Injector INJECTOR = Guice
+			.createInjector(new MainModule());
+
 	@Override
 	protected Injector getInjector() {
-		return Guice.createInjector(new MainModule());
+		return INJECTOR;
 	}
 
 	public void contextDestroyed(ServletContextEvent event) {

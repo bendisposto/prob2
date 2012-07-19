@@ -58,14 +58,18 @@
 		<div class="sixteen columns">
 			Current Log-Level: <a id="loglevel"
 				href="javascript:switchLogLevel()">Trace</a>
+			<div id="warnings"></div>
 		</div>
+
+
 		<div class="sixteen columns">
 			<div id="console" class="console"></div>
 		</div>
 		<div class="sixteen columns">
 			<hr style="margin-top: 20px;" />
 			<h3>System.out</h3>
-			<textarea id="system_out" style="width: 99%; height: 300px; font-family: monospace;"></textarea>
+			<textarea id="system_out"
+				style="width: 99%; height: 300px; font-family: monospace;"></textarea>
 		</div>
 
 		<div class="sixteen columns">
@@ -93,7 +97,7 @@
 		</div>
 
 		<div class="sixteen columns">
-		<h3 style="margin-top: 20px;">Imported</h3>
+			<h3 style="margin-top: 20px;">Imported</h3>
 			<textarea id="imports" style="width: 99%; font-family: monospace;"></textarea>
 		</div>
 

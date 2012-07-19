@@ -14,6 +14,7 @@ class Downloader {
 
 	def OsSpecificInfo osInfo
 	def String probhome
+	def config = downloadConfig()
 
 	@Inject
 	public Downloader(final OsSpecificInfo osInfo, @Home final String probhome) {
@@ -43,6 +44,11 @@ class Downloader {
 		return config
 	}
 
+	def availableVersions() {
+		config.collect { it.getKey()}
+	}
+
+
 	/**
 	 * Lists the possible versions of the ProB Cli that are available for download
 	 * @return
@@ -50,7 +56,6 @@ class Downloader {
 	def String listVersions(){
 		StringBuilder sb = new StringBuilder()
 		sb.append("Possible Versions are:\n")
-		def config = downloadConfig()
 		config.each {
 			sb.append("  ")
 			sb.append(it.getKey())

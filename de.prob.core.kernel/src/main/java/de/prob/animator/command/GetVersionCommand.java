@@ -2,6 +2,7 @@ package de.prob.animator.command;
 
 import com.google.common.base.Joiner;
 
+import de.prob.cli.CliVersionNumber;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -31,7 +32,7 @@ public class GetVersionCommand implements ICommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		//FIXME check for nullness
+		// FIXME check for nullness
 		major = bindings.get(VAR_MAJOR).getFunctor();
 		minor = bindings.get(VAR_MINOR).getFunctor();
 		service = bindings.get(VAR_SERVICE).getFunctor();
@@ -68,6 +69,11 @@ public class GetVersionCommand implements ICommand {
 
 	public String getProloginfo() {
 		return prologinfo;
+	}
+
+	public CliVersionNumber getVersion() {
+		return new CliVersionNumber(major, minor, service, qualifier,
+				svnrevision);
 	}
 
 	public String getVersionString() {

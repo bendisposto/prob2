@@ -72,6 +72,7 @@ function onHandle(line, report) {
 		input : line
 	}, function(data) {
 		bindingTable.fnReloadAjax()
+		checkVersion();
 		updateImports()
 		if (!data.continued) {
 			controller.lePrompt = false;
@@ -102,7 +103,25 @@ function switchLogLevel() {
 
 }
 
+function checkVersion() {
+	$
+			.getJSON(
+					"versions",
+					{},
+					function(data) {
+						var warnings = $("#warnings");
+						if (!data.installed) {
+							warnings[0].innerHTML = "You do not have the Prolog binaries installed. You can get them using 'upgrade \"latest\"' in the console.";
+							warnings.addClass("activeline")
+						} else {
+							warnings[0].innerHTML = " ";
+							warnings.removeClass("activeline");
+						}
+					});
+}
+
 function initialize() {
+	checkVersion();
 	lePrompt = "ProB> ";
 	var levela = $("#loglevel")[0];
 	$.getJSON("loglevel", {
