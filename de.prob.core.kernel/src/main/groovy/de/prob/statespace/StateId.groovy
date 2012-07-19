@@ -2,6 +2,9 @@ package de.prob.statespace
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.util.Collections.SingletonList
+
+import de.prob.animator.domainobjects.IEvalElement
 
 class StateId {
 
@@ -19,10 +22,19 @@ class StateId {
 		return newState;
 	}
 
-	def getProperty(String property){
+	def getProperty(String property) {
 		def result = space.info.getVariable(this, property);
 		if (result == null) {
-			throw NoSuchElementException("Missing attribute "+property);
+			def evalElement = space.getForms().get(property)
+			if (evalElement == null)
+				throw NoSuchElementException("Missing attribute "+property);
+
+			def known = space.info.variables.get(this)
+			if (known.keySet().contains(evalElement.getCode())) {
+				return known.get(evalElement.getCode())
+			}
+
+			result = space.eval(getId(), new SingletonList<IEvalElement>(evalElement))
 		}
 		return result;
 	}

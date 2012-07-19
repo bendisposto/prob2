@@ -53,13 +53,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final HashSet<StateId> explored = new HashSet<StateId>();
 	private final StateSpaceInfo info;
 
-	private final HashMap<String, String> forms = new HashMap<String, String>();
-	private final List<IEvalElement> formulas = new ArrayList<IEvalElement>();
+	private final HashMap<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
+
 	private final List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
 	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
-
 
 	public final StateId __root;
 
@@ -74,12 +73,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		addVertex(__root);
 		states.put(__root.getId(), __root);
 	}
-	
+
 	public StateId getRoot() {
 		this.explore(__root);
 		return __root;
 	}
-	
 
 	// MAKE CHANGES TO THE STATESPACE GRAPH
 	/**
@@ -95,6 +93,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		ExploreStateCommand command = new ExploreStateCommand(state.getId());
 		animator.execute(command);
+		info.add(state, command);
+
 		explored.add(state);
 		List<OpInfo> enabledOperations = command.getEnabledOperations();
 
@@ -193,13 +193,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return explored.contains(state);
 	}
 
-	// AUTOMATED ANIMATION IN STATESPACE
-	/**
-	 * Performs int number of animation steps randomly
-	 * 
-	 * @param steps
-	 */
-
 	// EVALUATE PART OF STATESPACE
 
 	/**
@@ -211,12 +204,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @throws BException
 	 */
 	public String addUserFormula(final String formula) throws BException {
-		formulas.add(new ClassicalBEvalElement(formula));
+		final ClassicalBEvalElement evalElement = new ClassicalBEvalElement(
+				formula);
 		int i = 0;
 		do {
 			i++;
-		} while (forms.keySet().contains("f" + i));
-		forms.put("f" + i, formula);
+		} while (formulas.keySet().contains("f" + i));
+		formulas.put("f" + i, evalElement);
 		return "f" + i;
 	}
 
@@ -230,8 +224,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public String addUserFormula(final String name, final String formula)
 			throws BException {
-		formulas.add(new ClassicalBEvalElement(formula));
-		forms.put(name, formula);
+		final ClassicalBEvalElement evalElement = new ClassicalBEvalElement(
+				formula);
+		formulas.put(name, evalElement);
 		return name;
 	}
 
@@ -246,22 +241,36 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public List<EvaluationResult> eval(final String state,
 			final List<IEvalElement> code) throws BException {
-		if (!containsVertex(getVertex(state)))
+		final StateId stateId = getVertex(state);
+		if (!containsVertex(stateId))
 			throw new IllegalArgumentException("state does not exist");
 
 		if (code.isEmpty())
 			return new ArrayList<EvaluationResult>();
 
-		EvaluateFormulasCommand command = new EvaluateFormulasCommand(code,
-				state);
+		final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
+				code, state);
 		execute(command);
 
-		return command.getValues();
+		List<EvaluationResult> values = command.getValues();
+
+		HashMap<String, String> varsAtCurrentState = info.getState(stateId);
+		if (varsAtCurrentState == null) {
+			varsAtCurrentState = new HashMap<String, String>();
+			info.add(stateId, varsAtCurrentState);
+		}
+
+		for (EvaluationResult result : values) {
+			varsAtCurrentState.put(result.code, result.value);
+		}
+		return values;
 	}
 
 	public void evaluateFormulas(final StateId state) {
 		try {
-			List<EvaluationResult> evaluate = eval(state.getId(), formulas);
+			final List<IEvalElement> formulaList = new ArrayList<IEvalElement>(
+					formulas.values());
+			List<EvaluationResult> evaluate = eval(state.getId(), formulaList);
 			HashMap<String, String> varsAtCurrentState = info.getState(state);
 			for (EvaluationResult result : evaluate) {
 				varsAtCurrentState.put(result.code, result.value);
@@ -399,6 +408,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			}
 		}
 		return sb.toString();
+	}
+
+	public HashMap<String, IEvalElement> getForms() {
+		return formulas;
 	}
 
 }
