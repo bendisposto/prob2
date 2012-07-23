@@ -1,5 +1,8 @@
 package de.prob.statespace;
 
+import java.util.List;
+import java.util.Set;
+
 import de.be4.classicalb.core.parser.exceptions.BException;
 
 public class History {
@@ -85,41 +88,33 @@ public class History {
 				+ current.getOp();
 	}
 
-	/**
-	 * Carries out one step in the animation with the id from an Operation. If
-	 * the opId is contained in the outgoing edges (it is enabled) explore it
-	 * (if not explored) and add state to history
-	 * 
-	 * @param opId
-	 */
-
-	/**
-	 * Finds one Operation that satisfies the operation name and predicate at
-	 * the current state
-	 * 
-	 * @param opName
-	 * @param predicate
-	 * @return one operations that meets the specifications @ * @throws
-	 *         BException
-	 */
 	public Operation findOneOp(final String opName, final String predicate)
 			throws BException {
-		return s.opFromPredicate(current.getCurrentState(), opName, predicate,
-				1).get(0);
+		List<Operation> ops = s.opFromPredicate(current.getCurrentState(),
+				opName, predicate, 1);
+		if (!ops.isEmpty())
+			return ops.get(0);
+		throw new IllegalArgumentException("Operation with name " + opName
+				+ " not found.");
 	}
 
-	/**
-	 * Finds an Operation with opName and predicate and carries out one
-	 * animation step with that Operation
-	 * 
-	 * @param opName
-	 * @param predicate
-	 * @throws BException
-	 */
-	public void execOp(final String opName, final String predicate)
+	public History add(final String opName, final String predicate)
 			throws BException {
 		Operation op = findOneOp(opName, predicate);
-		add(op.getId());
+		return add(op.getId());
 	}
 
+	public String getOp(final String name, final List<String> params) {
+		Set<OperationId> outgoingEdges = s.outgoingEdgesOf(current
+				.getCurrentState());
+		String id = null;
+		for (OperationId operationId : outgoingEdges) {
+			Operation op = s.getInfo().getOp(operationId);
+			if (op.getName().equals(name) && op.getParams().equals(params)) {
+				id = op.getId();
+				break;
+			}
+		}
+		return id;
+	}
 }
