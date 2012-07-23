@@ -118,7 +118,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		getInfo().add(state, command);
 	}
 
-	public StateId getVertex(String key) {
+	public StateId getVertex(final String key) {
 		return states.get(key);
 	}
 
