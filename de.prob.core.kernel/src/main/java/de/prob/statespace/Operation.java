@@ -15,9 +15,11 @@ public class Operation {
 		this.id = id;
 		this.name = name;
 
-		if (params2 != null)
-			for (String string : params2)
-				params.add(string);
+		if (params2 != null) {
+			for (String string : params2) {
+				getParams().add(string);
+			}
+		}
 	}
 
 	public String getId() {
@@ -30,7 +32,7 @@ public class Operation {
 
 	@Override
 	public String toString() {
-		return name + "(" + Joiner.on(",").join(params) + ")";
+		return name + "(" + Joiner.on(",").join(getParams()) + ")";
 	}
 
 	@Override
@@ -48,4 +50,7 @@ public class Operation {
 		return id.hashCode();
 	}
 
+	public List<String> getParams() {
+		return params;
+	}
 }
