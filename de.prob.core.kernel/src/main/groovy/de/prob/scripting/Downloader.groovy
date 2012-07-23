@@ -35,6 +35,7 @@ class Downloader {
 	 */
 	def ConfigObject downloadConfig() {
 		// download config
+		try {
 		def configurl = "http://nightly.cobra.cs.uni-duesseldorf.de/tmp/config.groovy"
 		def file = probhome + "config.groovy"
 		download(configurl, file)
@@ -42,6 +43,10 @@ class Downloader {
 		def config = new ConfigSlurper().parse(g.toURI().toURL())
 		g.delete()
 		return config
+		}
+		catch (Exception e) {
+			return [] 
+		}
 	}
 
 	def availableVersions() {
