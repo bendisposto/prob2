@@ -8,8 +8,11 @@ class SyncHistory {
 	def SyncHistory current
 	def SyncHistory prev
 
-	def SyncHistory(histories,syncedOps) {
-		this.histories = histories
+	def SyncHistory(List<StateSpace> statespaces, syncedOps) {
+		histories = []
+		statespaces.each { s ->
+			histories << new History(s)
+		}
 		this.syncedOps = syncedOps
 		this.head = this
 		this.current = head
@@ -23,7 +26,7 @@ class SyncHistory {
 		this.prev = prev
 		this.syncedOps = syncedOps
 	}
-	
+
 	def SyncHistory(histories,head,current,prev,syncedOps) {
 		this.histories = histories
 		this.head = head
@@ -37,7 +40,8 @@ class SyncHistory {
 			throw new IllegalArgumentException("The given operation has not been specified as a syncronized operation")
 		}
 		def map = new HashMap<History, String>()
-		histories.each { history ->
+		histories.each {
+			history ->
 			def op = history.getOp(syncedOp,params)
 			if(op==null) {
 				throw new IllegalArgumentException("Operation cannot be synced across the given histories")
@@ -45,9 +49,10 @@ class SyncHistory {
 			map.put(history, op)
 		}
 		def newHistories = []
-			histories.each { history ->
-				newHistories << history.add(map.get(history))
-			}
+		histories.each {
+			history ->
+			newHistories << history.add(map.get(history))
+		}
 		return new SyncHistory(newHistories,this,syncedOps)
 	}
 
@@ -59,17 +64,19 @@ class SyncHistory {
 		def operation = history.getOp(op,params)
 		history = history.add(operation)
 		def newHistories = []
-		histories.each { newHistories << it }
+		histories.each {
+			newHistories << it
+		}
 		newHistories.set(index, history)
 		return new SyncHistory(newHistories,this,syncedOps)
 	}
-	
+
 	def SyncHistory back() {
 		if(prev != null)
-			return new SyncHistory(prev.histories,head,prev,prev.prev,syncedOps)
+		return new SyncHistory(prev.histories,head,prev,prev.prev,syncedOps)
 		return this
 	}
-	
+
 	def SyncHistory forward() {
 		if(current != head) {
 			SyncHistory p = head
@@ -80,17 +87,20 @@ class SyncHistory {
 		}
 		return this
 	}
-	
+
 	def SyncHistory addOp(String op) {
 		def newSyncedOps = []
-		syncedOps.each { newSyncedOps << it }
+		syncedOps.each {
+			newSyncedOps << it
+		}
 		newSyncedOps.add(op)
 		return new SyncHistory(histories,head,current,prev,newSyncedOps)
 	}
-	
+
 	def String toString() {
 		def sb = new StringBuilder()
-		histories.each { history ->
+		histories.each {
+			history ->
 			sb.append("${histories.indexOf(history)}: ${history.toString()}\n")
 		}
 		sb.toString()
