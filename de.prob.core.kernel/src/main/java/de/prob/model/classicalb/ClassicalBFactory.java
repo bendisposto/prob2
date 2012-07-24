@@ -14,7 +14,7 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.animator.command.LoadBProjectCommand;
-import de.prob.animator.command.notImplemented.StartAnimationCommand;
+import de.prob.animator.command.StartAnimationCommand;
 
 public class ClassicalBFactory {
 

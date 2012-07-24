@@ -21,7 +21,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.animator.command.LoadEventBCommand;
-import de.prob.animator.command.notImplemented.StartAnimationCommand;
+import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.EventBModel;
 
 public class EventBFactory {
