@@ -26,7 +26,8 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class ConstraintBasedInvariantCheckCommand implements ICommand {
 
-	Logger logger = LoggerFactory.getLogger(GetCurrentStateIdCommand.class);
+	Logger logger = LoggerFactory
+			.getLogger(ConstraintBasedInvariantCheckCommand.class);
 
 	public static enum ResultType {
 		VIOLATION_FOUND, NO_VIOLATION_FOUND, INTERRUPTED
