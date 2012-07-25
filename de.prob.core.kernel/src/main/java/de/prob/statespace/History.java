@@ -32,6 +32,10 @@ public class History {
 		this.current = current;
 	}
 
+	public History add(final String name, final List<String> params) {
+		return add(getOp(name, params));
+	}
+
 	public History add(final String opId) {
 		// if(!s.getOps().containsKey(opId))
 		// throw new IllegalArgumentException(opId +
@@ -88,6 +92,10 @@ public class History {
 
 	@Override
 	public String toString() {
+		return s.printOps(current.getCurrentState()) + getRep();
+	}
+
+	public String getRep() {
 		return head.getRepresentation() + "] Current Transition is: "
 				+ current.getOp();
 	}

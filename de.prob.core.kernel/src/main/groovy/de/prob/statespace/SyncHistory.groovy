@@ -1,5 +1,7 @@
 package de.prob.statespace
 
+
+
 class SyncHistory {
 	def List<History> histories
 	def List<String> syncedOps
@@ -10,7 +12,8 @@ class SyncHistory {
 
 	def SyncHistory(List<StateSpace> statespaces, syncedOps) {
 		histories = []
-		statespaces.each { s ->
+		statespaces.each {
+			s ->
 			histories << new History(s)
 		}
 		this.syncedOps = syncedOps
@@ -70,6 +73,25 @@ class SyncHistory {
 		newHistories.set(index, history)
 		return new SyncHistory(newHistories,this,syncedOps)
 	}
+	
+	def SyncHistory add(String opId, int index) {
+		def history = histories.get(index)
+		def op = history.s.ops.get(opId)
+		if(syncedOps.contains(op.getName())) {
+			return add(op.getName(),op.getParams())
+		}
+		history = history.add(opId)
+		def newHistories = []
+		histories.each {
+			newHistories << it
+		}
+		newHistories.set(index, history)
+		return new SyncHistory(newHistories,this,syncedOps)
+	}
+	
+	def SyncHistory add(int opId, int index) {
+		return add(String.valueOf(opId),index)
+	}
 
 	def SyncHistory back() {
 		if(prev != null)
@@ -101,8 +123,21 @@ class SyncHistory {
 		def sb = new StringBuilder()
 		histories.each {
 			history ->
-			sb.append("${histories.indexOf(history)}: ${history.toString()}\n")
+			sb.append("${histories.indexOf(history)}: ${history.getRep()}\n")
 		}
-		sb.toString()
+		
+		sb.append("Operations:\n")
+		histories.each {
+			history ->
+			sb.append("${histories.indexOf(history)}: ")
+			def o = history.s.outgoingEdgesOf(history.current.getCurrentState())
+			def list = []
+			o.each {
+				list << "${it.getId()}: ${it.toString()}"
+			}
+			sb.append(list)
+			sb.append("\n")
+		}
+		return sb.toString()
 	}
 }

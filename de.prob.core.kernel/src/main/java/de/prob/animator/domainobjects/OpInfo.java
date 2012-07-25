@@ -114,4 +114,8 @@ public class OpInfo {
 	public int hashCode() {
 		return id.hashCode();
 	}
+
+	public boolean isSame(final OpInfo that) {
+		return that.getName().equals(name) && that.getParams().equals(params);
+	}
 }
