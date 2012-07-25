@@ -1,6 +1,8 @@
 package de.prob.statespace;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.DirectedGraph;
@@ -151,6 +153,20 @@ public class StateSpaceGraph implements Graph<StateId, OpInfo>,
 
 	@Override
 	public String toString() {
-		return graph.toString();
+		StringBuilder sb = new StringBuilder();
+
+		Set<StateId> vertexSet = vertexSet();
+		sb.append("(");
+		sb.append(vertexSet.toString());
+		sb.append(", ");
+		Set<OpInfo> edgeSet = edgeSet();
+
+		List<String> list = new ArrayList<String>();
+		for (OpInfo opInfo : edgeSet) {
+			list.add(opInfo.getId() + "=[" + opInfo.getSrc() + ","
+					+ opInfo.getDest() + "]");
+		}
+		sb.append(list.toString() + ")");
+		return sb.toString();
 	}
 }

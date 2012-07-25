@@ -1,5 +1,7 @@
 package de.prob.statespace
 
+import de.prob.animator.domainobjects.OpInfo
+
 
 
 class SyncHistory {
@@ -121,19 +123,42 @@ class SyncHistory {
 
 	def String toString() {
 		def sb = new StringBuilder()
+		
 		histories.each {
 			history ->
 			sb.append("${histories.indexOf(history)}: ${history.getRep()}\n")
 		}
 		
+		def h = histories.get(0)
+		def currentOpsOnH = h.s.outgoingEdgesOf(h.current.getCurrentState())
+		def copy = new HashSet<OpInfo>(currentOpsOnH)
+				
+		currentOpsOnH.each {
+			op ->
+			if(syncedOps.contains(op.getName())) {
+				histories.each {
+					history ->
+					def op2 = history.getOp(op.getName(),op.getParams())
+					if(op2==null) {
+						copy.remove(op)
+					}
+				}
+			} else {
+				copy.remove(op)
+			}
+		}
+
 		sb.append("Operations:\n")
+		sb.append("synced: ${copy}\n")
 		histories.each {
 			history ->
 			sb.append("${histories.indexOf(history)}: ")
 			def o = history.s.outgoingEdgesOf(history.current.getCurrentState())
 			def list = []
 			o.each {
+				if(!syncedOps.contains(it.getName())) {
 				list << "${it.getId()}: ${it.toString()}"
+				}
 			}
 			sb.append(list)
 			sb.append("\n")
