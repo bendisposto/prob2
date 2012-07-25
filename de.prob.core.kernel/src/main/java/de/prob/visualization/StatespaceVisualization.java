@@ -7,14 +7,14 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 
-import de.prob.statespace.OperationId;
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 
 public class StatespaceVisualization {
 
 	public StatespaceVisualization(final StateSpace s) {
-		JGraphXAdapter<StateId, OperationId> graph = new JGraphXAdapter<StateId, OperationId>(
+		JGraphXAdapter<StateId, OpInfo> graph = new JGraphXAdapter<StateId, OpInfo>(
 				s.getGraph());
 
 		JFrame frame = new JFrame();

@@ -6,6 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
+
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
@@ -64,9 +66,56 @@ public class OpInfo {
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
-		if (destTerm instanceof IntegerPrologTerm) {
+		if (destTerm instanceof IntegerPrologTerm)
 			return BindingGenerator.getInteger(destTerm).getValue().toString();
-		}
 		return destTerm.getFunctor();
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getSrc() {
+		return src;
+	}
+
+	public String getDest() {
+		return dest;
+	}
+
+	public List<String> getParams() {
+		return params;
+	}
+
+	public String getTargetState() {
+		return targetState;
+	}
+
+	@Override
+	public String toString() {
+		return name + "(" + Joiner.on(",").join(getParams()) + ")";
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj instanceof OpInfo) {
+			OpInfo that = (OpInfo) obj;
+			boolean b = that.getId().equals(id);
+			return b;
+		} else
+			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	public boolean isSame(final OpInfo that) {
+		return that.getName().equals(name) && that.getParams().equals(params);
 	}
 }

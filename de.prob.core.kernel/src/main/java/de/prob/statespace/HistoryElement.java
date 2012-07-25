@@ -1,9 +1,11 @@
 package de.prob.statespace;
 
+import de.prob.animator.domainobjects.OpInfo;
+
 public class HistoryElement {
 	private final StateId src;
 	private final StateId dest;
-	private final OperationId edge;
+	private final OpInfo edge;
 
 	private final HistoryElement previous;
 
@@ -21,7 +23,7 @@ public class HistoryElement {
 	}
 
 	public HistoryElement(final StateId src, final StateId dest,
-			final OperationId edge, final HistoryElement previous) {
+			final OpInfo edge, final HistoryElement previous) {
 		this.src = src;
 		this.dest = dest;
 		this.edge = edge;
@@ -42,7 +44,7 @@ public class HistoryElement {
 		return dest;
 	}
 
-	public OperationId getOp() {
+	public OpInfo getOp() {
 		return edge;
 	}
 

@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException
 import java.util.Collections.SingletonList
 
 import de.prob.animator.domainobjects.IEvalElement
+import de.prob.animator.domainobjects.OpInfo
 
 class StateId {
 
@@ -15,9 +16,8 @@ class StateId {
 
 	def invokeMethod(String method, Object params) {
 		String predicate = params[0];
-		Operation op = space.opFromPredicate(this, method,predicate , 1)[0];
-		OperationId opid = new OperationId(op.getId());
-		StateId newState = space.getEdgeTarget(opid);
+		OpInfo op = space.opFromPredicate(this, method,predicate , 1)[0];
+		StateId newState = space.getEdgeTarget(op);
 		space.explore(newState);
 		return newState;
 	}

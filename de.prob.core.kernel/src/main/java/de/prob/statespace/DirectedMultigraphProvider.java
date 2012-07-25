@@ -6,14 +6,15 @@ import org.jgrapht.graph.DirectedMultigraph;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
+import de.prob.animator.domainobjects.OpInfo;
+
 @Singleton
 public class DirectedMultigraphProvider implements
-		Provider<DirectedMultigraph<StateId, OperationId>> {
+		Provider<DirectedMultigraph<StateId, OpInfo>> {
 
 	@Override
-	public DirectedMultigraph<StateId, OperationId> get() {
-		return new DirectedMultigraph<StateId, OperationId>(
-				new ClassBasedEdgeFactory<StateId, OperationId>(
-						OperationId.class));
+	public DirectedMultigraph<StateId, OpInfo> get() {
+		return new DirectedMultigraph<StateId, OpInfo>(
+				new ClassBasedEdgeFactory<StateId, OpInfo>(OpInfo.class));
 	}
 }

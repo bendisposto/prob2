@@ -59,6 +59,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
+	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 
 	public final StateId __root;
 
@@ -98,20 +99,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		explored.add(state);
 		List<OpInfo> enabledOperations = command.getEnabledOperations();
 
-		for (OpInfo operations : enabledOperations) {
-			Operation op = new Operation(operations.id, operations.name,
-					operations.params);
-			if (!containsEdge(new OperationId(op.getId()))) {
-				getInfo().add(operations.id, op);
-				notifyStateSpaceChange(operations.id,
-						containsVertex(getVertex(operations.dest)));
-				StateId newState = new StateId(operations.dest,
-						operations.targetState, this);
+		for (OpInfo op : enabledOperations) {
+			if (!containsEdge(op)) {
+				ops.put(op.id, op);
+				notifyStateSpaceChange(op.id,
+						containsVertex(getVertex(op.dest)));
+				StateId newState = new StateId(op.dest, op.targetState, this);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
-				addEdge(states.get(operations.src),
-						states.get(operations.dest),
-						new OperationId(op.getId()));
+				addEdge(states.get(op.src), states.get(op.dest), op);
 			}
 		}
 
@@ -143,7 +139,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @return list of operations
 	 * @throws BException
 	 */
-	public List<Operation> opFromPredicate(final StateId stateId,
+	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
 			throws BException {
 		ClassicalBEvalElement pred = new ClassicalBEvalElement(predicate);
@@ -151,21 +147,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
 		List<OpInfo> newOps = command.getOperations();
-		List<Operation> ops = new ArrayList<Operation>();
+
 		// (id,name,src,dest,args)
-		for (OpInfo operations : newOps) {
-			Operation op = new Operation(operations.id, operations.name,
-					operations.params);
-			if (!containsEdge(new OperationId(op.getId()))) {
-				getInfo().add(operations.id, op);
-				notifyStateSpaceChange(operations.id,
-						containsVertex(getVertex(operations.dest)));
-				addEdge(getVertex(operations.src), getVertex(operations.dest),
-						new OperationId(op.getId()));
+		for (OpInfo op : newOps) {
+			if (!containsEdge(op)) {
+				ops.put(op.id, op);
+				notifyStateSpaceChange(op.id,
+						containsVertex(getVertex(op.dest)));
+				addEdge(getVertex(op.src), getVertex(op.dest), op);
 			}
-			ops.add(op);
 		}
-		return ops;
+		return newOps;
 	}
 
 	/**
@@ -316,7 +308,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public void notifyAnimationChange(final StateId stateId,
-			final StateId fromState, final OperationId withOp) {
+			final StateId fromState, final OpInfo withOp) {
 		for (IAnimationListener listener : animationListeners) {
 			listener.currentStateChanged(fromState, stateId, withOp);
 		}
@@ -342,16 +334,20 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	// assert !s.getOutEdges(s.getCurrentState()).contains(new OperationId("1"))
-	public boolean isOutEdge(final StateId sId, final OperationId oId) {
+	public boolean isOutEdge(final StateId sId, final OpInfo oId) {
 		return outgoingEdgesOf(sId).contains(oId);
 	}
 
 	public boolean isOutEdge(final String stateId, final String opId) {
-		return isOutEdge(getVertex(stateId), new OperationId(opId));
+		return isOutEdge(getVertex(stateId), ops.get(opId));
 	}
 
 	public HashMap<String, StateId> getStates() {
 		return states;
+	}
+
+	public HashMap<String, OpInfo> getOps() {
+		return ops;
 	}
 
 	public StateSpaceInfo getInfo() {
@@ -365,7 +361,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return state;
 	}
 
-	public StateId getState(final OperationId op) {
+	public StateId getState(final OpInfo op) {
 		final StateId edgeTarget = getEdgeTarget(op);
 		if (!isExplored(edgeTarget)) {
 			explore(edgeTarget);
@@ -375,11 +371,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	public String printOps(final StateId state) {
 		StringBuilder sb = new StringBuilder();
-		Collection<OperationId> opIds = outgoingEdgesOf(state);
+		Collection<OpInfo> opIds = outgoingEdgesOf(state);
 		sb.append("Operations: \n");
-		for (OperationId opId : opIds) {
-			Operation op = getInfo().getOp(opId);
-			sb.append("  " + op.getId() + ": " + op.toString() + "\n");
+		for (OpInfo opId : opIds) {
+			sb.append("  " + opId.id + ": " + opId.toString() + "\n");
 		}
 		return sb.toString();
 	}
