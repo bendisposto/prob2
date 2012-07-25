@@ -9,12 +9,12 @@ import de.prob.model.classicalb.ClassicalBEntity;
 
 public class Operation {
 
-	private String name;
-	private List<ClassicalBEntity> output = new ArrayList<ClassicalBEntity>();
-	private List<ClassicalBEntity> parameters = new ArrayList<ClassicalBEntity>();
+	private final String name;
+	private final List<ClassicalBEntity> output = new ArrayList<ClassicalBEntity>();
+	private final List<ClassicalBEntity> parameters = new ArrayList<ClassicalBEntity>();
 
-	public Operation(String name) {
-		this.name =name;
+	public Operation(final String name) {
+		this.name = name;
 	}
 
 	public List<ClassicalBEntity> output() {

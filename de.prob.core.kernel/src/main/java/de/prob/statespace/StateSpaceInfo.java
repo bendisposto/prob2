@@ -8,28 +8,17 @@ import de.prob.animator.domainobjects.EvaluationResult;
 
 /**
  * Contains the information about the StateSpace. This includes the Operations
- * for a given OperationId and the variables, invariant, timeouts, and
- * operations with timeout for a given StateId.
+ * for a given OpInfo and the variables, invariant, timeouts, and operations
+ * with timeout for a given StateId.
  * 
  * @author joy
  * 
  */
 public class StateSpaceInfo {
-	private final HashMap<OperationId, Operation> ops = new HashMap<OperationId, Operation>();
 	private final HashMap<StateId, HashMap<String, String>> variables = new HashMap<StateId, HashMap<String, String>>();
 	private final HashMap<StateId, Boolean> invariantOk = new HashMap<StateId, Boolean>();
 	private final HashMap<StateId, Boolean> timeoutOccured = new HashMap<StateId, Boolean>();
 	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
-
-	/**
-	 * Records an Operation (op) that corresponding to the given operation id.
-	 * 
-	 * @param id
-	 * @param op
-	 */
-	public void add(final String id, final Operation op) {
-		ops.put(new OperationId(id), op);
-	}
 
 	/**
 	 * Records the map of variables (vars) corresponding to the given state id.
@@ -39,16 +28,19 @@ public class StateSpaceInfo {
 	 */
 	public void add(final StateId id, final HashMap<String, String> vars) {
 		HashMap<String, String> hashMap = variables.get(id);
-		if (hashMap == null)
+		if (hashMap == null) {
 			hashMap = new HashMap<String, String>();
+		}
 		hashMap.putAll(vars);
 		variables.put(id, hashMap);
 	}
 
-	public void add(StateId id, String var, EvaluationResult val) {
+	public void add(final StateId id, final String var,
+			final EvaluationResult val) {
 		HashMap<String, String> hashMap = variables.get(id);
-		if (hashMap == null)
+		if (hashMap == null) {
 			hashMap = new HashMap<String, String>();
+		}
 		hashMap.put(var, val.value);
 		variables.put(id, hashMap);
 
@@ -150,37 +142,9 @@ public class StateSpaceInfo {
 		return state.containsKey(variable);
 	}
 
-	public HashMap<OperationId, Operation> getOps() {
-		return ops;
-	}
-
-	/**
-	 * Returns the operation string operation Id corresponding to the
-	 * OperationId stored in the ops map
-	 * 
-	 * @param opId
-	 *            (String)
-	 * @return operation for the given operation id
-	 */
-	public Operation getOp(final String opId) {
-		return getOp(new OperationId(opId));
-	}
-
-	/**
-	 * Returns the operation for the given operation id
-	 * 
-	 * @param opId
-	 *            (OperationId)
-	 * @return operation for the given operation id
-	 */
-	public Operation getOp(final OperationId opId) {
-		return ops.get(opId);
-	}
-
 	@Override
 	public String toString() {
 		String result = "";
-		result += "Operations: \n  " + ops.toString() + "\n";
 		result += "Variables: \n  " + variables.toString() + "\n";
 		result += "Invariants Ok: \n  " + invariantOk.toString() + "\n";
 		result += "Timeout Occured: \n  " + timeoutOccured.toString() + "\n";

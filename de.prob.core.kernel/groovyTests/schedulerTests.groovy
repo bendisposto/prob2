@@ -8,8 +8,8 @@ h = h.add 3
 assert h.current.getCurrentState() == s.states.get("2")
 assert s.isExplored(s.states.get("2"))
 assert !s.isExplored(s.states.get("5"))
-assert s.info.ops.containsKey(new OperationId("1"))
-assert !s.isOutEdge(h.current.getCurrentState(),new OperationId("1"))
+assert s.getOps().containsKey("1")
+assert !s.isOutEdge(h.current.getCurrentState(),s.getOps().get("1"))
 h = h.add 8
 idAt8 = h.current.getCurrentState()
 assert idAt0 == idAt8

@@ -5,6 +5,7 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 import de.prob.animator.IAnimator
+import de.prob.animator.domainobjects.OpInfo
 import de.prob.exception.ProBError
 
 class StateSpaceTest extends Specification {
@@ -30,26 +31,36 @@ class StateSpaceTest extends Specification {
 			new StateId("6", "consetetur",s)
 		]
 
-		states.each { it ->
+		def ops = [ new OpInfo("b","b","root","2",[],"2"),
+			new OpInfo("c","c","2","3",[],"3"),
+			new OpInfo("d","d","3","4",[],"4"),
+			new OpInfo("e","e","3","5",[],"5"),
+			new OpInfo("f","f","4","6",[],"6") ]
+
+		states.each {
+			it ->
 			s.addVertex(it)
 		}
-		states.each { it ->
+		states.each {
+			it ->
 			s.states.put(it.getId(),it)
 		}
 		s.explored.add(s.states.get("1"))
 
+		ops.each {
+			s.ops.put(it.getId(),it)
+		}
 
-
-		s.addEdge(s.states.get("root"), s.states.get("2"), new OperationId("b"))
-		s.addEdge(s.states.get("2"), s.states.get("3"), new OperationId("c"))
-		s.addEdge(s.states.get("3"), s.states.get("4"), new OperationId("d"))
-		s.addEdge(s.states.get("3"), s.states.get("5"), new OperationId("e"))
+		s.addEdge(s.states.get("root"), s.states.get("2"), s.ops.get("b"))
+		s.addEdge(s.states.get("2"), s.states.get("3"), s.ops.get("c"))
+		s.addEdge(s.states.get("3"), s.states.get("4"), s.ops.get("d"))
+		s.addEdge(s.states.get("3"), s.states.get("5"), s.ops.get("e"))
 		s.explored.add(s.states.get("2"))
 		s.explored.add(s.states.get("3"))
 		s.explored.add(s.states.get("4"))
 		s.explored.add(s.states.get("5"))
 
-		s.addEdge(s.states.get("4"), s.states.get("6"),new OperationId("f"))
+		s.addEdge(s.states.get("4"), s.states.get("6"),s.ops.get("f"))
 	}
 
 	def addVertices(List<String> ids, StateSpace s) {
@@ -89,8 +100,7 @@ class StateSpaceTest extends Specification {
 	}
 
 	def "The node is not a deadlock"() {
-		def op = new Operation("a", "Blah", null);
-		s.addEdge(s.states.get("1"), s.states.get("2"), new OperationId("blaOp"))
+		s.addEdge(s.states.get("1"), s.states.get("2"), new OpInfo("bla","blah","1","2",[],"2"))
 
 		expect:
 		s.isDeadlock("1") == false

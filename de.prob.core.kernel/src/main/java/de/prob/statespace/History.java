@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
+import de.prob.animator.domainobjects.OpInfo;
 
 public class History {
 
@@ -32,7 +33,10 @@ public class History {
 	}
 
 	public History add(final String opId) {
-		OperationId op = new OperationId(opId);
+		// if(!s.getOps().containsKey(opId))
+		// throw new IllegalArgumentException(opId +
+		// " is not a valid operation in the statespace");
+		OpInfo op = s.getOps().get(opId);
 		if (!s.outgoingEdgesOf(current.getCurrentState()).contains(op))
 			throw new IllegalArgumentException(opId
 					+ " is not a valid operation on this state");
@@ -88,10 +92,10 @@ public class History {
 				+ current.getOp();
 	}
 
-	public Operation findOneOp(final String opName, final String predicate)
+	public OpInfo findOneOp(final String opName, final String predicate)
 			throws BException {
-		List<Operation> ops = s.opFromPredicate(current.getCurrentState(),
-				opName, predicate, 1);
+		List<OpInfo> ops = s.opFromPredicate(current.getCurrentState(), opName,
+				predicate, 1);
 		if (!ops.isEmpty())
 			return ops.get(0);
 		throw new IllegalArgumentException("Operation with name " + opName
@@ -100,16 +104,15 @@ public class History {
 
 	public History add(final String opName, final String predicate)
 			throws BException {
-		Operation op = findOneOp(opName, predicate);
-		return add(op.getId());
+		OpInfo op = findOneOp(opName, predicate);
+		return add(op.id);
 	}
 
 	public String getOp(final String name, final List<String> params) {
-		Set<OperationId> outgoingEdges = s.outgoingEdgesOf(current
-				.getCurrentState());
+		Set<OpInfo> outgoingEdges = s
+				.outgoingEdgesOf(current.getCurrentState());
 		String id = null;
-		for (OperationId operationId : outgoingEdges) {
-			Operation op = s.getInfo().getOp(operationId);
+		for (OpInfo op : outgoingEdges) {
 			if (op.getName().equals(name) && op.getParams().equals(params)) {
 				id = op.getId();
 				break;
