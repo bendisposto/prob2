@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.jgrapht.alg.DijkstraShortestPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -395,6 +396,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	public HashMap<String, IEvalElement> getForms() {
 		return formulas;
+	}
+
+	public History getTrace(final int state) {
+		final StateId id = states.get(String.valueOf(state));
+		final List<OpInfo> path = new DijkstraShortestPath<StateId, OpInfo>(
+				this, this.__root, id).getPathEdgeList();
+		History h = new History(this);
+		for (final OpInfo opInfo : path) {
+			h = h.add(opInfo.getId());
+		}
+		return h;
 	}
 
 }
