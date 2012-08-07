@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.ProtectionDomain;
 
 import org.eclipse.jetty.server.Connector;
@@ -18,6 +19,8 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * 
  */
 public class WebConsole {
+
+	private final static int PORT = findPort(8080);
 
 	/**
 	 * Taken from Apache MINA
@@ -56,18 +59,30 @@ public class WebConsole {
 	}
 
 	public static void run() throws Exception {
+		run(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					Desktop.getDesktop().browse(
+							new URI("http://localhost:" + PORT));
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	public static void run(Runnable openBrowser) throws Exception {
 
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
 
-		int port = 8080;
-
-		while (!available(port)) {
-			port++;
-		}
 		Server server = new Server();
 
 		Connector connector = new SelectChannelConnector();
-		connector.setPort(port);
+		connector.setPort(PORT);
 		connector.setServer(server);
 		String hostname = System.getProperty("prob.host", "127.0.0.1");
 		connector.setHost(hostname);
@@ -88,8 +103,16 @@ public class WebConsole {
 		server.setHandler(handlers);
 
 		server.start();
-		Desktop.getDesktop().browse(new URI("http://localhost:" + port));
+		openBrowser.run();
 		server.join();
 
 	}
+
+	private static int findPort(int port) {
+		while (!available(port)) {
+			port++;
+		}
+		return port;
+	}
+
 }
