@@ -1,5 +1,6 @@
 package de.prob.statespace;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ public class History {
 
 	private final HistoryElement current;
 	private final HistoryElement head;
+	private final List<IAnimationListener> animationListeners;
 
 	private final StateSpace s;
 
@@ -17,19 +19,24 @@ public class History {
 		this.s = s;
 		head = new HistoryElement(s.getState(s.getVertex("root")));
 		current = head;
-	}
-
-	public History(final StateSpace s, final HistoryElement head) {
-		this.s = s;
-		this.head = head;
-		this.current = head;
+		animationListeners = new ArrayList<IAnimationListener>();
 	}
 
 	public History(final StateSpace s, final HistoryElement head,
-			final HistoryElement current) {
+			final List<IAnimationListener> animationListeners) {
+		this.s = s;
+		this.head = head;
+		this.current = head;
+		this.animationListeners = animationListeners;
+	}
+
+	public History(final StateSpace s, final HistoryElement head,
+			final HistoryElement current,
+			final List<IAnimationListener> animationListeners) {
 		this.s = s;
 		this.head = head;
 		this.current = current;
+		this.animationListeners = animationListeners;
 	}
 
 	public History add(final String name, final List<String> params) {
@@ -48,8 +55,10 @@ public class History {
 		StateId newState = s.getState(op);
 		s.evaluateFormulas(current.getCurrentState());
 
+		notifyAnimationChange(newState, current.getCurrentState(), op);
+
 		return new History(s, new HistoryElement(current.getCurrentState(),
-				newState, op, current));
+				newState, op, current), animationListeners);
 	}
 
 	public History add(final int i) {
@@ -62,7 +71,8 @@ public class History {
 	 */
 	public History back() {
 		if (canGoBack())
-			return new History(s, head, current.getPrevious());
+			return new History(s, head, current.getPrevious(),
+					animationListeners);
 		return this;
 	}
 
@@ -77,7 +87,7 @@ public class History {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious();
 			}
-			return new History(s, head, p);
+			return new History(s, head, p, animationListeners);
 		}
 		return this;
 	}
@@ -127,5 +137,23 @@ public class History {
 			}
 		}
 		return id;
+	}
+
+	/**
+	 * Adds an IAnimationListener to the list of animationListeners. This
+	 * listener will be notified whenever an animation step is performed
+	 * (whenever the current state changes).
+	 * 
+	 * @param l
+	 */
+	public void registerAnimationListener(final IAnimationListener l) {
+		animationListeners.add(l);
+	}
+
+	public void notifyAnimationChange(final StateId stateId,
+			final StateId fromState, final OpInfo withOp) {
+		for (IAnimationListener listener : animationListeners) {
+			listener.currentStateChanged(fromState, stateId, withOp);
+		}
 	}
 }

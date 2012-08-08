@@ -106,15 +106,6 @@ class StateSpaceTest extends Specification {
 		s.isDeadlock("1") == false
 	}
 
-	def "test register animation listener"() {
-		when:
-		def l = mock(IAnimationListener.class)
-		s.registerAnimationListener(l)
-
-		then:
-		s.animationListeners.contains(l)
-	}
-
 	def "test register StateSpaceChangeListener"() {
 		when:
 		def l = mock(IStateSpaceChangeListener.class)
