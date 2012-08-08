@@ -17,21 +17,13 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import de.prob.animator.IAnimator;
+import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 
 public class Main {
 
-	private static Injector INJECTOR;
 	private static boolean shellMode;
 
-	public static IAnimator getAnimator() {
-		return INJECTOR.getInstance(IAnimator.class);
-	}
-	
-	public static Injector getInjector() {
-		return INJECTOR;
-	}
-	
 
 	private final CommandLineParser parser;
 	private final Options options;
@@ -102,8 +94,7 @@ public class Main {
 		System.setProperty("PROB_LOGFILE", PROB_HOME + "logs" + separator
 				+ "ProB.txt");
 
-		INJECTOR = Guice.createInjector(new MainModule());
-		Main main = INJECTOR.getInstance(Main.class);
+		Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
 
 		main.run(args);
 		System.exit(0);
