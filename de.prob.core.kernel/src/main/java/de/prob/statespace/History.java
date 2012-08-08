@@ -162,4 +162,12 @@ public class History {
 			listener.currentStateChanged(history);
 		}
 	}
+
+	public HistoryElement getCurrent() {
+		return current;
+	}
+
+	public HistoryElement getHead() {
+		return head;
+	}
 }
