@@ -30,20 +30,29 @@ public class CompletionServlet extends HttpServlet {
 		String col = req.getParameter("col");
 		
 		int c = Integer.parseInt(col)-1;
-
-		
-		String input = fulltext[0..c]
-		
-		String rest = c>=fulltext.length()-1 ? "" : fulltext[(c+1)..-1]		
-		
+		int b = c > -1 ? fulltext.lastIndexOf(" ", c) : - 1;
+		String begin = b > -1 ? fulltext[0..b] : ""
+		String input;
+		if (c == -1 || c == b)
+			input = ""
+		else
+			input = b > 0 ? fulltext[b+1..c] : fulltext[0..c]
+		String rest = c >= fulltext.length() - 1 ? "" : fulltext[(c+1)..-1] 
 		
 
 		ArrayList<String> completions = computeCompletions(input);
 		String pre = getCommonPrefix(completions);
-		if (!pre.isEmpty() && pre != input)
-			completions = [pre]
-			
-		completions = completions.collect {it + rest}	
+		if (!pre.isEmpty() && pre != input && !input.contains("."))
+			completions = [begin + pre + rest]
+		else if (completions.size() == 1)
+			completions = completions.collect {begin + it + rest}
+		else if (input.contains(".") && !pre.isEmpty()) {
+			int pos = input.lastIndexOf(".")
+			String sub = input.substring(0, pos + 1)
+			String other = input.substring(pos + 1, input.length())
+			if (pos < input.length() && other != pre)
+				completions = [begin + sub + pre + rest]
+		}
 			
 		Gson g = new Gson();
 		String json = g.toJson(completions);
@@ -57,7 +66,7 @@ public class CompletionServlet extends HttpServlet {
 		def min = input.get(0).length()
 		def first = input.get(0)
 		for (String str : input) {
-			for (int i = min; i > 0; i--) {
+			for (int i = min; i >= 0; i--) {
 				if (i > str.length())
 					i = str.length();
 				def pre = str.substring(0, i)
