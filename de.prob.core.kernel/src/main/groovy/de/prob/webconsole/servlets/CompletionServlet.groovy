@@ -1,23 +1,17 @@
 package de.prob.webconsole.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.annotation.Retention;
-import java.util.ArrayList;
-import java.util.List;
+import javax.servlet.ServletException
+import javax.servlet.http.HttpServlet
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.codehaus.groovy.runtime.InvokerHelper
 
-import org.codehaus.groovy.runtime.InvokerHelper;
+import com.google.gson.Gson
+import com.google.inject.Inject
+import com.google.inject.Singleton
 
-import com.google.gson.Gson;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import de.prob.webconsole.GroovyExecution;
+import de.prob.webconsole.GroovyExecution
 
 @Singleton
 public class CompletionServlet extends HttpServlet {
@@ -35,11 +29,33 @@ public class CompletionServlet extends HttpServlet {
 		String input = req.getParameter("input");
 
 		ArrayList<String> completions = computeCompletions(input);
-
+		String pre = getCommonPrefix(completions);
+		if (!pre.isEmpty() && pre != input)
+			completions = [pre]
 		Gson g = new Gson();
 		String json = g.toJson(completions);
 		out.println(json);
 		out.close();
+	}
+			
+	private String getCommonPrefix(ArrayList<String> input) {
+		if (input.isEmpty())
+			return ""
+		def min = input.get(0).length()
+		def first = input.get(0)
+		for (String str : input) {
+			for (int i = min; i > 0; i--) {
+				if (i > str.length())
+					i = str.length();
+				def pre = str.substring(0, i)
+				if (first.startsWith(pre)) {
+					min = i;
+					break;
+				}
+			}
+		}
+		
+		return first.substring(0, min)
 	}
 
 	private ArrayList<String> computeCompletions(String input) {
