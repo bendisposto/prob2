@@ -33,8 +33,6 @@ function onValidate(line) {
 
 function onComplete(line,column, perform) {
 	var result;
-	alert(line);
-	alert(col);
 	$.getJSON("complete", {
 		input : line,
 		col: column
