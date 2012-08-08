@@ -31,10 +31,13 @@ function onValidate(line) {
 	return true;
 };
 
-function onComplete(line, perform) {
+function onComplete(line,column, perform) {
 	var result;
+	alert(line);
+	alert(col);
 	$.getJSON("complete", {
-		input : line
+		input : line,
+		col: column
 	}, function(json) {
 		perform(json);
 	});

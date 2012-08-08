@@ -27,7 +27,8 @@ public class CompletionServlet extends HttpServlet {
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 		String input = req.getParameter("input");
-
+		String col = req.getParameter("col");
+		System.err.println(col);
 		ArrayList<String> completions = computeCompletions(input);
 		String pre = getCommonPrefix(completions);
 		if (!pre.isEmpty() && pre != input)
