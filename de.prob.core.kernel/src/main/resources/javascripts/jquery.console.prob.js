@@ -545,7 +545,7 @@
 	};
 	
 	function tabPressed() {
-		var suggestions = config.completionHandle(promptText,performComplete)
+		var suggestions = config.completionHandle(promptText,column,performComplete)
 	}
 	
 	function performComplete(suggestions) {
