@@ -26,13 +26,25 @@ public class CompletionServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
-		String input = req.getParameter("input");
+		String fulltext = req.getParameter("input");
 		String col = req.getParameter("col");
-		System.err.println(col);
+		
+		int c = Integer.parseInt(col)-1;
+
+		
+		String input = fulltext[0..c]
+		
+		String rest = c>=fulltext.length()-1 ? "" : fulltext[(c+1)..-1]		
+		
+		
+
 		ArrayList<String> completions = computeCompletions(input);
 		String pre = getCommonPrefix(completions);
 		if (!pre.isEmpty() && pre != input)
 			completions = [pre]
+			
+		completions = completions.collect {it + rest}	
+			
 		Gson g = new Gson();
 		String json = g.toJson(completions);
 		out.println(json);
@@ -145,11 +157,12 @@ public class CompletionServlet extends HttpServlet {
 
 	List getPublicFieldsAndMethods(Object instance, String prefix) {
 		def rv = []
-		instance.class.fields.each {
+		def instanceClass = instance.getClass()
+		instanceClass.fields.each {
 			if (it.name.startsWith(prefix))
 				rv << it.name
 		}
-		instance.class.methods.each {
+		instanceClass.methods.each {
 			if (it.name.startsWith(prefix))
 				rv << it.name + (it.parameterTypes.length == 0 ? "()" : "(")
 		}
