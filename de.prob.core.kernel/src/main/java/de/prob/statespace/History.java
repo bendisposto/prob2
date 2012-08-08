@@ -55,10 +55,12 @@ public class History {
 		StateId newState = s.getState(op);
 		s.evaluateFormulas(current.getCurrentState());
 
-		notifyAnimationChange(newState, current.getCurrentState(), op);
+		History newHistory = new History(s, new HistoryElement(
+				current.getCurrentState(), newState, op, current),
+				animationListeners);
+		notifyAnimationChange(newHistory);
 
-		return new History(s, new HistoryElement(current.getCurrentState(),
-				newState, op, current), animationListeners);
+		return newHistory;
 	}
 
 	public History add(final int i) {
@@ -70,9 +72,12 @@ public class History {
 	 * Moves one step back in the animation if this is possible.
 	 */
 	public History back() {
-		if (canGoBack())
-			return new History(s, head, current.getPrevious(),
+		if (canGoBack()) {
+			History history = new History(s, head, current.getPrevious(),
 					animationListeners);
+			notifyAnimationChange(history);
+			return history;
+		}
 		return this;
 	}
 
@@ -87,7 +92,9 @@ public class History {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious();
 			}
-			return new History(s, head, p, animationListeners);
+			History history = new History(s, head, p, animationListeners);
+			notifyAnimationChange(history);
+			return history;
 		}
 		return this;
 	}
@@ -150,10 +157,17 @@ public class History {
 		animationListeners.add(l);
 	}
 
-	public void notifyAnimationChange(final StateId stateId,
-			final StateId fromState, final OpInfo withOp) {
+	public void notifyAnimationChange(final History history) {
 		for (IAnimationListener listener : animationListeners) {
-			listener.currentStateChanged(fromState, stateId, withOp);
+			listener.currentStateChanged(history);
 		}
+	}
+
+	public HistoryElement getCurrent() {
+		return current;
+	}
+
+	public HistoryElement getHead() {
+		return head;
 	}
 }
