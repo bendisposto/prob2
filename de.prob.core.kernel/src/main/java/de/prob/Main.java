@@ -27,6 +27,11 @@ public class Main {
 	public static IAnimator getAnimator() {
 		return INJECTOR.getInstance(IAnimator.class);
 	}
+	
+	public static Injector getInjector() {
+		return INJECTOR;
+	}
+	
 
 	private final CommandLineParser parser;
 	private final Options options;
