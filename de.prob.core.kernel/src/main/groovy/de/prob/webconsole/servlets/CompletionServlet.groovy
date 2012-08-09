@@ -1,5 +1,8 @@
 package de.prob.webconsole.servlets;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
@@ -21,6 +24,7 @@ public class CompletionServlet extends HttpServlet {
 	@Inject
 	public CompletionServlet(GroovyExecution executor) {
 		this.executor = executor;
+
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -80,58 +84,22 @@ public class CompletionServlet extends HttpServlet {
 	private List<String> camelMatch(final List<String> completions, final String match) {
 		if (match.isEmpty())
 			return completions
-		String nopar = match.charAt(match.length() - 1) == '(' ?
-							match.substring(0, match.length() - 1) : match;
-		List<String> split = camelSplit(nopar);
-		StringBuffer sb = new StringBuffer()
-		for (String str : split) {
-			sb.append(str + "[a-z]*")
-		}
-		sb.append(".*")
-		String regex = sb.toString()
+		def nopar = match.findAll {  Character.isJavaIdentifierPart(it.charAt(0))  }.join("")			
+		def split = camelSplit(nopar);
+		def  regex = split.join("[a-z]*") + ".*";
+	    completions.findAll { it ==~ regex  }
 		
-		ArrayList<String> matches = new ArrayList()
-		for (String str : completions) {
-			if (str ==~ regex) {
-				matches.add(str)
-			}
-		}
-		return matches
 	}
 			
 	private List<String> camelSplit(final String input) {
-		final ArrayList<String> camel = new ArrayList<String>();
-		if (input.isEmpty())
-			return camel;
-		int last = 0
-		for (int i = 0; i < input.length(); i++) {
-			if (input.charAt(i).isUpperCase()) {
-				camel.add(input.substring(last, i))
-				last = i
-			}
-		}
-		camel.add(input.substring(last, input.length()))
-		return camel;
+	 if (input.isEmpty()) return [];	
+     Pattern.compile("(^[a-z]*)|([A-Z][a-z]*)").matcher(input).collect {a,b,c -> a}
 	}
-			
+	
 	private String getCommonPrefix(ArrayList<String> input) {
 		if (input.isEmpty())
 			return ""
-		def min = input.get(0).length()
-		def first = input.get(0)
-		for (String str : input) {
-			for (int i = min; i >= 0; i--) {
-				if (i > str.length())
-					i = str.length();
-				def pre = str.substring(0, i)
-				if (first.startsWith(pre)) {
-					min = i;
-					break;
-				}
-			}
-		}
-		
-		return first.substring(0, min)
+		input.collect { it as List }.transpose().takeWhile { (it as Set).size() == 1 }.collect {it[0]}.join() 
 	}
 
 	private ArrayList<String> computeCompletions(String input) {

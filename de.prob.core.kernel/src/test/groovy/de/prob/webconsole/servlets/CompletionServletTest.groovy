@@ -60,4 +60,17 @@ class CompletionServletTest extends Specification {
 		List<String> expected = ["fooBarBar", "fooBahnBaah"]
 		result == expected
 	}
+	
+	def "checking common prefixes"() {
+		expect:
+		servlet.getCommonPrefix(input) == output
+
+		where:
+		input                   | output
+		["fool","fook","foom"]  | "foo"
+		["a"]                   | "a"
+		[]                      | ""
+		["aaaa","baaa"]         | ""
+	}
+	
 }
