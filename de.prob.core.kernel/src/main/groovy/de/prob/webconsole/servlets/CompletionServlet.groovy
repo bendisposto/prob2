@@ -24,40 +24,94 @@ public class CompletionServlet extends HttpServlet {
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
+	throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 		String fulltext = req.getParameter("input");
 		String col = req.getParameter("col");
-		
+
 		int c = Integer.parseInt(col)-1;
 		int b = c > -1 ? fulltext.lastIndexOf(" ", c) : - 1;
-		String begin = b > -1 ? fulltext[0..b] : ""
+
+				String begin = b > -1 ? fulltext[0..b] : ""
 		String input;
 		if (c == -1 || c == b)
-			input = ""
+		input = ""
 		else
-			input = b > 0 ? fulltext[b+1..c] : fulltext[0..c]
-		String rest = c >= fulltext.length() - 1 ? "" : fulltext[(c+1)..-1] 
-		
+		input = b > 0 ? fulltext[b+1..c] : fulltext[0..c]
+		String rest = c >= fulltext.length() - 1 ? "" : fulltext[(c+1)..-1]
 
-		ArrayList<String> completions = computeCompletions(input);
+		ArrayList<String> completions = new ArrayList<String>();
+		if (input.contains(".")) {
+			int pos = input.lastIndexOf(".")
+			String sub = input.substring(0, pos + 1)
+			String other = input.substring(pos + 1, input.length())
+			def computed = computeCompletions(sub)
+			completions = camelMatch(computed, other)
+		} else if (!input.isEmpty()) {
+			def computed = computeCompletions(new String(input.charAt(0)))
+			completions = camelMatch(computed, input);
+		}
+		
 		String pre = getCommonPrefix(completions);
 		if (!pre.isEmpty() && pre != input && !input.contains("."))
-			completions = [begin + pre + rest]
-		else if (completions.size() == 1)
+		completions = [begin + pre + rest]
+		else if (completions.size() == 1) {
+			if (input.contains('.')) {
+				String sub = input.substring(0, input.lastIndexOf(".") + 1)
+				begin = begin + sub;
+			}
 			completions = completions.collect {begin + it + rest}
+		}
 		else if (input.contains(".") && !pre.isEmpty()) {
+			// situation: "xyz.abc"
 			int pos = input.lastIndexOf(".")
 			String sub = input.substring(0, pos + 1)
 			String other = input.substring(pos + 1, input.length())
 			if (pos < input.length() && other != pre)
-				completions = [begin + sub + pre + rest]
+			completions = [begin + sub + pre + rest]
 		}
-			
+
 		Gson g = new Gson();
 		String json = g.toJson(completions);
 		out.println(json);
 		out.close();
+	}
+
+	private List<String> camelMatch(final List<String> completions, final String match) {
+		if (match.isEmpty())
+			return completions
+		String nopar = match.charAt(match.length() - 1) == '(' ?
+							match.substring(0, match.length() - 1) : match;
+		List<String> split = camelSplit(nopar);
+		StringBuffer sb = new StringBuffer()
+		for (String str : split) {
+			sb.append(str + "[a-z]*")
+		}
+		sb.append(".*")
+		String regex = sb.toString()
+		
+		ArrayList<String> matches = new ArrayList()
+		for (String str : completions) {
+			if (str ==~ regex) {
+				matches.add(str)
+			}
+		}
+		return matches
+	}
+			
+	private List<String> camelSplit(final String input) {
+		final ArrayList<String> camel = new ArrayList<String>();
+		if (input.isEmpty())
+			return camel;
+		int last = 0
+		for (int i = 0; i < input.length(); i++) {
+			if (input.charAt(i).isUpperCase()) {
+				camel.add(input.substring(last, i))
+				last = i
+			}
+		}
+		camel.add(input.substring(last, input.length()))
+		return camel;
 	}
 			
 	private String getCommonPrefix(ArrayList<String> input) {
