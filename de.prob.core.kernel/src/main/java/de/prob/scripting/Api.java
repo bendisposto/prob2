@@ -21,11 +21,13 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
+import de.prob.animator.command.StartAnimationCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.model.classicalb.ClassicalBFactory;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.statespace.StateSpace;
+import de.prob.webconsole.ServletContextListener;
 
 public class Api {
 
@@ -168,6 +170,10 @@ public class Api {
 		// xstream.omitField(IAnimator.class, "animator");
 
 		StateSpace t = (StateSpace) xstream.fromXML(sb.toString());
+		IAnimator anim = ServletContextListener.INJECTOR
+				.getInstance(IAnimator.class);
+		t.setAnimator(anim);
+		anim.execute(t.getLoadcmd(), new StartAnimationCommand());
 
 		return t;
 	}

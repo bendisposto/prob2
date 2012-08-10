@@ -100,5 +100,7 @@ class StateId {
 		return ns;
 	}
 
-	def anyEvent = this.&anyOperation;
+	def anyEvent(filter) {
+		anyOperation(filter);
+	}
 }

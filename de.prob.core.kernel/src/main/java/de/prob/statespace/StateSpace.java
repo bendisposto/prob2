@@ -50,7 +50,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 
-	private transient final IAnimator animator;
+	private transient IAnimator animator;
+
+	private ICommand loadcmd;
+
 	private final HashSet<StateId> explored = new HashSet<StateId>();
 	private final StateSpaceInfo info;
 
@@ -389,6 +392,18 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			h = h.add(opInfo.getId());
 		}
 		return h;
+	}
+
+	public void setAnimator(IAnimator animator) {
+		this.animator = animator;
+	}
+
+	public ICommand getLoadcmd() {
+		return loadcmd;
+	}
+
+	public void setLoadcmd(ICommand loadcmd) {
+		this.loadcmd = loadcmd;
 	}
 
 }

@@ -544,7 +544,10 @@
 	    return false;
 	};
 	
+	var olly;
+	
 	function tabPressed() {
+		olly = column;
 		var suggestions = config.completionHandle(promptText,column,performComplete)
 	}
 	
@@ -560,7 +563,7 @@
 			var msg = suggestions.join(" ");
 			commandResult(msg);
 			promptText = originalText;
-			moveColumn(promptText.length)
+			moveColumn(olly)
 			updatePromptDisplay();
 		}
 	}

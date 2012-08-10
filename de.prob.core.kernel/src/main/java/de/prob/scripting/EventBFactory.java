@@ -20,6 +20,7 @@ import org.eventb.emf.core.Project;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import de.prob.animator.command.ICommand;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.EventBModel;
@@ -29,8 +30,7 @@ public class EventBFactory {
 	private final Provider<EventBModel> modelProvider;
 	private final Pattern p1 = Pattern
 			.compile("^emf_model\\('(.*?)',\\\"(.*?)\\\"\\)\\.");
-	private final Pattern p2 = Pattern
-			.compile("^package\\((.*?)\\)\\.");
+	private final Pattern p2 = Pattern.compile("^package\\((.*?)\\)\\.");
 
 	@Inject
 	public EventBFactory(final Provider<EventBModel> modelProvider) {
@@ -40,13 +40,14 @@ public class EventBFactory {
 	CorePackage f = CorePackage.eINSTANCE; // As a side effect the EMF stuff is
 											// initialized! Hurray
 
-	public EventBModel load(final String s, String mainComponent) throws IOException {
+	public EventBModel load(final String s, String mainComponent)
+			throws IOException {
 		EventBModel eventBModel = modelProvider.get();
 		byte[] bytes = Base64.decodeBase64(s.getBytes());
 		XMLResourceImpl r2 = new XMLResourceImpl();
 		r2.load(new ByteArrayInputStream(bytes), new HashMap<Object, Object>());
 		Project p = (Project) r2.getContents().get(0);
-		eventBModel.initialize(p,mainComponent);
+		eventBModel.initialize(p, mainComponent);
 		return eventBModel;
 	}
 
@@ -63,18 +64,18 @@ public class EventBFactory {
 				loadcmd = m2.group(1);
 			}
 		}
-		EventBModel res = load(emfmodel,mainmodel);
-		
-		res.getStatespace().execute(new LoadEventBCommand(loadcmd));
+		EventBModel res = load(emfmodel, mainmodel);
+
+		final ICommand loadcommand = new LoadEventBCommand(loadcmd);
+		res.getStatespace().execute(loadcommand);
 		res.getStatespace().execute(new StartAnimationCommand());
-		
-		
+		res.getStatespace().setLoadcmd(loadcommand);
+
 		return res;
 
 	}
 
-	public final List<String> readFile(final File machine)
- throws IOException {
+	public final List<String> readFile(final File machine) throws IOException {
 		ArrayList<String> res = new ArrayList<String>();
 		FileInputStream fstream = new FileInputStream(machine);
 		try {
