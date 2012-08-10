@@ -75,7 +75,7 @@ public class WebConsole {
 		});
 	}
 
-	public static void run(Runnable openBrowser) throws Exception {
+	public static void run(final Runnable openBrowser) throws Exception {
 
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
 
@@ -113,6 +113,10 @@ public class WebConsole {
 			port++;
 		}
 		return port;
+	}
+
+	public static int getPort() {
+		return PORT;
 	}
 
 }
