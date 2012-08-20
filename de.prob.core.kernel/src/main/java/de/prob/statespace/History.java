@@ -170,4 +170,9 @@ public class History {
 	public HistoryElement getHead() {
 		return head;
 	}
+	
+	public StateSpace getStatespace() {
+		return s;
+	}
+	
 }
