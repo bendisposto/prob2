@@ -21,7 +21,6 @@ config.groovy
 **/*.prob
 *.dot
 *.prob
-META-INF/MANIFEST.MF
 build.properties
 plugin.properties
 plugin.xml

@@ -1,10 +1,11 @@
+apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply from: 'https://raw.github.com/gist/1527604/4080ebed7b141d10610825aebd70942fcd301105/emma.gradle'
 apply plugin: 'findbugs'
-//apply plugin: 'eclipse-wtp'
-//apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'war'
 //apply plugin: 'jetty'
 
 
@@ -208,6 +209,13 @@ task integrationtests(dependsOn: ['classes','downloadCli'], type:JavaExec){
 	args = ['-test','groovyTests']
 }
 
+eclipse {
+  project { 
+     natures   'org.eclipse.pde.PluginNature' 
+     buildCommand   'org.eclipse.pde.ManifestBuilder'
+     buildCommand 'org.eclipse.pde.SchemaBuilder'
+  }
+}
 
 
 
