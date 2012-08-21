@@ -1,0 +1,70 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+project.group = 'de.prob'
+sourceCompatibility = 1.6
+def gradle_version = '1.0-rc-3'
+
+
+project.version = '2.0.0-milestone-5-SNAPSHOT'
+
+
+
+repositories {
+    maven {
+      name "cobra"
+      url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
+    } 
+    maven {
+    	name "spock snapshot"
+    	url "http://oss.sonatype.org/content/repositories/snapshots/"
+    } 
+}
+
+
+
+configurations.all {
+      resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
+
+
+dependencies {
+
+	groovy 'org.codehaus.groovy:groovy-all:2.0.0' 
+
+
+
+	testCompile 'junit:junit:4.8.2'
+	testCompile 'org.mockito:mockito-core:1.8.5'
+	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0-SNAPSHOT'
+	
+}
+
+
+
+eclipse {
+  project { 
+ 	 name = 'de.prob.ui'
+     natures   'org.eclipse.pde.PluginNature' 
+     buildCommand   'org.eclipse.pde.ManifestBuilder'
+     buildCommand 'org.eclipse.pde.SchemaBuilder'
+  }
+  
+  classpath {
+	  file {
+		  whenMerged { classpath ->
+			  classpath.entries += new org.gradle.plugins.ide.eclipse.model.Container("org.eclipse.pde.core.requiredPlugins");
+		  }
+		}
+  }
+  
+}
+
+
+
+
+
