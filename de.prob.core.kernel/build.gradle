@@ -211,6 +211,7 @@ task integrationtests(dependsOn: ['classes','downloadCli'], type:JavaExec){
 
 eclipse {
   project { 
+ 	 name = 'de.prob.core.kernel'
      natures   'org.eclipse.pde.PluginNature' 
      buildCommand   'org.eclipse.pde.ManifestBuilder'
      buildCommand 'org.eclipse.pde.SchemaBuilder'
