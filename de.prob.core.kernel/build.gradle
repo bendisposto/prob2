@@ -55,12 +55,12 @@ def parser_version = '2.4.6-SNAPSHOT'
 
 dependencies {
 
-	groovy 'org.codehaus.groovy:groovy-all:2.0.0' 
+	groovy 'org.codehaus.groovy:groovy-all:2.0.1' 
 
 	compile 'com.google.guava:guava:r09' // Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
 
-	compile 'org.codehaus.groovy:groovy-all:2.0.0' // Apache Licence 2.0
+	compile 'org.codehaus.groovy:groovy-all:2.0.1' // Apache Licence 2.0
 	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
 	compile 'jline:jline:0.9.94' // BSD
 
