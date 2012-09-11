@@ -3,6 +3,12 @@ package de.prob.ui;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.google.inject.Injector;
+
+import de.prob.Main;
+import de.prob.webconsole.ServletContextListener;
+import de.prob.webconsole.WebConsole;
+
 
 /**
  * The activator class controls the plug-in life cycle
@@ -10,10 +16,11 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "ssd"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "de.prob.ui"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
+	private static final Injector INJECTOR = ServletContextListener.INJECTOR;
 	
 	/**
 	 * The constructor
@@ -27,6 +34,23 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		Main instance = INJECTOR.getInstance(Main.class);
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					WebConsole.run(new Runnable() {
+						@Override
+						public void run() {
+						}
+					});
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+
+		new Thread(r).start();
 		plugin = this;
 	}
 

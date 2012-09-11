@@ -1,5 +1,5 @@
 apply plugin: 'java'
-apply plugin: 'groovy'
+//apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 
@@ -29,12 +29,12 @@ configurations.all {
       resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
-sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
+//sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
 
 
 dependencies {
 
-	groovy 'org.codehaus.groovy:groovy-all:2.0.0' 
+//	groovy 'org.codehaus.groovy:groovy-all:2.0.1' 
 
 
 
@@ -44,6 +44,13 @@ dependencies {
 	
 }
 
+task collectDependencies(type: Copy) {
+	
+				   from configurations.compile
+			   
+				into "lib/dependencies"
+				
+}
 
 
 eclipse {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <fragment>
-   <extension
+<!--   <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="de.prob.ui.PerspectiveFactory"
@@ -10,6 +10,7 @@
             name="ProB"> 
       </perspective>
    </extension>
+   -->
  <!--  <extension
          point="org.eclipse.ui.splashHandlers">
       <splashHandler

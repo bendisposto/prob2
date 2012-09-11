@@ -3,8 +3,6 @@ package de.prob.ui;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.swing.JButton;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -18,25 +16,22 @@ public class OpenGroovyConsole extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+
 		try {
 			IWorkbenchBrowserSupport browserSupport = PlatformUI.getWorkbench()
 					.getBrowserSupport();
+			int port = WebConsole.getPort();
 			browserSupport.createBrowser(IWorkbenchBrowserSupport.AS_EDITOR,
 					"prob", "prob2", "prob3").openURL(
-					new URL("http://localhost:"+WebConsole.getPort()));
+					new URL("http://localhost:" + port));
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-			
-		}
-	
 
-		
+		}
+
 		return null;
 	}
-	
-	
-	
 
 }
