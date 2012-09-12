@@ -16,21 +16,17 @@ public class OpenGroovyConsole extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-
 		try {
 			IWorkbenchBrowserSupport browserSupport = PlatformUI.getWorkbench()
 					.getBrowserSupport();
-			int port = WebConsole.getPort();
 			browserSupport.createBrowser(IWorkbenchBrowserSupport.AS_EDITOR,
 					"prob", "prob2", "prob3").openURL(
-					new URL("http://localhost:" + port));
+					new URL("http://localhost:"+WebConsole.getPort()));
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-
 		}
-
 		return null;
 	}
 

@@ -5,23 +5,25 @@ import groovy.lang.Binding;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
-import org.eventb.core.IMachineRoot;
-import org.eventb.core.ISCContextRoot;
-import org.eventb.core.ISCMachineRoot;
-import org.eventb.emf.persistence.ProjectResource;
 import org.eventb.emf.core.Project;
+import org.eventb.emf.persistence.ProjectResource;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinCore;
@@ -31,9 +33,10 @@ import com.google.inject.Injector;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.EventBModel;
-import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.scripting.EventBFactory;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
+import de.prob.ui.eventb.internal.TranslatorFactory;
 import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;
 
@@ -49,7 +52,8 @@ public class StartAnimationHandler extends AbstractHandler {
 		final IEventBRoot rootElement = getRootElement();
 
 		Injector injector = ServletContextListener.INJECTOR;
-
+		
+	
 		final EventBFactory instance = injector
 				.getInstance(EventBFactory.class);
 
@@ -75,7 +79,7 @@ public class StartAnimationHandler extends AbstractHandler {
 		PrintWriter pto = new PrintWriter(writer);
 		try {
 			TranslatorFactory.translate(rootElement, pto);
-		} catch (TranslationFailedException e) {
+		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 
@@ -95,7 +99,8 @@ public class StartAnimationHandler extends AbstractHandler {
 		bindings.setVariable("defaultStateSpace", s);
 		bindings.setVariable("defaultHistory", h);
 		System.gc();
-		
+
+		System.out.println("IN IN IN!!!!");
 		return null;
 	}
 
@@ -117,22 +122,22 @@ public class StartAnimationHandler extends AbstractHandler {
 		}
 		return root;
 	}
+	
+	private static String serialize(Project project) {
 
-	public static void translate(final IEventBRoot root,
-			final IPrologTermOutput pto) throws  {
-		if (root instanceof IMachineRoot) {
-			final ISCMachineRoot scRoot = ((IMachineRoot) root)
-					.getSCMachineRoot();
-			EventBMachineTranslator.create(scRoot, pto);
-
-		} else if (root instanceof IContextRoot) {
-			final ISCContextRoot scRoot = ((IContextRoot) root)
-					.getSCContextRoot();
-			EventBContextTranslator.create(scRoot, pto);
-		} else {
-			throw new TranslationFailedException(root.getComponentName(),
-					"Cannot translate anything else than IMachineRoot or IContextRoot. Type was: "
-							+ root.getClass());
+		StringWriter sw = new StringWriter();
+		Map<Object, Object> options = new HashMap<Object, Object>();
+		options.put(XMLResource.OPTION_ROOT_OBJECTS,
+				Collections.singletonList(project));
+		options.put(XMLResource.OPTION_FORMATTED, false);
+		XMLResourceImpl ri = new XMLResourceImpl();
+		try {
+			ri.save(sw, options);
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
+
+		String xml = Base64.encodeBase64String(sw.toString().getBytes());
+		return xml;
 	}
 }

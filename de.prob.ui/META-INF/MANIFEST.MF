@@ -9,7 +9,10 @@ Bundle-Vendor: STUPS group
 Bundle-Activator: de.prob.ui.Activator
 Require-Bundle: org.eclipse.core.runtime,
  de.prob.core.kernel;bundle-version="1.0.0",
- org.eclipse.ui
+ org.eclipse.ui,
+ org.eventb.core;bundle-version="2.5.1",
+ org.rodinp;bundle-version="1.6.0",
+ org.eventb.emf.persistence;bundle-version="2.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: de.prob.ui
 
