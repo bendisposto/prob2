@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eventb.core.IEventBRoot;
+import org.eventb.emf.core.CorePackage;
 import org.eventb.emf.core.Project;
 import org.eventb.emf.persistence.ProjectResource;
 import org.rodinp.core.IRodinFile;
@@ -43,7 +44,11 @@ import de.prob.webconsole.ServletContextListener;
 public class StartAnimationHandler extends AbstractHandler {
 
 	private ISelection fSelection;
-	
+
+	CorePackage f = CorePackage.eINSTANCE; // As a side effect the EMF stuff is
+
+	// initialized! Hurray
+
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
@@ -52,14 +57,13 @@ public class StartAnimationHandler extends AbstractHandler {
 		final IEventBRoot rootElement = getRootElement();
 
 		Injector injector = ServletContextListener.INJECTOR;
-		
-	
+
 		final EventBFactory instance = injector
 				.getInstance(EventBFactory.class);
 
 		IRodinProject rodinProject = rootElement.getRodinProject();
 		ProjectResource resource = new ProjectResource(rodinProject);
-		
+
 		try {
 			resource.load(null);
 		} catch (IOException e) {
@@ -96,15 +100,19 @@ public class StartAnimationHandler extends AbstractHandler {
 		History h = new History(s);
 		final GroovyExecution ge = injector.getInstance(GroovyExecution.class);
 		Binding bindings = ge.getBindings();
-		bindings.setVariable("defaultStateSpace", s);
-		bindings.setVariable("defaultHistory", h);
+		try {
+			bindings.setVariable("defaultStateSpace", s);
+			bindings.setVariable("defaultHistory", h);
+		} catch (Error t) {
+			t.printStackTrace();
+		}
+
 		System.gc();
 
 		System.out.println("IN IN IN!!!!");
 		return null;
 	}
 
-	
 	private IEventBRoot getRootElement() {
 		IEventBRoot root = null;
 		if (fSelection instanceof IStructuredSelection) {
@@ -122,7 +130,7 @@ public class StartAnimationHandler extends AbstractHandler {
 		}
 		return root;
 	}
-	
+
 	private static String serialize(Project project) {
 
 		StringWriter sw = new StringWriter();
