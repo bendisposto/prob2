@@ -37,6 +37,7 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.StaticRegistry;
 import de.prob.ui.eventb.internal.TranslatorFactory;
 import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;
@@ -98,6 +99,8 @@ public class StartAnimationHandler extends AbstractHandler {
 		s.execute(new StartAnimationCommand());
 
 		History h = new History(s);
+		StaticRegistry.notifyNewHistory(h);
+		System.out.println(StaticRegistry.listeners);
 		final GroovyExecution ge = injector.getInstance(GroovyExecution.class);
 		Binding bindings = ge.getBindings();
 		try {
@@ -109,7 +112,6 @@ public class StartAnimationHandler extends AbstractHandler {
 
 		System.gc();
 
-		System.out.println("IN IN IN!!!!");
 		return null;
 	}
 

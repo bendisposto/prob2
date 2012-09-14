@@ -2,6 +2,7 @@ package de.prob.ui.views;
 
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
@@ -10,6 +11,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
+
+import de.prob.statespace.History;
+import de.prob.statespace.IAnimationListener;
+import de.prob.statespace.ILoadListener;
+import de.prob.statespace.StaticRegistry;
 
 
 /**
@@ -30,7 +36,7 @@ import org.eclipse.swt.SWT;
  * <p>
  */
 
-public class SampleView extends ViewPart {
+public class SampleView extends ViewPart implements IAnimationListener, ILoadListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -41,6 +47,7 @@ public class SampleView extends ViewPart {
 	private Action action1;
 	private Action action2;
 	private Action doubleClickAction;
+	private History currentHistory = null;
 
 	/*
 	 * The content provider class is responsible for
@@ -53,12 +60,16 @@ public class SampleView extends ViewPart {
 	 */
 	 
 	class ViewContentProvider implements IStructuredContentProvider {
+		// TableViewer, null, History
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+			System.out.println(v);
+			System.out.println(oldInput);
+			System.out.println(newInput);
 		}
 		public void dispose() {
 		}
 		public Object[] getElements(Object parent) {
-			return new String[] { "One", "Two", "Three" };
+			return new String[] { parent.toString() };
 		}
 	}
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -80,6 +91,7 @@ public class SampleView extends ViewPart {
 	 * The constructor.
 	 */
 	public SampleView() {
+		StaticRegistry.registerListener(this);
 	}
 
 	/**
@@ -91,7 +103,7 @@ public class SampleView extends ViewPart {
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new NameSorter());
-		viewer.setInput(getViewSite());
+		viewer.setInput(null);
 
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "de.prob.ui.viewer");
@@ -186,5 +198,23 @@ public class SampleView extends ViewPart {
 	 */
 	public void setFocus() {
 		viewer.getControl().setFocus();
+	}
+
+	@Override
+	public void currentStateChanged(final History history) {
+		Display.getDefault().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				viewer.setInput(history);
+			}
+		});
+		currentHistory = history;
+	}
+
+	@Override
+	public void notifyLoadHistory(History h) {
+		currentHistory = h;	
+		h.registerAnimationListener(this);
 	}
 }
