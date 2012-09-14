@@ -105,8 +105,6 @@ public class WebConsole {
 		server.setHandler(handlers);
 
 		server.start();
-		ready = true;
-		starting = false;
 		openBrowser.run();
 		server.join();
 
