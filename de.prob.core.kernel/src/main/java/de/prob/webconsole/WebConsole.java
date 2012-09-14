@@ -93,6 +93,8 @@ public class WebConsole {
 				.getProtectionDomain();
 		String warFile = protectionDomain.getCodeSource().getLocation()
 				.toExternalForm();
+		
+		if (!warFile.endsWith("bin/")) warFile += "bin/";
 
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
@@ -103,6 +105,8 @@ public class WebConsole {
 		server.setHandler(handlers);
 
 		server.start();
+		ready = true;
+		starting = false;
 		openBrowser.run();
 		server.join();
 
