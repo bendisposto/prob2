@@ -19,7 +19,10 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * 
  */
 public class WebConsole {
+	
 
+	private static volatile boolean starting  = true;
+	private static volatile boolean ready  = false;
 	private final static int PORT = findPort(8080);
 
 	/**
@@ -76,9 +79,10 @@ public class WebConsole {
 	}
 
 	public static void run(final Runnable openBrowser) throws Exception {
-
+		
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
-
+		
+				
 		Server server = new Server();
 
 		Connector connector = new SelectChannelConnector();
@@ -118,6 +122,7 @@ public class WebConsole {
 	}
 
 	public static int getPort() {
+		while (starting && !ready);
 		return PORT;
 	}
 
