@@ -14,8 +14,7 @@ import org.eclipse.swt.SWT;
 
 import de.prob.statespace.History;
 import de.prob.statespace.IAnimationListener;
-import de.prob.statespace.ILoadListener;
-import de.prob.statespace.StaticRegistry;
+import de.prob.statespace.IHistoryChangeListener;
 
 
 /**
@@ -36,7 +35,7 @@ import de.prob.statespace.StaticRegistry;
  * <p>
  */
 
-public class SampleView extends ViewPart implements IAnimationListener, ILoadListener {
+public class SampleView extends ViewPart implements IHistoryChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -91,7 +90,7 @@ public class SampleView extends ViewPart implements IAnimationListener, ILoadLis
 	 * The constructor.
 	 */
 	public SampleView() {
-		StaticRegistry.registerListener(this);
+//		StaticRegistry.registerListener(this);
 	}
 
 	/**
@@ -201,7 +200,7 @@ public class SampleView extends ViewPart implements IAnimationListener, ILoadLis
 	}
 
 	@Override
-	public void currentStateChanged(final History history) {
+	public void historyChange(final History history) {
 		Display.getDefault().asyncExec(new Runnable() {
 			
 			@Override
@@ -210,11 +209,5 @@ public class SampleView extends ViewPart implements IAnimationListener, ILoadLis
 			}
 		});
 		currentHistory = history;
-	}
-
-	@Override
-	public void notifyLoadHistory(History h) {
-		currentHistory = h;	
-		h.registerAnimationListener(this);
 	}
 }
