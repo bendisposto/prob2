@@ -18,5 +18,6 @@ public class ModelModule extends AbstractModule {
 		bind(StateSpaceInfo.class);
 		bind(ClassicalBModel.class);
 		bind(EventBModel.class);
+		bind(AnimationSelector.class);
 	}
 }
