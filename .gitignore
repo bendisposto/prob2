@@ -2,7 +2,7 @@ build/
 bin/
 .classpath
 .project
-.settings/
+.settings/**
 .gradle/
 logs/
 *.swp
