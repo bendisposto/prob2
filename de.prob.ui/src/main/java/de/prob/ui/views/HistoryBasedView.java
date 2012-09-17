@@ -12,9 +12,13 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 
+import com.google.inject.Injector;
+
+import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IAnimationListener;
 import de.prob.statespace.IHistoryChangeListener;
+import de.prob.webconsole.ServletContextListener;
 
 
 /**
@@ -35,7 +39,7 @@ import de.prob.statespace.IHistoryChangeListener;
  * <p>
  */
 
-public class SampleView extends ViewPart implements IHistoryChangeListener {
+public class HistoryBasedView extends ViewPart implements IHistoryChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -47,6 +51,8 @@ public class SampleView extends ViewPart implements IHistoryChangeListener {
 	private Action action2;
 	private Action doubleClickAction;
 	private History currentHistory = null;
+	
+	Injector injector = ServletContextListener.INJECTOR;
 
 	/*
 	 * The content provider class is responsible for
@@ -89,8 +95,9 @@ public class SampleView extends ViewPart implements IHistoryChangeListener {
 	/**
 	 * The constructor.
 	 */
-	public SampleView() {
-//		StaticRegistry.registerListener(this);
+	public HistoryBasedView() {
+		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
+		selector.registerHistoryChangeListener(this);
 	}
 
 	/**
@@ -117,7 +124,7 @@ public class SampleView extends ViewPart implements IHistoryChangeListener {
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
-				SampleView.this.fillContextMenu(manager);
+				HistoryBasedView.this.fillContextMenu(manager);
 			}
 		});
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());

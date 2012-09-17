@@ -114,10 +114,10 @@
       </category>
       <view
             category="de.prob.ui"
-            class="de.prob.ui.views.SampleView"
+            class="de.prob.ui.views.HistoryBasedView"
             icon="icons/sample.gif"
             id="de.prob.ui.views.SampleView"
-            name="Sample View">
+            name="History View">
       </view>
    </extension>
    <extension
