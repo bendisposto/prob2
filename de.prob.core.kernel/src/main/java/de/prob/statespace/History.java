@@ -58,7 +58,7 @@ public class History {
 		History newHistory = new History(s, new HistoryElement(
 				current.getCurrentState(), newState, op, current),
 				animationListeners);
-		notifyAnimationChange(newHistory);
+		notifyAnimationChange(this,newHistory);
 
 		return newHistory;
 	}
@@ -75,7 +75,7 @@ public class History {
 		if (canGoBack()) {
 			History history = new History(s, head, current.getPrevious(),
 					animationListeners);
-			notifyAnimationChange(history);
+			notifyAnimationChange(this,history);
 			return history;
 		}
 		return this;
@@ -93,7 +93,7 @@ public class History {
 				p = p.getPrevious();
 			}
 			History history = new History(s, head, p, animationListeners);
-			notifyAnimationChange(history);
+			notifyAnimationChange(this,history);
 			return history;
 		}
 		return this;
@@ -157,9 +157,9 @@ public class History {
 		animationListeners.add(l);
 	}
 
-	public void notifyAnimationChange(final History history) {
+	public void notifyAnimationChange(final History oldHistory,final History newHistory) {
 		for (IAnimationListener listener : animationListeners) {
-			listener.currentStateChanged(history);
+			listener.currentStateChanged(oldHistory,newHistory);
 		}
 	}
 
