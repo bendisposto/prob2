@@ -109,15 +109,22 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            id="de.prob.ui"
-            name="Sample Category">
+            id="de.hhu.stups.prob"
+            name="ProB">
       </category>
       <view
-            category="de.prob.ui"
-            class="de.prob.ui.views.HistoryBasedView"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.operationview.OperationView"
             icon="icons/sample.gif"
-            id="de.prob.ui.views.SampleView"
-            name="History View">
+            id="de.prob.ui.operationview.OperationView"
+            name="Events">
+      </view>
+      <view
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.stateview.StateView"
+            icon="icons/sample.gif"
+            id="de.prob.ui.stateview"
+            name="State View">
       </view>
    </extension>
    <extension
@@ -131,9 +138,21 @@
                relative="org.eclipse.ui.views.ProblemView">
          </view>
       </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               id="de.prob.ui.operationview.OperationView"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+      </perspectiveExtension>
    </extension>
    <extension
          point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
       <contexts
             file="contexts.xml">
       </contexts>
