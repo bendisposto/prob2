@@ -6,21 +6,28 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.services.ISourceProviderService;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Injector;
 
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
+import de.prob.ui.services.HistoryActiveProvider;
+import de.prob.ui.services.ModelLoadedProvider;
 import de.prob.webconsole.ServletContextListener;
 
 
@@ -56,9 +63,28 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	 
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
-			return getText(obj);
+			if(index == 0) {
+				if(obj instanceof OpInfo) {
+					OpInfo op = (OpInfo) obj;
+					return op.name;
+				} else {
+					return obj.getClass().toString();
+				}
+			}
+			
+			if(index == 1) {
+				if(obj instanceof OpInfo) {
+					OpInfo op = (OpInfo) obj;
+					return Joiner.on(",").join(op.params);
+				} else {
+					return obj.getClass().toString();
+				}
+			}
+			return "";
 		}
 		public Image getColumnImage(Object obj, int index) {
+			if( index == 1 )
+				return null;
 			return getImage(obj);
 		}
 		public Image getImage(Object obj) {
@@ -83,6 +109,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	 */
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		createColumns();
 		viewer.setContentProvider(new OperationsContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new NameSorter());
@@ -91,13 +118,37 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "de.prob.ui.viewer");
 		hookDoubleClickAction();
+		updateModelLoadedProvider();
+		
+		Table table = viewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
 	}
 
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new OTVDoubleClickListener());
 	}
-	
 
+	private void createColumns() {
+		TableViewerColumn column1 = new TableViewerColumn(viewer, SWT.NONE);
+		column1.getColumn().setText("Event");
+		column1.getColumn().setResizable(true);
+		column1.getColumn().pack();
+
+		TableViewerColumn column2 = new TableViewerColumn(viewer, SWT.NONE);
+		column2.getColumn().setText("Parameter(s)");
+		column2.getColumn().setResizable(true);
+		column2.getColumn().pack();
+	}
+
+	/**
+	 * Recalculate size of all columns
+	 */
+	private void packTableColumns() {
+		for (TableColumn column : viewer.getTable().getColumns()) {
+			column.pack();
+		}
+	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
@@ -114,8 +165,10 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 			@Override
 			public void run() {
 				viewer.setInput(history);
+				packTableColumns();
 			}
 		});
+		updateHistoryEnabled(history);
 	}
 	
 	public OpInfo getSelectedOperation() {
@@ -142,5 +195,21 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	
 	private void executeSingleOperation(OpInfo op) {
 		currentHistory.add(op.id);
+	}
+	
+	private void updateModelLoadedProvider() {
+		ISourceProviderService service = (ISourceProviderService) this
+				.getSite().getService(ISourceProviderService.class);
+		ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
+				.getSourceProvider(ModelLoadedProvider.SERVICE);
+		sourceProvider.setEnabled(true);
+	}
+	
+	private void updateHistoryEnabled(History history) {
+		ISourceProviderService service = (ISourceProviderService) this
+				.getSite().getService(ISourceProviderService.class);
+		HistoryActiveProvider sourceProvider = (HistoryActiveProvider) service
+				.getSourceProvider(HistoryActiveProvider.FORWARD_SERVICE);
+		sourceProvider.historyChange(history);
 	}
 }
