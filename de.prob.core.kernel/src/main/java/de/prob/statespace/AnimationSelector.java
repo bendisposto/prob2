@@ -14,6 +14,9 @@ public class AnimationSelector implements IAnimationListener {
 	
 	public void registerHistoryChangeListener(IHistoryChangeListener listener) {
 		listeners.add(listener);
+		if( currentHistory != null ) {
+			listener.historyChange(currentHistory);
+		}
 	}
 	
 	@Override
@@ -41,5 +44,9 @@ public class AnimationSelector implements IAnimationListener {
 		for (IHistoryChangeListener listener : listeners) {
 			listener.historyChange(history);
 		}
+	}
+	
+	public History getCurrentHistory() {
+		return currentHistory;
 	}
 }
