@@ -168,7 +168,9 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 				packTableColumns();
 			}
 		});
-		updateHistoryEnabled(history);
+		try {
+			updateHistoryEnabled(history);
+		} catch(Exception e) {}
 	}
 	
 	public OpInfo getSelectedOperation() {

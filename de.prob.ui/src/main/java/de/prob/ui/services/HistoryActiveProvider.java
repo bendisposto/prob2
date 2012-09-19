@@ -6,11 +6,7 @@ import java.util.Map;
 import org.eclipse.ui.AbstractSourceProvider;
 import org.eclipse.ui.ISources;
 
-import com.google.inject.Injector;
-
-import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
-import de.prob.webconsole.ServletContextListener;
 
 public class HistoryActiveProvider extends AbstractSourceProvider {
 

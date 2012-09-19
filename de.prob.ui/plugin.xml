@@ -200,6 +200,13 @@
             id="de.prob.ui.HistoryView"
             name="History">
       </view>
+      <view
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.animationsview.AnimationsView"
+            icon="icons/sample.gif"
+            id="de.prob.ui.AnimationsView"
+            name="Current Animations">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
