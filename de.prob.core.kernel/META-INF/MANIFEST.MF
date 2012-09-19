@@ -57,7 +57,8 @@ Bundle-ClassPath: .,
 Bundle-Vendor: STUPS Group
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: com.google.inject,
+Export-Package: com.google.common.base,
+ com.google.inject,
  com.google.inject.assistedinject,
  com.google.inject.binder,
  com.google.inject.matcher,
@@ -94,6 +95,7 @@ Export-Package: com.google.inject,
  de.prob,
  de.prob.animator.command,
  de.prob.animator.command.representation,
+ de.prob.animator.domainobjects,
  de.prob.core.sablecc.parser,
  de.prob.model.eventb,
  de.prob.model.representation,

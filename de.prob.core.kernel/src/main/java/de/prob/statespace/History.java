@@ -175,4 +175,8 @@ public class History {
 		return s;
 	}
 	
+	public Set<OpInfo> getNextTransitions() {
+		return s.outgoingEdgesOf(current.getCurrentState());
+	}
+	
 }
