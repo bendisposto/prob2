@@ -9,8 +9,15 @@ import org.eclipse.ui.PlatformUI;
 import com.google.common.base.Joiner;
 
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.ui.Activator;
 
 class OperationViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+	
+	private final Image imgEnabled = Activator.getDefault()
+			.getImageRegistry().getDescriptor(Activator.IMG_ENABLED)
+			.createImage();
+	
+	
 	public String getColumnText(Object obj, int index) {
 		if(index == 0) {
 			if(obj instanceof OpInfo) {
@@ -37,7 +44,6 @@ class OperationViewLabelProvider extends LabelProvider implements ITableLabelPro
 		return getImage(obj);
 	}
 	public Image getImage(Object obj) {
-		return PlatformUI.getWorkbench().
-				getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
+		return imgEnabled;
 	}
 }
