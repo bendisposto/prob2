@@ -1,15 +1,14 @@
 package de.prob.ui.stateview;
 
 
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.ISharedImages;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -51,21 +50,6 @@ public class StateView extends ViewPart implements IHistoryChangeListener{
 	
 	Injector injector = ServletContextListener.INJECTOR;
 	 
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			return getText(obj);
-		}
-		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().
-					getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
-	class NameSorter extends ViewerSorter {
-	}
-
 	/**
 	 * The constructor.
 	 */
@@ -80,15 +64,37 @@ public class StateView extends ViewPart implements IHistoryChangeListener{
 	 */
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		createColumns();
 		viewer.setContentProvider(new StateContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setSorter(new NameSorter());
+		viewer.setLabelProvider(new StateViewLabelProvider());
+		viewer.setSorter(null);
 		viewer.setInput(getViewSite());
 
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "de.prob.ui.viewer");
+		
+		Table table = viewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+	}
+	
+	private void createColumns() {
+		TableViewerColumn column1 = new TableViewerColumn(viewer, SWT.NONE);
+		column1.getColumn().setText("Name");
+		column1.getColumn().setResizable(true);
+		column1.getColumn().pack();
+
+		TableViewerColumn column2 = new TableViewerColumn(viewer, SWT.NONE);
+		column2.getColumn().setText("Value");
+		column2.getColumn().setResizable(true);
+		column2.getColumn().pack();
 	}
 
+	private void packTableColumns() {
+		for (TableColumn column : viewer.getTable().getColumns()) {
+			column.pack();
+		}
+	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
@@ -105,6 +111,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener{
 			@Override
 			public void run() {
 				viewer.setInput(history);
+				packTableColumns();
 			}
 		});
 	}

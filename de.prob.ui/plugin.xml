@@ -44,6 +44,12 @@
         <menuContribution
               locationURI="toolbar:de.prob.ui.OperationView">
            <command
+                 commandId="de.prob.ui.history.restartAnim"
+                 icon="icons/refresh.gif"
+                 label="Restart Animation"
+                 style="push">
+           </command>
+           <command
                  commandId="de.prob.ui.history.back"
                  icon="icons/back.gif"
                  label="History Back"
@@ -78,6 +84,10 @@
             <command
                   id="de.prob.ui.history.forward"
                   name="History Forward">
+            </command>
+            <command
+                  id="de.prob.ui.history.restartAnim"
+                  name="Restart Animation">
             </command>
       
    </extension>
@@ -169,6 +179,20 @@
                   </equals>
                </with>
             </and>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.history.restartAnim">
+         <class
+               class="de.prob.ui.operationview.RestartAnimationHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
          </enabledWhen>
       </handler>
       

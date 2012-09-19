@@ -31,7 +31,7 @@ class StateContentProvider implements IStructuredContentProvider {
 			History history = (History) inputElement;
 			HashMap<String, String> state = history.getStatespace().getInfo().getState(history.getCurrent().getCurrentState());
 			for (String key : state.keySet()) {
-				vars.add(key+" "+state.get(key));
+				vars.add(new Variable(key, state.get(key)));
 			}
 		}
 		

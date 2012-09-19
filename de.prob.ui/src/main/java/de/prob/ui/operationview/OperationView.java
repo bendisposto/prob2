@@ -3,23 +3,18 @@ package de.prob.ui.operationview;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
 
-import com.google.common.base.Joiner;
 import com.google.inject.Injector;
 
 import de.prob.animator.domainobjects.OpInfo;
@@ -61,40 +56,6 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	
 	Injector injector = ServletContextListener.INJECTOR;
 	 
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			if(index == 0) {
-				if(obj instanceof OpInfo) {
-					OpInfo op = (OpInfo) obj;
-					return op.name;
-				} else {
-					return obj.getClass().toString();
-				}
-			}
-			
-			if(index == 1) {
-				if(obj instanceof OpInfo) {
-					OpInfo op = (OpInfo) obj;
-					return Joiner.on(",").join(op.params);
-				} else {
-					return obj.getClass().toString();
-				}
-			}
-			return "";
-		}
-		public Image getColumnImage(Object obj, int index) {
-			if( index == 1 )
-				return null;
-			return getImage(obj);
-		}
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().
-					getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
-	class NameSorter extends ViewerSorter {
-	}
-
 	/**
 	 * The constructor.
 	 */
@@ -111,8 +72,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		createColumns();
 		viewer.setContentProvider(new OperationsContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setSorter(new NameSorter());
+		viewer.setLabelProvider(new OperationViewLabelProvider());
+		viewer.setSorter(new ViewerSorter());
 		viewer.setInput(getViewSite());
 
 		// Create the help context id for the viewer's control
