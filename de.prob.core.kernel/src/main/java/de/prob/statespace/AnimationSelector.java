@@ -49,4 +49,8 @@ public class AnimationSelector implements IAnimationListener {
 	public History getCurrentHistory() {
 		return currentHistory;
 	}
+	
+	public List<History> getHistories() {
+		return histories;
+	}
 }
