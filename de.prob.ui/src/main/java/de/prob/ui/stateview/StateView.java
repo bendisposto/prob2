@@ -1,9 +1,6 @@
 package de.prob.ui.stateview;
 
 
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -18,7 +15,6 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;

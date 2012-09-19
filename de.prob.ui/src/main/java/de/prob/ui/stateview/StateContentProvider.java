@@ -3,12 +3,10 @@ package de.prob.ui.stateview;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.History;
 
 /**
