@@ -100,7 +100,7 @@ public class StartAnimationHandler extends AbstractHandler {
 
 		History h = new History(s);
 		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
-		selector.addNewHistory(h);
+		selector.addNewHistory(h,model);
 		final GroovyExecution ge = injector.getInstance(GroovyExecution.class);
 		Binding bindings = ge.getBindings();
 		try {

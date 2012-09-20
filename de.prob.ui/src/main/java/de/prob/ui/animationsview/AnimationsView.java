@@ -19,6 +19,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
+import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
@@ -89,7 +90,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	}
 	
 	@Override
-	public void historyChange(final History history) {
+	public void historyChange(final History history, AbstractModel model) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
