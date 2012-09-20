@@ -61,4 +61,8 @@ public class AnimationSelector implements IAnimationListener {
 	public List<History> getHistories() {
 		return histories;
 	}
+	
+	public AbstractModel getModel(History history) {
+		return models.get(history);
+	}
 }
