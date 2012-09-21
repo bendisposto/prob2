@@ -1,5 +1,11 @@
 package de.prob.ui.operationview;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -14,10 +20,14 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
+import org.eventb.emf.core.machine.Machine;
 
 import com.google.inject.Injector;
 
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.model.eventb.Event;
+import de.prob.model.eventb.EventBComponent;
+import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
@@ -54,6 +64,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 
 	private TableViewer viewer;
 	private History currentHistory;
+	private AbstractModel currentModel;
 	
 	Injector injector = ServletContextListener.INJECTOR;
 	 
@@ -122,6 +133,9 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	@Override
 	public void historyChange(final History history, AbstractModel model) {
 		currentHistory = history;
+		if(currentModel != model) {
+			updateModel(model);
+		}
 		Display.getDefault().asyncExec(new Runnable() {
 			
 			@Override
@@ -175,5 +189,23 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 		HistoryActiveProvider sourceProvider = (HistoryActiveProvider) service
 				.getSourceProvider(HistoryActiveProvider.FORWARD_SERVICE);
 		sourceProvider.historyChange(history);
+	}
+	
+	private void updateModel(AbstractModel model) {
+		currentModel = model;
+		((OperationsContentProvider) viewer.getContentProvider()).setAllOperations(getOperationNames(model));
+	}
+	
+	private Map<String,Object> getOperationNames(AbstractModel model) {
+		Map<String,Object> names = new HashMap<String, Object>();
+		if(model instanceof EventBModel ) {
+			EventBModel ebmodel = (EventBModel) model;
+			EventBComponent component = ebmodel.getComponent(ebmodel.getMainComponentName());
+			Map<String, Event> events = component.getEvents();
+			for (String key : events.keySet()) {
+				names.put(key, events.get(key));
+			}
+		}
+		return names;
 	}
 }
