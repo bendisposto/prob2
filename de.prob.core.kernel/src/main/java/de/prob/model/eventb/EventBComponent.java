@@ -1,13 +1,16 @@
 package de.prob.model.eventb;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.emf.common.util.EList;
 import org.eventb.emf.core.EventBNamedCommentedComponentElement;
 import org.eventb.emf.core.context.Constant;
 import org.eventb.emf.core.context.Context;
-import org.eventb.emf.core.machine.Event;
 import org.eventb.emf.core.machine.Machine;
+import org.eventb.emf.core.machine.Parameter;
 import org.eventb.emf.core.machine.Variable;
 
 import de.prob.model.representation.AbstractElement;
@@ -34,7 +37,16 @@ public class EventBComponent implements AbstractElement {
 			Machine m = (Machine) emfComponent;
 			constants = new ArrayList<Constant>();
 			variables = m.getVariables();
-			events = m.getEvents();
+			events = new ArrayList<Event>();
+			EList<org.eventb.emf.core.machine.Event> emfEvents = m.getEvents();
+			for (org.eventb.emf.core.machine.Event event : emfEvents) {
+				List<String> params = new ArrayList<String>();
+				EList<Parameter> parameters = event.getParameters();
+				for (Parameter parameter : parameters) {
+					params.add(parameter.doGetName());
+				}				
+				events.add(new Event(event.doGetName(), params));
+			}
 		}
 	}
 
@@ -65,9 +77,17 @@ public class EventBComponent implements AbstractElement {
 	public List<String> getOperations() {
 		ArrayList<String> ops = new ArrayList<String>();
 		for (Event event : events) {
-			ops.add(event.doGetName());
+			ops.add(event.getName());
 		}
 		return ops;
+	}
+	
+	public Map<String,Event> getEvents() {
+		Map<String,Event> map = new HashMap<String, Event>();
+		for (Event event : events) {
+			map.put(event.getName(), event);
+		}
+		return map;
 	}
 
 	public boolean isContext() {
