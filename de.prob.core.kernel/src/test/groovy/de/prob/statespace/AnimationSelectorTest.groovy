@@ -3,6 +3,7 @@ package de.prob.statespace
 import java.awt.TexturePaintContext.Any;
 
 import de.prob.model.classicalb.ClassicalBEntity;
+import de.prob.model.representation.AbstractModel;
 import spock.lang.Specification
 import static org.mockito.Mockito.*
 
@@ -11,14 +12,16 @@ class AnimationSelectorTest extends Specification {
 	def history
 	def selector
 	def listener
+	def model
 	
 	def setup() {
 		history = mock(History.class);
 		doThrow(new IllegalArgumentException()).when(history).registerAnimationListener(any())
+		model = mock(AbstractModel.class)
 		selector = new AnimationSelector();
 		listener = new IHistoryChangeListener() {
 			def count = 0;
-			void historyChange(History arg0) {
+			void historyChange(History arg0,AbstractModel model) {
 				count++;
 			};
 		}
@@ -32,7 +35,7 @@ class AnimationSelectorTest extends Specification {
 	
 	def "It is possible to notify the listener"() {
 		when:
-		selector.notifyHistoryChange(null)
+		selector.notifyHistoryChange(null,null)
 		
 		then:
 		listener.count == 1
@@ -40,11 +43,12 @@ class AnimationSelectorTest extends Specification {
 	
 	def "It is possible to add a new History"() {
 		when:
-		selector.addNewHistory(history)
+		selector.addNewHistory(history,model)
 		
 		then:
 		thrown IllegalArgumentException
 		selector.histories.contains(history)
+		selector.models.get(history) == model
 	}
 	
 	def "It is possible to change the current history"() {
