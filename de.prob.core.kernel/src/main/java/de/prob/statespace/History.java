@@ -1,6 +1,7 @@
 package de.prob.statespace;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -144,6 +145,31 @@ public class History {
 			}
 		}
 		return id;
+	}
+	
+	public History randomAnimation(final int numOfSteps) {
+		StateId currentState = this.current.getCurrentState();
+		History oldHistory = this;
+		HistoryElement previous = this.current;
+		HistoryElement current = this.current;
+		for(int i = 0; i < numOfSteps; i++) {
+			previous = current;
+			List<OpInfo> ops = new ArrayList<OpInfo>();
+			ops.addAll(s.outgoingEdgesOf(currentState));
+			Collections.shuffle(ops);
+			OpInfo op = ops.get(0);
+			
+			StateId newState = s.getState(op);
+			s.evaluateFormulas(newState);
+			
+			current = new HistoryElement(currentState,newState,op,previous);
+			currentState = newState;
+		}
+		
+		History newHistory = new History(s, current, animationListeners);
+		notifyAnimationChange(oldHistory, newHistory);
+		
+		return newHistory;
 	}
 
 	/**
