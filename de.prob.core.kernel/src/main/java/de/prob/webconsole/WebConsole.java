@@ -114,14 +114,15 @@ public class WebConsole {
 
 	private static int findPort(int port) {
 		boolean found = false;
-		while (port < 8180 && (found = !available(port))) {
-			port++;
-		}
-		if (found) {
-			return port;
-		} else
-			throw new IllegalStateException(
-					"Cannot find an open port in the range between 8080 and 8179");
+		int p = port;
+		do {
+			found = available(p);
+			if (found)
+				return p;
+		} while (port < 8180);
+		throw new IllegalStateException(
+				"Cannot find an open port in the range between 8080 and 8179");
+
 	}
 
 	public static int getPort() {
