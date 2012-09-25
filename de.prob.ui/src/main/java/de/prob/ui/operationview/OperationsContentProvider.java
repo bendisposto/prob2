@@ -29,6 +29,7 @@ class OperationsContentProvider implements IStructuredContentProvider {
 			final Object newInput) {
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object[] getElements(final Object inputElement) {
 		List<Object> ops= new ArrayList<Object>();
 		Map<String,Object> enabledOps = new HashMap<String, Object>();
@@ -36,10 +37,17 @@ class OperationsContentProvider implements IStructuredContentProvider {
 		if( inputElement instanceof History) {
 			History history = (History) inputElement;
 			Set<OpInfo> nextTransitions = history.getNextTransitions();
-			ops.addAll(nextTransitions);
 			for (OpInfo opInfo : nextTransitions) {
-				enabledOps.put(opInfo.name, opInfo);
+				if(enabledOps.containsKey(opInfo.name)) {
+					List<OpInfo> opList = (ArrayList<OpInfo>) enabledOps.get(opInfo.name);
+					opList.add(opInfo);
+				} else {
+					List<OpInfo> opList = new ArrayList<OpInfo>();
+					opList.add(opInfo);
+					enabledOps.put(opInfo.name,opList);
+				}
 			}
+			ops.addAll(enabledOps.values());
 		}
 		
 		//add the operations that are not enabled

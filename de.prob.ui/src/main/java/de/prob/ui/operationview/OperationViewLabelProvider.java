@@ -29,9 +29,17 @@ class OperationViewLabelProvider extends LabelProvider implements ITableLabelPro
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	public String getColumnText(Object obj, int index) {
 		if(index == 0) {
-			if(obj instanceof OpInfo) {
+			if(obj instanceof ArrayList<?>) {
+				List<OpInfo> opList = (ArrayList<OpInfo>) obj;
+				if(opList.size() > 1) {
+					return opList.get(0).name + "(x"+ opList.size() + ")";
+				} else {
+					return opList.get(0).name;
+				}
+			} else if(obj instanceof OpInfo) {
 				OpInfo op = (OpInfo) obj;
 				return op.name;
 			} else if(obj instanceof Event) {
@@ -43,7 +51,10 @@ class OperationViewLabelProvider extends LabelProvider implements ITableLabelPro
 		}
 		
 		if(index == 1) {
-			if(obj instanceof OpInfo) {
+			if(obj instanceof ArrayList<?>) {
+				List<OpInfo> opList = (ArrayList<OpInfo>) obj;
+				return Joiner.on(",").join(opList.get(0).params);
+			} else if(obj instanceof OpInfo) {
 				OpInfo op = (OpInfo) obj;
 				return Joiner.on(",").join(op.params);
 			} else if(obj instanceof Event) {
@@ -62,7 +73,7 @@ class OperationViewLabelProvider extends LabelProvider implements ITableLabelPro
 	}
 	
 	public Image getImage(Object obj) {
-		if(obj instanceof OpInfo)
+		if(obj instanceof ArrayList)
 			return imgEnabled;
 		if(obj instanceof Event)
 			return imgDisabled;

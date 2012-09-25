@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -15,13 +20,16 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.eventb.emf.core.machine.Machine;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Injector;
 
 import de.prob.animator.domainobjects.OpInfo;
@@ -90,12 +98,44 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "de.prob.ui.viewer");
+		hookContextMenu();
 		hookDoubleClickAction();
 		updateModelLoadedProvider();
 		
 		Table table = viewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+	}
+	
+	private void hookContextMenu() {
+		final OperationView x = this;
+		TableViewer viewer = this.viewer;
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		IMenuListener listener = new IMenuListener(){
+			@Override
+			public void menuAboutToShow(IMenuManager manager) {
+				x.fillContextMenu(manager);
+			}
+		};
+		menuMgr.addMenuListener(listener);
+		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		viewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, viewer);
+	}
+	
+	private void fillContextMenu(final IMenuManager manager) {
+		List<OpInfo> selectedOperations = getSelectedOperations();
+		for (final OpInfo opInfo : selectedOperations) {
+			Action executeOp = new Action() {
+				public void run() {
+					currentHistory.add(opInfo.id);
+				}
+			};
+			executeOp.setText(Joiner.on(",").join(opInfo.params));
+			manager.add(executeOp);
+		}
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	private void hookDoubleClickAction() {
@@ -149,13 +189,16 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 		} catch(Exception e) {}
 	}
 	
-	public OpInfo getSelectedOperation() {
+	@SuppressWarnings("unchecked")
+	public List<OpInfo> getSelectedOperations() {
 		if (viewer.getSelection() != null
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof OpInfo)
-				return (OpInfo) ssel.getFirstElement();
+			if (ssel.getFirstElement() instanceof ArrayList<?>) {
+				List<OpInfo> opList = (ArrayList<OpInfo>) ssel.getFirstElement();
+				return opList;
+			}
 			else
 				System.out.println("Selection is: "+ssel.getFirstElement().getClass());
 		}
@@ -165,14 +208,11 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	private class OTVDoubleClickListener implements IDoubleClickListener {
 
 		public void doubleClick(final DoubleClickEvent event) {
-			if (getSelectedOperation() != null) {
-				executeSingleOperation(getSelectedOperation());
+			List<OpInfo> selectedOperations = getSelectedOperations();
+			if (selectedOperations != null && !selectedOperations.isEmpty()) {
+				currentHistory.add(selectedOperations.get(0).id);
 			} 
 		}
-	}
-	
-	private void executeSingleOperation(OpInfo op) {
-		currentHistory.add(op.id);
 	}
 	
 	private void updateModelLoadedProvider() {

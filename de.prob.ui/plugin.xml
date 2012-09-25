@@ -259,9 +259,6 @@
       <contexts
             file="contexts.xml">
       </contexts>
-      <contexts
-            file="contexts.xml">
-      </contexts>
    </extension>
    <extension
          point="org.eclipse.ui.services">
