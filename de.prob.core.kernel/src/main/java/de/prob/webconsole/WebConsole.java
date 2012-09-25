@@ -19,10 +19,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * 
  */
 public class WebConsole {
-	
 
-	private static volatile boolean starting  = true;
-	private static volatile boolean ready  = false;
 	private final static int PORT = findPort(8080);
 
 	/**
@@ -116,14 +113,18 @@ public class WebConsole {
 	}
 
 	private static int findPort(int port) {
-		while (!available(port)) {
+		boolean found = false;
+		while (port < 8180 && (found = !available(port))) {
 			port++;
 		}
-		return port;
+		if (found) {
+			return port;
+		} else
+			throw new IllegalStateException(
+					"Cannot find an open port in the range between 8080 and 8179");
 	}
 
 	public static int getPort() {
-		while (starting && !ready);
 		return PORT;
 	}
 
