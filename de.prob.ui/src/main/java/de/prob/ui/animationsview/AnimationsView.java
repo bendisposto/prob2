@@ -7,12 +7,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -36,19 +38,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	
 	Injector injector = ServletContextListener.INJECTOR;
 	AnimationSelector selector; 
-	
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			return getText(obj);
-		}
-		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().
-					getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
+
 
 	/**
 	 * The constructor.
@@ -64,8 +54,9 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	 */
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		createColumns();
 		viewer.setContentProvider(new AnimationsContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.setLabelProvider(new AnimationViewLabelProvider(selector));
 		viewer.setSorter(null);
 		viewer.setInput(getViewSite());
 
@@ -74,7 +65,31 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 		hookDoubleClickAction();
 		
 		Table table = viewer.getTable();
+		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+	}
+	
+	private void createColumns() {
+		TableViewerColumn column1 = new TableViewerColumn(viewer, SWT.NONE);
+		column1.getColumn().setText("Model Name");
+		column1.getColumn().setResizable(true);
+		column1.getColumn().pack();
+
+		TableViewerColumn column2 = new TableViewerColumn(viewer, SWT.NONE);
+		column2.getColumn().setText("Last Executed Operation");
+		column2.getColumn().setResizable(true);
+		column2.getColumn().pack();
+		
+		TableViewerColumn column3 = new TableViewerColumn(viewer, SWT.NONE);
+		column3.getColumn().setText("Number of Executed Operations");
+		column3.getColumn().setResizable(true);
+		column3.getColumn().pack();
+	}
+
+	private void packTableColumns() {
+		for (TableColumn column : viewer.getTable().getColumns()) {
+			column.pack();
+		}
 	}
 
 
@@ -95,6 +110,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 			@Override
 			public void run() {
 				viewer.setInput(selector);
+				packTableColumns();
 			}
 		});
 	}
