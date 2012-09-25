@@ -44,6 +44,12 @@
         <menuContribution
               locationURI="toolbar:de.prob.ui.OperationView">
            <command
+                 commandId="de.prob.ui.randomoperation"
+                 icon="icons/resume.gif"
+                 label="Execute Random Operations"
+                 style="pulldown">
+           </command>
+           <command
                  commandId="de.prob.ui.history.restartAnim"
                  icon="icons/refresh.gif"
                  label="Restart Animation"
@@ -60,6 +66,45 @@
                  icon="icons/forward.gif"
                  label="History Forward"
                  style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              locationURI="menu:de.prob.ui.randomoperation">
+           <command
+                 commandId="de.prob.ui.randomoperation"
+                 label="Execute 1 Step"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.randomoperation.steps"
+                    value="1">
+              </parameter>
+           </command>
+           <command
+                 commandId="de.prob.ui.randomoperation"
+                 label="Execute 5 Steps"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.randomoperation.steps"
+                    value="5">
+              </parameter>
+           </command>
+           <command
+                 commandId="de.prob.ui.randomoperation"
+                 label="Execute 10 Steps"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.randomoperation.steps"
+                    value="10">
+              </parameter>
+           </command>
+           <command
+                 commandId="de.prob.ui.randomoperation"
+                 label="Enter Number of Steps"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.randomoperation.steps"
+                    value="-1">
+              </parameter>
            </command>
         </menuContribution>
       
@@ -88,6 +133,15 @@
             <command
                   id="de.prob.ui.history.restartAnim"
                   name="Restart Animation">
+            </command>
+            <command
+                  id="de.prob.ui.randomoperation"
+                  name="Execute Random Events">
+               <commandParameter
+                     id="de.prob.ui.randomoperation.steps"
+                     name="Number of Steps"
+                     optional="false">
+               </commandParameter>
             </command>
       
    </extension>
@@ -194,6 +248,20 @@
                </equals>
             </with>
          </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.randomoperation">
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+         <class
+               class="de.prob.ui.operationview.ExecuteRandomHandler">
+         </class>
       </handler>
       
    </extension>
