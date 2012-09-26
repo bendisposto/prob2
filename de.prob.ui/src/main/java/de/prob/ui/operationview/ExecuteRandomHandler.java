@@ -54,8 +54,12 @@ public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
 		
 		History currentHistory = selector.getCurrentHistory();
-		History randomHistory = currentHistory.randomAnimation(steps);
-		randomHistory.notifyAnimationChange(currentHistory, randomHistory);
+		History newHistory = currentHistory;
+		for (int i = 0; i < steps; i++) {
+			newHistory = newHistory.anyEvent(null);
+		}
+		
+		newHistory.notifyAnimationChange(currentHistory, newHistory);
 	}
 
 	private int askForValue(final Shell shell) {
