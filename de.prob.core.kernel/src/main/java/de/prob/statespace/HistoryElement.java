@@ -1,5 +1,8 @@
 package de.prob.statespace;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.prob.animator.domainobjects.OpInfo;
 
 public class HistoryElement {
@@ -10,6 +13,7 @@ public class HistoryElement {
 	private final HistoryElement previous;
 
 	private final String representation;
+	private final List<OpInfo> opList;
 
 	public HistoryElement(final StateId src) {
 		this.src = src;
@@ -20,6 +24,8 @@ public class HistoryElement {
 		this.previous = null;
 
 		representation = "[";
+		
+		opList = new ArrayList<OpInfo>();
 	}
 
 	public HistoryElement(final StateId src, final StateId dest,
@@ -34,6 +40,10 @@ public class HistoryElement {
 		} else {
 			representation = previous.getRepresentation() + ", " + edge;
 		}
+		
+		List<OpInfo> previousOpList = previous.getOpList();
+		previousOpList.add(edge);
+		this.opList = previousOpList;
 	}
 
 	public StateId getSrc() {
@@ -60,5 +70,9 @@ public class HistoryElement {
 
 	public String getRepresentation() {
 		return representation;
+	}
+	
+	public List<OpInfo> getOpList() {
+		return opList;
 	}
 }
