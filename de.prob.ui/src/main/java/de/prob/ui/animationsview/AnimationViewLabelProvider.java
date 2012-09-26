@@ -41,13 +41,7 @@ class AnimationViewLabelProvider extends LabelProvider implements ITableLabelPro
 		if(index == 2) {
 			if(obj instanceof History) {
 				History history = (History) obj;
-				HistoryElement current = history.getCurrent();
-				int count = 0;
-				while(current.getOp() != null) {
-					count++;
-					current = current.getPrevious();
-				}
-				return count+"";
+				return history.getCurrent().getOpList().size()+"";
 			}
 		}
 		return "";

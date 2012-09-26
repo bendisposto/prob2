@@ -58,7 +58,7 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener{
 			return getText(obj);
 		}
 		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
+			return null;
 		}
 		public Image getImage(Object obj) {
 			return PlatformUI.getWorkbench().

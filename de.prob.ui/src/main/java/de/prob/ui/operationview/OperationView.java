@@ -129,7 +129,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 		for (final OpInfo opInfo : selectedOperations) {
 			Action executeOp = new Action() {
 				public void run() {
-					currentHistory.add(opInfo.id);
+					History newHistory = currentHistory.add(opInfo.id);
+					newHistory.notifyAnimationChange(currentHistory, newHistory);
 				}
 			};
 			executeOp.setText(Joiner.on(",").join(opInfo.params));
@@ -210,7 +211,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 		public void doubleClick(final DoubleClickEvent event) {
 			List<OpInfo> selectedOperations = getSelectedOperations();
 			if (selectedOperations != null && !selectedOperations.isEmpty()) {
-				currentHistory.add(selectedOperations.get(0).id);
+				History newHistory = currentHistory.add(selectedOperations.get(0).id);
+				newHistory.notifyAnimationChange(currentHistory, newHistory);
 			} 
 		}
 	}
