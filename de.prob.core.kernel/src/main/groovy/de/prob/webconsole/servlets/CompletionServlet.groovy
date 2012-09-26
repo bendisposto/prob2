@@ -93,7 +93,7 @@ public class CompletionServlet extends HttpServlet {
 			
 	private List<String> camelSplit(final String input) {
 	 if (input.isEmpty()) return [];	
-     Pattern.compile("(^[a-z]*)|([A-Z][a-z]*)").matcher(input).collect {a,b,c -> a}
+     Pattern.compile("(^[a-z_]*)|([A-Z][a-z_]*)").matcher(input).collect {a,b,c -> a}
 	}
 	
 	private String getCommonPrefix(ArrayList<String> input) {

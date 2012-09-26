@@ -61,6 +61,16 @@ class CompletionServletTest extends Specification {
 		result == expected
 	}
 	
+	def "proper underscore handling"() {
+		when:
+		List<String> completions = ["b_load(", "b_def()"]
+		List<String> result = servlet.camelMatch(completions, "b_l")
+		then:
+		List<String> expected = ["b_load("]
+		result == expected
+	}
+	
+	
 	def "checking common prefixes"() {
 		expect:
 		servlet.getCommonPrefix(input) == output
