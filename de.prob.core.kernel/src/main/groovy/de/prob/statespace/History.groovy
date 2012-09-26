@@ -107,8 +107,7 @@ class History {
 	}
 
 	def String getRep() {
-		return head.getRepresentation() + "] Current Transition is: "
-		+ current.getOp()
+		return "${head.getRepresentation()}] Current Transition is: ${current.getOp()}"
 	}
 
 	def OpInfo findOneOp(final String opName, final String predicate)

@@ -16,7 +16,6 @@ class AnimationSelectorTest extends Specification {
 	
 	def setup() {
 		history = mock(History.class);
-		doThrow(new IllegalArgumentException()).when(history).registerAnimationListener(any())
 		model = mock(AbstractModel.class)
 		selector = new AnimationSelector();
 		listener = new IHistoryChangeListener() {
@@ -46,7 +45,6 @@ class AnimationSelectorTest extends Specification {
 		selector.addNewHistory(history,model)
 		
 		then:
-		thrown IllegalArgumentException
 		selector.histories.contains(history)
 		selector.models.get(history) == model
 	}
