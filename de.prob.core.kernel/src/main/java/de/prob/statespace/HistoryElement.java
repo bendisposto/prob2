@@ -41,7 +41,7 @@ public class HistoryElement {
 			representation = previous.getRepresentation() + ", " + edge;
 		}
 		
-		List<OpInfo> previousOpList = previous.getOpList();
+		List<OpInfo> previousOpList = new ArrayList<OpInfo>(previous.getOpList());
 		previousOpList.add(edge);
 		this.opList = previousOpList;
 	}
