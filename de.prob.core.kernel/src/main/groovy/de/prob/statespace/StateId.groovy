@@ -14,8 +14,11 @@ class StateId {
 	def StateSpace space;
 
 
-	def invokeMethod(String method, Object params) {
-		String predicate = params[0];
+	def invokeMethod(String method,  params) {
+		String predicate;
+		
+        if (params == []) predicate = "TRUE = TRUE"  
+		else predicate = params[0];
 		OpInfo op = space.opFromPredicate(this, method,predicate , 1)[0];
 		StateId newState = space.getEdgeTarget(op);
 		space.explore(newState);

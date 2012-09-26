@@ -97,4 +97,9 @@ public class EventBComponent implements AbstractElement {
 	public boolean isMachine() {
 		return emfComponent instanceof Machine;
 	}
+	
+	public EventBNamedCommentedComponentElement getEmfComponent() {
+		return emfComponent;
+	}
+	
 }

@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.codehaus.groovy.tools.shell.Interpreter;
@@ -44,6 +45,8 @@ public class GroovyExecution {
 	private boolean continued;
 
 	private String outputs;
+	
+	private static final String[] IMPORTS = new String[] { "import de.prob.statespace.*;" };;
 
 	@Inject
 	public GroovyExecution(Api api, Downloader downloader) {
@@ -54,6 +57,8 @@ public class GroovyExecution {
 				binding);
 		interpreter.evaluate(Collections
 				.singletonList("upgrade = downloader.&downloadCli"));
+
+		imports.addAll(Arrays.asList(IMPORTS));
 
 		this.try_interpreter = new Interpreter(
 				this.getClass().getClassLoader(), new Binding());

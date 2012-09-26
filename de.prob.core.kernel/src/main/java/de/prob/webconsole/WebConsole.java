@@ -76,9 +76,10 @@ public class WebConsole {
 	}
 
 	public static void run(final Runnable openBrowser) throws Exception {
-
+		
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
-
+		
+				
 		Server server = new Server();
 
 		Connector connector = new SelectChannelConnector();
@@ -93,8 +94,9 @@ public class WebConsole {
 				.getProtectionDomain();
 		String warFile = protectionDomain.getCodeSource().getLocation()
 				.toExternalForm();
-		
-		if (!warFile.endsWith("bin/")) warFile += "bin/";
+
+		if (!warFile.endsWith("bin/"))
+			warFile += "bin/";
 
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
@@ -111,10 +113,16 @@ public class WebConsole {
 	}
 
 	private static int findPort(int port) {
-		while (!available(port)) {
-			port++;
-		}
-		return port;
+		boolean found = false;
+		int p = port;
+		do {
+			found = available(p);
+			if (found)
+				return p;
+		} while (port < 8180);
+		throw new IllegalStateException(
+				"Cannot find an open port in the range between 8080 and 8179");
+
 	}
 
 	public static int getPort() {
