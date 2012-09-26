@@ -84,6 +84,7 @@ public class CompletionServlet extends HttpServlet {
 	private List<String> camelMatch(final List<String> completions, final String match) {
 		if (match.isEmpty())
 			return completions
+			// FIXME Fix deprecation warning
 		def nopar = match.findAll {  Character.isJavaIdentifierPart(it.charAt(0))  }.join("")			
 		def split = camelSplit(nopar);
 		def  regex = split.join("[a-z]*") + ".*";
