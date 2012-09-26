@@ -1,0 +1,3 @@
+<configuration>
+    <include resource="fulltrace.xml"/>
+</configuration>
