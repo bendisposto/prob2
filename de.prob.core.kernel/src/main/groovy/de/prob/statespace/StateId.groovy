@@ -80,20 +80,16 @@ class StateId {
 
 	def StateId anyOperation(filter) {
 		def spaceInfo = space.info
-		def ops = new ArrayList()
+		def ops = new ArrayList<OpInfo>()
 		ops.addAll(space.outgoingEdgesOf(this));
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
-				def opinfo = spaceInfo.getOp(it)
-				def name = opinfo.getName()
-				name.matches(filter);
+				it.name.matches(filter);
 			}
 		}
 		if (filter != null && filter instanceof ArrayList) {
 			ops=ops.findAll {
-				def opinfo = spaceInfo.getOp(it)
-				def name = opinfo.getName()
-				filter.contains(name)
+				filter.contains(it.name)
 			}
 		}
 		Collections.shuffle(ops)
