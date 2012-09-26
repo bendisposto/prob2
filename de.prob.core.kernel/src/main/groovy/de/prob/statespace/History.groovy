@@ -177,28 +177,27 @@ class History {
 	
 	def History anyOperation(filter) {
 		def spaceInfo = s.info
-		def ops = new ArrayList()
+		def ops = new ArrayList<OpInfo>()
 		ops.addAll(s.outgoingEdgesOf(current.getCurrentState()));
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
-				def opinfo = spaceInfo.getOp(it)
-				def name = opinfo.getName()
-				name.matches(filter);
+				it.name.matches(filter);
 			}
 		}
 		if (filter != null && filter instanceof ArrayList) {
 			ops=ops.findAll {
-				def opinfo = spaceInfo.getOp(it)
-				def name = opinfo.getName()
-				filter.contains(name)
+				filter.contains(it.name)
 			}
 		}
 		Collections.shuffle(ops)
-		def op = ops.get(0)
-		return add(op.id)
+		if(!ops.empty) {
+			def op = ops.get(0)
+			return add(op.id)
+		}
+		return this
 	}
 	
-	def anyEvent(filter) {
+	def History anyEvent(filter) {
 		anyOperation(filter);
 	}
 
