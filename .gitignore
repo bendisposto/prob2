@@ -4,3 +4,5 @@
 **/.settings
 **/bin
 .gradle/
+de.prob.ui/lib/dependencies/groovy-all-2.0.0.jar
+de.prob.ui/lib/dependencies/groovy-all-2.0.1.jar
