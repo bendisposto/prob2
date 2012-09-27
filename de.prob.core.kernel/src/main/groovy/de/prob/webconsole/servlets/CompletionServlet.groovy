@@ -15,14 +15,17 @@ import com.google.inject.Inject
 import com.google.inject.Singleton
 
 import de.prob.webconsole.GroovyExecution
+import de.prob.webconsole.ShellCommands;
 
 @Singleton
 public class CompletionServlet extends HttpServlet {
 
 	private final GroovyExecution executor;
+	private ShellCommands shellCommands;
 
 	@Inject
-	public CompletionServlet(GroovyExecution executor) {
+	public CompletionServlet(GroovyExecution executor, ShellCommands shellCommands) {
+		this.shellCommands = shellCommands;
 		this.executor = executor;
 
 	}
@@ -36,45 +39,50 @@ public class CompletionServlet extends HttpServlet {
 		int c = Integer.parseInt(col)-1;
 		int b = c > -1 ? fulltext.lastIndexOf(" ", c) : - 1;
 
-				String begin = b > -1 ? fulltext[0..b] : ""
+		String begin = b > -1 ? fulltext[0..b] : ""
 		String input;
 		if (c == -1 || c == b)
-		input = ""
+			input = ""
 		else
-		input = b > 0 ? fulltext[b+1..c] : fulltext[0..c]
+			input = b > 0 ? fulltext[b+1..c] : fulltext[0..c]
 		String rest = c >= fulltext.length() - 1 ? "" : fulltext[(c+1)..-1]
 
-		ArrayList<String> completions = new ArrayList<String>();
-		if (input.contains(".")) {
-			int pos = input.lastIndexOf(".")
-			String sub = input.substring(0, pos + 1)
-			String other = input.substring(pos + 1, input.length())
-			def computed = computeCompletions(sub)
-			completions = camelMatch(computed, other)
-		} else if (!input.isEmpty()) {
-			def computed = computeCompletions(new String(input.charAt(0)))
-			completions = camelMatch(computed, input);
-		}
-		
-		String pre = getCommonPrefix(completions);
-		if (!pre.isEmpty() && pre != input && !input.contains("."))
-		completions = [begin + pre + rest]
-		else if (completions.size() == 1) {
-			if (input.contains('.')) {
-				String sub = input.substring(0, input.lastIndexOf(".") + 1)
-				begin = begin + sub;
-			}
-			completions = completions.collect {begin + it + rest}
-		}
-		else if (input.contains(".") && !pre.isEmpty()) {
-			// situation: "xyz.abc"
-			int pos = input.lastIndexOf(".")
-			String sub = input.substring(0, pos + 1)
-			String other = input.substring(pos + 1, input.length())
-			if (pos < input.length() && other != pre)
-			completions = [begin + sub + pre + rest]
-		}
+		List<String> completions = new ArrayList<String>();
+		def m = shellCommands.getMagic(fulltext)
+		if (!m.isEmpty()) {
+			completions = shellCommands.complete(m, b);
+		} else {
 
+			if (input.contains(".")) {
+				int pos = input.lastIndexOf(".")
+				String sub = input.substring(0, pos + 1)
+				String other = input.substring(pos + 1, input.length())
+				def computed = computeCompletions(sub)
+				completions = camelMatch(computed, other)
+			} else if (!input.isEmpty()) {
+				def computed = computeCompletions(new String(input.charAt(0)))
+				completions = camelMatch(computed, input);
+			}
+
+			String pre = getCommonPrefix(completions);
+			if (!pre.isEmpty() && pre != input && !input.contains("."))
+				completions = [begin + pre + rest]
+			else if (completions.size() == 1) {
+				if (input.contains('.')) {
+					String sub = input.substring(0, input.lastIndexOf(".") + 1)
+					begin = begin + sub;
+				}
+				completions = completions.collect {begin + it + rest}
+			}
+			else if (input.contains(".") && !pre.isEmpty()) {
+				// situation: "xyz.abc"
+				int pos = input.lastIndexOf(".")
+				String sub = input.substring(0, pos + 1)
+				String other = input.substring(pos + 1, input.length())
+				if (pos < input.length() && other != pre)
+					completions = [begin + sub + pre + rest]
+			}
+		}
 		Gson g = new Gson();
 		String json = g.toJson(completions);
 		out.println(json);

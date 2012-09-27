@@ -22,5 +22,6 @@ public class WebModule extends ServletModule {
 		serve("/imports*").with(ImportsServlet.class);
 		serve("/outputs*").with(GroovyOutputServlet.class);
 		serve("/versions*").with(VersionServlet.class);
+		bind(ShellCommands.class);
 	}
 }

@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.codehaus.groovy.tools.shell.Interpreter;
 import org.codehaus.groovy.tools.shell.ParseCode;
@@ -45,11 +46,14 @@ public class GroovyExecution {
 	private boolean continued;
 
 	private String outputs;
-	
-	private static final String[] IMPORTS = new String[] { "import de.prob.statespace.*;" };;
+
+	private static final String[] IMPORTS = new String[] { "import de.prob.statespace.*;" };
+	private ShellCommands shellCommands;;
 
 	@Inject
-	public GroovyExecution(Api api, Downloader downloader) {
+	public GroovyExecution(Api api, Downloader downloader,
+			ShellCommands shellCommands) {
+		this.shellCommands = shellCommands;
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
 		binding.setVariable("downloader", downloader);
@@ -69,8 +73,13 @@ public class GroovyExecution {
 
 	public String evaluate(String input) throws IOException {
 		assert input != null;
-		collectImports(input);
-		return eval(input);
+		List<String> m = shellCommands.getMagic(input);
+		if (m.isEmpty()) {
+			collectImports(input);
+			return eval(input);
+		} else {
+			return shellCommands.perform(m);
+		}
 	}
 
 	public Object tryevaluate(String input) throws IOException {
@@ -162,7 +171,8 @@ public class GroovyExecution {
 			} finally {
 				inputs.clear();
 			}
-			while(sideeffects.size()>0) {}
+			while (sideeffects.size() > 0) {
+			}
 			return evaluate == null ? "null" : evaluate.toString();
 		}
 	}
