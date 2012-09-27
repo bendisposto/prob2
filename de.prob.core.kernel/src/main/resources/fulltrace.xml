@@ -1,0 +1,11 @@
+<included>
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+	<encoder>
+		<pattern>%d %-4relative [%thread] %-5level %logger{35} Method: %method Line: %line - %msg%n%ex{full}</pattern>
+	</encoder>
+</appender>
+
+<root level="trace">
+	<appender-ref ref="STDOUT" />
+</root>
+</included>
