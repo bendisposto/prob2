@@ -45,14 +45,22 @@ public class GroovyExecution {
 
 	private boolean continued;
 
+	private int genCounter = 0;
+
+	public int nextCounter() {
+		return genCounter++;
+	}
+
 	private String outputs;
 
 	private static final String[] IMPORTS = new String[] { "import de.prob.statespace.*;" };
-	private ShellCommands shellCommands;;
+	private ShellCommands shellCommands;
+	private Api api;;
 
 	@Inject
 	public GroovyExecution(Api api, Downloader downloader,
 			ShellCommands shellCommands) {
+		this.api = api;
 		this.shellCommands = shellCommands;
 		Binding binding = new Binding();
 		binding.setVariable("api", api);
@@ -78,7 +86,7 @@ public class GroovyExecution {
 			collectImports(input);
 			return eval(input);
 		} else {
-			return shellCommands.perform(m);
+			return shellCommands.perform(m, this);
 		}
 	}
 

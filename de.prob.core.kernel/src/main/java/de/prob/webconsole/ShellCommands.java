@@ -1,5 +1,6 @@
 package de.prob.webconsole;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import java.util.Map;
 
 import com.google.inject.Singleton;
 
+import de.be4.classicalb.core.parser.exceptions.BException;
+import de.prob.scripting.Api;
 import de.prob.webconsole.shellcommands.AbstractShellCommand;
 import de.prob.webconsole.shellcommands.LoadCommand;
 
@@ -27,8 +30,9 @@ public class ShellCommands {
 		return Collections.emptyList();
 	}
 
-	public String perform(List<String> m) {
-		return magic.get(m.get(0)).perform(m);
+	public String perform(List<String> m, GroovyExecution exec) throws IOException {
+		Object result = magic.get(m.get(0)).perform(m,exec);
+		return result == null? "null" : result.toString();
 	}
 
 	public List<String> complete(List<String> m, int pos) {

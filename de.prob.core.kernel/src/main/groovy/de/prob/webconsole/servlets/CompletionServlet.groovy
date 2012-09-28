@@ -50,7 +50,7 @@ public class CompletionServlet extends HttpServlet {
 		List<String> completions = new ArrayList<String>();
 		def m = shellCommands.getMagic(fulltext)
 		if (!m.isEmpty()) {
-			completions = shellCommands.complete(m, b);
+			completions = shellCommands.complete(m, c);
 		} else {
 
 			if (input.contains(".")) {
