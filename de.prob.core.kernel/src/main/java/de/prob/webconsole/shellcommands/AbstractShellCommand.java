@@ -6,8 +6,6 @@ import java.util.List;
 
 import com.google.common.base.Joiner;
 
-import de.be4.classicalb.core.parser.exceptions.BException;
-import de.prob.scripting.Api;
 import de.prob.webconsole.GroovyExecution;
 
 public abstract class AbstractShellCommand {

@@ -10,7 +10,6 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
-import de.prob.statespace.HistoryElement;
 
 class AnimationViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 	

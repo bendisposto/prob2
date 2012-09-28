@@ -4,7 +4,6 @@ package de.prob.ui.historyview;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -49,8 +48,8 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener{
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
 	private TableViewer viewer;
-	private History currentHistory;
-	
+	private History currentHistory; // FIXME not used?
+
 	Injector injector = ServletContextListener.INJECTOR;
 	 
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {

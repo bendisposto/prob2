@@ -55,12 +55,10 @@ public class GroovyExecution {
 
 	private static final String[] IMPORTS = new String[] { "import de.prob.statespace.*;" };
 	private ShellCommands shellCommands;
-	private Api api;;
 
 	@Inject
 	public GroovyExecution(Api api, Downloader downloader,
 			ShellCommands shellCommands) {
-		this.api = api;
 		this.shellCommands = shellCommands;
 		Binding binding = new Binding();
 		binding.setVariable("api", api);

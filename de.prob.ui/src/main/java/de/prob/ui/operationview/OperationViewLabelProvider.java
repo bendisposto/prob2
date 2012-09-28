@@ -3,14 +3,9 @@ package de.prob.ui.operationview;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
-import org.eventb.emf.core.machine.Parameter;
-import org.eventb.emf.core.machine.impl.EventImpl;
 
 import com.google.common.base.Joiner;
 

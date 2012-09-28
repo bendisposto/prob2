@@ -12,11 +12,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-import de.prob.animator.IAnimator;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 

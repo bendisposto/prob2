@@ -9,8 +9,6 @@ import java.util.Map;
 
 import com.google.inject.Singleton;
 
-import de.be4.classicalb.core.parser.exceptions.BException;
-import de.prob.scripting.Api;
 import de.prob.webconsole.shellcommands.AbstractShellCommand;
 import de.prob.webconsole.shellcommands.LoadCommand;
 

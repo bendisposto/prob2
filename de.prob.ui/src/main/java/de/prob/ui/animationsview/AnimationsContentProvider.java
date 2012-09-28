@@ -7,8 +7,6 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.HistoryElement;
 
 /**
  * Creates a new list of Operations, merging the list of available operations
