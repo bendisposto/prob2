@@ -1,19 +1,25 @@
 package de.prob.ui.stateview;
 
 public class Variable {
-	private String value;
+	private String currentValue;
+	private String previousValue;
 	private String name;
 
-	public Variable(String name, String value) {
+	public Variable(String name, String currentValue, String previousValue) {
 		this.name = name;
-		this.value = value;
+		this.currentValue = currentValue;
+		this.previousValue = previousValue;
 	}
 	
 	public String getName() {
 		return name;
 	}
 	
-	public String getValue() {
-		return value;
+	public String getCurrentValue() {
+		return currentValue;
+	}
+	
+	public String getPreviousValue() {
+		return previousValue;
 	}
 }
