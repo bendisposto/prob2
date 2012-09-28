@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.scripting.Downloader;
 import de.prob.webconsole.shellcommands.AbstractShellCommand;
 import de.prob.webconsole.shellcommands.LoadCommand;
 
@@ -17,8 +19,10 @@ public class ShellCommands {
 
 	private Map<String, AbstractShellCommand> magic = new HashMap<String, AbstractShellCommand>();
 
-	public ShellCommands() {
+	@Inject
+	public ShellCommands(Downloader d) {
 		magic.put("load", new LoadCommand());
+		magic.put("upgrade", d);
 	}
 
 	public List<String> getMagic(String text) {
