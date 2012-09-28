@@ -1,19 +1,29 @@
 package de.prob.ui.stateview;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
+import de.prob.model.eventb.EventBComponent;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
@@ -46,10 +56,16 @@ public class StateView extends ViewPart implements IHistoryChangeListener{
 	 */
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
-	private TableViewer viewer;
 	private History currentHistory;
+	private AbstractModel currentModel;
 	
 	Injector injector = ServletContextListener.INJECTOR;
+
+	private Composite pageComposite;
+
+	private TreeViewer viewer;
+	private StateContentProvider contentProvider;
+	private StateViewLabelProvider labelProvider;
 	 
 	/**
 	 * The constructor.
@@ -64,37 +80,53 @@ public class StateView extends ViewPart implements IHistoryChangeListener{
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		createColumns();
-		viewer.setContentProvider(new StateContentProvider());
-		viewer.setLabelProvider(new StateViewLabelProvider());
-		viewer.setSorter(null);
-		viewer.setInput(getViewSite());
+		pageComposite = new Composite(parent, SWT.NONE);
+		final GridLayout layout = new GridLayout(2, true);
+		pageComposite.setLayout(layout);
+		contentProvider = new StateContentProvider();
+		labelProvider = new StateViewLabelProvider();
+		createVariableTree();
 
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "de.prob.ui.viewer");
 		
-		Table table = viewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
+		getSite().setSelectionProvider(viewer);
 	}
 	
-	private void createColumns() {
-		TableViewerColumn column1 = new TableViewerColumn(viewer, SWT.NONE);
-		column1.getColumn().setText("Name");
-		column1.getColumn().setResizable(true);
-		column1.getColumn().pack();
 
-		TableViewerColumn column2 = new TableViewerColumn(viewer, SWT.NONE);
-		column2.getColumn().setText("Value");
-		column2.getColumn().setResizable(true);
-		column2.getColumn().pack();
-	}
 
-	private void packTableColumns() {
-		for (TableColumn column : viewer.getTable().getColumns()) {
-			column.pack();
-		}
+	private void createVariableTree() {
+		final GridData treeViewerLayout = new GridData();
+		treeViewerLayout.grabExcessHorizontalSpace = true;
+		treeViewerLayout.grabExcessVerticalSpace = true;
+		treeViewerLayout.horizontalAlignment = SWT.FILL;
+		treeViewerLayout.verticalAlignment = SWT.FILL;
+		treeViewerLayout.horizontalSpan = 2;
+
+		viewer = new TreeViewer(pageComposite);
+		viewer.getTree().setLayoutData(treeViewerLayout);
+		viewer.getTree().setHeaderVisible(true);
+		viewer.getTree().setLinesVisible(true);
+		viewer.setAutoExpandLevel(2);
+
+		TreeViewerColumn col1 = new TreeViewerColumn(viewer, SWT.LEFT);
+		col1.getColumn().setText("Name");
+		col1.getColumn().setResizable(true);
+		col1.getColumn().setWidth(200);
+
+		TreeViewerColumn col2 = new TreeViewerColumn(viewer, SWT.RIGHT);
+		col2.getColumn().setText("Current Value");
+		col2.getColumn().setResizable(true);
+		col2.getColumn().setWidth(150);
+
+		TreeViewerColumn col3 = new TreeViewerColumn(viewer, SWT.RIGHT);
+		col3.getColumn().setText("Previous Value");
+		col3.getColumn().setResizable(true);
+		col3.getColumn().setWidth(150);
+
+		viewer.setContentProvider(contentProvider);
+		viewer.setLabelProvider(labelProvider);
+		viewer.setInput(getViewSite());
 	}
 
 	/**
@@ -107,13 +139,34 @@ public class StateView extends ViewPart implements IHistoryChangeListener{
 	@Override
 	public void historyChange(final History history, AbstractModel model) {
 		currentHistory = history;
+		contentProvider.setCurrentHistory(currentHistory);
+		if(model != currentModel) {
+			updateModelInfo(model);
+		}
+		
 		Display.getDefault().asyncExec(new Runnable() {
 			
 			@Override
 			public void run() {
-				viewer.setInput(history);
-				packTableColumns();
+				viewer.refresh();
 			}
 		});
+	}
+
+	private void updateModelInfo(AbstractModel model) {
+		currentModel = model;
+		List<Object> sections = new ArrayList<Object>();
+		for( final AbstractElement component : model.getComponents().values()) {
+			if(component instanceof EventBComponent) {
+				EventBComponent ebComponent = (EventBComponent) component;
+				if(ebComponent.isContext() && !ebComponent.getConstants().isEmpty()) {
+					sections.add(ebComponent);
+				}
+				if(ebComponent.isMachine() && !ebComponent.getVariables().isEmpty()) {
+					sections.add(ebComponent);
+				}
+			}
+		}
+		viewer.setInput(sections.toArray());
 	}
 }

@@ -1,6 +1,7 @@
 package de.prob.model.eventb;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.eventb.emf.core.EventBNamedCommentedComponentElement;
@@ -32,12 +33,15 @@ public class EventBModel extends AbstractModel {
 		this.mainComponent = mainComponent;
 		graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
-
+		
+		Map<String, EventBNamedCommentedComponentElement> allComponents = new HashMap<String, EventBNamedCommentedComponentElement>();
 		EventBNamedCommentedComponentElement element = null;
 		for (EventBNamedCommentedComponentElement cmpt : p.getComponents()) {
-			if (mainComponent.equals(cmpt.doGetName())) {
+			String name = cmpt.doGetName();
+			if (mainComponent.equals(name)) {
 				element = cmpt;
 			}
+			allComponents.put(name, cmpt);
 		}
 		if (element != null) {
 			String name = element.doGetName();
@@ -53,7 +57,7 @@ public class EventBModel extends AbstractModel {
 					String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EventBComponent(context));
+						components.put(ctxName, new EventBComponent(allComponents.get(ctxName)));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.EXTENDS));
 				}
@@ -65,7 +69,7 @@ public class EventBModel extends AbstractModel {
 					String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EventBComponent(context));
+						components.put(ctxName, new EventBComponent(allComponents.get(ctxName)));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.SEES));
 				}
@@ -74,7 +78,7 @@ public class EventBModel extends AbstractModel {
 					String mName = machine.doGetName();
 					if (!components.containsKey(mName)) {
 						graph.addVertex(mName);
-						components.put(mName, new EventBComponent(machine));
+						components.put(mName, new EventBComponent(allComponents.get(mName)));
 					}
 					graph.addEdge(name, mName, new RefType(ERefType.REFINES));
 				}
