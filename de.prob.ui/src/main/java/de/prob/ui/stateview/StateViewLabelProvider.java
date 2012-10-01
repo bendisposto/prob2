@@ -33,7 +33,7 @@ class StateViewLabelProvider extends LabelProvider implements ITableLabelProvide
 		
 		if(index == 2) {
 			if(obj instanceof Variable) {
-				return ((Variable) obj).getCurrentValue();
+				return ((Variable) obj).getPreviousValue();
 			}
 		}
 		return "";
