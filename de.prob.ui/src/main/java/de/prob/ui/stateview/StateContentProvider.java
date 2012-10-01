@@ -1,17 +1,12 @@
 package de.prob.ui.stateview;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import de.prob.model.eventb.EventBComponent;
-import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.History;
 import de.prob.statespace.HistoryElement;
 import de.prob.statespace.StateId;
