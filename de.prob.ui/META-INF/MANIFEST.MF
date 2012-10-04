@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ProB UI
 Bundle-SymbolicName: de.prob.ui;singleton:=true
 Bundle-ActivationPolicy: lazy
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: STUPS group
 Bundle-Activator: de.prob.ui.Activator
