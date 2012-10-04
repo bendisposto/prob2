@@ -299,6 +299,14 @@
             id="de.prob.ui.AnimationsView"
             name="Current Animations">
       </view>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.GroovyConsole"
+            id="de.prob.ui.groovy-console"
+            name="Groovy Console"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
