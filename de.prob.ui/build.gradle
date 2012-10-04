@@ -44,14 +44,6 @@ dependencies {
 	
 }
 
-task collectDependencies(type: Copy) {
-	
-				   from configurations.compile
-			   
-				into "lib/dependencies"
-				
-}
-
 
 eclipse {
   project { 
