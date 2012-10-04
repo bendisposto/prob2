@@ -30,11 +30,11 @@ public class ClassicalBModel extends AbstractModel {
 	public DirectedMultigraph<String, RefType> initialize(final Start mainast,
 			final RecursiveMachineLoader rml) {
 
-		DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
+		final DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
 		mainMachine = new ClassicalBMachine(null);
-		DomBuilder d = new DomBuilder(mainMachine);
+		final DomBuilder d = new DomBuilder(mainMachine);
 		d.build(mainast);
 		graph.addVertex(mainMachine.name());
 		components.put(mainMachine.name(), mainMachine);
@@ -43,10 +43,10 @@ public class ClassicalBModel extends AbstractModel {
 
 		do {
 			fpReached = true;
-			Set<String> vertices = new HashSet<String>();
+			final Set<String> vertices = new HashSet<String>();
 			vertices.addAll(graph.vertexSet());
-			for (String machineName : vertices) {
-				Start ast = rml.getParsedMachines().get(machineName);
+			for (final String machineName : vertices) {
+				final Start ast = rml.getParsedMachines().get(machineName);
 				if (!done.contains(machineName)) {
 					ast.apply(new DependencyWalker(machineName, components,
 							graph, rml.getParsedMachines()));
@@ -66,5 +66,11 @@ public class ClassicalBModel extends AbstractModel {
 	public ClassicalBMachine getMachine(final String machineName) {
 		return components.containsKey(machineName) ? (ClassicalBMachine) components
 				.get(machineName) : null;
+	}
+
+	@Override
+	public boolean isVisible() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

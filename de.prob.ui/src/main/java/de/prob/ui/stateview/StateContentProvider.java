@@ -47,13 +47,13 @@ class StateContentProvider implements ITreeContentProvider {
 
 			EventBComponent element = (EventBComponent) parentElement;
 			if (element.isContext()) {
-				List<String> constants = element.getConstants();
+				List<String> constants = element.getConstantNames();
 				for (String name : constants) {
 					children.addAll(extractVariables(name));
 				}
 			}
 			if (element.isMachine()) {
-				List<String> variables = element.getVariables();
+				List<String> variables = element.getVariableNames();
 				for (String name : variables) {
 					children.addAll(extractVariables(name));
 				}

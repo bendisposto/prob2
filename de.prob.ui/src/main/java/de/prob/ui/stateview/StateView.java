@@ -153,10 +153,10 @@ public class StateView extends ViewPart implements IHistoryChangeListener{
 		for( final AbstractElement component : model.getComponents().values()) {
 			if(component instanceof EventBComponent) {
 				EventBComponent ebComponent = (EventBComponent) component;
-				if(ebComponent.isContext() && !ebComponent.getConstants().isEmpty()) {
+				if(ebComponent.isContext() && !ebComponent.getConstantNames().isEmpty()) {
 					sections.add(ebComponent);
 				}
-				if(ebComponent.isMachine() && !ebComponent.getVariables().isEmpty()) {
+				if(ebComponent.isMachine() && !ebComponent.getVariableNames().isEmpty()) {
 					sections.add(ebComponent);
 				}
 			}

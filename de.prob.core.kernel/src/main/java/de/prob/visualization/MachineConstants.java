@@ -16,9 +16,9 @@ public class MachineConstants {
 
 	public MachineConstants(final AbstractElement abstractElement) {
 		this.name = abstractElement.getName();
-		this.variables = abstractElement.getVariables();
-		this.constants = abstractElement.getConstants();
-		this.operations = abstractElement.getOperations();
+		this.variables = abstractElement.getVariableNames();
+		this.constants = abstractElement.getConstantNames();
+		this.operations = abstractElement.getOperationNames();
 		width = calculateWidth();
 		html = generateHTML();
 		height = calculateHeight();

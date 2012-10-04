@@ -2,13 +2,13 @@ package de.prob.model.representation;
 
 import java.util.List;
 
-public interface AbstractElement {
+public interface AbstractElement extends IFormula{
 
 	public String getName();
 
-	public List<String> getConstants();
+	public List<String> getConstantNames();
 
-	public List<String> getVariables();
+	public List<String> getVariableNames();
 
-	public List<String> getOperations();
+	public List<String> getOperationNames();
 }

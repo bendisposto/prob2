@@ -33,52 +33,56 @@ public class EventBModel extends AbstractModel {
 		this.mainComponent = mainComponent;
 		graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
-		
-		Map<String, EventBNamedCommentedComponentElement> allComponents = new HashMap<String, EventBNamedCommentedComponentElement>();
+
+		final Map<String, EventBNamedCommentedComponentElement> allComponents = new HashMap<String, EventBNamedCommentedComponentElement>();
 		EventBNamedCommentedComponentElement element = null;
-		for (EventBNamedCommentedComponentElement cmpt : p.getComponents()) {
-			String name = cmpt.doGetName();
+		for (final EventBNamedCommentedComponentElement cmpt : p
+				.getComponents()) {
+			final String name = cmpt.doGetName();
 			if (mainComponent.equals(name)) {
 				element = cmpt;
 			}
 			allComponents.put(name, cmpt);
 		}
 		if (element != null) {
-			String name = element.doGetName();
+			final String name = element.doGetName();
 			graph.addVertex(name);
 			if (!components.containsKey(name)) {
 				components.put(name, new EventBComponent(element));
 			}
 
 			if (element instanceof Context) {
-				Context c = (Context) element;
-				EList<Context> ext = c.getExtends();
-				for (Context context : ext) {
-					String ctxName = context.doGetName();
+				final Context c = (Context) element;
+				final EList<Context> ext = c.getExtends();
+				for (final Context context : ext) {
+					final String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EventBComponent(allComponents.get(ctxName)));
+						components.put(ctxName, new EventBComponent(
+								allComponents.get(ctxName)));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.EXTENDS));
 				}
 			}
 			if (element instanceof Machine) {
-				Machine m = (Machine) element;
-				EList<Context> sees = m.getSees();
-				for (Context context : sees) {
-					String ctxName = context.doGetName();
+				final Machine m = (Machine) element;
+				final EList<Context> sees = m.getSees();
+				for (final Context context : sees) {
+					final String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EventBComponent(allComponents.get(ctxName)));
+						components.put(ctxName, new EventBComponent(
+								allComponents.get(ctxName)));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.SEES));
 				}
-				EList<Machine> refines = m.getRefines();
-				for (Machine machine : refines) {
-					String mName = machine.doGetName();
+				final EList<Machine> refines = m.getRefines();
+				for (final Machine machine : refines) {
+					final String mName = machine.doGetName();
 					if (!components.containsKey(mName)) {
 						graph.addVertex(mName);
-						components.put(mName, new EventBComponent(allComponents.get(mName)));
+						components.put(mName,
+								new EventBComponent(allComponents.get(mName)));
 					}
 					graph.addEdge(name, mName, new RefType(ERefType.REFINES));
 				}
@@ -93,6 +97,12 @@ public class EventBModel extends AbstractModel {
 
 	public String getMainComponentName() {
 		return mainComponent;
+	}
+
+	@Override
+	public boolean isVisible() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
