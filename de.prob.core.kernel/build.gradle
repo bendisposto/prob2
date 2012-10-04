@@ -142,7 +142,7 @@ task pack(type: Sync) {
     into "$buildDir/libs/lib"
 }
 
-task deploy(dependsOn: [jar, test,javadoc,pack], group: 'Build', type: Zip) {
+task deployKernel(dependsOn: [jar, test,javadoc,pack], group: 'Build', type: Zip) {
 	description = 'Assembles the uberjar, runs all tests and builds the javadoc.'
 	from "$buildDir/libs/"
 	doLast {

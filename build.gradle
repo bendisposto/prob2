@@ -1,0 +1,5 @@
+targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
+
+groupID = "de.prob2"
+
+apply from: 'tycho_build.gradle'
