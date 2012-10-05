@@ -4,9 +4,13 @@
 }
 
 #console {
-	height: 100%;
-	width: 100%;
 	background: #FFFFFF;
+}
+
+.CodeMirror-scroll {
+  height: auto;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 #console div.jquery-console-inner {

@@ -22,6 +22,13 @@ public class OpenGroovyConsole extends AbstractHandler {
 			browserSupport.createBrowser(IWorkbenchBrowserSupport.AS_EDITOR,
 					"prob", "prob2", "prob3").openURL(
 					new URL("http://localhost:"+WebConsole.getPort()));
+			
+			 browserSupport.createBrowser(IWorkbenchBrowserSupport.AS_VIEW,
+			 "qprob", "qprob2", "qprob3").openURL(
+			 new URL("http://localhost:"+WebConsole.getPort()+"/console.jsp"));
+			
+			
+			
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {

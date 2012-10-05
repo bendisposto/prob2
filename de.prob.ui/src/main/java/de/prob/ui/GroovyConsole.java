@@ -17,11 +17,7 @@ public class GroovyConsole extends ViewPart {
 		final Browser b = new Browser(parent, SWT.NONE);
 		b.setUrl("http://localhost:8080/console.jsp");
 
-		// IWorkbenchBrowserSupport browserSupport = PlatformUI.getWorkbench()
-		// .getBrowserSupport();
-		// browserSupport.createBrowser(IWorkbenchBrowserSupport.AS_VIEW,
-		// "prob", "prob2", "prob3").openURL(
-		// new URL("http://localhost:"+WebConsole.getPort()));
+
 	}
 
 	@Override
