@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="stylesheets/table_jui.css">
 
 </head>
-<body onLoad="initialize()">
+<body onLoad="initialize()" style="height: 100%;">
 
 	<!-- Primary Page Layout
       ================================================== -->
