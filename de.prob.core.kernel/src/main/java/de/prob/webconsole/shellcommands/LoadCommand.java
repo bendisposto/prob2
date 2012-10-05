@@ -22,6 +22,8 @@ public class LoadCommand extends AbstractShellCommand {
 		assert m.size() > 1;
 		String filename = m.get(1);
 
+		
+		
 		if (filename.startsWith("~")) {
 			filename = filename.replaceFirst("~", System.getProperty("user.home"));
 		}

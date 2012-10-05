@@ -27,6 +27,7 @@
 <link rel="stylesheet" href="stylesheets/pepper.css">
 <link rel="stylesheet" href="stylesheets/table_jui.css">
 
+
 </head>
 <body onLoad="initialize()">
 
@@ -35,8 +36,11 @@
 
 	<!-- Delete everything in this .container and get started on your own site! -->
 
-	<div id="console" class="console"></div>
-	<!-- container -->
+
+			<div id="system_out"
+				style="font-family: monospace;">foo</div>
+
+	
 
 	<!-- JS
       ================================================== -->
@@ -45,7 +49,7 @@
 	<script src="javascripts/jquery.console.prob.js"></script>
 
 	<script src="javascripts/jquery.dataTables.min.js"></script>
-	<script src="javascripts/console.js"></script>
+	<script src="javascripts/sysout.js"></script>
 
 
 
