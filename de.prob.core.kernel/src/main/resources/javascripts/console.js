@@ -6,6 +6,12 @@ function onValidate(line) {
 	return true;
 };
 
+
+function scrollDown(){
+  window.scrollTo(0,document.body.scrollHeight);
+}
+
+
 function onComplete(line,column, perform) {
 	var result;
 	$.getJSON("complete", {
@@ -13,6 +19,7 @@ function onComplete(line,column, perform) {
 		col: column
 	}, function(json) {
 		perform(json);
+		scrollDown();
 	});
 };
 
@@ -23,25 +30,7 @@ function updateImports() {
 	});
 }
 
-// function onHandle(line, report) {
-// $.getJSON("evaluate", {
-// input : line
-// }, function(data) {
-// bindingTable.fnReloadAjax()
-// updateImports()
-// if (!data.continued) {
-// controller.lePrompt = false;
-// report([ {
-// msg : data.output,
-// className : "jquery-console-message-value"
-// } ]);
-//
-// } else {
-// controller.lePrompt = true;
-// report();
-// }
-// });
-// };
+
 
 function onHandle(line, report) {
 	$.getJSON("evaluate", {
@@ -58,6 +47,7 @@ function onHandle(line, report) {
 			controller.lePrompt = true;
 			report();
 		}
+			scrollDown();
 	});
 };
 
@@ -92,5 +82,9 @@ function initialize() {
 		lineWrapping : true,
 		promptHistory : true
 	});
-
+	
+   $(window).resize(function() {
+      $("#console").height($(window).height())
+   });
+   $("#console").height($(window).height())
 }

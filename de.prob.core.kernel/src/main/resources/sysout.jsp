@@ -38,7 +38,7 @@
 
 
 			<div id="system_out"
-				style="font-family: monospace;">foo</div>
+				style="font-family: monospace;"></div>
 
 	
 

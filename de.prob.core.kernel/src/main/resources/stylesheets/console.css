@@ -3,12 +3,12 @@
    width: 150px;
 }
 
+
 #console {
-	background: #00FF00;
+	background: #FFFFFF;
 }
 
 .CodeMirror-scroll {
-  height: 100%;
   overflow-y: auto;
 }
 
