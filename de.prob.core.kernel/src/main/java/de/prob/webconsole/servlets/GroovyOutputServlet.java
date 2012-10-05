@@ -42,7 +42,7 @@ public class GroovyOutputServlet extends HttpServlet {
 		PrintWriter out = res.getWriter();
 
 		ByteArrayOutputStream sideeffects = executor.getSideeffects();
-		String outputs = sideeffects.toString();
+		String outputs = sideeffects.toString().replaceAll("\\n","<br />");
 		executor.renewSideeffects();
 		out.println(new Gson().toJson(outputs));
 		out.close();

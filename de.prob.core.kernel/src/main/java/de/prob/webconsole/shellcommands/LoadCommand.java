@@ -34,6 +34,8 @@ public class LoadCommand extends AbstractShellCommand {
 
 		String filename = m.get(1);
 
+		
+		
 		if (filename.startsWith("~")) {
 			filename = filename.replaceFirst("~",
 					System.getProperty("user.home"));

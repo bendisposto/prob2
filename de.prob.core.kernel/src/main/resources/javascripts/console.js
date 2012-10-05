@@ -89,6 +89,7 @@ function initialize() {
 		completionHandle : onComplete,
 		autofocus : true,
 		animateScroll : true,
+		lineWrapping : true,
 		promptHistory : true
 	});
 
