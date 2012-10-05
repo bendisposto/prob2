@@ -21,17 +21,12 @@ public class Label implements IFormula {
 	}
 
 	@Override
-	public String getValue() {
-		return "";
-	}
-
-	@Override
 	public FormulaUUID getId() {
 		return uuid;
 	}
 
 	@Override
-	public List<IFormula> getAllSubformulas() {
+	public List<IFormula> getSubcomponents() {
 		return subformulas;
 	}
 
@@ -40,14 +35,7 @@ public class Label implements IFormula {
 	}
 
 	@Override
-	public List<IFormula> getVisibleSubformulas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isVisible() {
-		// TODO Auto-generated method stub
+	public boolean toEvaluate() {
 		return false;
 	}
 

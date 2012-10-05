@@ -1,6 +1,8 @@
 package de.prob.model.eventb;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
@@ -15,6 +17,7 @@ import com.google.inject.Inject;
 
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.IFormula;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.statespace.StateSpace;
@@ -100,9 +103,10 @@ public class EventBModel extends AbstractModel {
 	}
 
 	@Override
-	public boolean isVisible() {
-		// TODO Auto-generated method stub
-		return false;
+	public List<IFormula> getSubcomponents() {
+		final List<IFormula> subformulas = new ArrayList<IFormula>();
+		subformulas.addAll(components.values());
+		return subformulas;
 	}
 
 }

@@ -38,7 +38,7 @@ public class EventBComponent implements AbstractElement {
 			final EList<Constant> constants2 = ctx.getConstants();
 			for (final Constant constant : constants2) {
 				constants.addFormula(new EventBFormula(constant.doGetName(),
-						"", constant));
+						constant));
 			}
 			events = new ArrayList<Event>();
 		}
@@ -47,7 +47,7 @@ public class EventBComponent implements AbstractElement {
 			final EList<Variable> mVars = m.getVariables();
 			for (final Variable variable : mVars) {
 				variables.addFormula(new EventBFormula(variable.doGetName(),
-						"", variable));
+						variable));
 			}
 			events = new ArrayList<Event>();
 			final EList<org.eventb.emf.core.machine.Event> emfEvents = m
@@ -71,7 +71,7 @@ public class EventBComponent implements AbstractElement {
 	@Override
 	public List<String> getConstantNames() {
 		final ArrayList<String> cons = new ArrayList<String>();
-		for (final IFormula con : constants.getAllSubformulas()) {
+		for (final IFormula con : constants.getSubcomponents()) {
 			cons.add(con.getLabel());
 		}
 		return cons;
@@ -80,7 +80,7 @@ public class EventBComponent implements AbstractElement {
 	@Override
 	public List<String> getVariableNames() {
 		final ArrayList<String> vars = new ArrayList<String>();
-		for (final IFormula var : variables.getAllSubformulas()) {
+		for (final IFormula var : variables.getSubcomponents()) {
 			vars.add(var.getLabel());
 		}
 		return vars;
@@ -121,31 +121,18 @@ public class EventBComponent implements AbstractElement {
 	}
 
 	@Override
-	public String getValue() {
-		return "";
-	}
-
-	@Override
 	public FormulaUUID getId() {
 		return uuid;
 	}
 
 	@Override
-	public List<IFormula> getAllSubformulas() {
+	public List<IFormula> getSubcomponents() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<IFormula> getVisibleSubformulas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isVisible() {
-		// TODO Auto-generated method stub
+	public boolean toEvaluate() {
 		return false;
 	}
-
 }

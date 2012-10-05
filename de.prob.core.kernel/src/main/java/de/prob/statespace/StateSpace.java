@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -24,6 +25,8 @@ import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.model.representation.FormulaUUID;
+import de.prob.model.representation.IFormula;
 
 /**
  * 
@@ -63,6 +66,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
+	private IFormula model;
+	private final Map<StateId, Map<FormulaUUID, String>> values = new HashMap<StateId, Map<FormulaUUID, String>>();
 
 	public final StateId __root;
 
@@ -95,25 +100,29 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
 
-		ExploreStateCommand command = new ExploreStateCommand(state.getId());
+		final ExploreStateCommand command = new ExploreStateCommand(
+				state.getId());
 		animator.execute(command);
 		info.add(state, command);
 
 		explored.add(state);
-		List<OpInfo> enabledOperations = command.getEnabledOperations();
+		final List<OpInfo> enabledOperations = command.getEnabledOperations();
 
-		for (OpInfo op : enabledOperations) {
+		for (final OpInfo op : enabledOperations) {
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
 				notifyStateSpaceChange(op.id,
 						containsVertex(getVertex(op.dest)));
-				StateId newState = new StateId(op.dest, op.targetState, this);
+				final StateId newState = new StateId(op.dest, op.targetState,
+						this);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
 				addEdge(states.get(op.src), states.get(op.dest), op);
 			}
 		}
 
+		// Testing!!!
+		// evaluateIFormulas(state);
 		getInfo().add(state, command);
 	}
 
@@ -126,7 +135,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public void explore(final int i) {
-		String si = String.valueOf(i);
+		final String si = String.valueOf(i);
 		explore(si);
 	}
 
@@ -145,14 +154,14 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
 			throws BException {
-		ClassicalBEvalElement pred = new ClassicalBEvalElement(predicate);
-		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
+		final ClassicalBEvalElement pred = new ClassicalBEvalElement(predicate);
+		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
-		List<OpInfo> newOps = command.getOperations();
+		final List<OpInfo> newOps = command.getOperations();
 
 		// (id,name,src,dest,args)
-		for (OpInfo op : newOps) {
+		for (final OpInfo op : newOps) {
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
 				notifyStateSpaceChange(op.id,
@@ -229,6 +238,24 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return name;
 	}
 
+	public List<EvaluationResult> eval(final StateId stateId,
+			final List<IEvalElement> code) throws BException {
+		if (!containsVertex(stateId))
+			throw new IllegalArgumentException("state does not exist");
+
+		if (code.isEmpty())
+			return new ArrayList<EvaluationResult>();
+
+		final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
+				code, stateId.getId());
+		execute(command);
+
+		final List<EvaluationResult> values = command.getValues();
+
+		return values;
+
+	}
+
 	/**
 	 * Evaluates a single formula or an array of formulas (represented as
 	 * strings) for the given state. Returns as list of EvaluationResults.
@@ -241,32 +268,20 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	public List<EvaluationResult> eval(final String state,
 			final List<IEvalElement> code) throws BException {
 		final StateId stateId = getVertex(state);
-		if (!containsVertex(stateId))
-			throw new IllegalArgumentException("state does not exist");
-
-		if (code.isEmpty())
-			return new ArrayList<EvaluationResult>();
-
-		final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-				code, state);
-		execute(command);
-
-		List<EvaluationResult> values = command.getValues();
-
-		return values;
+		return eval(stateId, code);
 	}
 
 	public void evaluateFormulas(final StateId state) {
-		Set<Entry<String, IEvalElement>> entrySet = formulas.entrySet();
-		for (Entry<String, IEvalElement> entry : entrySet) {
+		final Set<Entry<String, IEvalElement>> entrySet = formulas.entrySet();
+		for (final Entry<String, IEvalElement> entry : entrySet) {
 			state.getProperty(entry.getKey());
 		}
 	}
 
 	public List<EvaluationResult> eval(final String state, final String... code)
 			throws BException {
-		List<IEvalElement> list = new ArrayList<IEvalElement>();
-		for (String c : code) {
+		final List<IEvalElement> list = new ArrayList<IEvalElement>();
+		for (final String c : code) {
 			list.add(new ClassicalBEvalElement(c));
 		}
 		return eval(state, list);
@@ -302,7 +317,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private void notifyStateSpaceChange(final String opName,
 			final boolean isDestStateNew) {
-		for (IStateSpaceChangeListener listener : stateSpaceListeners) {
+		for (final IStateSpaceChangeListener listener : stateSpaceListeners) {
 			listener.newTransition(opName, isDestStateNew);
 		}
 	}
@@ -356,22 +371,22 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public String printOps(final StateId state) {
-		StringBuilder sb = new StringBuilder();
-		Collection<OpInfo> opIds = outgoingEdgesOf(state);
+		final StringBuilder sb = new StringBuilder();
+		final Collection<OpInfo> opIds = outgoingEdgesOf(state);
 		sb.append("Operations: \n");
-		for (OpInfo opId : opIds) {
+		for (final OpInfo opId : opIds) {
 			sb.append("  " + opId.id + ": " + opId.toString() + "\n");
 		}
 		return sb.toString();
 	}
 
 	public String printState(final StateId state) {
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("Current State Id: " + state + "\n");
-		HashMap<String, String> currentState = getInfo().getState(state);
+		final HashMap<String, String> currentState = getInfo().getState(state);
 		if (currentState != null) {
-			Set<Entry<String, String>> entrySet = currentState.entrySet();
-			for (Entry<String, String> entry : entrySet) {
+			final Set<Entry<String, String>> entrySet = currentState.entrySet();
+			for (final Entry<String, String> entry : entrySet) {
 				sb.append("  " + entry.getKey() + " -> " + entry.getValue()
 						+ "\n");
 			}
@@ -394,7 +409,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return h;
 	}
 
-	public void setAnimator(IAnimator animator) {
+	public void setAnimator(final IAnimator animator) {
 		this.animator = animator;
 	}
 
@@ -402,8 +417,54 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return loadcmd;
 	}
 
-	public void setLoadcmd(ICommand loadcmd) {
+	public void setLoadcmd(final ICommand loadcmd) {
 		this.loadcmd = loadcmd;
 	}
 
+	public void setModel(final IFormula model) {
+		this.model = model;
+	}
+
+	public List<IFormula> getFormulas(final IFormula formula) {
+		final List<IFormula> toEvaluate = new ArrayList<IFormula>();
+		final List<IFormula> subcomponents = formula.getSubcomponents();
+		for (final IFormula iFormula : subcomponents) {
+			if (iFormula.toEvaluate()) {
+				toEvaluate.add(iFormula);
+			}
+			toEvaluate.addAll(getFormulas(iFormula));
+		}
+		return toEvaluate;
+	}
+
+	public void evaluateIFormulas(final StateId stateId) {
+		final List<IFormula> formulaList = getFormulas(model);
+		final Map<FormulaUUID, String> valueMap = new HashMap<FormulaUUID, String>();
+		final List<IEvalElement> evalElements = new ArrayList<IEvalElement>();
+		for (final IFormula iFormula : formulaList) {
+			try {
+				evalElements
+						.add(new ClassicalBEvalElement(iFormula.getLabel()));
+			} catch (final BException e) {
+				System.out
+						.println(iFormula.getLabel() + " " + iFormula.getId());
+			}
+		}
+		List<EvaluationResult> result = null;
+		try {
+			result = eval(stateId, evalElements);
+		} catch (final BException e) {
+			System.out.println("failed!!!");
+		}
+		if (result != null) {
+			for (final EvaluationResult evaluationResult : result) {
+				for (final IFormula iFormula : formulaList) {
+					if (evaluationResult.code.equals(iFormula.getLabel())) {
+						valueMap.put(iFormula.getId(), evaluationResult.value);
+					}
+				}
+			}
+		}
+		values.put(stateId, valueMap);
+	}
 }

@@ -1,8 +1,6 @@
 package de.prob.model.representation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.jgrapht.graph.DirectedMultigraph;
 
@@ -51,25 +49,13 @@ public abstract class AbstractModel implements IFormula {
 	}
 
 	@Override
-	public String getValue() {
-		return "";
-	}
-
-	@Override
 	public FormulaUUID getId() {
 		return uuid;
 	}
 
 	@Override
-	public List<IFormula> getAllSubformulas() {
-		final List<IFormula> subformulas = new ArrayList<IFormula>();
-		subformulas.addAll(components.values());
-		return subformulas;
+	public boolean toEvaluate() {
+		return false;
 	}
 
-	@Override
-	public List<IFormula> getVisibleSubformulas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

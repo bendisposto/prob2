@@ -52,13 +52,13 @@ public class DependencyWalker extends DepthFirstAdapter {
 
 	@Override
 	public void caseAImportsMachineClause(final AImportsMachineClause node) {
-		LinkedList<PMachineReference> machineReferences = node
+		final LinkedList<PMachineReference> machineReferences = node
 				.getMachineReferences();
-		for (PMachineReference r : machineReferences) {
-			String dest = extractMachineName(((AMachineReference) r)
+		for (final PMachineReference r : machineReferences) {
+			final String dest = extractMachineName(((AMachineReference) r)
 					.getMachineName());
-			ClassicalBMachine newMachine = makeMachine(dest);
-			String name = newMachine.name();
+			final ClassicalBMachine newMachine = makeMachine(dest);
+			final String name = newMachine.name();
 			components.put(name, newMachine);
 			graph.addVertex(name);
 			graph.addEdge(src, name, new RefType(ERefType.IMPORTS));
@@ -68,18 +68,18 @@ public class DependencyWalker extends DepthFirstAdapter {
 	private ClassicalBMachine makeMachine(final String dest) {
 		// FIXME: find the NodeIdAssignment and initialize the ClassicalBMachine
 		// with it
-		ClassicalBMachine dst = new ClassicalBMachine(null);
-		DomBuilder builder = new DomBuilder(dst);
-		Start start = map.get(dest);
+		final ClassicalBMachine dst = new ClassicalBMachine(null);
+		final DomBuilder builder = new DomBuilder(dst);
+		final Start start = map.get(dest);
 		start.apply(builder);
 		return dst;
 	}
 
 	@Override
 	public void caseAMachineReference(final AMachineReference node) {
-		String dest = extractMachineName(node.getMachineName());
-		ClassicalBMachine newMachine = makeMachine(dest);
-		String name = newMachine.name();
+		final String dest = extractMachineName(node.getMachineName());
+		final ClassicalBMachine newMachine = makeMachine(dest);
+		final String name = newMachine.name();
 		components.put(name, newMachine);
 		graph.addVertex(name);
 		graph.addEdge(src, name, new RefType(ERefType.INCLUDES));
@@ -98,9 +98,9 @@ public class DependencyWalker extends DepthFirstAdapter {
 	}
 
 	private void registerRefinementMachine(final TIdentifierLiteral refMachine) {
-		String dest = refMachine.getText();
-		ClassicalBMachine newMachine = makeMachine(dest);
-		String name = newMachine.name();
+		final String dest = refMachine.getText();
+		final ClassicalBMachine newMachine = makeMachine(dest);
+		final String name = newMachine.name();
 		components.put(name, newMachine);
 		graph.addVertex(name);
 		graph.addEdge(src, name, new RefType(ERefType.REFINES));
@@ -108,12 +108,13 @@ public class DependencyWalker extends DepthFirstAdapter {
 
 	private void registerMachineNames(final List<PExpression> machineNames,
 			final RefType depType) {
-		for (PExpression machineName : machineNames) {
+		for (final PExpression machineName : machineNames) {
 			if (machineName instanceof AIdentifierExpression) {
-				AIdentifierExpression identifier = (AIdentifierExpression) machineName;
-				String dest = extractMachineName(identifier.getIdentifier());
-				ClassicalBMachine newMachine = makeMachine(dest);
-				String name = newMachine.name();
+				final AIdentifierExpression identifier = (AIdentifierExpression) machineName;
+				final String dest = extractMachineName(identifier
+						.getIdentifier());
+				final ClassicalBMachine newMachine = makeMachine(dest);
+				final String name = newMachine.name();
 				components.put(name, newMachine);
 				graph.addVertex(name);
 				graph.addEdge(src, name, depType);

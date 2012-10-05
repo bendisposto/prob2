@@ -5,13 +5,9 @@ import java.util.List;
 public interface IFormula {
 	public String getLabel();
 
-	public String getValue();
-
 	public FormulaUUID getId();
 
-	public List<IFormula> getAllSubformulas();
+	public List<IFormula> getSubcomponents();
 
-	public List<IFormula> getVisibleSubformulas();
-
-	public boolean isVisible();
+	public boolean toEvaluate();
 }
