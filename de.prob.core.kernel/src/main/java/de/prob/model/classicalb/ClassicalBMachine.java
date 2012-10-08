@@ -16,15 +16,9 @@ import de.prob.model.representation.Operation;
 public class ClassicalBMachine extends AbstractDomTreeElement implements
 		AbstractElement {
 
-	public final String SETS = "sets";
-	public final String PARAMETERS = "params";
-	public final String CONSTRAINTS = "constraints";
-	public final String CONSTANTS = "constants";
-	public final String PROPERTIES = "properties";
-	public final String VARIABLES = "variables";
-	public final String INVARIANT = "invariant";
-	public final String ASSERTIONS = "assertions";
-	public final String USER_FORMULAS = "user";
+	private enum ESection {
+		SETS, PARAMETERS, CONSTRAINTS, CONSTANTS, PROPERTIES, VARIABLES, INVARIANT, ASSERTIONS, USER_FORMULAS
+	}
 
 	private final NodeIdAssignment astMapping;
 
@@ -48,7 +42,7 @@ public class ClassicalBMachine extends AbstractDomTreeElement implements
 	private final List<ClassicalBEntity> assertions = new ArrayList<ClassicalBEntity>();
 	private final List<Operation> operations = new ArrayList<Operation>();
 
-	private final Map<String, Label> labels = new HashMap<String, Label>();
+	private final Map<ESection, Label> labels = new HashMap<ESection, Label>();
 
 	public List<ClassicalBEntity> constants() {
 		return lock(constants);
@@ -235,58 +229,58 @@ public class ClassicalBMachine extends AbstractDomTreeElement implements
 			for (final ClassicalBEntity set : sets) {
 				setLabel.addFormula(set);
 			}
-			labels.put(SETS, setLabel);
+			labels.put(ESection.SETS, setLabel);
 		}
 		if (!parameters.isEmpty()) {
 			final Label label = new Label("Parameters");
 			for (final ClassicalBEntity param : parameters) {
 				label.addFormula(param);
 			}
-			labels.put(PARAMETERS, label);
+			labels.put(ESection.PARAMETERS, label);
 		}
 		if (!constraints.isEmpty()) {
 			final Label label = new Label("Constraints");
 			for (final ClassicalBEntity constraint : constraints) {
 				label.addFormula(constraint);
 			}
-			labels.put(CONSTRAINTS, label);
+			labels.put(ESection.CONSTRAINTS, label);
 		}
 		if (!constants.isEmpty()) {
 			final Label label = new Label("Constants");
 			for (final ClassicalBEntity constant : constants) {
 				label.addFormula(constant);
 			}
-			labels.put(CONSTANTS, label);
+			labels.put(ESection.CONSTANTS, label);
 		}
 		if (!properties.isEmpty()) {
 			final Label label = new Label("Properties");
 			for (final ClassicalBEntity prop : properties) {
 				label.addFormula(prop);
 			}
-			labels.put(PROPERTIES, label);
+			labels.put(ESection.PROPERTIES, label);
 		}
 		if (!variables.isEmpty()) {
 			final Label label = new Label("Variables");
 			for (final ClassicalBEntity var : variables) {
 				label.addFormula(var);
 			}
-			labels.put(VARIABLES, label);
+			labels.put(ESection.VARIABLES, label);
 		}
 		if (!invariant.isEmpty()) {
 			final Label label = new Label("Invariant");
 			for (final ClassicalBEntity inv : invariant) {
 				label.addFormula(inv);
 			}
-			labels.put(INVARIANT, label);
+			labels.put(ESection.INVARIANT, label);
 		}
 		if (!assertions.isEmpty()) {
 			final Label label = new Label("Assertions");
 			for (final ClassicalBEntity assertion : assertions) {
 				label.addFormula(assertion);
 			}
-			labels.put(ASSERTIONS, label);
+			labels.put(ESection.ASSERTIONS, label);
 		}
-		labels.put(USER_FORMULAS, new Label("Formulas"));
+		labels.put(ESection.USER_FORMULAS, new Label("Formulas"));
 	}
 
 	@Override
