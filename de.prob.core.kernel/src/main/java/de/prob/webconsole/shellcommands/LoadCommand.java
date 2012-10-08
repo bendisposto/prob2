@@ -32,7 +32,7 @@ public class LoadCommand extends AbstractShellCommand {
 		if (extension.equals(".mch") || extension.equals(".ref")
 				|| extension.equals(".imp")) {
 			String name = freshVar(exec, "model_");
-			exec.evaluate(name + " = api.b_load(" + filename + ")");
+			exec.evaluate(name + " = api.b_load('" + filename + "')");
 			Object model = exec.getBindings().getVariable(name);
 			if (model != null) {
 				return name + " = " + model;
