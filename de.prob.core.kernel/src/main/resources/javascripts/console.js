@@ -87,4 +87,12 @@ function initialize() {
       $("#console").height($(window).height())
    });
    $("#console").height($(window).height())
+   
+   $(window).focus(function() {
+     scrollDown();
+   });
+   
+   
+   
+   
 }

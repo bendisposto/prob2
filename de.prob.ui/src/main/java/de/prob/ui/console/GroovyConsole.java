@@ -1,8 +1,10 @@
-package de.prob.ui;
+package de.prob.ui.console;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -40,6 +42,8 @@ public class GroovyConsole extends ViewPart {
 		browser.setLayoutData(gridData);
 		browser_1.setLayoutData(gridData);
 		sashForm.setLayoutData(gridData);
+		
+		
 	}
 
 	@Override
