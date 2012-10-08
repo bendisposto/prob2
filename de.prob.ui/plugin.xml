@@ -5,12 +5,6 @@
          point="org.eclipse.ui.menus">
           <menuContribution
             locationURI="menu:debug">
-         <command
-               commandId="de.prob.ui.groovyconsole"
-               label="Groovy Console"
-               mnemonic="G"
-               style="push">
-         </command>
       </menuContribution>
       
         <menuContribution
@@ -112,11 +106,6 @@
    
    <extension
          point="org.eclipse.ui.commands">
-              <command
-            categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.groovyconsole"
-            name="Open Groovy Console">
-      </command>
       
             <command
             id="de.prob.ui.starteventbanimation"
@@ -148,12 +137,6 @@
    
    <extension
          point="org.eclipse.ui.handlers">
- <handler
-            commandId="de.prob.ui.groovyconsole">
-         <class
-               class="de.prob.ui.OpenGroovyConsole">
-         </class>
-      </handler>
       
       <handler
             commandId="de.prob.ui.starteventbanimation">
@@ -302,7 +285,7 @@
       <view
             allowMultiple="false"
             category="de.hhu.stups.prob"
-            class="de.prob.ui.GroovyConsole"
+            class="de.prob.ui.console.GroovyConsole"
             id="de.prob.ui.groovy-console"
             name="Groovy Console"
             restorable="true">
