@@ -458,13 +458,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		} catch (final BException e) {
 			System.out.println("failed!!!");
 		}
+
+		assert result.size() == formulaList.size();
 		if (result != null) {
-			for (final EvaluationResult evaluationResult : result) {
-				for (final AbstractDomTreeElement iFormula : formulaList) {
-					if (evaluationResult.code.equals(iFormula.getLabel())) {
-						valueMap.put(iFormula, evaluationResult.value);
-					}
-				}
+			for (int i = 0; i < result.size(); i++) {
+				valueMap.put(formulaList.get(i), result.get(i).value);
 			}
 		}
 		values.put(stateId, valueMap);
