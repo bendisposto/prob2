@@ -1,18 +1,20 @@
 package de.prob.model.representation;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import org.jgrapht.graph.DirectedMultigraph;
 
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.statespace.StateSpace;
 
-public abstract class AbstractModel implements IFormula {
+public abstract class AbstractModel extends AbstractDomTreeElement {
 
 	protected StateSpace statespace;
 	protected HashMap<String, AbstractElement> components;
 	protected DirectedMultigraph<String, RefType> graph;
-	private final FormulaUUID uuid = new FormulaUUID();
 
 	public StateSpace getStatespace() {
 		return statespace;
@@ -45,17 +47,22 @@ public abstract class AbstractModel implements IFormula {
 
 	@Override
 	public String getLabel() {
-		return uuid.uuid;
-	}
-
-	@Override
-	public FormulaUUID getId() {
 		return uuid;
 	}
 
 	@Override
 	public boolean toEvaluate() {
 		return false;
+	}
+
+	public List<AbstractDomTreeElement> getSubcomponents(
+			Collection<AbstractElement> values) {
+		final List<AbstractDomTreeElement> subformulas = new ArrayList<AbstractDomTreeElement>();
+		for (AbstractElement abstractElement : values) {
+			AbstractDomTreeElement adt = (AbstractDomTreeElement) abstractElement;
+			subformulas.add(adt);
+		}
+		return subformulas;
 	}
 
 }

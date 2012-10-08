@@ -13,19 +13,17 @@ import org.eventb.emf.core.machine.Machine;
 import org.eventb.emf.core.machine.Parameter;
 import org.eventb.emf.core.machine.Variable;
 
+import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.FormulaUUID;
-import de.prob.model.representation.IFormula;
 import de.prob.model.representation.Label;
 
-public class EventBComponent implements AbstractElement {
+public class EventBComponent extends AbstractDomTreeElement implements AbstractElement {
 
 	private final EventBNamedCommentedComponentElement emfComponent;
 	private final String name;
 	private final Label variables;
 	private final Label constants;
 	private List<Event> events;
-	private final FormulaUUID uuid = new FormulaUUID();
 
 	public EventBComponent(
 			final EventBNamedCommentedComponentElement emfComponent) {
@@ -71,7 +69,7 @@ public class EventBComponent implements AbstractElement {
 	@Override
 	public List<String> getConstantNames() {
 		final ArrayList<String> cons = new ArrayList<String>();
-		for (final IFormula con : constants.getSubcomponents()) {
+		for (final AbstractDomTreeElement con : constants.getSubcomponents()) {
 			cons.add(con.getLabel());
 		}
 		return cons;
@@ -80,7 +78,7 @@ public class EventBComponent implements AbstractElement {
 	@Override
 	public List<String> getVariableNames() {
 		final ArrayList<String> vars = new ArrayList<String>();
-		for (final IFormula var : variables.getSubcomponents()) {
+		for (final AbstractDomTreeElement var : variables.getSubcomponents()) {
 			vars.add(var.getLabel());
 		}
 		return vars;
@@ -120,13 +118,10 @@ public class EventBComponent implements AbstractElement {
 		return name;
 	}
 
-	@Override
-	public FormulaUUID getId() {
-		return uuid;
-	}
+	
 
 	@Override
-	public List<IFormula> getSubcomponents() {
+	public List<AbstractDomTreeElement> getSubcomponents() {
 		// TODO Auto-generated method stub
 		return null;
 	}

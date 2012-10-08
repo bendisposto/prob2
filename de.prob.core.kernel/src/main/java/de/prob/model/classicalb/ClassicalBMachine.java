@@ -8,13 +8,13 @@ import java.util.Map;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.Node;
+import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.FormulaUUID;
-import de.prob.model.representation.IFormula;
 import de.prob.model.representation.Label;
 import de.prob.model.representation.Operation;
 
-public class ClassicalBMachine implements AbstractElement {
+public class ClassicalBMachine extends AbstractDomTreeElement implements
+		AbstractElement {
 
 	public final String SETS = "sets";
 	public final String PARAMETERS = "params";
@@ -27,7 +27,6 @@ public class ClassicalBMachine implements AbstractElement {
 	public final String USER_FORMULAS = "user";
 
 	private final NodeIdAssignment astMapping;
-	private final FormulaUUID uuid = new FormulaUUID();
 
 	public ClassicalBMachine(final NodeIdAssignment nodeIdAssignment) {
 		this.astMapping = nodeIdAssignment;
@@ -226,13 +225,8 @@ public class ClassicalBMachine implements AbstractElement {
 	}
 
 	@Override
-	public FormulaUUID getId() {
-		return uuid;
-	}
-
-	@Override
-	public List<IFormula> getSubcomponents() {
-		return new ArrayList<IFormula>(labels.values());
+	public List<AbstractDomTreeElement> getSubcomponents() {
+		return new ArrayList<AbstractDomTreeElement>(labels.values());
 	}
 
 	public void createLabels() {

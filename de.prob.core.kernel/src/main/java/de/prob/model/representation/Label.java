@@ -3,16 +3,14 @@ package de.prob.model.representation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Label implements IFormula {
+public class Label extends AbstractDomTreeElement {
 
 	private final String label;
-	private final List<IFormula> subformulas;
-	private final FormulaUUID uuid;
+	private final List<AbstractDomTreeElement> subformulas;
 
 	public Label(final String label) {
 		this.label = label;
-		this.subformulas = new ArrayList<IFormula>();
-		this.uuid = new FormulaUUID();
+		this.subformulas = new ArrayList<AbstractDomTreeElement>();
 	}
 
 	@Override
@@ -21,16 +19,11 @@ public class Label implements IFormula {
 	}
 
 	@Override
-	public FormulaUUID getId() {
-		return uuid;
-	}
-
-	@Override
-	public List<IFormula> getSubcomponents() {
+	public List<AbstractDomTreeElement> getSubcomponents() {
 		return subformulas;
 	}
 
-	public void addFormula(final IFormula formula) {
+	public void addFormula(final AbstractDomTreeElement formula) {
 		subformulas.add(formula);
 	}
 

@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.be4.classicalb.core.parser.node.Node;
-import de.prob.model.representation.FormulaUUID;
-import de.prob.model.representation.IFormula;
+import de.prob.model.representation.AbstractDomTreeElement;
 
-public class ClassicalBEntity implements IFormula {
+public class ClassicalBEntity extends AbstractDomTreeElement {
 
 	private final String identifier;
 	private final Node astPart;
-	private final FormulaUUID uuid = new FormulaUUID();
 
 	public ClassicalBEntity(final String name, final Node id) {
 		this.identifier = name;
@@ -38,15 +36,10 @@ public class ClassicalBEntity implements IFormula {
 		return toString();
 	}
 
-	@Override
-	public FormulaUUID getId() {
-		return uuid;
-	}
 
 	@Override
-	public List<IFormula> getSubcomponents() {
-		// FIXME Implement method to get subformulas
-		return new ArrayList<IFormula>();
+	public List<AbstractDomTreeElement> getSubcomponents() {
+		return new ArrayList<AbstractDomTreeElement>();
 	}
 
 	@Override

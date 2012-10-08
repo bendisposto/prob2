@@ -1,6 +1,6 @@
 package de.prob.model.classicalb;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,9 +13,9 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
+import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.IFormula;
 import de.prob.model.representation.RefType;
 import de.prob.statespace.StateSpace;
 
@@ -81,10 +81,9 @@ public class ClassicalBModel extends AbstractModel {
 	}
 
 	@Override
-	public List<IFormula> getSubcomponents() {
-		final List<IFormula> subcomponents = new ArrayList<IFormula>();
-		subcomponents.addAll(components.values());
-		return subcomponents;
+	public List<AbstractDomTreeElement> getSubcomponents() {
+		Collection<AbstractElement> values = components.values();
+		return getSubcomponents(values);
 	}
 
 }
