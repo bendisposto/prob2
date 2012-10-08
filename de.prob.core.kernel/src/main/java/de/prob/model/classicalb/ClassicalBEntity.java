@@ -35,7 +35,7 @@ public class ClassicalBEntity implements IFormula {
 
 	@Override
 	public String getLabel() {
-		return identifier;
+		return toString();
 	}
 
 	@Override

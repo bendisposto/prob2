@@ -122,7 +122,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 
 		// Testing!!!
-		// evaluateIFormulas(state);
+		if (!state.getId().equals("root")) {
+			evaluateIFormulas(state);
+		}
 		getInfo().add(state, command);
 	}
 
