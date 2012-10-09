@@ -1,8 +1,6 @@
 package de.prob.webconsole.servlets;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
