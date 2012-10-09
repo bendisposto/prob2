@@ -30,7 +30,6 @@ import de.prob.webconsole.ResultObject;
 public class GroovyShellServlet extends HttpServlet {
 
 	private final GroovyExecution executor;
-	private volatile boolean firstTime = true;
 
 	@Inject
 	public GroovyShellServlet(GroovyExecution executor) {
@@ -40,10 +39,6 @@ public class GroovyShellServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
-		if (firstTime) {
-			executor.renewSideeffects();
-			firstTime = false;
-		}
 		PrintWriter out = res.getWriter();
 		String input = req.getParameter("input");
 		String result = executor.evaluate(input);

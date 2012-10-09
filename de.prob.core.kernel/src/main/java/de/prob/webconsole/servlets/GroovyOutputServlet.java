@@ -40,12 +40,10 @@ public class GroovyOutputServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
+
 		ByteArrayOutputStream sideeffects = executor.getSideeffects();
-		String outputs = "";
-		if (sideeffects != null) {
-			outputs = sideeffects.toString().replaceAll("\\n", "<br />");
-			executor.renewSideeffects();
-		}
+		String outputs = sideeffects.toString();
+		executor.renewSideeffects();
 		out.println(new Gson().toJson(outputs));
 		out.close();
 	}

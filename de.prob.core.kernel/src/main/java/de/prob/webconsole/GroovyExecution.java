@@ -68,7 +68,8 @@ public class GroovyExecution {
 		this.try_interpreter = new Interpreter(
 				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
-
+		sideeffects = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(sideeffects));
 	}
 
 	public String evaluate(String input) throws IOException {
@@ -114,7 +115,7 @@ public class GroovyExecution {
 		return continued;
 	}
 
-	public synchronized ByteArrayOutputStream getSideeffects() {
+	public ByteArrayOutputStream getSideeffects() {
 		return sideeffects;
 	}
 
@@ -141,7 +142,7 @@ public class GroovyExecution {
 		}
 	}
 
-	private synchronized String eval(String input) throws IOException {
+	private String eval(String input) throws IOException {
 		Object evaluate = null;
 		ParseCode parseCode;
 		inputs.add(input);
@@ -171,12 +172,13 @@ public class GroovyExecution {
 			} finally {
 				inputs.clear();
 			}
-
+			while (sideeffects.size() > 0) {
+			}
 			return evaluate == null ? "null" : evaluate.toString();
 		}
 	}
 
-	public synchronized void renewSideeffects() {
+	public void renewSideeffects() {
 		sideeffects = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(sideeffects));
 	}

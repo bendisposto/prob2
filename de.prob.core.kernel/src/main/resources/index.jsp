@@ -68,8 +68,8 @@
 		<div class="sixteen columns">
 			<hr style="margin-top: 20px;" />
 			<h3>System.out</h3>
-			<div id="system_out"
-				style="width: 99%; height: 300px; font-family: monospace;"></div>
+			<textarea id="system_out"
+				style="width: 99%; height: 300px; font-family: monospace;"></textarea>
 		</div>
 
 		<div class="sixteen columns">

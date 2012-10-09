@@ -5,6 +5,12 @@
          point="org.eclipse.ui.menus">
           <menuContribution
             locationURI="menu:debug">
+         <command
+               commandId="de.prob.ui.groovyconsole"
+               label="Groovy Console"
+               mnemonic="G"
+               style="push">
+         </command>
       </menuContribution>
       
         <menuContribution
@@ -101,21 +107,16 @@
               </parameter>
            </command>
         </menuContribution>
-        <menuContribution
-              allPopups="false"
-              locationURI="toolbar:de.prob.ui.groovy-console">
-           <command
-                 commandId="de.prob.ui.switch_loglevel"
-                 icon="icons/forward.gif"
-                 label="Switch Loglevel"
-                 style="push">
-           </command>
-        </menuContribution>
       
    </extension>
    
    <extension
          point="org.eclipse.ui.commands">
+              <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.groovyconsole"
+            name="Open Groovy Console">
+      </command>
       
             <command
             id="de.prob.ui.starteventbanimation"
@@ -142,15 +143,17 @@
                      optional="false">
                </commandParameter>
             </command>
-            <command
-                  id="de.prob.ui.switch_loglevel"
-                  name="Switch Loglevel">
-            </command>
       
    </extension>
    
    <extension
          point="org.eclipse.ui.handlers">
+ <handler
+            commandId="de.prob.ui.groovyconsole">
+         <class
+               class="de.prob.ui.OpenGroovyConsole">
+         </class>
+      </handler>
       
       <handler
             commandId="de.prob.ui.starteventbanimation">
@@ -260,10 +263,6 @@
                class="de.prob.ui.operationview.ExecuteRandomHandler">
          </class>
       </handler>
-      <handler
-            class="LogLevelHandler"
-            commandId="de.prob.ui.switch_loglevel">
-      </handler>
       
    </extension>
    <extension
@@ -299,14 +298,6 @@
             icon="icons/sample.gif"
             id="de.prob.ui.AnimationsView"
             name="Current Animations">
-      </view>
-      <view
-            allowMultiple="false"
-            category="de.hhu.stups.prob"
-            class="de.prob.ui.console.GroovyConsole"
-            id="de.prob.ui.groovy-console"
-            name="Groovy Console"
-            restorable="true">
       </view>
    </extension>
    <extension
@@ -354,13 +345,6 @@
             provider="de.prob.ui.services.ModelLoadedProvider">
          <variable
                name="de.prob.ui.model_loaded"
-               priorityLevel="workbench">
-         </variable>
-      </sourceProvider>
-      <sourceProvider
-            provider="de.prob.ui.services.LogLevelProvider">
-         <variable
-               name="de.prob.ui.loglevel"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>

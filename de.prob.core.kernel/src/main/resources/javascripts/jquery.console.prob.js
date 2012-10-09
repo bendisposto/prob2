@@ -228,7 +228,6 @@
             inner.removeClass('jquery-console-nofocus');
             typer.focus();
             scrollToBottom();
-            window.scrollTo(0,document.body.scrollHeight);
             return false;
         });
 
