@@ -225,4 +225,8 @@ class History {
 	def Set<OpInfo> getNextTransitions() {
 		return s.outgoingEdgesOf(current.getCurrentState())
 	}
+	
+	def StateId getCurrentState() {
+		return current.getCurrentState()
+	}
 }
