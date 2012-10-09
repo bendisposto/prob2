@@ -101,6 +101,16 @@
               </parameter>
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="toolbar:de.prob.ui.groovy-console">
+           <command
+                 commandId="de.prob.ui.switch_loglevel"
+                 icon="icons/forward.gif"
+                 label="Switch Loglevel"
+                 style="push">
+           </command>
+        </menuContribution>
       
    </extension>
    
@@ -131,6 +141,10 @@
                      name="Number of Steps"
                      optional="false">
                </commandParameter>
+            </command>
+            <command
+                  id="de.prob.ui.switch_loglevel"
+                  name="Switch Loglevel">
             </command>
       
    </extension>
@@ -246,6 +260,10 @@
                class="de.prob.ui.operationview.ExecuteRandomHandler">
          </class>
       </handler>
+      <handler
+            class="LogLevelHandler"
+            commandId="de.prob.ui.switch_loglevel">
+      </handler>
       
    </extension>
    <extension
@@ -336,6 +354,13 @@
             provider="de.prob.ui.services.ModelLoadedProvider">
          <variable
                name="de.prob.ui.model_loaded"
+               priorityLevel="workbench">
+         </variable>
+      </sourceProvider>
+      <sourceProvider
+            provider="de.prob.ui.services.LogLevelProvider">
+         <variable
+               name="de.prob.ui.loglevel"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>

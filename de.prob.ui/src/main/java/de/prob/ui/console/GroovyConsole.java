@@ -3,8 +3,6 @@ package de.prob.ui.console;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -13,6 +11,8 @@ import org.eclipse.ui.part.ViewPart;
 import de.prob.webconsole.WebConsole;
 
 public class GroovyConsole extends ViewPart {
+	
+	public static final String ID = "de.prob.ui.console.GroovyConsole";
 
 	private final int port;
 
@@ -43,9 +43,11 @@ public class GroovyConsole extends ViewPart {
 		browser_1.setLayoutData(gridData);
 		sashForm.setLayoutData(gridData);
 		
-		
+
 	}
 
+	
+	
 	@Override
 	public void setFocus() {
 
