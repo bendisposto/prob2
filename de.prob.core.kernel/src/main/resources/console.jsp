@@ -15,32 +15,17 @@
 <meta name="description" content="">
 <meta name="author" content="Jens Bendisposto">
 
-<!-- Mobile Specific Metas
-    ================================================== -->
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <!-- CSS
     ================================================== -->
 <link rel="stylesheet" href="stylesheets/console_base.css">
 <link rel="stylesheet" href="stylesheets/console.css">
-<link rel="stylesheet" href="stylesheets/pepper.css">
-<link rel="stylesheet" href="stylesheets/table_jui.css">
 
 </head>
 <body onLoad="initialize()" style="height: 100%;">
 
-	<!-- Primary Page Layout
-      ================================================== -->
-
-	<!-- Delete everything in this .container and get started on your own site! -->
 
 	<div id="console" class="console"></div>
-	<!-- container -->
-
-	<!-- JS
-      ================================================== -->
-	<!-- <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script> -->
 	<script src="javascripts/jquery-1.7.2.min.js"></script>
 	<script src="javascripts/jquery.console.prob.js"></script>
 

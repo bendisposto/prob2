@@ -80,19 +80,12 @@ function initialize() {
 		autofocus : true,
 		animateScroll : true,
 		lineWrapping : true,
-		promptHistory : true
+		promptHistory : true,
 	});
 	
    $(window).resize(function() {
       $("#console").height($(window).height())
    });
    $("#console").height($(window).height())
-   
-   $(window).focus(function() {
-     scrollDown();
-   });
-   
-   
-   
    
 }
