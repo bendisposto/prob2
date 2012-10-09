@@ -42,26 +42,22 @@ import de.prob.ui.services.HistoryActiveProvider;
 import de.prob.ui.services.ModelLoadedProvider;
 import de.prob.webconsole.ServletContextListener;
 
-
 /**
- * This sample class demonstrates how to plug-in a new
- * workbench view. The view shows data obtained from the
- * model. The sample creates a dummy model on the fly,
- * but a real implementation would connect to the model
- * available either in this or another plug-in (e.g. the workspace).
- * The view is connected to the model using a content provider.
+ * This sample class demonstrates how to plug-in a new workbench view. The view
+ * shows data obtained from the model. The sample creates a dummy model on the
+ * fly, but a real implementation would connect to the model available either in
+ * this or another plug-in (e.g. the workspace). The view is connected to the
+ * model using a content provider.
  * <p>
- * The view uses a label provider to define how model
- * objects should be presented in the view. Each
- * view can present the same model objects using
- * different labels and icons, if needed. Alternatively,
- * a single label provider can be shared between views
- * in order to ensure that objects of the same type are
- * presented in the same way everywhere.
+ * The view uses a label provider to define how model objects should be
+ * presented in the view. Each view can present the same model objects using
+ * different labels and icons, if needed. Alternatively, a single label provider
+ * can be shared between views in order to ensure that objects of the same type
+ * are presented in the same way everywhere.
  * <p>
  */
 
-public class OperationView extends ViewPart implements IHistoryChangeListener{
+public class OperationView extends ViewPart implements IHistoryChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -71,23 +67,27 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	private TableViewer viewer;
 	private History currentHistory;
 	private AbstractModel currentModel;
-	
+	private boolean modelLoaded;
+
 	Injector injector = ServletContextListener.INJECTOR;
-	 
+
 	/**
 	 * The constructor.
 	 */
 	public OperationView() {
-		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
+		final AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
 		selector.registerHistoryChangeListener(this);
 	}
 
 	/**
-	 * This is a callback that will allow us
-	 * to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
-	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+	@Override
+	public void createPartControl(final Composite parent) {
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
 		createColumns();
 		viewer.setContentProvider(new OperationsContentProvider());
 		viewer.setLabelProvider(new OperationViewLabelProvider());
@@ -95,40 +95,43 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 		viewer.setInput(getViewSite());
 
 		// Create the help context id for the viewer's control
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "de.prob.ui.viewer");
+		PlatformUI.getWorkbench().getHelpSystem()
+				.setHelp(viewer.getControl(), "de.prob.ui.viewer");
 		hookContextMenu();
 		hookDoubleClickAction();
-		updateModelLoadedProvider();
-		
-		Table table = viewer.getTable();
+		modelLoaded = false;
+
+		final Table table = viewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 	}
-	
+
 	private void hookContextMenu() {
 		final OperationView x = this;
-		TableViewer viewer = this.viewer;
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		final TableViewer viewer = this.viewer;
+		final MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
-		IMenuListener listener = new IMenuListener(){
+		final IMenuListener listener = new IMenuListener() {
 			@Override
-			public void menuAboutToShow(IMenuManager manager) {
+			public void menuAboutToShow(final IMenuManager manager) {
 				x.fillContextMenu(manager);
 			}
 		};
 		menuMgr.addMenuListener(listener);
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		final Menu menu = menuMgr.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
 		getSite().registerContextMenu(menuMgr, viewer);
 	}
-	
+
 	private void fillContextMenu(final IMenuManager manager) {
-		List<OpInfo> selectedOperations = getSelectedOperations();
+		final List<OpInfo> selectedOperations = getSelectedOperations();
 		for (final OpInfo opInfo : selectedOperations) {
-			Action executeOp = new Action() {
+			final Action executeOp = new Action() {
+				@Override
 				public void run() {
-					History newHistory = currentHistory.add(opInfo.id);
-					newHistory.notifyAnimationChange(currentHistory, newHistory);
+					final History newHistory = currentHistory.add(opInfo.id);
+					newHistory
+							.notifyAnimationChange(currentHistory, newHistory);
 				}
 			};
 			executeOp.setText(Joiner.on(",").join(opInfo.params));
@@ -142,12 +145,14 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	}
 
 	private void createColumns() {
-		TableViewerColumn column1 = new TableViewerColumn(viewer, SWT.NONE);
+		final TableViewerColumn column1 = new TableViewerColumn(viewer,
+				SWT.NONE);
 		column1.getColumn().setText("Event");
 		column1.getColumn().setResizable(true);
 		column1.getColumn().pack();
 
-		TableViewerColumn column2 = new TableViewerColumn(viewer, SWT.NONE);
+		final TableViewerColumn column2 = new TableViewerColumn(viewer,
+				SWT.NONE);
 		column2.getColumn().setText("Parameter(s)");
 		column2.getColumn().setResizable(true);
 		column2.getColumn().pack();
@@ -157,7 +162,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	 * Recalculate size of all columns
 	 */
 	private void packTableColumns() {
-		for (TableColumn column : viewer.getTable().getColumns()) {
+		for (final TableColumn column : viewer.getTable().getColumns()) {
 			column.pack();
 		}
 	}
@@ -165,18 +170,23 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
+	@Override
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-	
+
 	@Override
-	public void historyChange(final History history, AbstractModel model) {
+	public void historyChange(final History history, final AbstractModel model) {
+		if (!modelLoaded) {
+			updateModelLoadedProvider();
+			modelLoaded = true;
+		}
 		currentHistory = history;
-		if(currentModel != model) {
+		if (currentModel != model) {
 			updateModel(model);
 		}
 		Display.getDefault().asyncExec(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				viewer.setInput(history);
@@ -185,9 +195,10 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 		});
 		try {
 			updateHistoryEnabled(history);
-		} catch(Exception e) {}
+		} catch (final Exception e) {
+		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<OpInfo> getSelectedOperations() {
 		if (viewer.getSelection() != null
@@ -195,54 +206,59 @@ public class OperationView extends ViewPart implements IHistoryChangeListener{
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
 			if (ssel.getFirstElement() instanceof ArrayList<?>) {
-				List<OpInfo> opList = (ArrayList<OpInfo>) ssel.getFirstElement();
+				final List<OpInfo> opList = (ArrayList<OpInfo>) ssel
+						.getFirstElement();
 				return opList;
-			}
-			else
-				System.out.println("Selection is: "+ssel.getFirstElement().getClass());
+			} else
+				System.out.println("Selection is: "
+						+ ssel.getFirstElement().getClass());
 		}
 		return null;
 	}
-	
+
 	private class OTVDoubleClickListener implements IDoubleClickListener {
 
+		@Override
 		public void doubleClick(final DoubleClickEvent event) {
-			List<OpInfo> selectedOperations = getSelectedOperations();
+			final List<OpInfo> selectedOperations = getSelectedOperations();
 			if (selectedOperations != null && !selectedOperations.isEmpty()) {
-				History newHistory = currentHistory.add(selectedOperations.get(0).id);
+				final History newHistory = currentHistory
+						.add(selectedOperations.get(0).id);
 				newHistory.notifyAnimationChange(currentHistory, newHistory);
-			} 
+			}
 		}
 	}
-	
+
 	private void updateModelLoadedProvider() {
-		ISourceProviderService service = (ISourceProviderService) this
+		final ISourceProviderService service = (ISourceProviderService) this
 				.getSite().getService(ISourceProviderService.class);
-		ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
+		final ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
 				.getSourceProvider(ModelLoadedProvider.SERVICE);
 		sourceProvider.setEnabled(true);
 	}
-	
-	private void updateHistoryEnabled(History history) {
-		ISourceProviderService service = (ISourceProviderService) this
+
+	private void updateHistoryEnabled(final History history) {
+		final ISourceProviderService service = (ISourceProviderService) this
 				.getSite().getService(ISourceProviderService.class);
-		HistoryActiveProvider sourceProvider = (HistoryActiveProvider) service
+		final HistoryActiveProvider sourceProvider = (HistoryActiveProvider) service
 				.getSourceProvider(HistoryActiveProvider.FORWARD_SERVICE);
 		sourceProvider.historyChange(history);
 	}
-	
-	private void updateModel(AbstractModel model) {
+
+	private void updateModel(final AbstractModel model) {
 		currentModel = model;
-		((OperationsContentProvider) viewer.getContentProvider()).setAllOperations(getOperationNames(model));
+		((OperationsContentProvider) viewer.getContentProvider())
+				.setAllOperations(getOperationNames(model));
 	}
-	
-	private Map<String,Object> getOperationNames(AbstractModel model) {
-		Map<String,Object> names = new HashMap<String, Object>();
-		if(model instanceof EventBModel ) {
-			EventBModel ebmodel = (EventBModel) model;
-			EventBComponent component = ebmodel.getComponent(ebmodel.getMainComponentName());
-			Map<String, Event> events = component.getEvents();
-			for (String key : events.keySet()) {
+
+	private Map<String, Object> getOperationNames(final AbstractModel model) {
+		final Map<String, Object> names = new HashMap<String, Object>();
+		if (model instanceof EventBModel) {
+			final EventBModel ebmodel = (EventBModel) model;
+			final EventBComponent component = ebmodel.getComponent(ebmodel
+					.getMainComponentName());
+			final Map<String, Event> events = component.getEvents();
+			for (final String key : events.keySet()) {
 				names.put(key, events.get(key));
 			}
 		}
