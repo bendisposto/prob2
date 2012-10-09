@@ -80,7 +80,11 @@ function initialize() {
 		autofocus : true,
 		animateScroll : true,
 		lineWrapping : true,
+<<<<<<< HEAD
 		promptHistory : true,
+=======
+		promptHistory : true
+>>>>>>> origin/feature/groovy_integration
 	});
 	
    $(window).resize(function() {
@@ -88,4 +92,14 @@ function initialize() {
    });
    $("#console").height($(window).height())
    
+<<<<<<< HEAD
+=======
+   $(window).focus(function() {
+     scrollDown();
+   });
+   
+   
+   
+   
+>>>>>>> origin/feature/groovy_integration
 }

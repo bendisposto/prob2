@@ -6,6 +6,7 @@
 #drop {
 }
 
+<<<<<<< HEAD
 #loglevel_container {
  position: fixed;
  z-index: 200;
@@ -20,6 +21,8 @@
  left: 0px;
 }
 
+=======
+>>>>>>> origin/feature/groovy_integration
 #console {
 	background: #FFFFFF;
 }

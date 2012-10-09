@@ -41,11 +41,16 @@ public class GroovyOutputServlet extends HttpServlet {
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 		ByteArrayOutputStream sideeffects = executor.getSideeffects();
+<<<<<<< HEAD
 		String outputs = "";
 		if (sideeffects != null) {
 			outputs = sideeffects.toString().replaceAll("\\n", "<br />");
 			executor.renewSideeffects();
 		}
+=======
+		String outputs = sideeffects.toString().replaceAll("\\n","<br />");
+		executor.renewSideeffects();
+>>>>>>> origin/feature/groovy_integration
 		out.println(new Gson().toJson(outputs));
 		out.close();
 	}
