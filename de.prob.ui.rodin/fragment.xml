@@ -65,6 +65,15 @@
          </toolbar>
       </menuContribution>
    </extension>
+     <extension
+           point="org.eclipse.ui.perspectives">
+        <perspective
+              class="de.prob.ui.PerspectiveFactory"
+              icon="icons/prob.png"
+              id="de.prob.ui.perspective"
+              name="ProB">
+        </perspective>
+     </extension>
    
    
 
