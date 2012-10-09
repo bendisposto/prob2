@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 var loglevel = "ERROR";
 
 function switchLogLevel() {
@@ -16,15 +15,12 @@ function switchLogLevel() {
 
 }
 
-=======
->>>>>>> origin/feature/groovy_integration
 
 function scrollDown(){
   window.scrollTo(0,document.body.scrollHeight);
 }
 
 function initialize() {
-<<<<<<< HEAD
 	var levela = $("#loglevel")[0];
 	$.getJSON("loglevel", {
 		input : loglevel
@@ -33,8 +29,6 @@ function initialize() {
 	});
 
 
-=======
->>>>>>> origin/feature/groovy_integration
 	// setup output polling
 	setInterval(function() {
 		$.ajax({
