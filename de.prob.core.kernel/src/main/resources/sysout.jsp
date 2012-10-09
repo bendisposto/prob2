@@ -36,6 +36,12 @@
 
 	<!-- Delete everything in this .container and get started on your own site! -->
 
+           <div id="loglevel_container">
+			Current Log-Level: <a id="loglevel"
+				href="javascript:switchLogLevel()">Trace</a>		</div>
+			<div id="warnings"></div>
+
+
 
 			<div id="system_out"
 				style="font-family: monospace;"></div>

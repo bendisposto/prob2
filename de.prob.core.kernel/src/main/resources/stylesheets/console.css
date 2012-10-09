@@ -6,6 +6,20 @@
 #drop {
 }
 
+#loglevel_container {
+ position: fixed;
+ z-index: 200;
+ top: 0px;
+ left: 0px;
+ background: #FFFFFF;
+}
+
+#system_out {
+ position: absolute;
+ top: 20px;
+ left: 0px;
+}
+
 #console {
 	background: #FFFFFF;
 }

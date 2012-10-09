@@ -68,8 +68,7 @@ public class GroovyExecution {
 		this.try_interpreter = new Interpreter(
 				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
-		sideeffects = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(sideeffects));
+
 	}
 
 	public String evaluate(String input) throws IOException {
