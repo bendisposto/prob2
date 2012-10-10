@@ -106,9 +106,9 @@
               locationURI="toolbar:de.prob.ui.groovy-console">
            <command
                  commandId="de.prob.ui.switch_loglevel"
-                 icon="icons/forward.gif"
+                 icon="icons/verbose.png"
                  label="Switch Loglevel"
-                 style="push">
+                 style="toggle">
            </command>
         </menuContribution>
       
@@ -145,6 +145,10 @@
             <command
                   id="de.prob.ui.switch_loglevel"
                   name="Switch Loglevel">
+               <state
+                     class="de.prob.ui.console.LogLevelHandler$NonPersistingToggleState"
+                     id="org.eclipse.ui.commands.toggleState">
+               </state>
             </command>
       
    </extension>
@@ -261,8 +265,10 @@
          </class>
       </handler>
       <handler
-            class="LogLevelHandler"
             commandId="de.prob.ui.switch_loglevel">
+         <class
+               class="de.prob.ui.console.LogLevelHandler">
+         </class>
       </handler>
       
    </extension>
@@ -354,13 +360,6 @@
             provider="de.prob.ui.services.ModelLoadedProvider">
          <variable
                name="de.prob.ui.model_loaded"
-               priorityLevel="workbench">
-         </variable>
-      </sourceProvider>
-      <sourceProvider
-            provider="de.prob.ui.services.LogLevelProvider">
-         <variable
-               name="de.prob.ui.loglevel"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>
