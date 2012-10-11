@@ -62,6 +62,7 @@ public class GroovyExecution {
 		this.shellCommands = shellCommands;
 		final Binding binding = new Binding();
 		binding.setVariable("api", api);
+		binding.setVariable("animations", selector);
 		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
 				binding);
 
@@ -144,7 +145,7 @@ public class GroovyExecution {
 		}
 	}
 
-	private String eval(final String input) throws IOException {
+	private synchronized String eval(final String input) throws IOException {
 		Object evaluate = null;
 		ParseCode parseCode;
 		inputs.add(input);
