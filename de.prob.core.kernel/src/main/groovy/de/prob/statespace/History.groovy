@@ -7,6 +7,7 @@ import java.util.Set
 
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.domainobjects.OpInfo
+import de.prob.model.representation.AbstractModel;
 
 class History {
 
@@ -17,6 +18,13 @@ class History {
 
 	def History(final StateSpace s) {
 		this.s = s
+		head = new HistoryElement(s.getState(s.getVertex("root")))
+		current = head
+		animationListeners = new ArrayList<IAnimationListener>()
+	}
+	
+	def History(final AbstractModel m) {
+		this.s = m.getStatespace()
 		head = new HistoryElement(s.getState(s.getVertex("root")))
 		current = head
 		animationListeners = new ArrayList<IAnimationListener>()
