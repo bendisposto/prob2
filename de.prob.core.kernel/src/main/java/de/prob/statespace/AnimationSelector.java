@@ -11,23 +11,25 @@ import de.prob.model.representation.AbstractModel;
 
 @Singleton
 public class AnimationSelector implements IAnimationListener {
-	
+
 	List<IHistoryChangeListener> listeners = new ArrayList<IHistoryChangeListener>();
 	List<History> histories = new ArrayList<History>();
 	History currentHistory = null;
 	Map<History, AbstractModel> models = new HashMap<History, AbstractModel>();
-	
-	public void registerHistoryChangeListener(IHistoryChangeListener listener) {
+
+	public void registerHistoryChangeListener(
+			final IHistoryChangeListener listener) {
 		listeners.add(listener);
-		if( currentHistory != null ) {
-			notifyHistoryChange(currentHistory,models.get(currentHistory));
+		if (currentHistory != null) {
+			notifyHistoryChange(currentHistory, models.get(currentHistory));
 		}
 	}
-	
+
 	@Override
-	public void currentStateChanged(History oldHistory, History newHistory) {
-		if(oldHistory.equals(currentHistory)) {
-			notifyHistoryChange(newHistory,models.get(oldHistory));
+	public void currentStateChanged(final History oldHistory,
+			final History newHistory) {
+		if (oldHistory.equals(currentHistory)) {
+			notifyHistoryChange(newHistory, models.get(oldHistory));
 		}
 		histories.set(histories.indexOf(oldHistory), newHistory);
 		models.put(newHistory, models.get(oldHistory));
@@ -35,34 +37,37 @@ public class AnimationSelector implements IAnimationListener {
 		currentHistory = newHistory;
 	}
 
-	public void changeCurrentHistory(History history) {
+	public void changeCurrentHistory(final History history) {
 		currentHistory = history;
 		notifyHistoryChange(history, models.get(history));
 	}
-	
-	public void addNewHistory(History history, AbstractModel model) {
+
+	public void addNewHistory(final History history, final AbstractModel model) {
+		if (histories.contains(history))
+			return;
 		histories.add(history);
 		models.put(history, model);
 		history.registerAnimationListener(this);
 		currentHistory = history;
 		notifyHistoryChange(history, model);
 	}
-	
-	public void notifyHistoryChange(History history, AbstractModel model) {
-		for (IHistoryChangeListener listener : listeners) {
-			listener.historyChange(history,model);
+
+	public void notifyHistoryChange(final History history,
+			final AbstractModel model) {
+		for (final IHistoryChangeListener listener : listeners) {
+			listener.historyChange(history, model);
 		}
 	}
-	
+
 	public History getCurrentHistory() {
 		return currentHistory;
 	}
-	
+
 	public List<History> getHistories() {
 		return histories;
 	}
-	
-	public AbstractModel getModel(History history) {
+
+	public AbstractModel getModel(final History history) {
 		return models.get(history);
 	}
 }

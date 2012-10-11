@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.scripting.Api;
+import de.prob.statespace.AnimationSelector;
 
 /**
  * This servlet takes a line from the web interface and evaluates it using
@@ -53,13 +54,15 @@ public class GroovyExecution {
 	private String outputs;
 
 	private static final String[] IMPORTS = new String[] { "import de.prob.statespace.*;" };
-	private ShellCommands shellCommands;
+	private final ShellCommands shellCommands;
 
 	@Inject
-	public GroovyExecution(Api api, ShellCommands shellCommands) {
+	public GroovyExecution(final Api api, final ShellCommands shellCommands,
+			final AnimationSelector selector) {
 		this.shellCommands = shellCommands;
-		Binding binding = new Binding();
+		final Binding binding = new Binding();
 		binding.setVariable("api", api);
+		binding.setVariable("animations", selector);
 		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
 				binding);
 
@@ -71,9 +74,9 @@ public class GroovyExecution {
 
 	}
 
-	public String evaluate(String input) throws IOException {
+	public String evaluate(final String input) throws IOException {
 		assert input != null;
-		List<String> m = shellCommands.getMagic(input);
+		final List<String> m = shellCommands.getMagic(input);
 		if (m.isEmpty()) {
 			collectImports(input);
 			return eval(input);
@@ -82,21 +85,21 @@ public class GroovyExecution {
 		}
 	}
 
-	public Object tryevaluate(String input) throws IOException {
-		Interpreter tinterpreter = new Interpreter(this.getClass()
+	public Object tryevaluate(final String input) throws IOException {
+		final Interpreter tinterpreter = new Interpreter(this.getClass()
 				.getClassLoader(), interpreter.getContext());
 
 		assert input != null;
-		ArrayList<String> eval = new ArrayList<String>();
+		final ArrayList<String> eval = new ArrayList<String>();
 		eval.addAll(imports);
 		eval.addAll(Collections.singletonList(input));
 		return tinterpreter.evaluate(eval);
 	}
 
 	public String[] getImports() {
-		String[] result = new String[imports.size()];
+		final String[] result = new String[imports.size()];
 		int c = 0;
-		for (String string : imports) {
+		for (final String string : imports) {
 			result[c++] = " " + string.substring(7, string.length() - 1).trim();
 		}
 		return result;
@@ -124,16 +127,16 @@ public class GroovyExecution {
 	 * 
 	 * @param input
 	 */
-	private void collectImports(String input) {
-		String[] split = input.split(";|\n");
-		for (String string : split) {
+	private void collectImports(final String input) {
+		final String[] split = input.split(";|\n");
+		for (final String string : split) {
 			if (string.trim().startsWith("import ")) {
 				try {
 					try_interpreter.evaluate(Collections.singletonList(string));
 					imports.add(string + ";"); // if try_interpreter does not
 												// throw an exception, it was a
 												// valid import statement
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					this.try_interpreter = new Interpreter(this.getClass()
 							.getClassLoader(), new Binding());
 				}
@@ -141,12 +144,12 @@ public class GroovyExecution {
 		}
 	}
 
-	private synchronized String eval(String input) throws IOException {
+	private synchronized String eval(final String input) throws IOException {
 		Object evaluate = null;
 		ParseCode parseCode;
 		inputs.add(input);
 
-		ArrayList<String> eval = new ArrayList<String>();
+		final ArrayList<String> eval = new ArrayList<String>();
 		eval.addAll(imports);
 		eval.addAll(inputs);
 		parseCode = parser.parse(eval).getCode();
@@ -159,7 +162,7 @@ public class GroovyExecution {
 			continued = false;
 			try {
 				evaluate = interpreter.evaluate(eval);
-			} catch (Throwable e) {
+			} catch (final Throwable e) {
 				imports.remove(input);
 				String message = e.getMessage();
 				if (message == null && e.getCause() != null)

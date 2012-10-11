@@ -3,8 +3,6 @@ package de.prob.ui.console;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -14,10 +12,17 @@ import de.prob.webconsole.WebConsole;
 
 public class GroovyConsole extends ViewPart {
 
+	public static final String ID = "de.prob.ui.console.GroovyConsole";
+
 	private final int port;
+	private Browser consoleBrowser;
+	private Browser outputBrowser;
+
+	private static GroovyConsole instance;
 
 	public GroovyConsole() {
 		port = WebConsole.getPort();
+		instance = this;
 	}
 
 	@Override
@@ -34,21 +39,33 @@ public class GroovyConsole extends ViewPart {
 		gridData.grabExcessHorizontalSpace = true;
 		gridData.grabExcessVerticalSpace = true;
 
-		Browser browser = new Browser(sashForm, SWT.NONE);
-		browser.setUrl("http://localhost:" + port + "/console.jsp");
-		Browser browser_1 = new Browser(sashForm, SWT.NONE);
-		browser_1.setUrl("http://localhost:" + port + "/sysout.jsp");
+		consoleBrowser = new Browser(sashForm, SWT.NONE);
+		consoleBrowser.setUrl("http://localhost:" + port + "/console.jsp");
+		outputBrowser = new Browser(sashForm, SWT.NONE);
+		outputBrowser.setUrl("http://localhost:" + port + "/sysout.jsp");
 
-		browser.setLayoutData(gridData);
-		browser_1.setLayoutData(gridData);
+		consoleBrowser.setLayoutData(gridData);
+		outputBrowser.setLayoutData(gridData);
 		sashForm.setLayoutData(gridData);
-		
-		
+
+	}
+
+	public Browser getConsoleBrowser() {
+		return consoleBrowser;
+	}
+
+	public Browser getOutputBrowser() {
+		return outputBrowser;
 	}
 
 	@Override
 	public void setFocus() {
+	}
 
+	public static GroovyConsole getInstance() {
+		if (instance == null)
+			instance = new GroovyConsole();
+		return instance;
 	}
 
 }
