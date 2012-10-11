@@ -145,7 +145,7 @@ public class GroovyExecution {
 		}
 	}
 
-	private synchronized String eval(final String input) throws IOException {
+	private String eval(final String input) throws IOException {
 		Object evaluate = null;
 		ParseCode parseCode;
 		inputs.add(input);

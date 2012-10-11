@@ -104,7 +104,7 @@
         </menuContribution>
         <menuContribution
               allPopups="false"
-              locationURI="toolbar:de.prob.ui.groovy-console">
+              locationURI="toolbar:de.prob.ui.groovyconsole">
            <command
                  commandId="de.prob.ui.switch_loglevel"
                  icon="icons/verbose.png"

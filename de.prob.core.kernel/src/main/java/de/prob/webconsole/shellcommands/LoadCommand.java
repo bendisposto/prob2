@@ -84,6 +84,27 @@ public class LoadCommand extends AbstractShellCommand {
 		return v;
 	}
 
+	private String greatestCommonPrefix(String a, String b) {
+		int minLength = Math.min(a.length(), b.length());
+		for (int i = 0; i < minLength; i++) {
+			if (a.charAt(i) != b.charAt(i)) {
+				return a.substring(0, i);
+			}
+		}
+		return a.substring(0, minLength);
+	}
+
+	private String findLongestCommonPrefix(ArrayList<String> suggestions) {
+		if (suggestions.size() == 1)
+			return suggestions.get(0);
+		String res = greatestCommonPrefix(suggestions.get(0),
+				suggestions.get(1));
+		for (int i = 2; i < suggestions.size(); i++) {
+			res = greatestCommonPrefix(res, suggestions.get(i));
+		}
+		return res;
+	}
+
 	@Override
 	public List<String> complete(List<String> args, int pos) {
 		ArrayList<String> suggestions = new ArrayList<String>();
@@ -91,12 +112,19 @@ public class LoadCommand extends AbstractShellCommand {
 		FileNameCompletor completor = new FileNameCompletor();
 		String input = Joiner.on(" ").join(args);
 		completor.complete(input, pos, suggestions);
+		if (suggestions.isEmpty())
+			return suggestions;
 		int lastSlash = input.lastIndexOf(File.separator);
 		if (lastSlash > -1) {
 			String prefix = input.substring(0, lastSlash);
-			for (String string : suggestions) {
-				s.add(prefix + File.separator + string);
-			}
+			String suffix = input.substring(lastSlash + 1);
+			String commonPrefix = findLongestCommonPrefix(suggestions);
+			if (commonPrefix.isEmpty() || commonPrefix.equals(suffix)) {
+				for (String string : suggestions) {
+					s.add(string);
+				}
+			} else
+				s.add(prefix + File.separator + commonPrefix);
 		}
 		if (s.size() == 1) {
 			return Collections.singletonList("load " + s.get(0));
