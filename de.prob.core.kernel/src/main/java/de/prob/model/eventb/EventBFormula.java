@@ -8,9 +8,9 @@ public class EventBFormula extends Formula {
 
 	private final EventBNamedCommentedElement emfComponent;
 
-	public EventBFormula(final String label, final String value,
+	public EventBFormula(final String label,
 			final EventBNamedCommentedElement emfComponent) {
-		super(label, value);
+		super(label);
 		this.emfComponent = emfComponent;
 	}
 

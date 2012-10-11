@@ -217,7 +217,8 @@ class History {
 	 * @param l
 	 */
 	def void registerAnimationListener(final IAnimationListener l) {
-		animationListeners.add(l)
+		if(!animationListeners.contains(l))
+			animationListeners.add(l)
 	}
 
 	def void notifyAnimationChange(final History oldHistory,final History newHistory) {

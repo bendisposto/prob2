@@ -25,7 +25,7 @@ public class ClassicalBEvalElement implements IEvalElement {
 	}
 
 	@Override
-	public String getType() {
+	public String getKind() {
 		return ast.getPParseUnit() instanceof AExpressionParseUnit ? EXPRESSION
 				.toString() : PREDICATE.toString();
 	}

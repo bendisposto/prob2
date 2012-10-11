@@ -1,7 +1,9 @@
 package de.prob.model.classicalb;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.graph.ClassBasedEdgeFactory;
@@ -11,6 +13,7 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
+import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.RefType;
@@ -24,6 +27,7 @@ public class ClassicalBModel extends AbstractModel {
 	@Inject
 	public ClassicalBModel(final StateSpace statespace) {
 		this.statespace = statespace;
+		statespace.setModel(this);
 		this.components = new HashMap<String, AbstractElement>();
 	}
 
@@ -56,7 +60,15 @@ public class ClassicalBModel extends AbstractModel {
 			}
 		} while (!fpReached);
 		this.graph = graph;
+
+		initializeLabels();
 		return graph;
+	}
+
+	private void initializeLabels() {
+		for (final String machine : graph.vertexSet()) {
+			((ClassicalBMachine) components.get(machine)).createLabels();
+		}
 	}
 
 	public ClassicalBMachine getMainMachine() {
@@ -69,8 +81,9 @@ public class ClassicalBModel extends AbstractModel {
 	}
 
 	@Override
-	public boolean isVisible() {
-		// TODO Auto-generated method stub
-		return false;
+	public List<AbstractDomTreeElement> getSubcomponents() {
+		Collection<AbstractElement> values = components.values();
+		return getSubcomponents(values);
 	}
+
 }

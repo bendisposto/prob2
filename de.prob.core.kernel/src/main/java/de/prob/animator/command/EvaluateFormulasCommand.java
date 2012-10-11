@@ -83,7 +83,7 @@ public class EvaluateFormulasCommand implements ICommand {
 		for (IEvalElement term : evalElements) {
 			pout.openTerm("eval");
 			term.printProlog(pout);
-			pout.printAtom(term.getType().toString());
+			pout.printAtom(term.getKind().toString());
 			pout.printAtom(term.getCode());
 			pout.closeTerm();
 		}

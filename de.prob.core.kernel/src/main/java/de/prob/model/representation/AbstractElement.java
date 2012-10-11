@@ -2,7 +2,7 @@ package de.prob.model.representation;
 
 import java.util.List;
 
-public interface AbstractElement extends IFormula{
+public interface AbstractElement {
 
 	public String getName();
 

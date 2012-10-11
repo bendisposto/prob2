@@ -2,7 +2,6 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
-apply from: 'https://raw.github.com/gist/1527604/4080ebed7b141d10610825aebd70942fcd301105/emma.gradle'
 apply plugin: 'findbugs'
 apply plugin: 'eclipse-wtp'
 apply plugin: 'war'
@@ -79,6 +78,8 @@ dependencies {
 	compile 'emf:ecore:2.3.0' // EPL
 	compile 'emf:common:2.3.0' // EPL
 	compile 'emf:xmi:2.7.0' // EPL
+	
+	compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' // Rodin
 
 	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
 	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0

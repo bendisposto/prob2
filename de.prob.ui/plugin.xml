@@ -107,7 +107,16 @@
               </parameter>
            </command>
         </menuContribution>
-      
+        <menuContribution
+              allPopups="false"
+              locationURI="toolbar:de.prob.ui.groovy-console">
+           <command
+                 commandId="de.prob.ui.switch_loglevel"
+                 icon="icons/verbose.png"
+                 label="Switch Loglevel"
+                 style="toggle">
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
@@ -143,7 +152,14 @@
                      optional="false">
                </commandParameter>
             </command>
-      
+            <command
+                  id="de.prob.ui.switch_loglevel"
+                  name="Switch Loglevel">
+               <state
+                     class="de.prob.ui.console.LogLevelHandler$NonPersistingToggleState"
+                     id="org.eclipse.ui.commands.toggleState">
+               </state>
+            </command>
    </extension>
    
    <extension
@@ -263,7 +279,12 @@
                class="de.prob.ui.operationview.ExecuteRandomHandler">
          </class>
       </handler>
-      
+      <handler
+            commandId="de.prob.ui.switch_loglevel">
+         <class
+               class="de.prob.ui.console.LogLevelHandler">
+         </class>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.views">

@@ -2,19 +2,25 @@ package de.prob.model.classicalb;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.Node;
+import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.FormulaUUID;
-import de.prob.model.representation.IFormula;
+import de.prob.model.representation.Label;
 import de.prob.model.representation.Operation;
 
-public class ClassicalBMachine implements AbstractElement {
+public class ClassicalBMachine extends AbstractDomTreeElement implements
+		AbstractElement {
+
+	private enum ESection {
+		SETS, PARAMETERS, CONSTRAINTS, CONSTANTS, PROPERTIES, VARIABLES, INVARIANT, ASSERTIONS, USER_FORMULAS
+	}
 
 	private final NodeIdAssignment astMapping;
-	private final FormulaUUID uuid = new FormulaUUID();
 
 	public ClassicalBMachine(final NodeIdAssignment nodeIdAssignment) {
 		this.astMapping = nodeIdAssignment;
@@ -35,6 +41,8 @@ public class ClassicalBMachine implements AbstractElement {
 	private final List<ClassicalBEntity> invariant = new ArrayList<ClassicalBEntity>();
 	private final List<ClassicalBEntity> assertions = new ArrayList<ClassicalBEntity>();
 	private final List<Operation> operations = new ArrayList<Operation>();
+
+	private final Map<ESection, Label> labels = new HashMap<ESection, Label>();
 
 	public List<ClassicalBEntity> constants() {
 		return lock(constants);
@@ -81,7 +89,7 @@ public class ClassicalBMachine implements AbstractElement {
 	public void setName(final String name) {
 		if (locked)
 			throw new UnsupportedOperationException(
-					"Must not modify Machine after it was locked");
+					"Must not modify Machine after it has been locked");
 		this.name = name;
 	}
 
@@ -116,41 +124,59 @@ public class ClassicalBMachine implements AbstractElement {
 
 	public String print() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("Sets:\n");
-		for (final ClassicalBEntity set : sets) {
-			sb.append("  " + set.toString() + "\n");
+		if (!sets.isEmpty()) {
+			sb.append("Sets:\n");
+			for (final ClassicalBEntity set : sets) {
+				sb.append("  " + set.toString() + "\n");
+			}
 		}
-		sb.append("Parameters:\n");
-		for (final ClassicalBEntity parameter : parameters) {
-			sb.append("  " + parameter.toString() + "\n");
+		if (!parameters.isEmpty()) {
+			sb.append("Parameters:\n");
+			for (final ClassicalBEntity parameter : parameters) {
+				sb.append("  " + parameter.toString() + "\n");
+			}
 		}
-		sb.append("Constraints:\n");
-		for (final ClassicalBEntity constraint : constraints) {
-			sb.append("  " + constraint.toString() + "\n");
+		if (!constraints.isEmpty()) {
+			sb.append("Constraints:\n");
+			for (final ClassicalBEntity constraint : constraints) {
+				sb.append("  " + constraint.toString() + "\n");
+			}
 		}
-		sb.append("Constants:\n");
-		for (final ClassicalBEntity constant : constants) {
-			sb.append("  " + constant.toString() + "\n");
+		if (!constants.isEmpty()) {
+			sb.append("Constants:\n");
+			for (final ClassicalBEntity constant : constants) {
+				sb.append("  " + constant.toString() + "\n");
+			}
 		}
-		sb.append("Properties:\n");
-		for (final ClassicalBEntity property : properties) {
-			sb.append("  " + property.toString() + "\n");
+		if (!properties.isEmpty()) {
+			sb.append("Properties:\n");
+			for (final ClassicalBEntity property : properties) {
+				sb.append("  " + property.toString() + "\n");
+			}
 		}
-		sb.append("Variables:\n");
-		for (final ClassicalBEntity variable : variables) {
-			sb.append("  " + variable.toString() + "\n");
+		if (!variables.isEmpty()) {
+			sb.append("Variables:\n");
+			for (final ClassicalBEntity variable : variables) {
+				sb.append("  " + variable.toString() + "\n");
+			}
 		}
-		sb.append("Invariant:\n");
-		for (final ClassicalBEntity inv : invariant) {
-			sb.append("  " + inv.toString() + "\n");
+		if (!invariant.isEmpty()) {
+			sb.append("Invariant:\n");
+			for (final ClassicalBEntity inv : invariant) {
+				sb.append("  " + inv.toString() + "\n");
+			}
 		}
-		sb.append("Assertions:\n");
-		for (final ClassicalBEntity assertion : assertions) {
-			sb.append("  " + assertion.toString() + "\n");
+		if (!assertions.isEmpty()) {
+			sb.append("Assertions:\n");
+			for (final ClassicalBEntity assertion : assertions) {
+				sb.append("  " + assertion.toString() + "\n");
+			}
 		}
-		sb.append("Operations:\n");
-		for (final Operation operation : operations) {
-			sb.append("  " + operation.toString() + "\n");
+		if (!operations.isEmpty()) {
+			sb.append("Operations:\n");
+			for (final Operation operation : operations) {
+				sb.append("  " + operation.toString() + "\n");
+			}
 		}
 		return sb.toString();
 	}
@@ -193,30 +219,72 @@ public class ClassicalBMachine implements AbstractElement {
 	}
 
 	@Override
-	public String getValue() {
-		return "";
+	public List<AbstractDomTreeElement> getSubcomponents() {
+		return new ArrayList<AbstractDomTreeElement>(labels.values());
+	}
+
+	public void createLabels() {
+		if (!sets.isEmpty()) {
+			final Label setLabel = new Label("Sets");
+			for (final ClassicalBEntity set : sets) {
+				setLabel.addFormula(set);
+			}
+			labels.put(ESection.SETS, setLabel);
+		}
+		if (!parameters.isEmpty()) {
+			final Label label = new Label("Parameters");
+			for (final ClassicalBEntity param : parameters) {
+				label.addFormula(param);
+			}
+			labels.put(ESection.PARAMETERS, label);
+		}
+		if (!constraints.isEmpty()) {
+			final Label label = new Label("Constraints");
+			for (final ClassicalBEntity constraint : constraints) {
+				label.addFormula(constraint);
+			}
+			labels.put(ESection.CONSTRAINTS, label);
+		}
+		if (!constants.isEmpty()) {
+			final Label label = new Label("Constants");
+			for (final ClassicalBEntity constant : constants) {
+				label.addFormula(constant);
+			}
+			labels.put(ESection.CONSTANTS, label);
+		}
+		if (!properties.isEmpty()) {
+			final Label label = new Label("Properties");
+			for (final ClassicalBEntity prop : properties) {
+				label.addFormula(prop);
+			}
+			labels.put(ESection.PROPERTIES, label);
+		}
+		if (!variables.isEmpty()) {
+			final Label label = new Label("Variables");
+			for (final ClassicalBEntity var : variables) {
+				label.addFormula(var);
+			}
+			labels.put(ESection.VARIABLES, label);
+		}
+		if (!invariant.isEmpty()) {
+			final Label label = new Label("Invariant");
+			for (final ClassicalBEntity inv : invariant) {
+				label.addFormula(inv);
+			}
+			labels.put(ESection.INVARIANT, label);
+		}
+		if (!assertions.isEmpty()) {
+			final Label label = new Label("Assertions");
+			for (final ClassicalBEntity assertion : assertions) {
+				label.addFormula(assertion);
+			}
+			labels.put(ESection.ASSERTIONS, label);
+		}
+		labels.put(ESection.USER_FORMULAS, new Label("Formulas"));
 	}
 
 	@Override
-	public FormulaUUID getId() {
-		return uuid;
-	}
-
-	@Override
-	public List<IFormula> getAllSubformulas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<IFormula> getVisibleSubformulas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isVisible() {
-		// TODO Auto-generated method stub
+	public boolean toEvaluate() {
 		return false;
 	}
 }

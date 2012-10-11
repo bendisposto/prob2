@@ -62,7 +62,6 @@ public class GroovyExecution {
 		this.shellCommands = shellCommands;
 		final Binding binding = new Binding();
 		binding.setVariable("api", api);
-		binding.setVariable("runningAnimations", selector);
 		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
 				binding);
 

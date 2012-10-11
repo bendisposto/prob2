@@ -7,5 +7,5 @@ public interface IEvalElement {
 
 	public void printProlog(IPrologTermOutput pout);
 
-	public String getType();
+	public String getKind();
 }
