@@ -11,6 +11,11 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.impl.StaticLoggerBinder;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 
 import com.google.inject.Inject;
 
@@ -63,6 +68,16 @@ public class Main {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("java -jar probcli.jar", options);
 		}
+	}
+
+	public static String setDebuggingLogLevel(boolean value) {
+		StaticLoggerBinder singleton = StaticLoggerBinder.getSingleton();
+		LoggerContext loggerFactory = (LoggerContext) singleton
+				.getLoggerFactory();
+		Logger root = (Logger) loggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		Level level = value ? Level.DEBUG : Level.ERROR;
+		root.setLevel(level);
+		return level.toString();
 	}
 
 	public static String getProBDirectory() {

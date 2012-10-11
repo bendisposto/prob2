@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
+import de.prob.Main;
 import de.prob.webconsole.WebConsole;
 
 public class GroovyConsole extends ViewPart {
@@ -48,6 +49,9 @@ public class GroovyConsole extends ViewPart {
 		outputBrowser.setLayoutData(gridData);
 		sashForm.setLayoutData(gridData);
 
+		String level = Main.setDebuggingLogLevel(false);
+		outputBrowser.execute("setLogLevel('" + level + "')");
+		outputBrowser.execute("initialize()");
 	}
 
 	public Browser getConsoleBrowser() {

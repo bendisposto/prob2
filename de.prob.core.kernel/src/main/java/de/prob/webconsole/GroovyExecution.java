@@ -175,8 +175,6 @@ public class GroovyExecution {
 			} finally {
 				inputs.clear();
 			}
-			while (sideeffects.size() > 0) {
-			}
 			return evaluate == null ? "null" : evaluate.toString();
 		}
 	}

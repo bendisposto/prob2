@@ -29,7 +29,7 @@
 
 
 </head>
-<body onLoad="initialize()">
+<body onLoad="">
 
 	<!-- Primary Page Layout
       ================================================== -->
@@ -37,7 +37,7 @@
 	<!-- Delete everything in this .container and get started on your own site! -->
 
            <div id="loglevel_container">
-			Current Log-Level: <span id="loglevel">Trace</span>
+			Current Log-Level: <span id="loglevel">ERROR</span>
 			<div id="warnings"></div>
 </div>
 
