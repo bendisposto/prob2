@@ -12,6 +12,7 @@ import com.google.inject.Singleton;
 
 import de.prob.scripting.Downloader;
 import de.prob.webconsole.shellcommands.AbstractShellCommand;
+import de.prob.webconsole.shellcommands.ImportCommand;
 import de.prob.webconsole.shellcommands.LoadCommand;
 
 @Singleton
@@ -23,6 +24,7 @@ public class ShellCommands {
 	public ShellCommands(Downloader d) {
 		magic.put("load", new LoadCommand());
 		magic.put("upgrade", d);
+		magic.put("import", new ImportCommand());
 	}
 
 	public List<String> getMagic(String text) {
