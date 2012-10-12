@@ -5,6 +5,7 @@ import static java.io.File.separator;
 import java.io.File;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.Executor;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -19,13 +20,13 @@ import ch.qos.logback.classic.LoggerContext;
 
 import com.google.inject.Inject;
 
+import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 
 public class Main {
 
 	private static boolean shellMode;
-
 
 	private final CommandLineParser parser;
 	private final Options options;
@@ -37,12 +38,15 @@ public class Main {
 
 	public static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
 
+	private static GroovyExecution executor;
+
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell) {
+			final Shell shell, GroovyExecution ex) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
+		Main.executor = ex;
 	}
 
 	void run(final String[] args) {
@@ -71,6 +75,7 @@ public class Main {
 	}
 
 	public static String setDebuggingLogLevel(boolean value) {
+		executor.renewSideeffects();
 		StaticLoggerBinder singleton = StaticLoggerBinder.getSingleton();
 		LoggerContext loggerFactory = (LoggerContext) singleton
 				.getLoggerFactory();

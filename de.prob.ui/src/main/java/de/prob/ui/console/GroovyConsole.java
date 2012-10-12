@@ -2,6 +2,8 @@ package de.prob.ui.console;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -49,9 +51,18 @@ public class GroovyConsole extends ViewPart {
 		outputBrowser.setLayoutData(gridData);
 		sashForm.setLayoutData(gridData);
 
-		String level = Main.setDebuggingLogLevel(false);
-		outputBrowser.execute("setLogLevel('" + level + "')");
-		outputBrowser.execute("initialize()");
+		outputBrowser.addProgressListener(new ProgressListener() {
+			@Override
+			public void completed(ProgressEvent event) {
+				final String level = Main.setDebuggingLogLevel(false);
+				outputBrowser.execute("setLogLevel('x" + level
+						+ "'); initialize();");
+			}
+
+			@Override
+			public void changed(ProgressEvent event) {
+			}
+		});
 	}
 
 	public Browser getConsoleBrowser() {
