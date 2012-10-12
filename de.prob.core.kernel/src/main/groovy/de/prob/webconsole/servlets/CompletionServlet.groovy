@@ -198,7 +198,7 @@ public class CompletionServlet extends HttpServlet {
 	List getPublicFieldsAndMethods(Object instance, String prefix) {
 		def rv = []
 		def instanceClass = instance.getClass()
-		instanceClass.fields.each {
+		instanceClass.declaredFields.each {
 			if (it.name.startsWith(prefix))
 				rv << it.name
 		}

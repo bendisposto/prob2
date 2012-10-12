@@ -37,7 +37,7 @@ public class GroovyExecution {
 	private final ArrayList<String> imports = new ArrayList<String>();
 
 	private final Interpreter interpreter;
-	private Interpreter try_interpreter;
+
 
 	private final Parser parser;
 
@@ -68,8 +68,7 @@ public class GroovyExecution {
 
 		imports.addAll(Arrays.asList(IMPORTS));
 
-		this.try_interpreter = new Interpreter(
-				this.getClass().getClassLoader(), new Binding());
+
 		this.parser = new Parser();
 		sideeffects = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(sideeffects));
@@ -79,7 +78,7 @@ public class GroovyExecution {
 		assert input != null;
 		final List<String> m = shellCommands.getMagic(input);
 		if (m.isEmpty()) {
-			collectImports(input);
+			//collectImports(input);
 			return eval(input);
 		} else {
 			return shellCommands.perform(m, this);
@@ -122,29 +121,6 @@ public class GroovyExecution {
 		return sideeffects;
 	}
 
-	/**
-	 * Split the line into different commands and find out, if there was a valid
-	 * import statement.
-	 * 
-	 * @param input
-	 */
-	private void collectImports(final String input) {
-		final String[] split = input.split(";|\n");
-		for (final String string : split) {
-			if (string.trim().startsWith("import ")) {
-				try {
-					try_interpreter.evaluate(Collections.singletonList(string));
-					imports.add(string + ";"); // if try_interpreter does not
-												// throw an exception, it was a
-												// valid import statement
-				} catch (final Exception e) {
-					this.try_interpreter = new Interpreter(this.getClass()
-							.getClassLoader(), new Binding());
-				}
-			}
-		}
-	}
-
 	private String eval(final String input) throws IOException {
 		Object evaluate = null;
 		ParseCode parseCode;
@@ -182,6 +158,10 @@ public class GroovyExecution {
 	public void renewSideeffects() {
 		sideeffects = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(sideeffects));
+	}
+	
+	public void addImport(String imp) {
+		this.imports.add(imp);
 	}
 
 }
