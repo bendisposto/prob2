@@ -17,6 +17,7 @@ import com.google.inject.Injector;
 
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.eventb.EventBComponent;
+import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
@@ -47,7 +48,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
 	private History currentHistory;
-	private AbstractModel currentModel;
+	private AbstractDomTreeElement currentModel;
 
 	Injector injector = ServletContextListener.INJECTOR;
 
@@ -129,7 +130,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history, final AbstractModel model) {
+	public void historyChange(final History history) {
 
 		Display.getDefault().asyncExec(new Runnable() {
 
@@ -137,6 +138,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 			public void run() {
 				currentHistory = history;
 				contentProvider.setCurrentHistory(currentHistory);
+				AbstractDomTreeElement model = history.getModel();
 				if (model != currentModel) {
 					updateModelInfo(model);
 				}
@@ -146,24 +148,28 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 		});
 	}
 
-	private void updateModelInfo(final AbstractModel model) {
+	private void updateModelInfo(final AbstractDomTreeElement model) {
 		currentModel = model;
 		final List<Object> sections = new ArrayList<Object>();
-		for (final AbstractElement component : model.getComponents().values()) {
-			if (component instanceof EventBComponent) {
-				final EventBComponent ebComponent = (EventBComponent) component;
-				if (ebComponent.isContext()
-						&& !ebComponent.getConstantNames().isEmpty()) {
-					sections.add(ebComponent);
+		if (model instanceof AbstractModel) {
+			AbstractModel amodel = (AbstractModel) model;
+			for (final AbstractElement component : amodel.getComponents()
+					.values()) {
+				if (component instanceof EventBComponent) {
+					final EventBComponent ebComponent = (EventBComponent) component;
+					if (ebComponent.isContext()
+							&& !ebComponent.getConstantNames().isEmpty()) {
+						sections.add(ebComponent);
+					}
+					if (ebComponent.isMachine()
+							&& !ebComponent.getVariableNames().isEmpty()) {
+						sections.add(ebComponent);
+					}
 				}
-				if (ebComponent.isMachine()
-						&& !ebComponent.getVariableNames().isEmpty()) {
-					sections.add(ebComponent);
+				if (component instanceof ClassicalBMachine) {
+					final ClassicalBMachine cbMachine = (ClassicalBMachine) component;
+					sections.add(cbMachine);
 				}
-			}
-			if (component instanceof ClassicalBMachine) {
-				final ClassicalBMachine cbMachine = (ClassicalBMachine) component;
-				sections.add(cbMachine);
 			}
 		}
 		viewer.setInput(sections.toArray());

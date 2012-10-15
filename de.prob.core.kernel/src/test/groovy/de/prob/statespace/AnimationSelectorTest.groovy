@@ -20,7 +20,7 @@ class AnimationSelectorTest extends Specification {
 		selector = new AnimationSelector();
 		listener = new IHistoryChangeListener() {
 			def count = 0;
-			void historyChange(History arg0,AbstractModel model) {
+			void historyChange(History arg0) {
 				count++;
 			};
 		}
@@ -34,7 +34,7 @@ class AnimationSelectorTest extends Specification {
 	
 	def "It is possible to notify the listener"() {
 		when:
-		selector.notifyHistoryChange(null,null)
+		selector.notifyHistoryChange(null)
 		
 		then:
 		listener.count == 1
@@ -42,11 +42,10 @@ class AnimationSelectorTest extends Specification {
 	
 	def "It is possible to add a new History"() {
 		when:
-		selector.addNewHistory(history,model)
+		selector.addNewHistory(history)
 		
 		then:
 		selector.histories.contains(history)
-		selector.models.get(history) == model
 	}
 	
 	def "It is possible to change the current history"() {
