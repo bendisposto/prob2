@@ -5,6 +5,7 @@ import groovy.lang.Binding;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +15,8 @@ import org.codehaus.groovy.tools.shell.Interpreter;
 import org.codehaus.groovy.tools.shell.ParseCode;
 import org.codehaus.groovy.tools.shell.Parser;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -68,11 +71,23 @@ public class GroovyExecution {
 
 		imports.addAll(Arrays.asList(IMPORTS));
 
+		String script = "";
+		URL url = Resources.getResource("initscript");
+		
+		try {
+			String string = Resources.toString(url, Charsets.UTF_8);
+			script = string.replaceAll("\\n",
+					" ; ");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		this.try_interpreter = new Interpreter(
 				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
 		sideeffects = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(sideeffects));
+		eval(script);
 	}
 
 	public String evaluate(final String input) throws IOException {
@@ -145,7 +160,7 @@ public class GroovyExecution {
 		}
 	}
 
-	private String eval(final String input) throws IOException {
+	private String eval(final String input) {
 		Object evaluate = null;
 		ParseCode parseCode;
 		inputs.add(input);
@@ -169,7 +184,11 @@ public class GroovyExecution {
 				if (message == null && e.getCause() != null)
 					message = e.getCause().getMessage();
 				if (message != null)
-					sideeffects.write(message.getBytes());
+					try {
+						sideeffects.write(message.getBytes());
+					} catch (IOException e1) {
+						// sideeffects is not real I/O
+					}
 				else
 					e.printStackTrace(System.out);
 			} finally {
