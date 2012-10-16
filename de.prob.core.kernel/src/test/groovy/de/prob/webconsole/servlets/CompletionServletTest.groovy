@@ -1,13 +1,26 @@
 package de.prob.webconsole.servlets;
 
 import static org.junit.Assert.*
+import static org.mockito.Mockito.*
+import de.prob.webconsole.GroovyExecution;
+import de.prob.webconsole.ShellCommands;
 import spock.lang.Specification
 
 class CompletionServletTest extends Specification {
 	def servlet
 	
 	def setup() {
-		servlet = new CompletionServlet(null)
+		def executorMock = mock(GroovyExecution.class)
+		def shellCmdMock = mock(ShellCommands.class)
+		Binding b = new Binding()
+		b.setVariable("api", null)
+		b.setVariable("foo", "baz")
+		b.setVariable("foobar", "baz")
+		b.setVariable("update", null)
+		when(executorMock.getBindings()).thenReturn(b)
+		when(executorMock.tryevaluate(anyString())).thenReturn("baz")
+		when(shellCmdMock.getSpecialCommands()).thenReturn(["upgrade", "load", "import"] as Set)
+		servlet = new CompletionServlet(executorMock, shellCmdMock)
 	}
 
 	def "camelCase gets split into correct substrings"() {
@@ -17,6 +30,13 @@ class CompletionServletTest extends Specification {
 		result == ["foo", "Bar"]
 	}
 
+	def "camelCase gets split into correct substrings2"() {
+		when:
+		def result = servlet.camelSplit("FooBar");
+		then:
+		result == ["Foo", "Bar"]
+	}
+	
 	def "splitting camelCase works on more than one uppercase occurence"() {
 		when:
 		def result = servlet.camelSplit("fooBarBazBlubbBla");
@@ -81,6 +101,55 @@ class CompletionServletTest extends Specification {
 		["a"]                   | "a"
 		[]                      | ""
 		["aaaa","baaa"]         | ""
+	}
+	
+	def "get special command completion"() {
+		expect:
+		servlet.getCompletions(col as String, fulltext) as Set == list as Set
+				
+		where:
+		col		| fulltext		| list
+		0		| ""			| ["upgrade ", "import ", "load "]
+		1		| "u"			| ["up"]
+		2		| "up"			| ["upgrade ", "update"]
+		3		| "upglatest"	| ["upgrade latest"]
+		3		| "imp"			| ["import "]
+	}
+	
+	def "completion on bindings"() {
+		expect:
+		servlet.getCompletions(col as String, fulltext) as Set == list as Set
+				
+		where:
+		col		| fulltext		| list
+		1		| "a"			| ["api"]
+		1		| "a api"		| ["api api"]
+		3		| "a a a"		| ["a api a"]
+		5		| "a a a"		| ["a a api"]
+		2		| "fo"			| ["foo"]
+		3		| "foo"			| ["foo", "foobar"]
+		6		| "api fo"		| ["api foo"]
+		7		| "api foo"		| ["foo", "foobar"]
+		6		| "api fo api"	| ["api foo api"]
+		7		| "api foo api"	| ["foo", "foobar"]
+	}
+	
+	def "method completion"() {
+		expect:
+		servlet.getCompletions(col as String, fulltext) as Set == list as Set
+				
+		where:
+		col		| fulltext		| list
+		5 		| "foo.l"		| ["lastIndexOf(", "leftShift(", "length()"]
+		6 		| "foo.la"		| ["foo.lastIndexOf("]
+		10 		| "api foo.la 3"| ["api foo.lastIndexOf( 3"]
+		6 		| "foo.le"		| ["leftShift(", "length()"]
+		6 		| "foo.lS"		| ["foo.leftShift("]
+		8 		| "1 foo.tB 3"	| ["1 foo.toB 3"]
+		9 		| "1 foo.toB 3"	| ["toBigDecimal()", "toBoolean()", "toBigInteger()"]
+		9 		| "1 foo.tBD 3"	| ["1 foo.toBigDecimal() 3"]
+		9 		| "1 foo.toBD 3"| ["toBigDecimal()", "toBoolean()", "toBigInteger()"]
+		5		| "foo.C"		| ["foo.CASE_INSENSITIVE_ORDER"]
 	}
 	
 }

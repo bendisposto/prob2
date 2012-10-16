@@ -36,6 +36,14 @@ public class CompletionServlet extends HttpServlet {
 		String fulltext = req.getParameter("input");
 		String col = req.getParameter("col");
 
+		List<String> completions = getCompletions(col, fulltext)
+		Gson g = new Gson();
+		String json = g.toJson(completions);
+		out.println(json);
+		out.close();
+	}
+
+	private List getCompletions(String col, String fulltext) {
 		int c = Integer.parseInt(col)-1;
 		int b = c > -1 ? fulltext.lastIndexOf(" ", c) : - 1;
 
@@ -52,7 +60,7 @@ public class CompletionServlet extends HttpServlet {
 		if (!m.isEmpty()) {
 			completions = shellCommands.complete(m, c);
 		} else {
-		
+
 			if (input.contains(".")) {
 				int pos = input.lastIndexOf(".")
 				String sub = input.substring(0, pos + 1)
@@ -63,7 +71,7 @@ public class CompletionServlet extends HttpServlet {
 				def computed = computeCompletions(new String(input.charAt(0)))
 				completions = camelMatch(computed, input)
 			}
-			
+
 			if (begin.isEmpty()) {
 				String sub = input.substring(0, c + 1)
 				def magicCommands = shellCommands.getSpecialCommands()
@@ -72,7 +80,7 @@ public class CompletionServlet extends HttpServlet {
 						completions << cmd + " "
 				}
 			}
-			
+
 			String pre = getCommonPrefix(completions);
 			if (!pre.isEmpty() && pre != input && !input.contains("."))
 				completions = [begin + pre + rest]
@@ -92,16 +100,12 @@ public class CompletionServlet extends HttpServlet {
 					completions = [begin + sub + pre + rest]
 			}
 		}
-		Gson g = new Gson();
-		String json = g.toJson(completions);
-		out.println(json);
-		out.close();
+		return completions
 	}
 
 	private List<String> camelMatch(final List<String> completions, final String match) {
 		if (match.isEmpty())
 			return completions
-			// FIXME Fix deprecation warning
 		def nopar = match.findAll {  Character.isJavaIdentifierPart(it.charAt(0))  }.join("")			
 		def split = camelSplit(nopar);
 		def  regex = split.join("[a-z]*") + ".*";
@@ -110,8 +114,8 @@ public class CompletionServlet extends HttpServlet {
 	}
 			
 	private List<String> camelSplit(final String input) {
-	 if (input.isEmpty()) return [];	
-     Pattern.compile("(^[a-z_]*)|([A-Z][a-z_]*)").matcher(input).collect {a,b,c -> a}
+		if (input.isEmpty()) return [];	
+		input.split("(?=[A-Z])").findAll {it != ""}
 	}
 	
 	private String getCommonPrefix(ArrayList<String> input) {
