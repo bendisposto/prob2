@@ -1,6 +1,7 @@
 package de.prob.webconsole;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,7 +30,13 @@ public class ShellCommands {
 	}
 
 	public List<String> getMagic(String text) {
-		List<String> list = Arrays.asList(text.trim().split("\\s"));
+		List<String> list1 = Arrays.asList(text.split("\\s"));
+		List<String> list = new ArrayList<String>();
+		for (String string : list1) {
+			String trim = string.trim();
+			if (!trim.isEmpty())
+				list.add(trim);
+		}
 		if (magic.containsKey(text.trim().split("\\s")[0]))
 			return list;
 		return Collections.emptyList();
