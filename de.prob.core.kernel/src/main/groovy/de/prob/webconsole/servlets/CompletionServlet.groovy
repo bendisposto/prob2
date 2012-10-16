@@ -1,7 +1,13 @@
 package de.prob.webconsole.servlets;
 
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Future
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServlet
@@ -148,24 +154,32 @@ public class CompletionServlet extends HttpServlet {
 		else {
 			if (lastDot == cursor-1 || identifierStart != -1){
 				int predecessorStart=findIdentifierStart(input,lastDot)
-
-				if(predecessorStart!=-1){
-					String instanceRefExpression = input.substring(predecessorStart, lastDot)
-					if(executor.getBindings().getVariables().keySet().contains(instanceRefExpression)) {
-						def instance = executor.tryevaluate(instanceRefExpression);
-						if (instance != null) {
-							// look for public methods/fields that match the prefix
-							List myCandidates = getPublicFieldsAndMethods(instance, identifierPrefix)
-							if (myCandidates.size() > 1) {
-								candidates.addAll(myCandidates)
-							}
-							else if (myCandidates.size() == 1) {
-								def prefix = input.substring(0, identifierStart);
-								candidates.add(prefix+myCandidates[0])
-							}
-							return candidates;
-						}
+				predecessorStart= 0
+				String instanceRefExpression = input.substring(predecessorStart, lastDot)
+				ExecutorService executorService = Executors.newSingleThreadExecutor();
+				
+				def future = executorService.submit({
+				def instance=	executor.tryevaluate(instanceRefExpression)
+					} as Callable)
+				def instance;
+				try {
+					instance = future.get(3, TimeUnit.SECONDS)
+				}
+				catch (Exception e) {
+					return ["You", "suck!"]
+				}						
+				
+				if (instance != null) {
+					// look for public methods/fields that match the prefix
+					List myCandidates = getPublicFieldsAndMethods(instance, identifierPrefix)
+					if (myCandidates.size() > 1) {
+						candidates.addAll(myCandidates)
 					}
+					else if (myCandidates.size() == 1) {
+						def prefix = input.substring(0, identifierStart);
+						candidates.add(prefix+myCandidates[0])
+					}
+					return candidates;
 				}
 			}
 
