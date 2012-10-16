@@ -34,6 +34,7 @@ import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBComponent;
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
@@ -66,7 +67,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 
 	private TableViewer viewer;
 	private History currentHistory;
-	private AbstractModel currentModel;
+	private AbstractDomTreeElement currentModel;
 	private boolean modelLoaded;
 
 	Injector injector = ServletContextListener.INJECTOR;
@@ -176,12 +177,13 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history, final AbstractModel model) {
+	public void historyChange(final History history) {
 		if (!modelLoaded) {
 			updateModelLoadedProvider();
 			modelLoaded = true;
 		}
 		currentHistory = history;
+		AbstractDomTreeElement model = history.getModel();
 		if (currentModel != model) {
 			updateModel(model);
 		}
@@ -245,13 +247,13 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		sourceProvider.historyChange(history);
 	}
 
-	private void updateModel(final AbstractModel model) {
+	private void updateModel(final AbstractDomTreeElement model) {
 		currentModel = model;
 		((OperationsContentProvider) viewer.getContentProvider())
 				.setAllOperations(getOperationNames(model));
 	}
 
-	private Map<String, Object> getOperationNames(final AbstractModel model) {
+	private Map<String, Object> getOperationNames(final AbstractDomTreeElement model) {
 		final Map<String, Object> names = new HashMap<String, Object>();
 		if (model instanceof EventBModel) {
 			final EventBModel ebmodel = (EventBModel) model;

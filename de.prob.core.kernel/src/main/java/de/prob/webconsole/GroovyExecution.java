@@ -40,7 +40,6 @@ public class GroovyExecution {
 	private final ArrayList<String> imports = new ArrayList<String>();
 
 	private final Interpreter interpreter;
-	private Interpreter try_interpreter;
 
 	private final Parser parser;
 
@@ -56,8 +55,13 @@ public class GroovyExecution {
 
 	private String outputs;
 
-	private static final String[] IMPORTS = new String[] { "import de.prob.statespace.*;" };
+	private static final String[] IMPORTS = new String[] {
+			"import de.prob.statespace.*;",
+			"import de.prob.model.representation.*;",
+			"import de.prob.model.classicalb.*;",
+			"import de.prob.model.eventb.*;" };
 	private final ShellCommands shellCommands;
+	private Interpreter try_interpreter;
 
 	@Inject
 	public GroovyExecution(final Api api, final ShellCommands shellCommands,
@@ -94,7 +98,7 @@ public class GroovyExecution {
 		assert input != null;
 		final List<String> m = shellCommands.getMagic(input);
 		if (m.isEmpty()) {
-			collectImports(input);
+			// collectImports(input);
 			return eval(input);
 		} else {
 			return shellCommands.perform(m, this);
@@ -201,6 +205,10 @@ public class GroovyExecution {
 	public void renewSideeffects() {
 		sideeffects = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(sideeffects));
+	}
+
+	public void addImport(String imp) {
+		this.imports.add(imp);
 	}
 
 }

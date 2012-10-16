@@ -1,13 +1,11 @@
 package de.prob.statespace
 
-import java.util.ArrayList
-import java.util.Collections
-import java.util.List
-import java.util.Set
-
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.domainobjects.OpInfo
-import de.prob.model.representation.AbstractModel;
+import de.prob.model.classicalb.ClassicalBModel
+import de.prob.model.eventb.EventBModel
+import de.prob.model.representation.AbstractDomTreeElement
+import de.prob.model.representation.AbstractModel
 
 class History {
 
@@ -22,7 +20,7 @@ class History {
 		current = head
 		animationListeners = new ArrayList<IAnimationListener>()
 	}
-	
+
 	def History(final AbstractModel m) {
 		this.s = m.getStatespace()
 		head = new HistoryElement(s.getState(s.getVertex("root")))
@@ -169,20 +167,20 @@ class History {
 		History newHistory = new History(s, current, animationListeners)
 		return newHistory
 	}
-	
+
 	def History invokeMethod(String method,  params) {
 		String predicate;
-		
+
 		if(method.startsWith("\$")) {
 			method = method.substring(1)
 		}
-		
+
 		if (params == []) predicate = "TRUE = TRUE"
 		else predicate = params[0];
 		OpInfo op = s.opFromPredicate(current.getCurrentState(), method,predicate , 1)[0];
 		return add(op.id)
 	}
-	
+
 	def History anyOperation(filter) {
 		def spaceInfo = s.info
 		def ops = new ArrayList<OpInfo>()
@@ -204,7 +202,7 @@ class History {
 		}
 		return this
 	}
-	
+
 	def History anyEvent(filter) {
 		anyOperation(filter);
 	}
@@ -234,8 +232,28 @@ class History {
 	def Set<OpInfo> getNextTransitions() {
 		return s.outgoingEdgesOf(current.getCurrentState())
 	}
-	
+
 	def StateId getCurrentState() {
 		return current.getCurrentState()
+	}
+
+	def AbstractDomTreeElement getModel() {
+		return s.getModel()
+	}
+
+	def Object asType(Class className) {
+		if(className == StateSpace) {
+			return s
+		}
+		if(className == AbstractModel) {
+			return (AbstractModel) s.model
+		}
+		if(className == ClassicalBModel) {
+			return (ClassicalBModel) s.model
+		}
+		if(className == EventBModel) {
+			return (EventBModel) s.model
+		}
+		throw new ClassCastException("Not able to convert History object to ${className}")
 	}
 }

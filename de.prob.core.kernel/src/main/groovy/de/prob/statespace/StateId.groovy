@@ -25,7 +25,7 @@ class StateId {
 		return newState;
 	}
 
-	def getProperty(String property) {
+	def propertyMissing(String property) {
 		def result = space.info.getVariable(this, property);
 		if (result == null) {
 			def evalElement = space.getForms().get(property)

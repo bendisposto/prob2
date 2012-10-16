@@ -8,6 +8,7 @@ import java.util.List;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import de.prob.model.representation.RefType.ERefType;
+import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
 
 public abstract class AbstractModel extends AbstractDomTreeElement {
@@ -34,8 +35,9 @@ public abstract class AbstractModel extends AbstractDomTreeElement {
 
 	public ERefType getEdge(final String comp1, final String comp2) {
 		final RefType edge = graph.getEdge(comp1, comp2);
-		if (edge == null)
+		if (edge == null) {
 			return null;
+		}
 
 		return edge.getRelationship();
 	}
@@ -56,13 +58,24 @@ public abstract class AbstractModel extends AbstractDomTreeElement {
 	}
 
 	public List<AbstractDomTreeElement> getSubcomponents(
-			Collection<AbstractElement> values) {
+			final Collection<AbstractElement> values) {
 		final List<AbstractDomTreeElement> subformulas = new ArrayList<AbstractDomTreeElement>();
 		for (AbstractElement abstractElement : values) {
 			AbstractDomTreeElement adt = (AbstractDomTreeElement) abstractElement;
 			subformulas.add(adt);
 		}
 		return subformulas;
+	}
+
+	public Object asType(final Class<?> className) {
+		if (className.getSimpleName().equals("StateSpace")) {
+			return statespace;
+		}
+		if (className.getSimpleName().equals("History")) {
+			return new History(statespace);
+		}
+		throw new ClassCastException("No element of type " + className
+				+ " found.");
 	}
 
 }

@@ -127,7 +127,11 @@ public class StateSpaceInfo {
 	 * @return gets the value of the variable for the given state
 	 */
 	public String getVariable(final StateId stateId, final String variable) {
-		return variables.get(stateId).get(variable);
+		HashMap<String, String> hashMap = variables.get(stateId);
+		if (hashMap == null) {
+			return null;
+		}
+		return hashMap.get(variable);
 	}
 
 	/**

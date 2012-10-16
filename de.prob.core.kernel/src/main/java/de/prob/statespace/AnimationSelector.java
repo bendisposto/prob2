@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.google.inject.Singleton;
 
+import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractModel;
 
 @Singleton
@@ -15,13 +16,12 @@ public class AnimationSelector implements IAnimationListener {
 	List<IHistoryChangeListener> listeners = new ArrayList<IHistoryChangeListener>();
 	List<History> histories = new ArrayList<History>();
 	History currentHistory = null;
-	Map<History, AbstractModel> models = new HashMap<History, AbstractModel>();
 
 	public void registerHistoryChangeListener(
 			final IHistoryChangeListener listener) {
 		listeners.add(listener);
 		if (currentHistory != null) {
-			notifyHistoryChange(currentHistory, models.get(currentHistory));
+			notifyHistoryChange(currentHistory);
 		}
 	}
 
@@ -29,33 +29,29 @@ public class AnimationSelector implements IAnimationListener {
 	public void currentStateChanged(final History oldHistory,
 			final History newHistory) {
 		if (oldHistory.equals(currentHistory)) {
-			notifyHistoryChange(newHistory, models.get(oldHistory));
+			notifyHistoryChange(newHistory);
 		}
 		histories.set(histories.indexOf(oldHistory), newHistory);
-		models.put(newHistory, models.get(oldHistory));
-		models.remove(oldHistory);
 		currentHistory = newHistory;
 	}
 
 	public void changeCurrentHistory(final History history) {
 		currentHistory = history;
-		notifyHistoryChange(history, models.get(history));
+		notifyHistoryChange(history);
 	}
 
-	public void addNewHistory(final History history, final AbstractModel model) {
+	public void addNewHistory(final History history) {
 		if (histories.contains(history))
 			return;
 		histories.add(history);
-		models.put(history, model);
 		history.registerAnimationListener(this);
 		currentHistory = history;
-		notifyHistoryChange(history, model);
+		notifyHistoryChange(history);
 	}
 
-	public void notifyHistoryChange(final History history,
-			final AbstractModel model) {
+	public void notifyHistoryChange(final History history) {
 		for (final IHistoryChangeListener listener : listeners) {
-			listener.historyChange(history, model);
+			listener.historyChange(history);
 		}
 	}
 
@@ -67,7 +63,7 @@ public class AnimationSelector implements IAnimationListener {
 		return histories;
 	}
 
-	public AbstractModel getModel(final History history) {
-		return models.get(history);
+	public AbstractDomTreeElement getModel(final History history) {
+		return history.getModel();
 	}
 }

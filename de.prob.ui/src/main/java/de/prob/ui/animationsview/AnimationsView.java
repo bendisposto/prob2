@@ -51,7 +51,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		createColumns();
 		viewer.setContentProvider(new AnimationsContentProvider());
-		viewer.setLabelProvider(new AnimationViewLabelProvider(selector));
+		viewer.setLabelProvider(new AnimationViewLabelProvider());
 		viewer.setSorter(null);
 		viewer.setInput(getViewSite());
 
@@ -100,7 +100,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	}
 	
 	@Override
-	public void historyChange(final History history, AbstractModel model) {
+	public void historyChange(final History history) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {

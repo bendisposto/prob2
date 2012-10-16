@@ -6,12 +6,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.scripting.Downloader;
 import de.prob.webconsole.shellcommands.AbstractShellCommand;
+import de.prob.webconsole.shellcommands.ImportCommand;
 import de.prob.webconsole.shellcommands.LoadCommand;
 
 @Singleton
@@ -23,6 +25,7 @@ public class ShellCommands {
 	public ShellCommands(Downloader d) {
 		magic.put("load", new LoadCommand());
 		magic.put("upgrade", d);
+		magic.put("import", new ImportCommand());
 	}
 
 	public List<String> getMagic(String text) {
@@ -40,6 +43,10 @@ public class ShellCommands {
 	public List<String> complete(List<String> m, int pos) {
 		List<String> args = m.subList(1, m.size());
 		return magic.get(m.get(0)).complete(args, pos);
+	}
+	
+	public Set<String> getSpecialCommands() {
+		return magic.keySet();
 	}
 
 }

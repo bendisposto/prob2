@@ -52,7 +52,7 @@ public class CompletionServlet extends HttpServlet {
 		if (!m.isEmpty()) {
 			completions = shellCommands.complete(m, c);
 		} else {
-
+		
 			if (input.contains(".")) {
 				int pos = input.lastIndexOf(".")
 				String sub = input.substring(0, pos + 1)
@@ -61,9 +61,18 @@ public class CompletionServlet extends HttpServlet {
 				completions = camelMatch(computed, other)
 			} else if (!input.isEmpty()) {
 				def computed = computeCompletions(new String(input.charAt(0)))
-				completions = camelMatch(computed, input);
+				completions = camelMatch(computed, input)
 			}
-
+			
+			if (begin.isEmpty()) {
+				String sub = input.substring(0, c + 1)
+				def magicCommands = shellCommands.getSpecialCommands()
+				for (String cmd : magicCommands) {
+					if (cmd.startsWith(sub))
+						completions << cmd + " "
+				}
+			}
+			
 			String pre = getCommonPrefix(completions);
 			if (!pre.isEmpty() && pre != input && !input.contains("."))
 				completions = [begin + pre + rest]
@@ -198,7 +207,7 @@ public class CompletionServlet extends HttpServlet {
 	List getPublicFieldsAndMethods(Object instance, String prefix) {
 		def rv = []
 		def instanceClass = instance.getClass()
-		instanceClass.fields.each {
+		instanceClass.declaredFields.each {
 			if (it.name.startsWith(prefix))
 				rv << it.name
 		}

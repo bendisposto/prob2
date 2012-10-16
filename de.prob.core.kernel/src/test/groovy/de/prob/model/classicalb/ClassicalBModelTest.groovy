@@ -8,7 +8,8 @@ import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType
 import spock.lang.Specification
-
+import static org.mockito.Mockito.*
+import de.prob.statespace.StateSpace
 
 class ClassicalBModelTest extends Specification {
 
@@ -21,7 +22,7 @@ class ClassicalBModelTest extends Specification {
 
 	def setup() {
 		model = new File(System.getProperties().get("user.dir")+"/groovyTests/machines/references/Foo.mch")
-		c = new ClassicalBModel(null)
+		c = new ClassicalBModel(mock(StateSpace.class));
 		bparser = new BParser();
 
 		ast = bparser.parseFile(model,false)

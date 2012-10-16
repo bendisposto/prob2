@@ -25,7 +25,10 @@ import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractDomTreeElement;
+import de.prob.model.representation.AbstractModel;
 
 /**
  * 
@@ -95,9 +98,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @param state
 	 */
 	public void explore(final StateId state) {
-		if (!containsVertex(state))
+		if (!containsVertex(state)) {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
+		}
 
 		final ExploreStateCommand command = new ExploreStateCommand(
 				state.getId());
@@ -197,8 +201,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @return returns if a specific state is explored
 	 */
 	public boolean isExplored(final StateId state) {
-		if (!containsVertex(state))
+		if (!containsVertex(state)) {
 			throw new IllegalArgumentException("Unknown State id");
+		}
 		return explored.contains(state);
 	}
 
@@ -241,11 +246,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	public List<EvaluationResult> eval(final StateId stateId,
 			final List<IEvalElement> code) throws BException {
-		if (!containsVertex(stateId))
+		if (!containsVertex(stateId)) {
 			throw new IllegalArgumentException("state does not exist");
+		}
 
-		if (code.isEmpty())
+		if (code.isEmpty()) {
 			return new ArrayList<EvaluationResult>();
+		}
 
 		final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
 				code, stateId.getId());
@@ -466,5 +473,32 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			}
 		}
 		values.put(stateId, valueMap);
+	}
+
+	public AbstractDomTreeElement getModel() {
+		return model;
+	}
+
+	public Object asType(final Class<?> className) {
+		if (className.getSimpleName().equals("AbstractModel")) {
+			if (model instanceof AbstractModel) {
+				return model;
+			}
+		}
+		if (className.getSimpleName().equals("EventBModel")) {
+			if (model instanceof EventBModel) {
+				return model;
+			}
+		}
+		if (className.getSimpleName().equals("ClassicalBModel")) {
+			if (model instanceof ClassicalBModel) {
+				return model;
+			}
+		}
+		if (className.getSimpleName().equals("History")) {
+			return new History(this);
+		}
+		throw new ClassCastException("An element of class " + className
+				+ " was not found");
 	}
 }

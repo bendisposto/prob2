@@ -1,6 +1,5 @@
 package de.prob.model.eventb;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +29,7 @@ public class EventBModel extends AbstractModel {
 	@Inject
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
+		statespace.setModel(this);
 		this.components = new HashMap<String, AbstractElement>();
 	}
 

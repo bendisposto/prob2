@@ -110,7 +110,7 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener{
 	}
 	
 	@Override
-	public void historyChange(final History history, AbstractModel model) {
+	public void historyChange(final History history) {
 		currentHistory = history;
 		Display.getDefault().asyncExec(new Runnable() {
 			
