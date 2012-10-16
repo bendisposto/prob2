@@ -10,13 +10,13 @@ public class ClassicalBEvalElementTest {
 
 	@Test
 	public void testExpression() throws BException {
-		ClassicalBEvalElement element = new ClassicalBEvalElement("9");
+		ClassicalB element = new ClassicalB("9");
 		assertEquals("#EXPRESSION", element.getKind());
 	}
 
 	@Test
 	public void testPredicate() throws BException {
-		ClassicalBEvalElement element = new ClassicalBEvalElement("9:NAT");
+		ClassicalB element = new ClassicalB("9:NAT");
 		assertEquals("#PREDICATE", element.getKind());
 	}
 

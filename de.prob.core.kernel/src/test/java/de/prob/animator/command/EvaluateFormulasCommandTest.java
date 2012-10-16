@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.animator.domainobjects.ClassicalBEvalElement;
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.ISimplifiedROMap;
@@ -24,8 +24,8 @@ public class EvaluateFormulasCommandTest {
 	public void testWriteCommand() throws Exception {
 
 		List<IEvalElement> evalElements = new ArrayList<IEvalElement>();
-		evalElements.add(new ClassicalBEvalElement("1<3"));
-		evalElements.add(new ClassicalBEvalElement("3"));
+		evalElements.add(new ClassicalB("1<3"));
+		evalElements.add(new ClassicalB("3"));
 
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		EvaluateFormulasCommand command = new EvaluateFormulasCommand(
@@ -50,10 +50,10 @@ public class EvaluateFormulasCommandTest {
 	@Test
 	public void testProcessResult() throws Exception {
 		List<IEvalElement> evalElements = new ArrayList<IEvalElement>();
-		evalElements.add(new ClassicalBEvalElement("1<3"));
-		evalElements.add(new ClassicalBEvalElement("3"));
-		evalElements.add(new ClassicalBEvalElement("1>3"));
-		evalElements.add(new ClassicalBEvalElement("99"));
+		evalElements.add(new ClassicalB("1<3"));
+		evalElements.add(new ClassicalB("3"));
+		evalElements.add(new ClassicalB("1>3"));
+		evalElements.add(new ClassicalB("99"));
 
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);

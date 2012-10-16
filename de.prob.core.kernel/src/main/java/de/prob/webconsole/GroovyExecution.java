@@ -59,7 +59,8 @@ public class GroovyExecution {
 			"import de.prob.statespace.*;",
 			"import de.prob.model.representation.*;",
 			"import de.prob.model.classicalb.*;",
-			"import de.prob.model.eventb.*;" };
+			"import de.prob.model.eventb.*;",
+			"import de.prob.animator.domainobjects.*;" };
 	private final ShellCommands shellCommands;
 	private Interpreter try_interpreter;
 
@@ -77,11 +78,10 @@ public class GroovyExecution {
 
 		String script = "";
 		URL url = Resources.getResource("initscript");
-		
+
 		try {
 			String string = Resources.toString(url, Charsets.UTF_8);
-			script = string.replaceAll("\\n",
-					" ; ");
+			script = string.replaceAll("\\n", " ; ");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -185,16 +185,18 @@ public class GroovyExecution {
 			} catch (final Throwable e) {
 				imports.remove(input);
 				String message = e.getMessage();
-				if (message == null && e.getCause() != null)
+				if (message == null && e.getCause() != null) {
 					message = e.getCause().getMessage();
-				if (message != null)
-					try {
-						sideeffects.write(message.getBytes());
-					} catch (IOException e1) {
-						// sideeffects is not real I/O
+					if (message != null) {
+						try {
+							sideeffects.write(message.getBytes());
+						} catch (IOException e1) {
+							// sideeffects is not real I/O
+						}
+					} else {
+						e.printStackTrace(System.out);
 					}
-				else
-					e.printStackTrace(System.out);
+				}
 			} finally {
 				inputs.clear();
 			}
@@ -207,7 +209,7 @@ public class GroovyExecution {
 		System.setOut(new PrintStream(sideeffects));
 	}
 
-	public void addImport(String imp) {
+	public void addImport(final String imp) {
 		this.imports.add(imp);
 	}
 

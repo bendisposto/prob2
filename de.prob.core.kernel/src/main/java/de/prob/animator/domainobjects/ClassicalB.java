@@ -14,12 +14,12 @@ import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class ClassicalBEvalElement implements IEvalElement {
+public class ClassicalB implements IEvalElement {
 
 	private final String code;
 	private final Start ast;
 
-	public ClassicalBEvalElement(final String code) throws BException {
+	public ClassicalB(final String code) throws BException {
 		this.code = code;
 		this.ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
 	}

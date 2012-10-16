@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.prob.animator.domainobjects.ClassicalBEvalElement;
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -34,14 +34,14 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	Logger logger = LoggerFactory
 			.getLogger(GetOperationByPredicateCommand.class);
 	private static final String NEW_STATE_ID_VARIABLE = "NewStateID";
-	private final ClassicalBEvalElement evalElement;
+	private final ClassicalB evalElement;
 	private final String stateId;
 	private final String name;
 	private final List<OpInfo> operation = new ArrayList<OpInfo>();
 	private final int nrOfSolutions;
 
 	public GetOperationByPredicateCommand(final String stateId,
-			final String name, final ClassicalBEvalElement predicate,
+			final String name, final ClassicalB predicate,
 			final int nrOfSolutions) {
 		this.stateId = stateId;
 		this.name = name;

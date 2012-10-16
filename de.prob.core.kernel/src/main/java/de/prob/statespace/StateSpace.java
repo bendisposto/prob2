@@ -21,7 +21,7 @@ import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.ICommand;
-import de.prob.animator.domainobjects.ClassicalBEvalElement;
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
@@ -159,7 +159,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
 			throws BException {
-		final ClassicalBEvalElement pred = new ClassicalBEvalElement(predicate);
+		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
@@ -218,7 +218,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @throws BException
 	 */
 	public String addUserFormula(final String formula) throws BException {
-		final ClassicalBEvalElement evalElement = new ClassicalBEvalElement(
+		final ClassicalB evalElement = new ClassicalB(
 				formula);
 		int i = 0;
 		do {
@@ -238,7 +238,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public String addUserFormula(final String name, final String formula)
 			throws BException {
-		final ClassicalBEvalElement evalElement = new ClassicalBEvalElement(
+		final ClassicalB evalElement = new ClassicalB(
 				formula);
 		formulas.put(name, evalElement);
 		return name;
@@ -290,7 +290,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			throws BException {
 		final List<IEvalElement> list = new ArrayList<IEvalElement>();
 		for (final String c : code) {
-			list.add(new ClassicalBEvalElement(c));
+			list.add(new ClassicalB(c));
 		}
 		return eval(state, list);
 	}
@@ -454,7 +454,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		for (final AbstractDomTreeElement iFormula : formulaList) {
 			try {
 				evalElements
-						.add(new ClassicalBEvalElement(iFormula.getLabel()));
+						.add(new ClassicalB(iFormula.getLabel()));
 			} catch (final BException e) {
 				System.out.println(iFormula.getLabel() + " " + iFormula.uuid);
 			}

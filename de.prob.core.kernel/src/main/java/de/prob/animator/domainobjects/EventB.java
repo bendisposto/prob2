@@ -23,13 +23,13 @@ import de.prob.formula.eventb.PredicateVisitor;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.unicode.UnicodeTranslator;
 
-public class EventBEvalElement implements IEvalElement {
+public class EventB implements IEvalElement {
 
 	private final String code;
 	private String kind;
 	private final Node ast;
 
-	public EventBEvalElement(String code) {
+	public EventB(String code) {
 		this.code = code;
 		String unicode = UnicodeTranslator.toUnicode(code);
 		kind = PREDICATE.toString();

@@ -1,3 +1,11 @@
-class Foo {
- def t = 99;
+/* This overwrites the asType method in String to allow the conversion from
+   a String to an EvalElement. Usage:
+       "..." as ClassicalB converts "..." to a ClassicalB evaluation element
+       "..." as EventB converts "..." to an EventB evaluation element
+*/
+String.metaClass {
+    asType {Class c -> 
+    			if(c == ClassicalB) return new ClassicalB(delegate)
+                if(c == EventB) return new EventB(delegate)
+                throw new ClassCastException("Type not recognized")}
 }
