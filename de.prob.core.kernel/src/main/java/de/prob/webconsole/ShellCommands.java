@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -42,6 +43,10 @@ public class ShellCommands {
 	public List<String> complete(List<String> m, int pos) {
 		List<String> args = m.subList(1, m.size());
 		return magic.get(m.get(0)).complete(args, pos);
+	}
+	
+	public Set<String> getSpecialCommands() {
+		return magic.keySet();
 	}
 
 }
