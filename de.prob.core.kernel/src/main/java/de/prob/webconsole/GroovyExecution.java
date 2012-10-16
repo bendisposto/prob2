@@ -5,6 +5,7 @@ import groovy.lang.Binding;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +15,8 @@ import org.codehaus.groovy.tools.shell.Interpreter;
 import org.codehaus.groovy.tools.shell.ParseCode;
 import org.codehaus.groovy.tools.shell.Parser;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -58,6 +61,7 @@ public class GroovyExecution {
 			"import de.prob.model.classicalb.*;",
 			"import de.prob.model.eventb.*;" };
 	private final ShellCommands shellCommands;
+	private Interpreter try_interpreter;
 
 	@Inject
 	public GroovyExecution(final Api api, final ShellCommands shellCommands,
@@ -71,9 +75,23 @@ public class GroovyExecution {
 
 		imports.addAll(Arrays.asList(IMPORTS));
 
+		String script = "";
+		URL url = Resources.getResource("initscript");
+		
+		try {
+			String string = Resources.toString(url, Charsets.UTF_8);
+			script = string.replaceAll("\\n",
+					" ; ");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		this.try_interpreter = new Interpreter(
+				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
 		sideeffects = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(sideeffects));
+		eval(script);
 	}
 
 	public String evaluate(final String input) throws IOException {
@@ -123,7 +141,30 @@ public class GroovyExecution {
 		return sideeffects;
 	}
 
-	private String eval(final String input) throws IOException {
+	/**
+	 * Split the line into different commands and find out, if there was a valid
+	 * import statement.
+	 * 
+	 * @param input
+	 */
+	private void collectImports(final String input) {
+		final String[] split = input.split(";|\n");
+		for (final String string : split) {
+			if (string.trim().startsWith("import ")) {
+				try {
+					try_interpreter.evaluate(Collections.singletonList(string));
+					imports.add(string + ";"); // if try_interpreter does not
+												// throw an exception, it was a
+												// valid import statement
+				} catch (final Exception e) {
+					this.try_interpreter = new Interpreter(this.getClass()
+							.getClassLoader(), new Binding());
+				}
+			}
+		}
+	}
+
+	private String eval(final String input) {
 		Object evaluate = null;
 		ParseCode parseCode;
 		inputs.add(input);
@@ -147,7 +188,11 @@ public class GroovyExecution {
 				if (message == null && e.getCause() != null)
 					message = e.getCause().getMessage();
 				if (message != null)
-					sideeffects.write(message.getBytes());
+					try {
+						sideeffects.write(message.getBytes());
+					} catch (IOException e1) {
+						// sideeffects is not real I/O
+					}
 				else
 					e.printStackTrace(System.out);
 			} finally {
