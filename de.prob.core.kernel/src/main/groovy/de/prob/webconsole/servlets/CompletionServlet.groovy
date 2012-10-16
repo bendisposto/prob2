@@ -64,6 +64,15 @@ public class CompletionServlet extends HttpServlet {
 				completions = camelMatch(computed, input)
 			}
 			
+			if (begin.isEmpty()) {
+				String sub = input.substring(0, c + 1)
+				def magicCommands = shellCommands.getSpecialCommands()
+				for (String cmd : magicCommands) {
+					if (cmd.startsWith(sub))
+						completions << cmd + " "
+				}
+			}
+			
 			String pre = getCommonPrefix(completions);
 			if (!pre.isEmpty() && pre != input && !input.contains("."))
 				completions = [begin + pre + rest]
@@ -81,15 +90,6 @@ public class CompletionServlet extends HttpServlet {
 				String other = input.substring(pos + 1, input.length())
 				if (pos < input.length() && other != pre)
 					completions = [begin + sub + pre + rest]
-			}
-			
-			if (begin.isEmpty()) {
-				String sub = input.substring(0, c + 1)
-				def magicCommands = shellCommands.getSpecialCommands()
-				for (String cmd : magicCommands) {
-					if (cmd.startsWith(sub))
-						completions << cmd + " "
-				}
 			}
 		}
 		Gson g = new Gson();
