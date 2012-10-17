@@ -27,8 +27,8 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.IEntity;
 
 /**
  * 
@@ -68,8 +68,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
-	private AbstractDomTreeElement model;
-	private final Map<StateId, Map<AbstractDomTreeElement, String>> values = new HashMap<StateId, Map<AbstractDomTreeElement, String>>();
+	private IEntity model;
+	private final Map<StateId, Map<IEntity, String>> values = new HashMap<StateId, Map<IEntity, String>>();
 
 	public final StateId __root;
 
@@ -125,9 +125,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 
 		// Testing!!!
-		if (!state.getId().equals("root")) {
-			evaluateIFormulas(state);
-		}
+		// if (!state.getId().equals("root")) {
+		// evaluateIFormulas(state);
+		// }
 		getInfo().add(state, command);
 	}
 
@@ -218,8 +218,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @throws BException
 	 */
 	public String addUserFormula(final String formula) throws BException {
-		final ClassicalB evalElement = new ClassicalB(
-				formula);
+		final ClassicalB evalElement = new ClassicalB(formula);
 		int i = 0;
 		do {
 			i++;
@@ -238,8 +237,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public String addUserFormula(final String name, final String formula)
 			throws BException {
-		final ClassicalB evalElement = new ClassicalB(
-				formula);
+		final ClassicalB evalElement = new ClassicalB(formula);
 		formulas.put(name, evalElement);
 		return name;
 	}
@@ -429,53 +427,54 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		this.loadcmd = loadcmd;
 	}
 
-	public void setModel(final AbstractDomTreeElement model) {
+	public void setModel(final IEntity model) {
 		this.model = model;
 	}
 
-	public List<AbstractDomTreeElement> getFormulas(
-			final AbstractDomTreeElement formula) {
-		final List<AbstractDomTreeElement> toEvaluate = new ArrayList<AbstractDomTreeElement>();
-		final List<AbstractDomTreeElement> subcomponents = formula
-				.getSubcomponents();
-		for (final AbstractDomTreeElement iFormula : subcomponents) {
-			if (iFormula.toEvaluate()) {
-				toEvaluate.add(iFormula);
-			}
-			toEvaluate.addAll(getFormulas(iFormula));
-		}
-		return toEvaluate;
-	}
+	// public List<AbstractDomTreeElement> getFormulas(
+	// final AbstractDomTreeElement formula) {
+	// final List<AbstractDomTreeElement> toEvaluate = new
+	// ArrayList<AbstractDomTreeElement>();
+	// final List<AbstractDomTreeElement> subcomponents = formula
+	// .getSubcomponents();
+	// for (final AbstractDomTreeElement iFormula : subcomponents) {
+	// if (iFormula.toEvaluate()) {
+	// toEvaluate.add(iFormula);
+	// }
+	// toEvaluate.addAll(getFormulas(iFormula));
+	// }
+	// return toEvaluate;
+	// }
+	//
+	// public void evaluateIFormulas(final StateId stateId) {
+	// final List<AbstractDomTreeElement> formulaList = getFormulas(model);
+	// final Map<AbstractDomTreeElement, String> valueMap = new
+	// HashMap<AbstractDomTreeElement, String>();
+	// final List<IEvalElement> evalElements = new ArrayList<IEvalElement>();
+	// for (final AbstractDomTreeElement iFormula : formulaList) {
+	// try {
+	// evalElements.add(new ClassicalB(iFormula.getLabel()));
+	// } catch (final BException e) {
+	// System.out.println(iFormula.getLabel() + " " + iFormula.uuid);
+	// }
+	// }
+	// List<EvaluationResult> result = null;
+	// try {
+	// result = eval(stateId, evalElements);
+	// } catch (final BException e) {
+	// System.out.println("failed!!!");
+	// }
+	//
+	// assert result.size() == formulaList.size();
+	// if (result != null) {
+	// for (int i = 0; i < result.size(); i++) {
+	// valueMap.put(formulaList.get(i), result.get(i).value);
+	// }
+	// }
+	// values.put(stateId, valueMap);
+	// }
 
-	public void evaluateIFormulas(final StateId stateId) {
-		final List<AbstractDomTreeElement> formulaList = getFormulas(model);
-		final Map<AbstractDomTreeElement, String> valueMap = new HashMap<AbstractDomTreeElement, String>();
-		final List<IEvalElement> evalElements = new ArrayList<IEvalElement>();
-		for (final AbstractDomTreeElement iFormula : formulaList) {
-			try {
-				evalElements
-						.add(new ClassicalB(iFormula.getLabel()));
-			} catch (final BException e) {
-				System.out.println(iFormula.getLabel() + " " + iFormula.uuid);
-			}
-		}
-		List<EvaluationResult> result = null;
-		try {
-			result = eval(stateId, evalElements);
-		} catch (final BException e) {
-			System.out.println("failed!!!");
-		}
-
-		assert result.size() == formulaList.size();
-		if (result != null) {
-			for (int i = 0; i < result.size(); i++) {
-				valueMap.put(formulaList.get(i), result.get(i).value);
-			}
-		}
-		values.put(stateId, valueMap);
-	}
-
-	public AbstractDomTreeElement getModel() {
+	public IEntity getModel() {
 		return model;
 	}
 

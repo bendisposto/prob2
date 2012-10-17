@@ -1,7 +1,6 @@
 package de.prob.model.representation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,17 +10,17 @@ import de.prob.model.representation.RefType.ERefType;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
 
-public abstract class AbstractModel extends AbstractDomTreeElement {
+public abstract class AbstractModel implements IEntity {
 
 	protected StateSpace statespace;
-	protected HashMap<String, AbstractElement> components;
+	protected HashMap<String, Label> components;
 	protected DirectedMultigraph<String, RefType> graph;
 
 	public StateSpace getStatespace() {
 		return statespace;
 	}
 
-	public HashMap<String, AbstractElement> getComponents() {
+	public HashMap<String, Label> getComponents() {
 		return components;
 	}
 
@@ -48,23 +47,13 @@ public abstract class AbstractModel extends AbstractDomTreeElement {
 	}
 
 	@Override
-	public String getLabel() {
-		return uuid;
+	public List<IEntity> getChildren() {
+		return new ArrayList<IEntity>(components.values());
 	}
 
 	@Override
-	public boolean toEvaluate() {
-		return false;
-	}
-
-	public List<AbstractDomTreeElement> getSubcomponents(
-			final Collection<AbstractElement> values) {
-		final List<AbstractDomTreeElement> subformulas = new ArrayList<AbstractDomTreeElement>();
-		for (AbstractElement abstractElement : values) {
-			AbstractDomTreeElement adt = (AbstractDomTreeElement) abstractElement;
-			subformulas.add(adt);
-		}
-		return subformulas;
+	public boolean hasChildren() {
+		return !components.values().isEmpty();
 	}
 
 	public Object asType(final Class<?> className) {

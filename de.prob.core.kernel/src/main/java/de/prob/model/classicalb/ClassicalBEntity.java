@@ -3,48 +3,28 @@ package de.prob.model.classicalb;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.be4.classicalb.core.parser.node.Node;
-import de.prob.model.representation.AbstractDomTreeElement;
+import de.be4.classicalb.core.parser.exceptions.BException;
+import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.model.representation.FormulaUUID;
+import de.prob.model.representation.IEntity;
 
-public class ClassicalBEntity extends AbstractDomTreeElement {
+public class ClassicalBEntity extends ClassicalB implements IEntity {
 
-	private final String identifier;
-	private final Node astPart;
+	public FormulaUUID uuid = new FormulaUUID();
 
-	public ClassicalBEntity(final String name, final Node id) {
-		this.identifier = name;
-		this.astPart = id;
-	}
-
-	public String getIdentifier() {
-		return identifier;
-	}
-
-	public Node getIdentifierExpression() {
-		return astPart;
+	public ClassicalBEntity(final String code) throws BException {
+		super(code);
 	}
 
 	@Override
-	public String toString() {
-		final PrettyPrinter prettyPrinter = new PrettyPrinter();
-		astPart.apply(prettyPrinter);
-		return prettyPrinter.getPrettyPrint();
+	public List<IEntity> getChildren() {
+		return new ArrayList<IEntity>();
 	}
 
 	@Override
-	public String getLabel() {
-		return toString();
-	}
-
-
-	@Override
-	public List<AbstractDomTreeElement> getSubcomponents() {
-		return new ArrayList<AbstractDomTreeElement>();
-	}
-
-	@Override
-	public boolean toEvaluate() {
-		return true;
+	public boolean hasChildren() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

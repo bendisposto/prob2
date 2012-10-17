@@ -4,8 +4,8 @@ import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.domainobjects.OpInfo
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
-import de.prob.model.representation.AbstractDomTreeElement
 import de.prob.model.representation.AbstractModel
+import de.prob.model.representation.IEntity
 
 class History {
 
@@ -237,7 +237,7 @@ class History {
 		return current.getCurrentState()
 	}
 
-	def AbstractDomTreeElement getModel() {
+	def IEntity getModel() {
 		return s.getModel()
 	}
 

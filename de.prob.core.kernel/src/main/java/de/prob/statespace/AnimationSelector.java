@@ -1,14 +1,11 @@
 package de.prob.statespace;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.google.inject.Singleton;
 
-import de.prob.model.representation.AbstractDomTreeElement;
-import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.IEntity;
 
 @Singleton
 public class AnimationSelector implements IAnimationListener {
@@ -41,8 +38,9 @@ public class AnimationSelector implements IAnimationListener {
 	}
 
 	public void addNewHistory(final History history) {
-		if (histories.contains(history))
+		if (histories.contains(history)) {
 			return;
+		}
 		histories.add(history);
 		history.registerAnimationListener(this);
 		currentHistory = history;
@@ -63,7 +61,7 @@ public class AnimationSelector implements IAnimationListener {
 		return histories;
 	}
 
-	public AbstractDomTreeElement getModel(final History history) {
+	public IEntity getModel(final History history) {
 		return history.getModel();
 	}
 }

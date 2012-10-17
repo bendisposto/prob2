@@ -1,9 +1,7 @@
 package de.prob.model.classicalb;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.graph.ClassBasedEdgeFactory;
@@ -13,9 +11,8 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.model.representation.AbstractDomTreeElement;
-import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.Label;
 import de.prob.model.representation.RefType;
 import de.prob.statespace.StateSpace;
 
@@ -28,7 +25,7 @@ public class ClassicalBModel extends AbstractModel {
 	public ClassicalBModel(final StateSpace statespace) {
 		this.statespace = statespace;
 		statespace.setModel(this);
-		this.components = new HashMap<String, AbstractElement>();
+		this.components = new HashMap<String, Label>();
 	}
 
 	public DirectedMultigraph<String, RefType> initialize(final Start mainast,
@@ -37,7 +34,7 @@ public class ClassicalBModel extends AbstractModel {
 		final DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
-		mainMachine = new ClassicalBMachine(null);
+		mainMachine = new ClassicalBMachine();
 		final DomBuilder d = new DomBuilder(mainMachine);
 		d.build(mainast);
 		graph.addVertex(mainMachine.name());
@@ -61,15 +58,15 @@ public class ClassicalBModel extends AbstractModel {
 		} while (!fpReached);
 		this.graph = graph;
 
-		initializeLabels();
+		// initializeLabels();
 		return graph;
 	}
 
-	private void initializeLabels() {
-		for (final String machine : graph.vertexSet()) {
-			((ClassicalBMachine) components.get(machine)).createLabels();
-		}
-	}
+	// private void initializeLabels() {
+	// for (final String machine : graph.vertexSet()) {
+	// ((ClassicalBMachine) components.get(machine)).createLabels();
+	// }
+	// }
 
 	public ClassicalBMachine getMainMachine() {
 		return mainMachine;
@@ -79,11 +76,4 @@ public class ClassicalBModel extends AbstractModel {
 		return components.containsKey(machineName) ? (ClassicalBMachine) components
 				.get(machineName) : null;
 	}
-
-	@Override
-	public List<AbstractDomTreeElement> getSubcomponents() {
-		Collection<AbstractElement> values = components.values();
-		return getSubcomponents(values);
-	}
-
 }

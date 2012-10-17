@@ -1,8 +1,6 @@
 package de.prob.model.eventb;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
@@ -15,7 +13,6 @@ import org.jgrapht.graph.DirectedMultigraph;
 
 import com.google.inject.Inject;
 
-import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.RefType;
@@ -103,12 +100,11 @@ public class EventBModel extends AbstractModel {
 		return mainComponent;
 	}
 
-	@Override
-	public List<AbstractDomTreeElement> getSubcomponents() {
-		Collection<AbstractElement> values = components.values();
-		return getSubcomponents(values);
-	}
-	
-
+	// @Override
+	// public List<AbstractDomTreeElement> getSubcomponents() {
+	// Collection<AbstractElement> values = components.values();
+	// return getSubcomponents(values);
+	// }
+	//
 
 }

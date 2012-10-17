@@ -13,30 +13,28 @@ import org.eventb.emf.core.machine.Machine;
 import org.eventb.emf.core.machine.Parameter;
 import org.eventb.emf.core.machine.Variable;
 
-import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.Label;
 
-public class EventBComponent extends AbstractDomTreeElement implements AbstractElement {
+public class EventBComponent implements AbstractElement {
 
 	private final EventBNamedCommentedComponentElement emfComponent;
 	private final String name;
-	private final Label variables;
-	private final Label constants;
+	// private final Label variables;
+	// private final Label constants;
 	private List<Event> events;
 
 	public EventBComponent(
 			final EventBNamedCommentedComponentElement emfComponent) {
 		this.emfComponent = emfComponent;
 		this.name = emfComponent.doGetName();
-		this.variables = new Label("Variables");
-		this.constants = new Label("Constants");
+		// this.variables = new Label("Variables");
+		// this.constants = new Label("Constants");
 		if (emfComponent instanceof Context) {
 			final Context ctx = (Context) emfComponent;
 			final EList<Constant> constants2 = ctx.getConstants();
 			for (final Constant constant : constants2) {
-				constants.addFormula(new EventBFormula(constant.doGetName(),
-						constant));
+				// constants.addFormula(new EventBFormula(constant.doGetName(),
+				// constant));
 			}
 			events = new ArrayList<Event>();
 		}
@@ -44,8 +42,8 @@ public class EventBComponent extends AbstractDomTreeElement implements AbstractE
 			final Machine m = (Machine) emfComponent;
 			final EList<Variable> mVars = m.getVariables();
 			for (final Variable variable : mVars) {
-				variables.addFormula(new EventBFormula(variable.doGetName(),
-						variable));
+				// variables.addFormula(new EventBFormula(variable.doGetName(),
+				// variable));
 			}
 			events = new ArrayList<Event>();
 			final EList<org.eventb.emf.core.machine.Event> emfEvents = m
@@ -69,18 +67,20 @@ public class EventBComponent extends AbstractDomTreeElement implements AbstractE
 	@Override
 	public List<String> getConstantNames() {
 		final ArrayList<String> cons = new ArrayList<String>();
-		for (final AbstractDomTreeElement con : constants.getSubcomponents()) {
-			cons.add(con.getLabel());
-		}
+		// for (final AbstractDomTreeElement con : constants.getSubcomponents())
+		// {
+		// cons.add(con.getLabel());
+		// }
 		return cons;
 	}
 
 	@Override
 	public List<String> getVariableNames() {
 		final ArrayList<String> vars = new ArrayList<String>();
-		for (final AbstractDomTreeElement var : variables.getSubcomponents()) {
-			vars.add(var.getLabel());
-		}
+		// for (final AbstractDomTreeElement var : variables.getSubcomponents())
+		// {
+		// vars.add(var.getLabel());
+		// }
 		return vars;
 	}
 
@@ -112,22 +112,20 @@ public class EventBComponent extends AbstractDomTreeElement implements AbstractE
 	public EventBNamedCommentedComponentElement getEmfComponent() {
 		return emfComponent;
 	}
-
-	@Override
-	public String getLabel() {
-		return name;
-	}
-
-	
-
-	@Override
-	public List<AbstractDomTreeElement> getSubcomponents() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean toEvaluate() {
-		return false;
-	}
+	//
+	// @Override
+	// public String getLabel() {
+	// return name;
+	// }
+	//
+	// @Override
+	// public List<AbstractDomTreeElement> getSubcomponents() {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
+	//
+	// @Override
+	// public boolean toEvaluate() {
+	// return false;
+	// }
 }
