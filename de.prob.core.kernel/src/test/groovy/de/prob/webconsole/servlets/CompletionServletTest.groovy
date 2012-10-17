@@ -109,7 +109,7 @@ class CompletionServletTest extends Specification {
 				
 		where:
 		col		| fulltext		| list
-		0		| ""			| ["upgrade ", "import ", "load "]
+		0		| ""			| ["api", "foo", "foobar", "update", "upgrade ", "import ", "load "]
 		1		| "u"			| ["up"]
 		2		| "up"			| ["upgrade ", "update"]
 		3		| "upglatest"	| ["upgrade latest"]
@@ -150,6 +150,23 @@ class CompletionServletTest extends Specification {
 		9 		| "1 foo.tBD 3"	| ["1 foo.toBigDecimal() 3"]
 		9 		| "1 foo.toBD 3"| ["toBigDecimal()", "toBoolean()", "toBigInteger()"]
 		5		| "foo.C"		| ["foo.CASE_INSENSITIVE_ORDER"]
+	}
+	
+	def "split input"() {
+		expect:
+		servlet.splitInput(text, col - 1) == arr
+		
+		where:
+		text				| col	| arr
+		""					| 0 	| ["", "", ""]
+		"foo bar baz"		| 2		| ["", "fo", "o bar baz"]
+		"foo bar baz"		| 7		| ["foo ", "bar", " baz"]
+		"foo bart baz"		| 7		| ["foo ", "bar", "t baz"]
+		"foo bar. baz"		| 8		| ["foo ", "bar.", " baz"]
+		"foo bar. baz"		| 10	| ["foo bar. ", "b", "az"]
+		"foo foo bar. baz"	| 6		| ["foo ", "fo", "o bar. baz"]
+		"foo foo bar. baz"	| 10	| ["foo foo ", "ba", "r. baz"]
+		"foo bar. baz"		| 12	| ["foo bar. ", "baz", ""]
 	}
 	
 }
