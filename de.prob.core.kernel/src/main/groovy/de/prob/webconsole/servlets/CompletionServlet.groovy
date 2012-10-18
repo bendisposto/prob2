@@ -128,60 +128,22 @@ public class CompletionServlet extends HttpServlet {
 
 	private ArrayList<String> computeCompletions(String input) {
 		ArrayList<String> candidates = new ArrayList<String>();
-		def cursor = input.length();
-		int identifierStart = findIdentifierStart(input, cursor)
-		String identifierPrefix = identifierStart != -1 ? input.substring(identifierStart, cursor) : ""
-		int lastDot = input.lastIndexOf('.')
 
-		if (lastDot == -1 || noDotsBeforeParentheses(input, cursor) ) {
-			if (identifierStart != -1) {
-				List myCandidates = findMatchingVariables(identifierPrefix)
-				if (myCandidates.size() > 0) {
-				    def prefix = input.substring(0, identifierStart);
-					candidates.addAll(myCandidates.collect {
-						prefix+it
-					})
-					return candidates
-				}
-			}
-			return []
-		}
+		String inputWithoutDot = input.substring(0, input.length() - 1)
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		
-		else {
-			if (lastDot == cursor-1 || identifierStart != -1){
-				int predecessorStart=findIdentifierStart(input,lastDot)
-				predecessorStart= 0
-				String instanceRefExpression = input.substring(predecessorStart, lastDot)
-				ExecutorService executorService = Executors.newSingleThreadExecutor();
-				
-				def future = executorService.submit({
-				def instance=	executor.tryevaluate(instanceRefExpression)
-					} as Callable)
-				def instance;
-				try {
-					instance = future.get(3, TimeUnit.SECONDS)
-				}
-				catch (Exception e) {
-					return ["You", "suck!"]
-				}						
-				
-				if (instance != null) {
-					// look for public methods/fields that match the prefix
-					List myCandidates = getPublicFieldsAndMethods(instance, identifierPrefix)
-					if (myCandidates.size() > 1) {
-						candidates.addAll(myCandidates)
-					}
-					else if (myCandidates.size() == 1) {
-						def prefix = input.substring(0, identifierStart);
-						candidates.add(prefix+myCandidates[0])
-					}
-					return candidates;
-				}
-			}
-
+		def future = executorService.submit({
+				executor.tryevaluate(inputWithoutDot)
+			} as Callable)
+		
+		def instance;
+		try {
+			instance = future.get(3, TimeUnit.SECONDS)
+		} catch (Exception e) {
 			return []
-		}
-		return candidates;
+		}						
+		
+		return getPublicFieldsAndMethods(instance)
 	}
 	
 	List findMatchingVariables(String prefix) {
@@ -192,46 +154,18 @@ public class CompletionServlet extends HttpServlet {
 				matches << varName
 		return matches
 	}
-	
-	
-	Boolean noDotsBeforeParentheses(String buffer, int endingAt) {
-		int lastDotIndex = buffer.lastIndexOf('.')
-		int lastParanIndex = buffer.lastIndexOf('(')
 
-		if(lastDotIndex==-1&&lastParanIndex==-1)
-			return true;
-		return lastDotIndex < lastParanIndex
-	}
-
-	int findIdentifierStart(String buffer, int endingAt) {
-		// if the string is empty then there is no expression
-		if (endingAt == 0)
-			return -1
-		// if the last character is not valid then there is no expression
-		char lastChar = buffer.charAt(endingAt-1)
-		if (!Character.isJavaIdentifierPart(lastChar) )
-			return -1
-		// scan backwards until the beginning of the expression is found
-		int startIndex = endingAt-1
-		while (startIndex > 0 && Character.isJavaIdentifierPart(buffer.charAt(startIndex-1)))
-			--startIndex
-		return startIndex
-	}
-
-	List getPublicFieldsAndMethods(Object instance, String prefix) {
+	List getPublicFieldsAndMethods(Object instance) {
 		def rv = []
 		def instanceClass = instance.getClass()
 		instanceClass.declaredFields.each {
-			if (it.name.startsWith(prefix))
-				rv << it.name
+			rv << it.name
 		}
 		instanceClass.methods.each {
-			if (it.name.startsWith(prefix))
-				rv << it.name + (it.parameterTypes.length == 0 ? "()" : "(")
+			rv << it.name + (it.parameterTypes.length == 0 ? "()" : "(")
 		}
 		InvokerHelper.getMetaClass(instance).metaMethods.each {
-			if (it.name.startsWith(prefix))
-				rv << it.name + (it.parameterTypes.length == 0 ? "()" : "(")
+			rv << it.name + (it.parameterTypes.length == 0 ? "()" : "(")
 		}
 		return rv.sort().unique()
 	}
