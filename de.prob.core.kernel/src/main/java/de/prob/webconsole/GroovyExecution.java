@@ -137,7 +137,7 @@ public class GroovyExecution {
 
 		// add each element of the stack trace
 		for (StackTraceElement element : t.getStackTrace()) {
-			buffer.add(element.toString());
+			buffer.append(element.toString());
 			buffer.newline();
 		}
 	}

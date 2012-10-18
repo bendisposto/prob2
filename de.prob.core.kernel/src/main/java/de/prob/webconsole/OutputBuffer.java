@@ -47,7 +47,7 @@ public class OutputBuffer {
 
 	private Queue<Entry> buffer = new ConcurrentLinkedQueue<Entry>();
 
-	public void add(String s) {
+	public void append(String s) {
 		buffer.add(new Entry(++maxLine, false, s));
 		if (gcNecessary())
 			gc();
@@ -86,7 +86,7 @@ public class OutputBuffer {
 	}
 
 	public void newline() {
-		add("\n");
+		append("\n");
 	}
 
 }
