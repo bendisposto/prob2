@@ -1,3 +1,4 @@
+var outputline = 0;
 
 function setLogLevel(level) {
  $("#loglevel")[0].innerHTML = level;
@@ -8,17 +9,23 @@ function scrollDown(){
 }
 
 function initialize() {
-	// setup output polling
+// setup output polling
 	setInterval(function() {
-		$.ajax({
-			url : "outputs",
-			success : function(data) {
-				if (data != "") {
-					$("#system_out").get(0).innerHTML += data;
-					scrollDown();
+	
+	$.getJSON("outputs", {
+		since : outputline
+	}, function(data) {
+		 if (data != "") {
+			 for (var prop in data) {
+  				if (data.hasOwnProperty(prop)) { 
+				   $("#system_out").get(0).innerHTML += data[prop].content.replace("\n","<br />");
+				   outputline = data[prop].nr
+                }
+             }
 				}
-			},
-			dataType : "json"
-		});
-	}, 100);
+	})
+	
+
+	}, 300);
+	
 }

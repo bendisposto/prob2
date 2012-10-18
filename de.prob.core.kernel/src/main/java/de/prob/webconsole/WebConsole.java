@@ -3,8 +3,6 @@ package de.prob.webconsole;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.BindException;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.ProtectionDomain;

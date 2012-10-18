@@ -9,3 +9,7 @@ String.metaClass {
                 if(c == EventB) return new EventB(delegate)
                 throw new ClassCastException("Type not recognized")}
 }
+
+/* Redirect print and println to our own buffered console*/
+Script.getMetaClass().print = { s -> __console.add(s) }
+Script.getMetaClass().println = { s -> __console.add(s+"\n") }
