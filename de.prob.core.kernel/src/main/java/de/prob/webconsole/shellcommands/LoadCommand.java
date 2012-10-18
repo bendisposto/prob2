@@ -27,7 +27,7 @@ public class LoadCommand extends AbstractShellCommand {
 			throws IOException {
 
 		if (m.size() != 2) {
-			String msg = "Load commend takes exactly one parameter, a filename.";
+			String msg = "Load command takes exactly one parameter, a filename.";
 			LOGGER.error(msg);
 			return "error: " + msg;
 		}
