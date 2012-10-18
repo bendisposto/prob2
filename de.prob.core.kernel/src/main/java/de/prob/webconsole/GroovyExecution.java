@@ -2,9 +2,7 @@ package de.prob.webconsole;
 
 import groovy.lang.Binding;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +60,6 @@ public class GroovyExecution {
 			"import de.prob.model.eventb.*;",
 			"import de.prob.animator.domainobjects.*;" };
 	private final ShellCommands shellCommands;
-	private Interpreter try_interpreter;
 
 	@Inject
 	public GroovyExecution(final Api api, final ShellCommands shellCommands,
@@ -87,9 +84,6 @@ public class GroovyExecution {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		this.try_interpreter = new Interpreter(
-				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
 		eval(script);
 	}
@@ -137,40 +131,15 @@ public class GroovyExecution {
 		return continued;
 	}
 
-	/**
-	 * Split the line into different commands and find out, if there was a valid
-	 * import statement.
-	 * 
-	 * @param input
-	 */
-	private void collectImports(final String input) {
-		final String[] split = input.split(";|\n");
-		for (final String string : split) {
-			if (string.trim().startsWith("import ")) {
-				try {
-					try_interpreter.evaluate(Collections.singletonList(string));
-					imports.add(string + ";"); // if try_interpreter does not
-												// throw an exception, it was a
-												// valid import statement
-				} catch (final Exception e) {
-					this.try_interpreter = new Interpreter(this.getClass()
-							.getClassLoader(), new Binding());
-				}
-			}
-		}
-	}
-
-	private String getStackTrace(Throwable t) {
-		final StringBuilder result = new StringBuilder();
-		result.append(t.toString());
-		result.append('\n');
+	private void printStackTrace(OutputBuffer buffer, Throwable t) {
+		buffer.error(t.toString());
+		buffer.newline();
 
 		// add each element of the stack trace
 		for (StackTraceElement element : t.getStackTrace()) {
-			result.append(element);
-			result.append('\n');
+			buffer.add(element.toString());
+			buffer.newline();
 		}
-		return result.toString();
 	}
 
 	private String eval(final String input) {
@@ -193,7 +162,7 @@ public class GroovyExecution {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
 				imports.remove(input);
-				sideeffects.add(getStackTrace(e));
+				printStackTrace(sideeffects, e);
 			} finally {
 				inputs.clear();
 			}

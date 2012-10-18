@@ -6,6 +6,10 @@
 #drop {
 }
 
+.groovy_error {
+   color: red;
+}
+
 #loglevel_container {
  position: fixed;
  z-index: 200;
