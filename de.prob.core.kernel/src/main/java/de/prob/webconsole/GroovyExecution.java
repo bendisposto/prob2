@@ -75,28 +75,41 @@ public class GroovyExecution {
 
 		imports.addAll(Arrays.asList(IMPORTS));
 
-		String script = "";
 		URL url = Resources.getResource("initscript");
 
+		String script = "";
 		try {
-			String string = Resources.toString(url, Charsets.UTF_8);
-			script = string.replaceAll("\\n", " ; ");
+			script = Resources.toString(url, Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		this.parser = new Parser();
-		eval(script);
+		runScript(script);
 	}
 
 	public String evaluate(final String input) throws IOException {
 		assert input != null;
 		final List<String> m = shellCommands.getMagic(input);
 		if (m.isEmpty()) {
-			// collectImports(input);
 			return eval(input);
 		} else {
 			return shellCommands.perform(m, this);
 		}
+	}
+
+	public String runScript(String content) {
+		final ArrayList<String> eval = new ArrayList<String>();
+		eval.addAll(imports);
+		eval.add(content);
+		Object evaluate = null;
+		try {
+			evaluate = interpreter.evaluate(eval);
+		} catch (final Throwable e) {
+			printStackTrace(sideeffects, e);
+		} finally {
+			inputs.clear();
+		}
+		return evaluate == null ? "null" : evaluate.toString();
 	}
 
 	public Object tryevaluate(final String input) throws IOException {
