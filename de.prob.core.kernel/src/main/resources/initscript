@@ -4,12 +4,15 @@
        "..." as EventB converts "..." to an EventB evaluation element
 */
 
-String.metaClass {
-    asType {Class c -> 
-    			if(c == ClassicalB) return new ClassicalB(delegate)
-                if(c == EventB) return new EventB(delegate)
-                throw new ClassCastException("Type not recognized")}
+def oldAsType = String.metaClass.getMetaMethod("asType", [Class] as Class[])
+
+String.metaClass.asType = { Class type -> if (type == ClassicalB) return new ClassicalB(delegate) 
+       if (type == EventB) return new EventB(delegate) 
+        oldAsType.invoke(delegate, [type] as Class[])
 }
+
+
+
 
 /* Redirect print and println to our own buffered console*/
 Script.getMetaClass().print = { s -> __console.append(s) }

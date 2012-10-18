@@ -147,12 +147,8 @@ public class CompletionServlet extends HttpServlet {
 	}
 	
 	List findMatchingVariables(String prefix) {
-		def matches = []
-		def vars = executor.getBindings().getVariables().keySet();
-		for (String varName in vars)
-			if (varName.startsWith(prefix))
-				matches << varName
-		return matches
+		def vars = executor.getBindings().getVariables().keySet() as List;
+		vars.findAll {String s -> s.startsWith(prefix) && !s.startsWith("__") && !s.startsWith('this$') }
 	}
 
 	List getPublicFieldsAndMethods(Object instance) {
