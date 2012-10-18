@@ -23,6 +23,7 @@ import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.model.representation.Label;
 
 public class DomBuilder extends DepthFirstAdapter {
@@ -79,8 +80,8 @@ public class DomBuilder extends DepthFirstAdapter {
 	@Override
 	public void outADeferredSetSet(final ADeferredSetSet node) {
 		try {
-			machine.sets.addChild(new ClassicalBEntity(
-					extractIdentifierName(node.getIdentifier())));
+			machine.sets.addChild(new ClassicalB(extractIdentifierName(node
+					.getIdentifier())));
 		} catch (final BException e) {
 			// Will not be reached because the set is syntactically correct
 			e.printStackTrace();
@@ -90,8 +91,8 @@ public class DomBuilder extends DepthFirstAdapter {
 	@Override
 	public void outAEnumeratedSetSet(final AEnumeratedSetSet node) {
 		try {
-			machine.sets.addChild(new ClassicalBEntity(
-					extractIdentifierName(node.getIdentifier())));
+			machine.sets.addChild(new ClassicalB(extractIdentifierName(node
+					.getIdentifier())));
 		} catch (final BException e) {
 			// Should not reach this point because the set is syntactically
 			// correct
@@ -142,7 +143,7 @@ public class DomBuilder extends DepthFirstAdapter {
 		node.apply(s);
 		for (final PPredicate predicate : s.getPredicates()) {
 			try {
-				section.addChild(new ClassicalBEntity(prettyprint(predicate)));
+				section.addChild(new ClassicalB(prettyprint(predicate)));
 			} catch (final BException e) {
 				// It should not reach this point because the predicate is valid
 				// Classical B code
@@ -158,7 +159,7 @@ public class DomBuilder extends DepthFirstAdapter {
 				final AIdentifierExpression id = (AIdentifierExpression) pExpression;
 				final String name = extractIdentifierName(id.getIdentifier());
 				try {
-					section.addChild(new ClassicalBEntity(name));
+					section.addChild(new ClassicalB(name));
 				} catch (final BException e) {
 					// It should not reach this point because parsing the name
 					// will not create any exceptions

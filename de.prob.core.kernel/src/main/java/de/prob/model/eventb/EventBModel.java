@@ -13,8 +13,8 @@ import org.jgrapht.graph.DirectedMultigraph;
 
 import com.google.inject.Inject;
 
-import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.Label;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.statespace.StateSpace;
@@ -26,8 +26,7 @@ public class EventBModel extends AbstractModel {
 	@Inject
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
-		statespace.setModel(this);
-		this.components = new HashMap<String, AbstractElement>();
+		this.components = new HashMap<String, Label>();
 	}
 
 	public void initialize(final Project p, final String mainComponent) {
@@ -49,7 +48,13 @@ public class EventBModel extends AbstractModel {
 			final String name = element.doGetName();
 			graph.addVertex(name);
 			if (!components.containsKey(name)) {
-				components.put(name, new EventBComponent(element));
+				if (element instanceof Context) {
+					final Context c = (Context) element;
+					components.put(name, new EBContext(c));
+				} else if (element instanceof Machine) {
+					final Machine m = (Machine) element;
+					components.put(name, new EBMachine(m));
+				}
 			}
 
 			if (element instanceof Context) {
@@ -59,8 +64,8 @@ public class EventBModel extends AbstractModel {
 					final String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EventBComponent(
-								allComponents.get(ctxName)));
+						components.put(ctxName, new EBContext(
+								(Context) allComponents.get(ctxName)));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.EXTENDS));
 				}
@@ -72,8 +77,8 @@ public class EventBModel extends AbstractModel {
 					final String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EventBComponent(
-								allComponents.get(ctxName)));
+						components.put(ctxName, new EBContext(
+								(Context) allComponents.get(ctxName)));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.SEES));
 				}
@@ -82,29 +87,22 @@ public class EventBModel extends AbstractModel {
 					final String mName = machine.doGetName();
 					if (!components.containsKey(mName)) {
 						graph.addVertex(mName);
-						components.put(mName,
-								new EventBComponent(allComponents.get(mName)));
+						components.put(mName, new EBMachine(
+								(Machine) allComponents.get(mName)));
 					}
 					graph.addEdge(name, mName, new RefType(ERefType.REFINES));
 				}
 			}
 		}
+		statespace.setModel(this);
 	}
 
-	public EventBComponent getComponent(final String componentName) {
-		return components.containsKey(componentName) ? (EventBComponent) components
+	public EventBElement getComponent(final String componentName) {
+		return components.containsKey(componentName) ? (EventBElement) components
 				.get(componentName) : null;
 	}
 
 	public String getMainComponentName() {
 		return mainComponent;
 	}
-
-	// @Override
-	// public List<AbstractDomTreeElement> getSubcomponents() {
-	// Collection<AbstractElement> values = components.values();
-	// return getSubcomponents(values);
-	// }
-	//
-
 }

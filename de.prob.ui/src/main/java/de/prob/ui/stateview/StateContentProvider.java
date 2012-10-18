@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.Viewer;
 
 import de.prob.model.classicalb.ClassicalBEntity;
 import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.eventb.EventBComponent;
+import de.prob.model.eventb.EventBElement;
 import de.prob.statespace.History;
 import de.prob.statespace.HistoryElement;
 import de.prob.statespace.StateId;
@@ -48,9 +48,9 @@ class StateContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(final Object parentElement) {
 		final List<Object> children = new ArrayList<Object>();
 
-		if (parentElement instanceof EventBComponent) {
+		if (parentElement instanceof EventBElement) {
 
-			final EventBComponent element = (EventBComponent) parentElement;
+			final EventBElement element = (EventBElement) parentElement;
 			if (element.isContext()) {
 				final List<String> constants = element.getConstantNames();
 				for (final String name : constants) {
@@ -104,7 +104,7 @@ class StateContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(final Object element) {
-		if (element instanceof EventBComponent
+		if (element instanceof EventBElement
 				|| element instanceof ClassicalBMachine) {
 			return true;
 		}

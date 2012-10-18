@@ -6,15 +6,24 @@
 
 package de.prob.animator.domainobjects;
 
-import static de.prob.animator.domainobjects.EvalElementType.*;
+import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
+import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.Start;
+import de.prob.model.representation.FormulaUUID;
+import de.prob.model.representation.IEntity;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class ClassicalB implements IEvalElement {
+public class ClassicalB implements IEvalElement, IEntity {
+
+	public FormulaUUID uuid = new FormulaUUID();
 
 	private final String code;
 	private final Start ast;
@@ -48,6 +57,16 @@ public class ClassicalB implements IEvalElement {
 	public void printProlog(final IPrologTermOutput pout) {
 		final ASTProlog prolog = new ASTProlog(pout, null);
 		getAst().apply(prolog);
+	}
+
+	@Override
+	public List<IEntity> getChildren() {
+		return new ArrayList<IEntity>();
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return false;
 	}
 
 }

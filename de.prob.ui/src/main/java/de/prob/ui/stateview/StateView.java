@@ -16,7 +16,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.google.inject.Injector;
 
 import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.eventb.EventBComponent;
+import de.prob.model.eventb.EventBElement;
 import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
@@ -155,8 +155,8 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 			AbstractModel amodel = (AbstractModel) model;
 			for (final AbstractElement component : amodel.getComponents()
 					.values()) {
-				if (component instanceof EventBComponent) {
-					final EventBComponent ebComponent = (EventBComponent) component;
+				if (component instanceof EventBElement) {
+					final EventBElement ebComponent = (EventBElement) component;
 					if (ebComponent.isContext()
 							&& !ebComponent.getConstantNames().isEmpty()) {
 						sections.add(ebComponent);

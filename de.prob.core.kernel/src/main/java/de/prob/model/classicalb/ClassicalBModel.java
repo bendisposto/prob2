@@ -24,7 +24,6 @@ public class ClassicalBModel extends AbstractModel {
 	@Inject
 	public ClassicalBModel(final StateSpace statespace) {
 		this.statespace = statespace;
-		statespace.setModel(this);
 		this.components = new HashMap<String, Label>();
 	}
 
@@ -58,15 +57,9 @@ public class ClassicalBModel extends AbstractModel {
 		} while (!fpReached);
 		this.graph = graph;
 
-		// initializeLabels();
+		statespace.setModel(this);
 		return graph;
 	}
-
-	// private void initializeLabels() {
-	// for (final String machine : graph.vertexSet()) {
-	// ((ClassicalBMachine) components.get(machine)).createLabels();
-	// }
-	// }
 
 	public ClassicalBMachine getMainMachine() {
 		return mainMachine;

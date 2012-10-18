@@ -31,8 +31,8 @@ import com.google.common.base.Joiner;
 import com.google.inject.Injector;
 
 import de.prob.animator.domainobjects.OpInfo;
-import de.prob.model.eventb.Event;
-import de.prob.model.eventb.EventBComponent;
+import de.prob.model.eventb.EBEvent;
+import de.prob.model.eventb.EventBElement;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractDomTreeElement;
 import de.prob.model.representation.AbstractModel;
@@ -257,9 +257,9 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		final Map<String, Object> names = new HashMap<String, Object>();
 		if (model instanceof EventBModel) {
 			final EventBModel ebmodel = (EventBModel) model;
-			final EventBComponent component = ebmodel.getComponent(ebmodel
+			final EventBElement component = ebmodel.getComponent(ebmodel
 					.getMainComponentName());
-			final Map<String, Event> events = component.getEvents();
+			final Map<String, EBEvent> events = component.getEvents();
 			for (final String key : events.keySet()) {
 				names.put(key, events.get(key));
 			}

@@ -25,7 +25,9 @@ import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.eventb.EBMachine;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.IEntity;
@@ -62,14 +64,14 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final HashSet<StateId> explored = new HashSet<StateId>();
 	private final StateSpaceInfo info;
 
-	private final HashMap<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
+	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
 	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private IEntity model;
-	private final Map<StateId, Map<IEntity, String>> values = new HashMap<StateId, Map<IEntity, String>>();
+	private final Map<StateId, Map<IEvalElement, String>> values = new HashMap<StateId, Map<IEvalElement, String>>();
 
 	public final StateId __root;
 
@@ -217,29 +219,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @param formula
 	 * @throws BException
 	 */
-	public String addUserFormula(final String formula) throws BException {
-		final ClassicalB evalElement = new ClassicalB(formula);
-		int i = 0;
-		do {
-			i++;
-		} while (formulas.keySet().contains("f" + i));
-		formulas.put("f" + i, evalElement);
-		return "f" + i;
-	}
-
-	/**
-	 * Adds an expression or predicate to the list of user formulas. This
-	 * expression or predicate is evaluated and the result is added to the map
-	 * of variables in the info object.
-	 * 
-	 * @param formula
-	 * @throws BException
-	 */
-	public String addUserFormula(final String name, final String formula)
-			throws BException {
-		final ClassicalB evalElement = new ClassicalB(formula);
-		formulas.put(name, evalElement);
-		return name;
+	public void addUserFormula(final IEvalElement formula) {
+		formulaRegistry.put(formula, new HashSet<Object>());
+		subscribe(this, formula);
 	}
 
 	public List<EvaluationResult> eval(final StateId stateId,
@@ -278,10 +260,33 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public void evaluateFormulas(final StateId state) {
-		final Set<Entry<String, IEvalElement>> entrySet = formulas.entrySet();
-		for (final Entry<String, IEvalElement> entry : entrySet) {
-			state.getProperty(entry.getKey());
+		if (state.getId().equals("root")) {
+			return;
 		}
+		final Set<IEvalElement> formulas = formulaRegistry.keySet();
+		final List<IEvalElement> toEvaluate = new ArrayList<IEvalElement>();
+		final HashMap<IEvalElement, String> valueMap = new HashMap<IEvalElement, String>();
+
+		for (final IEvalElement iEvalElement : formulas) {
+			if (!formulaRegistry.get(iEvalElement).isEmpty()) {
+				toEvaluate.add(iEvalElement);
+			}
+		}
+		List<EvaluationResult> results = null;
+		try {
+			results = eval(state, toEvaluate);
+		} catch (final BException e) {
+			System.out.println("Evaluation of formulas failed!");
+			e.printStackTrace();
+		}
+
+		assert results.size() == toEvaluate.size();
+		if (results != null) {
+			for (int i = 0; i < results.size(); i++) {
+				valueMap.put(toEvaluate.get(i), results.get(i).value);
+			}
+		}
+		values.put(state, valueMap);
 	}
 
 	public List<EvaluationResult> eval(final String state, final String... code)
@@ -400,10 +405,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return sb.toString();
 	}
 
-	public HashMap<String, IEvalElement> getForms() {
-		return formulas;
-	}
-
 	public History getTrace(final int state) {
 		final StateId id = states.get(String.valueOf(state));
 		final List<OpInfo> path = new DijkstraShortestPath<StateId, OpInfo>(
@@ -429,53 +430,65 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	public void setModel(final IEntity model) {
 		this.model = model;
+		registerFormulas(model.getChildren());
+		if (model instanceof ClassicalBModel) {
+			final List<IEntity> machines = model.getChildren();
+			for (final IEntity iEntity : machines) {
+				if (iEntity instanceof ClassicalBMachine) {
+					final ClassicalBMachine machine = (ClassicalBMachine) iEntity;
+					subscribeChildren(this, machine.variables);
+					subscribeChildren(this, machine.invariants);
+				}
+			}
+		}
+		if (model instanceof EventBModel) {
+			final List<IEntity> components = model.getChildren();
+			for (final IEntity iEntity : components) {
+				if (iEntity instanceof EBMachine) {
+					final EBMachine machine = (EBMachine) iEntity;
+					subscribeChildren(this, machine.variables);
+					subscribeChildren(this, machine.invariants);
+				}
+			}
+		}
 	}
 
-	// public List<AbstractDomTreeElement> getFormulas(
-	// final AbstractDomTreeElement formula) {
-	// final List<AbstractDomTreeElement> toEvaluate = new
-	// ArrayList<AbstractDomTreeElement>();
-	// final List<AbstractDomTreeElement> subcomponents = formula
-	// .getSubcomponents();
-	// for (final AbstractDomTreeElement iFormula : subcomponents) {
-	// if (iFormula.toEvaluate()) {
-	// toEvaluate.add(iFormula);
-	// }
-	// toEvaluate.addAll(getFormulas(iFormula));
-	// }
-	// return toEvaluate;
-	// }
-	//
-	// public void evaluateIFormulas(final StateId stateId) {
-	// final List<AbstractDomTreeElement> formulaList = getFormulas(model);
-	// final Map<AbstractDomTreeElement, String> valueMap = new
-	// HashMap<AbstractDomTreeElement, String>();
-	// final List<IEvalElement> evalElements = new ArrayList<IEvalElement>();
-	// for (final AbstractDomTreeElement iFormula : formulaList) {
-	// try {
-	// evalElements.add(new ClassicalB(iFormula.getLabel()));
-	// } catch (final BException e) {
-	// System.out.println(iFormula.getLabel() + " " + iFormula.uuid);
-	// }
-	// }
-	// List<EvaluationResult> result = null;
-	// try {
-	// result = eval(stateId, evalElements);
-	// } catch (final BException e) {
-	// System.out.println("failed!!!");
-	// }
-	//
-	// assert result.size() == formulaList.size();
-	// if (result != null) {
-	// for (int i = 0; i < result.size(); i++) {
-	// valueMap.put(formulaList.get(i), result.get(i).value);
-	// }
-	// }
-	// values.put(stateId, valueMap);
-	// }
+	public void registerFormulas(final List<IEntity> entities) {
+		for (final IEntity iEntity : entities) {
+			if (iEntity instanceof IEvalElement) {
+				final IEvalElement evalElement = (IEvalElement) iEntity;
+				formulaRegistry.put(evalElement, new HashSet<Object>());
+			}
+			registerFormulas(iEntity.getChildren());
+		}
+	}
 
 	public IEntity getModel() {
 		return model;
+	}
+
+	public void subscribeChildren(final Object subscriber, final IEntity entity) {
+		for (final IEntity iEntity : entity.getChildren()) {
+			if (iEntity instanceof IEvalElement) {
+				subscribe(subscriber, (IEvalElement) iEntity);
+			}
+		}
+	}
+
+	public void subscribe(final Object subscriber,
+			final IEvalElement formulaOfInterest) {
+		if (formulaRegistry.containsKey(formulaOfInterest)) {
+			formulaRegistry.get(formulaOfInterest).add(subscriber);
+		}
+	}
+
+	public void unsubscribe(final Object subscriber,
+			final IEvalElement formulaOfInterest) {
+		if (formulaRegistry.containsKey(formulaOfInterest)) {
+			final Set<Object> subscribers = formulaRegistry
+					.get(formulaOfInterest);
+			subscribers.remove(subscriber);
+		}
 	}
 
 	public Object asType(final Class<?> className) {

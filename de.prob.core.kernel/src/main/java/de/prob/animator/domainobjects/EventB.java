@@ -20,18 +20,22 @@ import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.formula.eventb.ExpressionVisitor;
 import de.prob.formula.eventb.PredicateVisitor;
+import de.prob.model.representation.FormulaUUID;
+import de.prob.model.representation.IEntity;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.unicode.UnicodeTranslator;
 
-public class EventB implements IEvalElement {
+public class EventB implements IEvalElement, IEntity {
+
+	public FormulaUUID uuid = new FormulaUUID();
 
 	private final String code;
 	private String kind;
 	private final Node ast;
 
-	public EventB(String code) {
+	public EventB(final String code) {
 		this.code = code;
-		String unicode = UnicodeTranslator.toUnicode(code);
+		final String unicode = UnicodeTranslator.toUnicode(code);
 		kind = PREDICATE.toString();
 		IParseResult parseResult = FormulaFactory.getDefault().parsePredicate(
 				unicode, LanguageVersion.LATEST, null);
@@ -51,29 +55,30 @@ public class EventB implements IEvalElement {
 
 	}
 
-	private Node prepareExpressionAst(IParseResult parseResult) {
-		Expression expr = parseResult.getParsedExpression();
-		ExpressionVisitor visitor = new ExpressionVisitor(
+	private Node prepareExpressionAst(final IParseResult parseResult) {
+		final Expression expr = parseResult.getParsedExpression();
+		final ExpressionVisitor visitor = new ExpressionVisitor(
 				new LinkedList<String>());
 		expr.accept(visitor);
-		Node expression = visitor.getExpression();
+		final Node expression = visitor.getExpression();
 		return expression;
 	}
 
-	private Node preparePredicateAst(IParseResult parseResult) {
-		Predicate parsedPredicate = parseResult.getParsedPredicate();
-		PredicateVisitor visitor = new PredicateVisitor();
+	private Node preparePredicateAst(final IParseResult parseResult) {
+		final Predicate parsedPredicate = parseResult.getParsedPredicate();
+		final PredicateVisitor visitor = new PredicateVisitor();
 		parsedPredicate.accept(visitor);
 		return visitor.getPredicate();
 	}
 
-	private void throwException(String code, IParseResult parseResult) {
-		List<ASTProblem> problems = parseResult.getProblems();
-		ArrayList<String> msgs = new ArrayList<String>();
-		for (ASTProblem astProblem : problems) {
+	private void throwException(final String code,
+			final IParseResult parseResult) {
+		final List<ASTProblem> problems = parseResult.getProblems();
+		final ArrayList<String> msgs = new ArrayList<String>();
+		for (final ASTProblem astProblem : problems) {
 			msgs.add(astProblem.getMessage().toString());
 		}
-		String error = Joiner.on(", \n").join(msgs);
+		final String error = Joiner.on(", \n").join(msgs);
 		throw new RuntimeException("Cannot parse " + code + ":\n " + error); // FIXME
 	}
 
@@ -83,7 +88,7 @@ public class EventB implements IEvalElement {
 	}
 
 	@Override
-	public void printProlog(IPrologTermOutput pout) {
+	public void printProlog(final IPrologTermOutput pout) {
 		final ASTProlog prolog = new ASTProlog(pout, null);
 		ast.apply(prolog);
 	}
@@ -91,6 +96,16 @@ public class EventB implements IEvalElement {
 	@Override
 	public String getKind() {
 		return kind;
+	}
+
+	@Override
+	public List<IEntity> getChildren() {
+		return new ArrayList<IEntity>();
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return false;
 	}
 
 }
