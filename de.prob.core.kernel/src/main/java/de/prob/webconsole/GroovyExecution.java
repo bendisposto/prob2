@@ -4,7 +4,7 @@ import groovy.lang.Binding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +43,7 @@ public class GroovyExecution {
 
 	private final Parser parser;
 
-	private ByteArrayOutputStream sideeffects;
+	private OutputBuffer sideeffects;
 
 	private boolean continued;
 
@@ -66,11 +66,13 @@ public class GroovyExecution {
 
 	@Inject
 	public GroovyExecution(final Api api, final ShellCommands shellCommands,
-			final AnimationSelector selector) {
+			final AnimationSelector selector, OutputBuffer sideeffects) {
 		this.shellCommands = shellCommands;
+		this.sideeffects = sideeffects;
 		final Binding binding = new Binding();
 		binding.setVariable("api", api);
 		binding.setVariable("animations", selector);
+		binding.setVariable("__console", sideeffects);
 		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
 				binding);
 
@@ -89,8 +91,6 @@ public class GroovyExecution {
 		this.try_interpreter = new Interpreter(
 				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
-		sideeffects = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(sideeffects));
 		eval(script);
 	}
 
@@ -137,10 +137,6 @@ public class GroovyExecution {
 		return continued;
 	}
 
-	public ByteArrayOutputStream getSideeffects() {
-		return sideeffects;
-	}
-
 	/**
 	 * Split the line into different commands and find out, if there was a valid
 	 * import statement.
@@ -164,6 +160,19 @@ public class GroovyExecution {
 		}
 	}
 
+	private String getStackTrace(Throwable t) {
+		final StringBuilder result = new StringBuilder();
+		result.append(t.toString());
+		result.append('\n');
+
+		// add each element of the stack trace
+		for (StackTraceElement element : t.getStackTrace()) {
+			result.append(element);
+			result.append('\n');
+		}
+		return result.toString();
+	}
+
 	private String eval(final String input) {
 		Object evaluate = null;
 		ParseCode parseCode;
@@ -184,29 +193,12 @@ public class GroovyExecution {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
 				imports.remove(input);
-				String message = e.getMessage();
-				if (message == null && e.getCause() != null) {
-					message = e.getCause().getMessage();
-					if (message != null) {
-						try {
-							sideeffects.write(message.getBytes());
-						} catch (IOException e1) {
-							// sideeffects is not real I/O
-						}
-					} else {
-						e.printStackTrace(System.out);
-					}
-				}
+				sideeffects.add(getStackTrace(e));
 			} finally {
 				inputs.clear();
 			}
 			return evaluate == null ? "null" : evaluate.toString();
 		}
-	}
-
-	public void renewSideeffects() {
-		sideeffects = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(sideeffects));
 	}
 
 	public void addImport(final String imp) {

@@ -29,7 +29,7 @@
 
 
 </head>
-<body>
+<body onload="initialize();">
 
 	<!-- Primary Page Layout
       ================================================== -->
