@@ -14,18 +14,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 import de.prob.webconsole.GroovyExecution;
+import de.prob.webconsole.IGroovyExecutionListener;
 import de.prob.webconsole.ServletContextListener;
 
-public class GroovyBindingView extends ViewPart {
-
-	public GroovyBindingView() {
-		executor = ServletContextListener.INJECTOR
-				.getInstance(GroovyExecution.class);
-	}
+public class GroovyBindingView extends ViewPart implements
+		IGroovyExecutionListener {
 
 	private TableViewer viewer;
-	// We use icons
-	private GroovyExecution executor;
 
 	public void createPartControl(Composite parent) {
 		GridLayout layout = new GridLayout(2, false);
@@ -46,11 +41,11 @@ public class GroovyBindingView extends ViewPart {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		viewer.setContentProvider(new BindingContentProvider(executor));
+		viewer.setContentProvider(new BindingContentProvider());
 		// Get the content for the viewer, setInput will call getElements in the
 		// contentProvider
 
-		viewer.setInput("");
+
 		// Make the selection available to other views
 		getSite().setSelectionProvider(viewer);
 		// Set the sorter for the table
@@ -63,6 +58,10 @@ public class GroovyBindingView extends ViewPart {
 		gridData.grabExcessVerticalSpace = true;
 		gridData.horizontalAlignment = GridData.FILL;
 		viewer.getControl().setLayoutData(gridData);
+		GroovyExecution instance = ServletContextListener.INJECTOR
+				.getInstance(GroovyExecution.class);
+		instance.registerListener(this);
+		instance.notifyListerners();
 	}
 
 	public TableViewer getViewer() {
@@ -83,22 +82,22 @@ public class GroovyBindingView extends ViewPart {
 			}
 		});
 
-		 col = createTableViewerColumn(titles[1], bounds[1], 1);
-		 col.setLabelProvider(new ColumnLabelProvider() {
-		 @Override
-		 public String getText(Object element) {
-			 BindingTableEntry e = (BindingTableEntry) element;
-		 return e.type;
-		 }
-		 });
-		 col = createTableViewerColumn(titles[2], bounds[2], 2);
-		 col.setLabelProvider(new ColumnLabelProvider() {
-			 @Override
-			 public String getText(Object element) {
-				 BindingTableEntry e = (BindingTableEntry) element;
-				 return e.value;
-			 }
-		 });
+		col = createTableViewerColumn(titles[1], bounds[1], 1);
+		col.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				BindingTableEntry e = (BindingTableEntry) element;
+				return e.type;
+			}
+		});
+		col = createTableViewerColumn(titles[2], bounds[2], 2);
+		col.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				BindingTableEntry e = (BindingTableEntry) element;
+				return e.value;
+			}
+		});
 
 	}
 
@@ -120,6 +119,16 @@ public class GroovyBindingView extends ViewPart {
 
 	public void setFocus() {
 		viewer.getControl().setFocus();
+	}
+
+	@Override
+	public void notifyListner(final GroovyExecution groovyExecution) {
+		this.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				viewer.setInput(groovyExecution);
+			}
+		});
 	}
 
 }

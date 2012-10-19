@@ -47,6 +47,8 @@ public class GroovyExecution {
 
 	private int genCounter = 0;
 
+	private List<IGroovyExecutionListener> listeners = new ArrayList<IGroovyExecutionListener>();
+
 	public int nextCounter() {
 		return genCounter++;
 	}
@@ -87,29 +89,47 @@ public class GroovyExecution {
 		runScript(script);
 	}
 
+	public void registerListener(IGroovyExecutionListener listener) {
+		listeners.add(listener);
+	}
+
+	public void notifyListerners() {
+		for (IGroovyExecutionListener l : listeners) {
+			l.notifyListner(this);
+		}
+	}
+
 	public String evaluate(final String input) throws IOException {
-		assert input != null;
-		final List<String> m = shellCommands.getMagic(input);
-		if (m.isEmpty()) {
-			return eval(input);
-		} else {
-			return shellCommands.perform(m, this);
+		try {
+			assert input != null;
+			final List<String> m = shellCommands.getMagic(input);
+			if (m.isEmpty()) {
+				return eval(input);
+			} else {
+				return shellCommands.perform(m, this);
+			}
+		} finally {
+			notifyListerners();
 		}
 	}
 
 	public String runScript(String content) {
-		final ArrayList<String> eval = new ArrayList<String>();
-		eval.addAll(imports);
-		eval.add(content);
-		Object evaluate = null;
 		try {
-			evaluate = interpreter.evaluate(eval);
-		} catch (final Throwable e) {
-			printStackTrace(sideeffects, e);
+			final ArrayList<String> eval = new ArrayList<String>();
+			eval.addAll(imports);
+			eval.add(content);
+			Object evaluate = null;
+			try {
+				evaluate = interpreter.evaluate(eval);
+			} catch (final Throwable e) {
+				printStackTrace(sideeffects, e);
+			} finally {
+				inputs.clear();
+			}
+			return evaluate == null ? "null" : evaluate.toString();
 		} finally {
-			inputs.clear();
+			notifyListerners();
 		}
-		return evaluate == null ? "null" : evaluate.toString();
 	}
 
 	public Object tryevaluate(final String input) throws IOException {

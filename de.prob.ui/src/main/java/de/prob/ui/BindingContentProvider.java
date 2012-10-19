@@ -18,8 +18,7 @@ public class BindingContentProvider implements IStructuredContentProvider {
 
 	
 	
-	public BindingContentProvider(GroovyExecution executor) {
-		this.executor = executor;
+	public BindingContentProvider() {
 	}
 
 	@Override
@@ -29,7 +28,7 @@ public class BindingContentProvider implements IStructuredContentProvider {
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-
+		this.executor = (GroovyExecution) newInput;
 	}
 
 	@Override
@@ -41,7 +40,8 @@ public class BindingContentProvider implements IStructuredContentProvider {
 			Entry e = (Entry) object;
 			String key = (String) e.getKey();
 			Object value =  e.getValue();
-			if (!(key.startsWith("__") || key.startsWith("this$"))) res.add(new BindingTableEntry(key, value.getClass().toString(), value.toString()));
+			if (!(key.startsWith("__") || key.startsWith("this$"))) 
+				res.add(new BindingTableEntry(key, value.getClass().getSimpleName(), value.toString()));
 		}
 		return res.toArray(new Object[res.size()]);
 	}
