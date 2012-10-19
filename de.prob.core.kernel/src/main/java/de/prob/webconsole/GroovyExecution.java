@@ -145,14 +145,16 @@ public class GroovyExecution {
 	}
 
 	private void printStackTrace(OutputBuffer buffer, Throwable t) {
-		buffer.error(t.toString());
-		buffer.newline();
+		String msg = t.toString();
 
+		ArrayList<String> trace = new ArrayList<String>();
 		// add each element of the stack trace
 		for (StackTraceElement element : t.getStackTrace()) {
-			buffer.append(element.toString());
-			buffer.newline();
+			trace.add(element.toString());
 		}
+
+		buffer.error(msg, trace);
+
 	}
 
 	private String eval(final String input) {

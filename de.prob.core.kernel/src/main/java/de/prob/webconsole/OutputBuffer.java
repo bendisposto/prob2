@@ -2,6 +2,7 @@ package de.prob.webconsole;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -13,19 +14,24 @@ public class OutputBuffer {
 
 	private static final String SORRY = " lines were droped because they were not retrieved on time. Most likely this is a bug in the display code. Sorry.";
 
+	@SuppressWarnings("unused")
+	// Fields are used by JSon serialisation
 	private static class Entry {
 
 		private final int nr;
-		@SuppressWarnings("unused")
-		private final String content; // is actually used by JSon serialisation
+		private final String content;
+		private final List<String> extra;
+		private final String msgtype;
 
-		@SuppressWarnings("unused")
-		private final String style; // is actually used by JSon serialisation
-
-		public Entry(int nr, boolean error, String content) {
+		public Entry(int nr, String content, String msgtype, List<String> extra) {
 			this.nr = nr;
-			this.style = error ? "groovy_error" : "";
 			this.content = content;
+			this.extra = extra;
+			this.msgtype = msgtype;
+		}
+
+		public Entry(int nr, String content, String msgtype) {
+			this(nr, content, msgtype, null);
 		}
 
 		public int getNr() {
@@ -48,13 +54,19 @@ public class OutputBuffer {
 	private Queue<Entry> buffer = new ConcurrentLinkedQueue<Entry>();
 
 	public void append(String s) {
-		buffer.add(new Entry(++maxLine, false, s));
-		if (gcNecessary())
-			gc();
+		buffer.add(new Entry(++maxLine, s, "output"));
 	}
 
 	public void error(String s) {
-		buffer.add(new Entry(++maxLine, true, s));
+		buffer.add(new Entry(++maxLine, s, "error"));
+	}
+
+	public void error(String s, List<String> trace) {
+		buffer.add(new Entry(++maxLine, s, "trace", trace));
+	}
+
+	public void add(String content, String msgtype) {
+		buffer.add(new Entry(++maxLine, content, msgtype));
 		if (gcNecessary())
 			gc();
 	}
@@ -72,8 +84,10 @@ public class OutputBuffer {
 
 	public String getTextAsJSon(int pos) {
 		ArrayList<Entry> res = new ArrayList<Entry>();
-		if (pos < minLine)
-			res.add(new Entry(pos, true, (minLine - pos) + SORRY));
+		if (pos < minLine) {
+			String content = (minLine - pos) + SORRY;
+			res.add(new Entry(pos, content, "error"));
+		}
 		Iterator<Entry> iterator = buffer.iterator();
 		while (iterator.hasNext()) {
 			Entry e = iterator.next();

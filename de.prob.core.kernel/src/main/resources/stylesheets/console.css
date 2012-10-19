@@ -9,6 +9,9 @@
 .groovy_error {
    color: red;
 }
+.groovy_trace {
+   color: #999999;
+}
 
 #loglevel_container {
  position: fixed;
