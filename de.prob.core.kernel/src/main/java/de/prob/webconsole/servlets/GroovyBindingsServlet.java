@@ -58,7 +58,7 @@ public class GroovyBindingsServlet extends HttpServlet {
 
 		Map<String, Object> filtered = new HashMap<String, Object>();
 		for (Entry<String, Object> v : vars) {
-			if (!v.getKey().startsWith("this") && !v.getKey().startsWith("__"))
+			if (!v.getKey().startsWith("this$") && !v.getKey().startsWith("__"))
 				filtered.put(v.getKey(), v.getValue());
 		}
 

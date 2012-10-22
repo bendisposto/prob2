@@ -285,6 +285,12 @@
             name="Groovy Console"
             restorable="true">
       </view>
+      <view
+            class="de.prob.ui.GroovyBindingView"
+            id="de.prob.ui.groovybinding"
+            name="Global Variables"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

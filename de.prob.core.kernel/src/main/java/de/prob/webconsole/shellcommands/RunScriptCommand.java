@@ -1,33 +1,33 @@
 package de.prob.webconsole.shellcommands;
 
-import groovy.lang.Binding;
-
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jline.FileNameCompletor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jline.FileNameCompletor;
 
 import com.google.common.base.Joiner;
 
 import de.prob.webconsole.GroovyExecution;
 
-public class LoadCommand extends AbstractShellCommand {
+public class RunScriptCommand extends AbstractShellCommand {
 
 	private final static Logger LOGGER = LoggerFactory
-			.getLogger(LoadCommand.class);
+			.getLogger(RunScriptCommand.class);
 
 	@Override
 	public Object perform(List<String> m, GroovyExecution exec)
 			throws IOException {
 
 		if (m.size() != 2) {
-			String msg = "Load command takes exactly one parameter, a filename.";
+			String msg = "Run command takes exactly one parameter, a filename.";
 			LOGGER.error(msg);
 			return "error: " + msg;
 		}
@@ -50,41 +50,26 @@ public class LoadCommand extends AbstractShellCommand {
 
 		String extension = filename.substring(lastDot, filename.length());
 
-		if (extension.equals(".mch") || extension.equals(".ref")
-				|| extension.equals(".imp")) {
-			String name = freshVar(exec, "model_");
-			exec.evaluate(name + " = api.b_load('" + filename + "')");
-			Object model = exec.getBindings().getVariable(name);
-			if (model != null) {
-				return name + " = " + model;
+		if (extension.equals(".groovy")) {
+			StringBuffer fileData = new StringBuffer(1000);
+			BufferedReader reader = new BufferedReader(new FileReader(f));
+			char[] buf = new char[1024];
+			int numRead = 0;
+			while ((numRead = reader.read(buf)) != -1) {
+				String readData = String.valueOf(buf, 0, numRead);
+				fileData.append(readData);
+				buf = new char[1024];
 			}
-			return model;
+			reader.close();
+			return exec.runScript(fileData.toString());
+
 		}
-		if (extension.equals(".eventb")) {
-			String name = freshVar(exec, "model_");
-			exec.evaluate(name + " = api.eb_load('" + filename + "')");
-			Object model = exec.getBindings().getVariable(name);
-			if (model != null) {
-				return name + " = " + model;
-			}
-			return model;
-		}
-		String msg = "Unknown filetype: " + extension;
+
+		String msg = "Groovy script must have the extension .groovy, not "
+				+ extension;
 		LOGGER.error(msg);
 		return "error: " + msg;
 	}
-
-	private synchronized String freshVar(GroovyExecution exec, String string) {
-		String v;
-		Binding bindings = exec.getBindings();
-		do {
-			v = string + exec.nextCounter();
-		} while (bindings.hasVariable(v));
-		bindings.setVariable(v, null);
-		return v;
-	}
-
-
 
 	@Override
 	public List<String> complete(List<String> args, int pos) {
@@ -108,7 +93,7 @@ public class LoadCommand extends AbstractShellCommand {
 				s.add(prefix + File.separator + commonPrefix);
 		}
 		if (s.size() == 1) {
-			return Collections.singletonList("load " + s.get(0));
+			return Collections.singletonList("run " + s.get(0));
 		}
 
 		return s;

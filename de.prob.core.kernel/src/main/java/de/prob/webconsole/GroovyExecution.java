@@ -2,9 +2,7 @@ package de.prob.webconsole;
 
 import groovy.lang.Binding;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +47,8 @@ public class GroovyExecution {
 
 	private int genCounter = 0;
 
+	private List<IGroovyExecutionListener> listeners = new ArrayList<IGroovyExecutionListener>();
+
 	public int nextCounter() {
 		return genCounter++;
 	}
@@ -62,7 +62,6 @@ public class GroovyExecution {
 			"import de.prob.model.eventb.*;",
 			"import de.prob.animator.domainobjects.*;" };
 	private final ShellCommands shellCommands;
-	private Interpreter try_interpreter;
 
 	@Inject
 	public GroovyExecution(final Api api, final ShellCommands shellCommands,
@@ -78,30 +77,58 @@ public class GroovyExecution {
 
 		imports.addAll(Arrays.asList(IMPORTS));
 
-		String script = "";
 		URL url = Resources.getResource("initscript");
 
+		String script = "";
 		try {
-			String string = Resources.toString(url, Charsets.UTF_8);
-			script = string.replaceAll("\\n", " ; ");
+			script = Resources.toString(url, Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		this.try_interpreter = new Interpreter(
-				this.getClass().getClassLoader(), new Binding());
 		this.parser = new Parser();
-		eval(script);
+		runScript(script);
+	}
+
+	public void registerListener(IGroovyExecutionListener listener) {
+		listeners.add(listener);
+	}
+
+	public void notifyListerners() {
+		for (IGroovyExecutionListener l : listeners) {
+			l.notifyListner(this);
+		}
 	}
 
 	public String evaluate(final String input) throws IOException {
-		assert input != null;
-		final List<String> m = shellCommands.getMagic(input);
-		if (m.isEmpty()) {
-			// collectImports(input);
-			return eval(input);
-		} else {
-			return shellCommands.perform(m, this);
+		try {
+			assert input != null;
+			final List<String> m = shellCommands.getMagic(input);
+			if (m.isEmpty()) {
+				return eval(input);
+			} else {
+				return shellCommands.perform(m, this);
+			}
+		} finally {
+			notifyListerners();
+		}
+	}
+
+	public String runScript(String content) {
+		try {
+			final ArrayList<String> eval = new ArrayList<String>();
+			eval.addAll(imports);
+			eval.add(content);
+			Object evaluate = null;
+			try {
+				evaluate = interpreter.evaluate(eval);
+			} catch (final Throwable e) {
+				printStackTrace(sideeffects, e);
+			} finally {
+				inputs.clear();
+			}
+			return evaluate == null ? "null" : evaluate.toString();
+		} finally {
+			notifyListerners();
 		}
 	}
 
@@ -137,40 +164,17 @@ public class GroovyExecution {
 		return continued;
 	}
 
-	/**
-	 * Split the line into different commands and find out, if there was a valid
-	 * import statement.
-	 * 
-	 * @param input
-	 */
-	private void collectImports(final String input) {
-		final String[] split = input.split(";|\n");
-		for (final String string : split) {
-			if (string.trim().startsWith("import ")) {
-				try {
-					try_interpreter.evaluate(Collections.singletonList(string));
-					imports.add(string + ";"); // if try_interpreter does not
-												// throw an exception, it was a
-												// valid import statement
-				} catch (final Exception e) {
-					this.try_interpreter = new Interpreter(this.getClass()
-							.getClassLoader(), new Binding());
-				}
-			}
-		}
-	}
+	private void printStackTrace(OutputBuffer buffer, Throwable t) {
+		String msg = t.toString();
 
-	private String getStackTrace(Throwable t) {
-		final StringBuilder result = new StringBuilder();
-		result.append(t.toString());
-		result.append('\n');
-
+		ArrayList<String> trace = new ArrayList<String>();
 		// add each element of the stack trace
 		for (StackTraceElement element : t.getStackTrace()) {
-			result.append(element);
-			result.append('\n');
+			trace.add(element.toString());
 		}
-		return result.toString();
+
+		buffer.error(msg, trace);
+
 	}
 
 	private String eval(final String input) {
@@ -193,7 +197,7 @@ public class GroovyExecution {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
 				imports.remove(input);
-				sideeffects.add(getStackTrace(e));
+				printStackTrace(sideeffects, e);
 			} finally {
 				inputs.clear();
 			}
