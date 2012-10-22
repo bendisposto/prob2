@@ -146,7 +146,7 @@
       ================================================== -->
 	<!-- <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script> -->
 	<script src="javascripts/jquery-1.7.2.min.js"></script>
-	<script src="javascripts/jquery.console.prob.js"></script>
+	<script src="javascripts/jquery.console.prob.extern.js"></script>
 
 	<script src="javascripts/jquery.dataTables.min.js"></script>
 	<script src="javascripts/prob.js"></script>

@@ -1,6 +1,8 @@
 package de.prob.ui;
 
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -21,6 +23,8 @@ public class GroovyBindingView extends ViewPart implements
 		IGroovyExecutionListener {
 
 	private TableViewer viewer;
+	TableViewerColumn varname, type, value;
+	
 
 	public void createPartControl(Composite parent) {
 		GridLayout layout = new GridLayout(2, false);
@@ -71,27 +75,27 @@ public class GroovyBindingView extends ViewPart implements
 	// This will create the columns for the table
 	private void createColumns(final Composite parent, final TableViewer viewer) {
 		String[] titles = { "Variable", "Type", "Value" };
-		int[] bounds = { 100, 100, 100, 100 };
-
-		TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0], 0);
-		col.setLabelProvider(new ColumnLabelProvider() {
+		
+int size = 150;
+		varname = createTableViewerColumn(titles[0], size, 0);
+		varname.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				BindingTableEntry e = (BindingTableEntry) element;
 				return e.name;
 			}
 		});
-
-		col = createTableViewerColumn(titles[1], bounds[1], 1);
-		col.setLabelProvider(new ColumnLabelProvider() {
+		
+		type = createTableViewerColumn(titles[1], size, 1);
+		type.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				BindingTableEntry e = (BindingTableEntry) element;
 				return e.type;
 			}
 		});
-		col = createTableViewerColumn(titles[2], bounds[2], 2);
-		col.setLabelProvider(new ColumnLabelProvider() {
+		value = createTableViewerColumn(titles[2], size, 2);
+		value.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				BindingTableEntry e = (BindingTableEntry) element;
@@ -99,6 +103,8 @@ public class GroovyBindingView extends ViewPart implements
 			}
 		});
 
+	
+		
 	}
 
 	private TableViewerColumn createTableViewerColumn(String title, int bound,

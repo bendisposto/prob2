@@ -64,4 +64,9 @@ public class AnimationSelector implements IAnimationListener {
 	public IEntity getModel(final History history) {
 		return history.getModel();
 	}
+
+	@Override
+	public String toString() {
+		return "Animations Registry";
+	}
 }
