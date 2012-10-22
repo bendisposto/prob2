@@ -1,4 +1,5 @@
 import de.prob.statespace.*
+import de.prob.animator.domainobjects.*;
 c = api.b_load(dir+"/machines/scheduler.mch")
 s = c.statespace
 h = new History(s)
