@@ -26,6 +26,6 @@ varsAt6 = s.info.getState(s.states.get("6"))
 assert varsAt6.get("waiting") == "{}"
 assert varsAt6.get("active") == "{PID2}"
 assert varsAt6.get("ready") == "{}"
-s.addUserFormula("1+1=2")
+s.addUserFormula("1+1=2" as ClassicalB)
 h.current.getCurrentState().f1
 assert s.info.getVariable(h.current.getCurrentState(),"f1") == "TRUE"
