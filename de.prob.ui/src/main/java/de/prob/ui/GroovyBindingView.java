@@ -1,11 +1,11 @@
 package de.prob.ui;
 
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -24,16 +24,39 @@ public class GroovyBindingView extends ViewPart implements
 
 	private TableViewer viewer;
 	TableViewerColumn varname, type, value;
-	
+	private GroovyExecution instance;
+
+	private static class SearchChangeListener implements ModifyListener {
+		private GroovyBindingView view;
+
+		public SearchChangeListener(GroovyBindingView view) {
+			this.view = view;
+		}
+
+		@Override
+		public void modifyText(ModifyEvent e) {
+			Object object = e.getSource();
+			if (object instanceof Text) {
+				Text text = (Text) object;
+				view.setFilter(text.getText());
+			}
+		}
+	}
+
+	public void setFilter(String text) {
+		viewer.setContentProvider(new BindingContentProvider(text));
+		instance.notifyListerners();
+	}
 
 	public void createPartControl(Composite parent) {
 		GridLayout layout = new GridLayout(2, false);
 		parent.setLayout(layout);
 		Label searchLabel = new Label(parent, SWT.NONE);
-		searchLabel.setText("Search: ");
+		searchLabel.setText("Filter: ");
 		final Text searchText = new Text(parent, SWT.BORDER | SWT.SEARCH);
 		searchText.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
+		searchText.addModifyListener(new SearchChangeListener(this));
 		createViewer(parent);
 	}
 
@@ -45,10 +68,9 @@ public class GroovyBindingView extends ViewPart implements
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		viewer.setContentProvider(new BindingContentProvider());
+		viewer.setContentProvider(new BindingContentProvider(""));
 		// Get the content for the viewer, setInput will call getElements in the
 		// contentProvider
-
 
 		// Make the selection available to other views
 		getSite().setSelectionProvider(viewer);
@@ -62,7 +84,7 @@ public class GroovyBindingView extends ViewPart implements
 		gridData.grabExcessVerticalSpace = true;
 		gridData.horizontalAlignment = GridData.FILL;
 		viewer.getControl().setLayoutData(gridData);
-		GroovyExecution instance = ServletContextListener.INJECTOR
+		instance = ServletContextListener.INJECTOR
 				.getInstance(GroovyExecution.class);
 		instance.registerListener(this);
 		instance.notifyListerners();
@@ -75,8 +97,8 @@ public class GroovyBindingView extends ViewPart implements
 	// This will create the columns for the table
 	private void createColumns(final Composite parent, final TableViewer viewer) {
 		String[] titles = { "Variable", "Type", "Value" };
-		
-int size = 150;
+
+		int size = 150;
 		varname = createTableViewerColumn(titles[0], size, 0);
 		varname.setLabelProvider(new ColumnLabelProvider() {
 			@Override
@@ -85,7 +107,7 @@ int size = 150;
 				return e.name;
 			}
 		});
-		
+
 		type = createTableViewerColumn(titles[1], size, 1);
 		type.setLabelProvider(new ColumnLabelProvider() {
 			@Override
@@ -103,8 +125,6 @@ int size = 150;
 			}
 		});
 
-	
-		
 	}
 
 	private TableViewerColumn createTableViewerColumn(String title, int bound,
