@@ -1,8 +1,5 @@
 package de.prob.ui.stateview;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -15,11 +12,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
-import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.eventb.EventBElement;
-import de.prob.model.representation.AbstractDomTreeElement;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.IEntity;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
@@ -48,7 +41,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
 	private History currentHistory;
-	private AbstractDomTreeElement currentModel;
+	private IEntity currentModel;
 
 	Injector injector = ServletContextListener.INJECTOR;
 
@@ -138,7 +131,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 			public void run() {
 				currentHistory = history;
 				contentProvider.setCurrentHistory(currentHistory);
-				AbstractDomTreeElement model = history.getModel();
+				final IEntity model = history.getModel();
 				if (model != currentModel) {
 					updateModelInfo(model);
 				}
@@ -148,30 +141,8 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 		});
 	}
 
-	private void updateModelInfo(final AbstractDomTreeElement model) {
+	private void updateModelInfo(final IEntity model) {
 		currentModel = model;
-		final List<Object> sections = new ArrayList<Object>();
-		if (model instanceof AbstractModel) {
-			AbstractModel amodel = (AbstractModel) model;
-			for (final AbstractElement component : amodel.getComponents()
-					.values()) {
-				if (component instanceof EventBElement) {
-					final EventBElement ebComponent = (EventBElement) component;
-					if (ebComponent.isContext()
-							&& !ebComponent.getConstantNames().isEmpty()) {
-						sections.add(ebComponent);
-					}
-					if (ebComponent.isMachine()
-							&& !ebComponent.getVariableNames().isEmpty()) {
-						sections.add(ebComponent);
-					}
-				}
-				if (component instanceof ClassicalBMachine) {
-					final ClassicalBMachine cbMachine = (ClassicalBMachine) component;
-					sections.add(cbMachine);
-				}
-			}
-		}
-		viewer.setInput(sections.toArray());
+		viewer.setInput(model);
 	}
 }

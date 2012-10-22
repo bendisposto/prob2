@@ -2,17 +2,17 @@ package de.prob.ui.stateview;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import de.prob.model.classicalb.ClassicalBEntity;
-import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.eventb.EventBElement;
+import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.IEntity;
 import de.prob.statespace.History;
 import de.prob.statespace.HistoryElement;
-import de.prob.statespace.StateId;
-import de.prob.statespace.StateSpaceInfo;
+import de.prob.statespace.StateSpace;
 
 /**
  * Creates a new list of Operations, merging the list of available operations
@@ -40,62 +40,69 @@ class StateContentProvider implements ITreeContentProvider {
 			final Object[] elements = (Object[]) inputElement;
 			return elements;
 		}
+		if (inputElement instanceof AbstractModel) {
+			final AbstractModel model = (AbstractModel) inputElement;
+			return model.getChildren().toArray();
+		}
 
-		return new ArrayList<Object>().toArray();
+		return new Object[] {};
 	}
 
 	@Override
 	public Object[] getChildren(final Object parentElement) {
 		final List<Object> children = new ArrayList<Object>();
 
-		if (parentElement instanceof EventBElement) {
-
-			final EventBElement element = (EventBElement) parentElement;
-			if (element.isContext()) {
-				final List<String> constants = element.getConstantNames();
-				for (final String name : constants) {
-					children.addAll(extractVariables(name));
+		if (parentElement instanceof IEntity) {
+			children.addAll(((IEntity) parentElement).getChildren());
+			for (final Object iEntity : children) {
+				if (iEntity instanceof IEvalElement) {
+					children.set(children.indexOf(iEntity),
+							extractValue((IEvalElement) iEntity));
 				}
-			}
-			if (element.isMachine()) {
-				final List<String> variables = element.getVariableNames();
-				for (final String name : variables) {
-					children.addAll(extractVariables(name));
-				}
-
-			}
-		}
-		if (parentElement instanceof ClassicalBMachine) {
-			final ClassicalBMachine cbMachine = (ClassicalBMachine) parentElement;
-			final List<ClassicalBEntity> variables = cbMachine.variables();
-			for (final ClassicalBEntity entity : variables) {
-				children.addAll(extractVariables(entity.getIdentifier()));
 			}
 		}
 		return children.toArray();
 	}
 
-	private List<Object> extractVariables(final String name) {
-		final StateSpaceInfo info = currentHistory.getStatespace().getInfo();
-		final List<Object> children = new ArrayList<Object>();
+	private Object extractValue(final IEvalElement element) {
+		final StateSpace statespace = currentHistory.getS();
 		final HistoryElement currentTrans = currentHistory.getCurrent();
-		final StateId previousState = currentTrans.getSrc();
-		final StateId currentState = currentTrans.getDest();
-		if (currentTrans.getOp() != null) {
-			String currentValue = "";
-			String previousValue = "";
-			if (info.stateHasVariable(currentState, name)) {
-				currentValue = info.getVariable(currentState, name);
-			}
-			if (info.stateHasVariable(previousState, name)) {
-				previousValue = info.getVariable(previousState, name);
-			}
-			children.add(new Variable(name, currentValue, previousValue));
-		} else {
-			children.add(new Variable(name, "", ""));
+		final Map<IEvalElement, String> previousValues = statespace
+				.valuesAt(currentTrans.getSrc());
+		final Map<IEvalElement, String> currentValues = statespace
+				.valuesAt(currentTrans.getDest());
+
+		final Variable var = new Variable(element.getCode(), "", "");
+		if (previousValues.containsKey(element)) {
+			var.setPreviousValue(previousValues.get(element));
 		}
-		return children;
+		if (currentValues.containsKey(element)) {
+			var.setCurrentValue(currentValues.get(element));
+		}
+		return var;
 	}
+
+	// private List<Object> extractVariables(final String name) {
+	// final StateSpaceInfo info = currentHistory.getStatespace().getInfo();
+	// final List<Object> children = new ArrayList<Object>();
+	// final HistoryElement currentTrans = currentHistory.getCurrent();
+	// final StateId previousState = currentTrans.getSrc();
+	// final StateId currentState = currentTrans.getDest();
+	// if (currentTrans.getOp() != null) {
+	// String currentValue = "";
+	// String previousValue = "";
+	// if (info.stateHasVariable(currentState, name)) {
+	// currentValue = info.getVariable(currentState, name);
+	// }
+	// if (info.stateHasVariable(previousState, name)) {
+	// previousValue = info.getVariable(previousState, name);
+	// }
+	// children.add(new Variable(name, currentValue, previousValue));
+	// } else {
+	// children.add(new Variable(name, "", ""));
+	// }
+	// return children;
+	// }
 
 	@Override
 	public Object getParent(final Object element) {
@@ -104,9 +111,8 @@ class StateContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(final Object element) {
-		if (element instanceof EventBElement
-				|| element instanceof ClassicalBMachine) {
-			return true;
+		if (element instanceof IEntity) {
+			return ((IEntity) element).hasChildren();
 		}
 		return false;
 	}

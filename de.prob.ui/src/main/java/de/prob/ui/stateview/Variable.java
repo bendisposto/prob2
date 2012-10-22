@@ -5,21 +5,30 @@ public class Variable {
 	private String previousValue;
 	private String name;
 
-	public Variable(String name, String currentValue, String previousValue) {
+	public Variable(final String name, final String currentValue,
+			final String previousValue) {
 		this.name = name;
 		this.currentValue = currentValue;
 		this.previousValue = previousValue;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getCurrentValue() {
 		return currentValue;
 	}
-	
+
 	public String getPreviousValue() {
 		return previousValue;
+	}
+
+	public void setCurrentValue(final String currentValue) {
+		this.currentValue = currentValue;
+	}
+
+	public void setPreviousValue(final String previousValue) {
+		this.previousValue = previousValue;
 	}
 }

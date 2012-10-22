@@ -32,10 +32,11 @@ import com.google.inject.Injector;
 
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.eventb.EBEvent;
+import de.prob.model.eventb.EBMachine;
 import de.prob.model.eventb.EventBElement;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.AbstractDomTreeElement;
-import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.IEntity;
+import de.prob.model.representation.Label;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
@@ -67,7 +68,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 
 	private TableViewer viewer;
 	private History currentHistory;
-	private AbstractDomTreeElement currentModel;
+	private IEntity currentModel;
 	private boolean modelLoaded;
 
 	Injector injector = ServletContextListener.INJECTOR;
@@ -183,7 +184,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 			modelLoaded = true;
 		}
 		currentHistory = history;
-		AbstractDomTreeElement model = history.getModel();
+		final IEntity model = history.getModel();
 		if (currentModel != model) {
 			updateModel(model);
 		}
@@ -211,9 +212,10 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 				final List<OpInfo> opList = (ArrayList<OpInfo>) ssel
 						.getFirstElement();
 				return opList;
-			} else
+			} else {
 				System.out.println("Selection is: "
 						+ ssel.getFirstElement().getClass());
+			}
 		}
 		return null;
 	}
@@ -247,21 +249,27 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		sourceProvider.historyChange(history);
 	}
 
-	private void updateModel(final AbstractDomTreeElement model) {
+	private void updateModel(final IEntity model) {
 		currentModel = model;
 		((OperationsContentProvider) viewer.getContentProvider())
 				.setAllOperations(getOperationNames(model));
 	}
 
-	private Map<String, Object> getOperationNames(final AbstractDomTreeElement model) {
+	private Map<String, Object> getOperationNames(final IEntity model) {
 		final Map<String, Object> names = new HashMap<String, Object>();
 		if (model instanceof EventBModel) {
 			final EventBModel ebmodel = (EventBModel) model;
 			final EventBElement component = ebmodel.getComponent(ebmodel
 					.getMainComponentName());
-			final Map<String, EBEvent> events = component.getEvents();
-			for (final String key : events.keySet()) {
-				names.put(key, events.get(key));
+			if (component instanceof EBMachine) {
+				final EBMachine machine = (EBMachine) component;
+				final Label events = machine.events;
+				for (final IEntity key : events.getChildren()) {
+					if (key instanceof EBEvent) {
+						names.put(((EBEvent) key).getName(), key);
+					}
+				}
+
 			}
 		}
 		return names;
