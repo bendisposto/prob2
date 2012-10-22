@@ -1,12 +1,16 @@
 package de.prob.model.eventb;
 
+import java.util.Arrays;
+
 import org.eclipse.emf.common.util.EList;
 import org.eventb.emf.core.machine.Event;
 import org.eventb.emf.core.machine.Invariant;
 import org.eventb.emf.core.machine.Machine;
 import org.eventb.emf.core.machine.Variable;
+import org.eventb.emf.core.machine.Variant;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.model.representation.IEntity;
 import de.prob.model.representation.Label;
 
 public class EBMachine extends EventBElement {
@@ -27,11 +31,19 @@ public class EBMachine extends EventBElement {
 			invariants.addChild(new EventB(invariant.getPredicate()));
 		}
 
-		variant.addChild(new EventB(machine.getVariant().getExpression()));
+		final Variant variant2 = machine.getVariant();
+		if (variant2 != null) {
+			final String expression = variant2.getExpression();
+			final EventB child = new EventB(expression);
+			variant.addChild(child);
+		}
 
 		final EList<Event> events2 = machine.getEvents();
 		for (final Event event : events2) {
 			events.addChild(new EBEvent(event));
 		}
+
+		children.addAll(Arrays.asList(new IEntity[] { variables, invariants,
+				variant, events }));
 	}
 }

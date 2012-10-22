@@ -225,7 +225,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public List<EvaluationResult> eval(final StateId stateId,
-			final List<IEvalElement> code) throws BException {
+			final List<IEvalElement> code) {
 		if (!containsVertex(stateId)) {
 			throw new IllegalArgumentException("state does not exist");
 		}
@@ -272,13 +272,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				toEvaluate.add(iEvalElement);
 			}
 		}
-		List<EvaluationResult> results = null;
-		try {
-			results = eval(state, toEvaluate);
-		} catch (final BException e) {
-			System.out.println("Evaluation of formulas failed!");
-			e.printStackTrace();
-		}
+		final List<EvaluationResult> results = eval(state, toEvaluate);
 
 		assert results.size() == toEvaluate.size();
 		if (results != null) {
@@ -287,6 +281,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			}
 		}
 		values.put(state, valueMap);
+	}
+
+	public Map<IEvalElement, String> valuesAt(final String stateId) {
+		return valuesAt(getVertex(stateId));
+	}
+
+	public Map<IEvalElement, String> valuesAt(final StateId stateId) {
+		if (values.containsKey(stateId)) {
+			return values.get(stateId);
+		}
+		return new HashMap<IEvalElement, String>();
 	}
 
 	public List<EvaluationResult> eval(final String state, final String... code)

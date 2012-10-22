@@ -56,18 +56,24 @@ class History {
 			+ " is not a valid operation on this state")
 
 		StateId newState = s.getState(op)
-		s.evaluateFormulas(current.getCurrentState())
+		if(canBeEvaluated(op)) {
+			s.evaluateFormulas(current.getCurrentState());
+		}
 
-		History newHistory = new History(s, new HistoryElement(
-				current.getCurrentState(), newState, op, current),
+		def newHE = new HistoryElement(current.getCurrentState(), newState, op, current)
+		History newHistory = new History(s, newHE,
 				animationListeners)
 
 		return newHistory
 	}
-
 	def History add(final int i) {
 		String opId = String.valueOf(i)
 		return add(opId)
+	}
+
+	def canBeEvaluated(OpInfo op) {
+		def toEvaluate = op.name != "\$setup_constants" && op.name != "\$initialise_machine"
+		return toEvaluate;
 	}
 
 	/**
@@ -158,7 +164,7 @@ class History {
 			OpInfo op = ops.get(0)
 
 			StateId newState = s.getState(op)
-			s.evaluateFormulas(newState)
+			evaluateFormulas(ops.get(0))
 
 			current = new HistoryElement(currentState,newState,op,previous)
 			currentState = newState

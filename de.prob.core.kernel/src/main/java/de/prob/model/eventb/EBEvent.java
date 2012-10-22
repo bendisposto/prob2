@@ -23,8 +23,8 @@ public class EBEvent extends EventBElement {
 	public EBEvent(final Event event) {
 		super(event);
 
-		for (final String name : event.getRefinesNames()) {
-			refines.addChild(new Label(name));
+		for (final Event event2 : event.getRefines()) {
+			refines.addChild(new Label(event2.doGetName()));
 		}
 
 		for (final Parameter parameter : event.getParameters()) {
@@ -40,10 +40,15 @@ public class EBEvent extends EventBElement {
 		}
 
 		for (final Action action : event.getActions()) {
-			actions.addChild(new EventB(action.getAction()));
+			actions.addChild(new Label(action.getAction()));
 		}
 
 		children.addAll(Arrays.asList(new IEntity[] { refines, parameters,
 				guards, witnesses, actions }));
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }
