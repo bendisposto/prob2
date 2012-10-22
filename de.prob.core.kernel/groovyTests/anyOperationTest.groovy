@@ -1,5 +1,5 @@
 import de.prob.statespace.*
-m = api.b_load("/home/joy/code/prob2/de.prob.core.kernel/groovyTests/machines/scheduler.mch")
+m = api.b_load(dir+"/machines/scheduler.mch")
 s = m.getStatespace()
 h = new History(s)
 h1 = h.anyOperation(".*i.*")
