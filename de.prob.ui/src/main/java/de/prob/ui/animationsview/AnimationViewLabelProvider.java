@@ -8,20 +8,18 @@ import org.eclipse.ui.PlatformUI;
 
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.AbstractDomTreeElement;
-import de.prob.model.representation.AbstractModel;
-import de.prob.statespace.AnimationSelector;
+import de.prob.model.representation.IEntity;
 import de.prob.statespace.History;
 
 class AnimationViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
-	
+
 	@Override
 	public String getColumnText(final Object obj, final int index) {
 		if (index == 0) {
 			if (obj instanceof History) {
-				History history = (History) obj;
-				AbstractDomTreeElement model = history.getModel();
+				final History history = (History) obj;
+				final IEntity model = history.getModel();
 				if (model instanceof EventBModel) {
 					final EventBModel ebmodel = (EventBModel) model;
 					return ebmodel.getMainComponentName();
@@ -36,8 +34,9 @@ class AnimationViewLabelProvider extends LabelProvider implements
 		if (index == 1) {
 			if (obj instanceof History) {
 				final History history = (History) obj;
-				if (!history.getCurrent().getSrc().getId().equals("root"))
+				if (!history.getCurrent().getSrc().getId().equals("root")) {
 					return history.getCurrent().getOp().toString();
+				}
 			}
 		}
 

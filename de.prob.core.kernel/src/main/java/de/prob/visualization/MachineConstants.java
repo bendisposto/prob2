@@ -1,27 +1,59 @@
 package de.prob.visualization;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.model.representation.AbstractElement;
+import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.model.classicalb.ClassicalBMachine;
+import de.prob.model.eventb.EBContext;
+import de.prob.model.eventb.EBMachine;
+import de.prob.model.representation.IEntity;
+import de.prob.model.representation.Label;
 
 public class MachineConstants {
 	private final String name;
-	private final List<String> variables;
-	private final List<String> constants;
-	private final List<String> operations;
+	private List<String> variables;
+	private List<String> constants;
+	private List<String> operations;
 	private final int width;
 	private int lines;
 	private final String html;
 	private final int height;
 
-	public MachineConstants(final AbstractElement abstractElement) {
+	public MachineConstants(final Label abstractElement) {
 		this.name = abstractElement.getName();
-		this.variables = abstractElement.getVariableNames();
-		this.constants = abstractElement.getConstantNames();
-		this.operations = abstractElement.getOperationNames();
+		if (abstractElement instanceof ClassicalBMachine) {
+			final ClassicalBMachine machine = (ClassicalBMachine) abstractElement;
+			variables = extractStrings(machine.variables.getChildren());
+			constants = new ArrayList<String>();
+			operations = extractStrings(machine.operations.getChildren());
+		} else if (abstractElement instanceof EBContext) {
+			constants = extractStrings(((EBContext) abstractElement).constants
+					.getChildren());
+			variables = new ArrayList<String>();
+			operations = new ArrayList<String>();
+		} else if (abstractElement instanceof EBMachine) {
+			final EBMachine machine = (EBMachine) abstractElement;
+			variables = extractStrings(machine.variables.getChildren());
+			operations = extractStrings(machine.events.getChildren());
+			constants = new ArrayList<String>();
+		}
 		width = calculateWidth();
 		html = generateHTML();
 		height = calculateHeight();
+	}
+
+	private List<String> extractStrings(final List<IEntity> entities) {
+		final List<String> names = new ArrayList<String>();
+		for (final IEntity entity : entities) {
+			if (entity instanceof IEvalElement) {
+				names.add(((IEvalElement) entity).getCode());
+			}
+			if (entity instanceof Label) {
+				names.add(entity.toString());
+			}
+		}
+		return names;
 	}
 
 	public String getName() {
@@ -30,7 +62,7 @@ public class MachineConstants {
 
 	public int getLargestVar() {
 		int max = 0;
-		for (String entity : variables) {
+		for (final String entity : variables) {
 			if (entity.length() > max) {
 				max = entity.length();
 			}
@@ -40,7 +72,7 @@ public class MachineConstants {
 
 	public int getLargestConstant() {
 		int max = 0;
-		for (String entity : constants) {
+		for (final String entity : constants) {
 			if (entity.length() > max) {
 				max = entity.length();
 			}
@@ -50,7 +82,7 @@ public class MachineConstants {
 
 	public int getLargestOp() {
 		int max = 0;
-		for (String op : operations) {
+		for (final String op : operations) {
 			if (op.length() > max) {
 				max = op.length();
 			}
@@ -72,9 +104,10 @@ public class MachineConstants {
 	}
 
 	public int calculateWidth() {
-		int l = getLargestLine();
-		if (l < 100)
+		final int l = getLargestLine();
+		if (l < 100) {
 			return 100;
+		}
 		return l;
 	}
 
@@ -83,7 +116,7 @@ public class MachineConstants {
 	}
 
 	public String generateHTML() {
-		HTMLgenerator htmlGenerator = new HTMLgenerator(width);
+		final HTMLgenerator htmlGenerator = new HTMLgenerator(width);
 		lines = 1;
 		htmlGenerator.writeLine(name);
 		if (!variables.isEmpty()) {
@@ -99,7 +132,7 @@ public class MachineConstants {
 		if (!operations.isEmpty()) {
 			htmlGenerator.writeHeading("Operations");
 			lines++;
-			for (String op : operations) {
+			for (final String op : operations) {
 				htmlGenerator.writeLine(op);
 				lines++;
 			}
