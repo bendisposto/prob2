@@ -26,8 +26,8 @@ public class RunScriptCommand extends AbstractShellCommand {
 	public Object perform(List<String> m, GroovyExecution exec)
 			throws IOException {
 
-		if (m.size() != 2) {
-			String msg = "Run command takes exactly one parameter, a filename.";
+		if (m.size() != 2 && m.size() != 3) {
+			String msg = "Run command takes one or two parameters. A filename and optionally a variablename where the result should be stored.";
 			LOGGER.error(msg);
 			return "error: " + msg;
 		}
@@ -61,7 +61,14 @@ public class RunScriptCommand extends AbstractShellCommand {
 				buf = new char[1024];
 			}
 			reader.close();
-			return exec.runScript(fileData.toString());
+
+			String result;
+			if (m.size() == 3) {
+				result = exec.runScript(fileData.toString(), m.get(2));
+			} else
+				result = exec.runScript(fileData.toString());
+
+			return result;
 
 		}
 

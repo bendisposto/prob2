@@ -49,7 +49,7 @@ public class GroovyExecution {
 
 	private List<IGroovyExecutionListener> listeners = new ArrayList<IGroovyExecutionListener>();
 
-	public int nextCounter() {
+	public synchronized int nextCounter() {
 		return genCounter++;
 	}
 
@@ -86,7 +86,7 @@ public class GroovyExecution {
 			e.printStackTrace();
 		}
 		this.parser = new Parser();
-		runScript(script);
+		runSilentScript(script);
 	}
 
 	public void registerListener(IGroovyExecutionListener listener) {
@@ -113,7 +113,37 @@ public class GroovyExecution {
 		}
 	}
 
+	public synchronized String freshVar(String prefix) {
+		String v;
+		Binding bindings = this.getBindings();
+		do {
+			v = prefix + nextCounter();
+		} while (bindings.hasVariable(v));
+		bindings.setVariable(v, null);
+		return v;
+	}
+
 	public String runScript(String content) {
+		String s = freshVar("script_");
+		return runScript(content, s);
+	}
+
+	public String runSilentScript(String content) {
+		return runScript(content, null, true);
+	}
+
+	public String runScript(String content, String resultbinding) {
+		return runScript(content, resultbinding, false);
+	}
+
+	public String runScript(String content, String resultbinding, boolean silent) {
+		Object result = runScript2(content);
+		if (!silent)
+			getBindings().setVariable(resultbinding, result);
+		return result == null ? "null" : result.toString();
+	}
+
+	public Object runScript2(String content) {
 		try {
 			final ArrayList<String> eval = new ArrayList<String>();
 			eval.addAll(imports);
@@ -126,7 +156,7 @@ public class GroovyExecution {
 			} finally {
 				inputs.clear();
 			}
-			return evaluate == null ? "null" : evaluate.toString();
+			return evaluate;
 		} finally {
 			notifyListerners();
 		}
