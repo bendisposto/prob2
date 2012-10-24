@@ -2,7 +2,6 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
-apply from: 'https://raw.github.com/gist/1527604/4080ebed7b141d10610825aebd70942fcd301105/emma.gradle'
 apply plugin: 'findbugs'
 apply plugin: 'eclipse-wtp'
 apply plugin: 'war'
@@ -14,7 +13,7 @@ sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
 
-project.version = '2.0.0-milestone-5'
+project.version = '2.0.0-milestone-6'
 
 
 
@@ -55,12 +54,12 @@ def parser_version = '2.4.6-SNAPSHOT'
 
 dependencies {
 
-	groovy 'org.codehaus.groovy:groovy-all:2.0.1' 
+	groovy 'org.codehaus.groovy:groovy-all:2.0.5' 
 
 	compile 'com.google.guava:guava:r09' // Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
 
-	compile 'org.codehaus.groovy:groovy-all:2.0.1' // Apache Licence 2.0
+	compile 'org.codehaus.groovy:groovy-all:2.0.5' // Apache Licence 2.0
 	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
 	compile 'jline:jline:0.9.94' // BSD
 
@@ -79,6 +78,8 @@ dependencies {
 	compile 'emf:ecore:2.3.0' // EPL
 	compile 'emf:common:2.3.0' // EPL
 	compile 'emf:xmi:2.7.0' // EPL
+	
+	compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' // Rodin
 
 	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
 	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
@@ -101,7 +102,7 @@ dependencies {
 
 	testCompile 'junit:junit:4.8.2'
 	testCompile 'org.mockito:mockito-core:1.8.5'
-	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0-SNAPSHOT'
+	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 	
 }
 
@@ -142,7 +143,7 @@ task pack(type: Sync) {
     into "$buildDir/libs/lib"
 }
 
-task deploy(dependsOn: [jar, test,javadoc,pack], group: 'Build', type: Zip) {
+task deployKernel(dependsOn: [jar, test,javadoc,pack], group: 'Build', type: Zip) {
 	description = 'Assembles the uberjar, runs all tests and builds the javadoc.'
 	from "$buildDir/libs/"
 	doLast {

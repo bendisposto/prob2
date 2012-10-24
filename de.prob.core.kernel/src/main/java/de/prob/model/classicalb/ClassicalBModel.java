@@ -11,8 +11,8 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.Label;
 import de.prob.model.representation.RefType;
 import de.prob.statespace.StateSpace;
 
@@ -24,17 +24,17 @@ public class ClassicalBModel extends AbstractModel {
 	@Inject
 	public ClassicalBModel(final StateSpace statespace) {
 		this.statespace = statespace;
-		this.components = new HashMap<String, AbstractElement>();
+		this.components = new HashMap<String, Label>();
 	}
 
 	public DirectedMultigraph<String, RefType> initialize(final Start mainast,
 			final RecursiveMachineLoader rml) {
 
-		DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
+		final DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
-		mainMachine = new ClassicalBMachine(null);
-		DomBuilder d = new DomBuilder(mainMachine);
+		mainMachine = new ClassicalBMachine();
+		final DomBuilder d = new DomBuilder(mainMachine);
 		d.build(mainast);
 		graph.addVertex(mainMachine.name());
 		components.put(mainMachine.name(), mainMachine);
@@ -43,10 +43,10 @@ public class ClassicalBModel extends AbstractModel {
 
 		do {
 			fpReached = true;
-			Set<String> vertices = new HashSet<String>();
+			final Set<String> vertices = new HashSet<String>();
 			vertices.addAll(graph.vertexSet());
-			for (String machineName : vertices) {
-				Start ast = rml.getParsedMachines().get(machineName);
+			for (final String machineName : vertices) {
+				final Start ast = rml.getParsedMachines().get(machineName);
 				if (!done.contains(machineName)) {
 					ast.apply(new DependencyWalker(machineName, components,
 							graph, rml.getParsedMachines()));
@@ -56,6 +56,8 @@ public class ClassicalBModel extends AbstractModel {
 			}
 		} while (!fpReached);
 		this.graph = graph;
+
+		statespace.setModel(this);
 		return graph;
 	}
 

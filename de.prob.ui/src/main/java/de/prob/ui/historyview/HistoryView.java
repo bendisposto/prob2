@@ -1,10 +1,12 @@
 package de.prob.ui.historyview;
 
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -16,6 +18,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
@@ -49,8 +52,8 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener{
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
 	private TableViewer viewer;
-	private History currentHistory;
-	
+	private History currentHistory; // FIXME not used?
+
 	Injector injector = ServletContextListener.INJECTOR;
 	 
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -87,11 +90,17 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener{
 
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "de.prob.ui.viewer");
+		hookDoubleClickListener();
 		
 		Table table = viewer.getTable();
 		table.setLinesVisible(true);
 	}
 
+
+	private void hookDoubleClickListener() {
+		viewer.addDoubleClickListener(new SelectOperationDoubleClickListener());
+		
+	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
@@ -101,7 +110,7 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener{
 	}
 	
 	@Override
-	public void historyChange(final History history, AbstractModel model) {
+	public void historyChange(final History history) {
 		currentHistory = history;
 		Display.getDefault().asyncExec(new Runnable() {
 			
@@ -110,5 +119,33 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener{
 				viewer.setInput(history);
 			}
 		});
+	}
+	
+	public OpInfo getSelectedOperation() {
+		if (viewer.getSelection() != null
+				&& viewer.getSelection() instanceof IStructuredSelection) {
+			final IStructuredSelection ssel = (IStructuredSelection) viewer
+					.getSelection();
+			if (ssel.getFirstElement() instanceof OpInfo) {
+				return (OpInfo) ssel.getFirstElement();
+			}
+			else
+				System.out.println("Selection is: "+ssel.getFirstElement().getClass());
+		}
+		return null;
+	}
+
+	private class SelectOperationDoubleClickListener implements IDoubleClickListener {
+
+		public void doubleClick(final DoubleClickEvent event) {
+			OpInfo selectedOperation = getSelectedOperation();
+			if (selectedOperation != null) {
+				History oldHistory = currentHistory;
+				while(currentHistory.getCurrent().getOp() != selectedOperation) {
+					currentHistory = currentHistory.back();
+				}
+				currentHistory.notifyAnimationChange(oldHistory, currentHistory);
+			} 
+		}
 	}
 }

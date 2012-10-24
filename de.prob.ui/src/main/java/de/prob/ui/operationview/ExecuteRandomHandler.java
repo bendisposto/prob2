@@ -1,9 +1,5 @@
 package de.prob.ui.operationview;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -15,11 +11,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.google.inject.Injector;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
-import de.prob.statespace.HistoryElement;
-import de.prob.statespace.StateId;
 import de.prob.webconsole.ServletContextListener;
 
 public class ExecuteRandomHandler extends AbstractHandler implements IHandler {

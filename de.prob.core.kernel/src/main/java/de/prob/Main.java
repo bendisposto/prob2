@@ -12,18 +12,14 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-import de.prob.animator.IAnimator;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 
 public class Main {
 
 	private static boolean shellMode;
-
 
 	private final CommandLineParser parser;
 	private final Options options;
@@ -47,15 +43,10 @@ public class Main {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {
-				if ("old".equals(System.getProperty("shell"))) {
-					Main.shellMode = true;
-					shell.repl();
-				} else {
-					try {
-						WebConsole.run();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				try {
+					WebConsole.run();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			if (line.hasOption("test")) {

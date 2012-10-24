@@ -1,6 +1,7 @@
 package de.prob.model.eventb;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.eventb.emf.core.EventBNamedCommentedComponentElement;
@@ -12,8 +13,8 @@ import org.jgrapht.graph.DirectedMultigraph;
 
 import com.google.inject.Inject;
 
-import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.Label;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.statespace.StateSpace;
@@ -25,7 +26,7 @@ public class EventBModel extends AbstractModel {
 	@Inject
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
-		this.components = new HashMap<String, AbstractElement>();
+		this.components = new HashMap<String, Label>();
 	}
 
 	public void initialize(final Project p, final String mainComponent) {
@@ -33,62 +34,75 @@ public class EventBModel extends AbstractModel {
 		graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
+		final Map<String, EventBNamedCommentedComponentElement> allComponents = new HashMap<String, EventBNamedCommentedComponentElement>();
 		EventBNamedCommentedComponentElement element = null;
-		for (EventBNamedCommentedComponentElement cmpt : p.getComponents()) {
-			if (mainComponent.equals(cmpt.doGetName())) {
+		for (final EventBNamedCommentedComponentElement cmpt : p
+				.getComponents()) {
+			final String name = cmpt.doGetName();
+			if (mainComponent.equals(name)) {
 				element = cmpt;
 			}
+			allComponents.put(name, cmpt);
 		}
 		if (element != null) {
-			String name = element.doGetName();
+			final String name = element.doGetName();
 			graph.addVertex(name);
 			if (!components.containsKey(name)) {
-				components.put(name, new EventBComponent(element));
+				if (element instanceof Context) {
+					final Context c = (Context) element;
+					components.put(name, new EBContext(c));
+				} else if (element instanceof Machine) {
+					final Machine m = (Machine) element;
+					components.put(name, new EBMachine(m));
+				}
 			}
 
 			if (element instanceof Context) {
-				Context c = (Context) element;
-				EList<Context> ext = c.getExtends();
-				for (Context context : ext) {
-					String ctxName = context.doGetName();
+				final Context c = (Context) element;
+				final EList<Context> ext = c.getExtends();
+				for (final Context context : ext) {
+					final String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EventBComponent(context));
+						components.put(ctxName, new EBContext(
+								(Context) allComponents.get(ctxName)));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.EXTENDS));
 				}
 			}
 			if (element instanceof Machine) {
-				Machine m = (Machine) element;
-				EList<Context> sees = m.getSees();
-				for (Context context : sees) {
-					String ctxName = context.doGetName();
+				final Machine m = (Machine) element;
+				final EList<Context> sees = m.getSees();
+				for (final Context context : sees) {
+					final String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EventBComponent(context));
+						components.put(ctxName, new EBContext(
+								(Context) allComponents.get(ctxName)));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.SEES));
 				}
-				EList<Machine> refines = m.getRefines();
-				for (Machine machine : refines) {
-					String mName = machine.doGetName();
+				final EList<Machine> refines = m.getRefines();
+				for (final Machine machine : refines) {
+					final String mName = machine.doGetName();
 					if (!components.containsKey(mName)) {
 						graph.addVertex(mName);
-						components.put(mName, new EventBComponent(machine));
+						components.put(mName, new EBMachine(
+								(Machine) allComponents.get(mName)));
 					}
 					graph.addEdge(name, mName, new RefType(ERefType.REFINES));
 				}
 			}
 		}
+		statespace.setModel(this);
 	}
 
-	public EventBComponent getComponent(final String componentName) {
-		return components.containsKey(componentName) ? (EventBComponent) components
+	public EventBElement getComponent(final String componentName) {
+		return components.containsKey(componentName) ? (EventBElement) components
 				.get(componentName) : null;
 	}
 
 	public String getMainComponentName() {
 		return mainComponent;
 	}
-
 }

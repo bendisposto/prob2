@@ -6,7 +6,6 @@ It is intended for internal usage, do not rely on any of the features or interfa
 The sourcecode of the current ProB release is located at http://github.com/bendisposto/prob
 
 This project contains Eclipse plugins. 
-You also need to clone http://github.com/bendisposto/probcore 
 
 Run `gradle eclipse` to produce the required Eclipse metadata
   

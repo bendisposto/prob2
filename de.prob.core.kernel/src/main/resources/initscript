@@ -1,0 +1,19 @@
+/* This overwrites the asType method in String to allow the conversion from
+   a String to an EvalElement. Usage:
+       "..." as ClassicalB converts "..." to a ClassicalB evaluation element
+       "..." as EventB converts "..." to an EventB evaluation element
+*/
+
+def oldAsType = String.metaClass.getMetaMethod("asType", [Class] as Class[])
+
+String.metaClass.asType = { Class type -> if (type == ClassicalB) return new ClassicalB(delegate) 
+       if (type == EventB) return new EventB(delegate) 
+        oldAsType.invoke(delegate, [type] as Class[])
+}
+
+
+
+
+/* Redirect print and println to our own buffered console*/
+Script.getMetaClass().print = { s -> __console.append(s) }
+Script.getMetaClass().println = { s -> __console.append(s+"\n") }

@@ -1,12 +1,11 @@
 package de.prob.statespace
 
-import java.util.ArrayList
-import java.util.Collections
-import java.util.List
-import java.util.Set
-
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.domainobjects.OpInfo
+import de.prob.model.classicalb.ClassicalBModel
+import de.prob.model.eventb.EventBModel
+import de.prob.model.representation.AbstractModel
+import de.prob.model.representation.IEntity
 
 class History {
 
@@ -17,6 +16,13 @@ class History {
 
 	def History(final StateSpace s) {
 		this.s = s
+		head = new HistoryElement(s.getState(s.getVertex("root")))
+		current = head
+		animationListeners = new ArrayList<IAnimationListener>()
+	}
+
+	def History(final AbstractModel m) {
+		this.s = m.getStatespace()
 		head = new HistoryElement(s.getState(s.getVertex("root")))
 		current = head
 		animationListeners = new ArrayList<IAnimationListener>()
@@ -50,18 +56,24 @@ class History {
 			+ " is not a valid operation on this state")
 
 		StateId newState = s.getState(op)
-		s.evaluateFormulas(current.getCurrentState())
+		if(canBeEvaluated(op)) {
+			s.evaluateFormulas(current.getCurrentState());
+		}
 
-		History newHistory = new History(s, new HistoryElement(
-				current.getCurrentState(), newState, op, current),
+		def newHE = new HistoryElement(current.getCurrentState(), newState, op, current)
+		History newHistory = new History(s, newHE,
 				animationListeners)
 
 		return newHistory
 	}
-
 	def History add(final int i) {
 		String opId = String.valueOf(i)
 		return add(opId)
+	}
+
+	def canBeEvaluated(OpInfo op) {
+		def toEvaluate = op.name != "\$setup_constants" && op.name != "\$initialise_machine"
+		return toEvaluate;
 	}
 
 	/**
@@ -152,7 +164,7 @@ class History {
 			OpInfo op = ops.get(0)
 
 			StateId newState = s.getState(op)
-			s.evaluateFormulas(newState)
+			evaluateFormulas(ops.get(0))
 
 			current = new HistoryElement(currentState,newState,op,previous)
 			currentState = newState
@@ -161,20 +173,20 @@ class History {
 		History newHistory = new History(s, current, animationListeners)
 		return newHistory
 	}
-	
+
 	def History invokeMethod(String method,  params) {
 		String predicate;
-		
+
 		if(method.startsWith("\$")) {
 			method = method.substring(1)
 		}
-		
+
 		if (params == []) predicate = "TRUE = TRUE"
 		else predicate = params[0];
 		OpInfo op = s.opFromPredicate(current.getCurrentState(), method,predicate , 1)[0];
 		return add(op.id)
 	}
-	
+
 	def History anyOperation(filter) {
 		def spaceInfo = s.info
 		def ops = new ArrayList<OpInfo>()
@@ -196,7 +208,7 @@ class History {
 		}
 		return this
 	}
-	
+
 	def History anyEvent(filter) {
 		anyOperation(filter);
 	}
@@ -209,7 +221,8 @@ class History {
 	 * @param l
 	 */
 	def void registerAnimationListener(final IAnimationListener l) {
-		animationListeners.add(l)
+		if(!animationListeners.contains(l))
+			animationListeners.add(l)
 	}
 
 	def void notifyAnimationChange(final History oldHistory,final History newHistory) {
@@ -224,5 +237,29 @@ class History {
 
 	def Set<OpInfo> getNextTransitions() {
 		return s.outgoingEdgesOf(current.getCurrentState())
+	}
+
+	def StateId getCurrentState() {
+		return current.getCurrentState()
+	}
+
+	def IEntity getModel() {
+		return s.getModel()
+	}
+
+	def Object asType(Class className) {
+		if(className == StateSpace) {
+			return s
+		}
+		if(className == AbstractModel) {
+			return (AbstractModel) s.model
+		}
+		if(className == ClassicalBModel) {
+			return (ClassicalBModel) s.model
+		}
+		if(className == EventBModel) {
+			return (EventBModel) s.model
+		}
+		throw new ClassCastException("Not able to convert History object to ${className}")
 	}
 }

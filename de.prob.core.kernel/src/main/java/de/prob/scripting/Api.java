@@ -36,6 +36,11 @@ public class Api {
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;
 
+	@Override
+	public String toString() {
+		return "ProB Connector";
+	}
+	
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
 			final Downloader downloader) {

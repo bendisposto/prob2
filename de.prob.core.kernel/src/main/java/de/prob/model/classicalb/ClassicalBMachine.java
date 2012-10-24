@@ -1,74 +1,28 @@
 package de.prob.model.classicalb;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 
-import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
-import de.be4.classicalb.core.parser.node.Node;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.Operation;
+import de.prob.model.representation.IEntity;
+import de.prob.model.representation.Label;
 
-public class ClassicalBMachine implements AbstractElement {
+public class ClassicalBMachine extends Label {
 
-	private final NodeIdAssignment astMapping;
-
-	public ClassicalBMachine(final NodeIdAssignment nodeIdAssignment) {
-		this.astMapping = nodeIdAssignment;
-	}
-
-	public Node getNode(final int i) {
-		return astMapping.lookupById(i);
-	}
-
-	private String name;
 	private boolean locked = false;
-	private final List<ClassicalBEntity> sets = new ArrayList<ClassicalBEntity>();
-	private final List<ClassicalBEntity> parameters = new ArrayList<ClassicalBEntity>();
-	private final List<ClassicalBEntity> constraints = new ArrayList<ClassicalBEntity>();
-	private final List<ClassicalBEntity> constants = new ArrayList<ClassicalBEntity>();
-	private final List<ClassicalBEntity> properties = new ArrayList<ClassicalBEntity>();
-	private final List<ClassicalBEntity> variables = new ArrayList<ClassicalBEntity>();
-	private final List<ClassicalBEntity> invariant = new ArrayList<ClassicalBEntity>();
-	private final List<ClassicalBEntity> assertions = new ArrayList<ClassicalBEntity>();
-	private final List<Operation> operations = new ArrayList<Operation>();
+	public final Label sets = new Label("Sets");
+	public final Label parameters = new Label("Parameters");
+	public final Label constraints = new Label("Constraints");
+	public final Label constants = new Label("Constants");
+	public final Label properties = new Label("Properties");
+	public final Label variables = new Label("Variables");
+	public final Label invariants = new Label("Invariants");
+	public final Label assertions = new Label("Assertions");
+	public final Label operations = new Label("Operations");
 
-	public List<ClassicalBEntity> constants() {
-		return lock(constants);
-	}
-
-	public List<ClassicalBEntity> variables() {
-		return lock(variables);
-	}
-
-	public List<ClassicalBEntity> parameters() {
-		return lock(parameters);
-	}
-
-	public List<ClassicalBEntity> invariant() {
-		return lock(invariant);
-	}
-
-	public List<ClassicalBEntity> assertions() {
-		return lock(assertions);
-	}
-
-	public List<ClassicalBEntity> constraints() {
-		return lock(constraints);
-	}
-
-	public List<ClassicalBEntity> properties() {
-		return lock(properties);
-	}
-
-	public List<Operation> operations() {
-		if (locked)
-			return Collections.unmodifiableList(operations);
-		return operations;
-	}
-
-	public List<ClassicalBEntity> sets() {
-		return lock(sets);
+	public ClassicalBMachine() {
+		super("");
+		children.addAll(Arrays.asList(new Label[] { sets, parameters,
+				constraints, constants, properties, variables, invariants,
+				assertions, operations }));
 	}
 
 	public String name() {
@@ -76,9 +30,10 @@ public class ClassicalBMachine implements AbstractElement {
 	}
 
 	public void setName(final String name) {
-		if (locked)
+		if (locked) {
 			throw new UnsupportedOperationException(
-					"Must not modify Machine after it was locked");
+					"Must not modify Machine after it has been locked");
+		}
 		this.name = name;
 	}
 
@@ -88,13 +43,13 @@ public class ClassicalBMachine implements AbstractElement {
 	}
 
 	public void close() {
-		locked = true;
+		lock();
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj instanceof ClassicalBMachine) {
-			ClassicalBMachine that = (ClassicalBMachine) obj;
+			final ClassicalBMachine that = (ClassicalBMachine) obj;
 			return that.name.equals(name);
 		}
 		return false;
@@ -105,82 +60,63 @@ public class ClassicalBMachine implements AbstractElement {
 		return name.hashCode();
 	}
 
-	private List<ClassicalBEntity> lock(final List<ClassicalBEntity> p) {
-		if (locked)
-			return Collections.unmodifiableList(p);
-		return p;
-	}
-
 	public String print() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Sets:\n");
-		for (ClassicalBEntity set : sets) {
-			sb.append("  " + set.toString() + "\n");
+		final StringBuilder sb = new StringBuilder();
+		if (sets.hasChildren()) {
+			sb.append("Sets:\n");
+			for (final IEntity set : sets.getChildren()) {
+				sb.append("  " + set.toString() + "\n");
+			}
 		}
-		sb.append("Parameters:\n");
-		for (ClassicalBEntity parameter : parameters) {
-			sb.append("  " + parameter.toString() + "\n");
+		if (parameters.hasChildren()) {
+			sb.append("Parameters:\n");
+			for (final IEntity parameter : parameters.getChildren()) {
+				sb.append("  " + parameter.toString() + "\n");
+			}
 		}
-		sb.append("Constraints:\n");
-		for (ClassicalBEntity constraint : constraints) {
-			sb.append("  " + constraint.toString() + "\n");
+		if (constraints.hasChildren()) {
+			sb.append("Constraints:\n");
+			for (final IEntity constraint : constraints.getChildren()) {
+				sb.append("  " + constraint.toString() + "\n");
+			}
 		}
-		sb.append("Constants:\n");
-		for (ClassicalBEntity constant : constants) {
-			sb.append("  " + constant.toString() + "\n");
+		if (constants.hasChildren()) {
+			sb.append("Constants:\n");
+			for (final IEntity constant : constants.getChildren()) {
+				sb.append("  " + constant.toString() + "\n");
+			}
 		}
-		sb.append("Properties:\n");
-		for (ClassicalBEntity property : properties) {
-			sb.append("  " + property.toString() + "\n");
+		if (properties.hasChildren()) {
+			sb.append("Properties:\n");
+			for (final IEntity property : properties.getChildren()) {
+				sb.append("  " + property.toString() + "\n");
+			}
 		}
-		sb.append("Variables:\n");
-		for (ClassicalBEntity variable : variables) {
-			sb.append("  " + variable.toString() + "\n");
+		if (variables.hasChildren()) {
+			sb.append("Variables:\n");
+			for (final IEntity variable : variables.getChildren()) {
+				sb.append("  " + variable.toString() + "\n");
+			}
 		}
-		sb.append("Invariant:\n");
-		for (ClassicalBEntity inv : invariant) {
-			sb.append("  " + inv.toString() + "\n");
+		if (invariants.hasChildren()) {
+			sb.append("Invariant:\n");
+			for (final IEntity inv : invariants.getChildren()) {
+				sb.append("  " + inv.toString() + "\n");
+			}
 		}
-		sb.append("Assertions:\n");
-		for (ClassicalBEntity assertion : assertions) {
-			sb.append("  " + assertion.toString() + "\n");
+		if (assertions.hasChildren()) {
+			sb.append("Assertions:\n");
+			for (final IEntity assertion : assertions.getChildren()) {
+				sb.append("  " + assertion.toString() + "\n");
+			}
 		}
-		sb.append("Operations:\n");
-		for (Operation operation : operations) {
-			sb.append("  " + operation.toString() + "\n");
+		if (operations.hasChildren()) {
+			sb.append("Operations:\n");
+			for (final IEntity operation : operations.getChildren()) {
+				sb.append("  " + operation.toString() + "\n");
+			}
 		}
 		return sb.toString();
 	}
 
-	@Override
-	public List<String> getVariables() {
-		List<String> vars = new ArrayList<String>();
-		for (ClassicalBEntity var : variables) {
-			vars.add(var.getIdentifier());
-		}
-		return vars;
-	}
-
-	@Override
-	public List<String> getConstants() {
-		List<String> cons = new ArrayList<String>();
-		for (ClassicalBEntity con : constants) {
-			cons.add(con.getIdentifier());
-		}
-		return cons;
-	}
-
-	@Override
-	public List<String> getOperations() {
-		List<String> ops = new ArrayList<String>();
-		for (Operation op : operations) {
-			ops.add(op.toString());
-		}
-		return ops;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
 }

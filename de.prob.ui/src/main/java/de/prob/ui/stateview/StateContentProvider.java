@@ -1,13 +1,18 @@
 package de.prob.ui.stateview;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
+import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.IEntity;
 import de.prob.statespace.History;
+import de.prob.statespace.HistoryElement;
+import de.prob.statespace.StateSpace;
 
 /**
  * Creates a new list of Operations, merging the list of available operations
@@ -15,26 +20,104 @@ import de.prob.statespace.History;
  * they are divided into groups by their operation name
  * 
  */
-class StateContentProvider implements IStructuredContentProvider {
+class StateContentProvider implements ITreeContentProvider {
 
+	public History currentHistory;
+
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput,
 			final Object newInput) {
 	}
 
+	@Override
 	public Object[] getElements(final Object inputElement) {
-		List<Object> vars= new ArrayList<Object>();
-		
-		if( inputElement instanceof History) {
-			History history = (History) inputElement;
-			HashMap<String, String> state = history.getStatespace().getInfo().getState(history.getCurrent().getCurrentState());
-			for (String key : state.keySet()) {
-				vars.add(new Variable(key, state.get(key)));
+
+		if (inputElement instanceof Object[]) {
+			final Object[] elements = (Object[]) inputElement;
+			return elements;
+		}
+		if (inputElement instanceof AbstractModel) {
+			final AbstractModel model = (AbstractModel) inputElement;
+			return model.getChildren().toArray();
+		}
+
+		return new Object[] {};
+	}
+
+	@Override
+	public Object[] getChildren(final Object parentElement) {
+		final List<Object> children = new ArrayList<Object>();
+
+		if (parentElement instanceof IEntity) {
+			children.addAll(((IEntity) parentElement).getChildren());
+			for (final Object iEntity : children) {
+				if (iEntity instanceof IEvalElement) {
+					children.set(children.indexOf(iEntity),
+							extractValue((IEvalElement) iEntity));
+				}
 			}
 		}
-		
-		return vars.toArray();
+		return children.toArray();
+	}
+
+	private Object extractValue(final IEvalElement element) {
+		final StateSpace statespace = currentHistory.getS();
+		final HistoryElement currentTrans = currentHistory.getCurrent();
+		final Map<IEvalElement, String> previousValues = statespace
+				.valuesAt(currentTrans.getSrc());
+		final Map<IEvalElement, String> currentValues = statespace
+				.valuesAt(currentTrans.getDest());
+
+		final Variable var = new Variable(element.getCode(), "", "");
+		if (previousValues.containsKey(element)) {
+			var.setPreviousValue(previousValues.get(element));
+		}
+		if (currentValues.containsKey(element)) {
+			var.setCurrentValue(currentValues.get(element));
+		}
+		return var;
+	}
+
+	// private List<Object> extractVariables(final String name) {
+	// final StateSpaceInfo info = currentHistory.getStatespace().getInfo();
+	// final List<Object> children = new ArrayList<Object>();
+	// final HistoryElement currentTrans = currentHistory.getCurrent();
+	// final StateId previousState = currentTrans.getSrc();
+	// final StateId currentState = currentTrans.getDest();
+	// if (currentTrans.getOp() != null) {
+	// String currentValue = "";
+	// String previousValue = "";
+	// if (info.stateHasVariable(currentState, name)) {
+	// currentValue = info.getVariable(currentState, name);
+	// }
+	// if (info.stateHasVariable(previousState, name)) {
+	// previousValue = info.getVariable(previousState, name);
+	// }
+	// children.add(new Variable(name, currentValue, previousValue));
+	// } else {
+	// children.add(new Variable(name, "", ""));
+	// }
+	// return children;
+	// }
+
+	@Override
+	public Object getParent(final Object element) {
+		return element.getClass();
+	}
+
+	@Override
+	public boolean hasChildren(final Object element) {
+		if (element instanceof IEntity) {
+			return ((IEntity) element).hasChildren();
+		}
+		return false;
+	}
+
+	public void setCurrentHistory(final History currentHistory) {
+		this.currentHistory = currentHistory;
 	}
 }

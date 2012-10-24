@@ -1,6 +1,7 @@
 var controller;
 var loglevel = "ERROR";
 var bindingTable;
+var outputline = 0;
 
 $.fn.dataTableExt.oApi.fnReloadAjax = function(oSettings, sNewSource) {
 	oSettings.sAjaxSource = sNewSource;
@@ -73,7 +74,7 @@ function onHandle(line, report) {
 		input : line
 	}, function(data) {
 		bindingTable.fnReloadAjax()
-		checkVersion();
+	//	checkVersion();
 		updateImports()
 		if (!data.continued) {
 			controller.lePrompt = false;
@@ -164,14 +165,20 @@ function initialize() {
 
 	// setup output polling
 	setInterval(function() {
-		$.ajax({
-			url : "outputs",
-			success : function(data) {
-				if (data != "") {
-					$("#system_out").append(data)
+	
+	$.getJSON("outputs", {
+		since : outputline
+	}, function(data) {
+		 if (data != "") {
+			 for (var prop in data) {
+  				if (data.hasOwnProperty(prop)) { 
+				   $("#system_out").append(data[prop].content)
+				   outputline = data[prop].nr
+                }
+             }
 				}
-			},
-			dataType : "json"
-		});
-	}, 100);
+	})
+	
+
+	}, 300);
 }

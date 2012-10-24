@@ -6,51 +6,57 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
+import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.AbstractModel;
-import de.prob.statespace.AnimationSelector;
+import de.prob.model.representation.IEntity;
 import de.prob.statespace.History;
-import de.prob.statespace.HistoryElement;
 
-class AnimationViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-	
-	private AnimationSelector selector;
-	public AnimationViewLabelProvider(AnimationSelector selector) {
-		this.selector = selector;
-	}
-	
-	public String getColumnText(Object obj, int index) {
-		if(index == 0) {
-			if(obj instanceof History) {
-				AbstractModel model = selector.getModel((History) obj);
-				if(model instanceof EventBModel) {
-					EventBModel ebmodel = (EventBModel) model;
+class AnimationViewLabelProvider extends LabelProvider implements
+		ITableLabelProvider {
+
+	@Override
+	public String getColumnText(final Object obj, final int index) {
+		if (index == 0) {
+			if (obj instanceof History) {
+				final History history = (History) obj;
+				final IEntity model = history.getModel();
+				if (model instanceof EventBModel) {
+					final EventBModel ebmodel = (EventBModel) model;
 					return ebmodel.getMainComponentName();
+				}
+				if (model instanceof ClassicalBModel) {
+					final ClassicalBModel cbmodel = (ClassicalBModel) model;
+					return cbmodel.getMainMachine().getName();
 				}
 			}
 		}
-		
-		if(index == 1) {
-			if(obj instanceof History) {
-				History history = (History) obj;
-				if(!history.getCurrent().getSrc().getId().equals("root"))
+
+		if (index == 1) {
+			if (obj instanceof History) {
+				final History history = (History) obj;
+				if (!history.getCurrent().getSrc().getId().equals("root")) {
 					return history.getCurrent().getOp().toString();
+				}
 			}
 		}
-		
-		if(index == 2) {
-			if(obj instanceof History) {
-				History history = (History) obj;
-				return history.getCurrent().getOpList().size()+"";
+
+		if (index == 2) {
+			if (obj instanceof History) {
+				final History history = (History) obj;
+				return history.getCurrent().getOpList().size() + "";
 			}
 		}
 		return "";
 	}
-	public Image getColumnImage(Object obj, int index) {
+
+	@Override
+	public Image getColumnImage(final Object obj, final int index) {
 		return null;
 	}
-	public Image getImage(Object obj) {
-		return PlatformUI.getWorkbench().
-				getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
+
+	@Override
+	public Image getImage(final Object obj) {
+		return PlatformUI.getWorkbench().getSharedImages()
+				.getImage(ISharedImages.IMG_OBJ_ELEMENT);
 	}
 }

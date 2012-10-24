@@ -2,22 +2,24 @@ package de.prob.webconsole;
 
 import groovy.lang.Binding;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.codehaus.groovy.tools.shell.Interpreter;
 import org.codehaus.groovy.tools.shell.ParseCode;
 import org.codehaus.groovy.tools.shell.Parser;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.scripting.Api;
-import de.prob.scripting.Downloader;
+import de.prob.statespace.AnimationSelector;
 
 /**
  * This servlet takes a line from the web interface and evaluates it using
@@ -36,58 +38,115 @@ public class GroovyExecution {
 	private final ArrayList<String> imports = new ArrayList<String>();
 
 	private final Interpreter interpreter;
-	private Interpreter try_interpreter;
 
 	private final Parser parser;
 
-	private ByteArrayOutputStream sideeffects;
+	private OutputBuffer sideeffects;
 
 	private boolean continued;
 
+	private int genCounter = 0;
+
+	private List<IGroovyExecutionListener> listeners = new ArrayList<IGroovyExecutionListener>();
+
+	public int nextCounter() {
+		return genCounter++;
+	}
+
 	private String outputs;
-	
-	private static final String[] IMPORTS = new String[] { "import de.prob.statespace.*;" };;
+
+	private static final String[] IMPORTS = new String[] {
+			"import de.prob.statespace.*;",
+			"import de.prob.model.representation.*;",
+			"import de.prob.model.classicalb.*;",
+			"import de.prob.model.eventb.*;",
+			"import de.prob.animator.domainobjects.*;" };
+	private final ShellCommands shellCommands;
 
 	@Inject
-	public GroovyExecution(Api api, Downloader downloader) {
-		Binding binding = new Binding();
+	public GroovyExecution(final Api api, final ShellCommands shellCommands,
+			final AnimationSelector selector, OutputBuffer sideeffects) {
+		this.shellCommands = shellCommands;
+		this.sideeffects = sideeffects;
+		final Binding binding = new Binding();
 		binding.setVariable("api", api);
-		binding.setVariable("downloader", downloader);
+		binding.setVariable("animations", selector);
+		binding.setVariable("__console", sideeffects);
 		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
 				binding);
-		interpreter.evaluate(Collections
-				.singletonList("upgrade = downloader.&downloadCli"));
 
 		imports.addAll(Arrays.asList(IMPORTS));
 
-		this.try_interpreter = new Interpreter(
-				this.getClass().getClassLoader(), new Binding());
+		URL url = Resources.getResource("initscript");
+
+		String script = "";
+		try {
+			script = Resources.toString(url, Charsets.UTF_8);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		this.parser = new Parser();
-		sideeffects = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(sideeffects));
+		runScript(script);
 	}
 
-	public String evaluate(String input) throws IOException {
-		assert input != null;
-		collectImports(input);
-		return eval(input);
+	public void registerListener(IGroovyExecutionListener listener) {
+		listeners.add(listener);
 	}
 
-	public Object tryevaluate(String input) throws IOException {
-		Interpreter tinterpreter = new Interpreter(this.getClass()
+	public void notifyListerners() {
+		for (IGroovyExecutionListener l : listeners) {
+			l.notifyListner(this);
+		}
+	}
+
+	public String evaluate(final String input) throws IOException {
+		try {
+			assert input != null;
+			final List<String> m = shellCommands.getMagic(input);
+			if (m.isEmpty()) {
+				return eval(input);
+			} else {
+				return shellCommands.perform(m, this);
+			}
+		} finally {
+			notifyListerners();
+		}
+	}
+
+	public String runScript(String content) {
+		try {
+			final ArrayList<String> eval = new ArrayList<String>();
+			eval.addAll(imports);
+			eval.add(content);
+			Object evaluate = null;
+			try {
+				evaluate = interpreter.evaluate(eval);
+			} catch (final Throwable e) {
+				printStackTrace(sideeffects, e);
+			} finally {
+				inputs.clear();
+			}
+			return evaluate == null ? "null" : evaluate.toString();
+		} finally {
+			notifyListerners();
+		}
+	}
+
+	public Object tryevaluate(final String input) throws IOException {
+		final Interpreter tinterpreter = new Interpreter(this.getClass()
 				.getClassLoader(), interpreter.getContext());
 
 		assert input != null;
-		ArrayList<String> eval = new ArrayList<String>();
+		final ArrayList<String> eval = new ArrayList<String>();
 		eval.addAll(imports);
 		eval.addAll(Collections.singletonList(input));
 		return tinterpreter.evaluate(eval);
 	}
 
 	public String[] getImports() {
-		String[] result = new String[imports.size()];
+		final String[] result = new String[imports.size()];
 		int c = 0;
-		for (String string : imports) {
+		for (final String string : imports) {
 			result[c++] = " " + string.substring(7, string.length() - 1).trim();
 		}
 		return result;
@@ -105,39 +164,25 @@ public class GroovyExecution {
 		return continued;
 	}
 
-	public ByteArrayOutputStream getSideeffects() {
-		return sideeffects;
-	}
+	private void printStackTrace(OutputBuffer buffer, Throwable t) {
+		String msg = t.toString();
 
-	/**
-	 * Split the line into different commands and find out, if there was a valid
-	 * import statement.
-	 * 
-	 * @param input
-	 */
-	private void collectImports(String input) {
-		String[] split = input.split(";|\n");
-		for (String string : split) {
-			if (string.trim().startsWith("import ")) {
-				try {
-					try_interpreter.evaluate(Collections.singletonList(string));
-					imports.add(string + ";"); // if try_interpreter does not
-												// throw an exception, it was a
-												// valid import statement
-				} catch (Exception e) {
-					this.try_interpreter = new Interpreter(this.getClass()
-							.getClassLoader(), new Binding());
-				}
-			}
+		ArrayList<String> trace = new ArrayList<String>();
+		// add each element of the stack trace
+		for (StackTraceElement element : t.getStackTrace()) {
+			trace.add(element.toString());
 		}
+
+		buffer.error(msg, trace);
+
 	}
 
-	private String eval(String input) throws IOException {
+	private String eval(final String input) {
 		Object evaluate = null;
 		ParseCode parseCode;
 		inputs.add(input);
 
-		ArrayList<String> eval = new ArrayList<String>();
+		final ArrayList<String> eval = new ArrayList<String>();
 		eval.addAll(imports);
 		eval.addAll(inputs);
 		parseCode = parser.parse(eval).getCode();
@@ -150,26 +195,18 @@ public class GroovyExecution {
 			continued = false;
 			try {
 				evaluate = interpreter.evaluate(eval);
-			} catch (Throwable e) {
+			} catch (final Throwable e) {
 				imports.remove(input);
-				String message = e.getMessage();
-				if (message == null && e.getCause() != null)
-					message = e.getCause().getMessage();
-				if (message != null)
-					sideeffects.write(message.getBytes());
-				else
-					e.printStackTrace(System.out);
+				printStackTrace(sideeffects, e);
 			} finally {
 				inputs.clear();
 			}
-			while(sideeffects.size()>0) {}
 			return evaluate == null ? "null" : evaluate.toString();
 		}
 	}
 
-	public void renewSideeffects() {
-		sideeffects = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(sideeffects));
+	public void addImport(final String imp) {
+		this.imports.add(imp);
 	}
 
 }

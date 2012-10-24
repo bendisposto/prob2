@@ -1,6 +1,5 @@
 package de.prob.webconsole.servlets;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -9,11 +8,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.webconsole.GroovyExecution;
+import de.prob.webconsole.OutputBuffer;
 
 /**
  * This servlet takes a line from the web interface and evaluates it using
@@ -29,23 +30,30 @@ import de.prob.webconsole.GroovyExecution;
 @Singleton
 public class GroovyOutputServlet extends HttpServlet {
 
-	private final GroovyExecution executor;
+	private Logger logger = LoggerFactory.getLogger(GroovyOutputServlet.class);
+	private OutputBuffer sideeffects;
 
 	@Inject
-	public GroovyOutputServlet(GroovyExecution executor) {
-		this.executor = executor;
+	public GroovyOutputServlet(OutputBuffer sideeffects) {
+		this.sideeffects = sideeffects;
 	}
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
+		String input = req.getParameter("since");
+		int pos = 0;
+		try {
+			pos = Integer.parseInt(input);
+		} catch (NumberFormatException e) {
+			String msg = "Illegal parameter '" + input
+					+ "'. Was expecting an integer but received " + input;
+			logger.error(msg);
+		}
 
-		ByteArrayOutputStream sideeffects = executor.getSideeffects();
-		String outputs = sideeffects.toString();
-		executor.renewSideeffects();
-		out.println(new Gson().toJson(outputs));
+		String json = sideeffects.getTextAsJSon(pos);
+		out.println(json);
 		out.close();
 	}
-
 }

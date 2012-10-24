@@ -4,18 +4,13 @@ package de.prob.ui.animationsview;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -56,7 +51,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		createColumns();
 		viewer.setContentProvider(new AnimationsContentProvider());
-		viewer.setLabelProvider(new AnimationViewLabelProvider(selector));
+		viewer.setLabelProvider(new AnimationViewLabelProvider());
 		viewer.setSorter(null);
 		viewer.setInput(getViewSite());
 
@@ -105,7 +100,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	}
 	
 	@Override
-	public void historyChange(final History history, AbstractModel model) {
+	public void historyChange(final History history) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {

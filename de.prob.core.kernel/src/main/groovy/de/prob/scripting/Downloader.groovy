@@ -2,15 +2,20 @@ package de.prob.scripting
 
 import static java.io.File.*
 
+import java.io.IOException;
+import java.util.List;
 import java.util.zip.ZipInputStream
 
 import com.google.inject.Inject
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 import de.prob.annotations.Home
 import de.prob.cli.OsSpecificInfo
+import de.prob.webconsole.GroovyExecution;
+import de.prob.webconsole.shellcommands.AbstractShellCommand;
 
 
-class Downloader {
+class Downloader extends AbstractShellCommand {
 
 	def OsSpecificInfo osInfo
 	def String probhome
@@ -36,20 +41,20 @@ class Downloader {
 	def ConfigObject downloadConfig() {
 		// download config
 		try {
-		def configurl = "http://nightly.cobra.cs.uni-duesseldorf.de/tmp/config.groovy"
-		def file = probhome + "config.groovy"
-		download(configurl, file)
-		File g = new File(file)
-		def config = new ConfigSlurper().parse(g.toURI().toURL())
-		g.delete()
-		return config
+			def configurl = "http://nightly.cobra.cs.uni-duesseldorf.de/tmp/config.groovy"
+			def file = probhome + "config.groovy"
+			download(configurl, file)
+			File g = new File(file)
+			def config = new ConfigSlurper().parse(g.toURI().toURL())
+			g.delete()
+			return config
 		}
 		catch (Exception e) {
-			return [] 
+			return []
 		}
 	}
 
-	def availableVersions() {
+	def  availableVersions() {
 		config.collect { it.getKey()}
 	}
 
@@ -132,5 +137,25 @@ class Downloader {
 		f.delete()
 
 		return "--Upgrade to version: ${targetVersion} (${url})  successful.--"
+	}
+
+
+	@Override
+	public List<String> complete(List<String> m, int pos) {
+		def suggestions = m.isEmpty() ? availableVersions(): availableVersions().findAll { it.startsWith(m[0]) }
+		if (suggestions.size() == 1) {
+			return ["upgrade "+suggestions[0]]
+		}
+		else {
+			return suggestions
+		}
+	}
+
+	@Override
+	public Object perform(List<String> m, GroovyExecution exec)
+	throws IOException {
+		def version = m[1]
+		assert ((List) availableVersions()).contains(version)
+		return downloadCli(version);
 	}
 }
