@@ -3,8 +3,8 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'findbugs'
-apply plugin: 'eclipse-wtp'
-apply plugin: 'war'
+//apply plugin: 'eclipse-wtp'
+//apply plugin: 'war'
 //apply plugin: 'jetty'
 
 
@@ -143,7 +143,7 @@ task pack(type: Sync) {
     into "$buildDir/libs/lib"
 }
 
-task deployKernel(dependsOn: [jar, test,javadoc,pack], group: 'Build', type: Zip) {
+task deployKernel(dependsOn: [jar, test,javadoc], group: 'Build', type: Zip) {
 	description = 'Assembles the uberjar, runs all tests and builds the javadoc.'
 	from "$buildDir/libs/"
 	doLast {
