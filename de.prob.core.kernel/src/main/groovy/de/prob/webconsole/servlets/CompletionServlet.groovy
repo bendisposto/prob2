@@ -49,8 +49,7 @@ public class CompletionServlet extends HttpServlet {
 		for (String fqn : p.keySet()) {
 			def pack = p.get(fqn)
 			def cn = fqn.substring(pack.length() + 1)
-			def clazz = cn.replaceAll(/\$/, ".")
-			clazzes.put(clazz, fqn)
+			clazzes.put(cn, fqn)
 		}
 	}
 
@@ -93,11 +92,19 @@ public class CompletionServlet extends HttpServlet {
 			return shellCommands.complete(m, c);
 		}
 		
-		// get Bindings
-		completions.addAll(findMatchingVariables(input));
 
 		String sub = ""
 		String other = input // for matching
+		if (input.contains("(")) {
+			int pos = input.lastIndexOf("(")
+			sub = input.substring(0, pos + 1)
+			other = input.substring(pos + 1, input.length())
+			begin = begin + sub
+			sub = ""
+			input = other
+		}
+		// get Bindings
+		completions.addAll(findMatchingVariables(input));
 		
 		if (input.contains(".")) {
 			int pos = input.lastIndexOf(".")
@@ -107,6 +114,7 @@ public class CompletionServlet extends HttpServlet {
 		} else {
 			completions.addAll(clazzes.keySet())
 		}
+		
 
 		if (begin.isEmpty() && other == input) {
 			addMagicCommands(completions, shellCommands)
@@ -115,7 +123,7 @@ public class CompletionServlet extends HttpServlet {
 		completions = camelMatch(completions, other)
 
 		String pre = getCommonPrefix(completions);
-		if (pre != input && pre != other && !pre.isEmpty()) {
+		if (pre.length() >= input.length() && pre != input && pre != other && !pre.isEmpty()) {
 			return [begin + sub + pre + rest]
 		}
 		
