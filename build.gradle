@@ -3,3 +3,24 @@ targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","ht
 groupID = "de.prob2"
 
 apply from: 'tycho_build.gradle'
+
+subprojects{
+	
+
+	task switchToBuildMF()<<{
+		if(features.every{ it != project.name }){		// Generating Poms for sub projects except features
+			def standardMF = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF")
+			def buildMF = new File(workspacePath+"${project.name}/BUILD-META/MANIFEST.MF")
+			standardMF.delete()
+			standardMF << buildMF.text
+		}
+	}
+	task switchToStandardMF()<<{
+		if(features.every{ it != project.name }){		// Generating Poms for sub projects except features
+			def standardMF = new File(workspacePath+"${project.name}/BUILD-META/OLD_MANIFEST.MF")
+			def buildMF = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF")
+			buildMF.delete()
+			buildMF << standardMF.text
+		}
+	}	
+}
