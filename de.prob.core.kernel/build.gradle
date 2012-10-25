@@ -72,6 +72,8 @@ dependencies {
 	compile 'jgrapht:jgrapht:0.8.3' // LGPL <---
 	compile 'jgraphx:jgraphx:1.10.1.0' // BSD
 	
+	//compile 'org.reflections:reflections:0.9.8' // do WTF you want license
+	//compile 'org.javassist:javassist:3.16.1-GA' // Apache
 	compile 'xstream:xstream:1.2.2' // BSD
 	compile 'stax:stax:1.2.0_rc2-dev' // Apache Licence 2.0
 	compile 'org.codehaus.jettison:jettison:1.3.1' // Apache Licence 2.0
@@ -121,6 +123,7 @@ compileJava {
 }
 
 def listJars() {
+	enumerateClasses()
 	def cp = sourceSets.main.runtimeClasspath
 	def deps = cp.collect { it.getName() }
 	def jars = deps.findAll {it.endsWith(".jar")}
@@ -142,6 +145,39 @@ task pack(type: Sync) {
     from configurations.runtime
     into "$buildDir/libs/lib"
 }
+
+def enumerateClasses() {
+	dude = configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	Properties<String, String> p = new Properties<String, String>()
+	dude.each { tree ->
+		tree.each {File file ->
+			def m = file.toString() =~ '.*/expandedArchives/[a-zA-Z0-9\\._-]*/(.*).class'
+			if (m.size() > 0) {
+				String match = m[0][1]
+				def fqn = match.replaceAll('/', '.');
+				int pos = fqn.lastIndexOf('.')
+				def pack  = pos > 0 ? fqn[0..pos-1] : ""
+				p.setProperty(fqn, pack)
+			}
+		}
+	}
+	def ft2 = fileTree(dir: 'bin')
+	ft2.each { File file ->
+		def m = file.toString() =~ '.*/de.prob.core.kernel/bin/(.*).class'
+		if (m.size() > 0) {
+			String match = m[0][1]
+			def fqn = match.replaceAll('/', '.');
+			int pos = fqn.lastIndexOf('.')
+			def pack  = pos > 0 ? fqn[0..pos-1] : ""
+			p.setProperty(fqn, pack)
+		}
+	}
+	File f = new File("src/main/resources/classmap.properties")
+	FileOutputStream fos = new FileOutputStream(f)
+	p.store(fos, "Classes (fqn) mapped to a the package name")
+	fos.close()
+}
+
 
 task deployKernel(dependsOn: [jar, test,javadoc], group: 'Build', type: Zip) {
 	description = 'Assembles the uberjar, runs all tests and builds the javadoc.'

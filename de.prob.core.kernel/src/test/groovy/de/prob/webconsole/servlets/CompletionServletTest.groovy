@@ -44,7 +44,7 @@ class CompletionServletTest extends Specification {
 		result == ["foo", "Bar", "Baz", "Blubb", "Bla"]
 	}
 
-	def "camcelCase splitting works with substrings of length one"() {
+	def "camelCase splitting works with substrings of length one"() {
 		when:
 		def result = servlet.camelSplit("mahnaMBDBDB");
 		then:
@@ -103,13 +103,17 @@ class CompletionServletTest extends Specification {
 		["aaaa","baaa"]         | ""
 	}
 	
+	def "completion on empty string contains bindings, magic commands and classes"() {
+		expect:
+		servlet.getCompletions("0", "").containsAll("api", "foo", "foobar", "update", "upgrade ", "import ", "load ", "CompletionServletTest")
+	}
+	
 	def "get special command completion"() {
 		expect:
 		servlet.getCompletions(col as String, fulltext) as Set == list as Set
 				
 		where:
 		col		| fulltext		| list
-		0		| ""			| ["api", "foo", "foobar", "update", "upgrade ", "import ", "load "]
 		1		| "u"			| ["up"]
 		2		| "up"			| ["upgrade ", "update"]
 		3		| "upglatest"	| ["upgrade latest"]
@@ -122,10 +126,10 @@ class CompletionServletTest extends Specification {
 				
 		where:
 		col		| fulltext		| list
-		1		| "a"			| ["api"]
-		1		| "a api"		| ["api api"]
-		3		| "a a a"		| ["a api a"]
-		5		| "a a a"		| ["a a api"]
+		2		| "ap"			| ["api"]
+		2		| "ap api"		| ["api api"]
+		3		| "a a a"		| ["api", "al"]
+		6		| "a a ap"		| ["a a api"]
 		2		| "fo"			| ["foo"]
 		3		| "foo"			| ["foo", "foobar"]
 		6		| "api fo"		| ["api foo"]
