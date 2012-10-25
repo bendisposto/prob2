@@ -1,5 +1,6 @@
 package de.prob.webconsole.servlets;
 
+import java.awt.im.InputContext;
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -92,11 +93,19 @@ public class CompletionServlet extends HttpServlet {
 			return shellCommands.complete(m, c);
 		}
 		
-		// get Bindings
-		completions.addAll(findMatchingVariables(input));
 
 		String sub = ""
 		String other = input // for matching
+		if (input.contains("(")) {
+			int pos = input.lastIndexOf("(")
+			sub = input.substring(0, pos + 1)
+			other = input.substring(pos + 1, input.length())
+			begin = begin + sub
+			sub = ""
+			input = other
+		}
+		// get Bindings
+		completions.addAll(findMatchingVariables(input));
 		
 		if (input.contains(".")) {
 			int pos = input.lastIndexOf(".")
@@ -106,6 +115,7 @@ public class CompletionServlet extends HttpServlet {
 		} else {
 			completions.addAll(clazzes.keySet())
 		}
+		
 
 		if (begin.isEmpty() && other == input) {
 			addMagicCommands(completions, shellCommands)
@@ -114,7 +124,7 @@ public class CompletionServlet extends HttpServlet {
 		completions = camelMatch(completions, other)
 
 		String pre = getCommonPrefix(completions);
-		if (pre != input && pre != other && !pre.isEmpty()) {
+		if (pre.length() >= input.length() && pre != input && pre != other && !pre.isEmpty()) {
 			return [begin + sub + pre + rest]
 		}
 		

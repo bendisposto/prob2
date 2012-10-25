@@ -144,7 +144,6 @@ class CompletionServletTest extends Specification {
 		10 		| "api foo.la 3"| ["api foo.lastIndexOf( 3"]
 		6 		| "foo.le"		| ["leftShift(", "length()"]
 		6 		| "foo.lS"		| ["foo.leftShift("]
-		8 		| "1 foo.tB 3"	| ["1 foo.toB 3"]
 		9 		| "1 foo.toB 3"	| ["toBigDecimal()", "toBoolean()", "toBigInteger()"]
 		9 		| "1 foo.tBD 3"	| ["1 foo.toBigDecimal() 3"]
 		9 		| "1 foo.toBD 3"| ["toBigDecimal()", "toBoolean()", "toBigInteger()"]
