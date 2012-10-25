@@ -1,5 +1,8 @@
 package de.prob.model.eventb;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +15,8 @@ import org.jgrapht.graph.ClassBasedEdgeFactory;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import com.google.inject.Inject;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Label;
@@ -50,10 +55,10 @@ public class EventBModel extends AbstractModel {
 			if (!components.containsKey(name)) {
 				if (element instanceof Context) {
 					final Context c = (Context) element;
-					components.put(name, new EBContext(c));
+					components.put(name, new EBContext(c.doGetName()));
 				} else if (element instanceof Machine) {
 					final Machine m = (Machine) element;
-					components.put(name, new EBMachine(m));
+					components.put(name, new EBMachine(m.doGetName()));
 				}
 			}
 
@@ -64,8 +69,7 @@ public class EventBModel extends AbstractModel {
 					final String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EBContext(
-								(Context) allComponents.get(ctxName)));
+						components.put(ctxName, new EBContext(ctxName));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.EXTENDS));
 				}
@@ -77,8 +81,7 @@ public class EventBModel extends AbstractModel {
 					final String ctxName = context.doGetName();
 					if (!components.containsKey(ctxName)) {
 						graph.addVertex(ctxName);
-						components.put(ctxName, new EBContext(
-								(Context) allComponents.get(ctxName)));
+						components.put(ctxName, new EBContext(ctxName));
 					}
 					graph.addEdge(name, ctxName, new RefType(ERefType.SEES));
 				}
@@ -87,22 +90,42 @@ public class EventBModel extends AbstractModel {
 					final String mName = machine.doGetName();
 					if (!components.containsKey(mName)) {
 						graph.addVertex(mName);
-						components.put(mName, new EBMachine(
-								(Machine) allComponents.get(mName)));
+						components.put(mName, new EBMachine(mName));
 					}
 					graph.addEdge(name, mName, new RefType(ERefType.REFINES));
 				}
 			}
 		}
 		statespace.setModel(this);
+		// testSerialization();
 	}
 
-	public EventBElement getComponent(final String componentName) {
-		return components.containsKey(componentName) ? (EventBElement) components
+	public Label getComponent(final String componentName) {
+		return components.containsKey(componentName) ? (Label) components
 				.get(componentName) : null;
 	}
 
 	public String getMainComponentName() {
 		return mainComponent;
+	}
+
+	public void testSerialization() {
+		final Model model = new Model();
+		for (final RefType edge : graph.edgeSet()) {
+			final Label from = components.get(graph.getEdgeSource(edge));
+			final Label to = components.get(graph.getEdgeTarget(edge));
+			model.relationships.add(new Relationship(from, to));
+		}
+
+		final XStream xstream = new XStream(new JettisonMappedXmlDriver());
+		final String xml = xstream.toXML(model);
+		try {
+			final FileWriter fw = new FileWriter("model.xml");
+			final BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(xml);
+			bw.close();
+		} catch (final IOException e1) {
+			System.out.println("could not create file");
+		}
 	}
 }

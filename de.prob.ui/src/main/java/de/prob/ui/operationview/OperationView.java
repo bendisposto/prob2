@@ -33,7 +33,6 @@ import com.google.inject.Injector;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.eventb.EBEvent;
 import de.prob.model.eventb.EBMachine;
-import de.prob.model.eventb.EventBElement;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.IEntity;
 import de.prob.model.representation.Label;
@@ -259,7 +258,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		final Map<String, Object> names = new HashMap<String, Object>();
 		if (model instanceof EventBModel) {
 			final EventBModel ebmodel = (EventBModel) model;
-			final EventBElement component = ebmodel.getComponent(ebmodel
+			final Label component = ebmodel.getComponent(ebmodel
 					.getMainComponentName());
 			if (component instanceof EBMachine) {
 				final EBMachine machine = (EBMachine) component;
