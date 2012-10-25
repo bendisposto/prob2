@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse
 
 import org.codehaus.groovy.runtime.InvokerHelper
 
+import com.google.common.collect.ArrayListMultimap
+import com.google.common.collect.Multimap
 import com.google.gson.Gson
 import com.google.inject.Inject
 import com.google.inject.Singleton
@@ -28,12 +30,28 @@ public class CompletionServlet extends HttpServlet {
 
 	private final GroovyExecution executor;
 	private ShellCommands shellCommands;
+	
+	private Multimap<String, String> clazzes = new ArrayListMultimap<String, String>()
 
 	@Inject
 	public CompletionServlet(GroovyExecution executor, ShellCommands shellCommands) {
 		this.shellCommands = shellCommands;
 		this.executor = executor;
+		initClassNames()
+	}
+	
+	def initClassNames() {
+		Properties p = new Properties()
+		def rs = this.getClass().getClassLoader()
+		    .getResourceAsStream("classmap.properties");
+		p.load(rs)
 
+		for (String fqn : p.keySet()) {
+			def pack = p.get(fqn)
+			def cn = fqn.substring(pack.length() + 1)
+			def clazz = cn.replaceAll(/\$/, ".")
+			clazzes.put(clazz, fqn)
+		}
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -43,7 +61,8 @@ public class CompletionServlet extends HttpServlet {
 		String col = req.getParameter("col");
 
 		List<String> completions = getCompletions(col, fulltext)
-		Gson g = new Gson();
+		Gson g = new Gson();		
+		
 		String json = g.toJson(completions);
 		out.println(json);
 		out.close();
@@ -85,6 +104,8 @@ public class CompletionServlet extends HttpServlet {
 			sub = input.substring(0, pos + 1)
 			other = input.substring(pos + 1, input.length())
 			addMethodsAndFields(completions, sub)
+		} else {
+			completions.addAll(clazzes.keySet())
 		}
 
 		if (begin.isEmpty() && other == input) {
@@ -97,9 +118,16 @@ public class CompletionServlet extends HttpServlet {
 		if (pre != input && pre != other && !pre.isEmpty()) {
 			return [begin + sub + pre + rest]
 		}
+		
+		if (clazzes.containsKey(other)) {
+			def valueList = clazzes.get(other)
+			if (valueList.size() > 1) {
+				completions.addAll(valueList)
+			}
+		}
 					
 		if (completions.size() == 1) {
-			completions = completions.collect {begin + sub + it + rest}
+				completions = completions.collect {begin + sub + it + rest}
 		}
 		
 		return completions

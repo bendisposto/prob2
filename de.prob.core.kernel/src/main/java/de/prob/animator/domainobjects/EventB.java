@@ -31,10 +31,13 @@ public class EventB implements IEvalElement, IEntity {
 
 	private final String code;
 	private String kind;
-	private final Node ast;
+	private Node ast = null;
 
 	public EventB(final String code) {
 		this.code = code;
+	}
+
+	private void ensureParsed() {
 		final String unicode = UnicodeTranslator.toUnicode(code);
 		kind = PREDICATE.toString();
 		IParseResult parseResult = FormulaFactory.getDefault().parsePredicate(
@@ -52,7 +55,6 @@ public class EventB implements IEvalElement, IEntity {
 		if (parseResult.hasProblem()) {
 			throwException(code, parseResult);
 		}
-
 	}
 
 	private Node prepareExpressionAst(final IParseResult parseResult) {
@@ -89,6 +91,11 @@ public class EventB implements IEvalElement, IEntity {
 
 	@Override
 	public void printProlog(final IPrologTermOutput pout) {
+		if (ast == null) {
+			ensureParsed();
+		}
+
+		assert ast != null;
 		final ASTProlog prolog = new ASTProlog(pout, null);
 		ast.apply(prolog);
 	}

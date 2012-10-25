@@ -2,17 +2,11 @@ package de.prob.model.eventb;
 
 import java.util.Arrays;
 
-import org.eventb.emf.core.machine.Action;
-import org.eventb.emf.core.machine.Event;
-import org.eventb.emf.core.machine.Guard;
-import org.eventb.emf.core.machine.Parameter;
-import org.eventb.emf.core.machine.Witness;
-
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.IEntity;
 import de.prob.model.representation.Label;
 
-public class EBEvent extends EventBElement {
+public class EBEvent extends Label {
 
 	final public Label refines = new Label("REFINES");
 	final public Label parameters = new Label("ANY");
@@ -20,29 +14,8 @@ public class EBEvent extends EventBElement {
 	final public Label witnesses = new Label("WITH");
 	final public Label actions = new Label("THEN");
 
-	public EBEvent(final Event event) {
-		super(event);
-
-		for (final Event event2 : event.getRefines()) {
-			refines.addChild(new Label(event2.doGetName()));
-		}
-
-		for (final Parameter parameter : event.getParameters()) {
-			parameters.addChild(new EventB(parameter.doGetName()));
-		}
-
-		for (final Guard guard : event.getGuards()) {
-			guards.addChild(new EventB(guard.getPredicate()));
-		}
-
-		for (final Witness witness : event.getWitnesses()) {
-			witnesses.addChild(new EventB(witness.getPredicate()));
-		}
-
-		for (final Action action : event.getActions()) {
-			actions.addChild(new Label(action.getAction()));
-		}
-
+	public EBEvent(final String name) {
+		super(name);
 		children.addAll(Arrays.asList(new IEntity[] { refines, parameters,
 				guards, witnesses, actions }));
 	}
@@ -50,5 +23,25 @@ public class EBEvent extends EventBElement {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public void addRefinement(final String refinementName) {
+		refines.addChild(new Label(refinementName));
+	}
+
+	public void addParameter(final String parameter) {
+		parameters.addChild(new EventB(parameter));
+	}
+
+	public void addGuard(final String guard) {
+		guards.addChild(new EventB(guard));
+	}
+
+	public void addWitness(final String witness) {
+		witnesses.addChild(new EventB(witness));
+	}
+
+	public void addAction(final String action) {
+		actions.addChild(new Label(action));
 	}
 }
