@@ -103,11 +103,6 @@ class CompletionServletTest extends Specification {
 		["aaaa","baaa"]         | ""
 	}
 	
-	def "completion on empty string contains bindings, magic commands and classes"() {
-		expect:
-		servlet.getCompletions("0", "").containsAll("api", "foo", "foobar", "update", "upgrade ", "import ", "load ", "CompletionServletTest")
-	}
-	
 	def "get special command completion"() {
 		expect:
 		servlet.getCompletions(col as String, fulltext) as Set == list as Set
