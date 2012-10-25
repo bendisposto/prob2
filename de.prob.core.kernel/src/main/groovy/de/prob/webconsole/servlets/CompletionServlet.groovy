@@ -49,7 +49,6 @@ public class CompletionServlet extends HttpServlet {
 		for (String fqn : p.keySet()) {
 			def pack = p.get(fqn)
 			def cn = fqn.substring(pack.length() + 1)
-			def clazz = cn.replaceAll(/\$/, ".")
 			clazzes.put(clazz, fqn)
 		}
 	}

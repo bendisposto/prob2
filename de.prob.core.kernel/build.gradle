@@ -157,7 +157,8 @@ def enumerateClasses() {
 				def fqn = match.replaceAll('/', '.');
 				int pos = fqn.lastIndexOf('.')
 				def pack  = pos > 0 ? fqn[0..pos-1] : ""
-				p.setProperty(fqn, pack)
+				if (fqn.indexOf("\$") == -1)
+					p.setProperty(fqn, pack)
 			}
 		}
 	}
@@ -169,7 +170,8 @@ def enumerateClasses() {
 			def fqn = match.replaceAll('/', '.');
 			int pos = fqn.lastIndexOf('.')
 			def pack  = pos > 0 ? fqn[0..pos-1] : ""
-			p.setProperty(fqn, pack)
+			if (fqn.indexOf("\$") == -1)
+				p.setProperty(fqn, pack)
 		}
 	}
 	File f = new File("src/main/resources/classmap.properties")
