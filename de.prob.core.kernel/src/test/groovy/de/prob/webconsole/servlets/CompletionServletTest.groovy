@@ -167,4 +167,17 @@ class CompletionServletTest extends Specification {
 		"foo bar. baz"		| 12	| ["foo bar. ", "baz", ""]
 	}
 	
+	def "specifying correct resplitting behaviour"() {
+		expect:
+		servlet.resplit(input) == list as String[]
+		
+		where:
+		input						| list
+		"api.foo("					| ["api.foo(", ""]
+		"foo.bar(baz."				| ["foo.bar(", "baz."]
+		"foo.bar(baz.ding).boing"	| ["", "foo.bar(baz.ding).boing"]
+		"foo(bar(baz).ding"			| ["foo(", "bar(baz).ding"]
+		"upgrade"					| ["", "upgrade"]
+	}
+	
 }
