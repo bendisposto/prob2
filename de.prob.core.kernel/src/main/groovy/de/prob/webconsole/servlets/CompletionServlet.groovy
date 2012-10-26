@@ -151,13 +151,6 @@ public class CompletionServlet extends HttpServlet {
 		def first = input.substring(0, i+2)
 		def second = input.substring(i+2, input.length())
 		return [first, second] as String[]
-		/*def firstOpenPar = input.indexOf('(')
-		def closingPar = input.indexOf(")", firstOpenPar+1)
-		while (closingPar > firstOpenPar) {
-			firstOpenPar = input.indexOf('(', firstOpenPar+1)
-			closingPar = input.indexOf(")", closingPar+1)
-		}
-		return [input[0..firstOpenPar], input.substring(firstOpenPar+1)] as String[]*/
 	}
 
 	private List<String> camelMatch(final List<String> completions, final String match) {
