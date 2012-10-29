@@ -4,23 +4,25 @@ groupID = "de.prob2"
 
 apply from: 'tycho_build.gradle'
 
-subprojects{
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.2'
+}
+
+project(':de.prob.core.rodin'){
 	
 
 	task switchToBuildMF()<<{
-		if(features.every{ it != project.name }){		// Generating Poms for sub projects except features
-			def standardMF = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF")
-			def buildMF = new File(workspacePath+"${project.name}/BUILD-META/MANIFEST.MF")
-			standardMF.delete()
-			standardMF << buildMF.text
-		}
+		def standardMF = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF")
+		def buildMF = new File(workspacePath+"${project.name}/BUILD-META/MANIFEST.MF")
+		standardMF.delete()
+		standardMF << buildMF.text
 	}
+	
 	task switchToStandardMF()<<{
-		if(features.every{ it != project.name }){		// Generating Poms for sub projects except features
-			def standardMF = new File(workspacePath+"${project.name}/BUILD-META/OLD_MANIFEST.MF")
-			def buildMF = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF")
-			buildMF.delete()
-			buildMF << standardMF.text
-		}
+		def standardMF = new File(workspacePath+"${project.name}/BUILD-META/OLD_MANIFEST.MF")
+		def buildMF = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF")
+		buildMF.delete()
+		buildMF << standardMF.text
+		
 	}	
 }
