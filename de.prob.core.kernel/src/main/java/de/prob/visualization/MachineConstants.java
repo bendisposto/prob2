@@ -6,7 +6,7 @@ import java.util.List;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.eventb.EBContext;
-import de.prob.model.eventb.EBMachine;
+import de.prob.model.eventb.newdom.EventBMachine;
 import de.prob.model.representation.IEntity;
 import de.prob.model.representation.Label;
 
@@ -32,8 +32,8 @@ public class MachineConstants {
 					.getChildren());
 			variables = new ArrayList<String>();
 			operations = new ArrayList<String>();
-		} else if (abstractElement instanceof EBMachine) {
-			final EBMachine machine = (EBMachine) abstractElement;
+		} else if (abstractElement instanceof EventBMachine) {
+			final EventBMachine machine = (EventBMachine) abstractElement;
 			variables = extractStrings(machine.variables.getChildren());
 			operations = extractStrings(machine.events.getChildren());
 			constants = new ArrayList<String>();

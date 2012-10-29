@@ -1,13 +1,17 @@
 package de.prob.model.eventb.newdom;
 
+import java.util.List;
+
+import de.prob.model.representation.newdom.AbstractElement;
+import de.prob.model.representation.newdom.Machine;
 
 public class EBModel extends AbstractElement {
 
-	void addMachine(Machine m) {
-		put(Machine.class, m);
+	public void addMachines(final List<EventBMachine> machines) {
+		put(Machine.class, machines);
 	}
 
-	void addContext(Context c) {
-
+	public void addContexts(final List<Context> contexts) {
+		put(Context.class, contexts);
 	}
 }
