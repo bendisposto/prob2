@@ -56,12 +56,12 @@ public class OpInfo {
 				.getArgument(5));
 		ValueTranslator valueTranslator = new ValueTranslator();
 		for (PrologTerm prologTerm : parameters) {
-			
-				Object translated = valueTranslator
-						.translate( prologTerm);
-//				System.out.println("T: " + translated.getClass() + " "
-//						+ translated.toString());
-			}
+
+			Object translated = valueTranslator.translate(prologTerm);
+			String retranslated = valueTranslator.asString(translated);
+			System.out.println("T: " + translated.getClass() + " "
+					+ translated.toString() + " " + retranslated);
+		}
 
 		ListPrologTerm lpt = BindingGenerator.getList(opTerm.getArgument(6));
 		for (PrologTerm prologTerm : lpt) {
