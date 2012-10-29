@@ -92,17 +92,13 @@ public class CompletionServlet extends HttpServlet {
 			return shellCommands.complete(m, c);
 		}
 		
+		String[] parSplit = resplit(input);
+		begin += parSplit[0]
+		input = parSplit[1]
 
 		String sub = ""
 		String other = input // for matching
-		if (input.contains("(")) {
-			int pos = input.lastIndexOf("(")
-			sub = input.substring(0, pos + 1)
-			other = input.substring(pos + 1, input.length())
-			begin = begin + sub
-			sub = ""
-			input = other
-		}
+		
 		// get Bindings
 		completions.addAll(findMatchingVariables(input));
 		
@@ -139,6 +135,22 @@ public class CompletionServlet extends HttpServlet {
 		}
 		
 		return completions
+	}
+	
+	private String[] resplit(String input) {
+		int unmatchedClosingParCount = 0;
+		int i = input.length() - 1
+		for (; i >= 0 && unmatchedClosingParCount >= 0; i--) {
+			if (input.charAt(i) == '(')
+				unmatchedClosingParCount--
+			else if (input.charAt(i) == ')')
+				unmatchedClosingParCount++
+		}
+		if (i == -1)
+			return ["", input] as String[]
+		def first = input.substring(0, i+2)
+		def second = input.substring(i+2, input.length())
+		return [first, second] as String[]
 	}
 
 	private List<String> camelMatch(final List<String> completions, final String match) {
