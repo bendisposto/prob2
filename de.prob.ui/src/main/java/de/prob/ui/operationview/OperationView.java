@@ -32,8 +32,8 @@ import com.google.inject.Injector;
 
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.eventb.EBEvent;
+import de.prob.model.eventb.EBMachine;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.eventb.newdom.EventBMachine;
 import de.prob.model.representation.IEntity;
 import de.prob.model.representation.Label;
 import de.prob.statespace.AnimationSelector;
@@ -260,8 +260,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 			final EventBModel ebmodel = (EventBModel) model;
 			final Label component = ebmodel.getComponent(ebmodel
 					.getMainComponentName());
-			if (component instanceof EventBMachine) {
-				final EventBMachine machine = (EventBMachine) component;
+			if (component instanceof EBMachine) {
+				final EBMachine machine = (EBMachine) component;
 				final Label events = machine.events;
 				for (final IEntity key : events.getChildren()) {
 					if (key instanceof EBEvent) {
