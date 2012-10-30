@@ -37,4 +37,6 @@ task collectArtifacts(type:Copy) {
 	    into workspacePath + 'updatesite'
 	    from workspacePath + "index.html"
 	    into workspacePath + 'updatesite'
+	    from workspacePath + "main.css"
+	    into workspacePath + 'updatesite'
 }
