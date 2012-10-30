@@ -16,5 +16,4 @@ public abstract class AbstractElement {
 			final List<? extends T> elements) {
 		children.put(c, elements);
 	}
-
 }
