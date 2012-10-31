@@ -147,9 +147,9 @@ task pack(type: Sync) {
 }
 
 def enumerateClasses() {
-	dude = configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	def folder = configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 	Properties<String, String> p = new Properties<String, String>()
-	dude.each { tree ->
+	folder.each { tree ->
 		tree.each {File file ->
 			def m = file.toString() =~ '.*/expandedArchives/[a-zA-Z0-9\\._-]*/(.*).class'
 			if (m.size() > 0) {
@@ -174,7 +174,8 @@ def enumerateClasses() {
 				p.setProperty(fqn, pack)
 		}
 	}
-	File f = new File("src/main/resources/classmap.properties")
+	def fn = projectDir.getAbsolutePath()+"/src/main/resources/classmap.properties"
+    File f = new File(fn)
 	FileOutputStream fos = new FileOutputStream(f)
 	p.store(fos, "Classes (fqn) mapped to a the package name")
 	fos.close()
