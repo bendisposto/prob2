@@ -74,6 +74,9 @@ public class LoadCommand extends AbstractShellCommand {
 
 	@Override
 	public List<String> complete(List<String> args, int pos) {
+		if (pos < 0) {
+			return Collections.emptyList();
+		}
 		ArrayList<String> suggestions = new ArrayList<String>();
 		ArrayList<String> s = new ArrayList<String>();
 		FileNameCompletor completor = new FileNameCompletor();
