@@ -3,7 +3,7 @@ package de.prob.animator.domainobjects
 import groovy.transform.TupleConstructor
 
 import com.google.common.base.Joiner
-import com.sun.tools.jdi.LinkedHashMap;
+import java.util.LinkedHashMap;
 
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
