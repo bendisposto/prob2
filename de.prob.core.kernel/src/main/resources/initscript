@@ -4,14 +4,23 @@
        "..." as EventB converts "..." to an EventB evaluation element
 */
 
-def oldAsType = String.metaClass.getMetaMethod("asType", [Class] as Class[])
+def oldStringAsType = String.metaClass.getMetaMethod("asType", [Class] as Class[])
+def oldArrayListAsType = ArrayList.metaClass.getMetaMethod("asType", [Class] as Class[])
 
-String.metaClass.asType = { Class type -> if (type == ClassicalB) return new ClassicalB(delegate) 
+
+String.metaClass.asType = { Class type -> 
+       if (type == ClassicalB) return new ClassicalB(delegate) 
        if (type == EventB) return new EventB(delegate) 
-        oldAsType.invoke(delegate, [type] as Class[])
+       oldStringAsType.invoke(delegate, [type] as Class[])
 }
 
 
+ArrayList.metaClass.asType = { Class type -> 
+		if (type == Tuple) return new Tuple(delegate[0],delegate[1]) 
+		def c = new Class[1]
+        c[0] = type
+        oldArrayListAsType.invoke(delegate, c)
+}
 
 
 /* Redirect print and println to our own buffered console*/
