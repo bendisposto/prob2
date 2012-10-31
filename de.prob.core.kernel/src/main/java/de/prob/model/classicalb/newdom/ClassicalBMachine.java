@@ -1,6 +1,6 @@
 package de.prob.model.classicalb.newdom;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import de.prob.model.representation.newdom.AbstractEvent;
 import de.prob.model.representation.newdom.Constant;
@@ -13,42 +13,42 @@ public class ClassicalBMachine extends Machine {
 
 	public ClassicalBMachine(final String name) {
 		super(name);
-		put(Parameter.class, new ArrayList<Parameter>());
-		put(Set.class, new ArrayList<ClassicalBSet>());
-		put(Constraint.class, new ArrayList<Constraint>());
-		put(Constant.class, new ArrayList<ClassicalBConstant>());
-		put(Property.class, new ArrayList<Property>());
-		put(Variable.class, new ArrayList<ClassicalBVariable>());
-		put(Invariant.class, new ArrayList<ClassicalBInvariant>());
-		put(Assertion.class, new ArrayList<Assertion>());
-		put(AbstractEvent.class, new ArrayList<Operation>());
 	}
 
-	public void addParameter(final Parameter parameter) {
+	public void addParameters(final List<Parameter> parameters) {
+		put(Parameter.class, parameters);
 	}
 
-	public void addSet(final ClassicalBSet set) {
+	public void addSets(final List<ClassicalBSet> sets) {
+		put(Set.class, sets);
 	}
 
-	public void addConstraint(final Constraint constraint) {
+	public void addConstraints(final List<Constraint> constraints) {
+		put(Constraint.class, constraints);
 	}
 
-	public void addConstant(final ClassicalBConstant constant) {
+	public void addConstants(final List<ClassicalBConstant> constants) {
+		put(Constant.class, constants);
 	}
 
-	public void addProperty(final Property property) {
+	public void addProperties(final List<Property> properties) {
+		put(Property.class, properties);
 	}
 
-	public void addVariable(final ClassicalBVariable variable) {
+	public void addVariables(final List<ClassicalBVariable> variables) {
+		put(Variable.class, variables);
 	}
 
-	public void addInvariant(final ClassicalBInvariant invariant) {
+	public void addInvariants(final List<ClassicalBInvariant> invariants) {
+		put(Invariant.class, invariants);
 	}
 
-	public void addAssertion(final Assertion assertion) {
+	public void addAssertions(final List<Assertion> assertions) {
+		put(Assertion.class, assertions);
 	}
 
-	public void addOperation(final Operation operation) {
+	public void addOperations(final List<Operation> operations) {
+		put(AbstractEvent.class, operations);
 	}
 
 }
