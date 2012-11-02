@@ -23,9 +23,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
 
@@ -235,11 +233,9 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	private void updateModelLoadedProvider() {
-		IWorkbenchPartSite site = this.getSite();
 		final ISourceProviderService service = (ISourceProviderService) PlatformUI
 				.getWorkbench().getActiveWorkbenchWindow()
 				.getService(ISourceProviderService.class);
-
 		final ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
 				.getSourceProvider(ModelLoadedProvider.SERVICE);
 		sourceProvider.setEnabled(true);
@@ -255,8 +251,9 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 
 	private void updateModel(final IEntity model) {
 		currentModel = model;
-		if (viewer == null)
+		if (viewer == null) {
 			return; // nothing to do here
+		}
 		((OperationsContentProvider) viewer.getContentProvider())
 				.setAllOperations(getOperationNames(model));
 	}
