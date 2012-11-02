@@ -16,7 +16,9 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
+import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.Start;
+import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.model.representation.IEntity;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -31,6 +33,11 @@ public class ClassicalB implements IEvalElement, IEntity {
 	public ClassicalB(final String code) throws BException {
 		this.code = code;
 		this.ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
+	}
+
+	public ClassicalB(final Start ast) {
+		this.ast = ast;
+		this.code = prettyprint(ast);
 	}
 
 	@Override
@@ -67,6 +74,12 @@ public class ClassicalB implements IEvalElement, IEntity {
 	@Override
 	public boolean hasChildren() {
 		return false;
+	}
+
+	private String prettyprint(final Node predicate) {
+		final PrettyPrinter prettyPrinter = new PrettyPrinter();
+		predicate.apply(prettyPrinter);
+		return prettyPrinter.getPrettyPrint();
 	}
 
 }

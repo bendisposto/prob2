@@ -1,16 +1,14 @@
 package de.prob.model.representation.newdom;
 
-import de.prob.animator.domainobjects.IEvalElement;
-
 public abstract class Set extends AbstractElement {
 
-	private final IEvalElement expression;
+	private final String name;
 
-	public Set(final IEvalElement expression) {
-		this.expression = expression;
+	public Set(final String name) {
+		this.name = name;
 	}
 
-	public IEvalElement getExpression() {
-		return expression;
+	public String getName() {
+		return name;
 	}
 }

@@ -4,7 +4,7 @@ import de.prob.animator.domainobjects.IEvalElement;
 
 public abstract class Constant extends AbstractElement {
 
-	private final IEvalElement expression;
+	protected final IEvalElement expression;
 
 	public Constant(final IEvalElement expression) {
 		this.expression = expression;

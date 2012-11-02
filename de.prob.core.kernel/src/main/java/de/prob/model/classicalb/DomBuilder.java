@@ -79,6 +79,7 @@ public class DomBuilder extends DepthFirstAdapter {
 
 	@Override
 	public void outADeferredSetSet(final ADeferredSetSet node) {
+
 		try {
 			machine.sets.addChild(new ClassicalB(extractIdentifierName(node
 					.getIdentifier())));
