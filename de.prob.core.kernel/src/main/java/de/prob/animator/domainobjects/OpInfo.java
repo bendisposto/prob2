@@ -56,8 +56,7 @@ public class OpInfo {
 				.getArgument(5));
 		ValueTranslator valueTranslator = new ValueTranslator();
 		for (PrologTerm prologTerm : parameters) {
-
-			Object translated = valueTranslator.translate(prologTerm);
+			Object translated = valueTranslator.toGroovy(prologTerm);
 			String retranslated = valueTranslator.asString(translated);
 			System.out.println("T: " + translated.getClass() + " "
 					+ translated.toString() + " " + retranslated);
