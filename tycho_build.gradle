@@ -15,6 +15,12 @@ apply plugin: 'base'
 import groovy.io.FileType
 tychoVersion = "0.15.0"
 
+try{
+	excludeFromTychoBuild = excludeFromTychoBuild
+}catch(MissingPropertyException e){
+	excludeFromTychoBuild = []
+}
+
 
 try{
 	workspacePath = workspacePath
@@ -490,7 +496,11 @@ task createParent() << {
 	f << endRepos()
 	f << moduleStart()
 	for(int i = 0; i < numberOfProjects(); i++){
-		f << module(projects(i))
+		
+		if( excludeFromTychoBuild.every{ it != projects(i) } ){
+		
+			f << module(projects(i))
+		}
 	}
 	f << module(repositoryName)
 	f << endParent()
