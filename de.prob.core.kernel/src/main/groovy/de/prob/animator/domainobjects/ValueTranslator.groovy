@@ -24,7 +24,7 @@ class ValueTranslator {
 	def makeSet(node, set) {
 		if (node.getFunctor() == "empty") set
 		else {
-			def value = translate(node.getArgument(1))
+			def value = toGroovy(node.getArgument(1))
 			set.add(value)
 			def left = makeSet(node.getArgument(4),set)
 			makeSet(node.getArgument(5),left)
@@ -34,7 +34,7 @@ class ValueTranslator {
 	def makeSetFromList(ListPrologTerm list) {
 		def res = new HashSet()
 		for (PrologTerm t : list) {
-			res.add(translate(t))
+			res.add(toGroovy(t))
 		}
 		res
 	}
@@ -43,7 +43,7 @@ class ValueTranslator {
 		// field(Name1,Val)
 		def res = new LinkedHashMap()
 		for (PrologTerm prologTerm : fields) {
-			res.put(prologTerm.getArgument(1).functor, translate(prologTerm.getArgument(2)))
+			res.put(prologTerm.getArgument(1).functor, toGroovy(prologTerm.getArgument(2)))
 		}
 		res
 	}
@@ -87,7 +87,7 @@ class ValueTranslator {
 			break
 			case "avl_set": makeSet(term.getArgument(1),new HashSet())
 			break
-			case ",": new Tuple(translate(term.getArgument(1)), translate(term.getArgument(2)))
+			case ",": new Tuple(toGroovy(term.getArgument(1)), toGroovy(term.getArgument(2)))
 			break
 			case "fd":  [term.getArgument(2).functor,term.getArgument(1)]
 			break
