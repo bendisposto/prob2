@@ -13,6 +13,7 @@ import de.be4.classicalb.core.parser.node.AConstraintsMachineClause;
 import de.be4.classicalb.core.parser.node.ADeferredSetSet;
 import de.be4.classicalb.core.parser.node.AEnumeratedSetSet;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
+import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.AInvariantMachineClause;
 import de.be4.classicalb.core.parser.node.AMachineHeader;
 import de.be4.classicalb.core.parser.node.AOperation;
@@ -131,14 +132,10 @@ public class DomBuilder extends DepthFirstAdapter {
 
 	@Override
 	public void inAOperation(final AOperation node) {
-		// TODO: Save operations
-		// final String name = extractIdentifierName(node.getOpName());
-		// final Label params = addIdentifiers(node.getParameters(), new Label(
-		// "Parameters"));
-		// final Label output = addIdentifiers(node.getReturnValues(), new
-		// Label(
-		// "Output"));
-		// machine.operations.addChild(new Operation(name, params, output));
+		final String name = extractIdentifierName(node.getOpName());
+		final List<String> params = extractIdentifiers(node.getParameters());
+		final List<String> output = extractIdentifiers(node.getReturnValues());
+		operations.add(new Operation(name, params, output));
 	}
 
 	// -------------------
@@ -156,6 +153,18 @@ public class DomBuilder extends DepthFirstAdapter {
 			text = Joiner.on(".").join(list);
 		}
 		return text;
+	}
+
+	private List<String> extractIdentifiers(
+			final LinkedList<PExpression> identifiers) {
+		final List<String> params = new ArrayList<String>();
+		for (PExpression pExpression : identifiers) {
+			if (pExpression instanceof AIdentifierExpression) {
+				params.add(extractIdentifierName(((AIdentifierExpression) pExpression)
+						.getIdentifier()));
+			}
+		}
+		return params;
 	}
 
 	private List<PPredicate> getPredicates(final Node node) {
