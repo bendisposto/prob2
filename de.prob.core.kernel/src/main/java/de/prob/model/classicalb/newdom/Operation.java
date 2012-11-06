@@ -2,10 +2,10 @@ package de.prob.model.classicalb.newdom;
 
 import java.util.List;
 
-import de.prob.model.representation.newdom.AbstractEvent;
+import de.prob.model.representation.newdom.BEvent;
 import de.prob.model.representation.newdom.Guard;
 
-public class Operation extends AbstractEvent {
+public class Operation extends BEvent {
 
 	private final List<String> parameters;
 	private final List<String> output;

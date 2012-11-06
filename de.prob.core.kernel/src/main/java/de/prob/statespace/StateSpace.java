@@ -25,12 +25,13 @@ import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
-import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.classicalb.ClassicalBModel;
-import de.prob.model.eventb.EBMachine;
-import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.IEntity;
+import de.prob.model.classicalb.newdom.ClassicalBModel;
+import de.prob.model.eventb.newdom.EventBModel;
+import de.prob.model.representation.newdom.AbstractElement;
+import de.prob.model.representation.newdom.AbstractModel;
+import de.prob.model.representation.newdom.Invariant;
+import de.prob.model.representation.newdom.Machine;
+import de.prob.model.representation.newdom.Variable;
 
 /**
  * 
@@ -70,7 +71,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
-	private IEntity model;
+	private AbstractElement model;
 	private final Map<StateId, Map<IEvalElement, String>> values = new HashMap<StateId, Map<IEvalElement, String>>();
 
 	public final StateId __root;
@@ -433,57 +434,32 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		this.loadcmd = loadcmd;
 	}
 
-	public void setModel(final IEntity model) {
+	public void setModel(final AbstractElement model) {
 		this.model = model;
-		registerFormulas(model.getChildren());
-		if (model instanceof ClassicalBModel) {
-			final List<IEntity> machines = model.getChildren();
-			for (final IEntity iEntity : machines) {
-				if (iEntity instanceof ClassicalBMachine) {
-					final ClassicalBMachine machine = (ClassicalBMachine) iEntity;
-					subscribeChildren(this, machine.variables);
-					subscribeChildren(this, machine.invariants);
-				}
+		Set<Machine> machines = model.getChildrenOfType(Machine.class);
+		for (Machine machine : machines) {
+			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
+				subscribe(this, variable.getExpression());
 			}
-		}
-		if (model instanceof EventBModel) {
-			final List<IEntity> components = model.getChildren();
-			for (final IEntity iEntity : components) {
-				if (iEntity instanceof EBMachine) {
-					final EBMachine machine = (EBMachine) iEntity;
-					subscribeChildren(this, machine.variables);
-					subscribeChildren(this, machine.invariants);
-				}
+			for (Invariant invariant : machine
+					.getChildrenOfType(Invariant.class)) {
+				subscribe(this, invariant.getPredicate());
 			}
 		}
 	}
 
-	public void registerFormulas(final List<IEntity> entities) {
-		for (final IEntity iEntity : entities) {
-			if (iEntity instanceof IEvalElement) {
-				final IEvalElement evalElement = (IEvalElement) iEntity;
-				formulaRegistry.put(evalElement, new HashSet<Object>());
-			}
-			registerFormulas(iEntity.getChildren());
-		}
-	}
-
-	public IEntity getModel() {
+	public AbstractElement getModel() {
 		return model;
-	}
-
-	public void subscribeChildren(final Object subscriber, final IEntity entity) {
-		for (final IEntity iEntity : entity.getChildren()) {
-			if (iEntity instanceof IEvalElement) {
-				subscribe(subscriber, (IEvalElement) iEntity);
-			}
-		}
 	}
 
 	public void subscribe(final Object subscriber,
 			final IEvalElement formulaOfInterest) {
 		if (formulaRegistry.containsKey(formulaOfInterest)) {
 			formulaRegistry.get(formulaOfInterest).add(subscriber);
+		} else {
+			HashSet<Object> subscribers = new HashSet<Object>();
+			subscribers.add(subscriber);
+			formulaRegistry.put(formulaOfInterest, subscribers);
 		}
 	}
 

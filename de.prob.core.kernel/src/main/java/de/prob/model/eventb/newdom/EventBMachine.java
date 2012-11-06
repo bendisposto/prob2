@@ -2,7 +2,7 @@ package de.prob.model.eventb.newdom;
 
 import java.util.List;
 
-import de.prob.model.representation.newdom.AbstractEvent;
+import de.prob.model.representation.newdom.BEvent;
 import de.prob.model.representation.newdom.Invariant;
 import de.prob.model.representation.newdom.Machine;
 import de.prob.model.representation.newdom.Variable;
@@ -33,6 +33,6 @@ public class EventBMachine extends Machine {
 	}
 
 	public void addEvents(final List<Event> events) {
-		put(AbstractEvent.class, events);
+		put(BEvent.class, events);
 	}
 }

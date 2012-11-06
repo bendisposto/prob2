@@ -2,8 +2,7 @@ package de.prob.scripting;
 
 import com.google.inject.Inject;
 
-import de.prob.model.classicalb.ClassicalBFactory;
-
+import de.prob.model.classicalb.newdom.ClassicalBFactory;
 
 public class FactoryProvider {
 
@@ -13,7 +12,7 @@ public class FactoryProvider {
 
 	@Inject
 	public FactoryProvider(final ClassicalBFactory bfactory,
-			final CspFactory csp_factory, EventBFactory eventb_factory) {
+			final CspFactory csp_factory, final EventBFactory eventb_factory) {
 		this.classical_b_factory = bfactory;
 		this.csp_factory = csp_factory;
 		this.eventb_factory = eventb_factory;
@@ -22,6 +21,7 @@ public class FactoryProvider {
 	public ClassicalBFactory getClassicalBFactory() {
 		return classical_b_factory;
 	}
+
 	public EventBFactory getEventBFactory() {
 		return eventb_factory;
 	}

@@ -96,7 +96,7 @@ public class EventBModel extends AbstractModel {
 				}
 			}
 		}
-		statespace.setModel(this);
+		// statespace.setModel(this);
 		// testSerialization();
 	}
 

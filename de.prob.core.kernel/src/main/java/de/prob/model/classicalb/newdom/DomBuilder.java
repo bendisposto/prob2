@@ -20,15 +20,18 @@ import de.be4.classicalb.core.parser.node.AOperation;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
 import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
+import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.model.classicalb.PredicateConjunctionSplitter;
+import de.prob.model.representation.newdom.BSet;
 
 public class DomBuilder extends DepthFirstAdapter {
 
+	private static final EOF EOF = new EOF();
 	private String name;
 	private final List<Parameter> parameters = new ArrayList<Parameter>();
 	private final List<Constraint> constraints = new ArrayList<Constraint>();
@@ -36,7 +39,7 @@ public class DomBuilder extends DepthFirstAdapter {
 	private final List<Property> properties = new ArrayList<Property>();
 	private final List<ClassicalBVariable> variables = new ArrayList<ClassicalBVariable>();
 	private final List<ClassicalBInvariant> invariants = new ArrayList<ClassicalBInvariant>();
-	private final List<ClassicalBSet> sets = new ArrayList<ClassicalBSet>();
+	private final List<BSet> sets = new ArrayList<BSet>();
 	private final List<Assertion> assertions = new ArrayList<Assertion>();
 	private final List<Operation> operations = new ArrayList<Operation>();
 
@@ -115,12 +118,12 @@ public class DomBuilder extends DepthFirstAdapter {
 
 	@Override
 	public void outADeferredSetSet(final ADeferredSetSet node) {
-		sets.add(new ClassicalBSet(extractIdentifierName(node.getIdentifier())));
+		sets.add(new BSet(extractIdentifierName(node.getIdentifier())));
 	}
 
 	@Override
 	public void outAEnumeratedSetSet(final AEnumeratedSetSet node) {
-		sets.add(new ClassicalBSet(extractIdentifierName(node.getIdentifier())));
+		sets.add(new BSet(extractIdentifierName(node.getIdentifier())));
 	}
 
 	@Override
@@ -177,7 +180,8 @@ public class DomBuilder extends DepthFirstAdapter {
 		Start start = new Start();
 		AExpressionParseUnit node = new AExpressionParseUnit();
 		start.setPParseUnit(node);
-		node.setExpression(expression);
+		start.setEOF(EOF);
+		node.setExpression((PExpression) expression.clone());
 		return start;
 	}
 
@@ -185,7 +189,8 @@ public class DomBuilder extends DepthFirstAdapter {
 		Start start = new Start();
 		APredicateParseUnit node2 = new APredicateParseUnit();
 		start.setPParseUnit(node2);
-		node2.setPredicate(pPredicate);
+		start.setEOF(EOF);
+		node2.setPredicate((PPredicate) pPredicate.clone());
 		return start;
 	}
 }

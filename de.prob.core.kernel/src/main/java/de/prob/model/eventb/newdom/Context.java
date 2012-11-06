@@ -4,8 +4,8 @@ import java.util.List;
 
 import de.prob.model.representation.newdom.AbstractElement;
 import de.prob.model.representation.newdom.Axiom;
+import de.prob.model.representation.newdom.BSet;
 import de.prob.model.representation.newdom.Constant;
-import de.prob.model.representation.newdom.Set;
 
 public class Context extends AbstractElement {
 
@@ -23,8 +23,8 @@ public class Context extends AbstractElement {
 		put(Context.class, contexts);
 	}
 
-	public void addSets(final List<EventBSet> sets) {
-		put(Set.class, sets);
+	public void addSets(final List<BSet> sets) {
+		put(BSet.class, sets);
 	}
 
 	public void addConstants(final List<EventBConstant> constants) {

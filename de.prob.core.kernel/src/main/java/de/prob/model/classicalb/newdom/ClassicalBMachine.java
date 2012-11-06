@@ -2,11 +2,11 @@ package de.prob.model.classicalb.newdom;
 
 import java.util.List;
 
-import de.prob.model.representation.newdom.AbstractEvent;
+import de.prob.model.representation.newdom.BEvent;
+import de.prob.model.representation.newdom.BSet;
 import de.prob.model.representation.newdom.Constant;
 import de.prob.model.representation.newdom.Invariant;
 import de.prob.model.representation.newdom.Machine;
-import de.prob.model.representation.newdom.Set;
 import de.prob.model.representation.newdom.Variable;
 
 public class ClassicalBMachine extends Machine {
@@ -19,8 +19,8 @@ public class ClassicalBMachine extends Machine {
 		put(Parameter.class, parameters);
 	}
 
-	public void addSets(final List<ClassicalBSet> sets) {
-		put(Set.class, sets);
+	public void addSets(final List<BSet> sets) {
+		put(BSet.class, sets);
 	}
 
 	public void addConstraints(final List<Constraint> constraints) {
@@ -48,7 +48,7 @@ public class ClassicalBMachine extends Machine {
 	}
 
 	public void addOperations(final List<Operation> operations) {
-		put(AbstractEvent.class, operations);
+		put(BEvent.class, operations);
 	}
 
 }

@@ -2,8 +2,8 @@ package de.prob.statespace;
 
 import com.google.inject.AbstractModule;
 
-import de.prob.model.classicalb.ClassicalBModel;
-import de.prob.model.eventb.EventBModel;
+import de.prob.model.classicalb.newdom.ClassicalBModel;
+import de.prob.model.eventb.newdom.EventBModel;
 
 public class ModelModule extends AbstractModule {
 

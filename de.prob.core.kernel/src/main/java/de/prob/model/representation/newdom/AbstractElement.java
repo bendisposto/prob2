@@ -1,19 +1,21 @@
 package de.prob.model.representation.newdom;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractElement {
-	protected Map<Class<? extends AbstractElement>, List<? extends AbstractElement>> children = new HashMap<Class<? extends AbstractElement>, List<? extends AbstractElement>>();
+	protected Map<Class<? extends AbstractElement>, java.util.Set<? extends AbstractElement>> children = new HashMap<Class<? extends AbstractElement>, Set<? extends AbstractElement>>();
 
-	public List<? extends AbstractElement> getChildrenOfType(
-			final Class<? extends AbstractElement> c) {
-		return children.get(c);
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractElement> Set<T> getChildrenOfType(final Class<T> c) {
+		return (Set<T>) children.get(c);
 	}
 
 	public <T extends AbstractElement> void put(final Class<T> c,
-			final List<? extends T> elements) {
-		children.put(c, elements);
+			final Collection<? extends T> elements) {
+		children.put(c, new LinkedHashSet<T>(elements));
 	}
 }
