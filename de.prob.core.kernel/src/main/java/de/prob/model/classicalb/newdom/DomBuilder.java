@@ -49,7 +49,7 @@ public class DomBuilder extends DepthFirstAdapter {
 	}
 
 	public ClassicalBMachine build(final Start ast) {
-		ast.apply(this);
+		((Start) ast.clone()).apply(this);
 		return getMachine();
 	}
 
