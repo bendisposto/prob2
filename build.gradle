@@ -2,6 +2,7 @@ targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","ht
 
 groupID = "de.prob2"
 excludeFromTychoBuild = ["de.prob.core.kernel"]
+excludeFromClassPath = ['de.prob.core.rodin', 'de.prob.ui', 'de.prob.ui.rodin', 'de.prob2.feature']
 
 apply from: 'tycho_build.gradle'
 
