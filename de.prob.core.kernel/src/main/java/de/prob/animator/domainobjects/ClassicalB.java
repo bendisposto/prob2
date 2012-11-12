@@ -16,6 +16,7 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
+import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.PrettyPrinter;
@@ -63,7 +64,11 @@ public class ClassicalB implements IEvalElement, IEntity {
 	@Override
 	public void printProlog(final IPrologTermOutput pout) {
 		final ASTProlog prolog = new ASTProlog(pout, null);
-		getAst().apply(prolog);
+		if (ast.getEOF() == null) {
+			ast.setEOF(new EOF());
+		}
+		ast.apply(prolog);
+
 	}
 
 	@Override
