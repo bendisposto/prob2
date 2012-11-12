@@ -21,6 +21,12 @@ try{
 	excludeFromTychoBuild = []
 }
 
+try{
+	excludeFromClassPath = excludeFromClassPath
+}catch(MissingPropertyException e){
+	excludeFromClassPath = []
+}
+
 
 try{
 	workspacePath = workspacePath
@@ -321,32 +327,32 @@ subprojects {
 	task setClassPath(dependsOn: 'collectDependencies')<<{
 		
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
-		//if(project.name ==~ /birkhoff.bundle.*/){
-		def dependencyList = []
-		try{
-			def dir = new File(workspacePath+project.name+"/"+dependencyFolder).eachFile() { file->  		
-			    if( !(file.getName() ==~/.*\.txt/) ){
-					dependencyList << file.getName()  
-				}
-			}
-	
-			if(features.every{ it != project.name }){	
-				boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
-				for(int icp = 0; icp < dependencyList.size; icp++){
-					addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
-					
-					if(!BundleClassPathPresent){					// Adds Lib to Manifest File
-						createRunTimeLib(dependencyList[icp], project.name)
-						BundleClassPathPresent = true
-					}else{
-						if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
-							addRunTimeLib( dependencyList[icp], project.name)
-						}
+		if( excludeFromClassPath.every{ it != project.name }){
+			def dependencyList = []
+			try{
+				def dir = new File(workspacePath+project.name+"/"+dependencyFolder).eachFile() { file->  		
+			    	if( !(file.getName() ==~/.*\.txt/) ){
+						dependencyList << file.getName()  
 					}
 				}
-				/*dependencyList.each{ dep->
+	
+				if(features.every{ it != project.name }){	
+					boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
+					for(int icp = 0; icp < dependencyList.size; icp++){
+						addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
+					
+						if(!BundleClassPathPresent){					// Adds Lib to Manifest File
+							createRunTimeLib(dependencyList[icp], project.name)
+							BundleClassPathPresent = true
+						}else{
+							if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
+								addRunTimeLib( dependencyList[icp], project.name)
+							}
+						}
+					}
+					/*dependencyList.each{ dep->
 					println project.name+": "+ dep	// could still be usefull for debugging, that's why it's not deleted
-				}*/	
+					}*/	
 			}
 			def warningReadMe = new File(workspacePath+project.name+"/"+dependencyFolder+"_README.txt")
 			warningReadMe.delete()
@@ -355,10 +361,10 @@ subprojects {
 			warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
 			
 			
-		}catch(Exception e){
-			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
-		}
-	//}// if projectAbfrage
+			}catch(Exception e){
+				println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
+			}
+		}// if exclude projectAbfrage
 		
 	}// setClassPath
 	
