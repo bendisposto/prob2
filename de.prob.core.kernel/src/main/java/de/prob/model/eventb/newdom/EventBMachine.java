@@ -12,12 +12,12 @@ public class EventBMachine extends Machine {
 		super(name);
 	}
 
-	public void addRefines(final List<EventBMachine> machine) {
-		put(Machine.class, machine);
+	public void addRefines(final List<EventBMachine> refines) {
+		put(Machine.class, refines);
 	}
 
-	public void addSees(final List<Context> contexts) {
-		put(Context.class, contexts);
+	public void addSees(final List<Context> sees) {
+		put(Context.class, sees);
 	}
 
 	public void addVariables(final List<EventBVariable> variables) {

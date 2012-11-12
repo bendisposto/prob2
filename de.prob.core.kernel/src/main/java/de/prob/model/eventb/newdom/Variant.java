@@ -5,13 +5,13 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.newdom.AbstractElement;
 
 public class Variant extends AbstractElement {
-	private final IEvalElement predicate;
+	private final IEvalElement expression;
 
 	public Variant(final String code) {
-		predicate = new EventB(code);
+		expression = new EventB(code);
 	}
 
-	public IEvalElement getPredicate() {
-		return predicate;
+	public IEvalElement getExpression() {
+		return expression;
 	}
 }

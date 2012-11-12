@@ -19,7 +19,7 @@ public class Context extends AbstractElement {
 		return name;
 	}
 
-	public void addRefines(final List<Context> contexts) {
+	public void addExtends(final List<Context> contexts) {
 		put(Context.class, contexts);
 	}
 

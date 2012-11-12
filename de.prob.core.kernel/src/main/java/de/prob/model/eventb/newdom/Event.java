@@ -2,15 +2,15 @@ package de.prob.model.eventb.newdom;
 
 import java.util.List;
 
-import de.prob.model.representation.newdom.BEvent;
 import de.prob.model.representation.newdom.Action;
+import de.prob.model.representation.newdom.BEvent;
 import de.prob.model.representation.newdom.Guard;
 
 public class Event extends BEvent {
 
 	private final EventType type;
 
-	enum EventType {
+	public enum EventType {
 		ORDINARY, CONVERGENT, ANTICIPATED
 	}
 
