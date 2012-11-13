@@ -598,3 +598,4 @@ Export-Package: ch.qos.logback.classic,
  org.slf4j.spi,
  org.xmlpull.mxp1,
  org.xmlpull.v1
+Import-Package: org.eventb.core
