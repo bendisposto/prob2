@@ -22,7 +22,7 @@ import com.google.inject.Injector;
 
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
-import de.prob.model.eventb.EventBModel;
+import de.prob.model.eventb.newdom.EventBModel;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
@@ -37,25 +37,20 @@ public class StartAnimationHandler extends AbstractHandler {
 	private ISelection fSelection;
 
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		fSelection = HandlerUtil.getCurrentSelection(event);
 
 		final IEventBRoot rootElement = getRootElement();
 
 		EventBTranslator eventBTranslator = new EventBTranslator(rootElement);
-		
-		
-		
-		
+
 		Injector injector = ServletContextListener.INJECTOR;
 
 		final EventBFactory instance = injector
 				.getInstance(EventBFactory.class);
 
-		
-		
-		EventBModel model = null;
+		EventBModel model = instance.load(eventBTranslator.getMainComponent());
 
 		StringWriter writer = new StringWriter();
 		PrintWriter pto = new PrintWriter(writer);
@@ -103,8 +98,9 @@ public class StartAnimationHandler extends AbstractHandler {
 					root = (IEventBRoot) element;
 				} else if (element instanceof IFile) {
 					IRodinFile rodinFile = RodinCore.valueOf((IFile) element);
-					if (rodinFile != null)
+					if (rodinFile != null) {
 						root = (IEventBRoot) rodinFile.getRoot();
+					}
 				}
 			}
 		}
