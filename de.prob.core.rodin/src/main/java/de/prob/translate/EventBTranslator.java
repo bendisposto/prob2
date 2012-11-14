@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eventb.core.IEventBRoot;
 import org.eventb.core.ISCAction;
 import org.eventb.core.ISCAxiom;
 import org.eventb.core.ISCCarrierSet;
@@ -43,16 +44,15 @@ public class EventBTranslator {
 	Map<String, ISCMachineRoot> machines = new HashMap<String, ISCMachineRoot>();
 	Map<String, ISCContextRoot> contexts = new HashMap<String, ISCContextRoot>();
 
-	public EventBTranslator(final ISCContextRoot root) {
+	public EventBTranslator(IEventBRoot root) {
 		IRodinProject rodinProject = root.getRodinProject();
 		extractComponents(rodinProject);
-		translateContext(root);
-	}
-
-	public EventBTranslator(final ISCMachineRoot root) {
-		IRodinProject rodinProject = root.getRodinProject();
-		extractComponents(rodinProject);
-		translateMachine(root);
+		if (root instanceof ISCMachineRoot) {
+			translateMachine((ISCMachineRoot) root);
+		}
+		if (root instanceof ISCContextRoot) {
+			translateContext((ISCContextRoot) root);
+		}
 	}
 
 	private void extractComponents(final IRodinProject rodinProject) {
@@ -85,7 +85,7 @@ public class EventBTranslator {
 						.getComponentName();
 				exts.add(translateContext(contexts.get(componentName)));
 			}
-			c.addRefines(exts);
+			c.addExtends(exts);
 
 			List<BSet> sets = new ArrayList<BSet>();
 			for (ISCCarrierSet iscCarrierSet : root.getSCCarrierSets()) {
