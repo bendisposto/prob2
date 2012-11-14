@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +25,11 @@ import com.google.inject.Provider;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
-import de.prob.model.eventb.EventBModel;
+import de.prob.model.eventb.newdom.Context;
+import de.prob.model.eventb.newdom.EventBMachine;
+import de.prob.model.eventb.newdom.EventBModel;
+import de.prob.model.representation.newdom.AbstractElement;
+import de.prob.model.representation.newdom.Machine;
 
 public class EventBFactory {
 
@@ -40,14 +46,14 @@ public class EventBFactory {
 	CorePackage f = CorePackage.eINSTANCE; // As a side effect the EMF stuff is
 											// initialized! Hurray
 
-	public EventBModel load(final String s, String mainComponent)
+	public EventBModel load(final String s, final String mainComponent)
 			throws IOException {
 		EventBModel eventBModel = modelProvider.get();
 		byte[] bytes = Base64.decodeBase64(s.getBytes());
 		XMLResourceImpl r2 = new XMLResourceImpl();
 		r2.load(new ByteArrayInputStream(bytes), new HashMap<Object, Object>());
 		Project p = (Project) r2.getContents().get(0);
-		eventBModel.initialize(p, mainComponent);
+		// eventBModel.initialize(p, mainComponent);
 		return eventBModel;
 	}
 
@@ -83,8 +89,9 @@ public class EventBFactory {
 					fstream));
 			String line;
 			while ((line = br.readLine()) != null) {
-				if (!line.trim().isEmpty())
+				if (!line.trim().isEmpty()) {
 					res.add(line);
+				}
 			}
 			return res;
 		} finally {
@@ -92,4 +99,47 @@ public class EventBFactory {
 		}
 	}
 
+	public EventBModel load(final AbstractElement mainComponent) {
+		EventBModel model = modelProvider.get();
+
+		Set<EventBMachine> machines = new HashSet<EventBMachine>();
+		Set<Context> contexts = new HashSet<Context>();
+
+		if (mainComponent instanceof EventBMachine) {
+			addMachines((EventBMachine) mainComponent, machines, contexts);
+		}
+		if (mainComponent instanceof Context) {
+			addContexts((Context) mainComponent, contexts);
+		}
+
+		model.addMachines(machines);
+		model.addContexts(contexts);
+
+		model.isFinished();
+
+		return model;
+	}
+
+	private void addContexts(final Context context, final Set<Context> contexts) {
+		contexts.add(context);
+
+		Set<Context> extended = context.getChildrenOfType(Context.class);
+		for (Context extend : extended) {
+			addContexts(extend, contexts);
+		}
+	}
+
+	private void addMachines(final EventBMachine machine,
+			final Set<EventBMachine> machines, final Set<Context> contexts) {
+		machines.add(machine);
+		Set<Context> sees = machine.getChildrenOfType(Context.class);
+		for (Context context : sees) {
+			addContexts(context, contexts);
+		}
+		Set<Machine> refines = machine.getChildrenOfType(Machine.class);
+		for (Machine refinedMachine : refines) {
+			addMachines((EventBMachine) refinedMachine, machines, contexts);
+		}
+
+	}
 }

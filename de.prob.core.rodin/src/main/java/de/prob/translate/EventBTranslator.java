@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.ISCAction;
 import org.eventb.core.ISCAxiom;
@@ -28,6 +29,7 @@ import org.rodinp.core.RodinDBException;
 
 import de.prob.model.eventb.newdom.Context;
 import de.prob.model.eventb.newdom.Event;
+import de.prob.model.eventb.newdom.Event.EventType;
 import de.prob.model.eventb.newdom.EventBAction;
 import de.prob.model.eventb.newdom.EventBAxiom;
 import de.prob.model.eventb.newdom.EventBConstant;
@@ -37,6 +39,7 @@ import de.prob.model.eventb.newdom.EventBMachine;
 import de.prob.model.eventb.newdom.EventBVariable;
 import de.prob.model.eventb.newdom.Variant;
 import de.prob.model.eventb.newdom.Witness;
+import de.prob.model.representation.newdom.AbstractElement;
 import de.prob.model.representation.newdom.BSet;
 
 public class EventBTranslator {
@@ -44,14 +47,16 @@ public class EventBTranslator {
 	Map<String, ISCMachineRoot> machines = new HashMap<String, ISCMachineRoot>();
 	Map<String, ISCContextRoot> contexts = new HashMap<String, ISCContextRoot>();
 
-	public EventBTranslator(IEventBRoot root) {
+	AbstractElement mainComponent;
+
+	public EventBTranslator(final IEventBRoot root) {
 		IRodinProject rodinProject = root.getRodinProject();
 		extractComponents(rodinProject);
 		if (root instanceof ISCMachineRoot) {
-			translateMachine((ISCMachineRoot) root);
+			mainComponent = translateMachine((ISCMachineRoot) root);
 		}
 		if (root instanceof ISCContextRoot) {
-			translateContext((ISCContextRoot) root);
+			mainComponent = translateContext((ISCContextRoot) root);
 		}
 	}
 
@@ -171,11 +176,9 @@ public class EventBTranslator {
 
 	private Event extractEvent(final ISCEvent iscEvent) throws RodinDBException {
 		String name = iscEvent.getElementName();
-		// int typeId = iscEvent.getConvergence().getCode();
+		int typeId = iscEvent.getConvergence().getCode();
 
-		Event e = new Event(name, null); // TODO: Reimport Project so
-											// that you can use
-											// Event.EventType
+		Event e = new Event(name, calculateEventType(typeId));
 
 		List<Event> refines = new ArrayList<Event>();
 		for (ISCRefinesEvent iscRefinesEvent : iscEvent.getSCRefinesClauses()) {
@@ -210,5 +213,23 @@ public class EventBTranslator {
 		e.addWitness(witnesses);
 
 		return e;
+	}
+
+	private EventType calculateEventType(final int typeId) {
+		Convergence valueOf = Convergence.valueOf(typeId);
+		if (valueOf.equals(Convergence.ORDINARY)) {
+			return EventType.ORDINARY;
+		}
+		if (valueOf.equals(Convergence.CONVERGENT)) {
+			return EventType.CONVERGENT;
+		}
+		if (valueOf.equals(Convergence.ANTICIPATED)) {
+			return EventType.ANTICIPATED;
+		}
+		return null;
+	}
+
+	public AbstractElement getMainComponent() {
+		return mainComponent;
 	}
 }

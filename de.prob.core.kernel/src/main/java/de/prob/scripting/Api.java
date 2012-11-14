@@ -25,7 +25,8 @@ import de.prob.animator.command.StartAnimationCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.model.classicalb.newdom.ClassicalBFactory;
 import de.prob.model.classicalb.newdom.ClassicalBModel;
-import de.prob.model.eventb.EventBModel;
+import de.prob.model.eventb.newdom.EventBModel;
+import de.prob.model.representation.newdom.AbstractElement;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
@@ -101,10 +102,15 @@ public class Api {
 		return bFactory.load(f);
 	}
 
-	public EventBModel eb_load(final String filename) throws IOException,
-			BException {
-		EventBFactory bFactory = modelFactoryProvider.getEventBFactory();
-		return bFactory.load(new File(filename));
+	// public EventBModel eb_load(final String filename) throws IOException,
+	// BException {
+	// EventBFactory bFactory = modelFactoryProvider.getEventBFactory();
+	// return bFactory.load(new File(filename));
+	// }
+
+	public EventBModel eb_load(final AbstractElement mainComponent) {
+		EventBFactory factory = modelFactoryProvider.getEventBFactory();
+		return factory.load(mainComponent);
 	}
 
 	public String getCurrentId(final StateSpace animation) {

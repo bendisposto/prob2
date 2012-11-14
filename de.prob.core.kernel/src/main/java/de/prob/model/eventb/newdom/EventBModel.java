@@ -1,6 +1,5 @@
 package de.prob.model.eventb.newdom;
 
-import java.util.List;
 import java.util.Set;
 
 import com.google.inject.Inject;
@@ -19,11 +18,11 @@ public class EventBModel extends AbstractModel {
 		this.statespace = statespace;
 	}
 
-	public void addMachines(final List<EventBMachine> machines) {
+	public void addMachines(final Set<EventBMachine> machines) {
 		put(Machine.class, machines);
 	}
 
-	public void addContexts(final List<Context> contexts) {
+	public void addContexts(final Set<Context> contexts) {
 		put(Context.class, contexts);
 	}
 
