@@ -13,6 +13,8 @@ import de.prob.statespace.StateSpace;
 
 public class EventBModel extends AbstractModel {
 
+	private AbstractElement mainComponent;
+
 	@Inject
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
@@ -29,6 +31,24 @@ public class EventBModel extends AbstractModel {
 	public void isFinished() {
 		calculateGraph();
 		statespace.setModel(this);
+	}
+
+	public void setMainComponent(final AbstractElement mainComponent) {
+		this.mainComponent = mainComponent;
+	}
+
+	public AbstractElement getMainComponent() {
+		return mainComponent;
+	}
+
+	public String getMainComponentName() {
+		if (mainComponent instanceof Context) {
+			return ((Context) mainComponent).getName();
+		}
+		if (mainComponent instanceof Machine) {
+			return ((Machine) mainComponent).getName();
+		}
+		return "";
 	}
 
 	@Override

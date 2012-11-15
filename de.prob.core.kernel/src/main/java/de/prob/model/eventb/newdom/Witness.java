@@ -1,9 +1,11 @@
 package de.prob.model.eventb.newdom;
 
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.newdom.AbstractElement;
+import de.prob.model.representation.newdom.IEval;
 
-public class Witness extends AbstractElement {
+public class Witness extends AbstractElement implements IEval {
 
 	private final String name;
 	private final EventB predicate;
@@ -20,4 +22,10 @@ public class Witness extends AbstractElement {
 	public EventB getPredicate() {
 		return predicate;
 	}
+
+	@Override
+	public IEvalElement getEvaluate() {
+		return predicate;
+	}
+
 }

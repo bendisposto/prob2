@@ -35,6 +35,10 @@ public class Event extends BEvent {
 		put(Witness.class, witness);
 	}
 
+	public void addParameters(final List<EventParameter> parameters) {
+		put(EventParameter.class, parameters);
+	}
+
 	public EventType getType() {
 		return type;
 	}
