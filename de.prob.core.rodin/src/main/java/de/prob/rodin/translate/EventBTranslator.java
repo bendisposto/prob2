@@ -1,11 +1,10 @@
-package de.prob.translate;
+package de.prob.rodin.translate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eventb.core.IConvergenceElement.Convergence;
+import org.eventb.core.IEventBProject;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.ISCAction;
 import org.eventb.core.ISCAxiom;
@@ -18,13 +17,15 @@ import org.eventb.core.ISCGuard;
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCInvariant;
 import org.eventb.core.ISCMachineRoot;
+import org.eventb.core.ISCParameter;
 import org.eventb.core.ISCRefinesEvent;
 import org.eventb.core.ISCRefinesMachine;
 import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
-import org.rodinp.core.IRodinElement;
-import org.rodinp.core.IRodinProject;
+import org.rodinp.core.IInternalElement;
+import org.rodinp.core.IInternalElementType;
+import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinDBException;
 
 import de.prob.model.eventb.newdom.Context;
@@ -37,46 +38,35 @@ import de.prob.model.eventb.newdom.EventBGuard;
 import de.prob.model.eventb.newdom.EventBInvariant;
 import de.prob.model.eventb.newdom.EventBMachine;
 import de.prob.model.eventb.newdom.EventBVariable;
+import de.prob.model.eventb.newdom.EventParameter;
 import de.prob.model.eventb.newdom.Variant;
 import de.prob.model.eventb.newdom.Witness;
 import de.prob.model.representation.newdom.AbstractElement;
 import de.prob.model.representation.newdom.BSet;
 
 public class EventBTranslator {
-
-	Map<String, ISCMachineRoot> machines = new HashMap<String, ISCMachineRoot>();
-	Map<String, ISCContextRoot> contexts = new HashMap<String, ISCContextRoot>();
+	//
+	// Map<String, ISCMachineRoot> machines = new HashMap<String,
+	// ISCMachineRoot>();
+	// Map<String, ISCContextRoot> contexts = new HashMap<String,
+	// ISCContextRoot>();
 
 	AbstractElement mainComponent;
+	private final IEventBProject eventBProject;
 
 	public EventBTranslator(final IEventBRoot root) {
-		IRodinProject rodinProject = root.getRodinProject();
-		extractComponents(rodinProject);
-		if (root instanceof ISCMachineRoot) {
-			mainComponent = translateMachine((ISCMachineRoot) root);
+		eventBProject = root.getEventBProject();
+		IInternalElementType<? extends IInternalElement> elementType = root
+				.getElementType();
+		String name = elementType.getName();
+		String id = elementType.getId();
+		if (id.equals("org.eventb.core.machineFile")) {
+			ISCMachineRoot scMachineRoot = eventBProject.getSCMachineRoot(root
+					.getElementName());
+			mainComponent = translateMachine(scMachineRoot);
 		}
 		if (root instanceof ISCContextRoot) {
 			mainComponent = translateContext((ISCContextRoot) root);
-		}
-	}
-
-	private void extractComponents(final IRodinProject rodinProject) {
-		try {
-			IRodinElement[] children = rodinProject.getChildren();
-			for (IRodinElement iRodinElement : children) {
-				if (iRodinElement instanceof ISCMachineRoot) {
-					ISCMachineRoot iscMachineRoot = (ISCMachineRoot) iRodinElement;
-					machines.put(iscMachineRoot.getComponentName(),
-							iscMachineRoot);
-				}
-				if (iRodinElement instanceof ISCContextRoot) {
-					ISCContextRoot iscContextRoot = (ISCContextRoot) iRodinElement;
-					contexts.put(iscContextRoot.getComponentName(),
-							iscContextRoot);
-				}
-			}
-		} catch (RodinDBException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -87,8 +77,9 @@ public class EventBTranslator {
 			for (ISCExtendsContext iscExtendsContext : root
 					.getSCExtendsClauses()) {
 				String componentName = iscExtendsContext.getAbstractSCContext()
-						.getComponentName();
-				exts.add(translateContext(contexts.get(componentName)));
+						.getRodinFile().getBareName();
+				exts.add(translateContext(eventBProject
+						.getSCContextRoot(componentName)));
 			}
 			c.addExtends(exts);
 
@@ -100,7 +91,7 @@ public class EventBTranslator {
 
 			List<EventBAxiom> axioms = new ArrayList<EventBAxiom>();
 			for (ISCAxiom iscAxiom : root.getSCAxioms()) {
-				String elementName = iscAxiom.getElementName();
+				String elementName = iscAxiom.getRodinFile().getBareName();
 				String predicateString = iscAxiom.getPredicateString();
 				boolean theorem = iscAxiom.isTheorem();
 				axioms.add(new EventBAxiom(elementName, predicateString,
@@ -124,11 +115,14 @@ public class EventBTranslator {
 
 		try {
 			List<EventBMachine> refines = new ArrayList<EventBMachine>();
-			for (ISCRefinesMachine iscRefinesMachine : root
-					.getSCRefinesClauses()) {
-				String elementName = iscRefinesMachine.getAbstractSCMachine()
-						.getElementName();
-				refines.add(translateMachine(machines.get(elementName)));
+			ISCRefinesMachine[] scRefinesClauses = root.getSCRefinesClauses();
+			for (ISCRefinesMachine iscRefinesMachine : scRefinesClauses) {
+				IRodinFile abstractSCMachine = iscRefinesMachine
+						.getAbstractSCMachine();
+				String bareName = abstractSCMachine.getBareName();
+				String elementName = abstractSCMachine.getElementName();
+				refines.add(translateMachine(eventBProject
+						.getSCMachineRoot(bareName)));
 			}
 			machine.addRefines(refines);
 
@@ -136,7 +130,8 @@ public class EventBTranslator {
 			for (ISCInternalContext iscInternalContext : root
 					.getSCSeenContexts()) {
 				String componentName = iscInternalContext.getComponentName();
-				sees.add(translateContext(contexts.get(componentName)));
+				sees.add(translateContext(eventBProject
+						.getSCContextRoot(componentName)));
 			}
 			machine.addSees(sees);
 
@@ -167,6 +162,7 @@ public class EventBTranslator {
 			for (ISCEvent iscEvent : scEvents) {
 				events.add(extractEvent(iscEvent));
 			}
+			machine.addEvents(events);
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 		}
@@ -204,13 +200,19 @@ public class EventBTranslator {
 		e.addActions(actions);
 
 		List<Witness> witnesses = new ArrayList<Witness>();
-		ISCWitness[] scWitnesses = iscEvent.getSCWitnesses();
-		for (ISCWitness iscWitness : scWitnesses) {
+		for (ISCWitness iscWitness : iscEvent.getSCWitnesses()) {
 			String elementName = iscWitness.getElementName();
 			String predicateString = iscWitness.getPredicateString();
 			witnesses.add(new Witness(elementName, predicateString));
 		}
 		e.addWitness(witnesses);
+
+		List<EventParameter> parameters = new ArrayList<EventParameter>();
+		for (ISCParameter iscParameter : iscEvent.getSCParameters()) {
+			parameters.add(new EventParameter(iscParameter
+					.getIdentifierString()));
+		}
+		e.addParameters(parameters);
 
 		return e;
 	}
