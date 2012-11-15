@@ -12,7 +12,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
-import de.prob.model.representation.IEntity;
+import de.prob.model.representation.newdom.AbstractElement;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
@@ -41,7 +41,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
 	private History currentHistory;
-	private IEntity currentModel;
+	private AbstractElement currentModel;
 
 	Injector injector = ServletContextListener.INJECTOR;
 
@@ -131,7 +131,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 			public void run() {
 				currentHistory = history;
 				contentProvider.setCurrentHistory(currentHistory);
-				final IEntity model = history.getModel();
+				final AbstractElement model = history.getModel();
 				if (model != currentModel) {
 					updateModelInfo(model);
 				}
@@ -141,7 +141,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 		});
 	}
 
-	private void updateModelInfo(final IEntity model) {
+	private void updateModelInfo(final AbstractElement model) {
 		currentModel = model;
 		viewer.setInput(model);
 	}

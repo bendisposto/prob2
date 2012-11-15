@@ -3,9 +3,9 @@ package de.prob.statespace
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.domainobjects.OpInfo
 import de.prob.model.classicalb.ClassicalBModel
-import de.prob.model.eventb.EventBModel
+import de.prob.model.eventb.newdom.EventBModel
 import de.prob.model.representation.AbstractModel
-import de.prob.model.representation.IEntity
+import de.prob.model.representation.newdom.AbstractElement
 
 class History {
 
@@ -243,7 +243,7 @@ class History {
 		return current.getCurrentState()
 	}
 
-	def IEntity getModel() {
+	def AbstractElement getModel() {
 		return s.getModel()
 	}
 

@@ -3,13 +3,15 @@ package de.prob.ui.stateview;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.IEntity;
+import de.prob.model.representation.newdom.AbstractElement;
+import de.prob.model.representation.newdom.AbstractModel;
+import de.prob.model.representation.newdom.IEval;
 import de.prob.statespace.History;
 import de.prob.statespace.HistoryElement;
 import de.prob.statespace.StateSpace;
@@ -42,7 +44,7 @@ class StateContentProvider implements ITreeContentProvider {
 		}
 		if (inputElement instanceof AbstractModel) {
 			final AbstractModel model = (AbstractModel) inputElement;
-			return model.getChildren().toArray();
+			return getChildren(model);
 		}
 
 		return new Object[] {};
@@ -52,12 +54,17 @@ class StateContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(final Object parentElement) {
 		final List<Object> children = new ArrayList<Object>();
 
-		if (parentElement instanceof IEntity) {
-			children.addAll(((IEntity) parentElement).getChildren());
-			for (final Object iEntity : children) {
-				if (iEntity instanceof IEvalElement) {
-					children.set(children.indexOf(iEntity),
-							extractValue((IEvalElement) iEntity));
+		if (parentElement instanceof AbstractElement) {
+			AbstractElement element = (AbstractElement) parentElement;
+			for (Set<? extends AbstractElement> object : element.getChildren()
+					.values()) {
+				children.addAll(object);
+			}
+
+			for (Object object : children) {
+				if (object instanceof IEval) {
+					children.set(children.indexOf(object),
+							extractValue(((IEval) object).getEvaluate()));
 				}
 			}
 		}
@@ -111,8 +118,14 @@ class StateContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(final Object element) {
-		if (element instanceof IEntity) {
-			return ((IEntity) element).hasChildren();
+		if (element instanceof AbstractElement) {
+			AbstractElement elem = (AbstractElement) element;
+			for (Set<? extends AbstractElement> kids : elem.getChildren()
+					.values()) {
+				if (!kids.isEmpty()) {
+					return true;
+				}
+			}
 		}
 		return false;
 	}
