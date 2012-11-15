@@ -112,6 +112,7 @@ public class EventBFactory {
 			addContexts((Context) mainComponent, contexts);
 		}
 
+		model.setMainComponent(mainComponent);
 		model.addMachines(machines);
 		model.addContexts(contexts);
 

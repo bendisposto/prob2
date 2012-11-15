@@ -18,4 +18,8 @@ public abstract class AbstractElement {
 			final Collection<? extends T> elements) {
 		children.put(c, new LinkedHashSet<T>(elements));
 	}
+
+	public Map<Class<? extends AbstractElement>, java.util.Set<? extends AbstractElement>> getChildren() {
+		return children;
+	}
 }
