@@ -60,7 +60,7 @@ try{
 
 	
 	groupID = "group"
-	for( i = 0; i < folderNames.size(); i++ ){
+	for( int  i = 0; i < folderNames.size(); i++ ){
 		
 		if( folderNames[i] ==~ /.*\.[rR]eleng/ ){
 			groupID = folderNames[i]
@@ -77,7 +77,7 @@ try{
 }catch(MissingPropertyException e){
 	
 	features = []
-	for( i = 0; i < subprojects.name.size(); i++ ){
+	for( int i = 0; i < subprojects.name.size(); i++ ){
 		if( subprojects.name[i] ==~ /.*\.[fF]eature/ ){
 			features.add( subprojects.name[i] )
 		}
