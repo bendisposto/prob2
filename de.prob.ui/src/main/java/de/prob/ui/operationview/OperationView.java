@@ -233,8 +233,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	private void updateModelLoadedProvider() {
-		final ISourceProviderService service = (ISourceProviderService) PlatformUI
-				.getWorkbench().getActiveWorkbenchWindow()
+		final ISourceProviderService service = (ISourceProviderService) getSite()
 				.getService(ISourceProviderService.class);
 		final ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
 				.getSourceProvider(ModelLoadedProvider.SERVICE);
