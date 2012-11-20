@@ -21,11 +21,10 @@ import de.be4.classicalb.core.parser.node.Node;
 import de.prob.formula.eventb.ExpressionVisitor;
 import de.prob.formula.eventb.PredicateVisitor;
 import de.prob.model.representation.FormulaUUID;
-import de.prob.model.representation.IEntity;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.unicode.UnicodeTranslator;
 
-public class EventB implements IEvalElement, IEntity {
+public class EventB implements IEvalElement {
 
 	public FormulaUUID uuid = new FormulaUUID();
 
@@ -103,16 +102,6 @@ public class EventB implements IEvalElement, IEntity {
 	@Override
 	public String getKind() {
 		return kind;
-	}
-
-	@Override
-	public List<IEntity> getChildren() {
-		return new ArrayList<IEntity>();
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return false;
 	}
 
 }

@@ -32,10 +32,10 @@ import com.google.common.base.Joiner;
 import com.google.inject.Injector;
 
 import de.prob.animator.domainobjects.OpInfo;
-import de.prob.model.eventb.newdom.EventBModel;
-import de.prob.model.representation.newdom.AbstractElement;
-import de.prob.model.representation.newdom.BEvent;
-import de.prob.model.representation.newdom.Machine;
+import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.BEvent;
+import de.prob.model.representation.Machine;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;

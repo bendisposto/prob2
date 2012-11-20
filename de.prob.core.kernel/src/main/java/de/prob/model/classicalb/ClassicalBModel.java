@@ -2,6 +2,8 @@ package de.prob.model.classicalb;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.graph.ClassBasedEdgeFactory;
@@ -11,8 +13,9 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.Label;
+import de.prob.model.representation.Machine;
 import de.prob.model.representation.RefType;
 import de.prob.statespace.StateSpace;
 
@@ -24,7 +27,6 @@ public class ClassicalBModel extends AbstractModel {
 	@Inject
 	public ClassicalBModel(final StateSpace statespace) {
 		this.statespace = statespace;
-		this.components = new HashMap<String, Label>();
 	}
 
 	public DirectedMultigraph<String, RefType> initialize(final Start mainast,
@@ -33,11 +35,12 @@ public class ClassicalBModel extends AbstractModel {
 		final DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
-		mainMachine = new ClassicalBMachine();
-		final DomBuilder d = new DomBuilder(mainMachine);
-		d.build(mainast);
-		graph.addVertex(mainMachine.name());
-		components.put(mainMachine.name(), mainMachine);
+		final DomBuilder d = new DomBuilder();
+		mainMachine = d.build(mainast);
+
+		graph.addVertex(mainMachine.getName());
+		Set<ClassicalBMachine> machines = new LinkedHashSet<ClassicalBMachine>();
+		machines.add(mainMachine);
 
 		boolean fpReached;
 
@@ -48,7 +51,7 @@ public class ClassicalBModel extends AbstractModel {
 			for (final String machineName : vertices) {
 				final Start ast = rml.getParsedMachines().get(machineName);
 				if (!done.contains(machineName)) {
-					ast.apply(new DependencyWalker(machineName, components,
+					ast.apply(new DependencyWalker(machineName, machines,
 							graph, rml.getParsedMachines()));
 					done.add(machineName);
 					fpReached = false;
@@ -57,7 +60,9 @@ public class ClassicalBModel extends AbstractModel {
 		} while (!fpReached);
 		this.graph = graph;
 
-		// statespace.setModel(this);
+		put(Machine.class, machines);
+
+		statespace.setModel(this);
 		return graph;
 	}
 
@@ -65,8 +70,23 @@ public class ClassicalBModel extends AbstractModel {
 		return mainMachine;
 	}
 
-	public ClassicalBMachine getMachine(final String machineName) {
-		return components.containsKey(machineName) ? (ClassicalBMachine) components
-				.get(machineName) : null;
+	@Override
+	public AbstractElement getComponent(final String name) {
+		Set<Machine> components = getChildrenOfType(Machine.class);
+		for (Machine machine : components) {
+			if (machine.getName().equals(name)) {
+				return machine;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Map<String, AbstractElement> getComponents() {
+		Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
+		for (Machine machine : getChildrenOfType(Machine.class)) {
+			components.put(machine.getName(), machine);
+		}
+		return components;
 	}
 }

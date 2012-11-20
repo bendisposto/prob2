@@ -23,10 +23,10 @@ import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.cli.ProBInstance;
-import de.prob.model.classicalb.newdom.ClassicalBFactory;
-import de.prob.model.classicalb.newdom.ClassicalBModel;
-import de.prob.model.eventb.newdom.EventBModel;
-import de.prob.model.representation.newdom.AbstractElement;
+import de.prob.model.classicalb.ClassicalBFactory;
+import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractElement;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 

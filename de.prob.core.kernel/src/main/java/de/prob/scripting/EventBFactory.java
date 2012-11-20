@@ -18,11 +18,11 @@ import com.google.inject.Provider;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
-import de.prob.model.eventb.newdom.Context;
-import de.prob.model.eventb.newdom.EventBMachine;
-import de.prob.model.eventb.newdom.EventBModel;
-import de.prob.model.representation.newdom.AbstractElement;
-import de.prob.model.representation.newdom.Machine;
+import de.prob.model.eventb.Context;
+import de.prob.model.eventb.EventBMachine;
+import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.Machine;
 
 public class EventBFactory {
 
@@ -35,7 +35,6 @@ public class EventBFactory {
 	public EventBFactory(final Provider<EventBModel> modelProvider) {
 		this.modelProvider = modelProvider;
 	}
-
 
 	private EventBModel load(final String s, final String mainComponent)
 			throws IOException {

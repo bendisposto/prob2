@@ -9,9 +9,9 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.newdom.AbstractElement;
-import de.prob.model.representation.newdom.AbstractModel;
-import de.prob.model.representation.newdom.IEval;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.IEval;
 import de.prob.statespace.History;
 import de.prob.statespace.HistoryElement;
 import de.prob.statespace.StateSpace;

@@ -23,7 +23,7 @@ public class ClassicalBFactory {
 	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
-	public ClassicalBFactory(Provider<ClassicalBModel> modelCreator) {
+	public ClassicalBFactory(final Provider<ClassicalBModel> modelCreator) {
 		this.modelCreator = modelCreator;
 	}
 
@@ -38,7 +38,7 @@ public class ClassicalBFactory {
 		return classicalBModel;
 	}
 
-	private void startAnimation(ClassicalBModel classicalBModel,
+	private void startAnimation(final ClassicalBModel classicalBModel,
 			final RecursiveMachineLoader rml) {
 		final ICommand loadcmd = new LoadBProjectCommand(rml);
 		classicalBModel.getStatespace().execute(loadcmd,
@@ -58,7 +58,7 @@ public class ClassicalBFactory {
 		return rml;
 	}
 
-	public Start parseFile(final File model, BParser bparser)
+	public Start parseFile(final File model, final BParser bparser)
 			throws IOException, BException {
 		logger.trace("Parsing main file '{}'", model.getAbsolutePath());
 		Start ast = null;

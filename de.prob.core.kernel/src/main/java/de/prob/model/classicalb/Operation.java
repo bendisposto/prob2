@@ -2,39 +2,31 @@ package de.prob.model.classicalb;
 
 import java.util.List;
 
-import com.google.common.base.Joiner;
+import de.prob.model.representation.BEvent;
+import de.prob.model.representation.Guard;
 
-import de.prob.model.representation.IEntity;
-import de.prob.model.representation.Label;
+public class Operation extends BEvent {
 
-public class Operation extends Label {
+	private final List<String> parameters;
+	private final List<String> output;
 
-	private final Label output;
-	private final Label parameters;
-
-	public Operation(final String name, final Label output,
-			final Label parameters) {
+	public Operation(final String name, final List<String> parameters,
+			final List<String> output) {
 		super(name);
-		this.output = output;
 		this.parameters = parameters;
+		this.output = output;
+
 	}
 
-	public Label output() {
-		return output;
+	public void addGuards(final List<Guard> guards) {
+		put(Guard.class, guards);
 	}
 
-	public Label parameters() {
+	public List<String> getParameters() {
 		return parameters;
 	}
 
-	@Override
-	public String toString() {
-		final List<IEntity> outChildren = output.getChildren();
-		final String returnValues = outChildren.isEmpty() ? "" : Joiner.on(',')
-				.join(outChildren) + "<--";
-		final List<IEntity> paramChildren = parameters.getChildren();
-		final String params = paramChildren.isEmpty() ? "" : "("
-				+ Joiner.on(',').join(paramChildren) + ")";
-		return returnValues + name + params;
+	public List<String> getOutput() {
+		return output;
 	}
 }

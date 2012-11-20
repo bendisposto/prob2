@@ -6,9 +6,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-import de.prob.model.classicalb.newdom.ClassicalBModel;
-import de.prob.model.eventb.newdom.EventBModel;
-import de.prob.model.representation.newdom.AbstractElement;
+import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractElement;
 import de.prob.statespace.History;
 
 class AnimationViewLabelProvider extends LabelProvider implements

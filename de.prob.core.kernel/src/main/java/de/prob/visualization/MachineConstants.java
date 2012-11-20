@@ -3,15 +3,15 @@ package de.prob.visualization;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.eventb.EBContext;
-import de.prob.model.eventb.EBMachine;
-import de.prob.model.representation.IEntity;
-import de.prob.model.representation.Label;
+import de.prob.model.eventb.Context;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.BEvent;
+import de.prob.model.representation.Constant;
+import de.prob.model.representation.Machine;
+import de.prob.model.representation.Variable;
 
 public class MachineConstants {
-	private final String name;
+	private String name;
 	private List<String> variables;
 	private List<String> constants;
 	private List<String> operations;
@@ -20,40 +20,32 @@ public class MachineConstants {
 	private final String html;
 	private final int height;
 
-	public MachineConstants(final Label abstractElement) {
-		this.name = abstractElement.getName();
-		if (abstractElement instanceof ClassicalBMachine) {
-			final ClassicalBMachine machine = (ClassicalBMachine) abstractElement;
-			variables = extractStrings(machine.variables.getChildren());
+	public MachineConstants(final AbstractElement abstractElement) {
+		if (abstractElement instanceof Machine) {
+			final Machine machine = (Machine) abstractElement;
+			this.name = machine.getName();
+			variables = new ArrayList<String>();
+			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
+				variables.add(variable.getName());
+			}
 			constants = new ArrayList<String>();
-			operations = extractStrings(machine.operations.getChildren());
-		} else if (abstractElement instanceof EBContext) {
-			constants = extractStrings(((EBContext) abstractElement).constants
-					.getChildren());
+			operations = new ArrayList<String>();
+			for (BEvent event : machine.getChildrenOfType(BEvent.class)) {
+				operations.add(event.getName());
+				// TODO: Create to string for BEvent
+			}
+		} else if (abstractElement instanceof Context) {
+			Context context = (Context) abstractElement;
+			constants = new ArrayList<String>();
+			for (Constant constant : context.getChildrenOfType(Constant.class)) {
+				constants.add(constant.getExpression().getCode());
+			}
 			variables = new ArrayList<String>();
 			operations = new ArrayList<String>();
-		} else if (abstractElement instanceof EBMachine) {
-			final EBMachine machine = (EBMachine) abstractElement;
-			variables = extractStrings(machine.variables.getChildren());
-			operations = extractStrings(machine.events.getChildren());
-			constants = new ArrayList<String>();
 		}
 		width = calculateWidth();
 		html = generateHTML();
 		height = calculateHeight();
-	}
-
-	private List<String> extractStrings(final List<IEntity> entities) {
-		final List<String> names = new ArrayList<String>();
-		for (final IEntity entity : entities) {
-			if (entity instanceof IEvalElement) {
-				names.add(((IEvalElement) entity).getCode());
-			}
-			if (entity instanceof Label) {
-				names.add(entity.toString());
-			}
-		}
-		return names;
 	}
 
 	public String getName() {

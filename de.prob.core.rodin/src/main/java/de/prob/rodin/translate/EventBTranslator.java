@@ -28,21 +28,21 @@ import org.rodinp.core.IInternalElementType;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinDBException;
 
-import de.prob.model.eventb.newdom.Context;
-import de.prob.model.eventb.newdom.Event;
-import de.prob.model.eventb.newdom.Event.EventType;
-import de.prob.model.eventb.newdom.EventBAction;
-import de.prob.model.eventb.newdom.EventBAxiom;
-import de.prob.model.eventb.newdom.EventBConstant;
-import de.prob.model.eventb.newdom.EventBGuard;
-import de.prob.model.eventb.newdom.EventBInvariant;
-import de.prob.model.eventb.newdom.EventBMachine;
-import de.prob.model.eventb.newdom.EventBVariable;
-import de.prob.model.eventb.newdom.EventParameter;
-import de.prob.model.eventb.newdom.Variant;
-import de.prob.model.eventb.newdom.Witness;
-import de.prob.model.representation.newdom.AbstractElement;
-import de.prob.model.representation.newdom.BSet;
+import de.prob.model.eventb.Context;
+import de.prob.model.eventb.Event;
+import de.prob.model.eventb.Event.EventType;
+import de.prob.model.eventb.EventBAction;
+import de.prob.model.eventb.EventBAxiom;
+import de.prob.model.eventb.EventBConstant;
+import de.prob.model.eventb.EventBGuard;
+import de.prob.model.eventb.EventBInvariant;
+import de.prob.model.eventb.EventBMachine;
+import de.prob.model.eventb.EventBVariable;
+import de.prob.model.eventb.EventParameter;
+import de.prob.model.eventb.Variant;
+import de.prob.model.eventb.Witness;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.BSet;
 
 public class EventBTranslator {
 	//

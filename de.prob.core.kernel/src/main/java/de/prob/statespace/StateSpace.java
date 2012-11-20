@@ -25,13 +25,13 @@ import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
-import de.prob.model.classicalb.newdom.ClassicalBModel;
-import de.prob.model.eventb.newdom.EventBModel;
-import de.prob.model.representation.newdom.AbstractElement;
-import de.prob.model.representation.newdom.AbstractModel;
-import de.prob.model.representation.newdom.Invariant;
-import de.prob.model.representation.newdom.Machine;
-import de.prob.model.representation.newdom.Variable;
+import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.Invariant;
+import de.prob.model.representation.Machine;
+import de.prob.model.representation.Variable;
 
 /**
  * 

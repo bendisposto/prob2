@@ -11,9 +11,9 @@ import org.eclipse.swt.graphics.Image;
 import com.google.common.base.Joiner;
 
 import de.prob.animator.domainobjects.OpInfo;
-import de.prob.model.eventb.EBEvent;
-import de.prob.model.eventb.newdom.Event;
-import de.prob.model.eventb.newdom.EventParameter;
+import de.prob.model.eventb.Event;
+import de.prob.model.eventb.EventParameter;
+import de.prob.model.representation.BEvent;
 import de.prob.ui.Activator;
 
 class OperationViewLabelProvider extends LabelProvider implements
@@ -82,7 +82,7 @@ class OperationViewLabelProvider extends LabelProvider implements
 		if (obj instanceof ArrayList) {
 			return imgEnabled;
 		}
-		if (obj instanceof EBEvent) {
+		if (obj instanceof BEvent) {
 			return imgDisabled;
 		}
 		return null;

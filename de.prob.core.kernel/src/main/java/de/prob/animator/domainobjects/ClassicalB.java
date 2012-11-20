@@ -8,10 +8,6 @@ package de.prob.animator.domainobjects;
 
 import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
 import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
@@ -21,10 +17,9 @@ import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
-import de.prob.model.representation.IEntity;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class ClassicalB implements IEvalElement, IEntity {
+public class ClassicalB implements IEvalElement {
 
 	public FormulaUUID uuid = new FormulaUUID();
 
@@ -69,16 +64,6 @@ public class ClassicalB implements IEvalElement, IEntity {
 		}
 		ast.apply(prolog);
 
-	}
-
-	@Override
-	public List<IEntity> getChildren() {
-		return new ArrayList<IEntity>();
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return false;
 	}
 
 	private String prettyprint(final Node predicate) {

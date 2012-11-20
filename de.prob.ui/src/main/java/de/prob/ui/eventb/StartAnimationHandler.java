@@ -22,7 +22,7 @@ import com.google.inject.Injector;
 
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
-import de.prob.model.eventb.newdom.EventBModel;
+import de.prob.model.eventb.EventBModel;
 import de.prob.rodin.translate.EventBTranslator;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.AnimationSelector;

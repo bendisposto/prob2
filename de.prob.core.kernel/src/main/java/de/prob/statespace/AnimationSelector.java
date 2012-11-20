@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.inject.Singleton;
 
-import de.prob.model.representation.newdom.AbstractElement;
+import de.prob.model.representation.AbstractElement;
 
 @Singleton
 public class AnimationSelector implements IAnimationListener {

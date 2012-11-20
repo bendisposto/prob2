@@ -1,6 +1,7 @@
 package de.prob.visualization;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -9,8 +10,8 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.Label;
 import de.prob.model.representation.RefType;
 
 public class HierarchyVisualization {
@@ -25,7 +26,7 @@ public class HierarchyVisualization {
 				model.getGraph());
 
 		final HashMap<mxCell, MachineConstants> constants = new HashMap<mxCell, MachineConstants>();
-		final HashMap<String, Label> components = model.getComponents();
+		final Map<String, AbstractElement> components = model.getComponents();
 
 		final JFrame frame = new JFrame();
 		final mxGraphComponent graphComponent = new mxGraphComponent(graph);

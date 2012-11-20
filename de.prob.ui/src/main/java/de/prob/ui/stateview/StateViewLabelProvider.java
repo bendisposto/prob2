@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-import de.prob.model.representation.Label;
+import de.prob.model.representation.AbstractElement;
 
 class StateViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
@@ -14,8 +14,8 @@ class StateViewLabelProvider extends LabelProvider implements
 	@Override
 	public String getColumnText(final Object obj, final int index) {
 		if (index == 0) {
-			if (obj instanceof Label) {
-				return ((Label) obj).getName();
+			if (obj instanceof AbstractElement) {
+				return ((AbstractElement) obj).toString();
 			}
 			if (obj instanceof Variable) {
 				return ((Variable) obj).getName();

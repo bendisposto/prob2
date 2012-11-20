@@ -1,9 +1,9 @@
 package de.prob.model.classicalb;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jgrapht.graph.DirectedMultigraph;
 
@@ -19,23 +19,21 @@ import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PMachineReference;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
-import de.prob.model.representation.Label;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
-
 public class DependencyWalker extends DepthFirstAdapter {
 
 	private final DirectedMultigraph<String, RefType> graph;
 	private final String src;
 	private final Map<String, Start> map;
-	private final HashMap<String, Label> components;
+	private final Set<ClassicalBMachine> machines;
 
 	public DependencyWalker(final String machine,
-			final HashMap<String, Label> comps,
+			final Set<ClassicalBMachine> machines,
 			final DirectedMultigraph<String, RefType> graph,
 			final Map<String, Start> map) {
 		src = machine;
-		this.components = comps;
+		this.machines = machines;
 		this.graph = graph;
 		this.map = map;
 	}
@@ -101,21 +99,24 @@ public class DependencyWalker extends DepthFirstAdapter {
 	}
 
 	private ClassicalBMachine makeMachine(final String dest) {
-		final ClassicalBMachine dst = new ClassicalBMachine();
-		final DomBuilder builder = new DomBuilder(dst);
+		final DomBuilder builder = new DomBuilder();
 		final Start start = map.get(dest);
 		start.apply(builder);
-		return dst;
+		return builder.getMachine();
 	}
 
 	// Takes the name of the destination machine, makes it, and puts it in the
 	// graph
 	private void addMachine(final String dest, final RefType refType) {
 		final ClassicalBMachine newMachine = makeMachine(dest);
-		final String name = newMachine.name();
-		components.put(name, newMachine);
+		final String name = newMachine.getName();
+		machines.add(newMachine);
 		graph.addVertex(name);
 		graph.addEdge(src, name, refType);
+	}
+
+	public Set<ClassicalBMachine> getMachines() {
+		return machines;
 	}
 
 }

@@ -1,28 +1,28 @@
 package de.prob.model.representation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
+import org.jgrapht.graph.ClassBasedEdgeFactory;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
 
-public abstract class AbstractModel implements IEntity {
+public abstract class AbstractModel extends AbstractElement {
 
 	protected StateSpace statespace;
-	protected HashMap<String, Label> components;
-	protected DirectedMultigraph<String, RefType> graph;
+	protected DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
+			new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
 	public StateSpace getStatespace() {
 		return statespace;
 	}
 
-	public HashMap<String, Label> getComponents() {
-		return components;
-	}
+	public abstract AbstractElement getComponent(String name);
+
+	// This is needed for the graph representation
+	public abstract Map<String, AbstractElement> getComponents();
 
 	public DirectedMultigraph<String, RefType> getGraph() {
 		return graph;
@@ -44,16 +44,6 @@ public abstract class AbstractModel implements IEntity {
 	@Override
 	public String toString() {
 		return graph.toString();
-	}
-
-	@Override
-	public List<IEntity> getChildren() {
-		return new ArrayList<IEntity>(components.values());
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return !components.values().isEmpty();
 	}
 
 	public Object asType(final Class<?> className) {

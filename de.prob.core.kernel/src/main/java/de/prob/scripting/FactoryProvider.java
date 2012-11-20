@@ -2,7 +2,7 @@ package de.prob.scripting;
 
 import com.google.inject.Inject;
 
-import de.prob.model.classicalb.newdom.ClassicalBFactory;
+import de.prob.model.classicalb.ClassicalBFactory;
 
 public class FactoryProvider {
 
