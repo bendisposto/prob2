@@ -34,4 +34,9 @@ public class Context extends AbstractElement {
 	public void addAxioms(final List<EventBAxiom> axioms) {
 		put(Axiom.class, axioms);
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

@@ -18,4 +18,9 @@ public abstract class Guard extends AbstractElement implements IEval {
 	public IEvalElement getEvaluate() {
 		return predicate;
 	}
+
+	@Override
+	public String toString() {
+		return predicate.toString();
+	}
 }
