@@ -1,23 +1,16 @@
 package de.prob.scripting;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.codec.binary.Base64;
-import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
-import org.eventb.emf.core.CorePackage;
-import org.eventb.emf.core.Project;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -43,21 +36,19 @@ public class EventBFactory {
 		this.modelProvider = modelProvider;
 	}
 
-	CorePackage f = CorePackage.eINSTANCE; // As a side effect the EMF stuff is
-											// initialized! Hurray
 
-	public EventBModel load(final String s, final String mainComponent)
+	private EventBModel load(final String s, final String mainComponent)
 			throws IOException {
 		EventBModel eventBModel = modelProvider.get();
-		byte[] bytes = Base64.decodeBase64(s.getBytes());
-		XMLResourceImpl r2 = new XMLResourceImpl();
-		r2.load(new ByteArrayInputStream(bytes), new HashMap<Object, Object>());
-		Project p = (Project) r2.getContents().get(0);
+		// byte[] bytes = Base64.decodeBase64(s.getBytes());
+		// XMLResourceImpl r2 = new XMLResourceImpl();
+		// r2.load(new ByteArrayInputStream(bytes), new HashMap<Object,
+		// Object>());
 		// eventBModel.initialize(p, mainComponent);
 		return eventBModel;
 	}
 
-	public EventBModel load(final File f) throws IOException {
+	private EventBModel load(final File f) throws IOException {
 		List<String> lines = readFile(f);
 		String loadcmd = null, emfmodel = null, mainmodel = null;
 		for (String string : lines) {
@@ -70,8 +61,8 @@ public class EventBFactory {
 				loadcmd = m2.group(1);
 			}
 		}
-		EventBModel res = load(emfmodel, mainmodel);
 
+		EventBModel res = load(emfmodel, mainmodel);
 		final ICommand loadcommand = new LoadEventBCommand(loadcmd);
 		res.getStatespace().execute(loadcommand);
 		res.getStatespace().execute(new StartAnimationCommand());
