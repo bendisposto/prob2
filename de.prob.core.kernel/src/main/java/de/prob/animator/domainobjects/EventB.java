@@ -34,7 +34,7 @@ public class EventB implements IEvalElement, IEntity {
 	private Node ast = null;
 
 	public EventB(final String code) {
-		this.code = code;
+		this.code = UnicodeTranslator.toAscii(code);
 	}
 
 	private void ensureParsed() {
