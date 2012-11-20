@@ -171,7 +171,8 @@ public class EventBTranslator {
 	}
 
 	private Event extractEvent(final ISCEvent iscEvent) throws RodinDBException {
-		String name = iscEvent.getElementName();
+		String name = iscEvent.getLabel();
+		
 		int typeId = iscEvent.getConvergence().getCode();
 
 		Event e = new Event(name, calculateEventType(typeId));
