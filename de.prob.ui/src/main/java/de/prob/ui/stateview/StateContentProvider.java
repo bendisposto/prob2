@@ -113,7 +113,7 @@ class StateContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object getParent(final Object element) {
-		return element.getClass();
+		return null;
 	}
 
 	@Override
