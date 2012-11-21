@@ -1,5 +1,6 @@
 package de.prob.model.eventb;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -22,11 +23,11 @@ public class EventBModel extends AbstractModel {
 		this.statespace = statespace;
 	}
 
-	public void addMachines(final Set<EventBMachine> machines) {
-		put(Machine.class, machines);
+	public void addMachines(final Collection<EventBMachine> collection) {
+		put(Machine.class, collection);
 	}
 
-	public void addContexts(final Set<Context> contexts) {
+	public void addContexts(final Collection<Context> contexts) {
 		put(Context.class, contexts);
 	}
 

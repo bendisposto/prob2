@@ -50,7 +50,8 @@ public class StartAnimationHandler extends AbstractHandler {
 		final EventBFactory instance = injector
 				.getInstance(EventBFactory.class);
 
-		EventBModel model = instance.load(eventBTranslator.getMainComponent());
+		EventBModel model = instance.load(eventBTranslator.getMainComponent(),
+				eventBTranslator.getMachines(), eventBTranslator.getContexts());
 
 		StringWriter writer = new StringWriter();
 		PrintWriter pto = new PrintWriter(writer);

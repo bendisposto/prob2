@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -89,18 +89,10 @@ public class EventBFactory {
 		}
 	}
 
-	public EventBModel load(final AbstractElement mainComponent) {
+	public EventBModel load(final AbstractElement mainComponent,
+			final Collection<EventBMachine> machines,
+			final Collection<Context> contexts) {
 		EventBModel model = modelProvider.get();
-
-		Set<EventBMachine> machines = new HashSet<EventBMachine>();
-		Set<Context> contexts = new HashSet<Context>();
-
-		if (mainComponent instanceof EventBMachine) {
-			addMachines((EventBMachine) mainComponent, machines, contexts);
-		}
-		if (mainComponent instanceof Context) {
-			addContexts((Context) mainComponent, contexts);
-		}
 
 		model.setMainComponent(mainComponent);
 		model.addMachines(machines);

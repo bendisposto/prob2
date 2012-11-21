@@ -1,7 +1,10 @@
 package de.prob.rodin.translate;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.IEventBProject;
@@ -51,6 +54,9 @@ public class EventBTranslator {
 	// Map<String, ISCContextRoot> contexts = new HashMap<String,
 	// ISCContextRoot>();
 
+	Map<String, EventBMachine> machines = new HashMap<String, EventBMachine>();
+	Map<String, Context> contexts = new HashMap<String, Context>();
+
 	AbstractElement mainComponent;
 	private final IEventBProject eventBProject;
 
@@ -58,7 +64,6 @@ public class EventBTranslator {
 		eventBProject = root.getEventBProject();
 		IInternalElementType<? extends IInternalElement> elementType = root
 				.getElementType();
-		String name = elementType.getName();
 		String id = elementType.getId();
 		if (id.equals("org.eventb.core.machineFile")) {
 			ISCMachineRoot scMachineRoot = eventBProject.getSCMachineRoot(root
@@ -71,7 +76,12 @@ public class EventBTranslator {
 	}
 
 	private Context translateContext(final ISCContextRoot root) {
-		Context c = new Context(root.getComponentName());
+		String name = root.getComponentName();
+		if (contexts.containsKey(name)) {
+			return contexts.get(name);
+		}
+
+		Context c = new Context(name);
 		try {
 			List<Context> exts = new ArrayList<Context>();
 			for (ISCExtendsContext iscExtendsContext : root
@@ -107,11 +117,17 @@ public class EventBTranslator {
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 		}
+		contexts.put(c.getName(), c);
 		return c;
 	}
 
 	private EventBMachine translateMachine(final ISCMachineRoot root) {
-		EventBMachine machine = new EventBMachine(root.getComponentName());
+		String name = root.getComponentName();
+		if (machines.containsKey(name)) {
+			return machines.get(name);
+		}
+
+		EventBMachine machine = new EventBMachine(name);
 
 		try {
 			List<EventBMachine> refines = new ArrayList<EventBMachine>();
@@ -120,7 +136,6 @@ public class EventBTranslator {
 				IRodinFile abstractSCMachine = iscRefinesMachine
 						.getAbstractSCMachine();
 				String bareName = abstractSCMachine.getBareName();
-				String elementName = abstractSCMachine.getElementName();
 				refines.add(translateMachine(eventBProject
 						.getSCMachineRoot(bareName)));
 			}
@@ -166,13 +181,13 @@ public class EventBTranslator {
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 		}
-
+		machines.put(machine.getName(), machine);
 		return machine;
 	}
 
 	private Event extractEvent(final ISCEvent iscEvent) throws RodinDBException {
 		String name = iscEvent.getLabel();
-		
+
 		int typeId = iscEvent.getConvergence().getCode();
 
 		Event e = new Event(name, calculateEventType(typeId));
@@ -235,4 +250,13 @@ public class EventBTranslator {
 	public AbstractElement getMainComponent() {
 		return mainComponent;
 	}
+
+	public Collection<EventBMachine> getMachines() {
+		return machines.values();
+	}
+
+	public Collection<Context> getContexts() {
+		return contexts.values();
+	}
+
 }
