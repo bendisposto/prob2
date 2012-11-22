@@ -1,6 +1,7 @@
 package de.prob.model.representation;
 
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.unicode.UnicodeTranslator;
 
 public abstract class Constant extends AbstractElement implements IEval {
 
@@ -18,4 +19,9 @@ public abstract class Constant extends AbstractElement implements IEval {
 	public IEvalElement getEvaluate() {
 		return expression;
 	}
+	@Override
+	public String toString() {
+		return UnicodeTranslator.toUnicode(expression.getCode());
+	}
+	
 }
