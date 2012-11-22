@@ -1,6 +1,7 @@
 package de.prob.model.representation;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -11,7 +12,10 @@ public abstract class AbstractElement {
 
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractElement> Set<T> getChildrenOfType(final Class<T> c) {
-		return (Set<T>) children.get(c);
+		Set<? extends AbstractElement> set = children.get(c);
+		if (set == null)
+			return Collections.emptySet();
+		return (Set<T>) set;
 	}
 
 	public <T extends AbstractElement> void put(final Class<T> c,

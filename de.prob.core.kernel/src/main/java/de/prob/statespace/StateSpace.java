@@ -289,11 +289,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public Map<IEvalElement, String> valuesAt(final StateId stateId) {
+		evaluateFormulas(stateId);
 		if (values.containsKey(stateId)) {
 			return values.get(stateId);
 		}
 		return new HashMap<IEvalElement, String>();
 	}
+
 
 	public List<EvaluationResult> eval(final String state, final String... code)
 			throws BException {

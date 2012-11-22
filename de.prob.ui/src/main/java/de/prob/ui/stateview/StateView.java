@@ -131,6 +131,8 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 			public void run() {
 				currentHistory = history;
 				contentProvider.setCurrentHistory(currentHistory);
+				labelProvider.setInput(currentHistory);
+
 				final AbstractElement model = history.getModel();
 				if (model != currentModel) {
 					updateModelInfo(model);

@@ -12,15 +12,21 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
+import de.prob.model.representation.StateSchema;
 import de.prob.statespace.StateSpace;
 
 public class EventBModel extends AbstractModel {
 
 	private AbstractElement mainComponent;
+	private final BStateSchema schema = new BStateSchema();;
 
 	@Inject
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
+	}
+	
+	public StateSchema getStateSchema() {
+		return this.schema;
 	}
 
 	public void addMachines(final Collection<EventBMachine> collection) {
@@ -107,4 +113,7 @@ public class EventBModel extends AbstractModel {
 		}
 		return components;
 	}
+
+	
+
 }

@@ -242,8 +242,11 @@ class History {
 	def StateId getCurrentState() {
 		return current.getCurrentState()
 	}
+	def StateId getPreviousState() {
+		return current.getPrevious().getCurrentState()
+	}
 
-	def AbstractElement getModel() {
+	def AbstractModel getModel() {
 		return s.getModel()
 	}
 

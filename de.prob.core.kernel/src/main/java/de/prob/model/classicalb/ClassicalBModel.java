@@ -13,16 +13,19 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
+import de.prob.model.eventb.BStateSchema;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.RefType;
+import de.prob.model.representation.StateSchema;
 import de.prob.statespace.StateSpace;
 
 public class ClassicalBModel extends AbstractModel {
 
 	private ClassicalBMachine mainMachine = null;
 	private final HashSet<String> done = new HashSet<String>();
+	StateSchema schema = new BStateSchema();
 
 	@Inject
 	public ClassicalBModel(final StateSpace statespace) {
@@ -88,5 +91,10 @@ public class ClassicalBModel extends AbstractModel {
 			components.put(machine.getName(), machine);
 		}
 		return components;
+	}
+
+	@Override
+	public StateSchema getStateSchema() {
+		return schema;
 	}
 }

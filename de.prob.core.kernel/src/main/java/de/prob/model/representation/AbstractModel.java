@@ -57,4 +57,6 @@ public abstract class AbstractModel extends AbstractElement {
 				+ " found.");
 	}
 
+	public abstract StateSchema getStateSchema();
+
 }

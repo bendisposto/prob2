@@ -1,44 +1,46 @@
 package de.prob.ui.stateview;
 
+import java.util.Map;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-import de.prob.model.representation.AbstractElement;
+import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.model.representation.IEval;
+import de.prob.statespace.History;
+import de.prob.statespace.StateId;
 
 class StateViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
 
+	public History currentHistory;
+
 	@Override
 	public String getColumnText(final Object obj, final int index) {
 		if (index == 0) {
-			if (obj instanceof AbstractElement) {
-				return ((AbstractElement) obj).toString();
-			}
-			if (obj instanceof Variable) {
-				return ((Variable) obj).getName();
-			}
-			if (obj instanceof String) {
-				return (String) obj;
-			} else {
-				return obj.getClass().toString();
-			}
+			return obj.toString();
 		}
 
-		if (index == 1) {
-			if (obj instanceof Variable) {
-				return ((Variable) obj).getCurrentValue();
-			}
+		if (index == 1 && obj instanceof IEval) {
+			return getValue(((IEval) obj).getEvaluate(),
+					currentHistory.getCurrentState());
 		}
 
-		if (index == 2) {
-			if (obj instanceof Variable) {
-				return ((Variable) obj).getPreviousValue();
-			}
+		if (index == 2 && obj instanceof IEval) {
+			return getValue(((IEval) obj).getEvaluate(), currentHistory
+					.getCurrent().getSrc());
 		}
 		return "";
+	}
+
+	private String getValue(final IEvalElement o, StateId state) {
+		Map<IEvalElement, String> values = currentHistory.getStatespace()
+				.valuesAt(state);
+		String result = values.get(o);
+		return result != null ? result : "";
 	}
 
 	@Override
@@ -50,6 +52,11 @@ class StateViewLabelProvider extends LabelProvider implements
 	public Image getImage(final Object obj) {
 		return PlatformUI.getWorkbench().getSharedImages()
 				.getImage(ISharedImages.IMG_OBJ_ELEMENT);
+	}
+
+	public void setInput(History currentHistory2) {
+		currentHistory = currentHistory2;
+
 	}
 
 }
