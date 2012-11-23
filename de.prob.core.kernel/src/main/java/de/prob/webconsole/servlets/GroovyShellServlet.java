@@ -1,5 +1,8 @@
 package de.prob.webconsole.servlets;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -12,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.annotations.Home;
 import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ResultObject;
 
@@ -30,10 +34,17 @@ import de.prob.webconsole.ResultObject;
 public class GroovyShellServlet extends HttpServlet {
 
 	private final GroovyExecution executor;
-
+	private BufferedWriter bw;
+	
 	@Inject
-	public GroovyShellServlet(GroovyExecution executor) {
+	public GroovyShellServlet(GroovyExecution executor, @Home final String probhome) {
 		this.executor = executor;
+		final File scrollback = new File(probhome + "scrollback");
+		try {
+			bw = new BufferedWriter(new FileWriter(scrollback, true));
+		} catch (IOException e) {
+			bw = null;
+		}
 	}
 
 	@Override
@@ -41,6 +52,13 @@ public class GroovyShellServlet extends HttpServlet {
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 		String input = req.getParameter("input");
+		
+		if (bw != null) {
+			bw.write(input);
+			bw.newLine();
+			bw.flush();
+		}
+		
 		String result = executor.evaluate(input);
 
 		ResultObject r = new ResultObject(result, executor.isContinued());
