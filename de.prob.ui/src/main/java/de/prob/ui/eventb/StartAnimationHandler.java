@@ -82,6 +82,8 @@ public class StartAnimationHandler extends AbstractHandler {
 			bindings.setVariable("defaultHistory", h);
 		} catch (Error t) {
 			t.printStackTrace();
+		} finally {
+			ge.notifyListerners();
 		}
 
 		System.gc();
