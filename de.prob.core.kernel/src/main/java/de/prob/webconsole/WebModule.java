@@ -7,6 +7,7 @@ import de.prob.webconsole.servlets.GroovyBindingsServlet;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.GroovyShellServlet;
 import de.prob.webconsole.servlets.ImportsServlet;
+import de.prob.webconsole.servlets.ScrollbackServlet;
 import de.prob.webconsole.servlets.VersionServlet;
 
 public class WebModule extends ServletModule {
@@ -20,6 +21,7 @@ public class WebModule extends ServletModule {
 		serve("/imports*").with(ImportsServlet.class);
 		serve("/outputs*").with(GroovyOutputServlet.class);
 		serve("/versions*").with(VersionServlet.class);
+		serve("/scrollback*").with(ScrollbackServlet.class);
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);
 	}

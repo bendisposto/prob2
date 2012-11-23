@@ -34,31 +34,41 @@ import de.prob.webconsole.ResultObject;
 public class GroovyShellServlet extends HttpServlet {
 
 	private final GroovyExecution executor;
-	private BufferedWriter bw;
-	
+	private String probhome;
+
 	@Inject
-	public GroovyShellServlet(GroovyExecution executor, @Home final String probhome) {
+	public GroovyShellServlet(GroovyExecution executor,
+			@Home final String probhome) {
 		this.executor = executor;
-		final File scrollback = new File(probhome + "scrollback");
-		try {
-			bw = new BufferedWriter(new FileWriter(scrollback, true));
-		} catch (IOException e) {
-			bw = null;
-		}
+		this.probhome = probhome;
+
 	}
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
-		String input = req.getParameter("input");
-		
-		if (bw != null) {
-			bw.write(input);
-			bw.newLine();
-			bw.flush();
+		String input = req.getParameter("input").trim();
+
+		if (!input.isEmpty()) {
+			BufferedWriter bw = null;
+			FileWriter fw = null;
+			final File scrollback = new File(probhome + "scrollback");
+			try {
+				fw = new FileWriter(scrollback, true);
+				bw = new BufferedWriter(fw);
+				bw.write(input);
+				bw.newLine();
+				bw.flush();
+			} catch (IOException e) {
+
+			} finally {
+				if (bw != null)
+					bw.close();
+				if (fw != null)
+					fw.close();
+			}
 		}
-		
 		String result = executor.evaluate(input);
 
 		ResultObject r = new ResultObject(result, executor.isContinued());

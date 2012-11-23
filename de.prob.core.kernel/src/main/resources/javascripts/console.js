@@ -82,6 +82,14 @@ function initialize() {
 		lineWrapping : true,
 		promptHistory : true
 	});
+
+	 $.getJSON("scrollback", {}, function(data) {
+		for(var i=0; i<data.length; i++) {
+		   controller.addToHistory(data[i]);
+		}
+	});
+	
+
 	
    $(window).resize(function() {
       $("#console").height($(window).height())
