@@ -46,6 +46,12 @@ public class LoadCommand extends AbstractShellCommand {
 			return "error: " + msg;
 		}
 
+		if (lastDot < 0) {
+			String msg = "Unknown filetype";
+			LOGGER.error(msg);
+			return "error: " + msg;
+		}
+		
 		String extension = filename.substring(lastDot, filename.length());
 
 		if (extension.equals(".mch") || extension.equals(".ref")
