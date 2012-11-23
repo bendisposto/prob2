@@ -42,9 +42,13 @@ public class CompletionServlet extends HttpServlet {
 	
 	def initClassNames() {
 		Properties p = new Properties()
-		def rs = this.getClass().getClassLoader()
-		    .getResourceAsStream("classmap.properties");
-		p.load(rs)
+		try {
+			def rs = this.getClass().getClassLoader()
+				.getResourceAsStream("classmap.properties");
+			p.load(rs)
+		} catch ( Exception swallowed ) {
+		    // if you get here, no class completion for you
+		} 
 
 		for (String fqn : p.keySet()) {
 			def pack = p.get(fqn)
