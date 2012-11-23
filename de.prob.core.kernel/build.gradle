@@ -258,6 +258,7 @@ eclipse {
 }
 
 
-
-
+task magic(dependsOn: ['clean', 'cleanEclipse', 'eclipse',
+    'createBuildConstants', 'setClassPath', 'deployKernel']) {
+}
 
