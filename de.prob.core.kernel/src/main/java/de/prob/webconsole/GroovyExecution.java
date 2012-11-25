@@ -20,6 +20,7 @@ import com.google.inject.Singleton;
 
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IStateSpaceChangeListener;
 
 /**
  * This servlet takes a line from the web interface and evaluates it using
@@ -32,7 +33,7 @@ import de.prob.statespace.AnimationSelector;
  * 
  */
 @Singleton
-public class GroovyExecution {
+public class GroovyExecution implements IStateSpaceChangeListener {
 
 	private final ArrayList<String> inputs = new ArrayList<String>();
 	private final ArrayList<String> imports = new ArrayList<String>();
@@ -237,6 +238,11 @@ public class GroovyExecution {
 
 	public void addImport(final String imp) {
 		this.imports.add(imp);
+	}
+
+	@Override
+	public void newTransition(String opName, boolean isDestStateNew) {
+		notifyListerners();
 	}
 
 }
