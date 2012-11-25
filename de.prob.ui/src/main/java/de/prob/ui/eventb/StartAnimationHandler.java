@@ -78,8 +78,7 @@ public class StartAnimationHandler extends AbstractHandler {
 		final GroovyExecution ge = injector.getInstance(GroovyExecution.class);
 		Binding bindings = ge.getBindings();
 		try {
-			bindings.setVariable("defaultStateSpace", s);
-			bindings.setVariable("defaultHistory", h);
+			bindings.setVariable(ge.freshVar("space_"), s);
 		} catch (Error t) {
 			t.printStackTrace();
 		} finally {
