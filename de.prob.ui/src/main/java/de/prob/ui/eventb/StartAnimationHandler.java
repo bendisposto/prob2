@@ -28,7 +28,6 @@ import de.prob.scripting.EventBFactory;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
-import de.prob.ui.GroovyBindingView;
 import de.prob.ui.eventb.internal.TranslatorFactory;
 import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;

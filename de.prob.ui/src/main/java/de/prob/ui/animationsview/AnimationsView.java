@@ -16,7 +16,6 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
-import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
