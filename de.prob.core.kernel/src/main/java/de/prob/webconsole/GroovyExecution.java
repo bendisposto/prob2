@@ -7,7 +7,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.groovy.tools.shell.Interpreter;
 import org.codehaus.groovy.tools.shell.ParseCode;
@@ -46,12 +48,15 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 
 	private boolean continued;
 
-	private int genCounter = 0;
+	// private int genCounter = 0;
+	private Map<String, Integer> gencounter = new HashMap<String, Integer>();
 
 	private List<IGroovyExecutionListener> listeners = new ArrayList<IGroovyExecutionListener>();
 
-	public synchronized int nextCounter() {
-		return genCounter++;
+	public synchronized int nextCounter(String s) {
+		int c = gencounter.containsKey(s) ? gencounter.get(s) : 0;
+		gencounter.put(s, c+1);
+		return c;
 	}
 
 	private String outputs;
@@ -118,7 +123,7 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 		String v;
 		Binding bindings = this.getBindings();
 		do {
-			v = prefix + nextCounter();
+			v = prefix + nextCounter(prefix);
 		} while (bindings.hasVariable(v));
 		bindings.setVariable(v, null);
 		return v;
