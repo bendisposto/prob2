@@ -4,6 +4,7 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.Collections.SingletonList
 
+import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.OpInfo
 
@@ -38,6 +39,16 @@ class StateId {
 		return result;
 	}
 
+	def eval(formula) {
+		def f = formula;
+		if (!(formula instanceof IEvalElement)) {
+			f = formula as ClassicalB;
+		}
+		space.eval(this, [f])[0]
+	}
+	
+	
+	
 	def StateId(id, hash, space) {
 		this.id = id;
 		this.hash = hash;
