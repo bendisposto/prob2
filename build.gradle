@@ -16,6 +16,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.2'
 }
 
+
 project(':de.prob.core.rodin'){
 	
 
@@ -33,6 +34,27 @@ project(':de.prob.core.rodin'){
 		buildMF << standardMF.text
 		
 	}	
+	
+	task generateMF()<<{
+		String exports = getExportedPackages()
+		//println exports
+		
+		def oldMF = new File(workspacePath+"de.prob.core.rodin/META-INF/MANIFEST.MF").getText("UTF-8")
+		def mf = new File(workspacePath+"de.prob.core.rodin/META-INF/MF.MF")
+		mf.delete()
+		def lib = getLibs()
+		
+		def setExports = { 
+			if(it ==~ /Export-Package:.*/)  it = it + ",\n" + exports
+
+			if(it ==~ /Bundle-ClassPath: ..*/) it = it + ",\n" + lib
+			mf << it+"\n"
+		}
+		oldMF.eachLine(setExports)
+		def oldManiF = new File(workspacePath+"de.prob.core.rodin/META-INF/MANIFEST.MF")
+		oldManiF.delete()
+		mf.renameTo(workspacePath+"de.prob.core.rodin/META-INF/MANIFEST.MF")
+	}
 }
 
 task deleteOldArtifacts(type: Delete) {
@@ -53,4 +75,56 @@ subprojects{
 	apply plugin: 'eclipse'
 	task magic(dependsOn: ['clean', 'cleanEclipse', 'eclipse', 'setClassPath']) {
 	}
+}
+
+
+// collects the Libs from de.prob.core.rodin for the build
+def getLibs(){
+	def dependencyList = []
+	//try{
+		def dir = new File(workspacePath+"de.prob.core.rodin"+"/"+dependencyFolder).eachFile() { file->  		
+	    	if( !(file.getName() ==~/.*\.txt/) ){
+				dependencyList << file.getName()  
+			}
+		}
+	//}catch( FileNotFoundException e ){
+	//	println "No libraries found please run 'gradle collectDependencies' or 'gradle setClassPath'"
+	//}
+	String libs = ""
+	for( int i = 0; i < dependencyList.size; i ++ ){
+
+		if( i > 0 )	 libs = libs +",\n " + dependencyList[i]
+		else		 libs = libs+" " + dependencyList[i]	
+		
+	}
+	return libs
+	
+}
+
+// Gets the exported Packages from kernel
+def String getExportedPackages(){
+	def exportList = []
+	def content = new File(workspacePath+"de.prob.core.kernel/META-INF/MANIFEST.MF").getText("UTF-8") 
+	boolean catchEntries = false
+
+	def getExports = { 
+		
+		if(it ==~ /[A-Z].*/) catchEntries == false
+		
+		if( catchEntries )   exportList << it
+			
+		if(  it ==~ /Export-Package:.*\,(\ |\t)*/ ){
+			catchEntries = true
+			it = it.replaceAll( "Export-Package:", '')
+			exportList << it
+		}
+	}
+
+	content.eachLine( getExports )
+	String exports = ""
+	for( int i = 0; i < exportList.size; i ++ ){
+		if( i > 0 )	 exports = exports +"\n" + exportList[i]
+		else		 exports = exports + exportList[i]	
+	}
+	return exports
 }
