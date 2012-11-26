@@ -115,6 +115,7 @@ public class PrettyPrinterTest {
 			"ll(dd'right_sect)",
 			"x",
 			"rec(left_sect:River1,right_sect:Lock1)",
+			"struct(left_sect:River1,right_sect:Lock1)",
 			"a-b-c",
 			"a+b+c",
 			"(a**b)**c",

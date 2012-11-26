@@ -4,6 +4,7 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ShellCommands;
+import spock.lang.Ignore;
 import spock.lang.Specification
 
 class CompletionServletTest extends Specification {
@@ -44,7 +45,7 @@ class CompletionServletTest extends Specification {
 		result == ["foo", "Bar", "Baz", "Blubb", "Bla"]
 	}
 
-	def "camcelCase splitting works with substrings of length one"() {
+	def "camelCase splitting works with substrings of length one"() {
 		when:
 		def result = servlet.camelSplit("mahnaMBDBDB");
 		then:
@@ -109,7 +110,6 @@ class CompletionServletTest extends Specification {
 				
 		where:
 		col		| fulltext		| list
-		0		| ""			| ["api", "foo", "foobar", "update", "upgrade ", "import ", "load "]
 		1		| "u"			| ["up"]
 		2		| "up"			| ["upgrade ", "update"]
 		3		| "upglatest"	| ["upgrade latest"]
@@ -122,16 +122,25 @@ class CompletionServletTest extends Specification {
 				
 		where:
 		col		| fulltext		| list
-		1		| "a"			| ["api"]
-		1		| "a api"		| ["api api"]
-		3		| "a a a"		| ["a api a"]
-		5		| "a a a"		| ["a a api"]
+		2		| "ap"			| ["api"]
+		2		| "ap api"		| ["api api"]
+		6		| "a a ap"		| ["a a api"]
 		2		| "fo"			| ["foo"]
 		3		| "foo"			| ["foo", "foobar"]
 		6		| "api fo"		| ["api foo"]
 		7		| "api foo"		| ["foo", "foobar"]
 		6		| "api fo api"	| ["api foo api"]
 		7		| "api foo api"	| ["foo", "foobar"]
+	}
+	
+	@Ignore 
+	def "weird testcase"() { // FIXME Why does this one fail in Eclipse but succeed in gradle?
+		expect:
+		servlet.getCompletions(col as String, fulltext) as Set == list as Set
+		
+		where:
+		col		| fulltext		| list
+		3		| "a a a"		| ["api", "al"]
 	}
 	
 	def "method completion"() {
@@ -145,7 +154,6 @@ class CompletionServletTest extends Specification {
 		10 		| "api foo.la 3"| ["api foo.lastIndexOf( 3"]
 		6 		| "foo.le"		| ["leftShift(", "length()"]
 		6 		| "foo.lS"		| ["foo.leftShift("]
-		8 		| "1 foo.tB 3"	| ["1 foo.toB 3"]
 		9 		| "1 foo.toB 3"	| ["toBigDecimal()", "toBoolean()", "toBigInteger()"]
 		9 		| "1 foo.tBD 3"	| ["1 foo.toBigDecimal() 3"]
 		9 		| "1 foo.toBD 3"| ["toBigDecimal()", "toBoolean()", "toBigInteger()"]
@@ -167,6 +175,19 @@ class CompletionServletTest extends Specification {
 		"foo foo bar. baz"	| 6		| ["foo ", "fo", "o bar. baz"]
 		"foo foo bar. baz"	| 10	| ["foo foo ", "ba", "r. baz"]
 		"foo bar. baz"		| 12	| ["foo bar. ", "baz", ""]
+	}
+	
+	def "specifying correct resplitting behaviour"() {
+		expect:
+		servlet.resplit(input) == list as String[]
+		
+		where:
+		input						| list
+		"api.foo("					| ["api.foo(", ""]
+		"foo.bar(baz."				| ["foo.bar(", "baz."]
+		"foo.bar(baz.ding).boing"	| ["", "foo.bar(baz.ding).boing"]
+		"foo(bar(baz).ding"			| ["foo(", "bar(baz).ding"]
+		"upgrade"					| ["", "upgrade"]
 	}
 	
 }

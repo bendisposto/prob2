@@ -54,42 +54,42 @@ class ClassicalBModelTest extends Specification {
 		"Baz"|false
 	}
 
-	def "the user can access machines from the string name"() {
-		setup:
-		def machine = new ClassicalBMachine()
-
-		when:
-		machine.setName(a)
-
-		then:
-		c.getMachine(a) == machine
-
-		where:
-		a <<[
-			"A",
-			"E",
-			"A",
-			"Foo",
-			"B",
-			"C",
-			"Bar"
-		]
-	}
-
-	def "when a machine is not in the graph, null is returned"() {
-		expect:
-		c.getMachine(b) == null
-
-		where:
-		b <<[
-			"I",
-			"am",
-			"not",
-			"in",
-			"the",
-			"graph"
-		]
-	}
+	//	def "the user can access machines from the string name"() {
+	//		setup:
+	//		def machine = new ClassicalBMachine()
+	//
+	//		when:
+	//		machine.setName(a)
+	//
+	//		then:
+	//		c.getMachine(a) == machine
+	//
+	//		where:
+	//		a <<[
+	//			"A",
+	//			"E",
+	//			"A",
+	//			"Foo",
+	//			"B",
+	//			"C",
+	//			"Bar"
+	//		]
+	//	}
+	//
+	//	def "when a machine is not in the graph, null is returned"() {
+	//		expect:
+	//		c.getMachine(b) == null
+	//
+	//		where:
+	//		b <<[
+	//			"I",
+	//			"am",
+	//			"not",
+	//			"in",
+	//			"the",
+	//			"graph"
+	//		]
+	//	}
 
 	def "the correct RefType connects the different machines"() {
 

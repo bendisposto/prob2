@@ -52,7 +52,8 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 			workbench.getActiveWorkbenchWindow().addPerspectiveListener(
 					new PerspectiveListener());
 		} catch (final WorkbenchException e) {
-			final String message = "Error opening ProB perspective.";
+//			final String message = "Error opening ProB perspective.";
+			//FIXME add Error handling
 		}
 	}
 

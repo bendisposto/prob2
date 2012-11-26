@@ -52,6 +52,16 @@ public class OpInfo {
 		id = getIdFromPrologTerm(opTerm.getArgument(1));
 		src = getIdFromPrologTerm(opTerm.getArgument(3));
 		dest = getIdFromPrologTerm(opTerm.getArgument(4));
+		ListPrologTerm parameters = BindingGenerator.getList(opTerm
+				.getArgument(5));
+		ValueTranslator valueTranslator = new ValueTranslator();
+		for (PrologTerm prologTerm : parameters) {
+			Object translated = valueTranslator.toGroovy(prologTerm);
+			String retranslated = valueTranslator.asString(translated);
+			System.out.println("T: " + translated.getClass() + " "
+					+ translated.toString() + " " + retranslated);
+		}
+
 		ListPrologTerm lpt = BindingGenerator.getList(opTerm.getArgument(6));
 		for (PrologTerm prologTerm : lpt) {
 			params.add(prologTerm.getFunctor());

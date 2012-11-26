@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.inject.Singleton;
 
-import de.prob.model.representation.IEntity;
+import de.prob.model.representation.AbstractElement;
 
 @Singleton
 public class AnimationSelector implements IAnimationListener {
@@ -61,7 +61,7 @@ public class AnimationSelector implements IAnimationListener {
 		return histories;
 	}
 
-	public IEntity getModel(final History history) {
+	public AbstractElement getModel(final History history) {
 		return history.getModel();
 	}
 

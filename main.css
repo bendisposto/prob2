@@ -1,0 +1,1052 @@
+/*
+** MediaWiki 'cavendish' style sheet for CSS2-capable browsers.
+** Copyright Mozilla Foundation - http://www.mozilla.org/
+** License: GPL (http://www.gnu.org/copyleft/gpl.html)
+**
+** Loosely based on the monobook style by Gabriel Wicke
+*/
+
+@import url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/content.css");
+@import url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/template.css");
+@import url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/basetemplate.css");
+@import url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/cavendish.css");
+
+
+#header ul { margin: 0; padding-right: 1em; }
+#header li { padding: 0 6px 0 0; margin-right: 2px; }
+#header ul li.selected a {
+	background-position: 0% -0px;
+	color: #455372;
+}
+#header ul li.selected {
+	background-position: 100% -200px;
+	border-bottom: 1px solid #fff;
+}
+
+body {
+/*	background: url("subsite_back.gif") repeat-x; */
+	background-color: #FFF;
+	margin-top: 0;
+	padding-top: 0; 
+}
+
+div#header { clear: both; }
+
+#header h1 a {
+	background: transparent url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/wiki_header_logo.png") no-repeat;
+	width: 285px;
+}
+
+#mozilla-org a {
+	float: right;
+	display: block;
+	text-indent: -5000em;
+	width: 110px;
+	height: 25px;
+	text-decoration: none;
+	background: url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/subsite_mozilla-org.gif") no-repeat;
+	margin-bottom: 1.5em;
+}
+
+a.new,
+#p-personal a.new { color:#ba0000; }
+a.new:visited,
+#p-personal a.new:visited { color:#a55858; }
+
+/*
+** the main content area
+*/
+
+h1 {}
+h2 {}
+h3 {
+	font-size: 1.3em;
+	font-weight: bold;
+}
+
+h4 {	
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+h5 {
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+#siteSub { display: none; }
+#contentSub {
+    font-size: 84%;
+    line-height: 1.2em;
+    margin: 0 0 1.4em 1em;
+    color: #7d7d7d;
+    width: auto;
+}
+span.subpages { display: block; }
+
+
+/* user notification thing */
+.usermessage {
+    background-color: #ffce7b;
+    border: 1px solid #ffa500;
+    color: Black;
+    font-weight: bold;
+    margin: 2em 0em 1em 0em;
+    padding: 0.5em 1em;
+    vertical-align: middle;
+}
+#siteNotice {
+    text-align: center;
+    font-size: 95%;
+    padding: 0 0.9em 0 0.9em;
+}
+#siteNotice p {
+    margin: 0;
+    padding: 0;
+}
+.error {
+    color: red;
+    font-size: larger;
+}
+#catlinks {
+    border:1px solid #aaaaaa;
+    background-color:#f9f9f9;
+    padding: 3px 5px 3px 5px;
+    margin-top: 1em;
+    clear: both;
+}
+
+p.catlinks {
+	padding: 0;
+	display: inline;
+}
+
+/* currently unused, intended to be used by a metadata box
+in the bottom-right corner of the content area */
+.documentDescription {
+    /* The summary text describing the document */
+    font-weight: bold;
+    display: block;
+    margin: 1em 0em;
+    line-height: 1.5em;
+}
+.documentByLine {
+    text-align: right;
+    font-size: 90%;
+    clear: both;
+    font-weight: normal;
+    color: #76797c;
+}
+
+/* emulate center */
+.center {
+    width: 100%;
+    text-align: center;
+}
+*.center * {
+    margin-left: auto;
+    margin-right: auto;
+}
+/* small for tables and similar */
+.small, .small * { font-size: 94%; }
+table.small { font-size: 100% }
+
+/*
+** content styles
+*/
+
+
+#toc {
+    /*border:1px solid #2f6fab;*/
+    border:1px solid #aaaaaa;
+    background-color:#f9f9f9;
+    padding:5px;
+    font-size: 95%;
+}
+#toc .tocindent { margin-left: 2em; }
+#toc .tocline { margin-bottom: 0px; }
+#toc p { margin: 0 }
+#toc .toctoggle { font-size: 94%; }
+#toc .editsection {
+    margin-top: 0.7em;
+    font-size: 94%;
+}
+
+/* images */
+div.floatright, table.floatright {
+    clear: right;
+    float: right;
+    position: relative;
+    margin: 0 0 0.5em 0.5em;
+    border: 0
+/*
+    border: 0.5em solid White;
+    border-width: 0.5em 0 0.8em 1.4em;
+*/
+}
+div.floatright p { font-style: italic; }
+div.floatleft, table.floatleft {
+    float: left;
+    position: relative;
+    margin: 0 0.5em 0.5em 0;
+    border: 0
+/*
+    margin: 0.3em 0.5em 0.5em 0;
+    border: 0.5em solid White;
+    border-width: 0.5em 1.4em 0.8em 0;
+*/
+}
+div.floatleft p { font-style: italic; }
+/* thumbnails */
+div.thumb {
+    margin-bottom: 0.5em;
+    border-style: solid; border-color: White;
+    width: auto;
+}
+div.thumb div {
+    border:1px solid #cccccc;
+    padding: 3px !important;
+    background-color:#f9f9f9;
+    font-size: 94%;
+    text-align: center;
+    overflow: hidden;
+}
+div.thumb div a img {
+    border:1px solid #cccccc;
+}
+div.thumb div div.thumbcaption {
+    border: none;
+    text-align: left;
+    line-height: 1.4em;
+    padding: 0.3em 0 0.1em 0;
+}
+div.magnify {
+    float: right;
+    border: none !important;
+    background: none !important;
+}
+div.magnify a, div.magnify img {
+    display: block;
+    border: none !important;
+    background: none !important;
+}
+div.tright {
+    clear: right;
+    float: right;
+    border-width: 0.5em 0 0.8em 1.4em;
+}
+div.tleft {
+    float: left;
+    margin-right:0.5em;
+    border-width: 0.5em 1.4em 0.8em 0;
+}
+.urlexpansion,
+.hiddenStructure {
+    display: none;
+}
+img.tex { vertical-align: middle; }
+span.texhtml { font-family: serif; }
+
+/*
+** classes for special content elements like town boxes
+** intended to be referenced directly from the wiki src
+*/
+
+/*
+** User styles
+*/
+/* table standards */
+table.rimage {
+    float:right;
+    position:relative;
+    margin-left:1em;
+    margin-bottom:1em;
+    text-align:center;
+}
+.toccolours {
+    border:1px solid #aaaaaa;
+    background-color:#f9f9f9;
+    padding:5px;
+    font-size: 95%;
+}
+div.townBox {
+    position:relative;
+    float:right;
+    background:White;
+    margin-left:1em;
+    border: 1px solid gray;
+    padding:0.3em;
+    width: 200px;
+    overflow: hidden;
+    clear: right;
+}
+div.townBox dl {
+    padding: 0;
+    margin: 0 0 0.3em 0;
+    font-size: 96%;
+}
+div.townBox dl dt {
+    background: none;
+    margin: 0.4em 0 0 0;
+}
+div.townBox dl dd {
+    margin: 0.1em 0 0 1.1em;
+    background-color: #f3f3f3;
+}
+
+/*
+** edit views etc
+*/
+.special li {
+    line-height: 1.4em;
+    margin: 0;
+    padding: 0;
+}
+
+/* Page history styling */
+/* the auto-generated edit comments */
+.autocomment { color: gray; }
+#pagehistory span.user {
+    margin-left: 1.4em;
+    margin-right: 0.4em;
+}
+#pagehistory span.minor { font-weight: bold; }
+#pagehistory li { border: 1px solid White; }
+#pagehistory li.selected {
+    background-color:#f9f9f9;
+    border:1px dashed #aaaaaa;
+}
+/*
+** Diff rendering
+*/
+table.diff { background:white; }
+td.diff-otitle { background:#ffffff; }
+td.diff-ntitle { background:#ffffff; }
+td.diff-addedline {
+    background:#ccffcc;
+    font-size: smaller;
+}
+td.diff-deletedline {
+    background:#ffffaa;
+    font-size: smaller;
+}
+td.diff-context {
+    background:#eeeeee;
+    font-size: smaller;
+}
+span.diffchange { color: red; font-weight: bold; }
+
+/*
+** keep the whitespace in front of the ^=, hides rule from konqueror
+** this is css3, the validator doesn't like it when validating as css2
+*/
+#mBody a[href ^="http://"],
+#mBody a[href ^="gopher://"] {
+    padding-right: 13px;
+}
+#mBody a[href ^="https://"],
+.link-https {
+    background: url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/lock_icon.gif") center right no-repeat;
+    padding-right: 16px;
+}
+#mBody a[href ^="mailto:"],
+.link-mailto {
+    background: url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/mail_icon.gif") center right no-repeat;
+    padding-right: 18px;
+}
+#mBody a[href ^="news://"] {
+    background: url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/news_icon.png") center right no-repeat;
+    padding-right: 18px;
+}
+#mBody a[href ^="ftp://"],
+.link-ftp {
+    background: url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/file_icon.gif") center right no-repeat;
+    padding-right: 18px;
+}
+#mBody a[href ^="irc://"],
+.link-irc {
+    background: url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/discussionitem_icon.gif")  center right no-repeat;
+    padding-right: 18px;
+}
+/* disable interwiki styling */
+#mBody a.extiw,
+#mBody a.extiw:active {
+    color: #3366bb;
+    background: none;
+    padding: 0;
+}
+#mBody a.external { color: #3366bb; }
+/* this can be used in the content area to switch off
+special external link styling */
+#mBody .plainlinks a {
+    background: none !important;
+    padding: 0;
+}
+/*
+** Structural Elements
+*/
+
+/*
+** general portlet styles (elements in the quickbar)
+*/
+.portlet {
+    border: none;
+    margin: 0 0 0.5em 0em;
+    float: none;
+    padding: 0;
+    width: 11.6em;
+    overflow: hidden;
+}
+.portlet h4 {
+    font-size: 95%;
+    font-weight: normal;
+    white-space: nowrap;
+}
+.portlet h5 {
+    background: transparent;
+    padding: 0em 1em 0em 0.5em;
+    text-transform: lowercase;
+    display: inline;
+    font-size: 91%;
+    height: 1em;
+    font-weight: normal;
+    white-space: nowrap;
+}
+.portlet h6 {
+    background: #ffae2e;
+    border: 1px solid #2f6fab;
+    border-style: solid solid none solid;
+    padding: 0em 1em 0em 1em;
+    text-transform: lowercase;
+    display: block;
+    font-size: 1em;
+    height: 1.2em;
+    font-weight: normal;
+    white-space: nowrap;
+}
+.pBody {
+    font-size: 95%;
+    background: White;
+    border-collapse: collapse;
+    border: 1px solid #aaaaaa;
+    padding: 0 0.8em 0.3em 0.5em;
+}
+.portlet h1,
+.portlet h2,
+.portlet h3,
+.portlet h4 {
+    margin: 0;
+    padding: 0;
+}
+.portlet ul {
+    line-height: 1.5em;
+    list-style-type: square;
+    list-style-image: url("http://www.stups.uni-duesseldorf.de/ProB/skins/cavendish/bullet.gif");
+    font-size:95%;
+}
+.portlet li {
+    padding: 0;
+    margin: 0;
+}
+
+/*
+** Logo properties
+*/
+
+#p-logo {
+    z-index: 3;
+    position:absolute; /*needed to use z-index */
+    top: 0;
+    left: 0;
+    height: 155px;
+    width: 12em;
+    overflow: visible;
+}
+#p-logo h5 { display: none; }
+#p-logo a,
+#p-logo a:hover {
+    display: block;
+    height: 155px;
+    width: 12.2em;
+    background-repeat: no-repeat;
+    background-position: 35% 50% !important;
+    text-decoration: none;
+}
+
+/*
+** the navigation portlet
+*/
+
+#p-nav {
+    position:relative;
+    z-index:3;
+}
+
+/*
+** Search portlet
+*/
+#p-search {
+    position:relative;
+    z-index:3;
+}
+#p-search .pBody {
+    text-align: center;
+}
+input.searchButton {
+    margin-top:1px;
+    font-size: 95%;
+}
+#searchGoButton {
+    padding-left: .5em;
+    padding-right: .5em;
+    font-weight: bold;
+}
+#searchInput {
+    width:10.9em;
+    margin: 0;
+    font-size: 95%;
+}
+#p-search .pBody {
+    padding: 0.5em 0.4em 0.4em 0.4em;
+}
+
+/*
+** the personal toolbar
+*/
+
+#p-personal {
+    width:100%;
+    white-space:nowrap;
+    padding: 0;
+    margin: 0;
+    position:absolute;
+    left:0px;
+    top:0px;
+    z-index: 0;
+    border: none;
+    background: none;
+    overflow: visible;
+    line-height: 1.2em;
+}
+
+#p-personal h5 {
+    display:none;
+}
+#p-personal .portlet,
+#p-personal .pBody {
+    padding:0;
+    margin:0;
+    border: none;
+    z-index:0;
+    overflow: visible;
+    background: none;
+}
+/* this is the ul contained in the portlet */
+#p-personal ul {
+    border: none;
+    line-height: 1.4em;
+    color: #2f6fab;
+    padding: 0em 2em 0 3em;
+    margin: 0;
+    text-align: right;
+    text-transform: lowercase;
+    list-style: none;
+    z-index:0;
+    background: none;
+}
+#p-personal li {
+    z-index:0;
+    border:none;
+    padding:0;
+    display: inline;
+    color: #2f6fab;
+    margin-left: 1em;
+    line-height: 1.2em;
+    background: none;
+}
+#p-personal li a {
+    text-decoration: none;
+    color: #005896;
+    padding-bottom: 0.2em;
+    background: none;
+}
+#p-personal li a:hover {
+    background-color: White;
+    padding-bottom: 0.2em;
+    text-decoration: none;
+}
+
+
+/*
+** the page-related actions- page/talk, edit etc
+*/
+#p-cactions {
+    position:absolute;
+    top: 1.3em;
+    left: 11.5em;
+    margin: 0;
+    white-space:nowrap;
+    width: 76%;
+    line-height: 1.1em;
+    overflow: visible;
+    background: none;
+    border-collapse: collapse;
+    padding-left: 1em;
+    list-style: none;
+    font-size: 95%;
+}
+#p-cactions .hiddenStructure { display: none; }
+#p-cactions ul {
+    list-style: none;
+}
+#p-cactions li {
+    display: inline;
+    border: 1px solid #aaaaaa;
+    border-bottom: none;
+    padding: 0 0 0.1em 0;
+    margin: 0 0.3em 0 0;
+    overflow: visible;
+    background: White;
+}
+#p-cactions li.selected {
+    border-color: #fabd23;
+    padding: 0 0 0.2em 0;
+}
+#p-cactions li a {
+    background-color: White;
+    color: #002bb8;
+    border: none;
+    padding: 0 0.8em 0.3em 0.8em;
+    text-decoration: none;
+    text-transform: lowercase;
+    position: relative;
+    z-index: 0;
+    margin: 0;
+}
+#p-cactions .selected a { z-index: 3; }
+#p-cactions .new a { color:#ba0000; }
+#p-cactions li a:hover {
+    z-index: 3;
+    text-decoration: none;
+}
+#p-cactions h5 { display: none; }
+#p-cactions li.istalk { margin-right: 0; }
+#p-cactions li.istalk a { padding-right: 0.5em; }
+#p-cactions #ca-addsection a {
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+}
+/* offsets to distinguish the tab groups */
+li#ca-talk { margin-right: 1.6em; }
+li#ca-watch, li#ca-watch, li#ca-varlang-0 { margin-left: 1.6em; }
+
+
+/*
+** the remaining portlets
+*/
+#p-tbx,
+#p-lang {
+    position:relative;
+    z-index:3;
+}
+
+/*
+** footer
+*/
+
+/* js pref toc */
+#preftoc {
+    float: left;
+    margin: 1em 1em 1em 1em;
+    width: 13em;
+}
+#preftoc li { border: 1px solid White; }
+#preftoc li.selected {
+    background-color:#f9f9f9;
+    border:1px dashed #aaaaaa;
+}
+#preftoc a,
+#preftoc a:active {
+    display: block;
+    color: #0014a6;
+}
+#prefcontrol {
+    clear: both;
+    float: left;
+    margin-top: 1em;
+}
+div.prefsectiontip {
+    font-size: 95%;
+    margin-top: 1em;
+}
+fieldset.operaprefsection { margin-left: 15em }
+
+/*
+** IE/Mac fixes, hope to find a validating way to move this
+** to a separate stylesheet. This would work but doesn't validate:
+** @import("IEMacFixes.css");
+*/
+/* tabs: border on the a, not the div */
+* > html #p-cactions li { border:none; }
+* > html #p-cactions li a {
+    border: 1px solid #aaaaaa;
+    border-bottom: none;
+}
+* > html #p-cactions li.selected a { border-color: #fabd23; }
+/* footer icons need a fixed width */
+* > html #f-poweredbyico,
+* > html #f-copyrightico { width: 88px; }
+* > html #mBody,
+* > html #mBody pre {
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 25px;
+}
+
+/* more IE fixes */
+/* float/negative margin brokenness */
+* html #footer {margin-top: 0;}
+* html #column-content {
+    display: inline;
+    margin-bottom: 0;
+}
+* html div.editsection { font-size: smaller; }
+#pagehistory li.selected { position: relative; }
+
+/* Mac IE 5.0 fix; floated content turns invisible */
+* > html #column-content {
+    float: none;
+}
+* > html #column-one {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+* > html #footer {
+    margin-left: 13.2em;
+}
+.redirectText {
+	font-size:150%;
+	margin:5px;
+}
+
+.printfooter {
+        display: none;
+}
+
+.not_patrolled {
+	background-color: #ffa;
+}
+div.patrollink {
+	font-size: 75%;
+	text-align: right;
+}
+span.newpage, span.minor, span.searchmatch {
+	font-weight: bold;
+}
+span.unpatrolled {
+	font-weight:bold;
+	color:red;
+}
+
+span.searchmatch {
+	color: red;
+}
+.sharedUploadNotice {
+        font-style: italic;
+}
+
+span.updatedmarker {
+	color:black;
+	background-color:#00FF00;
+}
+span.newpageletter {
+	font-weight:bold;
+	color:black;
+	background-color:yellow;
+}
+span.minoreditletter {
+	color:black;
+	background-color:#C5FFE6;
+}
+
+table.gallery {
+	border:  1px solid #cccccc;
+	margin:  2px;
+	padding: 2px;
+	background-color:#ffffff;
+}
+
+table.gallery tr {
+	vertical-align:top;
+}
+
+table.gallery td {
+	vertical-align:top;
+	background-color:#f9f9f9;
+	border: solid 2px white;
+}
+
+div.gallerybox {
+	margin: 2px;
+	width:  150px;
+}
+
+div.gallerybox div.thumb {
+	text-align: center;
+	border: 1px solid #cccccc;
+	margin: 2px;
+}
+
+div.gallerytext {
+	font-size: 94%;
+	padding: 2px 4px;
+}
+
+#footer { color: #666; }
+hr { border: 1px solid #FFF; border-top: 1px solid #CCC; } 
+
+/* ADDED BY DEB@DRIA.ORG FOR DEVMO WIKI */
+
+.standard-table {
+	border: solid black 1px;
+	border-collapse: collapse;
+}
+
+.standard-table td {
+	text-align: left;
+	vertical-align: top;
+	padding: 5px;
+	border: solid #BBB 1px;
+}
+
+.standard-table td.header, .standard-table th {
+	font-weight: bold;
+	background: #DDD;
+	border: solid #BBB 1px;
+	text-align: left;
+	padding: 0px 5px 0px 5px;
+}
+
+.fullwidth-table {
+	border: solid #666 1px;
+	border-collapse: collapse;
+	width: 100%;
+	margin-bottom: 10px;
+	background: #FFF;
+}
+
+.fullwidth-table td {
+	text-align: left;
+	vertical-align: top;
+	padding: 5px 15px 5px 15px;
+	border: solid #BBB 1px;
+}
+
+.fullwidth-table td.header, .fullwidth-table th {
+	background: #DDD;
+	border: solid #BBB 1px;
+	font-weight: bold;
+	font-size: 1.2em;
+	text-align: left;
+	padding: 0px 5px 0px 5px;
+}
+
+div.breadcrumbs {
+	border: solid #888 1px;
+	padding: 0px 5px 0px 5px;
+	background: #DDD;
+	margin: 5px 0px 10px 0px;
+	font-size: 0.9em;
+}
+
+div.breadcrumbs a.breadcrumbs {
+	text-decoration: none;
+}
+
+div.breadcrumbs span.breadcrumbs {
+	font-weight: bold;
+}
+
+pre {
+	background: #EEE;
+	border: dashed #666 1px;
+	padding: 15px 20px 15px 20px;
+	overflow: auto;
+}
+
+div.tip {
+	border: solid green 2px;
+	padding: 0px 10px 0px 10px;
+	margin: 10px 0px 10px 0px;
+	background: #DFD;
+}
+
+div.bug, div.warning {
+	border: solid red 2px;
+	padding: 0px 10px 0px 10px;
+	margin: 10px 0px 10px 0px;
+	background: #FDD;
+}
+
+div.note {
+	border: solid goldenrod 2px;
+	padding: 0px 10px 0px 10px;
+	margin: 10px 0px 10px 0px;
+	background: #FFD;
+	color: #000;
+}
+
+div.note:before {
+	content: "";
+}
+
+.float-left {
+	float: left;
+	padding: 5px;
+}
+
+.float-right {
+	float: right;
+	padding: 5px;
+}
+
+.figure {
+	/* for future use */
+}
+
+.originaldocinfo {
+	font-size: 0.8em;
+	background: #FFD;
+	border: solid #CCE 1px;
+	width: auto;
+	padding: 0px 10px 0px 10px;
+	margin: 15px 0px 15px 0px;
+}
+
+.originaldocinfo p {
+	line-height: 0.8em;
+}
+
+.originaldocinfo h2 {
+	font-size: 1.3em;
+	font-weight: bold;
+}
+
+.licenseblock {
+	border: dashed #888 1px;
+	background: #DDD;
+	font-size: 0.8em;
+	padding: 0px 10px 0px 10px;
+}
+
+code {
+	font-size: 1.2em;
+}
+
+.wrong-source-code {
+	color: #D00;
+}
+
+.right-source-code {
+	color: #0A0;
+}
+
+.template-toc {
+	background: #DDD;
+	font-size: 0.9em;
+	border: solid black 1px;
+	padding: 0px 10px 0px 10px;
+	margin: 15px 0px 15px 0px;
+	width: auto;
+}
+
+.prevnext {
+	font-size: 0.9em;
+	margin: 10px 0px 20px 0px;
+}
+
+div.highlight {
+	border-left: solid blue 3px;
+	padding-left: 15px;
+}
+
+span.highlightblue {
+	color: blue;
+}
+
+span.highlightred {
+	color: red;
+}
+
+.side-note {
+	width: auto;
+	padding: 0px 20px 0px 20px;
+	margin: 10px 0px 10px 0px;
+	border: solid #666 1px;
+	background: #EEE;
+}
+
+.side-note-left {
+	float:left;
+	width: 40%;
+	padding: 0px 20px 0px 20px;
+	margin: 10px 10px 10px 0px;
+	border: solid #666 1px;
+	background: #EEE;
+}
+
+.side-note-right {
+	float:right;
+	width: 40%;
+	padding: 0px 20px 0px 20px;
+	margin: 10px 0px 10px 10px;
+	border: solid #666 1px;
+	background: #EEE;
+}
+
+/* new for devmo topic pages */
+
+.callout-box {
+	float:right;
+	border: solid black 1px;
+	text-align: center;
+	width: 200px;
+	margin: 0px 0px 15px 15px;
+	padding: 10px;
+	background: #EEE;
+}
+
+.topicpage-table {
+	width: 100%;
+}
+
+.topicpage-table td  {
+	width: 50%;
+	vertical-align: top;
+	padding: 10px;
+}
+
+.alllinks {
+	font-size: 10px;
+	float:right;
+}
+
+.date {
+	color: #668;
+	font-style: italic;
+}
+
+.disambig {
+	font-size: 0.9em;
+	border-top: solid #AAA 1px;
+	border-bottom: solid #AAA 1px;
+}
+
+.notice {
+	font-size: 0.9em;
+	border: solid #AAA 1px;
+	padding: 5px;
+	margin: 5px 0px 5px 0px;
+}
+

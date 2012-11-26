@@ -8,7 +8,7 @@ import org.eclipse.ui.PlatformUI;
 
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.IEntity;
+import de.prob.model.representation.AbstractElement;
 import de.prob.statespace.History;
 
 class AnimationViewLabelProvider extends LabelProvider implements
@@ -19,7 +19,7 @@ class AnimationViewLabelProvider extends LabelProvider implements
 		if (index == 0) {
 			if (obj instanceof History) {
 				final History history = (History) obj;
-				final IEntity model = history.getModel();
+				final AbstractElement model = history.getModel();
 				if (model instanceof EventBModel) {
 					final EventBModel ebmodel = (EventBModel) model;
 					return ebmodel.getMainComponentName();

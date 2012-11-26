@@ -2,126 +2,144 @@ package de.prob.model.classicalb;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.google.common.base.Joiner;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AAssertionsMachineClause;
 import de.be4.classicalb.core.parser.node.AConstantsMachineClause;
 import de.be4.classicalb.core.parser.node.AConstraintsMachineClause;
 import de.be4.classicalb.core.parser.node.ADeferredSetSet;
 import de.be4.classicalb.core.parser.node.AEnumeratedSetSet;
+import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.AInvariantMachineClause;
 import de.be4.classicalb.core.parser.node.AMachineHeader;
 import de.be4.classicalb.core.parser.node.AOperation;
+import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
 import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
+import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
-import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.model.representation.Label;
-
+import de.prob.model.representation.BSet;
 public class DomBuilder extends DepthFirstAdapter {
 
-	private final ClassicalBMachine machine;
+	private static final EOF EOF = new EOF();
+	private String name;
+	private final List<Parameter> parameters = new ArrayList<Parameter>();
+	private final List<Constraint> constraints = new ArrayList<Constraint>();
+	private final List<ClassicalBConstant> constants = new ArrayList<ClassicalBConstant>();
+	private final List<Property> properties = new ArrayList<Property>();
+	private final List<ClassicalBVariable> variables = new ArrayList<ClassicalBVariable>();
+	private final List<ClassicalBInvariant> invariants = new ArrayList<ClassicalBInvariant>();
+	private final List<BSet> sets = new ArrayList<BSet>();
+	private final List<Assertion> assertions = new ArrayList<Assertion>();
+	private final List<Operation> operations = new ArrayList<Operation>();
 
 	@Override
 	public void outStart(final Start node) {
 		super.outStart(node);
-		machine.close();
-	}
-
-	public DomBuilder(final ClassicalBMachine machine) {
-		this.machine = machine;
 	}
 
 	public ClassicalBMachine build(final Start ast) {
-		ast.apply(this);
+		((Start) ast.clone()).apply(this);
+		return getMachine();
+	}
+
+	public ClassicalBMachine getMachine() {
+		ClassicalBMachine machine = new ClassicalBMachine(name);
+		machine.addAssertions(assertions);
+		machine.addConstants(constants);
+		machine.addConstraints(constraints);
+		machine.addProperties(properties);
+		machine.addInvariants(invariants);
+		machine.addParameters(parameters);
+		machine.addSets(sets);
+		machine.addVariables(variables);
+		machine.addOperations(operations);
 		return machine;
 	}
 
 	@Override
 	public void outAMachineHeader(final AMachineHeader node) {
-		machine.setName(extractIdentifierName(node.getName()));
-		addIdentifiers(node.getParameters(), machine.parameters);
+		name = extractIdentifierName(node.getName());
+		for (PExpression expression : node.getParameters()) {
+			parameters.add(new Parameter(createExpressionAST(expression)));
+		}
 	}
 
 	@Override
 	public void outAConstraintsMachineClause(
 			final AConstraintsMachineClause node) {
-		addPredicates(node, machine.constraints);
+		List<PPredicate> predicates = getPredicates(node);
+		for (PPredicate pPredicate : predicates) {
+			constraints.add(new Constraint(createPredicateAST(pPredicate)));
+		}
 	}
 
 	@Override
 	public void outAConstantsMachineClause(final AConstantsMachineClause node) {
-		addIdentifiers(node.getIdentifiers(), machine.constants);
+		for (PExpression pExpression : node.getIdentifiers()) {
+			constants.add(new ClassicalBConstant(
+					createExpressionAST(pExpression)));
+		}
 	}
 
 	@Override
 	public void outAPropertiesMachineClause(final APropertiesMachineClause node) {
-		addPredicates(node, machine.properties);
+		for (PPredicate pPredicate : getPredicates(node)) {
+			properties.add(new Property(createPredicateAST(pPredicate)));
+		}
 	}
 
 	@Override
 	public void outAVariablesMachineClause(final AVariablesMachineClause node) {
-		addIdentifiers(node.getIdentifiers(), machine.variables);
+		for (PExpression pExpression : node.getIdentifiers()) {
+			variables.add(new ClassicalBVariable(
+					createExpressionAST(pExpression)));
+		}
 	}
 
 	@Override
 	public void outAInvariantMachineClause(final AInvariantMachineClause node) {
-		addPredicates(node, machine.invariants);
+		List<PPredicate> predicates = getPredicates(node);
+		for (PPredicate pPredicate : predicates) {
+			invariants.add(new ClassicalBInvariant(
+					createPredicateAST(pPredicate)));
+		}
 	}
 
 	@Override
 	public void outADeferredSetSet(final ADeferredSetSet node) {
-		try {
-			machine.sets.addChild(new ClassicalB(extractIdentifierName(node
-					.getIdentifier())));
-		} catch (final BException e) {
-			// Will not be reached because the set is syntactically correct
-			e.printStackTrace();
-		}
+		sets.add(new BSet(extractIdentifierName(node.getIdentifier())));
 	}
 
 	@Override
 	public void outAEnumeratedSetSet(final AEnumeratedSetSet node) {
-		try {
-			machine.sets.addChild(new ClassicalB(extractIdentifierName(node
-					.getIdentifier())));
-		} catch (final BException e) {
-			// Should not reach this point because the set is syntactically
-			// correct
-			e.printStackTrace();
-		}
+		sets.add(new BSet(extractIdentifierName(node.getIdentifier())));
 	}
 
 	@Override
 	public void outAAssertionsMachineClause(final AAssertionsMachineClause node) {
-		addPredicates(node, machine.assertions);
+		for (PPredicate pPredicate : getPredicates(node)) {
+			assertions.add(new Assertion(createPredicateAST(pPredicate)));
+		}
 	}
 
 	@Override
 	public void inAOperation(final AOperation node) {
 		final String name = extractIdentifierName(node.getOpName());
-		final Label params = addIdentifiers(node.getParameters(), new Label(
-				"Parameters"));
-		final Label output = addIdentifiers(node.getReturnValues(), new Label(
-				"Output"));
-		machine.operations.addChild(new Operation(name, params, output));
+		final List<String> params = extractIdentifiers(node.getParameters());
+		final List<String> output = extractIdentifiers(node.getReturnValues());
+		operations.add(new Operation(name, params, output));
 	}
 
 	// -------------------
-
-	private String prettyprint(final Node predicate) {
-		final PrettyPrinter prettyPrinter = new PrettyPrinter();
-		predicate.apply(prettyPrinter);
-		return prettyPrinter.getPrettyPrint();
-	}
 
 	private String extractIdentifierName(
 			final LinkedList<TIdentifierLiteral> nameL) {
@@ -138,36 +156,39 @@ public class DomBuilder extends DepthFirstAdapter {
 		return text;
 	}
 
-	private void addPredicates(final Node node, final Label section) {
+	private List<String> extractIdentifiers(
+			final LinkedList<PExpression> identifiers) {
+		final List<String> params = new ArrayList<String>();
+		for (PExpression pExpression : identifiers) {
+			if (pExpression instanceof AIdentifierExpression) {
+				params.add(extractIdentifierName(((AIdentifierExpression) pExpression)
+						.getIdentifier()));
+			}
+		}
+		return params;
+	}
+
+	private List<PPredicate> getPredicates(final Node node) {
 		final PredicateConjunctionSplitter s = new PredicateConjunctionSplitter();
 		node.apply(s);
-		for (final PPredicate predicate : s.getPredicates()) {
-			try {
-				section.addChild(new ClassicalB(prettyprint(predicate)));
-			} catch (final BException e) {
-				// It should not reach this point because the predicate is valid
-				// Classical B code
-				e.printStackTrace();
-			}
-		}
+		return s.getPredicates();
 	}
 
-	private Label addIdentifiers(final LinkedList<PExpression> identifiers,
-			final Label section) {
-		for (final PExpression pExpression : identifiers) {
-			if (pExpression instanceof AIdentifierExpression) {
-				final AIdentifierExpression id = (AIdentifierExpression) pExpression;
-				final String name = extractIdentifierName(id.getIdentifier());
-				try {
-					section.addChild(new ClassicalB(name));
-				} catch (final BException e) {
-					// It should not reach this point because parsing the name
-					// will not create any exceptions
-					e.printStackTrace();
-				}
-			}
-		}
-		return section;
+	private Start createExpressionAST(final PExpression expression) {
+		Start start = new Start();
+		AExpressionParseUnit node = new AExpressionParseUnit();
+		start.setPParseUnit(node);
+		start.setEOF(EOF);
+		node.setExpression((PExpression) expression.clone());
+		return start;
 	}
 
+	private Start createPredicateAST(final PPredicate pPredicate) {
+		Start start = new Start();
+		APredicateParseUnit node2 = new APredicateParseUnit();
+		start.setPParseUnit(node2);
+		start.setEOF(EOF);
+		node2.setPredicate((PPredicate) pPredicate.clone());
+		return start;
+	}
 }

@@ -36,7 +36,7 @@ class Shell {
 		System.out.println("Running " + script.getAbsolutePath());
 
 		executor.getBindings().setVariable("dir", dir);
-		executor.runScript(script.getAbsolutePath());
+		executor.runSilentScript(script.getAbsolutePath());
 
 	}
 

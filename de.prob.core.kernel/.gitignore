@@ -24,3 +24,4 @@ config.groovy
 build.properties
 plugin.properties
 plugin.xml
+classmap.properties

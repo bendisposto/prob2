@@ -162,6 +162,13 @@ function initialize() {
 		animateScroll : true,
 		promptHistory : true
 	});
+	
+	 $.getJSON("scrollback", {}, function(data) {
+		for(var i=0; i<data.length; i++) {
+		   controller.addToHistory(data[i]);
+		}
+	});
+	
 
 	// setup output polling
 	setInterval(function() {

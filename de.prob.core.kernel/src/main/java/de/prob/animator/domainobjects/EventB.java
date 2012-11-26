@@ -21,20 +21,22 @@ import de.be4.classicalb.core.parser.node.Node;
 import de.prob.formula.eventb.ExpressionVisitor;
 import de.prob.formula.eventb.PredicateVisitor;
 import de.prob.model.representation.FormulaUUID;
-import de.prob.model.representation.IEntity;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.unicode.UnicodeTranslator;
 
-public class EventB implements IEvalElement, IEntity {
+public class EventB implements IEvalElement {
 
 	public FormulaUUID uuid = new FormulaUUID();
 
 	private final String code;
 	private String kind;
-	private final Node ast;
+	private Node ast = null;
 
 	public EventB(final String code) {
-		this.code = code;
+		this.code = UnicodeTranslator.toAscii(code);
+	}
+
+	private void ensureParsed() {
 		final String unicode = UnicodeTranslator.toUnicode(code);
 		kind = PREDICATE.toString();
 		IParseResult parseResult = FormulaFactory.getDefault().parsePredicate(
@@ -52,7 +54,6 @@ public class EventB implements IEvalElement, IEntity {
 		if (parseResult.hasProblem()) {
 			throwException(code, parseResult);
 		}
-
 	}
 
 	private Node prepareExpressionAst(final IParseResult parseResult) {
@@ -89,6 +90,11 @@ public class EventB implements IEvalElement, IEntity {
 
 	@Override
 	public void printProlog(final IPrologTermOutput pout) {
+		if (ast == null) {
+			ensureParsed();
+		}
+
+		assert ast != null;
 		final ASTProlog prolog = new ASTProlog(pout, null);
 		ast.apply(prolog);
 	}
@@ -96,16 +102,6 @@ public class EventB implements IEvalElement, IEntity {
 	@Override
 	public String getKind() {
 		return kind;
-	}
-
-	@Override
-	public List<IEntity> getChildren() {
-		return new ArrayList<IEntity>();
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return false;
 	}
 
 }

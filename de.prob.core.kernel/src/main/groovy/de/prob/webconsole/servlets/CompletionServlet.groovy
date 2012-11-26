@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse
 
 import org.codehaus.groovy.runtime.InvokerHelper
 
+import com.google.common.collect.ArrayListMultimap
+import com.google.common.collect.Multimap
 import com.google.gson.Gson
 import com.google.inject.Inject
 import com.google.inject.Singleton
@@ -28,12 +30,31 @@ public class CompletionServlet extends HttpServlet {
 
 	private final GroovyExecution executor;
 	private ShellCommands shellCommands;
+	
+	private Multimap<String, String> clazzes = new ArrayListMultimap<String, String>()
 
 	@Inject
 	public CompletionServlet(GroovyExecution executor, ShellCommands shellCommands) {
 		this.shellCommands = shellCommands;
 		this.executor = executor;
+		initClassNames()
+	}
+	
+	def initClassNames() {
+		Properties p = new Properties()
+		try {
+			def rs = this.getClass().getClassLoader()
+				.getResourceAsStream("classmap.properties");
+			p.load(rs)
+		} catch ( Exception swallowed ) {
+		    // if you get here, no class completion for you
+		} 
 
+		for (String fqn : p.keySet()) {
+			def pack = p.get(fqn)
+			def cn = fqn.substring(pack.length() + 1)
+			clazzes.put(cn, fqn)
+		}
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -43,7 +64,8 @@ public class CompletionServlet extends HttpServlet {
 		String col = req.getParameter("col");
 
 		List<String> completions = getCompletions(col, fulltext)
-		Gson g = new Gson();
+		Gson g = new Gson();		
+		
 		String json = g.toJson(completions);
 		out.println(json);
 		out.close();
@@ -74,18 +96,25 @@ public class CompletionServlet extends HttpServlet {
 			return shellCommands.complete(m, c);
 		}
 		
-		// get Bindings
-		completions.addAll(findMatchingVariables(input));
+		String[] parSplit = resplit(input);
+		begin += parSplit[0]
+		input = parSplit[1]
 
 		String sub = ""
 		String other = input // for matching
+		
+		// get Bindings
+		completions.addAll(findMatchingVariables(input));
 		
 		if (input.contains(".")) {
 			int pos = input.lastIndexOf(".")
 			sub = input.substring(0, pos + 1)
 			other = input.substring(pos + 1, input.length())
 			addMethodsAndFields(completions, sub)
+		} else {
+			completions.addAll(clazzes.keySet())
 		}
+		
 
 		if (begin.isEmpty() && other == input) {
 			addMagicCommands(completions, shellCommands)
@@ -94,15 +123,38 @@ public class CompletionServlet extends HttpServlet {
 		completions = camelMatch(completions, other)
 
 		String pre = getCommonPrefix(completions);
-		if (pre != input && pre != other && !pre.isEmpty()) {
+		if (pre.length() >= input.length() && pre != input && pre != other && !pre.isEmpty()) {
 			return [begin + sub + pre + rest]
+		}
+		
+		if (clazzes.containsKey(other)) {
+			def valueList = clazzes.get(other)
+			if (valueList.size() > 1) {
+				completions.addAll(valueList)
+			}
 		}
 					
 		if (completions.size() == 1) {
-			completions = completions.collect {begin + sub + it + rest}
+				completions = completions.collect {begin + sub + it + rest}
 		}
 		
 		return completions
+	}
+	
+	private String[] resplit(String input) {
+		int unmatchedClosingParCount = 0;
+		int i = input.length() - 1
+		for (; i >= 0 && unmatchedClosingParCount >= 0; i--) {
+			if (input.charAt(i) == '(')
+				unmatchedClosingParCount--
+			else if (input.charAt(i) == ')')
+				unmatchedClosingParCount++
+		}
+		if (i == -1)
+			return ["", input] as String[]
+		def first = input.substring(0, i+2)
+		def second = input.substring(i+2, input.length())
+		return [first, second] as String[]
 	}
 
 	private List<String> camelMatch(final List<String> completions, final String match) {

@@ -1,11 +1,12 @@
 package de.prob.statespace
 
 import de.be4.classicalb.core.parser.exceptions.BException
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.OpInfo
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
-import de.prob.model.representation.IEntity
 
 class History {
 
@@ -14,6 +15,15 @@ class History {
 	def final List<IAnimationListener> animationListeners
 	def final StateSpace s
 
+	def eval(formula) {
+		def f = formula;
+		if (!(formula instanceof IEvalElement)) {
+			f = formula as ClassicalB;
+		}
+		s.eval(getCurrentState(),[f]).get(0);
+	}
+	
+	
 	def History(final StateSpace s) {
 		this.s = s
 		head = new HistoryElement(s.getState(s.getVertex("root")))
@@ -242,8 +252,11 @@ class History {
 	def StateId getCurrentState() {
 		return current.getCurrentState()
 	}
+	def StateId getPreviousState() {
+		return current.getPrevious().getCurrentState()
+	}
 
-	def IEntity getModel() {
+	def AbstractModel getModel() {
 		return s.getModel()
 	}
 

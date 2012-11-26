@@ -7,7 +7,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.groovy.tools.shell.Interpreter;
 import org.codehaus.groovy.tools.shell.ParseCode;
@@ -20,6 +22,7 @@ import com.google.inject.Singleton;
 
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IStateSpaceChangeListener;
 
 /**
  * This servlet takes a line from the web interface and evaluates it using
@@ -32,7 +35,7 @@ import de.prob.statespace.AnimationSelector;
  * 
  */
 @Singleton
-public class GroovyExecution {
+public class GroovyExecution implements IStateSpaceChangeListener {
 
 	private final ArrayList<String> inputs = new ArrayList<String>();
 	private final ArrayList<String> imports = new ArrayList<String>();
@@ -45,12 +48,15 @@ public class GroovyExecution {
 
 	private boolean continued;
 
-	private int genCounter = 0;
+	// private int genCounter = 0;
+	private Map<String, Integer> gencounter = new HashMap<String, Integer>();
 
 	private List<IGroovyExecutionListener> listeners = new ArrayList<IGroovyExecutionListener>();
 
-	public int nextCounter() {
-		return genCounter++;
+	public synchronized int nextCounter(String s) {
+		int c = gencounter.containsKey(s) ? gencounter.get(s) : 0;
+		gencounter.put(s, c+1);
+		return c;
 	}
 
 	private String outputs;
@@ -86,7 +92,7 @@ public class GroovyExecution {
 			e.printStackTrace();
 		}
 		this.parser = new Parser();
-		runScript(script);
+		runSilentScript(script);
 	}
 
 	public void registerListener(IGroovyExecutionListener listener) {
@@ -113,7 +119,37 @@ public class GroovyExecution {
 		}
 	}
 
+	public synchronized String freshVar(String prefix) {
+		String v;
+		Binding bindings = this.getBindings();
+		do {
+			v = prefix + nextCounter(prefix);
+		} while (bindings.hasVariable(v));
+		bindings.setVariable(v, null);
+		return v;
+	}
+
 	public String runScript(String content) {
+		String s = freshVar("script_");
+		return runScript(content, s);
+	}
+
+	public String runSilentScript(String content) {
+		return runScript(content, null, true);
+	}
+
+	public String runScript(String content, String resultbinding) {
+		return runScript(content, resultbinding, false);
+	}
+
+	public String runScript(String content, String resultbinding, boolean silent) {
+		Object result = runScript2(content);
+		if (!silent)
+			getBindings().setVariable(resultbinding, result);
+		return result == null ? "null" : result.toString();
+	}
+
+	public Object runScript2(String content) {
 		try {
 			final ArrayList<String> eval = new ArrayList<String>();
 			eval.addAll(imports);
@@ -126,7 +162,7 @@ public class GroovyExecution {
 			} finally {
 				inputs.clear();
 			}
-			return evaluate == null ? "null" : evaluate.toString();
+			return evaluate;
 		} finally {
 			notifyListerners();
 		}
@@ -207,6 +243,11 @@ public class GroovyExecution {
 
 	public void addImport(final String imp) {
 		this.imports.add(imp);
+	}
+
+	@Override
+	public void newTransition(String opName, boolean isDestStateNew) {
+		notifyListerners();
 	}
 
 }

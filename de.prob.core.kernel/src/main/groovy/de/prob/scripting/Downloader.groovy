@@ -154,8 +154,13 @@ class Downloader extends AbstractShellCommand {
 	@Override
 	public Object perform(List<String> m, GroovyExecution exec)
 	throws IOException {
+		if (m.size() < 2) {
+			return listVersions()
+		}
 		def version = m[1]
-		assert ((List) availableVersions()).contains(version)
+		if (!((List) availableVersions()).contains(version)) {
+			return "unknown version"
+		}	
 		return downloadCli(version);
 	}
 }

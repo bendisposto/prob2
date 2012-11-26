@@ -1,108 +1,119 @@
 package de.prob.model.eventb;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.emf.common.util.EList;
-import org.eventb.emf.core.EventBNamedCommentedComponentElement;
-import org.eventb.emf.core.Project;
-import org.eventb.emf.core.context.Context;
-import org.eventb.emf.core.machine.Machine;
-import org.jgrapht.graph.ClassBasedEdgeFactory;
-import org.jgrapht.graph.DirectedMultigraph;
+import java.util.Set;
 
 import com.google.inject.Inject;
 
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.Label;
+import de.prob.model.representation.Machine;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
+import de.prob.model.representation.StateSchema;
 import de.prob.statespace.StateSpace;
 
 public class EventBModel extends AbstractModel {
 
-	private String mainComponent;
+	private AbstractElement mainComponent;
+	private final BStateSchema schema = new BStateSchema();;
 
 	@Inject
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
-		this.components = new HashMap<String, Label>();
+	}
+	
+	public StateSchema getStateSchema() {
+		return this.schema;
 	}
 
-	public void initialize(final Project p, final String mainComponent) {
-		this.mainComponent = mainComponent;
-		graph = new DirectedMultigraph<String, RefType>(
-				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
+	public void addMachines(final Collection<EventBMachine> collection) {
+		put(Machine.class, collection);
+	}
 
-		final Map<String, EventBNamedCommentedComponentElement> allComponents = new HashMap<String, EventBNamedCommentedComponentElement>();
-		EventBNamedCommentedComponentElement element = null;
-		for (final EventBNamedCommentedComponentElement cmpt : p
-				.getComponents()) {
-			final String name = cmpt.doGetName();
-			if (mainComponent.equals(name)) {
-				element = cmpt;
-			}
-			allComponents.put(name, cmpt);
-		}
-		if (element != null) {
-			final String name = element.doGetName();
-			graph.addVertex(name);
-			if (!components.containsKey(name)) {
-				if (element instanceof Context) {
-					final Context c = (Context) element;
-					components.put(name, new EBContext(c));
-				} else if (element instanceof Machine) {
-					final Machine m = (Machine) element;
-					components.put(name, new EBMachine(m));
-				}
-			}
+	public void addContexts(final Collection<Context> contexts) {
+		put(Context.class, contexts);
+	}
 
-			if (element instanceof Context) {
-				final Context c = (Context) element;
-				final EList<Context> ext = c.getExtends();
-				for (final Context context : ext) {
-					final String ctxName = context.doGetName();
-					if (!components.containsKey(ctxName)) {
-						graph.addVertex(ctxName);
-						components.put(ctxName, new EBContext(
-								(Context) allComponents.get(ctxName)));
-					}
-					graph.addEdge(name, ctxName, new RefType(ERefType.EXTENDS));
-				}
-			}
-			if (element instanceof Machine) {
-				final Machine m = (Machine) element;
-				final EList<Context> sees = m.getSees();
-				for (final Context context : sees) {
-					final String ctxName = context.doGetName();
-					if (!components.containsKey(ctxName)) {
-						graph.addVertex(ctxName);
-						components.put(ctxName, new EBContext(
-								(Context) allComponents.get(ctxName)));
-					}
-					graph.addEdge(name, ctxName, new RefType(ERefType.SEES));
-				}
-				final EList<Machine> refines = m.getRefines();
-				for (final Machine machine : refines) {
-					final String mName = machine.doGetName();
-					if (!components.containsKey(mName)) {
-						graph.addVertex(mName);
-						components.put(mName, new EBMachine(
-								(Machine) allComponents.get(mName)));
-					}
-					graph.addEdge(name, mName, new RefType(ERefType.REFINES));
-				}
-			}
-		}
+	public void isFinished() {
+		calculateGraph();
 		statespace.setModel(this);
 	}
 
-	public EventBElement getComponent(final String componentName) {
-		return components.containsKey(componentName) ? (EventBElement) components
-				.get(componentName) : null;
+	public void setMainComponent(final AbstractElement mainComponent) {
+		this.mainComponent = mainComponent;
+	}
+
+	public AbstractElement getMainComponent() {
+		return mainComponent;
 	}
 
 	public String getMainComponentName() {
-		return mainComponent;
+		if (mainComponent instanceof Context) {
+			return ((Context) mainComponent).getName();
+		}
+		if (mainComponent instanceof Machine) {
+			return ((Machine) mainComponent).getName();
+		}
+		return "";
 	}
+
+	@Override
+	public AbstractElement getComponent(final String name) {
+		for (Machine machine : getChildrenOfType(Machine.class)) {
+			if (machine.getName().equals(name)) {
+				return machine;
+			}
+		}
+		for (Context context : getChildrenOfType(Context.class)) {
+			if (context.getName().equals(name)) {
+				return context;
+			}
+		}
+		return null;
+	}
+
+	public void calculateGraph() {
+		for (Machine machine : getChildrenOfType(Machine.class)) {
+			graph.addVertex(machine.getName());
+		}
+		for (Context context : getChildrenOfType(Context.class)) {
+			graph.addVertex(context.getName());
+		}
+
+		for (Machine machine : getChildrenOfType(Machine.class)) {
+			for (Machine refinement : machine.getChildrenOfType(Machine.class)) {
+				graph.addEdge(machine.getName(), refinement.getName(),
+						new RefType(ERefType.REFINES));
+			}
+			for (Context seen : machine.getChildrenOfType(Context.class)) {
+				graph.addEdge(machine.getName(), seen.getName(), new RefType(
+						ERefType.SEES));
+			}
+		}
+		Set<Context> contexts = getChildrenOfType(Context.class);
+		for (Context context : contexts) {
+			for (Context seen : context.getChildrenOfType(Context.class)) {
+				graph.addEdge(context.getName(), seen.getName(), new RefType(
+						ERefType.EXTENDS));
+			}
+		}
+	}
+
+	@Override
+	public Map<String, AbstractElement> getComponents() {
+		Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
+		for (Machine machine : getChildrenOfType(Machine.class)) {
+			components.put(machine.getName(), machine);
+		}
+		for (Context context : getChildrenOfType(Context.class)) {
+			components.put(context.getName(), context);
+		}
+		return components;
+	}
+
+	
+
 }

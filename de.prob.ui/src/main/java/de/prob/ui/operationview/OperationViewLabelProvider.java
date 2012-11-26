@@ -2,6 +2,7 @@ package de.prob.ui.operationview;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -9,11 +10,10 @@ import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Joiner;
 
-import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.OpInfo;
-import de.prob.model.eventb.EBEvent;
-import de.prob.model.representation.IEntity;
-import de.prob.model.representation.Label;
+import de.prob.model.eventb.Event;
+import de.prob.model.eventb.EventParameter;
+import de.prob.model.representation.BEvent;
 import de.prob.ui.Activator;
 
 class OperationViewLabelProvider extends LabelProvider implements
@@ -38,8 +38,8 @@ class OperationViewLabelProvider extends LabelProvider implements
 			} else if (obj instanceof OpInfo) {
 				final OpInfo op = (OpInfo) obj;
 				return op.name;
-			} else if (obj instanceof EBEvent) {
-				final EBEvent event = (EBEvent) obj;
+			} else if (obj instanceof Event) {
+				final Event event = (Event) obj;
 				return event.getName();
 			} else {
 				return obj.getClass().toString();
@@ -53,16 +53,15 @@ class OperationViewLabelProvider extends LabelProvider implements
 			} else if (obj instanceof OpInfo) {
 				final OpInfo op = (OpInfo) obj;
 				return Joiner.on(",").join(op.params);
-			} else if (obj instanceof EBEvent) {
-				final EBEvent event = (EBEvent) obj;
-				final Label parameters = event.parameters;
-				final List<String> parameterNames = new ArrayList<String>();
-				for (final IEntity child : parameters.getChildren()) {
-					if (child instanceof EventB) {
-						parameterNames.add(((EventB) child).getCode());
-					}
+			} else if (obj instanceof Event) {
+				final Event event = (Event) obj;
+				Set<EventParameter> params = event
+						.getChildrenOfType(EventParameter.class);
+				List<String> paramNames = new ArrayList<String>();
+				for (EventParameter param : params) {
+					paramNames.add(param.getName());
 				}
-				return Joiner.on(",").join(parameterNames);
+				return Joiner.on(",").join(paramNames);
 			} else {
 				return obj.getClass().toString();
 			}
@@ -83,7 +82,7 @@ class OperationViewLabelProvider extends LabelProvider implements
 		if (obj instanceof ArrayList) {
 			return imgEnabled;
 		}
-		if (obj instanceof EBEvent) {
+		if (obj instanceof BEvent) {
 			return imgDisabled;
 		}
 		return null;

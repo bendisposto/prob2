@@ -1075,9 +1075,20 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
+	public void caseAStructExpression(AStructExpression node) {
+		sb.append("struct(");
+		processEntries(node.getEntries());
+		sb.append(")");
+	}
+
+	@Override
 	public void caseARecExpression(ARecExpression node) {
 		sb.append("rec(");
-		List<PRecEntry> list = node.getEntries();
+		processEntries(node.getEntries());
+		sb.append(")");
+	}
+
+	private void processEntries(List<PRecEntry> list) {
 		for (final Iterator<PRecEntry> iterator = list.iterator(); iterator
 				.hasNext();) {
 			final PRecEntry e = iterator.next();
@@ -1086,7 +1097,6 @@ public class PrettyPrinter extends DepthFirstAdapter {
 				sb.append(",");
 			}
 		}
-		sb.append(")");
 	}
 
 	@Override
