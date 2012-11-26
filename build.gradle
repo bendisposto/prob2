@@ -48,3 +48,9 @@ task collectArtifacts(type:Copy) {
 	    from workspacePath + "main.css"
 	    into workspacePath + 'updatesite'
 }
+
+subprojects{
+	apply plugin: 'eclipse'
+	task magic(dependsOn: ['clean', 'cleanEclipse', 'eclipse', 'setClassPath']) {
+	}
+}
