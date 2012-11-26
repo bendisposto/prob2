@@ -102,6 +102,26 @@
               </parameter>
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="popup:de.prob.ui.AnimationsView">
+           <command
+                 commandId="de.prob.ui.remove_variable"
+                 icon="icons/rem_co.gif"
+                 label="Remove History"
+                 style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="popup:de.prob.ui.groovybinding">
+           <command
+                 commandId="de.prob.ui.remove_variable"
+                 icon="icons/rem_co.gif"
+                 label="Remove Variable"
+                 style="push">
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
@@ -131,6 +151,16 @@
                      name="Number of Steps"
                      optional="false">
                </commandParameter>
+            </command>
+            <command
+                  description="Removes a history from the animations object"
+                  id="de.prob.ui.remove_history"
+                  name="Remove History">
+            </command>
+            <command
+                  description="Removes a variable from the groovy shell"
+                  id="de.prob.ui.remove_variable"
+                  name="Remove Variable">
             </command>
    </extension>
    
@@ -244,6 +274,18 @@
                class="de.prob.ui.operationview.ExecuteRandomHandler">
          </class>
       </handler>
+      <handler
+            commandId="de.prob.ui.remove_history">
+         <class
+               class="de.prob.ui.animationsview.RemoveHistoryHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.remove_variable">
+         <class
+               class="de.prob.ui.console.RemoveVariableHandler">
+         </class>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -280,13 +322,16 @@
             name="Current Animations">
       </view>
       <view
+            category="de.hhu.stups.prob"
             class="de.prob.ui.console.GroovyConsole"
             id="de.prob.ui.groovyconsole"
             name="Groovy Console"
             restorable="true">
       </view>
       <view
+            category="de.hhu.stups.prob"
             class="de.prob.ui.GroovyBindingView"
+            icon="de.hhu.stups.prob"
             id="de.prob.ui.groovybinding"
             name="Global Variables"
             restorable="true">
