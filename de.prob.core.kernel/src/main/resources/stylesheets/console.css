@@ -7,10 +7,15 @@
 }
 
 .groovy_error {
+   font-family: 'Courier New', monospace;
    color: red;
 }
 .groovy_trace {
+   font-family: 'Courier New', monospace;
    color: #999999;
+}
+.groovy_output {
+	font-family: 'Courier New', monospace;
 }
 
 #loglevel_container {

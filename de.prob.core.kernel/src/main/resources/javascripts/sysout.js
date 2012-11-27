@@ -37,7 +37,7 @@ setInterval(function() {
    if (data != "") {
     for (var prop in data) {
       if (data.hasOwnProperty(prop)) { 
-       var content = data[prop].content.replace(/\n/g,"<br />");
+       var content = data[prop].content.replace(/ /g,"&nbsp;").replace(/\n/g,"<br />");
        outputline = data[prop].nr
        if (data[prop].msgtype == "output") {
         var m = $('<span class=groovy_output>'+content+'</span>'); 
