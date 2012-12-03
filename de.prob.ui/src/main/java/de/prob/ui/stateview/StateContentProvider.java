@@ -13,7 +13,7 @@ import de.prob.statespace.History;
  * they are divided into groups by their operation name
  * 
  */
-class StateContentProvider implements ITreeContentProvider {
+public class StateContentProvider implements ITreeContentProvider {
 
 	public History currentHistory;
 
@@ -32,8 +32,9 @@ class StateContentProvider implements ITreeContentProvider {
 			AbstractModel model = currentHistory.getModel();
 			if (model != null) {
 				StateSchema schema = model.getStateSchema();
-				if (schema != null)
+				if (schema != null) {
 					return schema.getElements(inputElement);
+				}
 			}
 		}
 		return new Object[0];
@@ -55,8 +56,9 @@ class StateContentProvider implements ITreeContentProvider {
 			AbstractModel model = currentHistory.getModel();
 			if (model != null) {
 				StateSchema schema = model.getStateSchema();
-				if (schema != null)
+				if (schema != null) {
 					return schema.hasChildren(element);
+				}
 			}
 		}
 		return false;
