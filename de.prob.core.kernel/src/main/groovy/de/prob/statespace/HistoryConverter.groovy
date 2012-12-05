@@ -1,28 +1,44 @@
 package de.prob.statespace
 
+import de.prob.model.representation.AbstractModel
+
 
 class HistoryConverter {
 	def static File save(History history,String fileName) {
-		HistoryElement current = history.current
-		def opList = current.getOpList()
+		def file = new File(fileName);
+		file.newWriter()
 
-		def out = new File(fileName)
-		out.newWriter()
-		out << "{ m -> def h = new History(m)\n"
+		file << "<!-- Model for this trace has the following graph:"
+		def model = history as AbstractModel;
+		file << "${model.toString()} -->"
 
-		opList.each {
-			def params = []
-			it.params.each {
-				params.add("\"$it\"")
+		file << "<trace>"
+		history.current.opList.each {
+			file << "<Operation name=\"${it.getName()}\">"
+			it.getParams().each {
+				param -> file << "<Parameter name=\"$param\"/>"
 			}
-
-			if(it.name.startsWith("\$")) {
-				out << "h = h.add(\"\\${it.name}\",$params)\n"
-			} else {
-				out << "h = h.add(\"${it.name}\",$params)\n"
-			}
+			file << "</Operation>"
 		}
-		out << "h }"
-		out
+		file << "</trace>"
+
+		file
+	}
+
+	def static History restore(AbstractModel model,String fileName) {
+		def History history = model as History
+
+		def trace = new XmlSlurper().parse(fileName)
+
+		trace.Operation.each {
+			def params = []
+			it.Parameter.each {
+				params << "${it.@name}"
+			}
+			def name = "${it.@name}"
+			history = history.add("${it.@name}", params)
+		}
+
+		history
 	}
 }
