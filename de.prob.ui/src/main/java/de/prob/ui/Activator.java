@@ -47,6 +47,9 @@ public class Activator extends AbstractUIPlugin {
 	public static final String JUNIT_TSUITE_OK = "JUNIT_TSUITE_OK";
 	public static final String JUNIT_TSUITE = "JUNIT_TSUITE";
 	public static final String JUNIT_STACK = "JUNIT_STACK";
+	public static final String JUNIT_TEST_ERR = "JUNIT_TEST_ERR";
+	public static final String JUNIT_TEST_FAIL = "JUNIT_TEST_FAIL";
+	public static final String JUNIT_TEST_OK = "JUNIT_TEST_OK";
 
 	/**
 	 * The constructor
@@ -160,5 +163,15 @@ public class Activator extends AbstractUIPlugin {
 		reg.put(JUNIT_STACK,
 				imageDescriptorFromPlugin(PLUGIN_ID,
 						"icons/junit/eview16/stackframe.gif"));
+		reg.put(JUNIT_TEST_ERR,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/testerr.gif"));
+		reg.put(JUNIT_TEST_FAIL,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/testfail.gif"));
+		reg.put(JUNIT_TEST_OK,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/test.gif"));
+
 	}
 }

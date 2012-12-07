@@ -22,8 +22,6 @@ import com.google.inject.Injector;
 
 import de.prob.statespace.History;
 import de.prob.ui.Activator;
-import de.prob.ui.junitview.parts.CounterPanel;
-import de.prob.ui.junitview.parts.JUnitProgressBar;
 import de.prob.webconsole.ServletContextListener;
 
 /**
@@ -156,6 +154,7 @@ public class JUnitView extends ViewPart {
 
 	@Override
 	public void setFocus() {
+		// TODO Auto-generated method stub
 
 	}
 }

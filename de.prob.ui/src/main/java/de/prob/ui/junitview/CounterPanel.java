@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package de.prob.ui.junitview.parts;
+package de.prob.ui.junitview;
 
 import java.text.MessageFormat;
 
