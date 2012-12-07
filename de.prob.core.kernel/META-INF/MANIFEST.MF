@@ -59,6 +59,7 @@ Bundle-Vendor: STUPS Group
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: com.google.common.base,
+ com.google.common.collect,
  com.google.inject,
  com.google.inject.assistedinject,
  com.google.inject.binder,
@@ -119,6 +120,7 @@ Export-Package: com.google.common.base,
  de.prob.prolog.term,
  de.prob.scripting,
  de.prob.statespace,
+ de.prob.testing,
  de.prob.unicode,
  de.prob.unicode.analysis,
  de.prob.unicode.lexer,
@@ -128,5 +130,6 @@ Export-Package: com.google.common.base,
  de.prob.webconsole.servlets,
  de.prob.webconsole.shellcommands,
  groovy.lang,
+ junit.framework,
  org.apache.commons.codec,
  org.apache.commons.codec.binary
