@@ -23,6 +23,7 @@ import com.google.inject.Singleton;
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IStateSpaceChangeListener;
+import de.prob.testing.TestRegistry;
 
 /**
  * This servlet takes a line from the web interface and evaluates it using
@@ -44,18 +45,18 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 
 	private final Parser parser;
 
-	private OutputBuffer sideeffects;
+	private final OutputBuffer sideeffects;
 
 	private boolean continued;
 
 	// private int genCounter = 0;
-	private Map<String, Integer> gencounter = new HashMap<String, Integer>();
+	private final Map<String, Integer> gencounter = new HashMap<String, Integer>();
 
-	private List<IGroovyExecutionListener> listeners = new ArrayList<IGroovyExecutionListener>();
+	private final List<IGroovyExecutionListener> listeners = new ArrayList<IGroovyExecutionListener>();
 
-	public synchronized int nextCounter(String s) {
+	public synchronized int nextCounter(final String s) {
 		int c = gencounter.containsKey(s) ? gencounter.get(s) : 0;
-		gencounter.put(s, c+1);
+		gencounter.put(s, c + 1);
 		return c;
 	}
 
@@ -71,12 +72,14 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 
 	@Inject
 	public GroovyExecution(final Api api, final ShellCommands shellCommands,
-			final AnimationSelector selector, OutputBuffer sideeffects) {
+			final AnimationSelector selector, final OutputBuffer sideeffects,
+			final TestRegistry tests) {
 		this.shellCommands = shellCommands;
 		this.sideeffects = sideeffects;
 		final Binding binding = new Binding();
 		binding.setVariable("api", api);
 		binding.setVariable("animations", selector);
+		binding.setVariable("tests", tests);
 		binding.setVariable("__console", sideeffects);
 		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
 				binding);
@@ -95,7 +98,7 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 		runSilentScript(script);
 	}
 
-	public void registerListener(IGroovyExecutionListener listener) {
+	public void registerListener(final IGroovyExecutionListener listener) {
 		listeners.add(listener);
 	}
 
@@ -119,7 +122,7 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 		}
 	}
 
-	public synchronized String freshVar(String prefix) {
+	public synchronized String freshVar(final String prefix) {
 		String v;
 		Binding bindings = this.getBindings();
 		do {
@@ -129,27 +132,29 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 		return v;
 	}
 
-	public String runScript(String content) {
+	public String runScript(final String content) {
 		String s = freshVar("script_");
 		return runScript(content, s);
 	}
 
-	public String runSilentScript(String content) {
+	public String runSilentScript(final String content) {
 		return runScript(content, null, true);
 	}
 
-	public String runScript(String content, String resultbinding) {
+	public String runScript(final String content, final String resultbinding) {
 		return runScript(content, resultbinding, false);
 	}
 
-	public String runScript(String content, String resultbinding, boolean silent) {
+	public String runScript(final String content, final String resultbinding,
+			final boolean silent) {
 		Object result = runScript2(content);
-		if (!silent)
+		if (!silent) {
 			getBindings().setVariable(resultbinding, result);
+		}
 		return result == null ? "null" : result.toString();
 	}
 
-	public Object runScript2(String content) {
+	public Object runScript2(final String content) {
 		try {
 			final ArrayList<String> eval = new ArrayList<String>();
 			eval.addAll(imports);
@@ -200,7 +205,7 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 		return continued;
 	}
 
-	private void printStackTrace(OutputBuffer buffer, Throwable t) {
+	private void printStackTrace(final OutputBuffer buffer, final Throwable t) {
 		String msg = t.toString();
 
 		ArrayList<String> trace = new ArrayList<String>();
@@ -246,7 +251,7 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 	}
 
 	@Override
-	public void newTransition(String opName, boolean isDestStateNew) {
+	public void newTransition(final String opName, final boolean isDestStateNew) {
 		notifyListerners();
 	}
 
