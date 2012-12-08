@@ -12,6 +12,7 @@ class History {
 
 	def final HistoryElement current
 	def final HistoryElement head
+	def final HistoryElement first
 	def final List<IAnimationListener> animationListeners
 	def final StateSpace s
 
@@ -28,6 +29,7 @@ class History {
 		this.s = s
 		head = new HistoryElement(s.getState(s.getVertex("root")))
 		current = head
+		first = head
 		animationListeners = new ArrayList<IAnimationListener>()
 	}
 
@@ -97,6 +99,11 @@ class History {
 		}
 		return this
 	}
+	
+	def History first() {
+		return first;
+	}
+	
 
 	/**
 	 * Moves one step forward in the animation if this is possible
