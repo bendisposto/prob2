@@ -7,11 +7,11 @@ import junit.framework.Test;
 import junit.framework.TestFailure;
 import junit.framework.TestSuite;
 
-import org.eclipse.jface.viewers.IOpenListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.OpenEvent;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -177,7 +177,8 @@ public class JUnitView extends ViewPart implements IProBTestListener,
 		fFailureTrace = new FailureTrace(bottom, this);
 		bottom.setContent(fFailureTrace.getComposite());
 
-		fTestViewer.getViewer().addOpenListener(new JUnitOpenListener());
+		fTestViewer.getViewer().addSelectionChangedListener(
+				new TestSelectionListener());
 
 		fSashForm.setWeights(new int[] { 50, 50 });
 		return fSashForm;
@@ -288,10 +289,10 @@ public class JUnitView extends ViewPart implements IProBTestListener,
 		});
 	}
 
-	class JUnitOpenListener implements IOpenListener {
+	class TestSelectionListener implements ISelectionChangedListener {
 
 		@Override
-		public void open(final OpenEvent event) {
+		public void selectionChanged(final SelectionChangedEvent event) {
 			TestFailure selectedTest = getSelectedTest();
 			fFailureTrace.showFailure(selectedTest);
 		}
