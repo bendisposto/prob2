@@ -107,10 +107,8 @@ public class CounterPanel extends Composite {
 	public void setRunValue(final int value, final int ignoredCount) {
 		String runString;
 		if (ignoredCount == 0) {
-			runString = MessageFormat.format(
-					"{1}/{2}",
-					new Object[] { Integer.toString(value),
-							Integer.toString(fTotal) });
+			runString = Integer.toString(value) + "/"
+					+ Integer.toString(fTotal);
 		} else {
 			runString = MessageFormat.format(
 					"{1}/{2} ({3} ignored)",
