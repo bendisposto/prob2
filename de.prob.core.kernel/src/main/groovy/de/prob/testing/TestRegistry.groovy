@@ -15,7 +15,7 @@ class TestRegistry {
 
 	def loadTests(pathToDir) {
 		new File(pathToDir).eachFile(FileType.FILES, {
-			tests << it.getText()
+			if (it.getName().endsWith(".groovy")) tests << it.getText()
 		})
 		listeners.each {
 			it.newTests(tests)
