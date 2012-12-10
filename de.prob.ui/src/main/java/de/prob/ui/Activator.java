@@ -50,6 +50,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final String JUNIT_TEST_ERR = "JUNIT_TEST_ERR";
 	public static final String JUNIT_TEST_FAIL = "JUNIT_TEST_FAIL";
 	public static final String JUNIT_TEST_OK = "JUNIT_TEST_OK";
+	public static final String JUNIT_CAUGHT_EXCEPTION = "JUNIT_CAUGHT_EXCEPTION";
 
 	/**
 	 * The constructor
@@ -162,7 +163,7 @@ public class Activator extends AbstractUIPlugin {
 						"icons/junit/obj16/tsuiterun.gif"));
 		reg.put(JUNIT_STACK,
 				imageDescriptorFromPlugin(PLUGIN_ID,
-						"icons/junit/eview16/stackframe.gif"));
+						"icons/junit/obj16/stkfrm_obj.gif"));
 		reg.put(JUNIT_TEST_ERR,
 				imageDescriptorFromPlugin(PLUGIN_ID,
 						"icons/junit/obj16/testerr.gif"));
@@ -171,7 +172,10 @@ public class Activator extends AbstractUIPlugin {
 						"icons/junit/obj16/testfail.gif"));
 		reg.put(JUNIT_TEST_OK,
 				imageDescriptorFromPlugin(PLUGIN_ID,
-						"icons/junit/obj16/test.gif"));
+						"icons/junit/obj16/testok.gif"));
+		reg.put(JUNIT_CAUGHT_EXCEPTION,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/exc_catch.gif"));
 
 	}
 }

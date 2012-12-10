@@ -19,7 +19,8 @@ import de.prob.webconsole.GroovyExecution;
 public class ProBTestRunner {
 
 	private final GroovyExecution executor;
-	private final List<TestListener> testListeners = new ArrayList<TestListener>();
+	private final List<IProBTestListener> testListeners = new ArrayList<IProBTestListener>();
+	private List<TestSuite> tests = new ArrayList<TestSuite>();
 
 	private static final String[] IMPORTS = new String[] {
 			"import de.prob.statespace.*;",
@@ -34,13 +35,30 @@ public class ProBTestRunner {
 	}
 
 	public void runTests(final List<String> tests) {
+		this.tests = new ArrayList<TestSuite>();
 		for (String test : tests) {
-			runTest(test);
+			TestSuite translated = translateTest(test);
+			if (translated != null) {
+				this.tests.add(translated);
+			}
+		}
+		calculateTests();
+		for (TestSuite test : this.tests) {
+			doRun(test);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public void runTest(final String test) {
+	private void calculateTests() {
+		int testNum = 0;
+		for (TestSuite test : tests) {
+			testNum += test.countTestCases();
+		}
+		for (IProBTestListener listener : testListeners) {
+			listener.totalNumberOfTests(testNum);
+		}
+	}
+
+	public TestSuite translateTest(final String test) {
 		final Interpreter tinterpreter = new Interpreter(this.getClass()
 				.getClassLoader(), executor.getBindings());
 
@@ -53,11 +71,12 @@ public class ProBTestRunner {
 			// the last line of the test script must return an instance of the
 			// test
 			Object instance = tinterpreter.evaluate(eval);
-			doRun(new TestSuite(instance.getClass()));
+			return new TestSuite(instance.getClass());
 		} catch (Throwable t) {
 			System.out.println("Test: " + test
 					+ " is not of valid form and therefore was ignored.");
 		}
+		return null;
 	}
 
 	public TestResult doRun(final Test suite) {
@@ -69,7 +88,7 @@ public class ProBTestRunner {
 		return result;
 	}
 
-	public void addTestListener(final TestListener listener) {
+	public void addTestListener(final IProBTestListener listener) {
 		testListeners.add(listener);
 	}
 }
