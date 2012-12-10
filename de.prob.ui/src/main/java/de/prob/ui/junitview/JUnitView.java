@@ -309,4 +309,5 @@ public class JUnitView extends ViewPart implements IProBTestListener,
 		}
 		return null;
 	}
+
 }
