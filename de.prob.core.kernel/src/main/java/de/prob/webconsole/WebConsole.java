@@ -12,6 +12,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author bendisposto
@@ -19,6 +21,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
  */
 public class WebConsole {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebConsole.class);
 	private static int PORT;
 
 	public static void run() throws Exception {
@@ -42,12 +45,15 @@ public class WebConsole {
 
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
 
+		
 		Server server = new Server();
 
 		ProtectionDomain protectionDomain = WebConsole.class
 				.getProtectionDomain();
+		LOGGER.debug("Protection Domain: "+ protectionDomain.toString());
 		String warFile = protectionDomain.getCodeSource().getLocation()
 				.toExternalForm();
+		LOGGER.debug("External Form: "+ warFile);
 
 		if (!warFile.endsWith("bin/"))
 			warFile += "bin/";
