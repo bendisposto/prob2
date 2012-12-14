@@ -132,4 +132,5 @@ Export-Package: com.google.common.base,
  groovy.lang,
  junit.framework,
  org.apache.commons.codec,
- org.apache.commons.codec.binary
+ org.apache.commons.codec.binary,
+ org.slf4j

@@ -5,6 +5,11 @@
          point="org.eclipse.ui.menus">
           <menuContribution
             locationURI="menu:debug">
+             <command
+                   commandId="de.prob.ui.bugreport"
+                   label="Submit Bugreport"
+                   style="push">
+             </command>
 
       </menuContribution>
       
@@ -176,6 +181,10 @@
                   id="de.prob.ui.specifydirectory"
                   name="Specify Test Directory">
             </command>
+            <command
+                  id="de.prob.ui.bugreport"
+                  name="Submit Bug Report">
+            </command>
    </extension>
    
    <extension
@@ -304,6 +313,12 @@
             commandId="de.prob.ui.specifytestdir">
          <class
                class="de.prob.ui.junitview.SpecifyTestDirectoryHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.bugreport">
+         <class
+               class="de.prob.ui.ticket.SubmitBugreportHandler">
          </class>
       </handler>
    </extension>
