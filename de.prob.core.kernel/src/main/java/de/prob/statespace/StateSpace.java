@@ -289,13 +289,24 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public Map<IEvalElement, String> valuesAt(final StateId stateId) {
-		evaluateFormulas(stateId);
+		if (canBeEvaluated(stateId)) {
+			evaluateFormulas(stateId);
+		}
 		if (values.containsKey(stateId)) {
 			return values.get(stateId);
 		}
 		return new HashMap<IEvalElement, String>();
 	}
 
+	private boolean canBeEvaluated(final StateId stateId) {
+		for (OpInfo opInfo : outgoingEdgesOf(stateId)) {
+			if (opInfo.getName().equals("$setup_constants")
+					|| opInfo.getName().equals("$initialise_machine")) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	public List<EvaluationResult> eval(final String state, final String... code)
 			throws BException {
