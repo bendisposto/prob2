@@ -104,4 +104,9 @@ public class EventB implements IEvalElement {
 		return kind;
 	}
 
+	@Override
+	public String toString() {
+		return getCode();
+	}
+
 }

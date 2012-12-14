@@ -11,4 +11,9 @@ public abstract class Action extends AbstractElement {
 	public String getCode() {
 		return code;
 	}
+
+	@Override
+	public String toString() {
+		return code;
+	}
 }
