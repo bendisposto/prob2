@@ -23,6 +23,10 @@ repositories {
     	name "spock snapshot"
     	url "http://oss.sonatype.org/content/repositories/snapshots/"
     } 
+    maven {
+      name "jira client"
+      url "https://m2proxy.atlassian.com/repository/public"
+    } 
 }
 
 
@@ -42,7 +46,8 @@ dependencies {
 	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 
 	//compile group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
-	
+	compile 'com.atlassian.jira:jira-rest-java-client:2.0.0-m2'
+
 }
 
 
