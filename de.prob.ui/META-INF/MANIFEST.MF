@@ -10,7 +10,6 @@ Bundle-Activator: de.prob.ui.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eventb.core;bundle-version="[2.1.0,2.6.0)",
- de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional,
  org.rodinp;bundle-version="[1.3.1,1.7.0)",
  de.prob.core.rodin;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
