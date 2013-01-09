@@ -15,12 +15,13 @@ public class Attachment {
 	IPath filepath;
 	String description;
 	byte[] data;
-	
+	private final InputStream inputStream;
+
 	public int getTicketId() {
 		return ticketId;
 	}
 
-	public void setTicketId(int ticketId) {
+	public void setTicketId(final int ticketId) {
 		this.ticketId = ticketId;
 	}
 
@@ -28,19 +29,19 @@ public class Attachment {
 		return filename;
 	}
 
-	public void setFilename(String filename) {
+	public void setFilename(final String filename) {
 		this.filename = filename;
 	}
-	
+
 	public IPath getFilepath() {
 		return filepath;
 	}
-	
+
 	public String getDescription() {
 		return this.description;
 	}
-	
-	public void setDescription(String description) {
+
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 
@@ -49,18 +50,18 @@ public class Attachment {
 		System.arraycopy(data, 0, res, 0, data.length);
 		return res;
 	}
-	
-	
-	public Attachment(String filepath, String description) throws IOException {
+
+	public Attachment(final String filepath, final String description)
+			throws IOException {
 		this.ticketId = 0;
 		this.filename = "untitled";
 		this.filepath = new Path(filepath);
 		this.description = description;
-		InputStream in = new FileInputStream(filepath);
-		this.data = readData(in);
+		inputStream = new FileInputStream(filepath);
+		this.data = readData(inputStream);
 	}
-	
-	private byte[] readData(InputStream in) throws IOException {
+
+	private byte[] readData(final InputStream in) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			byte[] buffer = new byte[512];
@@ -75,5 +76,8 @@ public class Attachment {
 			in.close();
 		}
 	}
-	
+
+	public InputStream getInputStream() {
+		return inputStream;
+	}
 }

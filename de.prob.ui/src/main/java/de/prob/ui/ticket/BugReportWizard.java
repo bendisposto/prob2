@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -23,13 +25,19 @@ import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.rest.client.JiraRestClient;
+import com.atlassian.jira.rest.client.domain.BasicIssue;
+import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import com.atlassian.util.concurrent.Promise;
+
 @SuppressWarnings("restriction")
 public class BugReportWizard extends Wizard {
 
 	Logger logger = LoggerFactory.getLogger(BugReportWizard.class);
 
 	private WizardPage1 page1;
-	// private WizardPage2 page2;
+	private WizardPage2 page2;
 	private WizardPage3 page3;
 
 	private String email = "";
@@ -61,10 +69,10 @@ public class BugReportWizard extends Wizard {
 	@Override
 	public void addPages() {
 		page1 = new WizardPage1(email, summary, description, addTrace, true);
-		// page2 = new WizardPage2(description);
+		page2 = new WizardPage2();
 		page3 = new WizardPage3();
 		addPage(page1);
-		// addPage(page2);
+		addPage(page2);
 		addPage(page3);
 
 	}
@@ -81,49 +89,55 @@ public class BugReportWizard extends Wizard {
 							+ e.getLocalizedMessage(), e);
 		}
 
-		Ticket ticket = new Ticket(page1.getEmail(), page1.getSummary(), "",
-				page1.getDetailedDescription(), page1.isSensitive());
+		URI jiraServerUri;
+		try {
+			IssueInputBuilder issueBuilder = new IssueInputBuilder("PROBCORE",
+					(long) 1, page1.getSummary());
+			issueBuilder.setDescription("FROM: " + page1.getEmail() + "\n\n"
+					+ page1.getDetailedDescription());
 
-		for (Attachment a : page3.getAttachments()) {
-			ticket.addAttachment(a);
-		}
+			jiraServerUri = new URI("http://jira.cobra.cs.uni-duesseldorf.de/");
 
-		if (page1.isAddTrace()) {
-			// addTraceFileToTicket(ticket);
-			addInstallationDetailsToTicket(ticket);
+			AsynchronousJiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
+			JiraRestClient client = factory.createWithBasicHttpAuthentication(
+					jiraServerUri, page2.getUsername(), page2.getPassword());
+
+			Promise<BasicIssue> createIssue = client.getIssueClient()
+					.createIssue(issueBuilder.build());
+
+			// Creating issues currently doesn't work
+			// String issueURI =
+			// "http://jira.cobra.cs.uni-duesseldorf.de/api/2/issue/"
+			// + createIssue.get().getKey();
+			//
+			// if (page1.isAddTrace()) {
+			// URI attachmentUri = new URI(issueURI + "/attachments");
+			// client.getIssueClient().addAttachments(attachmentUri,
+			// page3.getAttachmentInputs());
+			// }
+
+		} catch (URISyntaxException e) {
+			logger.error("The website url was incorrect");
+			e.printStackTrace();
 		}
-		//
-		// try {
-		// ticket.send();
-		// } catch (XmlRpcException e) {
-		// Logger.notifyUserWithoutBugreport("Error sending bug report", e);
-		// }
 
 		return true;
 	}
 
-	private void addInstallationDetailsToTicket(final Ticket ticket) {
-		// Installation Details
-		try {
-			File[] installationDetailsFiles = new File[] { fetchPlugIns(),
-					fetchConfiguration(), fetchErrorLog() };
-			File zipFile;
-			zipFile = File.createTempFile("InstallationDetails", ".tmp");
-			compressFiles(installationDetailsFiles, zipFile);
-
-			Attachment a = new Attachment(zipFile.getAbsolutePath().toString(),
-					"installation details");
-			a.setFilename("InstallationDetails.zip");
-			ticket.addAttachment(a);
-
-		} catch (IOException e) {
-			logger.error("Error adding installation details", e);
-		}
-	}
+	// private File addInstallationDetailsToTicket() throws IOException {
+	// // Installation Details
+	// File[] installationDetailsFiles = new File[] { /* fetchPlugIns(), */
+	// fetchConfiguration(), fetchErrorLog() };
+	// File zipFile;
+	// zipFile = File.createTempFile("InstallationDetails", ".tmp");
+	// compressFiles(installationDetailsFiles, zipFile);
+	//
+	// return zipFile;
+	// }
 
 	// private void addTraceFileToTicket(final Ticket ticket) {
 	// // Trace File
-	// if (Animator.getAnimator().isMachineLoaded()) {
+	// if (isEnabled) {
 	// try {
 	// File tmpFile = File.createTempFile("ProBTrace", ".tmp");
 	// tmpFile.deleteOnExit();
@@ -144,7 +158,8 @@ public class BugReportWizard extends Wizard {
 	// ticket.addAttachment(a);
 	//
 	// } catch (IOException e) {
-	// Logger.notifyUserWithoutBugreport("Error adding trace file", e);
+	// // Logger.notifyUserWithoutBugreport("Error adding trace file",
+	// // e);
 	// }
 	// }
 	// }
@@ -216,29 +231,30 @@ public class BugReportWizard extends Wizard {
 		return null;
 	}
 
-	private File fetchPlugIns() {
-		// Plug-ins
-		try {
-			File plugInsFile = File.createTempFile("PlugIns", ".txt");
-			plugInsFile.deleteOnExit();
-
-			OutputStreamWriter writer;
-			writer = new OutputStreamWriter(new FileOutputStream(plugInsFile));
-			BufferedWriter output = new BufferedWriter(writer);
-
-			// for (Bundle b : Activator.getDefault().getInstalledBundles()) {
-			// output.write(b.toString());
-			// output.newLine();
-			// }
-
-			output.close();
-			return plugInsFile;
-
-		} catch (IOException e) {
-			logger.error("Error while fetching Plug-ins", e);
-		}
-		return null;
-	}
+	//
+	// private File fetchPlugIns() {
+	// // Plug-ins
+	// try {
+	// File plugInsFile = File.createTempFile("PlugIns", ".txt");
+	// plugInsFile.deleteOnExit();
+	//
+	// OutputStreamWriter writer;
+	// writer = new OutputStreamWriter(new FileOutputStream(plugInsFile));
+	// BufferedWriter output = new BufferedWriter(writer);
+	//
+	// for (Bundle b : Activator.getDefault().getInstalledBundles()) {
+	// output.write(b.toString());
+	// output.newLine();
+	// }
+	//
+	// output.close();
+	// return plugInsFile;
+	//
+	// } catch (IOException e) {
+	// logger.error("Error while fetching Plug-ins", e);
+	// }
+	// return null;
+	// }
 
 	private void compressFiles(final File[] inputFiles, final File zipFile) {
 		try {
