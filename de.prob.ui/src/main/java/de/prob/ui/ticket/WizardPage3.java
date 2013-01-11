@@ -1,7 +1,11 @@
 package de.prob.ui.ticket;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -25,12 +29,16 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import com.atlassian.jira.rest.client.domain.input.AttachmentInput;
+
 public class WizardPage3 extends WizardPage {
 	private Composite container;
 	private Button buttonAdd;
 	private Button buttonDelete;
 	private Table tableAttachments;
 	private int columns;
+	private final List<File> files = new ArrayList<File>();
+	private AttachmentInput[] attachments = null;
 
 	public WizardPage3() {
 		super("Third Page");
@@ -38,7 +46,8 @@ public class WizardPage3 extends WizardPage {
 		setDescription("Add Attachments to Bugreport");
 	}
 
-	public void createControl(Composite parent) {
+	@Override
+	public void createControl(final Composite parent) {
 		container = new Composite(parent, SWT.NULL);
 		GridLayout containerLayout = new GridLayout();
 		containerLayout.numColumns = 2;
@@ -78,24 +87,27 @@ public class WizardPage3 extends WizardPage {
 
 		tableAttachments.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(final SelectionEvent e) {
 
 				// Clean up any previous editor control
 				Control oldEditor = editor.getEditor();
-				if (oldEditor != null)
+				if (oldEditor != null) {
 					oldEditor.dispose();
+				}
 
 				// Identify the selected row
 				TableItem item = (TableItem) e.item;
-				if (item == null)
+				if (item == null) {
 					return;
+				}
 
 				// The control that will be the editor must be a child of the
 				// Table
 				Text newEditor = new Text(tableAttachments, SWT.NONE);
 				newEditor.setText(item.getText(EDITABLECOLUMN));
 				newEditor.addModifyListener(new ModifyListener() {
-					public void modifyText(ModifyEvent me) {
+					@Override
+					public void modifyText(final ModifyEvent me) {
 						Text text = (Text) editor.getEditor();
 						editor.getItem()
 								.setText(EDITABLECOLUMN, text.getText());
@@ -114,7 +126,7 @@ public class WizardPage3 extends WizardPage {
 		buttonAdd.setText("Add file ...");
 		buttonAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(final SelectionEvent e) {
 
 				IPath path = Platform.getLocation();
 
@@ -142,7 +154,7 @@ public class WizardPage3 extends WizardPage {
 		buttonDelete.setText("Delete attachment");
 		buttonDelete.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(final SelectionEvent e) {
 				// delete from displayed Table
 				tableAttachments.remove(tableAttachments.getSelectionIndices());
 			}
@@ -166,7 +178,7 @@ public class WizardPage3 extends WizardPage {
 	 * Override setVisible(boolean visible)-Method of DialogPage to be enabled
 	 * to set focus at will
 	 */
-	public void setVisible(boolean visible) {
+	public void setVisible(final boolean visible) {
 		container.setVisible(visible);
 
 		// Set Focus
@@ -185,12 +197,15 @@ public class WizardPage3 extends WizardPage {
 	 * @param path
 	 * @param fileNames
 	 */
-	protected void addAttachmentFiles(IPath path, String[] fileNames) {
+	protected void addAttachmentFiles(final IPath path, final String[] fileNames) {
 		// Examples:
 		// path: /Users/Marc/Downloads
 		// name: motogp.bmp
 		// filePath: /Users/Marc/Downloads/motogp.bmp
 
+		attachments = new AttachmentInput[fileNames.length];
+
+		int index = 0;
 		for (String name : fileNames) {
 			IPath filePath = path.append(name);
 			String uniqueFileName = createUniqueFileName(name);
@@ -198,11 +213,15 @@ public class WizardPage3 extends WizardPage {
 			try {
 				a = new Attachment(filePath.toOSString(), "");
 				a.setFilename(uniqueFileName);
-
+				InputStream inputStream = new FileInputStream(
+						filePath.toOSString());
+				attachments[index] = new AttachmentInput(uniqueFileName,
+						inputStream);
 				TableItem item = new TableItem(tableAttachments, SWT.NONE);
 				item.setText(0, uniqueFileName);
 				item.setText(1, "");
 				item.setData(a);
+				index++;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -210,7 +229,7 @@ public class WizardPage3 extends WizardPage {
 
 	}
 
-	private String createUniqueFileName(String name) {
+	private String createUniqueFileName(final String name) {
 
 		StringBuilder uniqueName = new StringBuilder(name);
 		int counter = 1;
@@ -235,6 +254,18 @@ public class WizardPage3 extends WizardPage {
 			attachments.add((Attachment) tableAttachments.getItem(i).getData());
 		}
 
+		return attachments;
+	}
+
+	public File[] getFiles() {
+		File[] nfiles = new File[files.size()];
+		for (File file : files) {
+			nfiles[files.indexOf(file)] = file;
+		}
+		return nfiles;
+	}
+
+	public AttachmentInput[] getAttachmentInputs() {
 		return attachments;
 	}
 

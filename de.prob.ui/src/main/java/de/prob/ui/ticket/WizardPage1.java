@@ -27,7 +27,8 @@ public class WizardPage1 extends WizardPage {
 	private String description = "";
 
 	public WizardPage1(final String email, final String summary,
-			final String description, final Boolean addTrace, boolean sensitive) {
+			final String description, final Boolean addTrace,
+			final boolean sensitive) {
 		super("First Page");
 		this.privacy = sensitive;
 		setTitle("Submit Bugreport");
@@ -39,6 +40,7 @@ public class WizardPage1 extends WizardPage {
 		this.addTrace = addTrace;
 	}
 
+	@Override
 	public void createControl(final Composite parent) {
 		container = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout();
@@ -51,9 +53,11 @@ public class WizardPage1 extends WizardPage {
 		textEmail = new Text(container, SWT.BORDER | SWT.SINGLE);
 		textEmail.setText(this.email);
 		textEmail.addKeyListener(new KeyListener() {
+			@Override
 			public void keyPressed(final KeyEvent e) {
 			}
 
+			@Override
 			public void keyReleased(final KeyEvent e) {
 				setPageComplete(checkPageComplete());
 			}
@@ -65,9 +69,11 @@ public class WizardPage1 extends WizardPage {
 		textSummary = new Text(container, SWT.BORDER | SWT.SINGLE);
 		textSummary.setText(this.summary);
 		textSummary.addKeyListener(new KeyListener() {
+			@Override
 			public void keyPressed(final KeyEvent e) {
 			}
 
+			@Override
 			public void keyReleased(final KeyEvent e) {
 				setPageComplete(checkPageComplete());
 			}
@@ -88,9 +94,11 @@ public class WizardPage1 extends WizardPage {
 		buttonAddTrace.setSelection(this.addTrace);
 
 		buttonAddTrace.addSelectionListener(new SelectionListener() {
+			@Override
 			public void widgetDefaultSelected(final SelectionEvent arg0) {
 			}
 
+			@Override
 			public void widgetSelected(final SelectionEvent arg0) {
 				addTrace = buttonAddTrace.getSelection();
 			}
@@ -103,9 +111,11 @@ public class WizardPage1 extends WizardPage {
 		buttonPrivacy.setSelection(this.privacy);
 
 		buttonPrivacy.addSelectionListener(new SelectionListener() {
+			@Override
 			public void widgetDefaultSelected(final SelectionEvent arg0) {
 			}
 
+			@Override
 			public void widgetSelected(final SelectionEvent arg0) {
 				privacy = buttonPrivacy.getSelection();
 			}
@@ -191,7 +201,6 @@ public class WizardPage1 extends WizardPage {
 	public Boolean isSensitive() {
 		return privacy;
 	}
-	
 	// private IConfigurationElement[] loadElements() {
 	// IExtensionPoint point = Platform.getExtensionRegistry()
 	//				.getExtensionPoint("org.eclipse.ui", "installationPages"); //$NON-NLS-1$ //$NON-NLS-2$
