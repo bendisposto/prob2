@@ -45,9 +45,8 @@ public class WebConsole {
 
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
 
-		
 		Server server = new Server();
-
+		
 		ProtectionDomain protectionDomain = WebConsole.class
 				.getProtectionDomain();
 		LOGGER.debug("Protection Domain: "+ protectionDomain.toString());
@@ -61,9 +60,15 @@ public class WebConsole {
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
 
+		WebAppContext worksheetContext=new WebAppContext(warFile+"webapps/de.prob.worksheetWeb.war","/worksheet");
+		worksheetContext.setExtractWAR(true);
+		worksheetContext.setServer(server);
+		
+		
 		// Add the handlers
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
+		handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
 		int port = 8080;
