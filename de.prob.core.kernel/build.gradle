@@ -33,7 +33,7 @@ repositories {
 	}
 	
 	maven{
-		name "jira client"
+		name "jira java client"
 		url "https://repository.atlassian.com/maven2"
 	}
 }
