@@ -73,7 +73,7 @@ public class BugReportWizard extends Wizard {
 		page3 = new WizardPage3();
 		addPage(page1);
 		addPage(page2);
-		addPage(page3);
+		// addPage(page3);
 
 	}
 
