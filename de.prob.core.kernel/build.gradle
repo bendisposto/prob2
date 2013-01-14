@@ -26,11 +26,11 @@ repositories {
     	name "spock snapshot"
     	url "http://oss.sonatype.org/content/repositories/snapshots/"
     } 
-	/*
+	
 	maven {
 		name "jira client"
 		url "https://m2proxy.atlassian.com/repository/public"
-	}*/
+	}
 	
 	maven{
 		name "jira client"
