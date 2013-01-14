@@ -105,6 +105,7 @@ public class WizardPage2 extends WizardPage {
 
 	private boolean checkPageComplete() {
 		if (!hasAccount) {
+			setErrorMessage(null);
 			return true;
 		}
 
