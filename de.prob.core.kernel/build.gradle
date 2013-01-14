@@ -34,7 +34,7 @@ repositories {
 	
 	maven{
 		name "jira java client"
-		url "https://repository.atlassian.com/maven2"
+		url "https://maven.atlassian.com/content/groups/public"
 	}
 }
 
