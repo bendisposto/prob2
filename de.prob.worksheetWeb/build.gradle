@@ -14,7 +14,8 @@ eclipse {
   }
 }
 war{
-	destinationDir =file("C:/Users/Rene/GitRepos/prob2/de.prob.core.kernel/src/main/resources/webapps")
+	//destinationDir =file("C:/Users/Rene/GitRepos/prob2/de.prob.core.kernel/src/main/resources/webapps")
+	destinationDir =file("C:/Users/Rene/GitRepos/prob2/de.prob.core.kernel/bin/webapps")
 }
 repositories {
 	maven {
