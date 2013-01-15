@@ -46,7 +46,7 @@ public class WebConsole {
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
 
 		Server server = new Server();
-		
+
 		ProtectionDomain protectionDomain = WebConsole.class
 				.getProtectionDomain();
 		LOGGER.debug("Protection Domain: "+ protectionDomain.toString());
