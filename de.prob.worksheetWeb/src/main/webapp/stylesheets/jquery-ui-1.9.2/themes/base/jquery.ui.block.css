@@ -1,0 +1,13 @@
+
+.ui-block{
+	position:relative;
+	margin:4px;
+	margin-bottom:0;
+}
+.ui-block .ui-sort-handle{
+	position:absolute;
+	right:-8px;
+	top:-8px;
+	width:16px;
+	height:16px;
+}
