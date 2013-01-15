@@ -254,5 +254,10 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 	public void newTransition(final String opName, final boolean isDestStateNew) {
 		notifyListerners();
 	}
+	
+	public void reset() {
+		continued = false;
+		inputs.clear();
+	}
 
 }

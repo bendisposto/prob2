@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -48,6 +49,14 @@ public class GroovyShellServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
+
+		String reset = req.getParameter("reset");
+
+		if (reset != null && "true".equals(reset.trim())) {
+			executor.reset();
+			return;
+		}
+
 		String input = req.getParameter("input").trim();
 
 		if (!input.isEmpty()) {
