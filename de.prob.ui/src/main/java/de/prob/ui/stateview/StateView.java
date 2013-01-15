@@ -149,6 +149,6 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 
 	private void updateModelInfo(final AbstractElement model) {
 		currentModel = model;
-		viewer.setInput(model);
+		if (!viewer.getTree().isDisposed()) viewer.setInput(model);
 	}
 }

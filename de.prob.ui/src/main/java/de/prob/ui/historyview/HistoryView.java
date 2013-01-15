@@ -120,7 +120,7 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener {
 
 			@Override
 			public void run() {
-				viewer.setInput(history);
+				if (!viewer.getTable().isDisposed()) viewer.setInput(history);
 			}
 		});
 	}

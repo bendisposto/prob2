@@ -196,8 +196,10 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 
 			@Override
 			public void run() {
-				viewer.setInput(history);
-				packTableColumns();
+				if (!viewer.getTable().isDisposed()) {
+					viewer.setInput(history);
+					packTableColumns();
+				}
 			}
 		});
 		try {
