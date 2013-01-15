@@ -20,9 +20,11 @@ public class GroovyConsole extends ViewPart {
 
 	private static GroovyConsole instance;
 
+	// FIXME GroovyConsole Viewpart should open url after complete
+	// initialization of Jetty Server. Sometimes the server is to slow
 	public GroovyConsole() {
 		port = WebConsole.getPort();
-		instance = this;
+		GroovyConsole.instance = this;
 	}
 
 	@Override
@@ -40,9 +42,11 @@ public class GroovyConsole extends ViewPart {
 		gridData.grabExcessVerticalSpace = true;
 
 		consoleBrowser = new Browser(sashForm, SWT.NONE);
-		consoleBrowser.setUrl("http://localhost:" + port + "/console.html");
+		consoleBrowser.setUrl("http://localhost:" + port
+				+ "/console/console.html");
 		outputBrowser = new Browser(sashForm, SWT.NONE);
-		outputBrowser.setUrl("http://localhost:" + port + "/sysout.html");
+		outputBrowser.setUrl("http://localhost:" + port
+				+ "/console/sysout.html");
 
 		consoleBrowser.setLayoutData(gridData);
 		outputBrowser.setLayoutData(gridData);
@@ -63,9 +67,9 @@ public class GroovyConsole extends ViewPart {
 	}
 
 	public static GroovyConsole getInstance() {
-		if (instance == null)
-			instance = new GroovyConsole();
-		return instance;
+		if (GroovyConsole.instance == null)
+			GroovyConsole.instance = new GroovyConsole();
+		return GroovyConsole.instance;
 	}
 
 }

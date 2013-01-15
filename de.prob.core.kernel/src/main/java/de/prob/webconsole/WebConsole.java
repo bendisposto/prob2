@@ -31,7 +31,7 @@ public class WebConsole {
 			public void run() {
 				try {
 					Desktop.getDesktop().browse(
-							new URI("http://localhost:" + PORT));
+							new URI("http://localhost:" + PORT+"/console"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (URISyntaxException e) {
@@ -57,7 +57,7 @@ public class WebConsole {
 		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/")))
 			warFile += "bin/";
 
-		WebAppContext context = new WebAppContext(warFile, "/");
+		WebAppContext context = new WebAppContext(warFile, "/console");
 		context.setServer(server);
 
 		WebAppContext worksheetContext=new WebAppContext(warFile+"webapps/de.prob.worksheetWeb.war","/worksheet");
