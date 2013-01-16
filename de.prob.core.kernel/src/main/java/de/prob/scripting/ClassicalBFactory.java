@@ -1,4 +1,4 @@
-package de.prob.model.classicalb;
+package de.prob.scripting;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import de.be4.classicalb.core.parser.node.Start;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.StartAnimationCommand;
+import de.prob.model.classicalb.ClassicalBModel;
 
 public class ClassicalBFactory {
 
