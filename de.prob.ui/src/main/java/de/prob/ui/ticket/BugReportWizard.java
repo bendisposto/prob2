@@ -45,6 +45,10 @@ public class BugReportWizard extends Wizard {
 	private Boolean addTrace = true;
 	private String description = "";
 
+	private boolean savedUsername = false;
+	private String username = "";
+	private String password = "";
+
 	private static final Preferences TICKET_PREFS = Platform
 			.getPreferencesService().getRootNode().node(InstanceScope.SCOPE)
 			.node("prob_ticket_preferences");
@@ -53,6 +57,10 @@ public class BugReportWizard extends Wizard {
 		super();
 		setNeedsProgressMonitor(true);
 		this.email = TICKET_PREFS.get("email", "");
+		this.savedUsername = TICKET_PREFS.getBoolean("saveUsr", false);
+		this.username = savedUsername ? TICKET_PREFS.get("usr", "") : "";
+		this.password = savedUsername ? TICKET_PREFS.get("pswd", "") : "";
+
 	}
 
 	public BugReportWizard(final String summary, final Boolean addTrace,
@@ -61,6 +69,9 @@ public class BugReportWizard extends Wizard {
 		setNeedsProgressMonitor(true);
 
 		this.email = TICKET_PREFS.get("email", "");
+		this.savedUsername = TICKET_PREFS.getBoolean("saveUsr", false);
+		this.username = savedUsername ? TICKET_PREFS.get("usr", "") : "";
+		this.password = savedUsername ? TICKET_PREFS.get("pswd", "") : "";
 		this.summary = summary;
 		this.addTrace = addTrace;
 		this.description = description;
@@ -69,7 +80,7 @@ public class BugReportWizard extends Wizard {
 	@Override
 	public void addPages() {
 		page1 = new WizardPage1(email, summary, description, addTrace, true);
-		page2 = new WizardPage2();
+		page2 = new WizardPage2(username, password, savedUsername);
 		page3 = new WizardPage3();
 		addPage(page1);
 		addPage(page2);
@@ -81,6 +92,16 @@ public class BugReportWizard extends Wizard {
 	public boolean performFinish() {
 
 		TICKET_PREFS.put("email", page1.getEmail());
+		boolean saveUsr = page2.isSaveUsr();
+		if (saveUsr) {
+			TICKET_PREFS.putBoolean("saveUsr", true);
+			TICKET_PREFS.put("usr", page2.getUsername());
+			TICKET_PREFS.put("pswd", page2.getPassword());
+		} else {
+			TICKET_PREFS.remove("saveUsr");
+			TICKET_PREFS.remove("usr");
+			TICKET_PREFS.remove("pswd");
+		}
 		try {
 			TICKET_PREFS.flush();
 		} catch (BackingStoreException e) {
