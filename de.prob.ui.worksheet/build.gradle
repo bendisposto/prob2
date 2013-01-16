@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+eclipse{
+	project{
+		natures 'org.eclipse.pde.PluginNature' , 'org.eclipse.jdt.core.javanature'
+		buildCommand 'org.eclipse.jdt.core.javabuilder'
+		buildCommand 'org.eclipse.pde.ManifestBuilder'
+		buildCommand 'org.eclipse.pde.SchemaBuilder'
+	}
+	classpath{
+		containers 'org.eclipse.pde.core.requiredPlugins'
+	}
+}
+
+jar{
+	manifest {
+		attributes(	"Manifest-Version": 1.0,
+					"Bundle-ManifestVersion": 2,
+					"Bundle-Name": "WorksheetEditor",
+					"Bundle-SymbolicName": "de.prob.ui.worksheet; singleton:=true",
+					"Bundle-Version": "1.0.0.qualifier",
+					"Bundle-Activator": "de.prob.ui.worksheet.Activator",
+					"Require-Bundle": "org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jface.text,org.eclipse.ui.editors",
+					"Bundle-ActivationPolicy": "lazy",
+					"Bundle-RequiredExecutionEnvironment": "JavaSE-1.6")
+	}
+}
+

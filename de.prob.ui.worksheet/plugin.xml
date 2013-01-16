@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+<extension
+         point="org.eclipse.ui.menus">
+<menuContribution
+              allPopups="true"
+              locationURI="toolbar:org.eclipse.ui.main.toolbar">
+           <toolbar
+                 id="de.prob.ui.openWorksheetEditorToolbar"
+                 label="Worksheet Editor">
+              <command
+                    commandId="de.prob.ui.openWorksheetEditor"
+                    label="Open Worksheet Editor"
+                    style="push">
+              </command>
+           </toolbar>
+        </menuContribution>
+</extension>
+<extension
+         point="org.eclipse.ui.commands">
+            <command
+                  id="de.prob.ui.openWorksheetEditor"
+                  name="Open Worksheet Editor">
+            </command>
+          </extension>
+   <extension
+	      point="org.eclipse.ui.editors">
+	      <editor
+  	   			id = "de.prob.ui.worksheetEditor"
+  	   			name="ProB Worksheet Editor"
+      	   		class="de.prob.ui.worksheet.editors.Worksheet"
+	   			extensions="prob_wsh">
+           <!--
+             	icon="icons/obj16/editor.png"
+      	 		contributorClass="org.eclipse.ui.examples.readmetool.ReadmeEditorActionBarContributor">-->
+	</editor>
+	</extension>
+
+</plugin>
