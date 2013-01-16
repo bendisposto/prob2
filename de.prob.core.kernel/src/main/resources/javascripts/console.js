@@ -68,6 +68,7 @@ function switchLogLevel() {
 
 
 function initialize() {
+    
 	lePrompt = "ProB> ";
 	var levela = $("#loglevel")[0];
  	controller = $("#console").console({
@@ -89,8 +90,8 @@ function initialize() {
 		}
 	});
 	
+   $.getJSON("evaluate", {input: '', reset: true}, function(data) {});
 
-	
    $(window).resize(function() {
       $("#console").height($(window).height())
    });

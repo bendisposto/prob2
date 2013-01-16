@@ -59,10 +59,9 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 		PlatformUI.getWorkbench().getHelpSystem()
 				.setHelp(viewer.getControl(), "de.prob.ui.viewer");
 		hookDoubleClickAction();
-		
-	    prepareHook();
 
-		
+		prepareHook();
+
 		Table table = viewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -70,10 +69,10 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 
 	private void prepareHook() {
 		MenuManager menuManager = new MenuManager();
-	    Menu menu = menuManager.createContextMenu(viewer.getTable());
-	    viewer.getTable().setMenu(menu);
-	    getSite().registerContextMenu(menuManager, viewer);
-	    getSite().setSelectionProvider(viewer);
+		Menu menu = menuManager.createContextMenu(viewer.getTable());
+		viewer.getTable().setMenu(menu);
+		getSite().registerContextMenu(menuManager, viewer);
+		getSite().setSelectionProvider(viewer);
 	}
 
 	private void createColumns() {
@@ -115,8 +114,10 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				viewer.setInput(selector);
-				packTableColumns();
+				if (!viewer.getTable().isDisposed()) {
+					viewer.setInput(selector);
+					packTableColumns();
+				}
 			}
 		});
 	}

@@ -45,9 +45,14 @@ public class HistoryActiveProvider extends AbstractSourceProvider {
 		return forward;
 	}
 
-	public void historyChange(History history) {		
-		backward = history.canGoBack();
-		forward = history.canGoForward();
+	public void historyChange(final History history) {
+		if (history == null) {
+			backward = false;
+			forward = false;
+		} else {
+			backward = history.canGoBack();
+			forward = history.canGoForward();
+		}
 		fireSourceChanged(ISources.WORKBENCH, getCurrentState());
 	}
 

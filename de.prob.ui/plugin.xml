@@ -111,7 +111,7 @@
               allPopups="false"
               locationURI="popup:de.prob.ui.AnimationsView">
            <command
-                 commandId="de.prob.ui.remove_variable"
+                 commandId="de.prob.ui.remove_history"
                  icon="icons/rem_co.gif"
                  label="Remove History"
                  style="push">

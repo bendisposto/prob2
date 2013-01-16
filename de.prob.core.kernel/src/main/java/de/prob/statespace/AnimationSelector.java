@@ -49,10 +49,23 @@ public class AnimationSelector implements IAnimationListener {
 	}
 
 	public void remove(final History history) {
-		if (!histories.contains(history))
+		if (!histories.contains(history)) {
 			return;
-		if (currentHistory == history)
+		}
+		if (currentHistory == history) {
+			int indexOf = histories.indexOf(history);
+			histories.remove(history);
+			if (histories.isEmpty()) {
+				currentHistory = null;
+				return;
+			}
+			if (indexOf == histories.size()) {
+				currentHistory = histories.get(indexOf - 1);
+				return;
+			}
+			currentHistory = histories.get(indexOf);
 			return;
+		}
 		histories.remove(history);
 	}
 
@@ -78,10 +91,9 @@ public class AnimationSelector implements IAnimationListener {
 	public String toString() {
 		return "Animations Registry";
 	}
-	
-	public void refresh()  {
+
+	public void refresh() {
 		notifyHistoryChange(currentHistory);
 	}
-	
-	
+
 }

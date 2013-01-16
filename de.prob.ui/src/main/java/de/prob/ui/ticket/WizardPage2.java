@@ -19,9 +19,18 @@ public class WizardPage2 extends WizardPage {
 	private Text textUser;
 	private Text textPswd;
 	private Button buttonAccount;
+	private Button buttonSave;
 
-	public WizardPage2() {
+	private final String username;
+	private final String password;
+	private boolean saveUsr;
+
+	public WizardPage2(final String username, final String password,
+			final boolean saveUsr) {
 		super("Wizard Page 2");
+		this.username = username;
+		this.password = password;
+		this.saveUsr = saveUsr;
 		hasAccount = false;
 
 		setTitle("Submit Bugreport");
@@ -67,7 +76,7 @@ public class WizardPage2 extends WizardPage {
 		Label labelUserName = new Label(container, SWT.NULL);
 		labelUserName.setText("Enter username:");
 		textUser = new Text(container, SWT.BORDER | SWT.SINGLE);
-		textUser.setText("");
+		textUser.setText(username);
 		textUser.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(final KeyEvent e) {
@@ -83,7 +92,7 @@ public class WizardPage2 extends WizardPage {
 		Label labelPswd = new Label(container, SWT.NULL);
 		labelPswd.setText("Enter password:");
 		textPswd = new Text(container, SWT.BORDER | SWT.PASSWORD);
-		textPswd.setText("");
+		textPswd.setText(password);
 		textPswd.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(final KeyEvent e) {
@@ -97,6 +106,22 @@ public class WizardPage2 extends WizardPage {
 		});
 		textPswd.setVisible(true);
 
+		Label labelSaveUsr = new Label(container, SWT.NONE);
+		labelSaveUsr.setText("Save my username and password");
+		buttonSave = new Button(container, SWT.CHECK);
+		buttonSave.setSelection(this.saveUsr);
+
+		buttonSave.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetDefaultSelected(final SelectionEvent arg0) {
+			}
+
+			@Override
+			public void widgetSelected(final SelectionEvent arg0) {
+				saveUsr = buttonSave.getSelection();
+			}
+		});
+
 		// Resize Text-Fields
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		textUser.setLayoutData(gd);
@@ -105,6 +130,7 @@ public class WizardPage2 extends WizardPage {
 
 	private boolean checkPageComplete() {
 		if (!hasAccount) {
+			setErrorMessage(null);
 			return true;
 		}
 
@@ -143,6 +169,10 @@ public class WizardPage2 extends WizardPage {
 			return textPswd.getText();
 		}
 		return "prob";
+	}
+
+	public boolean isSaveUsr() {
+		return saveUsr;
 	}
 
 }

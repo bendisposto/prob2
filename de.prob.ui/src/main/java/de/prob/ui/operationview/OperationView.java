@@ -178,21 +178,28 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 
 	@Override
 	public void historyChange(final History history) {
-		if (!modelLoaded) {
-			updateModelLoadedProvider();
+		currentHistory = history;
+		if (history == null) {
+			updateModelLoadedProvider(false);
+			modelLoaded = false;
+		} else if (!modelLoaded) {
+			updateModelLoadedProvider(true);
 			modelLoaded = true;
 		}
-		currentHistory = history;
-		final AbstractElement model = history.getModel();
-		if (currentModel != model) {
-			updateModel(model);
+		if (history != null) {
+			final AbstractElement model = history.getModel();
+			if (currentModel != model) {
+				updateModel(model);
+			}
 		}
 		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
-				viewer.setInput(history);
-				packTableColumns();
+				if (!viewer.getTable().isDisposed()) {
+					viewer.setInput(history);
+					packTableColumns();
+				}
 			}
 		});
 		try {
@@ -232,12 +239,12 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		}
 	}
 
-	private void updateModelLoadedProvider() {
+	private void updateModelLoadedProvider(final boolean b) {
 		final ISourceProviderService service = (ISourceProviderService) getSite()
 				.getService(ISourceProviderService.class);
 		final ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
 				.getSourceProvider(ModelLoadedProvider.SERVICE);
-		sourceProvider.setEnabled(true);
+		sourceProvider.setEnabled(b);
 	}
 
 	private void updateHistoryEnabled(final History history) {
