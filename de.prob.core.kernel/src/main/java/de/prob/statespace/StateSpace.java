@@ -405,7 +405,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		final Collection<OpInfo> opIds = outgoingEdgesOf(state);
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.id + ": " + opId.toString() + "\n");
+			sb.append("  " + opId.id + ": " + opId.getOpRep(model) + "\n");
 		}
 		return sb.toString();
 	}

@@ -16,8 +16,9 @@ public class CSPModel extends AbstractElement {
 		this.statespace = statespace;
 	}
 
-	public void setFilename(final String filename) {
+	public void init(final String filename) {
 		this.filename = filename;
+		statespace.setModel(this);
 	}
 
 	public String getFilename() {

@@ -21,7 +21,7 @@ public class CSPFactory {
 
 	public CSPModel load(final File f) throws IOException, BException {
 		CSPModel cspModel = modelCreator.get();
-		cspModel.setFilename(f.getName());
+		cspModel.init(f.getName());
 		startAnimation(cspModel, f);
 		return cspModel;
 	}

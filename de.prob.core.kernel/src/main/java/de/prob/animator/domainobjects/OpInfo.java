@@ -8,11 +8,13 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
+import de.prob.model.representation.AbstractElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.scripting.CSPModel;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -56,10 +58,15 @@ public class OpInfo {
 				.getArgument(5));
 		ValueTranslator valueTranslator = new ValueTranslator();
 		for (PrologTerm prologTerm : parameters) {
-			Object translated = valueTranslator.toGroovy(prologTerm);
-			String retranslated = valueTranslator.asString(translated);
-			System.out.println("T: " + translated.getClass() + " "
-					+ translated.toString() + " " + retranslated);
+			try {
+				Object translated = valueTranslator.toGroovy(prologTerm);
+				String retranslated = valueTranslator.asString(translated);
+				System.out.println("T: " + translated.getClass() + " "
+						+ translated.toString() + " " + retranslated);
+			} catch (IllegalArgumentException e) {
+				// Ignore exception for now. Translation is not implemented for
+				// CSP
+			}
 		}
 
 		ListPrologTerm lpt = BindingGenerator.getList(opTerm.getArgument(6));
@@ -76,8 +83,9 @@ public class OpInfo {
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
-		if (destTerm instanceof IntegerPrologTerm)
+		if (destTerm instanceof IntegerPrologTerm) {
 			return BindingGenerator.getInteger(destTerm).getValue().toString();
+		}
 		return destTerm.getFunctor();
 	}
 
@@ -116,8 +124,19 @@ public class OpInfo {
 			OpInfo that = (OpInfo) obj;
 			boolean b = that.getId().equals(id);
 			return b;
-		} else
+		} else {
 			return false;
+		}
+	}
+
+	public String getOpRep(final AbstractElement e) {
+		if (e instanceof CSPModel) {
+			if (params.isEmpty()) {
+				return name;
+			}
+			return name + "." + Joiner.on(".").join(getParams());
+		}
+		return toString();
 	}
 
 	@Override
