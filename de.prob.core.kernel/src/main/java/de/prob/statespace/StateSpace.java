@@ -116,6 +116,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		for (final OpInfo op : enabledOperations) {
 			if (!containsEdge(op)) {
+				op.setModel(model);
 				ops.put(op.id, op);
 				notifyStateSpaceChange(op.id,
 						containsVertex(getVertex(op.dest)));
@@ -170,6 +171,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		// (id,name,src,dest,args)
 		for (final OpInfo op : newOps) {
+			op.setModel(model);
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
 				notifyStateSpaceChange(op.id,
@@ -405,7 +407,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		final Collection<OpInfo> opIds = outgoingEdgesOf(state);
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.id + ": " + opId.getOpRep(model) + "\n");
+			sb.append("  " + opId.id + ": " + opId.toString() + "\n");
 		}
 		return sb.toString();
 	}

@@ -31,6 +31,7 @@ public class OpInfo {
 	public final String dest;
 	public final List<String> params = new ArrayList<String>();
 	public final String targetState;
+	public AbstractElement model;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
@@ -115,6 +116,12 @@ public class OpInfo {
 
 	@Override
 	public String toString() {
+		if (model instanceof CSPModel) {
+			if (params.isEmpty()) {
+				return name;
+			}
+			return name + "." + Joiner.on(".").join(getParams());
+		}
 		return name + "(" + Joiner.on(",").join(getParams()) + ")";
 	}
 
@@ -129,14 +136,8 @@ public class OpInfo {
 		}
 	}
 
-	public String getOpRep(final AbstractElement e) {
-		if (e instanceof CSPModel) {
-			if (params.isEmpty()) {
-				return name;
-			}
-			return name + "." + Joiner.on(".").join(getParams());
-		}
-		return toString();
+	public void setModel(final AbstractElement model) {
+		this.model = model;
 	}
 
 	@Override
