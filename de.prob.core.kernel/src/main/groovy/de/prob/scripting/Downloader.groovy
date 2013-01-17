@@ -133,7 +133,7 @@ class Downloader extends AbstractShellCommand {
 		f.unzip(probhome)
 		f.delete()
 
-		downloadCSPM()
+//		downloadCSPM()
 
 		return "--Upgrade to version: ${targetVersion} (${url})  successful.--"
 	}
