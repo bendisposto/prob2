@@ -2,17 +2,14 @@ package de.prob.scripting
 
 import static java.io.File.*
 
-import java.io.IOException;
-import java.util.List;
 import java.util.zip.ZipInputStream
 
 import com.google.inject.Inject
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 import de.prob.annotations.Home
 import de.prob.cli.OsSpecificInfo
-import de.prob.webconsole.GroovyExecution;
-import de.prob.webconsole.shellcommands.AbstractShellCommand;
+import de.prob.webconsole.GroovyExecution
+import de.prob.webconsole.shellcommands.AbstractShellCommand
 
 
 class Downloader extends AbstractShellCommand {
@@ -79,9 +76,9 @@ class Downloader extends AbstractShellCommand {
 	}
 
 	/**
-	 * Checks if the given targetVersion is valid. If it is, the targetVersion of 
+	 * Checks if the given targetVersion is valid. If it is, the targetVersion of
 	 * the ProB Cli is downloaded, unzipped, and saved in probhome
-	 * 
+	 *
 	 * @param targetVersion
 	 * @return
 	 * @throws ProBException
@@ -136,7 +133,26 @@ class Downloader extends AbstractShellCommand {
 		f.unzip(probhome)
 		f.delete()
 
+		downloadCSPM()
+
 		return "--Upgrade to version: ${targetVersion} (${url})  successful.--"
+	}
+
+	def downloadCSPM() {
+		def dirName = osInfo.dirName
+		def targetName = "cspm-"
+		if(dirName == "linux") {
+			targetName += "linux32"
+		}
+		if(dirName == "linux64" || dirName == "leopard64") {
+			targetName += dirName
+		}
+		if(dirName == "win32") {
+			targetName += "windows"
+		}
+		def target = probhome+"lib"+File.separator+"cspm"
+		download("http://nightly.cobra.cs.uni-duesseldorf.de/cspm/"+targetName,target)
+		new File(target).setExecutable(true)
 	}
 
 
@@ -160,7 +176,7 @@ class Downloader extends AbstractShellCommand {
 		def version = m[1]
 		if (!((List) availableVersions()).contains(version)) {
 			return "unknown version"
-		}	
+		}
 		return downloadCli(version);
 	}
 }
