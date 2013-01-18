@@ -133,27 +133,38 @@ class Downloader extends AbstractShellCommand {
 		f.unzip(probhome)
 		f.delete()
 
+		if(os == "win32") {
+			def target = probhome+"lib"+File.separator+"lib.zip"
+			download(versionurl+"windowslib.zip",target)
+			File r = new File(target)
+			r.unzip(probhome+"lib"+File.separator)
+			r.delete()
+		}
+
 		return "--Upgrade to version: ${targetVersion} (${url})  successful.--"
 	}
 
 	def upgradeCSPM() {
 		def target = probhome+"lib"+File.separator+"cspm"
-		def File f = new File(target);
-		if(!f.exists()) {
-			def dirName = osInfo.dirName
-			def targetName = "cspm-"
-			if(dirName == "linux") {
-				targetName += "linux32"
-			}
-			if(dirName == "linux64" || dirName == "leopard64") {
-				targetName += dirName
-			}
-			if(dirName == "win32") {
-				targetName += "windows"
-			}
-			download("http://nightly.cobra.cs.uni-duesseldorf.de/cspm/"+targetName,target)
-			new File(target).setExecutable(true)
+		def dirName = osInfo.dirName
+		if(dirName == "win32") {
+			target += ".exe"
 		}
+		def File f = new File(target);
+
+		def targetName = "cspm-"
+		if(dirName == "linux") {
+			targetName += "linux32"
+		}
+		if(dirName == "linux64" || dirName == "leopard64") {
+			targetName += dirName
+		}
+		if(dirName == "win32") {
+			targetName += "windows"
+		}
+		download("http://nightly.cobra.cs.uni-duesseldorf.de/cspm/"+targetName,target)
+		new File(target).setExecutable(true)
+
 		return "--CSP Parser cspm upgraded to latest copy--"
 	}
 
