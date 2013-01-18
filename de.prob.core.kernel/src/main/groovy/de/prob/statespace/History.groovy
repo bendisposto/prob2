@@ -7,6 +7,7 @@ import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.OpInfo
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
+import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.AbstractModel
 
 class History {
@@ -24,8 +25,8 @@ class History {
 		}
 		s.eval(getCurrentState(),[f]).get(0);
 	}
-	
-	
+
+
 	def History(final StateSpace s) {
 		this.s = s
 		head = new HistoryElement(s.getState(s.getVertex("root")))
@@ -100,11 +101,11 @@ class History {
 		}
 		return this
 	}
-	
+
 	def History first() {
 		return first;
 	}
-	
+
 
 	/**
 	 * Moves one step forward in the animation if this is possible
@@ -137,7 +138,7 @@ class History {
 	}
 
 	def String getRep() {
-		return "${head.getRepresentation()}] Current Transition is: ${current.getOp()}"
+		return "${head.getOpList()} Current Transition is: ${current.getOp()}"
 	}
 
 	def OpInfo findOneOp(final String opName, final String predicate)
@@ -264,7 +265,7 @@ class History {
 		return current.getPrevious().getCurrentState()
 	}
 
-	def AbstractModel getModel() {
+	def AbstractElement getModel() {
 		return s.getModel()
 	}
 

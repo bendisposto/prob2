@@ -12,7 +12,6 @@ public class HistoryElement {
 
 	private final HistoryElement previous;
 
-	private final String representation;
 	private final List<OpInfo> opList;
 
 	public HistoryElement(final StateId src) {
@@ -23,8 +22,6 @@ public class HistoryElement {
 		this.edge = null;
 		this.previous = null;
 
-		representation = "[";
-		
 		opList = new ArrayList<OpInfo>();
 	}
 
@@ -35,13 +32,9 @@ public class HistoryElement {
 		this.edge = edge;
 
 		this.previous = previous;
-		if (previous.getPrevious() == null) {
-			representation = previous.getRepresentation() + edge;
-		} else {
-			representation = previous.getRepresentation() + ", " + edge;
-		}
-		
-		List<OpInfo> previousOpList = new ArrayList<OpInfo>(previous.getOpList());
+
+		List<OpInfo> previousOpList = new ArrayList<OpInfo>(
+				previous.getOpList());
 		previousOpList.add(edge);
 		this.opList = previousOpList;
 	}
@@ -63,15 +56,12 @@ public class HistoryElement {
 	}
 
 	public StateId getCurrentState() {
-		if (dest == null)
+		if (dest == null) {
 			return src;
+		}
 		return dest;
 	}
 
-	public String getRepresentation() {
-		return representation;
-	}
-	
 	public List<OpInfo> getOpList() {
 		return opList;
 	}

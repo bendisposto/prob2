@@ -23,7 +23,7 @@ import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.cli.ProBInstance;
-import de.prob.model.classicalb.ClassicalBFactory;
+import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
@@ -98,6 +98,19 @@ public class Api {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 		return bFactory.load(f);
+	}
+
+	public CSPModel csp_load(final String file) throws Exception {
+		File f = new File(file);
+		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
+		CSPModel m = null;
+		try {
+			m = cspFactory.load(f);
+		} catch (ProBError error) {
+			throw new Exception(
+					"Could find CSP Parser. Perform 'upgrade cspm' to install cspm in your ProB lib directory");
+		}
+		return m;
 	}
 
 	// public EventBModel eb_load(final String filename) throws IOException,
