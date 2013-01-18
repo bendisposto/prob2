@@ -134,17 +134,17 @@ class Downloader extends AbstractShellCommand {
 		f.delete()
 
 		if(os == "win32") {
-			def target = probhome+"lib"+File.separator+"lib.zip"
+			def target = probhome+"lib.zip";
 			download(versionurl+"windowslib.zip",target)
 			File r = new File(target)
-			r.unzip(probhome+"lib"+File.separator)
+			r.unzip(probhome)
 			r.delete()
 		}
 
 		return "--Upgrade to version: ${targetVersion} (${url})  successful.--"
 	}
 
-	def upgradeCSPM() {
+	def installCSPM() {
 		def target = probhome+"lib"+File.separator+"cspm"
 		def dirName = osInfo.dirName
 		if(dirName == "win32") {
@@ -188,7 +188,7 @@ class Downloader extends AbstractShellCommand {
 		}
 		def version = m[1]
 		if(version == "cspm") {
-			return upgradeCSPM();
+			return installCSPM();
 		}
 		if (!((List) availableVersions()).contains(version)) {
 			return "unknown version"
