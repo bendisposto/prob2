@@ -10,6 +10,7 @@ import com.google.common.base.Joiner;
 
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.model.representation.AbstractElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -31,11 +32,14 @@ public class EvaluateFormulasCommand implements ICommand {
 	private final String stateId;
 	private final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
 
+	private final AbstractElement model;
+
 	// FIXME: Why does this command need access to the id?
 	public EvaluateFormulasCommand(final List<IEvalElement> evalElements,
-			final String id) {
+			final String id, AbstractElement model) {
 		this.evalElements = evalElements;
 		this.stateId = id;
+		this.model = model;
 	}
 
 	public List<EvaluationResult> getValues() {
@@ -82,7 +86,7 @@ public class EvaluateFormulasCommand implements ICommand {
 		// print parsed expressions/predicates
 		for (IEvalElement term : evalElements) {
 			pout.openTerm("eval");
-			term.printProlog(pout);
+			term.printProlog(pout, model);
 			pout.printAtom(term.getKind().toString());
 			pout.printAtom(term.getCode());
 			pout.closeTerm();

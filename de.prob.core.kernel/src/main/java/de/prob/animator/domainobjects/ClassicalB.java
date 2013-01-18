@@ -16,6 +16,7 @@ import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.model.classicalb.PrettyPrinter;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 
@@ -57,7 +58,7 @@ public class ClassicalB implements IEvalElement {
 	}
 
 	@Override
-	public void printProlog(final IPrologTermOutput pout) {
+	public void printProlog(final IPrologTermOutput pout, AbstractElement m) {
 		final ASTProlog prolog = new ASTProlog(pout, null);
 		if (ast.getEOF() == null) {
 			ast.setEOF(new EOF());
