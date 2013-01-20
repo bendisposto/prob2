@@ -1,4 +1,4 @@
-package de.prob.scripting;
+package de.prob.scripting
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,8 @@ import de.prob.animator.command.ICommand;
 import de.prob.animator.command.LoadCSPCommand;
 import de.prob.animator.command.StartAnimationCommand;
 
-public class CSPFactory {
+class CSPFactory {
+
 	private final Provider<CSPModel> modelCreator;
 
 	@Inject
@@ -21,9 +22,13 @@ public class CSPFactory {
 
 	public CSPModel load(final File f) throws IOException, BException {
 		CSPModel cspModel = modelCreator.get();
-		cspModel.init(f.getName());
+		cspModel.init(readFile(f));
 		startAnimation(cspModel, f);
 		return cspModel;
+	}
+
+	private String readFile(File f) {
+		return f.getText();
 	}
 
 	private void startAnimation(final CSPModel cspModel, final File f) {

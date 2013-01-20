@@ -29,7 +29,7 @@ public class EvaluateFormulasCommandTest {
 
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
 		EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-				evalElements, "root");
+				evalElements, "root",null);
 		command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();
 
@@ -62,7 +62,7 @@ public class EvaluateFormulasCommandTest {
 		when(map.get("Val")).thenReturn(lpt);
 
 		EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-				evalElements, "root");
+				evalElements, "root",null);
 		command.processResult(map);
 
 		List<EvaluationResult> vals = command.getValues();

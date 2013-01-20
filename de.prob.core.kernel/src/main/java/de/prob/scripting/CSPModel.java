@@ -9,20 +9,20 @@ import de.prob.statespace.StateSpace;
 public class CSPModel extends AbstractElement {
 
 	private final StateSpace statespace;
-	private String filename = "";
+	private String content;
 
 	@Inject
 	public CSPModel(final StateSpace statespace) {
 		this.statespace = statespace;
 	}
 
-	public void init(final String filename) {
-		this.filename = filename;
+	public void init(final String content) {
+		this.content = content;
 		statespace.setModel(this);
 	}
 
-	public String getFilename() {
-		return filename;
+	public String getContent() {
+		return content;
 	}
 
 	public Object asType(final Class<?> className) {
