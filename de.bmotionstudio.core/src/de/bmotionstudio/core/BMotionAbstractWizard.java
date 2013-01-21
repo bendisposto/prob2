@@ -28,7 +28,7 @@ public abstract class BMotionAbstractWizard extends TrayDialog {
 		this.control = control;
 	}
 
-	public BControl getBControl() {
+	public BControl getControl() {
 		return this.control;
 	}
 

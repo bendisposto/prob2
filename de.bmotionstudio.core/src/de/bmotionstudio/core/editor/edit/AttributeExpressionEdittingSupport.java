@@ -9,17 +9,17 @@ package de.bmotionstudio.core.editor.edit;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.views.properties.PropertyDescriptor;
 
+import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.util.BMotionWizardUtil;
 
 public class AttributeExpressionEdittingSupport extends EditingSupport {
 
-	private CellEditor cellEditor;
-
 	private BControl control;
 
-	private String stdAttribute;
+	private String attribute;
 
 	public AttributeExpressionEdittingSupport(ColumnViewer viewer,
 			BControl control) {
@@ -27,66 +27,33 @@ public class AttributeExpressionEdittingSupport extends EditingSupport {
 	}
 
 	public AttributeExpressionEdittingSupport(ColumnViewer viewer,
-			BControl control, String stdAttribute) {
+			BControl control, String attribute) {
 		super(viewer);
 		this.control = control;
-		this.stdAttribute = stdAttribute;
+		this.attribute = attribute;
 	}
 
 	@Override
 	protected boolean canEdit(Object element) {
-		return BMotionWizardUtil.isEditElement(getViewer());
+		return true;
 	}
 
 	@Override
 	protected Object getValue(Object element) {
-		//TODO: Reimplement me!!!
-//		ObserverEvalObject evalObject = (ObserverEvalObject) element;
-//		return evalObject.getValue();
 		return null;
 	}
 
 	@Override
 	protected void setValue(Object element, Object value) {
-		//TODO: Reimplement me!!!
-//		if (value == null)
-//			return;
-//		((ObserverEvalObject) element).setValue(value);
 	}
 
 	@Override
 	protected CellEditor getCellEditor(Object element) {
-
-		//TODO: Reimplement me!!!
-//		ObserverEvalObject obj = ((ObserverEvalObject) element);
-//
-//		if (obj.isExpressionMode()) {
-//			if (cellEditor == null) {
-//				cellEditor = new TextCellEditor((Composite) getViewer()
-//						.getControl());
-//			}
-//			return cellEditor;
-//		} else {
-//
-//			String atrID = stdAttribute;
-//
-//			if (atrID == null)
-//				atrID = obj.getAttribute();
-//
-//			if (atrID != null) {
-//				if (atrID.length() > 0) {
-//					AbstractAttribute atr = getControl().getAttributes().get(
-//							atrID);
-//					PropertyDescriptor desc = atr.getPropertyDescriptor();
-//					return desc.createPropertyEditor((Composite) getViewer()
-//							.getControl());
-//				}
-//			}
-//
-//		}
-
-		return null;
-
+		AbstractAttribute atr = ((AbstractAttribute) element);
+		PropertyDescriptor desc = atr.getPropertyDescriptor();
+		CellEditor propertyEditor = desc
+				.createPropertyEditor((Composite) getViewer().getControl());
+		return propertyEditor;
 	}
 
 	public void setControl(BControl control) {
@@ -97,12 +64,12 @@ public class AttributeExpressionEdittingSupport extends EditingSupport {
 		return control;
 	}
 
-	public void setStdAttribute(String stdAttribute) {
-		this.stdAttribute = stdAttribute;
+	public void setAttribute(String stdAttribute) {
+		this.attribute = stdAttribute;
 	}
 
-	public String getStdAttribute() {
-		return stdAttribute;
+	public String getAttribute() {
+		return attribute;
 	}
 
 }

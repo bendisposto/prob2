@@ -4,9 +4,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.BMotionEditorPlugin;
+import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.PropertyChangeSupportObject;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.observer.ObserverWizard;
 
 public abstract class Event extends PropertyChangeSupportObject implements
 		IEvent {

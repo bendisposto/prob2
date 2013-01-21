@@ -6,7 +6,7 @@
 
 package de.bmotionstudio.core.editor.view.observer;
 
-import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.IPage;
@@ -14,9 +14,11 @@ import org.eclipse.ui.part.MessagePage;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.PageBookView;
 
+import de.bmotionstudio.core.editor.VisualizationViewPart;
+
 public class ObserverView extends PageBookView {
 
-	public static String ID = "de.bmotionstudio.core.ObserverView";
+	public static String ID = "de.bmotionstudio.core.view.ObserverView";
 
 	private String defaultText = "The observer view is not available.";
 
@@ -33,13 +35,10 @@ public class ObserverView extends PageBookView {
 
 	@Override
 	protected PageRec doCreatePage(IWorkbenchPart part) {
-		// if (part instanceof BMotionStudioEditor) {
-		// page = new ObserverPage();
-		// initPage(page);
-		// page.createControl(getPageBook());
-		// return new PageRec(part, page);
-		// }
-		return null;
+		page = new ObserverPage();
+		initPage(page);
+		page.createControl(getPageBook());
+		return new PageRec(part, page);
 	}
 
 	@Override
@@ -52,15 +51,15 @@ public class ObserverView extends PageBookView {
 	@Override
 	protected IWorkbenchPart getBootstrapPart() {
 		IWorkbenchPage page = getSite().getPage();
-		if (page != null) {
-			return page.getActiveEditor();
-		}
+		IViewPart view = page.findView(VisualizationViewPart.ID);
+		if (view != null)
+			return view;
 		return null;
 	}
 
 	@Override
 	protected boolean isImportant(IWorkbenchPart part) {
-		return (part instanceof IEditorPart);
+		return part instanceof VisualizationViewPart;
 	}
 
 }

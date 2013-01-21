@@ -27,7 +27,7 @@
       </category>
       <wizard
             category="de.bmotionstudio.core.wizards"
-            class="de.bmotionstudio.core.internal.NewBMotionProjectWizard"
+            class="de.bmotionstudio.core.editor.NewBMotionProjectWizard"
             icon="icons/logo_bmotion.png"
             id="de.prob.bmotionstudio.NewBMotionProject"
             name="BMotion Studio Visualization"
@@ -74,6 +74,15 @@
             icon="icons/logo_bmotion.png"
             id="de.bmotionstudio.core.view.OutlineView"
             name="Outline"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="de.bmotionstudio.views"
+            class="de.bmotionstudio.core.editor.view.observer.ObserverView"
+            icon="icons/logo_bmotion.png"
+            id="de.bmotionstudio.core.view.ObserverView"
+            name="Observer"
             restorable="true">
       </view>
    </extension>
