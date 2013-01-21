@@ -135,17 +135,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		getInfo().add(state, command);
 	}
 
-	public StateId getVertex(final String key) {
-		return states.get(key);
-	}
-
 	public void explore(final String state) {
-		explore(states.get(state));
+		explore(getVertex(state));
 	}
 
 	public void explore(final int i) {
 		final String si = String.valueOf(i);
 		explore(si);
+	}
+
+	public StateId getVertex(final String key) {
+		return states.get(key);
 	}
 
 	/**
@@ -247,21 +247,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	}
 
-	/**
-	 * Evaluates a single formula or an array of formulas (represented as
-	 * strings) for the given state. Returns as list of EvaluationResults.
-	 * 
-	 * @param state
-	 * @param code
-	 * @return returns a list of evaluation results
-	 * @throws BException
-	 */
-	public List<EvaluationResult> eval(final String state,
-			final List<IEvalElement> code) throws BException {
-		final StateId stateId = getVertex(state);
-		return eval(stateId, code);
-	}
-
 	public void evaluateFormulas(final StateId state) {
 		if (state.getId().equals("root")) {
 			return;
@@ -308,15 +293,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			}
 		}
 		return true;
-	}
-
-	public List<EvaluationResult> eval(final String state, final String... code)
-			throws BException {
-		final List<IEvalElement> list = new ArrayList<IEvalElement>();
-		for (final String c : code) {
-			list.add(new ClassicalB(c));
-		}
-		return eval(state, list);
 	}
 
 	@Override
@@ -366,13 +342,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return getInfo().toString();
 	}
 
-	// assert !s.getOutEdges(s.getCurrentState()).contains(new OperationId("1"))
 	public boolean isOutEdge(final StateId sId, final OpInfo oId) {
 		return outgoingEdgesOf(sId).contains(oId);
-	}
-
-	public boolean isOutEdge(final String stateId, final String opId) {
-		return isOutEdge(getVertex(stateId), ops.get(opId));
 	}
 
 	public HashMap<String, StateId> getStates() {
@@ -429,7 +400,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	public History getTrace(final int state) {
 		final StateId id = states.get(String.valueOf(state));
 		final List<OpInfo> path = new DijkstraShortestPath<StateId, OpInfo>(
-				this, this.__root, id).getPathEdgeList();
+				this.getGraph(), this.getRoot(), id).getPathEdgeList();
 		History h = new History(this);
 		for (final OpInfo opInfo : path) {
 			h = h.add(opInfo.getId());
@@ -508,5 +479,20 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 		throw new ClassCastException("An element of class " + className
 				+ " was not found");
+	}
+
+	public Object minus(final Object that) {
+		StateId id = null;
+		if (that instanceof String) {
+			id = getVertex((String) that);
+		}
+		if (that instanceof Integer) {
+			id = getVertex(String.valueOf(that));
+		}
+		if (id != null) {
+			return id;
+		}
+		throw new IllegalArgumentException(
+				"StateSpace does not contain vertex " + that);
 	}
 }
