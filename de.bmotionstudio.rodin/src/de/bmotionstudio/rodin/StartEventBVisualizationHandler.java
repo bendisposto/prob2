@@ -20,7 +20,7 @@ public class StartEventBVisualizationHandler extends
 		StartVisualizationFileHandler implements IHandler {
 
 	@Override
-	protected IFile getBmsFileFromSelection(IStructuredSelection ssel) {
+	protected IFile getFileFromSelection(IStructuredSelection ssel) {
 		if (ssel.getFirstElement() instanceof IBMotionSurfaceRoot)
 			return ((IBMotionSurfaceRoot) ssel.getFirstElement()).getResource();
 		return null;
