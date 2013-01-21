@@ -11,6 +11,7 @@ def oldArrayListAsType = ArrayList.metaClass.getMetaMethod("asType", [Class] as 
 String.metaClass.asType = { Class type -> 
        if (type == ClassicalB) return new ClassicalB(delegate) 
        if (type == EventB) return new EventB(delegate) 
+       if (type == CSP) return new CSP(delegate)
        oldStringAsType.invoke(delegate, [type] as Class[])
 }
 
