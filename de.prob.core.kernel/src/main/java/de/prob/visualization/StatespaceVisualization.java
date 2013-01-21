@@ -2,7 +2,7 @@ package de.prob.visualization;
 
 import javax.swing.JFrame;
 
-import com.mxgraph.layout.mxFastOrganicLayout;
+import com.mxgraph.layout.mxOrganicLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
@@ -24,7 +24,7 @@ public class StatespaceVisualization {
 		frame.setSize(600, 400);
 		frame.setVisible(true);
 
-		mxFastOrganicLayout layout = new mxFastOrganicLayout(graph);
+		mxOrganicLayout layout = new mxOrganicLayout(graph);
 
 		graph.getModel().beginUpdate();
 		double x = 20, y = 20;
@@ -41,5 +41,4 @@ public class StatespaceVisualization {
 		layout.execute(graph.getDefaultParent());
 		graph.getModel().endUpdate();
 	}
-
 }
