@@ -6,7 +6,6 @@
 
 package de.bmotionstudio.core.editor.view.observer;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -32,9 +31,9 @@ import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
+import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.observer.Observer;
-import de.bmotionstudio.core.model.observer.ObserverWizard;
 
 public class ObserverPage extends Page implements ISelectionListener {
 
@@ -69,7 +68,7 @@ public class ObserverPage extends Page implements ISelectionListener {
 
 			@Override
 			public Object[] getElements(Object inputElement) {
-				Collection<?> observerList = (Collection<?>) inputElement;
+				List<?> observerList = (List<?>) inputElement;
 				return observerList.toArray();
 			}
 
@@ -96,7 +95,7 @@ public class ObserverPage extends Page implements ISelectionListener {
 			@Override
 			public String getText(Object element) {
 				Observer o = (Observer) element;
-				return o.getName();
+				return o.getIdentifier();
 			}
 
 			@Override
@@ -132,7 +131,7 @@ public class ObserverPage extends Page implements ISelectionListener {
 						rightContainer.setLayoutData(new GridData(
 								GridData.FILL_BOTH));
 						rightContainer.setLayout(new FillLayout());
-						wizard.createWizardContent(rightContainer);
+						wizard.createDialogArea(rightContainer);
 						helpAction.setEnabled(true);
 						helpAction.setObserverID(o.getID());
 					}

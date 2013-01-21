@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Shell;
 
+import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.PropertyChangeSupportObject;
 import de.bmotionstudio.core.model.control.BControl;
 

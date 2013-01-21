@@ -14,23 +14,26 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.handlers.HandlerUtil;
+
+import de.bmotionstudio.core.BMotionStudio;
+import de.bmotionstudio.core.editor.VisualizationProgressBar;
+import de.bmotionstudio.core.model.Simulation;
+import de.bmotionstudio.core.util.PerspectiveUtil;
 
 public class StartVisualizationFileHandler extends AbstractHandler implements
 		IHandler {
 
 	private ISelection fSelection;
-	// private VisualizationProgressBar dpb;
+	 private VisualizationProgressBar dpb;
 	// private BMotionStudioEditor activeEditor;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		fSelection = HandlerUtil.getCurrentSelection(event);
-
+		
 		// BMotionStudioEditor editor = BMotionEditorPlugin.getActiveEditor();
 		// if (editor != null) {
 		// if (BMotionEditorPlugin.getActiveEditor().isDirty()) {
@@ -56,15 +59,15 @@ public class StartVisualizationFileHandler extends AbstractHandler implements
 
 			if (ssel.size() == 1) {
 
-				f = getBmsFileFromSelection(ssel);
-
-				IWorkbenchWindow window = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow();
-				IWorkbenchPage page = window.getActivePage();
-
-				IEditorDescriptor desc = PlatformUI.getWorkbench()
-						.getEditorRegistry().getDefaultEditor(f.getName());
-
+				f = getFileFromSelection(ssel);
+				
+				// IWorkbenchWindow window = PlatformUI.getWorkbench()
+				// .getActiveWorkbenchWindow();
+				// IWorkbenchPage page = window.getActivePage();
+				//
+				// IEditorDescriptor desc = PlatformUI.getWorkbench()
+				// .getEditorRegistry().getDefaultEditor(f.getName());
+				//
 				// try {
 				// IEditorPart part = page.openEditor(new FileEditorInput(f),
 				// desc.getId());
@@ -94,14 +97,13 @@ public class StartVisualizationFileHandler extends AbstractHandler implements
 				// "Error opening BMotion Studio Run perspective.", e);
 				// }
 				//
-				// // First, kill old visualization (only if exists)
-				// if (dpb != null)
-				// dpb.kill();
-				// // Create a new visualization
-				// dpb = new VisualizationProgressBar(Display.getDefault()
-				// .getActiveShell(), animator, activeEditor, f);
-				// dpb.initGuage();
-				// dpb.open();
+				
+				if (dpb != null)
+					dpb.kill();
+				dpb = new VisualizationProgressBar(Display.getDefault()
+						.getActiveShell(), f);
+				dpb.initGuage();
+				dpb.open();
 
 			}
 
@@ -116,7 +118,7 @@ public class StartVisualizationFileHandler extends AbstractHandler implements
 		fSelection = selection;
 	}
 
-	protected IFile getBmsFileFromSelection(IStructuredSelection ssel) {
+	protected IFile getFileFromSelection(IStructuredSelection ssel) {
 		if (ssel.getFirstElement() instanceof IFile)
 			return (IFile) ssel.getFirstElement();
 		return null;

@@ -47,6 +47,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
@@ -55,22 +56,30 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 
+import com.google.inject.Injector;
+
 import de.bmotionstudio.core.editor.action.CopyAction;
-import de.bmotionstudio.core.editor.action.OpenObserverAction;
+import de.bmotionstudio.core.editor.action.AddObserverAction;
 import de.bmotionstudio.core.editor.action.PasteAction;
 import de.bmotionstudio.core.editor.part.BMSEditPartFactory;
 import de.bmotionstudio.core.editor.view.library.AttributeTransferDropTargetListener;
 import de.bmotionstudio.core.editor.view.outline.BMotionOutlinePage;
-import de.bmotionstudio.core.internal.BControlTransferDropTargetListener;
 import de.bmotionstudio.core.model.BMotionRuler;
 import de.bmotionstudio.core.model.Simulation;
 import de.bmotionstudio.core.model.VisualizationView;
+import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
+import de.prob.statespace.IHistoryChangeListener;
+import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
-		CommandStackListener, PropertyChangeListener {
+		CommandStackListener, PropertyChangeListener, IHistoryChangeListener {
 
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
+	
+	Injector injector = ServletContextListener.INJECTOR;
 	
 	private EditDomain editDomain;
 
@@ -261,10 +270,10 @@ public class VisualizationViewPart extends ViewPart implements
 					String observerClassName = configurationElement
 							.getAttribute("class");
 
-					action = new OpenObserverAction(this);
+					action = new AddObserverAction(this);
 					action.setId("de.bmotionstudio.core.observerAction."
 							+ observerClassName);
-					((OpenObserverAction) action)
+					((AddObserverAction) action)
 							.setClassName(observerClassName);
 					registry.registerAction(action);
 					getSelectionActions().add(
@@ -322,6 +331,7 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	private void unregister() {
+		
 		if (getCommandStack() != null)
 			getCommandStack().removeCommandStackListener(this);
 		if (getActionRegistry() != null)
@@ -329,8 +339,13 @@ public class VisualizationViewPart extends ViewPart implements
 		setInitialized(false);
 		if (getVisualizationView() != null)
 			getVisualizationView().removePropertyChangeListener(this);
+		
+		final AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
+		selector.unregisterHistoryChangeListener(this);
 //		if (getSimulation() != null)
 //			getSimulation().removePropertyChangeListener(this);
+		
 	}
 
 	@Override
@@ -400,7 +415,13 @@ public class VisualizationViewPart extends ViewPart implements
 		createMenu(getViewSite());
 		setPartName(visualizationView.getName());
 		getGraphicalViewer().setContents(visualization);
+		
+		final AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
+		selector.registerHistoryChangeListener(this);
+		
 		setInitialized(true);
+		
 	}
 
 	protected void hookGraphicalViewer() {
@@ -579,6 +600,53 @@ public class VisualizationViewPart extends ViewPart implements
 
 		}
 		
+	}
+
+	@Override
+	public void historyChange(History history) {
+		
+		if(visualizationView != null) {
+			checkObserver(history);			
+		}
+		
+	}
+	
+	public void checkObserver(final History history) {
+
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+
+				for (VisualizationView visView : simulation
+						.getVisualizationViews().values()) {
+
+					Visualization visualization = visView.getVisualization();
+					List<BControl> allBControls = new ArrayList<BControl>();
+					allBControls.add(visualization);
+					collectAllBControls(allBControls, visualization);
+					for (BControl c : allBControls)
+						c.checkObserver(history);
+
+				}
+
+			}
+
+		});
+
+	}
+
+	private void collectAllBControls(List<BControl> allBControls,
+			BControl control) {
+
+		if (control.getChildren().isEmpty())
+			return;
+
+		for (BControl bcontrol : control.getChildren()) {
+			allBControls.add(bcontrol);
+			collectAllBControls(allBControls, bcontrol);
+		}
+
 	}
 
 }

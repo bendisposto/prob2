@@ -2,8 +2,9 @@ package de.bmotionstudio.core.model.observer;
 
 import org.eclipse.swt.widgets.Shell;
 
-import de.bmotionstudio.core.Animation;
+import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.statespace.History;
 
 public class ExpressionObserver extends Observer {
 
@@ -14,7 +15,7 @@ public class ExpressionObserver extends Observer {
 	private boolean expressionMode;
 	
 	@Override
-	public void check(Animation animation, BControl control) {
+	public void check(History history, BControl control) {
 	}
 
 	@Override

@@ -40,6 +40,7 @@ import de.bmotionstudio.core.model.attribute.BAttributeX;
 import de.bmotionstudio.core.model.attribute.BAttributeY;
 import de.bmotionstudio.core.model.event.Event;
 import de.bmotionstudio.core.model.observer.Observer;
+import de.prob.statespace.History;
 
 /**
  * 
@@ -619,6 +620,21 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 	}
 
+	public void checkObserver(History history) {
+		for (Observer observer : getObservers()) {
+			observer.check(history, BControl.this);
+		}
+		// TODO: Currently connection observer are checked twice (source +
+		// target) => change this, so that observer are checked only on time per
+		// state!!!
+		for (BConnection con : getSourceConnections()) {
+			con.checkObserver(history);
+		}
+		for (BConnection con : getTargetConnections()) {
+			con.checkObserver(history);
+		}
+	}
+	
 	// TODO: Reimplement me!!!
 	// public void checkObserver(final Animation animation) {
 	//

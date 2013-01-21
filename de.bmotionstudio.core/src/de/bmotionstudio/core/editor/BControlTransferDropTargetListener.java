@@ -4,14 +4,13 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.core.internal;
+package de.bmotionstudio.core.editor;
 
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.requests.CreationFactory;
 
 import de.bmotionstudio.core.IBControlService;
-import de.bmotionstudio.core.editor.BControlCreationFactory;
 
 public class BControlTransferDropTargetListener extends
 		TemplateTransferDropTargetListener {

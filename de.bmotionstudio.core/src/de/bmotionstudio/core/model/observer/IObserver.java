@@ -6,8 +6,8 @@
 
 package de.bmotionstudio.core.model.observer;
 
-import de.bmotionstudio.core.Animation;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.statespace.History;
 
 public interface IObserver {
 
@@ -15,12 +15,12 @@ public interface IObserver {
 	 * This method is called after every state change. The method tells the
 	 * control how it has to look like and to behave.
 	 * 
-	 * @param animation
+	 * @param history
 	 *            The running animation
 	 * @param bcontrol
 	 *            The corresponding control
 	 */
-	public void check(Animation animation, BControl control);
+	public void check(History history, BControl control);
 	
 	public String getIdentifier();
 	

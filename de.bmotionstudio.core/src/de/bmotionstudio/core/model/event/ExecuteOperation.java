@@ -3,8 +3,8 @@ package de.bmotionstudio.core.model.event;
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.Animation;
+import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.observer.ObserverWizard;
 
 public class ExecuteOperation extends Event {
 
