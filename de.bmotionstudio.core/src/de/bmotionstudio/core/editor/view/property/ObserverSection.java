@@ -60,6 +60,8 @@ public class ObserverSection extends AbstractPropertySection implements
 	
 	private BMotionPropertySheetPage propertySheetPage;
 	
+	private Observer selectedObserver;
+	
 	@Override
 	public void setInput(IWorkbenchPart part, ISelection selection) {
 		
@@ -180,10 +182,15 @@ public class ObserverSection extends AbstractPropertySection implements
 					Object firstElement = ((StructuredSelection) event
 							.getSelection()).getFirstElement();
 					if (firstElement instanceof Observer) {
-						Observer o = (Observer) firstElement;
-						ObserverWizard wizard = o
-								.getWizard(Display.getDefault()
-										.getActiveShell(), selectedControl);
+						if (selectedObserver != null)
+							selectedObserver
+									.removePropertyChangeListener(ObserverSection.this);
+						selectedObserver = (Observer) firstElement;
+						selectedObserver
+								.addPropertyChangeListener(ObserverSection.this);
+						ObserverWizard wizard = selectedObserver.getWizard(
+								Display.getDefault().getActiveShell(),
+								selectedControl);
 						// IWizardPage page = wizard.getPages()[0];
 						rightContainer = new Composite(container, SWT.NONE);
 						rightContainer.setLayoutData(new GridData(
@@ -191,7 +198,8 @@ public class ObserverSection extends AbstractPropertySection implements
 						rightContainer.setLayout(new FillLayout());
 						wizard.createDialogArea(rightContainer);
 						helpAction.setEnabled(true);
-						helpAction.setObserverID(o.getClass().getName());
+						helpAction.setObserverID(selectedObserver.getClass()
+								.getName());
 					}
 				}
 				container.layout();
@@ -207,6 +215,9 @@ public class ObserverSection extends AbstractPropertySection implements
 				BControlPropertyConstants.PROPERTY_ADD_OBSERVER)
 				|| event.getPropertyName().equals(
 						BControlPropertyConstants.PROPERTY_REMOVE_OBSERVER))
+			listViewer.refresh();
+		
+		if(event.getPropertyName().equals("name"))
 			listViewer.refresh();
 
 	}
