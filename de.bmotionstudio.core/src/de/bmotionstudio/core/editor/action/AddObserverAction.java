@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.bmotionstudio.core.BMotionEditorPlugin;
+import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.editor.command.AddObserverCommand;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
@@ -25,7 +26,7 @@ import de.bmotionstudio.core.model.observer.Observer;
 
 public class AddObserverAction extends SelectionAction {
 
-	private String className;
+	private String id;
 
 	public AddObserverAction(IWorkbenchPart part) {
 		super(part);
@@ -44,7 +45,7 @@ public class AddObserverAction extends SelectionAction {
 
 	@Override
 	public void run() {
-
+		
 		BControl actionControl = getSelectedControl();
 
 		if (actionControl != null) {
@@ -52,10 +53,10 @@ public class AddObserverAction extends SelectionAction {
 			try {
 
 				IConfigurationElement observerExtension = BMotionEditorPlugin
-						.getObserverExtension(className);
+						.getObserverExtension(getObserverId());
 				Observer newObserver = (Observer) observerExtension
 						.createExecutableExtension("class");
-
+				
 				ObserverWizard wizard = newObserver.getWizard(Display
 						.getDefault().getActiveShell(), actionControl);
 
@@ -65,14 +66,11 @@ public class AddObserverAction extends SelectionAction {
 					if (size == null)
 						size = new Point(500, 300);
 					wizard.getShell().setSize(size);
-					String title = "Observer: " + newObserver.getName()
-							+ " Control: " + actionControl.getID();
-					wizard.getShell().setText(title);
-					// wizard.setWindowTitle("BMotion Studio Observer Wizard");
-					// wizard.setTitle(title);
-					// wizard.setMessage(observer.getDescription());
-					// wizard.setTitleImage(BMotionStudioImage
-					// .getImage(BMotionStudioImage.IMG_LOGO_BMOTION64));
+					wizard.getShell().setText("Create New Observer");
+					wizard.setMessage(newObserver.getDescription());
+					wizard.setTitle(newObserver.getType());
+					wizard.setTitleImage(BMotionImage
+							.getImage(BMotionImage.IMG_LOGO_BMOTION64));
 					int open = wizard.open();
 					if (open == StatusDialog.OK) {
 						AddObserverCommand addObserverCommand = new AddObserverCommand(
@@ -95,12 +93,12 @@ public class AddObserverAction extends SelectionAction {
 
 	}
 
-	public void setClassName(String className) {
-		this.className = className;
+	public void setObserverId(String id) {
+		this.id = id;
 	}
 
-	public String getClassName() {
-		return className;
+	public String getObserverId() {
+		return id;
 	}
 
 	protected BControl getSelectedControl() {

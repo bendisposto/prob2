@@ -267,18 +267,13 @@ public class VisualizationViewPart extends ViewPart implements
 
 				if ("observer".equals(configurationElement.getName())) {
 
-					String observerClassName = configurationElement
-							.getAttribute("class");
-
+					String oID = configurationElement.getAttribute("id");
 					action = new AddObserverAction(this);
-					action.setId("de.bmotionstudio.core.observerAction."
-							+ observerClassName);
-					((AddObserverAction) action)
-							.setClassName(observerClassName);
+					action.setId("de.bmotionstudio.core.observerAction." + oID);
+					((AddObserverAction) action).setObserverId(oID);
 					registry.registerAction(action);
 					getSelectionActions().add(
-							"de.bmotionstudio.core.observerAction."
-									+ observerClassName);
+							"de.bmotionstudio.core.observerAction." + oID);
 
 				}
 

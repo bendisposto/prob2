@@ -52,7 +52,8 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 
 	private static HashMap<String, IConfigurationElement> schedulerExtensions = new HashMap<String, IConfigurationElement>();
 
-	private static HashMap<Class<?>, IBControlService> controlServices = new HashMap<Class<?>, IBControlService>();
+	private static HashMap<Class<?>, IBControlService> controlServicesClass = new HashMap<Class<?>, IBControlService>();
+	private static HashMap<String, IBControlService> controlServicesId = new HashMap<String, IBControlService>();
 
 	IExtensionRegistry registry = Platform.getExtensionRegistry();
 
@@ -146,7 +147,9 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 					try {
 						IBControlService service = (IBControlService) configurationElement
 								.createExecutableExtension("service");
-						controlServices.put(service.getControlClass(), service);
+						String id = configurationElement.getAttribute("id");
+						controlServicesClass.put(service.getControlClass(), service);
+						controlServicesId.put(id, service);
 					} catch (CoreException e) {
 						e.printStackTrace();
 					}
@@ -200,7 +203,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		elementIDs.clear();
 		elementIDs.add("observer");
 		initExtensionClass("de.bmotionstudio.core.observer", elementIDs,
-				"class", observerExtensions);
+				"id", observerExtensions);
 
 		initBControlServices();
 		
@@ -228,10 +231,14 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		return schedulerExtensions;
 	}
 
-	public static HashMap<Class<?>, IBControlService> getControlServices() {
-		return controlServices;
+	public static HashMap<Class<?>, IBControlService> getControlServicesClass() {
+		return controlServicesClass;
 	}
 
+	public static HashMap<String, IBControlService> getControlServicesId() {
+		return controlServicesId;
+	}
+	
 	public static void setAliases(XStream xstream) {
 		xstream.alias("simulation", Simulation.class);
 		xstream.alias("view", VisualizationView.class);

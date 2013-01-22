@@ -208,90 +208,105 @@
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/eclipse16/image_obj.gif"
+            id="de.bmotionstudio.control.Image"
             name="Image"
             service="de.bmotionstudio.core.service.control.BImageService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_button.gif"
+            id="de.bmotionstudio.control.Button"
             name="Button"
             service="de.bmotionstudio.core.service.control.BButtonService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_radiobutton_c.gif"
+            id="de.bmotionstudio.control.Radiobutton"
             name="Radiobutton"
             service="de.bmotionstudio.core.service.control.BRadioButtonService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_checked.gif"
+            id="de.bmotionstudio.control.Checkbox"
             name="Checkbox"
             service="de.bmotionstudio.core.service.control.BCheckboxService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/eclipse16/overview_obj.gif"
+            id="de.bmotionstudio.control.Composite"
             name="Composite"
             service="de.bmotionstudio.core.service.control.BCompositeService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_text.gif"
+            id="de.bmotionstudio.control.Text"
             name="Text"
             service="de.bmotionstudio.core.service.control.BTextService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_textfield.gif"
+            id="de.bmotionstudio.control.Textfield"
             name="Textfield"
             service="de.bmotionstudio.core.service.control.BTextfieldService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_rectangle.gif"
+            id="de.bmotionstudio.control.Rectangle"
             name="Rectanlge"
             service="de.bmotionstudio.core.service.control.BRectangleService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_ellipse.gif"
+            id="de.bmotionstudio.control.Ellipse"
             name="Ellipse"
             service="de.bmotionstudio.core.service.control.BEllipseService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_connection16.gif"
+            id="de.bmotionstudio.control.Connection"
             name="Connection"
             service="de.bmotionstudio.core.service.control.BConnectionService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/eclipse16/prop_ps.gif"
+            id="de.bmotionstudio.control.Table"
             name="Table"
             service="de.bmotionstudio.core.service.control.BTableService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/eclipse16/prop_ps2.gif"
+            id="de.bmotionstudio.control.Column"
             name="Column"
             service="de.bmotionstudio.core.service.control.BTableColumnService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/eclipse16/prop_ps3.gif"
+            id="de.bmotionstudio.control.Cell"
             name="Cell"
             service="de.bmotionstudio.core.service.control.BTableCellService">
       </control>
       <control
             groupid="de.bmotionstudio.core.railway.group"
             icon="icons/controls/icon_signal.gif"
+            id="de.bmotionstudio.control.Signal"
             name="Signal"
             service="de.bmotionstudio.core.service.control.SignalService">
       </control>
       <control
             groupid="de.bmotionstudio.core.railway.group"
             icon="icons/eclipse16/smartmode_co.gif"
+            id="de.bmotionstudio.control.Light"
             name="Light"
             service="de.bmotionstudio.core.service.control.LightService">
       </control>
@@ -302,6 +317,7 @@
       <control
             groupid="de.bmotionstudio.core.industry.group"
             icon="icons/controls/icon_tank.gif"
+            id="de.bmotionstudio.control.Tank"
             name="Tank"
             service="de.bmotionstudio.core.service.control.TankService">
       </control>
@@ -312,18 +328,21 @@
       <control
             groupid="de.bmotionstudio.core.railway.group"
             icon="icons/controls/icon_tracknode.gif"
+            id="de.bmotionstudio.control.Tracknode"
             name="Node"
             service="de.bmotionstudio.core.service.control.TrackNodeService">
       </control>
       <control
             groupid="de.bmotionstudio.core.railway.group"
             icon="icons/controls/icon_track.gif"
+            id="de.bmotionstudio.control.Track"
             name="Trac"
             service="de.bmotionstudio.core.service.control.TrackService">
       </control>
       <control
             groupid="de.bmotionstudio.core.railway.group"
             icon="icons/controls/icon_switch.gif"
+            id="de.bmotionstudio.control.Switch"
             name="Switch"
             service="de.bmotionstudio.core.service.control.SwitchService">
       </control>
@@ -331,10 +350,12 @@
    <extension
          point="de.bmotionstudio.core.observer">
       <observer
-            class="de.bmotionstudio.core.model.observer.ExpressionObserver">
+            class="de.bmotionstudio.core.model.observer.ExpressionObserver"
+            id="de.bmotionstudio.observer.ExpressionObserver">
       </observer>
       <observer
-            class="de.bmotionstudio.core.model.observer.PredicateObserver">
+            class="de.bmotionstudio.core.model.observer.PredicateObserver"
+            id="de.bmotionstudio.observer.PredicateObserver">
       </observer>
    </extension>
    <extension
@@ -361,27 +382,21 @@
       <include
             language="EventB">
          <control
-               id="de.bmotionstudio.core.image">
+               id="de.bmotionstudio.control.Image">
             <observer
-                  id="de.bmotionstudio.core.observer.ListenOperationByPredicate">
+                  id="de.bmotionstudio.observer.ExpressionObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.core.observer.SwitchImage">
-            </observer>
-            <observer
-                  id="de.bmotionstudio.core.observer.SetAttribute">
-            </observer>
-            <observer
-                  id="de.bmotionstudio.core.observer.SwitchCoordinates">
+                  id="de.bmotionstudio.observer.PredicateObserver">
             </observer>
          </control>
          <control
-               id="de.bmotionstudio.core.model.control.Button">
+               id="de.bmotionstudio.control.Button">
             <observer
-                  id="de.bmotionstudio.core.model.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.ExpressionObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.core.model.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.PredicateObserver">
             </observer>
          </control>
          <control

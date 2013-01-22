@@ -55,8 +55,13 @@ public class PredicateObserver extends Observer {
 	}
 
 	@Override
-	public String getName() {
+	public String getType() {
 		return "Predicate Observer";
+	}
+	
+	@Override
+	public String getDescription() {
+		return "This observer sets the value of an attribute whenever the entered predicate was evaluated to true.";
 	}
 
 }

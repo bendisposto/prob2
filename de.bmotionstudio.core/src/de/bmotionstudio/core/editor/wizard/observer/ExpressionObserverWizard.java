@@ -4,51 +4,39 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import de.bmotionstudio.core.editor.edit.AttributeExpressionEdittingSupport;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
+import de.bmotionstudio.core.model.observer.ExpressionObserver;
 import de.bmotionstudio.core.model.observer.Observer;
-import de.bmotionstudio.core.model.observer.PredicateObserver;
 
-public class PredicateObserverWizard extends ObserverWizard {
-	
-	private TableViewer tableViewer;
+public class ExpressionObserverWizard extends ObserverWizard {
 	
 	private final DataBindingContext dbc = new DataBindingContext();
 	
-	private Text predicateText, nameText;
+	private Text nameText, expressionText;
 	
 	private ComboViewer attributeCombo;
 	
-	public PredicateObserverWizard(Shell shell, BControl control,
+	public ExpressionObserverWizard(Shell shell, BControl control,
 			Observer observer) {
 		super(shell, control, observer);
 	}
@@ -81,14 +69,7 @@ public class PredicateObserverWizard extends ObserverWizard {
 		
 		nameText = new Text(container, SWT.BORDER);
 		nameText.setLayoutData(gridDataFill);
-		
-		label = new Label(container,SWT.NONE);
-		label.setText("Predicate:");
-		label.setLayoutData(gridDataLabel);
-		
-		predicateText = new Text(container, SWT.BORDER);
-		predicateText.setLayoutData(gridDataFill);
-		
+			
 		label = new Label(container,SWT.NONE);
 		label.setText("Attribute:");
 		label.setLayoutData(gridDataLabel);
@@ -110,91 +91,36 @@ public class PredicateObserverWizard extends ObserverWizard {
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					@Override
 					public void selectionChanged(SelectionChangedEvent event) {
-						
+
 						ISelection selection = event.getSelection();
 						if (selection instanceof StructuredSelection) {
-							
-							StructuredSelection sel = (StructuredSelection) selection;
-							AbstractAttribute atr = (AbstractAttribute) sel
-									.getFirstElement();
 
-							String currentAttribute = ((PredicateObserver) getObserver())
-									.getAttribute();
-							if (currentAttribute == null
-									|| (currentAttribute != null && !currentAttribute
-											.equals(atr.getID()))) {
-								((PredicateObserver) getObserver())
-										.setValue(atr.getValue());
-							}
+							// StructuredSelection sel = (StructuredSelection)
+							// selection;
+							// AbstractAttribute atr = (AbstractAttribute) sel
+							// .getFirstElement();
+							//
+							// String currentAttribute = ((ExpressionObserver)
+							// getObserver())
+							// .getAttribute();
+							// if (currentAttribute == null
+							// || (currentAttribute != null && !currentAttribute
+							// .equals(atr.getID()))) {
+							// ((ExpressionObserver) getObserver())
+							// .setValue(atr.getValue());
+							// }
 
-							tableViewer.setInput(atr);
-							tableViewer.refresh();
-							
 						}
 
 					}
 				});
 		
 		label = new Label(container,SWT.NONE);
-		label.setText("Value:");
+		label.setText("Expression:");
 		label.setLayoutData(gridDataLabel);
 			
-		tableViewer = new TableViewer(container, SWT.NONE);		
-		tableViewer.getTable().setHeaderVisible(false);
-		tableViewer.getTable().setLinesVisible(false);
-		tableViewer.setContentProvider(new IStructuredContentProvider() {
-
-			@Override
-			public void dispose() {
-			}
-
-			@Override
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
-			}
-
-			@Override
-			public Object[] getElements(Object inputElement) {
-				return new Object[] {inputElement};
-			}
-			
-		});
-
-		tableViewer.getTable().setLayoutData(gridDataFill);
-		tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				event.gc.setBackground(ColorConstants.white);
-				event.gc.fillRectangle(event.getBounds());
-			}
-		});
-		
-		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setResizable(false);
-		column.getColumn().setWidth(215);
-		column.setEditingSupport(new AttributeExpressionEdittingSupport(
-				tableViewer, getControl()) {
-
-			@Override
-			protected void setValue(Object element, Object value) {
-				((PredicateObserver) getObserver()).setValue(value);
-				tableViewer.refresh();
-			}
-
-			@Override
-			protected Object getValue(Object element) {
-				return ((PredicateObserver) getObserver()).getValue();
-			}
-
-		});
-		column.setLabelProvider(new CellLabelProvider() {
-			@Override
-			public void update(ViewerCell cell) {
-				Object value = ((PredicateObserver) getObserver()).getValue();
-				if (value != null)
-					cell.setText(value.toString());
-			}
-		});
+		expressionText = new Text(container, SWT.BORDER);
+		expressionText.setLayoutData(gridDataFill);
 
 		initBindings(dbc);
 		
@@ -206,16 +132,16 @@ public class PredicateObserverWizard extends ObserverWizard {
 
 		dbc.bindValue(SWTObservables.observeText(nameText, SWT.Modify),
 				BeansObservables.observeValue(
-						(PredicateObserver) getObserver(), "name"));
+						(ExpressionObserver) getObserver(), "name"));
 
-		dbc.bindValue(SWTObservables.observeText(predicateText, SWT.Modify),
+		dbc.bindValue(SWTObservables.observeText(expressionText, SWT.Modify),
 				BeansObservables.observeValue(
-						(PredicateObserver) getObserver(), "predicate"));
+						(ExpressionObserver) getObserver(), "expression"));
 		
 		IObservableValue typeSelection = ViewersObservables
 				.observeSingleSelection(attributeCombo);
 		IObservableValue myModelTypeObserveValue = BeansObservables
-				.observeValue((PredicateObserver) getObserver(), "attribute");
+				.observeValue((ExpressionObserver) getObserver(), "attribute");
 		
 		dbc.bindValue(typeSelection, myModelTypeObserveValue,
 				new UpdateValueStrategy() {

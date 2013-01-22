@@ -95,7 +95,7 @@ public class ObserverPage extends Page implements ISelectionListener {
 			@Override
 			public String getText(Object element) {
 				Observer o = (Observer) element;
-				return o.getIdentifier();
+				return o.getName();
 			}
 
 			@Override
@@ -133,7 +133,7 @@ public class ObserverPage extends Page implements ISelectionListener {
 						rightContainer.setLayout(new FillLayout());
 						wizard.createDialogArea(rightContainer);
 						helpAction.setEnabled(true);
-						helpAction.setObserverID(o.getID());
+						helpAction.setObserverID(o.getClass().getName());
 					}
 				}
 				container.layout();

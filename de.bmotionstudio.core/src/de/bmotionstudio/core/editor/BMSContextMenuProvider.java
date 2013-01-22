@@ -27,6 +27,7 @@ import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.BMotionStudio;
+import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.IInstallMenu;
 import de.bmotionstudio.core.model.control.BControl;
 
@@ -124,7 +125,7 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 		else
 			return;
 
-		final MenuManager handleObserverMenu = new MenuManager("Observer",
+		final MenuManager handleObserverMenu = new MenuManager("New Observer",
 				BMotionImage.getImageDescriptor(BMotionEditorPlugin.PLUGIN_ID,
 						"icons/icon_observer.gif"), "observerMenu");
 		menu.appendToGroup(GEFActionConstants.GROUP_ADD, handleObserverMenu);
@@ -151,7 +152,12 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 
 							String cID = configC.getAttribute("id");
 							
-							if (control.getClass().getName().equals(cID)) {
+							IBControlService controlService = BMotionEditorPlugin
+									.getControlServicesId().get(cID);
+			
+							if (controlService != null
+									&& control.getClass().equals(
+											controlService.getControlClass())) {
 								
 								for (IConfigurationElement configO : configC
 										.getChildren("observer")) {
@@ -161,9 +167,10 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 											.getAction(
 													"de.bmotionstudio.core.observerAction."
 															+ oID);
-									
+
 									// TODO: Get correct name of observer
 									String name = oID;
+									
 									action.setText(name);
 
 									handleObserverMenu.add(action);
