@@ -76,15 +76,6 @@
             name="Outline"
             restorable="true">
       </view>
-      <view
-            allowMultiple="false"
-            category="de.bmotionstudio.views"
-            class="de.bmotionstudio.core.editor.view.observer.ObserverView"
-            icon="icons/logo_bmotion.png"
-            id="de.bmotionstudio.core.view.ObserverView"
-            name="Observer"
-            restorable="true">
-      </view>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -640,5 +631,54 @@
       <startup
             class="de.bmotionstudio.core.BMotionStartup">
       </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+      <propertyContributor
+            contributorId="de.bmotionstudio.core.view.VisualizationView">
+         <propertyCategory
+               category="de.bmotionstudio.core.propertyTabs">
+         </propertyCategory>
+      </propertyContributor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs
+            contributorId="de.bmotionstudio.core.view.VisualizationView">
+         <propertyTab
+               category="de.bmotionstudio.core.propertyTabs"
+               id="de.bmotionstudio.core.propertyTabProperties"
+               label="Properties">
+         </propertyTab>
+         <propertyTab
+               afterTab="de.bmotionstudio.core.propertyTabProperties"
+               category="de.bmotionstudio.core.propertyTabs"
+               id="de.bmotionstudio.core.propertyTabObserver"
+               image="icons/icon_observer.gif"
+               label="Observer">
+         </propertyTab>
+      </propertyTabs>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+            contributorId="de.bmotionstudio.core.view.VisualizationView">
+         <propertySection
+               class="de.bmotionstudio.core.editor.view.property.BMotionPropertySection"
+               id="de.bmotionstudio.core.propertySectionProperties"
+               tab="de.bmotionstudio.core.propertyTabProperties">
+            <input
+                  type="de.bmotionstudio.core.editor.part.BMSAbstractEditPart">
+            </input>
+         </propertySection>
+         <propertySection
+               class="de.bmotionstudio.core.editor.view.property.ObserverSection"
+               id="de.bmotionstudio.core.propertySectionObserver"
+               tab="de.bmotionstudio.core.propertyTabObserver">
+            <input
+                  type="de.bmotionstudio.core.editor.part.BMSAbstractEditPart">
+            </input>
+         </propertySection>
+      </propertySections>
    </extension>
 </plugin>
