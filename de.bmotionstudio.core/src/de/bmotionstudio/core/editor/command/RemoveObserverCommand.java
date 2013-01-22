@@ -14,35 +14,45 @@ import de.bmotionstudio.core.model.observer.Observer;
 public class RemoveObserverCommand extends Command {
 
 	private BControl control;
+	
 	private Observer observer;
+	
+	public RemoveObserverCommand(Observer observer, BControl control) {
+		this.observer = observer;
+		this.control = control;
+	}
 
 	public void execute() {
-		// TODO: Reimplement me!!!
-//		control.removeObserver(observer.getID());
+		redo();
 	}
 
 	public boolean canExecute() {
-		return true;
+		return observer != null && control != null;
 	}
 
 	public void undo() {
 		control.addObserver(observer);
 	}
 
+	public void redo() {
+		control.removeObserver(observer);
+	}
+	
 	public void setControl(BControl control) {
 		this.control = control;
 	}
 
 	public BControl getControl() {
-		return control;
-	}
-
-	public void setObserver(Observer observer) {
-		this.observer = observer;
+		return this.control;
 	}
 
 	public Observer getObserver() {
 		return observer;
 	}
+
+	public void setObserver(Observer observer) {
+		this.observer = observer;
+	}
+	
 
 }
