@@ -668,7 +668,7 @@
                id="de.bmotionstudio.core.propertySectionProperties"
                tab="de.bmotionstudio.core.propertyTabProperties">
             <input
-                  type="de.bmotionstudio.core.editor.part.BMSAbstractEditPart">
+                  type="org.eclipse.gef.editparts.AbstractEditPart">
             </input>
          </propertySection>
          <propertySection
@@ -676,7 +676,7 @@
                id="de.bmotionstudio.core.propertySectionObserver"
                tab="de.bmotionstudio.core.propertyTabObserver">
             <input
-                  type="de.bmotionstudio.core.editor.part.BMSAbstractEditPart">
+                  type="org.eclipse.gef.editparts.AbstractEditPart">
             </input>
          </propertySection>
       </propertySections>

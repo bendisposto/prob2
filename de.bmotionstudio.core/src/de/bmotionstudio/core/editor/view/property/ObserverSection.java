@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.gef.editparts.AbstractEditPart;
+import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -37,9 +39,7 @@ import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.BMotionStudio;
 import de.bmotionstudio.core.IBControlService;
-import de.bmotionstudio.core.editor.VisualizationViewPart;
 import de.bmotionstudio.core.editor.action.ObserverHelpAction;
-import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.BControlPropertyConstants;
@@ -64,34 +64,36 @@ public class ObserverSection extends AbstractPropertySection implements
 	
 	@Override
 	public void setInput(IWorkbenchPart part, ISelection selection) {
-		
+
 		super.setInput(part, selection);
-		
+
 		if (selection != null && selection instanceof StructuredSelection) {
 			Object firstElement = ((StructuredSelection) selection)
 					.getFirstElement();
-			if (firstElement instanceof BMSAbstractEditPart) {
-				if(selectedControl != null)
-					selectedControl.removePropertyChangeListener(this);
-				selectedControl = (BControl) ((BMSAbstractEditPart) firstElement)
-						.getModel();
-				selectedControl.addPropertyChangeListener(this);
-				if (!listViewer.getControl().isDisposed()) {
-					List<Observer> values = selectedControl.getObservers();
-					listViewer.setInput(values);
-					if (values.size() > 0) {
-						Observer firstObserver = values.iterator().next();
-						listViewer.setSelection(new StructuredSelection(
-								firstObserver));
-					} else {
-						helpAction.setEnabled(false);
-						if (rightContainer != null)
-							rightContainer.dispose();
+			if (firstElement instanceof AbstractEditPart) {
+				Object model = ((AbstractEditPart) firstElement).getModel();
+				if (model instanceof BControl) {
+					if (selectedControl != null)
+						selectedControl.removePropertyChangeListener(this);
+					selectedControl = (BControl) model;
+					selectedControl.addPropertyChangeListener(this);
+					if (!listViewer.getControl().isDisposed()) {
+						List<Observer> values = selectedControl.getObservers();
+						listViewer.setInput(values);
+						if (values.size() > 0) {
+							Observer firstObserver = values.iterator().next();
+							listViewer.setSelection(new StructuredSelection(
+									firstObserver));
+						} else {
+							helpAction.setEnabled(false);
+							if (rightContainer != null)
+								rightContainer.dispose();
+						}
 					}
 				}
 			}
 		}
-		
+
 	}
 	
 	public void createActions() {
@@ -224,13 +226,18 @@ public class ObserverSection extends AbstractPropertySection implements
 	
 	@Override
 	public void tabSelected(ITabDescriptor tabDescriptor) {
-		this.propertySheetPage.getSite().getActionBars().getToolBarManager().removeAll();
-		this.propertySheetPage.getSite().getActionBars().getMenuManager().removeAll();
-		if(tabDescriptor.getLabel().equals("Observer")) {
-			this.propertySheetPage.getSite().getActionBars().getToolBarManager().add(helpAction);
+		this.propertySheetPage.getSite().getActionBars().getToolBarManager()
+				.removeAll();
+		this.propertySheetPage.getSite().getActionBars().getMenuManager()
+				.removeAll();
+		if (tabDescriptor.getLabel().equals("Observer")) {
+			this.propertySheetPage.getSite().getActionBars()
+					.getToolBarManager().add(helpAction);
 		}
-		this.propertySheetPage.getSite().getActionBars().getToolBarManager().update(true);
-		buildObserverMenu(this.propertySheetPage.getSite().getActionBars().getMenuManager(),selectedControl);
+		this.propertySheetPage.getSite().getActionBars().getToolBarManager()
+				.update(true);
+		buildObserverMenu(this.propertySheetPage.getSite().getActionBars()
+				.getMenuManager(), selectedControl);
 	}
 	
 	private void buildObserverMenu(IMenuManager menu, BControl control) {
@@ -272,21 +279,24 @@ public class ObserverSection extends AbstractPropertySection implements
 								for (IConfigurationElement configO : configC
 										.getChildren("observer")) {
 
-									VisualizationViewPart viewPart = (VisualizationViewPart) getPart();
+									ActionRegistry actionRegistry = (ActionRegistry) getPart()
+											.getAdapter(ActionRegistry.class);
 
-									String oID = configO.getAttribute("id");
-									IAction action = viewPart
-											.getActionRegistry().getAction(
-													"de.bmotionstudio.core.observerAction."
-															+ oID);
+									if (actionRegistry != null) {
 
-									// TODO: Get correct name of observer
-									String name = oID;
-									
-									action.setText(name);
+										String oID = configO.getAttribute("id");
+										IAction action = actionRegistry
+												.getAction("de.bmotionstudio.core.observerAction."
+														+ oID);
 
-									handleObserverMenu.add(action);
+										// TODO: Get correct name of observer
+										String name = oID;
 
+										action.setText(name);
+
+										handleObserverMenu.add(action);
+
+									}
 								}
 
 							}

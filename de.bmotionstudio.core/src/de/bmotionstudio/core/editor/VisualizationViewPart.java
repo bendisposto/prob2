@@ -142,6 +142,10 @@ public class VisualizationViewPart extends ViewPart implements
 		if (type == IPropertySheetEntry.class) {
 			return new CustomSortPropertySheetEntry(getCommandStack());
 		}
+		
+		if (type == ActionRegistry.class) {
+			return getActionRegistry();
+		}
 
 		return super.getAdapter(type);
 
