@@ -29,7 +29,6 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
 
@@ -54,6 +53,10 @@ import de.prob.model.representation.Variable;
  * @author joy
  * 
  */
+/**
+ * @author joy
+ * 
+ */
 public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
@@ -63,7 +66,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private ICommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
-	private final StateSpaceInfo info;
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
@@ -72,17 +74,19 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private AbstractElement model;
-	private final Map<StateId, Map<IEvalElement, String>> values = new HashMap<StateId, Map<IEvalElement, String>>();
+	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
+
+	private final HashSet<StateId> invariantOk = new HashSet<StateId>();
+	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
+	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
 
 	public final StateId __root;
 
 	@Inject
 	public StateSpace(final IAnimator animator,
-			final DirectedMultigraphProvider graphProvider,
-			final StateSpaceInfo info) {
+			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		this.animator = animator;
-		this.info = info;
 		__root = new StateId("root", "1", this);
 		addVertex(__root);
 		states.put(__root.getId(), __root);
@@ -100,7 +104,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param state
 	 */
-	public void explore(final StateId state) {
+	public String explore(final StateId state) {
 		if (!containsVertex(state)) {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
@@ -109,7 +113,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		final ExploreStateCommand command = new ExploreStateCommand(
 				state.getId());
 		animator.execute(command);
-		info.add(state, command);
+		extractInformation(state, command);
 
 		explored.add(state);
 		final List<OpInfo> enabledOperations = command.getEnabledOperations();
@@ -127,25 +131,59 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				addEdge(states.get(op.src), states.get(op.dest), op);
 			}
 		}
-
-		// Testing!!!
-		// if (!state.getId().equals("root")) {
-		// evaluateIFormulas(state);
-		// }
-		getInfo().add(state, command);
+		evaluateFormulas(state);
+		return toString();
 	}
 
-	public void explore(final String state) {
-		explore(getVertex(state));
+	private void extractInformation(final StateId state,
+			final ExploreStateCommand command) {
+		operationsWithTimeout.put(state, command.getOperationsWithTimeout());
+		if (command.isInvariantOk()) {
+			invariantOk.add(state);
+		}
+		if (command.isTimeoutOccured()) {
+			timeoutOccured.add(state);
+		}
 	}
 
-	public void explore(final int i) {
+	public String explore(final String state) {
+		return explore(getVertex(state));
+	}
+
+	public String explore(final int i) {
 		final String si = String.valueOf(i);
-		explore(si);
+		return explore(si);
 	}
 
 	public StateId getVertex(final String key) {
 		return states.get(key);
+	}
+
+	/**
+	 * Explore state if not explored and return it.
+	 * 
+	 * @param state
+	 * @return
+	 */
+	public StateId getState(final StateId state) {
+		if (!isExplored(state)) {
+			explore(state);
+		}
+		return state;
+	}
+
+	/**
+	 * Get the target State for given operation, explore it, and return it.
+	 * 
+	 * @param op
+	 * @return
+	 */
+	public StateId getState(final OpInfo op) {
+		final StateId edgeTarget = getEdgeTarget(op);
+		if (!isExplored(edgeTarget)) {
+			explore(edgeTarget);
+		}
+		return edgeTarget;
 	}
 
 	/**
@@ -195,8 +233,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return outDegreeOf(state) == 0;
 	}
 
-	public boolean isDeadlock(final String state) {
-		return isDeadlock(states.get(state));
+	public boolean hasInvariantViolation(final StateId state) {
+		if (!isExplored(state)) {
+			explore(state);
+		}
+		return !invariantOk.contains(state);
 	}
 
 	/**
@@ -212,49 +253,87 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return explored.contains(state);
 	}
 
-	// EVALUATE PART OF STATESPACE
+	// EVALUATE FORMULAS
 
 	/**
-	 * Adds an expression or predicate to the list of user formulas. This
-	 * expression or predicate is evaluated and the result is added to the map
-	 * of variables in the info object.
+	 * The method eval takes a stateId and a list of formulas and returns a list
+	 * of EvaluationResults for the given formulas. It first checks to see if
+	 * any of the formulas have cached values for the given state and then, if
+	 * there are formulas that have not yet been calculated, it contacts Prolog
+	 * to get the remaining values.
 	 * 
-	 * @param formula
-	 * @throws BException
+	 * @param stateId
+	 * @param code
+	 * @return
 	 */
-	public void addUserFormula(final IEvalElement formula) {
-		formulaRegistry.put(formula, new HashSet<Object>());
-		subscribe(this, formula);
-	}
-
 	public List<EvaluationResult> eval(final StateId stateId,
 			final List<IEvalElement> code) {
 		if (!containsVertex(stateId)) {
 			throw new IllegalArgumentException("state does not exist");
 		}
-
 		if (code.isEmpty()) {
 			return new ArrayList<EvaluationResult>();
 		}
 
-		final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-				code, stateId.getId(), model);
-		execute(command);
+		// Check to see if there are any cached results for the given StateId
+		Map<IEvalElement, EvaluationResult> map = values.get(stateId);
+		if (map == null) {
+			map = new HashMap<IEvalElement, EvaluationResult>();
+		}
 
-		final List<EvaluationResult> values = command.getValues();
+		// Filter out any EvalElements that have already been calculated
+		Set<IEvalElement> calculated = map.keySet();
+		List<IEvalElement> toEval = new ArrayList<IEvalElement>();
+		for (IEvalElement iEvalElement : code) {
+			if (!calculated.contains(iEvalElement)) {
+				toEval.add(iEvalElement);
+			}
+		}
+
+		// If there are formulas for which no value has been calculated, send
+		// them to prolog to get the results
+		List<EvaluationResult> fromProlog;
+		if (!toEval.isEmpty()) {
+			final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
+					toEval, stateId.getId(), model);
+			execute(command);
+
+			fromProlog = command.getValues();
+		} else {
+			fromProlog = new ArrayList<EvaluationResult>();
+		}
+
+		// Merge the calculated results from Prolog with the cached results for
+		// the desired list
+		final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
+		for (IEvalElement iEvalElement : code) {
+			if (calculated.contains(iEvalElement)) {
+				values.add(map.get(iEvalElement));
+			} else {
+				values.add(fromProlog.get(toEval.indexOf(iEvalElement)));
+			}
+		}
 
 		return values;
 
 	}
 
+	/**
+	 * The method evaluateFormulas calculates all of the subscribed formulas for
+	 * the given state and caches them.
+	 * 
+	 * @param state
+	 */
 	public void evaluateFormulas(final StateId state) {
-		if (state.getId().equals("root")) {
+		if (!canBeEvaluated(state)) {
 			return;
 		}
 		final Set<IEvalElement> formulas = formulaRegistry.keySet();
 		final List<IEvalElement> toEvaluate = new ArrayList<IEvalElement>();
-		final HashMap<IEvalElement, String> valueMap = new HashMap<IEvalElement, String>();
+		Map<IEvalElement, EvaluationResult> valueMap = new HashMap<IEvalElement, EvaluationResult>();
 
+		// Check to see which formulas have subscribers. These are the ones that
+		// will be calculated
 		for (final IEvalElement iEvalElement : formulas) {
 			if (!formulaRegistry.get(iEvalElement).isEmpty()) {
 				toEvaluate.add(iEvalElement);
@@ -265,24 +344,27 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		assert results.size() == toEvaluate.size();
 		if (results != null) {
 			for (int i = 0; i < results.size(); i++) {
-				valueMap.put(toEvaluate.get(i), results.get(i).value);
+				valueMap.put(toEvaluate.get(i), results.get(i));
 			}
 		}
 		values.put(state, valueMap);
 	}
 
-	public Map<IEvalElement, String> valuesAt(final String stateId) {
-		return valuesAt(getVertex(stateId));
-	}
-
-	public Map<IEvalElement, String> valuesAt(final StateId stateId) {
+	/**
+	 * Calculated the registered formulas at the given state and returns the
+	 * cached values
+	 * 
+	 * @param stateId
+	 * @return
+	 */
+	public Map<IEvalElement, EvaluationResult> valuesAt(final StateId stateId) {
 		if (canBeEvaluated(stateId)) {
 			evaluateFormulas(stateId);
 		}
 		if (values.containsKey(stateId)) {
 			return values.get(stateId);
 		}
-		return new HashMap<IEvalElement, String>();
+		return new HashMap<IEvalElement, EvaluationResult>();
 	}
 
 	private boolean canBeEvaluated(final StateId stateId) {
@@ -294,6 +376,43 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 		return true;
 	}
+
+	/**
+	 * If a class is interested in having a particular formula calculated and
+	 * cached whenever a new state is explored, then they "subscribe" to that
+	 * formula with a reference to themselves.
+	 * 
+	 * @param subscriber
+	 * @param formulaOfInterest
+	 */
+	public void subscribe(final Object subscriber,
+			final IEvalElement formulaOfInterest) {
+		if (formulaRegistry.containsKey(formulaOfInterest)) {
+			formulaRegistry.get(formulaOfInterest).add(subscriber);
+		} else {
+			HashSet<Object> subscribers = new HashSet<Object>();
+			subscribers.add(subscriber);
+			formulaRegistry.put(formulaOfInterest, subscribers);
+		}
+	}
+
+	/**
+	 * If a subscribed class is no longer interested in the value of a
+	 * particular formula, then they can unsubscribe to that formula
+	 * 
+	 * @param subscriber
+	 * @param formulaOfInterest
+	 */
+	public void unsubscribe(final Object subscriber,
+			final IEvalElement formulaOfInterest) {
+		if (formulaRegistry.containsKey(formulaOfInterest)) {
+			final Set<Object> subscribers = formulaRegistry
+					.get(formulaOfInterest);
+			subscribers.remove(subscriber);
+		}
+	}
+
+	// ANIMATOR
 
 	@Override
 	public void execute(final ICommand command) {
@@ -330,7 +449,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 	}
 
-	// INFORMATION ABOUT THE STATE
+	// METHODS TO MAKE THE INTERACTION WITH THE GROOVY SHELL EASIER
 	@Override
 	public String toString() {
 		String result = "";
@@ -339,11 +458,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public String printInfo() {
-		return getInfo().toString();
-	}
-
-	public boolean isOutEdge(final StateId sId, final OpInfo oId) {
-		return outgoingEdgesOf(sId).contains(oId);
+		String result = "";
+		result += "Formulas: \n" + values.toString() + "\n";
+		result += "Invariants Ok: \n  " + invariantOk.toString() + "\n";
+		result += "Timeout Occured: \n  " + timeoutOccured.toString() + "\n";
+		result += "Operations With Timeout: \n  "
+				+ operationsWithTimeout.toString() + "\n";
+		return result;
 	}
 
 	public HashMap<String, StateId> getStates() {
@@ -354,45 +475,46 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return ops;
 	}
 
-	public StateSpaceInfo getInfo() {
-		return info;
-	}
-
-	public StateId getState(final StateId state) {
-		if (!isExplored(state)) {
-			explore(state);
-		}
-		return state;
-	}
-
-	public StateId getState(final OpInfo op) {
-		final StateId edgeTarget = getEdgeTarget(op);
-		if (!isExplored(edgeTarget)) {
-			explore(edgeTarget);
-		}
-		return edgeTarget;
-	}
-
 	public String printOps(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
 		final Collection<OpInfo> opIds = outgoingEdgesOf(state);
+		Set<String> withTO = operationsWithTimeout.get(state);
+
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.id + ": " + opId.toString() + "\n");
+			sb.append("  " + opId.id + ": " + opId.toString());
+			if (withTO.contains(opId.id)) {
+				sb.append(" (WITH TIMEOUT)");
+			}
+			sb.append("\n");
 		}
 		return sb.toString();
 	}
 
 	public String printState(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("Current State Id: " + state + "\n");
-		final HashMap<String, String> currentState = getInfo().getState(state);
+
+		explore(state);
+
+		sb.append("STATE: " + state + "\n\n");
+		sb.append("VALUES:\n");
+		Map<IEvalElement, EvaluationResult> currentState = values.get(state);
 		if (currentState != null) {
-			final Set<Entry<String, String>> entrySet = currentState.entrySet();
-			for (final Entry<String, String> entry : entrySet) {
-				sb.append("  " + entry.getKey() + " -> " + entry.getValue()
-						+ "\n");
+			final Set<Entry<IEvalElement, EvaluationResult>> entrySet = currentState
+					.entrySet();
+			for (final Entry<IEvalElement, EvaluationResult> entry : entrySet) {
+				sb.append("  " + entry.getKey().getCode() + " -> "
+						+ entry.getValue().toString() + "\n");
 			}
+		}
+		sb.append("\nINVARIANT: ");
+		if (invariantOk.contains(state)) {
+			sb.append(" OK\n");
+		} else {
+			sb.append(" KO\n");
+		}
+		if (timeoutOccured.contains(state)) {
+			sb.append("\nTIMEOUT OCCURED\n");
 		}
 		return sb.toString();
 	}
@@ -422,40 +544,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	public void setModel(final AbstractElement model) {
 		this.model = model;
+
 		Set<Machine> machines = model.getChildrenOfType(Machine.class);
 		for (Machine machine : machines) {
 			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
 				subscribe(this, variable.getExpression());
-			}
-			for (Invariant invariant : machine
-					.getChildrenOfType(Invariant.class)) {
-				subscribe(this, invariant.getPredicate());
 			}
 		}
 	}
 
 	public AbstractElement getModel() {
 		return model;
-	}
-
-	public void subscribe(final Object subscriber,
-			final IEvalElement formulaOfInterest) {
-		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			formulaRegistry.get(formulaOfInterest).add(subscriber);
-		} else {
-			HashSet<Object> subscribers = new HashSet<Object>();
-			subscribers.add(subscriber);
-			formulaRegistry.put(formulaOfInterest, subscribers);
-		}
-	}
-
-	public void unsubscribe(final Object subscriber,
-			final IEvalElement formulaOfInterest) {
-		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			final Set<Object> subscribers = formulaRegistry
-					.get(formulaOfInterest);
-			subscribers.remove(subscriber);
-		}
 	}
 
 	public Object asType(final Class<?> className) {

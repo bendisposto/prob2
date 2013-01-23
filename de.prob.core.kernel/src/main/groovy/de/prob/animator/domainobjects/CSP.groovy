@@ -47,4 +47,17 @@ class CSP implements IEvalElement {
 	public String getKind() {
 		return "csp";
 	}
+
+	@Override
+	public String toString() {
+		return code;
+	}
+
+	@Override
+	public boolean equals(final Object that) {
+		if (that instanceof CSP) {
+			return ((CSP) that).getCode().equals(this.getCode());
+		}
+		return false;
+	}
 }
