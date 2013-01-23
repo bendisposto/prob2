@@ -1,5 +1,7 @@
 package de.prob.ui.stateview;
 
+import java.util.Set;
+
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -13,9 +15,13 @@ import org.eclipse.ui.part.ViewPart;
 import com.google.inject.Injector;
 
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.Invariant;
+import de.prob.model.representation.Machine;
+import de.prob.model.representation.Variable;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 /**
@@ -149,6 +155,21 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 
 	private void updateModelInfo(final AbstractElement model) {
 		currentModel = model;
-		if (!viewer.getTree().isDisposed()) viewer.setInput(model);
+		StateSpace s = currentHistory.getStatespace();
+
+		Set<Machine> machines = model.getChildrenOfType(Machine.class);
+		for (Machine machine : machines) {
+			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
+				s.subscribe(this, variable.getExpression());
+			}
+			for (Invariant invariant : machine
+					.getChildrenOfType(Invariant.class)) {
+				s.subscribe(this, invariant.getPredicate());
+			}
+		}
+
+		if (!viewer.getTree().isDisposed()) {
+			viewer.setInput(model);
+		}
 	}
 }

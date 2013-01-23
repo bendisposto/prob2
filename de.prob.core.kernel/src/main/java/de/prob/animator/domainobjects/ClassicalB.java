@@ -58,7 +58,8 @@ public class ClassicalB implements IEvalElement {
 	}
 
 	@Override
-	public void printProlog(final IPrologTermOutput pout, AbstractElement m) {
+	public void printProlog(final IPrologTermOutput pout,
+			final AbstractElement m) {
 		final ASTProlog prolog = new ASTProlog(pout, null);
 		if (ast.getEOF() == null) {
 			ast.setEOF(new EOF());
@@ -71,6 +72,14 @@ public class ClassicalB implements IEvalElement {
 		final PrettyPrinter prettyPrinter = new PrettyPrinter();
 		predicate.apply(prettyPrinter);
 		return prettyPrinter.getPrettyPrint();
+	}
+
+	@Override
+	public boolean equals(final Object that) {
+		if (that instanceof ClassicalB) {
+			return ((ClassicalB) that).getCode().equals(this.getCode());
+		}
+		return false;
 	}
 
 }

@@ -57,6 +57,10 @@ public class StateSpaceGraph {
 		return graph.vertexSet();
 	}
 
+	public boolean isOutEdge(final StateId sId, final OpInfo oId) {
+		return outgoingEdgesOf(sId).contains(oId);
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

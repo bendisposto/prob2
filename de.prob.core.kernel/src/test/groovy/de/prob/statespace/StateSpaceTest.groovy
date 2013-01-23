@@ -19,7 +19,7 @@ class StateSpaceTest extends Specification {
 
 		doThrow(new ProBError("XXX")).when(mock).execute(any(Object.class));
 
-		s = new StateSpace(mock, new DirectedMultigraphProvider(), new StateSpaceInfo())
+		s = new StateSpace(mock, new DirectedMultigraphProvider())
 
 		def states = [
 			new StateId("1", "lorem",s),
