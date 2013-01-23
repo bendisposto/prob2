@@ -481,7 +481,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				+ " was not found");
 	}
 
-	public Object minus(final Object that) {
+	public Object getAt(final Object that) {
 		StateId id = null;
 		if (that instanceof String) {
 			id = getVertex((String) that);

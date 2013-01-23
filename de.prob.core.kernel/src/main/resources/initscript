@@ -15,6 +15,13 @@ String.metaClass.asType = { Class type ->
        oldStringAsType.invoke(delegate, [type] as Class[])
 }
 
+ArrayList.metaClass.to { Class type ->
+	def c = []
+	if (type == ClassicalB ) delegate.each { c << (it as ClassicalB) }
+	if (type == EventB ) delegate.each { c << (it as EventB) }
+	if (type == CSP) delegate.each { c << (it as CSP) }
+	return c
+}
 
 ArrayList.metaClass.asType = { Class type -> 
 		if (type == Tuple) return new Tuple(delegate[0],delegate[1]) 
