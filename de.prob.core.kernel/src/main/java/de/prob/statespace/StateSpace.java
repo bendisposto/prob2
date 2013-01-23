@@ -238,7 +238,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 
 		final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-				code, stateId.getId(), model);
+				code, stateId.getId());
 		execute(command);
 
 		final List<EvaluationResult> values = command.getValues();
