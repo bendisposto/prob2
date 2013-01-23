@@ -70,8 +70,10 @@ public class EventBTranslator {
 					.getElementName());
 			mainComponent = translateMachine(scMachineRoot);
 		}
-		if (root instanceof ISCContextRoot) {
-			mainComponent = translateContext((ISCContextRoot) root);
+		if (id.equals("org.eventb.core.contextFile")) {
+			ISCContextRoot scContextRoot = eventBProject.getSCContextRoot(root
+					.getElementName());
+			mainComponent = translateContext(scContextRoot);
 		}
 	}
 
