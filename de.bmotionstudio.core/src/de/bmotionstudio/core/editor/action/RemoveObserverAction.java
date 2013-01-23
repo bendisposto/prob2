@@ -6,25 +6,28 @@
 
 package de.bmotionstudio.core.editor.action;
 
-import org.eclipse.gef.ui.actions.WorkbenchPartAction;
+import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.bmotionstudio.core.editor.command.RemoveObserverCommand;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.observer.Observer;
 
-public class RemoveObserverAction extends WorkbenchPartAction {
+public class RemoveObserverAction extends SelectionAction {
 
 	private Observer observer;
 	private BControl control;
-
-	public RemoveObserverAction(IWorkbenchPart workbenchPart) {
-		super(workbenchPart);
+	
+	public RemoveObserverAction(IWorkbenchPart part) {
+		super(part);
+		setLazyEnablementCalculation(true);
 	}
 
 	@Override
 	protected boolean calculateEnabled() {
-		return true;
+		if (observer != null && control != null)
+			return true;
+		return false;
 	}
 
 	public void run() {

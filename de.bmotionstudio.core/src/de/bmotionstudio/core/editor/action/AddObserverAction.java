@@ -40,7 +40,9 @@ public class AddObserverAction extends SelectionAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		return true;
+		if (id != null)
+			return true;
+		return false;
 	}
 
 	@Override
