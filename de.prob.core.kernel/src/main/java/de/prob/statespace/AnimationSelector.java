@@ -22,6 +22,11 @@ public class AnimationSelector implements IAnimationListener {
 		}
 	}
 
+	public void unregisterHistoryChangeListener(
+			final IHistoryChangeListener listener) {
+		listeners.remove(listener);
+	}
+	
 	@Override
 	public void currentStateChanged(final History oldHistory,
 			final History newHistory) {

@@ -58,13 +58,13 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 			BControl c = (BControl) getModel();
 
 			for (BControl control : c.getChildren()) {
-				if (BMotionEditorPlugin.getControlServices()
+				if (BMotionEditorPlugin.getControlServicesClass()
 						.get(control.getClass()).showInOutlineView())
 					toShowElements.add(control);
 				List<BConnection> sourceConnections = control
 						.getSourceConnections();
 				for (BConnection con : sourceConnections) {
-					if (BMotionEditorPlugin.getControlServices()
+					if (BMotionEditorPlugin.getControlServicesClass()
 							.get(con.getClass()).showInOutlineView()
 							&& !toShowElements.contains(con))
 						toShowElements.add(con);
@@ -72,7 +72,7 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 				List<BConnection> targetConnections = control
 						.getTargetConnections();
 				for (BConnection con : targetConnections) {
-					if (BMotionEditorPlugin.getControlServices()
+					if (BMotionEditorPlugin.getControlServicesClass()
 							.get(con.getClass()).showInOutlineView()
 							&& !toShowElements.contains(con))
 						toShowElements.add(con);

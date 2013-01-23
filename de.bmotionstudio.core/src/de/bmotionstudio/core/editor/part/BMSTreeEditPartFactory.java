@@ -27,7 +27,7 @@ public class BMSTreeEditPartFactory implements EditPartFactory {
 
 			BControl control = (BControl) model;
 
-			IBControlService service = BMotionEditorPlugin.getControlServices()
+			IBControlService service = BMotionEditorPlugin.getControlServicesClass()
 					.get(control.getClass());
 			part = service.createTreeEditPart();
 

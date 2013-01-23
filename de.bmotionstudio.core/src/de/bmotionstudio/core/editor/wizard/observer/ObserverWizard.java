@@ -52,7 +52,7 @@ public abstract class ObserverWizard extends TitleAreaDialog {
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		PlatformUI.getWorkbench().getHelpSystem()
-				.setHelp(newShell, observer.getID());
+				.setHelp(newShell, observer.getClass().getName());
 	}
 
 	public BControl getControl() {

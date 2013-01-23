@@ -20,7 +20,6 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.CellEditorActionHandler;
 
@@ -101,13 +100,13 @@ public class TextEditManager extends DirectEditManager {
 		// Hook the cell editor's copy/paste actions to the actionBars so that
 		// they can
 		// be invoked via keyboard shortcuts.
-		actionBars = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				.getActivePage().getActiveEditor().getEditorSite()
-				.getActionBars();
-		saveCurrentActions(actionBars);
-		actionHandler = new CellEditorActionHandler(actionBars);
-		actionHandler.addCellEditor(getCellEditor());
-		actionBars.updateActionBars();
+		// actionBars = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+		// .getActivePage().getActiveEditor().getEditorSite()
+		// .getActionBars();
+		// saveCurrentActions(actionBars);
+		// actionHandler = new CellEditorActionHandler(actionBars);
+		// actionHandler.addCellEditor(getCellEditor());
+		// actionBars.updateActionBars();
 	}
 
 	private void restoreSavedActions(IActionBars actionBars) {
@@ -122,18 +121,18 @@ public class TextEditManager extends DirectEditManager {
 		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redo);
 	}
 
-	private void saveCurrentActions(IActionBars actionBars) {
-		copy = actionBars.getGlobalActionHandler(ActionFactory.COPY.getId());
-		paste = actionBars.getGlobalActionHandler(ActionFactory.PASTE.getId());
-		delete = actionBars
-				.getGlobalActionHandler(ActionFactory.DELETE.getId());
-		selectAll = actionBars.getGlobalActionHandler(ActionFactory.SELECT_ALL
-				.getId());
-		cut = actionBars.getGlobalActionHandler(ActionFactory.CUT.getId());
-		find = actionBars.getGlobalActionHandler(ActionFactory.FIND.getId());
-		undo = actionBars.getGlobalActionHandler(ActionFactory.UNDO.getId());
-		redo = actionBars.getGlobalActionHandler(ActionFactory.REDO.getId());
-	}
+	// private void saveCurrentActions(IActionBars actionBars) {
+	// copy = actionBars.getGlobalActionHandler(ActionFactory.COPY.getId());
+	// paste = actionBars.getGlobalActionHandler(ActionFactory.PASTE.getId());
+	// delete = actionBars
+	// .getGlobalActionHandler(ActionFactory.DELETE.getId());
+	// selectAll = actionBars.getGlobalActionHandler(ActionFactory.SELECT_ALL
+	// .getId());
+	// cut = actionBars.getGlobalActionHandler(ActionFactory.CUT.getId());
+	// find = actionBars.getGlobalActionHandler(ActionFactory.FIND.getId());
+	// undo = actionBars.getGlobalActionHandler(ActionFactory.UNDO.getId());
+	// redo = actionBars.getGlobalActionHandler(ActionFactory.REDO.getId());
+	// }
 
 	private void updateScaledFont(double zoom) {
 		if (cachedZoom == zoom)

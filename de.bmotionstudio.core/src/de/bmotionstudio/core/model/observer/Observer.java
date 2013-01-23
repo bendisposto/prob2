@@ -6,8 +6,6 @@
 
 package de.bmotionstudio.core.model.observer;
 
-import java.util.UUID;
-
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
@@ -30,10 +28,10 @@ import de.bmotionstudio.core.model.control.BControl;
 public abstract class Observer extends PropertyChangeSupportObject implements
 		IObserver {
 
-	private String identifier;
+	private String name;
 	
 	public Observer() {
-		this.identifier = UUID.randomUUID().toString();
+		this.name = getType();
 	}
 	
 	protected Object readResolve() {
@@ -58,18 +56,14 @@ public abstract class Observer extends PropertyChangeSupportObject implements
 	 */
 	public abstract ObserverWizard getWizard(Shell shell, BControl control);
 
-	public String getIdentifier() {
-		return identifier;
+	public String getName() {
+		return name;
 	}
 
-	public void setIdentifier(String identifier) {
-		String oldVal = this.identifier;
-		this.identifier = identifier;
-		firePropertyChange("identifier", oldVal, identifier);
-	}
-	
-	public String getID() {
-		return getClass().getName();
+	public void setName(String name) {
+		String oldVal = this.name;
+		this.name = name;
+		firePropertyChange("name", oldVal, name);
 	}
 	
 	public String getDescription() {

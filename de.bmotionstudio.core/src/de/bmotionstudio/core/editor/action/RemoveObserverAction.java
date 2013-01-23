@@ -32,10 +32,7 @@ public class RemoveObserverAction extends WorkbenchPartAction {
 	}
 
 	public RemoveObserverCommand createRemoveObserverCommand() {
-		RemoveObserverCommand command = new RemoveObserverCommand();
-		command.setControl(this.control);
-		command.setObserver(this.observer);
-		return command;
+		return new RemoveObserverCommand(this.observer, this.control);
 	}
 
 	public void setControl(BControl control) {

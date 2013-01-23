@@ -27,7 +27,7 @@ public class BMSEditPartFactory implements EditPartFactory {
 		if (control instanceof Visualization) {
 			part = new VisualizationPart();
 		} else {
-			IBControlService service = BMotionEditorPlugin.getControlServices()
+			IBControlService service = BMotionEditorPlugin.getControlServicesClass()
 					.get(control.getClass());
 			if (service != null)
 				part = service.createEditPart();

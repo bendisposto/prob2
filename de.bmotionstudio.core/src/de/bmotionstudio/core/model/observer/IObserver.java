@@ -22,14 +22,12 @@ public interface IObserver {
 	 */
 	public void check(History history, BControl control);
 	
-	public String getIdentifier();
+	public String getName();
 	
-	public void setIdentifier(String identifier);
+	public void setName(String name);
 	
 	public String getDescription();
-	
-	public String getID();
-	
-	public String getName();
+
+	public String getType();
 	
 }

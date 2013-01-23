@@ -182,4 +182,8 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 		super.dispose();
 	}
 
+	public VisualizationViewPart getViewPart() {
+		return viewPart;
+	}
+	
 }

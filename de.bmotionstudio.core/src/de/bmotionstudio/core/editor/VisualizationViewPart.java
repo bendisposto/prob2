@@ -54,16 +54,19 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.eclipse.ui.views.properties.IPropertySheetEntry;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 
 import com.google.inject.Injector;
 
-import de.bmotionstudio.core.editor.action.CopyAction;
 import de.bmotionstudio.core.editor.action.AddObserverAction;
+import de.bmotionstudio.core.editor.action.CopyAction;
 import de.bmotionstudio.core.editor.action.PasteAction;
 import de.bmotionstudio.core.editor.part.BMSEditPartFactory;
 import de.bmotionstudio.core.editor.view.library.AttributeTransferDropTargetListener;
 import de.bmotionstudio.core.editor.view.outline.BMotionOutlinePage;
+import de.bmotionstudio.core.editor.view.property.BMotionPropertySheetPage;
 import de.bmotionstudio.core.model.BMotionRuler;
 import de.bmotionstudio.core.model.Simulation;
 import de.bmotionstudio.core.model.VisualizationView;
@@ -75,7 +78,8 @@ import de.prob.statespace.IHistoryChangeListener;
 import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
-		CommandStackListener, PropertyChangeListener, IHistoryChangeListener {
+		CommandStackListener, PropertyChangeListener, IHistoryChangeListener,
+		ITabbedPropertySheetPageContributor {
 
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
 	
@@ -126,13 +130,21 @@ public class VisualizationViewPart extends ViewPart implements
 
 		// Adapter for property page
 		if (type == IPropertySheetPage.class) {
-			BMotionPropertyPage page = new BMotionPropertyPage(
-					getCommandStack(), getActionRegistry().getAction(
-							ActionFactory.UNDO.getId()), getActionRegistry()
-							.getAction(ActionFactory.REDO.getId()));
-			page.setRootEntry(new CustomSortPropertySheetEntry(
-					getCommandStack()));
-			return page;
+			// BMotionPropertyPage page = new BMotionPropertyPage(
+			// getCommandStack(), getActionRegistry().getAction(
+			// ActionFactory.UNDO.getId()), getActionRegistry()
+			// .getAction(ActionFactory.REDO.getId()));
+			// page.setRootEntry(new CustomSortPropertySheetEntry(
+			// getCommandStack()));
+			return new BMotionPropertySheetPage(this);
+		}
+		
+		if (type == IPropertySheetEntry.class) {
+			return new CustomSortPropertySheetEntry(getCommandStack());
+		}
+		
+		if (type == ActionRegistry.class) {
+			return getActionRegistry();
 		}
 
 		return super.getAdapter(type);
@@ -267,18 +279,13 @@ public class VisualizationViewPart extends ViewPart implements
 
 				if ("observer".equals(configurationElement.getName())) {
 
-					String observerClassName = configurationElement
-							.getAttribute("class");
-
+					String oID = configurationElement.getAttribute("id");
 					action = new AddObserverAction(this);
-					action.setId("de.bmotionstudio.core.observerAction."
-							+ observerClassName);
-					((AddObserverAction) action)
-							.setClassName(observerClassName);
+					action.setId("de.bmotionstudio.core.observerAction." + oID);
+					((AddObserverAction) action).setObserverId(oID);
 					registry.registerAction(action);
 					getSelectionActions().add(
-							"de.bmotionstudio.core.observerAction."
-									+ observerClassName);
+							"de.bmotionstudio.core.observerAction." + oID);
 
 				}
 
@@ -647,6 +654,11 @@ public class VisualizationViewPart extends ViewPart implements
 			collectAllBControls(allBControls, bcontrol);
 		}
 
+	}
+
+	@Override
+	public String getContributorId() {
+		return getSite().getId();
 	}
 
 }
