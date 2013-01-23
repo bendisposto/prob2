@@ -35,6 +35,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.ISimulationListener;
+import de.bmotionstudio.core.editor.action.AddVisualizationViewAction;
 import de.bmotionstudio.core.model.Simulation;
 import de.bmotionstudio.core.model.VisualizationView;
 
