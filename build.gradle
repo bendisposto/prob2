@@ -16,9 +16,6 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.2'
 }
 
-test {
-	ignoreFailures=true
-}
 
 
 project(':de.prob.core.rodin'){

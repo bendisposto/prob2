@@ -25,9 +25,7 @@ repositories {
     } 
 }
 
-test {
-  ignoreFailures=true
-}
+
 
 
 configurations.all {
