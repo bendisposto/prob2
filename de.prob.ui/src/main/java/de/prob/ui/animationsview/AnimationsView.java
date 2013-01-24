@@ -34,6 +34,8 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	Injector injector = ServletContextListener.INJECTOR;
 	AnimationSelector selector;
 
+	private AnimationViewLabelProvider labelProvider;
+
 	/**
 	 * The constructor.
 	 */
@@ -46,12 +48,14 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent) {
+	@Override
+	public void createPartControl(final Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		createColumns();
 		viewer.setContentProvider(new AnimationsContentProvider());
-		viewer.setLabelProvider(new AnimationViewLabelProvider());
+		labelProvider = new AnimationViewLabelProvider();
+		viewer.setLabelProvider(labelProvider);
 		viewer.setSorter(null);
 		viewer.setInput(getViewSite());
 
@@ -101,6 +105,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
+	@Override
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
@@ -115,6 +120,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 			@Override
 			public void run() {
 				if (!viewer.getTable().isDisposed()) {
+					labelProvider.setCurrentHistory(history);
 					viewer.setInput(selector);
 					packTableColumns();
 				}
@@ -127,17 +133,19 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof History)
+			if (ssel.getFirstElement() instanceof History) {
 				return (History) ssel.getFirstElement();
-			else
+			} else {
 				System.out.println("Selection is: "
 						+ ssel.getFirstElement().getClass());
+			}
 		}
 		return null;
 	}
 
 	private class AVDoubleClickListener implements IDoubleClickListener {
 
+		@Override
 		public void doubleClick(final DoubleClickEvent event) {
 			if (getSelection() != null) {
 				selector.changeCurrentHistory(getSelection());
