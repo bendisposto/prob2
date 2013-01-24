@@ -98,6 +98,10 @@ dependencies {
 	
 }
 
+test {
+    ignoreFailures=true
+}
+
 
 
 eclipse {
