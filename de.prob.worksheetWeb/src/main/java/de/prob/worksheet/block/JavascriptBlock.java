@@ -3,9 +3,13 @@ package de.prob.worksheet.block;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.xml.bind.annotation.XmlType;
+
 import de.prob.worksheet.IWorksheetMenuNode;
 import de.prob.worksheet.WorksheetMenuNode;
 
+
+@XmlType(name="JavascriptBlock")
 public class JavascriptBlock extends DefaultBlock {
 
 	public JavascriptBlock() {
@@ -35,7 +39,7 @@ public class JavascriptBlock extends DefaultBlock {
 
 	@Override
 	public boolean equals(final Object obj) {
-		// TODO Auto-generated method stub
+		// TODO Do we need an overriden default equals method ????
 		return super.equals(obj);
 	}
 

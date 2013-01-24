@@ -3,27 +3,31 @@
 	$.widget("ui.worksheet", {
 		version : "0.1.0",
 		options : {
+			isInitialized:false,
+			sessionId:0,
 			jsUrls : [ "javascripts/libs/jquery-ui-1.9.2/ui/jquery.ui.menubar.js" ],
 			cssUrls : [ "stylesheets/jquery-ui-1.9.2/themes/base/jquery.ui.menubar.css" ],
-			initialized : function(event) {
-				window.console.debug("Event: initialized from worksheet");
-			},
+			initialized : function(event) {},
 			optionsChanged : function(event, options) {
-				window.console.debug("Event: optionsChanged from worksheet: " + options.id);
+				if(!$.browser.msie)
+					window.console.debug("Event: optionsChanged from worksheet: " + options.id);
 			},
 		},
+		//jTODO Blocks[] is not needed;
 		blocks : [],
+		blocksLoading : 0,
 		_create : function() {
 			$("body").lazyLoader();
 			$("body").lazyLoader("loadStyles", this.options.cssUrls);
 			$("body").one("scriptsLoaded", 0, $.proxy(this._create2, this));
 			$("body").lazyLoader("loadScripts", this.options.jsUrls);
+			this.options.isInitialized=false;
 		},
 		_create2 : function() {
-			this.element.uniqueId().addClass("ui-worksheet ui-widget ui-corner-none");
+			this.element.addClass("ui-worksheet ui-widget ui-corner-none");
 
 			this.options.id = this.element.attr("id");
-
+			
 			if (this.options.hasMenu) {
 				var worksheetMenu = null;
 				if (this.options.menu.length > 0) {
@@ -47,16 +51,16 @@
 				});
 
 				if (this.options.blocks.length > 0) {
+					//JTODO Why Backup?
 					var blockOptions = this.options.blocks;
 					this.options.blocks = [];
 					for ( var x = 0; x < blockOptions.length; x++) {
-						this.appendBlock(blockOptions[x]);
+						this.appendBlock(blockOptions[x]);						
 					}
+					
+					
 				}
 			}
-			
-			this._trigger("initialized",0,[]);
-			this._trigger("optionsChanged",0,[this.options]);
 		},
 		createULFromNodeArrayRecursive : function(nodes) {
 			var menu = $("<ul></ul>");
@@ -97,12 +101,14 @@
 				blockOptions.worksheetId = this.options.id;
 				this.insertIntoBlocks(index, blockOptions);
 			}
+			this.blocksLoading++;
 			var block = $("<div></div>");
 			if (this.options.blocks.length > 1) {
 				$(this.element.find(".ui-worksheet-body>.ui-block")[index - 1]).after(block);
 			} else {
 				this.element.find(".ui-worksheet-body").append(block);
 			}
+			block.one("blockinitialized",$.proxy(this.blockLoaded,this));
 			block.block(this.options.blocks[index]);
 			block.bind("blockoptionschanged", $.proxy(function(event, options) {
 				var index=this.getBlockIndexById(options.id);
@@ -112,6 +118,20 @@
 			block.attr("tabindex",index+1);
 			this.element.find(".ui-worksheet-body").sortable("refresh");
 			this._trigger("optionsChanged",0,this.options);
+		},
+		blockLoaded: function(event,id){
+			this.blocksLoading--;
+			if(!this.options.isInitialized && this.blocksLoading==0 && this._blocksInitialized()){
+				this._triggerInitialized();
+				this._trigger("optionsChanged",0,[this.options]);
+			}
+		},
+		_blocksInitialized:function(){
+			for(var x=0;x<this.options.blocks.length;x++){
+				if(!this.options.blocks[x].isInitialized)
+					return false;
+			}
+			return true;
 		},
 		insertIntoBlocks : function(index, element) {
 			this.options.blocks.push(null);
@@ -175,13 +195,13 @@
             delete msg.menu;
             
 			var content = this._addParameter("", "block", $.toJSON(msg));
-			content = this._addParameter(content,"worksheetSessionId", "1");
+			content = this._addParameter(content,"worksheetSessionId", wsid);
 			$.ajax("setBlock", {
 				type : "POST",
 				data : content
 			}).done($.proxy(function(data, status, xhr) {
 				var content = this._addParameter("", "id", blockId);
-	            content = this._addParameter(content, "worksheetSessionId", "1");
+	            content = this._addParameter(content, "worksheetSessionId", wsid);
 	            $.ajax("evaluate", {
 					type : "POST",
 					data : content
@@ -208,6 +228,24 @@
 					+ encodeURIComponent(value);
 			return res;
 		},
+		_destroy : function(){
+			$(".ui-block")
+				.block("destroy")
+				.remove();
+			this.element
+				.empty()
+				.removeClass("ui-worksheet ui-widget ui-corner-none");
+			if(this.element.attr("class")=="")
+				this.element.removeAttr("class");
+			//LazyLoader needs to be destroyed seperatly because it could be needed in future or by other plugins
+		},
+		_triggerInitialized:function(){
+			this.options.isInitialized=true;
+			if(!$.browser.msie){
+				window.console.debug("Event: initialized from worksheet");				
+			}
+			this._trigger("initialized",0,[this.options.id]);
+		}
 
 	});
 }(jQuery));

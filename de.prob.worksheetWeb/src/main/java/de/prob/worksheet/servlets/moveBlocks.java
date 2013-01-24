@@ -11,9 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.prob.worksheet.WorksheetDocument;
 
 /**
@@ -25,15 +26,11 @@ public class moveBlocks extends HttpServlet {
 	 * 
 	 */
 	private static final long	serialVersionUID	= -9079077179155960240L;
+	Logger logger = LoggerFactory.getLogger(moveBlocks.class);
+
 	private WorksheetDocument	doc;
 
-	/**
-	 * 
-	 */
-	@Inject
-	public moveBlocks() {
-		// TODO Auto-generated constructor stub
-	}
+
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -51,6 +48,8 @@ public class moveBlocks extends HttpServlet {
 	@Override
 	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 		// Get Session and needed Attributes
+		logParameters(req);
+		resp.setCharacterEncoding("UTF-8");
 		final HttpSession session = req.getSession();
 		final String wsid = req.getParameter("worksheetSessionID");
 		if (session.isNew()) {
@@ -69,5 +68,15 @@ public class moveBlocks extends HttpServlet {
 
 		// TODO add result msg
 		return;
+	}
+	private void logParameters(HttpServletRequest req){
+		String[] params={"worksheetSessionId","ids","index"};
+		String msg="{ ";
+		for(int x=0;x<params.length;x++){
+			if(x!=0)msg+=" , ";
+			msg+=params[x]+" : "+req.getParameter(params[x]);
+		}
+		msg+=" }";
+		logger.debug(msg);
 	}
 }

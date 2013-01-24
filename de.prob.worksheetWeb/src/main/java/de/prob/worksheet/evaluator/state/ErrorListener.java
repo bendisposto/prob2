@@ -13,7 +13,6 @@ import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.api.IWorksheetAPIListener;
 import de.prob.worksheet.api.IWorksheetEvent;
 import de.prob.worksheet.api.WorksheetErrorEvent;
-import de.prob.worksheet.api.WorksheetOutputEvent;
 import de.prob.worksheet.block.IBlock;
 
 /**

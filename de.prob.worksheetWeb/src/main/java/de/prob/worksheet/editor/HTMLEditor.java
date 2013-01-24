@@ -1,5 +1,9 @@
 package de.prob.worksheet.editor;
 
+import javax.xml.bind.annotation.XmlType;
+
+
+@XmlType(name="HTMLEditor")
 public class HTMLEditor extends DefaultEditor {
 
 	public HTMLEditor() {

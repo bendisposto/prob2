@@ -10,7 +10,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -30,6 +31,9 @@ public class setBlock extends HttpServlet {
 	 */
 	private static final long	serialVersionUID	= -6543934467917126456L;
 
+
+	Logger logger = LoggerFactory.getLogger(setBlock.class);
+	
 	/**
 	 * 
 	 */
@@ -50,7 +54,9 @@ public class setBlock extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-
+		req.setCharacterEncoding("UTF-8");
+		logParameters(req);
+		resp.setCharacterEncoding("UTF-8");
 		final String wsid = req.getParameter("worksheetSessionId");
 		HashMap<String, Object> sessionAttributes=(HashMap<String, Object>) req.getSession().getAttribute(wsid);
 		if(sessionAttributes==null)
@@ -76,5 +82,17 @@ public class setBlock extends HttpServlet {
 		return;
 
 	}
+	
+	private void logParameters(HttpServletRequest req){
+		String[] params={"worksheetSessionId","block"};
+		String msg="{ ";
+		for(int x=0;x<params.length;x++){
+			if(x!=0)msg+=" , ";
+			msg+=params[x]+" : "+req.getParameter(params[x]);
+		}
+		msg+=" }";
+		logger.debug(msg);
+	}
+
 
 }

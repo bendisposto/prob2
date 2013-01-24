@@ -6,11 +6,14 @@ package de.prob.worksheet.editor;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * @author Rene
  * 
  */
-public class DefaultEditor implements IWorksheetEditor {
+@XmlType(name="DefaultEditor")
+public class DefaultEditor extends IWorksheetEditor {
 	private String				HTMLContent;
 	private String				EditorContent	= "";
 	private String				InitFunction;
@@ -48,10 +51,12 @@ public class DefaultEditor implements IWorksheetEditor {
 		this.setContentScript = script;
 	}
 
+	@Override
 	public String getId() {
 		return this.id;
 	}
 
+	@Override
 	public void setId(final String id) {
 		this.id = id;
 	}

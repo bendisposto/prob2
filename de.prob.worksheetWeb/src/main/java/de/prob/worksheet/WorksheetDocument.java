@@ -4,18 +4,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import de.prob.worksheet.block.IBlock;
 
+@XmlRootElement(name="worksheet")
 public class WorksheetDocument {
 
-	private final ArrayList<IBlock>			blocks;
-	private boolean							hasMenu;
-	private boolean							hasBody;
-	private ArrayList<WorksheetMenuNode>	menu;
-	private String							id;
+	private final ArrayList<IBlock> blocks;
+
+	private boolean hasMenu;
+	private boolean hasBody;
+	private ArrayList<WorksheetMenuNode> menu;
+	private String id;
+	private int blockCounter = 0;
 
 	public WorksheetDocument() {
-		this.hasMenu = true;
+		this.hasMenu = false;
 		this.hasBody = true;
 		this.blocks = new ArrayList<IBlock>();
 		this.menu = new ArrayList<WorksheetMenuNode>();
@@ -25,7 +35,7 @@ public class WorksheetDocument {
 		action.addChild(evalThis);
 		this.menu.add(action);
 	}
-
+	@XmlElements(value={@XmlElement(name="block")})
 	public IBlock[] getBlocks() {
 		return this.blocks.toArray(new IBlock[this.blocks.size()]);
 	}
@@ -35,6 +45,7 @@ public class WorksheetDocument {
 		this.blocks.addAll(Arrays.asList(blocks));
 	}
 
+	@XmlTransient
 	public boolean getHasMenu() {
 		return this.hasMenu;
 	}
@@ -43,6 +54,7 @@ public class WorksheetDocument {
 		this.hasMenu = hasMenu;
 	}
 
+	@XmlTransient
 	public boolean getHasBody() {
 		return this.hasBody;
 	}
@@ -50,7 +62,8 @@ public class WorksheetDocument {
 	public void setHasBody(final boolean hasBody) {
 		this.hasBody = hasBody;
 	}
-
+	
+	@XmlTransient
 	public ArrayList<WorksheetMenuNode> getMenu() {
 		return this.menu;
 	}
@@ -59,6 +72,8 @@ public class WorksheetDocument {
 		this.menu = menu;
 	}
 
+	@XmlAttribute(name="id")
+	@XmlID
 	public String getId() {
 		return this.id;
 	}
@@ -68,9 +83,17 @@ public class WorksheetDocument {
 	}
 
 	/*
-	 * Inserts the block at index and shifts the rest 
+	 * Inserts the block at index and shifts the rest
 	 */
-	private int	blockCounter	= 0;
+	@XmlAttribute(name="blockCounter")
+	public int getBlockCounter() {
+		return blockCounter;
+	}
+
+
+	public void setBlockCounter(int blockCounter) {
+		this.blockCounter = blockCounter;
+	}
 
 	public void insertBlock(final int index, final IBlock block) {
 		assert (this.blockCounter < Integer.MAX_VALUE);
@@ -85,14 +108,15 @@ public class WorksheetDocument {
 	public int getBlockIndex(final IBlock block) {
 		final String id = block.getId();
 		for (int x = 0; x < this.blocks.size(); x++) {
-			if (this.blocks.get(x).getId().equals(id)) return x;
+			if (this.blocks.get(x).getId().equals(id))
+				return x;
 		}
 		return -1;
 	}
 
 	public void undoFrom(final int index) {
 		for (int x = this.blocks.size() - 1; x >= 0; x--) {
-			if (this.blocks.get(x).isOutput()) {
+			if (this.blocks.get(x).getOutput()) {
 				continue;
 			}
 			this.blocks.get(x).undo();
@@ -121,12 +145,13 @@ public class WorksheetDocument {
 			final IBlock nblock = this.getBlockById(outputId);
 			this.blocks.remove(nblock);
 		}
-		block.setOutputIds(null);
+		block.setOutputBlockIds(null);
 	}
 
 	public IBlock getBlockById(final String id) {
 		for (int x = 0; x < this.blocks.size(); x++) {
-			if (this.blocks.get(x).getId().equals(id)) return this.blocks.get(x);
+			if (this.blocks.get(x).getId().equals(id))
+				return this.blocks.get(x);
 		}
 		return null;
 	}
@@ -134,7 +159,8 @@ public class WorksheetDocument {
 	public int getBlockIndexById(final String id) {
 		int x = 0;
 		for (final IBlock block : this.blocks) {
-			if (block.getId().equals(id)) return x;
+			if (block.getId().equals(id))
+				return x;
 			x++;
 		}
 		return -1;

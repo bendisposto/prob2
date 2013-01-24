@@ -1,5 +1,9 @@
 package de.prob.worksheet.editor;
 
+import javax.xml.bind.annotation.XmlType;
+
+
+@XmlType(name="HTMLErrorEditor")
 public class HTMLErrorEditor extends DefaultEditor {
 
 	public HTMLErrorEditor() {

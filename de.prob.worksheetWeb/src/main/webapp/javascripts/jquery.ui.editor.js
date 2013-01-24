@@ -3,6 +3,7 @@
 	$.widget("ui.editor", {
 		version : "0.1.0",
 		options : {
+			isInitialized:false,
 			worksheetId : null,
 			html : "<textarea id=\"editorObject\"></textarea>",
 			content : "Testinhalt",
@@ -24,17 +25,18 @@
 			},
 
 			contentChanged : function(event, content) {
-				window.console.debug("Event: contentChanged from Editor");
+				if(!$.browser.msie)
+					window.console.debug("Event: contentChanged from Editor");
 			},
-			initialized : function(event, data) {
-				window.console.debug("Event: initialized from Editor");
-			},
+			initialized : function(event, data) {},
 			optionsChanged : function(event, options) {
-				window.console.debug("Event: optionsChanged from editor: " + options.id);
+				if(!$.browser.msie)
+					window.console.debug("Event: optionsChanged from editor: " + options.id);
 			},
 		},
 
 		_create : function() {
+			this.options.isInitialized=false;
 			$("body").lazyLoader();
 			$("body").lazyLoader("loadStyles", this.options.cssURLs);
 			$("body").one("scriptsLoaded", $.proxy(this._create2, this));
@@ -50,10 +52,13 @@
 			
 			editorContentContainer.append($(this.options.html));
 			this.options=$.recursiveFunctionTest(this.options);
+
 			this.setEditorObject(this.initEditor());
-			this._trigger("initialized", 0, [ this ]);
-			this._trigger("optionsChanged",0,[this.options]);
+			this.initcontent=this.options.content;
 			this.setContent(this.options.content);
+
+			this._triggerInitialized();
+			this._trigger("optionsChanged",0,[this.options]);
 		},
 		_destroy : function() {
 
@@ -65,9 +70,14 @@
 				this.element.removeAttr("class")
 			this.element.removeAttr("id");
 		},
+		initcontent:"",
+		initialSetContent:true,
 		_editorChanged : function() {
+			
 			var content = this.getContent();
-			this._trigger("contentChanged", 0, [ content ]);
+			if(!this.initialSetContent)
+				this._trigger("contentChanged", 0, [ content,content!=this.initcontent ]);
+			this.initialSetContent=false;
 			this._setOptionContent(content);
 		},
 
@@ -118,7 +128,14 @@
 		_setOption :function(key,val){
 			this._super( "_setOption", key, val );
 			this._trigger("optionsChanged",0,this.options);
+		},
+		_triggerInitialized:function(){
+			this.options.isInitialized=true;
+			if(!$.browser.msie)
+				window.console.debug("Event: initialized from Editor");
+			this._trigger("initialized", 0, [ this ]);
 		}
+
 
 	});
 }(jQuery));

@@ -97,9 +97,11 @@ public class SimpleConsoleParser {
 		for (final String[] method : methods) {
 			Method methodInstance = null;
 			try {
-				if (this.apiMethodNamesMap.containsKey(method[0])) {
+				if (method.length>0 && this.apiMethodNamesMap.containsKey(method[0])) {
 					final Class api = this.apiMethodNamesMap.get(method[0]);
 					methodInstance = api.getMethod(method[0], this.toTypeArrayMinusFirst(method));
+				}else{
+					//TODO check if something needs to be done when method.length=0
 				}
 			} catch (final NoSuchMethodException e) {
 				System.err.println("String seems to be an WorksheetApi method but isn't found with this parameters!");

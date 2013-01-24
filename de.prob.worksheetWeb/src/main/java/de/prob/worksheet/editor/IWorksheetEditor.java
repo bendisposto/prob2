@@ -1,72 +1,95 @@
 package de.prob.worksheet.editor;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlValue;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
-@JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "@type")
+@JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
 @JsonSubTypes({ 
 		@Type(value = JavascriptEditor.class, name = "javascript"),
 		@Type(value = HTMLEditor.class, name = "HTMLEditor"),
 		@Type(value = HTMLErrorEditor.class, name = "errorHtml")})
 @JsonIgnoreProperties(ignoreUnknown = true)
-public interface IWorksheetEditor {
+
+@XmlSeeAlso(value={DefaultEditor.class,HTMLEditor.class,HTMLErrorEditor.class,JavascriptEditor.class})
+public abstract class IWorksheetEditor {
 
 	@JsonProperty(value = "html")
-	public String getHTMLContent();
+	@XmlTransient
+	public abstract String getHTMLContent();
 
 	@JsonProperty(value = "content")
-	public String getEditorContent();
+	@XmlValue
+	public abstract String getEditorContent();
 
 	@JsonProperty(value = "init")
-	public String getInitializationFunction();
+	@XmlTransient
+	public abstract String getInitializationFunction();
 
 	@JsonProperty(value = "getContent")
-	public String getGetContentScript();
+	@XmlTransient
+	public abstract String getGetContentScript();
 
 	@JsonProperty(value = "setContent")
-	public String getSetContentScript();
+	@XmlTransient
+	public abstract String getSetContentScript();
 
 	@JsonProperty(value = "destroy")
-	public String getDestroyScript();
+	@XmlTransient
+	public abstract String getDestroyScript();
 
 	@JsonProperty(value = "cssURLs")
-	public String[] getCSSHREFs();
+	@XmlTransient
+	public abstract String[] getCSSHREFs();
 
 	@JsonProperty(value = "jsURLs")
-	public String[] getJavascriptHREFs();
+	@XmlTransient
+	public abstract String[] getJavascriptHREFs();
 
 	@JsonProperty(value = "html")
-	public void setHTMLContent(String htmlContent);
+	public abstract void setHTMLContent(String htmlContent);
 
 	@JsonProperty(value = "content")
-	public void setEditorContent(String editorContent);
+	public abstract void setEditorContent(String editorContent);
 
 	@JsonIgnore
-	public void setInitializationFunction(String initFunction);
+	public abstract void setInitializationFunction(String initFunction);
 
 	@JsonIgnore
-	public void setGetContentScript(String script);
+	public abstract void setGetContentScript(String script);
 
 	@JsonIgnore
-	public void setDestroyScript(String script);
+	public abstract void setDestroyScript(String script);
 
 	@JsonIgnore
-	public void setSetContentScript(String script);
+	public abstract void setSetContentScript(String script);
 
 	@JsonProperty(value = "cssURLs")
-	public void setCSSHREFs(String[] cssHref);
+	public abstract void setCSSHREFs(String[] cssHref);
 
 	@JsonProperty(value = "jsURLs")
-	public void setJavascriptHREFs(String[] javascriptHrefs);
+	public abstract void setJavascriptHREFs(String[] javascriptHrefs);
+	
+	@JsonProperty(value = "id")
+	@XmlAttribute(name="id")
+	@XmlID
+	public abstract String getId();
+	
+	@JsonProperty(value = "id")
+	public abstract void setId(final String id);
 
-	public void addJavascriptHref(String href);
+	public abstract void addJavascriptHref(String href);
 
-	public void addCSSHref(String href);
+	public abstract void addCSSHref(String href);
 }

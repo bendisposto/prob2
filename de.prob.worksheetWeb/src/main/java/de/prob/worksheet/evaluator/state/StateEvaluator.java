@@ -44,8 +44,10 @@ public class StateEvaluator implements IWorksheetEvaluator, IWorksheetAPIListene
 			String errorString="";
 			if(evalObject.methodInstance==null){
 				errorString="Method unknown: "+evalObject.method[0];
-				if(evalObject.method.length>1)
-					errorString+=" with args ["+((Method) evalObject.methodInstance).getParameterTypes()+"]";
+				
+				//FIXME error arguments can produce an exception
+				//if(evalObject.method.length>1)
+				//	errorString+=" with args ["+((Method) evalObject.methodInstance).getParameterTypes()+"]";
 				errorListener.notify(new WorksheetErrorEvent(3001,errorString, true));
 			}
 			if (evalObject.methodInstance instanceof Method) {

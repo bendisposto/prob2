@@ -6,6 +6,8 @@ package de.prob.worksheet.block;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.xml.bind.annotation.XmlType;
+
 import de.prob.worksheet.IWorksheetMenuNode;
 import de.prob.worksheet.WorksheetMenuNode;
 import de.prob.worksheet.editor.IWorksheetEditor;
@@ -15,7 +17,9 @@ import de.prob.worksheet.editor.JavascriptEditor;
  * @author Rene
  * 
  */
-public class DefaultBlock implements IBlock {
+
+@XmlType(name="DefaultBlock")
+public class DefaultBlock extends IBlock {
 
 	public static final String					typeID	= "default";
 
@@ -158,7 +162,7 @@ public class DefaultBlock implements IBlock {
 	}
 
 	@Override
-	public boolean isOutput() {
+	public boolean getOutput() {
 		return this.output;
 	}
 
@@ -173,7 +177,7 @@ public class DefaultBlock implements IBlock {
 	}
 
 	@Override
-	public boolean isMark() {
+	public boolean getMark() {
 		return this.mark;
 	}
 
@@ -193,7 +197,7 @@ public class DefaultBlock implements IBlock {
 	}
 
 	@Override
-	public void setOutputIds(final String[] ids) {
+	public void setOutputBlockIds(final String[] ids) {
 		this.outputBlockIds.clear();
 		if (ids != null) {
 			this.outputBlockIds.addAll(Arrays.asList(ids));

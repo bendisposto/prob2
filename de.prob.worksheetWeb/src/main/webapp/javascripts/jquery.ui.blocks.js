@@ -1,7 +1,6 @@
 (function($, undefined) {
 
-	$
-			.widget(
+	$.widget(
 					"ui.block",
 					{
 						version : "0.1.0",
@@ -9,16 +8,17 @@
 							type : "Javascript",
 							container : "body",
 							role : "block",
-
+							isInitialized:false,
 						// callbacks
 							initialized : function(event, data) {
-								window.console.debug("Event: initialized from Block");
 							},
 							optionsChanged : function(event, options) {
-								window.console.debug("Event: optionsChanged from block: " + options.id);
+								if(!$.browser.msie)
+									window.console.debug("Event: optionsChanged from block: " + options.id);
 							},
 						},
 						_create : function() {
+							this.options.isInitialized=false;
 							this.options=$.recursiveFunctionTest(this.options);
 							this.element
 									.addClass("ui-block ui-widget ui-widget-content ui-corner-all");
@@ -31,36 +31,44 @@
 									.addClass("ui-block-content");
 							this.element.append(blockContentContainer);
 
-							this._setEditor(this.options.editor);
-
+							
 							this.element
 									.append("<div class=\"ui-sort-handle ui-icon ui-icon-arrow-4 ui-widget-content ui-corner-all\"></div>");
+							if(this.options.editor!=null){
+								this._setEditor(this.options.editor);
+							}else{
+								this._triggerInitialized();
+								this._trigger("optionsChanged",0,[this.options]);
+							}
 							this.element.focusin($.proxy(function() {
 								if(this.options.hasMenu){
 									this.element.find(".ui-visible-on-focus").show();
 								}
-								window.console.debug("in");
+								if(!$.browser.msie)
+									window.console.debug("in");
 							},this));
 							this.element.focusout($.proxy(function() {
 								this.element.find(".ui-visible-on-focus").hide();
 								this.syncToServer();
-								window.console.debug("out");
+								if(!$.browser.msie)
+									window.console.debug("out");
 							},this));
 							
 							// TODO give this Block the Focus;
 
 							this.element.focusout();
-							this._trigger("initialized",0,[]);
-							this._trigger("optionsChanged",0,[this.options]);
+							
 						},
 						syncToServer:function(){
 							var msg=jQuery.extend(true, {}, this.options);
 				            delete msg.menu;
 				            
+				            //FIXME syncToServer is called unnecessary some times (eg. when clicking the menu)
 							var content = this._addParameter("", "block", $.toJSON(msg));
-							content = this._addParameter(content,"worksheetSessionId", "1");
+							content = this._addParameter(content,"worksheetSessionId", wsid);
 							$.ajax("setBlock", {
 								type : "POST",
+								contentType: "application/x-www-form-urlencoded;charset=UTF-8",
 								data : content
 							});
 							//TODO add Handling
@@ -132,7 +140,7 @@
 							var content = this.addParameter("", "blocks", $
 									.toJSON(msg));
 							content = this.addParameter(content,
-									"worksheetSessionId", "1");
+									"worksheetSessionId", wsid);
 							$.ajax("blockEval", {
 								type : "POST",
 								data : content
@@ -244,8 +252,20 @@
 								this.element
 										.find(".ui-block-content")
 										.append(newEditor);
+								newEditor.one("editorinitialized",$.proxy(function(){
+									this._triggerInitialized();
+									this._trigger("optionsChanged",0,[this.options]);
+								},this));
 								newEditor.editor(editorOptions);
 								newEditor.bind("editoroptionschanged", $.proxy(function(event, options) {this._editorOptionsChanged(options)}, this));
+								newEditor.one("editorcontentchanged",this._javaSetDirty );
+							}
+								
+						},
+						_javaSetDirty:function(content,dirty){
+							if(typeof setDirty == 'function'){
+								if(dirty) 
+									setDirty(true);
 							}
 						},
 						_editorOptionsChanged:function(options){
@@ -266,7 +286,14 @@
 							res += encodeURIComponent(key) + "="
 									+ encodeURIComponent(value);
 							return res;
+						},
+						_triggerInitialized:function(){
+							this.options.isInitialized=true;
+							if(!$.browser.msie){}
+								window.console.debug("Event: initialized from Block");
+							this._trigger("initialized",0,[this.options.id]);
 						}
+						
 						
 					});
 

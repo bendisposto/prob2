@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
@@ -25,6 +28,8 @@ public class setDocument extends HttpServlet {
 	 * 
 	 */
 	private static final long	serialVersionUID	= 838311906090202227L;
+
+	Logger logger = LoggerFactory.getLogger(setDocument.class);
 
 	/**
 	 * 
@@ -46,7 +51,8 @@ public class setDocument extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-
+		logParameters(req);
+		resp.setCharacterEncoding("UTF-8");
 		// Get Session and needed Attributes
 		final HttpSession session = req.getSession();
 		final String wsid = req.getParameter("worksheetSessionID");
@@ -63,5 +69,17 @@ public class setDocument extends HttpServlet {
 		return;
 
 	}
-
+	
+	private void logParameters(HttpServletRequest req){
+		String[] params={"worksheetSessionId","document"};
+		String msg="{ ";
+		for(int x=0;x<params.length;x++){
+			if(x!=0)msg+=" , ";
+			msg+=params[x]+" : "+req.getParameter(params[x]);
+		}
+		msg+=" }";
+		logger.debug(msg);
+	}
 }
+
+

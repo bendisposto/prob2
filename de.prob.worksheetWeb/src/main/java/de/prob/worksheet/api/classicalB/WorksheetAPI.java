@@ -11,6 +11,8 @@ import de.prob.statespace.History;
 import de.prob.webconsole.ServletContextListener;
 */
 
+
+// TODO remove or update old WorksheetApi to the actual state of development
 public class WorksheetAPI {
 	/*	private final Injector INJECTOR;
 	private FactoryProvider factoryProvider;
@@ -134,7 +136,6 @@ public class WorksheetAPI {
 														
 														*/
 
-	// TODO extend data so that Api Calls can send more complex information
 	public void notifyApiListeners(final int type, final int name, final Object[] data) {
 		final WorksheetAPIListenerEvent event = new WorksheetAPIListenerEvent();
 		event.data = data;

@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
@@ -35,14 +37,8 @@ public class evaluate extends HttpServlet {
 	 * 
 	 */
 	private static final long	serialVersionUID	= -6247147601671174584L;
+	Logger logger = LoggerFactory.getLogger(evaluate.class);
 
-	/**
-	 * 
-	 */
-	@Inject
-	public evaluate() {
-		// TODO Auto-generated constructor stub
-	}
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -57,7 +53,9 @@ public class evaluate extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+		logParameters(req);
 
+		resp.setCharacterEncoding("UTF-8");
 		//initialize session and document
 		final String wsid = req.getParameter("worksheetSessionId");
 		HashMap<String, Object> sessionAttributes=(HashMap<String, Object>) req.getSession().getAttribute(wsid);
@@ -84,7 +82,7 @@ public class evaluate extends HttpServlet {
 		}
 
 		blocks = doc.getBlocksFrom(index);
-		if (blocks[blocks.length - 1].isOutput() || !blocks[blocks.length - 1].getEditor().getEditorContent().trim().equals("")) {
+		if (blocks[blocks.length - 1].getOutput() || !blocks[blocks.length - 1].getEditor().getEditorContent().trim().equals("")) {
 			doc.appendBlock(new JavascriptBlock());
 		}
 		blocks = doc.getBlocksFrom(index);
@@ -96,6 +94,7 @@ public class evaluate extends HttpServlet {
 
 		
 		final ObjectMapper mapper = new ObjectMapper();
+		
 		resp.getWriter().print(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(blocks));
 
 		return;
@@ -103,7 +102,7 @@ public class evaluate extends HttpServlet {
 	}
 
 	private void evaluateBlock(WorksheetDocument doc,final IBlock block, final HttpSession session, final String wsid) {
-		if (block.isOutput()) return;
+		if (block.getOutput()) return;
 
 		final int index = doc.getBlockIndexById(block.getId());
 
@@ -129,5 +128,15 @@ public class evaluate extends HttpServlet {
 			block.addOutputId(outBlock.getId());
 		}
 		return;
+	}
+	private void logParameters(HttpServletRequest req){
+		String[] params={"worksheetSessionId","id"};
+		String msg="{ ";
+		for(int x=0;x<params.length;x++){
+			if(x!=0)msg+=" , ";
+			msg+=params[x]+" : "+req.getParameter(params[x]);
+		}
+		msg+=" }";
+		logger.debug(msg);
 	}
 }
