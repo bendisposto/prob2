@@ -122,6 +122,11 @@ public class EvalstoreEvalCommand implements ICommand {
 			return hasInterruptedOccurred;
 		}
 
+		public boolean isSuccess() {
+			return !hasTimeoutOccurred && !hasInterruptedOccurred
+					&& !result.hasError();
+		}
+
 		public long getResultingStoreId() {
 			return resultingStoreId;
 		}
