@@ -39,23 +39,26 @@ class History {
 		this.s = m.getStatespace()
 		head = new HistoryElement(s.getState(s.getVertex("root")))
 		current = head
+		first = head
 		animationListeners = new ArrayList<IAnimationListener>()
 	}
 
-	def History(final StateSpace s, final HistoryElement head,
+	def History(final StateSpace s, final HistoryElement head, final HistoryElement first,
 	final List<IAnimationListener> animationListeners) {
 		this.s = s
 		this.head = head
 		this.current = head
+		this.first = first
 		this.animationListeners = animationListeners
 	}
 
 	def History(final StateSpace s, final HistoryElement head,
-	final HistoryElement current,
+	final HistoryElement current, HistoryElement first,
 	final List<IAnimationListener> animationListeners) {
 		this.s = s
 		this.head = head
 		this.current = current
+		this.first = first
 		this.animationListeners = animationListeners
 	}
 
@@ -72,7 +75,7 @@ class History {
 		StateId newState = s.getState(op)
 
 		def newHE = new HistoryElement(current.getCurrentState(), newState, op, current)
-		History newHistory = new History(s, newHE,
+		History newHistory = new History(s, newHE, first,
 				animationListeners)
 
 		return newHistory
@@ -87,7 +90,7 @@ class History {
 	 */
 	def History back() {
 		if (canGoBack()) {
-			History history = new History(s, head, current.getPrevious(),
+			History history = new History(s, head, current.getPrevious(), first,
 					animationListeners)
 			return history
 		}
@@ -110,7 +113,7 @@ class History {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious()
 			}
-			History history = new History(s, head, p, animationListeners)
+			History history = new History(s, head, p, first, animationListeners)
 			return history
 		}
 		return this
@@ -181,7 +184,7 @@ class History {
 			currentState = newState
 		}
 
-		History newHistory = new History(s, current, animationListeners)
+		History newHistory = new History(s, current, first, animationListeners)
 		return newHistory
 	}
 
