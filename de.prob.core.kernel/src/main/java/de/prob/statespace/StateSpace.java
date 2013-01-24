@@ -295,7 +295,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		List<EvaluationResult> fromProlog;
 		if (!toEval.isEmpty()) {
 			final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-					toEval, stateId.getId(), model);
+					toEval, stateId.getId());
 			execute(command);
 
 			fromProlog = command.getValues();
