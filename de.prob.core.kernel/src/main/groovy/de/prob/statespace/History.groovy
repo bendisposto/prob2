@@ -70,9 +70,6 @@ class History {
 			+ " is not a valid operation on this state")
 
 		StateId newState = s.getState(op)
-		if(canBeEvaluated(op)) {
-			s.evaluateFormulas(current.getCurrentState());
-		}
 
 		def newHE = new HistoryElement(current.getCurrentState(), newState, op, current)
 		History newHistory = new History(s, newHE,
@@ -83,11 +80,6 @@ class History {
 	def History add(final int i) {
 		String opId = String.valueOf(i)
 		return add(opId)
-	}
-
-	def canBeEvaluated(OpInfo op) {
-		def toEvaluate = op.name != "\$setup_constants" && op.name != "\$initialise_machine"
-		return toEvaluate;
 	}
 
 	/**

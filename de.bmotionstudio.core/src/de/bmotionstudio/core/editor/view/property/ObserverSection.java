@@ -10,9 +10,13 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.gef.ui.actions.ActionRegistry;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuCreator;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -28,18 +32,22 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.tabbed.AbstractPropertySection;
 import org.eclipse.ui.views.properties.tabbed.ITabDescriptor;
 import org.eclipse.ui.views.properties.tabbed.ITabSelectionListener;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
+import de.bmotionstudio.core.ActionConstants;
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.BMotionStudio;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.action.ObserverHelpAction;
+import de.bmotionstudio.core.editor.action.RemoveObserverAction;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.BControlPropertyConstants;
@@ -57,11 +65,15 @@ public class ObserverSection extends AbstractPropertySection implements
 	private Composite rightContainer;
 	
 	private ObserverHelpAction helpAction;
+	private Action observerAction;
 	
 	private BMotionPropertySheetPage propertySheetPage;
 	
 	private Observer selectedObserver;
 	
+	private MenuManager contextMenuManager, observerMenuManager,
+			observerSubMenuManager;
+
 	@Override
 	public void setInput(IWorkbenchPart part, ISelection selection) {
 
@@ -95,9 +107,51 @@ public class ObserverSection extends AbstractPropertySection implements
 		}
 
 	}
-	
+
 	public void createActions() {
+		
 		helpAction = new ObserverHelpAction();
+			
+		observerAction = new Action("New Observer", SWT.DROP_DOWN) {
+
+			@Override
+			public ImageDescriptor getImageDescriptor() {
+				return BMotionImage.getImageDescriptor(
+						BMotionEditorPlugin.PLUGIN_ID,
+						"icons/icon_observer.gif");
+			}
+
+		};
+		observerAction.setMenuCreator(new IMenuCreator() {
+
+			@Override
+			public Menu getMenu(Menu parent) {
+				return null;
+			}
+
+			@Override
+			public Menu getMenu(Control parent) {
+				if (observerMenuManager == null) {
+					observerMenuManager = new MenuManager();
+					observerMenuManager.createContextMenu(parent);
+					observerMenuManager.setRemoveAllWhenShown(true);
+					observerMenuManager.addMenuListener(new IMenuListener() {
+						@Override
+						public void menuAboutToShow(IMenuManager manager) {
+							updateMenuManager((MenuManager) manager,
+									selectedControl, false);
+						}
+					});
+				}
+				return observerMenuManager.getMenu();
+			}
+
+			@Override
+			public void dispose() {
+			}
+
+		});
+		
 	}
 	
 	@Override
@@ -207,7 +261,7 @@ public class ObserverSection extends AbstractPropertySection implements
 				container.layout();
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -226,30 +280,80 @@ public class ObserverSection extends AbstractPropertySection implements
 	
 	@Override
 	public void tabSelected(ITabDescriptor tabDescriptor) {
+
 		this.propertySheetPage.getSite().getActionBars().getToolBarManager()
 				.removeAll();
 		this.propertySheetPage.getSite().getActionBars().getMenuManager()
 				.removeAll();
+
 		if (tabDescriptor.getLabel().equals("Observer")) {
+
+			// Add help action
 			this.propertySheetPage.getSite().getActionBars()
 					.getToolBarManager().add(helpAction);
+			
+			// Add observer action
+			this.propertySheetPage.getSite().getActionBars()
+					.getToolBarManager().add(observerAction);
+
+			// Create context menu
+			if (contextMenuManager == null) {
+				contextMenuManager = new MenuManager();
+				contextMenuManager.createContextMenu(listViewer.getControl());
+				contextMenuManager.setRemoveAllWhenShown(true);
+				contextMenuManager.addMenuListener(new IMenuListener() {
+					@Override
+					public void menuAboutToShow(IMenuManager manager) {
+						updateMenuManager((MenuManager) manager,
+								selectedControl, true);
+						if (!listViewer.getSelection().isEmpty()) {
+
+							ActionRegistry actionRegistry = (ActionRegistry) getPart()
+									.getAdapter(ActionRegistry.class);
+
+							RemoveObserverAction removeObserverAction = (RemoveObserverAction) actionRegistry
+									.getAction(ActionConstants.ACTION_REMOVE_OBSERVER);
+							removeObserverAction.setText("Remove Observer");
+							removeObserverAction.setControl(selectedControl);
+							removeObserverAction.setObserver(selectedObserver);
+							manager.add(removeObserverAction);
+
+						}
+					}
+				});
+				listViewer.getControl().setMenu(contextMenuManager.getMenu());
+			}
+					
 		}
+
 		this.propertySheetPage.getSite().getActionBars().getToolBarManager()
 				.update(true);
-		buildObserverMenu(this.propertySheetPage.getSite().getActionBars()
-				.getMenuManager(), selectedControl);
-	}
-	
-	private void buildObserverMenu(IMenuManager menu, BControl control) {
+		this.propertySheetPage.getSite().getActionBars().getMenuManager()
+				.update(true);
 
-		final MenuManager handleObserverMenu = new MenuManager("New Observer",
-				BMotionImage.getImageDescriptor(BMotionEditorPlugin.PLUGIN_ID,
-						"icons/icon_observer.gif"), "observerMenu");
-		menu.add(handleObserverMenu);
+	}
+		
+	private void updateMenuManager(MenuManager manager,
+			BControl selectedControl, boolean asSubmenu) {
+
+		if (manager == null || selectedControl == null)
+			return;
+
+		MenuManager fmanager = manager;
+
+		if (asSubmenu) {
+			if (observerSubMenuManager == null)
+				observerSubMenuManager = new MenuManager("New Observer",
+						BMotionImage.getImageDescriptor(
+								BMotionEditorPlugin.PLUGIN_ID,
+								"icons/icon_observer.gif"), "observerMenu");
+			observerSubMenuManager.removeAll();
+			fmanager = observerSubMenuManager;
+			manager.add(fmanager);
+		}
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry()
-				.getExtensionPoint(
-						"de.bmotionstudio.core.includeObserver");
+				.getExtensionPoint("de.bmotionstudio.core.includeObserver");
 
 		for (IExtension extension : extensionPoint.getExtensions()) {
 			for (IConfigurationElement configurationElement : extension
@@ -263,19 +367,19 @@ public class ObserverSection extends AbstractPropertySection implements
 					if (langID != null
 							&& langID.equals(BMotionStudio
 									.getCurrentSimulation().getLanguage())) {
-					
+
 						for (IConfigurationElement configC : configurationElement
 								.getChildren("control")) {
 
 							String cID = configC.getAttribute("id");
-							
+
 							IBControlService controlService = BMotionEditorPlugin
 									.getControlServicesId().get(cID);
-			
+
 							if (controlService != null
-									&& control.getClass().equals(
+									&& selectedControl.getClass().equals(
 											controlService.getControlClass())) {
-								
+
 								for (IConfigurationElement configO : configC
 										.getChildren("observer")) {
 
@@ -294,9 +398,10 @@ public class ObserverSection extends AbstractPropertySection implements
 
 										action.setText(name);
 
-										handleObserverMenu.add(action);
+										fmanager.add(action);
 
 									}
+									
 								}
 
 							}
@@ -311,5 +416,5 @@ public class ObserverSection extends AbstractPropertySection implements
 		}
 
 	}
-
+	
 }

@@ -16,7 +16,6 @@ public class ModelModule extends AbstractModule {
 
 		bind(StateSpace.class);
 		bind(DirectedMultigraphProvider.class);
-		bind(StateSpaceInfo.class);
 		bind(ClassicalBModel.class);
 		bind(EventBModel.class);
 		bind(CSPModel.class);

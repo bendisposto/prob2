@@ -60,9 +60,11 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributo
 
 import com.google.inject.Injector;
 
+import de.bmotionstudio.core.ActionConstants;
 import de.bmotionstudio.core.editor.action.AddObserverAction;
 import de.bmotionstudio.core.editor.action.CopyAction;
 import de.bmotionstudio.core.editor.action.PasteAction;
+import de.bmotionstudio.core.editor.action.RemoveObserverAction;
 import de.bmotionstudio.core.editor.part.BMSEditPartFactory;
 import de.bmotionstudio.core.editor.view.library.AttributeTransferDropTargetListener;
 import de.bmotionstudio.core.editor.view.outline.BMotionOutlinePage;
@@ -270,6 +272,7 @@ public class VisualizationViewPart extends ViewPart implements
 		IAction action;
 		ActionRegistry registry = getActionRegistry();
 
+		// Register Add Observer Actions
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = reg
 				.getExtensionPoint("de.bmotionstudio.core.observer");
@@ -292,6 +295,12 @@ public class VisualizationViewPart extends ViewPart implements
 			}
 
 		}
+		
+		// Register Remove Observer Action
+		RemoveObserverAction removeObserverAction = new RemoveObserverAction(
+				this);
+		removeObserverAction.setId(ActionConstants.ACTION_REMOVE_OBSERVER);
+		registry.registerAction(removeObserverAction);
 
 	}
 
@@ -584,16 +593,16 @@ public class VisualizationViewPart extends ViewPart implements
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		
-		String name = visualizationView.getName();
-		boolean dirty = simulation.isDirty();
-
+				
 		String propertyName = evt.getPropertyName();
 
+		String name = visualizationView.getName();
+		boolean dirty = simulation.isDirty();
+		
 		if (propertyName.equals("name"))
 			name = evt.getNewValue().toString();
 		
-		if (propertyName.equals("running"))
+		if (propertyName.equals("dirty"))
 			dirty = Boolean.valueOf(evt.getNewValue().toString());
 		
 		if (propertyName.equals("dirty")

@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
+import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.IEval;
 import de.prob.statespace.History;
@@ -36,11 +37,11 @@ class StateViewLabelProvider extends LabelProvider implements
 		return "";
 	}
 
-	private String getValue(final IEvalElement o, StateId state) {
-		Map<IEvalElement, String> values = currentHistory.getStatespace()
-				.valuesAt(state);
-		String result = values.get(o);
-		return result != null ? result : "";
+	private String getValue(final IEvalElement o, final StateId state) {
+		Map<IEvalElement, EvaluationResult> values = currentHistory
+				.getStatespace().valuesAt(state);
+		EvaluationResult result = values.get(o);
+		return result != null ? result.value : "";
 	}
 
 	@Override
@@ -54,7 +55,7 @@ class StateViewLabelProvider extends LabelProvider implements
 				.getImage(ISharedImages.IMG_OBJ_ELEMENT);
 	}
 
-	public void setInput(History currentHistory2) {
+	public void setInput(final History currentHistory2) {
 		currentHistory = currentHistory2;
 
 	}
