@@ -12,18 +12,19 @@ import de.prob.scripting.CSPModel
 class CSP implements IEvalElement {
 
 	private String code,home;
+	private CSPModel model;
 
-	public CSP(String formula) {
+	public CSP(String formula, CSPModel model) {
 		this.code = formula;
 		this.home = Main.getProBDirectory();
+		this.model = model;
 	}
 
 	public String getCode() {
 		return code;
 	}
 
-	public void printProlog(IPrologTermOutput pout, AbstractElement m) {
-		CSPModel model = m;
+	public void printProlog(IPrologTermOutput pout) {
 		def nc = model.getContent()+"\n"+code;
 		File tf = File.createTempFile("cspm", ".csp")
 		tf << nc;

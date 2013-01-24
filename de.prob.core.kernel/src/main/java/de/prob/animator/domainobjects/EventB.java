@@ -20,7 +20,6 @@ import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.formula.eventb.ExpressionVisitor;
 import de.prob.formula.eventb.PredicateVisitor;
-import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.unicode.UnicodeTranslator;
@@ -98,8 +97,7 @@ public class EventB implements IEvalElement {
 	}
 
 	@Override
-	public void printProlog(final IPrologTermOutput pout,
-			final AbstractElement m) {
+	public void printProlog(final IPrologTermOutput pout)  {
 		if (ast == null) {
 			ensureParsed();
 		}
