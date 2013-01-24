@@ -4,6 +4,8 @@ Bundle-Name: ProB Kernel
 Bundle-SymbolicName: de.prob.core.kernel
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .,
+ lib/dependencies/xpp3_min-1.1.4c.jar,
+ lib/dependencies/xstream-1.2.2.jar,
  lib/dependencies/atlassian-event-2.2.0.jar,
  lib/dependencies/atlassian-util-concurrent-2.4.0-M9.jar,
  lib/dependencies/stax-api-1.0-2.jar,
@@ -103,6 +105,7 @@ Export-Package: com.atlassian.jira.rest.client,
  com.atlassian.jira.rest.client.internal.domain.input,
  com.atlassian.jira.rest.client.internal.json,
  com.atlassian.jira.rest.client.internal.json.gen,
+ com.atlassian.util.concurrent,
  com.google.common.base,
  com.google.common.collect,
  com.google.inject,

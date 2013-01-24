@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -84,7 +85,7 @@ public class BugReportWizard extends Wizard {
 		page3 = new WizardPage3();
 		addPage(page1);
 		addPage(page2);
-		// addPage(page3);
+		addPage(page3);
 
 	}
 
@@ -126,19 +127,26 @@ public class BugReportWizard extends Wizard {
 			Promise<BasicIssue> createIssue = client.getIssueClient()
 					.createIssue(issueBuilder.build());
 
+			BasicIssue f = createIssue.get();
+
 			// Creating issues currently doesn't work
-			// String issueURI =
-			// "http://jira.cobra.cs.uni-duesseldorf.de/api/2/issue/"
-			// + createIssue.get().getKey();
-			//
-			// if (page1.isAddTrace()) {
-			// URI attachmentUri = new URI(issueURI + "/attachments");
-			// client.getIssueClient().addAttachments(attachmentUri,
-			// page3.getAttachmentInputs());
-			// }
+			String issueURI = "http://jira.cobra.cs.uni-duesseldorf.de/rest/api/2/issue/"
+					+ f.getKey();
+
+			if (page1.isAddTrace()) {
+				URI attachmentUri = new URI(issueURI + "/attachments");
+				client.getIssueClient().addAttachments(attachmentUri,
+						page3.getAttachmentInputs());
+			}
 
 		} catch (URISyntaxException e) {
 			logger.error("The website url was incorrect");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

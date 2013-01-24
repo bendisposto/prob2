@@ -4,8 +4,11 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -15,9 +18,10 @@ public class WizardPage1 extends WizardPage {
 	private Text textEmail;
 	private Text textSummary;
 	private Text textDescription;
-	/*
-	 * private Button buttonPrivacy; private Button buttonAddTrace;
-	 */
+
+	private Button buttonPrivacy;
+	private Button buttonAddTrace;
+
 	private Boolean addTrace = true;
 	private Boolean privacy = false;
 	private String email = "";
@@ -85,33 +89,41 @@ public class WizardPage1 extends WizardPage {
 		textDescription = new Text(container, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 		textDescription.setText(this.description);
 
-		/*
-		 * // Add trace: Label labelAddTrace = new Label(container, SWT.NONE);
-		 * labelAddTrace.setText("Add debugging information:"); buttonAddTrace =
-		 * new Button(container, SWT.CHECK);
-		 * buttonAddTrace.setSelection(this.addTrace);
-		 * 
-		 * buttonAddTrace.addSelectionListener(new SelectionListener() {
-		 * 
-		 * @Override public void widgetDefaultSelected(final SelectionEvent
-		 * arg0) { }
-		 * 
-		 * @Override public void widgetSelected(final SelectionEvent arg0) {
-		 * addTrace = buttonAddTrace.getSelection(); } });
-		 * 
-		 * // Private: Label labelPrivacy = new Label(container, SWT.NONE);
-		 * labelPrivacy.setText("Private:"); buttonPrivacy = new
-		 * Button(container, SWT.CHECK);
-		 * buttonPrivacy.setSelection(this.privacy);
-		 * 
-		 * buttonPrivacy.addSelectionListener(new SelectionListener() {
-		 * 
-		 * @Override public void widgetDefaultSelected(final SelectionEvent
-		 * arg0) { }
-		 * 
-		 * @Override public void widgetSelected(final SelectionEvent arg0) {
-		 * privacy = buttonPrivacy.getSelection(); } });
-		 */
+		// Add trace:
+		Label labelAddTrace = new Label(container, SWT.NONE);
+		labelAddTrace.setText("Add debugging information:");
+		buttonAddTrace = new Button(container, SWT.CHECK);
+		buttonAddTrace.setSelection(this.addTrace);
+
+		buttonAddTrace.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetDefaultSelected(final SelectionEvent arg0) {
+			}
+
+			@Override
+			public void widgetSelected(final SelectionEvent arg0) {
+				addTrace = buttonAddTrace.getSelection();
+			}
+		});
+
+		// Private:
+		Label labelPrivacy = new Label(container, SWT.NONE);
+		labelPrivacy.setText("Private:");
+		buttonPrivacy = new Button(container, SWT.CHECK);
+		buttonPrivacy.setSelection(this.privacy);
+
+		buttonPrivacy.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetDefaultSelected(final SelectionEvent arg0) {
+			}
+
+			@Override
+			public void widgetSelected(final SelectionEvent arg0) {
+				privacy = buttonPrivacy.getSelection();
+			}
+		});
 
 		// Resize Text-Fields
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
