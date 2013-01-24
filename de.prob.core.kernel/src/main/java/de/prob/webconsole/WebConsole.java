@@ -6,9 +6,15 @@ import java.net.BindException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import org.eclipse.jetty.deploy.AppProvider;
+import org.eclipse.jetty.deploy.DeploymentManager;
+import org.eclipse.jetty.deploy.providers.WebAppProvider;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -56,19 +62,38 @@ public class WebConsole {
 
 		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/")))
 			warFile += "bin/";
+		
+		//Creating a context handler collection
+		ContextHandlerCollection contexts=new ContextHandlerCollection();
+		WebAppProvider wprv=new WebAppProvider();
+		wprv.setExtractWars(true);
+		DeploymentManager dmgr=new DeploymentManager();
+		Collection<AppProvider> prvs=new ArrayList<AppProvider>();
+
+		wprv.setMonitoredDirName(warFile+"webapps/");
+		wprv.setScanInterval(10);
+		prvs.add(wprv);
+		dmgr.setContexts(contexts);
+		dmgr.setAppProviders(prvs);
+		server.addBean(dmgr);
+
+
+		
+	
 
 		WebAppContext context = new WebAppContext(warFile, "/console");
 		context.setServer(server);
 
-		WebAppContext worksheetContext=new WebAppContext(warFile+"webapps/de.prob.worksheetWeb.war","/worksheet");
-		worksheetContext.setExtractWAR(true);
-		worksheetContext.setServer(server);
+		//WebAppContext worksheetContext=new WebAppContext(warFile+"webapps/de.prob.worksheetWeb.war","/worksheet");
+		//worksheetContext.setExtractWAR(true);
+		//worksheetContext.setServer(server);
 		
 		
 		// Add the handlers
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
-		handlers.addHandler(worksheetContext);
+		handlers.addHandler(contexts);
+		//handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
 		int port = 8080;
