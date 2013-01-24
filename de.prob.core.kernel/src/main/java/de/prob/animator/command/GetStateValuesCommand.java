@@ -36,26 +36,26 @@ public final class GetStateValuesCommand implements ICommand {
 	public GetStateValuesCommand(final String stateID) {
 		PrologTerm id;
 		try {
-		 id = new IntegerPrologTerm(Long.valueOf(stateID));
+			id = new IntegerPrologTerm(Long.valueOf(stateID));
 		} catch (NumberFormatException e) {
 			id = new CompoundPrologTerm(stateID);
 		}
 		this.stateId = id;
 	}
-	
+
 	private GetStateValuesCommand(final PrologTerm stateID) {
 		this.stateId = stateID;
 	}
-	
-	public GetStateValuesCommand getEvalstoreValuesCommand(long evalstoreId) {
+
+	public static GetStateValuesCommand getEvalstoreValuesCommand(
+			long evalstoreId) {
 		final IntegerPrologTerm id = new IntegerPrologTerm(evalstoreId);
 		return new GetStateValuesCommand(new CompoundPrologTerm("es", id));
 	}
-	
+
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			 {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm list;
 		list = BindingGenerator.getList(bindings, "Bindings");
 

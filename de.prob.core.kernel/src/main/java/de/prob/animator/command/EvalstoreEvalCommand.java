@@ -134,6 +134,18 @@ public class EvalstoreEvalCommand implements ICommand {
 		public EvaluationResult getResult() {
 			return result;
 		}
+
+		public String toString() {
+			final String str;
+			if (hasTimeoutOccurred)
+				str = "*timeout*";
+			else if (hasInterruptedOccurred) {
+				str = "*interrupted*";
+			} else {
+				str = result.toString();
+			}
+			return str;
+		}
 	}
 
 }
