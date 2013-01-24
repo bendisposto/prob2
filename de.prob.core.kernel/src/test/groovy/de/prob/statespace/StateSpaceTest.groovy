@@ -73,7 +73,7 @@ class StateSpaceTest extends Specification {
 
 	def "The node is a deadlock"() {
 		expect:
-		s.isDeadlock("1") == true
+		s.isDeadlock(s[1]) == true
 	}
 
 	def "The node is explored"() {
@@ -103,7 +103,7 @@ class StateSpaceTest extends Specification {
 		s.addEdge(s.states.get("1"), s.states.get("2"), new OpInfo("bla","blah","1","2",[],"2"))
 
 		expect:
-		s.isDeadlock("1") == false
+		s.isDeadlock(s[1]) == false
 	}
 
 	def "test register StateSpaceChangeListener"() {
