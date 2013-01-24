@@ -107,23 +107,23 @@ public class WizardPage1 extends WizardPage {
 			}
 		});
 
-		// Private:
-		Label labelPrivacy = new Label(container, SWT.NONE);
-		labelPrivacy.setText("Private:");
-		buttonPrivacy = new Button(container, SWT.CHECK);
-		buttonPrivacy.setSelection(this.privacy);
-
-		buttonPrivacy.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent arg0) {
-			}
-
-			@Override
-			public void widgetSelected(final SelectionEvent arg0) {
-				privacy = buttonPrivacy.getSelection();
-			}
-		});
+		// // Private:
+		// Label labelPrivacy = new Label(container, SWT.NONE);
+		// labelPrivacy.setText("Private:");
+		// buttonPrivacy = new Button(container, SWT.CHECK);
+		// buttonPrivacy.setSelection(this.privacy);
+		//
+		// buttonPrivacy.addSelectionListener(new SelectionListener() {
+		//
+		// @Override
+		// public void widgetDefaultSelected(final SelectionEvent arg0) {
+		// }
+		//
+		// @Override
+		// public void widgetSelected(final SelectionEvent arg0) {
+		// privacy = buttonPrivacy.getSelection();
+		// }
+		// });
 
 		// Resize Text-Fields
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
