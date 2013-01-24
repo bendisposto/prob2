@@ -8,11 +8,15 @@
               locationURI="toolbar:org.eclipse.ui.main.toolbar">
            <toolbar
                  id="de.prob.ui.openWorksheetEditorToolbar"
-                 label="Worksheet Editor">
+                 label="%toolbar.label">
               <command
                     commandId="de.prob.ui.openWorksheetEditor"
-                    label="Open Worksheet Editor"
-                    style="push">
+                    disabledIcon="icons/dtool16/new_tsk.png"
+                    icon="icons/etool16/new_tsk.png"
+                    label="%command.label"
+                    mnemonic="W"
+                    style="push"
+                    tooltip="Open a new Worksheet">
               </command>
            </toolbar>
         </menuContribution>
@@ -20,21 +24,32 @@
 <extension
          point="org.eclipse.ui.commands">
             <command
+                  categoryId="org.eclipse.ui.category.edit"
+                  defaultHandler="de.prob.ui.worksheet.OpenWorksheetEditorHandler"
                   id="de.prob.ui.openWorksheetEditor"
-                  name="Open Worksheet Editor">
+                  name="%command.name">
             </command>
           </extension>
    <extension
 	      point="org.eclipse.ui.editors">
 	      <editor
-  	   			id = "de.prob.ui.worksheetEditor"
-  	   			name="ProB Worksheet Editor"
-      	   		class="de.prob.ui.worksheet.editors.Worksheet"
-	   			extensions="prob_wsh">
+             class="de.prob.ui.worksheet.editors.Worksheet"
+             default="true"
+             extensions="prob_wsh"
+             icon="icons/obj16/worksheet_obj.png"
+             id="de.prob.ui.worksheetEditor"
+             name="%editor.name">
            <!--
              	icon="icons/obj16/editor.png"
       	 		contributorClass="org.eclipse.ui.examples.readmetool.ReadmeEditorActionBarContributor">-->
 	</editor>
 	</extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="de.prob.ui.worksheet.OpenWorksheetEditorHandler"
+            commandId="de.prob.ui.openWorksheet">
+      </handler>
+   </extension>
 
 </plugin>

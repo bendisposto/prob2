@@ -8,22 +8,42 @@ eclipse{
 		buildCommand 'org.eclipse.pde.ManifestBuilder'
 		buildCommand 'org.eclipse.pde.SchemaBuilder'
 	}
-	classpath{
-		containers 'org.eclipse.pde.core.requiredPlugins'
+	jdt{
+		sourceCompatibility = 1.6
+		targetCompatibility = 1.6
 	}
+	classpath{ containers 'org.eclipse.pde.core.requiredPlugins' }
 }
 
 jar{
 	manifest {
-		attributes(	"Manifest-Version": 1.0,
-					"Bundle-ManifestVersion": 2,
-					"Bundle-Name": "WorksheetEditor",
-					"Bundle-SymbolicName": "de.prob.ui.worksheet; singleton:=true",
-					"Bundle-Version": "1.0.0.qualifier",
-					"Bundle-Activator": "de.prob.ui.worksheet.Activator",
-					"Require-Bundle": "org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jface.text,org.eclipse.ui.editors",
-					"Bundle-ActivationPolicy": "lazy",
-					"Bundle-RequiredExecutionEnvironment": "JavaSE-1.6")
+		attributes(
+				"Manifest-Version": 1.0,
+				"Bundle-ManifestVersion": 2,
+				"Bundle-Name": "WorksheetEditor",
+				"Bundle-SymbolicName": "de.prob.ui.worksheet; singleton:=true",
+				"Bundle-Version": "1.0.0.qualifier",
+				"Bundle-Activator": "de.prob.ui.worksheet.Activator",
+				"Require-Bundle": "org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jface.text,org.eclipse.ui.editors",
+				"Bundle-ActivationPolicy": "lazy",
+				"Bundle-RequiredExecutionEnvironment": "JavaSE-1.6",
+				"Bundle-ClassPath":".")
 	}
 }
 
+repositories {
+	maven {
+		name "cobra"
+		url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
+	}
+	maven {
+		name "spock snapshot"
+		url "http://oss.sonatype.org/content/repositories/snapshots/"
+	}
+}
+
+dependencies{
+	compile 'org.slf4j:slf4j-api:1.6.1'
+	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
+	compile 'ch.qos.logback:logback-classic:0.9.29' // EPL
+}
