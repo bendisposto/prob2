@@ -398,7 +398,8 @@ public class ObserverSection extends AbstractPropertySection implements
 
 										action.setText(name);
 
-										fmanager.add(action);
+										if (fmanager.find(action.getId()) == null)
+											fmanager.add(action);
 
 									}
 									

@@ -173,7 +173,8 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 									
 									action.setText(name);
 
-									handleObserverMenu.add(action);
+									if (handleObserverMenu.find(action.getId()) == null)
+										handleObserverMenu.add(action);
 
 								}
 
