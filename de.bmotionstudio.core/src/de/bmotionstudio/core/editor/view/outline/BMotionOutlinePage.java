@@ -69,7 +69,7 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 		ContextMenuProvider provider = new BMSContextMenuProvider(getViewer(),
 				viewPart.getActionRegistry());
 		getViewer().setContextMenu(provider);
-		// getViewer().setKeyHandler(getCommonKeyHandler());
+		getViewer().setKeyHandler(this.viewPart.getCommonKeyHandler());
 	}
 
 	protected void hookOutlineViewer() {
