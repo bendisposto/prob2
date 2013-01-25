@@ -9,6 +9,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -145,6 +147,18 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 					final AbstractElement model = history.getModel();
 					if (model != currentModel) {
 						updateModelInfo(model);
+					}
+				}
+
+				Tree tree = viewer.getTree();
+				TreeItem[] items = tree.getItems();
+				for (TreeItem treeItem : items) {
+					TreeItem[] items2 = treeItem.getItems();
+					for (TreeItem treeItem2 : items2) {
+						if (treeItem2.getText().equals("Constants")
+								|| treeItem2.getText().equals("Variables")) {
+							treeItem2.setExpanded(true);
+						}
 					}
 				}
 
