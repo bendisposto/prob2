@@ -9,6 +9,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorLauncher;
 import org.eclipse.ui.IPerspectiveDescriptor;
 
@@ -17,6 +20,7 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionStudio;
+import de.bmotionstudio.core.editor.action.SaveSimulationAction;
 import de.bmotionstudio.core.model.Simulation;
 import de.bmotionstudio.core.model.control.Visualization;
 import de.bmotionstudio.core.util.PerspectiveUtil;
@@ -39,9 +43,34 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 		IPerspectiveDescriptor currentPerspective = BMotionStudio
 				.getCurrentPerspective();
 
-		// TODO: Check if the simulation is dirty and ask the user for
-		// saving it
-		if(currentSimulation != null && currentSimulation.isDirty()) {
+		// Check if the simulation is dirty and ask the user for saving it
+		if (currentSimulation != null && currentSimulation.isDirty()) {
+
+			MessageDialog dg = new MessageDialog(
+					Display.getDefault().getActiveShell(),
+					"You made changes to your visualization.",
+					null,
+					"Your visualization has beed modified. Save changes? Please note: The current visualization will be closed!",
+					MessageDialog.QUESTION_WITH_CANCEL, new String[] {
+							IDialogConstants.YES_LABEL,
+							IDialogConstants.NO_LABEL,
+							IDialogConstants.CANCEL_LABEL }, 0);
+			switch (dg.open()) {
+			case 0:
+				// yes - save the visualization and perspective
+				SaveSimulationAction saveSimulationAction = new SaveSimulationAction(
+						currentSimulation,
+						BMotionStudio.getCurrentProjectFile());
+				saveSimulationAction.run();
+				break;
+			case 1:
+				// no - do nothing
+				break;
+			case 2:
+				// cancel - return
+				return;
+			}
+
 		}
 
 		// If a simulation is already open, close the corresponding perspective
@@ -108,6 +137,7 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 				BMotionStudio.setCurrentSimulation(simulation);
 				BMotionStudio.setCurrentPerspective(PerspectiveUtil
 						.openPerspective(file));
+				BMotionStudio.setCurrentProjectFile(file);
 				PerspectiveUtil.initViews(simulation);
 			}
 
