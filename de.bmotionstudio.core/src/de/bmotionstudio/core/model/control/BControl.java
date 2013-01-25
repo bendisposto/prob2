@@ -97,6 +97,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		for (BControl child : getChildren())
 			child.setParent(this);
 		this.newControl = false;
+		init();
 		return this;
 	}
 
