@@ -289,7 +289,7 @@
 						},
 						_triggerInitialized:function(){
 							this.options.isInitialized=true;
-							if(!$.browser.msie){}
+							if(!$.browser.msie)
 								window.console.debug("Event: initialized from Block");
 							this._trigger("initialized",0,[this.options.id]);
 						}
