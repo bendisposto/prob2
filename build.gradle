@@ -64,7 +64,7 @@ project(':de.prob.core.rodin'){
 		def UiMF = new File( workspacePath + "de.prob.ui/META-INF/MF" )
 		UiMF.delete()
 		def deleteKernel={
-			if( !(it ==~ /(\ |\t)*de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional.*/ ) ){				//	 This check is only necessary because of the optional identifier cannot be handled anymore 
+			if( !(it ==~ /(\ |\t)*de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional.*/ ) ){				//	 This check is only necessary because the optional identifier cannot be handled anymore 
 				UiMF << it+"\n"
 			}
 		}
@@ -72,7 +72,17 @@ project(':de.prob.core.rodin'){
 		def oldUI = new File( workspacePath + "de.prob.ui/META-INF/MANIFEST.MF" )
 		oldUI.delete()
 		UiMF.renameTo( workspacePath + "de.prob.ui/META-INF/MANIFEST.MF" )
+		
+		// same for bMotionStudio.Core
+		def oldbMotionMF = new File( workspacePath + "de.bmotionstudio.core/META-INF/MANIFEST.MF" ).getText("UTF-8")
+		UiMF = new File( workspacePath + "de.bmotionstudio.core/META-INF/MF" )
+		oldbMotionMF.eachLine( deleteKernel )
+		def oldbMotion = new File( workspacePath + "de.bmotionstudio.core/META-INF/MANIFEST.MF" )
+		oldbMotion.delete()
+		UiMF.renameTo( workspacePath + "de.bmotionstudio.core/META-INF/MANIFEST.MF")
+				
 	}
+	
 }
 
 task deleteOldArtifacts(type: Delete) {

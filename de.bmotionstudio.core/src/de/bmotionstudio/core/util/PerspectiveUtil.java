@@ -234,14 +234,14 @@ public class PerspectiveUtil {
 
 	}
 	
-	private static String getPerspectiveIdFromFile(IFile file) {
-		return "ProB_" + file.getName().replace(".bmso", "");
+	public static String getPerspectiveIdFromFile(IFile projectFile) {
+		return "ProB_" + projectFile.getName().replace(".bmso", "");
 	}
 
-	private static String getPerspectiveFileName(IFile projectFile) {
+	public static String getPerspectiveFileName(IFile projectFile) {
 		return projectFile.getName().replace(".bmso", ".bmsop");
 	}
-	
+
 	public static void initViews(Simulation simulation) {
 
 		IWorkbenchPage activePage = PlatformUI.getWorkbench()

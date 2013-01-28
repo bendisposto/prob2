@@ -19,6 +19,9 @@ class History {
 	def final StateSpace s
 
 	def EvaluationResult eval(formula) {
+		if(!s.canBeEvaluated(getCurrentState())) {
+			return null
+		}
 		def f = formula;
 		if (!(formula instanceof IEvalElement)) {
 			f = formula as ClassicalB;

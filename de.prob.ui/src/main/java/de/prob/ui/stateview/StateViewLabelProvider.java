@@ -1,6 +1,7 @@
 package de.prob.ui.stateview;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -10,7 +11,12 @@ import org.eclipse.ui.PlatformUI;
 
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.model.representation.Axiom;
+import de.prob.model.representation.BSet;
+import de.prob.model.representation.Constant;
 import de.prob.model.representation.IEval;
+import de.prob.model.representation.Invariant;
+import de.prob.model.representation.Variable;
 import de.prob.statespace.History;
 import de.prob.statespace.StateId;
 
@@ -22,25 +28,53 @@ class StateViewLabelProvider extends LabelProvider implements
 	@Override
 	public String getColumnText(final Object obj, final int index) {
 		if (index == 0) {
+			if (obj instanceof Entry<?, ?>) {
+				Object value = ((Entry<?, ?>) obj).getKey();
+				if (value instanceof Class<?>) {
+					return getHeaderName((Class<?>) value);
+				}
+			}
 			return obj.toString();
 		}
 
 		if (index == 1 && obj instanceof IEval) {
-			return getValue(((IEval) obj).getEvaluate(),
-					currentHistory.getCurrentState());
+			return getValue(((IEval) obj), currentHistory.getCurrentState());
 		}
 
 		if (index == 2 && obj instanceof IEval) {
-			return getValue(((IEval) obj).getEvaluate(), currentHistory
-					.getCurrent().getSrc());
+			return getValue(((IEval) obj), currentHistory.getCurrent().getSrc());
 		}
 		return "";
 	}
 
-	private String getValue(final IEvalElement o, final StateId state) {
-		Map<IEvalElement, EvaluationResult> values = currentHistory
-				.getStatespace().valuesAt(state);
-		EvaluationResult result = values.get(o);
+	private String getHeaderName(final Class<?> value) {
+		if (value.equals(Invariant.class)) {
+			return "Invariants";
+		}
+		if (value.equals(Variable.class)) {
+			return "Variables";
+		}
+		if (value.equals(BSet.class)) {
+			return "Sets";
+		}
+		if (value.equals(Constant.class)) {
+			return "Constants";
+		}
+		if (value.equals(Axiom.class)) {
+			return "Axioms";
+		}
+		return "";
+	}
+
+	private String getValue(final IEval o, final StateId state) {
+		EvaluationResult result;
+		if (o instanceof Constant) {
+			result = ((Constant) o).getValue(currentHistory);
+		} else {
+			Map<IEvalElement, EvaluationResult> values = currentHistory
+					.getStatespace().valuesAt(state);
+			result = values.get(o.getEvaluate());
+		}
 		return result != null ? result.value : "";
 	}
 

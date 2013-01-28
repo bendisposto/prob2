@@ -17,6 +17,8 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.KeyHandler;
+import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.SnapToGeometry;
@@ -38,6 +40,7 @@ import org.eclipse.gef.ui.actions.UndoAction;
 import org.eclipse.gef.ui.actions.UpdateAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
@@ -104,6 +107,8 @@ public class VisualizationViewPart extends ViewPart implements
 	private boolean isInitialized = false;
 
 	private Composite parent;
+	
+	private KeyHandler sharedKeyHandler;
 
 	private List<String> selectionActions = new ArrayList<String>();
 	private List<String> stackActions = new ArrayList<String>();
@@ -162,6 +167,10 @@ public class VisualizationViewPart extends ViewPart implements
 	public GraphicalViewer getGraphicalViewer() {
 		return graphicalViewer;
 	}
+	
+	public Simulation getSimulation() {
+		return simulation;
+	}
 
 	/**
 	 * Lazily creates and returns the action registry.
@@ -187,10 +196,6 @@ public class VisualizationViewPart extends ViewPart implements
 	public VisualizationView getVisualizationView() {
 		return visualizationView;
 	}
-
-//	public Simulation getSimulation() {
-//		return simulation;
-//	}
 
 	private void createActions() {
 
@@ -239,7 +244,7 @@ public class VisualizationViewPart extends ViewPart implements
 					public void run() {
 						super.run();
 						setChecked(!isChecked());
-						// editor.setDirty(true);
+						getSimulation().setDirty(true);
 					}
 				});
 		getActionRegistry().registerAction(
@@ -248,7 +253,7 @@ public class VisualizationViewPart extends ViewPart implements
 					public void run() {
 						super.run();
 						setChecked(!isChecked());
-						// editor.setDirty(true);
+						getSimulation().setDirty(true);
 					}
 				});
 		getActionRegistry().registerAction(
@@ -257,7 +262,7 @@ public class VisualizationViewPart extends ViewPart implements
 					public void run() {
 						super.run();
 						setChecked(!isChecked());
-						// editor.setDirty(true);
+						getSimulation().setDirty(true);
 					}
 				});
 
@@ -355,12 +360,13 @@ public class VisualizationViewPart extends ViewPart implements
 		setInitialized(false);
 		if (getVisualizationView() != null)
 			getVisualizationView().removePropertyChangeListener(this);
+
+		if (simulation != null)
+			getSimulation().removePropertyChangeListener(this);
 		
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
 		selector.unregisterHistoryChangeListener(this);
-//		if (getSimulation() != null)
-//			getSimulation().removePropertyChangeListener(this);
 		
 	}
 
@@ -414,6 +420,7 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	public void init(Simulation simulation, VisualizationView visualizationView) {
+		
 		this.visualizationView = visualizationView;
 		this.visualizationView.addPropertyChangeListener(this);
 		this.simulation = simulation;
@@ -426,8 +433,8 @@ public class VisualizationViewPart extends ViewPart implements
 		configureGraphicalViewer();
 		hookGraphicalViewer();
 		loadProperties(visualizationView);
-		buildActions();
 		createActions();
+		buildActions();
 		createMenu(getViewSite());
 		setPartName(visualizationView.getName());
 		getGraphicalViewer().setContents(visualization);
@@ -454,6 +461,8 @@ public class VisualizationViewPart extends ViewPart implements
 		container
 				.setGraphicalViewer((ScrollingGraphicalViewer) graphicalViewer);
 		graphicalViewer.setEditDomain(getEditDomain());
+		graphicalViewer.setKeyHandler(new GraphicalViewerKeyHandler(
+				graphicalViewer).setParent(getCommonKeyHandler()));
 		graphicalViewer
 				.addDropTargetListener(new BControlTransferDropTargetListener(
 						graphicalViewer));
@@ -471,14 +480,14 @@ public class VisualizationViewPart extends ViewPart implements
 		ContextMenuProvider provider = new BMSContextMenuProvider(
 				graphicalViewer, getActionRegistry());
 		graphicalViewer.setContextMenu(provider);
-
+		
 	}
 
 	private void buildActions() {
-
+				
 		IActionBars bars = getViewSite().getActionBars();
 		ActionRegistry ar = getActionRegistry();
-
+		
 		bars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
 				ar.getAction(ActionFactory.UNDO.getId()));
 		bars.setGlobalActionHandler(ActionFactory.REDO.getId(),
@@ -576,6 +585,39 @@ public class VisualizationViewPart extends ViewPart implements
 		getGraphicalViewer().setProperty(
 				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 				MouseWheelZoomHandler.SINGLETON);
+
+	}
+	
+	/**
+	 * Returns the KeyHandler with common bindings for both the Outline and
+	 * Graphical Views. For example, delete is a common action.
+	 */
+	public KeyHandler getCommonKeyHandler() {
+
+		if (sharedKeyHandler == null) {
+
+			sharedKeyHandler = new KeyHandler();
+
+			sharedKeyHandler.put(
+					KeyStroke.getPressed(SWT.F2, 0),
+					getActionRegistry().getAction(
+							GEFActionConstants.DIRECT_EDIT));
+
+			sharedKeyHandler
+					.put(KeyStroke.getPressed(SWT.DEL, 127, 0),
+							getActionRegistry().getAction(
+									ActionFactory.DELETE.getId()));
+
+			sharedKeyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
+					getActionRegistry().getAction(GEFActionConstants.ZOOM_IN));
+
+			sharedKeyHandler.put(
+					KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
+					getActionRegistry().getAction(GEFActionConstants.ZOOM_OUT));
+
+		}
+
+		return sharedKeyHandler;
 
 	}
 
