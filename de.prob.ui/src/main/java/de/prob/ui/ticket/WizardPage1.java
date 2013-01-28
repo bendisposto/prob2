@@ -20,7 +20,6 @@ public class WizardPage1 extends WizardPage {
 	private Text textDescription;
 
 	private Button buttonPrivacy;
-	private Button buttonAddTrace;
 
 	private Boolean addTrace = true;
 	private Boolean privacy = false;
@@ -89,13 +88,13 @@ public class WizardPage1 extends WizardPage {
 		textDescription = new Text(container, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 		textDescription.setText(this.description);
 
-		// Add trace:
-		Label labelAddTrace = new Label(container, SWT.NONE);
-		labelAddTrace.setText("Add debugging information:");
-		buttonAddTrace = new Button(container, SWT.CHECK);
-		buttonAddTrace.setSelection(this.addTrace);
+		// Private:
+		Label labelPrivacy = new Label(container, SWT.NONE);
+		labelPrivacy.setText("Private:");
+		buttonPrivacy = new Button(container, SWT.CHECK);
+		buttonPrivacy.setSelection(this.privacy);
 
-		buttonAddTrace.addSelectionListener(new SelectionListener() {
+		buttonPrivacy.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent arg0) {
@@ -103,27 +102,9 @@ public class WizardPage1 extends WizardPage {
 
 			@Override
 			public void widgetSelected(final SelectionEvent arg0) {
-				addTrace = buttonAddTrace.getSelection();
+				privacy = buttonPrivacy.getSelection();
 			}
 		});
-
-		// // Private:
-		// Label labelPrivacy = new Label(container, SWT.NONE);
-		// labelPrivacy.setText("Private:");
-		// buttonPrivacy = new Button(container, SWT.CHECK);
-		// buttonPrivacy.setSelection(this.privacy);
-		//
-		// buttonPrivacy.addSelectionListener(new SelectionListener() {
-		//
-		// @Override
-		// public void widgetDefaultSelected(final SelectionEvent arg0) {
-		// }
-		//
-		// @Override
-		// public void widgetSelected(final SelectionEvent arg0) {
-		// privacy = buttonPrivacy.getSelection();
-		// }
-		// });
 
 		// Resize Text-Fields
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -205,9 +186,4 @@ public class WizardPage1 extends WizardPage {
 	public Boolean isSensitive() {
 		return privacy;
 	}
-	// private IConfigurationElement[] loadElements() {
-	// IExtensionPoint point = Platform.getExtensionRegistry()
-	//				.getExtensionPoint("org.eclipse.ui", "installationPages"); //$NON-NLS-1$ //$NON-NLS-2$
-	// return point.getConfigurationElements();
-	// }
 }

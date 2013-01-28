@@ -38,7 +38,7 @@ public class WizardPage3 extends WizardPage {
 	private Table tableAttachments;
 	private int columns;
 	private final List<File> files = new ArrayList<File>();
-	private AttachmentInput[] attachments = null;
+	private AttachmentInput[] attachments = new AttachmentInput[0];
 
 	public WizardPage3() {
 		super("Third Page");
@@ -267,6 +267,10 @@ public class WizardPage3 extends WizardPage {
 
 	public AttachmentInput[] getAttachmentInputs() {
 		return attachments;
+	}
+
+	public boolean hasAttachments() {
+		return attachments.length > 0;
 	}
 
 }
