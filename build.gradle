@@ -79,7 +79,7 @@ project(':de.prob.core.rodin'){
 		oldbMotionMF.eachLine( deleteKernel )
 		def oldbMotion = new File( workspacePath + "de.bmotionstudio.core/META-INF/MANIFEST.MF" )
 		oldbMotion.delete()
-		UiMF.renameTo( workspacePath + "de.bmotionstudio.core/META-INF/MANIFEST.MANIFEST.MF")
+		UiMF.renameTo( workspacePath + "de.bmotionstudio.core/META-INF/MANIFEST.MF")
 				
 	}
 	
