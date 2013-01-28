@@ -65,4 +65,14 @@ public class HistoryElement {
 	public List<OpInfo> getOpList() {
 		return opList;
 	}
+
+	@Override
+	public String toString() {
+		if (dest == null) {
+			return "State: " + src.toString();
+		} else {
+			return "From: " + src.toString() + " To: " + dest.toString()
+					+ " With: " + edge.toString();
+		}
+	}
 }

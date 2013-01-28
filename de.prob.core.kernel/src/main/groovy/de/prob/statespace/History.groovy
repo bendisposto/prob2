@@ -83,6 +83,7 @@ class History {
 
 		return newHistory
 	}
+
 	def History add(final int i) {
 		String opId = String.valueOf(i)
 		return add(opId)
@@ -279,6 +280,15 @@ class History {
 		}
 		if(className == EventBModel) {
 			return (EventBModel) s.model
+		}
+		if(className == ArrayList) {
+			def list = []
+			def p = head
+			while(p != null) {
+				list << p
+				p = p.getPrevious()
+			}
+			return list.reverse()
 		}
 		throw new ClassCastException("Not able to convert History object to ${className}")
 	}
