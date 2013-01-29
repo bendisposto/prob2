@@ -6,6 +6,7 @@ package de.prob.worksheet.servlets;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +24,7 @@ import de.prob.worksheet.WorksheetDocument;
  * @author Rene
  * 
  */
+@WebServlet(urlPatterns={"/setDocument"})
 public class setDocument extends HttpServlet {
 	/**
 	 * 
@@ -31,12 +33,6 @@ public class setDocument extends HttpServlet {
 
 	Logger logger = LoggerFactory.getLogger(setDocument.class);
 
-	/**
-	 * 
-	 */
-	@Inject
-	public setDocument() {
-	};
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)

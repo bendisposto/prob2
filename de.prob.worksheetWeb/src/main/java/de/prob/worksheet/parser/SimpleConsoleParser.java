@@ -10,10 +10,10 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.prob.worksheet.api.state.StateAPI;
+import de.prob.worksheet.api.evalStore.EvalStoreAPI;
 
 public class SimpleConsoleParser {
-	private static final Class[]	apis				= new Class[] { StateAPI.class };
+	private static final Class[]	apis				= new Class[] { EvalStoreAPI.class };
 
 	public TreeMap<String, Class>	apiMethodNamesMap	= new TreeMap<String, Class>();
 
@@ -28,7 +28,7 @@ public class SimpleConsoleParser {
 	}
 
 	public static String[] initialGetWorksheetApiMethodNames() {
-		final Method[] methods = StateAPI.class.getMethods();
+		final Method[] methods = EvalStoreAPI.class.getMethods();
 		final String[] methodNames = new String[methods.length];
 
 		for (int x = 0; x < methods.length; x++) {
@@ -72,15 +72,23 @@ public class SimpleConsoleParser {
 		return methodNames;
 	}
 
-	public class evalObject {
+	public class EvalObject {
 		public Object	methodInstance;
 		public String[]	method;
+		@Override
+		public String toString() {
+			String res="";
+			if(methodInstance!=null)
+				res+=methodInstance.toString()+" ";
+			res+="params:"+Arrays.toString(method);
+			return res;
+		}
 	}
 
-	public evalObject[] parse(final String code) {
+	public EvalObject[] parse(final String code) {
 		final String[] expressions = this.splitToExpressions(code);
 		final String[][] methods = this.expressionsToMethods(expressions);
-		final evalObject[] evalObjects = this.methodsToEvalObjects(methods);
+		final EvalObject[] evalObjects = this.methodsToEvalObjects(methods);
 		return evalObjects;
 	}
 
@@ -92,8 +100,8 @@ public class SimpleConsoleParser {
 		return expressions;
 	}
 
-	public evalObject[] methodsToEvalObjects(final String[][] methods) {
-		final List<evalObject> evalObjects = new ArrayList<evalObject>();
+	public EvalObject[] methodsToEvalObjects(final String[][] methods) {
+		final List<EvalObject> evalObjects = new ArrayList<EvalObject>();
 		for (final String[] method : methods) {
 			Method methodInstance = null;
 			try {
@@ -110,18 +118,18 @@ public class SimpleConsoleParser {
 				e.printStackTrace();
 			}
 			if (methodInstance != null) {
-				final evalObject newEval = new evalObject();
+				final EvalObject newEval = new EvalObject();
 				newEval.method = method;
 				newEval.methodInstance = methodInstance;
 				evalObjects.add(newEval);
 			}else{
-				final evalObject newEval = new evalObject();
+				final EvalObject newEval = new EvalObject();
 				newEval.method = method;
 				newEval.methodInstance = null;
 				evalObjects.add(newEval);
 			}
 		}
-		return evalObjects.toArray(new evalObject[evalObjects.size()]);
+		return evalObjects.toArray(new EvalObject[evalObjects.size()]);
 	}
 
 	public String[][] expressionsToMethods(final String[] expressions) {
@@ -136,8 +144,8 @@ public class SimpleConsoleParser {
 				methods.add(this.parseApiMethod(expression));
 
 			} else {
-				//is unknown
-				methods.add(this.parseApiMethod(expression));
+				//FIXME is unknown at the moment i say it is a eval expression
+				methods.add(new String[]{"evaluate",expression});
 			}
 		}
 		return methods.toArray(new String[methods.size()][]);

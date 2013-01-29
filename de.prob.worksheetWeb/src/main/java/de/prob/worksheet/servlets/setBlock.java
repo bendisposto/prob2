@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +25,7 @@ import de.prob.worksheet.block.IBlock;
  * @author Rene
  * 
  */
-@Singleton
+@WebServlet(urlPatterns={"/setBlock"})
 public class setBlock extends HttpServlet {
 	/**
 	 * 
@@ -34,12 +35,7 @@ public class setBlock extends HttpServlet {
 
 	Logger logger = LoggerFactory.getLogger(setBlock.class);
 	
-	/**
-	 * 
-	 */
-	@Inject
-	public setBlock() {
-	}
+	
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)

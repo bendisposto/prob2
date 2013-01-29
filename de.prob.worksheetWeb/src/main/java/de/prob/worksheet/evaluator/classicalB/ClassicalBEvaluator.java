@@ -11,9 +11,9 @@ import de.prob.worksheet.api.classicalB.WorksheetAPI;
 import de.prob.worksheet.block.IBlock;
 import de.prob.worksheet.evaluator.IWorksheetEvaluator;
 import de.prob.worksheet.parser.SimpleConsoleParser;
-import de.prob.worksheet.parser.SimpleConsoleParser.evalObject;
+import de.prob.worksheet.parser.SimpleConsoleParser.EvalObject;
 
-public class ClassicalBEvaluator implements IWorksheetEvaluator {
+public class ClassicalBEvaluator{/* implements IWorksheetEvaluator {
 
 	public WorksheetAPI	api;
 
@@ -27,9 +27,9 @@ public class ClassicalBEvaluator implements IWorksheetEvaluator {
 		this.api.addApiListener(new OutputWorksheetApiListener(retVal));
 
 		final SimpleConsoleParser cbwParser = new SimpleConsoleParser();
-		final evalObject[] evalObjects = cbwParser.parse(code);
+		final EvalObject[] evalObjects = cbwParser.parse(code);
 
-		for (final evalObject evalObject : evalObjects) {
+		for (final EvalObject evalObject : evalObjects) {
 			if (evalObject.methodInstance instanceof Method) {
 				if (((Method) evalObject.methodInstance).getDeclaringClass().isInstance(this.api)) {
 					final Object[] args = Arrays.copyOfRange(evalObject.method, 1, evalObject.method.length);
@@ -51,5 +51,5 @@ public class ClassicalBEvaluator implements IWorksheetEvaluator {
 
 		return retVal.toArray(new IBlock[retVal.size()]);
 	}
-
+*/
 }

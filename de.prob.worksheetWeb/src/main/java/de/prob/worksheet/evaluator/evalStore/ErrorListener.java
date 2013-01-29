@@ -1,9 +1,12 @@
 /**
  * 
  */
-package de.prob.worksheet.evaluator.state;
+package de.prob.worksheet.evaluator.evalStore;
 
 import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -20,13 +23,17 @@ import de.prob.worksheet.block.IBlock;
  *
  */
 public class ErrorListener implements IWorksheetAPIListener {
+	Logger logger= LoggerFactory.getLogger(ErrorListener.class);
 	private static final Injector	INJECTOR	= ServletContextListener.INJECTOR;
 
 	public ArrayList<IBlock> outputBlocks;
+	private boolean haltAll;
 	/**
 	 * 
 	 */
 	public ErrorListener(ArrayList<IBlock> output) {
+		logger.trace(output.toString());
+		this.setHaltAll(false);
 		this.outputBlocks=output;
 	}
 	/* (non-Javadoc)
@@ -34,7 +41,10 @@ public class ErrorListener implements IWorksheetAPIListener {
 	 */
 	@Override
 	public void notify(IWorksheetEvent event) {
+		logger.trace("{}",event);
 		final WorksheetErrorEvent typedEvent = (WorksheetErrorEvent) event;
+		if(typedEvent.isHaltAll())
+			this.setHaltAll(true);
 		switch (event.getId()) {
 			case 3001:
 				this.addOutput("errorHtml", typedEvent.getMessage(),typedEvent.isHaltAll());
@@ -46,9 +56,23 @@ public class ErrorListener implements IWorksheetAPIListener {
 	}
 
 	private void addOutput(final String outputBlockType, final String output,boolean haltAll) {
+		logger.trace("type:{}",outputBlockType);
+		logger.trace("output:{}",output);
+		logger.trace("halt{}",haltAll);
+		
 		final IBlock block = ErrorListener.INJECTOR.getInstance(Key.get(IBlock.class, Names.named(outputBlockType)));
 		block.setOutput(true);
 		block.getEditor().setEditorContent(output);
 		this.outputBlocks.add(block);
+		logger.debug("{}",this.outputBlocks);
+	}
+	
+	public boolean isHaltAll(){
+		logger.trace("");
+		return this.haltAll;
+	}
+	public void setHaltAll(boolean haltAll) {
+		logger.trace("{}",haltAll);
+		this.haltAll = haltAll;
 	}
 }

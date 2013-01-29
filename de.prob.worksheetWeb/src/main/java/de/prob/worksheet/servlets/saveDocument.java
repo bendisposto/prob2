@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +19,7 @@ import com.google.inject.Singleton;
 
 import de.prob.worksheet.WorksheetDocument;
 
-@Singleton
+@WebServlet(urlPatterns={"/saveDocument"})
 public class saveDocument extends HttpServlet {
 	/**
 	 * 
@@ -26,8 +27,6 @@ public class saveDocument extends HttpServlet {
 	private static final long serialVersionUID = -7762787871923711945L;
 	Logger logger = LoggerFactory.getLogger(saveDocument.class);
 
-	@Inject
-	public saveDocument() {}
 
 	/*
 	 * (non-Javadoc)

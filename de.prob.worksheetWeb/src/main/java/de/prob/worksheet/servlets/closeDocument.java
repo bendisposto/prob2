@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,18 +24,12 @@ import com.google.inject.Singleton;
  * @author Rene
  *
  */
-@Singleton
+@WebServlet(urlPatterns={"/closeDocument"})
 public class closeDocument extends HttpServlet {
 
 	
 	Logger logger = LoggerFactory.getLogger(closeDocument.class);
 
-	
-	/**
-	 * 
-	 */
-	@Inject
-	public closeDocument() {}
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)

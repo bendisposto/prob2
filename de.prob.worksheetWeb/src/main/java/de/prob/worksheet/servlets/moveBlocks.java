@@ -6,6 +6,7 @@ package de.prob.worksheet.servlets;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import de.prob.worksheet.WorksheetDocument;
  * @author Rene
  * 
  */
+@WebServlet(urlPatterns={"/moveBlocks"})
 public class moveBlocks extends HttpServlet {
 	/**
 	 * 

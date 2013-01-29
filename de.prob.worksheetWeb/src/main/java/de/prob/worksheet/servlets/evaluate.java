@@ -4,10 +4,13 @@
 package de.prob.worksheet.servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.ListIterator;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,8 +24,11 @@ import com.google.inject.Key;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
+import de.prob.worksheet.ContextHistory;
 import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.api.evalStore.EvalStoreAPI;
+import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.IBlock;
 import de.prob.worksheet.block.JavascriptBlock;
 import de.prob.worksheet.evaluator.IWorksheetEvaluator;
@@ -31,7 +37,7 @@ import de.prob.worksheet.evaluator.IWorksheetEvaluator;
  * @author Rene
  * 
  */
-@Singleton
+@WebServlet(urlPatterns={"/evaluate"})
 public class evaluate extends HttpServlet {
 	/**
 	 * 
@@ -57,28 +63,18 @@ public class evaluate extends HttpServlet {
 
 		resp.setCharacterEncoding("UTF-8");
 		//initialize session and document
-		final String wsid = req.getParameter("worksheetSessionId");
-		HashMap<String, Object> sessionAttributes=(HashMap<String, Object>) req.getSession().getAttribute(wsid);
-		if(sessionAttributes==null)
-			sessionAttributes=new HashMap<String, Object>();
-		WorksheetDocument doc=(WorksheetDocument) sessionAttributes.get("document");
-
-		if (req.getSession().isNew() || doc==null) {
-			System.err.println("No worksheet Document is initialized (first a call to newDocument Servlet is needed)");
-			resp.getWriter().write("Error: No document is initialized");
-			if(req.getSession().isNew())
-				req.getSession().invalidate();
-			return;
-		}
+		this.setSessionProperties(req.getSession());
 		
-		final String id = req.getParameter("id");
-		final int index = doc.getBlockIndexById(id);
+		HashMap<String, Object> sessionAttributes=this.getSessionAttributes(req.getSession(), req.getParameter("worksheetSessionId"));
+		WorksheetDocument doc=(WorksheetDocument) sessionAttributes.get("document");
+		
+		final int index = doc.getBlockIndexById(req.getParameter("id"));
 		doc.markAllAfter(index);
 
 		IBlock[] blocks = doc.getBlocksFrom(index);
 
 		for (final IBlock block : blocks) {
-			this.evaluateBlock(doc,block, req.getSession(), wsid);
+			this.evaluateBlock(doc,block,sessionAttributes);
 		}
 
 		blocks = doc.getBlocksFrom(index);
@@ -86,12 +82,8 @@ public class evaluate extends HttpServlet {
 			doc.appendBlock(new JavascriptBlock());
 		}
 		blocks = doc.getBlocksFrom(index);
-	
-		// DEBUG
-		System.out.println("Document Block Count: " + doc.getBlocks().length);
-		System.out.println("Document Blocks: " + Arrays.toString(doc.getBlocks()));
-		// END DEBUG
-
+		
+		this.setSessionAttributes(req.getSession(), req.getParameter("worksheetSessionId"), sessionAttributes);
 		
 		final ObjectMapper mapper = new ObjectMapper();
 		
@@ -100,27 +92,48 @@ public class evaluate extends HttpServlet {
 		return;
 
 	}
-
-	private void evaluateBlock(WorksheetDocument doc,final IBlock block, final HttpSession session, final String wsid) {
+	
+	private ContextHistory getContextHistory(HashMap<String, Object> attributes){
+		logger.trace("{}",attributes);
+		Object temp=attributes.get("contextHistory");
+		ContextHistory contextHistory=null;
+		if(temp==null){
+			contextHistory=new ContextHistory(new EvalStoreContext("init",null));
+			logger.info("new ContextHistory created");
+			attributes.put("contextHistory",contextHistory);
+		}else{
+			contextHistory=(ContextHistory) temp;	
+		}
+		logger.trace("{}",contextHistory);
+		return contextHistory;
+	}
+	
+	private void evaluateBlock(WorksheetDocument doc,final IBlock block,HashMap<String, Object> sessionAttributes) {
+		logger.trace("{}",doc);
+		logger.trace("{}",block);
+		logger.trace("{}",sessionAttributes);
+		
+		// don't evaluate outputblocks;
 		if (block.getOutput()) return;
 
-		final int index = doc.getBlockIndexById(block.getId());
-
-		// evaluate
 		final String evalType = block.getEvaluatorType();
-		IWorksheetEvaluator evaluator = (IWorksheetEvaluator) session.getAttribute(evalType + wsid);
-		if (evaluator == null) {
-			evaluator = ServletContextListener.INJECTOR.getInstance(Key.get(IWorksheetEvaluator.class, Names.named(evalType)));
-			session.setAttribute(evalType + wsid, evaluator);
-		}
-
+		IWorksheetEvaluator evaluator = ServletContextListener.INJECTOR.getInstance(Key.get(IWorksheetEvaluator.class, Names.named(evalType)));
+		//TODO Add Api Interface and getInstance by Key and dont't forget to add multiple api support
+		evaluator.setInitialContext(getContextHistory(sessionAttributes).getInitialContextForId(block.getId()));
+		evaluator.setImport(ServletContextListener.INJECTOR.getInstance(EvalStoreAPI.class));
+		
+		
 		final String evalCode = block.getEditor().getEditorContent();
-		final IBlock[] blocks = evaluator.evaluate(evalCode);
-
+		evaluator.evaluate(evalCode);
+		IBlock[] blocks = evaluator.getOutputs();
+	    
+		
+		getContextHistory(sessionAttributes).setContextsForId(block.getId(), evaluator.getContextHistory());
+		
+		int index = doc.getBlockIndexById(block.getId());
 		// remove old Output for this block from document;
 		doc.removeOutputBlocks(block);
-
-		// append outputBlocks after this block;
+		// append new outputBlocks to this block;
 		int oBlockIndex = index;
 		for (final IBlock outBlock : blocks) {
 			oBlockIndex++;
@@ -128,6 +141,32 @@ public class evaluate extends HttpServlet {
 			block.addOutputId(outBlock.getId());
 		}
 		return;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private HashMap<String, Object> getSessionAttributes(HttpSession session, String wsid) {
+		logger.trace("{} {}",session,wsid);
+		HashMap<String, Object> attributes = (HashMap<String, Object>) session.getAttribute(wsid);
+		if (attributes == null){
+			attributes = new HashMap<String, Object>();
+			logger.debug("New 'Sub'session initialized with id  :"+wsid);
+		}
+		logger.trace("{}",attributes);
+		return attributes;
+	}
+
+	private void setSessionAttributes(HttpSession session, String wsid, HashMap<String, Object> attributes) {
+		logger.trace("{}"+session);
+		logger.trace("{}"+wsid);
+		logger.trace("{}"+attributes);
+		session.setAttribute(wsid, attributes);
+	}
+	private void setSessionProperties(HttpSession session) {
+		logger.trace("{}",session);
+		if (session.isNew()) {
+			logger.debug("New Session initialized");
+			session.setMaxInactiveInterval(-1);
+		}
 	}
 	private void logParameters(HttpServletRequest req){
 		String[] params={"worksheetSessionId","id"};
@@ -139,4 +178,6 @@ public class evaluate extends HttpServlet {
 		msg+=" }";
 		logger.debug(msg);
 	}
+	
+	
 }

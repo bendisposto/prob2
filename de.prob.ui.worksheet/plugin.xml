@@ -14,7 +14,6 @@
                     disabledIcon="icons/dtool16/new_tsk.png"
                     icon="icons/etool16/new_tsk.png"
                     label="%command.label"
-                    mnemonic="W"
                     style="push"
                     tooltip="Open a new Worksheet">
               </command>
@@ -48,7 +47,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             class="de.prob.ui.worksheet.OpenWorksheetEditorHandler"
-            commandId="de.prob.ui.openWorksheet">
+            commandId="de.prob.ui.openWorksheetEditorHandler">
       </handler>
    </extension>
 

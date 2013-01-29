@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.prob.worksheet.api.state.StateAPI;
+import de.prob.worksheet.api.evalStore.EvalStoreAPI;
 import de.prob.worksheet.parser.SimpleConsoleParser;
 
 public class ClassicalBWorksheetParserTest {
@@ -36,7 +36,7 @@ public class ClassicalBWorksheetParserTest {
 	@Test
 	public void methodsToEvalObjects1() throws NoSuchMethodException, SecurityException {
 		final Object[] res = this.cbwParser.methodsToEvalObjects(new String[][] { { "selectHistory", "1" }, { "getHistories" }, { "load", "\"test,dsystem.mch\"", "true" } });
-		Assert.assertArrayEquals(new Object[] { StateAPI.class.getDeclaredMethod("selectHistory", String.class), StateAPI.class.getDeclaredMethod("getHistories"), StateAPI.class.getDeclaredMethod("load", String.class, String.class) }, res);
+		Assert.assertArrayEquals(new Object[] { EvalStoreAPI.class.getDeclaredMethod("selectHistory", String.class), EvalStoreAPI.class.getDeclaredMethod("getHistories"), EvalStoreAPI.class.getDeclaredMethod("load", String.class, String.class) }, res);
 	}
 
 	@Test
