@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
-import org.eventb.internal.core.ast.extension.datatype.ArgSimpleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

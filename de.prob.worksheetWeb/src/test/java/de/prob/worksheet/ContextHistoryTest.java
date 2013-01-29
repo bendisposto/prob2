@@ -3,17 +3,14 @@
  */
 package de.prob.worksheet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ListIterator;
 
 import org.junit.Test;
 
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
-import de.prob.worksheet.api.evalStore.EvalStoreContextTest;
 
 /**
  * @author Rene

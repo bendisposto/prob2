@@ -9,30 +9,23 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.command.EvalstoreCreateByStateCommand;
 import de.prob.animator.command.EvalstoreEvalCommand;
 import de.prob.animator.command.EvalstoreEvalCommand.EvalstoreResult;
 import de.prob.animator.command.GetStateValuesCommand;
-import de.prob.animator.command.ICommand;
-import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.StateId;
-import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
-import de.prob.worksheet.IContext;
 import de.prob.worksheet.api.IWorksheetAPIListener;
 import de.prob.worksheet.api.WorksheetActionEvent;
 import de.prob.worksheet.api.WorksheetErrorEvent;
 import de.prob.worksheet.api.WorksheetOutputEvent;
-import de.prob.worksheet.evaluator.evalStore.ErrorListener;
 
 public class EvalStoreAPI {
 	// Error IDs

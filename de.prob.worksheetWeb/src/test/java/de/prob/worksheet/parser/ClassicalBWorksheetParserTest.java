@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
-import de.prob.worksheet.parser.SimpleConsoleParser;
 
 public class ClassicalBWorksheetParserTest {
 	SimpleConsoleParser	cbwParser;

@@ -1,17 +1,5 @@
 package de.prob.worksheet.evaluator.classicalB;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import de.prob.worksheet.ServletContextListener;
-import de.prob.worksheet.api.classicalB.OutputWorksheetApiListener;
-import de.prob.worksheet.api.classicalB.WorksheetAPI;
-import de.prob.worksheet.block.IBlock;
-import de.prob.worksheet.evaluator.IWorksheetEvaluator;
-import de.prob.worksheet.parser.SimpleConsoleParser;
-import de.prob.worksheet.parser.SimpleConsoleParser.EvalObject;
 
 public class ClassicalBEvaluator{/* implements IWorksheetEvaluator {
 

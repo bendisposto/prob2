@@ -1,7 +1,5 @@
 package de.prob.worksheet.evaluator;
 
-import java.util.ArrayList;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
