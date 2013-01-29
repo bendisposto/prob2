@@ -13,12 +13,17 @@ class HistoryConverter {
 		file << "${model.toString()} -->"
 
 		file << "<trace>"
-		history.current.opList.each {
-			file << "<Operation name=\"${it.getName()}\">"
-			it.getParams().each {
-				param -> file << "<Parameter name=\"$param\"/>"
+		def trace = history as ArrayList
+		trace.each {
+			def op = it.edge
+			if(op != null) {
+				file << "<Operation name=\"${op.getName()}\">"
+				op.getParams().each {
+					param -> file << "<Parameter name=\"$param\"/>"
+				}
+				file << "<sha value=\"${it.dest.hash}\"/>"
+				file << "</Operation>"
 			}
-			file << "</Operation>"
 		}
 		file << "</trace>"
 
@@ -26,19 +31,34 @@ class HistoryConverter {
 	}
 
 	def static History restore(AbstractModel model,String fileName) {
-		def History history = model as History
+		def History h = model as History
+		def StateSpace s = h as StateSpace
 
 		def trace = new XmlSlurper().parse(fileName)
 
 		trace.Operation.each {
-			def params = []
-			it.Parameter.each {
-				params << "${it.@name}"
+			def sha = it.sha.getAt(0).@value.toString()
+			def ops = s.outgoingEdgesOf(h.getCurrentState())
+			def op = null
+			ops.each {
+				def state = s.getEdgeTarget(it)
+				if(state.hash == sha) {
+					op = it
+				}
 			}
-			def name = "${it.@name}"
-			history = history.add("${it.@name}", params)
+
+			if(op == null) {
+				def params = []
+						it.Parameter.each {
+					params << "${it.@name}"
+				}
+				def name = "${it.@name}"
+				h = h.add("${it.@name}", params)
+			} else {
+				h = h.add(op.id)
+			}
 		}
 
-		history
+		h
 	}
 }
