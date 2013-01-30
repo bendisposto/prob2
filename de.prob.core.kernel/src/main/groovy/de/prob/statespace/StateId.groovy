@@ -2,7 +2,6 @@ package de.prob.statespace
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
-import java.util.Collections.SingletonList
 
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IEvalElement
@@ -24,19 +23,6 @@ class StateId {
 		StateId newState = space.getEdgeTarget(op);
 		space.explore(newState);
 		return newState;
-	}
-
-	def propertyMissing(String property) {
-		def result = space.info.getVariable(this, property);
-		if (result == null) {
-			def evalElement = space.getForms().get(property)
-			if (evalElement == null)
-			throw NoSuchElementException("Missing attribute "+property);
-
-			result = space.eval(getId(), new SingletonList<IEvalElement>(evalElement))
-			space.info.add(this, property, result[0]);
-		}
-		return result;
 	}
 
 	def eval(formula) {
@@ -90,7 +76,6 @@ class StateId {
 
 
 	def StateId anyOperation(filter) {
-		def spaceInfo = space.info
 		def ops = new ArrayList<OpInfo>()
 		ops.addAll(space.outgoingEdgesOf(this));
 		if (filter != null && filter instanceof String) {

@@ -182,7 +182,7 @@ class History {
 			OpInfo op = ops.get(0)
 
 			StateId newState = s.getState(op)
-			evaluateFormulas(ops.get(0))
+			s.evaluateFormulas(ops.get(0))
 
 			current = new HistoryElement(currentState,newState,op,previous)
 			currentState = newState
@@ -206,7 +206,6 @@ class History {
 	}
 
 	def History anyOperation(filter) {
-		def spaceInfo = s.info
 		def ops = new ArrayList<OpInfo>()
 		ops.addAll(s.outgoingEdgesOf(current.getCurrentState()));
 		if (filter != null && filter instanceof String) {
