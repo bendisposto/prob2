@@ -12,11 +12,10 @@
  *******************************************************************************/
 package de.prob.ui.junitview;
 
-import junit.framework.TestFailure;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.junit.runner.notification.Failure;
 
 public class FailureTrace {
 	private static final int MAX_LABEL_LENGTH = 256;
@@ -43,20 +42,21 @@ public class FailureTrace {
 		return fTable;
 	}
 
-	public void showFailure(final TestFailure test) {
+	public void showFailure(final Failure selectedTest) {
 		String trace = ""; //$NON-NLS-1$
-		if (test != null) {
-			trace = createTrace(test);
+		if (selectedTest != null) {
+			trace = createTrace(selectedTest);
 		}
 		updateTable(trace);
 	}
 
-	private String createTrace(final TestFailure test) {
+	private String createTrace(final Failure selectedTest) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(test.thrownException().getClass().getSimpleName() + ": "
-				+ test.exceptionMessage());
+		sb.append(selectedTest.getException().getClass().getSimpleName() + ": "
+				+ selectedTest.getMessage());
 		sb.append("\n");
-		StackTraceElement[] stackTrace = test.thrownException().getStackTrace();
+		StackTraceElement[] stackTrace = selectedTest.getException()
+				.getStackTrace();
 		for (StackTraceElement e : stackTrace) {
 			sb.append(" at " + e.getClassName() + "." + e.getMethodName() + "("
 					+ e.getFileName() + ":" + e.getLineNumber() + ")\n");

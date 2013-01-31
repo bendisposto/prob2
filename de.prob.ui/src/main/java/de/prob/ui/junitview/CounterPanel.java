@@ -10,8 +10,6 @@
  *******************************************************************************/
 package de.prob.ui.junitview;
 
-import java.text.MessageFormat;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -28,7 +26,6 @@ import de.prob.ui.Activator;
  * A panel with counters for the number of Runs, Errors and Failures.
  */
 public class CounterPanel extends Composite {
-	protected Text fNumberOfErrors;
 	protected Text fNumberOfFailures;
 	protected Text fNumberOfRuns;
 	protected int fTotal;
@@ -49,7 +46,6 @@ public class CounterPanel extends Composite {
 		setLayout(gridLayout);
 
 		fNumberOfRuns = createLabel("Runs:", null, " 0/0  "); //$NON-NLS-1$
-		fNumberOfErrors = createLabel("Errors:", fErrorIcon, " 0 "); //$NON-NLS-1$
 		fNumberOfFailures = createLabel("Failures:", fFailureIcon, " 0 "); //$NON-NLS-1$
 
 		addDisposeListener(new DisposeListener() {
@@ -90,7 +86,6 @@ public class CounterPanel extends Composite {
 	}
 
 	public void reset() {
-		setErrorValue(0);
 		setFailureValue(0);
 		setRunValue(0, 0);
 		fTotal = 0;
@@ -110,11 +105,9 @@ public class CounterPanel extends Composite {
 			runString = Integer.toString(value) + "/"
 					+ Integer.toString(fTotal);
 		} else {
-			runString = MessageFormat.format(
-					"{1}/{2} ({3} ignored)",
-					new Object[] { Integer.toString(value),
-							Integer.toString(fTotal),
-							Integer.toString(ignoredCount) });
+			runString = Integer.toString(value) + "/"
+					+ Integer.toString(fTotal) + " ("
+					+ Integer.toString(ignoredCount) + " ignored)";
 		}
 		fNumberOfRuns.setText(runString);
 
@@ -126,11 +119,6 @@ public class CounterPanel extends Composite {
 			redraw();
 		}
 		fIgnoredCount = ignoredCount;
-	}
-
-	public void setErrorValue(final int value) {
-		fNumberOfErrors.setText(Integer.toString(value));
-		redraw();
 	}
 
 	public void setFailureValue(final int value) {

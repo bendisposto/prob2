@@ -3,8 +3,6 @@ package de.prob.ui.junitview;
 import java.util.Collection;
 import java.util.Set;
 
-import junit.framework.TestSuite;
-
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -12,7 +10,7 @@ import com.google.common.collect.Multimap;
 
 public class TestViewContentProvider implements ITreeContentProvider {
 
-	Multimap<Class<TestSuite>, Object> tests;
+	Multimap<String, Object> tests;
 
 	@Override
 	public void dispose() {
@@ -36,15 +34,14 @@ public class TestViewContentProvider implements ITreeContentProvider {
 		return new Object[] { inputElement };
 	}
 
-	public void update(final Multimap<Class<TestSuite>, Object> tests) {
+	public void update(final Multimap<String, Object> tests) {
 		this.tests = tests;
 	}
 
 	@Override
 	public Object[] getChildren(final Object parentElement) {
-		if (parentElement instanceof Class<?>) {
-			Collection<Object> children = tests
-					.get((Class<TestSuite>) parentElement);
+		if (parentElement instanceof String) {
+			Collection<Object> children = tests.get((String) parentElement);
 			return children.toArray();
 		}
 		return new Object[] {};
@@ -58,7 +55,7 @@ public class TestViewContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(final Object element) {
-		if (element instanceof Class<?>) {
+		if (element instanceof String) {
 			return true;
 		}
 		return false;

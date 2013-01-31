@@ -4,6 +4,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -20,11 +21,16 @@ public class SpecifyTestDirectoryHandler extends AbstractHandler implements
 
 		FileDialog dialog = new FileDialog(shell);
 		dialog.open();
-		String answer = dialog.getFilterPath();
+		final String answer = dialog.getFilterPath();
 
 		if (answer != null && answer != "") {
-			ServletContextListener.INJECTOR.getInstance(TestRegistry.class)
-					.loadTests(answer);
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					ServletContextListener.INJECTOR.getInstance(
+							TestRegistry.class).loadTests(answer);
+				}
+			});
 			return null;
 		} else {
 			throw new IllegalArgumentException();

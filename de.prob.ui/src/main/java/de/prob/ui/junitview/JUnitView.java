@@ -2,11 +2,6 @@ package de.prob.ui.junitview;
 
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.Test;
-import junit.framework.TestFailure;
-import junit.framework.TestSuite;
-
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -27,14 +22,16 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.inject.Injector;
 
-import de.prob.testing.IProBTestListener;
 import de.prob.testing.ITestsAddedListener;
+import de.prob.testing.ProBTestListener;
 import de.prob.testing.ProBTestRunner;
 import de.prob.testing.TestRegistry;
 import de.prob.ui.Activator;
@@ -55,8 +52,7 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class JUnitView extends ViewPart implements IProBTestListener,
-		ITestsAddedListener {
+public class JUnitView extends ViewPart implements ITestsAddedListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -71,14 +67,15 @@ public class JUnitView extends ViewPart implements IProBTestListener,
 	private SashForm fSashForm;
 	private TestViewer fTestViewer;
 	private ProBTestRunner runner;
+	private JUnitTestListener listener;
 	private FailureTrace fFailureTrace;
 
 	private int testCount = 0;
-	private int errorCount = 0;
 	private int failureCount = 0;
 	private int runCount = 0;
+	private int ignoredCount = 0;
 
-	private final SetMultimap<Class<TestSuite>, Object> tests = LinkedHashMultimap
+	private final SetMultimap<String, Object> tests = LinkedHashMultimap
 			.create();
 
 	class ViewLabelProvider extends LabelProvider implements
@@ -120,7 +117,8 @@ public class JUnitView extends ViewPart implements IProBTestListener,
 
 		runner = ServletContextListener.INJECTOR
 				.getInstance(ProBTestRunner.class);
-		runner.addTestListener(this);
+		listener = new JUnitTestListener();
+		runner.addTestListener(listener);
 
 		TestRegistry instance = ServletContextListener.INJECTOR
 				.getInstance(TestRegistry.class);
@@ -199,113 +197,124 @@ public class JUnitView extends ViewPart implements IProBTestListener,
 	private void resetAll() {
 		tests.clear();
 		testCount = 0;
-		errorCount = 0;
 		failureCount = 0;
 		runCount = 0;
+		ignoredCount = 0;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void addError(final Test test, final Throwable t) {
-		tests.remove(test.getClass(), test);
-		tests.put((Class<TestSuite>) test.getClass(), new TestFailure(test, t));
-		errorCount++;
+	private class JUnitTestListener extends ProBTestListener {
 
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				fCounterPanel.setErrorValue(errorCount);
-			}
-		});
-	}
+		@Override
+		public void testFailure(final Failure failure) throws Exception {
+			tests.remove(failure.getDescription().getClassName(),
+					failure.getDescription());
+			tests.put(failure.getDescription().getClassName(), failure);
+			failureCount++;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void addFailure(final Test test, final AssertionFailedError t) {
-		tests.remove(test.getClass(), test);
-		tests.put((Class<TestSuite>) test.getClass(), new TestFailure(test, t));
-		failureCount++;
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					fCounterPanel.setFailureValue(failureCount);
+				}
+			});
+		}
 
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				fCounterPanel.setFailureValue(failureCount);
-			}
-		});
+		@Override
+		public void testAssumptionFailure(final Failure failure) {
+			tests.remove(failure.getDescription().getClassName(),
+					failure.getDescription());
+			tests.put(failure.getDescription().getClassName(), failure);
+			failureCount++;
 
-	}
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					fCounterPanel.setFailureValue(failureCount);
+				}
+			});
+		}
 
-	@Override
-	public void endTest(final Test test) {
-		runCount++;
+		@Override
+		public void testIgnored(final Description description) throws Exception {
+			ignoredCount++;
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					fProgressBar.step(failureCount);
+				}
+			});
+		}
 
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				fTestViewer.update(Multimaps.synchronizedSetMultimap(tests));
-			}
-		});
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				fCounterPanel.setRunValue(runCount, 0);
-			}
-		});
+		@Override
+		public void testFinished(final Description description)
+				throws Exception {
+			runCount++;
 
-		Display.getDefault().asyncExec(new Runnable() {
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					fTestViewer.update(Multimaps.synchronizedSetMultimap(tests));
+				}
+			});
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					fCounterPanel.setRunValue(runCount, ignoredCount);
+				}
+			});
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					fProgressBar.step(failureCount);
+				}
+			});
+		}
 
-			@Override
-			public void run() {
-				fProgressBar.step(errorCount + failureCount);
-			}
-		});
-	}
+		@Override
+		public void testStarted(final Description description) throws Exception {
+			String className = description.getClassName();
+			tests.put(className, description);
+		}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void startTest(final Test test) {
-		Class<? extends Test> class1 = test.getClass();
-		tests.put((Class<TestSuite>) class1, test);
-	}
+		@Override
+		public void totalNumberOfTests(final int number) {
+			testCount = number;
 
-	@Override
-	public void totalNumberOfTests(final int number) {
-		testCount = number;
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					fCounterPanel.reset();
+					fCounterPanel.setTotal(testCount);
+				}
+			});
 
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				fCounterPanel.reset();
-				fCounterPanel.setTotal(testCount);
-			}
-		});
-
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				fProgressBar.reset();
-				fProgressBar.setMaximum(testCount);
-			}
-		});
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					fProgressBar.reset();
+					fProgressBar.setMaximum(testCount);
+				}
+			});
+		}
 	}
 
 	class TestSelectionListener implements ISelectionChangedListener {
 
 		@Override
 		public void selectionChanged(final SelectionChangedEvent event) {
-			TestFailure selectedTest = getSelectedTest();
+			Failure selectedTest = getSelectedTest();
 			fFailureTrace.showFailure(selectedTest);
 		}
 	}
 
-	public TestFailure getSelectedTest() {
+	public Failure getSelectedTest() {
 		TreeViewer viewer = fTestViewer.getViewer();
 		if (viewer.getSelection() != null
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof TestFailure) {
-				return (TestFailure) ssel.getFirstElement();
+			if (ssel.getFirstElement() instanceof Failure) {
+				return (Failure) ssel.getFirstElement();
 			}
 		}
 		return null;
