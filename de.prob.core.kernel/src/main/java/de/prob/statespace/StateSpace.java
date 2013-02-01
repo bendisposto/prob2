@@ -161,7 +161,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * Returns the StateId for the given key
 	 * 
 	 * @param key
-	 * @return
+	 * @return StateId for the specified key
 	 */
 	public StateId getVertex(final String key) {
 		return states.get(key);
@@ -173,7 +173,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * returned
 	 * 
 	 * @param state
-	 * @return
+	 * @return explored StateId
 	 */
 	public StateId getState(final StateId state) {
 		if (!isExplored(state)) {
@@ -186,7 +186,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * Get the target State for given operation, explore it, and return it.
 	 * 
 	 * @param op
-	 * @return
+	 * @return explored target StateId for op
 	 */
 	public StateId getState(final OpInfo op) {
 		final StateId edgeTarget = getEdgeTarget(op);
@@ -247,7 +247,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * Checks to see if the specified state has violated the invariant
 	 * 
 	 * @param state
-	 * @return
+	 * @return true if state has an invariant violation. False otherwise.
 	 */
 	public boolean hasInvariantViolation(final StateId state) {
 		if (!isExplored(state)) {
@@ -272,15 +272,16 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	// EVALUATE FORMULAS
 
 	/**
-	 * The method eval takes a stateId and a list of formulas and returns a list
-	 * of EvaluationResults for the given formulas. It first checks to see if
-	 * any of the formulas have cached values for the given state and then, if
-	 * there are formulas that have not yet been calculated, it contacts Prolog
-	 * to get the remaining values.
+	 * The method eval takes a stateId and a list of formulas (
+	 * {@link IEvalElement}) and returns a list of EvaluationResults for the
+	 * given formulas. It first checks to see if any of the formulas have cached
+	 * values for the given state and then, if there are formulas that have not
+	 * yet been calculated, it contacts Prolog to get the remaining values.
 	 * 
 	 * @param stateId
 	 * @param code
-	 * @return
+	 * @return list of {@link EvaluationResult} objects for the given stateId
+	 *         and code
 	 */
 	public List<EvaluationResult> eval(final StateId stateId,
 			final List<IEvalElement> code) {
@@ -371,7 +372,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * cached values
 	 * 
 	 * @param stateId
-	 * @return
+	 * @return map from {@link IEvalElement} object to {@link EvaluationResult}
+	 *         objects
 	 */
 	public Map<IEvalElement, EvaluationResult> valuesAt(final StateId stateId) {
 		if (canBeEvaluated(stateId)) {
@@ -479,11 +481,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	/**
-	 * Returns a string representation of the formulas, invariants, and timeouts
-	 * for the StateSpace. This is mainly useful for console output and
-	 * debugging.
-	 * 
-	 * @return
+	 * @return Returns a string representation of the formulas, invariants, and
+	 *         timeouts for the StateSpace. This is mainly useful for console
+	 *         output and debugging.
 	 */
 	public String printInfo() {
 		String result = "";
@@ -498,7 +498,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	/**
 	 * Get the the map of String ids to their corresponding {@link StateId}
 	 * 
-	 * @return
+	 * @return Map from String to {@link StateId}
 	 */
 	public HashMap<String, StateId> getStates() {
 		return states;
@@ -507,18 +507,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	/**
 	 * Get the map of String ids to their corresponding {@link OpInfo}
 	 * 
-	 * @return
+	 * @return Map from String to {@link OpInfo}
 	 */
 	public HashMap<String, OpInfo> getOps() {
 		return ops;
 	}
 
 	/**
-	 * Returns a String representation of the operations available from the
-	 * specified {@link StateId}. This is mainly useful for console output.
-	 * 
 	 * @param state
-	 * @return
+	 * @return Returns a String representation of the operations available from
+	 *         the specified {@link StateId}. This is mainly useful for console
+	 *         output.
 	 */
 	public String printOps(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
@@ -537,13 +536,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	/**
-	 * Returns a String representation of the information about the state with
-	 * the specified {@link StateId}. This includes the id for the state, the
-	 * cached calculated values, and if an invariant violation or a timeout has
-	 * occured for the given state. This is mainly useful for console output.
-	 * 
 	 * @param state
-	 * @return
+	 * @return Returns a String representation of the information about the
+	 *         state with the specified {@link StateId}. This includes the id
+	 *         for the state, the cached calculated values, and if an invariant
+	 *         violation or a timeout has occured for the given state. This is
+	 *         mainly useful for console output.
 	 */
 	public String printState(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
@@ -575,11 +573,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	/**
 	 * This calculated the shortest path from root to the specified state
-	 * (specified with an integer id value). The trace is returned in the form
-	 * of a {@link History} object
+	 * (specified with an integer id value).
 	 * 
 	 * @param state
-	 * @return
+	 * @return trace in the form of a {@link History} object
 	 */
 	public History getTrace(final int state) {
 		final StateId id = states.get(String.valueOf(state));
@@ -626,7 +623,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	/**
 	 * Returns the specified model for the given StateSpace
 	 * 
-	 * @return
+	 * @return the {@link AbstractElement} that represents the model for the
+	 *         given StateSpace instance
 	 */
 	public AbstractElement getModel() {
 		return model;
@@ -640,7 +638,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * {@link History}, a new History object will be created and returned.
 	 * 
 	 * @param className
-	 * @return
+	 * @return the Model or History corresponding to the StateSpace instance
 	 */
 	public Object asType(final Class<?> className) {
 		if (className.getSimpleName().equals("AbstractModel")) {
@@ -680,7 +678,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @throws IllegalArgumentException
 	 * @param that
-	 * @return
+	 * @return {@link StateId} for the specified id
 	 */
 	public Object getAt(final Object that) {
 		StateId id = null;

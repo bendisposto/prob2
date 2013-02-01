@@ -38,6 +38,13 @@ public class Api {
 		return "ProB Connector";
 	}
 
+	/**
+	 * A {@link FactoryProvider} and {@link Downloader} are injected into an api
+	 * object at startup
+	 * 
+	 * @param modelFactoryProvider
+	 * @param downloader
+	 */
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
 			final Downloader downloader) {
@@ -76,7 +83,7 @@ public class Api {
 	 * they need to install it.
 	 * 
 	 * @param file
-	 * @return
+	 * @return {@link CSPModel} that has been loaded from file
 	 * @throws Exception
 	 */
 	public CSPModel csp_load(final String file) throws Exception {
@@ -136,7 +143,8 @@ public class Api {
 	 * Reads the statespace.xml file and returns the StateSpace that it
 	 * represents
 	 * 
-	 * @return
+	 * @return {@link StateSpace} object specified by saved "statespace.xml"
+	 *         file
 	 */
 	public StateSpace readFile() {
 		FileInputStream fstream;
@@ -174,10 +182,9 @@ public class Api {
 	}
 
 	/**
-	 * Returns a String representation of the currently available commands for
-	 * the Api object. Intended to ease use in the Groovy console.
-	 * 
-	 * @return
+	 * @return Returns a String representation of the currently available
+	 *         commands for the Api object. Intended to ease use in the Groovy
+	 *         console.
 	 */
 	public String help() {
 		return "Api Commands: \n\n ClassicalBModel b_load(String PathToFile): load .mch files \n"

@@ -18,6 +18,12 @@ import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
 
+/**
+ * Creates new {@link ClassicalBModel} objects.
+ * 
+ * @author joy
+ * 
+ */
 public class ClassicalBFactory {
 
 	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
@@ -28,6 +34,12 @@ public class ClassicalBFactory {
 		this.modelCreator = modelCreator;
 	}
 
+	/**
+	 * @param f
+	 * @return {@link ClassicalBModel} from the specified file
+	 * @throws IOException
+	 * @throws BException
+	 */
 	public ClassicalBModel load(final File f) throws IOException, BException {
 		ClassicalBModel classicalBModel = modelCreator.get();
 		BParser bparser = new BParser();
@@ -59,6 +71,13 @@ public class ClassicalBFactory {
 		return rml;
 	}
 
+	/**
+	 * @param model
+	 * @param bparser
+	 * @return AST after parsing model with bparser
+	 * @throws IOException
+	 * @throws BException
+	 */
 	public Start parseFile(final File model, final BParser bparser)
 			throws IOException, BException {
 		logger.trace("Parsing main file '{}'", model.getAbsolutePath());

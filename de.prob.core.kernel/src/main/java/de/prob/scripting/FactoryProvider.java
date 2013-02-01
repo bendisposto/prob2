@@ -2,7 +2,14 @@ package de.prob.scripting;
 
 import com.google.inject.Inject;
 
-
+/**
+ * Provides the user with access to the {@link ClassicalBFactory},
+ * {@link CSPFactory}, and {@link EventBFactory} objects that are injected into
+ * the FactoryProvider
+ * 
+ * @author joy
+ * 
+ */
 public class FactoryProvider {
 
 	private final ClassicalBFactory classical_b_factory;
