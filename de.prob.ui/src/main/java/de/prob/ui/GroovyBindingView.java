@@ -1,5 +1,6 @@
 package de.prob.ui;
 
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -10,6 +11,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -60,6 +62,14 @@ public class GroovyBindingView extends ViewPart implements
 		createViewer(parent);
 	}
 
+	private void prepareHook() {
+		MenuManager menuManager = new MenuManager();
+	    Menu menu = menuManager.createContextMenu(viewer.getTable());
+	    viewer.getTable().setMenu(menu);
+	    getSite().registerContextMenu(menuManager, viewer);
+	    getSite().setSelectionProvider(viewer);
+	}
+	
 	private void createViewer(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
@@ -88,6 +98,7 @@ public class GroovyBindingView extends ViewPart implements
 				.getInstance(GroovyExecution.class);
 		instance.registerListener(this);
 		instance.notifyListerners();
+		prepareHook();
 	}
 
 	public TableViewer getViewer() {

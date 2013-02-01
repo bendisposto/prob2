@@ -23,7 +23,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final Injector INJECTOR = ServletContextListener.INJECTOR;
 
 	public static final Main MAIN = INJECTOR.getInstance(Main.class);
-	
+
 	// IMAGES
 	public static final String IMG_FILTER = "IMG_FILTER";
 	public static final String IMG_FORWARD = "IMG_FORWARD";
@@ -37,10 +37,20 @@ public class Activator extends AbstractUIPlugin {
 	public static final String OVERLAY = "OVERLAY";
 	public static final String CHANGE_STAR = "change_star";
 	public static final String IMG_RELOAD = "IMG_RELOAD";
-	
-	
-	
-	
+
+	// JUnit Icons
+	public static final String JUNIT_ERROR_OVR = "JUNIT_ERROR_OVR";
+	public static final String JUNIT_FAILED_OVR = "JUNIT_FAILED_OVR";
+	public static final String JUNIT_TSUITE_RUN = "JUNIT_TSUITE_RUN";
+	public static final String JUNIT_TSUITE_FAIL = "JUNIT_TSUITE_FAIL";
+	public static final String JUNIT_TSUITE_ERROR = "JUNIT_TSUITE_ERROR";
+	public static final String JUNIT_TSUITE_OK = "JUNIT_TSUITE_OK";
+	public static final String JUNIT_TSUITE = "JUNIT_TSUITE";
+	public static final String JUNIT_STACK = "JUNIT_STACK";
+	public static final String JUNIT_TEST_ERR = "JUNIT_TEST_ERR";
+	public static final String JUNIT_TEST_FAIL = "JUNIT_TEST_FAIL";
+	public static final String JUNIT_TEST_OK = "JUNIT_TEST_OK";
+	public static final String JUNIT_CAUGHT_EXCEPTION = "JUNIT_CAUGHT_EXCEPTION";
 
 	/**
 	 * The constructor
@@ -55,7 +65,8 @@ public class Activator extends AbstractUIPlugin {
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
 	 * )
 	 */
-	public void start(BundleContext context) throws Exception {
+	@Override
+	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 
 		Runnable r = new Runnable() {
@@ -84,7 +95,8 @@ public class Activator extends AbstractUIPlugin {
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
 	 * )
 	 */
-	public void stop(BundleContext context) throws Exception {
+	@Override
+	public void stop(final BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
 	}
@@ -97,7 +109,7 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
-	
+
 	@Override
 	protected void initializeImageRegistry(final ImageRegistry reg) {
 		super.initializeImageRegistry(reg);
@@ -126,7 +138,44 @@ public class Activator extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/star.png"));
 		reg.put(IMG_RELOAD,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/refresh.gif"));
-	}
-	
 
+		// JUnit Icons
+		reg.put(JUNIT_ERROR_OVR,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/ovr16/error_ovr.gif"));
+		reg.put(JUNIT_FAILED_OVR,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/ovr16/failed_ovr.gif"));
+		reg.put(JUNIT_TSUITE,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/tsuite.gif"));
+		reg.put(JUNIT_TSUITE_OK,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/tsuiteok.gif"));
+		reg.put(JUNIT_TSUITE_ERROR,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/tsuiteerror.gif"));
+		reg.put(JUNIT_TSUITE_FAIL,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/tsuitefail.gif"));
+		reg.put(JUNIT_TSUITE_RUN,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/tsuiterun.gif"));
+		reg.put(JUNIT_STACK,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/stkfrm_obj.gif"));
+		reg.put(JUNIT_TEST_ERR,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/testerr.gif"));
+		reg.put(JUNIT_TEST_FAIL,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/testfail.gif"));
+		reg.put(JUNIT_TEST_OK,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/testok.gif"));
+		reg.put(JUNIT_CAUGHT_EXCEPTION,
+				imageDescriptorFromPlugin(PLUGIN_ID,
+						"icons/junit/obj16/exc_catch.gif"));
+
+	}
 }

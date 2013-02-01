@@ -89,7 +89,15 @@ public class EventB implements IEvalElement {
 	}
 
 	@Override
-	public void printProlog(final IPrologTermOutput pout) {
+	public boolean equals(final Object that) {
+		if (that instanceof EventB) {
+			return ((EventB) that).getCode().equals(this.getCode());
+		}
+		return false;
+	}
+
+	@Override
+	public void printProlog(final IPrologTermOutput pout)  {
 		if (ast == null) {
 			ensureParsed();
 		}
@@ -102,6 +110,11 @@ public class EventB implements IEvalElement {
 	@Override
 	public String getKind() {
 		return kind;
+	}
+
+	@Override
+	public String toString() {
+		return getCode();
 	}
 
 }

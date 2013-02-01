@@ -23,14 +23,15 @@ public class OutputBuffer {
 		private final List<String> extra;
 		private final String msgtype;
 
-		public Entry(int nr, String content, String msgtype, List<String> extra) {
+		public Entry(final int nr, final String content, final String msgtype,
+				final List<String> extra) {
 			this.nr = nr;
 			this.content = content;
 			this.extra = extra;
 			this.msgtype = msgtype;
 		}
 
-		public Entry(int nr, String content, String msgtype) {
+		public Entry(final int nr, final String content, final String msgtype) {
 			this(nr, content, msgtype, null);
 		}
 
@@ -38,7 +39,7 @@ public class OutputBuffer {
 			return nr;
 		}
 
-		public boolean isNewer(int pos) {
+		public boolean isNewer(final int pos) {
 			return nr > pos;
 		}
 
@@ -46,34 +47,36 @@ public class OutputBuffer {
 
 	private static final long GC_STORE_TRIGGER = 500;
 	private static final long GC_TIME_TRIGGER = 10000;
-	private long lastGC = 0;
+	private final long lastGC = 0;
 	private int minLine = 0;
 	private int maxLine = 0;
 	private int lastHighestNumber = 0;
 
-	private Queue<Entry> buffer = new ConcurrentLinkedQueue<Entry>();
+	private final Queue<Entry> buffer = new ConcurrentLinkedQueue<Entry>();
 
-	public void append(String s) {
-		buffer.add(new Entry(++maxLine, s, "output"));
+	public void append(final String s) {
+		buffer.add(new Entry(++maxLine, s + "\n", "output"));
 	}
 
-	public void error(String s) {
-		buffer.add(new Entry(++maxLine, s, "error"));
+	public void error(final String s) {
+		buffer.add(new Entry(++maxLine, s + "\n", "error"));
 	}
 
-	public void error(String s, List<String> trace) {
-		buffer.add(new Entry(++maxLine, s, "trace", trace));
+	public void error(final String s, final List<String> trace) {
+		buffer.add(new Entry(++maxLine, s + "\n", "trace", trace));
 	}
 
-	public void add(String content, String msgtype) {
-		buffer.add(new Entry(++maxLine, content, msgtype));
-		if (gcNecessary())
+	public void add(final String content, final String msgtype) {
+		buffer.add(new Entry(++maxLine, content + "\n", msgtype));
+		if (gcNecessary()) {
 			gc();
+		}
 	}
 
 	private void gc() {
-		while (!buffer.peek().isNewer(lastHighestNumber))
+		while (!buffer.peek().isNewer(lastHighestNumber)) {
 			buffer.poll();
+		}
 		minLine = buffer.peek().getNr();
 	}
 
@@ -82,7 +85,7 @@ public class OutputBuffer {
 				&& (maxLine - minLine) > GC_STORE_TRIGGER;
 	}
 
-	public String getTextAsJSon(int pos) {
+	public String getTextAsJSon(final int pos) {
 		ArrayList<Entry> res = new ArrayList<Entry>();
 		if (pos < minLine) {
 			String content = (minLine - pos) + SORRY;
@@ -91,11 +94,13 @@ public class OutputBuffer {
 		Iterator<Entry> iterator = buffer.iterator();
 		while (iterator.hasNext()) {
 			Entry e = iterator.next();
-			if (e.isNewer(pos))
+			if (e.isNewer(pos)) {
 				res.add(e);
+			}
 		}
-		if (!res.isEmpty())
+		if (!res.isEmpty()) {
 			lastHighestNumber = res.get(res.size() - 1).getNr();
+		}
 		return new Gson().toJson(res);
 	}
 

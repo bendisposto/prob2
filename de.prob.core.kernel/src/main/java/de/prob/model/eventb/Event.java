@@ -1,7 +1,9 @@
 package de.prob.model.eventb;
 
 import java.util.List;
+import java.util.Set;
 
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Action;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Guard;
@@ -41,5 +43,29 @@ public class Event extends BEvent {
 
 	public EventType getType() {
 		return type;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Name: " + getName() + "\n");
+		sb.append("Type: " + type.toString() + "\n");
+		addChildren("Refines", getChildrenOfType(Event.class), sb);
+		addChildren("Any", getChildrenOfType(EventParameter.class), sb);
+		addChildren("Where", getChildrenOfType(Guard.class), sb);
+		addChildren("With", getChildrenOfType(Witness.class), sb);
+		addChildren("Then", getChildrenOfType(Action.class), sb);
+		return sb.toString();
+	}
+
+	private void addChildren(final String name,
+			final Set<? extends AbstractElement> childrenOfType,
+			final StringBuilder sb) {
+		if (!childrenOfType.isEmpty()) {
+			sb.append(name + ": \n");
+			for (AbstractElement abstractElement : childrenOfType) {
+				sb.append("\t" + abstractElement.toString() + "\n");
+			}
+		}
 	}
 }

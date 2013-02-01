@@ -1,5 +1,7 @@
 package de.prob.ui.stateview;
 
+import java.util.Set;
+
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -7,15 +9,21 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.Invariant;
+import de.prob.model.representation.Machine;
+import de.prob.model.representation.Variable;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 /**
@@ -129,13 +137,29 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 
 			@Override
 			public void run() {
-				currentHistory = history;
-				contentProvider.setCurrentHistory(currentHistory);
-				labelProvider.setInput(currentHistory);
+				if (history == null) {
+					updateModelInfo(null);
+				} else {
+					currentHistory = history;
+					contentProvider.setCurrentHistory(currentHistory);
+					labelProvider.setInput(currentHistory);
 
-				final AbstractElement model = history.getModel();
-				if (model != currentModel) {
-					updateModelInfo(model);
+					final AbstractElement model = history.getModel();
+					if (model != currentModel) {
+						updateModelInfo(model);
+					}
+				}
+
+				Tree tree = viewer.getTree();
+				TreeItem[] items = tree.getItems();
+				for (TreeItem treeItem : items) {
+					TreeItem[] items2 = treeItem.getItems();
+					for (TreeItem treeItem2 : items2) {
+						if (treeItem2.getText().equals("Constants")
+								|| treeItem2.getText().equals("Variables")) {
+							treeItem2.setExpanded(true);
+						}
+					}
 				}
 
 				viewer.refresh();
@@ -145,6 +169,21 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 
 	private void updateModelInfo(final AbstractElement model) {
 		currentModel = model;
-		viewer.setInput(model);
+		StateSpace s = currentHistory.getStatespace();
+
+		Set<Machine> machines = model.getChildrenOfType(Machine.class);
+		for (Machine machine : machines) {
+			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
+				s.subscribe(this, variable.getExpression());
+			}
+			for (Invariant invariant : machine
+					.getChildrenOfType(Invariant.class)) {
+				s.subscribe(this, invariant.getPredicate());
+			}
+		}
+
+		if (!viewer.getTree().isDisposed()) {
+			viewer.setInput(model);
+		}
 	}
 }

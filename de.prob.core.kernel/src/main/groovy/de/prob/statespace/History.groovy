@@ -2,32 +2,39 @@ package de.prob.statespace
 
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.EvaluationResult
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.OpInfo
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
+import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.AbstractModel
 
 class History {
 
 	def final HistoryElement current
 	def final HistoryElement head
+	def final HistoryElement first
 	def final List<IAnimationListener> animationListeners
 	def final StateSpace s
 
-	def eval(formula) {
+	def EvaluationResult eval(formula) {
+		if(!s.canBeEvaluated(getCurrentState())) {
+			return null
+		}
 		def f = formula;
 		if (!(formula instanceof IEvalElement)) {
 			f = formula as ClassicalB;
 		}
 		s.eval(getCurrentState(),[f]).get(0);
 	}
-	
-	
+
+
 	def History(final StateSpace s) {
 		this.s = s
 		head = new HistoryElement(s.getState(s.getVertex("root")))
 		current = head
+		first = head
 		animationListeners = new ArrayList<IAnimationListener>()
 	}
 
@@ -35,23 +42,26 @@ class History {
 		this.s = m.getStatespace()
 		head = new HistoryElement(s.getState(s.getVertex("root")))
 		current = head
+		first = head
 		animationListeners = new ArrayList<IAnimationListener>()
 	}
 
-	def History(final StateSpace s, final HistoryElement head,
+	def History(final StateSpace s, final HistoryElement head, final HistoryElement first,
 	final List<IAnimationListener> animationListeners) {
 		this.s = s
 		this.head = head
 		this.current = head
+		this.first = first
 		this.animationListeners = animationListeners
 	}
 
 	def History(final StateSpace s, final HistoryElement head,
-	final HistoryElement current,
+	final HistoryElement current, HistoryElement first,
 	final List<IAnimationListener> animationListeners) {
 		this.s = s
 		this.head = head
 		this.current = current
+		this.first = first
 		this.animationListeners = animationListeners
 	}
 
@@ -66,24 +76,17 @@ class History {
 			+ " is not a valid operation on this state")
 
 		StateId newState = s.getState(op)
-		if(canBeEvaluated(op)) {
-			s.evaluateFormulas(current.getCurrentState());
-		}
 
 		def newHE = new HistoryElement(current.getCurrentState(), newState, op, current)
-		History newHistory = new History(s, newHE,
+		History newHistory = new History(s, newHE, first,
 				animationListeners)
 
 		return newHistory
 	}
+
 	def History add(final int i) {
 		String opId = String.valueOf(i)
 		return add(opId)
-	}
-
-	def canBeEvaluated(OpInfo op) {
-		def toEvaluate = op.name != "\$setup_constants" && op.name != "\$initialise_machine"
-		return toEvaluate;
 	}
 
 	/**
@@ -91,12 +94,17 @@ class History {
 	 */
 	def History back() {
 		if (canGoBack()) {
-			History history = new History(s, head, current.getPrevious(),
+			History history = new History(s, head, current.getPrevious(), first,
 					animationListeners)
 			return history
 		}
 		return this
 	}
+
+	def History first() {
+		return first;
+	}
+
 
 	/**
 	 * Moves one step forward in the animation if this is possible
@@ -109,7 +117,7 @@ class History {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious()
 			}
-			History history = new History(s, head, p, animationListeners)
+			History history = new History(s, head, p, first, animationListeners)
 			return history
 		}
 		return this
@@ -129,7 +137,7 @@ class History {
 	}
 
 	def String getRep() {
-		return "${head.getRepresentation()}] Current Transition is: ${current.getOp()}"
+		return "${head.getOpList()} Current Transition is: ${current.getOp()}"
 	}
 
 	def OpInfo findOneOp(final String opName, final String predicate)
@@ -174,13 +182,13 @@ class History {
 			OpInfo op = ops.get(0)
 
 			StateId newState = s.getState(op)
-			evaluateFormulas(ops.get(0))
+			s.evaluateFormulas(ops.get(0))
 
 			current = new HistoryElement(currentState,newState,op,previous)
 			currentState = newState
 		}
 
-		History newHistory = new History(s, current, animationListeners)
+		History newHistory = new History(s, current, first, animationListeners)
 		return newHistory
 	}
 
@@ -198,7 +206,6 @@ class History {
 	}
 
 	def History anyOperation(filter) {
-		def spaceInfo = s.info
 		def ops = new ArrayList<OpInfo>()
 		ops.addAll(s.outgoingEdgesOf(current.getCurrentState()));
 		if (filter != null && filter instanceof String) {
@@ -256,7 +263,7 @@ class History {
 		return current.getPrevious().getCurrentState()
 	}
 
-	def AbstractModel getModel() {
+	def AbstractElement getModel() {
 		return s.getModel()
 	}
 
@@ -272,6 +279,15 @@ class History {
 		}
 		if(className == EventBModel) {
 			return (EventBModel) s.model
+		}
+		if(className == ArrayList) {
+			def list = []
+			def p = head
+			while(p != null) {
+				list << p
+				p = p.getPrevious()
+			}
+			return list.reverse()
 		}
 		throw new ClassCastException("Not able to convert History object to ${className}")
 	}

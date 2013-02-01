@@ -29,9 +29,9 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
+import de.prob.scripting.CSPModel;
 
 /**
  * 
@@ -54,6 +54,10 @@ import de.prob.model.representation.Variable;
  * @author joy
  * 
  */
+/**
+ * @author joy
+ * 
+ */
 public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
@@ -63,7 +67,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private ICommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
-	private final StateSpaceInfo info;
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
@@ -72,17 +75,19 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private AbstractElement model;
-	private final Map<StateId, Map<IEvalElement, String>> values = new HashMap<StateId, Map<IEvalElement, String>>();
+	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
+
+	private final HashSet<StateId> invariantOk = new HashSet<StateId>();
+	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
+	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
 
 	public final StateId __root;
 
 	@Inject
 	public StateSpace(final IAnimator animator,
-			final DirectedMultigraphProvider graphProvider,
-			final StateSpaceInfo info) {
+			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		this.animator = animator;
-		this.info = info;
 		__root = new StateId("root", "1", this);
 		addVertex(__root);
 		states.put(__root.getId(), __root);
@@ -96,11 +101,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	// MAKE CHANGES TO THE STATESPACE GRAPH
 	/**
 	 * Takes a state id and calculates the successor states, the invariant,
-	 * timeout, etc.
+	 * timeout, and the operations with a timeout and caches these for the given
+	 * stateId.
 	 * 
 	 * @param state
 	 */
-	public void explore(final StateId state) {
+	public String explore(final StateId state) {
 		if (!containsVertex(state)) {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
@@ -109,13 +115,14 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		final ExploreStateCommand command = new ExploreStateCommand(
 				state.getId());
 		animator.execute(command);
-		info.add(state, command);
+		extractInformation(state, command);
 
 		explored.add(state);
 		final List<OpInfo> enabledOperations = command.getEnabledOperations();
 
 		for (final OpInfo op : enabledOperations) {
 			if (!containsEdge(op)) {
+				op.setModel(model);
 				ops.put(op.id, op);
 				notifyStateSpaceChange(op.id,
 						containsVertex(getVertex(op.dest)));
@@ -126,25 +133,67 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				addEdge(states.get(op.src), states.get(op.dest), op);
 			}
 		}
-
-		// Testing!!!
-		// if (!state.getId().equals("root")) {
-		// evaluateIFormulas(state);
-		// }
-		getInfo().add(state, command);
+		evaluateFormulas(state);
+		return toString();
 	}
 
+	private void extractInformation(final StateId state,
+			final ExploreStateCommand command) {
+		operationsWithTimeout.put(state, command.getOperationsWithTimeout());
+		if (command.isInvariantOk()) {
+			invariantOk.add(state);
+		}
+		if (command.isTimeoutOccured()) {
+			timeoutOccured.add(state);
+		}
+	}
+
+	public String explore(final String state) {
+		return explore(getVertex(state));
+	}
+
+	public String explore(final int i) {
+		final String si = String.valueOf(i);
+		return explore(si);
+	}
+
+	/**
+	 * Returns the StateId for the given key
+	 * 
+	 * @param key
+	 * @return StateId for the specified key
+	 */
 	public StateId getVertex(final String key) {
 		return states.get(key);
 	}
 
-	public void explore(final String state) {
-		explore(states.get(state));
+	/**
+	 * Checks to see if the specified state has already been explored. If not,
+	 * the state is explored and in either case, the corresponding StateId is
+	 * returned
+	 * 
+	 * @param state
+	 * @return explored StateId
+	 */
+	public StateId getState(final StateId state) {
+		if (!isExplored(state)) {
+			explore(state);
+		}
+		return state;
 	}
 
-	public void explore(final int i) {
-		final String si = String.valueOf(i);
-		explore(si);
+	/**
+	 * Get the target State for given operation, explore it, and return it.
+	 * 
+	 * @param op
+	 * @return explored target StateId for op
+	 */
+	public StateId getState(final OpInfo op) {
+		final StateId edgeTarget = getEdgeTarget(op);
+		if (!isExplored(edgeTarget)) {
+			explore(edgeTarget);
+		}
+		return edgeTarget;
 	}
 
 	/**
@@ -170,6 +219,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		// (id,name,src,dest,args)
 		for (final OpInfo op : newOps) {
+			op.setModel(model);
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
 				notifyStateSpaceChange(op.id,
@@ -193,8 +243,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return outDegreeOf(state) == 0;
 	}
 
-	public boolean isDeadlock(final String state) {
-		return isDeadlock(states.get(state));
+	/**
+	 * Checks to see if the specified state has violated the invariant
+	 * 
+	 * @param state
+	 * @return true if state has an invariant violation. False otherwise.
+	 */
+	public boolean hasInvariantViolation(final StateId state) {
+		if (!isExplored(state)) {
+			explore(state);
+		}
+		return !invariantOk.contains(state);
 	}
 
 	/**
@@ -210,64 +269,88 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return explored.contains(state);
 	}
 
-	// EVALUATE PART OF STATESPACE
+	// EVALUATE FORMULAS
 
 	/**
-	 * Adds an expression or predicate to the list of user formulas. This
-	 * expression or predicate is evaluated and the result is added to the map
-	 * of variables in the info object.
+	 * The method eval takes a stateId and a list of formulas (
+	 * {@link IEvalElement}) and returns a list of EvaluationResults for the
+	 * given formulas. It first checks to see if any of the formulas have cached
+	 * values for the given state and then, if there are formulas that have not
+	 * yet been calculated, it contacts Prolog to get the remaining values.
 	 * 
-	 * @param formula
-	 * @throws BException
+	 * @param stateId
+	 * @param code
+	 * @return list of {@link EvaluationResult} objects for the given stateId
+	 *         and code
 	 */
-	public void addUserFormula(final IEvalElement formula) {
-		formulaRegistry.put(formula, new HashSet<Object>());
-		subscribe(this, formula);
-	}
-
 	public List<EvaluationResult> eval(final StateId stateId,
 			final List<IEvalElement> code) {
 		if (!containsVertex(stateId)) {
 			throw new IllegalArgumentException("state does not exist");
 		}
-
 		if (code.isEmpty()) {
 			return new ArrayList<EvaluationResult>();
 		}
 
-		final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-				code, stateId.getId());
-		execute(command);
+		// Check to see if there are any cached results for the given StateId
+		Map<IEvalElement, EvaluationResult> map = values.get(stateId);
+		if (map == null) {
+			map = new HashMap<IEvalElement, EvaluationResult>();
+		}
 
-		final List<EvaluationResult> values = command.getValues();
+		// Filter out any EvalElements that have already been calculated
+		Set<IEvalElement> calculated = map.keySet();
+		List<IEvalElement> toEval = new ArrayList<IEvalElement>();
+		for (IEvalElement iEvalElement : code) {
+			if (!calculated.contains(iEvalElement)) {
+				toEval.add(iEvalElement);
+			}
+		}
+
+		// If there are formulas for which no value has been calculated, send
+		// them to prolog to get the results
+		List<EvaluationResult> fromProlog;
+		if (!toEval.isEmpty()) {
+			final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
+					toEval, stateId.getId());
+			execute(command);
+
+			fromProlog = command.getValues();
+		} else {
+			fromProlog = new ArrayList<EvaluationResult>();
+		}
+
+		// Merge the calculated results from Prolog with the cached results for
+		// the desired list
+		final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
+		for (IEvalElement iEvalElement : code) {
+			if (calculated.contains(iEvalElement)) {
+				values.add(map.get(iEvalElement));
+			} else {
+				values.add(fromProlog.get(toEval.indexOf(iEvalElement)));
+			}
+		}
 
 		return values;
 
 	}
 
 	/**
-	 * Evaluates a single formula or an array of formulas (represented as
-	 * strings) for the given state. Returns as list of EvaluationResults.
+	 * The method evaluateFormulas calculates all of the subscribed formulas for
+	 * the given state and caches them.
 	 * 
 	 * @param state
-	 * @param code
-	 * @return returns a list of evaluation results
-	 * @throws BException
 	 */
-	public List<EvaluationResult> eval(final String state,
-			final List<IEvalElement> code) throws BException {
-		final StateId stateId = getVertex(state);
-		return eval(stateId, code);
-	}
-
 	public void evaluateFormulas(final StateId state) {
-		if (state.getId().equals("root")) {
+		if (!canBeEvaluated(state)) {
 			return;
 		}
 		final Set<IEvalElement> formulas = formulaRegistry.keySet();
 		final List<IEvalElement> toEvaluate = new ArrayList<IEvalElement>();
-		final HashMap<IEvalElement, String> valueMap = new HashMap<IEvalElement, String>();
+		Map<IEvalElement, EvaluationResult> valueMap = new HashMap<IEvalElement, EvaluationResult>();
 
+		// Check to see which formulas have subscribers. These are the ones that
+		// will be calculated
 		for (final IEvalElement iEvalElement : formulas) {
 			if (!formulaRegistry.get(iEvalElement).isEmpty()) {
 				toEvaluate.add(iEvalElement);
@@ -278,33 +361,76 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		assert results.size() == toEvaluate.size();
 		if (results != null) {
 			for (int i = 0; i < results.size(); i++) {
-				valueMap.put(toEvaluate.get(i), results.get(i).value);
+				valueMap.put(toEvaluate.get(i), results.get(i));
 			}
 		}
 		values.put(state, valueMap);
 	}
 
-	public Map<IEvalElement, String> valuesAt(final String stateId) {
-		return valuesAt(getVertex(stateId));
-	}
-
-	public Map<IEvalElement, String> valuesAt(final StateId stateId) {
-		evaluateFormulas(stateId);
+	/**
+	 * Calculates the registered formulas at the given state and returns the
+	 * cached values
+	 * 
+	 * @param stateId
+	 * @return map from {@link IEvalElement} object to {@link EvaluationResult}
+	 *         objects
+	 */
+	public Map<IEvalElement, EvaluationResult> valuesAt(final StateId stateId) {
+		if (canBeEvaluated(stateId)) {
+			evaluateFormulas(stateId);
+		}
 		if (values.containsKey(stateId)) {
 			return values.get(stateId);
 		}
-		return new HashMap<IEvalElement, String>();
+		return new HashMap<IEvalElement, EvaluationResult>();
 	}
 
-
-	public List<EvaluationResult> eval(final String state, final String... code)
-			throws BException {
-		final List<IEvalElement> list = new ArrayList<IEvalElement>();
-		for (final String c : code) {
-			list.add(new ClassicalB(c));
+	private boolean canBeEvaluated(final StateId stateId) {
+		for (OpInfo opInfo : outgoingEdgesOf(stateId)) {
+			if (opInfo.getName().equals("$setup_constants")
+					|| opInfo.getName().equals("$initialise_machine")) {
+				return false;
+			}
 		}
-		return eval(state, list);
+		return true;
 	}
+
+	/**
+	 * If a class is interested in having a particular formula calculated and
+	 * cached whenever a new state is explored, then they "subscribe" to that
+	 * formula with a reference to themselves.
+	 * 
+	 * @param subscriber
+	 * @param formulaOfInterest
+	 */
+	public void subscribe(final Object subscriber,
+			final IEvalElement formulaOfInterest) {
+		if (formulaRegistry.containsKey(formulaOfInterest)) {
+			formulaRegistry.get(formulaOfInterest).add(subscriber);
+		} else {
+			HashSet<Object> subscribers = new HashSet<Object>();
+			subscribers.add(subscriber);
+			formulaRegistry.put(formulaOfInterest, subscribers);
+		}
+	}
+
+	/**
+	 * If a subscribed class is no longer interested in the value of a
+	 * particular formula, then they can unsubscribe to that formula
+	 * 
+	 * @param subscriber
+	 * @param formulaOfInterest
+	 */
+	public void unsubscribe(final Object subscriber,
+			final IEvalElement formulaOfInterest) {
+		if (formulaRegistry.containsKey(formulaOfInterest)) {
+			final Set<Object> subscribers = formulaRegistry
+					.get(formulaOfInterest);
+			subscribers.remove(subscriber);
+		}
+	}
+
+	// ANIMATOR
 
 	@Override
 	public void execute(final ICommand command) {
@@ -341,7 +467,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 	}
 
-	// INFORMATION ABOUT THE STATE
+	// METHODS TO MAKE THE INTERACTION WITH THE GROOVY SHELL EASIER
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.prob.statespace.StateSpaceGraph#toString()
+	 */
 	@Override
 	public String toString() {
 		String result = "";
@@ -349,74 +480,108 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return result;
 	}
 
+	/**
+	 * @return Returns a string representation of the formulas, invariants, and
+	 *         timeouts for the StateSpace. This is mainly useful for console
+	 *         output and debugging.
+	 */
 	public String printInfo() {
-		return getInfo().toString();
+		String result = "";
+		result += "Formulas: \n" + values.toString() + "\n";
+		result += "Invariants Ok: \n  " + invariantOk.toString() + "\n";
+		result += "Timeout Occured: \n  " + timeoutOccured.toString() + "\n";
+		result += "Operations With Timeout: \n  "
+				+ operationsWithTimeout.toString() + "\n";
+		return result;
 	}
 
-	// assert !s.getOutEdges(s.getCurrentState()).contains(new OperationId("1"))
-	public boolean isOutEdge(final StateId sId, final OpInfo oId) {
-		return outgoingEdgesOf(sId).contains(oId);
-	}
-
-	public boolean isOutEdge(final String stateId, final String opId) {
-		return isOutEdge(getVertex(stateId), ops.get(opId));
-	}
-
+	/**
+	 * Get the the map of String ids to their corresponding {@link StateId}
+	 * 
+	 * @return Map from String to {@link StateId}
+	 */
 	public HashMap<String, StateId> getStates() {
 		return states;
 	}
 
+	/**
+	 * Get the map of String ids to their corresponding {@link OpInfo}
+	 * 
+	 * @return Map from String to {@link OpInfo}
+	 */
 	public HashMap<String, OpInfo> getOps() {
 		return ops;
 	}
 
-	public StateSpaceInfo getInfo() {
-		return info;
-	}
-
-	public StateId getState(final StateId state) {
-		if (!isExplored(state)) {
-			explore(state);
-		}
-		return state;
-	}
-
-	public StateId getState(final OpInfo op) {
-		final StateId edgeTarget = getEdgeTarget(op);
-		if (!isExplored(edgeTarget)) {
-			explore(edgeTarget);
-		}
-		return edgeTarget;
-	}
-
+	/**
+	 * @param state
+	 * @return Returns a String representation of the operations available from
+	 *         the specified {@link StateId}. This is mainly useful for console
+	 *         output.
+	 */
 	public String printOps(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
 		final Collection<OpInfo> opIds = outgoingEdgesOf(state);
+		Set<String> withTO = operationsWithTimeout.get(state);
+
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.id + ": " + opId.toString() + "\n");
+			sb.append("  " + opId.id + ": " + opId.toString());
+			if (withTO.contains(opId.id)) {
+				sb.append(" (WITH TIMEOUT)");
+			}
+			sb.append("\n");
 		}
 		return sb.toString();
 	}
 
+	/**
+	 * @param state
+	 * @return Returns a String representation of the information about the
+	 *         state with the specified {@link StateId}. This includes the id
+	 *         for the state, the cached calculated values, and if an invariant
+	 *         violation or a timeout has occured for the given state. This is
+	 *         mainly useful for console output.
+	 */
 	public String printState(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("Current State Id: " + state + "\n");
-		final HashMap<String, String> currentState = getInfo().getState(state);
+
+		explore(state);
+
+		sb.append("STATE: " + state + "\n\n");
+		sb.append("VALUES:\n");
+		Map<IEvalElement, EvaluationResult> currentState = values.get(state);
 		if (currentState != null) {
-			final Set<Entry<String, String>> entrySet = currentState.entrySet();
-			for (final Entry<String, String> entry : entrySet) {
-				sb.append("  " + entry.getKey() + " -> " + entry.getValue()
-						+ "\n");
+			final Set<Entry<IEvalElement, EvaluationResult>> entrySet = currentState
+					.entrySet();
+			for (final Entry<IEvalElement, EvaluationResult> entry : entrySet) {
+				sb.append("  " + entry.getKey().getCode() + " -> "
+						+ entry.getValue().toString() + "\n");
 			}
+		}
+		sb.append("\nINVARIANT: ");
+		if (invariantOk.contains(state)) {
+			sb.append(" OK\n");
+		} else {
+			sb.append(" KO\n");
+		}
+		if (timeoutOccured.contains(state)) {
+			sb.append("\nTIMEOUT OCCURED\n");
 		}
 		return sb.toString();
 	}
 
+	/**
+	 * This calculated the shortest path from root to the specified state
+	 * (specified with an integer id value).
+	 * 
+	 * @param state
+	 * @return trace in the form of a {@link History} object
+	 */
 	public History getTrace(final int state) {
 		final StateId id = states.get(String.valueOf(state));
 		final List<OpInfo> path = new DijkstraShortestPath<StateId, OpInfo>(
-				this, this.__root, id).getPathEdgeList();
+				this.getGraph(), this.getRoot(), id).getPathEdgeList();
 		History h = new History(this);
 		for (final OpInfo opInfo : path) {
 			h = h.add(opInfo.getId());
@@ -436,44 +601,45 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		this.loadcmd = loadcmd;
 	}
 
+	/**
+	 * Set the model that is being animated. This should only be set at the
+	 * beginning of an animation. The currently supported model types are
+	 * {@link ClassicalBModel}, {@link EventBModel}, or {@link CSPModel}. A
+	 * StateSpace object always corresponds with exactly one model.
+	 * 
+	 * @param model
+	 */
 	public void setModel(final AbstractElement model) {
 		this.model = model;
+
 		Set<Machine> machines = model.getChildrenOfType(Machine.class);
 		for (Machine machine : machines) {
 			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
 				subscribe(this, variable.getExpression());
 			}
-			for (Invariant invariant : machine
-					.getChildrenOfType(Invariant.class)) {
-				subscribe(this, invariant.getPredicate());
-			}
 		}
 	}
 
+	/**
+	 * Returns the specified model for the given StateSpace
+	 * 
+	 * @return the {@link AbstractElement} that represents the model for the
+	 *         given StateSpace instance
+	 */
 	public AbstractElement getModel() {
 		return model;
 	}
 
-	public void subscribe(final Object subscriber,
-			final IEvalElement formulaOfInterest) {
-		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			formulaRegistry.get(formulaOfInterest).add(subscriber);
-		} else {
-			HashSet<Object> subscribers = new HashSet<Object>();
-			subscribers.add(subscriber);
-			formulaRegistry.put(formulaOfInterest, subscribers);
-		}
-	}
-
-	public void unsubscribe(final Object subscriber,
-			final IEvalElement formulaOfInterest) {
-		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			final Set<Object> subscribers = formulaRegistry
-					.get(formulaOfInterest);
-			subscribers.remove(subscriber);
-		}
-	}
-
+	/**
+	 * This method allows the conversion of the StateSpace to a Model or a
+	 * History. This corresponds to the Groovy operator "as". The user convert a
+	 * StateSpace to an {@link AbstractModel}, {@link EventBModel},
+	 * {@link ClassicalBModel}, or {@link CSPModel}. If they specify the class
+	 * {@link History}, a new History object will be created and returned.
+	 * 
+	 * @param className
+	 * @return the Model or History corresponding to the StateSpace instance
+	 */
 	public Object asType(final Class<?> className) {
 		if (className.getSimpleName().equals("AbstractModel")) {
 			if (model instanceof AbstractModel) {
@@ -490,10 +656,42 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				return model;
 			}
 		}
+		if (className.getSimpleName().equals("CSPModel")) {
+			if (model instanceof CSPModel) {
+				return model;
+			}
+		}
 		if (className.getSimpleName().equals("History")) {
 			return new History(this);
 		}
 		throw new ClassCastException("An element of class " + className
 				+ " was not found");
+	}
+
+	/**
+	 * This method is implemented to provide access to the {@link StateId}
+	 * objects specified by either a String or an integer identifier. This maps
+	 * to a groovy operator so that in the console users can type
+	 * variableOfTypeStateSpace[stateId] and receive the corresponding StateId
+	 * back. An IllegalArgumentException is thrown if the specified id is
+	 * unknown.
+	 * 
+	 * @throws IllegalArgumentException
+	 * @param that
+	 * @return {@link StateId} for the specified id
+	 */
+	public Object getAt(final Object that) {
+		StateId id = null;
+		if (that instanceof String) {
+			id = getVertex((String) that);
+		}
+		if (that instanceof Integer) {
+			id = getVertex(String.valueOf(that));
+		}
+		if (id != null) {
+			return id;
+		}
+		throw new IllegalArgumentException(
+				"StateSpace does not contain vertex " + that);
 	}
 }

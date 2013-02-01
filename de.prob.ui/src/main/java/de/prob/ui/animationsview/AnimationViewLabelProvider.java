@@ -10,9 +10,14 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
 import de.prob.statespace.History;
+import de.prob.ui.Activator;
 
 class AnimationViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
+
+	private final Image imgEnabled = Activator.getDefault().getImageRegistry()
+			.getDescriptor(Activator.IMG_ENABLED).createImage();
+	private History currentHistory;
 
 	@Override
 	public String getColumnText(final Object obj, final int index) {
@@ -51,6 +56,9 @@ class AnimationViewLabelProvider extends LabelProvider implements
 
 	@Override
 	public Image getColumnImage(final Object obj, final int index) {
+		if (index == 0 && obj.equals(currentHistory)) {
+			return imgEnabled;
+		}
 		return null;
 	}
 
@@ -58,5 +66,9 @@ class AnimationViewLabelProvider extends LabelProvider implements
 	public Image getImage(final Object obj) {
 		return PlatformUI.getWorkbench().getSharedImages()
 				.getImage(ISharedImages.IMG_OBJ_ELEMENT);
+	}
+
+	public void setCurrentHistory(final History currentHistory) {
+		this.currentHistory = currentHistory;
 	}
 }

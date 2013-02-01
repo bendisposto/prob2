@@ -5,6 +5,11 @@
          point="org.eclipse.ui.menus">
           <menuContribution
             locationURI="menu:debug">
+             <command
+                   commandId="de.prob.ui.bugreport"
+                   label="Submit Bugreport"
+                   style="push">
+             </command>
 
       </menuContribution>
       
@@ -102,6 +107,35 @@
               </parameter>
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="popup:de.prob.ui.AnimationsView">
+           <command
+                 commandId="de.prob.ui.remove_history"
+                 icon="icons/rem_co.gif"
+                 label="Remove History"
+                 style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="popup:de.prob.ui.groovybinding">
+           <command
+                 commandId="de.prob.ui.remove_variable"
+                 icon="icons/rem_co.gif"
+                 label="Remove Variable"
+                 style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="toolbar:de.prob.ui.JUnitView">
+           <command
+                 commandId="de.prob.ui.specifydirectory"
+                 icon="icons/junit/etool16/new_testcase.gif"
+                 style="push">
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
@@ -131,6 +165,25 @@
                      name="Number of Steps"
                      optional="false">
                </commandParameter>
+            </command>
+            <command
+                  description="Removes a history from the animations object"
+                  id="de.prob.ui.remove_history"
+                  name="Remove History">
+            </command>
+            <command
+                  description="Removes a variable from the groovy shell"
+                  id="de.prob.ui.remove_variable"
+                  name="Remove Variable">
+            </command>
+            <command
+                  defaultHandler="de.prob.ui.junitview.SpecifyTestDirectoryHandler"
+                  id="de.prob.ui.specifydirectory"
+                  name="Specify Test Directory">
+            </command>
+            <command
+                  id="de.prob.ui.bugreport"
+                  name="Submit Bug Report">
             </command>
    </extension>
    
@@ -244,6 +297,30 @@
                class="de.prob.ui.operationview.ExecuteRandomHandler">
          </class>
       </handler>
+      <handler
+            commandId="de.prob.ui.remove_history">
+         <class
+               class="de.prob.ui.animationsview.RemoveHistoryHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.remove_variable">
+         <class
+               class="de.prob.ui.console.RemoveVariableHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.specifytestdir">
+         <class
+               class="de.prob.ui.junitview.SpecifyTestDirectoryHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.bugreport">
+         <class
+               class="de.prob.ui.ticket.SubmitBugreportHandler">
+         </class>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -280,16 +357,26 @@
             name="Current Animations">
       </view>
       <view
+            category="de.hhu.stups.prob"
             class="de.prob.ui.console.GroovyConsole"
             id="de.prob.ui.groovyconsole"
             name="Groovy Console"
             restorable="true">
       </view>
       <view
+            category="de.hhu.stups.prob"
             class="de.prob.ui.GroovyBindingView"
+            icon="de.hhu.stups.prob"
             id="de.prob.ui.groovybinding"
             name="Global Variables"
             restorable="true">
+      </view>
+      <view
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.junitview.JUnitView"
+            icon="icons/sample.gif"
+            id="de.prob.ui.JUnitView"
+            name="JUnit View">
       </view>
    </extension>
    <extension

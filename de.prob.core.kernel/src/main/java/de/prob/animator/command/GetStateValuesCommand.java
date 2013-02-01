@@ -15,6 +15,7 @@ import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
+import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -29,17 +30,32 @@ public final class GetStateValuesCommand implements ICommand {
 	private final Logger logger = LoggerFactory
 			.getLogger(GetStateBasedErrorsCommand.class);
 
-	private final String stateId;
+	private final PrologTerm stateId;
 	private final HashMap<String, String> values = new HashMap<String, String>();
 
 	public GetStateValuesCommand(final String stateID) {
-		stateId = stateID;
+		PrologTerm id;
+		try {
+			id = new IntegerPrologTerm(Long.valueOf(stateID));
+		} catch (NumberFormatException e) {
+			id = new CompoundPrologTerm(stateID);
+		}
+		this.stateId = id;
+	}
+
+	private GetStateValuesCommand(final PrologTerm stateID) {
+		this.stateId = stateID;
+	}
+
+	public static GetStateValuesCommand getEvalstoreValuesCommand(
+			long evalstoreId) {
+		final IntegerPrologTerm id = new IntegerPrologTerm(evalstoreId);
+		return new GetStateValuesCommand(new CompoundPrologTerm("es", id));
 	}
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			 {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm list;
 		list = BindingGenerator.getList(bindings, "Bindings");
 
@@ -65,7 +81,7 @@ public final class GetStateValuesCommand implements ICommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("getStateValues").printAtomOrNumber(stateId)
+		pto.openTerm("getStateValues").printTerm(stateId)
 				.printVariable("Bindings").closeTerm();
 	}
 

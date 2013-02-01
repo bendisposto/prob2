@@ -2,7 +2,10 @@ package de.prob.webconsole;
 
 import com.google.inject.servlet.ServletModule;
 
+import de.prob.testing.ProBTestRunner;
+import de.prob.testing.TestRegistry;
 import de.prob.webconsole.servlets.CompletionServlet;
+import de.prob.webconsole.servlets.FormulaOverHistoryServlet;
 import de.prob.webconsole.servlets.GroovyBindingsServlet;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.GroovyShellServlet;
@@ -22,7 +25,10 @@ public class WebModule extends ServletModule {
 		serve("/outputs*").with(GroovyOutputServlet.class);
 		serve("/versions*").with(VersionServlet.class);
 		serve("/scrollback*").with(ScrollbackServlet.class);
+		serve("/formula*").with(FormulaOverHistoryServlet.class);
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);
+		bind(ProBTestRunner.class);
+		bind(TestRegistry.class);
 	}
 }

@@ -8,9 +8,9 @@ sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
 
-project.version = '2.0.0-milestone-6-SNAPSHOT'
+project.version = '2.0.0-milestone-8'
 
-def core_version = '2.0.0-milestone-7-SNAPSHOT'
+def core_version = '2.0.0-milestone-8'
 def parser_version = '2.4.11-SNAPSHOT'
 
 
@@ -22,7 +22,12 @@ repositories {
     maven {
     	name "spock snapshot"
     	url "http://oss.sonatype.org/content/repositories/snapshots/"
-    } 
+    }  
+
+	maven{
+		name "jira java client"
+		url "https://maven.atlassian.com/content/groups/public"
+	}
 }
 
 
@@ -36,14 +41,17 @@ configurations.all {
 
 dependencies {
 
-
+	compile 'com.atlassian.jira:jira-rest-java-client:2.0.0-m2'
 	testCompile 'junit:junit:4.8.2'
 	testCompile 'org.mockito:mockito-core:1.8.5'
 	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 
 	//compile group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
-	
+
+
 }
+
+
 
 
 eclipse {

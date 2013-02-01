@@ -49,22 +49,34 @@ public class EvaluationResult {
 	public List<String> getQuantifiedVars() {
 		return quantifiedVars;
 	}
-	
+
 	public boolean hasEnumerationWarnings() {
 		return enumerationWarnings;
 	}
-	
+
+	public boolean hasError() {
+		return errors != null && !errors.isEmpty(); // You're kidding, aren't
+													// you? ;-)
+	}
+
+	public String getErrors() {
+		return errors;
+	}
+
+	public String getValue() {
+		return value;
+	}
 
 	@Override
 	public String toString() {
-		if (!errors.isEmpty())
-			return "'Errors: " + errors + "'";
+		final String result;
+		if (hasError())
+			result = "'Errors: " + errors + "'";
 		else {
-			if (solution.equals(""))
-				return value;
-			else
-				return value + explanation + solution;
+			result = (solution == null || solution.equals("")) ? value : value
+					+ explanation + solution;
 		}
+		return result;
 	}
 
 }

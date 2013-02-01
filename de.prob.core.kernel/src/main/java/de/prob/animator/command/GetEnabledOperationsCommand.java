@@ -42,8 +42,7 @@ public final class GetEnabledOperationsCommand implements ICommand {
 	// [op(id,name,src,dest,[Arguments], [ArgsPrettyPrint],[Infos])]
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			 {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		enabledOperations = new ArrayList<OpInfo>();
 
 		final ListPrologTerm prologTerm = (ListPrologTerm) bindings

@@ -3,6 +3,7 @@ package de.prob.ui.stateview;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.StateSchema;
 import de.prob.statespace.History;
@@ -13,7 +14,7 @@ import de.prob.statespace.History;
  * they are divided into groups by their operation name
  * 
  */
-class StateContentProvider implements ITreeContentProvider {
+public class StateContentProvider implements ITreeContentProvider {
 
 	public History currentHistory;
 
@@ -29,11 +30,15 @@ class StateContentProvider implements ITreeContentProvider {
 	@Override
 	public Object[] getElements(final Object inputElement) {
 		if (currentHistory != null) {
-			AbstractModel model = currentHistory.getModel();
+			AbstractElement model = currentHistory.getModel();
 			if (model != null) {
-				StateSchema schema = model.getStateSchema();
-				if (schema != null)
-					return schema.getElements(inputElement);
+				if (model instanceof AbstractModel) {
+					StateSchema schema = ((AbstractModel) model)
+							.getStateSchema();
+					if (schema != null) {
+						return schema.getElements(inputElement);
+					}
+				}
 			}
 		}
 		return new Object[0];
@@ -52,11 +57,15 @@ class StateContentProvider implements ITreeContentProvider {
 	@Override
 	public boolean hasChildren(final Object element) {
 		if (currentHistory != null) {
-			AbstractModel model = currentHistory.getModel();
-			if (model != null) {
-				StateSchema schema = model.getStateSchema();
-				if (schema != null)
-					return schema.hasChildren(element);
+			AbstractElement model = currentHistory.getModel();
+			if (model instanceof AbstractModel) {
+				if (model != null) {
+					StateSchema schema = ((AbstractModel) model)
+							.getStateSchema();
+					if (schema != null) {
+						return schema.hasChildren(element);
+					}
+				}
 			}
 		}
 		return false;

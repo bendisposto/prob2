@@ -14,4 +14,9 @@ public class EventParameter extends AbstractElement {
 		return name;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }

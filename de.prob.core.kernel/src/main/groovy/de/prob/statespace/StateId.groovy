@@ -2,10 +2,11 @@ package de.prob.statespace
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
-import java.util.Collections.SingletonList
 
+import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.OpInfo
+
 
 class StateId {
 
@@ -13,11 +14,10 @@ class StateId {
 	def hash;
 	def StateSpace space;
 
-
 	def invokeMethod(String method,  params) {
 		String predicate;
-		
-        if (params == []) predicate = "TRUE = TRUE"  
+
+		if (params == []) predicate = "TRUE = TRUE"
 		else predicate = params[0];
 		OpInfo op = space.opFromPredicate(this, method,predicate , 1)[0];
 		StateId newState = space.getEdgeTarget(op);
@@ -25,22 +25,17 @@ class StateId {
 		return newState;
 	}
 
-	def propertyMissing(String property) {
-		def result = space.info.getVariable(this, property);
-		if (result == null) {
-			def evalElement = space.getForms().get(property)
-			if (evalElement == null)
-				throw NoSuchElementException("Missing attribute "+property);
-
-			result = space.eval(getId(), new SingletonList<IEvalElement>(evalElement))
-			space.info.add(this, property, result[0]);
+	def eval(formula) {
+		def f = formula;
+		if (!(formula instanceof IEvalElement)) {
+			f = formula as ClassicalB;
 		}
-		return result;
+		space.eval(this, [f])[0]
 	}
 
-	def StateId(id, hash, space) {
+	def StateId(id, vars, space) {
 		this.id = id;
-		this.hash = hash;
+		this.hash = getHash(vars);
 		this.space = space;
 	}
 
@@ -59,16 +54,18 @@ class StateId {
 
 
 	def int hashCode() {
-		return this.hash.hashCode()
+		return hash.hashCode()
 	};
 
 
-	public String hash(final String vars) {
+	def String getHash(final String vars) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-1");
-			final String str = new String(md.digest(vars.getBytes()));
-			return str;
+			md.update(vars.getBytes());
+			def x = new BigInteger(1, md.digest()).toString(16).padLeft( 40, '0' )
+			return x
 		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace()
 			return vars;
 		}
 	}
@@ -79,7 +76,6 @@ class StateId {
 
 
 	def StateId anyOperation(filter) {
-		def spaceInfo = space.info
 		def ops = new ArrayList<OpInfo>()
 		ops.addAll(space.outgoingEdgesOf(this));
 		if (filter != null && filter instanceof String) {

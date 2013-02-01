@@ -72,4 +72,12 @@ public class ClassicalB implements IEvalElement {
 		return prettyPrinter.getPrettyPrint();
 	}
 
+	@Override
+	public boolean equals(final Object that) {
+		if (that instanceof ClassicalB) {
+			return ((ClassicalB) that).getCode().equals(this.getCode());
+		}
+		return false;
+	}
+
 }

@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
+import de.prob.scripting.CSPModel;
 
 public class ModelModule extends AbstractModule {
 
@@ -15,9 +16,9 @@ public class ModelModule extends AbstractModule {
 
 		bind(StateSpace.class);
 		bind(DirectedMultigraphProvider.class);
-		bind(StateSpaceInfo.class);
 		bind(ClassicalBModel.class);
 		bind(EventBModel.class);
+		bind(CSPModel.class);
 		bind(AnimationSelector.class);
 	}
 }
