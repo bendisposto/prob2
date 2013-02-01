@@ -1,16 +1,12 @@
 package de.prob.testing;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import junit.framework.Test;
-import junit.framework.TestListener;
-import junit.framework.TestResult;
-import junit.framework.TestSuite;
-
-import org.codehaus.groovy.tools.shell.Interpreter;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.Result;
+import org.junit.runner.notification.RunListener;
 
 import com.google.inject.Inject;
 
@@ -19,15 +15,16 @@ import de.prob.webconsole.GroovyExecution;
 public class ProBTestRunner {
 
 	private final GroovyExecution executor;
-	private final List<IProBTestListener> testListeners = new ArrayList<IProBTestListener>();
-	private List<TestSuite> tests = new ArrayList<TestSuite>();
+	private final List<ProBTestListener> testListeners = new ArrayList<ProBTestListener>();
+	private Class<?>[] tests = {};
 
 	private static final String[] IMPORTS = new String[] {
 			"import de.prob.statespace.*;",
 			"import de.prob.model.representation.*;",
 			"import de.prob.model.classicalb.*;",
 			"import de.prob.model.eventb.*;",
-			"import de.prob.animator.domainobjects.*;" };
+			"import de.prob.animator.domainobjects.*;", "import spock.lang.*;",
+			"import org.junit.Assert.*;" };
 
 	@Inject
 	public ProBTestRunner(final GroovyExecution executor) {
@@ -35,60 +32,44 @@ public class ProBTestRunner {
 	}
 
 	public void runTests(final List<String> tests) {
-		this.tests = new ArrayList<TestSuite>();
+		List<Class<?>> classes = new ArrayList<Class<?>>();
 		for (String test : tests) {
-			TestSuite translated = translateTest(test);
+			Object translated = getTestClass(test);
 			if (translated != null) {
-				this.tests.add(translated);
+				classes.add(translated.getClass());
 			}
 		}
-		calculateTests();
-		for (TestSuite test : this.tests) {
-			doRun(test);
+		this.tests = new Class<?>[classes.size()];
+		for (Class<?> class1 : classes) {
+			this.tests[classes.indexOf(class1)] = class1;
 		}
+		calculateTests();
+		doRun(this.tests);
 	}
 
 	private void calculateTests() {
-		int testNum = 0;
-		for (TestSuite test : tests) {
-			testNum += test.countTestCases();
-		}
-		for (IProBTestListener listener : testListeners) {
+		Request request = Request.classes(tests);
+		int testNum = request.getRunner().testCount();
+		for (ProBTestListener listener : testListeners) {
 			listener.totalNumberOfTests(testNum);
 		}
 	}
 
-	public TestSuite translateTest(final String test) {
-		final Interpreter tinterpreter = new Interpreter(this.getClass()
-				.getClassLoader(), executor.getBindings());
-
-		assert test != null;
-		final ArrayList<String> eval = new ArrayList<String>();
-		eval.addAll(Arrays.asList(IMPORTS));
-		eval.addAll(Collections.singletonList(test));
-		try {
-			// this executes the test script resulting in a loaded class
-			// the last line of the test script must return an instance of the
-			// test
-			Object instance = tinterpreter.evaluate(eval);
-			return new TestSuite(instance.getClass());
-		} catch (Throwable t) {
-			System.out.println("Test: " + test
-					+ " is not of valid form and therefore was ignored.");
-		}
-		return null;
+	public Object getTestClass(final String test) {
+		Object runScript2 = executor.runScript2(test);
+		return runScript2;
 	}
 
-	public TestResult doRun(final Test suite) {
-		TestResult result = new TestResult();
-		for (TestListener listener : testListeners) {
-			result.addListener(listener);
+	public Result doRun(final Class<?>... classes) {
+		JUnitCore jUnitCore = new JUnitCore();
+		for (RunListener listener : testListeners) {
+			jUnitCore.addListener(listener);
 		}
-		suite.run(result);
+		Result result = jUnitCore.run(classes);
 		return result;
 	}
 
-	public void addTestListener(final IProBTestListener listener) {
+	public void addTestListener(final ProBTestListener listener) {
 		testListeners.add(listener);
 	}
 }

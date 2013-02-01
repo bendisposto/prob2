@@ -30,6 +30,51 @@ class HistoryConverter {
 		file
 	}
 
+	def static File xmlToGroovy(String xmlFile, String outFile) {
+		def file = new File(outFile)
+		file.newWriter()
+
+		file << '''{ m ->
+    def next = { h, hash, name, args, strict ->
+        def s = h as StateSpace
+        def oldh = h
+        def ns = s.outgoingEdgesOf(h.getCurrentState())
+        def n = (ns.grep {s.getEdgeTarget(it).hash == hash})
+	    if (n.isEmpty()) {
+            if (strict) {
+                assert false, 'Could not replay exact trace.'
+            } else {
+                println "Warning: Cannot find precise solution for nondeterministic assignments"
+                h = h.add(name,args)
+            }
+        } else {
+            h = h.add(n.first().id);
+        }
+        assert h != null, 'Could not find a sucessor state. Trace so far is ${oldh}. Missing successor state for ${name} with arguments ${args}'
+        h
+    }
+
+    def h = m as History
+'''
+
+		def trace = new XmlSlurper().parse(xmlFile)
+
+		trace.Operation.each {
+			def sha = it.sha.getAt(0).@value.toString()
+			def params = []
+			it.Parameter.each {
+				params << "\"${it.@name}\""
+			}
+			def name = "${it.@name}"
+			if(name.startsWith("\$")) {
+				name = "\\${name}"
+			}
+			file << "    h = next(h,\"${sha}\",\"${name}\",${params},true)\n"
+		}
+
+		file << "h  }"
+	}
+
 	def static History restore(AbstractModel model,String fileName) {
 		def History h = model as History
 		def StateSpace s = h as StateSpace

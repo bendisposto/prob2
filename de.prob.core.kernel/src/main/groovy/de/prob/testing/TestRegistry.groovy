@@ -13,7 +13,7 @@ class TestRegistry {
 		tests = []
 	}
 
-	def loadTests(pathToDir) {
+	def void loadTests(pathToDir) {
 		tests = []
 		new File(pathToDir).eachFile(FileType.FILES, {
 			if (it.getName().endsWith(".groovy")) tests << it.getText()
@@ -21,7 +21,6 @@ class TestRegistry {
 		listeners.each {
 			it.newTests(tests)
 		}
-		tests
 	}
 
 	def registerListener(listener) {

@@ -133,7 +133,7 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 	}
 
 	public String runScript(final String content) {
-		String s = freshVar("script_");
+		String s = "script_";
 		return runScript(content, s);
 	}
 
@@ -141,15 +141,15 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 		return runScript(content, null, true);
 	}
 
-	public String runScript(final String content, final String resultbinding) {
-		return runScript(content, resultbinding, false);
+	public String runScript(final String content, final String prefix) {
+		return runScript(content, prefix, false);
 	}
 
-	public String runScript(final String content, final String resultbinding,
+	public String runScript(final String content, final String prefix,
 			final boolean silent) {
 		Object result = runScript2(content);
-		if (!silent) {
-			getBindings().setVariable(resultbinding, result);
+		if (!silent && result != null) {
+			getBindings().setVariable(freshVar(prefix), result);
 		}
 		return result == null ? "null" : result.toString();
 	}
@@ -254,7 +254,7 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 	public void newTransition(final String opName, final boolean isDestStateNew) {
 		notifyListerners();
 	}
-	
+
 	public void reset() {
 		continued = false;
 		inputs.clear();

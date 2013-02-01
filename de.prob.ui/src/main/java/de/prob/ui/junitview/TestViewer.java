@@ -12,8 +12,6 @@
  *******************************************************************************/
 package de.prob.ui.junitview;
 
-import junit.framework.TestSuite;
-
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -52,7 +50,7 @@ public class TestViewer {
 		return fViewerbook;
 	}
 
-	public void update(final SetMultimap<Class<TestSuite>, Object> map) {
+	public void update(final SetMultimap<String, Object> map) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
