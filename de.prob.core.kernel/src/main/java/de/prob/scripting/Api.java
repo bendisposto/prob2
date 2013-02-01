@@ -9,8 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +38,13 @@ public class Api {
 		return "ProB Connector";
 	}
 
+	/**
+	 * A {@link FactoryProvider} and {@link Downloader} are injected into an api
+	 * object at startup
+	 * 
+	 * @param modelFactoryProvider
+	 * @param downloader
+	 */
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
 			final Downloader downloader) {
@@ -47,45 +52,17 @@ public class Api {
 		this.downloader = downloader;
 	}
 
-	public void raise() {
-		// logger.error("Fataaaaal!");
-		// logger.error("Fatal!", new IllegalArgumentException("bawang"));
-	}
-
+	/**
+	 * Shutdown the specified {@link ProBInstance} object.
+	 * 
+	 * @param x
+	 */
 	public void shutdown(final ProBInstance x) {
 		x.shutdown();
 	}
 
-	public ClassicalBModel b_def() throws IOException, BException {
-		ClassLoader classLoader = getClass().getClassLoader();
-		URL resource = classLoader.getResource("examples/scheduler.mch");
-		File f = null;
-		try {
-			f = new File(resource.toURI());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		ClassicalBFactory bFactory = modelFactoryProvider
-				.getClassicalBFactory();
-
-		ClassicalBModel machine = bFactory.load(f);
-		return machine;
-	}
-
-	public StateSpace s() {
-		ClassicalBModel b = null;
-		try {
-			b = b_def();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (BException e) {
-			e.printStackTrace();
-		}
-		return (b != null) ? b.getStatespace() : null;
-	}
-
 	/**
-	 * Takes path of a Classical B Machine and loads it into the ClassicalBModel
+	 * Loads a {@link ClassicalBModel} from the specified file path.
 	 * 
 	 * @param file
 	 * @return classicalBModel
@@ -100,6 +77,15 @@ public class Api {
 		return bFactory.load(f);
 	}
 
+	/**
+	 * Loads a {@link CSPModel} from the given file. If the user does not have
+	 * the cspm parser installed, an Exception is thrown informing the user that
+	 * they need to install it.
+	 * 
+	 * @param file
+	 * @return {@link CSPModel} that has been loaded from file
+	 * @throws Exception
+	 */
 	public CSPModel csp_load(final String file) throws Exception {
 		File f = new File(file);
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
@@ -111,23 +97,6 @@ public class Api {
 					"Could find CSP Parser. Perform 'upgrade cspm' to install cspm in your ProB lib directory");
 		}
 		return m;
-	}
-
-	// public EventBModel eb_load(final String filename) throws IOException,
-	// BException {
-	// EventBFactory bFactory = modelFactoryProvider.getEventBFactory();
-	// return bFactory.load(new File(filename));
-	// }
-
-	// public EventBModel eb_load(final AbstractElement mainComponent) {
-	// EventBFactory factory = modelFactoryProvider.getEventBFactory();
-	// return factory.load(mainComponent);
-	// }
-
-	public String getCurrentId(final StateSpace animation) {
-		// new ICom<GetCurrentStateIdCommand>(new GetCurrentStateIdCommand())
-		// .executeOn(animation);
-		return null;
 	}
 
 	/**
@@ -149,6 +118,11 @@ public class Api {
 		return downloader.listVersions();
 	}
 
+	/**
+	 * Writes an xml representation of the StateSpace to file
+	 * 
+	 * @param s
+	 */
 	public void toFile(final StateSpace s) {
 		XStream xstream = new XStream(new JettisonMappedXmlDriver());
 		xstream.omitField(IAnimator.class, "animator");
@@ -165,6 +139,13 @@ public class Api {
 		}
 	}
 
+	/**
+	 * Reads the statespace.xml file and returns the StateSpace that it
+	 * represents
+	 * 
+	 * @return {@link StateSpace} object specified by saved "statespace.xml"
+	 *         file
+	 */
 	public StateSpace readFile() {
 		FileInputStream fstream;
 		StringBuffer sb = new StringBuffer();
@@ -198,5 +179,21 @@ public class Api {
 		anim.execute(t.getLoadcmd(), new StartAnimationCommand());
 
 		return t;
+	}
+
+	/**
+	 * @return Returns a String representation of the currently available
+	 *         commands for the Api object. Intended to ease use in the Groovy
+	 *         console.
+	 */
+	public String help() {
+		return "Api Commands: \n\n ClassicalBModel b_load(String PathToFile): load .mch files \n"
+				+ " CSPModel csp_load(String PathToFile): load .csp files \n"
+				+ " upgrade(String version): upgrade ProB cli to specified version\n"
+				+ " listVersions(): list currently available ProB cli versions\n"
+				+ " toFile(StateSpace s): save StateSpace\n"
+				+ " readFile(): reload saved StateSpace\n"
+				+ " shutdown(ProBInstance x): shutdown ProBInstance\n"
+				+ " help(): print out available commands";
 	}
 }
