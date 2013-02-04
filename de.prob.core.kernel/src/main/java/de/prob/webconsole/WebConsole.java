@@ -64,6 +64,7 @@ public class WebConsole {
 			warFile += "bin/";
 		
 		//Creating a context handler collection
+		/*
 		ContextHandlerCollection contexts=new ContextHandlerCollection();
 		WebAppProvider wprv=new WebAppProvider();
 		wprv.setExtractWars(true);
@@ -76,7 +77,7 @@ public class WebConsole {
 		dmgr.setContexts(contexts);
 		dmgr.setAppProviders(prvs);
 		server.addBean(dmgr);
-
+		*/
 
 		
 	
@@ -84,16 +85,16 @@ public class WebConsole {
 		WebAppContext context = new WebAppContext(warFile, "/console");
 		context.setServer(server);
 
-		//WebAppContext worksheetContext=new WebAppContext(warFile+"webapps/de.prob.worksheetWeb.war","/worksheet");
-		//worksheetContext.setExtractWAR(true);
-		//worksheetContext.setServer(server);
+		WebAppContext worksheetContext=new WebAppContext(warFile+"webapps/worksheet.war","/worksheet");
+		worksheetContext.setExtractWAR(true);
+		worksheetContext.setServer(server);
 		
 		
 		// Add the handlers
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
-		handlers.addHandler(contexts);
-		//handlers.addHandler(worksheetContext);
+		//handlers.addHandler(contexts);
+		handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
 		int port = 8080;
