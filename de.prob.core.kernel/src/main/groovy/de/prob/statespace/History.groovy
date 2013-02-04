@@ -239,6 +239,12 @@ class History {
 		}
 	}
 
+	def void notifyHistoryRemoval() {
+		for (IAnimationListener listener : animationListeners) {
+			listener.removeHistory(this)
+		}
+	}
+
 	def StateSpace getStatespace() {
 		return s
 	}
