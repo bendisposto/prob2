@@ -10,10 +10,6 @@ public class ModelModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		// install(new FactoryModuleBuilder()
-		// .implement(Payment.class, RealPayment.class)
-		// .build(PaymentFactory.class));
-
 		bind(StateSpace.class);
 		bind(DirectedMultigraphProvider.class);
 		bind(ClassicalBModel.class);

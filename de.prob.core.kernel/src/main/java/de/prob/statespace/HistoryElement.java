@@ -5,6 +5,18 @@ import java.util.List;
 
 import de.prob.animator.domainobjects.OpInfo;
 
+/**
+ * This class is used within the {@link History} object to create the linked
+ * list of operations. Each HistoryElement references a particular operation
+ * that has been executed. This includes saving the {@link StateId} source and
+ * {@link StateId} destination, as well as the {@link OpInfo}. It also contains
+ * a list of all executed operations and a pointer to the previous
+ * HistoryElement. When a State is root, everything except the source is set to
+ * null.
+ * 
+ * @author joy
+ * 
+ */
 public class HistoryElement {
 	private final StateId src;
 	private final StateId dest;
@@ -39,22 +51,39 @@ public class HistoryElement {
 		this.opList = previousOpList;
 	}
 
+	/**
+	 * @return the {@link StateId} source corresponding to this element
+	 */
 	public StateId getSrc() {
 		return src;
 	}
 
+	/**
+	 * @return the {@link StateId} destination corresponding to this element
+	 */
 	public StateId getDest() {
 		return dest;
 	}
 
+	/**
+	 * @return the {@link OpInfo} operation corresponding to this element
+	 */
 	public OpInfo getOp() {
 		return edge;
 	}
 
+	/**
+	 * @return returns the pointer to the previous HistoryElement
+	 */
 	public HistoryElement getPrevious() {
 		return previous;
 	}
 
+	/**
+	 * @return the current {@link StateId} that is associated with the
+	 *         HistoryElement. If the destination is null, this is source.
+	 *         Otherwise, this is destination.
+	 */
 	public StateId getCurrentState() {
 		if (dest == null) {
 			return src;
@@ -62,6 +91,9 @@ public class HistoryElement {
 		return dest;
 	}
 
+	/**
+	 * @return List of all executed operations ({@link OpInfo})
+	 */
 	public List<OpInfo> getOpList() {
 		return opList;
 	}

@@ -8,38 +8,28 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import com.google.inject.Injector;
-
-import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
-import de.prob.webconsole.ServletContextListener;
 
 public class RemoveHistoryHandler extends AbstractHandler implements IHandler {
 
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		History h = null;
 		ISelection selection = HandlerUtil.getCurrentSelection(event);
 
-		if (!(selection instanceof IStructuredSelection))
+		if (!(selection instanceof IStructuredSelection)) {
 			return null;
+		}
 
 		IStructuredSelection sel = (IStructuredSelection) selection;
 		Object x = sel.getFirstElement();
-		if (!(x instanceof History))
+		if (!(x instanceof History)) {
 			return null;
+		}
 
 		h = (History) x;
 
-		Injector injector = ServletContextListener.INJECTOR;
-
-		AnimationSelector animationSelector = injector
-				.getInstance(AnimationSelector.class);
-
-		if (h != null) {
-			animationSelector.remove(h);
-			animationSelector.refresh();
-		}
+		h.notifyHistoryRemoval();
 		return null;
 	}
 
