@@ -22,10 +22,10 @@ import de.prob.statespace.History;
 @Singleton
 public class FormulaOverHistoryServlet extends HttpServlet {
 
-	private AnimationSelector animations;
+	private final AnimationSelector animations;
 
 	@Inject
-	public FormulaOverHistoryServlet(AnimationSelector animations) {
+	public FormulaOverHistoryServlet(final AnimationSelector animations) {
 		this.animations = animations;
 	}
 
@@ -35,21 +35,25 @@ public class FormulaOverHistoryServlet extends HttpServlet {
 		public final Integer value;
 		public final Integer t;
 
-		public Element(String string, int t, Object value) {
+		public Element(final String string, final int t, final Object value) {
 			this.stateid = string;
 			this.t = t;
 			this.value = Integer.parseInt((String) value);
 		}
 	}
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
+	@Override
+	public void doGet(final HttpServletRequest req,
+			final HttpServletResponse res) throws ServletException, IOException {
 		List<Object> result = new ArrayList<Object>();
 		PrintWriter out = res.getWriter();
 
 		String formula = req.getParameter("formula");
 
-		History history = animations.getCurrentHistory().first();
+		History history = animations.getCurrentHistory();
+		while (history.canGoBack()) {
+			history = history.back();
+		}
 
 		int c = 0;
 
