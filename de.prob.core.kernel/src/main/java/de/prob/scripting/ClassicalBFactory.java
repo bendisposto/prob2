@@ -35,8 +35,12 @@ public class ClassicalBFactory {
 	}
 
 	/**
+	 * This method loads a machine from file, parses all machines, starts the
+	 * animation, and returns the created {@link ClassicalBModel}
+	 * 
 	 * @param f
-	 * @return {@link ClassicalBModel} from the specified file
+	 *            {@link File} containing machine to be loaded.
+	 * @return {@link ClassicalBModel} from the specified file.
 	 * @throws IOException
 	 * @throws BException
 	 */
@@ -51,6 +55,17 @@ public class ClassicalBFactory {
 		return classicalBModel;
 	}
 
+	/**
+	 * Starts animation in the Prolog kernel with the given
+	 * {@link ClassicalBModel} classicalBModel and
+	 * {@link RecursiveMachineLoader} rml
+	 * 
+	 * @param classicalBModel
+	 *            {@link ClassicalBModel} representing the loaded model
+	 * @param rml
+	 *            {@link RecursiveMachineLoader} containing all of the parsed
+	 *            machines
+	 */
 	private void startAnimation(final ClassicalBModel classicalBModel,
 			final RecursiveMachineLoader rml) {
 		final ICommand loadcmd = new LoadBProjectCommand(rml);
@@ -59,6 +74,20 @@ public class ClassicalBFactory {
 		classicalBModel.getStatespace().setLoadcmd(loadcmd);
 	}
 
+	/**
+	 * Given an {@link Start} ast, {@link File} f, and {@link BParser} bparser,
+	 * all machines are loaded.
+	 * 
+	 * @param ast
+	 *            {@link Start} representing the abstract syntax tree for the
+	 *            machine
+	 * @param f
+	 *            {@link File} containing machine
+	 * @param bparser
+	 *            {@link BParser} for parsing
+	 * @return {@link RecursiveMachineLoader} rml with all loaded machines
+	 * @throws BException
+	 */
 	public RecursiveMachineLoader parseAllMachines(final Start ast,
 			final File f, final BParser bparser) throws BException {
 		final RecursiveMachineLoader rml = new RecursiveMachineLoader(
@@ -73,8 +102,11 @@ public class ClassicalBFactory {
 
 	/**
 	 * @param model
+	 *            {@link File} containing B machine
 	 * @param bparser
-	 * @return AST after parsing model with bparser
+	 *            {@link BParser} for parsing
+	 * @return {@link Start} AST after parsing model with {@link BParser}
+	 *         bparser
 	 * @throws IOException
 	 * @throws BException
 	 */

@@ -10,5 +10,11 @@ package de.prob.statespace;
  * 
  */
 public interface IHistoryChangeListener {
+	/**
+	 * Lets the {@link IHistoryChangeListener} know that the history of interest
+	 * has changed
+	 * 
+	 * @param history
+	 */
 	public void historyChange(History history);
 }
