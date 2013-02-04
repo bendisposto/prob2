@@ -42,6 +42,8 @@
 							data.isJsLoading = true;
 							jQuery.getScript(nextURL, function(content, status, jqxhr) {
 								$("body").lazyLoader("scriptLoaded", this.url);
+								if(typeof window.console.log  =='object')
+									window.console.log(this.url+" loaded");
 							}).fail(function(jqxhr, settings, exception) {
 								// TODO make error handling complete;
 								window.console.log("Triggered ajaxError handler.");
@@ -81,6 +83,8 @@
 					while (data.cssUrlQueue.length > 0) {
 						var newUrl = data.cssUrlQueue.shift()
 						if (document.createStyleSheet) {
+							if(typeof window.console.log  =='object')
+								window.console.log(newUrl+" loaded");
 							document.createStyleSheet(newUrl);
 						} else {
 							$("head").append($("<link rel='stylesheet' href='"+newUrl+"' type='text/css' media='screen' />"));
@@ -93,7 +97,7 @@
 			_pushToCssQueue : function(urls) {
 				var data = this.data("lazyLoader");
 				for ( var x = 0; x < urls.length; x++) {
-					if (jQuery.inArray(urls[x], data.jsUrls) == -1) {
+					if (jQuery.inArray(urls[x], data.cssUrls) == -1) {
 						data.cssUrlQueue.push(urls[x]);
 					}
 				}

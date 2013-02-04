@@ -151,7 +151,45 @@ public class ContextHistoryTest {
 		assertTrue(bContextHistory2.getHistory().equals(map));
 		
 	}
-
+	@Test
+	public void removeAfterInitial(){
+		ContextHistory bContextHistory=new ContextHistory(new EvalStoreContext("init", null));
+		bContextHistory.add(new EvalStoreContext("id1", 1l));
+		bContextHistory.add(new EvalStoreContext("id2", 2l));
+		bContextHistory.add(new EvalStoreContext("id2", 3l));
+		bContextHistory.add(new EvalStoreContext("id2", 4l));
+		bContextHistory.add(new EvalStoreContext("id2", 5l));
+		bContextHistory.add(new EvalStoreContext("id3", 6l));
+		bContextHistory.add(new EvalStoreContext("id3", 7l));
+			
+		bContextHistory.removeHistoryAfterInitial("id2");
+		ArrayList<IContext> map=new ArrayList<IContext>();
+		map.add(new EvalStoreContext("init", null));
+		map.add(new EvalStoreContext("id1", 1l));
+		
+		assertTrue(map.equals(bContextHistory.getHistory()));
+		
+		bContextHistory=new ContextHistory(new EvalStoreContext("init", null));
+		bContextHistory.add(new EvalStoreContext("id1", 1l));
+		bContextHistory.add(new EvalStoreContext("id2", 2l));
+		bContextHistory.add(new EvalStoreContext("id2", 3l));
+		bContextHistory.add(new EvalStoreContext("id2", 4l));
+		bContextHistory.add(new EvalStoreContext("id2", 5l));
+		bContextHistory.add(new EvalStoreContext("id3", 6l));
+		bContextHistory.add(new EvalStoreContext("id3", 7l));
+			
+		bContextHistory.removeHistoryAfterInitial("id3");
+		map=new ArrayList<IContext>();
+		map.add(new EvalStoreContext("init", null));
+		map.add(new EvalStoreContext("id1", 1l));
+		map.add(new EvalStoreContext("id2", 2l));
+		map.add(new EvalStoreContext("id2", 3l));
+		map.add(new EvalStoreContext("id2", 4l));
+		map.add(new EvalStoreContext("id2", 5l));
+		
+		assertTrue(map.equals(bContextHistory.getHistory()));
+		
+	}
 	@Test
 	public void toString1() {
 		//TODO add test

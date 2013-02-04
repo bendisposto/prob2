@@ -8,6 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * The ContextHistory stores a list of IContext objects in the order they are added or merged 
+ * @author Rene
+ */
 public class ContextHistory implements Iterable<IContext> {
 	Logger logger=LoggerFactory.getLogger(ContextHistory.class);
 	private ArrayList<IContext> history;
@@ -121,7 +125,7 @@ public class ContextHistory implements Iterable<IContext> {
 	public void add(int index, IContext context) {
 		logger.trace("{}",context);
 		if(index<history.size()){
-			boolean equals=context.equals(history.get(index)) ;
+			boolean equals=context.equalsBindings(history.get(index)) ;
 			logger.debug("{}",equals);
 			if(equals){
 				history.get(index).setId(context.getId());
@@ -140,6 +144,26 @@ public class ContextHistory implements Iterable<IContext> {
 
 	public ArrayList<IContext> getHistory() {
 		return history;
+	}
+
+
+	public void removeHistoryAfterInitial(String id){
+		logger.trace("{}",id);
+		logger.debug("{}",history);
+		Iterator<IContext> it=history.iterator();
+		IContext next;
+		boolean found=false;
+		while(it.hasNext()){
+			next=it.next();
+			if(next.getId().equals(id)){
+				found=true;
+			}
+			if(found){
+				next.destroy();
+				it.remove();
+			}
+		}
+		return ;
 	}
 
 	

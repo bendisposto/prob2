@@ -7,8 +7,12 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.worksheet.IContext;
 
+/**
+ * @author Rene
+ * @see IContext
+ */
 public class EvalStoreContext implements IContext {
-	Logger logger=LoggerFactory.getLogger(EvalStoreContext.class);
+	private static Logger logger=LoggerFactory.getLogger(EvalStoreContext.class);
 	String blockId;
 	Long evalStoreId;
 	public EvalStoreContext(String blockId,Long evalStoreId) {
@@ -53,17 +57,41 @@ public class EvalStoreContext implements IContext {
 
 	@Override
 	public boolean equals(Object obj) {
-		//if(obj instanceof EvalStoreContext){
+		if(obj instanceof EvalStoreContext){
 			HashMap<String, Object> objA=this.getBindings();
 			HashMap<String, Object> objB=((EvalStoreContext) obj).getBindings();
 			boolean a=objA.equals(objB);
-			//boolean b=this.blockId.equals(((EvalStoreContext) obj).getID());
-			return  a ;
-		//}
-		//return false;
+			boolean b=this.blockId.equals(((EvalStoreContext) obj).getId());
+			return  a && b;
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean equalsBindings(Object obj){
+		HashMap<String, Object> objA=this.getBindings();
+		HashMap<String, Object> objB=((EvalStoreContext) obj).getBindings();
+		boolean a=objA.equals(objB);
+		return  a ;
 	}
 	@Override
 	public void setId(String id) {
 		this.blockId=id;
+	}
+	@Override
+	public void setBindings(HashMap<String, Object> bindings) {
+		if(bindings.containsKey("EvalStoreId")){
+			if(!(bindings.get("EvalStoreId") instanceof Long))
+				throw new IllegalArgumentException();
+			this.evalStoreId=(Long) bindings.get("EvalStoreId");
+		}else{
+			this.evalStoreId=null;	
+		}
+	}
+	@Override
+	public void setBinding(String name, Object binding) {
+		if(!name.equals("EvalStoreId") || !(binding instanceof Long))
+			throw new IllegalArgumentException();
+		this.evalStoreId=(Long) binding;
 	}
 }

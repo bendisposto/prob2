@@ -21,6 +21,7 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 
 import de.prob.worksheet.ContextHistory;
+import de.prob.worksheet.IContext;
 import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
@@ -69,6 +70,8 @@ public class evaluate extends HttpServlet {
 
 		IBlock[] blocks = doc.getBlocksFrom(index);
 
+		getContextHistory(sessionAttributes).removeHistoryAfterInitial(blocks[0].getId());
+		
 		for (final IBlock block : blocks) {
 			this.evaluateBlock(doc,block,sessionAttributes);
 		}

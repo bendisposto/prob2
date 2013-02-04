@@ -167,7 +167,7 @@ public class WorksheetDocument {
 	}
 
 	/**
-	 * @param javascriptBlock
+	 * @param block
 	 */
 	public void appendBlock(final IBlock block) {
 		this.insertBlock(this.blocks.size(), block);
