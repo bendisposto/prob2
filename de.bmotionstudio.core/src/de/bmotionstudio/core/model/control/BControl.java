@@ -23,6 +23,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 import de.bmotionstudio.core.AttributeConstants;
+import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.editor.command.CopyPasteHelper;
 import de.bmotionstudio.core.internal.BControlPropertySource;
 import de.bmotionstudio.core.model.BMotionGuide;
@@ -753,8 +754,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 	}
 
 	public Image getIcon() {
-		return null;
-//		return BMotionImage.getBControlImage(getType());
+		return BMotionImage.getControlImage(getClass().getName());
 	}
 
 }

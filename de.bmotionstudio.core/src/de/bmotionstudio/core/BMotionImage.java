@@ -76,10 +76,10 @@ public class BMotionImage {
 		return imageReg.get(key);
 	}
 
-	public static Image getBControlImage(final String bcontrolID) {
+	public static Image getControlImage(final String controlClassName) {
 		if (!isInit)
 			initializeImageRegistry();
-		return getImage("icon_control_" + bcontrolID);
+		return getImage("icon_control_" + controlClassName);
 	}
 
 	private static void initializeImageRegistry() {
@@ -164,12 +164,14 @@ public class BMotionImage {
 					final String icon = configurationElement
 							.getAttribute("icon");
 					final String ID = configurationElement.getAttribute("id");
-					final String sourcePluginID = configurationElement
-							.getContributor().getName();
-
-					final String key = "icon_control_" + ID;
-
-					registerImage(key, sourcePluginID, icon);
+					final IBControlService service = BMotionEditorPlugin.getControlServicesId().get(ID);
+					if(service != null) {
+						String className = service.getControlClass().getName();
+						String sourcePluginID = configurationElement
+								.getContributor().getName();
+						String key = "icon_control_" + className;
+						registerImage(key, sourcePluginID, icon);
+					}
 
 				}
 
