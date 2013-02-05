@@ -247,15 +247,17 @@ public class PerspectiveUtil {
 		IWorkbenchPage activePage = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
 		IWorkbenchPartSite site = activePage.getActivePart().getSite();
-
+		
+		VisualizationViewPart visualizationViewPart = null;
+		
 		for (Map.Entry<String, VisualizationView> entry : simulation
 				.getVisualizationViews().entrySet()) {
-
+			
 			String secId = entry.getKey();
 			VisualizationView visView = entry.getValue();
 			IViewReference viewReference = site.getPage().findViewReference(
 					VisualizationViewPart.ID, secId);
-			VisualizationViewPart visualizationViewPart = null;
+			
 			// Check if view already exists
 			if (viewReference != null) {
 				visualizationViewPart = (VisualizationViewPart) viewReference
@@ -274,8 +276,11 @@ public class PerspectiveUtil {
 					&& !visualizationViewPart.isInitialized()) {
 				visualizationViewPart.init(simulation, visView);
 			}
-
+			
 		}
+		
+		if(visualizationViewPart != null)
+			activePage.activate(visualizationViewPart);
 
 		// Close all unused visualization views
 		for (IViewReference viewReference : site.getPage().getViewReferences()) {
