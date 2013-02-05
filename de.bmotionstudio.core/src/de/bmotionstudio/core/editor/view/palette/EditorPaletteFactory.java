@@ -28,7 +28,7 @@ import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.IInstallPaletteEntry;
 import de.bmotionstudio.core.editor.BControlCreationFactory;
-import de.bmotionstudio.core.service.control.BConnectionService;
+import de.bmotionstudio.core.service.BConnectionService;
 
 public class EditorPaletteFactory {
 

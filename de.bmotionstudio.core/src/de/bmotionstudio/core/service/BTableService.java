@@ -1,33 +1,28 @@
-package de.bmotionstudio.core.service.control;
+package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.core.editor.part.LightPart;
+import de.bmotionstudio.core.editor.part.BTablePart;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.Light;
+import de.bmotionstudio.core.model.control.Table;
 
-public class LightService extends AbstractBControlService implements
+public class BTableService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
 	public BControl createControl() {
-		return new Light();
+		return new Table();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new LightPart();
-	}
-
-	@Override
-	public boolean showInPalette() {
-		return false;
+		return new BTablePart();
 	}
 
 	@Override
 	public Class<?> getControlClass() {
-		return Light.class;
+		return Table.class;
 	}
 
 }

@@ -4,31 +4,35 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.core.service.control;
+package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.core.editor.part.TankPart;
+import de.bmotionstudio.core.editor.part.BTextfieldPart;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.Tank;
+import de.bmotionstudio.core.model.control.Textfield;
 
-public class TankService extends AbstractBControlService implements
+/**
+ * @author Lukas Ladenberger
+ * 
+ */
+public class BTextfieldService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
 	public BControl createControl() {
-		return new Tank();
+		return new Textfield();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new TankPart();
+		return new BTextfieldPart();
 	}
 
 	@Override
 	public Class<?> getControlClass() {
-		return Tank.class;
+		return Textfield.class;
 	}
 
 }

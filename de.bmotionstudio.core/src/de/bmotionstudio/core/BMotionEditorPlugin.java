@@ -8,7 +8,6 @@ package de.bmotionstudio.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -49,8 +48,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	public static final String PLUGIN_ID = "de.bmotionstudio.core";
 
 	public static final String FILEEXT_STUDIO = "bmso";
-
-	public static List<ISimulationListener> openSimulationListeners = new ArrayList<ISimulationListener>();
 
 	// The shared instance
 	private static BMotionEditorPlugin plugin;

@@ -4,35 +4,35 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.core.service.control;
+package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
+import de.bmotionstudio.core.editor.part.BImagePart;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.core.editor.part.BTextPart;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.Text;
+import de.bmotionstudio.core.model.control.BImage;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class BTextService extends AbstractBControlService implements
+public class BImageService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
 	public BControl createControl() {
-		return new Text();
+		return new BImage();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BTextPart();
+		return new BImagePart();
 	}
 
 	@Override
 	public Class<?> getControlClass() {
-		return Text.class;
+		return BImage.class;
 	}
 
 }
