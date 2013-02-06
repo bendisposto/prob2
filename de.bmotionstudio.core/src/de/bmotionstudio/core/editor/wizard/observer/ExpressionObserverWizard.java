@@ -1,9 +1,13 @@
 package de.bmotionstudio.core.editor.wizard.observer;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -14,6 +18,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -23,18 +29,30 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.google.inject.Injector;
+
+import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.observer.ExpressionObserver;
 import de.bmotionstudio.core.model.observer.Observer;
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
+import de.prob.webconsole.ServletContextListener;
 
 public class ExpressionObserverWizard extends ObserverWizard {
 	
 	private final DataBindingContext dbc = new DataBindingContext();
 	
-	private Text nameText, expressionText;
+	private Text nameText, expressionText, messageText;
 	
 	private ComboViewer attributeCombo;
+	
+	private Composite container;
+	
+	private Injector injector = ServletContextListener.INJECTOR;
 	
 	public ExpressionObserverWizard(Shell shell, BControl control,
 			Observer observer) {
@@ -53,7 +71,7 @@ public class ExpressionObserverWizard extends ObserverWizard {
 		
 		GridLayout layout = new GridLayout(2,false);
 		
-		Composite container = new Composite(parent, SWT.NONE);
+		container = new Composite(parent, SWT.NONE);
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 		container.setLayout(layout);
 		
@@ -121,7 +139,83 @@ public class ExpressionObserverWizard extends ObserverWizard {
 			
 		expressionText = new Text(container, SWT.BORDER);
 		expressionText.setLayoutData(gridDataFill);
+		expressionText.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
 
+				try {
+					
+					messageText.setText("");
+					
+					BParser.parse(BParser.EXPRESSION_PREFIX
+							+ expressionText.getText());
+					
+					final AnimationSelector selector = injector
+							.getInstance(AnimationSelector.class);
+					History currentHistory = selector.getCurrentHistory();
+					
+					if(currentHistory != null) {
+					
+					EvaluationResult eval = currentHistory.eval(expressionText
+							.getText());
+						
+						if (eval != null) {
+
+							if (!eval.hasError()) {
+								messageText.setText("Result: "
+										+ eval.getValue());
+								messageText
+										.setForeground(ColorConstants.darkGreen);
+							} else {
+								messageText.setForeground(ColorConstants.red);
+								messageText.setText("Error: "
+										+ eval.getErrors());
+							}
+
+							messageText.redraw();
+
+						}
+
+					}
+					
+				} catch (BException e1) {
+					messageText.setForeground(ColorConstants.red);
+					messageText.setText("Error: " + e1.getMessage());
+				} finally {
+					messageText.redraw();
+				}
+
+			}
+			
+		});
+		
+		label = new Label(container,SWT.NONE);
+		label.setText("");
+		label.setLayoutData(gridDataLabel);
+
+		messageText = new Text(container,SWT.MULTI | SWT.WRAP);
+		messageText.setText("");
+		messageText.setForeground(ColorConstants.red);
+		messageText.setBackground(ColorConstants.menuBackground);
+		messageText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		
+		getObserver().addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				
+				if(evt.getPropertyName().equals("expression")) {
+					final AnimationSelector selector = injector
+							.getInstance(AnimationSelector.class);
+					History currentHistory = selector.getCurrentHistory();
+					getObserver().check(currentHistory, getControl());
+				}
+				
+			}
+			
+		});
+		
 		initBindings(dbc);
 		
 		return container;
@@ -130,6 +224,8 @@ public class ExpressionObserverWizard extends ObserverWizard {
 
 	private void initBindings(DataBindingContext dbc) {
 
+		
+		
 		dbc.bindValue(SWTObservables.observeText(nameText, SWT.Modify),
 				BeansObservables.observeValue(
 						(ExpressionObserver) getObserver(), "name"));

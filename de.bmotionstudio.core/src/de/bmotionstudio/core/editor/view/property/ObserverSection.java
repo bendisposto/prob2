@@ -169,8 +169,6 @@ public class ObserverSection extends AbstractPropertySection implements
 
 		container = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(2, false);
-		// layout.horizontalSpacing = 0;
-		// layout.verticalSpacing = 0;
 		container.setLayout(layout);
 		listViewer = new ListViewer(container);
 		listViewer.setContentProvider(new IStructuredContentProvider() {

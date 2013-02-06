@@ -1,5 +1,8 @@
 package de.bmotionstudio.core.editor.wizard.observer;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
@@ -21,6 +24,8 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -32,11 +37,19 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.google.inject.Injector;
+
+import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.core.editor.edit.AttributeExpressionEdittingSupport;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.bmotionstudio.core.model.observer.PredicateObserver;
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
+import de.prob.webconsole.ServletContextListener;
 
 public class PredicateObserverWizard extends ObserverWizard {
 	
@@ -44,7 +57,9 @@ public class PredicateObserverWizard extends ObserverWizard {
 	
 	private final DataBindingContext dbc = new DataBindingContext();
 	
-	private Text predicateText, nameText;
+	private Injector injector = ServletContextListener.INJECTOR;
+	
+	private Text predicateText, nameText, messageText;
 	
 	private ComboViewer attributeCombo;
 	
@@ -88,6 +103,56 @@ public class PredicateObserverWizard extends ObserverWizard {
 		
 		predicateText = new Text(container, SWT.BORDER);
 		predicateText.setLayoutData(gridDataFill);
+		predicateText.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+
+				try {
+					
+					messageText.setText("");
+					
+					BParser.parse(BParser.PREDICATE_PREFIX
+							+ predicateText.getText());
+					
+					final AnimationSelector selector = injector
+							.getInstance(AnimationSelector.class);
+					History currentHistory = selector.getCurrentHistory();
+					
+					if(currentHistory != null) {
+					
+						EvaluationResult eval = currentHistory
+								.eval(predicateText.getText());
+
+						if (eval != null) {
+
+							if (!eval.hasError()) {
+								messageText.setText("Result: "
+										+ eval.getValue());
+								messageText
+										.setForeground(ColorConstants.darkGreen);
+							} else {
+								messageText.setForeground(ColorConstants.red);
+								messageText.setText("Error: "
+										+ eval.getErrors());
+							}
+
+							messageText.redraw();
+
+						}
+
+					}
+					
+				} catch (BException e1) {
+					messageText.setForeground(ColorConstants.red);
+					messageText.setText("Error: " + e1.getMessage());
+				} finally {
+					messageText.redraw();
+				}
+
+			}
+			
+		});
 		
 		label = new Label(container,SWT.NONE);
 		label.setText("Attribute:");
@@ -196,6 +261,32 @@ public class PredicateObserverWizard extends ObserverWizard {
 			}
 		});
 
+		label = new Label(container,SWT.NONE);
+		label.setText("");
+		label.setLayoutData(gridDataLabel);
+
+		messageText = new Text(container,SWT.MULTI | SWT.WRAP);
+		messageText.setText("");
+		messageText.setForeground(ColorConstants.red);
+		messageText.setBackground(ColorConstants.menuBackground);
+		messageText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		
+		getObserver().addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				
+				if(evt.getPropertyName().equals("expression")) {
+					final AnimationSelector selector = injector
+							.getInstance(AnimationSelector.class);
+					History currentHistory = selector.getCurrentHistory();
+					getObserver().check(currentHistory, getControl());
+				}
+				
+			}
+			
+		});
+		
 		initBindings(dbc);
 		
 		return container;

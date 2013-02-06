@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Shell;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.PredicateObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.History;
 
 public class PredicateObserver extends Observer {
@@ -17,6 +18,21 @@ public class PredicateObserver extends Observer {
 	
 	@Override
 	public void check(History history, BControl control) {
+		
+		if(predicate == null || attribute == null || value == null)
+			return;
+		
+		EvaluationResult evalResult = history.eval(predicate);
+		
+		if (evalResult != null && !evalResult.hasError()) {
+
+			String result = evalResult.value;
+			Boolean bResult = Boolean.valueOf(result);
+			if (bResult)
+				control.setAttributeValue(attribute, value);
+
+		}
+		
 	}
 
 	@Override
