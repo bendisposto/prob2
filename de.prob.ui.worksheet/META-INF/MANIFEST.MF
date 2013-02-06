@@ -15,5 +15,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.editors
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/dependencies/slf4j-api-1.6.1.jar,
+ lib/dependencies/logback-core-0.9.29.jar,
+ lib/dependencies/logback-classic-0.9.29.jar
 

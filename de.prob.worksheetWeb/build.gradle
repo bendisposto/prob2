@@ -14,11 +14,19 @@ eclipse {
 		sourceCompatibility = 1.6
 		targetCompatibility = 1.6
 	}
-	wtp { component { } }
+	classpath{
+		file {
+			withXml {
+				def node = it.asNode()
+				node.appendNode('classpathentry', [kind: 'src', path: '/de.prob.core.kernel',combineaccessrules: 'false'])
+			}
+		}
+		
+	}
 }
 war{
 	//destinationDir =file("C:/Users/Rene/GitRepos/prob2/de.prob.core.kernel/src/main/resources/webapps")
-	destinationDir =file("C:/Users/Rene/GitRepos/prob2/de.prob.core.kernel/bin/webapps")
+	destinationDir =file("../de.prob.core.kernel/bin/webapps")
 	baseName = "worksheet"
 }
 repositories {
@@ -30,6 +38,15 @@ repositories {
 		name "spock snapshot"
 		url "http://oss.sonatype.org/content/repositories/snapshots/"
 	}
+	maven {
+		name "jira client"
+		url "https://m2proxy.atlassian.com/repository/public"
+	}
+	
+	maven{
+		name "jira java client"
+		url "https://maven.atlassian.com/content/groups/public"
+	}
 }
 
 dependencies{
@@ -40,7 +57,7 @@ dependencies{
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.1.2'
 	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.1.2'
 	compile 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.1.2'
-	
+	/*
 	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
 
 	compile 'com.google.inject.extensions:guice-assistedinject:3.0' // Apache Licence 2.0
@@ -60,7 +77,12 @@ dependencies{
 	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
 	compile 'ch.qos.logback:logback-classic:0.9.29' // EPL
 	compile 'ch.qos.logback:logback-access:0.9.29' // EPL
+	*/
 
+	 providedCompile project(':de.prob.core.kernel'){
+		transitive = true
+	}
+	
 	testCompile 'junit:junit:4.8.2'
 	
 }
