@@ -32,7 +32,7 @@
 			optionsChanged : function(event, options) {
 				if(!$.browser.msie)
 					window.console.debug("Event: optionsChanged from editor: " + options.id);
-			},
+			}
 		},
 
 		_create : function() {

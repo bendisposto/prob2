@@ -20,7 +20,8 @@ function loadDocument(content,id){
 	}).done($.proxy(function(data, status, xhr) {
 		if(typeof editorSetSessionId=="function")
 			editorSetSessionId(document.cookie.match(/JSESSIONID=(\w*)/)[1]);
-		data = (new Function( "return " + xhr.responseText))();
+		data = jQuery.parseJSON(xhr.responseText);
+		data = $.recursiveFunctionTest(data);
 		data.sessionId=wsid;
 		$('#ui-id-1').worksheet(data);
 		if(typeof setWorksheetLoaded=="function")
@@ -33,18 +34,22 @@ function loadDocument(content,id){
 }
 function newDocument(id){
 	wsid=id;
+	//DEBUG alert("new Document");
 	$.ajax("newDocument",{
 		type : "POST",
 		data : "worksheetSessionId="+wsid
 	}).done($.proxy(function(data, status, xhr) {
+		//DEBUG alert("new Document Result");
 		if(typeof editorSetSessionId=="function")
 			editorSetSessionId(document.cookie.match(/JSESSIONID=(\w*)/)[1]);
-		data = (new Function( "return " + xhr.responseText))();
+		data = jQuery.parseJSON(xhr.responseText);
+		data = $.recursiveFunctionTest(data);
 		data.sessionId=wsid;
 		$('#ui-id-1').worksheet(data);
 		if(typeof setWorksheetLoaded=="function")
 			setWorksheetLoaded(true);
 		$('#ui-id-1').one("worksheetinitialized",function(){
+			//DEBUG alert("new Document worksheetInitialized");
 			$("#loadingBar").hide();
 			$("#loadingSheet").hide();
 		});
@@ -60,7 +65,8 @@ function refreshDocument(id){
 		type : "POST",
 		data : "worksheetSessionId="+wsid
 	}).done($.proxy(function(data, status, xhr) {
-		data = (new Function( "return " + xhr.responseText))();
+		data = jQuery.parseJSON(xhr.responseText);
+		data = $.recursiveFunctionTest(data);
 		data.sessionId=wsid;
 		$('#ui-id-1').worksheet(data);
 		if(typeof setWorksheetLoaded=="function")

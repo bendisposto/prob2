@@ -4,12 +4,13 @@
 		var methods = {
 			init : function(options) {
 				var settings = $.extend({
-					'jsUrls' : [ 		"javascripts/libs/jquery-1.8.3/jquery-1.8.3.js","javascripts/libs/jquery-ui-1.9.2/ui/jquery-ui.js","javascripts/jquery.lazyLoader.js","javascripts/jquery.json-2.4.js","javascripts/jquery.ui.editor.js","javascripts/jquery.ui.blocks.js","javascripts/jquery.ui.worksheet.js","javascripts/worksheet.js" ],
+					'jsUrls' : [ "javascripts/libs/jquery-1.8.3/jquery-1.8.3.js","javascripts/libs/jquery-ui-1.9.2/ui/jquery-ui.js","javascripts/jquery.lazyLoader.js","javascripts/jquery.json-2.4.js","javascripts/jquery.ui.editor.js","javascripts/jquery.ui.blocks.js","javascripts/jquery.ui.worksheet.js","javascripts/worksheet.js" ],
 					'jsUrlQueue' : [ ],
 					'cssUrls' : [ "stylesheets/jquery-ui-1.9.2/themes/base/jquery-ui.css","stylesheets/jquery-ui-1.9.2/themes/smoothness/jquery.ui.theme.css","stylesheets/jquery-ui-1.9.2/themes/base/jquery.ui.worksheet.css","stylesheets/jquery-ui-1.9.2/themes/base/jquery.ui.block.css","stylesheets/jquery-ui-1.9.2/themes/base/jquery.ui.editor.css","stylesheets/worksheet.css"],
-					'cssUrlQueue' : [  ],
+					'cssUrlQueue' : [  ]
 				}, options);
 				this.each(function() {
+					//DEBUG alert("lazyLoader init");
 					var $this = $(this);
 					var data = $this.data('lazyLoader');
 
@@ -33,6 +34,7 @@
 				if(!$.isArray(urls))
 					return this;
 				return this.each(function(index) {
+					//DEBUG alert("worksheet loadScripts");
 					var $this = $(this);
 					var data = $this.data("lazyLoader");
 					data.target.lazyLoader("_pushToJsQueue", urls);
@@ -42,11 +44,7 @@
 							data.isJsLoading = true;
 							jQuery.getScript(nextURL, function(content, status, jqxhr) {
 								$("body").lazyLoader("scriptLoaded", this.url);
-								if(typeof window.console.log  =='object')
-									window.console.log(this.url+" loaded");
 							}).fail(function(jqxhr, settings, exception) {
-								// TODO make error handling complete;
-								window.console.log("Triggered ajaxError handler.");
 							});
 						}
 					} else {
@@ -56,6 +54,7 @@
 			},
 			scriptLoaded : function(url) {
 				return this.each(function(index) {
+					//DEBUG alert("worksheet scriptLoaded");
 					var $this = $(this);
 					var data = $this.data("lazyLoader");
 					var urlCorrected = url.replace(/\??_=\d*/, "");
@@ -65,6 +64,7 @@
 				});
 			},
 			_pushToJsQueue : function(urls) {
+				//DEBUG alert("worksheet _pushToJsQueue");
 				var data = this.data("lazyLoader");
 				for ( var x = 0; x < urls.length; x++) {
 					if (jQuery.inArray(urls[x], data.jsUrls) == -1) {
@@ -76,6 +76,7 @@
 				if(!$.isArray(urls))
 					return this;
 				return this.each(function(index) {
+					//DEBUG alert("worksheet loadStyles");
 					var $this = $(this);
 					var data = $this.data("lazyLoader");
 					data.target.lazyLoader("_pushToCssQueue", urls);
@@ -83,8 +84,6 @@
 					while (data.cssUrlQueue.length > 0) {
 						var newUrl = data.cssUrlQueue.shift()
 						if (document.createStyleSheet) {
-							if(typeof window.console.log  =='object')
-								window.console.log(newUrl+" loaded");
 							document.createStyleSheet(newUrl);
 						} else {
 							$("head").append($("<link rel='stylesheet' href='"+newUrl+"' type='text/css' media='screen' />"));
@@ -95,6 +94,7 @@
 				});
 			},
 			_pushToCssQueue : function(urls) {
+				//DEBUG alert("worksheet _pushToCssQueue");
 				var data = this.data("lazyLoader");
 				for ( var x = 0; x < urls.length; x++) {
 					if (jQuery.inArray(urls[x], data.cssUrls) == -1) {

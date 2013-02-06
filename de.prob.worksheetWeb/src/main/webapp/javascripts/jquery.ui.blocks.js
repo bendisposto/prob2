@@ -15,7 +15,7 @@
 							optionsChanged : function(event, options) {
 								if(!$.browser.msie)
 									window.console.debug("Event: optionsChanged from block: " + options.id);
-							},
+							}
 						},
 						_create : function() {
 							this.options.isInitialized=false;
@@ -148,7 +148,7 @@
 									$.proxy(function(data, status, xhr) {
 										var text=xhr.responseText;
 										//var text=text.replace("\n","\\n").replace("\r","\\r");
-										data = (new Function( "return " + text))();
+										data = jQuery.parseJSON(xhr.responseText);
 										data = $.recursiveFunctionTest(data);
 										// var caller = $("#" + data.id);
 										//this.removeOutputBlocks();
