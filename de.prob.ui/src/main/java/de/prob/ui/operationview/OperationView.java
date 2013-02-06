@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
@@ -73,20 +74,14 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	Injector injector = ServletContextListener.INJECTOR;
 
 	/**
-	 * The constructor.
-	 */
-	public OperationView() {
-		final AnimationSelector selector = injector
-				.getInstance(AnimationSelector.class);
-		selector.registerHistoryChangeListener(this);
-	}
-
-	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
 	@Override
 	public void createPartControl(final Composite parent) {
+		final AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
+		selector.registerHistoryChangeListener(this);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		createColumns();
@@ -188,7 +183,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		}
 		if (history != null) {
 			final AbstractElement model = history.getModel();
-			if (currentModel != model) {
+			if (currentModel != model && viewer != null) {
 				updateModel(model);
 			}
 		}
@@ -240,7 +235,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	private void updateModelLoadedProvider(final boolean b) {
-		final ISourceProviderService service = (ISourceProviderService) getSite()
+		IWorkbenchPartSite site = getSite();
+		final ISourceProviderService service = (ISourceProviderService) site
 				.getService(ISourceProviderService.class);
 		final ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
 				.getSourceProvider(ModelLoadedProvider.SERVICE);
@@ -257,9 +253,6 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 
 	private void updateModel(final AbstractElement model) {
 		currentModel = model;
-		if (viewer == null) {
-			return; // nothing to do here
-		}
 		((OperationsContentProvider) viewer.getContentProvider())
 				.setAllOperations(getOperationNames(model));
 	}
