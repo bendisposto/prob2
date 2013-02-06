@@ -49,12 +49,12 @@
                  label="Execute Random Operations"
                  style="pulldown">
            </command>
-           <command
+   <!--       <command
                  commandId="de.prob.ui.history.restartAnim"
                  icon="icons/refresh.gif"
                  label="Restart Animation"
                  style="push">
-           </command>
+           </command> -->
            <command
                  commandId="de.prob.ui.history.back"
                  icon="icons/back.gif"
@@ -153,10 +153,10 @@
                   id="de.prob.ui.history.forward"
                   name="History Forward">
             </command>
-            <command
+     <!--       <command
                   id="de.prob.ui.history.restartAnim"
                   name="Restart Animation">
-            </command>
+            </command> -->
             <command
                   id="de.prob.ui.randomoperation"
                   name="Execute Random Events">
