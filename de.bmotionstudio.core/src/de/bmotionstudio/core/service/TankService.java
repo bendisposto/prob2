@@ -4,35 +4,31 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.core.service.control;
+package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.core.editor.part.BRadioButtonPart;
+import de.bmotionstudio.core.editor.part.TankPart;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.RadioButton;
+import de.bmotionstudio.core.model.control.Tank;
 
-/**
- * @author Lukas Ladenberger
- * 
- */
-public class BRadioButtonService extends AbstractBControlService implements
+public class TankService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
 	public BControl createControl() {
-		return new RadioButton();
+		return new Tank();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BRadioButtonPart();
+		return new TankPart();
 	}
 
 	@Override
 	public Class<?> getControlClass() {
-		return RadioButton.class;
+		return Tank.class;
 	}
-	
+
 }

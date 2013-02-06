@@ -3,36 +3,35 @@
  * Heinrich Heine Universitaet Duesseldorf
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
-
-package de.bmotionstudio.core.service.control;
+package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
-import de.bmotionstudio.core.editor.part.BImagePart;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
+import de.bmotionstudio.core.editor.part.SignalPart;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.BImage;
+import de.bmotionstudio.core.model.control.Signal;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class BImageService extends AbstractBControlService implements
+public class SignalService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
 	public BControl createControl() {
-		return new BImage();
+		return new Signal();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BImagePart();
+		return new SignalPart();
 	}
 
 	@Override
 	public Class<?> getControlClass() {
-		return BImage.class;
+		return Signal.class;
 	}
 
 }

@@ -21,7 +21,6 @@ import org.eclipse.ui.PlatformUI;
 
 import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.BMotionEditorPlugin;
-import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.core.model.control.BConnection;
 import de.bmotionstudio.core.model.control.BControl;
@@ -89,7 +88,6 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		if (!isActive()) {
 			super.activate();
 			((BControl) getModel()).addPropertyChangeListener(this);
-			// ((BControl) getModel()).addObserverListener(this);
 		}
 	}
 
@@ -97,15 +95,12 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		if (isActive()) {
 			super.deactivate();
 			((BControl) getModel()).removePropertyChangeListener(this);
-			// ((BControl) getModel()).removeObserverListener(this);
 		}
 	}
 
 	@Override
 	public void refreshVisuals() {
-
 		Object model = getModel();
-
 		if (model instanceof BControl) {
 			BControl bcontrol = (BControl) model;
 			if (!(bcontrol instanceof Visualization)) {
@@ -113,12 +108,7 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 						AttributeConstants.ATTRIBUTE_ID).toString());
 				setWidgetImage(bcontrol.getIcon());
 			}
-		} else if (model instanceof Observer) {
-			setWidgetText(((Observer) model).getName());
-			setWidgetImage(BMotionImage
-					.getImage(BMotionImage.IMG_ICON_OBSERVER));
 		}
-
 	}
 
 	@Override

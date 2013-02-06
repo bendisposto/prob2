@@ -1,25 +1,25 @@
-package de.bmotionstudio.core.service.control;
+package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.part.BControlTreeEditPart;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.core.editor.part.BMSAbstractTreeEditPart;
-import de.bmotionstudio.core.editor.part.BTableColumnPart;
+import de.bmotionstudio.core.editor.part.BTableCellPart;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.TableColumn;
+import de.bmotionstudio.core.model.control.TableCell;
 
-public class BTableColumnService extends AbstractBControlService implements
+public class BTableCellService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
 	public BControl createControl() {
-		return new TableColumn();
+		return new TableCell();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BTableColumnPart();
+		return new BTableCellPart();
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class BTableColumnService extends AbstractBControlService implements
 
 	@Override
 	public Class<?> getControlClass() {
-		return TableColumn.class;
+		return TableCell.class;
 	}
 
 }

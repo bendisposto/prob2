@@ -4,35 +4,31 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.core.service.control;
+package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.core.editor.part.BTextfieldPart;
+import de.bmotionstudio.core.editor.part.SwitchPart;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.Textfield;
+import de.bmotionstudio.core.model.control.Switch;
 
-/**
- * @author Lukas Ladenberger
- * 
- */
-public class BTextfieldService extends AbstractBControlService implements
+public class SwitchService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
 	public BControl createControl() {
-		return new Textfield();
+		return new Switch();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BTextfieldPart();
+		return new SwitchPart();
 	}
 
 	@Override
 	public Class<?> getControlClass() {
-		return Textfield.class;
+		return Switch.class;
 	}
 
 }

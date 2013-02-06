@@ -4,35 +4,35 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.core.service.control;
+package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
-import de.bmotionstudio.core.editor.part.BCheckboxPart;
+import de.bmotionstudio.core.editor.part.BButtonPart;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.Checkbox;
+import de.bmotionstudio.core.model.control.Button;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class BCheckboxService extends AbstractBControlService implements
+public class BButtonService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
 	public BControl createControl() {
-		return new Checkbox();
+		return new Button();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BCheckboxPart();
+		return new BButtonPart();
 	}
 
 	@Override
 	public Class<?> getControlClass() {
-		return Checkbox.class;
+		return Button.class;
 	}
 
 }

@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.core.service.control;
+package de.bmotionstudio.core.service;
 
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
@@ -13,16 +13,16 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.BControlCreationFactory;
-import de.bmotionstudio.core.editor.part.BConnectionEditPart;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.core.model.control.BConnection;
+import de.bmotionstudio.core.editor.part.TrackPart;
 import de.bmotionstudio.core.model.control.BControl;
+import de.bmotionstudio.core.model.control.Track;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class BConnectionService extends AbstractBControlService implements
+public class TrackService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
@@ -38,22 +38,17 @@ public class BConnectionService extends AbstractBControlService implements
 
 	@Override
 	public BControl createControl() {
-		return new BConnection();
+		return new Track();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BConnectionEditPart();
-	}
-
-	@Override
-	public boolean showInPalette() {
-		return false;
+		return new TrackPart();
 	}
 
 	@Override
 	public Class<?> getControlClass() {
-		return BConnection.class;
+		return Track.class;
 	}
 
 }
