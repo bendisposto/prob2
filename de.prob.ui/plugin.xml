@@ -378,6 +378,13 @@
             id="de.prob.ui.JUnitView"
             name="JUnit View">
       </view>
+      <view
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.statisticsview.StatisticsView"
+            icon="icons/sample.gif"
+            id="de.prob.ui.StatisticsView"
+            name="Statistics View">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

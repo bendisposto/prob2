@@ -124,7 +124,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			if (!containsEdge(op)) {
 				op.setModel(model);
 				ops.put(op.id, op);
-				notifyStateSpaceChange(op.id,
+				notifyStateSpaceChange(op.name,
 						containsVertex(getVertex(op.dest)));
 				final StateId newState = new StateId(op.dest, op.targetState,
 						this);
@@ -222,7 +222,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			op.setModel(model);
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
-				notifyStateSpaceChange(op.id,
+				notifyStateSpaceChange(op.name,
 						containsVertex(getVertex(op.dest)));
 				addEdge(getVertex(op.src), getVertex(op.dest), op);
 			}
@@ -267,6 +267,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			throw new IllegalArgumentException("Unknown State id");
 		}
 		return explored.contains(state);
+	}
+
+	public HashSet<StateId> getExplored() {
+		return explored;
 	}
 
 	// EVALUATE FORMULAS
@@ -458,6 +462,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public void registerStateSpaceListener(final IStateSpaceChangeListener l) {
 		stateSpaceListeners.add(l);
+	}
+
+	public void deregisterStateSpaceListener(final IStateSpaceChangeListener l) {
+		stateSpaceListeners.remove(l);
 	}
 
 	private void notifyStateSpaceChange(final String opName,
