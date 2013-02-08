@@ -59,4 +59,5 @@ public abstract class AbstractModel extends AbstractElement {
 
 	public abstract StateSchema getStateSchema();
 
+	public abstract AbstractElement getMainComponent();
 }

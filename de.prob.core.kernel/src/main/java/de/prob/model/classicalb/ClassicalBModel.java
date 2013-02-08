@@ -97,4 +97,9 @@ public class ClassicalBModel extends AbstractModel {
 	public StateSchema getStateSchema() {
 		return schema;
 	}
+
+	@Override
+	public AbstractElement getMainComponent() {
+		return getMainMachine();
+	}
 }

@@ -24,7 +24,8 @@ public class EventBModel extends AbstractModel {
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
 	}
-	
+
+	@Override
 	public StateSchema getStateSchema() {
 		return this.schema;
 	}
@@ -46,6 +47,7 @@ public class EventBModel extends AbstractModel {
 		this.mainComponent = mainComponent;
 	}
 
+	@Override
 	public AbstractElement getMainComponent() {
 		return mainComponent;
 	}
@@ -113,7 +115,5 @@ public class EventBModel extends AbstractModel {
 		}
 		return components;
 	}
-
-	
 
 }
