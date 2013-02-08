@@ -179,7 +179,7 @@ public class IntegerCellEditor extends CellEditor {
 	 *            a text string (type <code>String</code>)
 	 */
 	protected void doSetValue(Object value) {
-		Assert.isTrue(text != null && (value instanceof Integer));
+		Assert.isTrue(text != null);
 		text.removeModifyListener(getModifyListener());
 		text.setText(String.valueOf(value.toString()));
 		text.addModifyListener(getModifyListener());
