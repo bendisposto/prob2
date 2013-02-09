@@ -50,12 +50,17 @@ repositories {
 }
 
 dependencies{
+	providedCompile project(':de.prob.core.kernel'){
+		transitive = true
+	}
 
 	compile 'com.fasterxml.jackson.core:jackson-core:2.1.2'
 	//runtime 'com.fasterxml.jackson.core:jackson-core:2.1.2'
 	compile 'com.fasterxml.jackson.core:jackson-annotations:2.1.2'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.1.2'
-	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.1.2'
+	compile('com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.1.2'){
+		transitive=false
+	}
 	compile 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.1.2'
 	/*
 	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
@@ -79,9 +84,6 @@ dependencies{
 	compile 'ch.qos.logback:logback-access:0.9.29' // EPL
 	*/
 
-	 providedCompile project(':de.prob.core.kernel'){
-		transitive = true
-	}
 	
 	testCompile 'junit:junit:4.8.2'
 	
