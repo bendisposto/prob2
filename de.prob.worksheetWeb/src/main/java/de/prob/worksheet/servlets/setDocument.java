@@ -23,29 +23,40 @@ import de.prob.worksheet.WorksheetDocument;
  * @author Rene
  * 
  */
-@WebServlet(urlPatterns={"/setDocument"})
+@WebServlet(urlPatterns = { "/setDocument" })
 public class setDocument extends HttpServlet {
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= 838311906090202227L;
+	private static final long serialVersionUID = 838311906090202227L;
 
 	Logger logger = LoggerFactory.getLogger(setDocument.class);
 
-
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest
+	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 		this.doPost(req, resp);
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest
+	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 		logParameters(req);
 		resp.setCharacterEncoding("UTF-8");
 		// Get Session and needed Attributes
@@ -64,17 +75,16 @@ public class setDocument extends HttpServlet {
 		return;
 
 	}
-	
-	private void logParameters(HttpServletRequest req){
-		String[] params={"worksheetSessionId","document"};
-		String msg="{ ";
-		for(int x=0;x<params.length;x++){
-			if(x!=0)msg+=" , ";
-			msg+=params[x]+" : "+req.getParameter(params[x]);
+
+	private void logParameters(HttpServletRequest req) {
+		String[] params = { "worksheetSessionId", "document" };
+		String msg = "{ ";
+		for (int x = 0; x < params.length; x++) {
+			if (x != 0)
+				msg += " , ";
+			msg += params[x] + " : " + req.getParameter(params[x]);
 		}
-		msg+=" }";
+		msg += " }";
 		logger.debug(msg);
 	}
 }
-
-

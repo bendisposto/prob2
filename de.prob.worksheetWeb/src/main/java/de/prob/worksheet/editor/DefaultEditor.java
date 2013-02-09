@@ -12,18 +12,18 @@ import javax.xml.bind.annotation.XmlType;
  * @author Rene
  * 
  */
-@XmlType(name="DefaultEditor")
+@XmlType(name = "DefaultEditor")
 public class DefaultEditor extends IWorksheetEditor {
-	private String				HTMLContent;
-	private String				EditorContent	= "";
-	private String				InitFunction;
-	private String				getContentScript;
-	private String				destroyScript;
-	private ArrayList<String>	CSSHREFs;
-	private ArrayList<String>	JavascriptHREFs;
-	private String				id;
+	private String HTMLContent;
+	private String EditorContent = "";
+	private String InitFunction;
+	private String getContentScript;
+	private String destroyScript;
+	private ArrayList<String> CSSHREFs;
+	private ArrayList<String> JavascriptHREFs;
+	private String id;
 
-	private String				setContentScript;
+	private String setContentScript;
 
 	public DefaultEditor() {
 		this.CSSHREFs = new ArrayList<String>();
@@ -83,7 +83,8 @@ public class DefaultEditor extends IWorksheetEditor {
 
 	@Override
 	public String[] getJavascriptHREFs() {
-		return this.JavascriptHREFs.toArray(new String[this.JavascriptHREFs.size()]);
+		return this.JavascriptHREFs.toArray(new String[this.JavascriptHREFs
+				.size()]);
 	}
 
 	@Override
@@ -108,7 +109,8 @@ public class DefaultEditor extends IWorksheetEditor {
 
 	@Override
 	public void setJavascriptHREFs(final String[] javascriptHrefs) {
-		this.JavascriptHREFs = new ArrayList<String>(Arrays.asList(javascriptHrefs));
+		this.JavascriptHREFs = new ArrayList<String>(
+				Arrays.asList(javascriptHrefs));
 	}
 
 	@Override
@@ -141,12 +143,15 @@ public class DefaultEditor extends IWorksheetEditor {
 		this.destroyScript = script;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (!(obj instanceof DefaultEditor)) return false;
+		if (!(obj instanceof DefaultEditor))
+			return false;
 		return this.id.equals(((DefaultEditor) obj).getId());
 	}
 }

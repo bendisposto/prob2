@@ -12,9 +12,10 @@ import de.prob.worksheet.editor.HTMLEditor;
  * 
  */
 
-@XmlType(name="HTMLBlock")
+@XmlType(name = "HTMLBlock")
 public class HTMLBlock extends DefaultBlock {
-	public static final String	typeID	= "html";
+	public static final String typeID = "html";
+
 	public HTMLBlock() {
 		this.setEvaluatorType("");
 		this.setOutput(true);
@@ -23,7 +24,9 @@ public class HTMLBlock extends DefaultBlock {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override

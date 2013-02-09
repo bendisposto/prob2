@@ -23,48 +23,61 @@ import de.prob.worksheet.WorksheetDocument;
  * @author Rene
  * 
  */
-@WebServlet(urlPatterns={"/moveBlocks"})
+@WebServlet(urlPatterns = { "/moveBlocks" })
 public class moveBlocks extends HttpServlet {
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= -9079077179155960240L;
+	private static final long serialVersionUID = -9079077179155960240L;
 	Logger logger = LoggerFactory.getLogger(moveBlocks.class);
 
-	private WorksheetDocument	doc;
+	private WorksheetDocument doc;
 
-
-
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest
+	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 		this.doPost(req, resp);
 
 		return;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest
+	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 		// Get Session and needed Attributes
 		logParameters(req);
 		resp.setCharacterEncoding("UTF-8");
 		final HttpSession session = req.getSession();
 		final String wsid = req.getParameter("worksheetSessionID");
 		if (session.isNew()) {
-			System.err.println("No worksheet Document is initialized (first a call to newDocument Servlet is needed)");
+			System.err
+					.println("No worksheet Document is initialized (first a call to newDocument Servlet is needed)");
 			resp.getWriter().write("Error: No document is initialized");
 			return;
 		}
-		this.doc = (WorksheetDocument) req.getSession().getAttribute("WorksheetDocument" + wsid);
+		this.doc = (WorksheetDocument) req.getSession().getAttribute(
+				"WorksheetDocument" + wsid);
 
 		final ObjectMapper mapper = new ObjectMapper();
 
-		final String[] ids = mapper.readValue(req.getParameter("ids"), String[].class);
+		final String[] ids = mapper.readValue(req.getParameter("ids"),
+				String[].class);
 		final int index = Integer.parseInt(req.getParameter("index"));
 
 		this.doc.moveBlocksTo(ids, index);
@@ -72,14 +85,16 @@ public class moveBlocks extends HttpServlet {
 		// TODO add result msg
 		return;
 	}
-	private void logParameters(HttpServletRequest req){
-		String[] params={"worksheetSessionId","ids","index"};
-		String msg="{ ";
-		for(int x=0;x<params.length;x++){
-			if(x!=0)msg+=" , ";
-			msg+=params[x]+" : "+req.getParameter(params[x]);
+
+	private void logParameters(HttpServletRequest req) {
+		String[] params = { "worksheetSessionId", "ids", "index" };
+		String msg = "{ ";
+		for (int x = 0; x < params.length; x++) {
+			if (x != 0)
+				msg += " , ";
+			msg += params[x] + " : " + req.getParameter(params[x]);
 		}
-		msg+=" }";
+		msg += " }";
 		logger.debug(msg);
 	}
 }

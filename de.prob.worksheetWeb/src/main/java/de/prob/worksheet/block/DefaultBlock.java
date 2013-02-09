@@ -18,20 +18,20 @@ import de.prob.worksheet.editor.JavascriptEditor;
  * 
  */
 
-@XmlType(name="DefaultBlock")
+@XmlType(name = "DefaultBlock")
 public class DefaultBlock extends IBlock {
 
-	public static final String					typeID	= "default";
+	public static final String typeID = "default";
 
-	private String								id;
-	private String								worksheetId;
-	private boolean								hasMenu;
-	private final ArrayList<IWorksheetMenuNode>	menu;
-	private IWorksheetEditor					editor;
-	private String								evaluatorType;
-	private boolean								output;
-	private boolean								mark;
-	private final ArrayList<String>				outputBlockIds;
+	private String id;
+	private String worksheetId;
+	private boolean hasMenu;
+	private final ArrayList<IWorksheetMenuNode> menu;
+	private IWorksheetEditor editor;
+	private String evaluatorType;
+	private boolean output;
+	private boolean mark;
+	private final ArrayList<String> outputBlockIds;
 
 	/**
 	 * 
@@ -193,7 +193,8 @@ public class DefaultBlock extends IBlock {
 
 	@Override
 	public String[] getOutputBlockIds() {
-		return this.outputBlockIds.toArray(new String[this.outputBlockIds.size()]);
+		return this.outputBlockIds.toArray(new String[this.outputBlockIds
+				.size()]);
 	}
 
 	@Override
@@ -211,7 +212,8 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (!(obj instanceof DefaultBlock)) return false;
+		if (!(obj instanceof DefaultBlock))
+			return false;
 		return this.id.equals(((DefaultBlock) obj).getId());
 
 	}

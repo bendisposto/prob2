@@ -16,14 +16,13 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.worksheet.WorksheetDocument;
 
-@WebServlet(urlPatterns={"/saveDocument"})
+@WebServlet(urlPatterns = { "/saveDocument" })
 public class saveDocument extends HttpServlet {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7762787871923711945L;
 	Logger logger = LoggerFactory.getLogger(saveDocument.class);
-
 
 	/*
 	 * (non-Javadoc)
@@ -33,55 +32,65 @@ public class saveDocument extends HttpServlet {
 	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		doPost(req, resp);
 	}
 
 	@Override
-	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 		resp.setCharacterEncoding("utf-8");
 		this.logParameters(req);
-		
+
 		// initialize the session
 		this.setSessionProperties(req.getSession());
 
 		// Load the session attibutes
-		HashMap<String, Object> attributes = this.getSessionAttributes(req.getSession(), req.getParameter("worksheetSessionId"));
+		HashMap<String, Object> attributes = this.getSessionAttributes(
+				req.getSession(), req.getParameter("worksheetSessionId"));
 
-		
 		// load or create the document
 		WorksheetDocument doc = this.getDocument(attributes);
 		attributes = new HashMap<String, Object>();
 		attributes.put("document", doc);
 
 		// store the session attributes
-		this.setSessionAttributes(req.getSession(), req.getParameter("worksheetSessionId"), attributes);
+		this.setSessionAttributes(req.getSession(),
+				req.getParameter("worksheetSessionId"), attributes);
 
 		// print the json string to the response
-/*		final XmlMapper mapper = new XmlMapper();
-		
-		AnnotationIntrospector introspector = new XmlJaxbAnnotationIntrospector(mapper.getTypeFactory());
-		AnnotationIntrospector secondary = new JacksonAnnotationIntrospector();
-		mapper.setAnnotationIntrospector(new AnnotationIntrospectorPair(introspector, secondary));
-		resp.getWriter().print(mapper.writeValueAsString(doc));
-*/
+		/*
+		 * final XmlMapper mapper = new XmlMapper();
+		 * 
+		 * AnnotationIntrospector introspector = new
+		 * XmlJaxbAnnotationIntrospector(mapper.getTypeFactory());
+		 * AnnotationIntrospector secondary = new
+		 * JacksonAnnotationIntrospector(); mapper.setAnnotationIntrospector(new
+		 * AnnotationIntrospectorPair(introspector, secondary));
+		 * resp.getWriter().print(mapper.writeValueAsString(doc));
+		 */
 		resp.setStatus(HttpServletResponse.SC_ACCEPTED);
 		JAXB.marshal(doc, resp.getWriter());
 	}
 
 	@SuppressWarnings("unchecked")
-	private HashMap<String, Object> getSessionAttributes(HttpSession session, String wsid) {
-		HashMap<String, Object> attributes = (HashMap<String, Object>) session.getAttribute(wsid);
-		if (attributes == null){
+	private HashMap<String, Object> getSessionAttributes(HttpSession session,
+			String wsid) {
+		HashMap<String, Object> attributes = (HashMap<String, Object>) session
+				.getAttribute(wsid);
+		if (attributes == null) {
 			attributes = new HashMap<String, Object>();
-			logger.debug("New 'Sub'session initialized with id :"+wsid);
+			logger.debug("New 'Sub'session initialized with id :" + wsid);
 		}
-		logger.debug("Session attributes: "+attributes.toString());
+		logger.debug("Session attributes: " + attributes.toString());
 		return attributes;
 	}
 
-	private void setSessionAttributes(HttpSession session, String wsid, HashMap<String, Object> attributes) {
-		logger.debug("Session attributes: "+attributes.toString());
+	private void setSessionAttributes(HttpSession session, String wsid,
+			HashMap<String, Object> attributes) {
+		logger.debug("Session attributes: " + attributes.toString());
 		session.setAttribute(wsid, attributes);
 	}
 
@@ -100,15 +109,17 @@ public class saveDocument extends HttpServlet {
 		return doc;
 
 	}
-	private void logParameters(HttpServletRequest req){
-		String[] params={"worksheetSessionId"};
-		String msg="{ ";
-		for(int x=0;x<params.length;x++){
-			if(x!=0)msg+=" , ";
-			msg+=params[x]+" : "+req.getParameter(params[x]);
+
+	private void logParameters(HttpServletRequest req) {
+		String[] params = { "worksheetSessionId" };
+		String msg = "{ ";
+		for (int x = 0; x < params.length; x++) {
+			if (x != 0)
+				msg += " , ";
+			msg += params[x] + " : " + req.getParameter(params[x]);
 		}
-		msg+=" }";
+		msg += " }";
 		logger.debug(msg);
-		
+
 	}
 }

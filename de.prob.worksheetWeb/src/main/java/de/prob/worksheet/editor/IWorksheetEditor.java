@@ -16,13 +16,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
-@JsonSubTypes({ 
-		@Type(value = JavascriptEditor.class, name = "javascript"),
+@JsonSubTypes({ @Type(value = JavascriptEditor.class, name = "javascript"),
 		@Type(value = HTMLEditor.class, name = "HTMLEditor"),
-		@Type(value = HTMLErrorEditor.class, name = "errorHtml")})
+		@Type(value = HTMLErrorEditor.class, name = "errorHtml") })
 @JsonIgnoreProperties(ignoreUnknown = true)
-
-@XmlSeeAlso(value={DefaultEditor.class,HTMLEditor.class,HTMLErrorEditor.class,JavascriptEditor.class})
+@XmlSeeAlso(value = { DefaultEditor.class, HTMLEditor.class,
+		HTMLErrorEditor.class, JavascriptEditor.class })
 public abstract class IWorksheetEditor {
 
 	@JsonProperty(value = "html")
@@ -80,12 +79,12 @@ public abstract class IWorksheetEditor {
 
 	@JsonProperty(value = "jsURLs")
 	public abstract void setJavascriptHREFs(String[] javascriptHrefs);
-	
+
 	@JsonProperty(value = "id")
-	@XmlAttribute(name="id")
+	@XmlAttribute(name = "id")
 	@XmlID
 	public abstract String getId();
-	
+
 	@JsonProperty(value = "id")
 	public abstract void setId(final String id);
 

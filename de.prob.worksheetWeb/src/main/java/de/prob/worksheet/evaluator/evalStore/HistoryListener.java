@@ -12,17 +12,20 @@ import de.prob.worksheet.api.evalStore.EvalStoreContext;
 public class HistoryListener implements IWorksheetAPIListener {
 	Logger logger = LoggerFactory.getLogger(HistoryListener.class);
 	ContextHistory contextHistory;
+
 	public HistoryListener(ContextHistory contextHistory) {
-		logger.trace("{}",contextHistory);
-		this.contextHistory=contextHistory;
+		logger.trace("{}", contextHistory);
+		this.contextHistory = contextHistory;
 	}
+
 	@Override
 	public void notify(IWorksheetEvent event) {
 		logger.trace(event.toString());
-		if(event.getId()==2001){
-			WorksheetActionEvent tEvent=(WorksheetActionEvent)event;
-			this.contextHistory.add(new EvalStoreContext("", (Long) tEvent.getDataAfter()));
-			logger.debug("{}",contextHistory);
+		if (event.getId() == 2001) {
+			WorksheetActionEvent tEvent = (WorksheetActionEvent) event;
+			this.contextHistory.add(new EvalStoreContext("", (Long) tEvent
+					.getDataAfter()));
+			logger.debug("{}", contextHistory);
 		}
 	}
 }

@@ -8,8 +8,8 @@ package de.prob.worksheet.api;
  * 
  */
 public class WorksheetActionEvent extends DefaultWorksheetEvent {
-	private Object	dataBefore;
-	private Object	dataAfter;
+	private Object dataBefore;
+	private Object dataAfter;
 
 	/**
 	 * @return the dataBefore

@@ -1,15 +1,16 @@
 (function($) {
 	$.fn.lazyLoader = function() {
-
+		
+		//jTODO never load lazyLoader on more than one element in the document
 		var methods = {
 			init : function(options) {
 				var settings = $.extend({
-					'jsUrls' : [ "javascripts/libs/jquery-1.8.3/jquery-1.8.3.js","javascripts/libs/jquery-ui-1.9.2/ui/jquery-ui.js","javascripts/jquery.lazyLoader.js","javascripts/jquery.json-2.4.js","javascripts/jquery.ui.editor.js","javascripts/jquery.ui.blocks.js","javascripts/jquery.ui.worksheet.js","javascripts/worksheet.js" ],
-					'jsUrlQueue' : [ ],
-					'cssUrls' : [ "stylesheets/jquery-ui-1.9.2/themes/base/jquery-ui.css","stylesheets/jquery-ui-1.9.2/themes/smoothness/jquery.ui.theme.css","stylesheets/jquery-ui-1.9.2/themes/base/jquery.ui.worksheet.css","stylesheets/jquery-ui-1.9.2/themes/base/jquery.ui.block.css","stylesheets/jquery-ui-1.9.2/themes/base/jquery.ui.editor.css","stylesheets/worksheet.css"],
-					'cssUrlQueue' : [  ]
+					'jsUrls' : [],
+					'jsUrlQueue' : [],
+					'cssUrls' : [],
+					'cssUrlQueue' : []
 				}, options);
-				this.each(function() {
+				return this.each(function() {
 					//DEBUG alert("lazyLoader init");
 					var $this = $(this);
 					var data = $this.data('lazyLoader');
@@ -25,10 +26,15 @@
 							jsUrlQueue : settings.jsUrlQueue
 						});
 						data = $this.data("lazyLoader");
+						$this.addClass("lazyLoader");
 					}
 				});
-				this.lazyLoader("loadStyles", []);
-				return this.lazyLoader("loadScripts", []);
+			},
+			load:function(){
+				return this.each(function() {
+					$(this).lazyLoader("loadScripts",[]);
+					$(this).lazyLoader("loadStyles",[]);
+				});
 			},
 			loadScripts : function(urls) {
 				if(!$.isArray(urls))
@@ -43,7 +49,7 @@
 							var nextURL = data.jsUrlQueue.shift();
 							data.isJsLoading = true;
 							jQuery.getScript(nextURL, function(content, status, jqxhr) {
-								$("body").lazyLoader("scriptLoaded", this.url);
+								$(".lazyLoader").lazyLoader("scriptLoaded", this.url);
 							}).fail(function(jqxhr, settings, exception) {
 							});
 						}
@@ -101,15 +107,6 @@
 						data.cssUrlQueue.push(urls[x]);
 					}
 				}
-			},
-			loadCSSs : function(Css) {
-			// GOOD
-			},
-			bindToScriptLoadOnce : function(callback, event, data) {
-
-			},
-			bindToCSSLoadOnce : function(callback, event, data) {
-			// !!!
 			}
 		};
 
@@ -124,7 +121,6 @@
 			}
 
 		};
-		// Do your awesome plugin stuff here
 
 	};
 }(jQuery));

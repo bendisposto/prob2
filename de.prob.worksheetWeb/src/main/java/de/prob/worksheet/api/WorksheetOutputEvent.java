@@ -8,8 +8,8 @@ package de.prob.worksheet.api;
  * 
  */
 public class WorksheetOutputEvent extends DefaultWorksheetEvent {
-	private String	OutputBlockType;
-	private Object	dataObject;
+	private String OutputBlockType;
+	private Object dataObject;
 
 	/**
 	 * @return the outputBlockType

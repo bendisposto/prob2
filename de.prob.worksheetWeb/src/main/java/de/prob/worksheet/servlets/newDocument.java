@@ -18,11 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.block.JavascriptBlock;
 
-@WebServlet(urlPatterns={"/newDocument"})
+@WebServlet(urlPatterns = { "/newDocument" })
 public class newDocument extends HttpServlet {
 	private static final long serialVersionUID = -8455020946701964097L;
 	Logger logger = LoggerFactory.getLogger(newDocument.class);
-
 
 	/*
 	 * (non-Javadoc)
@@ -32,48 +31,57 @@ public class newDocument extends HttpServlet {
 	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		doPost(req, resp);
 	}
 
 	@Override
-	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 		this.logParameters(req);
 		resp.setCharacterEncoding("UTF-8");
 		// initialize the session
 		this.setSessionProperties(req.getSession());
 
 		// Load the session attibutes
-		HashMap<String, Object> attributes = this.getSessionAttributes(req.getSession(), req.getParameter("worksheetSessionId"));
+		HashMap<String, Object> attributes = this.getSessionAttributes(
+				req.getSession(), req.getParameter("worksheetSessionId"));
 
-		
 		// load or create the document
 		WorksheetDocument doc = this.getDocument(attributes);
 		attributes = new HashMap<String, Object>();
 		attributes.put("document", doc);
 
 		// store the session attributes
-		this.setSessionAttributes(req.getSession(), req.getParameter("worksheetSessionId"), attributes);
+		this.setSessionAttributes(req.getSession(),
+				req.getParameter("worksheetSessionId"), attributes);
 
 		// print the json string to the response
 		final ObjectMapper mapper = new ObjectMapper();
 		resp.setStatus(HttpServletResponse.SC_ACCEPTED);
-		resp.getWriter().print(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(doc));
+		resp.getWriter()
+				.print(mapper.writerWithDefaultPrettyPrinter()
+						.writeValueAsString(doc));
 	}
 
 	@SuppressWarnings("unchecked")
-	private HashMap<String, Object> getSessionAttributes(HttpSession session, String wsid) {
-		HashMap<String, Object> attributes = (HashMap<String, Object>) session.getAttribute(wsid);
-		if (attributes == null){
+	private HashMap<String, Object> getSessionAttributes(HttpSession session,
+			String wsid) {
+		HashMap<String, Object> attributes = (HashMap<String, Object>) session
+				.getAttribute(wsid);
+		if (attributes == null) {
 			attributes = new HashMap<String, Object>();
-			logger.debug("New 'Sub'session initialized with id :"+wsid);
+			logger.debug("New 'Sub'session initialized with id :" + wsid);
 		}
-		logger.debug("Session attributes: "+attributes.toString());
+		logger.debug("Session attributes: " + attributes.toString());
 		return attributes;
 	}
 
-	private void setSessionAttributes(HttpSession session, String wsid, HashMap<String, Object> attributes) {
-		logger.debug("Session attributes: "+attributes.toString());
+	private void setSessionAttributes(HttpSession session, String wsid,
+			HashMap<String, Object> attributes) {
+		logger.debug("Session attributes: " + attributes.toString());
 		session.setAttribute(wsid, attributes);
 	}
 
@@ -87,27 +95,30 @@ public class newDocument extends HttpServlet {
 	private WorksheetDocument getDocument(HashMap<String, Object> attributes) {
 		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");
 		if (doc == null) {
-			//TODO add distinction between eclipse plugin mode and external Browser mode (e.g. remove unnecessary menus in plugin mode)
+			// TODO add distinction between eclipse plugin mode and external
+			// Browser mode (e.g. remove unnecessary menus in plugin mode)
 			doc = new WorksheetDocument();
 			doc.setId("ui-id-1");
 
 			logger.debug("New WorksheetDocument initiaized");
-					
+
 			final JavascriptBlock block1 = new JavascriptBlock();
 			doc.insertBlock(0, block1);
 		}
 		return doc;
 
 	}
-	private void logParameters(HttpServletRequest req){
-		String[] params={"worksheetSessionId"};
-		String msg="{ ";
-		for(int x=0;x<params.length;x++){
-			if(x!=0)msg+=" , ";
-			msg+=params[x]+" : "+req.getParameter(params[x]);
+
+	private void logParameters(HttpServletRequest req) {
+		String[] params = { "worksheetSessionId" };
+		String msg = "{ ";
+		for (int x = 0; x < params.length; x++) {
+			if (x != 0)
+				msg += " , ";
+			msg += params[x] + " : " + req.getParameter(params[x]);
 		}
-		msg+=" }";
+		msg += " }";
 		logger.debug(msg);
-		
+
 	}
 }

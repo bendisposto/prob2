@@ -20,23 +20,24 @@ import de.prob.worksheet.editor.IWorksheetEditor;
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
 @JsonSubTypes({ @Type(value = JavascriptBlock.class, name = "javascript"),
-				@Type(value = HTMLBlock.class, name = "html"),
-				@Type(value = HTMLErrorBlock.class, name = "HTMLErrorBlock"),
-				@Type(value = DefaultBlock.class, name = "default") })
+		@Type(value = HTMLBlock.class, name = "html"),
+		@Type(value = HTMLErrorBlock.class, name = "HTMLErrorBlock"),
+		@Type(value = DefaultBlock.class, name = "default") })
 @JsonIgnoreProperties(ignoreUnknown = true)
-@XmlSeeAlso(value={JavascriptBlock.class,HTMLBlock.class,HTMLErrorBlock.class,DefaultBlock.class})
+@XmlSeeAlso(value = { JavascriptBlock.class, HTMLBlock.class,
+		HTMLErrorBlock.class, DefaultBlock.class })
 public abstract class IBlock {
 
 	@JsonProperty(value = "id")
 	@XmlID
-	@XmlAttribute(name="id")
+	@XmlAttribute(name = "id")
 	public abstract String getId();
 
 	@JsonProperty(value = "id")
 	public abstract void setId(String id);
 
 	@JsonProperty(value = "worksheetId")
-	@XmlAttribute(name="worksheetId")
+	@XmlAttribute(name = "worksheetId")
 	public abstract String getWorksheetId();
 
 	@JsonProperty(value = "worksheetId")
@@ -57,35 +58,35 @@ public abstract class IBlock {
 	public abstract void setMenu(IWorksheetMenuNode[] menu);
 
 	@JsonProperty(value = "editor")
-	@XmlElement(name="editor")
+	@XmlElement(name = "editor")
 	public abstract IWorksheetEditor getEditor();
 
 	@JsonProperty(value = "editor")
 	public abstract void setEditor(IWorksheetEditor editor);
 
 	@JsonProperty(value = "evaluatorType")
-	@XmlAttribute(name="evaluatorType")
+	@XmlAttribute(name = "evaluatorType")
 	public abstract String getEvaluatorType();
 
 	@JsonProperty(value = "evaluatorType")
 	public abstract void setEvaluatorType(String evaluatorType);
 
 	@JsonProperty(value = "isOutput")
-	@XmlAttribute(name="isOutput")
+	@XmlAttribute(name = "isOutput")
 	public abstract boolean getOutput();
 
 	@JsonProperty(value = "isOutput")
 	public abstract void setOutput(boolean output);
 
 	@JsonProperty(value = "mark")
-	@XmlAttribute(name="mark")
+	@XmlAttribute(name = "mark")
 	public abstract boolean getMark();
 
 	@JsonProperty(value = "mark")
 	public abstract void setMark(boolean b);
 
 	@JsonProperty(value = "outputBlockIds")
-	@XmlAttribute(name="outputBlockIds")
+	@XmlAttribute(name = "outputBlockIds")
 	public abstract String[] getOutputBlockIds();
 
 	@JsonProperty(value = "outputBlockIds")

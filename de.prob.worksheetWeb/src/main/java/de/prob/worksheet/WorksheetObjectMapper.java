@@ -14,10 +14,10 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= 6357362407554569616L;
-	ArrayList<NamedType>		editors				= new ArrayList<NamedType>();
-	ArrayList<NamedType>		evaluaters			= new ArrayList<NamedType>();
-	ArrayList<NamedType>		blocks				= new ArrayList<NamedType>();
+	private static final long serialVersionUID = 6357362407554569616L;
+	ArrayList<NamedType> editors = new ArrayList<NamedType>();
+	ArrayList<NamedType> evaluaters = new ArrayList<NamedType>();
+	ArrayList<NamedType> blocks = new ArrayList<NamedType>();
 
 	public WorksheetObjectMapper() {
 		super();
@@ -27,16 +27,19 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	}
 
 	private void addEditorResolvers() {
-		this.addEditorResolver(new NamedType(JavascriptEditor.class, "Javascript"));
+		this.addEditorResolver(new NamedType(JavascriptEditor.class,
+				"Javascript"));
 		this.addEditorResolver(new NamedType(HTMLEditor.class, "HTMLOutput"));
 	}
 
 	private void addEvaluaterResolvers() {
-		this.addEvaluaterResolver(new NamedType(ClassicalBEvaluator.class, "ClassicalB"));
+		this.addEvaluaterResolver(new NamedType(ClassicalBEvaluator.class,
+				"ClassicalB"));
 	}
 
 	private void addBlockResolvers() {
-		this.addBlockResolver(new NamedType(JavascriptBlock.class, "JavascriptBlock"));
+		this.addBlockResolver(new NamedType(JavascriptBlock.class,
+				"JavascriptBlock"));
 	}
 
 	private void addEditorResolver(final NamedType type) {

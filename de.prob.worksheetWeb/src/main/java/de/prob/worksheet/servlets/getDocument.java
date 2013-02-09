@@ -23,7 +23,7 @@ import de.prob.worksheet.WorksheetDocument;
  * @author Rene
  * 
  */
-@WebServlet(urlPatterns={"/getDocument"})
+@WebServlet(urlPatterns = { "/getDocument" })
 public class getDocument extends HttpServlet {
 
 	/**
@@ -34,8 +34,6 @@ public class getDocument extends HttpServlet {
 
 	private WorksheetDocument doc;
 
-
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -44,7 +42,9 @@ public class getDocument extends HttpServlet {
 	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 		this.doPost(req, resp);
 	}
 
@@ -56,21 +56,27 @@ public class getDocument extends HttpServlet {
 	 * , javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 		logParameters(req);
 		resp.setCharacterEncoding("UTF-8");
 		// Get Session and needed Attributes
 		final HttpSession session = req.getSession();
 		final String wsid = req.getParameter("worksheetSessionId");
 		if (session.isNew()) {
-			System.err.println("No worksheet Document is initialized (first a call to newDocument Servlet is needed)");
+			System.err
+					.println("No worksheet Document is initialized (first a call to newDocument Servlet is needed)");
 			resp.getWriter().write("Error: No document is initialized");
 			return;
 		}
-		this.doc = (WorksheetDocument) req.getSession().getAttribute("WorksheetDocument" + wsid);
+		this.doc = (WorksheetDocument) req.getSession().getAttribute(
+				"WorksheetDocument" + wsid);
 
 		final ObjectMapper mapper = new ObjectMapper();
-		resp.getWriter().print(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this.doc));
+		resp.getWriter().print(
+				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
+						this.doc));
 
 		return;
 	}

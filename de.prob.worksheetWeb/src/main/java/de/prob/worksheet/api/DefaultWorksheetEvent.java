@@ -9,12 +9,14 @@ package de.prob.worksheet.api;
  */
 public class DefaultWorksheetEvent implements IWorksheetEvent {
 
-	private Integer	id;
-	private String	name;
-	private String	description;
-	private String	message;
+	private Integer id;
+	private String name;
+	private String description;
+	private String message;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.api.IWorksheetEvent#getId()
 	 */
 	@Override
@@ -22,7 +24,9 @@ public class DefaultWorksheetEvent implements IWorksheetEvent {
 		return this.id;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.api.IWorksheetEvent#setId(int)
 	 */
 	@Override
@@ -30,7 +34,9 @@ public class DefaultWorksheetEvent implements IWorksheetEvent {
 		this.id = id;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.api.IWorksheetEvent#setName(java.lang.String)
 	 */
 	@Override
@@ -38,7 +44,9 @@ public class DefaultWorksheetEvent implements IWorksheetEvent {
 		this.name = name;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.api.IWorksheetEvent#getName()
 	 */
 	@Override
@@ -46,7 +54,9 @@ public class DefaultWorksheetEvent implements IWorksheetEvent {
 		return this.name;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.api.IWorksheetEvent#getDescription()
 	 */
 	@Override
@@ -54,8 +64,11 @@ public class DefaultWorksheetEvent implements IWorksheetEvent {
 		return this.description;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.api.IWorksheetEvent#setDescription(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.api.IWorksheetEvent#setDescription(java.lang.String)
 	 */
 	@Override
 	public void setDescription(final String description) {

@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import de.prob.worksheet.block.IBlock;
 
-@XmlRootElement(name="worksheet")
+@XmlRootElement(name = "worksheet")
 public class WorksheetDocument {
 
 	private final ArrayList<IBlock> blocks;
@@ -30,12 +30,14 @@ public class WorksheetDocument {
 		this.blocks = new ArrayList<IBlock>();
 		this.menu = new ArrayList<WorksheetMenuNode>();
 		final WorksheetMenuNode action = new WorksheetMenuNode("File", "", "");
-		final WorksheetMenuNode evalThis = new WorksheetMenuNode("Open", "", "ui-icon-disk");
+		final WorksheetMenuNode evalThis = new WorksheetMenuNode("Open", "",
+				"ui-icon-disk");
 		evalThis.setClick("function() {alert('Open')}");
 		action.addChild(evalThis);
 		this.menu.add(action);
 	}
-	@XmlElements(value={@XmlElement(name="block")})
+
+	@XmlElements(value = { @XmlElement(name = "block") })
 	public IBlock[] getBlocks() {
 		return this.blocks.toArray(new IBlock[this.blocks.size()]);
 	}
@@ -62,7 +64,7 @@ public class WorksheetDocument {
 	public void setHasBody(final boolean hasBody) {
 		this.hasBody = hasBody;
 	}
-	
+
 	@XmlTransient
 	public ArrayList<WorksheetMenuNode> getMenu() {
 		return this.menu;
@@ -72,7 +74,7 @@ public class WorksheetDocument {
 		this.menu = menu;
 	}
 
-	@XmlAttribute(name="id")
+	@XmlAttribute(name = "id")
 	@XmlID
 	public String getId() {
 		return this.id;
@@ -85,11 +87,10 @@ public class WorksheetDocument {
 	/*
 	 * Inserts the block at index and shifts the rest
 	 */
-	@XmlAttribute(name="blockCounter")
+	@XmlAttribute(name = "blockCounter")
 	public int getBlockCounter() {
 		return blockCounter;
 	}
-
 
 	public void setBlockCounter(int blockCounter) {
 		this.blockCounter = blockCounter;
@@ -124,7 +125,8 @@ public class WorksheetDocument {
 	}
 
 	public IBlock[] getBlocksFrom(final int index) {
-		final List<IBlock> blocks = this.blocks.subList(index, this.blocks.size());
+		final List<IBlock> blocks = this.blocks.subList(index,
+				this.blocks.size());
 		return blocks.toArray(new IBlock[blocks.size()]);
 	}
 
@@ -140,7 +142,8 @@ public class WorksheetDocument {
 
 	public void removeOutputBlocks(final IBlock block) {
 		final int blockIndex = this.getBlockIndex(block);
-		final String[] outputIds = this.blocks.get(blockIndex).getOutputBlockIds();
+		final String[] outputIds = this.blocks.get(blockIndex)
+				.getOutputBlockIds();
 		for (final String outputId : outputIds) {
 			final IBlock nblock = this.getBlockById(outputId);
 			this.blocks.remove(nblock);

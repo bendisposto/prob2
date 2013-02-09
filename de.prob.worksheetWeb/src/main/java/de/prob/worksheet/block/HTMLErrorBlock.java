@@ -12,12 +12,12 @@ import de.prob.worksheet.editor.HTMLErrorEditor;
  * 
  */
 
-@XmlType(name="HTMLErrorBlock")
+@XmlType(name = "HTMLErrorBlock")
 public class HTMLErrorBlock extends DefaultBlock {
-	public static final String	typeID	= "errorHtml";
+	public static final String typeID = "errorHtml";
 
-	private boolean haltAll=false;
-	
+	private boolean haltAll = false;
+
 	public HTMLErrorBlock() {
 		this.setEvaluatorType("");
 		this.setOutput(true);
@@ -26,7 +26,9 @@ public class HTMLErrorBlock extends DefaultBlock {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -43,10 +45,11 @@ public class HTMLErrorBlock extends DefaultBlock {
 	}
 
 	/**
-	 * @param haltAll the haltAll to set
+	 * @param haltAll
+	 *            the haltAll to set
 	 */
 	public void setHaltAll(boolean haltAll) {
 		this.haltAll = haltAll;
 	}
-	
+
 }

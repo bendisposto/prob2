@@ -3,33 +3,24 @@
 	$.widget("ui.worksheet", {
 		version : "0.1.0",
 		options : {
+			id:"ui-id-1",
+			hasMenu:false,
+			hasBody:false,
+			blocks:[],
+			menu:[],
 			isInitialized:false,
 			sessionId:0,
-			jsUrls : [ "javascripts/libs/jquery-ui-1.9.2/ui/jquery.ui.menubar.js" ],
-			cssUrls : [ "stylesheets/jquery-ui-1.9.2/themes/base/jquery.ui.menubar.css" ],
 			initialized : function(event) {},
-			optionsChanged : function(event, options) {
-				if(!$.browser.msie)
-					window.console.debug("Event: optionsChanged from worksheet: " + options.id);
-			}
+			optionsChanged : function(event, options) {}
 		},
 		//jTODO Blocks[] is not needed;
 		blocks : [],
 		blocksLoading : 0,
 		_create : function() {
 			//DEBUG alert("worksheet _create");
-			$("body").lazyLoader();
-			$("body").lazyLoader("loadStyles", this.options.cssUrls);
-			$("body").one("scriptsLoaded", 0, $.proxy(this._create2, this));
-			$("body").lazyLoader("loadScripts", this.options.jsUrls);
-			this.options.isInitialized=false;
-			
-		},
-		_create2 : function() {
 			//DEBUG alert("worksheet _create2");
 			this.element.addClass("ui-worksheet ui-widget ui-corner-none");
-
-			this.options.id = this.element.attr("id");
+			this.element.attr("id",this.options.id);
 			
 			if (this.options.hasMenu) {
 				var worksheetMenu = null;

@@ -13,9 +13,9 @@ import java.util.regex.Pattern;
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
 
 public class SimpleConsoleParser {
-	private static final Class[]	apis				= new Class[] { EvalStoreAPI.class };
+	private static final Class[] apis = new Class[] { EvalStoreAPI.class };
 
-	public TreeMap<String, Class>	apiMethodNamesMap	= new TreeMap<String, Class>();
+	public TreeMap<String, Class> apiMethodNamesMap = new TreeMap<String, Class>();
 
 	// public String[] worksheetAPImethodNames;
 	// public String[] animatorCommands;
@@ -40,7 +40,8 @@ public class SimpleConsoleParser {
 
 	public void init() {
 		for (final Class api : SimpleConsoleParser.apis) {
-			this.apiMethodNamesMap.putAll(SimpleConsoleParser.getPublicMethodNamesMap(api));
+			this.apiMethodNamesMap.putAll(SimpleConsoleParser
+					.getPublicMethodNamesMap(api));
 		}
 	}
 
@@ -73,14 +74,15 @@ public class SimpleConsoleParser {
 	}
 
 	public class EvalObject {
-		public Object	methodInstance;
-		public String[]	method;
+		public Object methodInstance;
+		public String[] method;
+
 		@Override
 		public String toString() {
-			String res="";
-			if(methodInstance!=null)
-				res+=methodInstance.toString()+" ";
-			res+="params:"+Arrays.toString(method);
+			String res = "";
+			if (methodInstance != null)
+				res += methodInstance.toString() + " ";
+			res += "params:" + Arrays.toString(method);
 			return res;
 		}
 	}
@@ -105,14 +107,18 @@ public class SimpleConsoleParser {
 		for (final String[] method : methods) {
 			Method methodInstance = null;
 			try {
-				if (method.length>0 && this.apiMethodNamesMap.containsKey(method[0])) {
+				if (method.length > 0
+						&& this.apiMethodNamesMap.containsKey(method[0])) {
 					final Class api = this.apiMethodNamesMap.get(method[0]);
-					methodInstance = api.getMethod(method[0], this.toTypeArrayMinusFirst(method));
-				}else{
-					//TODO check if something needs to be done when method.length=0
+					methodInstance = api.getMethod(method[0],
+							this.toTypeArrayMinusFirst(method));
+				} else {
+					// TODO check if something needs to be done when
+					// method.length=0
 				}
 			} catch (final NoSuchMethodException e) {
-				System.err.println("String seems to be an WorksheetApi method but isn't found with this parameters!");
+				System.err
+						.println("String seems to be an WorksheetApi method but isn't found with this parameters!");
 				e.printStackTrace();
 			} catch (final SecurityException e) {
 				e.printStackTrace();
@@ -122,7 +128,7 @@ public class SimpleConsoleParser {
 				newEval.method = method;
 				newEval.methodInstance = methodInstance;
 				evalObjects.add(newEval);
-			}else{
+			} else {
 				final EvalObject newEval = new EvalObject();
 				newEval.method = method;
 				newEval.methodInstance = null;
@@ -144,8 +150,8 @@ public class SimpleConsoleParser {
 				methods.add(this.parseApiMethod(expression));
 
 			} else {
-				//FIXME is unknown at the moment i say it is a eval expression
-				methods.add(new String[]{"evaluate",expression});
+				// FIXME is unknown at the moment i say it is a eval expression
+				methods.add(new String[] { "evaluate", expression });
 			}
 		}
 		return methods.toArray(new String[methods.size()][]);
@@ -166,13 +172,15 @@ public class SimpleConsoleParser {
 	public String getCommand(String expression) {
 		expression = expression.trim();
 		final int end = expression.indexOf("(");
-		if (end != -1) return expression.substring(0, end).trim();
+		if (end != -1)
+			return expression.substring(0, end).trim();
 		return expression.trim();
 	}
 
 	public String[] parseApiMethod(String expression) {
 		expression = expression.trim();
-		final Pattern reg = Pattern.compile("^([a-zA-Z_$][a-zA-Z_0-9$]*)\\s*(\\((.*)\\)$)?");
+		final Pattern reg = Pattern
+				.compile("^([a-zA-Z_$][a-zA-Z_0-9$]*)\\s*(\\((.*)\\)$)?");
 		final Matcher match = reg.matcher(expression);
 		final String command;
 		final ArrayList<String> parts = new ArrayList<String>();
@@ -224,7 +232,8 @@ public class SimpleConsoleParser {
 					}
 				}
 
-				if (argString.charAt(x) == ',' && !inStr && !inStr2 && depth == 0) {
+				if (argString.charAt(x) == ',' && !inStr && !inStr2
+						&& depth == 0) {
 					args.add(arg);
 					arg = new String("");
 				} else {
@@ -235,7 +244,8 @@ public class SimpleConsoleParser {
 			final String[] sArgs = args.toArray(new String[args.size()]);
 			for (int x = 0; x < sArgs.length; x++) {
 				sArgs[x] = sArgs[x].trim();
-				if (sArgs[x].charAt(0) == '"' && sArgs[x].charAt(sArgs[x].length() - 1) == '"') {
+				if (sArgs[x].charAt(0) == '"'
+						&& sArgs[x].charAt(sArgs[x].length() - 1) == '"') {
 					sArgs[x] = sArgs[x].substring(1, sArgs[x].length() - 1);
 				}
 

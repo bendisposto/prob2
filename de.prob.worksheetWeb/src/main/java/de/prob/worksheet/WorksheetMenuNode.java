@@ -4,24 +4,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class WorksheetMenuNode implements IWorksheetMenuNode {
-	private String								text		= "";
-	private String								click		= null;
-	private String								itemClass	= "";
-	private String								iconClass	= "";
-	private final ArrayList<IWorksheetMenuNode>	children;
+	private String text = "";
+	private String click = null;
+	private String itemClass = "";
+	private String iconClass = "";
+	private final ArrayList<IWorksheetMenuNode> children;
 
 	public WorksheetMenuNode() {
 		this.children = new ArrayList<IWorksheetMenuNode>();
 	}
 
-	public WorksheetMenuNode(final String text, final String itemClass, final String iconClass) {
+	public WorksheetMenuNode(final String text, final String itemClass,
+			final String iconClass) {
 		this.children = new ArrayList<IWorksheetMenuNode>();
 		this.text = text;
 		this.itemClass = itemClass;
 		this.iconClass = iconClass;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.IWorksheetMenuNode#getText()
 	 */
 	@Override
@@ -29,7 +32,9 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 		return this.text;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.IWorksheetMenuNode#setText(java.lang.String)
 	 */
 	@Override
@@ -37,7 +42,9 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 		this.text = text;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.IWorksheetMenuNode#getClick()
 	 */
 	@Override
@@ -45,7 +52,9 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 		return this.click;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.IWorksheetMenuNode#setClick(java.lang.String)
 	 */
 	@Override
@@ -53,7 +62,9 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 		this.click = click;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.IWorksheetMenuNode#getItemClass()
 	 */
 	@Override
@@ -61,7 +72,9 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 		return this.itemClass;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.IWorksheetMenuNode#setItemClass(java.lang.String)
 	 */
 	@Override
@@ -69,7 +82,9 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 		this.itemClass = itemClass;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.IWorksheetMenuNode#getIconClass()
 	 */
 	@Override
@@ -77,7 +92,9 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 		return this.iconClass;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.IWorksheetMenuNode#setIconClass(java.lang.String)
 	 */
 	@Override
@@ -85,16 +102,22 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 		this.iconClass = iconClass;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.IWorksheetMenuNode#getChildren()
 	 */
 	@Override
 	public IWorksheetMenuNode[] getChildren() {
-		return this.children.toArray(new WorksheetMenuNode[this.children.size()]);
+		return this.children
+				.toArray(new WorksheetMenuNode[this.children.size()]);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.IWorksheetMenuNode#setChildren(de.prob.worksheet.WorksheetMenuNode[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.prob.worksheet.IWorksheetMenuNode#setChildren(de.prob.worksheet.
+	 * WorksheetMenuNode[])
 	 */
 	@Override
 	public void setChildren(final IWorksheetMenuNode[] children) {

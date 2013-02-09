@@ -17,6 +17,7 @@ import de.prob.worksheet.parser.SimpleConsoleParser.EvalObject;
 @JsonSubTypes({ @Type(value = ClassicalBEvaluator.class, name = "ClassicalB") })
 public interface IWorksheetEvaluator {
 	public abstract void evaluate(String code);
+
 	public abstract void setImport(EvalStoreAPI api);
 
 	public abstract void setInitialContext(IContext iContext);

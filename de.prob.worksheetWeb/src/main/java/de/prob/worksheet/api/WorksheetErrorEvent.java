@@ -8,18 +8,19 @@ package de.prob.worksheet.api;
  * 
  */
 public class WorksheetErrorEvent extends DefaultWorksheetEvent {
-	private boolean	haltAll;
+	private boolean haltAll;
 
 	/**
 	 * 
 	 */
-	public WorksheetErrorEvent(int id,String message,boolean haltAll) {
+	public WorksheetErrorEvent(int id, String message, boolean haltAll) {
 		super();
 		setId(id);
 		setMessage(message);
 		setDescription("empty description");
-		this.haltAll=haltAll;
+		this.haltAll = haltAll;
 	}
+
 	/**
 	 * @return the haltAll
 	 */

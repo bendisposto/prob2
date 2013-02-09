@@ -9,8 +9,12 @@ package de.prob.worksheet.api;
  */
 public class WorksheetOutputListener implements IWorksheetAPIListener {
 
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.api.IWorksheetAPIListener#notify(de.prob.worksheet.api.WorksheetAPIListenerEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.api.IWorksheetAPIListener#notify(de.prob.worksheet.
+	 * api.WorksheetAPIListenerEvent)
 	 */
 	@Override
 	public void notify(final IWorksheetEvent event) {

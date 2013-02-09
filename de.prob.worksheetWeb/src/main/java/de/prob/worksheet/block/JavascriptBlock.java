@@ -8,8 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import de.prob.worksheet.IWorksheetMenuNode;
 import de.prob.worksheet.WorksheetMenuNode;
 
-
-@XmlType(name="JavascriptBlock")
+@XmlType(name = "JavascriptBlock")
 public class JavascriptBlock extends DefaultBlock {
 
 	public JavascriptBlock() {
@@ -17,19 +16,24 @@ public class JavascriptBlock extends DefaultBlock {
 		this.setEvaluatorType("state");
 
 		final ArrayList<IWorksheetMenuNode> menu = new ArrayList<IWorksheetMenuNode>();
-		final IWorksheetMenuNode action = new WorksheetMenuNode("Action", "", "");
-		final IWorksheetMenuNode evalThis = new WorksheetMenuNode("Evaluate (this)", "", "ui-icon-play");
+		final IWorksheetMenuNode action = new WorksheetMenuNode("Action", "",
+				"");
+		final IWorksheetMenuNode evalThis = new WorksheetMenuNode(
+				"Evaluate (this)", "", "ui-icon-play");
 		evalThis.setClick("function(){$(this).closest(\".ui-worksheet\").worksheet(\"evaluate\",$(this).closest(\".ui-block\").block(\"option\",\"id\"));}");
 		action.addChild(evalThis);
 		menu.add(action);
 		// TODO getEditorTypes dynamically
 		final String[] types = { "JavaScript", "Python" };
-		final ArrayList<String> editorTypes = new ArrayList<String>(Arrays.asList(types));
+		final ArrayList<String> editorTypes = new ArrayList<String>(
+				Arrays.asList(types));
 
 		editorTypes.remove("JavaScript");
-		final WorksheetMenuNode typeMenu = new WorksheetMenuNode("JavaScript", "", "");
+		final WorksheetMenuNode typeMenu = new WorksheetMenuNode("JavaScript",
+				"", "");
 		for (final String typeName : editorTypes) {
-			final WorksheetMenuNode type = new WorksheetMenuNode(typeName, "", "");
+			final WorksheetMenuNode type = new WorksheetMenuNode(typeName, "",
+					"");
 			type.setClick("function(){alert('" + typeName + "');}");
 			typeMenu.addChild(type);
 		}

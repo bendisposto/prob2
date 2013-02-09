@@ -23,40 +23,48 @@ import de.prob.worksheet.block.IBlock;
  * 
  */
 public class OutputListener implements IWorksheetAPIListener {
-	Logger logger=LoggerFactory.getLogger(OutputListener.class);
-	private static final Injector	INJECTOR	= ServletContextListener.INJECTOR;
+	Logger logger = LoggerFactory.getLogger(OutputListener.class);
+	private static final Injector INJECTOR = ServletContextListener.INJECTOR;
 
-	ArrayList<IBlock>				outputBlocks;
+	ArrayList<IBlock> outputBlocks;
 
 	/**
 	 * 
 	 */
 	public OutputListener(ArrayList<IBlock> output) {
-		logger.trace("{}",output);
-		this.outputBlocks =output;
+		logger.trace("{}", output);
+		this.outputBlocks = output;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.api.IWorksheetAPIListener#notify(de.prob.worksheet.api.IWorksheetEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.api.IWorksheetAPIListener#notify(de.prob.worksheet.
+	 * api.IWorksheetEvent)
 	 */
 	@Override
 	public void notify(final IWorksheetEvent event) {
-		logger.trace("{}",event);
+		logger.trace("{}", event);
 		final WorksheetOutputEvent typedEvent = (WorksheetOutputEvent) event;
 		switch (event.getId()) {
-			default:
-				this.addOutput(typedEvent.getOutputBlockType(), typedEvent.getMessage() + "</br>" + typedEvent.getDataObject());
-				break;
+		default:
+			this.addOutput(
+					typedEvent.getOutputBlockType(),
+					typedEvent.getMessage() + "</br>"
+							+ typedEvent.getDataObject());
+			break;
 		}
 	}
 
 	private void addOutput(final String outputBlockType, final String output) {
-		logger.trace("{},{}",outputBlockType,output);
-		final IBlock block = OutputListener.INJECTOR.getInstance(Key.get(IBlock.class, Names.named("html")));
+		logger.trace("{},{}", outputBlockType, output);
+		final IBlock block = OutputListener.INJECTOR.getInstance(Key.get(
+				IBlock.class, Names.named("html")));
 		block.setOutput(true);
 		block.getEditor().setEditorContent(output);
 		this.outputBlocks.add(block);
-		logger.debug("{}",this.outputBlocks);
+		logger.debug("{}", this.outputBlocks);
 	}
 
 	public IBlock[] getBlocks() {
