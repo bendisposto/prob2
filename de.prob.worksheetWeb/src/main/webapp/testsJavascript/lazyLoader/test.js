@@ -1,1 +1,3 @@
-return;
+function test(){
+	alert("");
+}
