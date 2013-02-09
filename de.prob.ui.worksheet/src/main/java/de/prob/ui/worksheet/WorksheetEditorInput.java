@@ -6,17 +6,18 @@ import org.eclipse.ui.IPersistableElement;
 
 public class WorksheetEditorInput implements IEditorInput {
 
-	private static int createdInputs=0;
+	private static int createdInputs = 0;
 	private int myId;
+
 	public WorksheetEditorInput() {
-		//TODO add method for setting the name ids correctly (allways 0..x )
+		// TODO add method for setting the name ids correctly (allways 0..x )
 		createdInputs++;
-		myId=createdInputs;
+		myId = createdInputs;
 	}
-	
+
 	@Override
 	public Object getAdapter(Class adapter) {
-		//TODO find out if IAdapter needs to be filled
+		// TODO find out if IAdapter needs to be filled
 		return null;
 	}
 
@@ -27,14 +28,14 @@ public class WorksheetEditorInput implements IEditorInput {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		//TODO add ImageDescriptor
+		// TODO add ImageDescriptor
 		return null;
 	}
 
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "Worksheet ("+myId+")";
+		return "Worksheet (" + myId + ")";
 	}
 
 	@Override

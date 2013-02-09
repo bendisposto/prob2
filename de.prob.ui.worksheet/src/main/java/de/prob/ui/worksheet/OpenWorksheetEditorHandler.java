@@ -12,17 +12,20 @@ public class OpenWorksheetEditorHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		
-		IWorkbenchPage page=PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		//IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		//One attempt to create a temporary file would be to use the ProB Plugins State Location;
-		
-		//IFolder folder = workspace.getRoot().getFolder(Platform.getPlugin("de.prob.ui").getStateLocation());
-		//TODO Select the "active" Project
-		//IFile tempFile=folder.getFile("tempWorksheet.wsh");
-		
+
+		IWorkbenchPage page = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
+		// IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		// One attempt to create a temporary file would be to use the ProB
+		// Plugins State Location;
+
+		// IFolder folder =
+		// workspace.getRoot().getFolder(Platform.getPlugin("de.prob.ui").getStateLocation());
+		// TODO Select the "active" Project
+		// IFile tempFile=folder.getFile("tempWorksheet.wsh");
+
 		IEditorInput input = new WorksheetEditorInput();
-		
+
 		try {
 			page.openEditor(input, "de.prob.ui.worksheetEditor");
 		} catch (PartInitException e) {
@@ -31,7 +34,5 @@ public class OpenWorksheetEditorHandler extends AbstractHandler {
 		}
 		return null;
 	}
-
-
 
 }

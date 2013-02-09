@@ -48,18 +48,18 @@ import de.prob.ui.worksheet.WorksheetEditorInput;
 
 //import org.eclipse.core.internal.resources.ResourceException;
 
-public class Worksheet extends EditorPart{
+public class Worksheet extends EditorPart {
 	// Worksheet States
-	private boolean browserLoaded=false;
-	private boolean documentReady=false;
-	private boolean worksheetLoaded=false;
+	private boolean browserLoaded = false;
+	private boolean documentReady = false;
+	private boolean worksheetLoaded = false;
 	private boolean dirty = false;
-	
+
 	Browser worksheetBrowser;
 	private static int SubSessionIdCounter = 0;
 	private int subSessionId;
-	
-	private boolean newDocument = true;	
+
+	private boolean newDocument = true;
 	private String initialContent = "";
 	private String sessionID;
 
@@ -84,7 +84,8 @@ public class Worksheet extends EditorPart{
 			setContentToFileEditorInput((FileEditorInput) input, monitor);
 			setDirty(false);
 		} else if (input instanceof FileStoreEditorInput) {
-			setContentToFileStoreEditorInput((FileStoreEditorInput) input, monitor);
+			setContentToFileStoreEditorInput((FileStoreEditorInput) input,
+					monitor);
 			setDirty(false);
 		} else if (input instanceof WorksheetEditorInput) {
 			doSaveAs();
@@ -92,7 +93,8 @@ public class Worksheet extends EditorPart{
 
 	}
 
-	private void setContentToFileStoreEditorInput(FileStoreEditorInput input, IProgressMonitor monitor) {
+	private void setContentToFileStoreEditorInput(FileStoreEditorInput input,
+			IProgressMonitor monitor) {
 		InputStream contentStream = getContentInputStream();
 		String content = Worksheet.getStringFromInputStream(contentStream);
 		URLConnection con = null;
@@ -106,7 +108,8 @@ public class Worksheet extends EditorPart{
 				file.createNewFile();
 			}
 
-			out = new BufferedWriter(new OutputStreamWriter(fileStore.openOutputStream(EFS.NONE, monitor),"UTF-8"));
+			out = new BufferedWriter(new OutputStreamWriter(
+					fileStore.openOutputStream(EFS.NONE, monitor), "UTF-8"));
 			out.write(content);
 			out.flush();
 		} catch (MalformedURLException e) {
@@ -138,7 +141,8 @@ public class Worksheet extends EditorPart{
 		// TODO Auto-generated method stub
 	}
 
-	private void setContentToFileEditorInput(FileEditorInput input, IProgressMonitor monitor) {
+	private void setContentToFileEditorInput(FileEditorInput input,
+			IProgressMonitor monitor) {
 		InputStream contentStream = getContentInputStream();
 		// if (FileEditorInput.isLocalFile(input.getFile())) {
 		try {
@@ -164,15 +168,18 @@ public class Worksheet extends EditorPart{
 		try {
 			url = new URL("http://localhost:8080/worksheet/saveDocument");
 
-			body = Worksheet.addPOSTParameter(body, "worksheetSessionId", Integer.toString(this.subSessionId));
+			body = Worksheet.addPOSTParameter(body, "worksheetSessionId",
+					Integer.toString(this.subSessionId));
 
 			con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("POST");
 			con.setDoInput(true);
 			con.setDoOutput(true);
 			con.setUseCaches(false);
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-			con.setRequestProperty("Content-Length", String.valueOf(body.length()));
+			con.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded; charset=utf-8");
+			con.setRequestProperty("Content-Length",
+					String.valueOf(body.length()));
 			con.setRequestProperty("Accept-Charset", "UTF-8");
 			String cookie = con.getRequestProperty("Cookie");
 			if (cookie == null)
@@ -210,15 +217,18 @@ public class Worksheet extends EditorPart{
 		try {
 			url = new URL("http://localhost:8080/worksheet/closeDocument");
 
-			body = Worksheet.addPOSTParameter(body, "worksheetSessionId", Integer.toString(this.subSessionId));
+			body = Worksheet.addPOSTParameter(body, "worksheetSessionId",
+					Integer.toString(this.subSessionId));
 
 			con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("POST");
 			con.setDoInput(true);
 			con.setDoOutput(true);
 			con.setUseCaches(false);
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-			con.setRequestProperty("Content-Length", String.valueOf(body.length()));
+			con.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded; charset=utf-8");
+			con.setRequestProperty("Content-Length",
+					String.valueOf(body.length()));
 			con.setRequestProperty("Accept-Charset", "UTF-8");
 			String cookie = con.getRequestProperty("Cookie");
 			if (cookie == null)
@@ -240,15 +250,18 @@ public class Worksheet extends EditorPart{
 				e.printStackTrace();
 			}
 		}
-		return ;
+		return;
 
 	}
-	private static String addPOSTParameter(String parameterString, String parameterName, String parameterValue) {
+
+	private static String addPOSTParameter(String parameterString,
+			String parameterName, String parameterValue) {
 		if (!parameterString.equals("")) {
 			parameterString += "&";
 		}
 		try {
-			parameterString += URLEncoder.encode(parameterName, "UTF-8") + "=" + URLEncoder.encode(parameterValue, "UTF-8");
+			parameterString += URLEncoder.encode(parameterName, "UTF-8") + "="
+					+ URLEncoder.encode(parameterValue, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Do a format c: when this happens ;)
 			e.printStackTrace();
@@ -256,53 +269,55 @@ public class Worksheet extends EditorPart{
 		return parameterString;
 	}
 
-	
 	@Override
 	public void doSaveAs() {
-		//FIXME files are not shown in save as dialog
-		IProgressMonitor monitor=this.getEditorSite().getActionBars().getStatusLineManager().getProgressMonitor();
-		IEditorInput input=this.getEditorInput();
+		// FIXME files are not shown in save as dialog
+		IProgressMonitor monitor = this.getEditorSite().getActionBars()
+				.getStatusLineManager().getProgressMonitor();
+		IEditorInput input = this.getEditorInput();
 		// initialize and create SaveAsDialog
-		  SaveAsDialog dialog = new SaveAsDialog(getSite().getShell()); 
-			
-		
-		if(this.getEditorInput() instanceof FileEditorInput &&FileEditorInput.isLocalFile(((FileEditorInput)input).getFile())){
-			  IFile oldFile=((FileEditorInput)input).getFile();
-			  dialog.setOriginalFile(oldFile);
-		}else{
+		SaveAsDialog dialog = new SaveAsDialog(getSite().getShell());
+
+		if (this.getEditorInput() instanceof FileEditorInput
+				&& FileEditorInput.isLocalFile(((FileEditorInput) input)
+						.getFile())) {
+			IFile oldFile = ((FileEditorInput) input).getFile();
+			dialog.setOriginalFile(oldFile);
+		} else {
 			dialog.setOriginalName("worksheet.prob_wsh");
 		}
-		 
-		dialog.create();
-		  // open SaveAsDialog and check ReturnCode 
-		int res = dialog.open(); 
-		if (res != Window.OK) monitor.setCanceled(true);
-		
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IFile file=workspace.getRoot().getFile(dialog.getResult()); 
 
-		
-		
+		dialog.create();
+		// open SaveAsDialog and check ReturnCode
+		int res = dialog.open();
+		if (res != Window.OK)
+			monitor.setCanceled(true);
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IFile file = workspace.getRoot().getFile(dialog.getResult());
+
 		try {
 			file.create(this.getContentInputStream(), false, monitor);
 			this.setInputWithNotify(new FileEditorInput(file));
-			
+
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		// get Progressmonitor
-		//doSaveAs2();
+		// doSaveAs2();
 
 	}
 
-
-
 	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		if (!(input instanceof FileEditorInput || input instanceof WorksheetEditorInput || input instanceof FileStoreEditorInput))
-			throw new PartInitException("Worksheet Editor can't handle Inputs of type " + input.getClass().getName());
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
+		if (!(input instanceof FileEditorInput
+				|| input instanceof WorksheetEditorInput || input instanceof FileStoreEditorInput))
+			throw new PartInitException(
+					"Worksheet Editor can't handle Inputs of type "
+							+ input.getClass().getName());
 		setInput(input);
 		setSite(site);
 
@@ -321,7 +336,8 @@ public class Worksheet extends EditorPart{
 		}
 	}
 
-	private String getContentFromFileEditorInput(FileEditorInput input) throws PartInitException {
+	private String getContentFromFileEditorInput(FileEditorInput input)
+			throws PartInitException {
 		InputStream inStream = null;
 		String ret = "";
 		try {
@@ -350,7 +366,8 @@ public class Worksheet extends EditorPart{
 		return ret;
 	}
 
-	private String getContentFromFileStoreEditorInput(FileStoreEditorInput input) throws PartInitException {
+	private String getContentFromFileStoreEditorInput(FileStoreEditorInput input)
+			throws PartInitException {
 		InputStream stream = null;
 		String ret = "";
 		try {
@@ -415,21 +432,27 @@ public class Worksheet extends EditorPart{
 	public void createPartControl(Composite parent) {
 
 		worksheetBrowser = new Browser(parent, SWT.NONE);
-		worksheetBrowser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		new de.prob.ui.worksheet.editors.browserFunction.setDirty(worksheetBrowser, "setDirty", this);
-		new de.prob.ui.worksheet.editors.browserFunction.domReady(worksheetBrowser, "domReady", this);
-		new de.prob.ui.worksheet.editors.browserFunction.setSessionId(worksheetBrowser, "editorSetSessionId", this);
-		new de.prob.ui.worksheet.editors.browserFunction.setWorksheetLoaded(worksheetBrowser, "setWorksheetLoaded", this);
+		worksheetBrowser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				true));
+		new de.prob.ui.worksheet.editors.browserFunction.setDirty(
+				worksheetBrowser, "setDirty", this);
+		new de.prob.ui.worksheet.editors.browserFunction.domReady(
+				worksheetBrowser, "domReady", this);
+		new de.prob.ui.worksheet.editors.browserFunction.setSessionId(
+				worksheetBrowser, "editorSetSessionId", this);
+		new de.prob.ui.worksheet.editors.browserFunction.setWorksheetLoaded(
+				worksheetBrowser, "setWorksheetLoaded", this);
 		worksheetBrowser.setUrl("http://localhost:8080/worksheet/");
-	
-		
+
 		// Snippet Start (from
 		// http://wiki.eclipse.org/FAQ_Close_All_Editors_On_Shutdown)
-		// TODO find a better solution maybe just remove the snippet (http://wiki.eclipse.org/Eclipse_Plug-in_Development_FAQ#How_do_I_prevent_a_particular_editor_from_being_restored_on_the_next_workbench_startup.3F)
+		// TODO find a better solution maybe just remove the snippet
+		// (http://wiki.eclipse.org/Eclipse_Plug-in_Development_FAQ#How_do_I_prevent_a_particular_editor_from_being_restored_on_the_next_workbench_startup.3F)
 		IWorkbench workbench = PlatformUI.getWorkbench();
-		final IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
-		
-		//workbench.getWorkingSetManager().addPropertyChangeListener(this);
+		final IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow()
+				.getActivePage();
+
+		// workbench.getWorkingSetManager().addPropertyChangeListener(this);
 
 		workbench.addWorkbenchListener(new IWorkbenchListener() {
 			@Override
@@ -439,7 +462,8 @@ public class Worksheet extends EditorPart{
 					if (refs != null) {
 						for (IEditorReference ref : refs)
 							if (ref.getPart(false) instanceof Worksheet)
-								activePage.closeEditor((IEditorPart) ref.getPart(false), true);
+								activePage.closeEditor(
+										(IEditorPart) ref.getPart(false), true);
 					}
 				}
 				return true;
@@ -451,16 +475,17 @@ public class Worksheet extends EditorPart{
 			}
 		});
 	}
+
 	@Override
 	public void dispose() {
 		this.sendCloseDocument();
 		super.dispose();
 	}
+
 	@Override
 	public void setFocus() {
 		worksheetBrowser.setFocus();
 	}
-
 
 	public boolean isNewDocument() {
 		return newDocument;
@@ -485,6 +510,7 @@ public class Worksheet extends EditorPart{
 	public void setInitialContent(String initialContent) {
 		this.initialContent = initialContent;
 	}
+
 	public int getSubSessionId() {
 		return subSessionId;
 	}
