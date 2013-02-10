@@ -104,7 +104,7 @@
 					var data = $this.data("lazyLoader");
 					
 					data.target.lazyLoader("_pushToCssQueue", urls);
-					data.target.lazyLoader("_loadNextStyle");
+					data.target.lazyLoader("_loadNextStyles");
 				});
 			},
 			_loadNextStyles:function(){
