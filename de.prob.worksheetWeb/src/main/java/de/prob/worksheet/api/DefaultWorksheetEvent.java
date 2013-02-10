@@ -75,17 +75,22 @@ public class DefaultWorksheetEvent implements IWorksheetEvent {
 		this.description = description;
 	}
 
-	/**
-	 * @return the message
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.prob.worksheet.api.IWorksheetEvent#getMessage()
 	 */
+	@Override
 	public String getMessage() {
 		return this.message;
 	}
 
-	/**
-	 * @param message
-	 *            the message to set
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.prob.worksheet.api.IWorksheetEvent#setMessage(java.lang.String)
 	 */
+	@Override
 	public void setMessage(final String message) {
 		this.message = message;
 	}

@@ -3,6 +3,12 @@ package de.prob.worksheet;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * This is the default implementation of the IWorksheetMenuNode
+ * 
+ * @author Rene
+ * 
+ */
 public class WorksheetMenuNode implements IWorksheetMenuNode {
 	private String text = "";
 	private String click = null;
@@ -10,10 +16,23 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 	private String iconClass = "";
 	private final ArrayList<IWorksheetMenuNode> children;
 
+	/**
+	 * Default Constructor
+	 */
 	public WorksheetMenuNode() {
 		this.children = new ArrayList<IWorksheetMenuNode>();
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param text
+	 *            for setText
+	 * @param itemClass
+	 *            for setItemClass
+	 * @param iconClass
+	 *            for setIconClass
+	 */
 	public WorksheetMenuNode(final String text, final String itemClass,
 			final String iconClass) {
 		this.children = new ArrayList<IWorksheetMenuNode>();
@@ -125,6 +144,12 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 		this.children.addAll(Arrays.asList(children));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.prob.worksheet.IWorksheetMenuNode#addChild(de.prob.worksheet.
+	 * IWorksheetMenuNode)
+	 */
 	@Override
 	public void addChild(final IWorksheetMenuNode child) {
 		this.children.add(child);

@@ -33,37 +33,41 @@
 			},
 			load:function(){
 				return this.each(function() {
-					$(this).lazyLoader("loadScripts",[]);
-					$(this).lazyLoader("loadStyles",[]);
+					$(this).lazyLoader("_loadNextScript");
+					$(this).lazyLoader("_loadNextStyles");
 				});
 			},
-			loadScripts : function(urls) {
-				if(!$.isArray(urls)){
-					return this;
-				}
+			loadScripts : function(urls) {				
 				return this.each(function() {
 					//DEBUG alert("worksheet loadScripts");
 					var $this = $(this);
 					var data = $this.data("lazyLoader");
+					if(!$.isArray(urls) || urls.length===0){
+						if(!data.isJsLoading)
+							$this.trigger("scriptsLoaded", 0, []);
+						return this;
+					}
 					data.target.lazyLoader("_pushToJsQueue", urls);
 					data.target.lazyLoader("_loadNextScript");
 				});
 			},
 			_loadNextScript:function(){
-				var data = this.data("lazyLoader");
-				if (data.jsUrlQueue.length > 0) {
-					if (!data.isJsLoading) {
-						var nextURL = data.jsUrlQueue[data.jsUrlQueue.length-1];
-						data.isJsLoading = true;
-						jQuery.getScript(nextURL, function() {
-							$(".lazyLoader").lazyLoader("scriptLoaded", this.url);
-						}).fail(function() {
-							window.alert("Script loading error");
-						});
+				return this.each(function() {
+					var data = $(this).data("lazyLoader");
+					if (data.jsUrlQueue.length > 0) {
+						if (!data.isJsLoading) {
+							var nextURL = data.jsUrlQueue[data.jsUrlQueue.length-1];
+							data.isJsLoading = true;
+							jQuery.getScript(nextURL, function() {
+								$(".lazyLoader").lazyLoader("scriptLoaded", this.url);
+							}).fail(function() {
+								window.alert("Script loading error");
+							});
+						}
+					} else {
+						$(this).trigger("scriptsLoaded", 0, []);
 					}
-				} else {
-					this.trigger("scriptsLoaded", 0, []);
-				}
+				});
 			},
 			scriptLoaded : function(url) {
 				return this.each(function() {
@@ -80,23 +84,34 @@
 			},
 			_pushToJsQueue : function(urls) {
 				//DEBUG alert("worksheet _pushToJsQueue");
-				var data = this.data("lazyLoader");
-				for ( var x = 0; x < urls.length; x++) {
-					if (jQuery.inArray(urls[x], data.jsUrls) === -1 && jQuery.inArray(urls[x], data.jsUrlQueue) === -1)  {
-						data.jsUrlQueue.push(urls[x]);
+				return this.each(function() {
+					var data = $(this).data("lazyLoader");
+					for ( var x = 0; x < urls.length; x++) {
+						if (jQuery.inArray(urls[x], data.jsUrls) === -1 && jQuery.inArray(urls[x], data.jsUrlQueue) === -1)  {
+							data.jsUrlQueue.push(urls[x]);
+						}
 					}
-				}
+				});
 			},
 			loadStyles : function(urls) {
-				if(!$.isArray(urls)){
-					return this;
-				}
+				return this.each(function() {
+					//DEBUG alert("worksheet loadStyles");
+					var $this = $(this);
+					if(!$.isArray(urls) || urls.length===0){
+						$this.trigger("stylesLoaded", 0, []);
+						return this;
+					}
+					var data = $this.data("lazyLoader");
+					
+					data.target.lazyLoader("_pushToCssQueue", urls);
+					data.target.lazyLoader("_loadNextStyle");
+				});
+			},
+			_loadNextStyles:function(){
 				return this.each(function() {
 					//DEBUG alert("worksheet loadStyles");
 					var $this = $(this);
 					var data = $this.data("lazyLoader");
-					data.target.lazyLoader("_pushToCssQueue", urls);
-
 					while (data.cssUrlQueue.length > 0) {
 						var newUrl = data.cssUrlQueue.shift();
 						if (document.createStyleSheet) {
@@ -111,12 +126,14 @@
 			},
 			_pushToCssQueue : function(urls) {
 				//DEBUG alert("worksheet _pushToCssQueue");
-				var data = this.data("lazyLoader");
-				for ( var x = 0; x < urls.length; x++) {
-					if (jQuery.inArray(urls[x], data.cssUrls) === -1 && jQuery.inArray(urls[x], data.cssUrlQueue) === -1) {
-						data.cssUrlQueue.push(urls[x]);
+				return this.each(function() {
+					var data = $(this).data("lazyLoader");
+					for ( var x = 0; x < urls.length; x++) {
+						if (jQuery.inArray(urls[x], data.cssUrls) === -1 && jQuery.inArray(urls[x], data.cssUrlQueue) === -1) {
+							data.cssUrlQueue.push(urls[x]);
+						}
 					}
-				}
+				});
 			}
 		};
 

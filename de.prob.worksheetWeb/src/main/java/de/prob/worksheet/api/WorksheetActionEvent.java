@@ -11,7 +11,7 @@ public class WorksheetActionEvent extends DefaultWorksheetEvent {
 	private Object dataBefore;
 	private Object dataAfter;
 
-	/**
+	/** 
 	 * @return the dataBefore
 	 */
 	public Object getDataBefore() {

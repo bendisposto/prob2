@@ -25,9 +25,13 @@ public class ContextHistory implements Iterable<IContext> {
 		history.add(initialContext);
 	}
 
-	/*
-	 * Returns the last Context before the first context with this id; IDs can
-	 * be contained more than once in the History ()
+	/**
+	 * Returns the IContext which is initial (that means the last one before it)
+	 * for a given id
+	 * 
+	 * @param id
+	 *            for which the initialContext should be retrieved
+	 * @return the initial Context for the id
 	 */
 	public IContext getInitialContextForId(String id) {
 		logger.trace("{}", id);
@@ -46,6 +50,19 @@ public class ContextHistory implements Iterable<IContext> {
 		return last;
 	}
 
+	/**
+	 * Inserts a ContextHistory into this History and sets all IContext ids of
+	 * the inserted History, except the first one, to id.
+	 * 
+	 * The first IContext in the inserted History has to be inside this history.
+	 * Its used like an anchor in order to know where to insert the other
+	 * Contexts.
+	 * 
+	 * @param id
+	 *            for the new Contexts
+	 * @param contextHistory
+	 *            the History to insert
+	 */
 	public void setContextsForId(String id, ContextHistory contextHistory) {
 		logger.trace("{}", id);
 		logger.trace("{}", contextHistory);
@@ -84,10 +101,22 @@ public class ContextHistory implements Iterable<IContext> {
 		logger.trace("{}", history);
 	}
 
+	/**
+	 * Returns the IContext for the given index
+	 * 
+	 * @param index
+	 *            of the context
+	 * @return the context at index
+	 */
 	public IContext get(int index) {
 		return this.history.get(index);
 	}
 
+	/**
+	 * Returns the number of IContext Objects in this history
+	 * 
+	 * @return the size of the history
+	 */
 	public int size() {
 		logger.trace("{}", history.size());
 		return history.size();
@@ -98,12 +127,22 @@ public class ContextHistory implements Iterable<IContext> {
 		return this.history.iterator();
 	}
 
+	/**
+	 * Returns the last Context in the History
+	 * 
+	 * @return the last Context
+	 */
 	public IContext last() {
 		logger.trace("", history.get(history.size() - 1));
 		logger.debug("{}", history);
 		return history.get(history.size() - 1);
 	}
 
+	/**
+	 * Appends a context to the end of this history
+	 * 
+	 * @param context
+	 */
 	public void add(IContext context) {
 		logger.trace("{}", context);
 		boolean equals = context.equals(last());
@@ -115,6 +154,14 @@ public class ContextHistory implements Iterable<IContext> {
 		logger.debug("{}", history);
 	}
 
+	/**
+	 * Inserts a context into this history at the specified index
+	 * 
+	 * @param index
+	 *            to insert the context to
+	 * @param context
+	 *            to be inserted
+	 */
 	public void add(int index, IContext context) {
 		logger.trace("{}", context);
 		if (index < history.size()) {
@@ -134,10 +181,21 @@ public class ContextHistory implements Iterable<IContext> {
 		return history.toString();
 	}
 
+	/**
+	 * Returns an ordered ArrayList of IContext Objects containing all Contexts
+	 * of this History
+	 * 
+	 * @return the Contexts of this history
+	 */
 	public ArrayList<IContext> getHistory() {
 		return history;
 	}
 
+	/**
+	 * Removes all IContext after and including the contexts with the given id
+	 * 
+	 * @param id for the first context to be removed
+	 */
 	public void removeHistoryAfterInitial(String id) {
 		logger.trace("{}", id);
 		logger.debug("{}", history);

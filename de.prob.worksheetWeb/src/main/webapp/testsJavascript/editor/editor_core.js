@@ -2,119 +2,148 @@
 
 module( "editor: core" );
 
+
+test("initialize Event",function(){
+	expect(2);
+	var phase=0;
+	var done=false;
+	var element = $( "#editor" );
+	element.bind("editoroptionschanged",function(){
+		ok(phase==0 && !done) ;
+		phase=1;
+	});
+	element.bind("editorinitialized",function(){
+		ok(phase==1 && !done);
+		done=true;
+		start();
+	});
+	element.bind("editorcontentchanged",function(){
+		ok(false);
+	});
+	stop();
+	element.editor();
+	
+});
+
+test("Content Changed",function(){
+	expect(4);
+	
+	var phase=0;
+	var done=false;
+	var element = $( "#editor" );
+	element.editor();
+	
+	var phase=0;
+	var done=false;
+	element.bind("editorcontentchanged",function(){
+		ok(phase==0 &&  !done);
+		phase=1;
+	});
+	element.bind("editoroptionschanged",function(){
+		ok(phase==1 && !done) ;
+		done=true;
+		start();
+	});
+	element.bind("editorinitialized",function(){
+		ok(false);
+		start();
+	});
+	stop();
+	$("#editor").editor("setContent","test");
+	element.unbind();
+	
+	
+	
+	
+	var phase=0;
+	var done=false;
+	element.bind("editorcontentchanged",function(){
+		ok(phase==0 &&  !done);
+		phase=1;
+	});
+	element.bind("editoroptionschanged",function(){
+		ok(phase==1 && !done) ;
+		done=true;
+		start();
+	});
+	element.bind("editorinitialized",function(){
+		ok(false);
+		start();
+	});
+	stop();
+	
+	
+	var event = $.Event( "keydown" );
+	event.keyCode = 9;
+	$(document).trigger( event );
+	
+	element.editor("setContent","test");
+	element.unbind();
+	
+	
+	
+});
+
 test( "defaults", function() {
-	expect( 3 );
-	var element = $( "#block" ).block();
-	ok( element.hasClass( "ui-block" ), "main element is .ui-block" );
+	expect( 6 );
+	var element = $( "#editor" ).editor();
+	ok( element.hasClass( "ui-editor" ), "main element is .ui-editor" );
 	ok( element.attr("id")!="undefined", "main element has an id");
-	ok( element.children().length==0, "main element is empty");
-});
-
-test( "markup structure (empty block)", function() {
-	expect(3);
-	var options={
-			hasMenu : false,
-			editor : null,
-			isOutput : true,
-			outputBlockIds : [],
-			menu : null
-	};
-	var element = $( "#block" ).block(options);
-	ok( element.hasClass( "ui-block" ), "main element is .ui-block" );
-	ok( element.attr("id")!="undefined","main element has an id");
-	ok( element.children().length==0, "main element is empty");
+	ok( element.children().length==1, "main element has one child");
+	ok( $(element.children().first()).hasClass("ui-editor-content"), "editor-content is .ui-editor-content");
+	ok( $(element.children().first()).children().length==1, "editor-content element has one child");
+	ok( $($(element.children().first()).children().first()).hasClass("editor-object"), "editor-object is .editor-object");
 });
 
 
-test( "markup structure (block with visible menu )", function() {
-	expect( 7 );
+test( "markup structure without inner Editor", function() {
+	expect(5);
 	var options={
-			hasMenu : true,
-			editor : null,
-			isOutput : true,
-			outputBlockIds : [],
-			menu : [{
-		       	children: [],
-				click: "function() {alert('Open')}",
-				iconClass: "ui-icon-disk",
-				itemClass: "",
-				text: "Open"}]
+			content: "",
+			destroy: "function(){}",
+			getContent: "function(){}",
+			init: "function(){}",
+			html: ""
 	};
-	var element = $( "#block" ).block(options);
-	ok( element.hasClass( "ui-block" ), "main element is .ui-block" );
-	ok( element.attr("id")!="undefined","main element has an id");
-	ok( element.children().length==1, "main element just contains one element");
-	ok( element.children().first().hasClass( "ui-block-menu" ), "menu element is .ui-block-menu" );
-	ok( element.children().first().children().length==1, "menu element contains one menupoint" );
-	ok(	element.children().first().css("display")=="none");
-	element.focusin();
-	ok(	element.children().first().css("display")=="undefined" || element.children().first().css("display")=="block");
+	var element =$( "#editor" ).editor(options);
+	ok( element.hasClass( "ui-editor" ), "main element is .ui-editor" );
+	ok( element.attr("id")!="undefined", "main element has an id");
+	ok( element.children().length==1, "main element has one child");
+	ok( $(element.children().first()).hasClass("ui-editor-content"), "editor-content is .ui-editor-content");
+	ok( $(element.children().first()).children().length==0, "editor-content element has no child");
 });
 
-test( "markup structure (block with hidden menu )", function() {
-	expect( 7 );
-	var options={
-			hasMenu : false,
-			editor : null,
-			isOutput : true,
-			outputBlockIds : [],
-			menu : [{
-		       	children: [],
-				click: "function() {alert('Open')}",
-				iconClass: "ui-icon-disk",
-				itemClass: "",
-				text: "Open"}]
-	};
-	var element = $( "#block" ).block(options);
-	ok( element.hasClass( "ui-block" ), "main element is .ui-block" );
-	ok( element.attr("id")!="undefined","main element has an id");
-	ok( element.children().length==1, "main element just contains one element");
-	ok( element.children().first().hasClass( "ui-block-menu" ), "menu element is .ui-block-menu" );
-	ok( element.children().first().children().length==1, "menu element contains one menupoint" );
-	ok(	element.children().first().css("display")=="none");
-	element.focusin();
-	ok(	element.children().first().css("display")=="none");
+test( "getContent",function(){
+	expect(1);
+	// textarea Editor
+	var element=$("#editor").editor({content:"test2"});	
+	equal(element.data("editor").getContent(),"test2","content for default editor seems to be correct");
+		
 });
 
-
-test( "markup structure (sheet with empty menu and body)", function() {
-	expect( 7 );
-	var options={
-			hasBody: true,
-			hasMenu: true,			
-			id: "ui-id-1",
-			blocks: [],
-			menu: []
-	};
-	var element = $( "#worksheet" ).worksheet(options);
-	ok( element.hasClass( "ui-worksheet" ), "main element is .ui-worksheet" );
-	ok( element.attr("id")=="ui-id-1","main element has id #ui-id-1");
-	ok( element.children().length==2, "main element just contains two elements");
-	ok( $(element.children()[0]).hasClass( "ui-worksheet-menu" ), "menu element is .ui-worksheet-menu" );
-	ok( $(element.children()[0]).children().length==0, "menu element is empty" );
-	ok( $(element.children()[1]).hasClass( "ui-worksheet-body" ), "body element is .ui-worksheet-body" );
-	ok( $(element.children()[1]).children().length==0, "body element is empty" );
-
+test( "setContent",function(){
+	expect(1);
+	// textarea Editor
+	var element=$("#editor").editor();	
+	
+	element.editor("setContent","test");
+	
+	equal(element.editor("getContent"),"test","content for default editor seems to be correct");
+		
 });
 
-test( "markup structure (sheet with body and default block)", function() {
-	expect( 7 );
-	var options={
-			hasBody: true,
-			hasMenu: true,			
-			id: "ui-id-1",
-			blocks: [],
-			menu: []
-	};
-	var element = $( "#worksheet" ).worksheet(options);
-	ok( element.hasClass( "ui-worksheet" ), "main element is .ui-worksheet" );
-	ok( element.attr("id")=="ui-id-1","main element has id #ui-id-1");
-	ok( element.children().length==2, "main element just contains two elements");
-	ok( $(element.children()[0]).hasClass( "ui-worksheet-menu" ), "menu element is .ui-worksheet-menu" );
-	ok( $(element.children()[0]).children().length==0, "menu element is empty" );
-	ok( $(element.children()[1]).hasClass( "ui-worksheet-body" ), "body element is .ui-worksheet-body" );
-	ok( $(element.children()[1]).children().length==0, "body element is empty" );
+test( "getEditorObject",function(){
+	expect(2);
+	// textarea Editor
+	var element=$("#editor").editor();	
+	ok(element.editor("getEditorObject")[0]==$(".editor-object").first()[0]);
+	equal(element.editor("getEditorObject")[0],$(".editor-object").first()[0],"content for default editor seems to be correct");
+});
 
+test( "destroy",function(){
+	expect(1);
+	var clean=$($("#editor").first()).clone();
+	equal(clean[0],$("#editor").editor().editor("destroy")[0]);
 });
 
 

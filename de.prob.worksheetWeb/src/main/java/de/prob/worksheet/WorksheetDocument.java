@@ -13,6 +13,10 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import de.prob.worksheet.block.IBlock;
 
+/**
+ * @author Rene
+ *
+ */
 @XmlRootElement(name = "worksheet")
 public class WorksheetDocument {
 

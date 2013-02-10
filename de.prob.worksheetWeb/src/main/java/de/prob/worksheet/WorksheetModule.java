@@ -10,12 +10,18 @@ import de.prob.worksheet.block.JavascriptBlock;
 import de.prob.worksheet.evaluator.IWorksheetEvaluator;
 import de.prob.worksheet.evaluator.evalStore.StateEvaluator;
 
+/**
+ * This module configures the bindings for the Block and Evaluator Classes
+ * @author Rene
+ *
+ */
 public class WorksheetModule extends AbstractModule {
 
+	/* (non-Javadoc)
+	 * @see com.google.inject.AbstractModule#configure()
+	 */
 	@Override
 	protected void configure() {
-		// TODO Auto-generated method stub
-		// this.bind(IWorksheetEvaluator.class).annotatedWith(Names.named("classicalB")).to(ClassicalBEvaluator.class);
 		this.bind(IWorksheetEvaluator.class)
 				.annotatedWith(Names.named("state")).to(StateEvaluator.class);
 
