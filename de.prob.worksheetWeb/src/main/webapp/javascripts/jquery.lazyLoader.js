@@ -56,13 +56,14 @@
 					var data = $(this).data("lazyLoader");
 					if (data.jsUrlQueue.length > 0) {
 						if (!data.isJsLoading) {
-							var nextURL = data.jsUrlQueue[data.jsUrlQueue.length-1];
+							var nextURL = data.jsUrlQueue[0];
 							data.isJsLoading = true;
-							jQuery.getScript(nextURL, function() {
-								$(".lazyLoader").lazyLoader("scriptLoaded", this.url);
-							}).fail(function() {
-								window.alert("Script loading error");
-							});
+							jQuery.getScript(nextURL)
+								.done(function() {
+									$(".lazyLoader").lazyLoader("scriptLoaded", this.url);
+								}).fail(function() {
+									window.alert("Script loading error");
+								});
 						}
 					} else {
 						$(this).trigger("scriptsLoaded", 0, []);

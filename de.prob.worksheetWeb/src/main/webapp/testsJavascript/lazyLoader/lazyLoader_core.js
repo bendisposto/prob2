@@ -90,4 +90,32 @@ test( "load Scripts", function() {
 	
 });
 
+test("loading order",function(){
+	expect(6);
+	var options={};
+	var element = $( "#lazyLoader" );
+	element.lazyLoader(options);
+	
+	var counter=0;
+	element.bind("scriptLoaded",function(event,ui){
+		var x=["test.js"];
+		var y=["test2.js","test3.js"];
+		if(x==0)deepEqual(element.data("lazyLoader").jsUrls,x,"test.js is loaded first");
+		if(x==0)deepEqual(element.data("lazyLoader").jsUrlQueue,y,"test.js is loaded first");
+		x=["test.js","test2.js"];
+		y=["test3.js"];
+		if(x==1)deepEqual(element.data("lazyLoader").jsUrls,x,"test.js is loaded first");
+		if(x==1)deepEqual(element.data("lazyLoader").jsUrlQueue,y,"test.js is loaded first");
+		x=["test.js","test2.js","test3.js"];
+		y=[];
+		if(x==2)deepEqual(element.data("lazyLoader").jsUrls,x,"test.js is loaded first");
+		if(x==2)deepEqual(element.data("lazyLoader").jsUrlQueue,y,"test.js is loaded first");
+		counter++;
+		if(counter==3)
+			start();
+	});
+	stop();
+	element.lazyLoader("loadScripts",["test.js","test2.js","test3.js"]);
+});
+
 }( jQuery ) );

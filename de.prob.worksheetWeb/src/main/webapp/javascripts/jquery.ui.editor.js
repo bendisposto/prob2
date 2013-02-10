@@ -10,23 +10,20 @@
 			jsUrls:[],
 			cssUrls:[],
 			init : function() {
-				//DEBUG
-				window.console.debug("Trace: jsInit");
+				//DEBUG window.console.debug("Trace: jsInit");
 				var obj = $($("#"+this.id).find(".editor-object").first());
 				obj.change($.proxy($("#"+this.id).data("editor")._editorChanged,$("#"+this.id).data("editor")));
 				return obj;
 			},
 			destroy : null,
 			setContent : function(content) {
-				//DEBUG
-				window.console.debug("Trace: js:setContent");
+				//DEBUG window.console.debug("Trace: js:setContent");
 				var obj = $($("#"+this.id).find(".editor-object").first());
 				obj.val(content);
 				$.proxy($("#"+this.id).data("editor")._editorChanged(),$("#"+this.id).data("editor"));
 			},
 			getContent : function() {
-				//DEBUG
-				window.console.debug("Trace: js:getContent");
+				//DEBUG window.console.debug("Trace: js:getContent");
 				var obj = $($("#"+this.id).find(".editor-object").first());
 				return obj.val();
 			},
@@ -44,8 +41,7 @@
 		},
 		backupId:null,
 		_create : function() {
-			//DEBUG
-			window.console.debug("Trace: _create");
+			//DEBUG window.console.debug("Trace: _create");
 			this.element.empty();
 			if(typeof this.element.attr("id")=="string")	
 				this.backupId=this.element.attr("id");
@@ -70,8 +66,7 @@
 		},
 
 		_create2 : function(event, data) {
-			//DEBUG
-			window.console.debug("Trace: _create2");
+			//DEBUG window.console.debug("Trace: _create2");
 			this.setEditorObject(this.initEditor());
 			this.initcontent=this.options.content;
 			this.setContent(this.options.content);
@@ -82,19 +77,16 @@
 		
 
 		getEditorObject : function() {
-			//DEBUG
-			window.console.debug("Trace: getEditorObject");
+			//DEBUG window.console.debug("Trace: getEditorObject");
 			return this.editorObject;
 		},
 
 		setEditorObject : function(newEditorObject) {
-			//DEBUG
-			window.console.debug("Trace: setEditorObject");
+			//DEBUG window.console.debug("Trace: setEditorObject");
 			this.editorObject = newEditorObject;
 		},
 		insertEditorHTML : function() {
-			//DEBUG
-			window.console.debug("Trace: _insertEditorHTML");
+			//DEBUG window.console.debug("Trace: _insertEditorHTML");
 			if (this.options.html != "" && this.options.html != null) {
 				// TODO decide wheter to allow more content then this html
 				// (maybe empty ui-worksheet-block-editor-content and destroy
@@ -103,36 +95,31 @@
 			}
 		},
 		initEditor : function() {
-			//DEBUG
-			window.console.debug("Trace: _initEditor");
+			//DEBUG window.console.debug("Trace: _initEditor");
 			if ($.isFunction(this.options.init))
 				return this.options.init();
 			return null;
 		},
 		destroyEditor : function() {
-			//DEBUG
-			window.console.debug("Trace: _destroyEditor");
+			//DEBUG window.console.debug("Trace: _destroyEditor");
 			if ($.isFunction(this.options.destroy))
 				return this.options.destroy();
 			return null;
 		},
 
 		setContent : function(content) {
-			//DEBUG
-			window.console.debug("Trace: setContent");
+			//DEBUG window.console.debug("Trace: setContent");
 			this.options.setContent(content);
 		},
 
 		getContent : function() {
-			//DEBUG
-			window.console.debug("Trace: getContent");
+			//DEBUG window.console.debug("Trace: getContent");
 			if ($.isFunction(this.options.getContent))
 				return this.options.getContent();
 			return null;
 		},
 		_setOption :function(key,val){
-			//DEBUG
-			window.console.debug("Trace: _setOption");
+			//DEBUG window.console.debug("Trace: _setOption");
 			switch (key) {
 			case "id":
 				break;
@@ -170,30 +157,25 @@
 			this._trigger("optionsChanged",0,this.options);		
 		},
 		_setCSSUrls:function(urls){
-			//DEBUG
-			window.console.debug("Trace: _setCSSUrls");
+			//DEBUG window.console.debug("Trace: _setCSSUrls");
 			$("body").lazyLoader("loadStyles", urls);	
 		},
 		_setJSUrls:function(urls){
-			//DEBUG
-			window.console.debug("Trace: _setJsUrls");
+			//DEBUG window.console.debug("Trace: _setJsUrls");
 			$("body").lazyLoader("loadScripts", urls);	
 		},
 		_setOptionContent : function(content) {
-			//DEBUG
-			window.console.debug("Trace: _setOptionContent");
+			//DEBUG window.console.debug("Trace: _setOptionContent");
 			this.options.content = content;
 			this._trigger("optionsChanged", 0, [ this.options ]);
 		},
 
 		_getOptionContent : function() {
-			//DEBUG
-			window.console.debug("Trace: _getOptionContent");
+			//DEBUG window.console.debug("Trace: _getOptionContent");
 			return this.options.content;
 		},
 		_triggerInitialized:function(){
-			//DEBUG
-			window.console.debug("Trace: _triggerInitialized");
+			//DEBUG window.console.debug("Trace: _triggerInitialized");
 			
 			this.options.isInitialized=true;
 			if(!$.browser.msie)
@@ -201,8 +183,7 @@
 			this._trigger("initialized", 0, [ this ]);
 		},
 		_destroy : function() {
-			//DEBUG
-			window.console.debug("Trace: _destroy");
+			//DEBUG window.console.debug("Trace: _destroy");
 			
 			// TODO maybe remove scriptsLoaded Listener from lazyLaoder
 			this.destroyEditor();
@@ -219,8 +200,7 @@
 		initcontent:"",
 		initialSetContent:true,
 		_editorChanged : function() {
-			//DEBUG
-			window.console.debug("Trace: _editorChanged");
+			//DEBUG window.console.debug("Trace: _editorChanged");
 			var content = this.getContent();
 			if(!this.initialSetContent)
 				this._trigger("contentChanged", 0, [ content,content!=this.initcontent ]);
