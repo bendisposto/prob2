@@ -1,5 +1,12 @@
 package de.prob.cli;
 
+/**
+ * The OsSpecificInfo takes on the following form based on the present Operating
+ * System. Supports Windows, Mac, and Linux.
+ * 
+ * @author joy
+ * 
+ */
 public class OsSpecificInfo {
 	final String cliName;
 	final String helperCmd;
@@ -17,5 +24,49 @@ public class OsSpecificInfo {
 		this.name = name;
 		this.fullname = fullname;
 		this.dirName = dirName;
+	}
+
+	/**
+	 * @return cliName - Windows: "probcli.exe", Mac and Linux: "probcli.sh"
+	 */
+	public String getCliName() {
+		return cliName;
+	}
+
+	/**
+	 * @return helperCmd - Windows: null, Mac and Linux: "sh"
+	 */
+	public String getHelperCmd() {
+		return helperCmd;
+	}
+
+	/**
+	 * @return userInterruptCmd - Windows: "send_user_interrupt.exe", Mac and
+	 *         Linux: "send_user_interrupt"
+	 */
+	public String getUserInterruptCmd() {
+		return userInterruptCmd;
+	}
+
+	/**
+	 * @return name Windows: "Windows", Mac: "MacOs", Linux: "Linux"
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @return {@link System#getProperty(String)} with String key "os.arch"
+	 */
+	public String getFullname() {
+		return fullname;
+	}
+
+	/**
+	 * @return dirName Windows: "win32", Mac: "leopard64", Linux 32-Bit:
+	 *         "linux", Linux 64-Bit: "linux64"
+	 */
+	public String getDirName() {
+		return dirName;
 	}
 }

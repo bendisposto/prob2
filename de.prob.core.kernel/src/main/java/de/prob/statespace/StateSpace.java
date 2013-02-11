@@ -40,21 +40,16 @@ import de.prob.scripting.CSPModel;
  * 
  * 1) Find new states and operations
  * 
- * 2) Move between states within the StateSpace to inspect them
+ * 2) Inspect different states within the StateSpace
  * 
- * 3) Perform random animation steps
+ * 3) Evaluate custom predicates and expressions
  * 
- * 4) Evaluate custom predicates and expressions -
+ * 4) Register listeners that are notified of new states and operations
  * 
- * 5) Register listeners that are notified of animation steps/new states and
- * operations.
+ * The implementation of the StateSpace is as a {@link StateSpaceGraph} with
+ * {@link StateId}s as vertices and {@link OpInfo}s as edges. Therefore, some
+ * basic graph functionalities are provided.
  * 
- * 6) View information about the current state
- * 
- * @author joy
- * 
- */
-/**
  * @author joy
  * 
  */
@@ -100,9 +95,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	// MAKE CHANGES TO THE STATESPACE GRAPH
 	/**
-	 * Takes a state id and calculates the successor states, the invariant,
-	 * timeout, and the operations with a timeout and caches these for the given
-	 * stateId.
+	 * Takes a {@link StateId} and calculates the successor states, the
+	 * invariant, timeout, and the operations with a timeout and caches these
+	 * for the given stateId.
 	 * 
 	 * @param state
 	 */

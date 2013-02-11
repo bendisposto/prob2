@@ -19,6 +19,11 @@ import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 
+/**
+ * Representation of a ClassicalB formula.
+ * 
+ * @author joy
+ */
 public class ClassicalB implements IEvalElement {
 
 	public FormulaUUID uuid = new FormulaUUID();
@@ -26,16 +31,32 @@ public class ClassicalB implements IEvalElement {
 	private final String code;
 	private final Start ast;
 
+	/**
+	 * @param code
+	 *            will be parsed and the resulting {@link Start} ast saved
+	 * @throws BException
+	 */
 	public ClassicalB(final String code) throws BException {
 		this.code = code;
 		this.ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
 	}
 
+	/**
+	 * @param ast
+	 *            is saved and the string representation determined from the ast
+	 *            and saved
+	 */
 	public ClassicalB(final Start ast) {
 		this.ast = ast;
 		this.code = prettyprint(ast);
 	}
 
+	/**
+	 * @see de.prob.animator.domainobjects.IEvalElement#getKind()
+	 * 
+	 * @return kind {@link EvalElementType#toString()}. Either '#EXPRESSION' or
+	 *         '#PREDICATE'
+	 */
 	@Override
 	public String getKind() {
 		return ast.getPParseUnit() instanceof AExpressionParseUnit ? EXPRESSION
@@ -47,6 +68,9 @@ public class ClassicalB implements IEvalElement {
 		return code;
 	}
 
+	/**
+	 * @return {@link Start} ast corresponding to the formula
+	 */
 	public Start getAst() {
 		return ast;
 	}

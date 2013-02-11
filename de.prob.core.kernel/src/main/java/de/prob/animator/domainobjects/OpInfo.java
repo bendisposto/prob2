@@ -35,6 +35,17 @@ public class OpInfo {
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
+	/**
+	 * The user can specify all of the fields necessary to identify a particular
+	 * operation
+	 * 
+	 * @param id
+	 * @param name
+	 * @param src
+	 * @param dest
+	 * @param params
+	 * @param targetState
+	 */
 	public OpInfo(final String id, final String name, final String src,
 			final String dest, final List<String> params,
 			final String targetState) {
@@ -50,6 +61,23 @@ public class OpInfo {
 		}
 	}
 
+	/**
+	 * The {@link CompoundPrologTerm} that this constructor takes as an argument
+	 * should have an arity of 8. The following information should be contained
+	 * in the {@link CompoundPrologTerm}:
+	 * 
+	 * 
+	 * ( id , name , src , dest , {@link ListPrologTerm} represenation of
+	 * parameters that can be translated to groovy values ,
+	 * {@link ListPrologTerm} representation of names of parameters , _ , target
+	 * state )
+	 * 
+	 * @param opTerm
+	 *            - a {@link CompoundPrologTerm} which contains all of the
+	 *            information about the operation.
+	 * 
+	 * 
+	 */
 	public OpInfo(final CompoundPrologTerm opTerm) {
 		String id = null, src = null, dest = null;
 		id = getIdFromPrologTerm(opTerm.getArgument(1));
