@@ -3,6 +3,13 @@ package de.prob.animator.domainobjects;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This is what is saved when a formula ({@link IEvalElement}) is executed in
+ * the StateSpace
+ * 
+ * @author joy
+ * 
+ */
 public class EvaluationResult {
 
 	public final String value;
@@ -15,8 +22,9 @@ public class EvaluationResult {
 	private final boolean enumerationWarnings;
 
 	public EvaluationResult(final String code, final String value,
-			final String solution, final String errors, String resultType,
-			List<String> quantifiedVars, boolean enumerationWarnings) {
+			final String solution, final String errors,
+			final String resultType, final List<String> quantifiedVars,
+			final boolean enumerationWarnings) {
 		this.code = code;
 		this.value = value;
 		this.solution = solution;
@@ -24,21 +32,23 @@ public class EvaluationResult {
 		this.resultType = resultType;
 		this.quantifiedVars = quantifiedVars;
 		this.enumerationWarnings = enumerationWarnings;
-		if (!solutionMode(resultType) && "TRUE".equals(value))
+		if (!solutionMode(resultType) && "TRUE".equals(value)) {
 			this.explanation = "Solution";
-		else
+		} else {
 			this.explanation = solutionMode(resultType) ? " Solution: "
 					: " Counterexample: ";
+		}
 	}
 
-	public EvaluationResult(String code, String value, String solution,
-			String errors, String resultType, String[] strings,
-			boolean enumerationWarnings) {
+	public EvaluationResult(final String code, final String value,
+			final String solution, final String errors,
+			final String resultType, final String[] strings,
+			final boolean enumerationWarnings) {
 		this(code, value, solution, errors, resultType, Arrays.asList(strings),
 				enumerationWarnings);
 	}
 
-	private boolean solutionMode(String arg0) {
+	private boolean solutionMode(final String arg0) {
 		return "exists".equals(arg0);
 	}
 
@@ -70,9 +80,9 @@ public class EvaluationResult {
 	@Override
 	public String toString() {
 		final String result;
-		if (hasError())
+		if (hasError()) {
 			result = "'Errors: " + errors + "'";
-		else {
+		} else {
 			result = (solution == null || solution.equals("")) ? value : value
 					+ explanation + solution;
 		}
