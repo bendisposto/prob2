@@ -68,7 +68,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 
 	private TableViewer viewer;
 	private History currentHistory;
-	private AbstractElement currentModel;
+	private AbstractModel currentModel;
 	private boolean modelLoaded;
 
 	Injector injector = ServletContextListener.INJECTOR;
@@ -182,7 +182,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 			modelLoaded = true;
 		}
 		if (history != null) {
-			final AbstractElement model = history.getModel();
+			final AbstractModel model = history.getModel();
 			if (currentModel != model && viewer != null) {
 				updateModel(model);
 			}
@@ -251,24 +251,21 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		sourceProvider.historyChange(history);
 	}
 
-	private void updateModel(final AbstractElement model) {
+	private void updateModel(final AbstractModel model) {
 		currentModel = model;
 		((OperationsContentProvider) viewer.getContentProvider())
 				.setAllOperations(getOperationNames(model));
 	}
 
-	private Map<String, Object> getOperationNames(final AbstractElement model) {
+	private Map<String, Object> getOperationNames(final AbstractModel model) {
 		final Map<String, Object> names = new HashMap<String, Object>();
-		if (model instanceof AbstractModel) {
-			final AbstractModel ebmodel = (AbstractModel) model;
-			final AbstractElement component = ebmodel.getMainComponent();
-			if (component instanceof Machine) {
-				final Machine machine = (Machine) component;
-				Set<BEvent> childrenOfType = machine
-						.getChildrenOfType(BEvent.class);
-				for (BEvent event : childrenOfType) {
-					names.put(event.getName(), event);
-				}
+		final AbstractElement component = model.getMainComponent();
+		if (component instanceof Machine) {
+			final Machine machine = (Machine) component;
+			Set<BEvent> childrenOfType = machine
+					.getChildrenOfType(BEvent.class);
+			for (BEvent event : childrenOfType) {
+				names.put(event.getName(), event);
 			}
 		}
 		return names;

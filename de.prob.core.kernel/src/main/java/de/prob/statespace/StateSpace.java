@@ -27,7 +27,6 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
@@ -69,7 +68,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
-	private AbstractElement model;
+	private AbstractModel model;
 	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
 
 	private final HashSet<StateId> invariantOk = new HashSet<StateId>();
@@ -612,7 +611,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param model
 	 */
-	public void setModel(final AbstractElement model) {
+	public void setModel(final AbstractModel model) {
 		this.model = model;
 
 		Set<Machine> machines = model.getChildrenOfType(Machine.class);
@@ -626,10 +625,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	/**
 	 * Returns the specified model for the given StateSpace
 	 * 
-	 * @return the {@link AbstractElement} that represents the model for the
-	 *         given StateSpace instance
+	 * @return the {@link AbstractModel} that represents the model for the given
+	 *         StateSpace instance
 	 */
-	public AbstractElement getModel() {
+	public AbstractModel getModel() {
 		return model;
 	}
 
@@ -645,9 +644,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public Object asType(final Class<?> className) {
 		if (className.getSimpleName().equals("AbstractModel")) {
-			if (model instanceof AbstractModel) {
-				return model;
-			}
+			return model;
 		}
 		if (className.getSimpleName().equals("EventBModel")) {
 			if (model instanceof EventBModel) {
