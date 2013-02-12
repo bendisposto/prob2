@@ -385,6 +385,12 @@
             id="de.prob.ui.StatisticsView"
             name="Statistics View">
       </view>
+      <view
+            class="de.prob.ui.modelcheckingview.ModelCheckingView"
+            id="de.prob.ui.model_check"
+            name="Model Checking"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
