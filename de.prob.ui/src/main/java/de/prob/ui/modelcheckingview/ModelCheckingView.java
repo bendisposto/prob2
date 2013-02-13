@@ -9,6 +9,8 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 public class ModelCheckingView extends ViewPart {
@@ -20,6 +22,7 @@ public class ModelCheckingView extends ViewPart {
 	private boolean errors = false;
 
 	private Composite container;
+	private Text formulas;
 
 	@Override
 	public void createPartControl(final Composite parent) {
@@ -28,9 +31,14 @@ public class ModelCheckingView extends ViewPart {
 		container.setLayout(layout);
 
 		setSettings(container);
+
+		new Label(container, SWT.NONE).setText("Add Further Formulas:");
+		formulas = new Text(container, SWT.BORDER | SWT.MULTI | SWT.WRAP);
+		formulas.setText("");
+		formulas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
 		final Button start = new Button(container, SWT.PUSH);
-		GridData gridData = new GridData(SWT.CENTER, SWT.FILL, false, false);
-		start.setLayoutData(gridData);
+		start.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, false));
 		start.setText("Start Consistency Checking");
 		start.addSelectionListener(new SelectionListener() {
 

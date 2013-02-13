@@ -386,7 +386,9 @@
             name="Statistics View">
       </view>
       <view
+            category="de.hhu.stups.prob"
             class="de.prob.ui.modelcheckingview.ModelCheckingView"
+            icon="icons/Consistency.png"
             id="de.prob.ui.model_check"
             name="Model Checking"
             restorable="true">
