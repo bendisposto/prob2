@@ -82,7 +82,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		this.animator = animator;
-		__root = new StateId("root", "1", this);
+		__root = new StateId("root", this);
 		addVertex(__root);
 		states.put(__root.getId(), __root);
 	}
@@ -120,8 +120,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				ops.put(op.id, op);
 				notifyStateSpaceChange(op.name,
 						containsVertex(getVertex(op.dest)));
-				final StateId newState = new StateId(op.dest, op.targetState,
-						this);
+				final StateId newState = new StateId(op.dest, this);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
 				addEdge(states.get(op.src), states.get(op.dest), op);

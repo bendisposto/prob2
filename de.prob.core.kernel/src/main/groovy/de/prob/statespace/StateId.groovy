@@ -1,8 +1,5 @@
 package de.prob.statespace
 
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.OpInfo
@@ -11,7 +8,6 @@ import de.prob.animator.domainobjects.OpInfo
 class StateId {
 
 	def id;
-	def hash;
 	def StateSpace space;
 
 	def invokeMethod(String method,  params) {
@@ -33,9 +29,8 @@ class StateId {
 		space.eval(this, [f])[0]
 	}
 
-	def StateId(id, vars, space) {
+	def StateId(id, space) {
 		this.id = id;
-		this.hash = getHash(vars);
 		this.space = space;
 	}
 
@@ -43,37 +38,18 @@ class StateId {
 		return id;
 	}
 
-
 	def String getId() {
 		return id;
 	};
 
 	def boolean equals(Object that) {
-		return this.hash.equals(that.getHash());
+		return this.id.equals(that.getId());
 	}
 
 
 	def int hashCode() {
-		return hash.hashCode()
+		return id.hashCode()
 	};
-
-
-	def String getHash(final String vars) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-1");
-			md.update(vars.getBytes());
-			def x = new BigInteger(1, md.digest()).toString(16).padLeft( 40, '0' )
-			return x
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace()
-			return vars;
-		}
-	}
-
-	public String getHash() {
-		return hash;
-	}
-
 
 	def StateId anyOperation(filter) {
 		def ops = new ArrayList<OpInfo>()
