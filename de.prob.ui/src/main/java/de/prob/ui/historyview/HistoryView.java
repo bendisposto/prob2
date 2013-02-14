@@ -54,7 +54,10 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener {
 			ITableLabelProvider {
 		@Override
 		public String getColumnText(final Object obj, final int index) {
-			return getText(obj);
+			if (obj instanceof OpInfo) {
+				return ((OpInfo) obj).getRep(currentHistory.getS().getModel());
+			}
+			return "";
 		}
 
 		@Override
@@ -120,7 +123,9 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener {
 
 			@Override
 			public void run() {
-				if (!viewer.getTable().isDisposed()) viewer.setInput(history);
+				if (!viewer.getTable().isDisposed()) {
+					viewer.setInput(history);
+				}
 			}
 		});
 	}

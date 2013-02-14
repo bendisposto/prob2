@@ -75,10 +75,10 @@ class SyncHistory {
 		newHistories.set(index, history)
 		return new SyncHistory(newHistories,this,syncedOps)
 	}
-	
+
 	def SyncHistory add(String opId, int index) {
 		def history = histories.get(index)
-		def op = history.s.ops.get(opId)
+		def op = history.s.getOp(opId)
 		if(syncedOps.contains(op.getName())) {
 			return add(op.getName(),op.getParams())
 		}
@@ -90,7 +90,7 @@ class SyncHistory {
 		newHistories.set(index, history)
 		return new SyncHistory(newHistories,this,syncedOps)
 	}
-	
+
 	def SyncHistory add(int opId, int index) {
 		return add(String.valueOf(opId),index)
 	}
@@ -123,16 +123,16 @@ class SyncHistory {
 
 	def String toString() {
 		def sb = new StringBuilder()
-		
+
 		histories.each {
 			history ->
 			sb.append("${histories.indexOf(history)}: ${history.getRep()}\n")
 		}
-		
+
 		def h = histories.get(0)
 		def currentOpsOnH = h.s.outgoingEdgesOf(h.current.getCurrentState())
 		def copy = new HashSet<OpInfo>(currentOpsOnH)
-				
+
 		currentOpsOnH.each {
 			op ->
 			if(syncedOps.contains(op.getName())) {
@@ -157,7 +157,7 @@ class SyncHistory {
 			def list = []
 			o.each {
 				if(!syncedOps.contains(it.getName())) {
-				list << "${it.getId()}: ${it.toString()}"
+				list << "${it.getId()}: ${it.getRep(s.getModel())}"
 				}
 			}
 			sb.append(list)
