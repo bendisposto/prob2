@@ -8,13 +8,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-import de.prob.model.representation.AbstractElement;
+import de.prob.animator.command.GetOpFromId;
+import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.scripting.CSPModel;
+import de.prob.statespace.StateSpace;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -26,14 +28,19 @@ import de.prob.scripting.CSPModel;
  */
 public class OpInfo {
 	public final String id;
-	public final String name;
+	public String name;
 	public final String src;
 	public final String dest;
-	public final List<String> params = new ArrayList<String>();
-	public final String targetState;
-	public AbstractElement model;
+	public List<String> params = new ArrayList<String>();
+	public String targetState;
+	public boolean evaluated;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
+
+	public OpInfo(final String id, final String src, final String dest) {
+		this(id, null, src, dest, new ArrayList<String>(), null);
+		evaluated = false;
+	}
 
 	/**
 	 * The user can specify all of the fields necessary to identify a particular
@@ -59,6 +66,7 @@ public class OpInfo {
 				this.params.add(string);
 			}
 		}
+		evaluated = true;
 	}
 
 	/**
@@ -108,7 +116,7 @@ public class OpInfo {
 		this.name = PrologTerm.atomicString(opTerm.getArgument(2));
 		this.src = src;
 		this.dest = dest;
-
+		evaluated = true;
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
@@ -144,7 +152,15 @@ public class OpInfo {
 
 	@Override
 	public String toString() {
-		if (model instanceof CSPModel) {
+		return getId() + "=[" + getSrc() + "," + getDest() + "]";
+	}
+
+	public String getRep(final AbstractModel m) {
+		if (!evaluated) {
+			ensureEvaluated(m.getStatespace());
+		}
+
+		if (m instanceof CSPModel) {
 			if (params.isEmpty()) {
 				return name;
 			}
@@ -164,16 +180,32 @@ public class OpInfo {
 		}
 	}
 
-	public void setModel(final AbstractElement model) {
-		this.model = model;
-	}
-
 	@Override
 	public int hashCode() {
 		return id.hashCode();
 	}
 
 	public boolean isSame(final OpInfo that) {
+		if (!that.isEvaluated()) {
+			return false;
+		}
 		return that.getName().equals(name) && that.getParams().equals(params);
+	}
+
+	public OpInfo ensureEvaluated(final StateSpace s) {
+		if (evaluated) {
+			return this;
+		}
+		GetOpFromId command = new GetOpFromId(getId());
+		s.execute(command);
+		name = command.getName();
+		params = command.getParams();
+		targetState = command.getTargetState();
+		evaluated = true;
+		return this;
+	}
+
+	public boolean isEvaluated() {
+		return evaluated;
 	}
 }

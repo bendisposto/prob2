@@ -82,7 +82,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		this.animator = animator;
-		__root = new StateId("root", "1", this);
+		__root = new StateId("root", this);
 		addVertex(__root);
 		states.put(__root.getId(), __root);
 	}
@@ -116,12 +116,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		for (final OpInfo op : enabledOperations) {
 			if (!containsEdge(op)) {
-				op.setModel(model);
 				ops.put(op.id, op);
 				notifyStateSpaceChange(op.name,
 						containsVertex(getVertex(op.dest)));
-				final StateId newState = new StateId(op.dest, op.targetState,
-						this);
+				final StateId newState = new StateId(op.dest, this);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
 				addEdge(states.get(op.src), states.get(op.dest), op);
@@ -213,7 +211,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		// (id,name,src,dest,args)
 		for (final OpInfo op : newOps) {
-			op.setModel(model);
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
 				notifyStateSpaceChange(op.name,
@@ -515,6 +512,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return ops;
 	}
 
+	public OpInfo getOp(final String id) {
+		return ops.get(id).ensureEvaluated(this);
+	}
+
 	/**
 	 * @param state
 	 * @return Returns a String representation of the operations available from
@@ -528,7 +529,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.id + ": " + opId.toString());
+			sb.append("  " + opId.id + ": " + opId.getRep(model));
 			if (withTO.contains(opId.id)) {
 				sb.append(" (WITH TIMEOUT)");
 			}
@@ -693,5 +694,14 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 		throw new IllegalArgumentException(
 				"StateSpace does not contain vertex " + that);
+	}
+
+	@Override
+	public Set<OpInfo> outgoingEdgesOf(final StateId arg0) {
+		Set<OpInfo> outgoingEdgesOf = super.outgoingEdgesOf(arg0);
+		for (OpInfo opInfo : outgoingEdgesOf) {
+			opInfo.ensureEvaluated(this);
+		}
+		return outgoingEdgesOf;
 	}
 }

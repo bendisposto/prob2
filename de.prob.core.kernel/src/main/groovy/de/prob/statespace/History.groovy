@@ -127,7 +127,12 @@ class History {
 	}
 
 	def String getRep() {
-		return "${head.getOpList()} Current Transition is: ${current.getOp()}"
+		def ops = []
+		head.getOpList().each {
+			ops << it.getRep(s as AbstractModel)
+		}
+
+		return "${ops} Current Transition is: ${current.getOp().getRep(s as AbstractModel)}"
 	}
 
 	def OpInfo findOneOp(final String opName, final String predicate)

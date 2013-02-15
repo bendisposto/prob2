@@ -1,7 +1,5 @@
 package de.prob.statespace;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.graph.DirectedMultigraph;
@@ -70,13 +68,7 @@ public class StateSpaceGraph {
 		sb.append(vertexSet.toString());
 		sb.append(", ");
 		Set<OpInfo> edgeSet = edgeSet();
-
-		List<String> list = new ArrayList<String>();
-		for (OpInfo opInfo : edgeSet) {
-			list.add(opInfo.getId() + "=[" + opInfo.getSrc() + ","
-					+ opInfo.getDest() + "]");
-		}
-		sb.append(list.toString() + ")");
+		sb.append(edgeSet.toString() + ")");
 		return sb.toString();
 	}
 
