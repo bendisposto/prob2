@@ -19,8 +19,11 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
+import de.prob.animator.command.GetVersionCommand;
 import de.prob.animator.command.StartAnimationCommand;
+import de.prob.cli.CliVersionNumber;
 import de.prob.cli.ProBInstance;
+import de.prob.cli.ProBInstanceProvider;
 import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.statespace.StateSpace;
@@ -32,6 +35,7 @@ public class Api {
 
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;
+	private final ProBInstanceProvider instanceProvider;
 
 	@Override
 	public String toString() {
@@ -47,9 +51,10 @@ public class Api {
 	 */
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
-			final Downloader downloader) {
+			final Downloader downloader, ProBInstanceProvider instanceProvider) {
 		this.modelFactoryProvider = modelFactoryProvider;
 		this.downloader = downloader;
+		this.instanceProvider = instanceProvider;
 	}
 
 	/**
@@ -137,6 +142,24 @@ public class Api {
 		} catch (IOException e1) {
 			System.out.println("could not create file");
 		}
+	}
+
+	public CliVersionNumber getVersion() {
+		boolean binaryPresent = false;
+		try {
+			instanceProvider.get();
+			binaryPresent = true;
+		} catch (Exception e) {
+			binaryPresent = false;
+		}
+
+		if (!binaryPresent)
+			return null;
+		GetVersionCommand versionCommand = new GetVersionCommand();
+		IAnimator animator = ServletContextListener.INJECTOR
+				.getInstance(IAnimator.class);
+		animator.execute(versionCommand);
+		return versionCommand.getVersion();
 	}
 
 	/**
