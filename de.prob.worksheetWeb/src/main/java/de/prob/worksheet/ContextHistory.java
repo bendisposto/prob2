@@ -2,6 +2,7 @@ package de.prob.worksheet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 
 import org.slf4j.Logger;
@@ -9,7 +10,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The ContextHistory stores a list of IContext objects in the order they are
- * added or merged
+ * added or merged. It removes siblings which are equal.
+ * 
+ * TODO: Add handling for mixing Context Types (remember duplicate in
+ * setContextsForId)
  * 
  * @author Rene
  */
@@ -18,11 +22,12 @@ public class ContextHistory implements Iterable<IContext> {
 	private ArrayList<IContext> history;
 
 	public ContextHistory(IContext initialContext) {
-		logger.trace("{}", initialContext);
+		logger.trace("in: initialContext={}", initialContext);
 		if (initialContext == null)
 			throw new IllegalArgumentException();
 		history = new ArrayList<IContext>();
 		history.add(initialContext);
+		logger.trace("return:");
 	}
 
 	/**
@@ -64,41 +69,86 @@ public class ContextHistory implements Iterable<IContext> {
 	 *            the History to insert
 	 */
 	public void setContextsForId(String id, ContextHistory contextHistory) {
-		logger.trace("{}", id);
-		logger.trace("{}", contextHistory);
+		logger.trace("in: id0={}, context={}", id, contextHistory);
 
+		// TODO Feature: dispose IContext when his Binding is not present in
+		// History after remove (when implemented in CLI)
+		this.removeContextsWithId(id);
+
+		int initialContextIndex = this.getIndexForLastContext(contextHistory
+				.get(0));
+		if (initialContextIndex == -1)
+			initialContextIndex = history.size() - 1;
+
+		int insertIndex = initialContextIndex + 1;
+		if (contextHistory.size() == 1) {
+			IContext newContext = contextHistory.get(0).getDuplicate();
+			newContext.setId(id);
+			this.add(insertIndex, newContext);
+		} else {
+			boolean first = true;
+			for (IContext context : contextHistory) {
+				if (first) {
+					first = false;
+					continue;
+				}
+				context.setId(id);
+				this.add(insertIndex, context);
+				insertIndex++;
+			}
+		}
+		logger.debug("History={}", history);
+		logger.trace("return:");
+	}
+
+	private int getIndexForLastContextBinding(IContext context) {
+		logger.trace("in: context={}", context);
+		int index = this.history.size();
+		ListIterator<IContext> it = this.history.listIterator(index);
+		IContext previous;
+		while (it.hasPrevious()) {
+			previous = it.previous();
+			index--;
+			if (previous.equalsBindings(context)) {
+				logger.trace("return: index:{}", index);
+				return index;
+			}
+		}
+		logger.trace("return: index={}", -1);
+		return -1;
+	}
+
+	private int getIndexForLastContext(IContext context) {
+		logger.trace("in: context={}", context);
+		int index = this.history.size();
+		ListIterator<IContext> it = this.history.listIterator(index);
+		IContext previous;
+		while (it.hasPrevious()) {
+			previous = it.previous();
+			index--;
+			if (previous.equals(context)) {
+				logger.trace("return: index:{}", index);
+				return index;
+			}
+		}
+		logger.trace("return: index={}", -1);
+		return -1;
+	}
+
+	private List<IContext> removeContextsWithId(String id) {
+		logger.trace("in: id={}", id);
+		ArrayList<IContext> removed = new ArrayList<IContext>();
 		ListIterator<IContext> it = history.listIterator();
-		int index = -1;
-		int x = 0;
 		IContext next;
 		while (it.hasNext()) {
 			next = it.next();
 			if (next.getId().equals(id)) {
-				next.destroy();
+				removed.add(next);
 				it.remove();
 			}
-			if (index == -1) {
-				if (next.equals(contextHistory.get(0)))
-					index = x + 1;
-				else
-					x++;
-			}
 		}
-		logger.debug("{}", history);
-
-		if (index == -1)
-			index = history.size();
-		boolean first = true;
-		for (IContext context : contextHistory) {
-			if (first) {
-				first = false;
-				continue;
-			}
-			context.setId(id);
-			this.add(index, context);
-			index++;
-		}
-		logger.trace("{}", history);
+		logger.trace("return: removedContexts={}", removed);
+		return removed;
 	}
 
 	/**
@@ -139,23 +189,26 @@ public class ContextHistory implements Iterable<IContext> {
 	}
 
 	/**
-	 * Appends a context to the end of this history
+	 * Appends a context to the end of this history If the context equals the
+	 * last one (id and bindings) the context isn't inserted
 	 * 
 	 * @param context
 	 */
 	public void add(IContext context) {
-		logger.trace("{}", context);
+		logger.trace("in: context={}", context);
 		boolean equals = context.equals(last());
-		logger.debug("{}", equals);
 		if (equals) {
 			return;
 		}
 		this.history.add(context);
 		logger.debug("{}", history);
+		logger.trace("return:");
 	}
 
 	/**
-	 * Inserts a context into this history at the specified index
+	 * Inserts a context into this history at the specified index if the
+	 * inserted context equals(id and binding) the one at or previous the
+	 * insertion point it isn't inserted
 	 * 
 	 * @param index
 	 *            to insert the context to
@@ -163,17 +216,24 @@ public class ContextHistory implements Iterable<IContext> {
 	 *            to be inserted
 	 */
 	public void add(int index, IContext context) {
-		logger.trace("{}", context);
-		if (index < history.size()) {
-			boolean equals = context.equalsBindings(history.get(index));
-			logger.debug("{}", equals);
-			if (equals) {
-				history.get(index).setId(context.getId());
-				return;
-			}
-		}
-		this.history.add(index, context);
+		logger.trace("in: context={}", context);
+		if (index >= history.size())
+			this.add(context);
 
+		boolean equalsAt = context.equals(history.get(index));
+		boolean equalsPrevious = false;
+		if (index > 0) {
+			equalsPrevious = context.equals(history.get(index - 1));
+		}
+		if (!equalsAt && !equalsPrevious) {
+			logger.debug("Context is inserted into History");
+			history.add(index, context);
+			return;
+		} else {
+			logger.debug("Context is not inserted becaus its already there");
+		}
+
+		logger.trace("return:");
 	}
 
 	@Override
@@ -194,7 +254,8 @@ public class ContextHistory implements Iterable<IContext> {
 	/**
 	 * Removes all IContext after and including the contexts with the given id
 	 * 
-	 * @param id for the first context to be removed
+	 * @param id
+	 *            for the first context to be removed
 	 */
 	public void removeHistoryAfterInitial(String id) {
 		logger.trace("{}", id);

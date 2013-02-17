@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.WorksheetObjectMapper;
 
 /**
  * @author Rene
@@ -73,7 +74,7 @@ public class getDocument extends HttpServlet {
 		this.doc = (WorksheetDocument) req.getSession().getAttribute(
 				"WorksheetDocument" + wsid);
 
-		final ObjectMapper mapper = new ObjectMapper();
+		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 		resp.getWriter().print(
 				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
 						this.doc));

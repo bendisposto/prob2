@@ -5,6 +5,9 @@ package de.prob.worksheet.block;
 
 import javax.xml.bind.annotation.XmlType;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import de.prob.worksheet.editor.HTMLErrorEditor;
 
 /**
@@ -18,6 +21,7 @@ public class HTMLErrorBlock extends DefaultBlock {
 
 	private boolean haltAll = false;
 
+	@Inject
 	public HTMLErrorBlock() {
 		this.setEvaluatorType("");
 		this.setOutput(true);

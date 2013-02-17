@@ -60,7 +60,7 @@ public class OutputListener implements IWorksheetAPIListener {
 	private void addOutput(final String outputBlockType, final String output) {
 		logger.trace("{},{}", outputBlockType, output);
 		final IBlock block = OutputListener.INJECTOR.getInstance(Key.get(
-				IBlock.class, Names.named("html")));
+				IBlock.class, Names.named(outputBlockType)));
 		block.setOutput(true);
 		block.getEditor().setEditorContent(output);
 		this.outputBlocks.add(block);

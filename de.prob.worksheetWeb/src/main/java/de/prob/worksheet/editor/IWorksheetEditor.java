@@ -9,16 +9,11 @@ import javax.xml.bind.annotation.XmlValue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
-@JsonSubTypes({ @Type(value = JavascriptEditor.class, name = "javascript"),
-		@Type(value = HTMLEditor.class, name = "HTMLEditor"),
-		@Type(value = HTMLErrorEditor.class, name = "errorHtml") })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @XmlSeeAlso(value = { DefaultEditor.class, HTMLEditor.class,
 		HTMLErrorEditor.class, JavascriptEditor.class })
@@ -62,6 +57,18 @@ public abstract class IWorksheetEditor {
 	@JsonProperty(value = "content")
 	public abstract void setEditorContent(String editorContent);
 
+	/**
+	 * Initialization function for your internal js Editor.
+	 * 
+	 * Your js Editors content changed event must be bound to the _editorChanged
+	 * function. (e.g.
+	 * obj.change($.proxy($("#"+this.id).data("editor")._editorChanged
+	 * ,$("#"+this.id).data("editor")));)for text areas
+	 * 
+	 * Important the first call to _editorChanged is ignored
+	 * 
+	 * @param initFunction
+	 */
 	@JsonIgnore
 	public abstract void setInitializationFunction(String initFunction);
 

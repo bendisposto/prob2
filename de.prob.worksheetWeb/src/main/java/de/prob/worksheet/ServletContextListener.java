@@ -18,20 +18,27 @@ public class ServletContextListener implements
 		javax.servlet.ServletContextListener {
 
 	/**
-	 * This is a Guice Injector which is the child of de.prob.webconsoles injector.  
+	 * This is a Guice Injector which is the child of de.prob.webconsoles
+	 * injector.
 	 */
 	public static final Injector INJECTOR = de.prob.webconsole.ServletContextListener.INJECTOR
 			.createChildInjector(new WorksheetModule());
 
-	/** Returns the static instance of the guice injector
+	/**
+	 * Returns the static instance of the guice injector
+	 * 
 	 * @return guice injector
 	 */
 	protected Injector getInjector() {
 		return ServletContextListener.INJECTOR;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.ServletContextListener#contextInitialized(javax.servlet
+	 * .ServletContextEvent)
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
@@ -39,8 +46,11 @@ public class ServletContextListener implements
 
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
+	 * ServletContextEvent)
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {

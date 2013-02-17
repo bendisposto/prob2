@@ -1,20 +1,11 @@
 package de.prob.worksheet.evaluator;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
 import de.prob.worksheet.ContextHistory;
 import de.prob.worksheet.IContext;
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
 import de.prob.worksheet.block.IBlock;
-import de.prob.worksheet.evaluator.classicalB.ClassicalBEvaluator;
 import de.prob.worksheet.parser.SimpleConsoleParser.EvalObject;
 
-@JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "@type")
-@JsonSubTypes({ @Type(value = ClassicalBEvaluator.class, name = "ClassicalB") })
 public interface IWorksheetEvaluator {
 	public abstract void evaluate(String code);
 
@@ -30,6 +21,8 @@ public interface IWorksheetEvaluator {
 
 	public abstract EvalObject[] parseScript(String script);
 
+	// TODO decouple the evaluator completely from worksheet e.g. not
+	// outputBlocks just outputArray of any type
 	public abstract IBlock[] getOutputs();
 
 	public abstract ContextHistory getContextHistory();

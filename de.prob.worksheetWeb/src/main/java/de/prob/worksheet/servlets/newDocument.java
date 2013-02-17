@@ -13,9 +13,8 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.block.JavascriptBlock;
 
 @WebServlet(urlPatterns = { "/newDocument" })
@@ -48,18 +47,15 @@ public class newDocument extends HttpServlet {
 		// Load the session attibutes
 		HashMap<String, Object> attributes = this.getSessionAttributes(
 				req.getSession(), req.getParameter("worksheetSessionId"));
-
 		// load or create the document
 		WorksheetDocument doc = this.getDocument(attributes);
-		attributes = new HashMap<String, Object>();
-		attributes.put("document", doc);
 
 		// store the session attributes
 		this.setSessionAttributes(req.getSession(),
 				req.getParameter("worksheetSessionId"), attributes);
 
 		// print the json string to the response
-		final ObjectMapper mapper = new ObjectMapper();
+		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 		resp.setStatus(HttpServletResponse.SC_ACCEPTED);
 		resp.getWriter()
 				.print(mapper.writerWithDefaultPrettyPrinter()
@@ -74,6 +70,7 @@ public class newDocument extends HttpServlet {
 		if (attributes == null) {
 			attributes = new HashMap<String, Object>();
 			logger.debug("New 'Sub'session initialized with id :" + wsid);
+			session.setAttribute(wsid, attributes);
 		}
 		logger.debug("Session attributes: " + attributes.toString());
 		return attributes;
@@ -98,12 +95,13 @@ public class newDocument extends HttpServlet {
 			// TODO add distinction between eclipse plugin mode and external
 			// Browser mode (e.g. remove unnecessary menus in plugin mode)
 			doc = new WorksheetDocument();
-			doc.setId("ui-id-1");
+			doc.setId("ws-id-1");
 
 			logger.debug("New WorksheetDocument initiaized");
 
 			final JavascriptBlock block1 = new JavascriptBlock();
 			doc.insertBlock(0, block1);
+			attributes.put("document", doc);
 		}
 		return doc;
 

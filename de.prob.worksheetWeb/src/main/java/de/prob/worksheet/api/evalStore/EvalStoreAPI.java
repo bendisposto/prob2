@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
+import de.prob.animator.IAnimator;
 import de.prob.animator.command.EvalstoreCreateByStateCommand;
 import de.prob.animator.command.EvalstoreEvalCommand;
 import de.prob.animator.command.EvalstoreEvalCommand.EvalstoreResult;
@@ -59,7 +60,7 @@ public class EvalStoreAPI {
 	private AnimationSelector animations;
 	public static Injector injector = ServletContextListener.INJECTOR;
 
-	Logger logger = LoggerFactory.getLogger(this.getClass());
+	Logger logger = LoggerFactory.getLogger(EvalStoreAPI.class);
 
 	@Inject
 	public EvalStoreAPI(AnimationSelector animations) {
@@ -82,23 +83,43 @@ public class EvalStoreAPI {
 		logger.debug("Animations: " + animations.getHistories());
 		History currentHistory = animations.getCurrentHistory();
 		logger.debug("CurrentHistory: " + currentHistory);
+		String sId;
+		IAnimator animator = null;
 		if (currentHistory == null) {
-			this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID,
-					"noHistory", "No Animation is started",
-					"No Animation is started", true);
+			// logger.debug("No History present! Injecting new IAnimator");
+			animator = ServletContextListener.INJECTOR
+					.getInstance(IAnimator.class);
+			sId = "root";
+			this.notifyOutputListeners(EvalStoreAPI.OUTPUT_STATE_ID,
+					EvalStoreAPI.OUTPUT_STATE_NAME,
+					EvalStoreAPI.OUTPUT_STATE_DESC, "No Animation is started",
+					"Initialize State", "");
 			return;
+			// TODO try to find a way to start an animation if no is present
+			/*
+			 * logger.debug("No History present! Injecting new IAnimator");
+			 * animator = ServletContextListener.INJECTOR
+			 * .getInstance(IAnimator.class); sId = "root"; animator.execute(new
+			 * StartAnimationCommand());
+			 * this.notifyOutputListeners(EvalStoreAPI.OUTPUT_STATE_ID,
+			 * EvalStoreAPI.OUTPUT_STATE_NAME, EvalStoreAPI.OUTPUT_STATE_DESC,
+			 * "New Animation started","HTML","");
+			 */
+		} else {
+			StateId stateId = currentHistory.getCurrentState();
+			sId = stateId.getId();
+			animator = currentHistory.getStatespace();
 		}
-		StateId sId = currentHistory.getCurrentState();
-		logger.debug("Current StateId" + sId.getId());
+		logger.debug("Current StateId" + sId);
 
 		EvalstoreCreateByStateCommand cmd = new EvalstoreCreateByStateCommand(
-				sId.getId());
-		currentHistory.getStatespace().execute(cmd);
+				sId);
+		animator.execute(cmd);
 		this.evalStoreId = cmd.getEvalstoreId();
 		logger.debug("EvalstoreId: " + this.evalStoreId);
 		GetStateValuesCommand valCmd = GetStateValuesCommand
 				.getEvalstoreValuesCommand(this.evalStoreId);
-		currentHistory.getStatespace().execute(valCmd);
+		animator.execute(valCmd);
 
 		String output = "";
 		HashMap<String, String> values = valCmd.getResult();
@@ -112,9 +133,11 @@ public class EvalStoreAPI {
 				EvalStoreAPI.ACTION_STATE_CHANGED_NAME,
 				EvalStoreAPI.ACTION_STATE_CHANGED_DESC,
 				EvalStoreAPI.ACTION_STATE_CHANGED_MSG, before, this.evalStoreId);
+		if (output.equals(""))
+			output = "{}";
 		this.notifyOutputListeners(EvalStoreAPI.OUTPUT_STATE_ID,
 				EvalStoreAPI.OUTPUT_STATE_NAME, EvalStoreAPI.OUTPUT_STATE_DESC,
-				"Current State:\n", "html", output);
+				"Initial State:\n", "Initialize State", output);
 	}
 
 	public void evaluate(String expression) {
@@ -139,7 +162,7 @@ public class EvalStoreAPI {
 					this.evalStoreId);
 			logger.debug("{}", storeResult.getResult());
 			this.notifyOutputListeners(ACTION_STATE_CHANGED_ID, "", "",
-					"Result:\n", "html", storeResult.getResult().getValue());
+					"Result:\n", "HTML", storeResult.getResult().getValue());
 			storeResult.getResult().getValue();
 		} else {
 			if (storeResult.hasInterruptedOccurred()) {
@@ -166,8 +189,8 @@ public class EvalStoreAPI {
 		GetStateValuesCommand cmd = GetStateValuesCommand
 				.getEvalstoreValuesCommand(this.evalStoreId);
 		animations.getCurrentHistory().getStatespace().execute(cmd);
-		notifyOutputListeners(OUTPUT_STATE_ID, "", "", "State:\n", "html", cmd
-				.getResult().toString());
+		notifyOutputListeners(OUTPUT_STATE_ID, "", "", "State:\n",
+				"State Values", cmd.getResult().toString());
 	}
 
 	public void notifyErrorListeners(final int id, final String name,

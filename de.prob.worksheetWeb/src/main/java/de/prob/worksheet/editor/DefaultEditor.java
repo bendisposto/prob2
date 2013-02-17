@@ -36,9 +36,9 @@ public class DefaultEditor extends IWorksheetEditor {
 		this.addJavascriptHref("javascripts/libs/codemirror-2.36/mode/javascript/javascript.js");
 
 		this.setGetContentScript("function(){return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").getValue();}");
-		this.setInitializationFunction("function(){var cm = CodeMirror.fromTextArea($(\"#\"+this.id+\" .ui-editor-javascript\")[0],{lineNumbers: true,onChange:$.proxy($(\"#\"+this.id+\"\").editor().data().editor._editorChanged,$(\"#\"+this.id+\"\").editor().data().editor)}); return cm;}");
+		this.setInitializationFunction("function(){var cm = CodeMirror.fromTextArea($(\"#\"+this.id+\" .ui-editor-javascript\")[0],{lineNumbers: true,onChange:$.proxy($(\"#\"+this.id+\"\").data().editor._editorChanged,$(\"#\"+this.id+\"\").data().editor)}); return cm;}");
 		this.setSetContentScript("function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").setValue(content);}");
-		this.setDestroyScript("function(){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea();}");
+		this.setDestroyScript("function(){if(typeof $(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea=='function' ||typeof $(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea=='object')$(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea();}");
 	}
 
 	@Override

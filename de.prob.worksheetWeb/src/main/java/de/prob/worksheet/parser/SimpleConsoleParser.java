@@ -95,6 +95,8 @@ public class SimpleConsoleParser {
 	}
 
 	public String[] splitToExpressions(final String code) {
+		if (code == null)
+			return new String[] {};
 		final String[] expressions = code.split("\\n|\\r|\\r\\n");
 		for (int x = 0; x < expressions.length; x++) {
 			expressions[x] = expressions[x].trim();

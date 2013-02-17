@@ -32,17 +32,26 @@ public class ContextHistoryTest {
 	@Test
 	public void getInitialContextForId() {
 		EvalStoreContext context1 = new EvalStoreContext("init", null);
-		ContextHistory test = new ContextHistory(context1);
-		assertTrue(test.getInitialContextForId("").equals(context1));
-
 		EvalStoreContext context2 = new EvalStoreContext("id1", 1l);
-		test.add(context2);
-		assertTrue(test.getInitialContextForId("id1").equals(context1));
-		assertTrue(test.getInitialContextForId("newId").equals(context2));
-
 		EvalStoreContext context3 = new EvalStoreContext("id2", 1l);
+		EvalStoreContext context4 = new EvalStoreContext("id3", 2l);
+		EvalStoreContext context5 = new EvalStoreContext("id3", 3l);
+		EvalStoreContext context6 = new EvalStoreContext("id4", 4l);
+
+		ContextHistory test = new ContextHistory(context1);
+		test.add(context2);
 		test.add(context3);
+		test.add(context4);
+		test.add(context5);
+		test.add(context6);
+
+		assertTrue(test.getInitialContextForId("").equals(context6));
+		assertTrue(test.getInitialContextForId("newId").equals(context6));
+
+		assertTrue(test.getInitialContextForId("id1").equals(context1));
 		assertTrue(test.getInitialContextForId("id2").equals(context2));
+		assertTrue(test.getInitialContextForId("id3").equals(context3));
+		assertTrue(test.getInitialContextForId("id4").equals(context5));
 
 	}
 
@@ -53,8 +62,10 @@ public class ContextHistoryTest {
 		ContextHistory bContextHistory = new ContextHistory(
 				new EvalStoreContext("init", null));
 		bContextHistory.add(new EvalStoreContext("id1", 1l));
+		bContextHistory.add(new EvalStoreContext("id1", 1l));
+		bContextHistory.add(new EvalStoreContext("id1", 1l));
 		bContextHistory.add(new EvalStoreContext("id3", 2l));
-		bContextHistory.add(new EvalStoreContext("id3", 4l));
+		bContextHistory.add(new EvalStoreContext("id3", 3l));
 
 		ContextHistory bContextHistory2 = new ContextHistory(
 				new EvalStoreContext("id1", 1l));
@@ -68,10 +79,11 @@ public class ContextHistoryTest {
 		ArrayList<IContext> map = new ArrayList<IContext>();
 		map.add(new EvalStoreContext("init", null));
 		map.add(new EvalStoreContext("id1", 1l));
+		map.add(new EvalStoreContext("id2", 1l));
 		map.add(new EvalStoreContext("id2", 2l));
 		map.add(new EvalStoreContext("id2", 3l));
-		map.add(new EvalStoreContext("id3", 4l));
-
+		map.add(new EvalStoreContext("id3", 2l));
+		map.add(new EvalStoreContext("id3", 3l));
 		assertTrue(map.equals(bContextHistory.getHistory()));
 	}
 

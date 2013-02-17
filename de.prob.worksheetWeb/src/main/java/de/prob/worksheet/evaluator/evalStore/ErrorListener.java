@@ -53,11 +53,11 @@ public class ErrorListener implements IWorksheetAPIListener {
 			this.setHaltAll(true);
 		switch (event.getId()) {
 		case 3001:
-			this.addOutput("errorHtml", typedEvent.getMessage(),
+			this.addOutput("Fehler", typedEvent.getMessage(),
 					typedEvent.isHaltAll());
 			break;
 		default:
-			this.addOutput("errorHtml", "Error " + typedEvent.getId() + ": "
+			this.addOutput("Fehler", "Error " + typedEvent.getId() + ": "
 					+ typedEvent.getMessage(), false);
 			break;
 		}
@@ -69,8 +69,9 @@ public class ErrorListener implements IWorksheetAPIListener {
 		logger.trace("output:{}", output);
 		logger.trace("halt{}", haltAll);
 
-		final IBlock block = ErrorListener.INJECTOR.getInstance(Key.get(
-				IBlock.class, Names.named(outputBlockType)));
+		logger.debug("{}", ServletContextListener.INJECTOR.getAllBindings());
+		final IBlock block = ServletContextListener.INJECTOR.getInstance(Key
+				.get(IBlock.class, Names.named(outputBlockType)));
 		block.setOutput(true);
 		block.getEditor().setEditorContent(output);
 		this.outputBlocks.add(block);

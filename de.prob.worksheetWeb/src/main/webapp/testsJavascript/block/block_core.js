@@ -76,46 +76,50 @@ test( "markup structure (block with hidden menu )", function() {
 	ok(	element.children().first().css("display")=="none");
 });
 
-
-test( "markup structure (sheet with empty menu and body)", function() {
-	expect( 7 );
-	var options={
-			hasBody: true,
-			hasMenu: true,			
-			id: "ui-id-1",
-			blocks: [],
-			menu: []
-	};
-	var element = $( "#worksheet" ).worksheet(options);
-	ok( element.hasClass( "ui-worksheet" ), "main element is .ui-worksheet" );
-	ok( element.attr("id")=="ui-id-1","main element has id #ui-id-1");
-	ok( element.children().length==2, "main element just contains two elements");
-	ok( $(element.children()[0]).hasClass( "ui-worksheet-menu" ), "menu element is .ui-worksheet-menu" );
-	ok( $(element.children()[0]).children().length==0, "menu element is empty" );
-	ok( $(element.children()[1]).hasClass( "ui-worksheet-body" ), "body element is .ui-worksheet-body" );
-	ok( $(element.children()[1]).children().length==0, "body element is empty" );
-
-});
-
 test( "markup structure (sheet with body and default block)", function() {
-	expect( 7 );
+	expect(1);
 	var options={
-			hasBody: true,
-			hasMenu: true,			
-			id: "ui-id-1",
-			blocks: [],
-			menu: []
+			editor:{
+				content:"click STRG+ENTER"
+			}
 	};
-	var element = $( "#worksheet" ).worksheet(options);
-	ok( element.hasClass( "ui-worksheet" ), "main element is .ui-worksheet" );
-	ok( element.attr("id")=="ui-id-1","main element has id #ui-id-1");
-	ok( element.children().length==2, "main element just contains two elements");
-	ok( $(element.children()[0]).hasClass( "ui-worksheet-menu" ), "menu element is .ui-worksheet-menu" );
-	ok( $(element.children()[0]).children().length==0, "menu element is empty" );
-	ok( $(element.children()[1]).hasClass( "ui-worksheet-body" ), "body element is .ui-worksheet-body" );
-	ok( $(element.children()[1]).children().length==0, "body element is empty" );
-
+	var element=$("<div id='block2'></div>");
+	element.bind("blockevaluate",function(){
+		ok(true);
+		element.remove();
+		start();
+	});
+	element.attr("style","position:absolute;left:100px;top:100px;");
+	$("BODY").append(element)
+	stop();
+	element.block(options);
 });
-
+test( "markup structure (sheet with body and default block)", function() {
+	expect(1);
+	var options={
+			editor:{
+			      objType : "javascript",
+			      id : null,
+			      getContent : "function(){return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").getValue();}",
+			      destroy : "function(){if(typeof $(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea=='function' ||typeof $(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea=='object')$(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea();}",
+			      setContent : "function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").setValue(content);}",
+			      cssURLs : [ "../../javascripts/libs/codemirror-2.36/lib/codemirror.css", "../../javascripts/libs/codemirror-2.36/theme/eclipse.css" ],
+			      content : "click STRG+ENTER",
+			      init : "function(){var cm = CodeMirror.fromTextArea($(\"#\"+this.id+\" .ui-editor-javascript\")[0],{lineNumbers: true,onChange:$.proxy($(\"#\"+this.id+\"\").editor().data().editor._editorChanged,$(\"#\"+this.id+\"\").editor().data().editor)}); return cm;}",
+			      html : "<textarea class=\"ui-editor-javascript\"></textarea>",
+			      jsURLs : [ "../../javascripts/libs/codemirror-2.36/lib/codemirror.js", "../../javascripts/libs/codemirror-2.36/mode/javascript/javascript.js" ]
+			}
+	};
+	var element=$("<div id='block2'></div>");
+	element.bind("blockevaluate",function(){
+		ok(true);
+		element.remove();
+		start();
+	});
+	element.attr("style","position:absolute;left:100px;top:100px");
+	$("BODY").append(element)
+	stop();
+	element.block(options);
+});
 
 }( jQuery ) );

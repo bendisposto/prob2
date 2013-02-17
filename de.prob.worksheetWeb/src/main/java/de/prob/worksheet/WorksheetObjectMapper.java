@@ -2,44 +2,62 @@ package de.prob.worksheet;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+import de.prob.worksheet.block.DefaultBlock;
+import de.prob.worksheet.block.HTMLBlock;
+import de.prob.worksheet.block.HTMLErrorBlock;
+import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.InitializeStoreBlock;
 import de.prob.worksheet.block.JavascriptBlock;
+import de.prob.worksheet.block.StoreValuesBlock;
 import de.prob.worksheet.editor.HTMLEditor;
+import de.prob.worksheet.editor.HTMLErrorEditor;
 import de.prob.worksheet.editor.JavascriptEditor;
-import de.prob.worksheet.evaluator.classicalB.ClassicalBEvaluator;
 
+@Singleton
 public class WorksheetObjectMapper extends ObjectMapper {
+	static Logger logger = LoggerFactory.getLogger(WorksheetObjectMapper.class);
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6357362407554569616L;
 	ArrayList<NamedType> editors = new ArrayList<NamedType>();
-	ArrayList<NamedType> evaluaters = new ArrayList<NamedType>();
-	ArrayList<NamedType> blocks = new ArrayList<NamedType>();
+	ArrayList<NamedType> inputBlocks = new ArrayList<NamedType>();
+	ArrayList<NamedType> outputBlocks = new ArrayList<NamedType>();
 
+	@Inject
 	public WorksheetObjectMapper() {
 		super();
-		this.addEditorResolvers();
-		this.addEvaluaterResolvers();
-		this.addBlockResolvers();
+		this.initEditorResolvers();
+		this.initBlockResolvers();
 	}
 
-	private void addEditorResolvers() {
+	private void initEditorResolvers() {
+
 		this.addEditorResolver(new NamedType(JavascriptEditor.class,
+				"javascript"));
+		this.addEditorResolver(new NamedType(HTMLEditor.class, "HTMLEditor"));
+		this.addEditorResolver(new NamedType(HTMLErrorEditor.class, "errorHtml"));
+	}
+
+	private void initBlockResolvers() {
+		this.addInputBlockResolver(new NamedType(JavascriptBlock.class,
 				"Javascript"));
-		this.addEditorResolver(new NamedType(HTMLEditor.class, "HTMLOutput"));
-	}
-
-	private void addEvaluaterResolvers() {
-		this.addEvaluaterResolver(new NamedType(ClassicalBEvaluator.class,
-				"ClassicalB"));
-	}
-
-	private void addBlockResolvers() {
-		this.addBlockResolver(new NamedType(JavascriptBlock.class,
-				"JavascriptBlock"));
+		this.addOutputBlockResolver(new NamedType(HTMLBlock.class, "HTML"));
+		this.addOutputBlockResolver(new NamedType(HTMLErrorBlock.class,
+				"Fehler"));
+		this.addInputBlockResolver(new NamedType(DefaultBlock.class, "Standard"));
+		this.addInputBlockResolver(new NamedType(InitializeStoreBlock.class,
+				"Initialize State"));
+		this.addInputBlockResolver(new NamedType(StoreValuesBlock.class,
+				"State Values"));
 	}
 
 	private void addEditorResolver(final NamedType type) {
@@ -47,13 +65,13 @@ public class WorksheetObjectMapper extends ObjectMapper {
 		this.registerSubtypes(type);
 	}
 
-	private void addEvaluaterResolver(final NamedType type) {
-		this.evaluaters.add(type);
+	private void addInputBlockResolver(final NamedType type) {
+		this.inputBlocks.add(type);
 		this.registerSubtypes(type);
 	}
 
-	private void addBlockResolver(final NamedType type) {
-		this.blocks.add(type);
+	private void addOutputBlockResolver(final NamedType type) {
+		this.outputBlocks.add(type);
 		this.registerSubtypes(type);
 	}
 
@@ -67,23 +85,59 @@ public class WorksheetObjectMapper extends ObjectMapper {
 		return returnValue;
 	}
 
-	public String[] getEvaluatersNames() {
-		final String[] returnValue = new String[this.evaluaters.size()];
+	public String[] getInputBlockNames() {
+		final String[] returnValue = new String[this.inputBlocks.size()];
 		int x = 0;
-		for (final NamedType evaluater : this.evaluaters) {
-			returnValue[x] = evaluater.getName();
+		for (final NamedType block : this.inputBlocks) {
+			returnValue[x] = block.getName();
 			x++;
 		}
 		return returnValue;
 	}
 
-	public String[] getBlockNames() {
-		final String[] returnValue = new String[this.blocks.size()];
+	public IBlock getInputBlockTypeInstance(String name) {
 		int x = 0;
-		for (final NamedType block : this.blocks) {
+		for (final NamedType block : this.inputBlocks) {
+			if (block.getName().equals(name))
+				try {
+					return (IBlock) block.getType().newInstance();
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return null;
+	}
+
+	public String[] getOutputBlockNames() {
+		final String[] returnValue = new String[this.outputBlocks.size()];
+		int x = 0;
+		for (final NamedType block : this.outputBlocks) {
 			returnValue[x] = block.getName();
 			x++;
 		}
 		return returnValue;
+	}
+
+	public IBlock getOutputBlockTypeInstance(String name) {
+		logger.trace("{}", name);
+		for (final NamedType block : this.outputBlocks) {
+
+			logger.debug("{}", block.getName());
+			try {
+				if (block.getName().equals(name))
+					return (IBlock) block.getType().newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 }

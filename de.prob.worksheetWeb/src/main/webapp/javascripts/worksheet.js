@@ -23,10 +23,10 @@ function loadDocument(content,id){
 		data = jQuery.parseJSON(xhr.responseText);
 		data = $.recursiveFunctionTest(data);
 		data.sessionId=wsid;
-		$('#ui-id-1').worksheet(data);
+		$('#ws-id-1').worksheet(data);
 		if(typeof setWorksheetLoaded=="function")
 			setWorksheetLoaded(true);
-		$('#ui-id-1').one("worksheetinitialized",function(){
+		$('#ws-id-1').one("worksheetinitialized",function(){
 			$("#loadingBar").hide();
 			$("#loadingSheet").hide();
 		});
@@ -45,15 +45,24 @@ function newDocument(id){
 		data = jQuery.parseJSON(xhr.responseText);
 		data = $.recursiveFunctionTest(data);
 		data.sessionId=wsid;
-		$('#ui-id-1').worksheet(data);
+		$('#ws-id-1').worksheet(data);
 		if(typeof setWorksheetLoaded=="function")
 			setWorksheetLoaded(true);
-		$('#ui-id-1').one("worksheetinitialized",function(){
+		$('#ws-id-1').one("worksheetinitialized",function(){
 			//DEBUG alert("new Document worksheetInitialized");
 			$("#loadingBar").hide();
 			$("#loadingSheet").hide();
 		});
+		$('#ws-id-1').bind("worksheetevalstart",function(){
+			$("#loadingBar").show();
+			$("#loadingSheet").show();
+		});
+		$('#ws-id-1').bind("worksheetevalend",function(){
+			$("#loadingBar").hide();
+			$("#loadingSheet").hide();
+		});
 	},this));
+	
 }
 
 function refreshDocument(id){
@@ -68,10 +77,10 @@ function refreshDocument(id){
 		data = jQuery.parseJSON(xhr.responseText);
 		data = $.recursiveFunctionTest(data);
 		data.sessionId=wsid;
-		$('#ui-id-1').worksheet(data);
+		$('#ws-id-1').worksheet(data);
 		if(typeof setWorksheetLoaded=="function")
 			setWorksheetLoaded(true);
-		$('#ui-id-1').one("worksheetinitialized",function(){
+		$('#ws-id-1').one("worksheetinitialized",function(){
 			$("#loadingBar").hide();
 			$("#loadingSheet").hide();
 		});

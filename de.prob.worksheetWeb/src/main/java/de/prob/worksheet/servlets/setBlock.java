@@ -15,9 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.block.IBlock;
 
 /**
@@ -78,9 +77,11 @@ public class setBlock extends HttpServlet {
 			return;
 		}
 
-		final ObjectMapper mapper = new ObjectMapper();
+		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 		final String blockString = req.getParameter("block");
 		final IBlock block = mapper.readValue(blockString, IBlock.class);
+		logger.debug("EditorContent in Block:{}", block.getEditor()
+				.getEditorContent());
 
 		doc.setBlock(block);
 

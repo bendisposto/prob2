@@ -103,4 +103,10 @@ public class EvalStoreContext implements IContext {
 			throw new IllegalArgumentException();
 		this.evalStoreId = (Long) binding;
 	}
+
+	@Override
+	public IContext getDuplicate() {
+		return new EvalStoreContext(this.getId(),
+				(Long) this.getBinding("EvalStoreId"));
+	}
 }

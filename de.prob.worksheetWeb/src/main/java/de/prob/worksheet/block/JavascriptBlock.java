@@ -5,40 +5,50 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlType;
 
+import com.google.inject.Inject;
+
 import de.prob.worksheet.IWorksheetMenuNode;
+import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetMenuNode;
+import de.prob.worksheet.WorksheetObjectMapper;
 
 @XmlType(name = "JavascriptBlock")
 public class JavascriptBlock extends DefaultBlock {
 
+	@Inject
 	public JavascriptBlock() {
-		// FIXME change to back to type Javascript if test is done;
 		this.setEvaluatorType("state");
+		this.initBlockMenu();
+	}
 
+	private void initBlockMenu() {
 		final ArrayList<IWorksheetMenuNode> menu = new ArrayList<IWorksheetMenuNode>();
-		final IWorksheetMenuNode action = new WorksheetMenuNode("Action", "",
-				"");
-		final IWorksheetMenuNode evalThis = new WorksheetMenuNode(
-				"Evaluate (this)", "", "ui-icon-play");
-		evalThis.setClick("function(){$(this).closest(\".ui-worksheet\").worksheet(\"evaluate\",$(this).closest(\".ui-block\").block(\"option\",\"id\"));}");
-		action.addChild(evalThis);
-		menu.add(action);
-		// TODO getEditorTypes dynamically
-		final String[] types = { "JavaScript", "Python" };
-		final ArrayList<String> editorTypes = new ArrayList<String>(
-				Arrays.asList(types));
 
-		editorTypes.remove("JavaScript");
-		final WorksheetMenuNode typeMenu = new WorksheetMenuNode("JavaScript",
+		String[] blockTypes = this.getInputBlockTypes();
+
+		final WorksheetMenuNode typeMenu = new WorksheetMenuNode("Javascript",
 				"", "");
-		for (final String typeName : editorTypes) {
+		for (final String typeName : blockTypes) {
+			if (typeName.equals("Javascript") || typeName.equals("Standard"))
+				continue;
 			final WorksheetMenuNode type = new WorksheetMenuNode(typeName, "",
 					"");
-			type.setClick("function(){alert('" + typeName + "');}");
+			type.setClick("function(){$(this).closest('.ui-block').block('switchBlock','"
+					+ typeName + "');}");
 			typeMenu.addChild(type);
 		}
-		menu.add(typeMenu);
-		this.setMenu(menu.toArray(new IWorksheetMenuNode[menu.size()]));
+		if (typeMenu.getChildren().length != 0) {
+			menu.add(typeMenu);
+			this.setMenu(menu.toArray(new IWorksheetMenuNode[menu.size()]));
+		} else {
+			this.setHasMenu(false);
+		}
+	}
+
+	private String[] getInputBlockTypes() {
+		WorksheetObjectMapper mapper = ServletContextListener.INJECTOR
+				.getInstance(WorksheetObjectMapper.class);
+		return mapper.getInputBlockNames();
 	}
 
 	@Override

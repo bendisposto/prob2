@@ -1,8 +1,6 @@
 package de.prob.worksheet.servlets;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
@@ -11,28 +9,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 
+import de.prob.worksheet.ContextHistory;
+import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
+import de.prob.worksheet.api.evalStore.EvalStoreContext;
+import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.evaluator.DocumentEvaluator;
 
-@WebServlet(urlPatterns = { "/loadDocument" })
-public class loadDocument extends HttpServlet {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7762787871923711945L;
-	Logger logger = LoggerFactory.getLogger(loadDocument.class);
+@WebServlet(urlPatterns = { "/SwitchBlock" })
+public class SwitchBlock extends HttpServlet {
+	Logger logger = LoggerFactory.getLogger(SwitchBlock.class);
 
 	/*
 	 * (non-Javadoc)
@@ -51,14 +45,8 @@ public class loadDocument extends HttpServlet {
 	protected void doPost(final HttpServletRequest req,
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
-		/*
-		 * try { testSchema(); } catch (JAXBException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); }
-		 */
-
 		this.logParameters(req);
 		resp.setCharacterEncoding("UTF-8");
-
 		// initialize the session
 		this.setSessionProperties(req.getSession());
 
@@ -66,23 +54,37 @@ public class loadDocument extends HttpServlet {
 		HashMap<String, Object> attributes = this.getSessionAttributes(
 				req.getSession(), req.getParameter("worksheetSessionId"));
 
-		// load or create the document
-		WorksheetDocument doc = this.loadDocumentFromXml(attributes,
-				req.getParameter("documentXML"));
-		attributes = new HashMap<String, Object>();
-		attributes.put("document", doc);
+		// load or create the document replace
+		WorksheetDocument doc = this.getDocument(attributes);
 
+		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
+
+		// create new Block of whished type
+		IBlock newBlock = ServletContextListener.INJECTOR.getInstance(Key.get(
+				IBlock.class, Names.named(req.getParameter("type"))));
+		// Switch Block in Document
+		doc.switchBlockType((String) req.getParameter("blockId"), newBlock);
+
+		// Maybe move the line to bottom
+		int startIndex = doc.getBlockIndex(newBlock);
+
+		// if needed Evaluate the Document
+		if (newBlock.isImmediateEvaluation() || !newBlock.getOutput()) {
+			DocumentEvaluator documentEvalutor = new DocumentEvaluator();
+			documentEvalutor.evaluateFrom(doc, newBlock.getId(),
+					getContextHistory(attributes));
+		}
+		logger.debug("contextHistory: {}", attributes);
 		// store the session attributes
+
 		this.setSessionAttributes(req.getSession(),
 				req.getParameter("worksheetSessionId"), attributes);
 
 		// print the json string to the response
-		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 		resp.setStatus(HttpServletResponse.SC_ACCEPTED);
-		// FIXME sometimes a OutOfMemoryError:PermGen space occur (Bug 1000)
-		resp.getWriter()
-				.print(mapper.writerWithDefaultPrettyPrinter()
-						.writeValueAsString(doc));
+		resp.getWriter().print(
+				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
+						doc.getBlocksFrom(startIndex)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -92,10 +94,26 @@ public class loadDocument extends HttpServlet {
 				.getAttribute(wsid);
 		if (attributes == null) {
 			attributes = new HashMap<String, Object>();
-			logger.debug("New 'Sub'session initialized with id  :" + wsid);
+			logger.debug("New 'Sub'session initialized with id :" + wsid);
 		}
 		logger.debug("Session attributes: " + attributes.toString());
 		return attributes;
+	}
+
+	private ContextHistory getContextHistory(HashMap<String, Object> attributes) {
+		logger.trace("{}", attributes);
+		Object temp = attributes.get("contextHistory");
+		ContextHistory contextHistory = null;
+		if (temp == null) {
+			contextHistory = new ContextHistory(new EvalStoreContext("init",
+					null));
+			logger.info("new ContextHistory created");
+			attributes.put("contextHistory", contextHistory);
+		} else {
+			contextHistory = (ContextHistory) temp;
+		}
+		logger.trace("{}", contextHistory);
+		return contextHistory;
 	}
 
 	private void setSessionAttributes(HttpSession session, String wsid,
@@ -111,20 +129,13 @@ public class loadDocument extends HttpServlet {
 		}
 	}
 
-	private WorksheetDocument loadDocumentFromXml(
-			HashMap<String, Object> attributes, String documentXML) {
+	private WorksheetDocument getDocument(HashMap<String, Object> attributes) {
 		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");
-		if (doc != null) {
-			logger.warn("Document has already been loaded for this editor");
-		}
-		StringReader reader = new StringReader(documentXML);
-		doc = JAXB.unmarshal(reader, WorksheetDocument.class);
 		return doc;
-
 	}
 
 	private void logParameters(HttpServletRequest req) {
-		String[] params = { "worksheetSessionId", "documentXML" };
+		String[] params = { "worksheetSessionId", "blockId", "type" };
 		String msg = "{ ";
 		for (int x = 0; x < params.length; x++) {
 			if (x != 0)
@@ -133,32 +144,6 @@ public class loadDocument extends HttpServlet {
 		}
 		msg += " }";
 		logger.debug(msg);
-
-	}
-
-	public void testSchema() throws IOException, JAXBException {
-		// stolen from
-		// http://arthur.gonigberg.com/2010/04/26/jaxb-generating-schema-from-object-model/
-		// grab the context
-		JAXBContext context = JAXBContext.newInstance(WorksheetDocument.class);
-
-		String out;
-		final StringWriter writer = new StringWriter();
-		// generate the schema
-		context.generateSchema(
-		// need to define a SchemaOutputResolver to store to
-		new SchemaOutputResolver() {
-
-			@Override
-			public Result createOutput(String ns, String file)
-					throws IOException {
-				// save the schema to the list
-				StreamResult res = new StreamResult(writer);
-				res.setSystemId("no-id");
-				return res;
-			}
-		});
-		System.out.println(writer.toString());
 
 	}
 }

@@ -32,9 +32,12 @@ public class StateEvaluator implements IWorksheetEvaluator {
 	ContextHistory contextHistory;
 
 	@Inject
-	public StateEvaluator() {
+	public StateEvaluator(EvalStoreAPI api) {
 		outListener = new OutputListener(outputBlocks);
 		errorListener = new ErrorListener(outputBlocks);
+		this.api = api;
+		this.api.addErrorListener(errorListener);
+		this.api.addOutputListener(outListener);
 	}
 
 	/*
@@ -65,6 +68,7 @@ public class StateEvaluator implements IWorksheetEvaluator {
 		logger.trace("{}", context);
 		this.contextHistory = new ContextHistory(context);
 		actionListener = new HistoryListener(contextHistory);
+		this.api.addActionListener(actionListener);
 
 	}
 
@@ -112,6 +116,7 @@ public class StateEvaluator implements IWorksheetEvaluator {
 					true));
 		}
 
+		logger.debug("{}", this.contextHistory.last());
 		this.api.setEvalStoreId((Long) this.contextHistory.last().getBinding(
 				"EvalStoreId"));
 

@@ -29,7 +29,7 @@
 						_create : function() {
 							this.options.isInitialized = false;
 							this.options = $.recursiveFunctionTest(this.options);
-							this.element.addClass("ui-block ui-widget ui-widget-content ui-corner-all");
+							this.element.addClass("ui-block ui-widget ui-widget-content ui-corner-none"); //
 							if (this.options.id) {
 								this.element.attr("id", this.options.id);
 							} else {
@@ -38,7 +38,7 @@
 							}
 							this._initMenu(this.options.menu);
 							this._setHasMenu(this.options.hasMenu);
-
+							this._setIsOutput(this.options.isOutput);
 
 							// this.element.append("<div class=\"ui-sort-handle
 							// ui-icon ui-icon-arrow-4 ui-widget-content
@@ -63,14 +63,21 @@
 							}, this));
 
 							// TODO give this Block the Focus;
-
+							//this.lastOptions=this.options.clone(true,true);
 							this.element.focusout();
+							this.element.on("keypress",$.proxy(function(event){
+								if(event.ctrlKey && event.keyCode==10)
+									this._trigger("evaluate",1,[this.options.id]);},this)
+							);
 
 						},
+						lastOptions:null,
 						syncToServer : function() {
+							//jTODO test if this.options == this.lastOptions
+							if($("#loadingBar").css("display")=="hide")
+								return;
 							if(typeof wsid=="undefined")
 								return
-								
 							var msg = jQuery.extend(true, {}, this.options);
 							delete msg.menu;
 
@@ -89,6 +96,7 @@
 											});
 							// TODO add Handling
 						},
+						
 						createULFromNodeArrayRecursive : function(nodes) {
 							var menu = $("<ul></ul>");
 							for ( var x = 0; x < nodes.length; x++) {
@@ -149,7 +157,7 @@
 
 							// this.options.editor=newEditor.editor("updateOptions");
 						},
-						eval : function() {
+						/*eval : function() {
 							var msg = [ this.options ];
 							msg[0].editor = this.element.find(".ui-editor")
 									.editor("option");
@@ -185,7 +193,7 @@
 							res += encodeURIComponent(key) + "="
 									+ encodeURIComponent(value);
 							return res;
-						},
+						},*/
 						getOutputBlockIds : function() {
 							return this.options.outputBlockIds;
 						},
@@ -285,8 +293,9 @@
 										function(event, options) {
 											this._editorOptionsChanged(options)
 										}, this));
-								newEditor.one("editorcontentchanged",
-										this._javaSetDirty);
+								newEditor.bind("editorcontentchanged",function(){
+										$(".ui-worksheet").worksheet("setDirty",true)});
+								newEditor.on
 							}
 
 						},
@@ -319,13 +328,24 @@
 							return res;
 						},
 						_triggerInitialized : function() {
-							this.options.isInitialized = true;
+							this._setOption("isInitialized", true);
 							if (!$.browser.msie)
 								window.console
 										.debug("Event: initialized from Block");
 							this
 									._trigger("initialized", 0,
 											[ this.options.id ]);
+						},
+
+						_setIsOutput:function(isOutput){
+							if(isOutput){
+								this.element.addClass("ui-output");
+							}else{
+								this.element.removeClass("ui-output");	
+							}
+						},
+						switchBlock:function(name){
+							this.element.closest(".ui-worksheet").worksheet("switchBlock",{type:name,blockId:this.options.id})
 						}
 
 					});

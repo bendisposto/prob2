@@ -5,6 +5,9 @@ package de.prob.worksheet.block;
 
 import javax.xml.bind.annotation.XmlType;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import de.prob.worksheet.editor.HTMLEditor;
 
 /**
@@ -14,8 +17,9 @@ import de.prob.worksheet.editor.HTMLEditor;
 
 @XmlType(name = "HTMLBlock")
 public class HTMLBlock extends DefaultBlock {
-	public static final String typeID = "html";
+	public static final String typeID = "HTML";
 
+	@Inject
 	public HTMLBlock() {
 		this.setEvaluatorType("");
 		this.setOutput(true);

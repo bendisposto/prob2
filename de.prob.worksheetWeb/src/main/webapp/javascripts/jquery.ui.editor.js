@@ -20,7 +20,6 @@
 				//DEBUG window.console.debug("Trace: js:setContent");
 				var obj = $($("#"+this.id).find(".editor-object").first());
 				obj.val(content);
-				$.proxy($("#"+this.id).data("editor")._editorChanged(),$("#"+this.id).data("editor"));
 			},
 			getContent : function() {
 				//DEBUG window.console.debug("Trace: js:getContent");
@@ -47,16 +46,14 @@
 				this.backupId=this.element.attr("id");
 			this.options.isInitialized=false;
 			this.element.addClass("ui-editor ui-widget");
-			if (this.options.id) {
-				this.element.attr("id", this.options.id);
-			} else {
-				this.element.uniqueId();
-				this.options.id = this.element.attr("id");
-			}
+			//TODO find better workaround including id from server for uniqueid Jquery Bug
+			this.element.uniqueId();
+			this.options.id = this.element.attr("id");
+			
+			
 			var editorContentContainer = $("<div></div>").addClass("ui-editor-content");
 			this.element.append(editorContentContainer);
 			
-			editorContentContainer.append($(this.options.html));
 			this.options=$.recursiveFunctionTest(this.options);
 
 			$("body").lazyLoader();
@@ -91,30 +88,40 @@
 				// TODO decide wheter to allow more content then this html
 				// (maybe empty ui-worksheet-block-editor-content and destroy
 				// already existing editor)
+				if(this.options.isInitialized){
+				//TODO seems to be dead code
+					this.destroyEditor();
+					$(".ui-editor-content", this.element).empty();
+				}
 				$(".ui-editor-content", this.element).append(this.options.html);
 			}
 		},
 		initEditor : function() {
 			//DEBUG window.console.debug("Trace: _initEditor");
-			if ($.isFunction(this.options.init))
-				return this.options.init();
+			if ($.isFunction(this.options.init)){
+				this.insertEditorHTML();
+				return this.options.init();		
+			}
 			return null;
 		},
 		destroyEditor : function() {
 			//DEBUG window.console.debug("Trace: _destroyEditor");
-			if ($.isFunction(this.options.destroy))
+			if ($.isFunction(this.options.destroy) && this.options.isInitialized)
 				return this.options.destroy();
 			return null;
 		},
 
 		setContent : function(content) {
 			//DEBUG window.console.debug("Trace: setContent");
-			this.options.setContent(content);
+			if(this.getContent()!=content){
+				this.options.setContent(content);
+				this._trigger("contentChanged", 0, [ content,content!=this.initcontent ]);
+			}
 		},
 
 		getContent : function() {
 			//DEBUG window.console.debug("Trace: getContent");
-			if ($.isFunction(this.options.getContent))
+			if ($.isFunction(this.options.getContent) && this.options.isInitialized)
 				return this.options.getContent();
 			return null;
 		},
@@ -198,13 +205,13 @@
 			}
 		},
 		initcontent:"",
-		initialSetContent:true,
 		_editorChanged : function() {
+			//jTODO rework this shit
+		
 			//DEBUG window.console.debug("Trace: _editorChanged");
 			var content = this.getContent();
-			if(!this.initialSetContent)
+			if(this.initcontent!=content)
 				this._trigger("contentChanged", 0, [ content,content!=this.initcontent ]);
-			this.initialSetContent=false;
 			this._setOptionContent(content);
 		},
 

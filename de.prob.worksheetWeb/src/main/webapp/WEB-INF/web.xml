@@ -28,6 +28,18 @@
 		<url-pattern>/newDocument</url-pattern>
 	</servlet-mapping>
 	
+	
+	<servlet>
+		<display-name>SwitchBlock</display-name>
+		<servlet-name>SwitchBlock</servlet-name>
+		<servlet-class>de.prob.worksheet.servlets.SwitchBlock</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SwitchBlock</servlet-name>
+		<url-pattern>/SwitchBlock</url-pattern>
+	</servlet-mapping>
+	
+	
 	<servlet>
 		<display-name>loadDocument</display-name>
 		<servlet-name>loadDocument</servlet-name>

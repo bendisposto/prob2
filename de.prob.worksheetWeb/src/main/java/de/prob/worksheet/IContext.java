@@ -78,9 +78,14 @@ public interface IContext {
 	 */
 	public boolean equalsBindings(Object obj);
 
+	@Override
+	public boolean equals(Object obj);
+
 	/**
 	 * Makes necessary cleanups when a context is not used any more
 	 * 
 	 */
 	public void destroy();
+
+	public IContext getDuplicate();
 }

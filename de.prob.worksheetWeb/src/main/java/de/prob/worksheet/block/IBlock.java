@@ -9,8 +9,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -19,14 +17,22 @@ import de.prob.worksheet.IWorksheetMenuNode;
 import de.prob.worksheet.editor.IWorksheetEditor;
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
-@JsonSubTypes({ @Type(value = JavascriptBlock.class, name = "javascript"),
-		@Type(value = HTMLBlock.class, name = "html"),
-		@Type(value = HTMLErrorBlock.class, name = "HTMLErrorBlock"),
-		@Type(value = DefaultBlock.class, name = "default") })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @XmlSeeAlso(value = { JavascriptBlock.class, HTMLBlock.class,
 		HTMLErrorBlock.class, DefaultBlock.class })
 public abstract class IBlock {
+
+	@JsonIgnore
+	@XmlTransient
+	public abstract String getOverrideEditorContent();
+
+	@JsonIgnore
+	@XmlTransient
+	public abstract boolean isImmediateEvaluation();
+
+	@JsonIgnore
+	@XmlTransient
+	public abstract void setImmediateEvaluation(boolean immediateEvaluation);
 
 	@JsonProperty(value = "id")
 	@XmlID
@@ -96,5 +102,10 @@ public abstract class IBlock {
 	public abstract void addOutputId(String id);
 
 	@JsonIgnore
-	public abstract void undo();
+	@XmlTransient
+	public abstract boolean isInputAndOutput();
+
+	@JsonIgnore
+	@XmlTransient
+	public abstract void setInputAndOutput(boolean inputAndOuput);
 }

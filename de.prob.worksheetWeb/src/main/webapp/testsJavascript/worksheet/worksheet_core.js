@@ -99,6 +99,71 @@ test( "markup structure (sheet with body and default block)", function() {
 	ok( $(element.children()[1]).children().length==0, "body element is empty" );
 
 });
+test("worksheet dirty handling (programmatic)",function(){
+	expect(2);
+	var options={
+			hasBody:true,
+			blocks:[{
+				editor:{}
+			}]
+	};
+	var element = $( "#worksheet" ).worksheet(options);
+	ok(!element.worksheet("isDirty"));
+	element.find(".ui-editor").editor("setContent","test");
+	ok(element.worksheet("isDirty"));
+	element.worksheet("destroy");
+});
 
+test("worksheet dirty handling (editorChanged)",function(){
+	expect(2);
+	var options={
+			hasBody:true,
+			blocks:[{
+				editor:{}
+			}]
+	};
+	var element = $( "#worksheet" ).worksheet(options);
+	ok(!element.worksheet("isDirty"));
+	//first event is not fired because of initialization
+	element.find(".ui-editor").editor("setContent","test");
+	element.worksheet("setDirty",false);	
+	$(".ui-editor").first().data("editor")._editorChanged();
+	//$(".ui-editor").first().data("editor")._editorChanged();
+	ok(element.worksheet("isDirty"));
+	element.worksheet("destroy");
+	//jTODO add test for initializing with empty content
+});
+
+
+test( "eval Event", function() {
+	expect(1);
+	var options={
+			hasBody:true,
+			blocks:[{
+			editor:{
+			      objType : "javascript",
+			      id : null,
+			      getContent : "function(){return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").getValue();}",
+			      destroy : "function(){if(typeof $(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea=='function' ||typeof $(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea=='object')$(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea();}",
+			      setContent : "function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").setValue(content);}",
+			      cssURLs : [ "../../javascripts/libs/codemirror-2.36/lib/codemirror.css", "../../javascripts/libs/codemirror-2.36/theme/eclipse.css" ],
+			      content : "click STRG+ENTER",
+			      init : "function(){var cm = CodeMirror.fromTextArea($(\"#\"+this.id+\" .ui-editor-javascript\")[0],{lineNumbers: true,onChange:$.proxy($(\"#\"+this.id+\"\").editor().data().editor._editorChanged,$(\"#\"+this.id+\"\").editor().data().editor)}); return cm;}",
+			      html : "<textarea class=\"ui-editor-javascript\"></textarea>",
+			      jsURLs : [ "../../javascripts/libs/codemirror-2.36/lib/codemirror.js", "../../javascripts/libs/codemirror-2.36/mode/javascript/javascript.js" ]
+			}
+			}]
+	};
+	var element=$("<div id='worksheet2'></div>");
+	element.bind("worksheetevalstart",function(){
+		ok(true);
+		element.remove();
+		start();
+	});
+	element.attr("style","position:absolute;left:100px;top:100px");
+	$("BODY").append(element)
+	stop();
+	element.worksheet(options);
+});
 
 }( jQuery ) );

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.WorksheetObjectMapper;
 
 /**
  * @author Rene
@@ -76,7 +77,7 @@ public class getBlock extends HttpServlet {
 				"WorksheetDocument" + wsid);
 		final String id = req.getParameter("id");
 
-		final ObjectMapper mapper = new ObjectMapper();
+		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 		resp.getWriter().print(
 				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
 						this.doc.getBlockById(id)));

@@ -16,19 +16,13 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
-
 import de.prob.worksheet.ContextHistory;
-import de.prob.worksheet.IContext;
-import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetDocument;
-import de.prob.worksheet.api.evalStore.EvalStoreAPI;
+import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.IBlock;
 import de.prob.worksheet.block.JavascriptBlock;
-import de.prob.worksheet.evaluator.IWorksheetEvaluator;
+import de.prob.worksheet.evaluator.BlockEvaluator;
 
 /**
  * @author Rene
@@ -86,8 +80,10 @@ public class evaluate extends HttpServlet {
 		getContextHistory(sessionAttributes).removeHistoryAfterInitial(
 				blocks[0].getId());
 
+		BlockEvaluator blockEvaluator = new BlockEvaluator();
 		for (final IBlock block : blocks) {
-			this.evaluateBlock(doc, block, sessionAttributes);
+			blockEvaluator.evaluate(doc, block,
+					getContextHistory(sessionAttributes));
 		}
 
 		blocks = doc.getBlocksFrom(index);
@@ -101,7 +97,7 @@ public class evaluate extends HttpServlet {
 		this.setSessionAttributes(req.getSession(),
 				req.getParameter("worksheetSessionId"), sessionAttributes);
 
-		final ObjectMapper mapper = new ObjectMapper();
+		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 
 		resp.getWriter().print(
 				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
@@ -127,47 +123,36 @@ public class evaluate extends HttpServlet {
 		return contextHistory;
 	}
 
-	private void evaluateBlock(WorksheetDocument doc, final IBlock block,
-			HashMap<String, Object> sessionAttributes) {
-		logger.trace("{}", doc);
-		logger.trace("{}", block);
-		logger.trace("{}", sessionAttributes);
-
-		// don't evaluate outputblocks;
-		if (block.getOutput())
-			return;
-
-		final String evalType = block.getEvaluatorType();
-		IWorksheetEvaluator evaluator = ServletContextListener.INJECTOR
-				.getInstance(Key.get(IWorksheetEvaluator.class,
-						Names.named(evalType)));
-		// TODO Add Api Interface and getInstance by Key and dont't forget to
-		// add multiple api support
-		evaluator.setInitialContext(getContextHistory(sessionAttributes)
-				.getInitialContextForId(block.getId()));
-		evaluator.setImport(ServletContextListener.INJECTOR
-				.getInstance(EvalStoreAPI.class));
-
-		final String evalCode = block.getEditor().getEditorContent();
-		evaluator.evaluate(evalCode);
-		IBlock[] blocks = evaluator.getOutputs();
-
-		getContextHistory(sessionAttributes).setContextsForId(block.getId(),
-				evaluator.getContextHistory());
-
-		int index = doc.getBlockIndexById(block.getId());
-		// remove old Output for this block from document;
-		doc.removeOutputBlocks(block);
-		// append new outputBlocks to this block;
-		int oBlockIndex = index;
-		for (final IBlock outBlock : blocks) {
-			oBlockIndex++;
-			doc.insertBlock(oBlockIndex, outBlock);
-			block.addOutputId(outBlock.getId());
-		}
-		return;
-	}
-
+	/*
+	 * private void evaluateBlock(WorksheetDocument doc, final IBlock block,
+	 * HashMap<String, Object> sessionAttributes) { logger.trace("{}", doc);
+	 * logger.trace("{}", block); logger.trace("{}", sessionAttributes);
+	 * 
+	 * // don't evaluate outputblocks; if (block.getOutput()) return;
+	 * 
+	 * final String evalType = block.getEvaluatorType(); logger.debug("{}",
+	 * ServletContextListener.INJECTOR.getAllBindings()); IWorksheetEvaluator
+	 * evaluator = ServletContextListener.INJECTOR
+	 * .getInstance(Key.get(IWorksheetEvaluator.class, Names.named(evalType)));
+	 * // TODO Add Api Interface and getInstance by Key and dont't forget to //
+	 * add multiple api support
+	 * evaluator.setInitialContext(getContextHistory(sessionAttributes)
+	 * .getInitialContextForId(block.getId()));
+	 * evaluator.setImport(ServletContextListener.INJECTOR
+	 * .getInstance(EvalStoreAPI.class));
+	 * 
+	 * final String evalCode = block.getEditor().getEditorContent();
+	 * evaluator.evaluate(evalCode); IBlock[] blocks = evaluator.getOutputs();
+	 * 
+	 * getContextHistory(sessionAttributes).setContextsForId(block.getId(),
+	 * evaluator.getContextHistory());
+	 * 
+	 * int index = doc.getBlockIndexById(block.getId()); // remove old Output
+	 * for this block from document; doc.removeOutputBlocks(block); // append
+	 * new outputBlocks to this block; int oBlockIndex = index; for (final
+	 * IBlock outBlock : blocks) { oBlockIndex++; doc.insertBlock(oBlockIndex,
+	 * outBlock); block.addOutputId(outBlock.getId()); } return; }
+	 */
 	@SuppressWarnings("unchecked")
 	private HashMap<String, Object> getSessionAttributes(HttpSession session,
 			String wsid) {

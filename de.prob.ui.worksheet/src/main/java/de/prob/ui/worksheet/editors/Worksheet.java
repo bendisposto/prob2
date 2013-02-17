@@ -43,15 +43,16 @@ import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.ui.worksheet.WorksheetEditorInput;
 
 //import org.eclipse.core.internal.resources.ResourceException;
 
 public class Worksheet extends EditorPart {
+	static Logger logger=LoggerFactory.getLogger(Worksheet.class);
 	// Worksheet States
-	private boolean browserLoaded = false;
-	private boolean documentReady = false;
 	private boolean worksheetLoaded = false;
 	private boolean dirty = false;
 
@@ -77,6 +78,7 @@ public class Worksheet extends EditorPart {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		logger.trace("{}",monitor);
 		// TODO add tests for files on other filesystems and linked files
 
 		IEditorInput input = this.getEditorInput();
@@ -86,7 +88,7 @@ public class Worksheet extends EditorPart {
 		} else if (input instanceof FileStoreEditorInput) {
 			setContentToFileStoreEditorInput((FileStoreEditorInput) input,
 					monitor);
-			setDirty(false);
+			this.cleanDirty();
 		} else if (input instanceof WorksheetEditorInput) {
 			doSaveAs();
 		}
@@ -121,7 +123,7 @@ public class Worksheet extends EditorPart {
 
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch blocks
 			e.printStackTrace();
 		} finally {
 			try {
@@ -292,21 +294,22 @@ public class Worksheet extends EditorPart {
 		int res = dialog.open();
 		if (res != Window.OK)
 			monitor.setCanceled(true);
-
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile file = workspace.getRoot().getFile(dialog.getResult());
 
 		try {
-			file.create(this.getContentInputStream(), false, monitor);
-			this.setInputWithNotify(new FileEditorInput(file));
-
+			if(file.exists()){
+				file.setContents(this.getContentInputStream(), true, true, monitor);
+				this.setInputWithNotify(new FileEditorInput(file));
+			}else{
+				file.create(this.getContentInputStream(), true, monitor);
+				this.setInputWithNotify(new FileEditorInput(file));
+			}
+			this.cleanDirty();
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		// get Progressmonitor
-		// doSaveAs2();
 
 	}
 
@@ -426,7 +429,10 @@ public class Worksheet extends EditorPart {
 	public boolean isSaveAsAllowed() {
 		return true;
 	}
-
+	private void cleanDirty(){
+		this.worksheetBrowser.execute(
+				"$('.ui-worksheet').worksheet('setDirty',false)");
+	}
 	// FIXME set port dynamically
 	@Override
 	public void createPartControl(Composite parent) {

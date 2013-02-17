@@ -32,6 +32,8 @@ public class DefaultBlock extends IBlock {
 	private boolean output;
 	private boolean mark;
 	private final ArrayList<String> outputBlockIds;
+	private boolean immediateEvaluation;
+	private boolean inputAndOutput;
 
 	/**
 	 * 
@@ -44,7 +46,8 @@ public class DefaultBlock extends IBlock {
 		this.output = false;
 		this.mark = false;
 		this.evaluatorType = "state";
-
+		this.immediateEvaluation = false;
+		this.inputAndOutput = false;
 	}
 
 	/*
@@ -172,11 +175,6 @@ public class DefaultBlock extends IBlock {
 	}
 
 	@Override
-	public void undo() {
-		System.out.println("Implement undo");
-	}
-
-	@Override
 	public boolean getMark() {
 		return this.mark;
 	}
@@ -218,4 +216,34 @@ public class DefaultBlock extends IBlock {
 
 	}
 
+	@Override
+	public boolean isImmediateEvaluation() {
+		return this.immediateEvaluation;
+	}
+
+	@Override
+	public void setImmediateEvaluation(boolean immediateEvaluation) {
+		this.immediateEvaluation = immediateEvaluation;
+
+	}
+
+	@Override
+	public boolean isInputAndOutput() {
+		return this.inputAndOutput;
+	}
+
+	@Override
+	public void setInputAndOutput(boolean inputAndOuput) {
+		this.inputAndOutput = inputAndOuput;
+	}
+
+	@Override
+	public String getOverrideEditorContent() {
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "ID=" + this.id + " Type=" + this.getClass().getName();
+	}
 }

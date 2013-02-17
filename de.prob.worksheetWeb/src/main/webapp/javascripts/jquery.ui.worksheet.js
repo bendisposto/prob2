@@ -3,7 +3,8 @@
 	$.widget("ui.worksheet", {
 		version : "0.1.0",
 		options : {
-			id:"ui-id-1",
+			sessionId:-2,
+			id:"ws-id-1",
 			hasMenu:false,
 			hasBody:false,
 			blocks:[],
@@ -16,10 +17,11 @@
 		//jTODO Blocks[] is not needed;
 		blocks : [],
 		blocksLoading : 0,
+		initialBlocksLoading : 0,
 		_create : function() {
 			//DEBUG alert("worksheet _create");
 			//DEBUG alert("worksheet _create2");
-			this.element.addClass("ui-worksheet ui-widget ui-corner-none");
+			this.element.addClass("ui-worksheet ui-widget");
 			this.element.attr("id",this.options.id);
 			
 			if (this.options.hasMenu) {
@@ -34,26 +36,27 @@
 
 			}
 			if (this.options.hasBody) {
-				var worksheetBody = $("<div></div>").addClass("ui-worksheet-body ui-widget-content ");
+				var worksheetBody = $("<div></div>").addClass("ui-worksheet-body");
 				this.element.append(worksheetBody);
 				worksheetBody.sortable({
 					items : "> .ui-block",
 					handle : ".ui-sort-handle",
 					update : function(event, ui) {
-						$("#ui-id-1").worksheet("moveInBlocks", parseInt(ui.item.attr("tabindex")) - 1, ui.item.prevAll().length);
+						$("#ws-id-1").worksheet("moveInBlocks", parseInt(ui.item.attr("tabindex")) - 1, ui.item.prevAll().length);
 					}
 				});
 
 				if (this.options.blocks.length > 0) {
 					//JTODO Why Backup?
+					this.initialBlocksLoading=this.options.blocks.length;
 					var blockOptions = this.options.blocks;
 					this.options.blocks = [];
 					for ( var x = 0; x < blockOptions.length; x++) {
 						this.appendBlock(blockOptions[x]);						
-					}
-					
-					
+					}	
 				}
+				this.element.bind("blockevaluate",$.proxy(function(event,id){this.evaluate(id)},this));
+				
 			}
 		},
 		createULFromNodeArrayRecursive : function(nodes) {
@@ -110,7 +113,7 @@
 				this.element.find(".ui-worksheet-body").append(block);
 			}
 			block.one("blockinitialized",$.proxy(this.blockLoaded,this));
-			block.block(this.options.blocks[index]);
+			block.block(blockOptions);
 			block.bind("blockoptionschanged", $.proxy(function(event, options) {
 				var index=this.getBlockIndexById(options.id);
 				this.options.blocks[index]=options;
@@ -122,9 +125,11 @@
 		},
 		blockLoaded: function(event,id){
 			//DEBUG alert("worksheet blockLoaded");
-			
+
 			this.blocksLoading--;
-			if(!this.options.isInitialized && this.blocksLoading==0 && this._blocksInitialized()){
+			if(!this.options.isInitialized)	
+				this.initialBlocksLoading--;
+			if(!this.options.isInitialized && this.initialBlocksLoading==0 && this._blocksInitialized()){
 				this._triggerInitialized();
 				this._trigger("optionsChanged",0,[this.options]);
 			}
@@ -132,7 +137,7 @@
 		_blocksInitialized:function(){
 			//DEBUG alert("worksheet _blocksInitialized");
 			for(var x=0;x<this.options.blocks.length;x++){
-				if(!this.options.blocks[x].isInitialized)
+				if(!$("#"+this.options.blocks[x].id).data("block").options.isInitialized)
 					return false;
 			}
 			return true;
@@ -210,17 +215,23 @@
 		},
 		evaluate:function(blockId){
 			//DEBUG alert("worksheet evaluate");
+			this._trigger("evalStart",0,[blockId]);
 			var msg=this.options.blocks[this.getBlockIndexById(blockId)];
-            delete msg.menu;
+			if(typeof msg =="undefined" || msg==null){
+				//jTODO decide how to react on not existing blockId Error
+				return;
+			}
+            if(typeof msg.menu !=="undefined" && msg.menu!=null)
+            	delete msg.menu;
             
 			var content = this._addParameter("", "block", $.toJSON(msg));
-			content = this._addParameter(content,"worksheetSessionId", wsid);
+			content = this._addParameter(content,"worksheetSessionId", this.options.sessionId);
 			$.ajax("setBlock", {
 				type : "POST",
 				data : content
 			}).done($.proxy(function(data, status, xhr) {
 				var content = this._addParameter("", "id", blockId);
-	            content = this._addParameter(content, "worksheetSessionId", wsid);
+	            content = this._addParameter(content, "worksheetSessionId", this.options.sessionId);
 	            $.ajax("evaluate", {
 					type : "POST",
 					data : content
@@ -237,6 +248,7 @@
 					for ( var x = 0; x < data.length; x++) {
 						 this.appendBlock(data[x]);
 					}
+					this._trigger("evalEnd",0,[blockId]);
 				},this));
 			},this));
 		},
@@ -265,7 +277,53 @@
 				window.console.debug("Event: initialized from worksheet");				
 			}
 			this._trigger("initialized",0,[this.options.id]);
+		},
+		
+		dirty:false,
+		setDirty:function(dirty){
+			if(dirty==this.dirty)
+				return dirty;	
+			if(!this.dirty){
+				if (typeof setDirty == 'function') {
+					setDirty(true);
+				}
+			}else{
+				if (typeof setDirty == 'function') {
+					setDirty(false);
+				}
+			}
+			this.dirty=dirty;
+		},
+		isDirty:function(){
+			return this.dirty;
+		},
+		switchBlock:function(options){
+			this._trigger("switchBlockStart",0,[options]);
+			this._trigger("evalStart",0,[options.blockId]);
+			var content = this._addParameter("", "blockId", options.blockId);
+			content = this._addParameter(content, "type", options.type);
+			content = this._addParameter(content,"worksheetSessionId", this.options.sessionId);
+			$.ajax("SwitchBlock", {
+				type : "POST",
+				data : content
+			}).done($.proxy(function(data, status, xhr) {
+				var text=xhr.responseText;
+				data = jQuery.parseJSON(xhr.responseText);
+				data = $.recursiveFunctionTest(data);
+
+				var index=this.getBlockIndexById(data[0].id);
+				for(var x=this.options.blocks.length-1;x>=index;x--){
+					this.removeBlock(x);
+				}
+
+				for ( var x = 0; x < data.length; x++) {
+					 this.appendBlock(data[x]);
+				}
+				this._trigger("evalEnd",0,[]);
+				this._trigger("blockSwitched",0,[]);
+			},this));
 		}
+		
 
 	});
 }(jQuery));
