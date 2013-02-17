@@ -31,7 +31,6 @@ public abstract class IBlock {
 	public abstract boolean isImmediateEvaluation();
 
 	@JsonIgnore
-	@XmlTransient
 	public abstract void setImmediateEvaluation(boolean immediateEvaluation);
 
 	@JsonProperty(value = "id")
@@ -102,7 +101,6 @@ public abstract class IBlock {
 	public abstract void addOutputId(String id);
 
 	@JsonIgnore
-	@XmlTransient
 	public abstract boolean isInputAndOutput();
 
 	@JsonIgnore
