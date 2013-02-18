@@ -21,8 +21,7 @@ import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.IBlock;
-import de.prob.worksheet.block.JavascriptBlock;
-import de.prob.worksheet.evaluator.BlockEvaluator;
+import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 /**
  * @author Rene
@@ -73,36 +72,21 @@ public class evaluate extends HttpServlet {
 				.get("document");
 
 		final int index = doc.getBlockIndexById(req.getParameter("id"));
-		doc.markAllAfter(index);
 
-		IBlock[] blocks = doc.getBlocksFrom(index);
+		DocumentEvaluator docEvaluator = new DocumentEvaluator();
 
-		getContextHistory(sessionAttributes).removeHistoryAfterInitial(
-				blocks[0].getId());
-
-		BlockEvaluator blockEvaluator = new BlockEvaluator();
-		for (final IBlock block : blocks) {
-			blockEvaluator.evaluate(doc, block,
-					getContextHistory(sessionAttributes));
-		}
-
-		blocks = doc.getBlocksFrom(index);
-		if (blocks[blocks.length - 1].getOutput()
-				|| !blocks[blocks.length - 1].getEditor().getEditorContent()
-						.trim().equals("")) {
-			doc.appendBlock(new JavascriptBlock());
-		}
-		blocks = doc.getBlocksFrom(index);
+		docEvaluator.evaluateFrom(doc, index,
+				getContextHistory(sessionAttributes));
 
 		this.setSessionAttributes(req.getSession(),
 				req.getParameter("worksheetSessionId"), sessionAttributes);
 
 		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 
+		IBlock[] blocks = doc.getBlocksFrom(index);
 		resp.getWriter().print(
 				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
 						blocks));
-
 		return;
 
 	}

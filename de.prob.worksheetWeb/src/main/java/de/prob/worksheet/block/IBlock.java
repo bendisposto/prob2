@@ -19,7 +19,8 @@ import de.prob.worksheet.editor.IWorksheetEditor;
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @XmlSeeAlso(value = { JavascriptBlock.class, HTMLBlock.class,
-		HTMLErrorBlock.class, DefaultBlock.class })
+		HTMLErrorBlock.class, DefaultBlock.class, InitializeStoreBlock.class,
+		StoreValuesBlock.class })
 public abstract class IBlock {
 
 	@JsonIgnore

@@ -169,16 +169,19 @@ public class WorksheetDocument {
 	}
 
 	public void removeOutputBlocks(final IBlock block) {
-		logger.trace("{}", block);
+		logger.trace("in: block={}", block);
 		final int blockIndex = this.getBlockIndex(block);
 		final String[] outputIds = this.blocks.get(blockIndex)
 				.getOutputBlockIds();
 		for (final String outputId : outputIds) {
-			final IBlock nblock = this.getBlockById(outputId);
-			this.blocks.remove(nblock);
+			final int index = this.getBlockIndexById(outputId);
+			this.blocks.remove(index);
 		}
 		block.setOutputBlockIds(null);
-		logger.debug("{}", this.blocks);
+		logger.debug("OutputIds of {} = {}", block.getId(),
+				block.getOutputBlockIds());
+		logger.debug("Worsheet Blocks={}", this.blocks);
+		logger.trace("return:");
 	}
 
 	public IBlock getBlockById(final String id) {
@@ -285,7 +288,10 @@ public class WorksheetDocument {
 			this.insertBlock(index, outBlock);
 			block.addOutputId(outBlock.getId());
 		}
-		logger.debug("{}", this.blocks);
+		logger.debug("OutputIds of {} = {}", block.getId(),
+				block.getOutputBlockIds());
+		logger.debug("Worsheet Blocks={}", this.blocks);
+		logger.trace("return:");
 
 	}
 

@@ -82,6 +82,7 @@ public class SubsessionServletHelper {
 			evaluator.evaluateFrom(doc, 0, new ContextHistory(
 					new EvalStoreContext("init", null)));
 			logger.debug("New WorksheetDocument initiaized");
+			attributes.put("document", doc);
 		}
 		logger.trace("return: document={}", doc);
 		return doc;
