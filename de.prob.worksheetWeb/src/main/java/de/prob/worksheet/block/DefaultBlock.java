@@ -9,7 +9,9 @@ import java.util.Arrays;
 import javax.xml.bind.annotation.XmlType;
 
 import de.prob.worksheet.IWorksheetMenuNode;
+import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetMenuNode;
+import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.editor.IWorksheetEditor;
 import de.prob.worksheet.editor.JavascriptEditor;
 
@@ -245,5 +247,38 @@ public class DefaultBlock extends IBlock {
 	@Override
 	public String toString() {
 		return "ID=" + this.id + " Type=" + this.getClass().getName();
+	}
+
+	public void initBlockMenu(String type, String[] excludes) {
+		final ArrayList<IWorksheetMenuNode> menu = new ArrayList<IWorksheetMenuNode>();
+		String[] blockTypes = this.getInputBlockTypes();
+		final WorksheetMenuNode typeMenu = new WorksheetMenuNode(type, "", "");
+		typeMenu.setTitle(true);
+		Arrays.sort(excludes);
+
+		for (final String typeName : blockTypes) {
+			if (Arrays.binarySearch(excludes, typeName) >= 0
+					|| typeName.equals(type))
+				continue;
+			final WorksheetMenuNode node = new WorksheetMenuNode(typeName, "",
+					"");
+			node.setClick("function(){$(this).closest('.ui-block').block('switchBlock','"
+					+ typeName + "');}");
+			node.setChar(typeName.charAt(0));
+			typeMenu.addChild(node);
+		}
+		if (typeMenu.getChildren().length != 0) {
+			menu.add(typeMenu);
+			this.setMenu(menu.toArray(new IWorksheetMenuNode[menu.size()]));
+			this.setHasMenu(true);
+		} else {
+			this.setHasMenu(false);
+		}
+	}
+
+	private String[] getInputBlockTypes() {
+		WorksheetObjectMapper mapper = ServletContextListener.INJECTOR
+				.getInstance(WorksheetObjectMapper.class);
+		return mapper.getInputBlockNames();
 	}
 }

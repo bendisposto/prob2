@@ -39,6 +39,10 @@ public abstract class IWorksheetEditor {
 	@XmlTransient
 	public abstract String getSetContentScript();
 
+	@JsonProperty(value = "setFocus")
+	@XmlTransient
+	public abstract String getSetFocusScript();
+
 	@JsonProperty(value = "destroy")
 	@XmlTransient
 	public abstract String getDestroyScript();
@@ -74,6 +78,9 @@ public abstract class IWorksheetEditor {
 
 	@JsonIgnore
 	public abstract void setGetContentScript(String script);
+
+	@JsonIgnore
+	public abstract void setSetFocusScript(String script);
 
 	@JsonIgnore
 	public abstract void setDestroyScript(String script);

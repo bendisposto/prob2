@@ -88,6 +88,14 @@ public interface IWorksheetMenuNode {
 	 */
 	public abstract IWorksheetMenuNode[] getChildren();
 
+	public abstract char getChar();
+
+	public abstract void setChar(char character);
+
+	public abstract boolean isTitle();
+
+	public abstract void setTitle(boolean title);
+
 	/**
 	 * Sets an array of IWorksheetMenuNode to be the child menuitems for this
 	 * menuitem

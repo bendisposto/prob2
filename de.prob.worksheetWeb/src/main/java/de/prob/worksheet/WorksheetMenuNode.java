@@ -15,6 +15,8 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 	private String itemClass = "";
 	private String iconClass = "";
 	private final ArrayList<IWorksheetMenuNode> children;
+	private char character;
+	private boolean title=false;
 
 	/**
 	 * Default Constructor
@@ -153,5 +155,24 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 	@Override
 	public void addChild(final IWorksheetMenuNode child) {
 		this.children.add(child);
+	}
+
+	@Override
+	public char getChar() {
+		return this.character;
+	}
+
+	@Override
+	public void setChar(char character) {
+		this.character = character;
+	}
+	
+	@Override
+	public boolean isTitle() {
+		return title;
+	}
+	@Override
+	public void setTitle(boolean title) {
+		this.title=title;	
 	}
 }

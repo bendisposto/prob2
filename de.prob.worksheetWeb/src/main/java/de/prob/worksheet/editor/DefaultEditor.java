@@ -8,6 +8,8 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author Rene
  * 
@@ -22,23 +24,25 @@ public class DefaultEditor extends IWorksheetEditor {
 	private ArrayList<String> CSSHREFs;
 	private ArrayList<String> JavascriptHREFs;
 	private String id;
-
 	private String setContentScript;
+	private String setFocusScript;
 
 	public DefaultEditor() {
 		this.CSSHREFs = new ArrayList<String>();
 		this.JavascriptHREFs = new ArrayList<String>();
-
-		this.setHTMLContent("<textarea class=\"ui-editor-javascript\"></textarea>");
-		this.addCSSHref("javascripts/libs/codemirror-2.36/lib/codemirror.css");
-		this.addCSSHref("javascripts/libs/codemirror-2.36/theme/eclipse.css");
-		this.addJavascriptHref("javascripts/libs/codemirror-2.36/lib/codemirror.js");
-		this.addJavascriptHref("javascripts/libs/codemirror-2.36/mode/javascript/javascript.js");
-
-		this.setGetContentScript("function(){return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").getValue();}");
-		this.setInitializationFunction("function(){var cm = CodeMirror.fromTextArea($(\"#\"+this.id+\" .ui-editor-javascript\")[0],{lineNumbers: true,onChange:$.proxy($(\"#\"+this.id+\"\").data().editor._editorChanged,$(\"#\"+this.id+\"\").data().editor)}); return cm;}");
-		this.setSetContentScript("function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").setValue(content);}");
-		this.setDestroyScript("function(){if(typeof $(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea=='function' ||typeof $(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea=='object')$(\"#\"+this.id+\"\").editor(\"getEditorObject\").toTextArea();}");
+		this.setHTMLContent("<textarea class=\"editor-object\"></textarea>");
+		this.setInitializationFunction("function(){"
+				+ "var obj = $($(\"#\"+this.id).find(\".editor-object\").first());"
+				+ "obj.change($.proxy($(\"#\"+this.id).data(\"editor\")._editorChanged,$(\"#\"+this.id).data(\"editor\")));"
+				+ "return obj;}");
+		this.setDestroyScript(null);
+		this.setSetContentScript("function(content) {"
+				+ "var obj = $($(\"#\"+this.id).find(\".editor-object\").first());"
+				+ "obj.val(content);}");
+		this.setSetContentScript("function() {"
+				+ "var obj = $($(\"#\"+this.id).find(\".editor-object\").first());"
+				+ "return obj.val();}");
+		this.setSetFocusScript("function(){$($(\"#\"+this.id).find(\".editor-object\").focus();}");
 	}
 
 	@Override
@@ -153,5 +157,16 @@ public class DefaultEditor extends IWorksheetEditor {
 		if (!(obj instanceof DefaultEditor))
 			return false;
 		return this.id.equals(((DefaultEditor) obj).getId());
+	}
+
+	@Override
+	public String getSetFocusScript() {
+		return this.setFocusScript;
+	}
+
+	@Override
+	@JsonIgnore
+	public void setSetFocusScript(String script) {
+		this.setFocusScript = script;
 	}
 }

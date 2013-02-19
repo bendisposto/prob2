@@ -6,7 +6,7 @@ test( "defaults", function() {
 	expect( 3 );
 	var element = $( "#worksheet" ).worksheet();
 	ok( element.hasClass( "ui-worksheet" ), "main element is .ui-worksheet" );
-	ok( element.attr("id")=="ui-id-1", "main element has id #ui-id-1");
+	ok( element.attr("id")=="ws-id-1", "main element has id #ws-id-1");
 	ok( element.children().length==0, "main element is empty");
 });
 
@@ -104,6 +104,7 @@ test("worksheet dirty handling (programmatic)",function(){
 	var options={
 			hasBody:true,
 			blocks:[{
+				id:"ws-block-id-1",
 				editor:{}
 			}]
 	};
@@ -119,6 +120,7 @@ test("worksheet dirty handling (editorChanged)",function(){
 	var options={
 			hasBody:true,
 			blocks:[{
+				id:"ws-block-id-1",
 				editor:{}
 			}]
 	};
@@ -140,6 +142,7 @@ test( "eval Event", function() {
 	var options={
 			hasBody:true,
 			blocks:[{
+				id:"ws-block-id-1",
 			editor:{
 			      objType : "javascript",
 			      id : null,
@@ -166,4 +169,25 @@ test( "eval Event", function() {
 	element.worksheet(options);
 });
 
+test( "focus", function() {
+	expect(3)
+	var options={
+			hasBody:true,
+			blocks:[{
+				id:"ws-block-id-1",
+				editor:{}
+			},{
+				id:"ws-block-id-2",
+				editor:{}
+			},{
+				id:"ws-block-id-3",
+				editor:{}
+			}]
+	};
+	var element = $( "#worksheet" ).worksheet(options);
+
+	$("#ws-block-id-2").block("setFocus");
+	$("#ws-block-id-3").block("setFocus");
+	$("#ws-block-id-1").block("setFocus");
+});
 }( jQuery ) );

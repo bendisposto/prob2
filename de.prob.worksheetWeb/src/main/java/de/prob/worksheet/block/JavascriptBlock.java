@@ -1,7 +1,6 @@
 package de.prob.worksheet.block;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlType;
 
@@ -18,7 +17,7 @@ public class JavascriptBlock extends DefaultBlock {
 	@Inject
 	public JavascriptBlock() {
 		this.setEvaluatorType("state");
-		this.initBlockMenu();
+		this.initBlockMenu("Javascript", new String[] { "Standard" });
 	}
 
 	private void initBlockMenu() {
@@ -28,6 +27,7 @@ public class JavascriptBlock extends DefaultBlock {
 
 		final WorksheetMenuNode typeMenu = new WorksheetMenuNode("Javascript",
 				"", "");
+		typeMenu.setTitle(true);
 		for (final String typeName : blockTypes) {
 			if (typeName.equals("Javascript") || typeName.equals("Standard"))
 				continue;
@@ -35,6 +35,7 @@ public class JavascriptBlock extends DefaultBlock {
 					"");
 			type.setClick("function(){$(this).closest('.ui-block').block('switchBlock','"
 					+ typeName + "');}");
+			// TODO add better keyCode Selection
 			typeMenu.addChild(type);
 		}
 		if (typeMenu.getChildren().length != 0) {

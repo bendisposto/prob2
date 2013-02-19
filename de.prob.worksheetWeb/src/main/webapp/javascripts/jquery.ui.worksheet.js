@@ -51,12 +51,29 @@
 					this.initialBlocksLoading=this.options.blocks.length;
 					var blockOptions = this.options.blocks;
 					this.options.blocks = [];
-					for ( var x = 0; x < blockOptions.length; x++) {
-						this.appendBlock(blockOptions[x]);						
-					}	
+					for( var x = 0; x < blockOptions.length; x++) {
+						this.appendBlock(blockOptions[x]);
+					}
 				}
 				this.element.bind("blockevaluate",$.proxy(function(event,id){this.evaluate(id)},this));
-				
+				this.element.on("keydown",$.proxy(function(event){
+						if(event.ctrlKey){
+							switch(event.which){
+								case $.ui.keyCode.UP:
+									this.focusPreviousInputBlock();
+									break;
+								case $.ui.keyCode.DOWN:
+									this.focusNextInputBlock();
+									break;	
+							}
+						}
+						if(event.ctrlKey && event.altKey){
+							if(event.which==$.ui.keyCode.ENTER){
+								this.evaluate(this.options.blocks[0].id);
+							}
+						}
+							
+					},this));
 			}
 		},
 		createULFromNodeArrayRecursive : function(nodes) {
@@ -244,10 +261,14 @@
 					for(var x=this.options.blocks.length-1;x>=index;x--){
 						this.removeBlock(x);
 					}
-
+					var lastInputIndex=0;
 					for ( var x = 0; x < data.length; x++) {
 						 this.appendBlock(data[x]);
+						 if(!data[x].isOutput){
+							 lastInputIndex=x;
+						 }
 					}
+					$("#"+data[lastInputIndex].id).block("setFocus");
 					this._trigger("evalEnd",0,[blockId]);
 				},this));
 			},this));
@@ -316,14 +337,43 @@
 					this.removeBlock(x);
 				}
 
+				var lastInputIndex=0;
 				for ( var x = 0; x < data.length; x++) {
 					 this.appendBlock(data[x]);
+					 if(!data[x].isOutput){
+						 lastInputIndex=x;
+					 }
 				}
+				$("#"+data[lastInputIndex].id).block("setFocus");
 				this._trigger("evalEnd",0,[]);
 				this._trigger("blockSwitched",0,[]);
 			},this));
+		},
+		focusPreviousInputBlock:function(){
+			var actId=this.element.find(".ui-block.focusin").data("block").options.id;
+			var actIndex=this.getBlockIndexById(actId);
+			
+			for(var x=actIndex-1;x>=0;x--){
+				if(!this.options.blocks[x].isOutput){
+					this.element.find(".ui-block.focusin").focusout();
+					$("#"+this.options.blocks[x].id).block("setFocus");
+					break;
+				}
+			}
+			
+		},
+		focusNextInputBlock:function(){
+			var actId=this.element.find(".ui-block.focusin").data("block").options.id;
+			var actIndex=this.getBlockIndexById(actId);
+			
+			for(var x=actIndex+1;x<this.options.blocks.length;x++){
+				if(!this.options.blocks[x].isOutput){
+					this.element.find(".ui-block.focusin").focusout();
+					$("#"+this.options.blocks[x].id).block("setFocus");
+					break;
+				}
+			}
 		}
-		
 
 	});
 }(jQuery));

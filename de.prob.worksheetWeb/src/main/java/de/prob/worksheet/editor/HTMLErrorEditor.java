@@ -16,6 +16,7 @@ public class HTMLErrorEditor extends DefaultEditor {
 		this.setInitializationFunction("function(){return $($(\"#\"+this.id+\" .ui-editor-HTMLErrorOutput\")[0])}");
 		this.setSetContentScript("function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").empty();return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").append(content)}");
 		this.setDestroyScript("function(){}");
+		this.setSetFocusScript("function(){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").focus();}");
 
 	}
 

@@ -18,6 +18,7 @@
 							isInitialized : false,
 							// callbacks
 							initialized : function(event, data) {
+								
 							},
 							optionsChanged : function(event, options) {
 								if (!$.browser.msie)
@@ -55,10 +56,13 @@
 									this.element.find(".ui-visible-on-focus")
 											.show();
 								}
+								this.element.addClass("focusin");
 							}, this));
 							this.element.focusout($.proxy(function() {
+								this.element.removeClass("focusin");
 								this.element.find(".ui-visible-on-focus")
 										.hide();
+								this.element.find(".ui-editor").editor("toUnicode");
 								this.syncToServer();
 							}, this));
 
@@ -66,10 +70,17 @@
 							//this.lastOptions=this.options.clone(true,true);
 							this.element.focusout();
 							this.element.on("keypress",$.proxy(function(event){
-								if(event.ctrlKey && event.keyCode==10)
-									this._trigger("evaluate",1,[this.options.id]);},this)
-							);
-
+								if(event.ctrlKey && event.keyCode==10){	
+									this.element.find(".ui-editor").editor("toUnicode");
+									this._trigger("evaluate",1,[this.options.id]);
+								}
+							},this));
+								
+							this.element.on("keydown",$.proxy(function(event){
+								if(event.ctrlKey && event.altKey){
+									this.menuKey(event);
+								}
+							},this));
 						},
 						lastOptions:null,
 						syncToServer : function() {
@@ -117,7 +128,6 @@
 							if (node.itemClass != "") {
 								nodeItem.addClass(node.itemClass);
 							}
-
 							if (node.iconClass != "") {
 								var icon = $("<span></span>").addClass(
 										"ui-icon " + node.iconClass);
@@ -125,15 +135,23 @@
 							}
 							if (node.title) {
 								if (node.text != "") {
-									nodeItem.append(node.text);
+									item.append(node.text);
 								}
+								nodeItem.append(item);
 							} else {
 								if (node.text != "") {
 									item.append(node.text);
+									if(node.char!= ""){
+										var hint=$("<span class=\"menu-key-hint\" />");
+										hint.append("[CTRL+ALT+"+node.char+"]");
+										item.append(hint);
+										this.menuKeys[node.char]=node.click;
+									}	
 								}
 								item.click(node.click);
 								nodeItem.append(item);
 							}
+							
 							return nodeItem;
 						},
 						toggleBlockContent : function() {
@@ -157,43 +175,6 @@
 
 							// this.options.editor=newEditor.editor("updateOptions");
 						},
-						/*eval : function() {
-							var msg = [ this.options ];
-							msg[0].editor = this.element.find(".ui-editor")
-									.editor("option");
-							var content = this.addParameter("", "blocks", $
-									.toJSON(msg));
-							content = this.addParameter(content,
-									"worksheetSessionId", wsid);
-							$.ajax("blockEval", {
-								type : "POST",
-								data : content
-							}).done(
-									$.proxy(function(data, status, xhr) {
-										var text = xhr.responseText;
-										// var
-										// text=text.replace("\n","\\n").replace("\r","\\r");
-										data = jQuery
-												.parseJSON(xhr.responseText);
-										data = $.recursiveFunctionTest(data);
-										// var caller = $("#" + data.id);
-										// this.removeOutputBlocks();
-										this._setOptions(data[0]);
-										var worksheet = $("#"
-												+ this.options.worksheetId);
-										for ( var x = 1; x < data.length; x++) {
-											var block = worksheet.worksheet(
-													"appendBlock", data[x]);
-										}
-									}, this));
-						},
-						addParameter : function(res, key, value) {
-							if (res != "")
-								res += "&";
-							res += encodeURIComponent(key) + "="
-									+ encodeURIComponent(value);
-							return res;
-						},*/
 						getOutputBlockIds : function() {
 							return this.options.outputBlockIds;
 						},
@@ -345,7 +326,32 @@
 							}
 						},
 						switchBlock:function(name){
+							this.element.focusout();
 							this.element.closest(".ui-worksheet").worksheet("switchBlock",{type:name,blockId:this.options.id})
+						},
+						setFocus:function(){
+							this.element.focusin();
+							this.element.focus();
+							this.element.find(".ui-editor").editor("setFocus");
+						},
+						menuKeys:{},
+						menuKey:function(event){
+							if(this.options.hasMenu){
+								var char=String.fromCharCode(event.which);
+								if(event.shiftKey){
+									char=char.toUpperCase();
+								}else{
+									char=char.toLowerCase();
+								}
+								if($.isFunction(this.menuKeys[char])){
+									$.proxy(this.menuKeys[char],this.element.find(".ui-block-menu"))();
+								}else{
+								//	var el=this.element.find(".ui-block-menu").find(">li>a").first();
+								//	if(el.attr("aria-haspopup")=="true")
+								//		el.click();	
+								}
+								
+							}
 						}
 
 					});

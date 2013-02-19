@@ -64,7 +64,7 @@ public class EvalStoreAPI {
 
 	@Inject
 	public EvalStoreAPI(AnimationSelector animations) {
-		logger.trace("{}", animations.getHistories());
+		logger.trace("in: animations={}", animations.getHistories());
 		this.animations = animations;
 		// INJECTOR=ServletContextListener.INJECTOR;
 		this.errorListeners = new ArrayList<IWorksheetAPIListener>();
@@ -73,11 +73,11 @@ public class EvalStoreAPI {
 		logger.debug("{}", this.outputListeners);
 		this.actionListeners = new ArrayList<IWorksheetAPIListener>();
 		logger.debug("{}", actionListeners);
-		// TODO remove when rodin ui works;
+		logger.trace("return:");
 	}
 
 	public void getCurrentState() {
-		logger.trace("");
+		logger.trace("in:");
 		Long before = this.evalStoreId;
 		this.animations = injector.getInstance(AnimationSelector.class);
 		logger.debug("Animations: " + animations.getHistories());
@@ -94,6 +94,7 @@ public class EvalStoreAPI {
 					EvalStoreAPI.OUTPUT_STATE_NAME,
 					EvalStoreAPI.OUTPUT_STATE_DESC, "No Animation is started",
 					"Initialize State", "");
+			logger.trace("return: No Animation is started");
 			return;
 			// TODO try to find a way to start an animation if no is present
 			/*
@@ -137,7 +138,8 @@ public class EvalStoreAPI {
 			output = "{}";
 		this.notifyOutputListeners(EvalStoreAPI.OUTPUT_STATE_ID,
 				EvalStoreAPI.OUTPUT_STATE_NAME, EvalStoreAPI.OUTPUT_STATE_DESC,
-				"Initial State:\n", "Initialize State", output);
+				"", "Initialize State", output);
+		logger.trace("return:");
 	}
 
 	public void evaluate(String expression) {
@@ -151,36 +153,43 @@ public class EvalStoreAPI {
 		IEvalElement eval = new EventB(expression);
 		EvalstoreEvalCommand cmd = new EvalstoreEvalCommand(this.evalStoreId,
 				eval);
-		this.animations.getCurrentHistory().getStatespace().execute(cmd);
-		EvalstoreResult storeResult = cmd.getResult();
-		if (storeResult.isSuccess()) {
-			this.evalStoreId = storeResult.getResultingStoreId();
-			this.notifyActionListeners(EvalStoreAPI.ACTION_STATE_CHANGED_ID,
-					EvalStoreAPI.ACTION_STATE_CHANGED_NAME,
-					EvalStoreAPI.ACTION_STATE_CHANGED_DESC,
-					EvalStoreAPI.ACTION_STATE_CHANGED_MSG, before,
-					this.evalStoreId);
-			logger.debug("{}", storeResult.getResult());
-			this.notifyOutputListeners(ACTION_STATE_CHANGED_ID, "", "",
-					"Result:\n", "HTML", storeResult.getResult().getValue());
-			storeResult.getResult().getValue();
-		} else {
-			if (storeResult.hasInterruptedOccurred()) {
-				this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID, "",
-						"", "No Success Interrupt", true);
-				logger.error("{}", storeResult.getResult());
+		try {
+			this.animations.getCurrentHistory().getStatespace().execute(cmd);
+			EvalstoreResult storeResult = cmd.getResult();
+			if (storeResult.isSuccess()) {
+				this.evalStoreId = storeResult.getResultingStoreId();
+				this.notifyActionListeners(
+						EvalStoreAPI.ACTION_STATE_CHANGED_ID,
+						EvalStoreAPI.ACTION_STATE_CHANGED_NAME,
+						EvalStoreAPI.ACTION_STATE_CHANGED_DESC,
+						EvalStoreAPI.ACTION_STATE_CHANGED_MSG, before,
+						this.evalStoreId);
+				logger.debug("{}", storeResult.getResult());
+				this.notifyOutputListeners(ACTION_STATE_CHANGED_ID, "", "",
+						"Result:\n", "HTML", storeResult.getResult().getValue());
+				storeResult.getResult().getValue();
+			} else {
+				if (storeResult.hasInterruptedOccurred()) {
+					this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID,
+							"", "", "No Success Interrupt", true);
+					logger.error("{}", storeResult.getResult());
+				}
+				if (storeResult.hasTimeoutOccurred()) {
+					this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID,
+							"", "", "No Success Timeout", true);
+					logger.error("{}", storeResult.getResult());
+				}
+				if (storeResult.getResult().hasError()) {
+					this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID,
+							"", "", "No Success Result Error: "
+									+ storeResult.getResult().getErrors(), true);
+					logger.error("{}", storeResult.getResult());
+				}
 			}
-			if (storeResult.hasTimeoutOccurred()) {
-				this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID, "",
-						"", "No Success Timeout", true);
-				logger.error("{}", storeResult.getResult());
-			}
-			if (storeResult.getResult().hasError()) {
-				this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID, "",
-						"", "No Success Result Error: "
-								+ storeResult.getResult().getErrors(), true);
-				logger.error("{}", storeResult.getResult());
-			}
+		} catch (Exception e) {
+			this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID, "", "",
+					"Error<br /> " + e.getMessage(), true);
+
 		}
 
 	}

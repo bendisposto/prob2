@@ -14,9 +14,9 @@ public class HTMLEditor extends DefaultEditor {
 		this.setHTMLContent("<div class=\"ui-editor-HTMLOutput\" class=\"ui-editor-border\"></div>");
 		this.setGetContentScript("function(){return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").html();}");
 		this.setInitializationFunction("function(){return $($(\"#\"+this.id+\" .ui-editor-HTMLOutput\")[0])}");
-		this.setSetContentScript("function(content){\n$(\"#\"+this.id+\"\").editor(\"getEditorObject\").empty();\nreturn $(\"#\"+this.id+\"\").editor(\"getEditorObject\").append(content)}");
-		this.setDestroyScript("function(){}");
+		this.setSetContentScript("function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").empty();\nreturn $(\"#\"+this.id+\"\").editor(\"getEditorObject\").append(content)}");
+		this.setDestroyScript(null);
+		this.setSetFocusScript("function(){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").focus();}");
 
 	}
-
 }
