@@ -78,10 +78,24 @@
 								
 							this.element.on("keydown",$.proxy(function(event){
 								if(event.ctrlKey && event.altKey){
+									this.menuactivate=true;
+									if(event.which!=17 || event.which!=18)
+										this.menuactivate=false;
 									this.menuKey(event);
+								}else if(!(event.ctrlKey && this.menuactivate) && !(event.altKey && this.menuactivate)){
+									this.menuactivate=false;	
 								}
 							},this));
+							this.element.on("keyup",$.proxy(function(event){
+								if(this.menuactivate){
+									this.activateMenu();
+								}
+							},this));
+							this.element.find(".ui-block-menu").bind("menuselect",$.proxy(
+									function(event,ui){ui.item.trigger("menuitemselect",ui)},
+									this.element.find(".ui-block-menu")));
 						},
+						menuactivate:false,
 						lastOptions:null,
 						syncToServer : function() {
 							//jTODO test if this.options == this.lastOptions
@@ -146,9 +160,11 @@
 										hint.append("[CTRL+ALT+"+node.char+"]");
 										item.append(hint);
 										this.menuKeys[node.char]=node.click;
-									}	
+									}
 								}
-								item.click(node.click);
+								item.click($.noop());
+								//nodeItem.bind("menuitemselect",$.proxy(function(event,ui){window.console.debug(ui);},this.element.find(".ui-block-menu")))
+								nodeItem.bind("menuitemselect",$.proxy(node.click,this.element));
 								nodeItem.append(item);
 							}
 							
@@ -344,14 +360,18 @@
 									char=char.toLowerCase();
 								}
 								if($.isFunction(this.menuKeys[char])){
-									$.proxy(this.menuKeys[char],this.element.find(".ui-block-menu"))();
+									this.menuactivate=false;
+									$.proxy(this.menuKeys[char],this.element)();
 								}else{
-								//	var el=this.element.find(".ui-block-menu").find(">li>a").first();
-								//	if(el.attr("aria-haspopup")=="true")
-								//		el.click();	
 								}
 								
 							}
+						},
+						activateMenu:function(){
+								var el=this.element.find(".ui-block-menu").find(">li>a").first();
+								if(el.attr("aria-haspopup")=="true")
+									el.click();	
+								this.menuactivate=false;
 						}
 
 					});

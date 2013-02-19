@@ -30,7 +30,7 @@ public class DefaultEditor extends IWorksheetEditor {
 	public DefaultEditor() {
 		this.CSSHREFs = new ArrayList<String>();
 		this.JavascriptHREFs = new ArrayList<String>();
-		this.setHTMLContent("<textarea class=\"editor-object\"></textarea>");
+		this.setHTMLContent("<textarea class=\"editor-object ui-editor-padding\"></textarea>");
 		this.setInitializationFunction("function(){"
 				+ "var obj = $($(\"#\"+this.id).find(\".editor-object\").first());"
 				+ "obj.change($.proxy($(\"#\"+this.id).data(\"editor\")._editorChanged,$(\"#\"+this.id).data(\"editor\")));"

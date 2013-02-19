@@ -195,6 +195,15 @@ public class EvalStoreAPI {
 	}
 
 	public void getStoreValues() {
+		if (this.evalStoreId == null) {
+			this.notifyOutputListeners(
+					EvalStoreAPI.OUTPUT_STATE_ID,
+					EvalStoreAPI.OUTPUT_STATE_NAME,
+					EvalStoreAPI.OUTPUT_STATE_DESC,
+					"No State is selected! Open Initialize State before getting his values",
+					"State Values", "");
+			return;
+		}
 		GetStateValuesCommand cmd = GetStateValuesCommand
 				.getEvalstoreValuesCommand(this.evalStoreId);
 		animations.getCurrentHistory().getStatespace().execute(cmd);

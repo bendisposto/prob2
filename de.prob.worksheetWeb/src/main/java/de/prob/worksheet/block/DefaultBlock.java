@@ -262,8 +262,8 @@ public class DefaultBlock extends IBlock {
 				continue;
 			final WorksheetMenuNode node = new WorksheetMenuNode(typeName, "",
 					"");
-			node.setClick("function(){$(this).closest('.ui-block').block('switchBlock','"
-					+ typeName + "');}");
+			node.setClick("function(){$(this).block('switchBlock','" + typeName
+					+ "');}");
 			node.setChar(typeName.charAt(0));
 			typeMenu.addChild(node);
 		}
