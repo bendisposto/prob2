@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Stephan Michels, stephan@apache.org - 104944 [JUnit] Unnecessary code in JUnitProgressBar
  *******************************************************************************/
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Display;
 /**
  * A progress bar with a red/green indication for success or failure.
  */
-public class JUnitProgressBar extends Canvas {
+public class BUnitProgressBar extends Canvas {
 	private static final int DEFAULT_WIDTH = 160;
 	private static final int DEFAULT_HEIGHT = 18;
 
@@ -42,7 +42,7 @@ public class JUnitProgressBar extends Canvas {
 	private boolean fError;
 	private boolean fStopped = false;
 
-	public JUnitProgressBar(final Composite parent) {
+	public BUnitProgressBar(final Composite parent) {
 		super(parent, SWT.NONE);
 
 		addControlListener(new ControlAdapter() {

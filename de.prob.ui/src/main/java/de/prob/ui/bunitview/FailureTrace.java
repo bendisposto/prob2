@@ -10,7 +10,7 @@
  *     Sebastian Davids: sdavids@gmx.de bug 37333, 26653
  *     Johan Walles: walles@mailblocks.com bug 68737
  *******************************************************************************/
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -32,7 +32,7 @@ public class FailureTrace {
 			"de.prob.ui.junitview.*", "groovy.lang.MetaMethod.*",
 			"groovy.lang.Closure.*" };
 
-	public FailureTrace(final Composite parent, final JUnitView view) {
+	public FailureTrace(final Composite parent, final BUnitView view) {
 		fTable = new Table(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
 
 		fFailureTableDisplay = new FailureTableDisplay(fTable);
