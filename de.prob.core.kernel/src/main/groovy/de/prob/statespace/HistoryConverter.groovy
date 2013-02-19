@@ -21,7 +21,7 @@ class HistoryConverter {
 				op.getParams().each {
 					param -> file << "<Parameter name=\"$param\"/>"
 				}
-				file << "<sha value=\"${it.dest.hash}\"/>"
+				file << "<sha value=\"${op.sha()}\"/>"
 				file << "</Operation>"
 			}
 		}
@@ -39,7 +39,7 @@ class HistoryConverter {
         def s = h as StateSpace
         def oldh = h
         def ns = s.outgoingEdgesOf(h.getCurrentState())
-        def n = (ns.grep {s.getEdgeTarget(it).hash == hash})
+        def n = (ns.grep {it.sha() == hash})
 	    if (n.isEmpty()) {
             if (strict) {
                 assert false, 'Could not replay exact trace.'

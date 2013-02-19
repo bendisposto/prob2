@@ -1,5 +1,8 @@
 package de.prob.animator.domainobjects;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -207,5 +210,11 @@ public class OpInfo {
 
 	public boolean isEvaluated() {
 		return evaluated;
+	}
+
+	public String sha() throws NoSuchAlgorithmException {
+		MessageDigest md = MessageDigest.getInstance("SHA-1");
+		md.update(targetState.getBytes());
+		return new BigInteger(1, md.digest()).toString(16);
 	}
 }
