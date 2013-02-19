@@ -79,7 +79,7 @@
 							this.element.on("keydown",$.proxy(function(event){
 								if(event.ctrlKey && event.altKey){
 									this.menuactivate=true;
-									if(event.which!=17 || event.which!=18)
+									if(event.which!=17 && event.which!=18)
 										this.menuactivate=false;
 									this.menuKey(event);
 								}else if(!(event.ctrlKey && this.menuactivate) && !(event.altKey && this.menuactivate)){
