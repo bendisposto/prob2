@@ -1,5 +1,11 @@
 package de.prob.ui.modelcheckingview;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -13,33 +19,49 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
-public class ModelCheckingView extends ViewPart {
+import de.prob.check.ConsistencyCheckingSearchOption;
+import de.prob.check.ModelChecker;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
+import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.StateSpace;
+import de.prob.webconsole.ServletContextListener;
 
-	private boolean breadth_first = false;
-	private boolean deadlock = true;
-	private boolean invariant = true;
-	private boolean theorem = false;
-	private boolean errors = false;
+public class ModelCheckingView extends ViewPart implements
+		IHistoryChangeListener {
+
+	private final Set<ConsistencyCheckingSearchOption> options = new HashSet<ConsistencyCheckingSearchOption>();
 
 	private Composite container;
 	private Text formulas;
+	private ModelChecker checker;
+	private StateSpace s;
+	private BigInteger lastTransition;
 
 	@Override
 	public void createPartControl(final Composite parent) {
+		final AnimationSelector selector = ServletContextListener.INJECTOR
+				.getInstance(AnimationSelector.class);
+		selector.registerHistoryChangeListener(this);
 		container = new Composite(parent, SWT.NULL);
-		GridLayout layout = new GridLayout(1, true);
+		GridLayout layout = new GridLayout(2, true);
 		container.setLayout(layout);
 
 		setSettings(container);
 
-		new Label(container, SWT.NONE).setText("Add Further Formulas:");
+		Label textLabel = new Label(container, SWT.NONE);
+		textLabel.setText("Add Further Formulas:");
+		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		formulas = new Text(container, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 		formulas.setText("");
-		formulas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.horizontalSpan = 2;
+		formulas.setLayoutData(gd);
 
 		final Button start = new Button(container, SWT.PUSH);
-		start.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, false));
-		start.setText("Start Consistency Checking");
+		gd = new GridData(SWT.CENTER, SWT.FILL, false, false);
+		start.setLayoutData(gd);
+		start.setText("Start");
 		start.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -51,99 +73,105 @@ public class ModelCheckingView extends ViewPart {
 			public void widgetDefaultSelected(final SelectionEvent e) {
 			}
 		});
+
+		final Button cancel = new Button(container, SWT.PUSH);
+		gd = new GridData(SWT.CENTER, SWT.FILL, false, false);
+		cancel.setLayoutData(gd);
+		cancel.setText("Cancel");
+		cancel.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				cancelModelChecking();
+			}
+
+			@Override
+			public void widgetDefaultSelected(final SelectionEvent e) {
+			}
+		});
+	}
+
+	private void cancelModelChecking() {
+		if (checker != null) {
+			if (!checker.isDone()) {
+				checker.cancel();
+			}
+			lastTransition = checker.getLastTransition();
+		}
 	}
 
 	private void startModelChecking() {
-		// TODO Auto-generated method stub
-
+		if (s != null) {
+			checker = new ModelChecker(s, optionsToString(), lastTransition);
+			checker.start();
+		}
 	}
 
 	private void setSettings(final Composite container) {
 		Group settings = new Group(container, SWT.NONE);
 		settings.setText("Settings");
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		gridData.horizontalSpan = 2;
 		settings.setLayoutData(gridData);
 		settings.setLayout(new RowLayout(SWT.VERTICAL));
 
-		final Button bf_button = new Button(settings, SWT.CHECK);
-		bf_button.setText("Breadth First Search");
-		bf_button.setSelection(breadth_first);
-		bf_button.addSelectionListener(new SelectionListener() {
+		for (int i = 0; i < 5; i++) {
+			final Button button = new Button(settings, SWT.CHECK);
+			final ConsistencyCheckingSearchOption option = ConsistencyCheckingSearchOption
+					.get(i);
+			button.setText(option.getDescription());
+			button.setSelection(option.isEnabledByDefault());
+			setOptions(button.getSelection(), option);
+			button.addSelectionListener(new SelectionListener() {
 
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				breadth_first = bf_button.getSelection();
+				@Override
+				public void widgetSelected(final SelectionEvent e) {
+					setOptions(button.getSelection(), option);
+				}
+
+				@Override
+				public void widgetDefaultSelected(final SelectionEvent e) {
+				}
+			});
+		}
+	}
+
+	private void setOptions(final boolean set,
+			final ConsistencyCheckingSearchOption option) {
+		if (set) {
+			if (!options.contains(option)) {
+				options.add(option);
 			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
+		} else {
+			if (options.contains(option)) {
+				options.remove(option);
 			}
-		});
+		}
+	}
 
-		final Button dead_button = new Button(settings, SWT.CHECK);
-		dead_button.setText("Find Deadlocks");
-		dead_button.setSelection(deadlock);
-		dead_button.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				deadlock = dead_button.getSelection();
-			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-			}
-		});
-
-		final Button inv_button = new Button(settings, SWT.CHECK);
-		inv_button.setText("Find Invariant Violations");
-		inv_button.setSelection(invariant);
-		inv_button.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				invariant = inv_button.getSelection();
-			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-			}
-		});
-
-		final Button th_button = new Button(settings, SWT.CHECK);
-		th_button.setText("Find Theorem Violations");
-		th_button.setSelection(theorem);
-		th_button.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				theorem = th_button.getSelection();
-			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-			}
-		});
-
-		final Button er_button = new Button(settings, SWT.CHECK);
-		er_button.setText("Search for New Errors");
-		er_button.setSelection(errors);
-		er_button.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				errors = er_button.getSelection();
-			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-			}
-		});
+	private List<String> optionsToString() {
+		List<String> list = new ArrayList<String>();
+		for (ConsistencyCheckingSearchOption option : options) {
+			list.add(option.name());
+		}
+		return list;
 	}
 
 	@Override
 	public void setFocus() {
 		container.setFocus();
+	}
+
+	@Override
+	public void historyChange(final History history) {
+		if (history.getS() != s) {
+			resetChecker(history);
+		}
+	}
+
+	private void resetChecker(final History history) {
+		s = history.getS();
+		lastTransition = new BigInteger("-1");
 	}
 
 }
