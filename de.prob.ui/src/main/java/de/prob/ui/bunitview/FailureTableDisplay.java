@@ -11,7 +11,7 @@
 /**
  *
  */
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;

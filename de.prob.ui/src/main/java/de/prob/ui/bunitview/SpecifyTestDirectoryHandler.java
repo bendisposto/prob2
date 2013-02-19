@@ -1,4 +1,4 @@
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

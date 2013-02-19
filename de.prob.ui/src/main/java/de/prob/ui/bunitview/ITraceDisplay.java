@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
 
 public interface ITraceDisplay {
 	public abstract void addTraceLine(int lineType, String label);

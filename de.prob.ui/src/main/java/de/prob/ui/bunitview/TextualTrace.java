@@ -11,7 +11,7 @@
 /**
  *
  */
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
 
 import java.io.BufferedReader;
 import java.io.IOException;

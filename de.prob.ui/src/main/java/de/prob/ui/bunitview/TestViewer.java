@@ -10,7 +10,7 @@
  *     Brock Janiczak (brockj@tpg.com.au)
  *         - https://bugs.eclipse.org/bugs/show_bug.cgi?id=102236: [JUnit] display execution time next to each test
  *******************************************************************************/
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -23,13 +23,13 @@ import com.google.common.collect.SetMultimap;
 
 public class TestViewer {
 
-	private final JUnitView fJUnitView;
+	private final BUnitView fJUnitView;
 	private PageBook fViewerbook;
 	private TreeViewer viewer;
 	private TestViewLabelProvider labelProvider;
 	private TestViewContentProvider contentProvider;
 
-	public TestViewer(final Composite parent, final JUnitView junitview) {
+	public TestViewer(final Composite parent, final BUnitView junitview) {
 		fJUnitView = junitview;
 		createTestViewers(parent);
 	}
