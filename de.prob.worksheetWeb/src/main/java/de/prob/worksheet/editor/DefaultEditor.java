@@ -26,6 +26,8 @@ public class DefaultEditor extends IWorksheetEditor {
 	private String id;
 	private String setContentScript;
 	private String setFocusScript;
+	private boolean newlineToHtml;
+	private boolean escapeHtml;
 
 	public DefaultEditor() {
 		this.CSSHREFs = new ArrayList<String>();
@@ -43,6 +45,8 @@ public class DefaultEditor extends IWorksheetEditor {
 				+ "var obj = $($(\"#\"+this.id).find(\".editor-object\").first());"
 				+ "return obj.val();}");
 		this.setSetFocusScript("function(){$($(\"#\"+this.id).find(\".editor-object\").focus();}");
+		this.setNewlineToHtml(false);
+		this.setEscapeHtml(false);
 	}
 
 	@Override
@@ -169,4 +173,25 @@ public class DefaultEditor extends IWorksheetEditor {
 	public void setSetFocusScript(String script) {
 		this.setFocusScript = script;
 	}
+
+	@Override
+	public boolean isNewlineToHtml() {
+		return newlineToHtml;
+	}
+
+	@Override
+	public void setNewlineToHtml(boolean newlineToHtml) {
+		this.newlineToHtml = newlineToHtml;
+	}
+
+	@Override
+	public boolean isEscapeHtml() {
+		return escapeHtml;
+	}
+
+	@Override
+	public void setEscapeHtml(boolean escapeHtml) {
+		this.escapeHtml = escapeHtml;
+	}
+
 }

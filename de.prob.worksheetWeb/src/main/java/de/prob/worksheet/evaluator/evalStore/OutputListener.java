@@ -49,10 +49,8 @@ public class OutputListener implements IWorksheetAPIListener {
 		final WorksheetOutputEvent typedEvent = (WorksheetOutputEvent) event;
 		switch (event.getId()) {
 		default:
-			this.addOutput(
-					typedEvent.getOutputBlockType(),
-					typedEvent.getMessage() + "</br>"
-							+ typedEvent.getDataObject());
+			this.addOutput(typedEvent.getOutputBlockType(),
+					typedEvent.getMessage());
 			break;
 		}
 	}

@@ -17,7 +17,8 @@ public class HTMLErrorEditor extends DefaultEditor {
 		this.setSetContentScript("function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").empty();return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").append(content)}");
 		this.setDestroyScript("function(){}");
 		this.setSetFocusScript("function(){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").focus();}");
-
+		this.setNewlineToHtml(true);
+		this.setEscapeHtml(true);
 	}
 
 }

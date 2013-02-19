@@ -52,13 +52,9 @@ public class ErrorListener implements IWorksheetAPIListener {
 		if (typedEvent.isHaltAll())
 			this.setHaltAll(true);
 		switch (event.getId()) {
-		case 3001:
+		default:
 			this.addOutput("Fehler", typedEvent.getMessage(),
 					typedEvent.isHaltAll());
-			break;
-		default:
-			this.addOutput("Fehler", "Error " + typedEvent.getId() + ": "
-					+ typedEvent.getMessage(), false);
 			break;
 		}
 	}

@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.worksheet.ContextHistory;
-import de.prob.worksheet.IContext;
+import de.prob.worksheet.api.ContextHistory;
+import de.prob.worksheet.api.IContext;
 import de.prob.worksheet.api.WorksheetErrorEvent;
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
 import de.prob.worksheet.block.IBlock;

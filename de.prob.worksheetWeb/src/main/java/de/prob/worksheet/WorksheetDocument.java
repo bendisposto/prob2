@@ -21,35 +21,72 @@ import de.prob.worksheet.block.IBlock;
  */
 @XmlRootElement(name = "worksheet")
 public class WorksheetDocument {
-	Logger logger = LoggerFactory.getLogger(WorksheetDocument.class);
+
+	/**
+	 * The static slf4j Logger for this class
+	 */
+	private static Logger logger = LoggerFactory
+			.getLogger(WorksheetDocument.class);
+
+	/**
+	 * The list containing the blocks of this document
+	 */
 	private final ArrayList<IBlock> blocks;
 
+	/**
+	 * A flag which tells if this document has a menu
+	 */
 	private boolean hasMenu;
+
+	/**
+	 * A flag which tells if this document is initialized without a body
+	 */
 	private boolean hasBody;
+
+	/**
+	 * A list containing the menu nodes for this document
+	 */
 	private ArrayList<WorksheetMenuNode> menu;
+
+	/**
+	 * The id of this document (need's to be set to ws-id-1)
+	 */
 	private String id;
+
+	/**
+	 * A counter used to count how many blocks have been added to this document.
+	 * It's used to set unique id's for the blocks
+	 */
 	private int blockCounter = 0;
 
+	/**
+	 * The Constructor of the Document
+	 */
 	public WorksheetDocument() {
 		logger.trace("");
 		this.hasMenu = false;
 		this.hasBody = true;
 		this.blocks = new ArrayList<IBlock>();
 		this.menu = new ArrayList<WorksheetMenuNode>();
-		final WorksheetMenuNode action = new WorksheetMenuNode("File", "", "");
-		final WorksheetMenuNode evalThis = new WorksheetMenuNode("Open", "",
-				"ui-icon-disk");
-		evalThis.setClick("function() {alert('Open')}");
-		action.addChild(evalThis);
-		this.menu.add(action);
 	}
 
+	/**
+	 * Getter for this documents blocks
+	 * 
+	 * @return an array containing all blocks of this document
+	 */
 	@XmlElements(value = { @XmlElement(name = "block") })
 	public IBlock[] getBlocks() {
 		logger.trace("{}", this.blocks.toArray(new IBlock[this.blocks.size()]));
 		return this.blocks.toArray(new IBlock[this.blocks.size()]);
 	}
 
+	/**
+	 * Setter for this documents blocks
+	 * 
+	 * @param blocks
+	 *            array to set for this document
+	 */
 	public void setBlocks(final IBlock[] blocks) {
 		logger.trace("{}", blocks);
 		this.blocks.clear();
@@ -57,39 +94,77 @@ public class WorksheetDocument {
 		logger.debug("{}", this.blocks);
 	}
 
+	/**
+	 * Getter for the hasMenu Flag
+	 * 
+	 * @return a boolean flag for hasMenu
+	 */
 	@XmlTransient
 	public boolean getHasMenu() {
 		logger.trace("{}", this.hasMenu);
 		return this.hasMenu;
 	}
 
+	/**
+	 * Setter for the hasMenu flag
+	 * 
+	 * @param hasMenu
+	 *            flag to be set
+	 */
 	public void setHasMenu(final boolean hasMenu) {
 		logger.trace("{}", hasMenu);
 		this.hasMenu = hasMenu;
 	}
 
+	/**
+	 * Getter for the hasBody flag
+	 * 
+	 * @return a boolean for the hasBody flag
+	 */
 	@XmlTransient
 	public boolean getHasBody() {
 		logger.trace("{}", this.hasBody);
 		return this.hasBody;
 	}
 
+	/**
+	 * Setter for the hasBody flag
+	 * 
+	 * @param hasBody
+	 *            flag to be set
+	 */
 	public void setHasBody(final boolean hasBody) {
 		logger.trace("{}", hasBody);
 		this.hasBody = hasBody;
 	}
 
+	/**
+	 * Getter for the menu list
+	 * 
+	 * @return an array containing all nodes of this menu
+	 */
 	@XmlTransient
 	public ArrayList<WorksheetMenuNode> getMenu() {
 		logger.trace("{}", this.menu);
 		return this.menu;
 	}
 
+	/**
+	 * Setter for the menu list
+	 * 
+	 * @param menu
+	 *            array to be set for this document
+	 */
 	public void setMenu(final ArrayList<WorksheetMenuNode> menu) {
 		logger.trace("{}", menu);
 		this.menu = menu;
 	}
 
+	/**
+	 * Getter for the id of this document
+	 * 
+	 * @return id of this document
+	 */
 	@XmlAttribute(name = "id")
 	@XmlID
 	public String getId() {
@@ -97,13 +172,21 @@ public class WorksheetDocument {
 		return this.id;
 	}
 
+	/**
+	 * Setter for the id of this document
+	 * 
+	 * @param id
+	 *            to be set for this document
+	 */
 	public void setId(final String id) {
 		logger.trace("{}", id);
 		this.id = id;
 	}
 
-	/*
-	 * Inserts the block at index and shifts the rest
+	/**
+	 * Getter for the blockCounter of this document
+	 * 
+	 * @return the blockcounter
 	 */
 	@XmlAttribute(name = "blockCounter")
 	public int getBlockCounter() {
@@ -111,18 +194,26 @@ public class WorksheetDocument {
 		return blockCounter;
 	}
 
+	/**
+	 * Setter for the blockCounter of this document
+	 * 
+	 * @param blockCounter
+	 *            to be set
+	 */
 	public void setBlockCounter(int blockCounter) {
 		logger.trace("{}", blockCounter);
 		this.blockCounter = blockCounter;
 	}
 
 	/**
-	 * 
-	 * 
-	 * Assigns a new Id to the inserted Block
+	 * Inserts a block into the document at the specified index. Assigns a new
+	 * Id to the inserted Block and shifts all blocks at and after the specified
+	 * position to the left
 	 * 
 	 * @param index
+	 *            to insert the block at
 	 * @param block
+	 *            to insert
 	 */
 	public void insertBlock(final int index, final IBlock block) {
 		logger.trace("index={}, block={}", index, block);
@@ -134,6 +225,13 @@ public class WorksheetDocument {
 		logger.debug("{}", this.blocks);
 	}
 
+	/**
+	 * Returns the index of a specified block or -1 if the block is not found
+	 * 
+	 * @param block
+	 *            to get the index for
+	 * @return the index of the block
+	 */
 	public int getBlockIndex(final IBlock block) {
 		logger.trace("{}", block);
 		final String id = block.getId();

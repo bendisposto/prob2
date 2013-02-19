@@ -17,6 +17,7 @@ public class HTMLEditor extends DefaultEditor {
 		this.setSetContentScript("function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").empty();\nreturn $(\"#\"+this.id+\"\").editor(\"getEditorObject\").append(content)}");
 		this.setDestroyScript(null);
 		this.setSetFocusScript("function(){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").focus();}");
-
+		this.setNewlineToHtml(true);
+		this.setEscapeHtml(true);
 	}
 }

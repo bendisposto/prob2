@@ -3,26 +3,28 @@ package de.prob.worksheet;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * This is the default implementation of the IWorksheetMenuNode
  * 
  * @author Rene
  * 
  */
-public class WorksheetMenuNode implements IWorksheetMenuNode {
+public class WorksheetMenuNode {
 	private String text = "";
 	private String click = null;
 	private String itemClass = "";
 	private String iconClass = "";
-	private final ArrayList<IWorksheetMenuNode> children;
+	private final ArrayList<WorksheetMenuNode> children;
 	private char character;
-	private boolean title=false;
+	private boolean title = false;
 
 	/**
 	 * Default Constructor
 	 */
 	public WorksheetMenuNode() {
-		this.children = new ArrayList<IWorksheetMenuNode>();
+		this.children = new ArrayList<WorksheetMenuNode>();
 	}
 
 	/**
@@ -37,142 +39,161 @@ public class WorksheetMenuNode implements IWorksheetMenuNode {
 	 */
 	public WorksheetMenuNode(final String text, final String itemClass,
 			final String iconClass) {
-		this.children = new ArrayList<IWorksheetMenuNode>();
+		this.children = new ArrayList<WorksheetMenuNode>();
 		this.text = text;
 		this.itemClass = itemClass;
 		this.iconClass = iconClass;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns the visible text for this menupoint
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#getText()
+	 * @return the menutext
 	 */
-	@Override
 	public String getText() {
 		return this.text;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Set the visible text for this menupoint
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#setText(java.lang.String)
+	 * @param text
+	 *            to become menutext
 	 */
-	@Override
 	public void setText(final String text) {
 		this.text = text;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns a javascript string containing the function to execute when the
+	 * users clicks the menupoint
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#getClick()
+	 * @return a javascript function string
 	 */
-	@Override
+	@JsonProperty(value = "click")
 	public String getClick() {
 		return this.click;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Sets a javascript function string to be executed when the user clicks the
+	 * menupoint
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#setClick(java.lang.String)
+	 * @param function
+	 *            string to be set for this menupoint
 	 */
-	@Override
 	public void setClick(final String click) {
 		this.click = click;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns the CSS class for this menu item
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#getItemClass()
+	 * @return CSS class name or names
 	 */
-	@Override
 	public String getItemClass() {
 		return this.itemClass;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Sets the CSS class name(s) for this menu item
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#setItemClass(java.lang.String)
+	 * @param itemClass
+	 *            for this menu item
 	 */
-	@Override
 	public void setItemClass(final String itemClass) {
 		this.itemClass = itemClass;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns a CSS Class String for this menu items icon
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#getIconClass()
+	 * @return CSS class name
 	 */
-	@Override
 	public String getIconClass() {
 		return this.iconClass;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Sets a CSS Class String for this menuitems icon
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#setIconClass(java.lang.String)
+	 * @param iconClass
+	 *            for this menu items icon
 	 */
-	@Override
 	public void setIconClass(final String iconClass) {
 		this.iconClass = iconClass;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns an array of WorksheetMenuNodes containing the child menu items
+	 * for this menu item
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#getChildren()
+	 * @return an array of WorksheetMenuNode
 	 */
-	@Override
-	public IWorksheetMenuNode[] getChildren() {
+	public WorksheetMenuNode[] getChildren() {
 		return this.children
 				.toArray(new WorksheetMenuNode[this.children.size()]);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Sets an array of WorksheetMenuNode to be the child menu items for this
+	 * menu item
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#setChildren(de.prob.worksheet.
-	 * WorksheetMenuNode[])
+	 * @param children
+	 *            of this node
 	 */
-	@Override
-	public void setChildren(final IWorksheetMenuNode[] children) {
+	public void setChildren(final WorksheetMenuNode[] children) {
 		this.children.clear();
 		this.children.addAll(Arrays.asList(children));
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Adds an WorksheetMenuNode to the child's of this menu item
 	 * 
-	 * @see de.prob.worksheet.IWorksheetMenuNode#addChild(de.prob.worksheet.
-	 * IWorksheetMenuNode)
+	 * @param child
+	 *            to be added
 	 */
-	@Override
-	public void addChild(final IWorksheetMenuNode child) {
+	public void addChild(final WorksheetMenuNode child) {
 		this.children.add(child);
 	}
 
-	@Override
+	/**
+	 * Getter for the shortcut character of this MenuNode
+	 * 
+	 * @return the shortcut character
+	 */
 	public char getChar() {
 		return this.character;
 	}
 
-	@Override
+	/**
+	 * Setter for the shortcut character of this MenuNode
+	 * 
+	 * @param character
+	 *            the character to use for the shortcut
+	 */
 	public void setChar(char character) {
 		this.character = character;
 	}
-	
-	@Override
+
+	/**
+	 * Getter for a flag which tells if this menu node is a title node. Title
+	 * nodes don't have a shortcut and don't perform an action if selected
+	 * 
+	 * @return if this menu node is a title node
+	 */
 	public boolean isTitle() {
 		return title;
 	}
-	@Override
+
+	/**
+	 * Setter for a flag which tells if this menu node is a title node. Title
+	 * nodes don't have a shortcut and don't perform an action if selected
+	 * 
+	 * @param title
+	 *            flag for this node
+	 */
 	public void setTitle(boolean title) {
-		this.title=title;	
+		this.title = title;
 	}
 }

@@ -1,4 +1,4 @@
-package de.prob.worksheet;
+package de.prob.worksheet.api;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,9 +18,25 @@ import org.slf4j.LoggerFactory;
  * @author Rene
  */
 public class ContextHistory implements Iterable<IContext> {
-	Logger logger = LoggerFactory.getLogger(ContextHistory.class);
+	/**
+	 * The static instance of a slf4j Logger for this class
+	 */
+	private static Logger logger = LoggerFactory
+			.getLogger(ContextHistory.class);
+	/**
+	 * An ArrayList for storing the Contexts of this ContextHistory
+	 */
 	private ArrayList<IContext> history;
 
+	/**
+	 * The constructor for the ContextHistory Object.
+	 * 
+	 * If this ContextHistory is not used as a SubHistory e.g. for a block it
+	 * must be initialized with a context named root with null binding
+	 * 
+	 * @param initialContext
+	 *            for this history
+	 */
 	public ContextHistory(IContext initialContext) {
 		logger.trace("in: initialContext={}", initialContext);
 		if (initialContext == null)
@@ -101,6 +117,14 @@ public class ContextHistory implements Iterable<IContext> {
 		logger.trace("return:");
 	}
 
+	/**
+	 * Returns the Index of the last occurrence of the IContexts Binding in this
+	 * ContextHistory
+	 * 
+	 * @param context
+	 *            containing the Binding to retrieve the index for
+	 * @return the index of the IContext
+	 */
 	private int getIndexForLastContextBinding(IContext context) {
 		logger.trace("in: context={}", context);
 		int index = this.history.size();
@@ -118,6 +142,13 @@ public class ContextHistory implements Iterable<IContext> {
 		return -1;
 	}
 
+	/**
+	 * Returns the Index of the last occurrence of this context
+	 * 
+	 * @param context
+	 *            to retrieve the index for
+	 * @return the index of the last occurrence of the IContext
+	 */
 	private int getIndexForLastContext(IContext context) {
 		logger.trace("in: context={}", context);
 		int index = this.history.size();
@@ -135,6 +166,14 @@ public class ContextHistory implements Iterable<IContext> {
 		return -1;
 	}
 
+	/**
+	 * Removes all IContext Objects from this ContextHistory with the specified
+	 * id
+	 * 
+	 * @param id
+	 *            of the IContexts to be removed
+	 * @return the list of contexts which are removed
+	 */
 	private List<IContext> removeContextsWithId(String id) {
 		logger.trace("in: id={}", id);
 		ArrayList<IContext> removed = new ArrayList<IContext>();
@@ -172,6 +211,11 @@ public class ContextHistory implements Iterable<IContext> {
 		return history.size();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Iterable#iterator()
+	 */
 	@Override
 	public Iterator<IContext> iterator() {
 		return this.history.iterator();
@@ -236,6 +280,11 @@ public class ContextHistory implements Iterable<IContext> {
 		logger.trace("return:");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return history.toString();

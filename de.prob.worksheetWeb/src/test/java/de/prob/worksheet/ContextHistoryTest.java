@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import de.prob.worksheet.api.ContextHistory;
+import de.prob.worksheet.api.IContext;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
 
 /**

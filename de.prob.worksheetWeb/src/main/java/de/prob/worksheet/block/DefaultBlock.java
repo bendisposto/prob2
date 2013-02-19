@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlType;
 
-import de.prob.worksheet.IWorksheetMenuNode;
 import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetMenuNode;
 import de.prob.worksheet.WorksheetObjectMapper;
@@ -28,7 +27,7 @@ public class DefaultBlock extends IBlock {
 	private String id;
 	private String worksheetId;
 	private boolean hasMenu;
-	private final ArrayList<IWorksheetMenuNode> menu;
+	private final ArrayList<WorksheetMenuNode> menu;
 	private IWorksheetEditor editor;
 	private String evaluatorType;
 	private boolean output;
@@ -41,7 +40,7 @@ public class DefaultBlock extends IBlock {
 	 * 
 	 */
 	public DefaultBlock() {
-		this.menu = new ArrayList<IWorksheetMenuNode>();
+		this.menu = new ArrayList<WorksheetMenuNode>();
 		this.outputBlockIds = new ArrayList<String>();
 		this.editor = new JavascriptEditor();
 		this.hasMenu = true;
@@ -118,7 +117,7 @@ public class DefaultBlock extends IBlock {
 	 * @see de.prob.worksheet.IWorksheetBlock#getChildren()
 	 */
 	@Override
-	public IWorksheetMenuNode[] getMenu() {
+	public WorksheetMenuNode[] getMenu() {
 		return this.menu.toArray(new WorksheetMenuNode[this.menu.size()]);
 	}
 
@@ -129,7 +128,7 @@ public class DefaultBlock extends IBlock {
 	 * WorksheetMenuNode[])
 	 */
 	@Override
-	public void setMenu(final IWorksheetMenuNode[] menu) {
+	public void setMenu(final WorksheetMenuNode[] menu) {
 		this.menu.clear();
 		this.menu.addAll(Arrays.asList(menu));
 	}
@@ -250,7 +249,7 @@ public class DefaultBlock extends IBlock {
 	}
 
 	public void initBlockMenu(String type, String[] excludes) {
-		final ArrayList<IWorksheetMenuNode> menu = new ArrayList<IWorksheetMenuNode>();
+		final ArrayList<WorksheetMenuNode> menu = new ArrayList<WorksheetMenuNode>();
 		String[] blockTypes = this.getInputBlockTypes();
 		final WorksheetMenuNode typeMenu = new WorksheetMenuNode(type, "", "");
 		typeMenu.setTitle(true);
@@ -269,7 +268,7 @@ public class DefaultBlock extends IBlock {
 		}
 		if (typeMenu.getChildren().length != 0) {
 			menu.add(typeMenu);
-			this.setMenu(menu.toArray(new IWorksheetMenuNode[menu.size()]));
+			this.setMenu(menu.toArray(new WorksheetMenuNode[menu.size()]));
 			this.setHasMenu(true);
 		} else {
 			this.setHasMenu(false);

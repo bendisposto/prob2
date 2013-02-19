@@ -24,30 +24,6 @@ public interface IWorksheetEvent {
 	public void setId(int id);
 
 	/**
-	 * @deprecated
-	 * @param name
-	 */
-	public void setName(String name);
-
-	/**
-	 * @deprecated
-	 * @return
-	 */
-	public String getName();
-
-	/**
-	 * @deprecated
-	 * @return
-	 */
-	public String getDescription();
-
-	/**
-	 * @deprecated
-	 * @param description
-	 */
-	public void setDescription(String description);
-
-	/**
 	 * @return the message
 	 */
 	public String getMessage();

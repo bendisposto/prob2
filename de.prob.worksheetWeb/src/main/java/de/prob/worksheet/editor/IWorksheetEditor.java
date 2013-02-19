@@ -105,4 +105,17 @@ public abstract class IWorksheetEditor {
 	public abstract void addJavascriptHref(String href);
 
 	public abstract void addCSSHref(String href);
+
+	@XmlTransient
+	public abstract void setNewlineToHtml(boolean newlineToHtml);
+
+	@JsonProperty(value = "newlineToHtml")
+	public abstract boolean isNewlineToHtml();
+
+	@XmlTransient
+	public abstract void setEscapeHtml(boolean escapeHtml);
+
+	@JsonProperty(value = "escapeHtml")
+	public abstract boolean isEscapeHtml();
+
 }

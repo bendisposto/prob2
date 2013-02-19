@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
-import de.prob.worksheet.IWorksheetMenuNode;
+import de.prob.worksheet.WorksheetMenuNode;
 import de.prob.worksheet.editor.IWorksheetEditor;
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
@@ -58,10 +58,10 @@ public abstract class IBlock {
 
 	@JsonProperty(value = "menu")
 	@XmlTransient
-	public abstract IWorksheetMenuNode[] getMenu();
+	public abstract WorksheetMenuNode[] getMenu();
 
 	@JsonProperty(value = "menu")
-	public abstract void setMenu(IWorksheetMenuNode[] menu);
+	public abstract void setMenu(WorksheetMenuNode[] menu);
 
 	@JsonProperty(value = "editor")
 	@XmlElement(name = "editor")

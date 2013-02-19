@@ -1,4 +1,4 @@
-package de.prob.worksheet;
+package de.prob.worksheet.api;
 
 import java.util.HashMap;
 
@@ -78,6 +78,13 @@ public interface IContext {
 	 */
 	public boolean equalsBindings(Object obj);
 
+	/**
+	 * Compares to IContext Object
+	 * 
+	 * @param obj
+	 *            the context to compare this against
+	 * @return true if both contexts are equal
+	 */
 	@Override
 	public boolean equals(Object obj);
 
@@ -87,5 +94,10 @@ public interface IContext {
 	 */
 	public void destroy();
 
+	/**
+	 * Returns a duplicate of this Context
+	 * 
+	 * @return the duplicate
+	 */
 	public IContext getDuplicate();
 }

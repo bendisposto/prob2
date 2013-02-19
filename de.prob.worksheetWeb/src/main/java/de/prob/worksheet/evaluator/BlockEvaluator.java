@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 
-import de.prob.worksheet.ContextHistory;
-import de.prob.worksheet.IContext;
 import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.api.ContextHistory;
+import de.prob.worksheet.api.IContext;
 import de.prob.worksheet.block.IBlock;
 
 public class BlockEvaluator {

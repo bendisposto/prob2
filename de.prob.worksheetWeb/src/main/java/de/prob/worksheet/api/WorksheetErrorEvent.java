@@ -17,7 +17,6 @@ public class WorksheetErrorEvent extends DefaultWorksheetEvent {
 		super();
 		setId(id);
 		setMessage(message);
-		setDescription("empty description");
 		this.haltAll = haltAll;
 	}
 

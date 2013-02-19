@@ -1,8 +1,6 @@
 package de.prob.worksheet.api.evalStore;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -10,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.EvalstoreCreateByStateCommand;
@@ -23,63 +20,29 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.StateId;
 import de.prob.webconsole.ServletContextListener;
-import de.prob.worksheet.api.IWorksheetAPIListener;
-import de.prob.worksheet.api.WorksheetActionEvent;
-import de.prob.worksheet.api.WorksheetErrorEvent;
-import de.prob.worksheet.api.WorksheetOutputEvent;
+import de.prob.worksheet.api.DefaultWorksheetAPI;
+import de.prob.worksheet.evaluator.evalStore.IEvalStoreConstants;
 
-public class EvalStoreAPI {
-	// Error IDs
-	public static final int ERR_VAR_UNKNOWN_ID = 1001;
-	public static final String ERR_VAR_UNKNOWN_NAME = "var_unknown";
-	public static final String ERR_VAR_UNKNOWN_DESC = "You have tried to access a variable of the state which doesn't exist";
-	public static final String ERR_VAR_UNKNOWN_MSG = "Variable unknown";
-
-	public static final int ERR_VAR_ALREADY_EXISTS_ID = 1001;
-	public static final String ERR_VAR_ALREADY_EXISTS_NAME = "var_exists";
-	public static final String ERR_VAR_ALREADY_EXISTS_DESC = "You have tried to add a variable which already exists in the state";
-	public static final String ERR_VAR_ALREADY_EXISTS_MSG = "Variable exists";
-
-	// Action IDs
-	public static final int ACTION_STATE_CHANGED_ID = 2001;
-	public static final String ACTION_STATE_CHANGED_NAME = "state_change";
-	public static final String ACTION_STATE_CHANGED_DESC = "The state has changed";
-	public static final String ACTION_STATE_CHANGED_MSG = "State changed";
-
-	// Output IDs
-	public static final int OUTPUT_STATE_ID = 2001;
-	public static final String OUTPUT_STATE_NAME = "state_change";
-	public static final String OUTPUT_STATE_DESC = "The state has changed";
-	public static final String OUTPUT_STATE_MSG = "State changed";
-
-	private List<IWorksheetAPIListener> actionListeners;
-	private List<IWorksheetAPIListener> outputListeners;
-	private List<IWorksheetAPIListener> errorListeners;
+public class EvalStoreAPI extends DefaultWorksheetAPI {
 
 	private Long evalStoreId;
 	private AnimationSelector animations;
-	public static Injector injector = ServletContextListener.INJECTOR;
 
-	Logger logger = LoggerFactory.getLogger(EvalStoreAPI.class);
+	public static Logger logger = LoggerFactory.getLogger(EvalStoreAPI.class);
 
 	@Inject
 	public EvalStoreAPI(AnimationSelector animations) {
 		logger.trace("in: animations={}", animations.getHistories());
 		this.animations = animations;
-		// INJECTOR=ServletContextListener.INJECTOR;
-		this.errorListeners = new ArrayList<IWorksheetAPIListener>();
-		logger.debug("{}", errorListeners);
-		this.outputListeners = new ArrayList<IWorksheetAPIListener>();
-		logger.debug("{}", this.outputListeners);
-		this.actionListeners = new ArrayList<IWorksheetAPIListener>();
-		logger.debug("{}", actionListeners);
+
 		logger.trace("return:");
 	}
 
 	public void getCurrentState() {
 		logger.trace("in:");
 		Long before = this.evalStoreId;
-		this.animations = injector.getInstance(AnimationSelector.class);
+		this.animations = ServletContextListener.INJECTOR
+				.getInstance(AnimationSelector.class);
 		logger.debug("Animations: " + animations.getHistories());
 		History currentHistory = animations.getCurrentHistory();
 		logger.debug("CurrentHistory: " + currentHistory);
@@ -90,10 +53,8 @@ public class EvalStoreAPI {
 			animator = ServletContextListener.INJECTOR
 					.getInstance(IAnimator.class);
 			sId = "root";
-			this.notifyOutputListeners(EvalStoreAPI.OUTPUT_STATE_ID,
-					EvalStoreAPI.OUTPUT_STATE_NAME,
-					EvalStoreAPI.OUTPUT_STATE_DESC, "No Animation is started",
-					"Initialize State", "");
+			this.notifyOutputListeners(IEvalStoreConstants.NO_ANIMATION,
+					"No Animation is started", "Initialize State", null);
 			logger.trace("return: No Animation is started");
 			return;
 			// TODO try to find a way to start an animation if no is present
@@ -128,17 +89,14 @@ public class EvalStoreAPI {
 
 		Set<Entry<String, String>> entries = values.entrySet();
 		for (Entry<String, String> value : entries) {
-			output += value.getKey() + ":=" + value.getValue();
+			output += value.getKey() + ":=" + value.getValue() + "\n";
 		}
-		this.notifyActionListeners(EvalStoreAPI.ACTION_STATE_CHANGED_ID,
-				EvalStoreAPI.ACTION_STATE_CHANGED_NAME,
-				EvalStoreAPI.ACTION_STATE_CHANGED_DESC,
-				EvalStoreAPI.ACTION_STATE_CHANGED_MSG, before, this.evalStoreId);
+		notifyActionListeners(IEvalStoreConstants.STORE_CHANGE, "", before,
+				this.evalStoreId);
 		if (output.equals(""))
 			output = "{}";
-		this.notifyOutputListeners(EvalStoreAPI.OUTPUT_STATE_ID,
-				EvalStoreAPI.OUTPUT_STATE_NAME, EvalStoreAPI.OUTPUT_STATE_DESC,
-				"", "Initialize State", output);
+		notifyOutputListeners(IEvalStoreConstants.CMD_RESULT, output,
+				"Initialize State", null);
 		logger.trace("return:");
 	}
 
@@ -146,7 +104,7 @@ public class EvalStoreAPI {
 		logger.trace("{}", expression);
 		Long before = this.evalStoreId;
 		if (this.evalStoreId == null) {
-			this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID, "", "",
+			this.notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED,
 					"no State is initialized (call getCurrentState)", true);
 			return;
 		}
@@ -158,37 +116,45 @@ public class EvalStoreAPI {
 			EvalstoreResult storeResult = cmd.getResult();
 			if (storeResult.isSuccess()) {
 				this.evalStoreId = storeResult.getResultingStoreId();
-				this.notifyActionListeners(
-						EvalStoreAPI.ACTION_STATE_CHANGED_ID,
-						EvalStoreAPI.ACTION_STATE_CHANGED_NAME,
-						EvalStoreAPI.ACTION_STATE_CHANGED_DESC,
-						EvalStoreAPI.ACTION_STATE_CHANGED_MSG, before,
-						this.evalStoreId);
+				this.notifyActionListeners(IEvalStoreConstants.STORE_CHANGE,
+						"", before, this.evalStoreId);
 				logger.debug("{}", storeResult.getResult());
-				this.notifyOutputListeners(ACTION_STATE_CHANGED_ID, "", "",
-						"Result:\n", "HTML", storeResult.getResult().getValue());
+				this.notifyOutputListeners(IEvalStoreConstants.CMD_RESULT,
+						storeResult.getResult().getValue(), "HTML", null);
 				storeResult.getResult().getValue();
+				logger.debug("Result.value = {}", storeResult.getResult().value);
+				logger.debug("Result.explanation = {}",
+						storeResult.getResult().explanation);
+				logger.debug("Result.solution = {}",
+						storeResult.getResult().solution);
+				logger.debug("Result.getErrors = {}", storeResult.getResult()
+						.getErrors());
+				logger.debug("Result.getQuanitfied = {}", storeResult
+						.getResult().getQuantifiedVars());
+				logger.debug("Result.getResultType = {}", storeResult
+						.getResult().getResultType());
+
 			} else {
 				if (storeResult.hasInterruptedOccurred()) {
-					this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID,
-							"", "", "No Success Interrupt", true);
+					this.notifyErrorListeners(IEvalStoreConstants.INTERRUPT,
+							"No Success Interrupt", true);
 					logger.error("{}", storeResult.getResult());
 				}
 				if (storeResult.hasTimeoutOccurred()) {
-					this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID,
-							"", "", "No Success Timeout", true);
+					this.notifyErrorListeners(IEvalStoreConstants.TIMEOUT,
+							"No Success Timeout", true);
 					logger.error("{}", storeResult.getResult());
 				}
 				if (storeResult.getResult().hasError()) {
-					this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID,
-							"", "", "No Success Result Error: "
+					this.notifyErrorListeners(IEvalStoreConstants.CMD_ERROR,
+							"No Success Result Error: "
 									+ storeResult.getResult().getErrors(), true);
 					logger.error("{}", storeResult.getResult());
 				}
 			}
 		} catch (Exception e) {
-			this.notifyErrorListeners(EvalStoreAPI.ERR_VAR_UNKNOWN_ID, "", "",
-					"Error<br /> " + e.getMessage(), true);
+			this.notifyErrorListeners(IEvalStoreConstants.EXCEPTION,
+					e.getMessage(), true);
 
 		}
 
@@ -197,128 +163,25 @@ public class EvalStoreAPI {
 	public void getStoreValues() {
 		if (this.evalStoreId == null) {
 			this.notifyOutputListeners(
-					EvalStoreAPI.OUTPUT_STATE_ID,
-					EvalStoreAPI.OUTPUT_STATE_NAME,
-					EvalStoreAPI.OUTPUT_STATE_DESC,
+					IEvalStoreConstants.CMD_RESULT,
 					"No State is selected! Open Initialize State before getting his values",
-					"State Values", "");
+					"State Values", null);
 			return;
 		}
 		GetStateValuesCommand cmd = GetStateValuesCommand
 				.getEvalstoreValuesCommand(this.evalStoreId);
 		animations.getCurrentHistory().getStatespace().execute(cmd);
-		notifyOutputListeners(OUTPUT_STATE_ID, "", "", "State:\n",
-				"State Values", cmd.getResult().toString());
-	}
 
-	public void notifyErrorListeners(final int id, final String name,
-			final String description, final String message,
-			final boolean haltAll) {
-		logger.trace("id{}", id);
-		logger.trace("name{}", name);
-		logger.trace("description{}", description);
-		logger.trace("haltAll{}", haltAll);
-
-		final WorksheetErrorEvent event = new WorksheetErrorEvent(id, message,
-				haltAll);
-		event.setDescription(description);
-		event.setName(name);
-		for (final IWorksheetAPIListener listener : this.errorListeners) {
-			listener.notify(event);
-		}
-	}
-
-	public void addErrorListener(final IWorksheetAPIListener listener) {
-		logger.trace("{}", listener);
-		assert (this.errorListeners != null);
-		assert (listener != null);
-
-		if (!this.errorListeners.contains(listener)) {
-			this.errorListeners.add(listener);
-			logger.debug("listeners:{}", this.errorListeners);
+		HashMap<String, String> values = cmd.getResult();
+		logger.debug("Current Store Values: " + values);
+		String output = "";
+		Set<Entry<String, String>> entries = values.entrySet();
+		for (Entry<String, String> value : entries) {
+			output += value.getKey() + ":=" + value.getValue() + "\n";
 		}
 
-	}
-
-	public void removeErrorListener(final IWorksheetAPIListener listener) {
-		logger.trace("{}", listener);
-		assert (this.errorListeners != null);
-		this.errorListeners.remove(listener);
-		logger.debug("{}", errorListeners);
-	}
-
-	public void notifyOutputListeners(final int id, final String name,
-			final String description, final String message,
-			final String outputBlockType, final Object dataObject) {
-		logger.trace("id{}", id);
-		logger.trace("name{}", name);
-		logger.trace("description{}", description);
-		logger.trace("message{}", message);
-		logger.trace("data{}", dataObject);
-
-		final WorksheetOutputEvent event = new WorksheetOutputEvent();
-		event.setId(id);
-		event.setName(name);
-		event.setDescription(description);
-		event.setOutputBlockType(outputBlockType);
-		event.setMessage(message);
-		event.setDataObject(dataObject);
-		for (final IWorksheetAPIListener listener : this.outputListeners) {
-			listener.notify(event);
-		}
-	}
-
-	public void addOutputListener(final IWorksheetAPIListener listener) {
-		logger.trace("{}", listener);
-		assert (this.outputListeners != null);
-		assert (this.outputListeners != null);
-		if (!this.outputListeners.contains(listener)) {
-			this.outputListeners.add(listener);
-			logger.debug("{}", outputListeners);
-		}
-	}
-
-	public void removeOutputListener(final IWorksheetAPIListener listener) {
-		logger.trace("{}", listener);
-		this.outputListeners.remove(listener);
-		logger.debug("{}", outputListeners);
-	}
-
-	public void notifyActionListeners(final int id, final String name,
-			final String description, final String message,
-			final Object dataBefore, final Object dataAfter) {
-		logger.trace("id{}", id);
-		logger.trace("name{}", name);
-		logger.trace("description{}", description);
-		logger.trace("message{}", message);
-		logger.trace("before{}", dataBefore);
-		logger.trace("after{}", dataAfter);
-
-		final WorksheetActionEvent event = new WorksheetActionEvent();
-		event.setId(id);
-		event.setName(name);
-		event.setDescription(description);
-		event.setMessage(message);
-		event.setDataBefore(dataBefore);
-		event.setDataAfter(dataAfter);
-		for (final IWorksheetAPIListener listener : this.actionListeners) {
-			listener.notify(event);
-		}
-	}
-
-	public void addActionListener(final IWorksheetAPIListener listener) {
-		logger.trace("{}", listener);
-		assert (this.actionListeners != null);
-		assert (this.actionListeners != null);
-
-		this.actionListeners.add(listener);
-		logger.debug("{}", actionListeners);
-	}
-
-	public void removeActionListener(final IWorksheetAPIListener listener) {
-		logger.trace("{}", listener);
-		this.actionListeners.remove(listener);
-		logger.debug("{}", actionListeners);
+		notifyOutputListeners(IEvalStoreConstants.CMD_RESULT, output,
+				"State Values", null);
 	}
 
 	public void setEvalStoreId(Long id) {

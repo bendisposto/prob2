@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.worksheet.IContext;
+import de.prob.worksheet.api.IContext;
 
 /**
  * @author Rene

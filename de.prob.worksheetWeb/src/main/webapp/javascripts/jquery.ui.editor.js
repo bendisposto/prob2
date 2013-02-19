@@ -116,18 +116,37 @@
 
 		setContent : function(content) {
 			//DEBUG window.console.debug("Trace: setContent");
-			if(this.getContent()!=content){
-				if($.isFunction(this.options.getContent)){
+			if($.isFunction(this.options.getContent) && this.getContent()!=content){
+				if($.isFunction(this.options.setContent)){
+					if(this.options.escapeHtml)
+						content=$("<div/>").text(content).html();
+					if(this.options.newlineToHtml){
+						var reg=RegExp("\\r\\n","g");
+						content=content.replace(reg,"<br />");
+						var reg=RegExp("\\n","g");
+						content=content.replace(reg,"<br />");
+						var reg=RegExp("\\r","g");
+						content=content.replace(reg,"<br />");
+					}
 					this.options.setContent(content);
 					this._trigger("contentChanged", 0, [ content,content!=this.initcontent ]);
+
 				}
 			}
 		},
 
 		getContent : function() {
 			//DEBUG window.console.debug("Trace: getContent");
-			if ($.isFunction(this.options.getContent) && this.options.isInitialized)
-				return this.options.getContent();
+			if ($.isFunction(this.options.getContent) && this.options.isInitialized){
+				var content=this.options.getContent();
+				if(this.options.newlineToHtml){
+					var reg=RegExp("<br\\s*/?>","g");
+					content=content.replace(reg,"\n");
+				}
+				if(this.options.escapeHtml)
+					content=$("<div/>").html(content).text();
+				return content;	
+			}
 			return null;
 		},
 		setFocus:function(){

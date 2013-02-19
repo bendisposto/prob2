@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.google.inject.Inject;
 
-import de.prob.worksheet.IWorksheetMenuNode;
 import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetMenuNode;
 import de.prob.worksheet.WorksheetObjectMapper;
@@ -21,7 +20,7 @@ public class JavascriptBlock extends DefaultBlock {
 	}
 
 	private void initBlockMenu() {
-		final ArrayList<IWorksheetMenuNode> menu = new ArrayList<IWorksheetMenuNode>();
+		final ArrayList<WorksheetMenuNode> menu = new ArrayList<WorksheetMenuNode>();
 
 		String[] blockTypes = this.getInputBlockTypes();
 
@@ -40,7 +39,7 @@ public class JavascriptBlock extends DefaultBlock {
 		}
 		if (typeMenu.getChildren().length != 0) {
 			menu.add(typeMenu);
-			this.setMenu(menu.toArray(new IWorksheetMenuNode[menu.size()]));
+			this.setMenu(menu.toArray(new WorksheetMenuNode[menu.size()]));
 		} else {
 			this.setHasMenu(false);
 		}

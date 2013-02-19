@@ -1,7 +1,7 @@
 package de.prob.worksheet.evaluator;
 
-import de.prob.worksheet.ContextHistory;
 import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.block.IBlock;
 import de.prob.worksheet.block.JavascriptBlock;
 
