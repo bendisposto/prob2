@@ -459,7 +459,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		stateSpaceListeners.remove(l);
 	}
 
-	private void notifyStateSpaceChange(final String opName,
+	public void notifyStateSpaceChange(final String opName,
 			final boolean isDestStateNew) {
 		for (final IStateSpaceChangeListener listener : stateSpaceListeners) {
 			listener.newTransition(opName, isDestStateNew);
