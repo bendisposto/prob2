@@ -66,7 +66,7 @@ public class ConsistencyCheckingCommand implements ICommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("do_modelchecking").printNumber(time).openList();
+		pto.openTerm("prob2_modelcheck").printNumber(time).openList();
 		for (String o : options) {
 			pto.printAtom(o);
 		}

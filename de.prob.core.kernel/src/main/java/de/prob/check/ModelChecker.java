@@ -76,6 +76,8 @@ public class ModelChecker {
 			ModelCheckingResult res = null;
 			while (!abort) {
 				res = do_model_checking_step();
+				options.remove(ConsistencyCheckingSearchOption.inspect_existing_nodes
+						.name());
 				abort = res.isAbort();
 			}
 			return res;
@@ -109,13 +111,16 @@ public class ModelChecker {
 						states.put(sK, src);
 					}
 					StateId dest = states.get(dK);
+					boolean destNew = false;
 					if (dest == null) {
+						destNew = true;
 						dest = new StateId(dK, s);
 						s.addVertex(dest);
 						states.put(dK, dest);
 					}
 					s.addEdge(src, dest, opInfo);
 					ops.put(opInfo.id, opInfo);
+					s.notifyStateSpaceChange("", destNew);
 				}
 			}
 		}
