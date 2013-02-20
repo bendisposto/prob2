@@ -22,13 +22,13 @@ class StateSpaceTest extends Specification {
 		s = new StateSpace(mock, new DirectedMultigraphProvider())
 
 		def states = [
-			new StateId("1", "lorem",s),
-			new StateId("root", "lorem2",s),
-			new StateId("2", "ipsum",s),
-			new StateId("3", "dolor",s),
-			new StateId("4", "sit",s),
-			new StateId("5", "amit",s),
-			new StateId("6", "consetetur",s)
+			new StateId("1",s),
+			new StateId("root", s),
+			new StateId("2", s),
+			new StateId("3", s),
+			new StateId("4", s),
+			new StateId("5", s),
+			new StateId("6", s)
 		]
 
 		def ops = [ new OpInfo("b","b","root","2",[],"2"),
@@ -91,7 +91,7 @@ class StateSpaceTest extends Specification {
 
 	def "The state is not explored"() {
 		when:
-		def a = new StateId("7", "bla",s)
+		def a = new StateId("7", s)
 		s.addVertex(a)
 		s.states.put(a.getId(),a)
 
