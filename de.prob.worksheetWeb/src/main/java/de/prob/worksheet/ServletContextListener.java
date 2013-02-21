@@ -3,6 +3,9 @@ package de.prob.worksheet;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.annotation.WebListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Injector;
 
 /**
@@ -17,6 +20,8 @@ import com.google.inject.Injector;
 public class ServletContextListener implements
 		javax.servlet.ServletContextListener {
 
+	public static final Logger logger = LoggerFactory
+			.getLogger(ServletContextListener.class);
 	/**
 	 * This is a Guice Injector which is the child of de.prob.webconsoles
 	 * injector.
@@ -30,6 +35,8 @@ public class ServletContextListener implements
 	 * @return guice injector
 	 */
 	protected Injector getInjector() {
+		logger.trace("in:");
+		logger.trace("return: injector={}", ServletContextListener.INJECTOR);
 		return ServletContextListener.INJECTOR;
 	}
 
@@ -42,8 +49,8 @@ public class ServletContextListener implements
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		// TODO Auto-generated method stub
-
+		logger.trace("in: event={}", sce);
+		logger.trace("return:");
 	}
 
 	/*
@@ -54,8 +61,8 @@ public class ServletContextListener implements
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		// TODO Auto-generated method stub
-
+		logger.trace("in: event={}", sce);
+		logger.trace("return:");
 	}
 
 }

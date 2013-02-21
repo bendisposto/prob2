@@ -3,15 +3,21 @@ package de.prob.worksheet;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This is the default implementation of the IWorksheetMenuNode
+ * This Class represents a node of a menu which is used for blocks in the
+ * worksheet user interface
  * 
  * @author Rene
  * 
  */
 public class WorksheetMenuNode {
+	public static final Logger logger = LoggerFactory
+			.getLogger(WorksheetMenuNode.class);
 	private String text = "";
 	private String click = null;
 	private String itemClass = "";
@@ -24,7 +30,9 @@ public class WorksheetMenuNode {
 	 * Default Constructor
 	 */
 	public WorksheetMenuNode() {
+		logger.trace("in:");
 		this.children = new ArrayList<WorksheetMenuNode>();
+		logger.trace("return:");
 	}
 
 	/**
@@ -39,10 +47,13 @@ public class WorksheetMenuNode {
 	 */
 	public WorksheetMenuNode(final String text, final String itemClass,
 			final String iconClass) {
+		logger.trace("in: text={}, itemClass={}, iconClass={}", new Object[] {
+				text, itemClass, iconClass });
 		this.children = new ArrayList<WorksheetMenuNode>();
 		this.text = text;
 		this.itemClass = itemClass;
 		this.iconClass = iconClass;
+		logger.trace("return:");
 	}
 
 	/**
@@ -51,6 +62,8 @@ public class WorksheetMenuNode {
 	 * @return the menutext
 	 */
 	public String getText() {
+		logger.trace("in:");
+		logger.trace("return: text={}", this.text);
 		return this.text;
 	}
 
@@ -61,6 +74,8 @@ public class WorksheetMenuNode {
 	 *            to become menutext
 	 */
 	public void setText(final String text) {
+		logger.trace("in: text={}", this.text);
+		logger.trace("return:");
 		this.text = text;
 	}
 
@@ -72,6 +87,8 @@ public class WorksheetMenuNode {
 	 */
 	@JsonProperty(value = "click")
 	public String getClick() {
+		logger.trace("in:");
+		logger.trace("return: click={}", this.click);
 		return this.click;
 	}
 
@@ -83,6 +100,8 @@ public class WorksheetMenuNode {
 	 *            string to be set for this menupoint
 	 */
 	public void setClick(final String click) {
+		logger.trace("in: click={}", click);
+		logger.trace("return:");
 		this.click = click;
 	}
 
@@ -92,6 +111,8 @@ public class WorksheetMenuNode {
 	 * @return CSS class name or names
 	 */
 	public String getItemClass() {
+		logger.trace("in:");
+		logger.trace("return: itemClass={}", this.itemClass);
 		return this.itemClass;
 	}
 
@@ -102,7 +123,9 @@ public class WorksheetMenuNode {
 	 *            for this menu item
 	 */
 	public void setItemClass(final String itemClass) {
+		logger.trace("in: itemClass={}", itemClass);
 		this.itemClass = itemClass;
+		logger.trace("return:");
 	}
 
 	/**
@@ -111,6 +134,8 @@ public class WorksheetMenuNode {
 	 * @return CSS class name
 	 */
 	public String getIconClass() {
+		logger.trace("in:");
+		logger.trace("return: iconClass={}", this.iconClass);
 		return this.iconClass;
 	}
 
@@ -121,7 +146,9 @@ public class WorksheetMenuNode {
 	 *            for this menu items icon
 	 */
 	public void setIconClass(final String iconClass) {
+		logger.trace("in: iconClass={}", iconClass);
 		this.iconClass = iconClass;
+		logger.trace("return:");
 	}
 
 	/**
@@ -131,6 +158,8 @@ public class WorksheetMenuNode {
 	 * @return an array of WorksheetMenuNode
 	 */
 	public WorksheetMenuNode[] getChildren() {
+		logger.trace("in:");
+		logger.trace("return: children={}", this.children);
 		return this.children
 				.toArray(new WorksheetMenuNode[this.children.size()]);
 	}
@@ -143,8 +172,10 @@ public class WorksheetMenuNode {
 	 *            of this node
 	 */
 	public void setChildren(final WorksheetMenuNode[] children) {
+		logger.trace("in: children={}", children);
 		this.children.clear();
 		this.children.addAll(Arrays.asList(children));
+		logger.trace("return:");
 	}
 
 	/**
@@ -154,7 +185,9 @@ public class WorksheetMenuNode {
 	 *            to be added
 	 */
 	public void addChild(final WorksheetMenuNode child) {
+		logger.trace("in: child={}", child);
 		this.children.add(child);
+		logger.trace("return:");
 	}
 
 	/**
@@ -163,6 +196,8 @@ public class WorksheetMenuNode {
 	 * @return the shortcut character
 	 */
 	public char getChar() {
+		logger.trace("in:");
+		logger.trace("return: shortcut Char={}", this.character);
 		return this.character;
 	}
 
@@ -173,7 +208,9 @@ public class WorksheetMenuNode {
 	 *            the character to use for the shortcut
 	 */
 	public void setChar(char character) {
+		logger.trace("in: shortcut char={}", character);
 		this.character = character;
+		logger.trace("return:");
 	}
 
 	/**
@@ -183,6 +220,8 @@ public class WorksheetMenuNode {
 	 * @return if this menu node is a title node
 	 */
 	public boolean isTitle() {
+		logger.trace("in:");
+		logger.trace("return: isTitle={}", title);
 		return title;
 	}
 
@@ -194,6 +233,8 @@ public class WorksheetMenuNode {
 	 *            flag for this node
 	 */
 	public void setTitle(boolean title) {
+		logger.trace("in: isTitle={}", title);
 		this.title = title;
+		logger.trace("return:");
 	}
 }

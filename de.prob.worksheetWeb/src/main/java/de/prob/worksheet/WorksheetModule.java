@@ -22,7 +22,8 @@ import de.prob.worksheet.evaluator.evalStore.StateEvaluator;
  * 
  */
 public class WorksheetModule extends AbstractModule {
-	Logger logger = LoggerFactory.getLogger(WorksheetModule.class);
+	public static final Logger logger = LoggerFactory
+			.getLogger(WorksheetModule.class);
 
 	/*
 	 * (non-Javadoc)
@@ -31,7 +32,7 @@ public class WorksheetModule extends AbstractModule {
 	 */
 	@Override
 	protected void configure() {
-		logger.trace("");
+		logger.trace("in: ");
 		this.bind(IWorksheetEvaluator.class)
 				.annotatedWith(Names.named("state")).to(StateEvaluator.class);
 
@@ -45,5 +46,6 @@ public class WorksheetModule extends AbstractModule {
 				.to(InitializeStoreBlock.class);
 		this.bind(IBlock.class).annotatedWith(Names.named("State Values"))
 				.to(StoreValuesBlock.class);
+		logger.trace("return:");
 	}
 }
