@@ -102,6 +102,11 @@ task collectArtifacts(type:Copy) {
 subprojects{
 	apply plugin: 'eclipse'
 	task magic(dependsOn: ['clean', 'cleanEclipse', 'eclipse', 'setClassPath']) {
+      doFirst {
+
+println(new File('magic.txt').text)
+System.exit(-1);
+      }
 	}
 }
 
