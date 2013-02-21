@@ -40,7 +40,7 @@ public class DocumentEvaluator {
 		}
 
 		blocks = doc.getBlocksFrom(index);
-		if (blocks[blocks.length - 1].getOutput()
+		if (blocks[blocks.length - 1].isOutput()
 				|| !blocks[blocks.length - 1].getEditor().getEditorContent()
 						.trim().equals("")) {
 			doc.appendBlock(new JavascriptBlock());

@@ -28,12 +28,12 @@ import de.prob.worksheet.evaluator.DocumentEvaluator;
  * 
  */
 @WebServlet(urlPatterns = { "/evaluate" })
-public class evaluate extends HttpServlet {
+public class Evaluate extends HttpServlet {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6247147601671174584L;
-	Logger logger = LoggerFactory.getLogger(evaluate.class);
+	Logger logger = LoggerFactory.getLogger(Evaluate.class);
 
 	/*
 	 * (non-Javadoc)
@@ -107,36 +107,6 @@ public class evaluate extends HttpServlet {
 		return contextHistory;
 	}
 
-	/*
-	 * private void evaluateBlock(WorksheetDocument doc, final IBlock block,
-	 * HashMap<String, Object> sessionAttributes) { logger.trace("{}", doc);
-	 * logger.trace("{}", block); logger.trace("{}", sessionAttributes);
-	 * 
-	 * // don't evaluate outputblocks; if (block.getOutput()) return;
-	 * 
-	 * final String evalType = block.getEvaluatorType(); logger.debug("{}",
-	 * ServletContextListener.INJECTOR.getAllBindings()); IWorksheetEvaluator
-	 * evaluator = ServletContextListener.INJECTOR
-	 * .getInstance(Key.get(IWorksheetEvaluator.class, Names.named(evalType)));
-	 * // TODO Add Api Interface and getInstance by Key and dont't forget to //
-	 * add multiple api support
-	 * evaluator.setInitialContext(getContextHistory(sessionAttributes)
-	 * .getInitialContextForId(block.getId()));
-	 * evaluator.setImport(ServletContextListener.INJECTOR
-	 * .getInstance(EvalStoreAPI.class));
-	 * 
-	 * final String evalCode = block.getEditor().getEditorContent();
-	 * evaluator.evaluate(evalCode); IBlock[] blocks = evaluator.getOutputs();
-	 * 
-	 * getContextHistory(sessionAttributes).setContextsForId(block.getId(),
-	 * evaluator.getContextHistory());
-	 * 
-	 * int index = doc.getBlockIndexById(block.getId()); // remove old Output
-	 * for this block from document; doc.removeOutputBlocks(block); // append
-	 * new outputBlocks to this block; int oBlockIndex = index; for (final
-	 * IBlock outBlock : blocks) { oBlockIndex++; doc.insertBlock(oBlockIndex,
-	 * outBlock); block.addOutputId(outBlock.getId()); } return; }
-	 */
 	@SuppressWarnings("unchecked")
 	private HashMap<String, Object> getSessionAttributes(HttpSession session,
 			String wsid) {

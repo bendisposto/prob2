@@ -453,7 +453,9 @@ public class WorksheetDocument {
 	public void switchBlockType(String id, IBlock newBlock) {
 		logger.trace("in: id={} type={}", id, newBlock);
 		int index = this.getBlockIndexById(id);
-		newBlock.setId(id);
+		IBlock oldBlock = this.getBlockById(id);
+		newBlock.setId(oldBlock.getId());
+		newBlock.setOutputBlockIds(oldBlock.getOutputBlockIds());
 		this.blocks.set(index, newBlock);
 		logger.debug("Worksheet Blocks=={}", this.blocks);
 		logger.trace("return:");

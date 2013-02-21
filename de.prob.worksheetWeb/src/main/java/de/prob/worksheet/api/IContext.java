@@ -2,8 +2,6 @@ package de.prob.worksheet.api;
 
 import java.util.HashMap;
 
-import de.prob.worksheet.api.evalStore.EvalStoreContext;
-
 /**
  * The interface defines a simple <b>storage</b> for information which are
  * needed to initialize an evaluation Context like a scripting engine or a

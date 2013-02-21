@@ -24,13 +24,13 @@ import de.prob.worksheet.WorksheetDocument;
  * 
  */
 @WebServlet(urlPatterns = { "/setDocument" })
-public class setDocument extends HttpServlet {
+public class SetDocument extends HttpServlet {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 838311906090202227L;
 
-	Logger logger = LoggerFactory.getLogger(setDocument.class);
+	Logger logger = LoggerFactory.getLogger(SetDocument.class);
 
 	/*
 	 * (non-Javadoc)

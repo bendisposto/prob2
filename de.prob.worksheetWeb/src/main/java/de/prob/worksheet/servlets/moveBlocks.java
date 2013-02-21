@@ -24,12 +24,12 @@ import de.prob.worksheet.WorksheetDocument;
  * 
  */
 @WebServlet(urlPatterns = { "/moveBlocks" })
-public class moveBlocks extends HttpServlet {
+public class MoveBlocks extends HttpServlet {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -9079077179155960240L;
-	Logger logger = LoggerFactory.getLogger(moveBlocks.class);
+	Logger logger = LoggerFactory.getLogger(MoveBlocks.class);
 
 	private WorksheetDocument doc;
 

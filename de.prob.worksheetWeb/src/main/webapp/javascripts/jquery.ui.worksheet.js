@@ -302,13 +302,17 @@
 		
 		dirty:false,
 		setDirty:function(dirty){
+			if(!this.options.isInitialized)
+				return;
 			if(dirty==this.dirty)
 				return dirty;	
 			if(!this.dirty){
+				this._trigger("dirtyStateChange",0,true);
 				if (typeof setDirty == 'function') {
 					setDirty(true);
 				}
 			}else{
+				this._trigger("dirtyStateChange",0,false);
 				if (typeof setDirty == 'function') {
 					setDirty(false);
 				}
@@ -324,7 +328,7 @@
 			var content = this._addParameter("", "blockId", options.blockId);
 			content = this._addParameter(content, "type", options.type);
 			content = this._addParameter(content,"worksheetSessionId", this.options.sessionId);
-			$.ajax("SwitchBlock", {
+			$.ajax("switchBlock", {
 				type : "POST",
 				data : content
 			}).done($.proxy(function(data, status, xhr) {

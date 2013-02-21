@@ -8,6 +8,9 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetMenuNode;
 import de.prob.worksheet.WorksheetObjectMapper;
@@ -21,7 +24,8 @@ import de.prob.worksheet.editor.JavascriptEditor;
 
 @XmlType(name = "DefaultBlock")
 public class DefaultBlock extends IBlock {
-
+	public static final Logger logger = LoggerFactory
+			.getLogger(DefaultBlock.class);
 	public static final String typeID = "default";
 
 	private String id;
@@ -40,6 +44,7 @@ public class DefaultBlock extends IBlock {
 	 * 
 	 */
 	public DefaultBlock() {
+		logger.trace("in:");
 		this.menu = new ArrayList<WorksheetMenuNode>();
 		this.outputBlockIds = new ArrayList<String>();
 		this.editor = new JavascriptEditor();
@@ -49,6 +54,7 @@ public class DefaultBlock extends IBlock {
 		this.evaluatorType = "state";
 		this.immediateEvaluation = false;
 		this.inputAndOutput = false;
+		logger.trace("return:");
 	}
 
 	/*
@@ -58,6 +64,7 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public String getId() {
+		logger.trace("get: id={}", this.id);
 		return this.id;
 	}
 
@@ -68,6 +75,7 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public void setId(final String id) {
+		logger.trace("set: id={}", id);
 		this.id = id;
 	}
 
@@ -78,6 +86,7 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public String getWorksheetId() {
+		logger.trace("get: id={}", this.worksheetId);
 		return this.worksheetId;
 	}
 
@@ -88,6 +97,7 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public void setWorksheetId(final String worksheetId) {
+		logger.trace("set: id={}", worksheetId);
 		this.worksheetId = worksheetId;
 	}
 
@@ -98,6 +108,7 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public boolean getHasMenu() {
+		logger.trace("get: hasMenu={}", hasMenu);
 		return this.hasMenu;
 	}
 
@@ -108,6 +119,7 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public void setHasMenu(final boolean hasMenu) {
+		logger.trace("set: hasMenu={}", hasMenu);
 		this.hasMenu = hasMenu;
 	}
 
@@ -118,6 +130,7 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public WorksheetMenuNode[] getMenu() {
+		logger.trace("get: menu={}", this.menu);
 		return this.menu.toArray(new WorksheetMenuNode[this.menu.size()]);
 	}
 
@@ -129,6 +142,7 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public void setMenu(final WorksheetMenuNode[] menu) {
+		logger.trace("set: menu={}", menu);
 		this.menu.clear();
 		this.menu.addAll(Arrays.asList(menu));
 	}
@@ -140,6 +154,7 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public IWorksheetEditor getEditor() {
+		logger.trace("get: editor={}", this.editor);
 		return this.editor;
 	}
 
@@ -152,52 +167,62 @@ public class DefaultBlock extends IBlock {
 	 */
 	@Override
 	public void setEditor(final IWorksheetEditor editor) {
+		logger.trace("set: editor={}", editor);
 		this.editor = editor;
 	}
 
 	@Override
 	public String getEvaluatorType() {
+		logger.trace("get: type={}", this.evaluatorType);
 		return this.evaluatorType;
 	}
 
 	@Override
 	public void setEvaluatorType(final String evaluatorType) {
+		logger.trace("set: type={}", evaluatorType);
 		this.evaluatorType = evaluatorType;
 	}
 
 	@Override
-	public boolean getOutput() {
+	public boolean isOutput() {
+		logger.trace("get: isOutput={}", this.output);
 		return this.output;
 	}
 
 	@Override
 	public void setOutput(final boolean output) {
+		logger.trace("set: isOutput={}", output);
 		this.output = output;
 	}
 
 	@Override
 	public boolean getMark() {
+		logger.trace("get: mark={}", this.mark);
 		return this.mark;
 	}
 
 	@Override
 	public void setMark(final boolean marked) {
+		logger.trace("set: mark={}", marked);
 		this.mark = marked;
 	}
 
 	@Override
 	public void addOutputId(final String id) {
+		logger.trace("add: id={}", id);
 		this.outputBlockIds.add(id);
 	}
 
 	@Override
 	public String[] getOutputBlockIds() {
+		logger.trace("get: outputBlockIds={}", this.outputBlockIds);
 		return this.outputBlockIds.toArray(new String[this.outputBlockIds
 				.size()]);
 	}
 
 	@Override
 	public void setOutputBlockIds(final String[] ids) {
+		logger.trace("set: OutputBlockIds={}", ids);
 		this.outputBlockIds.clear();
 		if (ids != null) {
 			this.outputBlockIds.addAll(Arrays.asList(ids));
@@ -219,27 +244,32 @@ public class DefaultBlock extends IBlock {
 
 	@Override
 	public boolean isImmediateEvaluation() {
+		logger.trace("get: immediateEvaluation={}", this.immediateEvaluation);
 		return this.immediateEvaluation;
 	}
 
 	@Override
 	public void setImmediateEvaluation(boolean immediateEvaluation) {
+		logger.trace("set: immediateEvaluation={}", immediateEvaluation);
 		this.immediateEvaluation = immediateEvaluation;
 
 	}
 
 	@Override
 	public boolean isInputAndOutput() {
+		logger.trace("get: InputAndOutput={}", this.inputAndOutput);
 		return this.inputAndOutput;
 	}
 
 	@Override
 	public void setInputAndOutput(boolean inputAndOuput) {
+		logger.trace("set: inputAndOutput={}", inputAndOuput);
 		this.inputAndOutput = inputAndOuput;
 	}
 
 	@Override
 	public String getOverrideEditorContent() {
+		logger.trace("get: OverrideEditorContent=null");
 		return null;
 	}
 
@@ -249,6 +279,7 @@ public class DefaultBlock extends IBlock {
 	}
 
 	public void initBlockMenu(String type, String[] excludes) {
+		logger.trace("in: type={}, excludes={}", type, excludes);
 		final ArrayList<WorksheetMenuNode> menu = new ArrayList<WorksheetMenuNode>();
 		String[] blockTypes = this.getInputBlockTypes();
 		final WorksheetMenuNode typeMenu = new WorksheetMenuNode(type, "", "");
@@ -273,11 +304,14 @@ public class DefaultBlock extends IBlock {
 		} else {
 			this.setHasMenu(false);
 		}
+		logger.trace("return:");
 	}
 
 	private String[] getInputBlockTypes() {
+		logger.trace("in:");
 		WorksheetObjectMapper mapper = ServletContextListener.INJECTOR
 				.getInstance(WorksheetObjectMapper.class);
+		logger.trace("return: inputBlockNames={}", mapper.getInputBlockNames());
 		return mapper.getInputBlockNames();
 	}
 }

@@ -17,12 +17,12 @@ import org.slf4j.LoggerFactory;
 import de.prob.worksheet.WorksheetDocument;
 
 @WebServlet(urlPatterns = { "/saveDocument" })
-public class saveDocument extends HttpServlet {
+public class SaveDocument extends HttpServlet {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7762787871923711945L;
-	Logger logger = LoggerFactory.getLogger(saveDocument.class);
+	Logger logger = LoggerFactory.getLogger(SaveDocument.class);
 
 	/*
 	 * (non-Javadoc)

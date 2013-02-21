@@ -54,7 +54,7 @@ public class SwitchBlock extends HttpServlet {
 		HashMap<String, Object> attributes = this.getSessionAttributes(
 				req.getSession(), req.getParameter("worksheetSessionId"));
 
-		// load or create the document replace
+		// load or create the document
 		WorksheetDocument doc = this.getDocument(attributes);
 
 		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
@@ -65,11 +65,11 @@ public class SwitchBlock extends HttpServlet {
 		// Switch Block in Document
 		doc.switchBlockType((String) req.getParameter("blockId"), newBlock);
 
-		// Maybe move the line to bottom
+		// Maybe move this lineof code to the end of the method
 		int startIndex = doc.getBlockIndex(newBlock);
 
 		// if needed Evaluate the Document
-		if (newBlock.isImmediateEvaluation() || !newBlock.getOutput()) {
+		if (newBlock.isImmediateEvaluation() || !newBlock.isOutput()) {
 			DocumentEvaluator documentEvalutor = new DocumentEvaluator();
 			documentEvalutor.evaluateFrom(doc, newBlock.getId(),
 					getContextHistory(attributes));

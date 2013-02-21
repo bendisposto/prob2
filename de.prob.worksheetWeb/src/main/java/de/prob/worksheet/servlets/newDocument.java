@@ -18,9 +18,9 @@ import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.block.JavascriptBlock;
 
 @WebServlet(urlPatterns = { "/newDocument" })
-public class newDocument extends HttpServlet {
+public class NewDocument extends HttpServlet {
 	private static final long serialVersionUID = -8455020946701964097L;
-	Logger logger = LoggerFactory.getLogger(newDocument.class);
+	Logger logger = LoggerFactory.getLogger(NewDocument.class);
 
 	/*
 	 * (non-Javadoc)

@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @WebServlet(urlPatterns = { "/closeDocument" })
-public class closeDocument extends HttpServlet {
+public class CloseDocument extends HttpServlet {
 
-	Logger logger = LoggerFactory.getLogger(closeDocument.class);
+	Logger logger = LoggerFactory.getLogger(CloseDocument.class);
 
 	/*
 	 * (non-Javadoc)

@@ -4,6 +4,8 @@
 package de.prob.worksheet.api;
 
 /**
+ * This interface defines the structure of all events for the worksheet
+ * 
  * @author Rene
  * 
  */

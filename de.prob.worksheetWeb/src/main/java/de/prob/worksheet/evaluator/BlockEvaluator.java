@@ -21,7 +21,7 @@ public class BlockEvaluator {
 		logger.trace("{}", block);
 		logger.trace("{}", contextHistory);
 
-		if (block.getOutput())
+		if (block.isOutput())
 			return;
 
 		IWorksheetEvaluator evaluator = this.initializeEvaluator(

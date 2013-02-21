@@ -67,7 +67,7 @@
 							}, this));
 
 							// TODO give this Block the Focus;
-							//this.lastOptions=this.options.clone(true,true);
+							this.lastOptions=$.extend(true,{},this.options);
 							this.element.focusout();
 							this.element.on("keypress",$.proxy(function(event){
 								if(event.ctrlKey && event.keyCode==10){	
@@ -97,8 +97,18 @@
 						},
 						menuactivate:false,
 						lastOptions:null,
+						needsSync:function(){
+							if(this.options.editor.content!=this.lastOptions.editor.content)
+								return true;
+							return false;
+						},
 						syncToServer : function() {
-							//jTODO test if this.options == this.lastOptions
+							if(!this.needsSync())
+								return;
+							if(this.syncBlocked)
+								return;
+							this.lastOptions = jQuery.extend(true, {}, this.options);
+							
 							if($("#loadingBar").css("display")=="hide")
 								return;
 							if(typeof wsid=="undefined")
@@ -112,14 +122,16 @@
 									.toJSON(msg));
 							content = this._addParameter(content,
 									"worksheetSessionId", wsid);
+							this._trigger("syncStart",1,this.options.id);
 							$.ajax(
 											"setBlock",
 											{
 												type : "POST",
 												contentType : "application/x-www-form-urlencoded;charset=UTF-8",
 												data : content
-											});
-							// TODO add Handling
+											}).done($.proxy(function(){
+												this._trigger("syncEnd",1,this.options.id);
+											},this));
 						},
 						
 						createULFromNodeArrayRecursive : function(nodes) {
@@ -296,12 +308,12 @@
 							}
 
 						},
-						_javaSetDirty : function(content, dirty) {
+						/*_javaSetDirty : function(content, dirty) {
 							if (typeof setDirty == 'function') {
 								if (dirty)
 									setDirty(true);
 							}
-						},
+						},*/
 						_editorOptionsChanged : function(options) {
 							this.options.editor = options;
 							this
@@ -309,7 +321,9 @@
 											[ this.options ]);
 
 						},
+						syncBlocked:false,
 						_destroy : function() {
+							this.syncBlocked=true;
 							this._setEditor(null);
 							this.element.empty();
 							this.element

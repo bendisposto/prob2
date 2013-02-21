@@ -9,22 +9,22 @@
 		<listener-class>de.prob.worksheet.ServletContextListener</listener-class>
 	</listener>
 	<servlet>
-		<display-name>saveDocument</display-name>
-		<servlet-name>saveDocument</servlet-name>
-		<servlet-class>de.prob.worksheet.servlets.saveDocument</servlet-class>
+		<display-name>SaveDocument</display-name>
+		<servlet-name>SaveDocument</servlet-name>
+		<servlet-class>de.prob.worksheet.servlets.SaveDocument</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>saveDocument</servlet-name>
+		<servlet-name>SaveDocument</servlet-name>
 		<url-pattern>/saveDocument</url-pattern>
 	</servlet-mapping>
 	
 	<servlet>
-		<display-name>newDocument</display-name>
-		<servlet-name>newDocument</servlet-name>
-		<servlet-class>de.prob.worksheet.servlets.newDocument</servlet-class>
+		<display-name>NewDocument</display-name>
+		<servlet-name>NewDocument</servlet-name>
+		<servlet-class>de.prob.worksheet.servlets.NewDocument</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>newDocument</servlet-name>
+		<servlet-name>NewDocument</servlet-name>
 		<url-pattern>/newDocument</url-pattern>
 	</servlet-mapping>
 	
@@ -36,53 +36,53 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SwitchBlock</servlet-name>
-		<url-pattern>/SwitchBlock</url-pattern>
+		<url-pattern>/switchBlock</url-pattern>
 	</servlet-mapping>
 	
 	
 	<servlet>
-		<display-name>loadDocument</display-name>
-		<servlet-name>loadDocument</servlet-name>
-		<servlet-class>de.prob.worksheet.servlets.loadDocument</servlet-class>
+		<display-name>LoadDocument</display-name>
+		<servlet-name>LoadDocument</servlet-name>
+		<servlet-class>de.prob.worksheet.servlets.LoadDocument</servlet-class>
 	</servlet>
 	<servlet>
-		<display-name>setBlock</display-name>
-		<servlet-name>setBlock</servlet-name>
-		<servlet-class>de.prob.worksheet.servlets.setBlock</servlet-class>
+		<display-name>SetBlock</display-name>
+		<servlet-name>SetBlock</servlet-name>
+		<servlet-class>de.prob.worksheet.servlets.SetBlock</servlet-class>
 	</servlet>
 	<servlet>
-		<display-name>getBlock</display-name>
-		<servlet-name>getBlock</servlet-name>
-		<servlet-class>de.prob.worksheet.servlets.getBlock</servlet-class>
+		<display-name>GetBlock</display-name>
+		<servlet-name>GetBlock</servlet-name>
+		<servlet-class>de.prob.worksheet.servlets.GetBlock</servlet-class>
 	</servlet>
 	<servlet>
-		<display-name>closeDocument</display-name>
-		<servlet-name>closeDocument</servlet-name>
-		<servlet-class>de.prob.worksheet.servlets.closeDocument</servlet-class>
+		<display-name>CloseDocument</display-name>
+		<servlet-name>CloseDocument</servlet-name>
+		<servlet-class>de.prob.worksheet.servlets.CloseDocument</servlet-class>
 	</servlet>
 	<servlet>
-		<display-name>evaluate</display-name>
-		<servlet-name>evaluate</servlet-name>
-		<servlet-class>de.prob.worksheet.servlets.evaluate</servlet-class>
+		<display-name>Evaluate</display-name>
+		<servlet-name>Evaluate</servlet-name>
+		<servlet-class>de.prob.worksheet.servlets.Evaluate</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>loadDocument</servlet-name>
+		<servlet-name>LoadDocument</servlet-name>
 		<url-pattern>/loadDocument</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>setBlock</servlet-name>
+		<servlet-name>SetBlock</servlet-name>
 		<url-pattern>/setBlock</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>getBlock</servlet-name>
+		<servlet-name>GetBlock</servlet-name>
 		<url-pattern>/getBlock</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>closeDocument</servlet-name>
+		<servlet-name>CloseDocument</servlet-name>
 		<url-pattern>/closeDocument</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>evaluate</servlet-name>
+		<servlet-name>Evaluate</servlet-name>
 		<url-pattern>/evaluate</url-pattern>
 	</servlet-mapping>
 	

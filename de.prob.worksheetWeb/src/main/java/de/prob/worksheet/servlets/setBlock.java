@@ -24,13 +24,13 @@ import de.prob.worksheet.block.IBlock;
  * 
  */
 @WebServlet(urlPatterns = { "/setBlock" })
-public class setBlock extends HttpServlet {
+public class SetBlock extends HttpServlet {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6543934467917126456L;
 
-	Logger logger = LoggerFactory.getLogger(setBlock.class);
+	Logger logger = LoggerFactory.getLogger(SetBlock.class);
 
 	/*
 	 * (non-Javadoc)

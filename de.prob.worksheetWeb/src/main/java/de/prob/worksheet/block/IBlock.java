@@ -79,7 +79,7 @@ public abstract class IBlock {
 
 	@JsonProperty(value = "isOutput")
 	@XmlAttribute(name = "isOutput")
-	public abstract boolean getOutput();
+	public abstract boolean isOutput();
 
 	@JsonProperty(value = "isOutput")
 	public abstract void setOutput(boolean output);

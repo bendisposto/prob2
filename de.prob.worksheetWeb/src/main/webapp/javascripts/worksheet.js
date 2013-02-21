@@ -1,12 +1,16 @@
-//jFIXME Error with serverSynchronization and setDirty which results in unsaved Content (not moving out of the editor)
 //jFIXME Error with serverSynchronization and setDirty when evaluating a document (js listeners are not set correctly)
-
-wsid=-1;
+var debug=window.location.href.match("\\?debug=true","g")!=null;
+var wsid=-1;
 $(document).ready(function(){
 	if(typeof domReady == 'function'){
 		domReady();
 	}else{
 		newDocument(wsid);
+	}
+	if(debug){
+		$("BODY").bind("worksheetdirtystatechange",function(event,data){window.console.debug("dirty=",data)});
+		$("BODY").bind("blocksyncstart",function(event,data){window.console.debug("sync of block: ",data)});
+		
 	}
 });
 

@@ -25,13 +25,13 @@ import de.prob.worksheet.WorksheetObjectMapper;
  * 
  */
 @WebServlet(urlPatterns = { "/getDocument" })
-public class getDocument extends HttpServlet {
+public class GetDocument extends HttpServlet {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 531283514393446460L;
-	Logger logger = LoggerFactory.getLogger(getDocument.class);
+	Logger logger = LoggerFactory.getLogger(GetDocument.class);
 
 	private WorksheetDocument doc;
 
