@@ -21,6 +21,14 @@ class StateId {
 		return newState;
 	}
 
+	
+	def value(String key) {
+		def v = space.valuesAt(this);
+		def e = v.find { it.getKey().code == key}
+	    return e.getValue().value;
+	}
+	
+	
 	def eval(formula) {
 		def f = formula;
 		if (!(formula instanceof IEvalElement)) {
