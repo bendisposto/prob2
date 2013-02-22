@@ -1,4 +1,4 @@
-# Experimental ProB 2.0 with Worksheet
+# Experimental ProB 2.0 with Worksheet (Readme.md changed by Rene Goebbels for this branch)
 
 This project contains experiments for ProB 2.0.
 It is intended for internal usage, do not rely on any of the features or interfaces in this project. 
@@ -12,10 +12,10 @@ We assume, you have a fresh copy of Eclipse 4.2 and an empty workspace at hand. 
 1. Install Groovy-Eclipse for Juno using the Eclipse Marketplace.
 2. Clone the prob2 repository to some location (e.g. gitrepo/prob2). 
    We assume that gitrepo is a directory outside your Eclipse workspace. 
-3. cd into gitrepo/prob2 and run `gradle magic` 
+3. cd into gitrepo/prob2 and call "git checkout worksheet" run `gradle magic` 
 4. run `gradle war` (needs to be called again after cleanUp of de.prob.core.kernel/bin)
 5. In Eclipse, choose File | Import | General | Existing projects into workspace. Select gitrepo/prob2 as root directory. 
-6. Import all four projects.
+6. Import all projects.
 7. Open the file de.prob.core.rodin/prob_target.target and click "Set as Target Platform" (upper right corner). 
    This will take a while ...
 8. Select "Run as Eclipse application" from the context menu of de.prob.ui. This will open a new Eclipse Window and create a fresh run configuration.
