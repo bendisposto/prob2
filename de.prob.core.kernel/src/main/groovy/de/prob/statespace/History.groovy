@@ -122,8 +122,7 @@ class History {
 	}
 
 	@Override
-	def String toString() {
-		return s.printOps(current.getCurrentState()) + getRep()
+	def String toString() {		return s.printOps(current.getCurrentState()) + getRep()
 	}
 
 	def String getRep() {
@@ -131,8 +130,9 @@ class History {
 		head.getOpList().each {
 			ops << it.getRep(s as AbstractModel)
 		}
-
-		return "${ops} Current Transition is: ${current.getOp().getRep(s as AbstractModel)}"
+        def curTrans = current?.getOp()?.getRep(s as AbstractModel) ?: "n/a"
+		
+		return "${ops} Current Transition is: ${curTrans}"
 	}
 
 	def OpInfo findOneOp(final String opName, final String predicate)
