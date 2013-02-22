@@ -1,4 +1,4 @@
-package de.bmotionstudio.core.util;
+package de.prob.common.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -21,21 +21,16 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.core.runtime.preferences.PreferenceFilterEntry;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
-import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPartSite;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 
-import de.bmotionstudio.core.editor.VisualizationViewPart;
-import de.bmotionstudio.core.model.Simulation;
-import de.bmotionstudio.core.model.VisualizationView;
-import de.prob.ui.PerspectiveFactory;
+import de.prob.common.ProBConfiguration;
 
 public class PerspectiveUtil {
+	
+	public static String PROB_PERSPECTIVE_FILE_EXTENSION = "probp";
 
 	public static void deletePerspective(
 			IPerspectiveDescriptor perspectiveDescriptor) {
@@ -71,6 +66,12 @@ public class PerspectiveUtil {
 
 		Assert.isNotNull(perspectiveDescriptor);
 
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		IWorkbenchPage page = workbench.getActiveWorkbenchWindow()
+				.getActivePage();
+		// We need to save the perspective first
+		page.savePerspectiveAs(perspectiveDescriptor);
+		
 		FileOutputStream fos = null;
 		ByteArrayInputStream inputStream = null;
 
@@ -130,18 +131,6 @@ public class PerspectiveUtil {
 
 	}
 
-	public static VisualizationViewPart createVisualizationViewPart(
-			String secId, VisualizationView visualizationView)
-			throws PartInitException {
-		IWorkbenchWindow window = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
-		IWorkbenchPage activePage = window.getActivePage();
-		VisualizationViewPart visualizationViewPart = (VisualizationViewPart) activePage
-				.showView(VisualizationViewPart.ID, secId,
-						IWorkbenchPage.VIEW_VISIBLE);
-		return visualizationViewPart;
-	}
-
 	public static void importPerspective(final IFile perspectiveFile,
 			final String perspectiveID) {
 
@@ -190,15 +179,16 @@ public class PerspectiveUtil {
 
 	}
 
-	public static IPerspectiveDescriptor openPerspective(IFile projectFile) {
+	public static IPerspectiveDescriptor openPerspective(IFile modelFile) {
 
-		IWorkbenchPage page = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
-
+		ProBConfiguration.setCurrentModelFile(modelFile);
+		
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		
 		// Try to get the corresponding perspective
-		IPerspectiveRegistry perspectiveRegistry = page.getWorkbenchWindow()
-				.getWorkbench().getPerspectiveRegistry();
-		String perspectiveId = getPerspectiveIdFromFile(projectFile);
+		IPerspectiveRegistry perspectiveRegistry = workbench
+				.getPerspectiveRegistry();
+		String perspectiveId = getPerspectiveIdFromFile(modelFile);
 		IPerspectiveDescriptor perspective = perspectiveRegistry
 				.findPerspectiveWithId(perspectiveId);
 
@@ -207,8 +197,8 @@ public class PerspectiveUtil {
 			PerspectiveUtil.switchPerspective(perspective);
 		} else {
 			// Check if a corresponding perspective file exists
-			IFile perspectiveFile = projectFile.getProject().getFile(
-					getPerspectiveFileName(projectFile));
+			IFile perspectiveFile = modelFile.getProject().getFile(
+					getPerspectiveFileName(modelFile));
 			if (perspectiveFile.exists()) {
 				PerspectiveUtil.importPerspective(perspectiveFile,
 						perspectiveId);
@@ -218,79 +208,31 @@ public class PerspectiveUtil {
 			} else {
 				// No --> create a new perspective
 				IPerspectiveDescriptor originalPerspectiveDescriptor = perspectiveRegistry
-						.findPerspectiveWithId(PerspectiveFactory.PROB_PERSPECTIVE);
+						.findPerspectiveWithId("de.prob.ui.perspective");
 				PerspectiveUtil
 						.switchPerspective(originalPerspectiveDescriptor);
 				perspective = perspectiveRegistry.clonePerspective(
 						perspectiveId, perspectiveId,
 						originalPerspectiveDescriptor);
-				// save the perspective
-				page.savePerspectiveAs(perspective);
+				// Save the perspective
+				PerspectiveUtil.switchPerspective(perspective);
+				PerspectiveUtil.exportPerspective(perspective, perspectiveFile);
 			}
-
 		}
 
 		return perspective;
 
 	}
 	
-	public static String getPerspectiveIdFromFile(IFile projectFile) {
-		return "ProB_" + projectFile.getName().replace(".bmso", "");
+	public static String getPerspectiveIdFromFile(IFile modelFile) {
+		return "ProB_"
+				+ modelFile.getName().replace(
+						"." + modelFile.getFileExtension(), "");
 	}
 
-	public static String getPerspectiveFileName(IFile projectFile) {
-		return projectFile.getName().replace(".bmso", ".bmsop");
-	}
-
-	public static void initViews(Simulation simulation) {
-
-		IWorkbenchPage activePage = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
-		IWorkbenchPartSite site = activePage.getActivePart().getSite();
-		
-		VisualizationViewPart visualizationViewPart = null;
-		
-		for (Map.Entry<String, VisualizationView> entry : simulation
-				.getVisualizationViews().entrySet()) {
-			
-			String secId = entry.getKey();
-			VisualizationView visView = entry.getValue();
-			IViewReference viewReference = site.getPage().findViewReference(
-					VisualizationViewPart.ID, secId);
-			
-			// Check if view already exists
-			if (viewReference != null) {
-				visualizationViewPart = (VisualizationViewPart) viewReference
-						.getPart(true);
-			} else {
-				// If not, create a new one
-				try {
-					visualizationViewPart = PerspectiveUtil
-							.createVisualizationViewPart(secId, visView);
-				} catch (PartInitException e) {
-					e.printStackTrace();
-				}
-			}
-
-			if (visualizationViewPart != null
-					&& !visualizationViewPart.isInitialized()) {
-				visualizationViewPart.init(simulation, visView);
-			}
-			
-		}
-		
-		if(visualizationViewPart != null)
-			activePage.activate(visualizationViewPart);
-
-		// Close all unused visualization views
-		for (IViewReference viewReference : site.getPage().getViewReferences()) {
-			if (viewReference.getId().equals(VisualizationViewPart.ID)) {
-				if (!simulation.getVisualizationViews().containsKey(
-						viewReference.getSecondaryId()))
-					site.getPage().hideView(viewReference);
-			}
-		}
-
+	public static String getPerspectiveFileName(IFile modelFile) {
+		return modelFile.getName().replace("." + modelFile.getFileExtension(),
+				"." + PROB_PERSPECTIVE_FILE_EXTENSION);
 	}
 	
 }

@@ -46,9 +46,11 @@ import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.BMotionStudio;
 import de.bmotionstudio.core.IBControlService;
+import de.bmotionstudio.core.editor.VisualizationViewPart;
 import de.bmotionstudio.core.editor.action.ObserverHelpAction;
 import de.bmotionstudio.core.editor.action.RemoveObserverAction;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
+import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.BControlPropertyConstants;
 import de.bmotionstudio.core.model.observer.Observer;
@@ -337,70 +339,82 @@ public class ObserverSection extends AbstractPropertySection implements
 		if (manager == null || selectedControl == null)
 			return;
 
-		MenuManager fmanager = manager;
+		IWorkbenchPart part = getPart();
+		if (part instanceof VisualizationViewPart) {
 
-		if (asSubmenu) {
-			if (observerSubMenuManager == null)
-				observerSubMenuManager = new MenuManager("New Observer",
-						BMotionImage.getImageDescriptor(
-								BMotionEditorPlugin.PLUGIN_ID,
-								"icons/icon_observer.gif"), "observerMenu");
-			observerSubMenuManager.removeAll();
-			fmanager = observerSubMenuManager;
-			manager.add(fmanager);
-		}
+			VisualizationViewPart visualizationViewPart = (VisualizationViewPart) part;
+			VisualizationView visualizationView = visualizationViewPart
+					.getVisualizationView();
+			String language = visualizationView.getLanguage();
 
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry()
-				.getExtensionPoint("de.bmotionstudio.core.includeObserver");
+			MenuManager fmanager = manager;
 
-		for (IExtension extension : extensionPoint.getExtensions()) {
-			for (IConfigurationElement configurationElement : extension
-					.getConfigurationElements()) {
+			if (asSubmenu) {
+				if (observerSubMenuManager == null)
+					observerSubMenuManager = new MenuManager("New Observer",
+							BMotionImage.getImageDescriptor(
+									BMotionEditorPlugin.PLUGIN_ID,
+									"icons/icon_observer.gif"), "observerMenu");
+				observerSubMenuManager.removeAll();
+				fmanager = observerSubMenuManager;
+				manager.add(fmanager);
+			}
 
-				if ("include".equals(configurationElement.getName())) {
+			IExtensionPoint extensionPoint = Platform.getExtensionRegistry()
+					.getExtensionPoint("de.bmotionstudio.core.includeObserver");
 
-					String langID = configurationElement
-							.getAttribute("language");
+			for (IExtension extension : extensionPoint.getExtensions()) {
+				for (IConfigurationElement configurationElement : extension
+						.getConfigurationElements()) {
 
-					if (langID != null
-							&& langID.equals(BMotionStudio
-									.getCurrentSimulation().getLanguage())) {
+					if ("include".equals(configurationElement.getName())) {
 
-						for (IConfigurationElement configC : configurationElement
-								.getChildren("control")) {
+						String langID = configurationElement
+								.getAttribute("language");
 
-							String cID = configC.getAttribute("id");
+						if (langID != null && langID.equals(language)) {
 
-							IBControlService controlService = BMotionEditorPlugin
-									.getControlServicesId().get(cID);
+							for (IConfigurationElement configC : configurationElement
+									.getChildren("control")) {
 
-							if (controlService != null
-									&& selectedControl.getClass().equals(
-											controlService.getControlClass())) {
+								String cID = configC.getAttribute("id");
 
-								for (IConfigurationElement configO : configC
-										.getChildren("observer")) {
+								IBControlService controlService = BMotionEditorPlugin
+										.getControlServicesId().get(cID);
 
-									ActionRegistry actionRegistry = (ActionRegistry) getPart()
-											.getAdapter(ActionRegistry.class);
+								if (controlService != null
+										&& selectedControl.getClass().equals(
+												controlService
+														.getControlClass())) {
 
-									if (actionRegistry != null) {
+									for (IConfigurationElement configO : configC
+											.getChildren("observer")) {
 
-										String oID = configO.getAttribute("id");
-										IAction action = actionRegistry
-												.getAction("de.bmotionstudio.core.observerAction."
-														+ oID);
+										ActionRegistry actionRegistry = (ActionRegistry) getPart()
+												.getAdapter(
+														ActionRegistry.class);
 
-										// TODO: Get correct name of observer
-										String name = oID;
+										if (actionRegistry != null) {
 
-										action.setText(name);
+											String oID = configO
+													.getAttribute("id");
+											IAction action = actionRegistry
+													.getAction("de.bmotionstudio.core.observerAction."
+															+ oID);
 
-										if (fmanager.find(action.getId()) == null)
-											fmanager.add(action);
+											// TODO: Get correct name of
+											// observer
+											String name = oID;
+
+											action.setText(name);
+
+											if (fmanager.find(action.getId()) == null)
+												fmanager.add(action);
+
+										}
 
 									}
-									
+
 								}
 
 							}
@@ -410,8 +424,8 @@ public class ObserverSection extends AbstractPropertySection implements
 					}
 
 				}
-
 			}
+
 		}
 
 	}

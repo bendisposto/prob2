@@ -98,21 +98,6 @@
                   name="group.filter"
                   visible="true">
             </separator>
-            <command
-                  commandId="de.bmotionstudio.command.startVisualizationFromEditor"
-                  icon="icons/icon_run.png"
-                  label="Start Visualization"
-                  style="push">
-               <visibleWhen
-                     checkEnabled="true">
-                  <with
-                        variable="activeEditorId">
-                     <equals
-                           value="de.bmotionstudio.core.BMotionStudioEditor">
-                     </equals>
-                  </with>
-               </visibleWhen>
-            </command>
          </menu>
       </menuContribution>
       <menuContribution
@@ -559,12 +544,6 @@
             </observer>
          </control>
       </include>   
-   </extension>
-   <extension
-         point="org.eclipse.ui.startup">
-      <startup
-            class="de.bmotionstudio.core.BMotionStartup">
-      </startup>
    </extension>
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">

@@ -26,8 +26,6 @@ public class Visualization extends BControl {
 
 	private transient Boolean isRunning;
 
-	// private transient Animation animation;
-
 	public Visualization() {
 		ButtonGroupHelper.reset();
 	}
@@ -38,25 +36,8 @@ public class Visualization extends BControl {
 		this.isRunning = false;
 		ButtonGroupHelper.reset();
 		init();
-//		initChildren(getChildrenArray());
 		return this;
 	}
-
-//	private void initChildren(List<BControl> children) {
-//		for (BControl c : children) {
-//			c.setVisualization(this);
-//			c.init();
-//			for (BConnection sc : c.getSourceConnections()) {
-//				sc.setVisualization(this);
-//				sc.init();
-//			}
-//			for (BConnection tc : c.getTargetConnections()) {
-//				tc.setVisualization(this);
-//				tc.init();
-//			}
-//			initChildren(c.getChildrenArray());
-//		}
-//	}
 
 	public void setIsRunning(Boolean bol) {
 		this.isRunning = bol;
@@ -65,15 +46,6 @@ public class Visualization extends BControl {
 	public Boolean isRunning() {
 		return isRunning;
 	}
-
-	// TODO: Reimplement me!!!
-	// public void setAnimation(Animation animation) {
-	// this.animation = animation;
-	// }
-	//
-	// public Animation getAnimation() {
-	// return this.animation;
-	// }
 
 	public List<String> getAllBControlNames() {
 		return getAllBControlNames(getChildren());
@@ -160,10 +132,5 @@ public class Visualization extends BControl {
 	public void setVisualizationView(VisualizationView visualizationView) {
 		this.visualizationView = visualizationView;
 	}
-
-//	@Override
-//	public Visualization getVisualization() {
-//		return this;
-//	}
 
 }

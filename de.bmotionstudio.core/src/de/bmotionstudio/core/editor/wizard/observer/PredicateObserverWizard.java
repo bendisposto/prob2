@@ -70,7 +70,7 @@ public class PredicateObserverWizard extends ObserverWizard {
 
 	@Override
 	public Point getSize() {
-		return new Point(375, 300);
+		return new Point(375, 325);
 	}
 	
 	@Override

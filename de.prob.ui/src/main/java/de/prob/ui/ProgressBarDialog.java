@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.core.editor;
+package de.prob.ui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -116,8 +116,8 @@ public abstract class ProgressBarDialog extends Dialog {
 		shell.setSize(483, 350);
 		shell.setText(shellTitle);
 		shell.setBackgroundImage(BMotionImage
-				.getImage(BMotionImage.IMG_SPLASH));
-
+				.getImage(BMotionImage.IMG_PROB_SPLASH));
+		
 		Monitor primary = Display.getCurrent().getPrimaryMonitor();
 		Rectangle bounds = primary.getBounds();
 		Rectangle rect = shell.getBounds();

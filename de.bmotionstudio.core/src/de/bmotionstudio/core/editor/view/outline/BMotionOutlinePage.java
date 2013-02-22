@@ -67,7 +67,8 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 		getViewer().setEditDomain(this.viewPart.getEditDomain());
 		getViewer().setEditPartFactory(new BMSTreeEditPartFactory());
 		ContextMenuProvider provider = new BMSContextMenuProvider(getViewer(),
-				viewPart.getActionRegistry());
+				viewPart.getActionRegistry(), viewPart.getVisualizationView()
+						.getLanguage());
 		getViewer().setContextMenu(provider);
 		getViewer().setKeyHandler(this.viewPart.getCommonKeyHandler());
 	}

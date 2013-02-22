@@ -26,7 +26,6 @@ import org.eclipse.ui.actions.ActionFactory;
 import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
-import de.bmotionstudio.core.BMotionStudio;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.IInstallMenu;
 import de.bmotionstudio.core.model.control.BControl;
@@ -39,9 +38,13 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 
 	private String[] eventIDs = { AttributeConstants.EVENT_MOUSECLICK };
 
-	public BMSContextMenuProvider(EditPartViewer viewer, ActionRegistry registry) {
+	private String language;
+	
+	public BMSContextMenuProvider(EditPartViewer viewer,
+			ActionRegistry registry, String language) {
 		super(viewer);
 		setActionRegistry(registry);
+		this.language = language;
 	}
 
 	@Override
@@ -131,8 +134,7 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 		menu.appendToGroup(GEFActionConstants.GROUP_ADD, handleObserverMenu);
 
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry()
-				.getExtensionPoint(
-						"de.bmotionstudio.core.includeObserver");
+				.getExtensionPoint("de.bmotionstudio.core.includeObserver");
 
 		for (IExtension extension : extensionPoint.getExtensions()) {
 			for (IConfigurationElement configurationElement : extension
@@ -143,22 +145,20 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 					String langID = configurationElement
 							.getAttribute("language");
 
-					if (langID != null
-							&& langID.equals(BMotionStudio
-									.getCurrentSimulation().getLanguage())) {
-					
+					if (langID != null && langID.equals(language)) {
+
 						for (IConfigurationElement configC : configurationElement
 								.getChildren("control")) {
 
 							String cID = configC.getAttribute("id");
-							
+
 							IBControlService controlService = BMotionEditorPlugin
 									.getControlServicesId().get(cID);
-			
+
 							if (controlService != null
 									&& control.getClass().equals(
 											controlService.getControlClass())) {
-								
+
 								for (IConfigurationElement configO : configC
 										.getChildren("observer")) {
 
@@ -170,7 +170,7 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 
 									// TODO: Get correct name of observer
 									String name = oID;
-									
+
 									action.setText(name);
 
 									if (handleObserverMenu.find(action.getId()) == null)
