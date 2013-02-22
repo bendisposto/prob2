@@ -65,7 +65,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
-	private final List<IStateSpaceChangeListener> stateSpaceListeners = new ArrayList<IStateSpaceChangeListener>();
+	private final List<IStatesCalculatedListener> stateSpaceListeners = new ArrayList<IStatesCalculatedListener>();
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
@@ -456,16 +456,16 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param l
 	 */
-	public void registerStateSpaceListener(final IStateSpaceChangeListener l) {
+	public void registerStateSpaceListener(final IStatesCalculatedListener l) {
 		stateSpaceListeners.add(l);
 	}
 
-	public void deregisterStateSpaceListener(final IStateSpaceChangeListener l) {
+	public void deregisterStateSpaceListener(final IStatesCalculatedListener l) {
 		stateSpaceListeners.remove(l);
 	}
 
 	public void notifyStateSpaceChange() {
-		for (final IStateSpaceChangeListener listener : stateSpaceListeners) {
+		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
 			listener.newTransitions();
 		}
 	}

@@ -22,7 +22,7 @@ import com.google.inject.Singleton;
 
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IStateSpaceChangeListener;
+import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.testing.TestRegistry;
 
 /**
@@ -36,7 +36,7 @@ import de.prob.testing.TestRegistry;
  * 
  */
 @Singleton
-public class GroovyExecution implements IStateSpaceChangeListener {
+public class GroovyExecution implements IStatesCalculatedListener {
 
 	private final ArrayList<String> inputs = new ArrayList<String>();
 	private final ArrayList<String> imports = new ArrayList<String>();
