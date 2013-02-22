@@ -1,19 +1,25 @@
 package de.prob.ui;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchListener;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.google.inject.Injector;
 
 import de.prob.Main;
+import de.prob.ui.util.PerspectiveUtil;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements IWorkbenchListener {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "de.prob.ui"; //$NON-NLS-1$
@@ -88,6 +94,7 @@ public class Activator extends AbstractUIPlugin {
 
 		new Thread(r).start();
 		plugin = this;
+		PlatformUI.getWorkbench().addWorkbenchListener(this);
 	}
 
 	/*
@@ -100,6 +107,7 @@ public class Activator extends AbstractUIPlugin {
 	@Override
 	public void stop(final BundleContext context) throws Exception {
 		plugin = null;
+		PlatformUI.getWorkbench().removeWorkbenchListener(this);
 		super.stop(context);
 	}
 
@@ -184,4 +192,26 @@ public class Activator extends AbstractUIPlugin {
 						"icons/junit/obj16/exc_catch.gif"));
 
 	}
+
+	@Override
+	public boolean preShutdown(IWorkbench workbench, boolean forced) {
+		IPerspectiveDescriptor currentPerspective = ProBConfiguration
+				.getCurrentPerspective();
+		IFile currentModelFile = ProBConfiguration.getCurrentModelFile();
+		// Close and save old perspective
+		if (currentPerspective != null && currentModelFile != null) {
+			// If yes ...
+			// Export the current perspective
+			IFile perspectiveFile = currentModelFile.getProject().getFile(
+					PerspectiveUtil.getPerspectiveFileName(currentModelFile));
+			PerspectiveUtil.exportPerspective(currentPerspective,
+					perspectiveFile);
+		}
+		return true;
+	}
+
+	@Override
+	public void postShutdown(IWorkbench workbench) {
+	}
+	
 }
