@@ -1,6 +1,5 @@
 package de.prob.ui.modelcheckingview;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +35,6 @@ public class ModelCheckingView extends ViewPart implements
 	private Text formulas;
 	private ModelChecker checker;
 	private StateSpace s;
-	private BigInteger lastTransition;
 
 	@Override
 	public void createPartControl(final Composite parent) {
@@ -96,13 +94,12 @@ public class ModelCheckingView extends ViewPart implements
 			if (!checker.isDone()) {
 				checker.cancel();
 			}
-			lastTransition = checker.getLastTransition();
 		}
 	}
 
 	private void startModelChecking() {
 		if (s != null) {
-			checker = new ModelChecker(s, optionsToString(), lastTransition);
+			checker = new ModelChecker(s, optionsToString());
 			checker.start();
 		}
 	}
@@ -171,7 +168,6 @@ public class ModelCheckingView extends ViewPart implements
 
 	private void resetChecker(final History history) {
 		s = history.getS();
-		lastTransition = new BigInteger("-1");
 	}
 
 }
