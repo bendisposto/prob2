@@ -1,6 +1,6 @@
 package de.prob.statespace;
 
 
-public interface IStateSpaceChangeListener {
+public interface IStatesCalculatedListener {
 	public void newTransitions();
 }
