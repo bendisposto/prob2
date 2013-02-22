@@ -100,27 +100,6 @@
             </separator>
          </menu>
       </menuContribution>
-      <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar">
-         <toolbar
-               id="de.bmotionstudio.core.toolbar">
-            <command
-                  commandId="de.bmotionstudio.command.startVisualizationFromEditor"
-                  icon="icons/icon_run.png"
-                  label="Start Visualization"
-                  style="push">
-               <visibleWhen
-                     checkEnabled="true">
-                  <with
-                        variable="activeEditorId">
-                     <equals
-                           value="de.bmotionstudio.core.BMotionStudioEditor">
-                     </equals>
-                  </with>
-               </visibleWhen>
-            </command>
-         </toolbar>
-      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -128,15 +107,6 @@
             defaultHandler="de.bmotionstudio.core.editor.handler.OpenWebsiteHandler"
             id="de.bmotionstudio.core.command.openBMotionStudioWebsite"
             name="Open website">
-      </command>
-      <command
-            id="de.bmotionstudio.command.startVisualizationFromEditor"
-            name="Start Visualization from Editor">
-      </command>
-      <command
-            defaultHandler="de.bmotionstudio.core.editor.handler.StartVisualizationFileHandler"
-            id="de.bmotionstudio.command.startVisualizationFromFile"
-            name="Start Visualization from File">
       </command>
       <command
             description="SnapToGeometry"
@@ -158,21 +128,6 @@
             id="de.bmotionstudio.core.command.addVisualizationView"
             name="Add Visualization View">
       </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            class="de.bmotionstudio.core.editor.handler.StartVisualizationEditorHandler"
-            commandId="de.bmotionstudio.command.startVisualizationFromEditor">
-         <enabledWhen>
-            <with
-                  variable="activeEditorId">
-               <equals
-                     value="de.bmotionstudio.core.BMotionStudioEditor">
-               </equals>
-            </with>
-         </enabledWhen>
-      </handler>
    </extension>
    
  <extension
