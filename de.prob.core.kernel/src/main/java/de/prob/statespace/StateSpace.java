@@ -113,18 +113,19 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		explored.add(state);
 		final List<OpInfo> enabledOperations = command.getEnabledOperations();
+		final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
 		for (final OpInfo op : enabledOperations) {
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
-				notifyStateSpaceChange(op.name,
-						containsVertex(getVertex(op.dest)));
+				newOps.add(op);
 				final StateId newState = new StateId(op.dest, this);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
 				addEdge(states.get(op.src), states.get(op.dest), op);
 			}
 		}
+		notifyStateSpaceChange(newOps);
 		evaluateFormulas(state);
 		return toString();
 	}
@@ -207,18 +208,19 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
-		final List<OpInfo> newOps = command.getOperations();
+		final List<OpInfo> ops = command.getOperations();
+		final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
 		// (id,name,src,dest,args)
-		for (final OpInfo op : newOps) {
+		for (final OpInfo op : ops) {
 			if (!containsEdge(op)) {
-				ops.put(op.id, op);
-				notifyStateSpaceChange(op.name,
-						containsVertex(getVertex(op.dest)));
+				this.ops.put(op.id, op);
+				newOps.add(op);
 				addEdge(getVertex(op.src), getVertex(op.dest), op);
 			}
 		}
-		return newOps;
+		notifyStateSpaceChange(newOps);
+		return ops;
 	}
 
 	/**
@@ -459,10 +461,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		stateSpaceListeners.remove(l);
 	}
 
-	public void notifyStateSpaceChange(final String opName,
-			final boolean isDestStateNew) {
+	public void notifyStateSpaceChange(final List<OpInfo> ops) {
 		for (final IStateSpaceChangeListener listener : stateSpaceListeners) {
-			listener.newTransition(opName, isDestStateNew);
+			listener.newTransitions(ops);
 		}
 	}
 

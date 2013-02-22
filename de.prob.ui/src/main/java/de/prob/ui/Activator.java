@@ -37,6 +37,8 @@ public class Activator extends AbstractUIPlugin {
 	public static final String OVERLAY = "OVERLAY";
 	public static final String CHANGE_STAR = "change_star";
 	public static final String IMG_RELOAD = "IMG_RELOAD";
+	public static final String IMG_SPLASH = "IMG_SPLASH";
+	public static final String IMG_LOADING = "IMG_LOADING";
 
 	// JUnit Icons
 	public static final String JUNIT_ERROR_OVR = "JUNIT_ERROR_OVR";
@@ -138,7 +140,11 @@ public class Activator extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/star.png"));
 		reg.put(IMG_RELOAD,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/refresh.gif"));
-
+		reg.put(IMG_SPLASH,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/probsplash.png"));
+		reg.put(IMG_LOADING,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/icon_loading.gif"));
+		
 		// JUnit Icons
 		reg.put(JUNIT_ERROR_OVR,
 				imageDescriptorFromPlugin(PLUGIN_ID,

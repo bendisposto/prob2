@@ -1,7 +1,5 @@
 package de.prob.ui.statisticsview;
 
-import java.util.Map.Entry;
-
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -22,8 +20,6 @@ public class StatisticsViewLabelProvider extends LabelProvider implements
 		if (columnIndex == 0) {
 			if (element instanceof String) {
 				return (String) element;
-			} else if (element instanceof Entry<?, ?>) {
-				return ((Entry<?, ?>) element).getKey().toString();
 			}
 		}
 
@@ -34,8 +30,6 @@ public class StatisticsViewLabelProvider extends LabelProvider implements
 				return "" + currentS.vertexSet().size();
 			} else if (element.equals("Transitions")) {
 				return "" + currentS.edgeSet().size();
-			} else if (element instanceof Entry<?, ?>) {
-				return ((Entry<?, ?>) element).getValue().toString();
 			}
 		}
 		return "";

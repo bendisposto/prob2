@@ -1,4 +1,4 @@
-package de.bmotionstudio.core;
+package de.prob.ui;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPerspectiveDescriptor;
@@ -6,9 +6,9 @@ import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
 
-import de.bmotionstudio.core.util.PerspectiveUtil;
+import de.prob.ui.util.PerspectiveUtil;
 
-public class BMotionStartup implements IStartup {
+public class ProBStartup implements IStartup {
 
 	@Override
 	public void earlyStartup() {

@@ -1,7 +1,5 @@
 package de.bmotionstudio.core.model;
 
-import java.util.UUID;
-
 import org.eclipse.draw2d.PositionConstants;
 
 import de.bmotionstudio.core.model.control.Visualization;
@@ -12,26 +10,27 @@ public class VisualizationView extends PropertyChangeSupportObject {
 
 	private Visualization visualization;
 
-	private String viewId;
-
 	private boolean rulerVisible, snapToGeometry, gridEnabled;
 	
 	protected BMotionRuler leftRuler, topRuler;
-	
-	public VisualizationView(String name, String viewId,
-			Visualization visualization) {
+
+	private String language;
+
+	private transient boolean dirty;
+
+	public VisualizationView(String name, Visualization visualization,
+			String language) {
 		this.name = name;
-		this.viewId = viewId;
 		this.visualization = visualization;
+		this.language = language;
 		this.rulerVisible = true;
 		this.snapToGeometry = true;
 		this.gridEnabled = false;
 		createRulers();
 	}
 
-	public VisualizationView(Visualization visualization) {
-		this("New Visualization View", UUID.randomUUID().toString(),
-				visualization);
+	public VisualizationView(Visualization visualization, String language) {
+		this("New Visualization View", visualization, language);
 	}
 
 	protected Object readResolve() {
@@ -59,16 +58,6 @@ public class VisualizationView extends PropertyChangeSupportObject {
 		this.visualization = visualization;
 		visualization.setVisualizationView(this);
 		firePropertyChange("visualization", oldVal, visualization);
-	}
-
-	public String getViewId() {
-		return viewId;
-	}
-
-	public void setViewId(String viewId) {
-		String oldVal = this.viewId;
-		this.viewId = viewId;
-		firePropertyChange("viewId", oldVal, viewId);
 	}
 
 	public void setRulerVisible(boolean rulerVisible) {
@@ -134,6 +123,16 @@ public class VisualizationView extends PropertyChangeSupportObject {
 		firePropertyChange("leftRuler", oldVal, leftRuler);
 	}
 
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		String oldVal = this.language;
+		this.language = language;
+		firePropertyChange("language", oldVal, language);
+	}
+	
 	protected void createRulers() {
 		if (leftRuler == null)
 			leftRuler = new BMotionRuler(false);
@@ -141,4 +140,14 @@ public class VisualizationView extends PropertyChangeSupportObject {
 			topRuler = new BMotionRuler(true);
 	}
 
+	public void setDirty(boolean dirty) {
+		boolean oldVal = this.dirty;
+		this.dirty = dirty;
+		firePropertyChange("dirty", oldVal, dirty);
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+	
 }

@@ -22,16 +22,19 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		final String editorArea = layout.getEditorArea();
 		layout.setEditorAreaVisible(false);
 
+		// LEFT ---------------------------------
 		// Place the project explorer to left of editor area.
 		final IFolderLayout left = layout.createFolder("left",
 				IPageLayout.LEFT, 0.15f, editorArea);
 		left.addView("de.prob.ui.OperationView");
 
 		final IFolderLayout leftb = layout.createFolder("leftb",
-				IPageLayout.BOTTOM, 0.50f, "left");
+				IPageLayout.BOTTOM, 0.65f, "left");
 		leftb.addView("fr.systerel.explorer.navigator.view");
 		leftb.addView("org.eventb.ui.views.RodinProblemView");
-
+		// ---------------------------------
+		
+		// RIGHT ---------------------------------
 		// Palette View
 		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT,
 				0.80f, editorArea);
@@ -42,23 +45,25 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		IFolderLayout rightb = layout.createFolder("rightb",
 				IPageLayout.BOTTOM, 0.65f, "right");
 		rightb.addView("de.bmotionstudio.core.view.LibraryView");
+		// ---------------------------------
+		
+		// MAIN ---------------------------------
+		// Properties view + observer view + control panel
+		IFolderLayout bottom1 = layout.createFolder("bottom1",
+				IPageLayout.BOTTOM, 0.65f, editorArea);
+		bottom1.addView("de.prob.ui.StateView");
+		bottom1.addView("de.prob.ui.AnimationsView");
+		bottom1.addView(IPageLayout.ID_PROP_SHEET);
+		// bottom1.addView("de.prob.ui.EventErrorView");
 		
 		// Place the outline to right of editor area.
 		final IFolderLayout main1 = layout.createFolder("main1",
 				IPageLayout.BOTTOM, 0.5f, editorArea);
 		main1.addView("de.prob.ui.HistoryView");
 		// right1.addView("de.prob.ui.ltl.CounterExampleView");
-		// TODO: Prevent string IDs. Better: Link to a static constant of a
-		// class
+		// Placeholder for new visualization views
 		main1.addPlaceholder("de.bmotionstudio.core.view.VisualizationView:*");
-	
-		// Properties view + observer view + control panel
-		IFolderLayout bottom1 = layout.createFolder("bottom1",
-				IPageLayout.BOTTOM, 0.65f, "main1");
-		bottom1.addView("de.prob.ui.StateView");
-		bottom1.addView("de.prob.ui.AnimationsView");
-		bottom1.addView(IPageLayout.ID_PROP_SHEET);
-		// bottom1.addView("de.prob.ui.EventErrorView");
+		// ---------------------------------
 		
 	}
 
