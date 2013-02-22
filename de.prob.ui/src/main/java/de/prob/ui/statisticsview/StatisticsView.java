@@ -1,5 +1,7 @@
 package de.prob.ui.statisticsview;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -11,6 +13,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
@@ -115,12 +118,11 @@ public class StatisticsView extends ViewPart implements IHistoryChangeListener,
 	}
 
 	@Override
-	public void newTransition(final String opName, final boolean isDestStateNew) {
+	public void newTransitions(final List<OpInfo> ops) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				if (!viewer.getTable().isDisposed()) {
-					contentProvider.addOp(opName);
 					viewer.refresh();
 				}
 			}
