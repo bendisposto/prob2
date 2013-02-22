@@ -73,7 +73,7 @@ public class AddVisualizationViewHandler extends AbstractHandler {
 								false, new NullProgressMonitor());
 						file.refreshLocal(IResource.DEPTH_ZERO, null);
 
-						BMotionUtil.initVisualizationViewPart(
+						BMotionUtil.createVisualizationViewPart(
 								visualizationView, file, fileName);
 						
 					} else if (selection instanceof IResource) {
