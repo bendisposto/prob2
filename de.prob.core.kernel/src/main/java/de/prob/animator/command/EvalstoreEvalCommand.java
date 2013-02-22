@@ -3,6 +3,7 @@
  */
 package de.prob.animator.command;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,7 +70,11 @@ public class EvalstoreEvalCommand implements ICommand {
 			result = new EvalstoreResult(true, false, evalstoreId, null);
 		} else if (term.hasFunctor("errors", 1)) {
 			final ListPrologTerm args = (ListPrologTerm) term.getArgument(1);
-			final List<String> errors = PrologTerm.atomicStrings(args);
+			final List<String> errors = new ArrayList<String>(args.size());
+			for (final PrologTerm arg : args) {
+				errors.add(PrologTerm.atomicString(((CompoundPrologTerm) arg)
+						.getArgument(1)));
+			}
 			final String error = errors.isEmpty() ? "unspecified error"
 					: errors.get(0);
 			final List<String> empty = Collections.emptyList();
