@@ -1,5 +1,9 @@
 package de.prob.statespace;
 
+import java.util.List;
+
+import de.prob.animator.domainobjects.OpInfo;
+
 public interface IStateSpaceChangeListener {
-	public void newTransition(String opName, boolean isDestStateNew);
+	public void newTransitions(List<OpInfo> ops);
 }

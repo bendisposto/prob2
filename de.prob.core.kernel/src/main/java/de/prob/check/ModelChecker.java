@@ -1,6 +1,8 @@
 package de.prob.check;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -80,6 +82,7 @@ public class ModelChecker {
 						.name());
 				abort = res.isAbort();
 			}
+			s.notifyStateSpaceChange(Collections.<OpInfo> emptyList());
 			return res;
 		}
 
@@ -100,8 +103,11 @@ public class ModelChecker {
 			HashMap<String, StateId> states = s.getStates();
 			HashMap<String, OpInfo> ops = s.getOps();
 
+			List<OpInfo> toNotify = new ArrayList<OpInfo>();
+
 			for (OpInfo opInfo : newOps) {
 				if (!ops.containsKey(opInfo.id)) {
+					toNotify.add(opInfo);
 					String sK = opInfo.src;
 					String dK = opInfo.dest;
 					StateId src = states.get(sK);
@@ -120,9 +126,9 @@ public class ModelChecker {
 					}
 					s.addEdge(src, dest, opInfo);
 					ops.put(opInfo.id, opInfo);
-					s.notifyStateSpaceChange("", destNew);
 				}
 			}
+			s.notifyStateSpaceChange(toNotify);
 		}
 
 		public BigInteger getLast() {
