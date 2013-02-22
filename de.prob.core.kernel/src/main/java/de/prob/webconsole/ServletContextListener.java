@@ -6,6 +6,7 @@ import javax.servlet.ServletContextEvent;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
 
 import de.prob.Main;
@@ -21,8 +22,8 @@ import de.prob.MainModule;
  */
 public class ServletContextListener extends GuiceServletContextListener {
 
-	public static final Injector INJECTOR = Guice
-			.createInjector(new MainModule());
+	public static final Injector INJECTOR = Guice.createInjector(
+			Stage.DEVELOPMENT, new MainModule());
 
 	@Override
 	protected Injector getInjector() {
