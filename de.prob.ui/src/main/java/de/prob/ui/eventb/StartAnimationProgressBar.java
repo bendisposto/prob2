@@ -68,18 +68,18 @@ public class StartAnimationProgressBar extends ProgressBarDialog {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					startBMotionStudioVisualization();
+					openProBPerspective();
 				}
 
 			});
-			return "Starting BMotion Studio Visualization";
+			return "Opening ProB Perspective";
 		}
 
 		return "Starting ProB Animaton";
 
 	}
 
-	private void startBMotionStudioVisualization() {
+	private void openProBPerspective() {
 
 		IFile modelFile = rootElement.getResource();
 
