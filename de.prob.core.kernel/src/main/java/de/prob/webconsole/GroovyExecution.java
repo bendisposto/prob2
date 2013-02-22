@@ -20,7 +20,6 @@ import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IStateSpaceChangeListener;
@@ -252,7 +251,7 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 	}
 
 	@Override
-	public void newTransitions(final List<OpInfo> ops) {
+	public void newTransitions() {
 		notifyListerners();
 	}
 

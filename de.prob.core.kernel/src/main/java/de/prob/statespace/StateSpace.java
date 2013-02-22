@@ -1,5 +1,6 @@
 package de.prob.statespace;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -68,6 +69,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
+	private BigInteger lastCalculatedTransitionId;
 	private AbstractModel model;
 	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
 
@@ -85,6 +87,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		__root = new StateId("root", this);
 		addVertex(__root);
 		states.put(__root.getId(), __root);
+		lastCalculatedTransitionId = new BigInteger("-1");
 	}
 
 	public StateId getRoot() {
@@ -113,19 +116,20 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		explored.add(state);
 		final List<OpInfo> enabledOperations = command.getEnabledOperations();
-		final List<OpInfo> newOps = new ArrayList<OpInfo>();
+
+		calculateLastTransitionId(enabledOperations);
 
 		for (final OpInfo op : enabledOperations) {
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
-				newOps.add(op);
+
 				final StateId newState = new StateId(op.dest, this);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
 				addEdge(states.get(op.src), states.get(op.dest), op);
 			}
 		}
-		notifyStateSpaceChange(newOps);
+		notifyStateSpaceChange();
 		evaluateFormulas(state);
 		return toString();
 	}
@@ -208,19 +212,18 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
-		final List<OpInfo> ops = command.getOperations();
-		final List<OpInfo> newOps = new ArrayList<OpInfo>();
+		final List<OpInfo> newOps = command.getOperations();
+		calculateLastTransitionId(newOps);
 
 		// (id,name,src,dest,args)
-		for (final OpInfo op : ops) {
+		for (final OpInfo op : newOps) {
 			if (!containsEdge(op)) {
-				this.ops.put(op.id, op);
-				newOps.add(op);
+				ops.put(op.id, op);
 				addEdge(getVertex(op.src), getVertex(op.dest), op);
 			}
 		}
-		notifyStateSpaceChange(newOps);
-		return ops;
+		notifyStateSpaceChange();
+		return newOps;
 	}
 
 	/**
@@ -461,9 +464,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		stateSpaceListeners.remove(l);
 	}
 
-	public void notifyStateSpaceChange(final List<OpInfo> ops) {
+	public void notifyStateSpaceChange() {
 		for (final IStateSpaceChangeListener listener : stateSpaceListeners) {
-			listener.newTransitions(ops);
+			listener.newTransitions();
 		}
 	}
 
@@ -704,5 +707,28 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			opInfo.ensureEvaluated(this);
 		}
 		return outgoingEdgesOf;
+	}
+
+	public BigInteger getLastCalculatedTransitionId() {
+		return lastCalculatedTransitionId;
+	}
+
+	public void setLastCalculatedTransitionId(
+			final BigInteger lastCalculatedTransitionId) {
+		if (lastCalculatedTransitionId.intValue() > this.lastCalculatedTransitionId
+				.intValue()) {
+			this.lastCalculatedTransitionId = lastCalculatedTransitionId;
+		}
+	}
+
+	private void calculateLastTransitionId(final List<OpInfo> enabledOperations) {
+		int value = lastCalculatedTransitionId.intValue();
+		for (OpInfo opInfo : enabledOperations) {
+			int newV = Integer.parseInt(opInfo.id);
+			if (newV > value) {
+				value = newV;
+			}
+		}
+		lastCalculatedTransitionId = new BigInteger(value + "");
 	}
 }
