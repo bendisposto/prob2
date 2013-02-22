@@ -16,10 +16,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -34,8 +31,7 @@ import de.bmotionstudio.core.model.control.Visualization;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class BMotionEditorPlugin extends AbstractUIPlugin implements
-		IWorkbenchListener {
+public class BMotionEditorPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "de.bmotionstudio.core";
@@ -74,7 +70,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 		super.start(context);
 		plugin = this;
 		initExtensionClasses();
-		PlatformUI.getWorkbench().addWorkbenchListener(this);
 	}
 
 	/*
@@ -87,7 +82,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	@Override
 	public void stop(final BundleContext context) throws Exception {
 		plugin = null;
-		PlatformUI.getWorkbench().removeWorkbenchListener(this);
 		super.stop(context);
 	}
 
@@ -245,62 +239,5 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 		xstream.alias("guide", BMotionGuide.class);
 		xstream.alias("connection", BConnection.class);
 	} 
-
-	@Override
-	public boolean preShutdown(IWorkbench workbench, boolean forced) {
-
-		// TODO reimplement me!
-//		Simulation currentSimulation = BMotionStudio.getCurrentSimulation();
-//		IFile currentProjectFile = BMotionStudio.getCurrentProjectFile();
-//
-//		if (currentSimulation == null || currentProjectFile == null)
-//			return true;
-//
-//		MessageDialog dg = new MessageDialog(
-//				Display.getDefault().getActiveShell(),
-//				"You made changes to your visualization.",
-//				null,
-//				"Your visualization has beed modified. Save changes?",
-//				MessageDialog.QUESTION_WITH_CANCEL, new String[] {
-//						IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL,
-//						IDialogConstants.CANCEL_LABEL }, 0);
-//		switch (dg.open()) {
-//		case 0:
-//			// yes - save the visualization and perspective
-//			SaveSimulationAction saveSimulationAction = new SaveSimulationAction(
-//					currentSimulation, currentProjectFile);
-//			saveSimulationAction.run();
-//			break;
-//		case 1:
-//			// no - do nothing
-//			break;
-//		case 2:
-//			// cancel - return
-//			return false;
-//		}
-
-		return true;
-
-	}
-
-	@Override
-	public void postShutdown(IWorkbench workbench) {
-	}
-
-	// public static void openSimulation(Simulation simulation) {
-	// openSimulations.put(simulation.getProjectFile().getName(), simulation);
-	// for (ISimulationListener l : openSimulationListeners)
-	// l.openSimulation(simulation);
-	// }
-	//
-	// public static void closeSimulation(Simulation simulation) {
-	// openSimulations.remove(simulation.getProjectFile().getName());
-	// for (ISimulationListener l : openSimulationListeners)
-	// l.closeSimulation(simulation);
-	// }
-	//
-	// public static Map<String, Simulation> getOpenSimulations() {
-	// return openSimulations;
-	// }
 
 }
