@@ -108,7 +108,7 @@ class StateSpaceTest extends Specification {
 
 	def "test register StateSpaceChangeListener"() {
 		when:
-		def l = mock(IStateSpaceChangeListener.class)
+		def l = mock(IStatesCalculatedListener.class)
 		s.registerStateSpaceListener(l)
 
 		then:

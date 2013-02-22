@@ -21,9 +21,14 @@ import de.prob.model.representation.AbstractElement;
 @Singleton
 public class AnimationSelector implements IAnimationListener {
 
-	List<IHistoryChangeListener> listeners = new ArrayList<IHistoryChangeListener>();
+	List<IHistoryChangeListener> historyListeners = new ArrayList<IHistoryChangeListener>();
+	List<IModelChangedListener> modelListeners = new ArrayList<IModelChangedListener>();
+
+	List<StateSpace> statespaces = new ArrayList<StateSpace>();
 	List<History> histories = new ArrayList<History>();
+
 	History currentHistory = null;
+	StateSpace currentStateSpace = null;
 
 	/**
 	 * An {@link IHistoryChangeListener} can register itself via this method
@@ -33,7 +38,7 @@ public class AnimationSelector implements IAnimationListener {
 	 */
 	public void registerHistoryChangeListener(
 			final IHistoryChangeListener listener) {
-		listeners.add(listener);
+		historyListeners.add(listener);
 		if (currentHistory != null) {
 			notifyHistoryChange(currentHistory);
 		}
@@ -47,7 +52,20 @@ public class AnimationSelector implements IAnimationListener {
 	 */
 	public void unregisterHistoryChangeListener(
 			final IHistoryChangeListener listener) {
-		listeners.remove(listener);
+		historyListeners.remove(listener);
+	}
+
+	public void registerModelChangedListener(
+			final IModelChangedListener listener) {
+		modelListeners.add(listener);
+		if (currentStateSpace != null) {
+			notifyModelChanged(currentStateSpace);
+		}
+	}
+
+	public void unregisterModelChangedListener(
+			final IModelChangedListener listener) {
+		modelListeners.remove(listener);
 	}
 
 	/**
@@ -59,6 +77,12 @@ public class AnimationSelector implements IAnimationListener {
 	public void changeCurrentHistory(final History history) {
 		currentHistory = history;
 		notifyHistoryChange(history);
+
+		if (currentHistory != null
+				&& currentHistory.getStatespace() != currentStateSpace) {
+			currentStateSpace = currentHistory.getStatespace();
+			notifyModelChanged(currentStateSpace);
+		}
 	}
 
 	/**
@@ -74,6 +98,9 @@ public class AnimationSelector implements IAnimationListener {
 		history.registerAnimationListener(this);
 		currentHistory = history;
 		notifyHistoryChange(history);
+
+		statespaces.add(history.getStatespace());
+		notifyModelChanged(history.getStatespace());
 	}
 
 	/**
@@ -83,8 +110,14 @@ public class AnimationSelector implements IAnimationListener {
 	 * @param history
 	 */
 	public void notifyHistoryChange(final History history) {
-		for (final IHistoryChangeListener listener : listeners) {
+		for (final IHistoryChangeListener listener : historyListeners) {
 			listener.historyChange(history);
+		}
+	}
+
+	private void notifyModelChanged(final StateSpace s) {
+		for (IModelChangedListener listener : modelListeners) {
+			listener.modelChanged(s);
 		}
 	}
 
@@ -100,6 +133,10 @@ public class AnimationSelector implements IAnimationListener {
 	 */
 	public List<History> getHistories() {
 		return histories;
+	}
+
+	public List<StateSpace> getStatespaces() {
+		return statespaces;
 	}
 
 	/**
@@ -122,6 +159,7 @@ public class AnimationSelector implements IAnimationListener {
 	 */
 	public void refresh() {
 		notifyHistoryChange(currentHistory);
+		notifyModelChanged(currentStateSpace);
 	}
 
 	/*
@@ -140,6 +178,12 @@ public class AnimationSelector implements IAnimationListener {
 		int indexOf = histories.indexOf(oldHistory);
 		histories.set(indexOf, newHistory);
 		currentHistory = newHistory;
+
+		if (currentHistory != null
+				&& currentHistory.getStatespace() != currentStateSpace) {
+			currentStateSpace = currentHistory.getStatespace();
+			notifyModelChanged(currentStateSpace);
+		}
 	}
 
 	/*

@@ -126,6 +126,9 @@ class History {
 	}
 
 	def String getRep() {
+		if(current.getOp() == null) {
+			return "";
+		}
 		def ops = []
 		head.getOpList().each {
 			ops << it.getRep(s as AbstractModel)

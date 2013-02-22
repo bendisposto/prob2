@@ -1,8 +1,6 @@
 package de.prob.check;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -20,17 +18,11 @@ public class ModelChecker {
 	private final Worker worker;
 
 	public ModelChecker(final StateSpace s) {
-		this(s, ConsistencyCheckingSearchOption.getDefaultOptions(),
-				new BigInteger("-1"));
+		this(s, ConsistencyCheckingSearchOption.getDefaultOptions());
 	}
 
 	public ModelChecker(final StateSpace s, final List<String> options) {
-		this(s, options, new BigInteger("-1"));
-	}
-
-	public ModelChecker(final StateSpace s, final List<String> options,
-			final BigInteger lastTrans) {
-		worker = new Worker(s, options, lastTrans);
+		worker = new Worker(s, options);
 		watcher = new Watcher(worker);
 	}
 
@@ -65,11 +57,10 @@ public class ModelChecker {
 		private final List<String> options;
 		private BigInteger last;
 
-		public Worker(final StateSpace s, final List<String> options,
-				final BigInteger last) {
+		public Worker(final StateSpace s, final List<String> options) {
 			this.s = s;
 			this.options = options;
-			this.last = last;
+			this.last = s.getLastCalculatedTransitionId();
 		}
 
 		@Override
@@ -82,7 +73,7 @@ public class ModelChecker {
 						.name());
 				abort = res.isAbort();
 			}
-			s.notifyStateSpaceChange(Collections.<OpInfo> emptyList());
+			s.notifyStateSpaceChange();
 			return res;
 		}
 
@@ -94,8 +85,11 @@ public class ModelChecker {
 			ModelCheckingResult result = cmd.getResult();
 			List<OpInfo> newOps = cmd.getNewOps();
 			addCheckedStates(newOps);
-			OpInfo lastOp = newOps.get(newOps.size() - 1);
-			last = new BigInteger(lastOp.id);
+			if (!newOps.isEmpty()) {
+				OpInfo lastOp = newOps.get(newOps.size() - 1);
+				s.setLastCalculatedTransitionId(new BigInteger(lastOp.id));
+				last = s.getLastCalculatedTransitionId();
+			}
 			return result;
 		}
 
@@ -103,11 +97,8 @@ public class ModelChecker {
 			HashMap<String, StateId> states = s.getStates();
 			HashMap<String, OpInfo> ops = s.getOps();
 
-			List<OpInfo> toNotify = new ArrayList<OpInfo>();
-
 			for (OpInfo opInfo : newOps) {
 				if (!ops.containsKey(opInfo.id)) {
-					toNotify.add(opInfo);
 					String sK = opInfo.src;
 					String dK = opInfo.dest;
 					StateId src = states.get(sK);
@@ -128,7 +119,7 @@ public class ModelChecker {
 					ops.put(opInfo.id, opInfo);
 				}
 			}
-			s.notifyStateSpaceChange(toNotify);
+			s.notifyStateSpaceChange();
 		}
 
 		public BigInteger getLast() {

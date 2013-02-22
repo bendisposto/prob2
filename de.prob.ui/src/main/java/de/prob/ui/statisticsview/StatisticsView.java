@@ -1,7 +1,5 @@
 package de.prob.ui.statisticsview;
 
-import java.util.List;
-
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -13,16 +11,14 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
-import de.prob.statespace.IStateSpaceChangeListener;
+import de.prob.statespace.IModelChangedListener;
+import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
-public class StatisticsView extends ViewPart implements IHistoryChangeListener,
-		IStateSpaceChangeListener {
+public class StatisticsView extends ViewPart implements IModelChangedListener,
+		IStatesCalculatedListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -46,7 +42,7 @@ public class StatisticsView extends ViewPart implements IHistoryChangeListener,
 	@Override
 	public void createPartControl(final Composite parent) {
 		selector = injector.getInstance(AnimationSelector.class);
-		selector.registerHistoryChangeListener(this);
+		selector.registerModelChangedListener(this);
 
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
@@ -86,39 +82,30 @@ public class StatisticsView extends ViewPart implements IHistoryChangeListener,
 	}
 
 	@Override
-	public void historyChange(final History history) {
+	public void modelChanged(final StateSpace s) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				if (!viewer.getTable().isDisposed()) {
-					if (history != null && notSameStateSpace(history)) {
-						changeS(history);
-					}
+					changeS(s);
 					viewer.refresh();
 				}
 			}
 		});
 	}
 
-	private void changeS(final History history) {
+	private void changeS(final StateSpace s) {
 		if (currentStateSpace != null) {
 			currentStateSpace.deregisterStateSpaceListener(this);
 		}
-		currentStateSpace = history.getS();
+		currentStateSpace = s;
 		currentStateSpace.registerStateSpaceListener(this);
 		contentProvider.reset(currentStateSpace);
 		labelProvider.setCurrentS(currentStateSpace);
 	}
 
-	private boolean notSameStateSpace(final History history) {
-		if (history.getS() != currentStateSpace) {
-			return true;
-		}
-		return false;
-	}
-
 	@Override
-	public void newTransitions(final List<OpInfo> ops) {
+	public void newTransitions() {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -128,4 +115,5 @@ public class StatisticsView extends ViewPart implements IHistoryChangeListener,
 			}
 		});
 	}
+
 }

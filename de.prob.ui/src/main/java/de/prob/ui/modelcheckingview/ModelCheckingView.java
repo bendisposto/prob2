@@ -1,6 +1,5 @@
 package de.prob.ui.modelcheckingview;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,13 +21,12 @@ import org.eclipse.ui.part.ViewPart;
 import de.prob.check.ConsistencyCheckingSearchOption;
 import de.prob.check.ModelChecker;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 public class ModelCheckingView extends ViewPart implements
-		IHistoryChangeListener {
+		IModelChangedListener {
 
 	private final Set<ConsistencyCheckingSearchOption> options = new HashSet<ConsistencyCheckingSearchOption>();
 
@@ -36,13 +34,12 @@ public class ModelCheckingView extends ViewPart implements
 	private Text formulas;
 	private ModelChecker checker;
 	private StateSpace s;
-	private BigInteger lastTransition;
 
 	@Override
 	public void createPartControl(final Composite parent) {
 		final AnimationSelector selector = ServletContextListener.INJECTOR
 				.getInstance(AnimationSelector.class);
-		selector.registerHistoryChangeListener(this);
+		selector.registerModelChangedListener(this);
 		container = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout(2, true);
 		container.setLayout(layout);
@@ -96,13 +93,12 @@ public class ModelCheckingView extends ViewPart implements
 			if (!checker.isDone()) {
 				checker.cancel();
 			}
-			lastTransition = checker.getLastTransition();
 		}
 	}
 
 	private void startModelChecking() {
 		if (s != null) {
-			checker = new ModelChecker(s, optionsToString(), lastTransition);
+			checker = new ModelChecker(s, optionsToString());
 			checker.start();
 		}
 	}
@@ -162,16 +158,13 @@ public class ModelCheckingView extends ViewPart implements
 		container.setFocus();
 	}
 
-	@Override
-	public void historyChange(final History history) {
-		if (history.getS() != s) {
-			resetChecker(history);
-		}
+	private void resetChecker(final StateSpace s) {
+		this.s = s;
 	}
 
-	private void resetChecker(final History history) {
-		s = history.getS();
-		lastTransition = new BigInteger("-1");
+	@Override
+	public void modelChanged(final StateSpace s) {
+		resetChecker(s);
 	}
 
 }
