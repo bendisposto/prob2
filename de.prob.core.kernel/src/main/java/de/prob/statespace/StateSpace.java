@@ -217,9 +217,16 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		// (id,name,src,dest,args)
 		for (final OpInfo op : newOps) {
+
+			StateId vertex = getVertex(op.dest);
+			if (vertex == null) {
+				vertex = new StateId(op.dest, this);
+				states.put(vertex.getId(), vertex);
+				addVertex(vertex);
+			}
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
-				addEdge(getVertex(op.src), getVertex(op.dest), op);
+				addEdge(getVertex(op.src), vertex, op);
 			}
 		}
 		notifyStateSpaceChange();
