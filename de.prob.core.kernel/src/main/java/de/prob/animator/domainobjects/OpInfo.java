@@ -1,5 +1,8 @@
 package de.prob.animator.domainobjects;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,13 +11,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-import de.prob.model.representation.AbstractElement;
+import de.prob.animator.command.GetOpFromId;
+import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.scripting.CSPModel;
+import de.prob.statespace.StateSpace;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -26,15 +31,31 @@ import de.prob.scripting.CSPModel;
  */
 public class OpInfo {
 	public final String id;
-	public final String name;
+	public String name;
 	public final String src;
 	public final String dest;
-	public final List<String> params = new ArrayList<String>();
-	public final String targetState;
-	public AbstractElement model;
+	public List<String> params = new ArrayList<String>();
+	public String targetState;
+	public boolean evaluated;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
+	public OpInfo(final String id, final String src, final String dest) {
+		this(id, null, src, dest, new ArrayList<String>(), null);
+		evaluated = false;
+	}
+
+	/**
+	 * The user can specify all of the fields necessary to identify a particular
+	 * operation
+	 * 
+	 * @param id
+	 * @param name
+	 * @param src
+	 * @param dest
+	 * @param params
+	 * @param targetState
+	 */
 	public OpInfo(final String id, final String name, final String src,
 			final String dest, final List<String> params,
 			final String targetState) {
@@ -48,8 +69,26 @@ public class OpInfo {
 				this.params.add(string);
 			}
 		}
+		evaluated = true;
 	}
 
+	/**
+	 * The {@link CompoundPrologTerm} that this constructor takes as an argument
+	 * should have an arity of 8. The following information should be contained
+	 * in the {@link CompoundPrologTerm}:
+	 * 
+	 * 
+	 * ( id , name , src , dest , {@link ListPrologTerm} represenation of
+	 * parameters that can be translated to groovy values ,
+	 * {@link ListPrologTerm} representation of names of parameters , _ , target
+	 * state )
+	 * 
+	 * @param opTerm
+	 *            - a {@link CompoundPrologTerm} which contains all of the
+	 *            information about the operation.
+	 * 
+	 * 
+	 */
 	public OpInfo(final CompoundPrologTerm opTerm) {
 		String id = null, src = null, dest = null;
 		id = getIdFromPrologTerm(opTerm.getArgument(1));
@@ -80,7 +119,7 @@ public class OpInfo {
 		this.name = PrologTerm.atomicString(opTerm.getArgument(2));
 		this.src = src;
 		this.dest = dest;
-
+		evaluated = true;
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
@@ -116,7 +155,15 @@ public class OpInfo {
 
 	@Override
 	public String toString() {
-		if (model instanceof CSPModel) {
+		return getId() + "=[" + getSrc() + "," + getDest() + "]";
+	}
+
+	public String getRep(final AbstractModel m) {
+		if (!evaluated) {
+			ensureEvaluated(m.getStatespace());
+		}
+
+		if (m instanceof CSPModel) {
 			if (params.isEmpty()) {
 				return name;
 			}
@@ -136,16 +183,38 @@ public class OpInfo {
 		}
 	}
 
-	public void setModel(final AbstractElement model) {
-		this.model = model;
-	}
-
 	@Override
 	public int hashCode() {
 		return id.hashCode();
 	}
 
 	public boolean isSame(final OpInfo that) {
+		if (!that.isEvaluated()) {
+			return false;
+		}
 		return that.getName().equals(name) && that.getParams().equals(params);
+	}
+
+	public OpInfo ensureEvaluated(final StateSpace s) {
+		if (evaluated) {
+			return this;
+		}
+		GetOpFromId command = new GetOpFromId(getId());
+		s.execute(command);
+		name = command.getName();
+		params = command.getParams();
+		targetState = command.getTargetState();
+		evaluated = true;
+		return this;
+	}
+
+	public boolean isEvaluated() {
+		return evaluated;
+	}
+
+	public String sha() throws NoSuchAlgorithmException {
+		MessageDigest md = MessageDigest.getInstance("SHA-1");
+		md.update(targetState.getBytes());
+		return new BigInteger(1, md.digest()).toString(16);
 	}
 }

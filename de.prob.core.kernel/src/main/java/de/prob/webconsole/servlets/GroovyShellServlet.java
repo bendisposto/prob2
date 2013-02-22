@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,10 +34,10 @@ import de.prob.webconsole.ResultObject;
 public class GroovyShellServlet extends HttpServlet {
 
 	private final GroovyExecution executor;
-	private String probhome;
+	private final String probhome;
 
 	@Inject
-	public GroovyShellServlet(GroovyExecution executor,
+	public GroovyShellServlet(final GroovyExecution executor,
 			@Home final String probhome) {
 		this.executor = executor;
 		this.probhome = probhome;
@@ -46,8 +45,8 @@ public class GroovyShellServlet extends HttpServlet {
 	}
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
+	public void doGet(final HttpServletRequest req,
+			final HttpServletResponse res) throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 
 		String reset = req.getParameter("reset");
@@ -72,10 +71,12 @@ public class GroovyShellServlet extends HttpServlet {
 			} catch (IOException e) {
 
 			} finally {
-				if (bw != null)
+				if (bw != null) {
 					bw.close();
-				if (fw != null)
+				}
+				if (fw != null) {
 					fw.close();
+				}
 			}
 		}
 		String result = executor.evaluate(input);
@@ -90,9 +91,8 @@ public class GroovyShellServlet extends HttpServlet {
 	 * Converts the ResultObject into a JSON representation
 	 * 
 	 * @param result
-	 * @return
 	 */
-	private String toJson(ResultObject result) {
+	private String toJson(final ResultObject result) {
 		Gson g = new Gson();
 		String json = g.toJson(result);
 		return json;

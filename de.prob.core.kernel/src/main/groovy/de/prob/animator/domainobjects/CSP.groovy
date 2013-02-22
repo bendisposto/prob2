@@ -3,17 +3,29 @@
 package de.prob.animator.domainobjects
 
 import de.prob.Main
-import de.prob.model.representation.AbstractElement
 import de.prob.parser.ProBResultParser
 import de.prob.parser.PrologTermGenerator
 import de.prob.prolog.output.IPrologTermOutput
 import de.prob.scripting.CSPModel
 
+/**
+ * A Formula representation for CSP
+ *
+ * @author joy
+ *
+ */
 class CSP implements IEvalElement {
 
 	private String code,home;
 	private CSPModel model;
 
+	/**
+	 * When a new formula is entered, the entire model must be reparsed. For this reason,
+	 * a {@link CSPModel} is one of the necessary parameters.
+	 *
+	 * @param formula
+	 * @param model
+	 */
 	public CSP(String formula, CSPModel model) {
 		this.code = formula;
 		this.home = Main.getProBDirectory();
@@ -45,6 +57,11 @@ class CSP implements IEvalElement {
 		pout.printTerm(term);
 	}
 
+	/**
+	 * @see de.prob.animator.domainobjects.IEvalElement#getKind()
+	 *
+	 * The kind for {@link CSP} formulas is "csp"
+	 */
 	public String getKind() {
 		return "csp";
 	}

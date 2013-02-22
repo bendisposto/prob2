@@ -24,6 +24,12 @@ import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.unicode.UnicodeTranslator;
 
+/**
+ * Representation of an Event-B formula
+ * 
+ * @author joy
+ * 
+ */
 public class EventB implements IEvalElement {
 
 	public FormulaUUID uuid = new FormulaUUID();
@@ -32,6 +38,11 @@ public class EventB implements IEvalElement {
 	private String kind;
 	private Node ast = null;
 
+	/**
+	 * @param code
+	 *            - The String which is a representation of the desired Event-B
+	 *            formula
+	 */
 	public EventB(final String code) {
 		this.code = UnicodeTranslator.toAscii(code);
 	}
@@ -97,7 +108,7 @@ public class EventB implements IEvalElement {
 	}
 
 	@Override
-	public void printProlog(final IPrologTermOutput pout)  {
+	public void printProlog(final IPrologTermOutput pout) {
 		if (ast == null) {
 			ensureParsed();
 		}

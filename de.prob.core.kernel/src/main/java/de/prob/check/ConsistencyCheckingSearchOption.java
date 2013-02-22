@@ -7,18 +7,20 @@
 /**
  * 
  */
-package de.prob.animator.command.notImplemented;
+package de.prob.check;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public enum ConsistencyCheckingSearchOption {
-			breadth_first_search(0, "Breadth First Search", false),
-			find_deadlocks(1,"Find Deadlocks", true),
-			find_invariant_violations(2,"Find Invariant Violations", true),
-			find_assertion_violations(3,"Find Theorem Violations", false),
-			not_inspect_existing_nodes(4,"Search for New Errors", false);
+	breadth_first_search(0, "Breadth First Search", false), find_deadlocks(1,
+			"Find Deadlocks", true), find_invariant_violations(2,
+			"Find Invariant Violations", true), find_assertion_violations(3,
+			"Find Theorem Violations", false), inspect_existing_nodes(4,
+			"Recheck existing states", false);
 
 	private final String text;
 	private final int pos;
@@ -50,6 +52,16 @@ public enum ConsistencyCheckingSearchOption {
 
 	public final boolean isEnabledByDefault() {
 		return enabledByDefault;
+	}
+
+	public final static List<String> getDefaultOptions() {
+		List<String> options = new ArrayList<String>();
+		for (ConsistencyCheckingSearchOption option : lookup.values()) {
+			if (option.isEnabledByDefault()) {
+				options.add(option.name());
+			}
+		}
+		return options;
 	}
 
 	public final static ConsistencyCheckingSearchOption get(final int code) {

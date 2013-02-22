@@ -104,7 +104,7 @@ public class HistoryElement {
 			return "State: " + src.toString();
 		} else {
 			return "From: " + src.toString() + " To: " + dest.toString()
-					+ " With: " + edge.toString();
+					+ " With: " + edge.getId();
 		}
 	}
 }

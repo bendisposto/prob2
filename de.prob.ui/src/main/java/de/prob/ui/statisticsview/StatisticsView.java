@@ -1,17 +1,19 @@
 package de.prob.ui.statisticsview;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
@@ -68,20 +70,11 @@ public class StatisticsView extends ViewPart implements IHistoryChangeListener,
 	private void createColumns() {
 		TableViewerColumn column1 = new TableViewerColumn(viewer, SWT.NONE);
 		column1.getColumn().setResizable(true);
-		column1.getColumn().pack();
+		column1.getColumn().setWidth(170);
 
 		TableViewerColumn column2 = new TableViewerColumn(viewer, SWT.NONE);
 		column2.getColumn().setResizable(true);
 		column2.getColumn().pack();
-	}
-
-	/**
-	 * Recalculate size of all columns
-	 */
-	private void packTableColumns() {
-		for (final TableColumn column : viewer.getTable().getColumns()) {
-			column.pack();
-		}
 	}
 
 	/**
@@ -101,7 +94,6 @@ public class StatisticsView extends ViewPart implements IHistoryChangeListener,
 					if (history != null && notSameStateSpace(history)) {
 						changeS(history);
 					}
-					packTableColumns();
 					viewer.refresh();
 				}
 			}
@@ -126,13 +118,11 @@ public class StatisticsView extends ViewPart implements IHistoryChangeListener,
 	}
 
 	@Override
-	public void newTransition(final String opName, final boolean isDestStateNew) {
+	public void newTransitions(final List<OpInfo> ops) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				if (!viewer.getTable().isDisposed()) {
-					contentProvider.addOp(opName);
-					packTableColumns();
 					viewer.refresh();
 				}
 			}

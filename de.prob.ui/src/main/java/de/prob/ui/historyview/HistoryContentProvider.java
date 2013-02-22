@@ -1,6 +1,7 @@
 package de.prob.ui.historyview;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -17,22 +18,23 @@ import de.prob.statespace.HistoryElement;
  */
 class HistoryContentProvider implements IStructuredContentProvider {
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput,
 			final Object newInput) {
 	}
 
+	@Override
 	public Object[] getElements(final Object inputElement) {
 		List<Object> ops = new ArrayList<Object>();
-		if( inputElement instanceof History) {
+		if (inputElement instanceof History) {
 			History history = (History) inputElement;
 			HistoryElement current = history.getCurrent();
-			while( current.getPrevious() != null ) {
-				ops.add(current.getOp());
-				current = current.getPrevious();
-			}
+			ops.addAll(current.getOpList());
+			Collections.reverse(ops);
 		}
 		return ops.toArray();
 	}

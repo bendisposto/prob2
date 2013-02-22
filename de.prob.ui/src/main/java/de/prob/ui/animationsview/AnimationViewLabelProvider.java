@@ -7,8 +7,9 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 import de.prob.model.classicalb.ClassicalBModel;
-import de.prob.model.eventb.EventBModel;
+import de.prob.model.eventb.Context;
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.Machine;
 import de.prob.statespace.History;
 import de.prob.ui.Activator;
 
@@ -24,14 +25,16 @@ class AnimationViewLabelProvider extends LabelProvider implements
 		if (index == 0) {
 			if (obj instanceof History) {
 				final History history = (History) obj;
-				final AbstractElement model = history.getModel();
-				if (model instanceof EventBModel) {
-					final EventBModel ebmodel = (EventBModel) model;
-					return ebmodel.getMainComponentName();
+				final AbstractElement component = history.getModel()
+						.getMainComponent();
+
+				if (component instanceof Machine) {
+					final Machine m = (Machine) component;
+					return m.getName();
 				}
-				if (model instanceof ClassicalBModel) {
-					final ClassicalBModel cbmodel = (ClassicalBModel) model;
-					return cbmodel.getMainMachine().getName();
+				if (component instanceof Context) {
+					final Context c = (Context) component;
+					return c.getName();
 				}
 			}
 		}

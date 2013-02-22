@@ -27,7 +27,6 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
@@ -40,21 +39,16 @@ import de.prob.scripting.CSPModel;
  * 
  * 1) Find new states and operations
  * 
- * 2) Move between states within the StateSpace to inspect them
+ * 2) Inspect different states within the StateSpace
  * 
- * 3) Perform random animation steps
+ * 3) Evaluate custom predicates and expressions
  * 
- * 4) Evaluate custom predicates and expressions -
+ * 4) Register listeners that are notified of new states and operations
  * 
- * 5) Register listeners that are notified of animation steps/new states and
- * operations.
+ * The implementation of the StateSpace is as a {@link StateSpaceGraph} with
+ * {@link StateId}s as vertices and {@link OpInfo}s as edges. Therefore, some
+ * basic graph functionalities are provided.
  * 
- * 6) View information about the current state
- * 
- * @author joy
- * 
- */
-/**
  * @author joy
  * 
  */
@@ -74,7 +68,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
-	private AbstractElement model;
+	private AbstractModel model;
 	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
 
 	private final HashSet<StateId> invariantOk = new HashSet<StateId>();
@@ -88,7 +82,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		this.animator = animator;
-		__root = new StateId("root", "1", this);
+		__root = new StateId("root", this);
 		addVertex(__root);
 		states.put(__root.getId(), __root);
 	}
@@ -100,9 +94,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	// MAKE CHANGES TO THE STATESPACE GRAPH
 	/**
-	 * Takes a state id and calculates the successor states, the invariant,
-	 * timeout, and the operations with a timeout and caches these for the given
-	 * stateId.
+	 * Takes a {@link StateId} and calculates the successor states, the
+	 * invariant, timeout, and the operations with a timeout and caches these
+	 * for the given stateId.
 	 * 
 	 * @param state
 	 */
@@ -119,20 +113,19 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		explored.add(state);
 		final List<OpInfo> enabledOperations = command.getEnabledOperations();
+		final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
 		for (final OpInfo op : enabledOperations) {
 			if (!containsEdge(op)) {
-				op.setModel(model);
 				ops.put(op.id, op);
-				notifyStateSpaceChange(op.name,
-						containsVertex(getVertex(op.dest)));
-				final StateId newState = new StateId(op.dest, op.targetState,
-						this);
+				newOps.add(op);
+				final StateId newState = new StateId(op.dest, this);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
 				addEdge(states.get(op.src), states.get(op.dest), op);
 			}
 		}
+		notifyStateSpaceChange(newOps);
 		evaluateFormulas(state);
 		return toString();
 	}
@@ -215,19 +208,19 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
-		final List<OpInfo> newOps = command.getOperations();
+		final List<OpInfo> ops = command.getOperations();
+		final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
 		// (id,name,src,dest,args)
-		for (final OpInfo op : newOps) {
-			op.setModel(model);
+		for (final OpInfo op : ops) {
 			if (!containsEdge(op)) {
-				ops.put(op.id, op);
-				notifyStateSpaceChange(op.name,
-						containsVertex(getVertex(op.dest)));
+				this.ops.put(op.id, op);
+				newOps.add(op);
 				addEdge(getVertex(op.src), getVertex(op.dest), op);
 			}
 		}
-		return newOps;
+		notifyStateSpaceChange(newOps);
+		return ops;
 	}
 
 	/**
@@ -468,10 +461,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		stateSpaceListeners.remove(l);
 	}
 
-	private void notifyStateSpaceChange(final String opName,
-			final boolean isDestStateNew) {
+	public void notifyStateSpaceChange(final List<OpInfo> ops) {
 		for (final IStateSpaceChangeListener listener : stateSpaceListeners) {
-			listener.newTransition(opName, isDestStateNew);
+			listener.newTransitions(ops);
 		}
 	}
 
@@ -521,6 +513,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return ops;
 	}
 
+	public OpInfo getOp(final String id) {
+		return ops.get(id).ensureEvaluated(this);
+	}
+
 	/**
 	 * @param state
 	 * @return Returns a String representation of the operations available from
@@ -534,7 +530,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.id + ": " + opId.toString());
+			sb.append("  " + opId.id + ": " + opId.getRep(model));
 			if (withTO.contains(opId.id)) {
 				sb.append(" (WITH TIMEOUT)");
 			}
@@ -617,7 +613,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param model
 	 */
-	public void setModel(final AbstractElement model) {
+	public void setModel(final AbstractModel model) {
 		this.model = model;
 
 		Set<Machine> machines = model.getChildrenOfType(Machine.class);
@@ -631,10 +627,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	/**
 	 * Returns the specified model for the given StateSpace
 	 * 
-	 * @return the {@link AbstractElement} that represents the model for the
-	 *         given StateSpace instance
+	 * @return the {@link AbstractModel} that represents the model for the given
+	 *         StateSpace instance
 	 */
-	public AbstractElement getModel() {
+	public AbstractModel getModel() {
 		return model;
 	}
 
@@ -650,9 +646,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public Object asType(final Class<?> className) {
 		if (className.getSimpleName().equals("AbstractModel")) {
-			if (model instanceof AbstractModel) {
-				return model;
-			}
+			return model;
 		}
 		if (className.getSimpleName().equals("EventBModel")) {
 			if (model instanceof EventBModel) {
@@ -701,5 +695,14 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 		throw new IllegalArgumentException(
 				"StateSpace does not contain vertex " + that);
+	}
+
+	@Override
+	public Set<OpInfo> outgoingEdgesOf(final StateId arg0) {
+		Set<OpInfo> outgoingEdgesOf = super.outgoingEdgesOf(arg0);
+		for (OpInfo opInfo : outgoingEdgesOf) {
+			opInfo.ensureEvaluated(this);
+		}
+		return outgoingEdgesOf;
 	}
 }

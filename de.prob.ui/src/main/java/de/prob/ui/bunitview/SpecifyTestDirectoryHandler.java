@@ -1,10 +1,11 @@
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
+
+import java.util.concurrent.Executors;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -24,13 +25,14 @@ public class SpecifyTestDirectoryHandler extends AbstractHandler implements
 		final String answer = dialog.getFilterPath();
 
 		if (answer != null && answer != "") {
-			Display.getDefault().asyncExec(new Runnable() {
+			Runnable runTestLoader = new Runnable() {
 				@Override
 				public void run() {
 					ServletContextListener.INJECTOR.getInstance(
 							TestRegistry.class).loadTests(answer);
 				}
-			});
+			};
+			Executors.newSingleThreadExecutor().execute(runTestLoader);
 			return null;
 		} else {
 			throw new IllegalArgumentException();

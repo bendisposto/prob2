@@ -1,4 +1,4 @@
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class JUnitView extends ViewPart implements ITestsAddedListener {
+public class BUnitView extends ViewPart implements ITestsAddedListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -62,7 +62,7 @@ public class JUnitView extends ViewPart implements ITestsAddedListener {
 	Injector injector = ServletContextListener.INJECTOR;
 
 	private CounterPanel fCounterPanel;
-	private JUnitProgressBar fProgressBar;
+	private BUnitProgressBar fProgressBar;
 	private Composite fCounterComposite;
 	private SashForm fSashForm;
 	private TestViewer fTestViewer;
@@ -135,7 +135,7 @@ public class JUnitView extends ViewPart implements ITestsAddedListener {
 		fCounterPanel = new CounterPanel(composite);
 		fCounterPanel.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
-		fProgressBar = new JUnitProgressBar(composite);
+		fProgressBar = new BUnitProgressBar(composite);
 		fProgressBar.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 		return composite;

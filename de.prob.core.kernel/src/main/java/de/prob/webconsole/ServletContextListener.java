@@ -11,6 +11,14 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import de.prob.Main;
 import de.prob.MainModule;
 
+/**
+ * Developers can access instantiated classes from an active instance of ProB
+ * 2.0 by accessing the {@link Injector} from this class (using the
+ * {@link ServletContextListener#getInjector()} method).
+ * 
+ * @author joy
+ * 
+ */
 public class ServletContextListener extends GuiceServletContextListener {
 
 	public static final Injector INJECTOR = Guice
@@ -21,7 +29,8 @@ public class ServletContextListener extends GuiceServletContextListener {
 		return INJECTOR;
 	}
 
-	public void contextDestroyed(ServletContextEvent event) {
+	@Override
+	public void contextDestroyed(final ServletContextEvent event) {
 		Set<Process> keySet = Main.processes.keySet();
 		for (Process process : keySet) {
 			process.destroy();

@@ -16,7 +16,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
-import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
@@ -49,7 +49,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
 	private History currentHistory;
-	private AbstractElement currentModel;
+	private AbstractModel currentModel;
 
 	Injector injector = ServletContextListener.INJECTOR;
 
@@ -144,7 +144,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 					contentProvider.setCurrentHistory(currentHistory);
 					labelProvider.setInput(currentHistory);
 
-					final AbstractElement model = history.getModel();
+					final AbstractModel model = history.getModel();
 					if (model != currentModel) {
 						updateModelInfo(model);
 					}
@@ -167,7 +167,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 		});
 	}
 
-	private void updateModelInfo(final AbstractElement model) {
+	private void updateModelInfo(final AbstractModel model) {
 		currentModel = model;
 		StateSpace s = currentHistory.getStatespace();
 

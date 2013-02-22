@@ -129,7 +129,7 @@
         </menuContribution>
         <menuContribution
               allPopups="false"
-              locationURI="toolbar:de.prob.ui.JUnitView">
+              locationURI="toolbar:de.prob.ui.BUnitView">
            <command
                  commandId="de.prob.ui.specifydirectory"
                  icon="icons/junit/etool16/new_testcase.gif"
@@ -177,7 +177,7 @@
                   name="Remove Variable">
             </command>
             <command
-                  defaultHandler="de.prob.ui.junitview.SpecifyTestDirectoryHandler"
+                  defaultHandler="de.prob.ui.bunitview.SpecifyTestDirectoryHandler"
                   id="de.prob.ui.specifydirectory"
                   name="Specify Test Directory">
             </command>
@@ -312,7 +312,7 @@
       <handler
             commandId="de.prob.ui.specifytestdir">
          <class
-               class="de.prob.ui.junitview.SpecifyTestDirectoryHandler">
+               class="de.prob.ui.bunitview.SpecifyTestDirectoryHandler">
          </class>
       </handler>
       <handler
@@ -373,10 +373,10 @@
       </view>
       <view
             category="de.hhu.stups.prob"
-            class="de.prob.ui.junitview.JUnitView"
+            class="de.prob.ui.bunitview.BUnitView"
             icon="icons/sample.gif"
-            id="de.prob.ui.JUnitView"
-            name="JUnit View">
+            id="de.prob.ui.BUnitView"
+            name="BUnit View">
       </view>
       <view
             category="de.hhu.stups.prob"
@@ -384,6 +384,14 @@
             icon="icons/sample.gif"
             id="de.prob.ui.StatisticsView"
             name="Statistics View">
+      </view>
+      <view
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.modelcheckingview.ModelCheckingView"
+            icon="icons/Consistency.png"
+            id="de.prob.ui.model_check"
+            name="Model Checking"
+            restorable="true">
       </view>
    </extension>
    <extension

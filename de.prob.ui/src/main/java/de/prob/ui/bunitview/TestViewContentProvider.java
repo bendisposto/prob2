@@ -1,4 +1,4 @@
-package de.prob.ui.junitview;
+package de.prob.ui.bunitview;
 
 import java.util.Collection;
 import java.util.Set;

@@ -109,6 +109,11 @@ dependencies {
     compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
     compile group: "de.prob", name: "unicode", version: parser_version , changing: true
 
+  	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
+
+	compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
+
+
 	compile 'com.atlassian.jira:jira-rest-java-client:2.0.0-m2'
 	testCompile 'junit:junit:4.8.2'
 	compile 'org.mockito:mockito-core:1.8.5'
