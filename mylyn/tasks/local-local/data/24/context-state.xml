@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContextState>
+<org.eclipse.mylyn.context.ui.editors>
+<MonitoredWindowOpenEditors class="org.eclipse.ui.internal.WorkbenchWindow" isActive="true" isLaunching="true" number="0">
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/de.prob.worksheetWeb/src/main/java/de/prob/worksheet/editor/DefaultEditor.java"/>
+<editorState selectionHorizontalPixel="1081" selectionLength="116" selectionOffset="1378" selectionTopPixel="360"/>
+</editor>
+<editor id="org.eclipse.wst.jsdt.ui.CompilationUnitEditor">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/de.prob.worksheetWeb/src/main/webapp/javascripts/jquery.lazyLoader.js"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="100"/>
+</editor>
+</MonitoredWindowOpenEditors>
+</org.eclipse.mylyn.context.ui.editors>
+</ContextState>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContextState>
+<org.eclipse.mylyn.context.ui.editors>
+<MonitoredWindowOpenEditors class="org.eclipse.ui.internal.WorkbenchWindow" isActive="true" isLaunching="true" number="0">
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/de.prob.worksheetWeb/src/main/java/de/prob/worksheet/ContextHistory.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="3" selectionOffset="5735" selectionTopPixel="4080"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/de.prob.worksheetWeb/src/test/java/de/prob/worksheet/ContextHistoryTest.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1411" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/de.prob.worksheetWeb/src/main/java/de/prob/worksheet/IContext.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2207" selectionTopPixel="1160"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/de.prob.worksheetWeb/src/main/java/de/prob/worksheet/api/evalStore/EvalStoreContext.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2723" selectionTopPixel="1424"/>
+</editor>
+</MonitoredWindowOpenEditors>
+</org.eclipse.mylyn.context.ui.editors>
+</ContextState>
