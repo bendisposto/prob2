@@ -56,7 +56,6 @@ import com.thoughtworks.xstream.XStream;
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.ILanguageService;
-import de.bmotionstudio.core.model.Simulation;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.Visualization;
 
@@ -122,18 +121,17 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 	public InputStream getInitialContents(String fileExtension)
 			throws UnsupportedEncodingException {
 
-		String model = getSelectedEntry().getMachineFile().getName();
-		String language = getSelectedEntry().getMachineLanguage();
+		//String model = getSelectedEntry().getMachineFile().getName();
+		//String language = getSelectedEntry().getMachineLanguage();
 
-		Simulation simulation = new Simulation(model, language);
 		Visualization visualization = new Visualization();
+		// TODO Make language more generic!!!!
 		VisualizationView visualizationView = new VisualizationView(
-				visualization);
-		simulation.addVisualizationView(visualizationView);
+				visualization, "EventB");
 
 		XStream xstream = new XStream();
 		BMotionEditorPlugin.setAliases(xstream);
-		String content = xstream.toXML(simulation);
+		String content = xstream.toXML(visualizationView);
 		return new ByteArrayInputStream(content.getBytes("UTF-8"));
 
 	}

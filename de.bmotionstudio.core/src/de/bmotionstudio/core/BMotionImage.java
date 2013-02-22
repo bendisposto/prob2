@@ -48,7 +48,9 @@ public class BMotionImage {
 	public static final String IMG_ICON_HELP = "icon_help";
 	public static final String IMG_ICON_JPG = "icon_jpg";
 	public static final String IMG_ICON_GIF = "icon_gif";
-	public static final String IMG_SPLASH = "splash";
+	public static final String IMG_ICON_SAVE = "icon_save";
+	public static final String IMG_BMS_SPLASH = "bmssplash";
+	public static final String IMG_PROB_SPLASH = "probsplash";
 
 	public static ImageDescriptor getImageDescriptor(final String path) {
 		return getImageDescriptor(BMotionEditorPlugin.PLUGIN_ID, path);
@@ -130,6 +132,8 @@ public class BMotionImage {
 				"icons/controls/icon_radiobutton_c.gif");
 		registerImage(IMG_RADIOBUTTON_UNCHECKED, BMotionEditorPlugin.PLUGIN_ID,
 				"icons/controls/icon_radiobutton_uc.gif");
+		registerImage(IMG_ICON_SAVE, "org.eclipse.ui",
+				"$nl$/icons/full/etool16/save_edit");
 
 		registerImage(IMG_ICON_JPG, BMotionEditorPlugin.PLUGIN_ID,
 				"icons/icon_jpg.gif");
@@ -139,8 +143,10 @@ public class BMotionImage {
 		registerImage(IMG_ICON_OBSERVER, BMotionEditorPlugin.PLUGIN_ID,
 				"icons/icon_observer.gif");
 
-		registerImage(IMG_SPLASH, BMotionEditorPlugin.PLUGIN_ID,
-				"icons/splash.jpg");
+		registerImage(IMG_BMS_SPLASH, BMotionEditorPlugin.PLUGIN_ID,
+				"icons/bmssplash.jpg");
+		registerImage(IMG_PROB_SPLASH, BMotionEditorPlugin.PLUGIN_ID,
+				"icons/probsplash.png");
 
 		registerBControlImages();
 

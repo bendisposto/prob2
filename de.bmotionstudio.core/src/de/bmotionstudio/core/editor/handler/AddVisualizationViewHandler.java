@@ -6,20 +6,28 @@
 
 package de.bmotionstudio.core.editor.handler;
 
-import java.util.UUID;
+import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
-import de.bmotionstudio.core.BMotionStudio;
-import de.bmotionstudio.core.editor.VisualizationViewPart;
-import de.bmotionstudio.core.model.Simulation;
+import de.bmotionstudio.core.BMotionEditorPlugin;
+import de.bmotionstudio.core.editor.handler.VisualizationViewDialog.DummyObject;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.Visualization;
-import de.bmotionstudio.core.util.PerspectiveUtil;
+import de.bmotionstudio.core.util.BMotionUtil;
+import de.prob.common.ProBConfiguration;
+import de.prob.common.util.PerspectiveUtil;
 
 public class AddVisualizationViewHandler extends AbstractHandler {
 
@@ -28,36 +36,82 @@ public class AddVisualizationViewHandler extends AbstractHandler {
 		// TODO This handler should only be enabled if a simulation or
 		// perspective respectively is open!!!
 
-		Simulation simulation = BMotionStudio.getCurrentSimulation();
-		IPerspectiveDescriptor perspective = BMotionStudio
+		IPerspectiveDescriptor perspective = ProBConfiguration
 				.getCurrentPerspective();
 
-		if (simulation != null && perspective != null) {
+		try {
 
-			PerspectiveUtil.switchPerspective(perspective);
+			if (perspective != null) {
 
-			try {
+				PerspectiveUtil.switchPerspective(perspective);
 
-				String secId = UUID.randomUUID().toString();
-				Visualization visualization = new Visualization();
-				VisualizationView visualizationView = new VisualizationView(
-						"New Visualization View", secId, visualization);
-				simulation.addVisualizationView(visualizationView);
-				
-				VisualizationViewPart visualizationViewPart = PerspectiveUtil
-						.createVisualizationViewPart(secId, visualizationView);
-				visualizationViewPart.init(simulation, visualizationView);
+				VisualizationViewDialog dialog = new VisualizationViewDialog(
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+								.getShell());
+				if (dialog.open() == Dialog.OK) {
 
-				simulation.setDirty(true);
+					Object selection = dialog.getSelection();
+					if (selection instanceof DummyObject) {
 
-			} catch (PartInitException e1) {
-				e1.printStackTrace();
+						// Create a new visualization view
+						IFile currentModelFile = ProBConfiguration
+								.getCurrentModelFile();
+						String fileName = BMotionUtil
+								.getUniqueVisualizationFileName(currentModelFile);
+						Visualization visualization = new Visualization();
+						// TODO Make language more generic!!!!
+						VisualizationView visualizationView = new VisualizationView(
+								"New Visualization View", visualization, "EventB");
+	
+						// Save content
+						IProject project = currentModelFile.getProject();
+						IFile file = project.getFile(fileName + "."
+								+ BMotionEditorPlugin.FILEEXT_STUDIO);
+						file.create(
+								BMotionUtil
+										.getInitialContentsAsInputStream(visualizationView),
+								false, new NullProgressMonitor());
+						file.refreshLocal(IResource.DEPTH_ZERO, null);
+
+						BMotionUtil.initVisualizationViewPart(
+								visualizationView, file, fileName);
+						
+					} else if (selection instanceof IResource) {
+
+						// Use an existing visualization view
+						IResource existingVisualization = (IResource) selection;
+						IFile visualizationFile = existingVisualization
+								.getProject().getFile(
+										existingVisualization.getName());
+						VisualizationView visualizationView = BMotionUtil
+								.getVisualizationViewFromFile(visualizationFile);
+
+						String viewId = existingVisualization
+								.getName()
+								.replace(
+										"."
+												+ existingVisualization
+														.getFileExtension(),
+										"");
+						BMotionUtil.createVisualizationViewPart(
+								visualizationView, visualizationFile, viewId);
+
+					}
+
+				}
+
+			} else {
+				// TODO: Throw some exception!?!
 			}
 
-		} else {
-			// TODO: Throw some exception!?!
+		} catch (PartInitException e1) {
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (CoreException e) {
+			e.printStackTrace();
 		}
-
+		
 		return null;
 
 	}

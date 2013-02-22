@@ -8,19 +8,14 @@ package de.bmotionstudio.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
@@ -30,9 +25,7 @@ import org.osgi.framework.BundleContext;
 
 import com.thoughtworks.xstream.XStream;
 
-import de.bmotionstudio.core.editor.action.SaveSimulationAction;
 import de.bmotionstudio.core.model.BMotionGuide;
-import de.bmotionstudio.core.model.Simulation;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.BConnection;
 import de.bmotionstudio.core.model.control.BControl;
@@ -62,8 +55,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	private static HashMap<String, IBControlService> controlServicesId = new HashMap<String, IBControlService>();
 
 	IExtensionRegistry registry = Platform.getExtensionRegistry();
-
-	public static Map<String, Simulation> openSimulations = new HashMap<String, Simulation>();
 
 	/**
 	 * The constructor
@@ -248,7 +239,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	}
 	
 	public static void setAliases(XStream xstream) {
-		xstream.alias("simulation", Simulation.class);
 		xstream.alias("view", VisualizationView.class);
 		xstream.alias("control", BControl.class);
 		xstream.alias("visualization", Visualization.class);
@@ -259,34 +249,35 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	@Override
 	public boolean preShutdown(IWorkbench workbench, boolean forced) {
 
-		Simulation currentSimulation = BMotionStudio.getCurrentSimulation();
-		IFile currentProjectFile = BMotionStudio.getCurrentProjectFile();
-
-		if (currentSimulation == null || currentProjectFile == null)
-			return true;
-
-		MessageDialog dg = new MessageDialog(
-				Display.getDefault().getActiveShell(),
-				"You made changes to your visualization.",
-				null,
-				"Your visualization has beed modified. Save changes?",
-				MessageDialog.QUESTION_WITH_CANCEL, new String[] {
-						IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL,
-						IDialogConstants.CANCEL_LABEL }, 0);
-		switch (dg.open()) {
-		case 0:
-			// yes - save the visualization and perspective
-			SaveSimulationAction saveSimulationAction = new SaveSimulationAction(
-					currentSimulation, currentProjectFile);
-			saveSimulationAction.run();
-			break;
-		case 1:
-			// no - do nothing
-			break;
-		case 2:
-			// cancel - return
-			return false;
-		}
+		// TODO reimplement me!
+//		Simulation currentSimulation = BMotionStudio.getCurrentSimulation();
+//		IFile currentProjectFile = BMotionStudio.getCurrentProjectFile();
+//
+//		if (currentSimulation == null || currentProjectFile == null)
+//			return true;
+//
+//		MessageDialog dg = new MessageDialog(
+//				Display.getDefault().getActiveShell(),
+//				"You made changes to your visualization.",
+//				null,
+//				"Your visualization has beed modified. Save changes?",
+//				MessageDialog.QUESTION_WITH_CANCEL, new String[] {
+//						IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL,
+//						IDialogConstants.CANCEL_LABEL }, 0);
+//		switch (dg.open()) {
+//		case 0:
+//			// yes - save the visualization and perspective
+//			SaveSimulationAction saveSimulationAction = new SaveSimulationAction(
+//					currentSimulation, currentProjectFile);
+//			saveSimulationAction.run();
+//			break;
+//		case 1:
+//			// no - do nothing
+//			break;
+//		case 2:
+//			// cancel - return
+//			return false;
+//		}
 
 		return true;
 
