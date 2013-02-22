@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.util.BMotionUtil;
-import de.prob.common.ProBConfiguration;
+import de.prob.ui.ProBConfiguration;
 
 public class VisualizationViewDialog extends Dialog {
 

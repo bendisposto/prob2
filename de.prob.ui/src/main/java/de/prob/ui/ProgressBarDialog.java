@@ -27,9 +27,6 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
-import de.bmotionstudio.core.BMotionImage;
-
-
 public abstract class ProgressBarDialog extends Dialog {
 
 	private Label processMessageLabel; // info of process finish
@@ -52,8 +49,8 @@ public abstract class ProgressBarDialog extends Dialog {
 	protected int executeTime = 50;// process times
 	protected String processMessage = "process......";// procress info
 	protected String shellTitle = "Progress..."; //
-	protected Image processImage = BMotionImage
-			.getImage(BMotionImage.IMG_ICON_LOADING);// image
+	protected Image processImage = Activator.getDefault().getImageRegistry()
+			.getDescriptor(Activator.IMG_LOADING).createImage();// image
 	protected boolean mayCancel = true; // cancel
 	protected int processBarStyle = SWT.SMOOTH; // process bar style
 
@@ -115,8 +112,8 @@ public abstract class ProgressBarDialog extends Dialog {
 		shell.setLayout(fl);
 		shell.setSize(483, 350);
 		shell.setText(shellTitle);
-		shell.setBackgroundImage(BMotionImage
-				.getImage(BMotionImage.IMG_PROB_SPLASH));
+		shell.setBackgroundImage(Activator.getDefault().getImageRegistry()
+				.getDescriptor(Activator.IMG_SPLASH).createImage());
 		
 		Monitor primary = Display.getCurrent().getPrimaryMonitor();
 		Rectangle bounds = primary.getBounds();

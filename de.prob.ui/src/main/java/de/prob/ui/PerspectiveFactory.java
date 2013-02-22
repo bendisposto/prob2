@@ -13,8 +13,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 
-import de.bmotionstudio.core.editor.VisualizationViewPart;
-
 public class PerspectiveFactory implements IPerspectiveFactory {
 
 	public static final String PROB_PERSPECTIVE = "de.prob.ui.perspective";
@@ -64,7 +62,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		main1.addView("de.prob.ui.HistoryView");
 		// right1.addView("de.prob.ui.ltl.CounterExampleView");
 		// Placeholder for new visualization views
-		main1.addPlaceholder(VisualizationViewPart.ID + ":*");
+		main1.addPlaceholder("de.bmotionstudio.core.view.VisualizationView:*");
 		// ---------------------------------
 		
 	}

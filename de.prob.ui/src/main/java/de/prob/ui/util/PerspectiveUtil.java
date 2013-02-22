@@ -1,4 +1,4 @@
-package de.prob.common.util;
+package de.prob.ui.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -26,7 +26,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 
-import de.prob.common.ProBConfiguration;
+import de.prob.ui.ProBConfiguration;
 
 public class PerspectiveUtil {
 	

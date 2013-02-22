@@ -6,7 +6,7 @@ import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
 
-import de.prob.common.util.PerspectiveUtil;
+import de.prob.ui.util.PerspectiveUtil;
 
 public class ProBStartup implements IStartup {
 

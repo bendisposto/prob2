@@ -14,7 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -25,12 +24,8 @@ import org.eventb.core.IEventBRoot;
 
 import com.google.inject.Injector;
 
-import de.bmotionstudio.core.model.VisualizationView;
-import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
-import de.prob.common.ProBConfiguration;
-import de.prob.common.util.PerspectiveUtil;
 import de.prob.model.eventb.EventBModel;
 import de.prob.rodin.translate.EventBTranslator;
 import de.prob.scripting.EventBFactory;
@@ -38,8 +33,10 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
 import de.prob.ui.Activator;
+import de.prob.ui.ProBConfiguration;
 import de.prob.ui.ProgressBarDialog;
 import de.prob.ui.eventb.internal.TranslatorFactory;
+import de.prob.ui.util.PerspectiveUtil;
 import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;
 
@@ -110,18 +107,6 @@ public class StartAnimationProgressBar extends ProgressBarDialog {
 		// Set some global variables
 		ProBConfiguration.setCurrentPerspective(perspective);
 		ProBConfiguration.setCurrentModelFile(modelFile);
-
-		// Initialize visualization views
-		for (IResource vis : BMotionUtil.getVisualizationViewFiles(modelFile
-				.getProject())) {
-			String viewId = vis.getName().replace("." + vis.getFileExtension(),
-					"");
-			IFile visualizationFile = vis.getProject().getFile(vis.getName());
-			VisualizationView visualizationView = BMotionUtil
-					.getVisualizationViewFromFile(visualizationFile);
-			BMotionUtil.initVisualizationViewPart(visualizationView,
-						visualizationFile, viewId);
-		}
 
 	}
 

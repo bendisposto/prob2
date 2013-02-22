@@ -26,8 +26,8 @@ import de.bmotionstudio.core.editor.handler.VisualizationViewDialog.DummyObject;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.Visualization;
 import de.bmotionstudio.core.util.BMotionUtil;
-import de.prob.common.ProBConfiguration;
-import de.prob.common.util.PerspectiveUtil;
+import de.prob.ui.ProBConfiguration;
+import de.prob.ui.util.PerspectiveUtil;
 
 public class AddVisualizationViewHandler extends AbstractHandler {
 

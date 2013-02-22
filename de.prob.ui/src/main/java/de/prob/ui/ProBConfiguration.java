@@ -1,4 +1,4 @@
-package de.prob.common;
+package de.prob.ui;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.IPerspectiveDescriptor;
