@@ -70,7 +70,7 @@
 							this.lastOptions=$.extend(true,{},this.options);
 							this.element.focusout();
 							this.element.on("keypress",$.proxy(function(event){
-								if(event.ctrlKey && event.which==13){	
+								if(event.ctrlKey && (event.which==13 || event.which==10)){	
 									this.element.find(".ui-editor").editor("toUnicode");
 									this._trigger("evaluate",1,[this.options.id]);
 								}
