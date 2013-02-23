@@ -2,30 +2,16 @@ package de.prob.worksheet.editor;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
-@JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
-@JsonIgnoreProperties(ignoreUnknown = true)
-@XmlSeeAlso(value = { DefaultEditor.class, HTMLEditor.class,
-		HTMLErrorEditor.class, JavascriptEditor.class })
-public abstract class IWorksheetEditor {
+public interface IEditorUI {
 
 	@JsonProperty(value = "html")
 	@XmlTransient
 	public abstract String getHTMLContent();
-
-	@JsonProperty(value = "content")
-	@XmlValue
-	public abstract String getEditorContent();
 
 	@JsonProperty(value = "init")
 	@XmlTransient
@@ -57,9 +43,6 @@ public abstract class IWorksheetEditor {
 
 	@JsonProperty(value = "html")
 	public abstract void setHTMLContent(String htmlContent);
-
-	@JsonProperty(value = "content")
-	public abstract void setEditorContent(String editorContent);
 
 	/**
 	 * Initialization function for your internal js Editor.
@@ -100,7 +83,7 @@ public abstract class IWorksheetEditor {
 	public abstract String getId();
 
 	@JsonProperty(value = "id")
-	public abstract void setId(final String id);
+	public abstract void setId(String id);
 
 	public abstract void addJavascriptHref(String href);
 

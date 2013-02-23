@@ -10,12 +10,12 @@ import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.IContext;
-import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.impl.DefaultBlock;
 
 public class BlockEvaluator {
 	Logger logger = LoggerFactory.getLogger(BlockEvaluator.class);
 
-	public void evaluate(WorksheetDocument doc, final IBlock block,
+	public void evaluate(WorksheetDocument doc, final DefaultBlock block,
 			ContextHistory contextHistory) {
 		logger.trace("{}", doc);
 		logger.trace("{}", block);
@@ -36,7 +36,7 @@ public class BlockEvaluator {
 		evaluateScript(evaluator, script);
 
 		doc.removeOutputBlocks(block);
-		IBlock[] outputs = evaluator.getOutputs();
+		DefaultBlock[] outputs = evaluator.getOutputs();
 		if (block.isInputAndOutput()) {
 			block.getEditor().setEditorContent(
 					outputs[0].getEditor().getEditorContent());

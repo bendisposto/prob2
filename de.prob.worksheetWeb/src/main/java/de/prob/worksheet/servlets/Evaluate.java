@@ -20,7 +20,7 @@ import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
-import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 /**
@@ -83,7 +83,7 @@ public class Evaluate extends HttpServlet {
 
 		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 
-		IBlock[] blocks = doc.getBlocksFrom(index);
+		IBlockData[] blocks = doc.getBlocksFrom(index);
 		resp.getWriter().print(
 				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
 						blocks));

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
-import de.prob.worksheet.block.JavascriptBlock;
+import de.prob.worksheet.block.impl.JavascriptBlock;
 
 @WebServlet(urlPatterns = { "/newDocument" })
 public class NewDocument extends HttpServlet {

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
-import de.prob.worksheet.block.InitializeStoreBlock;
+import de.prob.worksheet.block.impl.InitializeStoreBlock;
 import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 public class SubsessionServletHelper {

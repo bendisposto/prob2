@@ -2,8 +2,8 @@ package de.prob.worksheet.evaluator;
 
 import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.api.ContextHistory;
-import de.prob.worksheet.block.IBlock;
-import de.prob.worksheet.block.JavascriptBlock;
+import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.block.impl.JavascriptBlock;
 
 public class DocumentEvaluator {
 
@@ -30,12 +30,12 @@ public class DocumentEvaluator {
 
 		doc.markAllAfter(index);
 
-		IBlock[] blocks = doc.getBlocksFrom(index);
+		DefaultBlock[] blocks = doc.getBlocksFrom(index);
 
 		contextHistory.removeHistoryAfterInitial(blocks[0].getId());
 
 		BlockEvaluator blockEvaluator = new BlockEvaluator();
-		for (final IBlock block : blocks) {
+		for (final DefaultBlock block : blocks) {
 			blockEvaluator.evaluate(doc, block, contextHistory);
 		}
 

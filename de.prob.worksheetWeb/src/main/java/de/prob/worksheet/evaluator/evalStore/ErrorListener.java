@@ -16,7 +16,7 @@ import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.api.IWorksheetAPIListener;
 import de.prob.worksheet.api.IWorksheetEvent;
 import de.prob.worksheet.api.WorksheetErrorEvent;
-import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.impl.DefaultBlock;
 
 /**
  * @author Rene
@@ -26,13 +26,13 @@ public class ErrorListener implements IWorksheetAPIListener {
 	Logger logger = LoggerFactory.getLogger(ErrorListener.class);
 	private static final Injector INJECTOR = ServletContextListener.INJECTOR;
 
-	public ArrayList<IBlock> outputBlocks;
+	public ArrayList<DefaultBlock> outputBlocks;
 	private boolean haltAll;
 
 	/**
 	 * 
 	 */
-	public ErrorListener(ArrayList<IBlock> output) {
+	public ErrorListener(ArrayList<DefaultBlock> output) {
 		logger.trace(output.toString());
 		this.setHaltAll(false);
 		this.outputBlocks = output;
@@ -66,8 +66,8 @@ public class ErrorListener implements IWorksheetAPIListener {
 		logger.trace("halt{}", haltAll);
 
 		logger.debug("{}", ServletContextListener.INJECTOR.getAllBindings());
-		final IBlock block = ServletContextListener.INJECTOR.getInstance(Key
-				.get(IBlock.class, Names.named(outputBlockType)));
+		final DefaultBlock block = ServletContextListener.INJECTOR.getInstance(Key
+				.get(DefaultBlock.class, Names.named(outputBlockType)));
 		block.setOutput(true);
 		block.getEditor().setEditorContent(output);
 		this.outputBlocks.add(block);

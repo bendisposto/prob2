@@ -2,14 +2,14 @@ package de.prob.worksheet.api.classicalB;
 
 import java.util.ArrayList;
 
-import de.prob.worksheet.block.IBlock;
-import de.prob.worksheet.block.JavascriptBlock;
+import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.block.impl.JavascriptBlock;
 
 public class OutputWorksheetApiListener implements WorksheetAPIListener {
 
-	ArrayList<IBlock> outputBlocks;
+	ArrayList<DefaultBlock> outputBlocks;
 
-	public OutputWorksheetApiListener(final ArrayList<IBlock> retVal) {
+	public OutputWorksheetApiListener(final ArrayList<DefaultBlock> retVal) {
 		this.outputBlocks = retVal;
 	}
 

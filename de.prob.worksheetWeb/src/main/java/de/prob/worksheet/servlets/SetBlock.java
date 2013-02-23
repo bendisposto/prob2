@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
-import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.impl.DefaultBlock;
 
 /**
  * @author Rene
@@ -79,7 +79,7 @@ public class SetBlock extends HttpServlet {
 
 		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 		final String blockString = req.getParameter("block");
-		final IBlock block = mapper.readValue(blockString, IBlock.class);
+		final DefaultBlock block = mapper.readValue(blockString, DefaultBlock.class);
 		logger.debug("EditorContent in Block:{}", block.getEditor()
 				.getEditorContent());
 

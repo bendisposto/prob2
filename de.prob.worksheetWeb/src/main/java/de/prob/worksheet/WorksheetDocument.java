@@ -13,7 +13,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.IBlockData;
+import de.prob.worksheet.block.impl.DefaultBlock;
 
 /**
  * The WorksheetDocument stores all data including blocks of a worksheet
@@ -33,7 +34,7 @@ public class WorksheetDocument {
 	/**
 	 * The list containing the blocks of this document
 	 */
-	private final ArrayList<IBlock> blocks;
+	private final ArrayList<DefaultBlock> blocks;
 
 	/**
 	 * A flag which tells if this document has a menu
@@ -68,7 +69,7 @@ public class WorksheetDocument {
 		logger.trace("in:");
 		this.hasMenu = false;
 		this.hasBody = true;
-		this.blocks = new ArrayList<IBlock>();
+		this.blocks = new ArrayList<DefaultBlock>();
 		this.menu = new ArrayList<WorksheetMenuNode>();
 		logger.trace("return:");
 	}
@@ -79,11 +80,11 @@ public class WorksheetDocument {
 	 * @return an array containing all blocks of this document
 	 */
 	@XmlElements(value = { @XmlElement(name = "block") })
-	public IBlock[] getBlocks() {
+	public IBlockData[] getBlocks() {
 		logger.trace("in:");
 		logger.trace("return: blocks=",
-				this.blocks.toArray(new IBlock[this.blocks.size()]));
-		return this.blocks.toArray(new IBlock[this.blocks.size()]);
+				this.blocks.toArray(new DefaultBlock[this.blocks.size()]));
+		return this.blocks.toArray(new DefaultBlock[this.blocks.size()]);
 	}
 
 	/**
@@ -92,7 +93,7 @@ public class WorksheetDocument {
 	 * @param blocks
 	 *            array to set for this document
 	 */
-	public void setBlocks(final IBlock[] blocks) {
+	public void setBlocks(final DefaultBlock[] blocks) {
 		logger.trace("in: blocks={}", blocks);
 		this.blocks.clear();
 		this.blocks.addAll(Arrays.asList(blocks));
@@ -230,7 +231,7 @@ public class WorksheetDocument {
 	 * @param block
 	 *            to insert
 	 */
-	public void insertBlock(final int index, final IBlock block) {
+	public void insertBlock(final int index, final DefaultBlock block) {
 		logger.trace("in: index={}, block={}", index, block);
 		assert (this.blockCounter < Integer.MAX_VALUE);
 
@@ -248,7 +249,7 @@ public class WorksheetDocument {
 	 *            to get the index for
 	 * @return the index of the block
 	 */
-	public int getBlockIndex(final IBlock block) {
+	public int getBlockIndex(final IBlockData block) {
 		logger.trace("in: block={}", block);
 		final String id = block.getId();
 		for (int x = 0; x < this.blocks.size(); x++) {
@@ -268,10 +269,10 @@ public class WorksheetDocument {
 	 *            for the first block to return
 	 * @return an array containing all blocks from index to blocks.length
 	 */
-	public IBlock[] getBlocksFrom(final int index) {
+	public DefaultBlock[] getBlocksFrom(final int index) {
 		logger.trace("in: index={}", index);
-		IBlock[] blocks = this.blocks.subList(index, this.blocks.size())
-				.toArray(new IBlock[this.blocks.size() - index]);
+		DefaultBlock[] blocks = this.blocks.subList(index, this.blocks.size())
+				.toArray(new DefaultBlock[this.blocks.size() - index]);
 		logger.trace("return: blocks={}", blocks);
 		return blocks;
 	}
@@ -297,7 +298,7 @@ public class WorksheetDocument {
 	 * @param index
 	 * @param block
 	 */
-	public void setBlock(final int index, final IBlock block) {
+	public void setBlock(final int index, final DefaultBlock block) {
 		logger.trace("in: index={}, block={}", index, block);
 		this.blocks.set(index, block);
 		logger.debug("Worksheet Blocks={}", this.blocks);
@@ -310,7 +311,7 @@ public class WorksheetDocument {
 	 * @param block
 	 *            to remove the output blocks for
 	 */
-	public void removeOutputBlocks(final IBlock block) {
+	public void removeOutputBlocks(final IBlockData block) {
 		logger.trace("in: block={}", block);
 		final int blockIndex = this.getBlockIndex(block);
 		final String[] outputIds = this.blocks.get(blockIndex)
@@ -332,7 +333,7 @@ public class WorksheetDocument {
 	 *            to return the block for
 	 * @return the block with the given id
 	 */
-	public IBlock getBlockById(final String id) {
+	public DefaultBlock getBlockById(final String id) {
 		logger.trace("in: id={}", id);
 		for (int x = 0; x < this.blocks.size(); x++) {
 			if (this.blocks.get(x).getId().equals(id)) {
@@ -355,7 +356,7 @@ public class WorksheetDocument {
 	public int getBlockIndexById(final String id) {
 		logger.trace("in: id={}", id);
 		int x = 0;
-		for (final IBlock block : this.blocks) {
+		for (final IBlockData block : this.blocks) {
 			if (block.getId().equals(id)) {
 				logger.trace("return: index={}", x);
 				return x;
@@ -372,7 +373,7 @@ public class WorksheetDocument {
 	 * @param block
 	 *            to append
 	 */
-	public void appendBlock(final IBlock block) {
+	public void appendBlock(final DefaultBlock block) {
 		logger.trace("in: block={}", block);
 		this.insertBlock(this.blocks.size(), block);
 		logger.debug("Worksheet Blocks=={}", this.blocks);
@@ -387,7 +388,7 @@ public class WorksheetDocument {
 	 *            to set
 	 * @return the index of the set block or -1 if the block is not set
 	 */
-	public int setBlock(final IBlock block) {
+	public int setBlock(final DefaultBlock block) {
 		logger.trace("in: block={}", block);
 		// find block index
 		final int index = this.getBlockIndexById(block.getId());
@@ -430,7 +431,7 @@ public class WorksheetDocument {
 	 */
 	public void moveBlocksTo(final String[] ids, final int index) {
 		logger.trace("in: ids={},index={}", ids, index);
-		final IBlock[] blocks = new IBlock[ids.length];
+		final DefaultBlock[] blocks = new DefaultBlock[ids.length];
 		for (int x = 0; x < ids.length; x++) {
 			blocks[x] = this.blocks.remove(this.getBlockIndexById(ids[x]));
 		}
@@ -450,10 +451,10 @@ public class WorksheetDocument {
 	 * @param newBlock
 	 *            to set
 	 */
-	public void switchBlockType(String id, IBlock newBlock) {
+	public void switchBlockType(String id, DefaultBlock newBlock) {
 		logger.trace("in: id={} type={}", id, newBlock);
 		int index = this.getBlockIndexById(id);
-		IBlock oldBlock = this.getBlockById(id);
+		IBlockData oldBlock = this.getBlockById(id);
 		newBlock.setId(oldBlock.getId());
 		newBlock.setOutputBlockIds(oldBlock.getOutputBlockIds());
 		this.blocks.set(index, newBlock);
@@ -470,14 +471,14 @@ public class WorksheetDocument {
 	 * @param blocks
 	 *            to append
 	 */
-	public void insertOutputBlocks(IBlock block, IBlock[] blocks) {
+	public void insertOutputBlocks(DefaultBlock block, DefaultBlock[] blocks) {
 		logger.trace("in: block={}, blocks={}", block, blocks);
 		int index = this.getBlockIndex(block);
 
 		if (block.isInputAndOutput()) {
 		}
 
-		for (final IBlock outBlock : blocks) {
+		for (final DefaultBlock outBlock : blocks) {
 			if (block.isImmediateEvaluation()) {
 				setBlock(index, outBlock);
 				block = outBlock;
@@ -501,7 +502,7 @@ public class WorksheetDocument {
 	 *            to test
 	 * @return true if the block is the last block of the document else false
 	 */
-	public boolean isLastBlock(IBlock block) {
+	public boolean isLastBlock(IBlockData block) {
 		logger.trace("in block={}",
 				block.equals(this.blocks.get(this.blocks.size() - 1)));
 		logger.trace("return: blocksEqual={}",
@@ -514,7 +515,7 @@ public class WorksheetDocument {
 	 * 
 	 * @return
 	 */
-	public IBlock getFirst() {
+	public IBlockData getFirst() {
 		logger.trace("in:");
 		logger.trace("return: block={}", this.blocks.get(0));
 		return this.blocks.get(0);
@@ -527,9 +528,9 @@ public class WorksheetDocument {
 	 *            which is the first one to be retrieve
 	 * @return an array of blocks
 	 */
-	public IBlock[] getBlocksFrom(IBlock block) {
+	public IBlockData[] getBlocksFrom(IBlockData block) {
 		logger.trace("in:");
-		IBlock[] blocks = getBlocksFrom(getBlockIndex(block));
+		IBlockData[] blocks = getBlocksFrom(getBlockIndex(block));
 		logger.trace("return: blocks={}", blocks);
 		return blocks;
 	}

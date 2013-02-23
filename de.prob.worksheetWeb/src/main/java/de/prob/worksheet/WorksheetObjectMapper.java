@@ -10,15 +10,15 @@ import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.worksheet.block.DefaultBlock;
-import de.prob.worksheet.block.HTMLBlock;
-import de.prob.worksheet.block.HTMLErrorBlock;
-import de.prob.worksheet.block.InitializeStoreBlock;
-import de.prob.worksheet.block.JavascriptBlock;
-import de.prob.worksheet.block.StoreValuesBlock;
-import de.prob.worksheet.editor.HTMLEditor;
-import de.prob.worksheet.editor.HTMLErrorEditor;
-import de.prob.worksheet.editor.JavascriptEditor;
+import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.block.impl.HTMLBlock;
+import de.prob.worksheet.block.impl.HTMLErrorBlock;
+import de.prob.worksheet.block.impl.InitializeStoreBlock;
+import de.prob.worksheet.block.impl.JavascriptBlock;
+import de.prob.worksheet.block.impl.StoreValuesBlock;
+import de.prob.worksheet.editor.impl.HTMLEditor;
+import de.prob.worksheet.editor.impl.HTMLErrorEditor;
+import de.prob.worksheet.editor.impl.JavascriptEditor;
 
 /**
  * The WorksheetObjectMapper extends the Jackson Object Mapper. It binds the

@@ -16,7 +16,8 @@ import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.api.IWorksheetAPIListener;
 import de.prob.worksheet.api.IWorksheetEvent;
 import de.prob.worksheet.api.WorksheetOutputEvent;
-import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.IBlockData;
+import de.prob.worksheet.block.impl.DefaultBlock;
 
 /**
  * @author Rene
@@ -26,12 +27,12 @@ public class OutputListener implements IWorksheetAPIListener {
 	Logger logger = LoggerFactory.getLogger(OutputListener.class);
 	private static final Injector INJECTOR = ServletContextListener.INJECTOR;
 
-	ArrayList<IBlock> outputBlocks;
+	ArrayList<DefaultBlock> outputBlocks;
 
 	/**
 	 * 
 	 */
-	public OutputListener(ArrayList<IBlock> output) {
+	public OutputListener(ArrayList<DefaultBlock> output) {
 		logger.trace("{}", output);
 		this.outputBlocks = output;
 	}
@@ -57,16 +58,16 @@ public class OutputListener implements IWorksheetAPIListener {
 
 	private void addOutput(final String outputBlockType, final String output) {
 		logger.trace("{},{}", outputBlockType, output);
-		final IBlock block = OutputListener.INJECTOR.getInstance(Key.get(
-				IBlock.class, Names.named(outputBlockType)));
+		final DefaultBlock block = OutputListener.INJECTOR.getInstance(Key.get(
+				DefaultBlock.class, Names.named(outputBlockType)));
 		block.setOutput(true);
 		block.getEditor().setEditorContent(output);
 		this.outputBlocks.add(block);
 		logger.debug("{}", this.outputBlocks);
 	}
 
-	public IBlock[] getBlocks() {
+	public IBlockData[] getBlocks() {
 		logger.trace("");
-		return this.outputBlocks.toArray(new IBlock[this.outputBlocks.size()]);
+		return this.outputBlocks.toArray(new DefaultBlock[this.outputBlocks.size()]);
 	}
 }

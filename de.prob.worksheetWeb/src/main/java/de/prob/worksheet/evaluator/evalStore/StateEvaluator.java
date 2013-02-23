@@ -14,7 +14,7 @@ import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.IContext;
 import de.prob.worksheet.api.WorksheetErrorEvent;
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
-import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.evaluator.IWorksheetEvaluator;
 import de.prob.worksheet.parser.SimpleConsoleParser;
 import de.prob.worksheet.parser.SimpleConsoleParser.EvalObject;
@@ -28,7 +28,7 @@ public class StateEvaluator implements IWorksheetEvaluator {
 	ErrorListener errorListener;
 	HistoryListener actionListener;
 
-	ArrayList<IBlock> outputBlocks = new ArrayList<IBlock>();
+	ArrayList<DefaultBlock> outputBlocks = new ArrayList<DefaultBlock>();
 	ContextHistory contextHistory;
 
 	@Inject
@@ -208,9 +208,9 @@ public class StateEvaluator implements IWorksheetEvaluator {
 	 * @see de.prob.worksheet.evaluator.IWorksheetEvaluator#getOutputs()
 	 */
 	@Override
-	public IBlock[] getOutputs() {
+	public DefaultBlock[] getOutputs() {
 		this.outputBlocks = this.outListener.outputBlocks;
-		IBlock[] ret = this.outputBlocks.toArray(new IBlock[this.outputBlocks
+		DefaultBlock[] ret = this.outputBlocks.toArray(new DefaultBlock[this.outputBlocks
 				.size()]);
 		logger.trace(Arrays.toString(ret));
 		return ret;

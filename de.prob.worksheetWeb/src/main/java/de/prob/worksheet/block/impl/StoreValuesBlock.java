@@ -1,12 +1,12 @@
-package de.prob.worksheet.block;
+package de.prob.worksheet.block.impl;
 
 import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.inject.Inject;
 
-import de.prob.worksheet.editor.HTMLEditor;
-import de.prob.worksheet.editor.IWorksheetEditor;
+import de.prob.worksheet.editor.IEditorData;
+import de.prob.worksheet.editor.impl.HTMLEditor;
 
 @XmlType(name = "StateValues")
 public class StoreValuesBlock extends DefaultBlock {
@@ -22,7 +22,7 @@ public class StoreValuesBlock extends DefaultBlock {
 
 	@Override
 	@JsonIgnore
-	public void setEditor(IWorksheetEditor editor) {
+	public void setEditor(IEditorData editor) {
 		// TODO Auto-generated method stub
 		super.setEditor(editor);
 	}

@@ -1,4 +1,4 @@
-package de.prob.worksheet.block;
+package de.prob.worksheet.block.impl;
 
 import java.util.ArrayList;
 

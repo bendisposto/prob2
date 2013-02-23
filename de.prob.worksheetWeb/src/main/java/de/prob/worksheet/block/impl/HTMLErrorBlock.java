@@ -1,14 +1,14 @@
 /**
  * 
  */
-package de.prob.worksheet.block;
+package de.prob.worksheet.block.impl;
 
 import javax.xml.bind.annotation.XmlType;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import de.prob.worksheet.editor.HTMLErrorEditor;
+import de.prob.worksheet.editor.impl.HTMLErrorEditor;
 
 /**
  * @author Rene

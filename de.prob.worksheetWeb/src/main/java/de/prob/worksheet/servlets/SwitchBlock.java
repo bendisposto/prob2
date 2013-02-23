@@ -21,7 +21,7 @@ import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
-import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 @WebServlet(urlPatterns = { "/SwitchBlock" })
@@ -60,8 +60,8 @@ public class SwitchBlock extends HttpServlet {
 		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 
 		// create new Block of whished type
-		IBlock newBlock = ServletContextListener.INJECTOR.getInstance(Key.get(
-				IBlock.class, Names.named(req.getParameter("type"))));
+		DefaultBlock newBlock = ServletContextListener.INJECTOR.getInstance(Key.get(
+				DefaultBlock.class, Names.named(req.getParameter("type"))));
 		// Switch Block in Document
 		doc.switchBlockType((String) req.getParameter("blockId"), newBlock);
 

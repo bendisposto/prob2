@@ -1,4 +1,4 @@
-package de.prob.worksheet.editor;
+package de.prob.worksheet.editor.impl;
 
 import javax.xml.bind.annotation.XmlType;
 

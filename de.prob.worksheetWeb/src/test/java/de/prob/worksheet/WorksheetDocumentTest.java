@@ -5,11 +5,12 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import de.prob.worksheet.block.HTMLBlock;
-import de.prob.worksheet.block.HTMLErrorBlock;
-import de.prob.worksheet.block.IBlock;
-import de.prob.worksheet.block.InitializeStoreBlock;
-import de.prob.worksheet.block.JavascriptBlock;
+import de.prob.worksheet.block.IBlockData;
+import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.block.impl.HTMLBlock;
+import de.prob.worksheet.block.impl.HTMLErrorBlock;
+import de.prob.worksheet.block.impl.InitializeStoreBlock;
+import de.prob.worksheet.block.impl.JavascriptBlock;
 
 public class WorksheetDocumentTest {
 
@@ -92,7 +93,7 @@ public class WorksheetDocumentTest {
 	public void testGetBlocksFromInt() {
 		WorksheetDocument doc = new WorksheetDocument();
 
-		IBlock[] res = doc.getBlocksFrom(0);
+		IBlockData[] res = doc.getBlocksFrom(0);
 		assertTrue(res.length == 0);
 
 		doc.appendBlock(new InitializeStoreBlock());
@@ -123,16 +124,16 @@ public class WorksheetDocumentTest {
 	@Test
 	public void testRemoveOutputBlocks() {
 		WorksheetDocument doc = new WorksheetDocument();
-		IBlock block = new JavascriptBlock();
+		DefaultBlock block = new JavascriptBlock();
 		doc.appendBlock(block);
-		IBlock out1 = new HTMLBlock();
-		IBlock out2 = new HTMLErrorBlock();
+		DefaultBlock out1 = new HTMLBlock();
+		DefaultBlock out2 = new HTMLErrorBlock();
 
-		doc.insertOutputBlocks(block, new IBlock[] { out1, out2 });
+		doc.insertOutputBlocks(block, new DefaultBlock[] { out1, out2 });
 		assertTrue(out1.getId().equals("ws-block-id-2"));
 		assertTrue(out2.getId().equals("ws-block-id-3"));
 		doc.removeOutputBlocks(block);
-		IBlock[] res = doc.getBlocksFrom(0);
+		IBlockData[] res = doc.getBlocksFrom(0);
 		assertTrue(res.length == 1);
 	}
 
@@ -169,12 +170,12 @@ public class WorksheetDocumentTest {
 	@Test
 	public void testSwitchBlockType() {
 		WorksheetDocument doc = new WorksheetDocument();
-		IBlock block = new JavascriptBlock();
+		DefaultBlock block = new JavascriptBlock();
 		block.addOutputId("ws-block-id-5");
 		block.addOutputId("ws-block-id-6");
 		block.addOutputId("ws-block-id-7");
 		doc.appendBlock(block);
-		IBlock block2 = new HTMLBlock();
+		DefaultBlock block2 = new HTMLBlock();
 		doc.switchBlockType(block.getId(), block2);
 		assertTrue(block2.getOutputBlockIds().length == 3);
 		assertTrue(block2.getId().equals(block.getId()));
@@ -183,11 +184,11 @@ public class WorksheetDocumentTest {
 	@Test
 	public void testInsertOutputBlocks() {
 		WorksheetDocument doc = new WorksheetDocument();
-		IBlock block = new JavascriptBlock();
+		DefaultBlock block = new JavascriptBlock();
 		doc.appendBlock(block);
-		doc.insertOutputBlocks(block, new IBlock[] { new HTMLBlock(),
+		doc.insertOutputBlocks(block, new DefaultBlock[] { new HTMLBlock(),
 				new HTMLErrorBlock() });
-		IBlock[] res = doc.getBlocksFrom(0);
+		IBlockData[] res = doc.getBlocksFrom(0);
 		assertTrue(res.length == 3);
 		String[] ids = doc.getBlockById(res[0].getId()).getOutputBlockIds();
 		assertTrue(ids.length == 2);

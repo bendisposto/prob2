@@ -8,11 +8,12 @@ import org.junit.Test;
 import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
-import de.prob.worksheet.block.HTMLBlock;
-import de.prob.worksheet.block.HTMLErrorBlock;
-import de.prob.worksheet.block.IBlock;
-import de.prob.worksheet.block.InitializeStoreBlock;
-import de.prob.worksheet.block.JavascriptBlock;
+import de.prob.worksheet.block.IBlockData;
+import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.block.impl.HTMLBlock;
+import de.prob.worksheet.block.impl.HTMLErrorBlock;
+import de.prob.worksheet.block.impl.InitializeStoreBlock;
+import de.prob.worksheet.block.impl.JavascriptBlock;
 
 public class BlockEvaluatorTest {
 	WorksheetDocument doc;
@@ -21,9 +22,9 @@ public class BlockEvaluatorTest {
 	public void init() {
 		doc = new WorksheetDocument();
 		doc.appendBlock(new InitializeStoreBlock());
-		IBlock inBlock = new JavascriptBlock();
+		DefaultBlock inBlock = new JavascriptBlock();
 		doc.appendBlock(inBlock);
-		doc.insertOutputBlocks(inBlock, new IBlock[] { new HTMLBlock(),
+		doc.insertOutputBlocks(inBlock, new DefaultBlock[] { new HTMLBlock(),
 				new HTMLErrorBlock() });
 		doc.appendBlock(new JavascriptBlock());
 	}
@@ -31,15 +32,15 @@ public class BlockEvaluatorTest {
 	@Test
 	public void testEvaluate() {
 		doc = new WorksheetDocument();
-		IBlock inBlock = new JavascriptBlock();
+		DefaultBlock inBlock = new JavascriptBlock();
 		inBlock.getEditor().setEditorContent("x");
 		doc.appendBlock(inBlock);
-		doc.insertOutputBlocks(inBlock, new IBlock[] { new HTMLBlock(),
+		doc.insertOutputBlocks(inBlock, new DefaultBlock[] { new HTMLBlock(),
 				new HTMLErrorBlock() });
 		BlockEvaluator evaluater = new BlockEvaluator();
 		evaluater.evaluate(doc, inBlock, new ContextHistory(
 				new EvalStoreContext("root", null)));
-		IBlock[] res = doc.getBlocksFrom(0);
+		IBlockData[] res = doc.getBlocksFrom(0);
 		assertTrue(res.length == 2);
 	}
 }

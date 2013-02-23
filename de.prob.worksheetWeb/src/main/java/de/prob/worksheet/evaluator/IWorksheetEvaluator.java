@@ -3,7 +3,7 @@ package de.prob.worksheet.evaluator;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.IContext;
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
-import de.prob.worksheet.block.IBlock;
+import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.parser.SimpleConsoleParser.EvalObject;
 
 public interface IWorksheetEvaluator {
@@ -23,7 +23,7 @@ public interface IWorksheetEvaluator {
 
 	// TODO decouple the evaluator completely from worksheet e.g. not
 	// outputBlocks just outputArray of any type
-	public abstract IBlock[] getOutputs();
+	public abstract DefaultBlock[] getOutputs();
 
 	public abstract ContextHistory getContextHistory();
 }
