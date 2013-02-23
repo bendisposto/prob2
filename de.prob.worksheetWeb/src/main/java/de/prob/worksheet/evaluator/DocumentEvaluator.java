@@ -1,9 +1,9 @@
 package de.prob.worksheet.evaluator;
 
-import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.block.impl.JavascriptBlock;
+import de.prob.worksheet.document.impl.WorksheetDocument;
 
 public class DocumentEvaluator {
 

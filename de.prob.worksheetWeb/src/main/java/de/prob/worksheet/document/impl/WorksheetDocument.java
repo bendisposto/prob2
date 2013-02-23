@@ -1,4 +1,4 @@
-package de.prob.worksheet;
+package de.prob.worksheet.document.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.document.IWorksheetData;
+import de.prob.worksheet.document.IWorksheetEvaluate;
+import de.prob.worksheet.document.IWorksheetUI;
 
 /**
  * The WorksheetDocument stores all data including blocks of a worksheet
@@ -23,7 +26,7 @@ import de.prob.worksheet.block.impl.DefaultBlock;
  * 
  */
 @XmlRootElement(name = "worksheet")
-public class WorksheetDocument {
+public class WorksheetDocument implements IWorksheetData, IWorksheetUI, IWorksheetEvaluate {
 
 	/**
 	 * The static slf4j Logger for this class
@@ -74,11 +77,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Getter for this documents blocks
-	 * 
-	 * @return an array containing all blocks of this document
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#getBlocks()
 	 */
+	@Override
 	@XmlElements(value = { @XmlElement(name = "block") })
 	public IBlockData[] getBlocks() {
 		logger.trace("in:");
@@ -87,12 +89,10 @@ public class WorksheetDocument {
 		return this.blocks.toArray(new DefaultBlock[this.blocks.size()]);
 	}
 
-	/**
-	 * Setter for this documents blocks
-	 * 
-	 * @param blocks
-	 *            array to set for this document
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#setBlocks(de.prob.worksheet.block.impl.DefaultBlock[])
 	 */
+	@Override
 	public void setBlocks(final DefaultBlock[] blocks) {
 		logger.trace("in: blocks={}", blocks);
 		this.blocks.clear();
@@ -100,11 +100,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Getter for the hasMenu Flag
-	 * 
-	 * @return a boolean flag for hasMenu
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetUI#getHasMenu()
 	 */
+	@Override
 	@XmlTransient
 	public boolean getHasMenu() {
 		logger.trace("in:");
@@ -112,23 +111,20 @@ public class WorksheetDocument {
 		return this.hasMenu;
 	}
 
-	/**
-	 * Setter for the hasMenu flag
-	 * 
-	 * @param hasMenu
-	 *            flag to be set
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetUI#setHasMenu(boolean)
 	 */
+	@Override
 	public void setHasMenu(final boolean hasMenu) {
 		logger.trace("in: hasMenu{}", hasMenu);
 		this.hasMenu = hasMenu;
 		logger.trace("return:");
 	}
 
-	/**
-	 * Getter for the hasBody flag
-	 * 
-	 * @return a boolean for the hasBody flag
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetUI#getHasBody()
 	 */
+	@Override
 	@XmlTransient
 	public boolean getHasBody() {
 		logger.trace("in:");
@@ -136,23 +132,20 @@ public class WorksheetDocument {
 		return this.hasBody;
 	}
 
-	/**
-	 * Setter for the hasBody flag
-	 * 
-	 * @param hasBody
-	 *            flag to be set
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetUI#setHasBody(boolean)
 	 */
+	@Override
 	public void setHasBody(final boolean hasBody) {
 		logger.trace("in: hasBody={}", hasBody);
 		this.hasBody = hasBody;
 		logger.trace("return:");
 	}
 
-	/**
-	 * Getter for the menu list
-	 * 
-	 * @return an array containing all nodes of this menu
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetUI#getMenu()
 	 */
+	@Override
 	@XmlTransient
 	public ArrayList<WorksheetMenuNode> getMenu() {
 		logger.trace("in:");
@@ -160,23 +153,20 @@ public class WorksheetDocument {
 		return this.menu;
 	}
 
-	/**
-	 * Setter for the menu list
-	 * 
-	 * @param menu
-	 *            array to be set for this document
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetUI#setMenu(java.util.ArrayList)
 	 */
+	@Override
 	public void setMenu(final ArrayList<WorksheetMenuNode> menu) {
 		logger.trace("in: menu={}", menu);
 		this.menu = menu;
 		logger.trace("return:");
 	}
 
-	/**
-	 * Getter for the id of this document
-	 * 
-	 * @return id of this document
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#getId()
 	 */
+	@Override
 	@XmlAttribute(name = "id")
 	@XmlID
 	public String getId() {
@@ -185,23 +175,20 @@ public class WorksheetDocument {
 		return this.id;
 	}
 
-	/**
-	 * Setter for the id of this document
-	 * 
-	 * @param id
-	 *            to be set for this document
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#setId(java.lang.String)
 	 */
+	@Override
 	public void setId(final String id) {
 		logger.trace("in: id={}", id);
 		this.id = id;
 		logger.trace("return:");
 	}
 
-	/**
-	 * Getter for the blockCounter of this document
-	 * 
-	 * @return the blockcounter
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#getBlockCounter()
 	 */
+	@Override
 	@XmlAttribute(name = "blockCounter")
 	public int getBlockCounter() {
 		logger.trace("in:");
@@ -209,28 +196,20 @@ public class WorksheetDocument {
 		return blockCounter;
 	}
 
-	/**
-	 * Setter for the blockCounter of this document
-	 * 
-	 * @param blockCounter
-	 *            to be set
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#setBlockCounter(int)
 	 */
+	@Override
 	public void setBlockCounter(int blockCounter) {
 		logger.trace("in: blockCounter={}", blockCounter);
 		this.blockCounter = blockCounter;
 		logger.trace("return:");
 	}
 
-	/**
-	 * Inserts a block into the document at the specified index. Assigns a new
-	 * Id to the inserted Block and shifts all blocks at and after the specified
-	 * position to the left
-	 * 
-	 * @param index
-	 *            to insert the block at
-	 * @param block
-	 *            to insert
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#insertBlock(int, de.prob.worksheet.block.impl.DefaultBlock)
 	 */
+	@Override
 	public void insertBlock(final int index, final DefaultBlock block) {
 		logger.trace("in: index={}, block={}", index, block);
 		assert (this.blockCounter < Integer.MAX_VALUE);
@@ -242,13 +221,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Returns the index of a specified block or -1 if the block is not found
-	 * 
-	 * @param block
-	 *            to get the index for
-	 * @return the index of the block
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#getBlockIndex(de.prob.worksheet.block.IBlockData)
 	 */
+	@Override
 	public int getBlockIndex(final IBlockData block) {
 		logger.trace("in: block={}", block);
 		final String id = block.getId();
@@ -262,13 +238,10 @@ public class WorksheetDocument {
 		return -1;
 	}
 
-	/**
-	 * Returns all blocks from index to blocks.length
-	 * 
-	 * @param index
-	 *            for the first block to return
-	 * @return an array containing all blocks from index to blocks.length
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetEvaluate#getBlocksFrom(int)
 	 */
+	@Override
 	public DefaultBlock[] getBlocksFrom(final int index) {
 		logger.trace("in: index={}", index);
 		DefaultBlock[] blocks = this.blocks.subList(index, this.blocks.size())
@@ -277,12 +250,10 @@ public class WorksheetDocument {
 		return blocks;
 	}
 
-	/**
-	 * Marks all blocks from index to blocks.length. A marked block isn't
-	 * evaluated so his content could be incorrect
-	 * 
-	 * @param blockIndex
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetEvaluate#markAllAfter(int)
 	 */
+	@Override
 	public void markAllAfter(final int index) {
 		logger.trace("in: index={}", index);
 		for (int x = index; x < this.blocks.size(); x++) {
@@ -291,13 +262,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Sets the block at index. The block which had been at index before setting
-	 * is removed
-	 * 
-	 * @param index
-	 * @param block
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#setBlock(int, de.prob.worksheet.block.impl.DefaultBlock)
 	 */
+	@Override
 	public void setBlock(final int index, final DefaultBlock block) {
 		logger.trace("in: index={}, block={}", index, block);
 		this.blocks.set(index, block);
@@ -305,12 +273,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Removes all Output Blocks for the given Input BLock
-	 * 
-	 * @param block
-	 *            to remove the output blocks for
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetEvaluate#removeOutputBlocks(de.prob.worksheet.block.IBlockData)
 	 */
+	@Override
 	public void removeOutputBlocks(final IBlockData block) {
 		logger.trace("in: block={}", block);
 		final int blockIndex = this.getBlockIndex(block);
@@ -326,13 +292,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Returns the block for the given id
-	 * 
-	 * @param id
-	 *            to return the block for
-	 * @return the block with the given id
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#getBlockById(java.lang.String)
 	 */
+	@Override
 	public DefaultBlock getBlockById(final String id) {
 		logger.trace("in: id={}", id);
 		for (int x = 0; x < this.blocks.size(); x++) {
@@ -345,14 +308,10 @@ public class WorksheetDocument {
 		return null;
 	}
 
-	/**
-	 * Returns the index of the block with given id or -1 if no block with the
-	 * give id exists
-	 * 
-	 * @param id
-	 *            of the block to retrieve the index for
-	 * @return the index of the block
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#getBlockIndexById(java.lang.String)
 	 */
+	@Override
 	public int getBlockIndexById(final String id) {
 		logger.trace("in: id={}", id);
 		int x = 0;
@@ -367,12 +326,10 @@ public class WorksheetDocument {
 		return -1;
 	}
 
-	/**
-	 * Appends the block to the end of the document
-	 * 
-	 * @param block
-	 *            to append
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#appendBlock(de.prob.worksheet.block.impl.DefaultBlock)
 	 */
+	@Override
 	public void appendBlock(final DefaultBlock block) {
 		logger.trace("in: block={}", block);
 		this.insertBlock(this.blocks.size(), block);
@@ -380,14 +337,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Sets the block with block.id to the new Block. If no block exists in the
-	 * document with block id the new block is not set
-	 * 
-	 * @param block
-	 *            to set
-	 * @return the index of the set block or -1 if the block is not set
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#setBlock(de.prob.worksheet.block.impl.DefaultBlock)
 	 */
+	@Override
 	public int setBlock(final DefaultBlock block) {
 		logger.trace("in: block={}", block);
 		// find block index
@@ -405,14 +358,10 @@ public class WorksheetDocument {
 		return index;
 	}
 
-	/**
-	 * Moves the block with id to index
-	 * 
-	 * @param id
-	 *            of the block to move
-	 * @param index
-	 *            to move the block to
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetEvaluate#moveBlockTo(java.lang.String, int)
 	 */
+	@Override
 	public void moveBlockTo(final String id, final int index) {
 		logger.trace("in: id={}, index={}", id, index);
 		final int oldIndex = this.getBlockIndexById(id);
@@ -421,14 +370,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Moves the blocks with the ids to the positions starting at index
-	 * 
-	 * @param ids
-	 *            of the blocks to move
-	 * @param index
-	 *            of the starting pos to move the blocks to
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetEvaluate#moveBlocksTo(java.lang.String[], int)
 	 */
+	@Override
 	public void moveBlocksTo(final String[] ids, final int index) {
 		logger.trace("in: ids={},index={}", ids, index);
 		final DefaultBlock[] blocks = new DefaultBlock[ids.length];
@@ -442,15 +387,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Changes the type of the block with id to newBlock. The new block gets the
-	 * id of the old block
-	 * 
-	 * @param id
-	 *            of the block to switch
-	 * @param newBlock
-	 *            to set
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetEvaluate#switchBlockType(java.lang.String, de.prob.worksheet.block.impl.DefaultBlock)
 	 */
+	@Override
 	public void switchBlockType(String id, DefaultBlock newBlock) {
 		logger.trace("in: id={} type={}", id, newBlock);
 		int index = this.getBlockIndexById(id);
@@ -462,15 +402,10 @@ public class WorksheetDocument {
 		logger.trace("return:");
 	}
 
-	/**
-	 * Appends the output blocks to the given block and sets the output ids to
-	 * the block
-	 * 
-	 * @param block
-	 *            to append the output blocks to
-	 * @param blocks
-	 *            to append
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetEvaluate#insertOutputBlocks(de.prob.worksheet.block.impl.DefaultBlock, de.prob.worksheet.block.impl.DefaultBlock[])
 	 */
+	@Override
 	public void insertOutputBlocks(DefaultBlock block, DefaultBlock[] blocks) {
 		logger.trace("in: block={}, blocks={}", block, blocks);
 		int index = this.getBlockIndex(block);
@@ -495,13 +430,10 @@ public class WorksheetDocument {
 
 	}
 
-	/**
-	 * Returns whether the given block is the last one in the document.
-	 * 
-	 * @param block
-	 *            to test
-	 * @return true if the block is the last block of the document else false
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#isLastBlock(de.prob.worksheet.block.IBlockData)
 	 */
+	@Override
 	public boolean isLastBlock(IBlockData block) {
 		logger.trace("in block={}",
 				block.equals(this.blocks.get(this.blocks.size() - 1)));
@@ -510,24 +442,20 @@ public class WorksheetDocument {
 		return block.equals(this.blocks.get(this.blocks.size() - 1));
 	}
 
-	/**
-	 * Returns the first block in the document
-	 * 
-	 * @return
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetData#getFirst()
 	 */
+	@Override
 	public IBlockData getFirst() {
 		logger.trace("in:");
 		logger.trace("return: block={}", this.blocks.get(0));
 		return this.blocks.get(0);
 	}
 
-	/**
-	 * Returns all blocks from block to the end of the document
-	 * 
-	 * @param block
-	 *            which is the first one to be retrieve
-	 * @return an array of blocks
+	/* (non-Javadoc)
+	 * @see de.prob.worksheet.IWorksheetEvaluate#getBlocksFrom(de.prob.worksheet.block.IBlockData)
 	 */
+	@Override
 	public IBlockData[] getBlocksFrom(IBlockData block) {
 		logger.trace("in:");
 		IBlockData[] blocks = getBlocksFrom(getBlockIndex(block));

@@ -1,4 +1,4 @@
-package de.prob.worksheet;
+package de.prob.worksheet.document.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;

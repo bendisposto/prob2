@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.prob.worksheet.WorksheetMenuNode;
+import de.prob.worksheet.document.impl.WorksheetMenuNode;
 
 public interface IBlockUI {
 

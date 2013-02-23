@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.prob.worksheet.servlets;
+package de.prob.worksheet.servlets.sync;
 
 import java.io.IOException;
 
@@ -17,21 +17,21 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.document.IWorksheetData;
+import de.prob.worksheet.document.impl.WorksheetDocument;
 
 /**
  * @author Rene
  * 
  */
-@WebServlet(urlPatterns = { "/moveBlocks" })
-public class MoveBlocks extends HttpServlet {
+@WebServlet(urlPatterns = { "/setDocument" })
+public class SetDocument extends HttpServlet {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -9079077179155960240L;
-	Logger logger = LoggerFactory.getLogger(MoveBlocks.class);
+	private static final long serialVersionUID = 838311906090202227L;
 
-	private WorksheetDocument doc;
+	Logger logger = LoggerFactory.getLogger(SetDocument.class);
 
 	/*
 	 * (non-Javadoc)
@@ -45,8 +45,6 @@ public class MoveBlocks extends HttpServlet {
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
 		this.doPost(req, resp);
-
-		return;
 	}
 
 	/*
@@ -60,34 +58,27 @@ public class MoveBlocks extends HttpServlet {
 	protected void doPost(final HttpServletRequest req,
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
-		// Get Session and needed Attributes
 		logParameters(req);
 		resp.setCharacterEncoding("UTF-8");
+		// Get Session and needed Attributes
 		final HttpSession session = req.getSession();
 		final String wsid = req.getParameter("worksheetSessionID");
-		if (session.isNew()) {
-			System.err
-					.println("No worksheet Document is initialized (first a call to newDocument Servlet is needed)");
-			resp.getWriter().write("Error: No document is initialized");
-			return;
-		}
-		this.doc = (WorksheetDocument) req.getSession().getAttribute(
-				"WorksheetDocument" + wsid);
 
-		final ObjectMapper mapper = new ObjectMapper();
+		final ObjectMapper jsonMapper = new ObjectMapper();
 
-		final String[] ids = mapper.readValue(req.getParameter("ids"),
-				String[].class);
-		final int index = Integer.parseInt(req.getParameter("index"));
+		final String docString = req.getParameter("document");
+		IWorksheetData doc;
+		doc = jsonMapper.readValue(docString, WorksheetDocument.class);
 
-		this.doc.moveBlocksTo(ids, index);
+		session.setAttribute("WorksheetDocument" + wsid, doc);
+		// TODO add result msg;
 
-		// TODO add result msg
 		return;
+
 	}
 
 	private void logParameters(HttpServletRequest req) {
-		String[] params = { "worksheetSessionId", "ids", "index" };
+		String[] params = { "worksheetSessionId", "document" };
 		String msg = "{ ";
 		for (int x = 0; x < params.length; x++) {
 			if (x != 0)

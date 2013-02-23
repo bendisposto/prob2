@@ -20,11 +20,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import de.prob.worksheet.ServletContextListener;
-import de.prob.worksheet.WorksheetMenuNode;
 import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.block.IBlockEvaluate;
 import de.prob.worksheet.block.IBlockUI;
+import de.prob.worksheet.document.impl.WorksheetMenuNode;
 import de.prob.worksheet.editor.IEditorData;
 import de.prob.worksheet.editor.impl.JavascriptEditor;
 

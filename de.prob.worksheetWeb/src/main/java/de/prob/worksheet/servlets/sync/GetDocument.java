@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.prob.worksheet.servlets;
+package de.prob.worksheet.servlets.sync;
 
 import java.io.IOException;
 
@@ -17,20 +17,23 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.WorksheetObjectMapper;
+import de.prob.worksheet.document.IWorksheetData;
 
 /**
  * @author Rene
  * 
  */
-@WebServlet(urlPatterns = { "/setDocument" })
-public class SetDocument extends HttpServlet {
+@WebServlet(urlPatterns = { "/getDocument" })
+public class GetDocument extends HttpServlet {
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 838311906090202227L;
+	private static final long serialVersionUID = 531283514393446460L;
+	Logger logger = LoggerFactory.getLogger(GetDocument.class);
 
-	Logger logger = LoggerFactory.getLogger(SetDocument.class);
+	private IWorksheetData doc;
 
 	/*
 	 * (non-Javadoc)
@@ -61,19 +64,22 @@ public class SetDocument extends HttpServlet {
 		resp.setCharacterEncoding("UTF-8");
 		// Get Session and needed Attributes
 		final HttpSession session = req.getSession();
-		final String wsid = req.getParameter("worksheetSessionID");
+		final String wsid = req.getParameter("worksheetSessionId");
+		if (session.isNew()) {
+			System.err
+					.println("No worksheet Document is initialized (first a call to newDocument Servlet is needed)");
+			resp.getWriter().write("Error: No document is initialized");
+			return;
+		}
+		this.doc = (IWorksheetData) req.getSession().getAttribute(
+				"WorksheetDocument" + wsid);
 
-		final ObjectMapper jsonMapper = new ObjectMapper();
-
-		final String docString = req.getParameter("document");
-		WorksheetDocument doc;
-		doc = jsonMapper.readValue(docString, WorksheetDocument.class);
-
-		session.setAttribute("WorksheetDocument" + wsid, doc);
-		// TODO add result msg;
+		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
+		resp.getWriter().print(
+				mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
+						this.doc));
 
 		return;
-
 	}
 
 	private void logParameters(HttpServletRequest req) {

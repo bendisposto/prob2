@@ -11,6 +11,7 @@ import de.prob.worksheet.block.impl.HTMLBlock;
 import de.prob.worksheet.block.impl.HTMLErrorBlock;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
 import de.prob.worksheet.block.impl.JavascriptBlock;
+import de.prob.worksheet.document.impl.WorksheetDocument;
 
 public class WorksheetDocumentTest {
 

@@ -7,15 +7,15 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 
 import de.prob.worksheet.ServletContextListener;
-import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.IContext;
 import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.document.IWorksheetEvaluate;
 
 public class BlockEvaluator {
 	Logger logger = LoggerFactory.getLogger(BlockEvaluator.class);
 
-	public void evaluate(WorksheetDocument doc, final DefaultBlock block,
+	public void evaluate(IWorksheetEvaluate doc, final DefaultBlock block,
 			ContextHistory contextHistory) {
 		logger.trace("{}", doc);
 		logger.trace("{}", block);

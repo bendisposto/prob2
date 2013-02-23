@@ -23,8 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
+import de.prob.worksheet.document.IWorksheetData;
+import de.prob.worksheet.document.impl.WorksheetDocument;
 
 @WebServlet(urlPatterns = { "/loadDocument" })
 public class LoadDocument extends HttpServlet {
@@ -67,7 +68,7 @@ public class LoadDocument extends HttpServlet {
 				req.getSession(), req.getParameter("worksheetSessionId"));
 
 		// load or create the document
-		WorksheetDocument doc = this.loadDocumentFromXml(attributes,
+		IWorksheetData doc = this.loadDocumentFromXml(attributes,
 				req.getParameter("documentXML"));
 		attributes = new HashMap<String, Object>();
 		attributes.put("document", doc);
@@ -111,9 +112,9 @@ public class LoadDocument extends HttpServlet {
 		}
 	}
 
-	private WorksheetDocument loadDocumentFromXml(
+	private IWorksheetData loadDocumentFromXml(
 			HashMap<String, Object> attributes, String documentXML) {
-		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");
+		IWorksheetData doc = (IWorksheetData) attributes.get("document");
 		if (doc != null) {
 			logger.warn("Document has already been loaded for this editor");
 		}

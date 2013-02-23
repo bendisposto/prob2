@@ -1,36 +1,37 @@
 /**
  * 
  */
-package de.prob.worksheet.servlets;
+package de.prob.worksheet.servlets.sync;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.worksheet.WorksheetDocument;
-import de.prob.worksheet.WorksheetObjectMapper;
-import de.prob.worksheet.block.impl.DefaultBlock;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.prob.worksheet.document.IWorksheetEvaluate;
 
 /**
  * @author Rene
  * 
  */
-@WebServlet(urlPatterns = { "/setBlock" })
-public class SetBlock extends HttpServlet {
+@WebServlet(urlPatterns = { "/moveBlocks" })
+public class MoveBlocks extends HttpServlet {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -6543934467917126456L;
+	private static final long serialVersionUID = -9079077179155960240L;
+	Logger logger = LoggerFactory.getLogger(MoveBlocks.class);
 
-	Logger logger = LoggerFactory.getLogger(SetBlock.class);
+	private IWorksheetEvaluate doc;
 
 	/*
 	 * (non-Javadoc)
@@ -44,6 +45,8 @@ public class SetBlock extends HttpServlet {
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
 		this.doPost(req, resp);
+
+		return;
 	}
 
 	/*
@@ -57,42 +60,34 @@ public class SetBlock extends HttpServlet {
 	protected void doPost(final HttpServletRequest req,
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
-		req.setCharacterEncoding("UTF-8");
+		// Get Session and needed Attributes
 		logParameters(req);
 		resp.setCharacterEncoding("UTF-8");
-		final String wsid = req.getParameter("worksheetSessionId");
-		HashMap<String, Object> sessionAttributes = (HashMap<String, Object>) req
-				.getSession().getAttribute(wsid);
-		if (sessionAttributes == null)
-			sessionAttributes = new HashMap<String, Object>();
-		WorksheetDocument doc = (WorksheetDocument) sessionAttributes
-				.get("document");
-
-		if (req.getSession().isNew() || doc == null) {
+		final HttpSession session = req.getSession();
+		final String wsid = req.getParameter("worksheetSessionID");
+		if (session.isNew()) {
 			System.err
 					.println("No worksheet Document is initialized (first a call to newDocument Servlet is needed)");
 			resp.getWriter().write("Error: No document is initialized");
-			if (req.getSession().isNew())
-				req.getSession().invalidate();
 			return;
 		}
+		this.doc = (IWorksheetEvaluate) req.getSession().getAttribute(
+				"WorksheetDocument" + wsid);
 
-		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
-		final String blockString = req.getParameter("block");
-		final DefaultBlock block = mapper.readValue(blockString, DefaultBlock.class);
-		logger.debug("EditorContent in Block:{}", block.getEditor()
-				.getEditorContent());
+		final ObjectMapper mapper = new ObjectMapper();
 
-		doc.setBlock(block);
+		final String[] ids = mapper.readValue(req.getParameter("ids"),
+				String[].class);
+		final int index = Integer.parseInt(req.getParameter("index"));
 
-		// TODO add result msg;
+		this.doc.moveBlocksTo(ids, index);
 
+		// TODO add result msg
 		return;
-
 	}
 
 	private void logParameters(HttpServletRequest req) {
-		String[] params = { "worksheetSessionId", "block" };
+		String[] params = { "worksheetSessionId", "ids", "index" };
 		String msg = "{ ";
 		for (int x = 0; x < params.length; x++) {
 			if (x != 0)
@@ -102,5 +97,4 @@ public class SetBlock extends HttpServlet {
 		msg += " }";
 		logger.debug(msg);
 	}
-
 }

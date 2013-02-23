@@ -14,7 +14,7 @@ import javax.xml.bind.JAXB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.worksheet.WorksheetDocument;
+import de.prob.worksheet.document.IWorksheetData;
 
 @WebServlet(urlPatterns = { "/saveDocument" })
 public class SaveDocument extends HttpServlet {
@@ -52,7 +52,7 @@ public class SaveDocument extends HttpServlet {
 				req.getSession(), req.getParameter("worksheetSessionId"));
 
 		// load or create the document
-		WorksheetDocument doc = this.getDocument(attributes);
+		IWorksheetData doc = this.getDocument(attributes);
 		attributes = new HashMap<String, Object>();
 		attributes.put("document", doc);
 
@@ -101,8 +101,8 @@ public class SaveDocument extends HttpServlet {
 		}
 	}
 
-	private WorksheetDocument getDocument(HashMap<String, Object> attributes) {
-		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");
+	private IWorksheetData getDocument(HashMap<String, Object> attributes) {
+		IWorksheetData doc = (IWorksheetData) attributes.get("document");
 		if (doc == null) {
 			logger.error("No document is initialized");
 		}

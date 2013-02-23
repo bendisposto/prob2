@@ -13,9 +13,10 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.block.impl.JavascriptBlock;
+import de.prob.worksheet.document.IWorksheetData;
+import de.prob.worksheet.document.impl.WorksheetDocument;
 
 @WebServlet(urlPatterns = { "/newDocument" })
 public class NewDocument extends HttpServlet {
@@ -48,7 +49,7 @@ public class NewDocument extends HttpServlet {
 		HashMap<String, Object> attributes = this.getSessionAttributes(
 				req.getSession(), req.getParameter("worksheetSessionId"));
 		// load or create the document
-		WorksheetDocument doc = this.getDocument(attributes);
+		IWorksheetData doc = this.getDocument(attributes);
 
 		// store the session attributes
 		this.setSessionAttributes(req.getSession(),
@@ -89,8 +90,8 @@ public class NewDocument extends HttpServlet {
 		}
 	}
 
-	private WorksheetDocument getDocument(HashMap<String, Object> attributes) {
-		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");
+	private IWorksheetData getDocument(HashMap<String, Object> attributes) {
+		IWorksheetData doc = (IWorksheetData) attributes.get("document");
 		if (doc == null) {
 			// TODO add distinction between eclipse plugin mode and external
 			// Browser mode (e.g. remove unnecessary menus in plugin mode)

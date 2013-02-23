@@ -1,4 +1,4 @@
-package de.prob.worksheet.servlets;
+package de.prob.worksheet.servlets.eval;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,11 +17,11 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 
 import de.prob.worksheet.ServletContextListener;
-import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.document.impl.WorksheetDocument;
 import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 @WebServlet(urlPatterns = { "/SwitchBlock" })

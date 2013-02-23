@@ -8,10 +8,11 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
+import de.prob.worksheet.document.IWorksheetData;
+import de.prob.worksheet.document.impl.WorksheetDocument;
 import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 public class SubsessionServletHelper {
@@ -66,7 +67,7 @@ public class SubsessionServletHelper {
 		return contextHistory;
 	}
 
-	public WorksheetDocument getDocument(HashMap<String, Object> attributes,
+	public IWorksheetData getDocument(HashMap<String, Object> attributes,
 			boolean create) {
 		logger.trace("in: attributes={}, create={}", attributes, create);
 		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.prob.worksheet.servlets;
+package de.prob.worksheet.servlets.eval;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,11 +16,11 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.worksheet.WorksheetDocument;
 import de.prob.worksheet.WorksheetObjectMapper;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.IBlockData;
+import de.prob.worksheet.document.impl.WorksheetDocument;
 import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 /**

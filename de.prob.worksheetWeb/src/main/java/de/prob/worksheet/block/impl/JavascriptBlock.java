@@ -7,8 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 import com.google.inject.Inject;
 
 import de.prob.worksheet.ServletContextListener;
-import de.prob.worksheet.WorksheetMenuNode;
 import de.prob.worksheet.WorksheetObjectMapper;
+import de.prob.worksheet.document.impl.WorksheetMenuNode;
 
 @XmlType(name = "JavascriptBlock")
 public class JavascriptBlock extends DefaultBlock {
