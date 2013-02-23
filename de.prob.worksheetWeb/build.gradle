@@ -17,8 +17,8 @@ eclipse {
 	classpath{
 		file {
 			withXml {
-				def node = it.asNode()
-				node.appendNode('classpathentry', [kind: 'src', path: '/de.prob.core.kernel',combineaccessrules: 'false'])
+			//	def node = it.asNode()
+			//	node.appendNode('classpathentry', [kind: 'src', path: '/de.prob.core.kernel',combineaccessrules: 'false'])
 			}
 		}
 		
