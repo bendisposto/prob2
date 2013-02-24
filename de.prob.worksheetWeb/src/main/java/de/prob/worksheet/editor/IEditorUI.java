@@ -15,7 +15,7 @@ public interface IEditorUI {
 
 	@JsonProperty(value = "init")
 	@XmlTransient
-	public abstract String getInitializationFunction();
+	public abstract String getInitializationScript();
 
 	@JsonProperty(value = "getContent")
 	@XmlTransient
@@ -57,7 +57,7 @@ public interface IEditorUI {
 	 * @param initFunction
 	 */
 	@JsonIgnore
-	public abstract void setInitializationFunction(String initFunction);
+	public abstract void setInitializationScript(String initFunction);
 
 	@JsonIgnore
 	public abstract void setGetContentScript(String script);

@@ -13,7 +13,7 @@ public class HTMLErrorEditor extends DefaultEditor {
 
 		this.setHTMLContent("<div class=\"ui-editor-HTMLErrorOutput ui-editor-border ui-editor-padding\"> ></div>");
 		this.setGetContentScript("function(){return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").html();}");
-		this.setInitializationFunction("function(){return $($(\"#\"+this.id+\" .ui-editor-HTMLErrorOutput\")[0])}");
+		this.setInitializationScript("function(){return $($(\"#\"+this.id+\" .ui-editor-HTMLErrorOutput\")[0])}");
 		this.setSetContentScript("function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").empty();return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").append(content)}");
 		this.setDestroyScript("function(){}");
 		this.setSetFocusScript("function(){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").focus();}");

@@ -15,14 +15,15 @@ public class JavascriptBlock extends DefaultBlock {
 
 	@Inject
 	public JavascriptBlock() {
-		this.setEvaluatorType("state");
+		setEvaluatorType("state");
 		this.initBlockMenu("Javascript", new String[] { "Standard" });
+		setToUnicode(true);
 	}
 
 	private void initBlockMenu() {
 		final ArrayList<WorksheetMenuNode> menu = new ArrayList<WorksheetMenuNode>();
 
-		String[] blockTypes = this.getInputBlockTypes();
+		String[] blockTypes = getInputBlockTypes();
 
 		final WorksheetMenuNode typeMenu = new WorksheetMenuNode("Javascript",
 				"", "");
@@ -39,9 +40,9 @@ public class JavascriptBlock extends DefaultBlock {
 		}
 		if (typeMenu.getChildren().length != 0) {
 			menu.add(typeMenu);
-			this.setMenu(menu.toArray(new WorksheetMenuNode[menu.size()]));
+			setMenu(menu.toArray(new WorksheetMenuNode[menu.size()]));
 		} else {
-			this.setHasMenu(false);
+			setHasMenu(false);
 		}
 	}
 

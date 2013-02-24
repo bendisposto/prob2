@@ -37,10 +37,10 @@
 								this.element.uniqueId();
 								this.options.id = this.element.attr("id");
 							}
+							this._setNeitherInNorOutput(this.options.neitherInNorOutput);
 							this._initMenu(this.options.menu);
 							this._setHasMenu(this.options.hasMenu);
 							this._setIsOutput(this.options.isOutput);
-
 							// this.element.append("<div class=\"ui-sort-handle
 							// ui-icon ui-icon-arrow-4 ui-widget-content
 							// ui-corner-all\"></div>");
@@ -91,6 +91,16 @@
 									this.activateMenu();
 								}
 							},this));
+							this.element.on("keyup",$.proxy(function(event){
+								if(this.menuactivate){
+									this.activateMenu();
+								}
+							},this));
+							this.element.contextMenu([
+							                         {'add documentation before': $.proxy(function(menuItem,menu){$('#ws-id-1').worksheet("addNewBlock",['Documentation',this.attr('id'),true]);},this.element)},
+							                         $.contextMenu.separator,
+							                         {'add documentation after': $.proxy(function(menuItem,menu){$('#ws-id-1').worksheet("addNewBlock",['Documentation',this.attr('id'),false]);},this.element)}],
+							                         {theme:'vista'});
 							this.element.find(".ui-block-menu").bind("menuselect",$.proxy(
 									function(event,ui){ui.item.trigger("menuitemselect",ui)},
 									this.element.find(".ui-block-menu")));
@@ -246,7 +256,9 @@
 								break;
 							case "mark":
 								break;
-
+							case "neitherInNorOutput":
+								this._setNeitherInNorOutput(value);
+								break;
 							default:
 								break;
 							}
@@ -353,6 +365,13 @@
 								this.element.addClass("ui-output");
 							}else{
 								this.element.removeClass("ui-output");	
+							}
+						},
+						_setNeitherInNorOutput:function(neitherInNorOutput){
+							if(neitherInNorOutput){
+								this.element.addClass("ui-no-in-no-out");
+							}else{
+								this.element.removeClass("ui-no-in-no-out");	
 							}
 						},
 						switchBlock:function(name){

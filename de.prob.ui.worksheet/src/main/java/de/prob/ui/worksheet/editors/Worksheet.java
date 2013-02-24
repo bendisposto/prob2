@@ -64,25 +64,25 @@ public class Worksheet extends EditorPart {
 	private String sessionID;
 
 	public Worksheet() {
-		SubSessionIdCounter++;
-		subSessionId = SubSessionIdCounter;
+		Worksheet.SubSessionIdCounter++;
+		subSessionId = Worksheet.SubSessionIdCounter;
 	}
 
 	public void setDirty(boolean dirty) {
 		if (this.dirty != dirty) {
 			this.dirty = dirty;
-			this.firePropertyChange(IEditorPart.PROP_DIRTY);
+			firePropertyChange(IEditorPart.PROP_DIRTY);
 			if (!dirty)
-				this.cleanDirty();
+				cleanDirty();
 		}
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		logger.trace("{}", monitor);
+		Worksheet.logger.trace("{}", monitor);
 		// TODO add tests for files on other filesystems and linked files
 
-		IEditorInput input = this.getEditorInput();
+		IEditorInput input = getEditorInput();
 		if (input instanceof FileEditorInput) {
 			setContentToFileEditorInput((FileEditorInput) input, monitor);
 			setDirty(false);
@@ -155,7 +155,7 @@ public class Worksheet extends EditorPart {
 			// TODO add handling of Core Exception
 			e.printStackTrace();
 		} catch (OperationCanceledException e) {
-			System.out.println("Save canceled");
+			Worksheet.logger.debug("Save canceled");
 		}
 
 	}
@@ -172,7 +172,7 @@ public class Worksheet extends EditorPart {
 			url = new URL("http://localhost:8080/worksheet/saveDocument");
 
 			body = Worksheet.addPOSTParameter(body, "worksheetSessionId",
-					Integer.toString(this.subSessionId));
+					Integer.toString(subSessionId));
 
 			con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("POST");
@@ -186,9 +186,9 @@ public class Worksheet extends EditorPart {
 			con.setRequestProperty("Accept-Charset", "UTF-8");
 			String cookie = con.getRequestProperty("Cookie");
 			if (cookie == null)
-				cookie = "JSESSIONID=" + this.sessionID;
+				cookie = "JSESSIONID=" + sessionID;
 			if (!cookie.contains("JSESSIONID"))
-				cookie += ";JSESSIONID=" + this.sessionID;
+				cookie += ";JSESSIONID=" + sessionID;
 
 			con.setRequestProperty("Cookie", cookie);
 			writer = new OutputStreamWriter(con.getOutputStream());
@@ -221,7 +221,7 @@ public class Worksheet extends EditorPart {
 			url = new URL("http://localhost:8080/worksheet/closeDocument");
 
 			body = Worksheet.addPOSTParameter(body, "worksheetSessionId",
-					Integer.toString(this.subSessionId));
+					Integer.toString(subSessionId));
 
 			con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("POST");
@@ -235,9 +235,9 @@ public class Worksheet extends EditorPart {
 			con.setRequestProperty("Accept-Charset", "UTF-8");
 			String cookie = con.getRequestProperty("Cookie");
 			if (cookie == null)
-				cookie = "JSESSIONID=" + this.sessionID;
+				cookie = "JSESSIONID=" + sessionID;
 			if (!cookie.contains("JSESSIONID"))
-				cookie += ";JSESSIONID=" + this.sessionID;
+				cookie += ";JSESSIONID=" + sessionID;
 
 			con.setRequestProperty("Cookie", cookie);
 			writer = new OutputStreamWriter(con.getOutputStream());
@@ -275,13 +275,13 @@ public class Worksheet extends EditorPart {
 	@Override
 	public void doSaveAs() {
 		// FIXME files are not shown in save as dialog
-		IProgressMonitor monitor = this.getEditorSite().getActionBars()
+		IProgressMonitor monitor = getEditorSite().getActionBars()
 				.getStatusLineManager().getProgressMonitor();
-		IEditorInput input = this.getEditorInput();
+		IEditorInput input = getEditorInput();
 		// initialize and create SaveAsDialog
 		SaveAsDialog dialog = new SaveAsDialog(getSite().getShell());
 
-		if (this.getEditorInput() instanceof FileEditorInput
+		if (getEditorInput() instanceof FileEditorInput
 				&& FileEditorInput.isLocalFile(((FileEditorInput) input)
 						.getFile())) {
 			IFile oldFile = ((FileEditorInput) input).getFile();
@@ -300,14 +300,13 @@ public class Worksheet extends EditorPart {
 
 		try {
 			if (file.exists()) {
-				file.setContents(this.getContentInputStream(), true, true,
-						monitor);
-				this.setDirty(false);
-				this.setInputWithNotify(new FileEditorInput(file));
+				file.setContents(getContentInputStream(), true, true, monitor);
+				setDirty(false);
+				setInputWithNotify(new FileEditorInput(file));
 			} else {
-				file.create(this.getContentInputStream(), true, monitor);
-				this.setDirty(false);
-				this.setInputWithNotify(new FileEditorInput(file));
+				file.create(getContentInputStream(), true, monitor);
+				setDirty(false);
+				setInputWithNotify(new FileEditorInput(file));
 			}
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
@@ -328,15 +327,12 @@ public class Worksheet extends EditorPart {
 		setSite(site);
 
 		if (input instanceof FileEditorInput) {
-			System.out.println("FileEditorInput");
 			setInitialContent(getContentFromFileEditorInput((FileEditorInput) input));
 			setNewDocument(false);
 		} else if (input instanceof FileStoreEditorInput) {
-			System.out.println("FileStoreEditorInput");
 			setInitialContent(getContentFromFileStoreEditorInput((FileStoreEditorInput) input));
 			setNewDocument(false);
 		} else if (input instanceof WorksheetEditorInput) {
-			System.out.println("WorksheetEditorInput");
 			setInitialContent(getContentFromWorksheetEditorInput((WorksheetEditorInput) input));
 			setNewDocument(true);
 		}
@@ -356,7 +352,7 @@ public class Worksheet extends EditorPart {
 				input.getFile().setCharset("utf-8", null);
 				inStream = input.getStorage().getContents();
 			}
-			ret = getStringFromInputStream(inStream);
+			ret = Worksheet.getStringFromInputStream(inStream);
 		} catch (CoreException e) {
 			// TODO add complete Exception Handling for FileEditorInput
 			throw new PartInitException(e.getStatus());
@@ -378,7 +374,7 @@ public class Worksheet extends EditorPart {
 		String ret = "";
 		try {
 			stream = input.getURI().toURL().openStream();
-			ret = getStringFromInputStream(stream);
+			ret = Worksheet.getStringFromInputStream(stream);
 		} catch (MalformedURLException e) {
 			// TODO add complete Exception Handling for FileStoreEditorInput
 			throw new PartInitException(e.getLocalizedMessage());
@@ -434,7 +430,7 @@ public class Worksheet extends EditorPart {
 	}
 
 	private void cleanDirty() {
-		this.worksheetBrowser
+		worksheetBrowser
 				.execute("$('.ui-worksheet').worksheet('setDirty',false)");
 	}
 
@@ -489,7 +485,7 @@ public class Worksheet extends EditorPart {
 
 	@Override
 	public void dispose() {
-		this.sendCloseDocument();
+		sendCloseDocument();
 		super.dispose();
 	}
 

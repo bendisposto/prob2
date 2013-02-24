@@ -27,13 +27,14 @@ function loadDocument(content,id){
 		data = jQuery.parseJSON(xhr.responseText);
 		data = $.recursiveFunctionTest(data);
 		data.sessionId=wsid;
-		$('#ws-id-1').worksheet(data);
-		if(typeof setWorksheetLoaded=="function")
-			setWorksheetLoaded(true);
 		$('#ws-id-1').one("worksheetinitialized",function(){
 			$("#loadingBar").hide();
 			$("#loadingSheet").hide();
 		});
+		$('#ws-id-1').worksheet(data);
+		if(typeof setWorksheetLoaded=="function")
+			setWorksheetLoaded(true);
+		
 	},this));	
 }
 function newDocument(id){
@@ -49,10 +50,7 @@ function newDocument(id){
 		data = jQuery.parseJSON(xhr.responseText);
 		data = $.recursiveFunctionTest(data);
 		data.sessionId=wsid;
-		$('#ws-id-1').worksheet(data);
-		if(typeof setWorksheetLoaded=="function")
-			setWorksheetLoaded(true);
-		$('#ws-id-1').one("worksheetinitialized",function(){
+		$('#ws-id-1').bind("worksheetinitialized",function(){
 			//DEBUG alert("new Document worksheetInitialized");
 			$("#loadingBar").hide();
 			$("#loadingSheet").hide();
@@ -65,6 +63,10 @@ function newDocument(id){
 			$("#loadingBar").hide();
 			$("#loadingSheet").hide();
 		});
+		$('#ws-id-1').worksheet(data);
+		if(typeof setWorksheetLoaded=="function")
+			setWorksheetLoaded(true);
+		
 	},this));
 	
 }

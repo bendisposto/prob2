@@ -25,19 +25,20 @@ import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.block.IBlockEvaluate;
 import de.prob.worksheet.block.IBlockUI;
 import de.prob.worksheet.document.impl.WorksheetMenuNode;
-import de.prob.worksheet.editor.IEditorData;
+import de.prob.worksheet.editor.impl.DefaultEditor;
 import de.prob.worksheet.editor.impl.JavascriptEditor;
 
 /**
  * @author Rene
- *
+ * 
  */
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @XmlSeeAlso(value = { JavascriptBlock.class, HTMLBlock.class,
 		HTMLErrorBlock.class, InitializeStoreBlock.class,
-		StoreValuesBlock.class })
-public class DefaultBlock implements IBlockData, IBlockUI, IBlockEvaluate{
+		StoreValuesBlock.class, DocumentationBlock.class })
+public abstract class DefaultBlock implements IBlockData, IBlockUI,
+		IBlockEvaluate {
 	public static final Logger logger = LoggerFactory
 			.getLogger(DefaultBlock.class);
 	public static final String typeID = "default";
@@ -46,61 +47,77 @@ public class DefaultBlock implements IBlockData, IBlockUI, IBlockEvaluate{
 	private String worksheetId;
 	private boolean hasMenu;
 	private final ArrayList<WorksheetMenuNode> menu;
-	private IEditorData editor;
+	private DefaultEditor editor;
 	private String evaluatorType;
 	private boolean output;
 	private boolean mark;
 	private final ArrayList<String> outputBlockIds;
 	private boolean immediateEvaluation;
 	private boolean inputAndOutput;
-	
+	private boolean toUnicode;
+	private boolean neitherInNorOutput;
+
 	public DefaultBlock() {
-		logger.trace("in:");
-		this.menu = new ArrayList<WorksheetMenuNode>();
-		this.outputBlockIds = new ArrayList<String>();
-		this.editor = new JavascriptEditor();
-		this.hasMenu = true;
-		this.output = false;
-		this.mark = false;
-		this.evaluatorType = "state";
-		this.immediateEvaluation = false;
-		this.inputAndOutput = false;
-		logger.trace("return:");
+		DefaultBlock.logger.trace("in:");
+		menu = new ArrayList<WorksheetMenuNode>();
+		outputBlockIds = new ArrayList<String>();
+		editor = new JavascriptEditor();
+		hasMenu = true;
+		output = false;
+		mark = false;
+		evaluatorType = "state";
+		immediateEvaluation = false;
+		inputAndOutput = false;
+		DefaultBlock.logger.trace("return:");
+		setToUnicode(false);
+		setNeitherInNorOutput(false);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.UIBlockData#getOverrideEditorContent()
 	 */
 	@Override
 	@JsonIgnore
 	@XmlTransient
-	public String getOverrideEditorContent(){
-		logger.trace("get: OverrideEditorContent=null");
+	public String getOverrideEditorContent() {
+		DefaultBlock.logger.trace("get: OverrideEditorContent=null");
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#isImmediateEvaluation()
 	 */
 	@Override
 	@JsonIgnore
 	@XmlTransient
-	public boolean isImmediateEvaluation(){
-		logger.trace("get: immediateEvaluation={}", this.immediateEvaluation);
-		return this.immediateEvaluation;
+	public boolean isImmediateEvaluation() {
+		DefaultBlock.logger.trace("get: immediateEvaluation={}",
+				immediateEvaluation);
+		return immediateEvaluation;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.block.IBlockEvaluate#setImmediateEvaluation(boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.block.IBlockEvaluate#setImmediateEvaluation(boolean)
 	 */
+	@Override
 	@JsonIgnore
-	public void setImmediateEvaluation(boolean immediateEvaluation){
-		logger.trace("set: immediateEvaluation={}", immediateEvaluation);
+	public void setImmediateEvaluation(boolean immediateEvaluation) {
+		DefaultBlock.logger.trace("set: immediateEvaluation={}",
+				immediateEvaluation);
 		this.immediateEvaluation = immediateEvaluation;
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.UIBlockData#getId()
 	 */
 	@Override
@@ -108,221 +125,298 @@ public class DefaultBlock implements IBlockData, IBlockUI, IBlockEvaluate{
 	@XmlID
 	@XmlAttribute(name = "id")
 	public String getId() {
-		logger.trace("get: id={}", this.id);
-		return this.id;
+		DefaultBlock.logger.trace("get: id={}", id);
+		return id;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.UIBlockData#setId(java.lang.String)
 	 */
 	@Override
 	@JsonProperty(value = "id")
-	public void setId(String id){
-		logger.trace("set: id={}", id);
+	public void setId(String id) {
+		DefaultBlock.logger.trace("set: id={}", id);
 		this.id = id;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#getWorksheetId()
 	 */
 	@Override
 	@JsonProperty(value = "worksheetId")
 	@XmlAttribute(name = "worksheetId")
-	public String getWorksheetId(){
-		logger.trace("get: id={}", this.worksheetId);
-		return this.worksheetId;
+	public String getWorksheetId() {
+		DefaultBlock.logger.trace("get: id={}", worksheetId);
+		return worksheetId;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#setWorksheetId(java.lang.String)
 	 */
 	@Override
 	@JsonProperty(value = "worksheetId")
-	public void setWorksheetId(String worksheetId){
-		logger.trace("set: id={}", worksheetId);
+	public void setWorksheetId(String worksheetId) {
+		DefaultBlock.logger.trace("set: id={}", worksheetId);
 		this.worksheetId = worksheetId;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#getHasMenu()
 	 */
 	@Override
 	@JsonProperty(value = "hasMenu")
 	@XmlTransient
-	public boolean getHasMenu(){
-		logger.trace("get: hasMenu={}", hasMenu);
-		return this.hasMenu;
+	public boolean getHasMenu() {
+		DefaultBlock.logger.trace("get: hasMenu={}", hasMenu);
+		return hasMenu;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#setHasMenu(boolean)
 	 */
+	@Override
 	@JsonProperty(value = "hasMenu")
-	public void setHasMenu(boolean hasMenu){
-		logger.trace("set: hasMenu={}", hasMenu);
+	public void setHasMenu(boolean hasMenu) {
+		DefaultBlock.logger.trace("set: hasMenu={}", hasMenu);
 		this.hasMenu = hasMenu;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#getMenu()
 	 */
 	@Override
 	@JsonProperty(value = "menu")
 	@XmlTransient
-	public WorksheetMenuNode[] getMenu(){
-		logger.trace("get: menu={}", this.menu);
-		return this.menu.toArray(new WorksheetMenuNode[this.menu.size()]);
+	public WorksheetMenuNode[] getMenu() {
+		DefaultBlock.logger.trace("get: menu={}", menu);
+		return menu.toArray(new WorksheetMenuNode[menu.size()]);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.block.IBlockUI#setMenu(de.prob.worksheet.WorksheetMenuNode[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.block.IBlockUI#setMenu(de.prob.worksheet.WorksheetMenuNode
+	 * [])
 	 */
 	@Override
 	@JsonProperty(value = "menu")
-	public void setMenu(WorksheetMenuNode[] menu){
-		logger.trace("set: menu={}", menu);
+	public void setMenu(WorksheetMenuNode[] menu) {
+		DefaultBlock.logger.trace("set: menu={}", menu);
 		this.menu.clear();
 		this.menu.addAll(Arrays.asList(menu));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.UIBlockData#getEditor()
 	 */
 	@Override
 	@JsonProperty(value = "editor")
 	@XmlElement(name = "editor")
-	public IEditorData getEditor(){
-		logger.trace("get: editor={}", this.editor);
-		return this.editor;
+	public DefaultEditor getEditor() {
+		DefaultBlock.logger.trace("get: editor={}", editor);
+		return editor;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.block.UIBlockData#setEditor(de.prob.worksheet.editor.IWorksheetEditor)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.block.UIBlockData#setEditor(de.prob.worksheet.editor
+	 * .IWorksheetEditor)
 	 */
 	@Override
 	@JsonProperty(value = "editor")
-	public void setEditor(IEditorData editor){
-		logger.trace("set: editor={}", editor);
+	public void setEditor(DefaultEditor editor) {
+		DefaultBlock.logger.trace("set: editor={}", editor);
 		this.editor = editor;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.UIBlockData#getEvaluatorType()
 	 */
 	@Override
 	@JsonProperty(value = "evaluatorType")
 	@XmlAttribute(name = "evaluatorType")
 	public String getEvaluatorType() {
-		logger.trace("get: type={}", this.evaluatorType);
-		return this.evaluatorType;
+		DefaultBlock.logger.trace("get: type={}", evaluatorType);
+		return evaluatorType;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.block.UIBlockData#setEvaluatorType(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.block.UIBlockData#setEvaluatorType(java.lang.String)
 	 */
 	@Override
 	@JsonProperty(value = "evaluatorType")
-	public void setEvaluatorType(String evaluatorType){
-		logger.trace("set: type={}", evaluatorType);
+	public void setEvaluatorType(String evaluatorType) {
+		DefaultBlock.logger.trace("set: type={}", evaluatorType);
 		this.evaluatorType = evaluatorType;
 	}
 
+	@Override
 	@JsonProperty(value = "isOutput")
 	@XmlAttribute(name = "isOutput")
-	public boolean isOutput(){
-		logger.trace("get: isOutput={}", this.output);
-		return this.output;
+	public boolean isOutput() {
+		DefaultBlock.logger.trace("get: isOutput={}", output);
+		return output;
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.UIBlockData#setOutput(boolean)
 	 */
 	@Override
 	@JsonProperty(value = "isOutput")
-	public void setOutput(boolean output){
-		logger.trace("set: isOutput={}", output);
+	public void setOutput(boolean output) {
+		DefaultBlock.logger.trace("set: isOutput={}", output);
 		this.output = output;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#getMark()
 	 */
 	@Override
 	@JsonProperty(value = "mark")
 	@XmlAttribute(name = "mark")
-	public boolean getMark(){
-		logger.trace("get: mark={}", this.mark);
-		return this.mark;
+	public boolean getMark() {
+		DefaultBlock.logger.trace("get: mark={}", mark);
+		return mark;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#setMark(boolean)
 	 */
 	@Override
 	@JsonProperty(value = "mark")
-	public void setMark(boolean marked){
-		logger.trace("set: mark={}", marked);
-		this.mark = marked;
+	public void setMark(boolean marked) {
+		DefaultBlock.logger.trace("set: mark={}", marked);
+		mark = marked;
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.UIBlockData#getOutputBlockIds()
 	 */
 	@Override
 	@JsonProperty(value = "outputBlockIds")
 	@XmlAttribute(name = "outputBlockIds")
-	public String[] getOutputBlockIds(){
-		logger.trace("get: outputBlockIds={}", this.outputBlockIds);
-		return this.outputBlockIds.toArray(new String[this.outputBlockIds
-				.size()]);
+	public String[] getOutputBlockIds() {
+		DefaultBlock.logger.trace("get: outputBlockIds={}", outputBlockIds);
+		return outputBlockIds.toArray(new String[outputBlockIds.size()]);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.block.UIBlockData#setOutputBlockIds(java.lang.String[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.block.UIBlockData#setOutputBlockIds(java.lang.String[])
 	 */
 	@Override
 	@JsonProperty(value = "outputBlockIds")
-	public void setOutputBlockIds(String[] ids){
-		logger.trace("set: OutputBlockIds={}", ids);
-		this.outputBlockIds.clear();
+	public void setOutputBlockIds(String[] ids) {
+		DefaultBlock.logger.trace("set: OutputBlockIds={}", ids);
+		outputBlockIds.clear();
 		if (ids != null) {
-			this.outputBlockIds.addAll(Arrays.asList(ids));
+			outputBlockIds.addAll(Arrays.asList(ids));
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.UIBlockData#addOutputId(java.lang.String)
 	 */
 	@Override
 	@JsonIgnore
 	public void addOutputId(String id) {
-		logger.trace("add: id={}", id);
-		this.outputBlockIds.add(id);
+		DefaultBlock.logger.trace("add: id={}", id);
+		outputBlockIds.add(id);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#isInputAndOutput()
 	 */
 	@Override
 	@JsonIgnore
-	public boolean isInputAndOutput(){
-		logger.trace("get: InputAndOutput={}", this.inputAndOutput);
-		return this.inputAndOutput;
+	public boolean isInputAndOutput() {
+		DefaultBlock.logger.trace("get: InputAndOutput={}", inputAndOutput);
+		return inputAndOutput;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.block.IBlockUI#setInputAndOutput(boolean)
 	 */
 	@Override
 	@JsonIgnore
 	@XmlTransient
-	public void setInputAndOutput(boolean inputAndOuput){
-		logger.trace("set: inputAndOutput={}", inputAndOuput);
-		this.inputAndOutput = inputAndOuput;
+	public void setInputAndOutput(boolean inputAndOuput) {
+		DefaultBlock.logger.trace("set: inputAndOutput={}", inputAndOuput);
+		inputAndOutput = inputAndOuput;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.prob.worksheet.editor.IEditorUI#isToUnicode()
+	 */
+	@Override
+	@JsonProperty("toUnicode")
+	@XmlTransient
+	public boolean isToUnicode() {
+		return toUnicode;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.prob.worksheet.editor.IEditorUI#setToUnicode(boolean)
+	 */
+	@Override
+	@JsonProperty("toUnicode")
+	public void setToUnicode(boolean toUnicode) {
+		this.toUnicode = toUnicode;
+	}
+
+	@Override
+	@XmlTransient
+	public boolean isNeitherInNorOutput() {
+		return neitherInNorOutput;
+	}
+
+	@Override
+	public void setNeitherInNorOutput(boolean neitherInNorOutput) {
+		this.neitherInNorOutput = neitherInNorOutput;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -332,14 +426,14 @@ public class DefaultBlock implements IBlockData, IBlockUI, IBlockEvaluate{
 	public boolean equals(final Object obj) {
 		if (!(obj instanceof DefaultBlock))
 			return false;
-		return this.id.equals(((DefaultBlock) obj).getId());
+		return id.equals(((DefaultBlock) obj).getId());
 
 	}
-	
+
 	public void initBlockMenu(String type, String[] excludes) {
-		logger.trace("in: type={}, excludes={}", type, excludes);
+		DefaultBlock.logger.trace("in: type={}, excludes={}", type, excludes);
 		final ArrayList<WorksheetMenuNode> menu = new ArrayList<WorksheetMenuNode>();
-		String[] blockTypes = this.getInputBlockTypes();
+		String[] blockTypes = getInputBlockTypes();
 		final WorksheetMenuNode typeMenu = new WorksheetMenuNode(type, "", "");
 		typeMenu.setTitle(true);
 		Arrays.sort(excludes);
@@ -357,19 +451,20 @@ public class DefaultBlock implements IBlockData, IBlockUI, IBlockEvaluate{
 		}
 		if (typeMenu.getChildren().length != 0) {
 			menu.add(typeMenu);
-			this.setMenu(menu.toArray(new WorksheetMenuNode[menu.size()]));
-			this.setHasMenu(true);
+			setMenu(menu.toArray(new WorksheetMenuNode[menu.size()]));
+			setHasMenu(true);
 		} else {
-			this.setHasMenu(false);
+			setHasMenu(false);
 		}
-		logger.trace("return:");
+		DefaultBlock.logger.trace("return:");
 	}
 
 	private String[] getInputBlockTypes() {
-		logger.trace("in:");
+		DefaultBlock.logger.trace("in:");
 		WorksheetObjectMapper mapper = ServletContextListener.INJECTOR
 				.getInstance(WorksheetObjectMapper.class);
-		logger.trace("return: inputBlockNames={}", mapper.getInputBlockNames());
+		DefaultBlock.logger.trace("return: inputBlockNames={}",
+				mapper.getInputBlockNames());
 		return mapper.getInputBlockNames();
 	}
 }

@@ -10,12 +10,13 @@ import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.block.impl.DocumentationBlock;
 import de.prob.worksheet.block.impl.HTMLBlock;
 import de.prob.worksheet.block.impl.HTMLErrorBlock;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
 import de.prob.worksheet.block.impl.JavascriptBlock;
 import de.prob.worksheet.block.impl.StoreValuesBlock;
+import de.prob.worksheet.editor.impl.CkEditorEditor;
 import de.prob.worksheet.editor.impl.HTMLEditor;
 import de.prob.worksheet.editor.impl.HTMLErrorEditor;
 import de.prob.worksheet.editor.impl.JavascriptEditor;
@@ -55,10 +56,10 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	@Inject
 	public WorksheetObjectMapper() {
 		super();
-		logger.trace("in:");
-		this.initEditorResolvers();
-		this.initBlockResolvers();
-		logger.trace("return:");
+		WorksheetObjectMapper.logger.trace("in:");
+		initEditorResolvers();
+		initBlockResolvers();
+		WorksheetObjectMapper.logger.trace("return:");
 	}
 
 	/**
@@ -66,12 +67,12 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 * to the Worksheet Project they must be configured here
 	 */
 	private void initEditorResolvers() {
-		logger.trace("in:");
-		this.addEditorResolver(new NamedType(JavascriptEditor.class,
-				"javascript"));
-		this.addEditorResolver(new NamedType(HTMLEditor.class, "HTMLEditor"));
-		this.addEditorResolver(new NamedType(HTMLErrorEditor.class, "errorHtml"));
-		logger.trace("return:");
+		WorksheetObjectMapper.logger.trace("in:");
+		addEditorResolver(new NamedType(JavascriptEditor.class, "javascript"));
+		addEditorResolver(new NamedType(HTMLEditor.class, "HTMLEditor"));
+		addEditorResolver(new NamedType(HTMLErrorEditor.class, "errorHtml"));
+		addEditorResolver(new NamedType(CkEditorEditor.class, "Documentation"));
+		WorksheetObjectMapper.logger.trace("return:");
 	}
 
 	/**
@@ -79,18 +80,17 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 * the Worksheet Project they must be configured here
 	 */
 	private void initBlockResolvers() {
-		logger.trace("in:");
-		this.addInputBlockResolver(new NamedType(JavascriptBlock.class,
-				"Javascript"));
-		this.addOutputBlockResolver(new NamedType(HTMLBlock.class, "HTML"));
-		this.addOutputBlockResolver(new NamedType(HTMLErrorBlock.class,
-				"Fehler"));
-		this.addInputBlockResolver(new NamedType(DefaultBlock.class, "Standard"));
-		this.addInputBlockResolver(new NamedType(InitializeStoreBlock.class,
+		WorksheetObjectMapper.logger.trace("in:");
+		addInputBlockResolver(new NamedType(JavascriptBlock.class, "Javascript"));
+		addOutputBlockResolver(new NamedType(HTMLBlock.class, "HTML"));
+		addOutputBlockResolver(new NamedType(HTMLErrorBlock.class, "Fehler"));
+		addInputBlockResolver(new NamedType(InitializeStoreBlock.class,
 				"Initialize State"));
-		this.addInputBlockResolver(new NamedType(StoreValuesBlock.class,
+		addInputBlockResolver(new NamedType(StoreValuesBlock.class,
 				"State Values"));
-		logger.trace("return:");
+		addInputBlockResolver(new NamedType(DocumentationBlock.class,
+				"Documentation"));
+		WorksheetObjectMapper.logger.trace("return:");
 	}
 
 	/**
@@ -100,10 +100,10 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 *            to add
 	 */
 	private void addEditorResolver(final NamedType type) {
-		logger.trace("in: type={}", type);
-		this.editors.add(type);
+		WorksheetObjectMapper.logger.trace("in: type={}", type);
+		editors.add(type);
 		this.registerSubtypes(type);
-		logger.trace("return:");
+		WorksheetObjectMapper.logger.trace("return:");
 	}
 
 	/**
@@ -114,10 +114,10 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 *            to add
 	 */
 	private void addInputBlockResolver(final NamedType type) {
-		logger.trace("in: type={}", type);
-		this.inputBlocks.add(type);
+		WorksheetObjectMapper.logger.trace("in: type={}", type);
+		inputBlocks.add(type);
 		this.registerSubtypes(type);
-		logger.trace("return:");
+		WorksheetObjectMapper.logger.trace("return:");
 	}
 
 	/**
@@ -128,10 +128,10 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 *            to add
 	 */
 	private void addOutputBlockResolver(final NamedType type) {
-		logger.trace("in: type={}", type);
-		this.outputBlocks.add(type);
+		WorksheetObjectMapper.logger.trace("in: type={}", type);
+		outputBlocks.add(type);
 		this.registerSubtypes(type);
-		logger.trace("return:");
+		WorksheetObjectMapper.logger.trace("return:");
 	}
 
 	/**
@@ -140,14 +140,14 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 * @return an array containing editor names
 	 */
 	public String[] getEditorNames() {
-		logger.trace("in:");
-		final String[] returnValue = new String[this.editors.size()];
+		WorksheetObjectMapper.logger.trace("in:");
+		final String[] returnValue = new String[editors.size()];
 		int x = 0;
-		for (final NamedType editor : this.editors) {
+		for (final NamedType editor : editors) {
 			returnValue[x] = editor.getName();
 			x++;
 		}
-		logger.trace("return: names={}", returnValue);
+		WorksheetObjectMapper.logger.trace("return: names={}", returnValue);
 		return returnValue;
 	}
 
@@ -157,14 +157,14 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 * @return an array containing block names
 	 */
 	public String[] getInputBlockNames() {
-		logger.trace("in:");
-		final String[] returnValue = new String[this.inputBlocks.size()];
+		WorksheetObjectMapper.logger.trace("in:");
+		final String[] returnValue = new String[inputBlocks.size()];
 		int x = 0;
-		for (final NamedType block : this.inputBlocks) {
+		for (final NamedType block : inputBlocks) {
 			returnValue[x] = block.getName();
 			x++;
 		}
-		logger.trace("return: names={}", returnValue);
+		WorksheetObjectMapper.logger.trace("return: names={}", returnValue);
 		return returnValue;
 	}
 
@@ -174,14 +174,14 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 * @return an array containing block names
 	 */
 	public String[] getOutputBlockNames() {
-		logger.trace("in:");
-		final String[] returnValue = new String[this.outputBlocks.size()];
+		WorksheetObjectMapper.logger.trace("in:");
+		final String[] returnValue = new String[outputBlocks.size()];
 		int x = 0;
-		for (final NamedType block : this.outputBlocks) {
+		for (final NamedType block : outputBlocks) {
 			returnValue[x] = block.getName();
 			x++;
 		}
-		logger.trace("return: names={}", returnValue);
+		WorksheetObjectMapper.logger.trace("return: names={}", returnValue);
 		return returnValue;
 	}
 

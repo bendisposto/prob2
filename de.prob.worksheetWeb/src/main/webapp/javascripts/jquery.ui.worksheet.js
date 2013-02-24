@@ -56,6 +56,9 @@
 					}
 				}
 				this.element.bind("blockevaluate",$.proxy(function(event,id){this.evaluate(id)},this));
+				this.element.bind("blockcontextmenu",$.proxy(function(event,id){
+					$("#"+id+"");
+				},this));
 				this.element.on("keydown",$.proxy(function(event){
 						if(event.ctrlKey){
 							switch(event.which){
@@ -116,7 +119,6 @@
 			return this.insertBlock(blockOptions, index);
 		},
 		insertBlock : function(blockOptions,index){
-			// set options for block if needed
 			//DEBUG alert("worksheet insertBlock");
 			if (blockOptions != null && blockOptions != {}){
 				blockOptions.worksheetId = this.options.id;
@@ -377,6 +379,47 @@
 					break;
 				}
 			}
+		},
+		addNewBlock:function(options){
+			this._trigger("addBlockStart",0,[options]);
+			var content = this._addParameter("", "blockId", options[1]);
+			content = this._addParameter(content, "type", options[0]);
+			content = this._addParameter(content,"before", options[2]);
+			content = this._addParameter(content,"worksheetSessionId", this.options.sessionId);
+			
+			$.ajax("newBlock", {
+				type : "POST",
+				data : content
+			}).done($.proxy(function(id,before,data, status, xhr) {
+				var text=xhr.responseText;
+				data = jQuery.parseJSON(xhr.responseText);
+				data = $.recursiveFunctionTest(data);
+				if(data.length>1){
+					//TODO add Handling for immediate EvaluationBlocks
+					/*var index=this.getBlockIndexById(data[0].id);
+					for(var x=this.options.blocks.length-1;x>=index;x--){
+						this.removeBlock(x);
+					}
+					
+					var lastInputIndex=0;
+					for ( var x = 0; x < data.length; x++) {
+						this.appendBlock(data[x]);
+						if(!data[x].isOutput){
+							lastInputIndex=x;
+						}	
+					}
+					$("#"+data[lastInputIndex].id).block("setFocus");*/
+				}else{
+					var index=this.getBlockIndexById(id);
+					if(index<0)
+						return;
+					if(!before)
+						index++;
+					this.insertBlock(data[0], index);
+					$("#"+data[0].id).block("setFocus");
+				}
+				this._trigger("addBlockEnd",0,[]);
+			},this,options[1],options[2]));
 		}
 
 	});

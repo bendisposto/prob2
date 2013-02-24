@@ -96,7 +96,9 @@
 					this.destroyEditor();
 					$(".ui-editor-content", this.element).empty();
 				}
-				$(".ui-editor-content", this.element).append(this.options.html);
+				var content=$(this.options.html);
+				content.uniqueId();
+				$(".ui-editor-content", this.element).append(content);
 			}
 		},
 		initEditor : function() {
@@ -379,7 +381,10 @@
 		_toAsciiClassicalB:function(unicode){
 			
 		},
+		converting:false,
 		toUnicode:function(){
+			if(!this.element.closest(".ui-block").block("option","toUnicode"))
+				return;
 			var content=this.getContent();
 			if(content!=null){
 				content=$('<div/>').html(content).text();				

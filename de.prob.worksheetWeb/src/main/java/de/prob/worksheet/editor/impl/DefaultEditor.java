@@ -21,9 +21,9 @@ import de.prob.worksheet.editor.IEditorUI;
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@XmlSeeAlso(value = { HTMLEditor.class,
-		HTMLErrorEditor.class, JavascriptEditor.class })
-public class DefaultEditor implements IEditorData, IEditorUI {
+@XmlSeeAlso(value = { HTMLEditor.class, HTMLErrorEditor.class,
+		JavascriptEditor.class, CkEditorEditor.class })
+public abstract class DefaultEditor implements IEditorData, IEditorUI {
 	private String HTMLContent;
 	private String EditorContent = "";
 	private String InitFunction;
@@ -36,183 +36,246 @@ public class DefaultEditor implements IEditorData, IEditorUI {
 	private String setFocusScript;
 	private boolean newlineToHtml;
 	private boolean escapeHtml;
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#getHTMLContent()
 	 */
-	
+
 	public DefaultEditor() {
-		this.CSSHREFs = new ArrayList<String>();
-		this.JavascriptHREFs = new ArrayList<String>();
-		this.setHTMLContent("<textarea class=\"editor-object ui-editor-padding\"></textarea>");
-		this.setInitializationFunction("function(){"
+		CSSHREFs = new ArrayList<String>();
+		JavascriptHREFs = new ArrayList<String>();
+		setHTMLContent("<textarea class=\"editor-object ui-editor-padding\"></textarea>");
+		setInitializationScript("function(){"
 				+ "var obj = $($(\"#\"+this.id).find(\".editor-object\").first());"
 				+ "obj.change($.proxy($(\"#\"+this.id).data(\"editor\")._editorChanged,$(\"#\"+this.id).data(\"editor\")));"
 				+ "return obj;}");
-		this.setDestroyScript(null);
-		this.setSetContentScript("function(content) {"
+		setDestroyScript(null);
+		setSetContentScript("function(content) {"
 				+ "var obj = $($(\"#\"+this.id).find(\".editor-object\").first());"
 				+ "obj.val(content);}");
-		this.setSetContentScript("function() {"
+		setSetContentScript("function() {"
 				+ "var obj = $($(\"#\"+this.id).find(\".editor-object\").first());"
 				+ "return obj.val();}");
-		this.setSetFocusScript("function(){$($(\"#\"+this.id).find(\".editor-object\").focus();}");
-		this.setNewlineToHtml(false);
-		this.setEscapeHtml(false);
+		setSetFocusScript("function(){$($(\"#\"+this.id).find(\".editor-object\").focus();}");
+		setNewlineToHtml(false);
+		setEscapeHtml(false);
 	}
-	
+
 	@Override
 	@JsonProperty(value = "html")
 	@XmlTransient
 	public String getHTMLContent() {
-		return this.HTMLContent;
+		return HTMLContent;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorData#getEditorContent()
 	 */
 	@Override
 	@JsonProperty(value = "content")
 	@XmlValue
 	public String getEditorContent() {
-		return this.EditorContent;
+		return EditorContent;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#getInitializationFunction()
 	 */
 	@Override
 	@JsonProperty(value = "init")
 	@XmlTransient
-	public String getInitializationFunction() {
-		return this.InitFunction;
+	public String getInitializationScript() {
+		return InitFunction;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#getGetContentScript()
 	 */
 	@Override
 	@JsonProperty(value = "getContent")
 	@XmlTransient
 	public String getGetContentScript() {
-		return this.getContentScript;
+		return getContentScript;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#getSetContentScript()
 	 */
 	@Override
 	@JsonProperty(value = "setContent")
 	@XmlTransient
 	public String getSetContentScript() {
-		return this.setContentScript;
+		return setContentScript;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#getSetFocusScript()
 	 */
 	@Override
 	@JsonProperty(value = "setFocus")
 	@XmlTransient
 	public String getSetFocusScript() {
-		return this.setFocusScript;
+		return setFocusScript;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#getDestroyScript()
 	 */
 	@Override
 	@JsonProperty(value = "destroy")
 	@XmlTransient
 	public String getDestroyScript() {
-		return this.destroyScript;
+		return destroyScript;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#getCSSHREFs()
 	 */
 	@Override
 	@JsonProperty(value = "cssURLs")
 	@XmlTransient
 	public String[] getCSSHREFs() {
-		return this.CSSHREFs.toArray(new String[this.CSSHREFs.size()]);
+		return CSSHREFs.toArray(new String[CSSHREFs.size()]);
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#getJavascriptHREFs()
 	 */
 	@Override
 	@JsonProperty(value = "jsURLs")
 	@XmlTransient
 	public String[] getJavascriptHREFs() {
-		return this.JavascriptHREFs.toArray(new String[this.JavascriptHREFs
-				.size()]);
+		return JavascriptHREFs.toArray(new String[JavascriptHREFs.size()]);
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#setHTMLContent(java.lang.String)
 	 */
 	@Override
 	@JsonProperty(value = "html")
 	public void setHTMLContent(final String htmlContent) {
-		this.HTMLContent = htmlContent;
+		HTMLContent = htmlContent;
 	}
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.editor.IEditorData#setEditorContent(java.lang.String)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.editor.IEditorData#setEditorContent(java.lang.String)
 	 */
 	@Override
 	@JsonProperty(value = "content")
 	public void setEditorContent(final String editorContent) {
-		this.EditorContent = editorContent;
+		EditorContent = editorContent;
 	}
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.editor.IEditorUI#setInitializationFunction(java.lang.String)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.editor.IEditorUI#setInitializationFunction(java.lang
+	 * .String)
 	 */
 	@Override
 	@JsonIgnore
-	public void setInitializationFunction(final String initFunction) {
-		this.InitFunction = initFunction;
+	public void setInitializationScript(final String initFunction) {
+		InitFunction = initFunction;
 	}
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.editor.IEditorUI#setGetContentScript(java.lang.String)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.editor.IEditorUI#setGetContentScript(java.lang.String)
 	 */
 	@Override
 	@JsonIgnore
 	public void setGetContentScript(final String script) {
-		this.getContentScript = script;
+		getContentScript = script;
 	}
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.editor.IEditorUI#setSetFocusScript(java.lang.String)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.editor.IEditorUI#setSetFocusScript(java.lang.String)
 	 */
 	@Override
 	@JsonIgnore
 	public void setSetFocusScript(String script) {
-		this.setFocusScript = script;
+		setFocusScript = script;
 	}
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.editor.IEditorUI#setDestroyScript(java.lang.String)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.editor.IEditorUI#setDestroyScript(java.lang.String)
 	 */
 	@Override
 	@JsonIgnore
 	public void setDestroyScript(final String script) {
-		this.destroyScript = script;
+		destroyScript = script;
 	}
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.editor.IEditorUI#setSetContentScript(java.lang.String)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.editor.IEditorUI#setSetContentScript(java.lang.String)
 	 */
 	@Override
 	@JsonIgnore
 	public void setSetContentScript(final String script) {
-		this.setContentScript = script;
+		setContentScript = script;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#setCSSHREFs(java.lang.String[])
 	 */
 	@Override
 	@JsonProperty(value = "cssURLs")
 	public void setCSSHREFs(final String[] cssHref) {
-		this.CSSHREFs = new ArrayList<String>(Arrays.asList(cssHref));
+		CSSHREFs = new ArrayList<String>(Arrays.asList(cssHref));
 	}
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.editor.IEditorUI#setJavascriptHREFs(java.lang.String[])
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.editor.IEditorUI#setJavascriptHREFs(java.lang.String[])
 	 */
 	@Override
 	@JsonProperty(value = "jsURLs")
 	public void setJavascriptHREFs(final String[] javascriptHrefs) {
-		this.JavascriptHREFs = new ArrayList<String>(
-				Arrays.asList(javascriptHrefs));
+		JavascriptHREFs = new ArrayList<String>(Arrays.asList(javascriptHrefs));
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#getId()
 	 */
 	@Override
@@ -220,9 +283,12 @@ public class DefaultEditor implements IEditorData, IEditorUI {
 	@XmlAttribute(name = "id")
 	@XmlID
 	public String getId() {
-		return this.id;
+		return id;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#setId(java.lang.String)
 	 */
 	@Override
@@ -230,21 +296,31 @@ public class DefaultEditor implements IEditorData, IEditorUI {
 	public void setId(final String id) {
 		this.id = id;
 	}
-	/* (non-Javadoc)
-	 * @see de.prob.worksheet.editor.IEditorUI#addJavascriptHref(java.lang.String)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.prob.worksheet.editor.IEditorUI#addJavascriptHref(java.lang.String)
 	 */
 	@Override
 	public void addJavascriptHref(final String href) {
-		this.JavascriptHREFs.add(href);
+		JavascriptHREFs.add(href);
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#addCSSHref(java.lang.String)
 	 */
 	@Override
 	public void addCSSHref(final String href) {
-		this.CSSHREFs.add(href);
+		CSSHREFs.add(href);
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#setNewlineToHtml(boolean)
 	 */
 	@Override
@@ -252,7 +328,10 @@ public class DefaultEditor implements IEditorData, IEditorUI {
 	public void setNewlineToHtml(boolean newlineToHtml) {
 		this.newlineToHtml = newlineToHtml;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#isNewlineToHtml()
 	 */
 	@Override
@@ -260,7 +339,10 @@ public class DefaultEditor implements IEditorData, IEditorUI {
 	public boolean isNewlineToHtml() {
 		return newlineToHtml;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#setEscapeHtml(boolean)
 	 */
 	@Override
@@ -268,7 +350,10 @@ public class DefaultEditor implements IEditorData, IEditorUI {
 	public void setEscapeHtml(boolean escapeHtml) {
 		this.escapeHtml = escapeHtml;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.prob.worksheet.editor.IEditorUI#isEscapeHtml()
 	 */
 	@Override
@@ -276,6 +361,7 @@ public class DefaultEditor implements IEditorData, IEditorUI {
 	public boolean isEscapeHtml() {
 		return escapeHtml;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -285,7 +371,7 @@ public class DefaultEditor implements IEditorData, IEditorUI {
 	public boolean equals(final Object obj) {
 		if (!(obj instanceof DefaultEditor))
 			return false;
-		return this.id.equals(((DefaultEditor) obj).getId());
+		return id.equals(((DefaultEditor) obj).getId());
 	}
 
 }

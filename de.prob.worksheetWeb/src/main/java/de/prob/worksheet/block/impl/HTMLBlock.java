@@ -6,7 +6,6 @@ package de.prob.worksheet.block.impl;
 import javax.xml.bind.annotation.XmlType;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import de.prob.worksheet.editor.impl.HTMLEditor;
 
@@ -21,10 +20,11 @@ public class HTMLBlock extends DefaultBlock {
 
 	@Inject
 	public HTMLBlock() {
-		this.setEvaluatorType("");
-		this.setOutput(true);
-		this.setEditor(new HTMLEditor());
-		this.setHasMenu(false);
+		setEvaluatorType("");
+		setOutput(true);
+		setEditor(new HTMLEditor());
+		setHasMenu(false);
+		setToUnicode(true);
 
 	}
 

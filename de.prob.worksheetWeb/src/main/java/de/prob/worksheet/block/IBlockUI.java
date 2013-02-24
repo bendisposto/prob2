@@ -3,13 +3,11 @@ package de.prob.worksheet.block;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.prob.worksheet.document.impl.WorksheetMenuNode;
 
 public interface IBlockUI {
-
 
 	@JsonProperty(value = "worksheetId")
 	@XmlAttribute(name = "worksheetId")
@@ -21,7 +19,7 @@ public interface IBlockUI {
 	@JsonProperty(value = "hasMenu")
 	@XmlTransient
 	public abstract boolean getHasMenu();
-	
+
 	@JsonProperty(value = "hasMenu")
 	public abstract void setHasMenu(boolean hasMenu);
 
@@ -39,6 +37,11 @@ public interface IBlockUI {
 	@JsonProperty(value = "mark")
 	public abstract void setMark(boolean b);
 
+	@JsonProperty(value = "toUnicode")
+	@XmlTransient
+	public abstract boolean isToUnicode();
 
+	@JsonProperty(value = "toUnicode")
+	public abstract void setToUnicode(boolean toUnicode);
 
 }

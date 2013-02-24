@@ -43,7 +43,7 @@ public class SetBlock extends HttpServlet {
 	protected void doGet(final HttpServletRequest req,
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
-		this.doPost(req, resp);
+		doPost(req, resp);
 	}
 
 	/*
@@ -53,6 +53,7 @@ public class SetBlock extends HttpServlet {
 	 * javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest
 	 * , javax.servlet.http.HttpServletResponse)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doPost(final HttpServletRequest req,
 			final HttpServletResponse resp) throws ServletException,
@@ -65,8 +66,7 @@ public class SetBlock extends HttpServlet {
 				.getSession().getAttribute(wsid);
 		if (sessionAttributes == null)
 			sessionAttributes = new HashMap<String, Object>();
-		IWorksheetData doc = (IWorksheetData) sessionAttributes
-				.get("document");
+		IWorksheetData doc = (IWorksheetData) sessionAttributes.get("document");
 
 		if (req.getSession().isNew() || doc == null) {
 			System.err
@@ -79,7 +79,8 @@ public class SetBlock extends HttpServlet {
 
 		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 		final String blockString = req.getParameter("block");
-		final DefaultBlock block = mapper.readValue(blockString, DefaultBlock.class);
+		final DefaultBlock block = mapper.readValue(blockString,
+				DefaultBlock.class);
 		logger.debug("EditorContent in Block:{}", block.getEditor()
 				.getEditorContent());
 

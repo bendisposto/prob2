@@ -5,25 +5,25 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.inject.Inject;
 
-import de.prob.worksheet.editor.IEditorData;
+import de.prob.worksheet.editor.impl.DefaultEditor;
 import de.prob.worksheet.editor.impl.HTMLEditor;
 
 @XmlType(name = "StateValues")
 public class StoreValuesBlock extends DefaultBlock {
 	@Inject
 	public StoreValuesBlock() {
-		this.setEvaluatorType("state");
-		this.setOutput(false);
-		this.setEditor(new HTMLEditor());
-		this.setImmediateEvaluation(true);
-		this.setInputAndOutput(true);
-		this.initBlockMenu("State Values", new String[] { "Standard" });
+		setEvaluatorType("state");
+		setOutput(false);
+		setEditor(new HTMLEditor());
+		setImmediateEvaluation(true);
+		setInputAndOutput(true);
+		initBlockMenu("State Values", new String[] { "Standard" });
+		setToUnicode(true);
 	}
 
 	@Override
 	@JsonIgnore
-	public void setEditor(IEditorData editor) {
-		// TODO Auto-generated method stub
+	public void setEditor(DefaultEditor editor) {
 		super.setEditor(editor);
 	}
 

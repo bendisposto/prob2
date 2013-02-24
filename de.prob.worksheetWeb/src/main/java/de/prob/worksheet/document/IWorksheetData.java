@@ -5,7 +5,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlID;
 
-import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.block.impl.DefaultBlock;
 
 public interface IWorksheetData {
@@ -16,7 +15,7 @@ public interface IWorksheetData {
 	 * @return an array containing all blocks of this document
 	 */
 	@XmlElements(value = { @XmlElement(name = "block") })
-	public abstract IBlockData[] getBlocks();
+	public abstract DefaultBlock[] getBlocks();
 
 	/**
 	 * Setter for this documents blocks
@@ -78,7 +77,7 @@ public interface IWorksheetData {
 	 *            to get the index for
 	 * @return the index of the block
 	 */
-	public abstract int getBlockIndex(IBlockData block);
+	public abstract int getBlockIndex(DefaultBlock block);
 
 	/**
 	 * Sets the block at index. The block which had been at index before setting
@@ -133,13 +132,13 @@ public interface IWorksheetData {
 	 *            to test
 	 * @return true if the block is the last block of the document else false
 	 */
-	public abstract boolean isLastBlock(IBlockData block);
+	public abstract boolean isLastBlock(DefaultBlock block);
 
 	/**
 	 * Returns the first block in the document
 	 * 
 	 * @return
 	 */
-	public abstract IBlockData getFirst();
+	public abstract DefaultBlock getFirst();
 
 }

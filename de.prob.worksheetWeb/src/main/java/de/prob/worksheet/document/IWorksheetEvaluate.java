@@ -1,6 +1,5 @@
 package de.prob.worksheet.document;
 
-import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.block.impl.DefaultBlock;
 
 public interface IWorksheetEvaluate {
@@ -28,7 +27,7 @@ public interface IWorksheetEvaluate {
 	 * @param block
 	 *            to remove the output blocks for
 	 */
-	public abstract void removeOutputBlocks(IBlockData block);
+	public abstract void removeOutputBlocks(DefaultBlock block);
 
 	/**
 	 * Moves the block with id to index
@@ -80,6 +79,6 @@ public interface IWorksheetEvaluate {
 	 *            which is the first one to be retrieve
 	 * @return an array of blocks
 	 */
-	public abstract IBlockData[] getBlocksFrom(IBlockData block);
+	public abstract DefaultBlock[] getBlocksFrom(DefaultBlock block);
 
 }

@@ -22,4 +22,10 @@ public interface IBlockEvaluate {
 	@JsonIgnore
 	@XmlTransient
 	public abstract String getOverrideEditorContent();
+
+	@XmlTransient
+	public abstract boolean isNeitherInNorOutput();
+
+	public abstract void setNeitherInNorOutput(boolean neitherInNorOutput);
+
 }

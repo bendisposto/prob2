@@ -16,3 +16,9 @@
 	margin-top:0;
 	border-top:none;
 }
+.ui-block.ui-no-in-no-out{
+	margin-top:8px;
+	margin-bottom:8px;
+	border:none;
+}
+
