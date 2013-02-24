@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.inject.Inject;
 
 import de.prob.worksheet.editor.impl.DefaultEditor;
-import de.prob.worksheet.editor.impl.HTMLEditor;
+import de.prob.worksheet.editor.impl.HTMLDiv;
 
 @XmlType(name = "Initialize")
 public class InitializeStoreBlock extends DefaultBlock {
@@ -14,7 +14,7 @@ public class InitializeStoreBlock extends DefaultBlock {
 	public InitializeStoreBlock() {
 		setEvaluatorType("state");
 		setOutput(false);
-		setEditor(new HTMLEditor());
+		setEditor(new HTMLDiv());
 		setImmediateEvaluation(true);
 		setInputAndOutput(true);
 		initBlockMenu("Initialize State", new String[] { "Standard" });

@@ -17,9 +17,9 @@ import de.prob.worksheet.block.impl.InitializeStoreBlock;
 import de.prob.worksheet.block.impl.JavascriptBlock;
 import de.prob.worksheet.block.impl.StoreValuesBlock;
 import de.prob.worksheet.editor.impl.CkEditorEditor;
-import de.prob.worksheet.editor.impl.HTMLEditor;
-import de.prob.worksheet.editor.impl.HTMLErrorEditor;
-import de.prob.worksheet.editor.impl.JavascriptEditor;
+import de.prob.worksheet.editor.impl.HTMLDiv;
+import de.prob.worksheet.editor.impl.HTMLDivError;
+import de.prob.worksheet.editor.impl.CodeMirrorJSEditor;
 
 /**
  * The WorksheetObjectMapper extends the Jackson Object Mapper. It binds the
@@ -68,9 +68,9 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 */
 	private void initEditorResolvers() {
 		WorksheetObjectMapper.logger.trace("in:");
-		addEditorResolver(new NamedType(JavascriptEditor.class, "javascript"));
-		addEditorResolver(new NamedType(HTMLEditor.class, "HTMLEditor"));
-		addEditorResolver(new NamedType(HTMLErrorEditor.class, "errorHtml"));
+		addEditorResolver(new NamedType(CodeMirrorJSEditor.class, "javascript"));
+		addEditorResolver(new NamedType(HTMLDiv.class, "HTMLEditor"));
+		addEditorResolver(new NamedType(HTMLDivError.class, "errorHtml"));
 		addEditorResolver(new NamedType(CkEditorEditor.class, "Documentation"));
 		WorksheetObjectMapper.logger.trace("return:");
 	}

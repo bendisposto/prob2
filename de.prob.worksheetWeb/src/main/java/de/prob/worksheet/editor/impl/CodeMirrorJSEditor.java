@@ -3,9 +3,9 @@ package de.prob.worksheet.editor.impl;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "JavascriptEditor")
-public class JavascriptEditor extends DefaultEditor {
+public class CodeMirrorJSEditor extends DefaultEditor {
 
-	public JavascriptEditor() {
+	public CodeMirrorJSEditor() {
 		setHTMLContent("<textarea class=\"ui-editor-javascript\"></textarea>");
 		addCSSHref("javascripts/libs/codemirror-2.36/lib/codemirror.css");
 		addCSSHref("javascripts/libs/codemirror-2.36/theme/eclipse.css");

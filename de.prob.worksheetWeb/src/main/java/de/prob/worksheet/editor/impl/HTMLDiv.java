@@ -3,9 +3,9 @@ package de.prob.worksheet.editor.impl;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "HTMLEditor")
-public class HTMLEditor extends DefaultEditor {
+public class HTMLDiv extends DefaultEditor {
 
-	public HTMLEditor() {
+	public HTMLDiv() {
 		super();
 		setCSSHREFs(new String[] {});
 		setJavascriptHREFs(new String[] {});

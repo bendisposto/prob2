@@ -32,20 +32,21 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 
 	@Inject
 	public EvalStoreAPI(AnimationSelector animations) {
-		logger.trace("in: animations={}", animations.getHistories());
+		EvalStoreAPI.logger.trace("in: animations={}",
+				animations.getHistories());
 		this.animations = animations;
 
-		logger.trace("return:");
+		EvalStoreAPI.logger.trace("return:");
 	}
 
 	public void getCurrentState() {
-		logger.trace("in:");
-		Long before = this.evalStoreId;
-		this.animations = ServletContextListener.INJECTOR
+		EvalStoreAPI.logger.trace("in:");
+		Long before = evalStoreId;
+		animations = ServletContextListener.INJECTOR
 				.getInstance(AnimationSelector.class);
-		logger.debug("Animations: " + animations.getHistories());
+		EvalStoreAPI.logger.debug("Animations: " + animations.getHistories());
 		History currentHistory = animations.getCurrentHistory();
-		logger.debug("CurrentHistory: " + currentHistory);
+		EvalStoreAPI.logger.debug("CurrentHistory: " + currentHistory);
 		String sId;
 		IAnimator animator = null;
 		if (currentHistory == null) {
@@ -53,9 +54,9 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 			animator = ServletContextListener.INJECTOR
 					.getInstance(IAnimator.class);
 			sId = "root";
-			this.notifyOutputListeners(IEvalStoreConstants.NO_ANIMATION,
+			notifyOutputListeners(IEvalStoreConstants.NO_ANIMATION,
 					"No Animation is started", "Initialize State", null);
-			logger.trace("return: No Animation is started");
+			EvalStoreAPI.logger.trace("return: No Animation is started");
 			return;
 			// TODO try to find a way to start an animation if no is present
 			/*
@@ -72,121 +73,122 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 			sId = stateId.getId();
 			animator = currentHistory.getStatespace();
 		}
-		logger.debug("Current StateId" + sId);
+		EvalStoreAPI.logger.debug("Current StateId" + sId);
 
 		EvalstoreCreateByStateCommand cmd = new EvalstoreCreateByStateCommand(
 				sId);
 		animator.execute(cmd);
-		this.evalStoreId = cmd.getEvalstoreId();
-		logger.debug("EvalstoreId: " + this.evalStoreId);
+		evalStoreId = cmd.getEvalstoreId();
+		EvalStoreAPI.logger.debug("EvalstoreId: " + evalStoreId);
 		GetStateValuesCommand valCmd = GetStateValuesCommand
-				.getEvalstoreValuesCommand(this.evalStoreId);
+				.getEvalstoreValuesCommand(evalStoreId);
 		animator.execute(valCmd);
 
 		String output = "";
 		HashMap<String, String> values = valCmd.getResult();
-		logger.debug("Current Store Values: " + values);
+		EvalStoreAPI.logger.debug("Current Store Values: " + values);
 
 		Set<Entry<String, String>> entries = values.entrySet();
 		for (Entry<String, String> value : entries) {
-			output += value.getKey() + ":=" + value.getValue() + "\n";
+			output += value.getKey() + "=" + value.getValue() + "\n";
 		}
 		notifyActionListeners(IEvalStoreConstants.STORE_CHANGE, "", before,
-				this.evalStoreId);
+				evalStoreId);
 		if (output.equals(""))
 			output = "{}";
 		notifyOutputListeners(IEvalStoreConstants.CMD_RESULT, output,
 				"Initialize State", null);
-		logger.trace("return:");
+		EvalStoreAPI.logger.trace("return:");
 	}
 
 	public void evaluate(String expression) {
-		logger.trace("{}", expression);
-		Long before = this.evalStoreId;
-		if (this.evalStoreId == null) {
-			this.notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED,
+		EvalStoreAPI.logger.trace("{}", expression);
+		Long before = evalStoreId;
+		if (evalStoreId == null) {
+			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED,
 					"no State is initialized (call getCurrentState)", true);
 			return;
 		}
 		IEvalElement eval = new EventB(expression);
-		EvalstoreEvalCommand cmd = new EvalstoreEvalCommand(this.evalStoreId,
-				eval);
+		EvalstoreEvalCommand cmd = new EvalstoreEvalCommand(evalStoreId, eval);
 		try {
-			this.animations.getCurrentHistory().getStatespace().execute(cmd);
+			animations.getCurrentHistory().getStatespace().execute(cmd);
 			EvalstoreResult storeResult = cmd.getResult();
 			if (storeResult.isSuccess()) {
-				this.evalStoreId = storeResult.getResultingStoreId();
-				this.notifyActionListeners(IEvalStoreConstants.STORE_CHANGE,
-						"", before, this.evalStoreId);
-				logger.debug("{}", storeResult.getResult());
-				this.notifyOutputListeners(IEvalStoreConstants.CMD_RESULT,
+				evalStoreId = storeResult.getResultingStoreId();
+				notifyActionListeners(IEvalStoreConstants.STORE_CHANGE, "",
+						before, evalStoreId);
+				EvalStoreAPI.logger.debug("{}", storeResult.getResult());
+				notifyOutputListeners(IEvalStoreConstants.CMD_RESULT,
 						storeResult.getResult().getValue(), "HTML", null);
 				storeResult.getResult().getValue();
-				logger.debug("Result.value = {}", storeResult.getResult().value);
-				logger.debug("Result.explanation = {}",
+				EvalStoreAPI.logger.debug("Result.value = {}",
+						storeResult.getResult().value);
+				EvalStoreAPI.logger.debug("Result.explanation = {}",
 						storeResult.getResult().explanation);
-				logger.debug("Result.solution = {}",
+				EvalStoreAPI.logger.debug("Result.solution = {}",
 						storeResult.getResult().solution);
-				logger.debug("Result.getErrors = {}", storeResult.getResult()
-						.getErrors());
-				logger.debug("Result.getQuanitfied = {}", storeResult
-						.getResult().getQuantifiedVars());
-				logger.debug("Result.getResultType = {}", storeResult
-						.getResult().getResultType());
+				EvalStoreAPI.logger.debug("Result.getErrors = {}", storeResult
+						.getResult().getErrors());
+				EvalStoreAPI.logger.debug("Result.getQuanitfied = {}",
+						storeResult.getResult().getQuantifiedVars());
+				EvalStoreAPI.logger.debug("Result.getResultType = {}",
+						storeResult.getResult().getResultType());
 
 			} else {
 				if (storeResult.hasInterruptedOccurred()) {
-					this.notifyErrorListeners(IEvalStoreConstants.INTERRUPT,
+					notifyErrorListeners(IEvalStoreConstants.INTERRUPT,
 							"No Success Interrupt", true);
-					logger.error("{}", storeResult.getResult());
+					EvalStoreAPI.logger.error("{}", storeResult.getResult());
 				}
 				if (storeResult.hasTimeoutOccurred()) {
-					this.notifyErrorListeners(IEvalStoreConstants.TIMEOUT,
+					notifyErrorListeners(IEvalStoreConstants.TIMEOUT,
 							"No Success Timeout", true);
-					logger.error("{}", storeResult.getResult());
+					EvalStoreAPI.logger.error("{}", storeResult.getResult());
 				}
 				if (storeResult.getResult().hasError()) {
-					this.notifyErrorListeners(IEvalStoreConstants.CMD_ERROR,
+					notifyErrorListeners(IEvalStoreConstants.CMD_ERROR,
 							"No Success Result Error: "
 									+ storeResult.getResult().getErrors(), true);
-					logger.error("{}", storeResult.getResult());
+					EvalStoreAPI.logger.error("{}", storeResult.getResult());
 				}
 			}
 		} catch (Exception e) {
-			this.notifyErrorListeners(IEvalStoreConstants.EXCEPTION,
-					e.getMessage(), true);
+			notifyErrorListeners(IEvalStoreConstants.EXCEPTION, e.getMessage(),
+					true);
 
 		}
 
 	}
 
 	public void getStoreValues() {
-		if (this.evalStoreId == null) {
-			this.notifyOutputListeners(
+		if (evalStoreId == null) {
+			notifyOutputListeners(
 					IEvalStoreConstants.CMD_RESULT,
 					"No State is selected! Open Initialize State before getting his values",
 					"State Values", null);
 			return;
 		}
 		GetStateValuesCommand cmd = GetStateValuesCommand
-				.getEvalstoreValuesCommand(this.evalStoreId);
+				.getEvalstoreValuesCommand(evalStoreId);
 		animations.getCurrentHistory().getStatespace().execute(cmd);
 
 		HashMap<String, String> values = cmd.getResult();
-		logger.debug("Current Store Values: " + values);
+		EvalStoreAPI.logger.debug("Current Store Values: " + values);
 		String output = "";
 		Set<Entry<String, String>> entries = values.entrySet();
 		for (Entry<String, String> value : entries) {
-			output += value.getKey() + ":=" + value.getValue() + "\n";
+			output += value.getKey() + "=" + value.getValue() + "\n";
 		}
-
+		if (output.equals(""))
+			output = "{}";
 		notifyOutputListeners(IEvalStoreConstants.CMD_RESULT, output,
 				"State Values", null);
 	}
 
 	public void setEvalStoreId(Long id) {
-		logger.trace("{}", id);
-		this.evalStoreId = id;
+		EvalStoreAPI.logger.trace("{}", id);
+		evalStoreId = id;
 	}
 
 	@Override

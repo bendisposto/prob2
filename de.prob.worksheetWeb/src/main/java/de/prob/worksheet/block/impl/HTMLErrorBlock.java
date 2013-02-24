@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import de.prob.worksheet.editor.impl.HTMLErrorEditor;
+import de.prob.worksheet.editor.impl.HTMLDivError;
 
 /**
  * @author Rene
@@ -25,7 +25,7 @@ public class HTMLErrorBlock extends DefaultBlock {
 	public HTMLErrorBlock() {
 		this.setEvaluatorType("");
 		this.setOutput(true);
-		this.setEditor(new HTMLErrorEditor());
+		this.setEditor(new HTMLDivError());
 		this.setHasMenu(false);
 
 	}

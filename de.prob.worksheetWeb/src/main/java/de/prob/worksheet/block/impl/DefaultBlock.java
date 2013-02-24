@@ -26,7 +26,7 @@ import de.prob.worksheet.block.IBlockEvaluate;
 import de.prob.worksheet.block.IBlockUI;
 import de.prob.worksheet.document.impl.WorksheetMenuNode;
 import de.prob.worksheet.editor.impl.DefaultEditor;
-import de.prob.worksheet.editor.impl.JavascriptEditor;
+import de.prob.worksheet.editor.impl.CodeMirrorJSEditor;
 
 /**
  * @author Rene
@@ -61,7 +61,7 @@ public abstract class DefaultBlock implements IBlockData, IBlockUI,
 		DefaultBlock.logger.trace("in:");
 		menu = new ArrayList<WorksheetMenuNode>();
 		outputBlockIds = new ArrayList<String>();
-		editor = new JavascriptEditor();
+		editor = new CodeMirrorJSEditor();
 		hasMenu = true;
 		output = false;
 		mark = false;

@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.google.inject.Inject;
 
-import de.prob.worksheet.editor.impl.HTMLEditor;
+import de.prob.worksheet.editor.impl.HTMLDiv;
 
 /**
  * @author Rene
@@ -22,7 +22,7 @@ public class HTMLBlock extends DefaultBlock {
 	public HTMLBlock() {
 		setEvaluatorType("");
 		setOutput(true);
-		setEditor(new HTMLEditor());
+		setEditor(new HTMLDiv());
 		setHasMenu(false);
 		setToUnicode(true);
 
