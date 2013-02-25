@@ -1,5 +1,6 @@
 package de.prob.model.representation;
 
+import java.io.File;
 import java.util.Map;
 
 import org.jgrapht.graph.ClassBasedEdgeFactory;
@@ -12,6 +13,7 @@ import de.prob.statespace.StateSpace;
 public abstract class AbstractModel extends AbstractElement {
 
 	protected StateSpace statespace;
+	protected File modelFile;
 	protected DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
 			new ClassBasedEdgeFactory<String, RefType>(RefType.class));
 
@@ -60,4 +62,8 @@ public abstract class AbstractModel extends AbstractElement {
 	public abstract StateSchema getStateSchema();
 
 	public abstract AbstractElement getMainComponent();
+
+	public File getModelFile() {
+		return modelFile;
+	}
 }

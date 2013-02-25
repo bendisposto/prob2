@@ -42,9 +42,10 @@ import de.prob.webconsole.ServletContextListener;
 
 public class StartAnimationProgressBar extends ProgressBarDialog {
 
-	private IEventBRoot rootElement;
-	
-	public StartAnimationProgressBar(Shell parent, IEventBRoot rootElement) {
+	private final IEventBRoot rootElement;
+
+	public StartAnimationProgressBar(final Shell parent,
+			final IEventBRoot rootElement) {
 		super(parent);
 		this.rootElement = rootElement;
 	}
@@ -58,7 +59,7 @@ public class StartAnimationProgressBar extends ProgressBarDialog {
 	}
 
 	@Override
-	protected String process(int i) {
+	protected String process(final int i) {
 
 		switch (i) {
 		case 1:
@@ -111,7 +112,7 @@ public class StartAnimationProgressBar extends ProgressBarDialog {
 	}
 
 	private void startProBAnimator() {
-	
+
 		EventBTranslator eventBTranslator = new EventBTranslator(rootElement);
 
 		Injector injector = ServletContextListener.INJECTOR;
@@ -120,7 +121,8 @@ public class StartAnimationProgressBar extends ProgressBarDialog {
 				.getInstance(EventBFactory.class);
 
 		EventBModel model = instance.load(eventBTranslator.getMainComponent(),
-				eventBTranslator.getMachines(), eventBTranslator.getContexts());
+				eventBTranslator.getMachines(), eventBTranslator.getContexts(),
+				eventBTranslator.getModelFile());
 
 		StringWriter writer = new StringWriter();
 		PrintWriter pto = new PrintWriter(writer);
@@ -156,7 +158,7 @@ public class StartAnimationProgressBar extends ProgressBarDialog {
 		}
 
 		System.gc();
-		
+
 	}
 
 	@Override
@@ -164,12 +166,14 @@ public class StartAnimationProgressBar extends ProgressBarDialog {
 	}
 
 	public void kill() {
-		if (getShell() != null)
+		if (getShell() != null) {
 			getShell().dispose();
+		}
 	}
 
 	public void openErrorDialog(final String msg) {
 		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				ErrorDialog.openError(getParent(), "Error",
 						"An error occured while starting the animation",

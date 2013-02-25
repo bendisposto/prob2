@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.io.File;
 
 import com.google.inject.Inject;
 
@@ -36,6 +37,10 @@ public class EventBModel extends AbstractModel {
 
 	public void addContexts(final Collection<Context> contexts) {
 		put(Context.class, contexts);
+	}
+
+	public void setModelFile(final File modelFile) {
+		this.modelFile = modelFile;
 	}
 
 	public void isFinished() {

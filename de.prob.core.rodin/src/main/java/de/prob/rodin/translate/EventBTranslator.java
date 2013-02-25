@@ -1,5 +1,6 @@
 package de.prob.rodin.translate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,11 +57,13 @@ public class EventBTranslator {
 
 	Map<String, EventBMachine> machines = new HashMap<String, EventBMachine>();
 	Map<String, Context> contexts = new HashMap<String, Context>();
+	File modelFile;
 
 	AbstractElement mainComponent;
 	private final IEventBProject eventBProject;
 
 	public EventBTranslator(final IEventBRoot root) {
+		modelFile = root.getUnderlyingResource().getRawLocation().toFile();
 		eventBProject = root.getEventBProject();
 		IInternalElementType<? extends IInternalElement> elementType = root
 				.getElementType();
@@ -259,6 +262,10 @@ public class EventBTranslator {
 
 	public Collection<Context> getContexts() {
 		return contexts.values();
+	}
+
+	public File getModelFile() {
+		return modelFile;
 	}
 
 }

@@ -1,5 +1,6 @@
 package de.prob.model.classicalb;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -33,7 +34,9 @@ public class ClassicalBModel extends AbstractModel {
 	}
 
 	public DirectedMultigraph<String, RefType> initialize(final Start mainast,
-			final RecursiveMachineLoader rml) {
+			final RecursiveMachineLoader rml, final File modelFile) {
+
+		this.modelFile = modelFile;
 
 		final DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
 				new ClassBasedEdgeFactory<String, RefType>(RefType.class));

@@ -2,6 +2,8 @@ package de.prob.scripting;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.LoadBProjectCommand;
+import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
 
@@ -40,17 +43,25 @@ public class ClassicalBFactory {
 	 * 
 	 * @param f
 	 *            {@link File} containing machine to be loaded.
+	 * @param prefs
 	 * @return {@link ClassicalBModel} from the specified file.
 	 * @throws IOException
 	 * @throws BException
 	 */
-	public ClassicalBModel load(final File f) throws IOException, BException {
+	public ClassicalBModel load(final File f, final Map<String, String> prefs)
+			throws IOException, BException {
 		ClassicalBModel classicalBModel = modelCreator.get();
+
+		for (Entry<String, String> pref : prefs.entrySet()) {
+			classicalBModel.getStatespace().execute(
+					new SetPreferenceCommand(pref.getKey(), pref.getValue()));
+		}
+
 		BParser bparser = new BParser();
 		Start ast = parseFile(f, bparser);
 		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 
-		classicalBModel.initialize(ast, rml);
+		classicalBModel.initialize(ast, rml, f);
 		startAnimation(classicalBModel, rml);
 		return classicalBModel;
 	}
