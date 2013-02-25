@@ -20,6 +20,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
@@ -180,8 +181,10 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 	
 	@Override
 	public void dispose() {
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				.removePerspectiveListener(this);
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow != null)
+			activeWorkbenchWindow.removePerspectiveListener(this);
 		selector.unregisterModelChangedListener(this);
 		super.dispose();
 	}
