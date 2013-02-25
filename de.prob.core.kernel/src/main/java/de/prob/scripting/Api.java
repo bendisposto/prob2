@@ -6,9 +6,15 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +25,16 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
+import de.prob.animator.command.GetPreferencesCommand;
 import de.prob.animator.command.GetVersionCommand;
 import de.prob.animator.command.StartAnimationCommand;
+import de.prob.animator.domainobjects.ProBPreference;
 import de.prob.cli.CliVersionNumber;
 import de.prob.cli.ProBInstance;
 import de.prob.cli.ProBInstanceProvider;
 import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
@@ -51,7 +60,8 @@ public class Api {
 	 */
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
-			final Downloader downloader, ProBInstanceProvider instanceProvider) {
+			final Downloader downloader,
+			final ProBInstanceProvider instanceProvider) {
 		this.modelFactoryProvider = modelFactoryProvider;
 		this.downloader = downloader;
 		this.instanceProvider = instanceProvider;
@@ -66,6 +76,11 @@ public class Api {
 		x.shutdown();
 	}
 
+	public ClassicalBModel b_load(final String file) throws IOException,
+			BException {
+		return b_load(file, new HashMap<String, String>());
+	}
+
 	/**
 	 * Loads a {@link ClassicalBModel} from the specified file path.
 	 * 
@@ -74,12 +89,16 @@ public class Api {
 	 * @throws BException
 	 * @throws IOException
 	 */
-	public ClassicalBModel b_load(final String file) throws IOException,
-			BException {
+	public ClassicalBModel b_load(final String file,
+			final Map<String, String> prefs) throws IOException, BException {
 		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
-		return bFactory.load(f);
+		return bFactory.load(f, prefs);
+	}
+
+	public CSPModel csp_load(final String file) throws Exception {
+		return csp_load(file, new HashMap<String, String>());
 	}
 
 	/**
@@ -91,17 +110,73 @@ public class Api {
 	 * @return {@link CSPModel} that has been loaded from file
 	 * @throws Exception
 	 */
-	public CSPModel csp_load(final String file) throws Exception {
+	public CSPModel csp_load(final String file, final Map<String, String> prefs)
+			throws Exception {
 		File f = new File(file);
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
 		CSPModel m = null;
 		try {
-			m = cspFactory.load(f);
+			m = cspFactory.load(f, prefs);
 		} catch (ProBError error) {
 			throw new Exception(
 					"Could find CSP Parser. Perform 'upgrade cspm' to install cspm in your ProB lib directory");
 		}
 		return m;
+	}
+
+	public AbstractModel load(final String filename) throws Exception {
+		Properties p = new Properties();
+
+		Map<String, String> prefs = new HashMap<String, String>();
+
+		try {
+			p.load(new FileInputStream(filename));
+
+			Set<String> keys = p.stringPropertyNames();
+			for (String key : keys) {
+				if (key.endsWith(".prolog")) {
+					prefs.put(key.substring(0, key.indexOf(".")),
+							p.getProperty(key));
+				}
+			}
+
+			String modelFile = p.getProperty("MODEL_FILE");
+			String formalism = p.getProperty("FORMALISM");
+			if (formalism.equals("ClassicalBModel")) {
+				return b_load(modelFile, prefs);
+			}
+			if (formalism.equals("CSPModel")) {
+				return csp_load(modelFile, prefs);
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public void save(final AbstractModel m, final String filename) {
+		GetPreferencesCommand cmd = new GetPreferencesCommand();
+
+		m.getStatespace().execute(cmd);
+		List<ProBPreference> prefs = cmd.getPreferences();
+
+		try {
+			Properties p = new Properties();
+
+			for (ProBPreference pref : prefs) {
+				p.setProperty(pref.name + ".prolog", pref.defaultValue);
+			}
+
+			p.setProperty("MODEL_FILE", m.getModelFile().getAbsolutePath());
+			p.setProperty("FORMALISM", m.getClass().getSimpleName());
+
+			p.store(new FileOutputStream(filename), null);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -153,8 +228,9 @@ public class Api {
 			binaryPresent = false;
 		}
 
-		if (!binaryPresent)
+		if (!binaryPresent) {
 			return null;
+		}
 		GetVersionCommand versionCommand = new GetVersionCommand();
 		IAnimator animator = ServletContextListener.INJECTOR
 				.getInstance(IAnimator.class);
