@@ -21,8 +21,8 @@ import de.prob.worksheet.editor.IEditorUI;
 
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@XmlSeeAlso(value = { HTMLDiv.class, HTMLDivError.class,
-		CodeMirrorJSEditor.class, CkEditorEditor.class })
+@XmlSeeAlso(value = { HTMLDiv.class, HTMLDivError.class, CkEditorEditor.class,
+		CodeMirrorTextEditor.class })
 public abstract class DefaultEditor implements IEditorData, IEditorUI {
 	private String HTMLContent;
 	private String EditorContent = "";

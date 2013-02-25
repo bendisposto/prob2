@@ -8,12 +8,12 @@ import com.google.inject.name.Names;
 
 import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.block.impl.DocumentationBlock;
+import de.prob.worksheet.block.impl.EventBBlock;
 import de.prob.worksheet.block.impl.HTMLBlock;
 import de.prob.worksheet.block.impl.HTMLErrorBlock;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
-import de.prob.worksheet.block.impl.JavascriptBlock;
 import de.prob.worksheet.block.impl.StoreValuesBlock;
-import de.prob.worksheet.evaluator.IWorksheetEvaluator;
+import de.prob.worksheet.evaluator.IEvaluator;
 import de.prob.worksheet.evaluator.evalStore.StateEvaluator;
 
 /**
@@ -34,21 +34,24 @@ public class WorksheetModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		WorksheetModule.logger.trace("in: ");
-		this.bind(IWorksheetEvaluator.class)
-				.annotatedWith(Names.named("state")).to(StateEvaluator.class);
+		this.bind(IEvaluator.class).annotatedWith(Names.named("state"))
+				.to(StateEvaluator.class);
 
-		this.bind(DefaultBlock.class).annotatedWith(Names.named("Javascript"))
-				.to(JavascriptBlock.class);
+		// this.bind(DefaultBlock.class).annotatedWith(Names.named("Javascript"))
+		// .to(JavascriptBlock.class);
+
+		this.bind(DefaultBlock.class).annotatedWith(Names.named("Event-B"))
+				.to(EventBBlock.class);
 		this.bind(DefaultBlock.class).annotatedWith(Names.named("HTML"))
 				.to(HTMLBlock.class);
 		this.bind(DefaultBlock.class).annotatedWith(Names.named("Fehler"))
+				.to(HTMLErrorBlock.class);
 
-		.to(HTMLErrorBlock.class);
 		this.bind(DefaultBlock.class)
-				.annotatedWith(Names.named("Initialize State"))
+				.annotatedWith(Names.named("Get state from animation"))
 				.to(InitializeStoreBlock.class);
 		this.bind(DefaultBlock.class)
-				.annotatedWith(Names.named("State Values"))
+				.annotatedWith(Names.named("Show state properties"))
 				.to(StoreValuesBlock.class);
 		this.bind(DefaultBlock.class)
 				.annotatedWith(Names.named("Documentation"))

@@ -24,8 +24,7 @@ public class BlockEvaluator {
 		if (block.isOutput())
 			return;
 
-		IWorksheetEvaluator evaluator = this.initializeEvaluator(
-				block.getEvaluatorType(),
+		IEvaluator evaluator = initializeEvaluator(block.getEvaluatorType(),
 				contextHistory.getInitialContextForId(block.getId()));
 
 		String script = block.getOverrideEditorContent();
@@ -37,9 +36,11 @@ public class BlockEvaluator {
 
 		doc.removeOutputBlocks(block);
 		DefaultBlock[] outputs = evaluator.getOutputs();
+
 		if (block.isInputAndOutput()) {
 			block.getEditor().setEditorContent(
 					outputs[0].getEditor().getEditorContent());
+			block.setToUnicode(outputs[0].isToUnicode());
 			outputs[0] = block;
 		}
 		doc.insertOutputBlocks(block, outputs);
@@ -52,19 +53,18 @@ public class BlockEvaluator {
 		return;
 	}
 
-	private IWorksheetEvaluator initializeEvaluator(String evaluatorType,
+	private IEvaluator initializeEvaluator(String evaluatorType,
 			IContext initialContext) {
 		logger.trace("evaluatorType={}, initialContext={}", evaluatorType,
 				initialContext);
-		IWorksheetEvaluator evaluator = ServletContextListener.INJECTOR
-				.getInstance(Key.get(IWorksheetEvaluator.class,
-						Names.named(evaluatorType)));
+		IEvaluator evaluator = ServletContextListener.INJECTOR.getInstance(Key
+				.get(IEvaluator.class, Names.named(evaluatorType)));
 		evaluator.setInitialContext(initialContext);
 		logger.trace("{}", evaluator);
 		return evaluator;
 	}
 
-	private void evaluateScript(IWorksheetEvaluator evaluator, String script) {
+	private void evaluateScript(IEvaluator evaluator, String script) {
 		evaluator.evaluate(script);
 	}
 

@@ -10,6 +10,8 @@ import de.prob.worksheet.editor.impl.HTMLDiv;
 
 @XmlType(name = "StateValues")
 public class StoreValuesBlock extends DefaultBlock {
+	public static final String PRINT_NAME = "Show state properties";
+
 	@Inject
 	public StoreValuesBlock() {
 		setEvaluatorType("state");

@@ -11,15 +11,15 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.worksheet.block.impl.DocumentationBlock;
+import de.prob.worksheet.block.impl.EventBBlock;
 import de.prob.worksheet.block.impl.HTMLBlock;
 import de.prob.worksheet.block.impl.HTMLErrorBlock;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
-import de.prob.worksheet.block.impl.JavascriptBlock;
 import de.prob.worksheet.block.impl.StoreValuesBlock;
 import de.prob.worksheet.editor.impl.CkEditorEditor;
+import de.prob.worksheet.editor.impl.CodeMirrorTextEditor;
 import de.prob.worksheet.editor.impl.HTMLDiv;
 import de.prob.worksheet.editor.impl.HTMLDivError;
-import de.prob.worksheet.editor.impl.CodeMirrorJSEditor;
 
 /**
  * The WorksheetObjectMapper extends the Jackson Object Mapper. It binds the
@@ -68,10 +68,12 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 */
 	private void initEditorResolvers() {
 		WorksheetObjectMapper.logger.trace("in:");
-		addEditorResolver(new NamedType(CodeMirrorJSEditor.class, "javascript"));
+		// addEditorResolver(new NamedType(CodeMirrorJSEditor.class,
+		// "javascript"));
 		addEditorResolver(new NamedType(HTMLDiv.class, "HTMLEditor"));
 		addEditorResolver(new NamedType(HTMLDivError.class, "errorHtml"));
 		addEditorResolver(new NamedType(CkEditorEditor.class, "Documentation"));
+		addEditorResolver(new NamedType(CodeMirrorTextEditor.class, "Event-B"));
 		WorksheetObjectMapper.logger.trace("return:");
 	}
 
@@ -81,14 +83,18 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 */
 	private void initBlockResolvers() {
 		WorksheetObjectMapper.logger.trace("in:");
-		addInputBlockResolver(new NamedType(JavascriptBlock.class, "Javascript"));
+		// addInputBlockResolver(new NamedType(JavascriptBlock.class,
+		// "Javascript"));
 		addOutputBlockResolver(new NamedType(HTMLBlock.class, "HTML"));
 		addOutputBlockResolver(new NamedType(HTMLErrorBlock.class, "Fehler"));
 		addInputBlockResolver(new NamedType(InitializeStoreBlock.class,
-				"Initialize State"));
+				"Get state from animation"));
 		addInputBlockResolver(new NamedType(StoreValuesBlock.class,
-				"State Values"));
-		addInputBlockResolver(new NamedType(DocumentationBlock.class,
+				"Show state properties"));
+		addInputBlockResolver(new NamedType(EventBBlock.class, "Event-B"));
+
+		// TODO maybe add new List for new BlockTypes
+		addOutputBlockResolver(new NamedType(DocumentationBlock.class,
 				"Documentation"));
 		WorksheetObjectMapper.logger.trace("return:");
 	}

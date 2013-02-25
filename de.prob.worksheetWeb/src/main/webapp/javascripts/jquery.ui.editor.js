@@ -47,11 +47,11 @@
 			this.element.empty();
 			if(typeof this.element.attr("id")=="string")	
 				this.backupId=this.element.attr("id");
-			this.options.isInitialized=false;
 			this.element.addClass("ui-editor ui-widget");
 			//TODO find better workaround including id from server for uniqueid Jquery Bug
 			this.element.uniqueId();
-			this.options.id = this.element.attr("id");
+			this._setOption("id",this.element.attr("id"));
+			this._setOption("isInitialized",false);
 			
 			
 			var editorContentContainer = $("<div></div>").addClass("ui-editor-content");
@@ -131,8 +131,6 @@
 						content=content.replace(reg,"<br />");
 					}
 					this.options.setContent(content);
-					this._trigger("contentChanged", 0, [ content,content!=this.initcontent ]);
-
 				}
 			}
 		},
@@ -149,7 +147,7 @@
 					content=$("<div/>").html(content).text();
 				return content;	
 			}
-			return null;
+			return "";
 		},
 		setFocus:function(){
 			if ($.isFunction(this.options.setFocus) && this.options.isInitialized)
@@ -161,37 +159,41 @@
 			switch (key) {
 			case "id":
 				break;
-			case "content":
-				this.setContent(value);
+			case "content":				
+				this.setContent(val);
+				this.options.content = val;
+				if(this.initcontent!=val && !this.converting )
+					this._trigger("contentChanged", 0, [val]);
+				
 				break;
 			case "cssURLs":
-				this._setCSSUrls(value);
+				this._setCSSUrls(val);
 				break;
 			case "jsURLs":
-				this._setJSUrls(value);
+				this._setJSUrls(val);
 				break;
 			case "getContent":
-				value=$.recursiveFunctionTest(value);
+				value=$.recursiveFunctionTest(val);
 				break;
 			case "setContent":
-				value=$.recursiveFunctionTest(value);
+				value=$.recursiveFunctionTest(val);
 				break;
 			case "html":
 				break;
 			case "init":
-				value=$.recursiveFunctionTest(value);
+				value=$.recursiveFunctionTest(val);
 				break;
 			case "objType":
 				break;
 			case "destroy":
-				value=$.recursiveFunctionTest(value);
+				value=$.recursiveFunctionTest(val);
 				break;
 
 
 			default:
 				break;
 			}
-			this._super( "_setOption", key, val );
+			this._super( key, val );
 			this._trigger("optionsChanged",0,this.options);		
 		},
 		_setCSSUrls:function(urls){
@@ -204,8 +206,7 @@
 		},
 		_setOptionContent : function(content) {
 			//DEBUG window.console.debug("Trace: _setOptionContent");
-			this.options.content = content;
-			this._trigger("optionsChanged", 0, [ this.options ]);
+			
 		},
 
 		_getOptionContent : function() {
@@ -215,7 +216,9 @@
 		_triggerInitialized:function(){
 			//DEBUG window.console.debug("Trace: _triggerInitialized");
 			
-			this.options.isInitialized=true;
+			this._setOption("isInitialized",true);
+			if(this.element.closest(".ui-block").block("option","toUnicode"))
+				this.toUnicode();
 			if(!$.browser.msie)
 				window.console.debug("Event: initialized from Editor");
 			this._trigger("initialized", 0, [ this ]);
@@ -240,10 +243,11 @@
 			//jTODO rework this shit
 		
 			//DEBUG window.console.debug("Trace: _editorChanged");
+			if(!this.options.isInitialized)
+				return;
+			
 			var content = this.getContent();
-			if(this.initcontent!=content && !this.converting)
-				this._trigger("contentChanged", 0, [ content,content!=this.initcontent ]);
-			this._setOptionContent(content);
+			this._setOption("content",content);
 		},
 		_toUnicodeEventB:function(ascii){
 			var reg=RegExp("<:","g");	ascii=ascii.replace(reg,"\u2286");//,8838],

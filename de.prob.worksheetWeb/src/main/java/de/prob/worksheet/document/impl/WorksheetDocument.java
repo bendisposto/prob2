@@ -324,7 +324,7 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	@Override
 	public void removeOutputBlocks(final DefaultBlock block) {
 		WorksheetDocument.logger.trace("in: block={}", block);
-		final int blockIndex = this.getBlockIndex(block);
+		final int blockIndex = getBlockIndex(block);
 		final String[] outputIds = blocks.get(blockIndex).getOutputBlockIds();
 		WorksheetDocument.logger.debug("OutputIds of {} = {}", block.getId(),
 				outputIds);
@@ -482,7 +482,7 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	public void insertOutputBlocks(DefaultBlock block, DefaultBlock[] blocks) {
 		WorksheetDocument.logger
 				.trace("in: block={}, blocks={}", block, blocks);
-		int index = this.getBlockIndex(block);
+		int index = getBlockIndex(block);
 
 		if (block.isInputAndOutput()) {
 		}
@@ -545,5 +545,11 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 		DefaultBlock[] blocks = getBlocksFrom(getBlockIndex(block));
 		WorksheetDocument.logger.trace("return: blocks={}", blocks);
 		return blocks;
+	}
+
+	@Override
+	public void removeBlock(DefaultBlock block) {
+		int index = getBlockIndex(block);
+		blocks.remove(index);
 	}
 }

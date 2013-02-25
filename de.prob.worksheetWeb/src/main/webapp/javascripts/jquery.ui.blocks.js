@@ -304,19 +304,18 @@
 								blockContentContainer.append(
 										newEditor);
 								newEditor.one("editorinitialized", $.proxy(
-										function() {
+										function(editor) {
+											editor.bind("editoroptionschanged", $.proxy(
+													function(event, options) {
+														this._editorOptionsChanged(options)
+													}, this));
+											editor.bind("editorcontentchanged",function(){
+													$(".ui-worksheet").worksheet("setDirty",true)});
+											
 											this._triggerInitialized();
-											this._trigger("optionsChanged", 0,
-													[ this.options ]);
-										}, this));
+										}, this,newEditor));
 								newEditor.editor(editorOptions);
-								newEditor.bind("editoroptionschanged", $.proxy(
-										function(event, options) {
-											this._editorOptionsChanged(options)
-										}, this));
-								newEditor.bind("editorcontentchanged",function(){
-										$(".ui-worksheet").worksheet("setDirty",true)});
-								newEditor.on
+								
 							}
 
 						},

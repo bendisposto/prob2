@@ -15,11 +15,11 @@ import de.prob.worksheet.api.IContext;
 import de.prob.worksheet.api.WorksheetErrorEvent;
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
 import de.prob.worksheet.block.impl.DefaultBlock;
-import de.prob.worksheet.evaluator.IWorksheetEvaluator;
+import de.prob.worksheet.evaluator.IEvaluator;
 import de.prob.worksheet.parser.SimpleConsoleParser;
 import de.prob.worksheet.parser.SimpleConsoleParser.EvalObject;
 
-public class StateEvaluator implements IWorksheetEvaluator {
+public class StateEvaluator implements IEvaluator {
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -35,25 +35,10 @@ public class StateEvaluator implements IWorksheetEvaluator {
 	public StateEvaluator(EvalStoreAPI api) {
 		outListener = new OutputListener(outputBlocks);
 		errorListener = new ErrorListener(outputBlocks);
-		this.api = api;
-		this.api.addErrorListener(errorListener);
-		this.api.addOutputListener(outListener);
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.prob.worksheet.evaluator.IWorksheetEvaluator#setImport(de.prob.worksheet
-	 * .api.state.StateAPI)
-	 */
-	@Override
-	public void setImport(EvalStoreAPI api) {
-		logger.trace(api.toString());
 		this.api = api;
 		this.api.addErrorListener(errorListener);
 		this.api.addOutputListener(outListener);
-		this.api.addActionListener(actionListener);
 	}
 
 	/*
@@ -66,9 +51,9 @@ public class StateEvaluator implements IWorksheetEvaluator {
 	@Override
 	public void setInitialContext(IContext context) {
 		logger.trace("{}", context);
-		this.contextHistory = new ContextHistory(context);
+		contextHistory = new ContextHistory(context);
 		actionListener = new HistoryListener(contextHistory);
-		this.api.addActionListener(actionListener);
+		api.addActionListener(actionListener);
 
 	}
 
@@ -90,19 +75,11 @@ public class StateEvaluator implements IWorksheetEvaluator {
 			logger.error("Evaluator isn't correctly initialized. initialContext is missing.");
 			return;
 		}
-		this.evaluateScript(script);
+		evaluateScript(script);
 		return;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.prob.worksheet.evaluator.IWorksheetEvaluator#evaluateObject(de.prob
-	 * .worksheet.parser.SimpleConsoleParser.EvalObject)
-	 */
-	@Override
-	public void evaluateObject(EvalObject evalObject) {
+	private void evaluateObject(EvalObject evalObject) {
 		logger.trace(evalObject.toString());
 		// TODO Change to parserError thrown by Parser
 
@@ -116,17 +93,16 @@ public class StateEvaluator implements IWorksheetEvaluator {
 					true));
 		}
 
-		logger.debug("{}", this.contextHistory.last());
-		this.api.setEvalStoreId((Long) this.contextHistory.last().getBinding(
-				"EvalStoreId"));
+		logger.debug("{}", contextHistory.last());
+		api.setContext(contextHistory.last());
 
 		if (evalObject.methodInstance instanceof Method) {
 			if (((Method) evalObject.methodInstance).getDeclaringClass()
-					.isInstance(this.api)) {
+					.isInstance(api)) {
 				final Object[] args = Arrays.copyOfRange(evalObject.method, 1,
 						evalObject.method.length);
 				try {
-					((Method) evalObject.methodInstance).invoke(this.api, args);
+					((Method) evalObject.methodInstance).invoke(api, args);
 				} catch (final IllegalAccessException e) {
 					errorListener.notify(new WorksheetErrorEvent(3001,
 							"You don't have access to the method "
@@ -155,15 +131,7 @@ public class StateEvaluator implements IWorksheetEvaluator {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.prob.worksheet.evaluator.IWorksheetEvaluator#evaluateObjects(de.prob
-	 * .worksheet.parser.SimpleConsoleParser.EvalObject[])
-	 */
-	@Override
-	public void evaluateObjects(EvalObject[] evalObjects) {
+	private void evaluateObjects(EvalObject[] evalObjects) {
 		logger.trace(Arrays.toString(evalObjects));
 		for (EvalObject object : evalObjects) {
 			if (errorListener.isHaltAll())
@@ -172,29 +140,13 @@ public class StateEvaluator implements IWorksheetEvaluator {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.prob.worksheet.evaluator.IWorksheetEvaluator#evaluateScript(java.lang
-	 * .String)
-	 */
-	@Override
-	public void evaluateScript(String script) {
+	private void evaluateScript(String script) {
 		logger.trace(script);
-		EvalObject[] evalObjects = this.parseScript(script);
-		this.evaluateObjects(evalObjects);
+		EvalObject[] evalObjects = parseScript(script);
+		evaluateObjects(evalObjects);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.prob.worksheet.evaluator.IWorksheetEvaluator#parseScript(java.lang
-	 * .String)
-	 */
-	@Override
-	public EvalObject[] parseScript(String script) {
+	private EvalObject[] parseScript(String script) {
 		logger.trace(script);
 		final SimpleConsoleParser cbwParser = new SimpleConsoleParser();
 		final EvalObject[] evalObjects = cbwParser.parse(script);
@@ -209,8 +161,8 @@ public class StateEvaluator implements IWorksheetEvaluator {
 	 */
 	@Override
 	public DefaultBlock[] getOutputs() {
-		this.outputBlocks = this.outListener.outputBlocks;
-		DefaultBlock[] ret = this.outputBlocks.toArray(new DefaultBlock[this.outputBlocks
+		outputBlocks = outListener.outputBlocks;
+		DefaultBlock[] ret = outputBlocks.toArray(new DefaultBlock[outputBlocks
 				.size()]);
 		logger.trace(Arrays.toString(ret));
 		return ret;
@@ -223,8 +175,8 @@ public class StateEvaluator implements IWorksheetEvaluator {
 	 */
 	@Override
 	public ContextHistory getContextHistory() {
-		logger.trace("{}", this.contextHistory);
-		return this.contextHistory;
+		logger.trace("{}", contextHistory);
+		return contextHistory;
 	}
 
 }

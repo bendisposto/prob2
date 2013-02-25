@@ -34,7 +34,7 @@ public class OutputListener implements IWorksheetAPIListener {
 	 */
 	public OutputListener(ArrayList<DefaultBlock> output) {
 		logger.trace("{}", output);
-		this.outputBlocks = output;
+		outputBlocks = output;
 	}
 
 	/*
@@ -50,8 +50,7 @@ public class OutputListener implements IWorksheetAPIListener {
 		final WorksheetOutputEvent typedEvent = (WorksheetOutputEvent) event;
 		switch (event.getId()) {
 		default:
-			this.addOutput(typedEvent.getOutputBlockType(),
-					typedEvent.getMessage());
+			addOutput(typedEvent.getOutputBlockType(), typedEvent.getMessage());
 			break;
 		}
 	}
@@ -62,12 +61,12 @@ public class OutputListener implements IWorksheetAPIListener {
 				DefaultBlock.class, Names.named(outputBlockType)));
 		block.setOutput(true);
 		block.getEditor().setEditorContent(output);
-		this.outputBlocks.add(block);
-		logger.debug("{}", this.outputBlocks);
+		outputBlocks.add(block);
+		logger.debug("{}", outputBlocks);
 	}
 
 	public IBlockData[] getBlocks() {
 		logger.trace("");
-		return this.outputBlocks.toArray(new DefaultBlock[this.outputBlocks.size()]);
+		return outputBlocks.toArray(new DefaultBlock[outputBlocks.size()]);
 	}
 }

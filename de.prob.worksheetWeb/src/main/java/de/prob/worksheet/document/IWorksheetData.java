@@ -141,4 +141,6 @@ public interface IWorksheetData {
 	 */
 	public abstract DefaultBlock getFirst();
 
+	public abstract void removeBlock(DefaultBlock block);
+
 }

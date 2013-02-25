@@ -9,5 +9,6 @@ public interface IEvalStoreConstants {
 	public static int INTERRUPT = 6;
 	public static int TIMEOUT = 7;
 	public static int CMD_ERROR = 8;
+	public static int CONTEXT_ERROR = 9;
 
 }

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * @author Rene
  * 
  */
-public class DefaultWorksheetAPI implements IWorksheetAPI {
+public abstract class DefaultWorksheetAPI implements IWorksheetAPI {
 	public static Logger logger = LoggerFactory
 			.getLogger(DefaultWorksheetAPI.class);
 	private List<IWorksheetAPIListener> actionListeners;
@@ -20,11 +20,11 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	private List<IWorksheetAPIListener> errorListeners;
 
 	public DefaultWorksheetAPI() {
-		logger.trace("in:");
-		this.errorListeners = new ArrayList<IWorksheetAPIListener>();
-		this.outputListeners = new ArrayList<IWorksheetAPIListener>();
-		this.actionListeners = new ArrayList<IWorksheetAPIListener>();
-		logger.trace("return:");
+		DefaultWorksheetAPI.logger.trace("in:");
+		errorListeners = new ArrayList<IWorksheetAPIListener>();
+		outputListeners = new ArrayList<IWorksheetAPIListener>();
+		actionListeners = new ArrayList<IWorksheetAPIListener>();
+		DefaultWorksheetAPI.logger.trace("return:");
 	}
 
 	/*
@@ -36,15 +36,15 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	@Override
 	public void notifyErrorListeners(final int id, final String message,
 			final boolean haltAll) {
-		logger.trace("in: id={}, message={}, haltAll={}", new Object[] { id,
-				message, haltAll });
+		DefaultWorksheetAPI.logger.trace("in: id={}, message={}, haltAll={}",
+				new Object[] { id, message, haltAll });
 
 		final WorksheetErrorEvent event = new WorksheetErrorEvent(id, message,
 				haltAll);
-		for (final IWorksheetAPIListener listener : this.errorListeners) {
+		for (final IWorksheetAPIListener listener : errorListeners) {
 			listener.notify(event);
 		}
-		logger.trace("return:");
+		DefaultWorksheetAPI.logger.trace("return:");
 	}
 
 	/*
@@ -56,15 +56,16 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	 */
 	@Override
 	public void addErrorListener(final IWorksheetAPIListener listener) {
-		logger.trace("in: listener={}", listener);
-		assert (this.errorListeners != null);
+		DefaultWorksheetAPI.logger.trace("in: listener={}", listener);
+		assert (errorListeners != null);
 		assert (listener != null);
 
-		if (!this.errorListeners.contains(listener)) {
-			this.errorListeners.add(listener);
-			logger.debug("ErrorListeners={}", this.errorListeners);
+		if (!errorListeners.contains(listener)) {
+			errorListeners.add(listener);
+			DefaultWorksheetAPI.logger.debug("ErrorListeners={}",
+					errorListeners);
 		}
-		logger.trace("return:");
+		DefaultWorksheetAPI.logger.trace("return:");
 	}
 
 	/*
@@ -76,11 +77,11 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	 */
 	@Override
 	public void removeErrorListener(final IWorksheetAPIListener listener) {
-		logger.trace("in: listener={}", listener);
-		assert (this.errorListeners != null);
-		this.errorListeners.remove(listener);
-		logger.debug("ErrorListeners={}", errorListeners);
-		logger.trace("return:");
+		DefaultWorksheetAPI.logger.trace("in: listener={}", listener);
+		assert (errorListeners != null);
+		errorListeners.remove(listener);
+		DefaultWorksheetAPI.logger.debug("ErrorListeners={}", errorListeners);
+		DefaultWorksheetAPI.logger.trace("return:");
 	}
 
 	/*
@@ -92,7 +93,8 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	@Override
 	public void notifyOutputListeners(final int id, final String message,
 			final String outputBlockType, final Object dataObject) {
-		logger.trace("in: id={}, message={}, outputBlockType={}, data={}",
+		DefaultWorksheetAPI.logger.trace(
+				"in: id={}, message={}, outputBlockType={}, data={}",
 				new Object[] { id, message, outputBlockType, dataObject });
 
 		final WorksheetOutputEvent event = new WorksheetOutputEvent();
@@ -100,10 +102,10 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 		event.setOutputBlockType(outputBlockType);
 		event.setMessage(message);
 		event.setDataObject(dataObject);
-		for (final IWorksheetAPIListener listener : this.outputListeners) {
+		for (final IWorksheetAPIListener listener : outputListeners) {
 			listener.notify(event);
 		}
-		logger.trace("return:");
+		DefaultWorksheetAPI.logger.trace("return:");
 	}
 
 	/*
@@ -115,14 +117,15 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	 */
 	@Override
 	public void addOutputListener(final IWorksheetAPIListener listener) {
-		logger.trace("in: listener={}", listener);
-		assert (this.outputListeners != null);
-		assert (this.outputListeners != null);
-		if (!this.outputListeners.contains(listener)) {
-			this.outputListeners.add(listener);
-			logger.debug("OutputListeners{}", outputListeners);
+		DefaultWorksheetAPI.logger.trace("in: listener={}", listener);
+		assert (outputListeners != null);
+		assert (outputListeners != null);
+		if (!outputListeners.contains(listener)) {
+			outputListeners.add(listener);
+			DefaultWorksheetAPI.logger.debug("OutputListeners{}",
+					outputListeners);
 		}
-		logger.trace("return:");
+		DefaultWorksheetAPI.logger.trace("return:");
 	}
 
 	/*
@@ -134,10 +137,10 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	 */
 	@Override
 	public void removeOutputListener(final IWorksheetAPIListener listener) {
-		logger.trace("in: listener={}", listener);
-		this.outputListeners.remove(listener);
-		logger.debug("OutputListeners={}", outputListeners);
-		logger.trace("return:");
+		DefaultWorksheetAPI.logger.trace("in: listener={}", listener);
+		outputListeners.remove(listener);
+		DefaultWorksheetAPI.logger.debug("OutputListeners={}", outputListeners);
+		DefaultWorksheetAPI.logger.trace("return:");
 	}
 
 	/*
@@ -149,18 +152,19 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	@Override
 	public void notifyActionListeners(final int id, final String message,
 			final Object dataBefore, final Object dataAfter) {
-		logger.trace("in: id{}, message{}, before{}, after{}", new Object[] {
-				id, message, dataBefore, dataAfter });
+		DefaultWorksheetAPI.logger.trace(
+				"in: id{}, message{}, before{}, after{}", new Object[] { id,
+						message, dataBefore, dataAfter });
 
 		final WorksheetActionEvent event = new WorksheetActionEvent();
 		event.setId(id);
 		event.setMessage(message);
 		event.setDataBefore(dataBefore);
 		event.setDataAfter(dataAfter);
-		for (final IWorksheetAPIListener listener : this.actionListeners) {
+		for (final IWorksheetAPIListener listener : actionListeners) {
 			listener.notify(event);
 		}
-		logger.trace("return");
+		DefaultWorksheetAPI.logger.trace("return");
 	}
 
 	/*
@@ -172,13 +176,13 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	 */
 	@Override
 	public void addActionListener(final IWorksheetAPIListener listener) {
-		logger.trace("in: listener={}", listener);
-		assert (this.actionListeners != null);
-		assert (this.actionListeners != null);
+		DefaultWorksheetAPI.logger.trace("in: listener={}", listener);
+		assert (actionListeners != null);
+		assert (actionListeners != null);
 
-		this.actionListeners.add(listener);
-		logger.debug("ActionListeners={}", actionListeners);
-		logger.trace("return:");
+		actionListeners.add(listener);
+		DefaultWorksheetAPI.logger.debug("ActionListeners={}", actionListeners);
+		DefaultWorksheetAPI.logger.trace("return:");
 	}
 
 	/*
@@ -190,9 +194,9 @@ public class DefaultWorksheetAPI implements IWorksheetAPI {
 	 */
 	@Override
 	public void removeActionListener(final IWorksheetAPIListener listener) {
-		logger.trace("in: listener={}", listener);
-		this.actionListeners.remove(listener);
-		logger.debug("ActionListeners={}", actionListeners);
-		logger.trace("return:");
+		DefaultWorksheetAPI.logger.trace("in: listener={}", listener);
+		actionListeners.remove(listener);
+		DefaultWorksheetAPI.logger.debug("ActionListeners={}", actionListeners);
+		DefaultWorksheetAPI.logger.trace("return:");
 	}
 }

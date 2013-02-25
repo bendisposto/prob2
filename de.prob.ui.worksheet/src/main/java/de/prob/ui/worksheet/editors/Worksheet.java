@@ -293,24 +293,26 @@ public class Worksheet extends EditorPart {
 		dialog.create();
 		// open SaveAsDialog and check ReturnCode
 		int res = dialog.open();
-		if (res != Window.OK)
+		if (res != Window.OK) {
 			monitor.setCanceled(true);
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IFile file = workspace.getRoot().getFile(dialog.getResult());
-
-		try {
-			if (file.exists()) {
-				file.setContents(getContentInputStream(), true, true, monitor);
-				setDirty(false);
-				setInputWithNotify(new FileEditorInput(file));
-			} else {
-				file.create(getContentInputStream(), true, monitor);
-				setDirty(false);
-				setInputWithNotify(new FileEditorInput(file));
+		} else {
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			IFile file = workspace.getRoot().getFile(dialog.getResult());
+			try {
+				if (file.exists()) {
+					file.setContents(getContentInputStream(), true, true,
+							monitor);
+					setDirty(false);
+					setInputWithNotify(new FileEditorInput(file));
+				} else {
+					file.create(getContentInputStream(), true, monitor);
+					setDirty(false);
+					setInputWithNotify(new FileEditorInput(file));
+				}
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 	}

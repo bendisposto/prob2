@@ -14,9 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.worksheet.WorksheetObjectMapper;
-import de.prob.worksheet.block.impl.JavascriptBlock;
+import de.prob.worksheet.api.ContextHistory;
+import de.prob.worksheet.api.evalStore.EvalStoreContext;
+import de.prob.worksheet.block.impl.InitializeStoreBlock;
 import de.prob.worksheet.document.IWorksheetData;
 import de.prob.worksheet.document.impl.WorksheetDocument;
+import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 @WebServlet(urlPatterns = { "/newDocument" })
 public class NewDocument extends HttpServlet {
@@ -40,19 +43,19 @@ public class NewDocument extends HttpServlet {
 	protected void doPost(final HttpServletRequest req,
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
-		this.logParameters(req);
+		logParameters(req);
 		resp.setCharacterEncoding("UTF-8");
 		// initialize the session
-		this.setSessionProperties(req.getSession());
+		setSessionProperties(req.getSession());
 
 		// Load the session attibutes
-		HashMap<String, Object> attributes = this.getSessionAttributes(
+		HashMap<String, Object> attributes = getSessionAttributes(
 				req.getSession(), req.getParameter("worksheetSessionId"));
 		// load or create the document
-		IWorksheetData doc = this.getDocument(attributes);
+		IWorksheetData doc = getDocument(attributes);
 
 		// store the session attributes
-		this.setSessionAttributes(req.getSession(),
+		setSessionAttributes(req.getSession(),
 				req.getParameter("worksheetSessionId"), attributes);
 
 		// print the json string to the response
@@ -91,7 +94,7 @@ public class NewDocument extends HttpServlet {
 	}
 
 	private IWorksheetData getDocument(HashMap<String, Object> attributes) {
-		IWorksheetData doc = (IWorksheetData) attributes.get("document");
+		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");
 		if (doc == null) {
 			// TODO add distinction between eclipse plugin mode and external
 			// Browser mode (e.g. remove unnecessary menus in plugin mode)
@@ -100,12 +103,34 @@ public class NewDocument extends HttpServlet {
 
 			logger.debug("New WorksheetDocument initiaized");
 
-			final JavascriptBlock block1 = new JavascriptBlock();
+			final InitializeStoreBlock block1 = new InitializeStoreBlock();
 			doc.insertBlock(0, block1);
+			if (block1.isImmediateEvaluation()) {
+				DocumentEvaluator evaluator = new DocumentEvaluator();
+				evaluator.evaluateDocument(doc, getContextHistory(attributes));
+			}
 			attributes.put("document", doc);
 		}
 		return doc;
 
+	}
+
+	private ContextHistory getContextHistory(HashMap<String, Object> attributes) {
+		logger.trace("{}", attributes);
+		Object temp = attributes.get("contextHistory");
+		ContextHistory contextHistory = null;
+		if (temp == null) {
+			// TODO change if new Modules with other Contexts and different
+			// EntryPoints will be added
+			contextHistory = new ContextHistory(new EvalStoreContext("init",
+					null));
+			logger.info("new ContextHistory created");
+			attributes.put("contextHistory", contextHistory);
+		} else {
+			contextHistory = (ContextHistory) temp;
+		}
+		logger.trace("{}", contextHistory);
+		return contextHistory;
 	}
 
 	private void logParameters(HttpServletRequest req) {

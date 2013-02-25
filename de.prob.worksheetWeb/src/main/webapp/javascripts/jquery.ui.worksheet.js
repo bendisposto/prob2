@@ -126,10 +126,10 @@
 			}
 			this.blocksLoading++;
 			var block = $("<div></div>");
-			if (this.options.blocks.length > 1) {
-				$(this.element.find(".ui-worksheet-body>.ui-block")[index - 1]).after(block);
-			} else {
-				this.element.find(".ui-worksheet-body").append(block);
+			if (index < this.element.find(".ui-worksheet-body>.ui-block").size() ){
+				$(this.element.find(".ui-worksheet-body>.ui-block")[index]).before(block);						
+			}else{
+				this.element.find(".ui-worksheet-body").append(block);				
 			}
 			block.one("blockinitialized",$.proxy(this.blockLoaded,this));
 			block.block(blockOptions);
@@ -382,6 +382,20 @@
 		},
 		addNewBlock:function(options){
 			this._trigger("addBlockStart",0,[options]);
+			if(options[0]=="Documentation" && !options[2]){
+				var index=this.getBlockIndexById(options[1]);
+				index++;
+				while(index < this.options.blocks.length){
+					if(!this.options.blocks[index].isOutput){
+						options[1]=this.options.blocks[index-1].id;
+						break;
+					}
+					if(index==this.options.blocks.length-1){
+						options[1]=this.options.blocks[index-1].id;
+					}
+					index++;
+				}
+			}
 			var content = this._addParameter("", "blockId", options[1]);
 			content = this._addParameter(content, "type", options[0]);
 			content = this._addParameter(content,"before", options[2]);

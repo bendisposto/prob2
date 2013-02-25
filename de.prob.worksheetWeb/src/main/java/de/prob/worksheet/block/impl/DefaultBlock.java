@@ -25,8 +25,8 @@ import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.block.IBlockEvaluate;
 import de.prob.worksheet.block.IBlockUI;
 import de.prob.worksheet.document.impl.WorksheetMenuNode;
-import de.prob.worksheet.editor.impl.DefaultEditor;
 import de.prob.worksheet.editor.impl.CodeMirrorJSEditor;
+import de.prob.worksheet.editor.impl.DefaultEditor;
 
 /**
  * @author Rene
@@ -34,9 +34,9 @@ import de.prob.worksheet.editor.impl.CodeMirrorJSEditor;
  */
 @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = "objType")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@XmlSeeAlso(value = { JavascriptBlock.class, HTMLBlock.class,
-		HTMLErrorBlock.class, InitializeStoreBlock.class,
-		StoreValuesBlock.class, DocumentationBlock.class })
+@XmlSeeAlso(value = { EventBBlock.class, HTMLBlock.class, HTMLErrorBlock.class,
+		InitializeStoreBlock.class, StoreValuesBlock.class,
+		DocumentationBlock.class })
 public abstract class DefaultBlock implements IBlockData, IBlockUI,
 		IBlockEvaluate {
 	public static final Logger logger = LoggerFactory

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.block.impl.DefaultBlock;
+import de.prob.worksheet.block.impl.EventBBlock;
 import de.prob.worksheet.block.impl.JavascriptBlock;
 import de.prob.worksheet.document.impl.WorksheetDocument;
 
@@ -19,7 +20,7 @@ public class DocumentEvaluator {
 
 	}
 
-	public void evaluateDocument(WorksheetDocument doc, String blockId,
+	public void evaluateDocument(WorksheetDocument doc,
 			ContextHistory contextHistory) {
 		evaluateFrom(doc, doc.getFirst().getId(), contextHistory);
 	}
@@ -49,7 +50,7 @@ public class DocumentEvaluator {
 		if (blocks != null && blocks.length > 0) {
 			if (blocks[blocks.length - 1].isOutput()
 					|| blocks[blocks.length - 1].isInputAndOutput()) {
-				doc.appendBlock(new JavascriptBlock());
+				doc.appendBlock(new EventBBlock());
 			} else {
 				if (blocks[blocks.length - 1].getEditor() != null) {
 					String content = blocks[blocks.length - 1].getEditor()
@@ -59,11 +60,27 @@ public class DocumentEvaluator {
 					}
 				}
 			}
+
 		} else {
 			DocumentEvaluator.logger
 					.error("Tried to get Blocks from index {} but result was null or emtpy",
 							index);
 		}
+		if (index > 0) {
+			blocks = doc.getBlocksFrom(index - 1);
+			DefaultBlock last = blocks[blocks.length - 1];
+			DefaultBlock secondLast = blocks[blocks.length - 2];
 
+			if (last.getClass().equals(last.getClass())) {
+				if (!last.isInputAndOutput() && !last.isNeitherInNorOutput()
+						&& !secondLast.isInputAndOutput()
+						&& !secondLast.isNeitherInNorOutput()) {
+					if (last.getEditor().getEditorContent().trim().equals("")
+							&& secondLast.getEditor().getEditorContent().trim()
+									.equals(""))
+						doc.removeBlock(last);
+				}
+			}
+		}
 	}
 }

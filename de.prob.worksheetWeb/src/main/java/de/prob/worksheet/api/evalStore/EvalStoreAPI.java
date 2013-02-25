@@ -21,6 +21,8 @@ import de.prob.statespace.History;
 import de.prob.statespace.StateId;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.worksheet.api.DefaultWorksheetAPI;
+import de.prob.worksheet.api.IContext;
+import de.prob.worksheet.block.impl.StoreValuesBlock;
 import de.prob.worksheet.evaluator.evalStore.IEvalStoreConstants;
 
 public class EvalStoreAPI extends DefaultWorksheetAPI {
@@ -54,8 +56,10 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 			animator = ServletContextListener.INJECTOR
 					.getInstance(IAnimator.class);
 			sId = "root";
-			notifyOutputListeners(IEvalStoreConstants.NO_ANIMATION,
-					"No Animation is started", "Initialize State", null);
+			notifyErrorListeners(
+					IEvalStoreConstants.NO_ANIMATION,
+					"No Animation is started. You have to start an ProB animation before using the worksheet",
+					true);
 			EvalStoreAPI.logger.trace("return: No Animation is started");
 			return;
 			// TODO try to find a way to start an animation if no is present
@@ -97,7 +101,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		if (output.equals(""))
 			output = "{}";
 		notifyOutputListeners(IEvalStoreConstants.CMD_RESULT, output,
-				"Initialize State", null);
+				"Get state from animation", null);
 		EvalStoreAPI.logger.trace("return:");
 	}
 
@@ -106,7 +110,8 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		Long before = evalStoreId;
 		if (evalStoreId == null) {
 			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED,
-					"no State is initialized (call getCurrentState)", true);
+					"No state is selected (call: Get state from animation)",
+					true);
 			return;
 		}
 		IEvalElement eval = new EventB(expression);
@@ -119,9 +124,11 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 				notifyActionListeners(IEvalStoreConstants.STORE_CHANGE, "",
 						before, evalStoreId);
 				EvalStoreAPI.logger.debug("{}", storeResult.getResult());
+
 				notifyOutputListeners(IEvalStoreConstants.CMD_RESULT,
 						storeResult.getResult().getValue(), "HTML", null);
 				storeResult.getResult().getValue();
+
 				EvalStoreAPI.logger.debug("Result.value = {}",
 						storeResult.getResult().value);
 				EvalStoreAPI.logger.debug("Result.explanation = {}",
@@ -163,10 +170,9 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 
 	public void getStoreValues() {
 		if (evalStoreId == null) {
-			notifyOutputListeners(
-					IEvalStoreConstants.CMD_RESULT,
-					"No State is selected! Open Initialize State before getting his values",
-					"State Values", null);
+			notifyOutputListeners(IEvalStoreConstants.CMD_RESULT,
+					"No State is selected! (call: Get state from animation)",
+					StoreValuesBlock.PRINT_NAME, null);
 			return;
 		}
 		GetStateValuesCommand cmd = GetStateValuesCommand
@@ -183,12 +189,21 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		if (output.equals(""))
 			output = "{}";
 		notifyOutputListeners(IEvalStoreConstants.CMD_RESULT, output,
-				"State Values", null);
+				StoreValuesBlock.PRINT_NAME, null);
 	}
 
-	public void setEvalStoreId(Long id) {
-		EvalStoreAPI.logger.trace("{}", id);
-		evalStoreId = id;
+	@Override
+	public void setContext(IContext context) {
+		if (!(context instanceof EvalStoreContext)) {
+			notifyErrorListeners(
+					IEvalStoreConstants.CONTEXT_ERROR,
+					"Exception: A wrong context has been set. Please store your data and close this editor",
+					true);
+		} else {
+			Long id = (Long) context.getBinding("EvalStoreId");
+			EvalStoreAPI.logger.trace("{}", id);
+			evalStoreId = id;
+		}
 	}
 
 	@Override

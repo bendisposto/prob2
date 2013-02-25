@@ -8,8 +8,10 @@ import com.google.inject.Inject;
 import de.prob.worksheet.editor.impl.DefaultEditor;
 import de.prob.worksheet.editor.impl.HTMLDiv;
 
-@XmlType(name = "Initialize")
+@XmlType(name = "getStateFromAnimation")
 public class InitializeStoreBlock extends DefaultBlock {
+	public static final String PRINT_NAME = "Get state from animation";
+
 	@Inject
 	public InitializeStoreBlock() {
 		setEvaluatorType("state");
@@ -17,7 +19,8 @@ public class InitializeStoreBlock extends DefaultBlock {
 		setEditor(new HTMLDiv());
 		setImmediateEvaluation(true);
 		setInputAndOutput(true);
-		initBlockMenu("Initialize State", new String[] { "Standard" });
+		initBlockMenu(InitializeStoreBlock.PRINT_NAME,
+				new String[] { "Standard" });
 		setToUnicode(true);
 	}
 

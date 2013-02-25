@@ -101,4 +101,6 @@ public interface IWorksheetAPI {
 	 */
 	public abstract void removeActionListener(IWorksheetAPIListener listener);
 
+	public abstract void setContext(IContext context);
+
 }
