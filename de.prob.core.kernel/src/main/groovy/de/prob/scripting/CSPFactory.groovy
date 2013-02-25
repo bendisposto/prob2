@@ -1,15 +1,12 @@
 package de.prob.scripting
 
-import java.io.File;
-import java.io.IOException;
+import com.google.inject.Inject
+import com.google.inject.Provider
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
-import de.be4.classicalb.core.parser.exceptions.BException;
-import de.prob.animator.command.ICommand;
-import de.prob.animator.command.LoadCSPCommand;
-import de.prob.animator.command.StartAnimationCommand;
+import de.be4.classicalb.core.parser.exceptions.BException
+import de.prob.animator.command.ICommand
+import de.prob.animator.command.LoadCSPCommand
+import de.prob.animator.command.StartAnimationCommand
 
 class CSPFactory {
 
@@ -22,7 +19,7 @@ class CSPFactory {
 
 	public CSPModel load(final File f) throws IOException, BException {
 		CSPModel cspModel = modelCreator.get();
-		cspModel.init(readFile(f));
+		cspModel.init(readFile(f),f);
 		startAnimation(cspModel, f);
 		return cspModel;
 	}

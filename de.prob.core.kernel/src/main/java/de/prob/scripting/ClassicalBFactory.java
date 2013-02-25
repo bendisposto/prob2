@@ -50,7 +50,7 @@ public class ClassicalBFactory {
 		Start ast = parseFile(f, bparser);
 		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 
-		classicalBModel.initialize(ast, rml);
+		classicalBModel.initialize(ast, rml, f);
 		startAnimation(classicalBModel, rml);
 		return classicalBModel;
 	}
