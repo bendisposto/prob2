@@ -1,5 +1,6 @@
 package de.prob.scripting;
 
+import java.io.File;
 import java.util.Map;
 
 import com.google.inject.Inject;
@@ -18,8 +19,9 @@ public class CSPModel extends AbstractModel {
 		this.statespace = statespace;
 	}
 
-	public void init(final String content) {
+	public void init(final String content, final File modelFile) {
 		this.content = content;
+		this.modelFile = modelFile;
 		statespace.setModel(this);
 	}
 
