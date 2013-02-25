@@ -18,30 +18,74 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IPerspectiveListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+
+import com.google.inject.Injector;
 
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.editor.handler.VisualizationViewDialog.DummyObject;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.Visualization;
 import de.bmotionstudio.core.util.BMotionUtil;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
+import de.prob.statespace.IModelChangedListener;
+import de.prob.statespace.StateSpace;
+import de.prob.ui.PerspectiveFactory;
 import de.prob.ui.ProBConfiguration;
 import de.prob.ui.util.PerspectiveUtil;
+import de.prob.webconsole.ServletContextListener;
 
-public class AddVisualizationViewHandler extends AbstractHandler {
+public class AddVisualizationViewHandler extends AbstractHandler implements
+		IPerspectiveListener, IModelChangedListener {
+
+	Injector injector = ServletContextListener.INJECTOR;
+
+	final AnimationSelector selector = injector
+			.getInstance(AnimationSelector.class);
+
+	public AddVisualizationViewHandler() {
+		updateEnablement();
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.addPerspectiveListener(this);
+		selector.registerModelChangedListener(this);
+	}
+
+	void updateEnablement() {
+
+		boolean isEnabled = false;
+		
+		History currentHistory = selector.getCurrentHistory();
+
+		IWorkbenchPage page = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
+
+		IPerspectiveDescriptor currentPerspective = page.getPerspective();
+
+		if (currentPerspective != null
+				&& currentPerspective.getId().equals(
+						PerspectiveFactory.PROB_PERSPECTIVE)
+				&& currentHistory != null)
+			isEnabled = true;
+
+		setBaseEnabled(isEnabled);
+		
+	}
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 		// TODO This handler should only be enabled if a simulation or
 		// perspective respectively is open!!!
 
-		IPerspectiveDescriptor perspective = ProBConfiguration
-				.getCurrentPerspective();
-
 		try {
 
-			if (perspective != null) {
+			if (PerspectiveUtil.isProBPerspective()) {
+
+				IPerspectiveDescriptor perspective = PerspectiveUtil
+						.getCurrentPerspective();
 
 				PerspectiveUtil.switchPerspective(perspective);
 
@@ -61,8 +105,9 @@ public class AddVisualizationViewHandler extends AbstractHandler {
 						Visualization visualization = new Visualization();
 						// TODO Make language more generic!!!!
 						VisualizationView visualizationView = new VisualizationView(
-								"New Visualization View", visualization, "EventB");
-	
+								"New Visualization View", visualization,
+								"EventB");
+
 						// Save content
 						IProject project = currentModelFile.getProject();
 						IFile file = project.getFile(fileName + "."
@@ -75,7 +120,7 @@ public class AddVisualizationViewHandler extends AbstractHandler {
 
 						BMotionUtil.createVisualizationViewPart(
 								visualizationView, file, fileName);
-						
+
 					} else if (selection instanceof IResource) {
 
 						// Use an existing visualization view
@@ -111,9 +156,34 @@ public class AddVisualizationViewHandler extends AbstractHandler {
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 
 	}
+
+	@Override
+	public void perspectiveActivated(IWorkbenchPage page,
+			IPerspectiveDescriptor perspective) {
+		updateEnablement();	
+	}
+
+	@Override
+	public void perspectiveChanged(IWorkbenchPage page,
+			IPerspectiveDescriptor perspective, String changeId) {
+		updateEnablement();
+	}
+
+	@Override
+	public void modelChanged(StateSpace s) {
+		updateEnablement();		
+	}
 	
+	@Override
+	public void dispose() {
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.removePerspectiveListener(this);
+		selector.unregisterModelChangedListener(this);
+		super.dispose();
+	}
+
 }

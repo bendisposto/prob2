@@ -23,9 +23,11 @@ import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 
+import de.prob.ui.PerspectiveFactory;
 import de.prob.ui.ProBConfiguration;
 
 public class PerspectiveUtil {
@@ -48,6 +50,7 @@ public class PerspectiveUtil {
 
 	public static void switchPerspective(
 			IPerspectiveDescriptor perspectiveDescriptor) {
+		Assert.isNotNull(perspectiveDescriptor);
 		switchPerspective(perspectiveDescriptor.getId());
 	}
 
@@ -233,6 +236,33 @@ public class PerspectiveUtil {
 	public static String getPerspectiveFileName(IFile modelFile) {
 		return modelFile.getName().replace("." + modelFile.getFileExtension(),
 				"." + PROB_PERSPECTIVE_FILE_EXTENSION);
+	}
+	
+	public static boolean isProBPerspective() {
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow != null) {
+			IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+			if (page != null) {
+				IPerspectiveDescriptor perspective = page.getPerspective();
+				return perspective != null
+						&& perspective.getId().equals(
+								PerspectiveFactory.PROB_PERSPECTIVE);
+			}
+		}
+		return false;
+	}
+	
+	public static IPerspectiveDescriptor getCurrentPerspective() {
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow != null) {
+			IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+			if (page != null) {
+				return page.getPerspective();
+			}
+		}
+		return null;
 	}
 	
 }
