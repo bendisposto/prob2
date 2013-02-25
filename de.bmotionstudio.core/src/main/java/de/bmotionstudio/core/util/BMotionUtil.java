@@ -8,11 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -26,7 +24,6 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.bmotionstudio.core.BMotionEditorPlugin;
-import de.bmotionstudio.core.BMotionStudio;
 import de.bmotionstudio.core.editor.VisualizationViewPart;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.Visualization;
@@ -44,108 +41,66 @@ public class BMotionUtil {
 						IDialogConstants.CANCEL_LABEL }, 0);
 		return dg.open();
 	}
-	
-	public static void closeCurrentVisualization() {
-		
-//		// Check if a perspective is already open
-//		IPerspectiveDescriptor currentPerspective = BMotionStudio
-//				.getCurrentPerspective();
-//
-//		// If a simulation is already open, close the corresponding perspective
-//		// before opening the new one
-//		if (currentPerspective != null) {
-//			PerspectiveUtil.closePerspective(currentPerspective);
-//			PerspectiveUtil.deletePerspective(currentPerspective);
-//		}
-//		
-//		BMotionStudio.reset();
-		
-	}
-	
-	public static boolean openVisualization(IFile visualizationFile,
-			String language) {
+
+	public static boolean openVisualization(IFile visualizationFile) {
 
 		// If the visualization file does not exist, stop ...
 		if (visualizationFile == null || !visualizationFile.exists())
 			return false;
 
-		InputStream inputStream = null;
+		VisualizationView visualizationView = BMotionUtil
+				.getVisualizationViewFromFile(visualizationFile);
+		
+		String secId = visualizationFile.getName().replace(
+				"." + visualizationFile.getFileExtension(), "");
 
 		try {
-
-			inputStream = visualizationFile.getContents();
-
-			XStream xstream = new XStream() {
-				@Override
-				protected MapperWrapper wrapMapper(final MapperWrapper next) {
-					return new MapperWrapper(next) {
-						@Override
-						public boolean shouldSerializeMember(
-								@SuppressWarnings("rawtypes") final Class definedIn,
-								final String fieldName) {
-							if (definedIn == Object.class)
-								return false;
-							return super.shouldSerializeMember(definedIn,
-									fieldName);
-						}
-					};
-				}
-			};
-
-			BMotionEditorPlugin.setAliases(xstream);
-			Object obj = xstream.fromXML(inputStream);
-
-			// Set the correct image path. In this case the image path is a
-			// subfolder called "images" in the corresponding project
-			IFolder imageFolder = visualizationFile.getProject().getFolder(
-					"images");
-			if (!imageFolder.exists())
-				imageFolder.create(true, true, new NullProgressMonitor());
-			String imageFolderUrl = imageFolder.getLocationURI().toString()
-					.replace("file:/", "");
-			BMotionStudio.setImagePath(imageFolderUrl);
-			// -------------------------------------------------------------
-
-			// TODO reimplement me!!!
-//			Simulation simulation = null;
-
-//			if (obj instanceof Visualization) {
-
-				// TODO: We need a converter for "old" visualizations
-				// Visualization visualization = (Visualization) obj;
-				//
-				// simulation = new Simulation();
-				//
-				// String secId = UUID.randomUUID().toString();
-				//
-				// VisualizationView visualizationView = new VisualizationView(
-				// "New Visualization View", secId, visualization);
-				//
-				// simulation.addVisualizationView(visualizationView);
-
-//			} else if (obj instanceof Simulation) {
-//				simulation = (Simulation) obj;
-//			}
-
-//			if (simulation != null) {
-//				simulation.setLanguage(language);
-//				BMotionStudio.setCurrentSimulation(simulation);
-//				BMotionStudio.setCurrentPerspective(PerspectiveUtil
-//						.openPerspective(visualizationFile));
-//				BMotionStudio.setCurrentProjectFile(visualizationFile);
-//				PerspectiveUtil.initViews(simulation);
-//			}
-			
-		} catch (CoreException e) {
+			BMotionUtil.createVisualizationViewPart(visualizationView,
+					visualizationFile, secId);
+		} catch (PartInitException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				if (inputStream != null)
-					inputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
+
+		// Set the correct image path. In this case the image path is a
+		// subfolder called "images" in the corresponding project
+		// IFolder imageFolder = visualizationFile.getProject().getFolder(
+		// "images");
+		// if (!imageFolder.exists())
+		// imageFolder.create(true, true, new NullProgressMonitor());
+		// String imageFolderUrl = imageFolder.getLocationURI().toString()
+		// .replace("file:/", "");
+		// BMotionStudio.setImagePath(imageFolderUrl);
+		// -------------------------------------------------------------
+
+		// TODO reimplement me!!!
+		// Simulation simulation = null;
+
+		// if (obj instanceof Visualization) {
+
+		// TODO: We need a converter for "old" visualizations
+		// Visualization visualization = (Visualization) obj;
+		//
+		// simulation = new Simulation();
+		//
+		// String secId = UUID.randomUUID().toString();
+		//
+		// VisualizationView visualizationView = new VisualizationView(
+		// "New Visualization View", secId, visualization);
+		//
+		// simulation.addVisualizationView(visualizationView);
+
+		// } else if (obj instanceof Simulation) {
+		// simulation = (Simulation) obj;
+		// }
+
+		// if (simulation != null) {
+		// simulation.setLanguage(language);
+		// BMotionStudio.setCurrentSimulation(simulation);
+		// BMotionStudio.setCurrentPerspective(PerspectiveUtil
+		// .openPerspective(visualizationFile));
+		// BMotionStudio.setCurrentProjectFile(visualizationFile);
+		// PerspectiveUtil.initViews(simulation);
+		// }
 
 		return true;
 
