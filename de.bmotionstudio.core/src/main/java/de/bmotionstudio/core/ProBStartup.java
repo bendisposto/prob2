@@ -1,10 +1,12 @@
-package de.bmotionstudio.core.editor;
+package de.bmotionstudio.core;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 import de.bmotionstudio.core.util.PerspectiveUtil;
@@ -19,9 +21,6 @@ public class ProBStartup implements IStartup {
 			public void run() {
 				boolean deleted = false;
 				IWorkbench workbench = PlatformUI.getWorkbench();
-				IPerspectiveDescriptor currentPerspective = workbench
-						.getActiveWorkbenchWindow().getActivePage()
-						.getPerspective();
 				IPerspectiveRegistry perspectiveRegistry = workbench
 						.getPerspectiveRegistry();
 				IPerspectiveDescriptor[] perspectives = perspectiveRegistry
@@ -33,11 +32,22 @@ public class ProBStartup implements IStartup {
 						deleted = true;
 					}
 				}
-				if (deleted
-						&& currentPerspective.getId().replace("<", "")
-								.startsWith("ProB_"))
-					PerspectiveUtil
-							.switchPerspective(PerspectiveFactory.PROB_PERSPECTIVE);
+				IWorkbenchWindow activeWorkbenchWindow = workbench
+						.getActiveWorkbenchWindow();
+				if (activeWorkbenchWindow != null) {
+					IWorkbenchPage activePage = activeWorkbenchWindow
+							.getActivePage();
+					if (activePage != null) {
+						IPerspectiveDescriptor currentPerspective = activePage
+								.getPerspective();
+						if (deleted
+								&& currentPerspective.getId()
+										.replaceAll("<", "")
+										.startsWith("ProB_"))
+							PerspectiveUtil
+									.switchPerspective(PerspectiveFactory.PROB_PERSPECTIVE);
+					}
+				}
 			}
 		});
 	}
