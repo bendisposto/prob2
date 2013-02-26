@@ -23,14 +23,12 @@ import com.google.common.collect.SetMultimap;
 
 public class TestViewer {
 
-	private final BUnitView fJUnitView;
 	private PageBook fViewerbook;
 	private TreeViewer viewer;
 	private TestViewLabelProvider labelProvider;
 	private TestViewContentProvider contentProvider;
 
 	public TestViewer(final Composite parent, final BUnitView junitview) {
-		fJUnitView = junitview;
 		createTestViewers(parent);
 	}
 

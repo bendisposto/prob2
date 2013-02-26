@@ -80,7 +80,6 @@ public class TestViewLabelProvider extends LabelProvider implements
 		return suite_err;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Image calculateClassCoverate(final Object obj) {
 		Set<Object> set = map.get((String) obj);
 		boolean isFailure = false;
