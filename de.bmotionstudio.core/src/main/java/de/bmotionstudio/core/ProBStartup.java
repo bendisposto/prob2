@@ -19,8 +19,21 @@ public class ProBStartup implements IStartup {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
+
 				boolean deleted = false;
+
 				IWorkbench workbench = PlatformUI.getWorkbench();
+				IWorkbenchWindow activeWorkbenchWindow = workbench
+						.getActiveWorkbenchWindow();
+				IPerspectiveDescriptor currentPerspective = null;
+
+				if (activeWorkbenchWindow != null) {
+					IWorkbenchPage activePage = activeWorkbenchWindow
+							.getActivePage();
+					if (activePage != null)
+						currentPerspective = activePage.getPerspective();
+				}
+
 				IPerspectiveRegistry perspectiveRegistry = workbench
 						.getPerspectiveRegistry();
 				IPerspectiveDescriptor[] perspectives = perspectiveRegistry
@@ -32,22 +45,13 @@ public class ProBStartup implements IStartup {
 						deleted = true;
 					}
 				}
-				IWorkbenchWindow activeWorkbenchWindow = workbench
-						.getActiveWorkbenchWindow();
-				if (activeWorkbenchWindow != null) {
-					IWorkbenchPage activePage = activeWorkbenchWindow
-							.getActivePage();
-					if (activePage != null) {
-						IPerspectiveDescriptor currentPerspective = activePage
-								.getPerspective();
-						if (deleted
-								&& currentPerspective.getId()
-										.replaceAll("<", "")
-										.startsWith("ProB_"))
-							PerspectiveUtil
-									.switchPerspective(PerspectiveFactory.PROB_PERSPECTIVE);
-					}
-				}
+				if (deleted
+						&& currentPerspective != null
+						&& currentPerspective.getId().replaceAll("<", "")
+								.startsWith("ProB_"))
+					PerspectiveUtil
+							.switchPerspective(PerspectiveFactory.PROB_PERSPECTIVE);
+				
 			}
 		});
 	}
