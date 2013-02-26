@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -32,8 +34,10 @@ public class ModelCheckingView extends ViewPart implements
 
 	private Composite container;
 	private Text formulas;
-	private ModelChecker checker;
 	private StateSpace s;
+	private ModelChecker checker;
+
+	ExecutorService executor = Executors.newCachedThreadPool();
 
 	@Override
 	public void createPartControl(final Composite parent) {
@@ -59,33 +63,34 @@ public class ModelCheckingView extends ViewPart implements
 		gd = new GridData(SWT.CENTER, SWT.FILL, false, false);
 		start.setLayoutData(gd);
 		start.setText("Start");
-		start.addSelectionListener(new SelectionListener() {
+		MCSelectionListener listener = new MCSelectionListener();
+		start.addSelectionListener(listener);
 
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				startModelChecking();
-			}
-
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
-			}
-		});
-
-		final Button cancel = new Button(container, SWT.PUSH);
+		Button cancel = new Button(container, SWT.PUSH);
 		gd = new GridData(SWT.CENTER, SWT.FILL, false, false);
 		cancel.setLayoutData(gd);
 		cancel.setText("Cancel");
-		cancel.addSelectionListener(new SelectionListener() {
+		cancel.addSelectionListener(listener);
+	}
 
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				cancelModelChecking();
-			}
+	private class MCSelectionListener implements SelectionListener {
 
-			@Override
-			public void widgetDefaultSelected(final SelectionEvent e) {
+		@Override
+		public void widgetSelected(final SelectionEvent e) {
+			Object source = e.getSource();
+			if (source instanceof Button) {
+				String x = ((Button) source).getText();
+				if (x.equals("Start")) {
+					startModelChecking();
+				} else if (x.equals("Cancel")) {
+					cancelModelChecking();
+				}
 			}
-		});
+		}
+
+		@Override
+		public void widgetDefaultSelected(final SelectionEvent e) {
+		}
 	}
 
 	private void cancelModelChecking() {

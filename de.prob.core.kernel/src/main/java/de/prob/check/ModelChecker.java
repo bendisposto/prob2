@@ -4,8 +4,11 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import de.prob.animator.command.ConsistencyCheckingCommand;
 import de.prob.animator.domainobjects.OpInfo;
@@ -14,8 +17,9 @@ import de.prob.statespace.StateSpace;
 
 public class ModelChecker {
 
-	private final Watcher watcher;
 	private final Worker worker;
+	private final ExecutorService executor;
+	private Future<ModelCheckingResult> f;
 
 	public ModelChecker(final StateSpace s) {
 		this(s, ConsistencyCheckingSearchOption.getDefaultOptions());
@@ -23,32 +27,55 @@ public class ModelChecker {
 
 	public ModelChecker(final StateSpace s, final List<String> options) {
 		worker = new Worker(s, options);
-		watcher = new Watcher(worker);
+		executor = Executors.newSingleThreadExecutor();
 	}
 
 	public boolean cancel() {
-		return watcher.cancel(true);
+		if (f != null) {
+			return f.cancel(true);
+		}
+		return false;
 	}
 
-	public ModelCheckingResult getResult() throws InterruptedException,
-			ExecutionException {
-		return watcher.get();
+	public ModelCheckingResult getResult() {
+		try {
+			if (f != null) {
+				return f.get();
+			}
+		} catch (InterruptedException e) {
+			f.cancel(true);
+		} catch (ExecutionException e) {
+			launderThrowable(e.getCause());
+		} catch (CancellationException e) {
+			return worker.getResult();
+		}
+		return null;
 	}
 
 	public void start() {
-		watcher.run();
+		f = executor.submit(worker);
 	}
 
 	public boolean isDone() {
-		return watcher.isDone();
+		return f == null ? null : f.isDone();
 	}
 
 	public boolean isCancelled() {
-		return watcher.isCancelled();
+		return f.isCancelled();
 	}
 
 	public BigInteger getLastTransition() {
 		return worker.getLast();
+	}
+
+	public static RuntimeException launderThrowable(final Throwable t) {
+		if (t instanceof RuntimeException) {
+			return (RuntimeException) t;
+		} else if (t instanceof Error) {
+			throw (Error) t;
+		} else {
+			throw new IllegalStateException("Not unchecked", t);
+		}
 	}
 
 	private class Worker implements Callable<ModelCheckingResult> {
@@ -56,6 +83,7 @@ public class ModelChecker {
 		private final StateSpace s;
 		private final List<String> options;
 		private BigInteger last;
+		private ModelCheckingResult res;
 
 		public Worker(final StateSpace s, final List<String> options) {
 			this.s = s;
@@ -66,14 +94,21 @@ public class ModelChecker {
 		@Override
 		public ModelCheckingResult call() throws Exception {
 			boolean abort = false;
-			ModelCheckingResult res = null;
 			while (!abort) {
+				if (Thread.interrupted()) {
+					Thread.currentThread().interrupt();
+					break;
+				}
 				res = do_model_checking_step();
 				options.remove(ConsistencyCheckingSearchOption.inspect_existing_nodes
 						.name());
 				abort = res.isAbort();
 			}
 			s.notifyStateSpaceChange();
+			return res;
+		}
+
+		public ModelCheckingResult getResult() {
 			return res;
 		}
 
@@ -124,13 +159,6 @@ public class ModelChecker {
 
 		public BigInteger getLast() {
 			return last;
-		}
-	}
-
-	private class Watcher extends FutureTask<ModelCheckingResult> {
-
-		public Watcher(final Callable<ModelCheckingResult> callable) {
-			super(callable);
 		}
 	}
 

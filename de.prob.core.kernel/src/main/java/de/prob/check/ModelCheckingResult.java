@@ -51,4 +51,9 @@ public class ModelCheckingResult {
 	public boolean isAbort() {
 		return result.isAbort();
 	}
+
+	@Override
+	public String toString() {
+		return result.name();
+	}
 }
