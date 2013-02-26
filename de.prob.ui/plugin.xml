@@ -443,10 +443,5 @@
          </variable>
       </sourceProvider>
    </extension>
-   <extension
-         point="org.eclipse.ui.startup">
-      <startup
-            class="de.prob.ui.ProBStartup"></startup>
-   </extension>
 
 </plugin>

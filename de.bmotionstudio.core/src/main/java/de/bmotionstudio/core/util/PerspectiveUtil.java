@@ -1,6 +1,5 @@
-package de.prob.ui.util;
+package de.bmotionstudio.core.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,10 +8,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IExportedPreferences;
 import org.eclipse.core.runtime.preferences.IPreferenceFilter;
@@ -28,7 +25,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 
 import de.prob.ui.PerspectiveFactory;
-import de.prob.ui.ProBConfiguration;
 
 public class PerspectiveUtil {
 	
@@ -65,18 +61,18 @@ public class PerspectiveUtil {
 
 	public static void exportPerspective(
 			final IPerspectiveDescriptor perspectiveDescriptor,
-			final IFile targetPerspectiveFile) {
+			final File targetPerspectiveFile) {
 
 		Assert.isNotNull(perspectiveDescriptor);
-
+		Assert.isNotNull(targetPerspectiveFile);
+		
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchPage page = workbench.getActiveWorkbenchWindow()
 				.getActivePage();
 		// We need to save the perspective first
 		page.savePerspectiveAs(perspectiveDescriptor);
-		
+
 		FileOutputStream fos = null;
-		ByteArrayInputStream inputStream = null;
 
 		try {
 
@@ -101,19 +97,9 @@ public class PerspectiveUtil {
 				}
 			};
 
-			String content = "";
-
-			inputStream = new ByteArrayInputStream(content.getBytes());
-			NullProgressMonitor monitor = new NullProgressMonitor();
-			if (!targetPerspectiveFile.exists()) {
-				targetPerspectiveFile.create(inputStream, true, monitor);
-			} else {
-				targetPerspectiveFile.setContents(inputStream, true, false,
-						monitor);
-			}
-
-			File exportFile = new File(targetPerspectiveFile.getLocationURI());
-			fos = new FileOutputStream(exportFile);
+			if (!targetPerspectiveFile.exists())
+				targetPerspectiveFile.createNewFile();
+			fos = new FileOutputStream(targetPerspectiveFile);
 			IPreferencesService service = Platform.getPreferencesService();
 			service.exportPreferences(service.getRootNode(), transfers, fos);
 
@@ -121,12 +107,12 @@ public class PerspectiveUtil {
 			e.printStackTrace();
 		} catch (CoreException e) {
 			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		} finally {
 			try {
 				if (fos != null)
 					fos.close();
-				if (inputStream != null)
-					inputStream.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -134,7 +120,7 @@ public class PerspectiveUtil {
 
 	}
 
-	public static void importPerspective(final IFile perspectiveFile,
+	public static void importPerspective(final File perspectiveFile,
 			final String perspectiveID) {
 
 		FileInputStream fis = null;
@@ -146,9 +132,7 @@ public class PerspectiveUtil {
 
 			// Only import if a perspective file exists
 			if (perspectiveFile.exists()) {
-
-				File exportFile = new File(perspectiveFile.getLocationURI());
-				fis = new FileInputStream(exportFile);
+				fis = new FileInputStream(perspectiveFile);
 				IPreferencesService service = Platform.getPreferencesService();
 				// service.importPreferences(fis);
 				IExportedPreferences prefs = service.readPreferences(fis);
@@ -182,16 +166,14 @@ public class PerspectiveUtil {
 
 	}
 
-	public static IPerspectiveDescriptor openPerspective(IFile modelFile) {
+	public static IPerspectiveDescriptor openPerspective(File modelFile) {
 
-		ProBConfiguration.setCurrentModelFile(modelFile);
-		
 		IWorkbench workbench = PlatformUI.getWorkbench();
-		
+
 		// Try to get the corresponding perspective
 		IPerspectiveRegistry perspectiveRegistry = workbench
 				.getPerspectiveRegistry();
-		String perspectiveId = getPerspectiveIdFromFile(modelFile);
+		String perspectiveId = getPerspectiveIdFromModelFile(modelFile);
 		IPerspectiveDescriptor perspective = perspectiveRegistry
 				.findPerspectiveWithId(perspectiveId);
 
@@ -199,9 +181,9 @@ public class PerspectiveUtil {
 		if (perspective != null) {
 			PerspectiveUtil.switchPerspective(perspective);
 		} else {
+
 			// Check if a corresponding perspective file exists
-			IFile perspectiveFile = modelFile.getProject().getFile(
-					getPerspectiveFileName(modelFile));
+			File perspectiveFile = getPerspectiveFileFromModelFile(modelFile);
 			if (perspectiveFile.exists()) {
 				PerspectiveUtil.importPerspective(perspectiveFile,
 						perspectiveId);
@@ -211,7 +193,7 @@ public class PerspectiveUtil {
 			} else {
 				// No --> create a new perspective
 				IPerspectiveDescriptor originalPerspectiveDescriptor = perspectiveRegistry
-						.findPerspectiveWithId("de.prob.ui.perspective");
+						.findPerspectiveWithId(PerspectiveFactory.PROB_PERSPECTIVE);
 				PerspectiveUtil
 						.switchPerspective(originalPerspectiveDescriptor);
 				perspective = perspectiveRegistry.clonePerspective(
@@ -221,21 +203,39 @@ public class PerspectiveUtil {
 				PerspectiveUtil.switchPerspective(perspective);
 				PerspectiveUtil.exportPerspective(perspective, perspectiveFile);
 			}
+			
 		}
 
 		return perspective;
 
 	}
 	
-	public static String getPerspectiveIdFromFile(IFile modelFile) {
+	public static String getPerspectiveIdFromModelFile(File modelFile) {
 		return "ProB_"
-				+ modelFile.getName().replace(
-						"." + modelFile.getFileExtension(), "");
+				+ modelFile.getName()
+						.replace("." + getExtension(modelFile), "");
 	}
 
-	public static String getPerspectiveFileName(IFile modelFile) {
-		return modelFile.getName().replace("." + modelFile.getFileExtension(),
+	public static String getPerspectiveFileNameFromModelFile(File modelFile) {
+		return modelFile.getName().replace("." + getExtension(modelFile),
 				"." + PROB_PERSPECTIVE_FILE_EXTENSION);
+	}
+
+	public static File getPerspectiveFileFromModelFile(File modelFile) {
+		String perspectiveFileName = getPerspectiveFileNameFromModelFile(modelFile);
+		File parentFile = modelFile.getParentFile();
+		return new File(parentFile.getPath() + "/" + perspectiveFileName);
+	}
+	
+	public static String getExtension(File f) {
+		String ext = null;
+		String s = f.getName();
+		int i = s.lastIndexOf('.');
+
+		if (i > 0 && i < s.length() - 1) {
+			ext = s.substring(i + 1).toLowerCase();
+		}
+		return ext;
 	}
 	
 	public static boolean isProBPerspective() {
@@ -246,8 +246,7 @@ public class PerspectiveUtil {
 			if (page != null) {
 				IPerspectiveDescriptor perspective = page.getPerspective();
 				return perspective != null
-						&& perspective.getId().equals(
-								PerspectiveFactory.PROB_PERSPECTIVE);
+						&& perspective.getId().startsWith("ProB_");
 			}
 		}
 		return false;

@@ -2,12 +2,12 @@ package de.bmotionstudio.core.editor;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -78,6 +78,7 @@ import de.bmotionstudio.core.model.BMotionRuler;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
+import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
@@ -111,7 +112,7 @@ public class VisualizationViewPart extends ViewPart implements
 	
 	private KeyHandler sharedKeyHandler;
 	
-	private IFile visualizationFile;
+	private File visualizationFile;
 
 	private List<String> selectionActions = new ArrayList<String>();
 	private List<String> stackActions = new ArrayList<String>();
@@ -235,9 +236,11 @@ public class VisualizationViewPart extends ViewPart implements
 		zoomContributions.add(ZoomManager.FIT_WIDTH);
 		manager.setZoomLevelContributions(zoomContributions);
 		
-		action = new SaveAction(visualizationView, visualizationFile);
-		action.setEnabled(false);
-		registry.registerAction(action);
+		if (visualizationFile != null) {
+			action = new SaveAction(visualizationView, visualizationFile);
+			action.setEnabled(false);
+			registry.registerAction(action);
+		}
 		
 		getActionRegistry().registerAction(
 				new ToggleRulerVisibilityAction(getGraphicalViewer()) {
@@ -411,7 +414,7 @@ public class VisualizationViewPart extends ViewPart implements
 
 		this.parent = parent;
 		this.container = new RulerComposite(parent, SWT.NONE);
-
+		
 		// IFile modelFile = ProBConfiguration.getCurrentModelFile();
 		//
 		// if (modelFile == null)
@@ -439,14 +442,17 @@ public class VisualizationViewPart extends ViewPart implements
 		this.container.setFocus();
 	}
 
-	public void init(VisualizationView visualizationView,
-			IFile visualizationFile) {
+	public void init(File visualizationFile) {
+		this.visualizationFile = visualizationFile;
+		init(BMotionUtil.getVisualizationViewFromFile(visualizationFile));
+	}
+
+	public void init(VisualizationView visualizationView) {
 		this.visualizationView = visualizationView;
 		this.visualizationView.addPropertyChangeListener(this);
 		this.graphicalViewer = new ScrollingGraphicalViewer();
 		this.graphicalViewer.createControl(this.container);
 		Visualization visualization = visualizationView.getVisualization();
-		this.visualizationFile = visualizationFile;
 		this.editDomain = new EditDomain();
 		this.editDomain.getCommandStack().addCommandStackListener(this);
 		configureGraphicalViewer();
@@ -463,7 +469,7 @@ public class VisualizationViewPart extends ViewPart implements
 		selector.registerHistoryChangeListener(this);
 		setInitialized(true);
 	}
-
+	
 	protected void hookGraphicalViewer() {
 		getSelectionSynchronizer().addViewer(getGraphicalViewer());
 		getSite().setSelectionProvider(getGraphicalViewer());
@@ -550,8 +556,11 @@ public class VisualizationViewPart extends ViewPart implements
 				.getToolBarManager()
 				.add(getActionRegistry().getAction(GEFActionConstants.ZOOM_OUT));
 
-		viewSite.getActionBars().getToolBarManager()
-				.add(getActionRegistry().getAction(ActionFactory.SAVE.getId()));
+		if (this.visualizationFile != null)
+			viewSite.getActionBars()
+					.getToolBarManager()
+					.add(getActionRegistry().getAction(
+							ActionFactory.SAVE.getId()));
 		
 		viewSite.getActionBars()
 				.getMenuManager()
@@ -677,9 +686,11 @@ public class VisualizationViewPart extends ViewPart implements
 
 		}
 
-		IAction saveAction = getActionRegistry().getAction(
-				ActionFactory.SAVE.getId());
-		saveAction.setEnabled(dirty);
+		if (visualizationFile != null) {
+			IAction saveAction = getActionRegistry().getAction(
+					ActionFactory.SAVE.getId());
+			saveAction.setEnabled(dirty);
+		}
 
 	}
 

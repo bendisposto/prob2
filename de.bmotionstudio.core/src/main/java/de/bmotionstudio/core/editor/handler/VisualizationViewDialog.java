@@ -6,11 +6,10 @@
 
 package de.bmotionstudio.core.editor.handler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -29,25 +28,25 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.util.BMotionUtil;
-import de.prob.ui.ProBConfiguration;
 
 public class VisualizationViewDialog extends Dialog {
 
 	private TableViewer view;
 	
 	private Object selection;
-
-	protected VisualizationViewDialog(final Shell parentShell) {
+	
+	private File modelFile;
+	
+	public VisualizationViewDialog(Shell parentShell, File modelFile) {
 		super(parentShell);
+		this.modelFile = modelFile;
 	}
 
 	@Override
 	protected Control createDialogArea(final Composite parent) {
-
+		
 		Composite container = (Composite) super.createDialogArea(parent);
 
-		List<Object> content = new ArrayList<Object>();
-		
 		GridLayout gl = new GridLayout(1, true);
 		gl.horizontalSpacing = 0;
 		container.setLayout(gl);
@@ -81,25 +80,23 @@ public class VisualizationViewDialog extends Dialog {
 			@Override
 			public void update(final ViewerCell cell) {
 				Object element = cell.getElement();
-				if(element instanceof IResource) {
-					cell.setText(((IResource) element).getName());
+				if(element instanceof File) {
+					cell.setText(((File) element).getName());
 				} else if (element instanceof DummyObject) {
 					cell.setText(((DummyObject) element).getName());
 				}
 			}
 		});
-		
-		IFile modelFile = ProBConfiguration.getCurrentModelFile();
-		
-		if (modelFile != null) {
-			IResource[] visualizationViewFiles = BMotionUtil
-					.getVisualizationViewFiles(modelFile.getProject());
-			
+
+		List<Object> content = new ArrayList<Object>();
+		if (this.modelFile != null) {
+			File[] visualizationViewFiles = BMotionUtil
+					.getVisualizationViewFiles(this.modelFile);
 			java.util.Collections.addAll(content, visualizationViewFiles);
 			content.add(new DummyObject());
-			view.setInput(content);
 		}
-
+		view.setInput(content);
+		
 		return container;
 
 	}
@@ -118,7 +115,7 @@ public class VisualizationViewDialog extends Dialog {
 	public Object getSelection() {
 		return selection;
 	}
-
+	
 	class DummyObject {
 		public String getName() {
 			return "< New Visualization View >";
