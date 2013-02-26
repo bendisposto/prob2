@@ -549,4 +549,10 @@
          </propertySection>
       </propertySections>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="de.bmotionstudio.core.editor.ProBStartup">
+      </startup>
+   </extension>
 </plugin>
