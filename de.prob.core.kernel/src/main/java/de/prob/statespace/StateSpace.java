@@ -592,10 +592,14 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @param state
 	 * @return trace in the form of a {@link History} object
 	 */
-	public History getTrace(final int state) {
-		final StateId id = states.get(String.valueOf(state));
-		final List<OpInfo> path = new DijkstraShortestPath<StateId, OpInfo>(
-				this.getGraph(), this.getRoot(), id).getPathEdgeList();
+	public History getTrace(final String state) {
+		final StateId id = states.get(state);
+		StateId root = this.getRoot();
+		List<OpInfo> findPathBetween = DijkstraShortestPath.findPathBetween(
+				this.getGraph(), root, id);
+		DijkstraShortestPath<StateId, OpInfo> dijkstraShortestPath = new DijkstraShortestPath<StateId, OpInfo>(
+				this.getGraph(), root, id);
+		final List<OpInfo> path = dijkstraShortestPath.getPathEdgeList();
 		History h = new History(this);
 		for (final OpInfo opInfo : path) {
 			h = h.add(opInfo.getId());

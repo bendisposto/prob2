@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -15,20 +16,25 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 import de.prob.check.ConsistencyCheckingSearchOption;
 import de.prob.check.ModelChecker;
+import de.prob.check.ModelCheckingResult;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
+import de.prob.statespace.IHistoryChangeListener;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 public class ModelCheckingView extends ViewPart implements
-		IModelChangedListener {
+		IModelChangedListener, IHistoryChangeListener {
 
 	private final Set<ConsistencyCheckingSearchOption> options = new HashSet<ConsistencyCheckingSearchOption>();
 
@@ -36,6 +42,7 @@ public class ModelCheckingView extends ViewPart implements
 	private Text formulas;
 	private StateSpace s;
 	private ModelChecker checker;
+	private History currentHistory;
 
 	ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -105,6 +112,7 @@ public class ModelCheckingView extends ViewPart implements
 		if (s != null) {
 			checker = new ModelChecker(s, optionsToString());
 			checker.start();
+			finish(checker);
 		}
 	}
 
@@ -172,4 +180,81 @@ public class ModelCheckingView extends ViewPart implements
 		resetChecker(s);
 	}
 
+	public void finish(final ModelChecker checker) {
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				final Shell shell = container.getShell();
+
+				ModelCheckingResult res = checker.getResult();
+
+				String message = "";
+				boolean traceAvailable = false;
+				switch (res.getResult()) {
+				case ok:
+					message = "No error state found. ALL states visited.";
+					break;
+				case ok_not_all_nodes_considered:
+					message = "No error state found. Not all states visited.";
+					break;
+				case deadlock:
+					message = "Deadlock found";
+					traceAvailable = true;
+					break;
+				case invariant_violation:
+					message = "An invariant violation was found.";
+					traceAvailable = true;
+					break;
+				case assertion_violation:
+					message = "An assertion violation was found.";
+					traceAvailable = true;
+					break;
+				case not_yet_finished:
+					message = "Model checking was not completed successfully.";
+					break;
+				case state_error:
+					message = "A state error occured.";
+					break;
+				case well_definedness_error:
+					message = "A welldefinedness error occured.";
+					break;
+				case general_error:
+					message = "An error occured";
+					break;
+				}
+
+				String[] buttons = null;
+				if (traceAvailable) {
+					buttons = new String[] { "Ok", "Open Trace" };
+				} else {
+					buttons = new String[] { "Ok" };
+				}
+
+				final String finalMsg = message;
+				final String[] finalButtons = buttons;
+
+				MessageDialog dialog = new MessageDialog(shell,
+						"Model Checking Result", null, finalMsg,
+						MessageDialog.INFORMATION, finalButtons, 0);
+
+				int result = dialog.open();
+
+				if (result == 1) {
+					// //This does not yet work. Working on the implementation.
+					// String id =
+					// OpInfo.getIdFromPrologTerm(res.getArgument(0));
+					// History trace = s.getTrace(id);
+					// currentHistory.notifyAnimationChange(currentHistory,
+					// trace);
+				}
+			}
+		});
+
+	}
+
+	@Override
+	public void historyChange(final History history) {
+		currentHistory = history;
+	}
 }
