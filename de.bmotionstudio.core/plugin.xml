@@ -552,7 +552,7 @@
    <extension
          point="org.eclipse.ui.startup">
       <startup
-            class="de.bmotionstudio.core.editor.ProBStartup">
+            class="de.bmotionstudio.core.ProBStartup">
       </startup>
    </extension>
 </plugin>
