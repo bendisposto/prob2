@@ -70,13 +70,17 @@ public class PerspectiveUtil {
 
 		Assert.isNotNull(perspectiveDescriptor);
 		Assert.isNotNull(targetPerspectiveFile);
-		
+
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		if (activeWorkbenchWindow == null)
 			return;
+
 		IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
 		if (page == null)
+			return;
+
+		if (!page.getPerspective().getLabel().startsWith("ProB_"))
 			return;
 		
 		// We need to save the perspective first
@@ -227,6 +231,7 @@ public class PerspectiveUtil {
 	}
 
 	public static String getPerspectiveFileNameFromModelFile(File modelFile) {
+		Assert.isNotNull(modelFile);
 		return modelFile.getName().replace("." + getExtension(modelFile),
 				"." + PROB_PERSPECTIVE_FILE_EXTENSION);
 	}
