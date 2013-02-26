@@ -27,7 +27,7 @@ public class ProBStartup implements IStartup {
 				IPerspectiveDescriptor[] perspectives = perspectiveRegistry
 						.getPerspectives();
 				for (IPerspectiveDescriptor p : perspectives) {
-					if (p.getId().replace("<", "").startsWith("ProB_")) {
+					if (p.getId().replaceAll("<", "").startsWith("ProB_")) {
 						PerspectiveUtil.closePerspective(p);
 						PerspectiveUtil.deletePerspective(p);
 						deleted = true;
