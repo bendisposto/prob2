@@ -39,7 +39,7 @@ public class ProBStartup implements IStartup {
 				IPerspectiveDescriptor[] perspectives = perspectiveRegistry
 						.getPerspectives();
 				for (IPerspectiveDescriptor p : perspectives) {
-					if (p.getId().replaceAll("<", "").startsWith("ProB_")) {
+					if (p.getLabel().replaceAll("<", "").startsWith("ProB_")) {
 						PerspectiveUtil.closePerspective(p);
 						PerspectiveUtil.deletePerspective(p);
 						deleted = true;
@@ -47,11 +47,11 @@ public class ProBStartup implements IStartup {
 				}
 				if (deleted
 						&& currentPerspective != null
-						&& currentPerspective.getId().replaceAll("<", "")
+						&& currentPerspective.getLabel().replaceAll("<", "")
 								.startsWith("ProB_"))
 					PerspectiveUtil
 							.switchPerspective(PerspectiveFactory.PROB_PERSPECTIVE);
-				
+
 			}
 		});
 	}
