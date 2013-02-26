@@ -103,7 +103,7 @@ public class AnimationSelector implements IAnimationListener {
 		if (!statespaces.contains(s)) {
 			statespaces.add(s);
 		}
-		if (!currentStateSpace.equals(s)) {
+		if (!s.equals(currentStateSpace)) {
 			currentStateSpace = s;
 			notifyModelChanged(s);
 		}
