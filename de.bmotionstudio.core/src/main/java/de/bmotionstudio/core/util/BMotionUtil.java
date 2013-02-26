@@ -1,6 +1,9 @@
 package de.bmotionstudio.core.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -8,9 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -42,21 +50,14 @@ public class BMotionUtil {
 		return dg.open();
 	}
 
-	public static boolean openVisualization(IFile visualizationFile) {
+	public static boolean openVisualization(File visualizationFile) {
 
 		// If the visualization file does not exist, stop ...
 		if (visualizationFile == null || !visualizationFile.exists())
 			return false;
 
-		VisualizationView visualizationView = BMotionUtil
-				.getVisualizationViewFromFile(visualizationFile);
-		
-		String secId = visualizationFile.getName().replace(
-				"." + visualizationFile.getFileExtension(), "");
-
 		try {
-			BMotionUtil.createVisualizationViewPart(visualizationView,
-					visualizationFile, secId);
+			BMotionUtil.createVisualizationViewPart(visualizationFile);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
@@ -107,12 +108,14 @@ public class BMotionUtil {
 	}
 	
 	public static VisualizationViewPart initVisualizationViewPart(
-			VisualizationView visualizationView, IFile visualizationFile,
-			String secId) {
+			File visualizationFile) {
 
 		IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		IWorkbenchPage activePage = window.getActivePage();
+
+		String secId = visualizationFile.getName().replace(
+				"." + PerspectiveUtil.getExtension(visualizationFile), "");
 
 		// Check if view is already open
 		IViewReference viewReference = activePage.findViewReference(
@@ -127,15 +130,64 @@ public class BMotionUtil {
 
 		if (visualizationViewPart != null
 				&& !visualizationViewPart.isInitialized())
-			visualizationViewPart.init(visualizationView, visualizationFile);
+			visualizationViewPart.init(visualizationFile);
 
 		return visualizationViewPart;
 
 	}
 	
+	public static File createNewVisualizationViewFile(File modelFile) {
+
+		Assert.isNotNull(modelFile);
+
+		File visualizationFile = null;
+
+		// Create a new visualization view
+		String fileName = BMotionUtil.getUniqueVisualizationFileName(modelFile);
+		Visualization visualization = new Visualization();
+		// TODO Make language more generic!!!!
+		VisualizationView visualizationView = new VisualizationView(
+				"New Visualization View", visualization, "EventB");
+
+		File parentFile = modelFile.getParentFile();
+		if (parentFile.isDirectory()) {
+			visualizationFile = new File(parentFile.getPath() + "/" + fileName
+					+ "." + BMotionEditorPlugin.FILEEXT_STUDIO);
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			IPath location = Path.fromOSString(visualizationFile
+					.getAbsolutePath());
+			IFile ifile = workspace.getRoot().getFileForLocation(location);
+			InputStream initialContentsAsInputStream = null;
+			try {
+				initialContentsAsInputStream = BMotionUtil
+						.getInitialContentsAsInputStream(visualizationView);
+				ifile.create(initialContentsAsInputStream, false,
+						new NullProgressMonitor());
+				ifile.refreshLocal(IResource.DEPTH_ZERO, null);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (CoreException e) {
+				e.printStackTrace();
+			} finally {
+				if (initialContentsAsInputStream != null) {
+					try {
+						initialContentsAsInputStream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+
+		return visualizationFile;
+
+	}
+	
 	public static VisualizationViewPart createVisualizationViewPart(
-			VisualizationView visualizationView, IFile visualizationFile,
-			String secId) throws PartInitException {
+			File visualizationFile) throws PartInitException {
+
+		String secId = visualizationFile.getName().replace(
+				"." + PerspectiveUtil.getExtension(visualizationFile), "");
 
 		IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
@@ -147,20 +199,20 @@ public class BMotionUtil {
 
 		if (visualizationViewPart != null
 				&& !visualizationViewPart.isInitialized())
-			visualizationViewPart.init(visualizationView, visualizationFile);
+			visualizationViewPart.init(visualizationFile);
 
 		return visualizationViewPart;
 
 	}
 
 	public static VisualizationView getVisualizationViewFromFile(
-			IFile visualizationFile) {
+			File visualizationFile) {
 
 		InputStream inputStream = null;
 
 		try {
 
-			inputStream = visualizationFile.getContents();
+			inputStream = new FileInputStream(visualizationFile);
 
 			XStream xstream = new XStream() {
 				@Override
@@ -184,7 +236,7 @@ public class BMotionUtil {
 
 			return (VisualizationView) obj;
 
-		} catch (CoreException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} finally {
 			try {
@@ -217,48 +269,57 @@ public class BMotionUtil {
 		return new ByteArrayInputStream(content.getBytes("UTF-8"));
 	}
 	
-	public static IResource[] getVisualizationViewFiles(IProject project) {
+	public static File[] getVisualizationViewFiles(File modelFile) {
 
-		if (project == null)
-			return null;
+		Assert.isNotNull(modelFile);
 
-		List<IResource> filteredFiles = new ArrayList<IResource>();
+		List<File> filteredFiles = new ArrayList<File>();
 
-		try {
-			for (IResource r : project.members()) {
-				if (r.getType() == IResource.FILE
-						&& (r.getFileExtension().equals("bmso"))) {
-					filteredFiles.add(r);
-				}
+		File parentFile = modelFile.getParentFile();
+		if (parentFile.isDirectory()) {
+			File[] listFiles = parentFile.listFiles();
+			for (File f : listFiles) {
+				String extension = PerspectiveUtil.getExtension(f);
+				if (extension != null
+						&& extension.equals(BMotionEditorPlugin.FILEEXT_STUDIO))
+					filteredFiles.add(f);
 			}
-		} catch (CoreException e) {
-			e.printStackTrace();
 		}
-
-		IResource[] viewFiles = filteredFiles
-				.toArray(new IResource[filteredFiles.size()]);
+		File[] viewFiles = filteredFiles
+				.toArray(new File[filteredFiles.size()]);
 		return viewFiles;
 
 	}
 	
 	private static String getUniqueVisualizationFileName(String fileName,
-			IProject project, int counter) {
+			File modelFile, int counter) {
 		String newFileName = fileName + counter;
-		if (project.getFile(newFileName + ".bmso").exists()) {
+		File visFile = new File(modelFile.getParentFile().getPath() + "/"
+				+ newFileName + ".bmso");
+		if (visFile.exists()) {
 			counter++;
-			return getUniqueVisualizationFileName(fileName, project, counter);
+			return getUniqueVisualizationFileName(fileName, modelFile, counter);
 		} else {
 			return newFileName;
 		}
 	}
 
-	public static String getUniqueVisualizationFileName(IFile modelFile) {
+	public static String getUniqueVisualizationFileName(File modelFile) {
 		String fileName = modelFile.getName().replace(
-				"." + modelFile.getFileExtension(), "");
-		if (modelFile.getProject().getFile(fileName + ".bmso").exists())
-			return getUniqueVisualizationFileName(fileName,
-					modelFile.getProject(), 1);
+				"." + PerspectiveUtil.getExtension(modelFile), "");
+		File visFile = new File(modelFile.getParentFile().getPath() + "/"
+				+ fileName + ".bmso");
+		if (visFile.exists())
+			return getUniqueVisualizationFileName(fileName, modelFile, 1);
 		return fileName;
+	}
+
+	public static void initVisualizationViews(File modelFile) {
+		File[] visualizationViewFiles = BMotionUtil
+				.getVisualizationViewFiles(modelFile);
+		for (File f : visualizationViewFiles) {
+			BMotionUtil.initVisualizationViewPart(f);
+		}
 	}
 	
 }

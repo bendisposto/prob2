@@ -99,8 +99,14 @@ public class AnimationSelector implements IAnimationListener {
 		currentHistory = history;
 		notifyHistoryChange(history);
 
-		statespaces.add(history.getStatespace());
-		notifyModelChanged(history.getStatespace());
+		StateSpace s = history.getStatespace();
+		if (!statespaces.contains(s)) {
+			statespaces.add(s);
+		}
+		if (!currentStateSpace.equals(s)) {
+			currentStateSpace = s;
+			notifyModelChanged(s);
+		}
 	}
 
 	/**

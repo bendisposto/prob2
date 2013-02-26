@@ -6,37 +6,28 @@
 
 package de.bmotionstudio.core.editor.handler;
 
-import java.io.UnsupportedEncodingException;
+import java.io.File;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import com.google.inject.Injector;
 
-import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.editor.handler.VisualizationViewDialog.DummyObject;
-import de.bmotionstudio.core.model.VisualizationView;
-import de.bmotionstudio.core.model.control.Visualization;
 import de.bmotionstudio.core.util.BMotionUtil;
+import de.bmotionstudio.core.util.PerspectiveUtil;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
-import de.prob.ui.PerspectiveFactory;
-import de.prob.ui.ProBConfiguration;
-import de.prob.ui.util.PerspectiveUtil;
 import de.prob.webconsole.ServletContextListener;
 
 public class AddVisualizationViewHandler extends AbstractHandler implements
@@ -47,38 +38,37 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 	final AnimationSelector selector = injector
 			.getInstance(AnimationSelector.class);
 
+	private File modelFile;
+	
 	public AddVisualizationViewHandler() {
 		updateEnablement();
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				.addPerspectiveListener(this);
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow != null)
+			activeWorkbenchWindow.addPerspectiveListener(this);
 		selector.registerModelChangedListener(this);
 	}
 
 	void updateEnablement() {
-
 		boolean isEnabled = false;
-		
 		History currentHistory = selector.getCurrentHistory();
-
-		IWorkbenchPage page = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
-
-		IPerspectiveDescriptor currentPerspective = page.getPerspective();
-
-		if (currentPerspective != null
-				&& currentPerspective.getId().equals(
-						PerspectiveFactory.PROB_PERSPECTIVE)
-				&& currentHistory != null)
-			isEnabled = true;
-
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow != null) {
+			IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+			if (page != null) {
+				IPerspectiveDescriptor currentPerspective = page
+						.getPerspective();
+				if (currentPerspective != null
+						&& currentPerspective.getId().startsWith("ProB_")
+						&& currentHistory != null)
+					isEnabled = true;
+			}
+		}
 		setBaseEnabled(isEnabled);
-		
 	}
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-
-		// TODO This handler should only be enabled if a simulation or
-		// perspective respectively is open!!!
 
 		try {
 
@@ -88,59 +78,25 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 						.getCurrentPerspective();
 
 				PerspectiveUtil.switchPerspective(perspective);
-
+				
 				VisualizationViewDialog dialog = new VisualizationViewDialog(
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-								.getShell());
+								.getShell(), this.modelFile);
 				if (dialog.open() == Dialog.OK) {
 
 					Object selection = dialog.getSelection();
-					if (selection instanceof DummyObject) {
-
+					if (selection instanceof DummyObject
+							&& this.modelFile != null) {
 						// Create a new visualization view
-						IFile currentModelFile = ProBConfiguration
-								.getCurrentModelFile();
-						String fileName = BMotionUtil
-								.getUniqueVisualizationFileName(currentModelFile);
-						Visualization visualization = new Visualization();
-						// TODO Make language more generic!!!!
-						VisualizationView visualizationView = new VisualizationView(
-								"New Visualization View", visualization,
-								"EventB");
-
-						// Save content
-						IProject project = currentModelFile.getProject();
-						IFile file = project.getFile(fileName + "."
-								+ BMotionEditorPlugin.FILEEXT_STUDIO);
-						file.create(
-								BMotionUtil
-										.getInitialContentsAsInputStream(visualizationView),
-								false, new NullProgressMonitor());
-						file.refreshLocal(IResource.DEPTH_ZERO, null);
-
-						BMotionUtil.createVisualizationViewPart(
-								visualizationView, file, fileName);
-
-					} else if (selection instanceof IResource) {
-
+						File visualizationViewFile = BMotionUtil
+								.createNewVisualizationViewFile(modelFile);
+						BMotionUtil
+								.createVisualizationViewPart(visualizationViewFile);
+					} else if (selection instanceof File) {
 						// Use an existing visualization view
-						IResource existingVisualization = (IResource) selection;
-						IFile visualizationFile = existingVisualization
-								.getProject().getFile(
-										existingVisualization.getName());
-						VisualizationView visualizationView = BMotionUtil
-								.getVisualizationViewFromFile(visualizationFile);
-
-						String viewId = existingVisualization
-								.getName()
-								.replace(
-										"."
-												+ existingVisualization
-														.getFileExtension(),
-										"");
-						BMotionUtil.createVisualizationViewPart(
-								visualizationView, visualizationFile, viewId);
-
+						File existingVisualization = (File) selection;
+						BMotionUtil
+								.createVisualizationViewPart(existingVisualization);
 					}
 
 				}
@@ -151,10 +107,6 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 
 		} catch (PartInitException e1) {
 			e1.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
-			e.printStackTrace();
 		}
 
 		return null;
@@ -175,13 +127,16 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 
 	@Override
 	public void modelChanged(StateSpace s) {
-		updateEnablement();		
+		this.modelFile = s.getModel().getModelFile();
+		updateEnablement();
 	}
 	
 	@Override
 	public void dispose() {
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				.removePerspectiveListener(this);
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow != null)
+			activeWorkbenchWindow.removePerspectiveListener(this);
 		selector.unregisterModelChangedListener(this);
 		super.dispose();
 	}

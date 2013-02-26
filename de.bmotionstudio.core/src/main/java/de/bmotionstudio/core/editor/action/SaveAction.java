@@ -1,13 +1,9 @@
 package de.bmotionstudio.core.editor.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.actions.ActionFactory;
 
@@ -23,10 +19,10 @@ public class SaveAction extends Action {
 	
 	private VisualizationView visualizationView;
 	
-	private IFile visualizationFile;
+	private File visualizationFile;
 
 	public SaveAction(VisualizationView visualizationView,
-			IFile visualizationFile) {
+			File visualizationFile) {
 		setId(ActionFactory.SAVE.getId());
 		setText("Save");
 		setToolTipText("Save");
@@ -35,31 +31,31 @@ public class SaveAction extends Action {
 		this.visualizationView = visualizationView;
 		this.visualizationFile = visualizationFile;
 	}
-	
+
 	@Override
 	public void run() {
 
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		OutputStreamWriter writer = null;
+		// ByteArrayOutputStream out = new ByteArrayOutputStream();
+		// OutputStreamWriter writer = null;
+		FileWriter fileWriter = null;
+
 		try {
-			// saveProperties();
-			writer = new OutputStreamWriter(out, "UTF8");
+
+			fileWriter = new FileWriter(this.visualizationFile);
+			// writer = new OutputStreamWriter(out, "UTF8");
 			XStream xstream = new XStream();
 			BMotionEditorPlugin.setAliases(xstream);
-			xstream.toXML(visualizationView, writer);
-			visualizationFile.setContents(
-					new ByteArrayInputStream(out.toByteArray()), true, false,
-					new NullProgressMonitor());
+			xstream.toXML(visualizationView, fileWriter);
+			// visualizationFile.setContents(
+			// new ByteArrayInputStream(out.toByteArray()), true, false,
+			// new NullProgressMonitor());
 			visualizationView.setDirty(false);
-		} catch (CoreException ce) {
-			ce.printStackTrace();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} finally {
 			try {
-				out.close();
-				if (writer != null)
-					writer.close();
+				if (fileWriter != null)
+					fileWriter.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -6,6 +6,7 @@
 
 package de.bmotionstudio.core;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,10 +17,15 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.google.inject.Injector;
 import com.thoughtworks.xstream.XStream;
 
 import de.bmotionstudio.core.model.BMotionGuide;
@@ -27,11 +33,18 @@ import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.BConnection;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
+import de.bmotionstudio.core.util.BMotionUtil;
+import de.bmotionstudio.core.util.PerspectiveUtil;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IModelChangedListener;
+import de.prob.statespace.StateSpace;
+import de.prob.webconsole.ServletContextListener;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class BMotionEditorPlugin extends AbstractUIPlugin {
+public class BMotionEditorPlugin extends AbstractUIPlugin implements
+		IModelChangedListener, IWorkbenchListener {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "de.bmotionstudio.core";
@@ -52,6 +65,11 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 
 	IExtensionRegistry registry = Platform.getExtensionRegistry();
 
+	Injector injector = ServletContextListener.INJECTOR;
+
+	final AnimationSelector selector = injector
+			.getInstance(AnimationSelector.class);
+	
 	/**
 	 * The constructor
 	 */
@@ -70,6 +88,8 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 		initExtensionClasses();
+		selector.registerModelChangedListener(this);
+		PlatformUI.getWorkbench().addWorkbenchListener(this);
 	}
 
 	/*
@@ -82,6 +102,8 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 	@Override
 	public void stop(final BundleContext context) throws Exception {
 		plugin = null;
+		selector.unregisterModelChangedListener(this);
+		PlatformUI.getWorkbench().removeWorkbenchListener(this);
 		super.stop(context);
 	}
 
@@ -238,6 +260,60 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		xstream.alias("visualization", Visualization.class);
 		xstream.alias("guide", BMotionGuide.class);
 		xstream.alias("connection", BConnection.class);
-	} 
+	}
+
+	@Override
+	public void modelChanged(StateSpace s) {
+
+		File modelFile = s.getModel().getModelFile();
+
+		// Save old and close old perspective (if exists)
+		IPerspectiveDescriptor currentPerspective = BMotionStudio
+				.getCurrentPerspective();
+		File currentModelFile = BMotionStudio.getCurrentModelFile();
+
+		// Close and save old perspective
+		if (currentPerspective != null && currentModelFile != null) {
+			// If yes ...
+			// Export the current perspective
+			File perspectiveFile = PerspectiveUtil
+					.getPerspectiveFileFromModelFile(currentModelFile);
+			PerspectiveUtil.exportPerspective(currentPerspective,
+					perspectiveFile);
+			// Close and delete current perspective, before opening the new one
+			PerspectiveUtil.closePerspective(currentPerspective);
+			PerspectiveUtil.deletePerspective(currentPerspective);
+		}
+
+		// Open new perspective
+		IPerspectiveDescriptor perspective = PerspectiveUtil
+				.openPerspective(modelFile);
+		BMotionUtil.initVisualizationViews(modelFile);
+		BMotionStudio.setCurrentModelFile(modelFile);
+		BMotionStudio.setCurrentPerspective(perspective);
+
+	}
+
+	@Override
+	public boolean preShutdown(IWorkbench workbench, boolean forced) {
+		// TODO reimplement me!!!
+//		IPerspectiveDescriptor currentPerspective = ProBConfiguration
+//				.getCurrentPerspective();
+//		IFile currentModelFile = ProBConfiguration.getCurrentModelFile();
+//		// Close and save old perspective
+//		if (currentPerspective != null && currentModelFile != null) {
+//			// If yes ...
+//			// Export the current perspective
+//			IFile perspectiveFile = currentModelFile.getProject().getFile(
+//					PerspectiveUtil.getPerspectiveFileName(currentModelFile));
+//			PerspectiveUtil.exportPerspective(currentPerspective,
+//					perspectiveFile);
+//		}
+		return true;
+	}
+
+	@Override
+	public void postShutdown(IWorkbench workbench) {
+	}
 
 }
