@@ -340,7 +340,7 @@
             class="de.prob.ui.stateview.StateView"
             icon="icons/sample.gif"
             id="de.prob.ui.StateView"
-            name="State View">
+            name="State Inspector">
       </view>
       <view
             category="de.hhu.stups.prob"
@@ -359,6 +359,7 @@
       <view
             category="de.hhu.stups.prob"
             class="de.prob.ui.console.GroovyConsole"
+            icon="icons/sample.gif"
             id="de.prob.ui.groovyconsole"
             name="Groovy Console"
             restorable="true">
@@ -366,7 +367,7 @@
       <view
             category="de.hhu.stups.prob"
             class="de.prob.ui.GroovyBindingView"
-            icon="de.hhu.stups.prob"
+            icon="icons/sample.gif"
             id="de.prob.ui.groovybinding"
             name="Global Variables"
             restorable="true">
@@ -376,14 +377,14 @@
             class="de.prob.ui.bunitview.BUnitView"
             icon="icons/sample.gif"
             id="de.prob.ui.BUnitView"
-            name="BUnit View">
+            name="BUnit Tests">
       </view>
       <view
             category="de.hhu.stups.prob"
             class="de.prob.ui.statisticsview.StatisticsView"
             icon="icons/sample.gif"
             id="de.prob.ui.StatisticsView"
-            name="Statistics View">
+            name="Statistics">
       </view>
       <view
             category="de.hhu.stups.prob"
