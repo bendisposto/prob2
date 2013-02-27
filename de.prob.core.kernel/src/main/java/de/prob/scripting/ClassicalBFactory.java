@@ -2,6 +2,8 @@ package de.prob.scripting;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -15,6 +17,7 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
+import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
@@ -52,17 +55,12 @@ public class ClassicalBFactory {
 			throws IOException, BException {
 		ClassicalBModel classicalBModel = modelCreator.get();
 
-		for (Entry<String, String> pref : prefs.entrySet()) {
-			classicalBModel.getStatespace().execute(
-					new SetPreferenceCommand(pref.getKey(), pref.getValue()));
-		}
-
 		BParser bparser = new BParser();
 		Start ast = parseFile(f, bparser);
 		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 
 		classicalBModel.initialize(ast, rml, f);
-		startAnimation(classicalBModel, rml);
+		startAnimation(classicalBModel, rml, prefs);
 		return classicalBModel;
 	}
 
@@ -76,12 +74,20 @@ public class ClassicalBFactory {
 	 * @param rml
 	 *            {@link RecursiveMachineLoader} containing all of the parsed
 	 *            machines
+	 * @param prefs
 	 */
 	private void startAnimation(final ClassicalBModel classicalBModel,
-			final RecursiveMachineLoader rml) {
+			final RecursiveMachineLoader rml, final Map<String, String> prefs) {
+		List<ICommand> cmds = new ArrayList<ICommand>();
+
+		for (Entry<String, String> pref : prefs.entrySet()) {
+			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
+		}
+
 		final ICommand loadcmd = new LoadBProjectCommand(rml);
-		classicalBModel.getStatespace().execute(loadcmd,
-				new StartAnimationCommand());
+		cmds.add(loadcmd);
+		cmds.add(new StartAnimationCommand());
+		classicalBModel.getStatespace().execute(new ComposedCommand(cmds));
 		classicalBModel.getStatespace().setLoadcmd(loadcmd);
 	}
 

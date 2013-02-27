@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
-import de.prob.animator.command.GetPreferencesCommand;
+import de.prob.animator.command.GetDefaultPreferencesCommand;
 import de.prob.animator.command.GetVersionCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.animator.domainobjects.ProBPreference;
@@ -156,7 +156,7 @@ public class Api {
 	}
 
 	public void save(final AbstractModel m, final String filename) {
-		GetPreferencesCommand cmd = new GetPreferencesCommand();
+		GetDefaultPreferencesCommand cmd = new GetDefaultPreferencesCommand();
 
 		m.getStatespace().execute(cmd);
 		List<ProBPreference> prefs = cmd.getPreferences();
