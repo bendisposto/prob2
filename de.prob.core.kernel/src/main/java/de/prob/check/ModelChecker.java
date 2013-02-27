@@ -57,7 +57,7 @@ public class ModelChecker {
 	}
 
 	public boolean isDone() {
-		return f == null ? null : f.isDone();
+		return f != null && f.isDone();
 	}
 
 	public boolean isCancelled() {
