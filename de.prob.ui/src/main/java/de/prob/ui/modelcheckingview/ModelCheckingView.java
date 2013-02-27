@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.check.ConsistencyCheckingSearchOption;
 import de.prob.check.ModelChecker;
 import de.prob.check.ModelCheckingResult;
@@ -51,8 +52,9 @@ public class ModelCheckingView extends ViewPart implements
 		final AnimationSelector selector = ServletContextListener.INJECTOR
 				.getInstance(AnimationSelector.class);
 		selector.registerModelChangedListener(this);
+		selector.registerHistoryChangeListener(this);
 		container = new Composite(parent, SWT.NULL);
-		GridLayout layout = new GridLayout(2, true);
+		GridLayout layout = new GridLayout(3, true);
 		container.setLayout(layout);
 
 		setSettings(container);
@@ -63,7 +65,7 @@ public class ModelCheckingView extends ViewPart implements
 		formulas = new Text(container, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 		formulas.setText("");
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.horizontalSpan = 2;
+		gd.horizontalSpan = 3;
 		formulas.setLayoutData(gd);
 
 		final Button start = new Button(container, SWT.PUSH);
@@ -78,6 +80,12 @@ public class ModelCheckingView extends ViewPart implements
 		cancel.setLayoutData(gd);
 		cancel.setText("Cancel");
 		cancel.addSelectionListener(listener);
+
+		Button getResult = new Button(container, SWT.PUSH);
+		gd = new GridData(SWT.CENTER, SWT.FILL, false, false);
+		getResult.setLayoutData(gd);
+		getResult.setText("Get the Result");
+		getResult.addSelectionListener(listener);
 	}
 
 	private class MCSelectionListener implements SelectionListener {
@@ -91,6 +99,8 @@ public class ModelCheckingView extends ViewPart implements
 					startModelChecking();
 				} else if (x.equals("Cancel")) {
 					cancelModelChecking();
+				} else if (x.equals("Get the Result")) {
+					waitForFinish();
 				}
 			}
 		}
@@ -112,7 +122,6 @@ public class ModelCheckingView extends ViewPart implements
 		if (s != null) {
 			checker = new ModelChecker(s, optionsToString());
 			checker.start();
-			finish(checker);
 		}
 	}
 
@@ -120,7 +129,7 @@ public class ModelCheckingView extends ViewPart implements
 		Group settings = new Group(container, SWT.NONE);
 		settings.setText("Settings");
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		gridData.horizontalSpan = 2;
+		gridData.horizontalSpan = 3;
 		settings.setLayoutData(gridData);
 		settings.setLayout(new RowLayout(SWT.VERTICAL));
 
@@ -180,14 +189,15 @@ public class ModelCheckingView extends ViewPart implements
 		resetChecker(s);
 	}
 
-	public void finish(final ModelChecker checker) {
+	public void waitForFinish() {
+		final ModelChecker checker = this.checker;
 		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
 				final Shell shell = container.getShell();
 
-				ModelCheckingResult res = checker.getResult();
+				final ModelCheckingResult res = checker.getResult();
 
 				String message = "";
 				boolean traceAvailable = false;
@@ -241,12 +251,9 @@ public class ModelCheckingView extends ViewPart implements
 				int result = dialog.open();
 
 				if (result == 1) {
-					// //This does not yet work. Working on the implementation.
-					// String id =
-					// OpInfo.getIdFromPrologTerm(res.getArgument(0));
-					// History trace = s.getTrace(id);
-					// currentHistory.notifyAnimationChange(currentHistory,
-					// trace);
+					String id = OpInfo.getIdFromPrologTerm(res.getArgument(0));
+					History trace = s.getTrace(id);
+					currentHistory.notifyAnimationChange(currentHistory, trace);
 				}
 			}
 		});

@@ -88,7 +88,7 @@ public class ModelChecker {
 		public Worker(final StateSpace s, final List<String> options) {
 			this.s = s;
 			this.options = options;
-			this.last = s.getLastCalculatedTransitionId();
+			this.last = s.getLastCalculatedStateId();
 		}
 
 		@Override
@@ -120,11 +120,6 @@ public class ModelChecker {
 			ModelCheckingResult result = cmd.getResult();
 			List<OpInfo> newOps = cmd.getNewOps();
 			addCheckedStates(newOps);
-			if (!newOps.isEmpty()) {
-				OpInfo lastOp = newOps.get(newOps.size() - 1);
-				s.setLastCalculatedTransitionId(new BigInteger(lastOp.id));
-				last = s.getLastCalculatedTransitionId();
-			}
 			return result;
 		}
 
@@ -132,9 +127,18 @@ public class ModelChecker {
 			HashMap<String, StateId> states = s.getStates();
 			HashMap<String, OpInfo> ops = s.getOps();
 
+			BigInteger i = s.getLastCalculatedStateId();
+
 			for (OpInfo opInfo : newOps) {
 				if (!ops.containsKey(opInfo.id)) {
 					String sK = opInfo.src;
+					if (!sK.equals("root")) {
+						int value = Integer.parseInt(sK);
+						if (value > i.intValue()) {
+							i = new BigInteger(sK);
+						}
+					}
+
 					String dK = opInfo.dest;
 					StateId src = states.get(sK);
 					if (src == null) {
@@ -143,9 +147,7 @@ public class ModelChecker {
 						states.put(sK, src);
 					}
 					StateId dest = states.get(dK);
-					boolean destNew = false;
 					if (dest == null) {
-						destNew = true;
 						dest = new StateId(dK, s);
 						s.addVertex(dest);
 						states.put(dK, dest);
@@ -154,6 +156,9 @@ public class ModelChecker {
 					ops.put(opInfo.id, opInfo);
 				}
 			}
+			s.setLastCalculatedStateId(i);
+			last = i;
+
 			s.notifyStateSpaceChange();
 		}
 

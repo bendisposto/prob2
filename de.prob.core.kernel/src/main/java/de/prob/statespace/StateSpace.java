@@ -69,7 +69,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
-	private BigInteger lastCalculatedTransitionId;
+	private BigInteger lastCalculatedStateId;
 	private AbstractModel model;
 	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
 
@@ -87,7 +87,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		__root = new StateId("root", this);
 		addVertex(__root);
 		states.put(__root.getId(), __root);
-		lastCalculatedTransitionId = new BigInteger("-1");
+		lastCalculatedStateId = new BigInteger("-1");
 	}
 
 	public StateId getRoot() {
@@ -115,9 +115,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		extractInformation(state, command);
 
 		explored.add(state);
+		if (!state.getId().equals("root")) {
+			setLastCalculatedStateId(new BigInteger(state.getId()));
+		}
 		final List<OpInfo> enabledOperations = command.getEnabledOperations();
-
-		calculateLastTransitionId(enabledOperations);
 
 		for (final OpInfo op : enabledOperations) {
 			if (!containsEdge(op)) {
@@ -213,7 +214,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
 		final List<OpInfo> newOps = command.getOperations();
-		calculateLastTransitionId(newOps);
+		setLastCalculatedStateId(new BigInteger(stateId.getId()));
 
 		// (id,name,src,dest,args)
 		for (final OpInfo op : newOps) {
@@ -720,26 +721,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return outgoingEdgesOf;
 	}
 
-	public BigInteger getLastCalculatedTransitionId() {
-		return lastCalculatedTransitionId;
+	public BigInteger getLastCalculatedStateId() {
+		return lastCalculatedStateId;
 	}
 
-	public void setLastCalculatedTransitionId(
-			final BigInteger lastCalculatedTransitionId) {
-		if (lastCalculatedTransitionId.intValue() > this.lastCalculatedTransitionId
-				.intValue()) {
-			this.lastCalculatedTransitionId = lastCalculatedTransitionId;
+	public void setLastCalculatedStateId(final BigInteger lastCalculatedId) {
+		if (lastCalculatedId.intValue() > lastCalculatedStateId.intValue()) {
+			lastCalculatedStateId = lastCalculatedId;
 		}
-	}
-
-	private void calculateLastTransitionId(final List<OpInfo> enabledOperations) {
-		int value = lastCalculatedTransitionId.intValue();
-		for (OpInfo opInfo : enabledOperations) {
-			int newV = Integer.parseInt(opInfo.id);
-			if (newV > value) {
-				value = newV;
-			}
-		}
-		lastCalculatedTransitionId = new BigInteger(value + "");
 	}
 }
