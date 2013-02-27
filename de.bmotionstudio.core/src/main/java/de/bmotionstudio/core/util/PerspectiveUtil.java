@@ -34,14 +34,19 @@ public class PerspectiveUtil {
 			IPerspectiveDescriptor perspectiveDescriptor) {
 		IPerspectiveRegistry perspectiveRegistry = PlatformUI.getWorkbench()
 				.getPerspectiveRegistry();
-		perspectiveRegistry.deletePerspective(perspectiveDescriptor);
+		if (perspectiveRegistry != null)
+			perspectiveRegistry.deletePerspective(perspectiveDescriptor);
 	}
 
 	public static void closePerspective(
 			IPerspectiveDescriptor perspectiveDescriptor) {
-		IWorkbenchPage page = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
-		page.closePerspective(perspectiveDescriptor, false, true);
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow != null) {
+			IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+			if (page != null)
+				page.closePerspective(perspectiveDescriptor, false, true);
+		}
 	}
 
 	public static void switchPerspective(
@@ -65,10 +70,19 @@ public class PerspectiveUtil {
 
 		Assert.isNotNull(perspectiveDescriptor);
 		Assert.isNotNull(targetPerspectiveFile);
+
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow == null)
+			return;
+
+		IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+		if (page == null)
+			return;
+
+		if (!page.getPerspective().getLabel().startsWith("ProB_"))
+			return;
 		
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		IWorkbenchPage page = workbench.getActiveWorkbenchWindow()
-				.getActivePage();
 		// We need to save the perspective first
 		page.savePerspectiveAs(perspectiveDescriptor);
 
@@ -217,6 +231,7 @@ public class PerspectiveUtil {
 	}
 
 	public static String getPerspectiveFileNameFromModelFile(File modelFile) {
+		Assert.isNotNull(modelFile);
 		return modelFile.getName().replace("." + getExtension(modelFile),
 				"." + PROB_PERSPECTIVE_FILE_EXTENSION);
 	}

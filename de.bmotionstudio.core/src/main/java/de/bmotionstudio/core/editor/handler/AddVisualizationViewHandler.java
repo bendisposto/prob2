@@ -44,9 +44,10 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 		updateEnablement();
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
-		if (activeWorkbenchWindow != null)
+		if (activeWorkbenchWindow != null) {
 			activeWorkbenchWindow.addPerspectiveListener(this);
-		selector.registerModelChangedListener(this);
+			selector.registerModelChangedListener(this);
+		}
 	}
 
 	void updateEnablement() {
@@ -89,7 +90,7 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 							&& this.modelFile != null) {
 						// Create a new visualization view
 						File visualizationViewFile = BMotionUtil
-								.createNewVisualizationViewFile(modelFile);
+								.createNewVisualizationViewFile(this.modelFile);
 						BMotionUtil
 								.createVisualizationViewPart(visualizationViewFile);
 					} else if (selection instanceof File) {
@@ -135,9 +136,10 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 	public void dispose() {
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
-		if (activeWorkbenchWindow != null)
+		if (activeWorkbenchWindow != null) {
 			activeWorkbenchWindow.removePerspectiveListener(this);
-		selector.unregisterModelChangedListener(this);
+			selector.unregisterModelChangedListener(this);
+		}
 		super.dispose();
 	}
 

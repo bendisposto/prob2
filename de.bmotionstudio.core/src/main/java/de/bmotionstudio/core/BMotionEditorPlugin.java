@@ -296,19 +296,26 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 
 	@Override
 	public boolean preShutdown(IWorkbench workbench, boolean forced) {
-		// TODO reimplement me!!!
-//		IPerspectiveDescriptor currentPerspective = ProBConfiguration
-//				.getCurrentPerspective();
-//		IFile currentModelFile = ProBConfiguration.getCurrentModelFile();
-//		// Close and save old perspective
-//		if (currentPerspective != null && currentModelFile != null) {
-//			// If yes ...
-//			// Export the current perspective
-//			IFile perspectiveFile = currentModelFile.getProject().getFile(
-//					PerspectiveUtil.getPerspectiveFileName(currentModelFile));
-//			PerspectiveUtil.exportPerspective(currentPerspective,
-//					perspectiveFile);
-//		}
+		// If the current perspective is a ProB perspective, export before
+		// closing eclipse
+		IPerspectiveDescriptor currentPerspective = workbench
+				.getActiveWorkbenchWindow().getActivePage().getPerspective();
+		File currentModelFile = BMotionStudio.getCurrentModelFile();
+		IPerspectiveDescriptor probPerspective = BMotionStudio
+				.getCurrentPerspective();
+		
+		if(currentModelFile == null || probPerspective == null)
+			 return true;
+		
+		if (currentPerspective.getLabel().startsWith("ProB_")) {
+			PerspectiveUtil.exportPerspective(currentPerspective, PerspectiveUtil
+					.getPerspectiveFileFromModelFile(currentModelFile));
+		} else {
+			PerspectiveUtil.switchPerspective(probPerspective);
+			PerspectiveUtil.exportPerspective(probPerspective, PerspectiveUtil
+					.getPerspectiveFileFromModelFile(currentModelFile));
+			PerspectiveUtil.switchPerspective(currentPerspective);
+		}
 		return true;
 	}
 
