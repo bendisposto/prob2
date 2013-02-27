@@ -2,7 +2,6 @@ package de.prob.statespace
 
 import static org.mockito.Mockito.*
 import spock.lang.Specification
-import de.prob.model.representation.AbstractModel
 
 class AnimationSelectorTest extends Specification {
 
