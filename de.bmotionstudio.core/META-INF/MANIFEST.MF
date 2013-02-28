@@ -21,7 +21,7 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  de.prob.core.rodin;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Eclipse-RegisterBuddy: de.prob.core.rodin
+Eclipse-RegisterBuddy: de.prob.core.rodin, de.prob.core.kernel
 Bundle-Vendor: HHU Düsseldorf STUPS Group
 Bundle-ClassPath: .
 Export-Package: de.bmotionstudio.core,
