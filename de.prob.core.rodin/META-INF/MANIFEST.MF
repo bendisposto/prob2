@@ -14,3 +14,4 @@ Bundle-ActivationPolicy: lazy
 Import-Package: org.eventb.core
 Export-Package: de.prob.rodin.translate
 Eclipse-BuddyPolicy: registered
+
