@@ -60,7 +60,7 @@ dependencies {
 	compile 'jgrapht:jgrapht:0.8.3' // LGPL <---
 	compile 'jgraphx:jgraphx:1.10.1.0' // BSD
 	
-	compile 'xstream:xstream:1.2.2' // BSD
+	compile 'com.thoughtworks.xstream:xstream:1.4.3' // BSD
 	compile 'stax:stax:1.2.0_rc2-dev' // Apache Licence 2.0
 	compile 'org.codehaus.jettison:jettison:1.3.1' // Apache Licence 2.0
 	compile 'emf:ecore:2.3.0' // EPL
