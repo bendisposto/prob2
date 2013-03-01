@@ -37,8 +37,7 @@ public final class GetDefaultPreferencesCommand implements ICommand {
 		return prefs;
 	}
 
-	private ProBPreference verifyTerm(final PrologTerm term)
-			 {
+	private ProBPreference verifyTerm(final PrologTerm term) {
 		CompoundPrologTerm compoundTerm;
 		compoundTerm = BindingGenerator.getCompoundTerm(term, "preference", 5);
 		return new ProBPreference(compoundTerm);
@@ -46,8 +45,7 @@ public final class GetDefaultPreferencesCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			 {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 
 		ListPrologTerm p = BindingGenerator.getList(bindings
 				.get(PREFS_VARIABLE));
@@ -57,7 +55,6 @@ public final class GetDefaultPreferencesCommand implements ICommand {
 			preference = verifyTerm(term);
 			prefs.add(preference);
 		}
-
 	}
 
 	@Override
