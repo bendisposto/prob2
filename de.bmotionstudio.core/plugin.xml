@@ -288,6 +288,10 @@
             class="de.bmotionstudio.core.model.observer.PredicateObserver"
             id="de.bmotionstudio.observer.PredicateObserver">
       </observer>
+      <observer
+            class="de.bmotionstudio.core.model.observer.CSPEventObserver"
+            id="de.bmotionstudio.observer.CSPEventObserver">
+      </observer>
    </extension>
    <extension
          point="de.bmotionstudio.core.installActions">
@@ -487,15 +491,15 @@
       <include
             language="CSP">
          <control
-               id="de.bmotionstudio.core.rectangle">
+               id="de.bmotionstudio.control.Rectangle">
             <observer
-                  id="de.bmotionstudio.core.observer.CSPEventObserver">
+                  id="de.bmotionstudio.observer.CSPEventObserver">
             </observer>
          </control>
          <control
-               id="de.bmotionstudio.core.tank">
+               id="de.bmotionstudio.control.Tank">
             <observer
-                  id="de.bmotionstudio.core.observer.CSPEventObserver">
+                  id="de.bmotionstudio.observer.CSPEventObserver">
             </observer>
          </control>
       </include>   
