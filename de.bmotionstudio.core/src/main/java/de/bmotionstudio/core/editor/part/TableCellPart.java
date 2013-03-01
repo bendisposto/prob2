@@ -22,7 +22,7 @@ import de.bmotionstudio.core.editor.editpolicy.RenamePolicy;
 import de.bmotionstudio.core.editor.figure.TableCellFigure;
 import de.bmotionstudio.core.model.control.BControl;
 
-public class BTableCellPart extends BMSAbstractEditPart {
+public class TableCellPart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -34,11 +34,6 @@ public class BTableCellPart extends BMSAbstractEditPart {
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
 				new CustomDirectEditPolicy());
 		installEditPolicy(EditPolicy.NODE_ROLE, new RenamePolicy());
-	}
-
-
-	@Override
-	protected void prepareRunPolicies() {
 	}
 
 	@Override

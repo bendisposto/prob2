@@ -8,7 +8,7 @@ package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
-import de.bmotionstudio.core.editor.part.BButtonPart;
+import de.bmotionstudio.core.editor.part.ButtonPart;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Button;
@@ -27,7 +27,7 @@ public class BButtonService extends AbstractBControlService implements
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BButtonPart();
+		return new ButtonPart();
 	}
 
 	@Override

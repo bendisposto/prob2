@@ -6,9 +6,10 @@
 
 package de.bmotionstudio.core.model.control;
 
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.draw2d.ColorConstants;
 
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
+import de.bmotionstudio.core.model.attribute.AttributeTrackLength;
 import de.bmotionstudio.core.model.attribute.BAttributeConnection;
 import de.bmotionstudio.core.model.attribute.BAttributeConnectionSourceDecoration;
 import de.bmotionstudio.core.model.attribute.BAttributeConnectionTargetDecoration;
@@ -21,7 +22,7 @@ import de.bmotionstudio.core.model.attribute.BAttributeLineWidth;
  * @author Lukas Ladenberger
  * 
  */
-public class Track extends BConnection {
+public class Segment extends BConnection {
 
 	@Override
 	protected void initAttributes() {
@@ -30,7 +31,7 @@ public class Track extends BConnection {
 		aConnection.setGroup(AbstractAttribute.ROOT);
 		initAttribute(aConnection);
 
-		BAttributeLineWidth aLineWidth = new BAttributeLineWidth(1);
+		BAttributeLineWidth aLineWidth = new BAttributeLineWidth(4);
 		aLineWidth.setGroup(aConnection);
 		initAttribute(aLineWidth);
 
@@ -40,7 +41,7 @@ public class Track extends BConnection {
 		initAttribute(aLineStyle);
 
 		BAttributeForegroundColor aForegroundColor = new BAttributeForegroundColor(
-				new RGB(0, 0, 0));
+				ColorConstants.gray.getRGB());
 		aForegroundColor.setGroup(aConnection);
 		initAttribute(aForegroundColor);
 
@@ -57,7 +58,12 @@ public class Track extends BConnection {
 		BAttributeLabel aLabel = new BAttributeLabel("Label ...");
 		aLabel.setGroup(aConnection);
 		initAttribute(aLabel);
-
+		
+		AttributeTrackLength attributeTrackLength = new AttributeTrackLength(
+				250);
+		attributeTrackLength.setGroup(aConnection);
+		initAttribute(attributeTrackLength);
+		
 	}
 
 }

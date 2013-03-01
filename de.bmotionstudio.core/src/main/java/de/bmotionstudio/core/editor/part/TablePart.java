@@ -20,7 +20,7 @@ import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.TableCell;
 import de.bmotionstudio.core.model.control.TableColumn;
 
-public class BTablePart extends BMSAbstractEditPart {
+public class TablePart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -41,10 +41,6 @@ public class BTablePart extends BMSAbstractEditPart {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new BMSConnectionEditPolicy());
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
 	}
 
 	@Override

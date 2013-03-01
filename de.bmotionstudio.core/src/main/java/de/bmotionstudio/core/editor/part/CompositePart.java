@@ -37,7 +37,7 @@ import de.bmotionstudio.core.editor.view.library.LibraryImageCommand;
 import de.bmotionstudio.core.editor.view.library.LibraryVariableCommand;
 import de.bmotionstudio.core.model.control.BControl;
 
-public class BCompositePart extends BMSAbstractEditPart {
+public class CompositePart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -135,10 +135,6 @@ public class BCompositePart extends BMSAbstractEditPart {
 				new BMSConnectionEditPolicy());
 		installEditPolicy(ChangeAttributePolicy.CHANGE_ATTRIBUTE_POLICY,
 				new ChangeAttributePolicy());
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
 	}
 
 }

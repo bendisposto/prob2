@@ -9,7 +9,7 @@ package de.bmotionstudio.core.service;
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.core.editor.part.BTextfieldPart;
+import de.bmotionstudio.core.editor.part.TextfieldPart;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Textfield;
 
@@ -27,7 +27,7 @@ public class BTextfieldService extends AbstractBControlService implements
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BTextfieldPart();
+		return new TextfieldPart();
 	}
 
 	@Override

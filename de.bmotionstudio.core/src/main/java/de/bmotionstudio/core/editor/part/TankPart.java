@@ -70,8 +70,4 @@ public class TankPart extends BMSAbstractEditPart {
 				new BMSConnectionEditPolicy());
 	}
 
-	@Override
-	protected void prepareRunPolicies() {
-	}
-
 }

@@ -5,15 +5,12 @@
  * */
 package de.bmotionstudio.core.editor.figure;
 
-import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.ToolbarLayout;
+import org.eclipse.draw2d.Shape;
+import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
-
+import org.eclipse.swt.SWT;
 
 /**
  * @author Lukas Ladenberger
@@ -21,83 +18,95 @@ import org.eclipse.draw2d.geometry.Rectangle;
  */
 public class SignalFigure extends AbstractBMotionFigure {
 
-	private Label lb;
-	private PointList arrow = new PointList();
-	private boolean isEast;
-	private Figure panel;
-
+	private Shape shapeFigure;
+	protected static final int LEG = 8;
+	protected static final int RAD = 10;
+	public static final int WIDTH = LEG + RAD*2+1;
+	public static final int HEIGHT = RAD*2+2;
+	private boolean isRight;
+	
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+	}
+	
 	public SignalFigure() {
 
-		ToolbarLayout layout = new ToolbarLayout();
-		layout.setMinorAlignment(ToolbarLayout.ALIGN_CENTER);
-		setLayoutManager(layout);
+		setLayoutManager(new StackLayout());
 
-		setOpaque(true);
+		shapeFigure = new Shape() {
 
-		lb = new Label();
-
-		panel = new Figure() {
 			@Override
-			protected void paintFigure(Graphics g) {
+			protected void outlineShape(Graphics g) {
 
-				super.paintFigure(g);
-				Rectangle r = getClientArea();
-				arrow.removeAllPoints();
+				Rectangle r = this.getBounds();
 
-				g.setAlpha(0);
-				g.setBackgroundColor(ColorConstants.white);
-				g.setForegroundColor(ColorConstants.lightGray);
-				g.fillRectangle(r); // Fill background with color
+				g.setAntialias(SWT.ON);
 
-				// Draw track lines
-				g.setAlpha(255);
-				g.setLineWidth(1);
+				Point a;
+				Point b;
+				Point c;
 
-				// Draw horizontal line
-				Point pt1 = r.getTopLeft();
-				Point pt2 = r.getTopRight();
-				pt1.y = pt1.y + 4;
-				pt2.y = pt2.y + 4;
-				g.drawLine(pt1, pt2);
+				int x = r.x;
+				int y = r.y + r.height / 2;
 
-				g.setAlpha(255);
-				g.setBackgroundColor(ColorConstants.lightGray);
+				if (isRight) {
 
-				// Draw arrow
-				Point p1;
-				Point p2;
-				Point p3;
+					x++;
+					y--;
 
-				if (isEast) {
-					p1 = r.getTopRight();
-					p2 = r.getTopRight();
-					p3 = r.getTopRight();
-					p2.x = p2.x - 8;
-					p3.x = p3.x - 8;
+					g.drawLine(x, y, x + LEG + RAD * 2, y);
+					g.drawOval(x, y - RAD, RAD * 2, RAD * 2);
+					g.drawLine(x + RAD - 1, y - RAD, x + RAD - 1, y + RAD);
+					g.drawLine(x + RAD + 1, y - RAD, x + RAD + 1, y + RAD);
+
+					a = new Point(x + RAD, y - RAD);
+					b = new Point(x + RAD, y + RAD);
+					c = new Point(x + RAD, y);
+
 				} else {
-					p1 = r.getTopLeft();
-					p2 = r.getTopLeft();
-					p3 = r.getTopLeft();
-					p2.x = p2.x + 8;
-					p3.x = p3.x + 8;
+
+					g.drawLine(x, y, x + LEG + RAD * 2, y);
+					g.drawOval(x + LEG, y - RAD, RAD * 2, RAD * 2);
+					g.drawLine(x + LEG + RAD - 1, y - RAD, x + LEG + RAD - 1, y
+							+ RAD);
+					g.drawLine(x + LEG + RAD + 1, y - RAD, x + LEG + RAD + 1, y
+							+ RAD);
+
+					a = new Point(x + LEG + RAD, y - RAD);
+					b = new Point(x + LEG + RAD, y + RAD);
+					c = new Point(x + LEG + RAD, y);
+
 				}
 
-				p1.y = p1.y + 4;
-				p2.y = p2.y + 8;
+				a.translate(-c.x, -c.y);
+				b.translate(-c.x, -c.y);
 
-				arrow.addPoint(p1);
-				arrow.addPoint(p2);
-				arrow.addPoint(p3);
-				g.fillPolygon(arrow);
+				Point na = rotate(a, -45);
+				Point nb = rotate(b, -45);
+				na.translate(c);
+				nb.translate(c);
+				g.drawLine(na, nb);
 
 			}
 
-		};
-		panel.setPreferredSize(60, 10);
+			@Override
+			protected void fillShape(Graphics g) {
+			}
 
-		// add(node);
-		add(lb);
-		add(panel);
+		};
+
+		add(shapeFigure);
+
+	}
+	
+	protected static Point rotate(Point p, int degrees) {
+		double rad = Math.toRadians(degrees);
+		double x = p.x;
+		double y = p.y;
+		int nx = (int) (x * Math.cos(rad) + y * Math.sin(rad));
+		int ny = (int) (-x * Math.sin(rad) + y * Math.cos(rad));
+		return new Point(nx, ny);
 	}
 
 	@Override
@@ -108,13 +117,9 @@ public class SignalFigure extends AbstractBMotionFigure {
 	public void activateFigure() {
 	}
 
-	public void setTrackDirection(boolean isEast) {
-		this.isEast = isEast;
-		this.panel.repaint();
+	public void setTrackDirection(boolean isRight) {
+		this.isRight = isRight;
+		this.shapeFigure.repaint();
 	}
-
-	public void setLabel(String lb) {
-		this.lb.setText(lb);
-	}
-
+	
 }

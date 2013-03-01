@@ -11,10 +11,7 @@ import java.beans.PropertyChangeEvent;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Display;
 
-import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.core.editor.editpolicy.TrackEditPolicy;
 import de.bmotionstudio.core.editor.figure.TrackNodeFigure;
@@ -33,24 +30,8 @@ public class TrackNodePart extends BMSAbstractEditPart {
 	public void refreshEditFigure(IFigure figure, BControl model,
 			PropertyChangeEvent evt) {
 
-		Object value = evt.getNewValue();
-		String aID = evt.getPropertyName();
-
-		if (aID.equals(AttributeConstants.ATTRIBUTE_LINEWIDTH))
-			((TrackNodeFigure) getFigure()).setLineWidth(Integer
-					.valueOf(value.toString()));
-
-		if (aID.equals(AttributeConstants.ATTRIBUTE_LINESTYLE))
-			((TrackNodeFigure) getFigure()).setLineStyle((Integer
-					.valueOf(value.toString()) + 1));
-
-		if (aID.equals(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR)) {
-			if (foregroundColor != null)
-				foregroundColor.dispose();
-			foregroundColor = new Color(Display.getDefault(), (RGB) value);
-			((TrackNodeFigure) getFigure())
-					.setForegroundColor(foregroundColor);
-		}
+//		Object value = evt.getNewValue();
+//		String aID = evt.getPropertyName();
 
 	}
 
@@ -58,10 +39,6 @@ public class TrackNodePart extends BMSAbstractEditPart {
 	protected void prepareEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new TrackEditPolicy());
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
 	}
 
 }

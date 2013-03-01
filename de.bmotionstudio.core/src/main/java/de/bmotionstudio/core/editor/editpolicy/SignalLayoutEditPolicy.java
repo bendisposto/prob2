@@ -31,7 +31,7 @@ import de.bmotionstudio.core.editor.command.BControlChangeLayoutCommand;
 import de.bmotionstudio.core.editor.command.ReorderPartCommand;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Light;
-import de.bmotionstudio.core.model.control.Signal;
+import de.bmotionstudio.core.model.control.Trafficlight;
 
 public class SignalLayoutEditPolicy extends FlowLayoutEditPolicy {
 
@@ -50,7 +50,7 @@ public class SignalLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 		BControl childModel = (BControl) child.getModel();
 		BControl parentModel = (BControl) getHost().getModel();
-		if ((childModel instanceof Light && parentModel instanceof Signal)) {
+		if ((childModel instanceof Light && parentModel instanceof Trafficlight)) {
 			AddCommand command = new AddCommand();
 			command.setChild(childModel);
 			command.setParent(parentModel);
@@ -237,7 +237,7 @@ public class SignalLayoutEditPolicy extends FlowLayoutEditPolicy {
 		BControl childModel = (BControl) child.getModel();
 		BControl parentModel = (BControl) getHost().getModel();
 
-		if ((childModel instanceof Light && parentModel instanceof Signal)) {
+		if ((childModel instanceof Light && parentModel instanceof Trafficlight)) {
 			int oldIndex = getHost().getChildren().indexOf(child);
 			int newIndex = getHost().getChildren().indexOf(after);
 			if (newIndex > oldIndex)

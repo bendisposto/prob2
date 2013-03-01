@@ -6,7 +6,7 @@
 
 package de.bmotionstudio.core.editor.editpolicy;
 
-import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.DropRequest;
@@ -14,9 +14,10 @@ import org.eclipse.gef.requests.ReconnectRequest;
 
 import de.bmotionstudio.core.editor.command.ConnectionCreateCommand;
 import de.bmotionstudio.core.editor.command.ConnectionReconnectCommand;
+import de.bmotionstudio.core.editor.figure.TrackNodeFigure;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.core.model.control.BConnection;
-import de.bmotionstudio.core.model.control.Track;
+import de.bmotionstudio.core.model.control.Segment;
 import de.bmotionstudio.core.model.control.TrackNode;
 
 public class TrackEditPolicy extends BMSConnectionEditPolicy {
@@ -27,12 +28,12 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 		Command cmd = null;
 
 		Object newObject = request.getNewObject();
-		if (newObject instanceof Track) {
+		if (newObject instanceof Segment) {
 
 			Object model = getHost().getModel();
 			if (model instanceof TrackNode) {
 
-				Track track = (Track) newObject;
+				Segment track = (Segment) newObject;
 				TrackNode trackNode = (TrackNode) model;
 				cmd = new ConnectionCreateCommand(trackNode);
 				((ConnectionCreateCommand) cmd).setConnection(track);
@@ -55,7 +56,7 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 		Command cmd = null;
 
 		Object newObject = request.getNewObject();
-		if (newObject instanceof Track) {
+		if (newObject instanceof Segment) {
 
 			cmd = request.getStartCommand();
 			((ConnectionCreateCommand) cmd).setTarget((TrackNode) getHost()
@@ -75,9 +76,9 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 		Command cmd = null;
 
 		Object newObject = request.getConnectionEditPart().getModel();
-		if (newObject instanceof Track) {
+		if (newObject instanceof Segment) {
 
-			Track track = (Track) newObject;
+			Segment track = (Segment) newObject;
 			TrackNode newSource = (TrackNode) getHost().getModel();
 			cmd = new ConnectionReconnectCommand();
 			((ConnectionReconnectCommand) cmd).setNewSource(newSource);
@@ -97,9 +98,9 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 		Command cmd = null;
 
 		Object newObject = request.getConnectionEditPart().getModel();
-		if (newObject instanceof Track) {
+		if (newObject instanceof Segment) {
 
-			Track track = (Track) newObject;
+			Segment track = (Segment) newObject;
 			TrackNode newTarget = (TrackNode) getHost().getModel();
 			cmd = new ConnectionReconnectCommand();
 			((ConnectionReconnectCommand) cmd).setNewTarget(newTarget);
@@ -117,7 +118,9 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 	protected void showTargetConnectionFeedback(DropRequest request) {
 		if (getHost() instanceof BMSAbstractEditPart) {
 			BMSAbstractEditPart host = (BMSAbstractEditPart) getHost();
-			host.getFigure().setBackgroundColor(ColorConstants.lightGray);
+			IFigure figure = host.getFigure();
+			if(figure instanceof TrackNodeFigure)
+				((TrackNodeFigure)figure).setShowFeedback(true);
 		}
 	}
 
@@ -125,7 +128,9 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 	protected void eraseTargetConnectionFeedback(DropRequest request) {
 		if (getHost() instanceof BMSAbstractEditPart) {
 			BMSAbstractEditPart host = (BMSAbstractEditPart) getHost();
-			host.getFigure().setBackgroundColor(ColorConstants.white);
+			IFigure figure = host.getFigure();
+			if(figure instanceof TrackNodeFigure)
+				((TrackNodeFigure)figure).setShowFeedback(false);
 		}
 	}
 

@@ -21,7 +21,7 @@ import de.bmotionstudio.core.editor.editpolicy.TableLayoutEditPolicy;
 import de.bmotionstudio.core.editor.figure.TableColumnFigure;
 import de.bmotionstudio.core.model.control.BControl;
 
-public class BTableColumnPart extends BMSAbstractEditPart {
+public class TableColumnPart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -41,10 +41,6 @@ public class BTableColumnPart extends BMSAbstractEditPart {
 				new TableLayoutEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new BMSConnectionEditPolicy());
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
 	}
 
 	@Override
