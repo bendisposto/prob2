@@ -99,7 +99,7 @@ dependencies {
 	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3' // EPL
-	compile 'org.mortbay.jetty:jsp-2.1-glassfish:2.1.v20100127' // EPL
+//	compile 'org.mortbay.jetty:jsp-2.1-glassfish:2.1.v20100127' // EPL
 
     compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
     compile group: "de.prob", name: "bparser", version: parser_version , changing: true
