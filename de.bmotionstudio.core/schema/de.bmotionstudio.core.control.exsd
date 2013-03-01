@@ -111,21 +111,12 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="de.bmotionstudio.core.AbstractBControlService:de.bmotionstudio.gef.editor.IBControlService"/>
+                  <meta.attribute kind="java" basedOn="de.bmotionstudio.core.AbstractBControlService:de.bmotionstudio.core.IBControlService"/>
                </appInfo>
             </annotation>
          </attribute>
       </complexType>
    </element>
-
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         [Enter API information here.]
-      </documentation>
-   </annotation>
 
    <annotation>
       <appInfo>
@@ -154,5 +145,14 @@
       </documentation>
    </annotation>
 
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
 
 </schema>
