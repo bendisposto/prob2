@@ -91,7 +91,7 @@ public class EventB implements IEvalElement {
 			msgs.add(astProblem.getMessage().toString());
 		}
 		final String error = Joiner.on(", \n").join(msgs);
-		throw new RuntimeException("Cannot parse " + code + ":\n " + error); // FIXME
+		throw new EvaluationException("Cannot parse " + code + ":\n " + error);
 	}
 
 	@Override

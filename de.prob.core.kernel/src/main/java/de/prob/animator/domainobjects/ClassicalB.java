@@ -34,11 +34,15 @@ public class ClassicalB implements IEvalElement {
 	/**
 	 * @param code
 	 *            will be parsed and the resulting {@link Start} ast saved
-	 * @throws BException
+	 * @throws EvaluationException
 	 */
-	public ClassicalB(final String code) throws BException {
+	public ClassicalB(final String code) {
 		this.code = code;
-		this.ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
+		try {
+			this.ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
+		} catch (BException e) {
+			throw new EvaluationException(e.getMessage(), e);
+		}
 	}
 
 	/**

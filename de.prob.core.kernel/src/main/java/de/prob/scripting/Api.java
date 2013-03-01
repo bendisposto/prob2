@@ -11,8 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
@@ -25,10 +25,9 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
-import de.prob.animator.command.GetDefaultPreferencesCommand;
+import de.prob.animator.command.GetCurrentPreferencesCommand;
 import de.prob.animator.command.GetVersionCommand;
 import de.prob.animator.command.StartAnimationCommand;
-import de.prob.animator.domainobjects.ProBPreference;
 import de.prob.cli.CliVersionNumber;
 import de.prob.cli.ProBInstance;
 import de.prob.cli.ProBInstanceProvider;
@@ -156,16 +155,16 @@ public class Api {
 	}
 
 	public void save(final AbstractModel m, final String filename) {
-		GetDefaultPreferencesCommand cmd = new GetDefaultPreferencesCommand();
+		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand();
 
 		m.getStatespace().execute(cmd);
-		List<ProBPreference> prefs = cmd.getPreferences();
+		Map<String, String> prefs = cmd.getPreferences();
 
 		try {
 			Properties p = new Properties();
 
-			for (ProBPreference pref : prefs) {
-				p.setProperty(pref.name + ".prolog", pref.defaultValue);
+			for (Entry<String, String> pref : prefs.entrySet()) {
+				p.setProperty(pref.getKey() + ".prolog", pref.getValue());
 			}
 
 			p.setProperty("MODEL_FILE", m.getModelFile().getAbsolutePath());

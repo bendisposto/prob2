@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.ClassicalB;
@@ -46,29 +45,19 @@ public class GetInvariantsCommand implements ICommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final ArrayList<ClassicalB> r = new ArrayList<ClassicalB>();
 
-		try {
-
-			final PrologTerm prologTerm = bindings.get(LIST);
-			final ListPrologTerm invs = BindingGenerator.getList(prologTerm);
-			for (final PrologTerm invTerm : invs) {
-				final CompoundPrologTerm inv = BindingGenerator
-						.getCompoundTerm(invTerm, 2);
-				final int id = Integer.parseInt(inv.getArgument(2).toString());
-				// final String name = inv.getArgument(1).getFunctor();
-				final Node ID = nodeIdMapping.lookupById(id);
-				final String prettyPrint = prettyprint(ID);
-				try {
-					r.add(new ClassicalB(prettyPrint));
-				} catch (final BException e) {
-					// Should not reach this point because the Node is of
-					// correct syntax
-					e.printStackTrace();
-				}
-			}
-
-		} finally {
-			invariant = r;
+		final PrologTerm prologTerm = bindings.get(LIST);
+		final ListPrologTerm invs = BindingGenerator.getList(prologTerm);
+		for (final PrologTerm invTerm : invs) {
+			final CompoundPrologTerm inv = BindingGenerator.getCompoundTerm(
+					invTerm, 2);
+			final int id = Integer.parseInt(inv.getArgument(2).toString());
+			// final String name = inv.getArgument(1).getFunctor();
+			final Node ID = nodeIdMapping.lookupById(id);
+			final String prettyPrint = prettyprint(ID);
+			r.add(new ClassicalB(prettyPrint));
 		}
+		invariant = r;
+
 	}
 
 	public List<ClassicalB> getInvariants() {
