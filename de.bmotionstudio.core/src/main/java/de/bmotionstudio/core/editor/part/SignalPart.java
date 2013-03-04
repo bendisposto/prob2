@@ -8,8 +8,12 @@ package de.bmotionstudio.core.editor.part;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
+import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PrecisionPoint;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
 
 import de.bmotionstudio.core.AttributeConstants;
@@ -20,7 +24,7 @@ import de.bmotionstudio.core.model.control.BControl;
 
 public class SignalPart extends BMSAbstractEditPart {
 
-	private FixedConnectionAnchor fixedConnectionAnchor;
+	private ChopboxAnchor fixedConnectionAnchor;
 	
 	@Override
 	protected IFigure createEditFigure() {
@@ -54,6 +58,9 @@ public class SignalPart extends BMSAbstractEditPart {
 			}
 			refreshAnchors();
 		}
+		
+		if (aID.equals(AttributeConstants.ATTRIBUTE_LABEL))
+			((SignalFigure) getFigure()).setLabel(value.toString());
 
 	}
 
@@ -66,12 +73,22 @@ public class SignalPart extends BMSAbstractEditPart {
 	
 	protected ConnectionAnchor getConnectionAnchor() {
 		if (fixedConnectionAnchor == null) {
-			fixedConnectionAnchor = new FixedConnectionAnchor(getFigure());
-			fixedConnectionAnchor.setOffsetV(11);
-			if (((SignalFigure) getFigure()).isRight()) {
-				fixedConnectionAnchor.setOffsetH(29);
-				fixedConnectionAnchor.setOffsetV(10);
-			}
+			fixedConnectionAnchor = new ChopboxAnchor(getFigure()) {
+				@Override
+				public Point getLocation(Point reference) {
+					Rectangle r = getFigure().getBounds();
+					int y = r.y + r.height / 2 + 7;
+					int x = r.x + r.width / 2;
+					if (((SignalFigure) getFigure()).isRight()) {
+						x = x + 18;
+					} else {
+						x = x - 18;
+					}
+					Point p = new PrecisionPoint(x, y);
+					getFigure().translateToAbsolute(p);
+					return p;
+				}
+			};
 		}
 		return fixedConnectionAnchor;
 	}

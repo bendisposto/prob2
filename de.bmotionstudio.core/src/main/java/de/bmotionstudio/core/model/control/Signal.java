@@ -9,7 +9,6 @@ import de.bmotionstudio.core.model.attribute.AttributeTrackDirection;
 import de.bmotionstudio.core.model.attribute.BAttributeHeight;
 import de.bmotionstudio.core.model.attribute.BAttributeLabel;
 import de.bmotionstudio.core.model.attribute.BAttributeSize;
-import de.bmotionstudio.core.model.attribute.BAttributeWidth;
 
 /**
  * @author Lukas Ladenberger
@@ -20,17 +19,11 @@ public class Signal extends BControl {
 	@Override
 	protected void initAttributes() {
 
-		BAttributeHeight aHeight = new BAttributeHeight(22);
+		BAttributeHeight aHeight = new BAttributeHeight(50);
 		aHeight.setGroup(BAttributeSize.ID);
 		aHeight.setShow(false);
 		aHeight.setEditable(false);
 		initAttribute(aHeight);
-
-		BAttributeWidth aWidth = new BAttributeWidth(30);
-		aWidth.setGroup(BAttributeSize.ID);
-		aWidth.setShow(false);
-		aWidth.setEditable(false);
-		initAttribute(aWidth);
 		
 		initAttribute(new AttributeTrackDirection(AttributeTrackDirection.RIGHT));
 		initAttribute(new BAttributeLabel("Signal"));

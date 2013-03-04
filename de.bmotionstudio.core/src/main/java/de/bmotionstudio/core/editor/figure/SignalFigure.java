@@ -6,11 +6,13 @@
 package de.bmotionstudio.core.editor.figure;
 
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Shape;
-import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 
 /**
  * @author Lukas Ladenberger
@@ -24,6 +26,8 @@ public class SignalFigure extends AbstractBMotionFigure {
 	public static final int WIDTH = LEG + RAD*2+1;
 	public static final int HEIGHT = RAD*2+2;
 	private boolean isRight;
+	private Label label;
+	private Color foregroundcolor;
 	
 	@Override
 	public void paint(Graphics g) {
@@ -31,9 +35,15 @@ public class SignalFigure extends AbstractBMotionFigure {
 	}
 	
 	public SignalFigure() {
+		
+		ToolbarLayout layout = new ToolbarLayout();
+		layout.setMinorAlignment(ToolbarLayout.ALIGN_CENTER);
+		setLayoutManager(layout);
 
-		setLayoutManager(new StackLayout());
-
+		setOpaque(true);
+		
+		label = new Label();
+		
 		shapeFigure = new Shape() {
 
 			@Override
@@ -47,14 +57,12 @@ public class SignalFigure extends AbstractBMotionFigure {
 				Point b;
 				Point c;
 
-				int x = r.x;
+				int x = r.x + r.width / 2;
 				int y = r.y + r.height / 2;
-
+				
 				if (isRight) {
 
-					x++;
-					y--;
-
+					x = x - 10;
 					g.drawLine(x, y, x + LEG + RAD * 2, y);
 					g.drawOval(x, y - RAD, RAD * 2, RAD * 2);
 					g.drawLine(x + RAD - 1, y - RAD, x + RAD - 1, y + RAD);
@@ -66,6 +74,8 @@ public class SignalFigure extends AbstractBMotionFigure {
 
 				} else {
 
+					x = x - 18;
+					
 					g.drawLine(x, y, x + LEG + RAD * 2, y);
 					g.drawOval(x + LEG, y - RAD, RAD * 2, RAD * 2);
 					g.drawLine(x + LEG + RAD - 1, y - RAD, x + LEG + RAD - 1, y
@@ -87,7 +97,7 @@ public class SignalFigure extends AbstractBMotionFigure {
 				na.translate(c);
 				nb.translate(c);
 				g.drawLine(na, nb);
-
+			
 			}
 
 			@Override
@@ -96,8 +106,12 @@ public class SignalFigure extends AbstractBMotionFigure {
 
 		};
 
+		label.setPreferredSize(0, 15);
+		shapeFigure.setPreferredSize(0, 35);
+		
+		add(label);
 		add(shapeFigure);
-
+		
 	}
 	
 	protected static Point rotate(Point p, int degrees) {
@@ -111,6 +125,8 @@ public class SignalFigure extends AbstractBMotionFigure {
 
 	@Override
 	public void deactivateFigure() {
+		if(foregroundcolor != null)
+			foregroundcolor.dispose();
 	}
 
 	@Override
@@ -126,4 +142,9 @@ public class SignalFigure extends AbstractBMotionFigure {
 		return this.isRight;
 	}
 	
+	public void setLabel(String label) {
+		this.label.setText(label);
+		this.label.repaint();
+	}
+
 }

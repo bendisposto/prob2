@@ -115,6 +115,7 @@ public class TrafficlightFigure extends AbstractBMotionFigure {
 
 	public void setLabel(String lb) {
 		this.lb.setText(lb);
+		this.lb.repaint();
 	}
 
 }
