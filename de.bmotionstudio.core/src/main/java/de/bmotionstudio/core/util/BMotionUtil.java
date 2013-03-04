@@ -1,9 +1,10 @@
 package de.bmotionstudio.core.util;
 
-import java.io.ByteArrayInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -17,7 +18,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -141,40 +141,39 @@ public class BMotionUtil {
 		Assert.isNotNull(modelFile);
 
 		File visualizationFile = null;
-
-		// Create a new visualization view
 		String fileName = BMotionUtil.getUniqueVisualizationFileName(modelFile);
-		Visualization visualization = new Visualization();
-		// TODO Make language more generic!!!!
-		VisualizationView visualizationView = new VisualizationView(
-				"New Visualization View", visualization, "EventB");
 
 		File parentFile = modelFile.getParentFile();
 		if (parentFile.isDirectory()) {
+
 			visualizationFile = new File(parentFile.getPath() + "/" + fileName
 					+ "." + BMotionEditorPlugin.FILEEXT_STUDIO);
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IPath location = Path.fromOSString(visualizationFile
-					.getAbsolutePath());
-			IFile ifile = workspace.getRoot().getFileForLocation(location);
-			InputStream initialContentsAsInputStream = null;
+
+			FileWriter output = null;
+			BufferedWriter writer = null;
 			try {
-				initialContentsAsInputStream = BMotionUtil
-						.getInitialContentsAsInputStream(visualizationView);
-				ifile.create(initialContentsAsInputStream, false,
-						new NullProgressMonitor());
-				ifile.refreshLocal(IResource.DEPTH_ZERO, null);
-			} catch (UnsupportedEncodingException e) {
+				String content = BMotionUtil.getInitialContent();
+				output = new FileWriter(visualizationFile);
+				writer = new BufferedWriter(output);
+				writer.write(content);
+				IPath location = Path.fromOSString(visualizationFile
+						.getAbsolutePath());
+				IFile ifile = workspace.getRoot().getFileForLocation(location);
+				if (ifile != null)
+					ifile.refreshLocal(IResource.DEPTH_ZERO, null);
+			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (CoreException e) {
 				e.printStackTrace();
 			} finally {
-				if (initialContentsAsInputStream != null) {
-					try {
-						initialContentsAsInputStream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+				try {
+					if (writer != null)
+						writer.close();
+					if (output != null)
+						output.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -251,24 +250,22 @@ public class BMotionUtil {
 
 	}
 
-	public static InputStream getInitialContentsAsInputStream()
+	public static String getInitialContent()
 			throws UnsupportedEncodingException {
 		Visualization visualization = new Visualization();
 		// TODO Make language more generic!!!!
 		VisualizationView visualizationView = new VisualizationView(
 				visualization, "EventB");
-		return getInitialContentsAsInputStream(visualizationView);
+		return getInitialContent(visualizationView);
 	}
 
-	public static InputStream getInitialContentsAsInputStream(
-			VisualizationView visualizationView)
+	public static String getInitialContent(VisualizationView visualizationView)
 			throws UnsupportedEncodingException {
 		XStream xstream = new XStream();
 		BMotionEditorPlugin.setAliases(xstream);
-		String content = xstream.toXML(visualizationView);
-		return new ByteArrayInputStream(content.getBytes("UTF-8"));
+		return xstream.toXML(visualizationView);
 	}
-	
+
 	public static File[] getVisualizationViewFiles(File modelFile) {
 
 		Assert.isNotNull(modelFile);
