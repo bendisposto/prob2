@@ -122,4 +122,8 @@ public class SignalFigure extends AbstractBMotionFigure {
 		this.shapeFigure.repaint();
 	}
 	
+	public boolean isRight() {
+		return this.isRight;
+	}
+	
 }

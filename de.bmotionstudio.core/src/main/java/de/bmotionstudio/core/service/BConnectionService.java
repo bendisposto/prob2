@@ -48,7 +48,7 @@ public class BConnectionService extends AbstractBControlService implements
 
 	@Override
 	public boolean showInPalette() {
-		return false;
+		return true;
 	}
 
 	@Override
