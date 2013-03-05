@@ -106,7 +106,8 @@ Bundle-Vendor: STUPS Group
 Bundle-Localization: plugin
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: com.google.inject,
+Export-Package: com.google.common.base,
+ com.google.inject,
  com.thoughtworks.xstream,
  com.thoughtworks.xstream.mapper,
  de.be4.classicalb.core.parser,
