@@ -69,6 +69,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			"import de.prob.model.eventb.*;",
 			"import de.prob.animator.domainobjects.*;" };
 	private final ShellCommands shellCommands;
+	private List<URL> initscripts = createScriptsList();
 
 	@Inject
 	public GroovyExecution(final Api api, final ShellCommands shellCommands,
@@ -85,16 +86,26 @@ public class GroovyExecution implements IStatesCalculatedListener {
 				binding);
 
 		imports.addAll(Arrays.asList(IMPORTS));
+		this.parser = new Parser();
 
-		URL url = Resources.getResource("initscript");
+		for (URL u : initscripts) {
+			runInitScript(u);
+		}
+	}
 
+	private List<URL> createScriptsList() {
+		ArrayList<URL> result = new ArrayList<URL>();
+		result.add(Resources.getResource("initscript"));
+		return result;
+	}
+
+	private void runInitScript(URL url) {
 		String script = "";
 		try {
 			script = Resources.toString(url, Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.parser = new Parser();
 		runSilentScript(script);
 	}
 
