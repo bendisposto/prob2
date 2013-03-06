@@ -129,4 +129,5 @@ Export-Package: com.google.common.base,
  de.prob.statespace,
  de.prob.testing,
  de.prob.unicode,
- de.prob.webconsole
+ de.prob.webconsole,
+ groovy.lang
