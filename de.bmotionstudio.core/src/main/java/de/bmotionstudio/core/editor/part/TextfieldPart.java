@@ -27,7 +27,7 @@ import de.bmotionstudio.core.editor.figure.AbstractBMotionFigure;
 import de.bmotionstudio.core.editor.figure.TextfieldFigure;
 import de.bmotionstudio.core.model.control.BControl;
 
-public class BTextfieldPart extends BMSAbstractEditPart {
+public class TextfieldPart extends BMSAbstractEditPart {
 
 	private TextEditManager textEditManager;
 
@@ -39,7 +39,7 @@ public class BTextfieldPart extends BMSAbstractEditPart {
 				if (f.getModel().isPressed()) {
 					if (textEditManager == null)
 						textEditManager = new TextEditManager(
-								BTextfieldPart.this, new TextCellEditorLocator(
+								TextfieldPart.this, new TextCellEditorLocator(
 										(IFigure) getFigure())) {
 							@Override
 							protected void bringDown() {
@@ -79,7 +79,7 @@ public class BTextfieldPart extends BMSAbstractEditPart {
 	}
 
 	private void performDirectEdit() {
-		new TextEditManager(BTextfieldPart.this, new TextCellEditorLocator(
+		new TextEditManager(TextfieldPart.this, new TextCellEditorLocator(
 				(IFigure) getFigure())).show();
 	}
 
@@ -118,12 +118,6 @@ public class BTextfieldPart extends BMSAbstractEditPart {
 				new CustomDirectEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new BMSConnectionEditPolicy());
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
-		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
-				new CustomDirectEditPolicy());
 	}
 
 }

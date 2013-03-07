@@ -5,7 +5,7 @@ import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.part.BControlTreeEditPart;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.core.editor.part.BMSAbstractTreeEditPart;
-import de.bmotionstudio.core.editor.part.BTableColumnPart;
+import de.bmotionstudio.core.editor.part.TableColumnPart;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.TableColumn;
 
@@ -19,7 +19,7 @@ public class BTableColumnService extends AbstractBControlService implements
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BTableColumnPart();
+		return new TableColumnPart();
 	}
 
 	@Override

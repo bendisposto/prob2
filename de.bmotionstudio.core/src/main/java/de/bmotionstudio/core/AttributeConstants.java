@@ -46,6 +46,7 @@ public final class AttributeConstants {
 	public static final String ATTRIBUTE_OFFSET_V = "de.bmotionstudio.core.model.attribute.BAttributeOffsetV";
 	public static final String ATTRIBUTE_CONNECTION_SOURCE_DECORATION = "de.bmotionstudio.core.model.attribute.BAttributeConnectionSourceDecoration";
 	public static final String ATTRIBUTE_CONNECTION_TARGET_DECORATION = "de.bmotionstudio.core.model.attribute.BAttributeConnectionTargetDecoration";
+	public static final String ATTRIBUTE_TRACK_LENGTH = "de.bmotionstudio.core.model.attribute.AttributeTrackLength";
 
 	public static final String ATTRIBUTE_SIZE = "de.bmotionstudio.core.model.attribute.BAttributeSize";
 	public static final String ATTRIBUTE_COORDINATES = "de.bmotionstudio.core.model.attribute.BAttributeCoordinates";

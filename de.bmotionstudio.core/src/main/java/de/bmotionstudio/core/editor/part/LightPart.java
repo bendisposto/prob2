@@ -41,8 +41,4 @@ public class LightPart extends BMSAbstractEditPart {
 	protected void prepareEditPolicies() {
 	}
 
-	@Override
-	protected void prepareRunPolicies() {
-	}
-
 }

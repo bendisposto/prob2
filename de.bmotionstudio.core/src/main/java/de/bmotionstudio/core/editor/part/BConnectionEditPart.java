@@ -96,30 +96,31 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 			public void paint(Graphics g) {
 				if (!visible) {
 					Rectangle clientArea = getClientArea();
-					g.drawImage(
-							BMotionImage
-									.getImage(BMotionImage.IMG_ICON_CONTROL_HIDDEN),
+					g.drawImage(BMotionImage
+							.getImage(BMotionImage.IMG_ICON_CONTROL_HIDDEN),
 							clientArea.x, clientArea.y);
 					g.setAlpha(AbstractBMotionFigure.HIDDEN_ALPHA_VALUE);
 				}
-				super.paint(g);
+					super.paint(g);
 			}
 
 			@Override
 			public void setVisible(boolean visible) {
-//				if (!isRunning()) {
-					this.visible = visible;
-					repaint();
-//				} else {
-//					super.setVisible(visible);
-//				}
+				this.visible = visible;
+			}
+			
+			@Override
+			protected void outlineShape(Graphics g) {
+				super.outlineShape(g);
 			}
 
 		};
 		conLabel = new Label();
 		MidpointLocator locator = new MidpointLocator(connection, 0);
 		locator.setRelativePosition(PositionConstants.NORTH);
+		locator.setGap(10);
 		connection.add(conLabel, locator);
+		
 		return connection;
 	}
 
@@ -427,11 +428,6 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 			setParent(null);
 		if (sourceEditPart != null && targetEditPart != null)
 			refresh();
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
-
 	}
 
 }

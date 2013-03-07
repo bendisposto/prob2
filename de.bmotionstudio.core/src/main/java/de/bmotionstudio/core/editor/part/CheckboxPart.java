@@ -7,7 +7,6 @@
 package de.bmotionstudio.core.editor.part;
 
 import java.beans.PropertyChangeEvent;
-import java.util.Collection;
 
 import org.eclipse.draw2d.ButtonModel;
 import org.eclipse.draw2d.ChangeEvent;
@@ -17,10 +16,10 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.BMotionImage;
-import de.bmotionstudio.core.ButtonGroupHelper;
 import de.bmotionstudio.core.editor.edit.TextCellEditorLocator;
 import de.bmotionstudio.core.editor.edit.TextEditManager;
 import de.bmotionstudio.core.editor.editpolicy.BMSConnectionEditPolicy;
@@ -28,41 +27,32 @@ import de.bmotionstudio.core.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.core.editor.editpolicy.CustomDirectEditPolicy;
 import de.bmotionstudio.core.editor.editpolicy.RenamePolicy;
 import de.bmotionstudio.core.editor.figure.AbstractBMotionFigure;
-import de.bmotionstudio.core.editor.figure.RadioButtonFigure;
+import de.bmotionstudio.core.editor.figure.CheckboxFigure;
 import de.bmotionstudio.core.model.control.BControl;
 
-public class BRadioButtonPart extends BMSAbstractEditPart {
+public class CheckboxPart extends BMSAbstractEditPart {
 
 	private ChangeListener changeListener = new ChangeListener() {
 		@Override
 		public void handleStateChanged(ChangeEvent event) {
-
 			if (event.getPropertyName().equals(ButtonModel.PRESSED_PROPERTY)) {
-
-				BControl control = (BControl) getModel();
-
-				// TODO: Reimplement me!!!
-				// // Recheck observer after click
-				// control.getVisualization().getAnimation().checkObserver();
-
-				// Set correct image of Radiobutton
-				String btgroupid = control.getAttributeValue(
-						AttributeConstants.ATTRIBUTE_BUTTONGROUP).toString();
-				if (!btgroupid.trim().equals("")) {
-					Collection<BControl> btGroup = ButtonGroupHelper
-							.getButtonGroup(btgroupid);
-					for (BControl c : btGroup) {
-						c.setAttributeValue(
-								AttributeConstants.ATTRIBUTE_CHECKED, false);
-					}
+				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
+				if (f.getModel().isPressed()) {
+					// TODO: Reimplement me!!!
+					// BControl control = (BControl) getModel();
+					// // Recheck observer after click
+					// control.getVisualization().getAnimation().checkObserver();
+					// if (Boolean.valueOf(control.getAttributeValue(
+					// AttributeConstants.ATTRIBUTE_CHECKED).toString())) {
+					// control.setAttributeValue(
+					// AttributeConstants.ATTRIBUTE_CHECKED, false);
+					// } else {
+					// control.setAttributeValue(
+					// AttributeConstants.ATTRIBUTE_CHECKED, true);
+					// }
 				}
-				control.setAttributeValue(AttributeConstants.ATTRIBUTE_CHECKED,
-						true);
-
 			}
-
 		}
-
 	};
 
 	@Override
@@ -87,7 +77,7 @@ public class BRadioButtonPart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
-		RadioButtonFigure fig = new RadioButtonFigure();
+		CheckboxFigure fig = new CheckboxFigure();
 		return fig;
 	}
 
@@ -99,43 +89,36 @@ public class BRadioButtonPart extends BMSAbstractEditPart {
 		String aID = pEvent.getPropertyName();
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE))
-			((RadioButtonFigure) figure).setVisible(Boolean.valueOf(value
+			((CheckboxFigure) figure).setVisible(Boolean.valueOf(value
 					.toString()));
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_CHECKED)) {
 			Boolean bol = Boolean.valueOf(value.toString());
 			if (bol) {
-				((RadioButtonFigure) figure).setImage(BMotionImage
-						.getImage(BMotionImage.IMG_RADIOBUTTON_CHECKED));
+				((CheckboxFigure) figure).setImage(BMotionImage
+						.getImage(BMotionImage.IMG_ICON_CHECKED));
 			} else {
-				((RadioButtonFigure) figure).setImage(BMotionImage
-						.getImage(BMotionImage.IMG_RADIOBUTTON_UNCHECKED));
+				((CheckboxFigure) figure).setImage(BMotionImage
+						.getImage(BMotionImage.IMG_ICON_UNCHECKED));
 			}
 
 		}
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT)) {
-			int addWidth = ((RadioButtonFigure) figure).setText(value
-					.toString());
+			int addWidth = ((CheckboxFigure) figure).setText(value.toString());
 			((BControl) getModel()).setAttributeValue(
 					AttributeConstants.ATTRIBUTE_WIDTH, (30 + addWidth));
 		}
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT_COLOR)) {
 			RGB rgbText = (RGB) value;
-			((RadioButtonFigure) figure).setTextColor(rgbText);
-		}
-
-		if (aID.equals(AttributeConstants.ATTRIBUTE_BUTTONGROUP)) {
-			String btgroup = value.toString();
-			if (!btgroup.trim().equals("")) {
-				ButtonGroupHelper.addToButtonGroup(btgroup,
-						(BControl) getModel());
-			}
+			((CheckboxFigure) figure)
+					.setTextColor(new org.eclipse.swt.graphics.Color(Display
+							.getDefault(), rgbText));
 		}
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_ENABLED))
-			((RadioButtonFigure) figure).setBtEnabled(Boolean.valueOf(value
+			((CheckboxFigure) figure).setBtEnabled(Boolean.valueOf(value
 					.toString()));
 
 	}
@@ -148,10 +131,6 @@ public class BRadioButtonPart extends BMSAbstractEditPart {
 				new CustomDirectEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new BMSConnectionEditPolicy());
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
 	}
 
 	private void performDirectEdit() {

@@ -85,16 +85,18 @@ public class GroovyExecution implements IStatesCalculatedListener {
 				binding);
 
 		imports.addAll(Arrays.asList(IMPORTS));
+		this.parser = new Parser();
 
-		URL url = Resources.getResource("initscript");
+		runInitScript(Resources.getResource("initscript"));
+	}
 
+	public void runInitScript(URL url) {
 		String script = "";
 		try {
 			script = Resources.toString(url, Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.parser = new Parser();
 		runSilentScript(script);
 	}
 

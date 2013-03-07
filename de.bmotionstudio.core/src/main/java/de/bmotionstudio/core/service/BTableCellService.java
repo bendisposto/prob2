@@ -5,7 +5,7 @@ import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.part.BControlTreeEditPart;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.core.editor.part.BMSAbstractTreeEditPart;
-import de.bmotionstudio.core.editor.part.BTableCellPart;
+import de.bmotionstudio.core.editor.part.TableCellPart;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.TableCell;
 
@@ -19,7 +19,7 @@ public class BTableCellService extends AbstractBControlService implements
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BTableCellPart();
+		return new TableCellPart();
 	}
 
 	@Override

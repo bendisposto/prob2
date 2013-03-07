@@ -111,8 +111,6 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 	protected abstract void prepareEditPolicies();
 
-	protected abstract void prepareRunPolicies();
-
 //	protected Boolean isRunning() {
 //		return ((BControl) getModel()).getVisualization().isRunning();
 //	}

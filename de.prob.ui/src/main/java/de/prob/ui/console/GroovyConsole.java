@@ -40,9 +40,9 @@ public class GroovyConsole extends ViewPart {
 		gridData.grabExcessVerticalSpace = true;
 
 		consoleBrowser = new Browser(sashForm, SWT.NONE);
-		consoleBrowser.setUrl("http://localhost:" + port + "/console.jsp");
+		consoleBrowser.setUrl("http://localhost:" + port + "/console.html");
 		outputBrowser = new Browser(sashForm, SWT.NONE);
-		outputBrowser.setUrl("http://localhost:" + port + "/sysout.jsp");
+		outputBrowser.setUrl("http://localhost:" + port + "/sysout.html");
 
 		consoleBrowser.setLayoutData(gridData);
 		outputBrowser.setLayoutData(gridData);

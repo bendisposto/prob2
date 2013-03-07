@@ -29,7 +29,7 @@ import de.bmotionstudio.core.editor.view.library.AttributeRequest;
 import de.bmotionstudio.core.editor.view.library.LibraryVariableCommand;
 import de.bmotionstudio.core.model.control.BControl;
 
-public class BTextPart extends BMSAbstractEditPart {
+public class TextPart extends BMSAbstractEditPart {
 
 	@Override
 	public void refreshEditFigure(IFigure figure, BControl model,
@@ -105,10 +105,6 @@ public class BTextPart extends BMSAbstractEditPart {
 				new BMSConnectionEditPolicy());
 		installEditPolicy(ChangeAttributePolicy.CHANGE_ATTRIBUTE_POLICY,
 				new ChangeAttributePolicy());
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
 	}
 
 }

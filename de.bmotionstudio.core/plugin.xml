@@ -228,14 +228,14 @@
             service="de.bmotionstudio.core.service.BTableCellService">
       </control>
       <control
-            groupid="de.bmotionstudio.core.railway.group"
-            icon="icons/controls/icon_signal.gif"
-            id="de.bmotionstudio.control.Signal"
-            name="Signal"
-            service="de.bmotionstudio.core.service.SignalService">
+            groupid="de.bmotionstudio.core.industry.group"
+            icon="icons/controls/icon_trafficlight.gif"
+            id="de.bmotionstudio.control.Trafficlight"
+            name="Trafficlight"
+            service="de.bmotionstudio.core.service.TrafficlightService">
       </control>
       <control
-            groupid="de.bmotionstudio.core.railway.group"
+            groupid="de.bmotionstudio.core.industry.group"
             icon="icons/eclipse16/smartmode_co.gif"
             id="de.bmotionstudio.control.Light"
             name="Light"
@@ -265,17 +265,17 @@
       </control>
       <control
             groupid="de.bmotionstudio.core.railway.group"
-            icon="icons/controls/icon_track.gif"
-            id="de.bmotionstudio.control.Track"
-            name="Trac"
-            service="de.bmotionstudio.core.service.TrackService">
+            icon="icons/controls/icon_segment.gif"
+            id="de.bmotionstudio.control.Segment"
+            name="Segment"
+            service="de.bmotionstudio.core.service.SegmentService">
       </control>
       <control
             groupid="de.bmotionstudio.core.railway.group"
-            icon="icons/controls/icon_switch.gif"
-            id="de.bmotionstudio.control.Switch"
-            name="Switch"
-            service="de.bmotionstudio.core.service.SwitchService">
+            icon="icons/controls/icon_trafficlight.gif"
+            id="de.bmotionstudio.control.Signal"
+            name="Signal"
+            service="de.bmotionstudio.core.service.SignalService">
       </control>
    </extension>
    <extension

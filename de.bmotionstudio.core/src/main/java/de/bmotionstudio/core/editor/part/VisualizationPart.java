@@ -60,10 +60,6 @@ public class VisualizationPart extends BMSAbstractEditPart {
 	}
 
 	@Override
-	protected void prepareRunPolicies() {
-	}
-
-	@Override
 	public void refreshEditFigure(final IFigure figure, final BControl model,
 			final PropertyChangeEvent evt) {
 

@@ -1,8 +1,11 @@
 package de.bmotionstudio.core.editor.view.palette;
 
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
+import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.palette.PaletteViewer;
+import org.eclipse.gef.ui.views.palette.PaletteView;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -10,20 +13,20 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.part.IPage;
-import org.eclipse.ui.part.MessagePage;
 import org.eclipse.ui.part.Page;
-import org.eclipse.ui.part.PageBook;
-import org.eclipse.ui.part.PageBookView;
 
 import de.bmotionstudio.core.editor.VisualizationViewPart;
 
-public class BMSPaletteView extends PageBookView {
+public class BMSPaletteView extends PaletteView {
 
 	private PaletteViewer paletteViewer;
 
+	private PaletteRoot paletteRoot;
+	
 	public static String ID = "de.bmotionstudio.core.view.PaletteView";
 
+	private PageRec visPageRec;
+	
 	@Override
 	protected IWorkbenchPart getBootstrapPart() {
 		IWorkbenchPage page = getSite().getPage();
@@ -34,23 +37,44 @@ public class BMSPaletteView extends PageBookView {
 	}
 
 	@Override
+	public void partOpened(IWorkbenchPart part) {
+		partActivated(part);
+		if (part instanceof VisualizationViewPart)
+			hookVisualizationViewPart((VisualizationViewPart) part);
+		super.partOpened(part);
+	}
+	
+	private void hookVisualizationViewPart(VisualizationViewPart part) {
+		EditDomain domain = part.getEditDomain();
+		if (domain != null) {
+			domain.setPaletteViewer(paletteViewer);
+			domain.setPaletteRoot(paletteRoot);
+		}
+	}
+	
+	private void unhookVisualizationViewPart(VisualizationViewPart part) {
+		EditDomain domain = part.getEditDomain();
+		if (domain != null) {
+			domain.setPaletteViewer(null);
+			domain.setPaletteRoot(null);
+		}
+	}
+	
+	@Override
 	public void partActivated(IWorkbenchPart part) {
-		// if (part instanceof VisualizationViewPart) {
-		// VisualizationViewPart visView = (VisualizationViewPart) part;
-		// EditDomain domain = visView.getEditDomain();
-		// if (domain != null)
-		// domain.setPaletteViewer(paletteViewer);
-		// }
 		super.partActivated(part);
 	}
 
 	@Override
 	protected PageRec doCreatePage(IWorkbenchPart part) {
 		if (part instanceof VisualizationViewPart) {
-			BMSPaletteViewPage page = new BMSPaletteViewPage();
-			initPage(page);
-			page.createControl(getPageBook());
-			return new PageRec(part, page);
+			if (visPageRec == null) {
+				BMSPaletteViewPage page = new BMSPaletteViewPage();
+				initPage(page);
+				page.createControl(getPageBook());
+				visPageRec = new PageRec(part, page);
+			}	
+			return visPageRec;
 		}
 		return null;
 	}
@@ -60,6 +84,12 @@ public class BMSPaletteView extends PageBookView {
 		return part instanceof VisualizationViewPart;
 	}
 
+	@Override
+	public void partClosed(IWorkbenchPart part) {
+		if (part instanceof VisualizationViewPart)
+			unhookVisualizationViewPart((VisualizationViewPart)part);
+	}
+	
 	private class BMSPaletteViewPage extends Page {
 
 		private Composite container;
@@ -68,8 +98,8 @@ public class BMSPaletteView extends PageBookView {
 			paletteViewer = new PaletteViewer();
 			paletteViewer.createControl(parent);
 			paletteViewer.getControl().setBackground(ColorConstants.green);
-			paletteViewer.setPaletteRoot(new EditorPaletteFactory()
-					.createPalette());
+			paletteRoot = new EditorPaletteFactory().createPalette();
+			paletteViewer.setPaletteRoot(paletteRoot);
 			paletteViewer
 					.addDragSourceListener(new TemplateTransferDragSourceListener(
 							paletteViewer));
@@ -91,19 +121,6 @@ public class BMSPaletteView extends PageBookView {
 		public void setFocus() {
 		}
 
-	}
-
-	@Override
-	protected IPage createDefaultPage(PageBook book) {
-		MessagePage page = new MessagePage();
-		initPage(page);
-		page.createControl(book);
-		page.setMessage("A palette is not available.");
-		return page;
-	}
-
-	@Override
-	protected void doDestroyPage(IWorkbenchPart part, PageRec pageRecord) {
 	}
 
 }

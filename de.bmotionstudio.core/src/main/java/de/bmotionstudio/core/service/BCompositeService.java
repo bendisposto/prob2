@@ -8,7 +8,7 @@ package de.bmotionstudio.core.service;
 
 import de.bmotionstudio.core.AbstractBControlService;
 import de.bmotionstudio.core.IBControlService;
-import de.bmotionstudio.core.editor.part.BCompositePart;
+import de.bmotionstudio.core.editor.part.CompositePart;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Composite;
@@ -27,7 +27,7 @@ public class BCompositeService extends AbstractBControlService implements
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BCompositePart();
+		return new CompositePart();
 	}
 
 	@Override

@@ -61,6 +61,7 @@ public class PerspectiveUtil {
 			workbench.showPerspective(perspectiveID,
 					workbench.getActiveWorkbenchWindow());
 		} catch (WorkbenchException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -195,7 +196,6 @@ public class PerspectiveUtil {
 		if (perspective != null) {
 			PerspectiveUtil.switchPerspective(perspective);
 		} else {
-
 			// Check if a corresponding perspective file exists
 			File perspectiveFile = getPerspectiveFileFromModelFile(modelFile);
 			if (perspectiveFile.exists()) {

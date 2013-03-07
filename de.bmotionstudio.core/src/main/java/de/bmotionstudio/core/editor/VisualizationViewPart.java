@@ -411,30 +411,9 @@ public class VisualizationViewPart extends ViewPart implements
 
 	@Override
 	public void createPartControl(Composite parent) {
-
 		this.parent = parent;
 		this.container = new RulerComposite(parent, SWT.NONE);
-		
-		// IFile modelFile = ProBConfiguration.getCurrentModelFile();
-		//
-		// if (modelFile == null)
-		// return;
-		//
-		// for (IResource vis : BMotionUtil.getVisualizationViewFiles(modelFile
-		// .getProject())) {
-		//
-		// String viewId = vis.getName().replace("." + vis.getFileExtension(),
-		// "");
-		//
-		// if (viewId.equals(getViewSite().getSecondaryId())) {
-		// VisualizationView visualizationView = BMotionUtil
-		// .getVisualizationViewFromFile(vis.getProject().getFile(
-		// vis.getName()));
-		// init(visualizationView);
-		// }
-		//
-		// }
-
+		this.editDomain = new EditDomain();	
 	}
 	
 	@Override
@@ -452,9 +431,8 @@ public class VisualizationViewPart extends ViewPart implements
 		this.visualizationView.addPropertyChangeListener(this);
 		this.graphicalViewer = new ScrollingGraphicalViewer();
 		this.graphicalViewer.createControl(this.container);
-		Visualization visualization = visualizationView.getVisualization();
-		this.editDomain = new EditDomain();
 		this.editDomain.getCommandStack().addCommandStackListener(this);
+		Visualization visualization = visualizationView.getVisualization();
 		configureGraphicalViewer();
 		hookGraphicalViewer();
 		loadProperties(visualizationView);

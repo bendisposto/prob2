@@ -8,21 +8,21 @@ package de.bmotionstudio.core.service;
 
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import de.bmotionstudio.core.AbstractBControlService;
+import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.BControlCreationFactory;
 import de.bmotionstudio.core.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.core.editor.part.TrackPart;
+import de.bmotionstudio.core.editor.part.SegmentPart;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.Track;
+import de.bmotionstudio.core.model.control.Segment;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class TrackService extends AbstractBControlService implements
+public class SegmentService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
@@ -30,25 +30,23 @@ public class TrackService extends AbstractBControlService implements
 			String sourcePluginID, IBControlService service) {
 		return new ConnectionCreationToolEntry(name, "Create " + name,
 				new BControlCreationFactory(this),
-				AbstractUIPlugin
-						.imageDescriptorFromPlugin(sourcePluginID, icon),
-				AbstractUIPlugin
-						.imageDescriptorFromPlugin(sourcePluginID, icon));
+				BMotionImage.getImageDescriptor(sourcePluginID, icon),
+				BMotionImage.getImageDescriptor(sourcePluginID, icon));
 	}
 
 	@Override
 	public BControl createControl() {
-		return new Track();
+		return new Segment();
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new TrackPart();
+		return new SegmentPart();
 	}
 
 	@Override
 	public Class<?> getControlClass() {
-		return Track.class;
+		return Segment.class;
 	}
 
 }

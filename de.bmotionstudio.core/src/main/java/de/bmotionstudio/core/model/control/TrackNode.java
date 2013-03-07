@@ -6,13 +6,8 @@
 
 package de.bmotionstudio.core.model.control;
 
-import org.eclipse.draw2d.ColorConstants;
-
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
-import de.bmotionstudio.core.model.attribute.BAttributeForegroundColor;
 import de.bmotionstudio.core.model.attribute.BAttributeHeight;
-import de.bmotionstudio.core.model.attribute.BAttributeLineStyle;
-import de.bmotionstudio.core.model.attribute.BAttributeLineWidth;
 import de.bmotionstudio.core.model.attribute.BAttributeSize;
 import de.bmotionstudio.core.model.attribute.BAttributeWidth;
 
@@ -31,23 +26,17 @@ public class TrackNode extends BControl {
 		aSize.setEditable(false);
 		initAttribute(aSize);
 
-		BAttributeHeight aHeight = new BAttributeHeight(20);
+		BAttributeHeight aHeight = new BAttributeHeight(12);
 		aHeight.setGroup(BAttributeSize.ID);
 		aHeight.setShow(false);
 		aHeight.setEditable(false);
 		initAttribute(aHeight);
 
-		BAttributeWidth aWidth = new BAttributeWidth(20);
+		BAttributeWidth aWidth = new BAttributeWidth(8);
 		aWidth.setGroup(BAttributeSize.ID);
 		aWidth.setShow(false);
 		aWidth.setEditable(false);
 		initAttribute(aWidth);
-
-		initAttribute(new BAttributeForegroundColor(
-				ColorConstants.black.getRGB()));
-		initAttribute(new BAttributeLineStyle(
-				BAttributeLineStyle.SOLID_CONNECTION));
-		initAttribute(new BAttributeLineWidth(1));
 
 	}
 

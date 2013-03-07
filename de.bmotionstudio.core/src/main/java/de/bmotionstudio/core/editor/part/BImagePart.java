@@ -79,8 +79,4 @@ public class BImagePart extends BMSAbstractEditPart {
 				new ChangeAttributePolicy());
 	}
 
-	@Override
-	protected void prepareRunPolicies() {
-	}
-
 }

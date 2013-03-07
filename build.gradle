@@ -101,7 +101,7 @@ task collectArtifacts(type:Copy) {
 
 subprojects{
 	apply plugin: 'eclipse'
-	task magic(dependsOn: ['clean', 'cleanEclipse', 'eclipse', 'setClassPath']) {
+	task magic(dependsOn: ['clean', 'cleanEclipse', 'eclipse', 'deleteFromClassPath','setClassPath']) {
       doFirst {
 println """\
           __-----_.                        ______\n\

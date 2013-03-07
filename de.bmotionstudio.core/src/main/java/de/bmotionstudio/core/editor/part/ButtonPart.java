@@ -24,7 +24,7 @@ import de.bmotionstudio.core.editor.editpolicy.RenamePolicy;
 import de.bmotionstudio.core.editor.figure.ButtonFigure;
 import de.bmotionstudio.core.model.control.BControl;
 
-public class BButtonPart extends BMSAbstractEditPart {
+public class ButtonPart extends BMSAbstractEditPart {
 
 	@Override
 	public void refreshEditFigure(IFigure figure, BControl model,
@@ -76,10 +76,6 @@ public class BButtonPart extends BMSAbstractEditPart {
 				new CustomDirectEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new BMSConnectionEditPolicy());
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
 	}
 
 }

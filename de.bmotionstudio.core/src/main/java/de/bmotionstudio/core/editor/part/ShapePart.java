@@ -22,7 +22,7 @@ import de.bmotionstudio.core.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.core.editor.figure.ShapeFigure;
 import de.bmotionstudio.core.model.control.BControl;
 
-public class BShapePart extends BMSAbstractEditPart {
+public class ShapePart extends BMSAbstractEditPart {
 
 	@Override
 	public void refreshEditFigure(IFigure figure, BControl model,
@@ -117,10 +117,6 @@ public class BShapePart extends BMSAbstractEditPart {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new BMSConnectionEditPolicy());
-	}
-
-	@Override
-	protected void prepareRunPolicies() {
 	}
 
 }

@@ -39,8 +39,4 @@ public class UnknownPart extends BMSAbstractEditPart {
 	protected void prepareEditPolicies() {
 	}
 
-	@Override
-	protected void prepareRunPolicies() {
-	}
-
 }
