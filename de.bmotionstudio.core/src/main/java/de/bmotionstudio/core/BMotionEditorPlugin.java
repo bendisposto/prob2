@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
@@ -263,34 +264,39 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	}
 
 	@Override
-	public void modelChanged(StateSpace s) {
-
-		File modelFile = s.getModel().getModelFile();
-
-		// Save old and close old perspective (if exists)
-		IPerspectiveDescriptor currentPerspective = BMotionStudio
-				.getCurrentPerspective();
-		File currentModelFile = BMotionStudio.getCurrentModelFile();
-
-		// Close and save old perspective
-		if (currentPerspective != null && currentModelFile != null) {
-			// If yes ...
-			// Export the current perspective
-			File perspectiveFile = PerspectiveUtil
-					.getPerspectiveFileFromModelFile(currentModelFile);
-			PerspectiveUtil.exportPerspective(currentPerspective,
-					perspectiveFile);
-			// Close and delete current perspective, before opening the new one
-			PerspectiveUtil.closePerspective(currentPerspective);
-			PerspectiveUtil.deletePerspective(currentPerspective);
-		}
+	public void modelChanged(final StateSpace s) {
 
 		// Open new perspective
-		IPerspectiveDescriptor perspective = PerspectiveUtil
-				.openPerspective(modelFile);
-		BMotionUtil.initVisualizationViews(modelFile);
-		BMotionStudio.setCurrentModelFile(modelFile);
-		BMotionStudio.setCurrentPerspective(perspective);
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				File modelFile = s.getModel().getModelFile();
+				// Save old and close old perspective (if exists)
+				IPerspectiveDescriptor currentPerspective = BMotionStudio
+						.getCurrentPerspective();
+				File currentModelFile = BMotionStudio.getCurrentModelFile();
+				// Close and save old perspective
+				if (currentPerspective != null && currentModelFile != null) {
+					// If yes ...
+					// Export the current perspective
+					File perspectiveFile = PerspectiveUtil
+							.getPerspectiveFileFromModelFile(currentModelFile);
+					PerspectiveUtil.exportPerspective(currentPerspective,
+							perspectiveFile);
+					// Close and delete current perspective, before opening the
+					// new one
+					PerspectiveUtil.closePerspective(currentPerspective);
+					PerspectiveUtil.deletePerspective(currentPerspective);
+				}
+				IPerspectiveDescriptor perspective = PerspectiveUtil
+						.openPerspective(modelFile);
+				BMotionUtil.initVisualizationViews(modelFile);
+				BMotionStudio.setCurrentModelFile(modelFile);
+				BMotionStudio.setCurrentPerspective(perspective);
+			}
+
+		});
 
 	}
 
