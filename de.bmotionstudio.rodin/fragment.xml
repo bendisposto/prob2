@@ -2,20 +2,6 @@
 <?eclipse version="3.4"?>
 <fragment>
    <extension
-         point="org.eclipse.core.contenttype.contentTypes">
-      <content-type
-            base-type="org.rodinp.core.rodin"
-            file-extensions="bmso"
-            id="BMotionStudioFile"
-            name="BMotion Studio Surface File"
-            priority="normal">
-      </content-type>
-      <file-association
-            content-type="de.bmotionstudio.rodin.BMotionStudioFile"
-            file-extensions="bmso">
-      </file-association>
-   </extension>
-   <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
             contentProvider="de.bmotionstudio.rodin.BMotionStudioContentProvider"
