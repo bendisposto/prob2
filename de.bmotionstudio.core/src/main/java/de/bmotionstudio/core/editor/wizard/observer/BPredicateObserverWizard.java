@@ -45,13 +45,13 @@ import de.bmotionstudio.core.editor.edit.AttributeExpressionEdittingSupport;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.observer.Observer;
-import de.bmotionstudio.core.model.observer.PredicateObserver;
+import de.bmotionstudio.core.model.observer.BPredicateObserver;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.webconsole.ServletContextListener;
 
-public class PredicateObserverWizard extends ObserverWizard {
+public class BPredicateObserverWizard extends ObserverWizard {
 	
 	private TableViewer tableViewer;
 	
@@ -63,7 +63,7 @@ public class PredicateObserverWizard extends ObserverWizard {
 	
 	private ComboViewer attributeCombo;
 	
-	public PredicateObserverWizard(Shell shell, BControl control,
+	public BPredicateObserverWizard(Shell shell, BControl control,
 			Observer observer) {
 		super(shell, control, observer);
 	}
@@ -183,12 +183,12 @@ public class PredicateObserverWizard extends ObserverWizard {
 							AbstractAttribute atr = (AbstractAttribute) sel
 									.getFirstElement();
 
-							String currentAttribute = ((PredicateObserver) getObserver())
+							String currentAttribute = ((BPredicateObserver) getObserver())
 									.getAttribute();
 							if (currentAttribute == null
 									|| (currentAttribute != null && !currentAttribute
 											.equals(atr.getID()))) {
-								((PredicateObserver) getObserver())
+								((BPredicateObserver) getObserver())
 										.setValue(atr.getValue());
 							}
 
@@ -242,20 +242,20 @@ public class PredicateObserverWizard extends ObserverWizard {
 
 			@Override
 			protected void setValue(Object element, Object value) {
-				((PredicateObserver) getObserver()).setValue(value);
+				((BPredicateObserver) getObserver()).setValue(value);
 				tableViewer.refresh();
 			}
 
 			@Override
 			protected Object getValue(Object element) {
-				return ((PredicateObserver) getObserver()).getValue();
+				return ((BPredicateObserver) getObserver()).getValue();
 			}
 
 		});
 		column.setLabelProvider(new CellLabelProvider() {
 			@Override
 			public void update(ViewerCell cell) {
-				Object value = ((PredicateObserver) getObserver()).getValue();
+				Object value = ((BPredicateObserver) getObserver()).getValue();
 				if (value != null)
 					cell.setText(value.toString());
 			}
@@ -297,16 +297,16 @@ public class PredicateObserverWizard extends ObserverWizard {
 
 		dbc.bindValue(SWTObservables.observeText(nameText, SWT.Modify),
 				BeansObservables.observeValue(
-						(PredicateObserver) getObserver(), "name"));
+						(BPredicateObserver) getObserver(), "name"));
 
 		dbc.bindValue(SWTObservables.observeText(predicateText, SWT.Modify),
 				BeansObservables.observeValue(
-						(PredicateObserver) getObserver(), "predicate"));
+						(BPredicateObserver) getObserver(), "predicate"));
 		
 		IObservableValue typeSelection = ViewersObservables
 				.observeSingleSelection(attributeCombo);
 		IObservableValue myModelTypeObserveValue = BeansObservables
-				.observeValue((PredicateObserver) getObserver(), "attribute");
+				.observeValue((BPredicateObserver) getObserver(), "attribute");
 		
 		dbc.bindValue(typeSelection, myModelTypeObserveValue,
 				new UpdateValueStrategy() {

@@ -2,14 +2,16 @@ package de.bmotionstudio.core.model.observer;
 
 import org.eclipse.swt.widgets.Shell;
 
-import de.bmotionstudio.core.editor.wizard.observer.ExpressionObserverWizard;
+import de.bmotionstudio.core.editor.wizard.observer.CSPExpressionObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.scripting.CSPModel;
 import de.prob.statespace.History;
 
-public class ExpressionObserver extends Observer {
+public class CSPExpressionObserver extends Observer {
 
 	private String attribute;
 
@@ -17,12 +19,14 @@ public class ExpressionObserver extends Observer {
 
 	@Override
 	public void check(History history, BControl control) {
-		
+
 		if (attribute == null || expression == null)
 			return;
 
-		EvaluationResult evalResult = history.eval(expression);
-		
+		CSP cspEval = new CSP(expression, (CSPModel) history.getModel());
+
+		EvaluationResult evalResult = history.eval(cspEval);
+
 		if (evalResult != null && !evalResult.hasError()) {
 
 			String result = evalResult.value;
@@ -31,12 +35,12 @@ public class ExpressionObserver extends Observer {
 			control.setAttributeValue(attribute, unmarshalResult);
 
 		}
-		
+
 	}
 
 	@Override
 	public ObserverWizard getWizard(Shell shell, BControl control) {
-		return new ExpressionObserverWizard(shell, control, this);
+		return new CSPExpressionObserverWizard(shell, control, this);
 	}
 
 	public String getAttribute() {
@@ -61,7 +65,7 @@ public class ExpressionObserver extends Observer {
 
 	@Override
 	public String getType() {
-		return "Expression Observer";
+		return "CSP Expression Observer";
 	}
 
 	@Override
