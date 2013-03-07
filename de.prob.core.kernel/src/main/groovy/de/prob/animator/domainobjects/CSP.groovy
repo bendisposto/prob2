@@ -50,11 +50,9 @@ class CSP implements IEvalElement {
 		}
 		def s =""
 		def c =  new File(fn+".cspm.pl").eachLine {
-			if (it.startsWith("'bindval'")) s="yes("+it.substring(0,it.length()-1)+")"
+			if (it.startsWith("'bindval'")) s = it
 		}
-
-		def term = PrologTermGenerator.toPrologTerm(ProBResultParser.parse(s))
-		pout.printTerm(term);
+		pout.printString(s);
 	}
 
 	/**
