@@ -9,8 +9,6 @@ package de.bmotionstudio.rodin;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
-import org.rodinp.core.IInternalElement;
-import org.rodinp.core.IRodinFile;
 
 import de.bmotionstudio.core.BMotionImage;
 
@@ -21,14 +19,10 @@ public class BMotionLabelProvider implements ILabelProvider {
 	}
 
 	public String getText(final Object element) {
-
-		if (element instanceof IRodinFile) {
-			return ((IRodinFile) element).getBareName();
-		} else if (element instanceof IInternalElement) {
-			return ((IInternalElement) element).getRodinFile().getBareName();
-		}
-		return null;
-
+		if (element instanceof BMotionStudioFile)
+			return ((BMotionStudioFile) element).getResource().getName()
+					.replace(".bmso", "");
+		return element.toString();
 	}
 
 	public void addListener(final ILabelProviderListener listener) {

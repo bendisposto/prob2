@@ -4,27 +4,27 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.core.internal;
+package de.bmotionstudio.rodin;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.IInputValidator;
-import org.rodinp.core.IRodinFile;
-import org.rodinp.core.IRodinProject;
 
 import de.bmotionstudio.core.BMotionEditorPlugin;
 
 public class BMotionFileInputValidator implements IInputValidator {
 
-	private IRodinProject prj;
+	private IProject prj;
 
-	public BMotionFileInputValidator(IRodinProject prj) {
+	public BMotionFileInputValidator(IProject prj) {
 		this.prj = prj;
 	}
 
 	public String isValid(String newText) {
-		IRodinFile rodinFile = prj.getRodinFile(newText + "."
+		IResource res = prj.getFile(newText + "."
 				+ BMotionEditorPlugin.FILEEXT_STUDIO);
-		if (rodinFile != null && rodinFile.exists())
-			return "The BMotion-Project filename must be unique in a project.";
+		if (res != null && res.exists())
+			return "The BMotion Studio filename must be unique in a project.";
 		return null;
 	}
 

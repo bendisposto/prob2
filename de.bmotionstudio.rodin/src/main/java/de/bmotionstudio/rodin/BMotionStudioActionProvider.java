@@ -25,15 +25,12 @@ public class BMotionStudioActionProvider extends CommonActionProvider {
 
 	public static String GROUP_FILEACTIONS = "fileactionsGroup";
 
-	// StructuredViewer viewer;
-
 	ICommonActionExtensionSite site;
 
 	@Override
 	public void init(final ICommonActionExtensionSite aSite) {
 		super.init(aSite);
 		site = aSite;
-		// viewer = aSite.getStructuredViewer();
 	}
 
 	@Override
@@ -63,7 +60,7 @@ public class BMotionStudioActionProvider extends CommonActionProvider {
 		ISelection selection = site.getStructuredViewer().getSelection();
 		Object obj = ((IStructuredSelection) selection).getFirstElement();
 		menu.add(new OpenWithMenu(BMotionEditorPlugin.getActivePage(),
-				((IBMotionSurfaceRoot) obj).getRodinFile().getResource()));
+				((BMotionStudioFile) obj).getResource()));
 		return menu;
 	}
 
