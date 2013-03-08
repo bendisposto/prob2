@@ -24,9 +24,12 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -50,13 +53,19 @@ public class CSPEventObserverWizard extends ObserverWizard {
 	
 	private TableViewer tableViewer;
 	
+	private Text customValueText;
+	
 	private final DataBindingContext dbc = new DataBindingContext();
 	
 	private Injector injector = ServletContextListener.INJECTOR;
 	
 	private Text predicateText, nameText, messageText;
 	
+	private Button isCustomCheckbox;
+	
 	private ComboViewer attributeCombo;
+	
+	private Composite valueComposite;
 	
 	public CSPEventObserverWizard(Shell shell, BControl control,
 			Observer observer) {
@@ -73,18 +82,19 @@ public class CSPEventObserverWizard extends ObserverWizard {
 		
 		parent.setLayout(new GridLayout(1,true));
 		
-		GridLayout layout = new GridLayout(2,false);
+		GridLayout layout = new GridLayout(3,false);
 		
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 		container.setLayout(layout);
 		
 		GridData gridDataFill = new GridData(GridData.FILL_HORIZONTAL);
+		gridDataFill.horizontalSpan = 2;
 		
 		GridData gridDataLabel = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 		gridDataLabel.widthHint = 75;
 		gridDataLabel.heightHint = 25;
-
+		
 		Label label = new Label(container,SWT.NONE);
 		label.setText("Name:");
 		label.setLayoutData(gridDataLabel);
@@ -170,101 +180,64 @@ public class CSPEventObserverWizard extends ObserverWizard {
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					@Override
 					public void selectionChanged(SelectionChangedEvent event) {
-						
-						ISelection selection = event.getSelection();
-						if (selection instanceof StructuredSelection) {
-							
-							StructuredSelection sel = (StructuredSelection) selection;
-							AbstractAttribute atr = (AbstractAttribute) sel
-									.getFirstElement();
-
-							String currentAttribute = ((CSPEventObserver) getObserver())
-									.getAttribute();
-							if (currentAttribute == null
-									|| (currentAttribute != null && !currentAttribute
-											.equals(atr.getID()))) {
-								((CSPEventObserver) getObserver())
-										.setValue(atr.getValue());
-							}
-
-							tableViewer.setInput(atr);
-							tableViewer.refresh();
-							
-						}
-
+						setInputFromSelection(event.getSelection(), false);
 					}
 				});
 		
 		label = new Label(container,SWT.NONE);
 		label.setText("Value:");
 		label.setLayoutData(gridDataLabel);
+		
+		valueComposite = new Composite(container, SWT.NONE);
+		valueComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		valueComposite.setBackground(ColorConstants.red);
+		GridLayout gridLayout = new GridLayout(1, false);
+		gridLayout.marginWidth = 0;
+		gridLayout.marginHeight = 0;
+		valueComposite.setLayout(gridLayout);
+		
+		CSPEventObserver ob = (CSPEventObserver) getObserver();
+		if (ob != null && !ob.isCustom()) {
+			createValueEditing(valueComposite);
+		} else {
+			createCustomValueEditing(valueComposite);
+		}
+
+		isCustomCheckbox = new Button(container, SWT.CHECK);
+		isCustomCheckbox.addSelectionListener(new SelectionListener() {
 			
-		tableViewer = new TableViewer(container, SWT.NONE);		
-		tableViewer.getTable().setHeaderVisible(false);
-		tableViewer.getTable().setLinesVisible(false);
-		tableViewer.setContentProvider(new IStructuredContentProvider() {
-
 			@Override
-			public void dispose() {
-			}
-
-			@Override
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
-			}
-
-			@Override
-			public Object[] getElements(Object inputElement) {
-				return new Object[] {inputElement};
+			public void widgetSelected(SelectionEvent e) {
+				
+				if (isCustomCheckbox.getSelection()) {
+					// custom
+					tableViewer.getTable().dispose();
+					createCustomValueEditing(valueComposite);
+				} else {
+					// default
+					customValueText.dispose();
+					createValueEditing(valueComposite);
+					setInputFromSelection(attributeCombo.getSelection(), true);
+				}
+				
+				valueComposite.layout();
+				
 			}
 			
-		});
-
-		tableViewer.getTable().setLayoutData(gridDataFill);
-		tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
 			@Override
-			public void handleEvent(Event event) {
-				event.gc.setBackground(ColorConstants.white);
-				event.gc.fillRectangle(event.getBounds());
+			public void widgetDefaultSelected(SelectionEvent e) {
 			}
+			
 		});
 		
-		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setResizable(false);
-		column.getColumn().setWidth(215);
-		column.setEditingSupport(new AttributeExpressionEdittingSupport(
-				tableViewer, getControl()) {
+		GridData gridDataFillMessage = new GridData(GridData.FILL_BOTH);
+		gridDataFillMessage.horizontalSpan = 3;
 
-			@Override
-			protected void setValue(Object element, Object value) {
-				((CSPEventObserver) getObserver()).setValue(value);
-				tableViewer.refresh();
-			}
-
-			@Override
-			protected Object getValue(Object element) {
-				return ((CSPEventObserver) getObserver()).getValue();
-			}
-
-		});
-		column.setLabelProvider(new CellLabelProvider() {
-			@Override
-			public void update(ViewerCell cell) {
-				Object value = ((CSPEventObserver) getObserver()).getValue();
-				if (value != null)
-					cell.setText(value.toString());
-			}
-		});
-
-		label = new Label(container,SWT.NONE);
-		label.setText("");
-		label.setLayoutData(gridDataLabel);
-
-		messageText = new Text(container,SWT.MULTI | SWT.WRAP);
+		messageText = new Text(container, SWT.MULTI | SWT.WRAP);
 		messageText.setText("");
 		messageText.setForeground(ColorConstants.red);
 		messageText.setBackground(ColorConstants.menuBackground);
-		messageText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		messageText.setLayoutData(gridDataFillMessage);
 		
 		getObserver().addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -297,6 +270,10 @@ public class CSPEventObserverWizard extends ObserverWizard {
 		dbc.bindValue(SWTObservables.observeText(predicateText, SWT.Modify),
 				BeansObservables.observeValue(
 						(CSPEventObserver) getObserver(), "expression"));
+
+		dbc.bindValue(SWTObservables.observeSelection(isCustomCheckbox),
+				BeansObservables.observeValue((CSPEventObserver) getObserver(),
+						"isCustom"));
 		
 		IObservableValue typeSelection = ViewersObservables
 				.observeSingleSelection(attributeCombo);
@@ -321,6 +298,111 @@ public class CSPEventObserverWizard extends ObserverWizard {
 
 				});
 
+	}
+	
+	private void setInputFromSelection(ISelection selection, boolean restore) {
+
+		if (selection instanceof StructuredSelection) {
+
+			StructuredSelection sel = (StructuredSelection) selection;
+			AbstractAttribute selectedAttribute = (AbstractAttribute) sel
+					.getFirstElement();
+
+			if(selectedAttribute == null)
+				return;
+			
+			if (restore)
+				selectedAttribute.restoreValue();
+
+			String currentAttribute = ((CSPEventObserver) getObserver())
+					.getAttribute();
+			if (restore || currentAttribute == null
+					|| !selectedAttribute.getID().equals(currentAttribute)) {
+				((CSPEventObserver) getObserver()).setValue(selectedAttribute
+						.getValue());
+			}
+
+			if (tableViewer != null && !tableViewer.getTable().isDisposed()) {
+				tableViewer.setInput(selectedAttribute);
+				tableViewer.refresh();
+			}
+
+		}
+
+	}
+	
+	private void createCustomValueEditing(Composite container) {
+		customValueText = new Text(container, SWT.BORDER);
+		GridData gridData = new GridData(GridData.FILL_BOTH);
+		gridData.heightHint = 20;
+		customValueText.setLayoutData(gridData);
+		dbc.bindValue(SWTObservables.observeText(customValueText, SWT.Modify),
+				BeansObservables.observeValue((CSPEventObserver) getObserver(),
+						"value"));
+	}
+	
+	private void createValueEditing(Composite container) {
+		
+		tableViewer = new TableViewer(container, SWT.NONE);		
+		tableViewer.getTable().setHeaderVisible(false);
+		tableViewer.getTable().setLinesVisible(false);
+		tableViewer.setContentProvider(new IStructuredContentProvider() {
+
+			@Override
+			public void dispose() {
+			}
+
+			@Override
+			public void inputChanged(Viewer viewer, Object oldInput,
+					Object newInput) {
+			}
+
+			@Override
+			public Object[] getElements(Object inputElement) {
+				return new Object[] {inputElement};
+			}
+			
+		});
+
+		GridData gridData = new GridData(GridData.FILL_BOTH);
+		gridData.heightHint = 7;
+		
+		tableViewer.getTable().setLayoutData(gridData);
+		tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				event.gc.setBackground(ColorConstants.white);
+				event.gc.fillRectangle(event.getBounds());
+			}
+		});
+		
+		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.BORDER);
+		column.getColumn().setResizable(false);
+		column.getColumn().setWidth(215);
+		column.setEditingSupport(new AttributeExpressionEdittingSupport(
+				tableViewer, getControl()) {
+
+			@Override
+			protected void setValue(Object element, Object value) {
+				((CSPEventObserver) getObserver()).setValue(value);
+				tableViewer.refresh();
+			}
+
+			@Override
+			protected Object getValue(Object element) {
+				return ((CSPEventObserver) getObserver()).getValue();
+			}
+
+		});
+		column.setLabelProvider(new CellLabelProvider() {
+			@Override
+			public void update(ViewerCell cell) {
+				Object value = ((CSPEventObserver) getObserver()).getValue();
+				if (value != null)
+					cell.setText(value.toString());
+			}
+		});
+		
 	}
 
 }
