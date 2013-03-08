@@ -244,10 +244,15 @@ public class CSPEventObserverWizard extends ObserverWizard {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				
-				if(evt.getPropertyName().equals("expression")) {
+				CSPEventObserver cspE = (CSPEventObserver) getObserver();
+				
+				if (evt.getPropertyName().equals("expression")
+						|| (cspE.isCustom() && evt.getPropertyName().equals(
+								"value"))) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					History currentHistory = selector.getCurrentHistory();
+
 					getObserver().check(currentHistory, getControl());
 				}
 				
