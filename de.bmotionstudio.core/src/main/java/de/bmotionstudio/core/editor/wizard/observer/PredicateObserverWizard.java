@@ -122,7 +122,7 @@ public class PredicateObserverWizard extends ObserverWizard {
 					if(currentHistory != null) {
 					
 						EvaluationResult eval = currentHistory
-								.eval(predicateText.getText());
+								.evalCurrent(predicateText.getText());
 
 						if (eval != null) {
 

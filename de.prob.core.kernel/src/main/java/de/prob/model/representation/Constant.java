@@ -32,7 +32,7 @@ public abstract class Constant extends AbstractElement implements IEval {
 	// it.
 	public EvaluationResult getValue(final History h) {
 		if (result == null) {
-			result = h.eval(getEvaluate());
+			result = h.evalCurrent(getEvaluate());
 		}
 		return result;
 	}

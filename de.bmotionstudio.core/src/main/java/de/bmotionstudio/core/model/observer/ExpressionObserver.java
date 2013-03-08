@@ -21,7 +21,7 @@ public class ExpressionObserver extends Observer {
 		if (attribute == null || expression == null)
 			return;
 
-		EvaluationResult evalResult = history.eval(expression);
+		EvaluationResult evalResult = history.evalCurrent(expression);
 		
 		if (evalResult != null && !evalResult.hasError()) {
 

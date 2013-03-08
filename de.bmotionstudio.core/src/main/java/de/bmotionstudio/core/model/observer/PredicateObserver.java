@@ -22,7 +22,7 @@ public class PredicateObserver extends Observer {
 		if(predicate == null || attribute == null || value == null)
 			return;
 		
-		EvaluationResult evalResult = history.eval(predicate);
+		EvaluationResult evalResult = history.evalCurrent(predicate);
 		
 		if (evalResult != null && !evalResult.hasError()) {
 
