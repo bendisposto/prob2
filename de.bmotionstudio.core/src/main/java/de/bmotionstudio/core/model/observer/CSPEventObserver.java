@@ -67,7 +67,7 @@ public class CSPEventObserver extends Observer {
 					if (isCustom) {
 						String parseExpression = parseExpression(
 								value.toString(), control, history);
-						CSP cspE = new CSP(parseExpression,
+						CSP cspE = new CSP("bmsresult=" + parseExpression,
 								(CSPModel) history.getModel());
 						EvaluationResult subEval = history.eval(cspE);
 						if (subEval != null && !subEval.hasError()) {
@@ -97,14 +97,11 @@ public class CSPEventObserver extends Observer {
 		// Find expressions and collect ExpressionEvalElements
 		final Matcher matcher = PATTERN.matcher(expressionString);
 		while (matcher.find()) {
-			
 			int subExpr = Integer.valueOf(matcher.group(1));
-						String para = params.get(subExpr);
-			
-			System.out.println("==> "+ para);
-			
-			if(para != null)
-				finalExpression = finalExpression.replace("$"+subExpr+"$", para);
+			String para = params.get(subExpr);
+			if (para != null)
+				finalExpression = finalExpression.replace("$" + subExpr + "$",
+						para);
 		}
 		
 		System.out.println(finalExpression);

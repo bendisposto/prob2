@@ -23,7 +23,8 @@ public class CSPExpressionObserver extends Observer {
 		if (attribute == null || expression == null)
 			return;
 
-		CSP cspEval = new CSP(expression, (CSPModel) history.getModel());
+		CSP cspEval = new CSP("bmsresult=" + expression,
+				(CSPModel) history.getModel());
 
 		EvaluationResult evalResult = history.eval(cspEval);
 
