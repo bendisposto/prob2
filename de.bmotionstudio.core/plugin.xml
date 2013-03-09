@@ -281,12 +281,20 @@
    <extension
          point="de.bmotionstudio.core.observer">
       <observer
-            class="de.bmotionstudio.core.model.observer.ExpressionObserver"
-            id="de.bmotionstudio.observer.ExpressionObserver">
+            class="de.bmotionstudio.core.model.observer.BExpressionObserver"
+            id="de.bmotionstudio.observer.BExpressionObserver">
       </observer>
       <observer
-            class="de.bmotionstudio.core.model.observer.PredicateObserver"
-            id="de.bmotionstudio.observer.PredicateObserver">
+            class="de.bmotionstudio.core.model.observer.BPredicateObserver"
+            id="de.bmotionstudio.observer.BPredicateObserver">
+      </observer>
+      <observer
+            class="de.bmotionstudio.core.model.observer.CSPEventObserver"
+            id="de.bmotionstudio.observer.CSPEventObserver">
+      </observer>
+      <observer
+            class="de.bmotionstudio.core.model.observer.CSPExpressionObserver"
+            id="de.bmotionstudio.observer.CSPExpressionObserver">
       </observer>
    </extension>
    <extension
@@ -315,187 +323,202 @@
          <control
                id="de.bmotionstudio.control.Image">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Button">
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Checkbox">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Radiobutton">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Textfield">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Composite">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Text">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Rectangle">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Connection">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Ellipse">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Table">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Column">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Cell">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Signal">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Light">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Tank">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Tracknode">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Track">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Switch">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
          </control>
       </include>
       <include
             language="CSP">
          <control
-               id="de.bmotionstudio.core.rectangle">
+               id="de.bmotionstudio.control.Rectangle">
             <observer
-                  id="de.bmotionstudio.core.observer.CSPEventObserver">
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
             </observer>
          </control>
          <control
-               id="de.bmotionstudio.core.tank">
+               id="de.bmotionstudio.control.Tank">
             <observer
-                  id="de.bmotionstudio.core.observer.CSPEventObserver">
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Text">
+            <observer
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
             </observer>
          </control>
       </include>   
