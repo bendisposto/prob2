@@ -62,7 +62,7 @@ public class FormulaOverHistoryServlet extends HttpServlet {
 			if (id.equals("root")) {
 				// skip root state
 			} else {
-				EvaluationResult e = history.eval(formula);
+				EvaluationResult e = history.evalCurrent(formula);
 				result.add(new Element(id, c++, e.value));
 			}
 			history = history.forward();

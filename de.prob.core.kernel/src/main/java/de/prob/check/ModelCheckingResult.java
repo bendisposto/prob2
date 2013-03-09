@@ -40,6 +40,10 @@ public class ModelCheckingResult {
 		}
 	}
 
+	public ModelCheckingResult(final Result r) {
+		result = r;
+	}
+
 	public PrologTerm getArgument(final int i) {
 		return arguments.get(i);
 	}

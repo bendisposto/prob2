@@ -28,20 +28,21 @@ public class EvalstoreEvalCommand implements ICommand {
 
 	private EvalstoreResult result;
 
-	public EvalstoreEvalCommand(long evalstoreId, IEvalElement evalElement,
-			Integer timeout) {
+	public EvalstoreEvalCommand(final long evalstoreId,
+			final IEvalElement evalElement, final Integer timeout) {
 		super();
 		this.evalstoreId = evalstoreId;
 		this.evalElement = evalElement;
 		this.timeout = timeout;
 	}
 
-	public EvalstoreEvalCommand(long evalstoreId, IEvalElement evalElement) {
+	public EvalstoreEvalCommand(final long evalstoreId,
+			final IEvalElement evalElement) {
 		this(evalstoreId, evalElement, null);
 	}
 
 	@Override
-	public void writeCommand(IPrologTermOutput pto) {
+	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("es_eval");
 		pto.printNumber(evalstoreId);
 		evalElement.printProlog(pto);
@@ -55,7 +56,8 @@ public class EvalstoreEvalCommand implements ICommand {
 	}
 
 	@Override
-	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		CompoundPrologTerm term = (CompoundPrologTerm) bindings.get(RESULT_VAR);
 
 		// TODO[DP,23.01.2013] Check with EvaluationResult: I don't know what
@@ -71,8 +73,8 @@ public class EvalstoreEvalCommand implements ICommand {
 			final String error = errors.isEmpty() ? "unspecified error"
 					: errors.get(0);
 			final List<String> empty = Collections.emptyList();
-			final EvaluationResult er = new EvaluationResult(null, null, null,
-					error, null, empty, false);
+			final EvaluationResult er = new EvaluationResult("", null, null,
+					null, error, null, empty, false);
 			result = new EvalstoreResult(false, false, evalstoreId, er);
 		} else if (term.hasFunctor("ok", 4)) {
 			// first argument ignored
@@ -82,8 +84,8 @@ public class EvalstoreEvalCommand implements ICommand {
 			final List<String> newIdentifiers = PrologTerm.atomicStrings(ids);
 			final long storeId = ((IntegerPrologTerm) term.getArgument(4))
 					.getValue().longValue();
-			final EvaluationResult er = new EvaluationResult(null, valueStr,
-					null, null, null, newIdentifiers, false);
+			final EvaluationResult er = new EvaluationResult("", null,
+					valueStr, null, null, null, newIdentifiers, false);
 			result = new EvalstoreResult(false, false, storeId, er);
 		} else {
 			// TODO[DP,23.01.2013] This should be some sensible exception - but
@@ -104,9 +106,9 @@ public class EvalstoreEvalCommand implements ICommand {
 		private final long resultingStoreId;
 		private final EvaluationResult result;
 
-		public EvalstoreResult(boolean hasTimeoutOccurred,
-				boolean hasInterruptedOccurred, long resultingStoreId,
-				EvaluationResult result) {
+		public EvalstoreResult(final boolean hasTimeoutOccurred,
+				final boolean hasInterruptedOccurred,
+				final long resultingStoreId, final EvaluationResult result) {
 			super();
 			this.hasTimeoutOccurred = hasTimeoutOccurred;
 			this.hasInterruptedOccurred = hasInterruptedOccurred;
@@ -135,11 +137,12 @@ public class EvalstoreEvalCommand implements ICommand {
 			return result;
 		}
 
+		@Override
 		public String toString() {
 			final String str;
-			if (hasTimeoutOccurred)
+			if (hasTimeoutOccurred) {
 				str = "*timeout*";
-			else if (hasInterruptedOccurred) {
+			} else if (hasInterruptedOccurred) {
 				str = "*interrupted*";
 			} else {
 				str = result.toString();

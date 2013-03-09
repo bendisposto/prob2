@@ -157,7 +157,7 @@ public class BExpressionObserverWizard extends ObserverWizard {
 					
 					if(currentHistory != null) {
 					
-					EvaluationResult eval = currentHistory.eval(expressionText
+					EvaluationResult eval = currentHistory.evalCurrent(expressionText
 							.getText());
 						
 						if (eval != null) {
