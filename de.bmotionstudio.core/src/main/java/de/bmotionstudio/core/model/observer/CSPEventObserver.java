@@ -56,7 +56,7 @@ public class CSPEventObserver extends Observer {
 			System.out.println("===> " + cspExpression);
 			
 			CSP cspEval = new CSP(cspExpression, (CSPModel) history.getModel());
-			EvaluationResult eval = history.eval(cspEval);
+			EvaluationResult eval = history.evalCurrent(cspEval);
 			
 			if (eval != null && !eval.hasError()) {
 
@@ -69,7 +69,7 @@ public class CSPEventObserver extends Observer {
 								value.toString(), control, history);
 						CSP cspE = new CSP("bmsresult=" + parseExpression,
 								(CSPModel) history.getModel());
-						EvaluationResult subEval = history.eval(cspE);
+						EvaluationResult subEval = history.evalCurrent(cspE);
 						if (subEval != null && !subEval.hasError()) {
 							control.setAttributeValue(attribute, subEval.value);
 						}
