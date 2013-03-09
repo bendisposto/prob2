@@ -64,6 +64,8 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	private static HashMap<Class<?>, IBControlService> controlServicesClass = new HashMap<Class<?>, IBControlService>();
 	private static HashMap<String, IBControlService> controlServicesId = new HashMap<String, IBControlService>();
 
+	private StateSpace currentStateSpace = null;
+	
 	IExtensionRegistry registry = Platform.getExtensionRegistry();
 
 	Injector injector = ServletContextListener.INJECTOR;
@@ -266,6 +268,11 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	@Override
 	public void modelChanged(final StateSpace s) {
 
+		if (s.equals(currentStateSpace))
+			return;
+
+		currentStateSpace = s;
+		
 		// Open new perspective
 		Display.getDefault().asyncExec(new Runnable() {
 
