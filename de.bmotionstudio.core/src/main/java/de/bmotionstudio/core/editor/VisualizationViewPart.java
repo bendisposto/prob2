@@ -90,7 +90,7 @@ public class VisualizationViewPart extends ViewPart implements
 
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
 	
-	Injector injector = ServletContextListener.INJECTOR;
+	private Injector injector = ServletContextListener.INJECTOR;
 	
 	private EditDomain editDomain;
 
@@ -439,11 +439,13 @@ public class VisualizationViewPart extends ViewPart implements
 		createActions();
 		buildActions();
 		createMenu(getViewSite());
-		setPartName(visualizationView.getName() + "("
-				+ getViewSite().getSecondaryId() + ")");
-		getGraphicalViewer().setContents(visualization);
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
+		setPartName(visualizationView.getName()
+				+ " ("
+				+ selector.getCurrentHistory().getModel().getModelFile()
+						.getName() + ")");
+		getGraphicalViewer().setContents(visualization);
 		selector.registerHistoryChangeListener(this);
 		setInitialized(true);
 	}
@@ -653,8 +655,13 @@ public class VisualizationViewPart extends ViewPart implements
 			dirty = Boolean.valueOf(evt.getNewValue().toString());
 
 		if (propertyName.equals("dirty") || propertyName.equals("name")) {
+			
+			final AnimationSelector selector = injector
+					.getInstance(AnimationSelector.class);
+			String modelName = selector.getCurrentHistory().getModel()
+					.getModelFile().getName();
 
-			name = name + "(" + getViewSite().getSecondaryId() + ")";
+			name = name + " (" + modelName + ")";
 
 			if (dirty) {
 				setPartName("*" + name);
