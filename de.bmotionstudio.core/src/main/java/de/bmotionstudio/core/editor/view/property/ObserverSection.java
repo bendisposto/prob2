@@ -44,7 +44,6 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import de.bmotionstudio.core.ActionConstants;
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
-import de.bmotionstudio.core.BMotionStudio;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.VisualizationViewPart;
 import de.bmotionstudio.core.editor.action.ObserverHelpAction;
@@ -266,15 +265,22 @@ public class ObserverSection extends AbstractPropertySection implements
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		
+
 		if (event.getPropertyName().equals(
 				BControlPropertyConstants.PROPERTY_ADD_OBSERVER)
 				|| event.getPropertyName().equals(
-						BControlPropertyConstants.PROPERTY_REMOVE_OBSERVER))
+						BControlPropertyConstants.PROPERTY_REMOVE_OBSERVER)
+				|| event.getPropertyName().equals("name"))
 			listViewer.refresh();
-		
-		if(event.getPropertyName().equals("name"))
-			listViewer.refresh();
+
+		if (event.getSource() instanceof Observer) {
+			IWorkbenchPart part = getPart();
+			if (part instanceof VisualizationViewPart) {
+				VisualizationViewPart viewPart = (VisualizationViewPart) part;
+				if (viewPart.getVisualizationView() != null)
+					viewPart.getVisualizationView().setDirty(true);
+			}
+		}
 
 	}
 	
@@ -402,11 +408,11 @@ public class ObserverSection extends AbstractPropertySection implements
 													.getAction("de.bmotionstudio.core.observerAction."
 															+ oID);
 
-											// TODO: Get correct name of
-											// observer
-											String name = oID;
-
-											action.setText(name);
+											IConfigurationElement observerExtension = BMotionEditorPlugin
+													.getObserverExtension(oID);
+											String oName = observerExtension
+													.getAttribute("name");
+											action.setText(oName);
 
 											if (fmanager.find(action.getId()) == null)
 												fmanager.add(action);

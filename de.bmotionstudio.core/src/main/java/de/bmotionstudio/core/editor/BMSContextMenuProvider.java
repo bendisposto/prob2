@@ -168,10 +168,12 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 													"de.bmotionstudio.core.observerAction."
 															+ oID);
 
-									// TODO: Get correct name of observer
-									String name = oID;
+									IConfigurationElement observerExtension = BMotionEditorPlugin
+											.getObserverExtension(oID);
+									String oName = observerExtension
+											.getAttribute("name");
 
-									action.setText(name);
+									action.setText(oName);
 
 									if (handleObserverMenu.find(action.getId()) == null)
 										handleObserverMenu.add(action);

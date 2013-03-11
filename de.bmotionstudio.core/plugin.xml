@@ -5,7 +5,7 @@
    <extension-point id="de.bmotionstudio.core.installMenu" name="Context Menu" schema="schema/de.bmotionstudio.core.installMenu.exsd"/>
    <extension-point id="de.bmotionstudio.core.control" name="Control" schema="schema/de.bmotionstudio.core.control.exsd"/>
    <extension-point id="de.bmotionstudio.core.language" name="BMotion Studio Language Loader" schema="schema/de.bmotionstudio.core.language.exsd"/>
-   <extension-point id="de.bmotionstudio.core.schedulerEvent" name="Scheduler Event" schema="schema/de.bmotionstudio.core.schedulerEvent.exsd"/>
+   <extension-point id="de.bmotionstudio.core.action" name="BMotion Studio Action" schema="schema/de.bmotionstudio.core.action.exsd"/>
    <extension-point id="de.bmotionstudio.core.observer" name="BMotion Studio Observer" schema="schema/de.bmotionstudio.core.observer.exsd"/>
    <extension-point id="de.bmotionstudio.core.paletteEntry" name="Add a custom Palette Entry" schema="schema/de.bmotionstudio.core.paletteEntry.exsd"/>
    <extension-point id="de.bmotionstudio.core.includeObserver" name="Include Observer Extension Point" schema="schema/de.bmotionstudio.core.includeObserver.exsd"/>
