@@ -68,7 +68,9 @@ public class ImportImagesAction extends AbstractLibraryAction {
 				IPath path = new Path(targetImagePath);
 				IFile targetFile = ResourcesPlugin.getWorkspace().getRoot()
 						.getFileForLocation(path);
-
+				if(targetFile == null)
+					return;			
+				
 				IContainer parent = targetFile.getParent();
 				if (parent instanceof IFolder) {
 					IFolder folder = (IFolder) parent;

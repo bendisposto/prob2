@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
@@ -54,20 +55,18 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	// The shared instance
 	private static BMotionEditorPlugin plugin;
 
-//	private static HashMap<String, IConfigurationElement> controlExtensions = new HashMap<String, IConfigurationElement>();
-
 	private static HashMap<String, IConfigurationElement> observerExtensions = new HashMap<String, IConfigurationElement>();
-
 	private static HashMap<String, IConfigurationElement> schedulerExtensions = new HashMap<String, IConfigurationElement>();
-
 	private static HashMap<Class<?>, IBControlService> controlServicesClass = new HashMap<Class<?>, IBControlService>();
 	private static HashMap<String, IBControlService> controlServicesId = new HashMap<String, IBControlService>();
 
-	IExtensionRegistry registry = Platform.getExtensionRegistry();
+	private StateSpace currentStateSpace = null;
 
-	Injector injector = ServletContextListener.INJECTOR;
+	private IExtensionRegistry registry = Platform.getExtensionRegistry();
 
-	final AnimationSelector selector = injector
+	private Injector injector = ServletContextListener.INJECTOR;
+
+	private final AnimationSelector selector = injector
 			.getInstance(AnimationSelector.class);
 	
 	/**
@@ -206,14 +205,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	private void initExtensionClasses() {
 
 		ArrayList<String> elementIDs = new ArrayList<String>();
-//		elementIDs.add("control");
-//		initExtensionClass("de.bmotionstudio.core.control", elementIDs,
-//				"id", controlExtensions);
-
-//		elementIDs.clear();
-//		elementIDs.add("control");
-//		initExtensionClass("de.bmotionstudio.core.control", elementIDs,
-//				"id", controlServices);
 
 		elementIDs.clear();
 		elementIDs.add("observer");
@@ -229,10 +220,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 //				elementIDs, "class", schedulerExtensions);
 
 	}
-
-//	public static IConfigurationElement getControlExtension(String ident) {
-//		return controlExtensions.get(ident);
-//	}
 
 	public static IConfigurationElement getObserverExtension(String ident) {
 		return observerExtensions.get(ident);
@@ -263,34 +250,44 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	}
 
 	@Override
-	public void modelChanged(StateSpace s) {
+	public void modelChanged(final StateSpace s) {
 
-		File modelFile = s.getModel().getModelFile();
+		if (s.equals(currentStateSpace))
+			return;
 
-		// Save old and close old perspective (if exists)
-		IPerspectiveDescriptor currentPerspective = BMotionStudio
-				.getCurrentPerspective();
-		File currentModelFile = BMotionStudio.getCurrentModelFile();
-
-		// Close and save old perspective
-		if (currentPerspective != null && currentModelFile != null) {
-			// If yes ...
-			// Export the current perspective
-			File perspectiveFile = PerspectiveUtil
-					.getPerspectiveFileFromModelFile(currentModelFile);
-			PerspectiveUtil.exportPerspective(currentPerspective,
-					perspectiveFile);
-			// Close and delete current perspective, before opening the new one
-			PerspectiveUtil.closePerspective(currentPerspective);
-			PerspectiveUtil.deletePerspective(currentPerspective);
-		}
-
+		currentStateSpace = s;
+		
 		// Open new perspective
-		IPerspectiveDescriptor perspective = PerspectiveUtil
-				.openPerspective(modelFile);
-		BMotionUtil.initVisualizationViews(modelFile);
-		BMotionStudio.setCurrentModelFile(modelFile);
-		BMotionStudio.setCurrentPerspective(perspective);
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				File modelFile = s.getModel().getModelFile();
+				// Save old and close old perspective (if exists)
+				IPerspectiveDescriptor currentPerspective = BMotionStudio
+						.getCurrentPerspective();
+				File currentModelFile = BMotionStudio.getCurrentModelFile();
+				// Close and save old perspective
+				if (currentPerspective != null && currentModelFile != null) {
+					// If yes ...
+					// Export the current perspective
+					File perspectiveFile = PerspectiveUtil
+							.getPerspectiveFileFromModelFile(currentModelFile);
+					PerspectiveUtil.exportPerspective(currentPerspective,
+							perspectiveFile);
+					// Close and delete current perspective, before opening the
+					// new one
+					PerspectiveUtil.closePerspective(currentPerspective);
+					PerspectiveUtil.deletePerspective(currentPerspective);
+				}
+				IPerspectiveDescriptor perspective = PerspectiveUtil
+						.openPerspective(modelFile);
+				BMotionUtil.initVisualizationViews(modelFile);
+				BMotionStudio.setCurrentModelFile(modelFile);
+				BMotionStudio.setCurrentPerspective(perspective);
+			}
+
+		});
 
 	}
 

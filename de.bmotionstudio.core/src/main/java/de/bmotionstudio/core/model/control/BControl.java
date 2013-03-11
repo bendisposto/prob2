@@ -153,92 +153,6 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		initStandardAttributes();
 		// Init custom control attributes
 		initAttributes();
-		// Init observer
-		initObserver();
-	}
-
-	// TODO: Reimplement me!!!
-//	private List<String> getSupportedObserverList() {
-//
-//		List<String> supportedObserver = new ArrayList<String>();
-//
-//		IExtensionPoint extensionPoint = Platform.getExtensionRegistry()
-//				.getExtensionPoint(
-//						"de.bmotionstudio.core.includeObserver");
-//
-//		for (IExtension extension : extensionPoint.getExtensions()) {
-//			for (IConfigurationElement configurationElement : extension
-//					.getConfigurationElements()) {
-//
-//				if ("include".equals(configurationElement.getName())) {
-//
-//					String langID = configurationElement
-//							.getAttribute("language");
-//
-//					if (langID != null
-//							&& langID.equals(getVisualization()
-//									.getLanguage())) {
-//
-//						for (IConfigurationElement configC : configurationElement
-//								.getChildren("control")) {
-//
-//							String cID = configC.getAttribute("id");
-//
-//							if (getType().equals(cID)) {
-//
-//								for (IConfigurationElement configO : configC
-//										.getChildren("observer")) {
-//
-//									supportedObserver.add(configO
-//											.getAttribute("id"));
-//
-//								}
-//
-//							}
-//
-//						}
-//
-//					}
-//
-//				}
-//
-//			}
-//		}
-//
-//		return supportedObserver;
-//
-//	}
-
-	private void initObserver() {
-
-		// TODO: Reimplement me!!!
-//		List<String> supportedObserverList = getSupportedObserverList();
-//		for (String oID : supportedObserverList) {
-//
-//			// Check if control has already the observer
-//			if (!hasObserver(oID)) {
-//
-//				// If no, create a new instance and add the observer to the
-//				// control
-//				IConfigurationElement observerExtension = BMotionEditorPlugin
-//						.getObserverExtension(oID);
-//				
-//				if (observerExtension != null) {
-//					try {
-//
-//
-//						Observer newObserver = (Observer) observerExtension
-//								.createExecutableExtension("class");
-//						addObserver(newObserver);
-//					} catch (CoreException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//
-//			}
-//
-//		}
-
 	}
 
 	private void initStandardAttributes() {
@@ -636,26 +550,6 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 			con.checkObserver(history);
 		}
 	}
-	
-	// TODO: Reimplement me!!!
-	// public void checkObserver(final Animation animation) {
-	//
-	// // Check all Observers
-	// for (Observer observer : getObservers().values()) {
-	// observer.check(animation, BControl.this);
-	// }
-	//
-	// // TODO: Currently connection observer are checked twice (source +
-	// // target) => change this, so that observer are checked only on time per
-	// // state!!!
-	// for (BConnection con : getSourceConnections()) {
-	// con.checkObserver(animation);
-	// }
-	// for (BConnection con : getTargetConnections()) {
-	// con.checkObserver(animation);
-	// }
-	//
-	// }
 
 	// TODO: Reimplement me!!!
 	// public void executeEvent(String eventID) {

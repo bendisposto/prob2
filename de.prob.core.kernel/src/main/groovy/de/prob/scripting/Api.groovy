@@ -202,21 +202,21 @@ public class Api {
 	 * 
 	 * @param s
 	 */
-	public void toFile(final StateSpace s) {
-		XStream xstream = new XStream(new JettisonMappedXmlDriver());
-		xstream.omitField(IAnimator.class, "animator");
-		// xstream.omitField(History.class, "history");
-		String xml = xstream.toXML(s);
-		// System.out.println(xml);
-		try {
-			FileWriter fw = new FileWriter("statespace.xml");
-			final BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(xml);
-			bw.close();
-		} catch (IOException e1) {
-			System.out.println("could not create file");
-		}
-	}
+//	public void toFile(final StateSpace s) {
+//		XStream xstream = new XStream(new JettisonMappedXmlDriver());
+//		xstream.omitField(IAnimator.class, "animator");
+//		// xstream.omitField(History.class, "history");
+//		String xml = xstream.toXML(s);
+//		// System.out.println(xml);
+//		try {
+//			FileWriter fw = new FileWriter("statespace.xml");
+//			final BufferedWriter bw = new BufferedWriter(fw);
+//			bw.write(xml);
+//			bw.close();
+//		} catch (IOException e1) {
+//			System.out.println("could not create file");
+//		}
+//	}
 
 	public CliVersionNumber getVersion() {
 		boolean binaryPresent = false;
@@ -244,40 +244,40 @@ public class Api {
 	 * @return {@link StateSpace} object specified by saved "statespace.xml"
 	 *         file
 	 */
-	public StateSpace readFile() {
-		FileInputStream fstream;
-		StringBuffer sb = new StringBuffer();
-		try {
-			fstream = new FileInputStream("statespace.xml");
-
-			final DataInputStream in = new DataInputStream(fstream);
-			final BufferedReader br = new BufferedReader(new InputStreamReader(
-					in));
-
-			String tmp;
-
-			try {
-				while ((tmp = br.readLine()) != null) {
-					sb.append(tmp);
-				}
-				in.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e) {
-		}
-		XStream xstream = new XStream(new JettisonMappedXmlDriver());
-		// xstream.omitField(IAnimator.class, "animator");
-
-		StateSpace t = (StateSpace) xstream.fromXML(sb.toString());
-		IAnimator anim = ServletContextListener.INJECTOR
-				.getInstance(IAnimator.class);
-		t.setAnimator(anim);
-		anim.execute(t.getLoadcmd(), new StartAnimationCommand());
-
-		return t;
-	}
+//	public StateSpace readFile() {
+//		FileInputStream fstream;
+//		StringBuffer sb = new StringBuffer();
+//		try {
+//			fstream = new FileInputStream("statespace.xml");
+//
+//			final DataInputStream in = new DataInputStream(fstream);
+//			final BufferedReader br = new BufferedReader(new InputStreamReader(
+//					in));
+//
+//			String tmp;
+//
+//			try {
+//				while ((tmp = br.readLine()) != null) {
+//					sb.append(tmp);
+//				}
+//				in.close();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		} catch (FileNotFoundException e) {
+//		}
+//		XStream xstream = new XStream(new JettisonMappedXmlDriver());
+//		// xstream.omitField(IAnimator.class, "animator");
+//
+//		StateSpace t = (StateSpace) xstream.fromXML(sb.toString());
+//		IAnimator anim = ServletContextListener.INJECTOR
+//				.getInstance(IAnimator.class);
+//		t.setAnimator(anim);
+//		anim.execute(t.getLoadcmd(), new StartAnimationCommand());
+//
+//		return t;
+//	}
 
 	/**
 	 * @return Returns a String representation of the currently available
@@ -294,4 +294,6 @@ public class Api {
 				+ " shutdown(ProBInstance x): shutdown ProBInstance\n"
 				+ " help(): print out available commands";
 	}
+	
+
 }

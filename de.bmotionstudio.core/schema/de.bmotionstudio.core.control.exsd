@@ -81,7 +81,7 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="name" type="string">
+         <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
                   The name of the control. The name will be displayed in the Palette
@@ -120,6 +120,15 @@
 
    <annotation>
       <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
          <meta.section type="since"/>
       </appInfo>
       <documentation>
@@ -145,14 +154,5 @@
       </documentation>
    </annotation>
 
-
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         [Enter API information here.]
-      </documentation>
-   </annotation>
 
 </schema>

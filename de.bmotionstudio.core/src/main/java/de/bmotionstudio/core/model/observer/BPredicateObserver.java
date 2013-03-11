@@ -3,12 +3,12 @@ package de.bmotionstudio.core.model.observer;
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
-import de.bmotionstudio.core.editor.wizard.observer.PredicateObserverWizard;
+import de.bmotionstudio.core.editor.wizard.observer.BPredicateObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.History;
 
-public class PredicateObserver extends Observer {
+public class BPredicateObserver extends Observer {
 
 	private String predicate;
 	
@@ -22,7 +22,7 @@ public class PredicateObserver extends Observer {
 		if(predicate == null || attribute == null || value == null)
 			return;
 		
-		EvaluationResult evalResult = history.eval(predicate);
+		EvaluationResult evalResult = history.evalCurrent(predicate);
 		
 		if (evalResult != null && !evalResult.hasError()) {
 
@@ -37,7 +37,7 @@ public class PredicateObserver extends Observer {
 
 	@Override
 	public ObserverWizard getWizard(Shell shell, BControl control) {
-		return new PredicateObserverWizard(shell, control, this);
+		return new BPredicateObserverWizard(shell, control, this);
 	}
 
 	public String getPredicate() {
@@ -72,7 +72,7 @@ public class PredicateObserver extends Observer {
 
 	@Override
 	public String getType() {
-		return "Predicate Observer";
+		return "B Predicate Observer";
 	}
 	
 	@Override

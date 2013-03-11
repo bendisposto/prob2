@@ -18,6 +18,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -110,27 +111,37 @@ public class BMotionUtil {
 	public static VisualizationViewPart initVisualizationViewPart(
 			File visualizationFile) {
 
-		IWorkbenchWindow window = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
-		IWorkbenchPage activePage = window.getActivePage();
-
-		String secId = visualizationFile.getName().replace(
-				"." + PerspectiveUtil.getExtension(visualizationFile), "");
-
-		// Check if view is already open
-		IViewReference viewReference = activePage.findViewReference(
-				VisualizationViewPart.ID, secId);
-
 		VisualizationViewPart visualizationViewPart = null;
 
-		if (viewReference != null) {
-			visualizationViewPart = (VisualizationViewPart) viewReference
-					.getPart(true);
-		}
+		IWorkbenchWindow window = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
 
-		if (visualizationViewPart != null
-				&& !visualizationViewPart.isInitialized())
-			visualizationViewPart.init(visualizationFile);
+		if (window != null) {
+
+			IWorkbenchPage activePage = window.getActivePage();
+
+			if (activePage != null) {
+
+				String secId = visualizationFile.getName().replace(
+						"." + PerspectiveUtil.getExtension(visualizationFile),
+						"");
+
+				// Check if view is already open
+				IViewReference viewReference = activePage.findViewReference(
+						VisualizationViewPart.ID, secId);
+
+				if (viewReference != null) {
+					visualizationViewPart = (VisualizationViewPart) viewReference
+							.getPart(true);
+				}
+
+				if (visualizationViewPart != null
+						&& !visualizationViewPart.isInitialized())
+					visualizationViewPart.init(visualizationFile);
+
+			}
+
+		}
 
 		return visualizationViewPart;
 
@@ -161,7 +172,8 @@ public class BMotionUtil {
 						.getAbsolutePath());
 				IFile ifile = workspace.getRoot().getFileForLocation(location);
 				if (ifile != null)
-					ifile.refreshLocal(IResource.DEPTH_ZERO, null);
+					ifile.refreshLocal(IResource.DEPTH_ZERO,
+							new NullProgressMonitor());
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (CoreException e) {

@@ -2,14 +2,14 @@ package de.bmotionstudio.core.model.observer;
 
 import org.eclipse.swt.widgets.Shell;
 
-import de.bmotionstudio.core.editor.wizard.observer.ExpressionObserverWizard;
+import de.bmotionstudio.core.editor.wizard.observer.BExpressionObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.History;
 
-public class ExpressionObserver extends Observer {
+public class BExpressionObserver extends Observer {
 
 	private String attribute;
 
@@ -21,7 +21,7 @@ public class ExpressionObserver extends Observer {
 		if (attribute == null || expression == null)
 			return;
 
-		EvaluationResult evalResult = history.eval(expression);
+		EvaluationResult evalResult = history.evalCurrent(expression);
 		
 		if (evalResult != null && !evalResult.hasError()) {
 
@@ -36,7 +36,7 @@ public class ExpressionObserver extends Observer {
 
 	@Override
 	public ObserverWizard getWizard(Shell shell, BControl control) {
-		return new ExpressionObserverWizard(shell, control, this);
+		return new BExpressionObserverWizard(shell, control, this);
 	}
 
 	public String getAttribute() {
@@ -61,7 +61,7 @@ public class ExpressionObserver extends Observer {
 
 	@Override
 	public String getType() {
-		return "Expression Observer";
+		return "B Expression Observer";
 	}
 
 	@Override

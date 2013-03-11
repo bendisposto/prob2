@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.check.ModelCheckingResult;
 import de.prob.exception.ProBError;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -35,7 +36,7 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 
 	private final PrologTerm predicate;
 
-	private ResultType result;
+	private ModelCheckingResult result;
 	private String deadlockStateId;
 	private OpInfo deadlockOperation;
 
@@ -52,7 +53,7 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 		return predicate;
 	}
 
-	public ResultType getResult() {
+	public ModelCheckingResult getResult() {
 		return result;
 	}
 
@@ -78,21 +79,24 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		final ResultType result;
+		final ModelCheckingResult result;
 		if (resultTerm.hasFunctor("no_deadlock_found", 0)) {
-			result = ResultType.NO_DEADLOCK;
+			result = new ModelCheckingResult(ModelCheckingResult.Result.ok);
 		} else if (resultTerm.hasFunctor("errors", 1)) {
-			result = ResultType.ERROR;
+			result = new ModelCheckingResult(
+					ModelCheckingResult.Result.general_error);
 		} else if (resultTerm.hasFunctor("interrupted", 0)) {
-			result = ResultType.INTERRUPTED;
+			result = new ModelCheckingResult(
+					ModelCheckingResult.Result.not_yet_finished);
 		} else if (resultTerm.hasFunctor("deadlock", 2)) {
 
 			CompoundPrologTerm deadlockTerm = BindingGenerator.getCompoundTerm(
 					resultTerm, 2);
-			result = ResultType.DEADLOCK_FOUND;
+			result = new ModelCheckingResult(
+					ModelCheckingResult.Result.deadlock);
 
 			deadlockOperation = new OpInfo(BindingGenerator.getCompoundTerm(
-					deadlockTerm.getArgument(1), 7));
+					deadlockTerm.getArgument(1), 8));
 			deadlockStateId = deadlockTerm.getArgument(2).toString();
 
 		} else {

@@ -35,14 +35,14 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.observer.ExpressionObserver;
+import de.bmotionstudio.core.model.observer.BExpressionObserver;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.webconsole.ServletContextListener;
 
-public class ExpressionObserverWizard extends ObserverWizard {
+public class BExpressionObserverWizard extends ObserverWizard {
 	
 	private final DataBindingContext dbc = new DataBindingContext();
 	
@@ -54,7 +54,7 @@ public class ExpressionObserverWizard extends ObserverWizard {
 	
 	private Injector injector = ServletContextListener.INJECTOR;
 	
-	public ExpressionObserverWizard(Shell shell, BControl control,
+	public BExpressionObserverWizard(Shell shell, BControl control,
 			Observer observer) {
 		super(shell, control, observer);
 	}
@@ -157,7 +157,7 @@ public class ExpressionObserverWizard extends ObserverWizard {
 					
 					if(currentHistory != null) {
 					
-					EvaluationResult eval = currentHistory.eval(expressionText
+					EvaluationResult eval = currentHistory.evalCurrent(expressionText
 							.getText());
 						
 						if (eval != null) {
@@ -228,16 +228,16 @@ public class ExpressionObserverWizard extends ObserverWizard {
 		
 		dbc.bindValue(SWTObservables.observeText(nameText, SWT.Modify),
 				BeansObservables.observeValue(
-						(ExpressionObserver) getObserver(), "name"));
+						(BExpressionObserver) getObserver(), "name"));
 
 		dbc.bindValue(SWTObservables.observeText(expressionText, SWT.Modify),
 				BeansObservables.observeValue(
-						(ExpressionObserver) getObserver(), "expression"));
+						(BExpressionObserver) getObserver(), "expression"));
 		
 		IObservableValue typeSelection = ViewersObservables
 				.observeSingleSelection(attributeCombo);
 		IObservableValue myModelTypeObserveValue = BeansObservables
-				.observeValue((ExpressionObserver) getObserver(), "attribute");
+				.observeValue((BExpressionObserver) getObserver(), "attribute");
 		
 		dbc.bindValue(typeSelection, myModelTypeObserveValue,
 				new UpdateValueStrategy() {

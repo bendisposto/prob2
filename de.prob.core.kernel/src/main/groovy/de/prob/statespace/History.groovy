@@ -1,6 +1,8 @@
 package de.prob.statespace
 
 import de.be4.classicalb.core.parser.exceptions.BException
+import de.prob.animator.command.ComposedCommand
+import de.prob.animator.command.EvaluateFormulasCommand
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvaluationResult
 import de.prob.animator.domainobjects.IEvalElement
@@ -16,7 +18,7 @@ class History {
 	def final List<IAnimationListener> animationListeners
 	def final StateSpace s
 
-	def EvaluationResult eval(formula) {
+	def EvaluationResult evalCurrent(formula) {
 		if(!s.canBeEvaluated(getCurrentState())) {
 			return null
 		}
@@ -25,6 +27,32 @@ class History {
 			f = formula as ClassicalB;
 		}
 		s.eval(getCurrentState(),[f]).get(0);
+	}
+
+	def List<EvaluationResult> eval(formula) {
+		def f = formula;
+		if(!(formula instanceof IEvalElement)) {
+			f = formula as ClassicalB;
+		}
+
+		def List<EvaluateFormulasCommand> cmds = []
+
+		def ops = head.getOpList()
+		ops.each {
+			if(s.canBeEvaluated(s.getVertex(it.dest))) {
+				cmds << new EvaluateFormulasCommand([f], it.dest)
+			}
+		}
+
+		ComposedCommand cmd = new ComposedCommand(cmds);
+		s.execute(cmd);
+
+		def res = []
+
+		cmds.each {
+			res << it.getValues().get(0)
+		}
+		res
 	}
 
 
@@ -134,7 +162,7 @@ class History {
 			ops << it.getRep(s as AbstractModel)
 		}
         def curTrans = current?.getOp()?.getRep(s as AbstractModel) ?: "n/a"
-		
+
 		return "${ops} Current Transition is: ${curTrans}"
 	}
 

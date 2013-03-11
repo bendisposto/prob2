@@ -11,7 +11,7 @@ import de.bmotionstudio.core.util.BMotionUtil;
 
 
 public class BMotionStudioLauncher implements IEditorLauncher {
-	
+
 	public void open(File visualizationFile) {
 		BMotionUtil.openVisualization(visualizationFile);
 	}
@@ -20,8 +20,13 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 	public void open(IPath path) {
 		IFile fileForLocation = ResourcesPlugin.getWorkspace().getRoot()
 				.getFileForLocation(path);
-		File file = fileForLocation.getRawLocation().makeAbsolute().toFile();
-		open(file);
+		if (fileForLocation != null) {
+			File file = fileForLocation.getRawLocation().makeAbsolute()
+					.toFile();
+			open(file);
+		} else {
+			// TODO: return some error message?
+		}
 	}
 
 }
