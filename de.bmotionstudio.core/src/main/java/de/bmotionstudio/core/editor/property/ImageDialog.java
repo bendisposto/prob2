@@ -35,10 +35,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import com.google.inject.Injector;
+
 import de.bmotionstudio.core.BMotionImage;
-import de.bmotionstudio.core.BMotionStudio;
 import de.bmotionstudio.core.editor.view.library.LibraryImageObject;
 import de.bmotionstudio.core.editor.view.library.LibraryObject;
+import de.prob.statespace.AnimationSelector;
+import de.prob.webconsole.ServletContextListener;
 
 public class ImageDialog extends Dialog {
 
@@ -48,6 +51,8 @@ public class ImageDialog extends Dialog {
 	private Canvas previewCanvas;
 	private final ImageDialogCellEditor imageDialogCellEditor;
 
+	private Injector injector = ServletContextListener.INJECTOR;
+	
 	protected ImageDialog(final Shell parentShell,
 			final ImageDialogCellEditor imageDialogCellEditor) {
 		super(parentShell);
@@ -106,9 +111,15 @@ public class ImageDialog extends Dialog {
 				if (obj != null) {
 					String imageName = obj.getName();
 					if (!imageName.equals("noimage")) {
+						
+						final AnimationSelector selector = injector
+								.getInstance(AnimationSelector.class);
 
-						String myPath = BMotionStudio.getImagePath()
-								+ File.separator + imageName;
+						String imagePath = selector.getCurrentHistory()
+								.getModel().getModelFile().getParent()
+								+ "/images";
+
+						String myPath = imagePath + File.separator + imageName;
 						previewImage = new Image(Display.getDefault(), myPath);
 
 					}
@@ -164,9 +175,13 @@ public class ImageDialog extends Dialog {
 				.getImageDescriptor("org.eclipse.ui",
 						"$nl$/icons/full/etool16/delete_edit.gif")
 				.createImage()));
-
-		String basePath = BMotionStudio.getImagePath();
-		File dir = new File(basePath);
+				
+		final AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
+		
+		String imagePath = selector.getCurrentHistory().getModel().getModelFile().getParent() + "/images";
+		
+		File dir = new File(imagePath);
 		File[] fileList = dir.listFiles(new FilenameFilter() {
 			public boolean accept(final File dir, final String name) {
 				if (name.toLowerCase().endsWith(".jpg")

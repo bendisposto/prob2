@@ -12,6 +12,7 @@ import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.exception.ProBError;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.History;
 import de.prob.statespace.HistoryElement;
@@ -37,7 +38,9 @@ public class CSPEventObserver extends Observer {
 		OpInfo op = current.getOp();
 		
 		if (op != null) {
+			
 			String opName = op.getName();
+			
 			List<String> opParameter = op.getParams();
 			if (opParameter.size() > 0) {
 				String[] inputArray = opParameter
@@ -53,34 +56,41 @@ public class CSPEventObserver extends Observer {
 			String cspExpression = "bmsresult = member(" + opName
 					+ AsImplodedString + "," + expression + ")";
 			
-			System.out.println("===> " + cspExpression);
+			System.out.println("=====> " + cspExpression);
 			
 			CSP cspEval = new CSP(cspExpression, (CSPModel) history.getModel());
-			EvaluationResult eval = history.evalCurrent(cspEval);
 			
-			if (eval != null && !eval.hasError()) {
+			try {
 
-				String result = eval.value;
-				Boolean bResult = Boolean.valueOf(result);
-				if (bResult) {
+				EvaluationResult eval = history.evalCurrent(cspEval);
+				if (eval != null && !eval.hasError()) {
 
-					if (isCustom) {
-						String parseExpression = parseExpression(
-								value.toString(), control, history);
-						CSP cspE = new CSP("bmsresult=" + parseExpression,
-								(CSPModel) history.getModel());
-						EvaluationResult subEval = history.evalCurrent(cspE);
-						if (subEval != null && !subEval.hasError()) {
-							control.setAttributeValue(attribute, subEval.value);
+					String result = eval.value;
+					Boolean bResult = Boolean.valueOf(result);
+					if (bResult) {
+
+						if (isCustom) {
+							String parseExpression = parseExpression(
+									value.toString(), control, history);
+							CSP cspE = new CSP("bmsresult=" + parseExpression,
+									(CSPModel) history.getModel());
+							EvaluationResult subEval = history
+									.evalCurrent(cspE);
+							if (subEval != null && !subEval.hasError()) {
+								control.setAttributeValue(attribute,
+										subEval.value);
+							}
+						} else {
+							control.setAttributeValue(attribute, value);
 						}
-					} else {
-						control.setAttributeValue(attribute, value);
+
 					}
 
 				}
 
+			} catch (ProBError e) {
+				System.err.println(e.getMessage());
 			}
-			
 			
 		}
 

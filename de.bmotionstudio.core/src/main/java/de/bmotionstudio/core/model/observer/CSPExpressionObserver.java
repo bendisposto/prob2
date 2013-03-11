@@ -8,6 +8,7 @@ import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.exception.ProBError;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.History;
 
@@ -26,15 +27,21 @@ public class CSPExpressionObserver extends Observer {
 		CSP cspEval = new CSP("bmsresult=" + expression,
 				(CSPModel) history.getModel());
 
-		EvaluationResult evalResult = history.evalCurrent(cspEval);
+		try {
 
-		if (evalResult != null && !evalResult.hasError()) {
+			EvaluationResult evalResult = history.evalCurrent(cspEval);
 
-			String result = evalResult.value;
-			AbstractAttribute atr = control.getAttribute(attribute);
-			Object unmarshalResult = atr.unmarshal(result);
-			control.setAttributeValue(attribute, unmarshalResult);
+			if (evalResult != null && !evalResult.hasError()) {
 
+				String result = evalResult.value;
+				AbstractAttribute atr = control.getAttribute(attribute);
+				Object unmarshalResult = atr.unmarshal(result);
+				control.setAttributeValue(attribute, unmarshalResult);
+
+			}
+
+		} catch (ProBError e) {
+			System.err.println(e.getMessage());
 		}
 
 	}

@@ -300,6 +300,11 @@
             id="de.bmotionstudio.observer.CSPExpressionObserver"
             name="CSP Expression Observer">
       </observer>
+      <observer
+            class="de.bmotionstudio.core.model.observer.CSPInitObserver"
+            id="de.bmotionstudio.observer.CSPInitObserver"
+            name="CSP Init Observer">
+      </observer>
    </extension>
    <extension
          point="de.bmotionstudio.core.installActions">
@@ -506,6 +511,9 @@
             <observer
                   id="de.bmotionstudio.observer.CSPExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Tank">
@@ -515,6 +523,9 @@
             <observer
                   id="de.bmotionstudio.observer.CSPExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Text">
@@ -523,6 +534,33 @@
             </observer>
             <observer
                   id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Image">
+            <observer
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Segment">
+            <observer
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
             </observer>
          </control>
       </include>   

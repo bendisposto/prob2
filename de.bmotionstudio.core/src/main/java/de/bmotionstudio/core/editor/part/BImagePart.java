@@ -12,8 +12,9 @@ import java.io.File;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 
+import com.google.inject.Injector;
+
 import de.bmotionstudio.core.AttributeConstants;
-import de.bmotionstudio.core.BMotionStudio;
 import de.bmotionstudio.core.editor.editpolicy.BMSConnectionEditPolicy;
 import de.bmotionstudio.core.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.core.editor.editpolicy.ChangeAttributePolicy;
@@ -22,8 +23,12 @@ import de.bmotionstudio.core.editor.view.library.AbstractLibraryCommand;
 import de.bmotionstudio.core.editor.view.library.AttributeRequest;
 import de.bmotionstudio.core.editor.view.library.LibraryImageCommand;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.statespace.AnimationSelector;
+import de.prob.webconsole.ServletContextListener;
 
 public class BImagePart extends BMSAbstractEditPart {
+	
+	private Injector injector = ServletContextListener.INJECTOR;
 	
 	@Override
 	public void refreshEditFigure(IFigure figure, BControl model,
@@ -35,11 +40,19 @@ public class BImagePart extends BMSAbstractEditPart {
 		if (aID.equals(AttributeConstants.ATTRIBUTE_IMAGE)) {
 			
 			if (value != null && value.toString().length() > 0) {
-				String imagePath = BMotionStudio.getImagePath()
-						+ File.separator + value.toString();
+				
+				final AnimationSelector selector = injector
+						.getInstance(AnimationSelector.class);
+
+				String path = selector.getCurrentHistory().getModel()
+						.getModelFile().getParent()
+						+ "/images";
+				String imagePath = path + File.separator + value.toString();
+				
 				if (new File(imagePath).exists()) {
 					((BMSImageFigure) figure).setImage(imagePath);
 				}
+				
 			}		
 					
 		}
