@@ -3,8 +3,6 @@
 package de.prob.animator.domainobjects
 
 import de.prob.Main
-import de.prob.parser.ProBResultParser
-import de.prob.parser.PrologTermGenerator
 import de.prob.prolog.output.IPrologTermOutput
 import de.prob.scripting.CSPModel
 
@@ -46,7 +44,7 @@ class CSP implements IEvalElement {
 		process.waitFor()
 
 		if (process.exitValue() != 0) {
-			throw new Exception("Error parsing CSP "+process.err.text);
+			throw new EvaluationException("Error parsing CSP "+process.err.text);
 		}
 		def s =""
 		def c =  new File(fn+".cspm.pl").eachLine {
