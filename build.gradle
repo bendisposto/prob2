@@ -7,7 +7,8 @@ project.ext {
 	groupID = "de.prob2"
 
 	excludeFromTychoBuild = ["de.prob.core.kernel"]
-	excludeFromClassPath = ['de.prob.core.rodin', 'de.prob.ui', 'de.prob.ui.rodin', 'de.prob2.feature']
+	excludeFromClassPath = [ 'de.prob.core.rodin','de.prob.ui.rodin', 'de.prob2.feature' ]		// Projects defined here will also be exluded from changes of MF File
+	excludeManifestClassPathDelete = ['de.bmotionstudio.core', 'de.bmotionstudio.rodin']		// Projects defined here will still have classpath changes but no changes in the MF File
 }
 
 apply from: 'tycho_build.gradle'
@@ -20,14 +21,14 @@ task wrapper(type: Wrapper) {
 
 project(':de.prob.core.rodin'){
 	
-
+	// Currently not in use
 	task switchToBuildMF()<<{
 		def standardMF = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF")
 		def buildMF = new File(workspacePath+"${project.name}/BUILD-META/MANIFEST.MF")
 		standardMF.delete()
 		standardMF << buildMF.text
 	}
-	
+	//currently not in use
 	task switchToStandardMF()<<{
 		def standardMF = new File(workspacePath+"${project.name}/BUILD-META/OLD_MANIFEST.MF")
 		def buildMF = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF")

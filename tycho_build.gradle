@@ -15,12 +15,21 @@ apply plugin: 'base'
 import groovy.io.FileType
 project.ext.tychoVersion = "0.15.0"
 
+// defines a List with projects which will not be included in the tycho build 
 try{
 	excludeFromTychoBuild = excludeFromTychoBuild
 }catch(MissingPropertyException e){
 	project.ext.excludeFromTychoBuild = []
 }
 
+// defines a List with projects which Manifest files will not be affected by alterations of setClassPath and deleteCLassPath tasks
+try{
+	excludeManifestClassPathDelete = excludeManifestClassPathDelete
+}catch(MissingPropertyException e){
+		project.ext.excludeManifestClassPathDelete = []
+}
+
+// defines a List with projects which .classpath file will not be altered
 try{
 	excludeFromClassPath = excludeFromClassPath
 }catch(MissingPropertyException e){
@@ -34,11 +43,11 @@ try{
 	project.ext.workspacePath = ""
 }
 
-
+// Folder in each subproject where dependency jars are located
 try{
 	dependencyFolder = dependencyFolder
 }catch(MissingPropertyException e){
-	project.ext.dependencyFolder = "lib/dependencies/"			// Folder in each subproject where 
+	project.ext.dependencyFolder = "lib/dependencies/"			
 }
 
 try{
@@ -71,7 +80,7 @@ try{
 	
 }
 
-
+// List which defines the features. By default it searches for projects with '.feature' at the end
 try{
 	features = features
 }catch(MissingPropertyException e){
@@ -254,9 +263,9 @@ def addRunTimeLib( String libPar, String projectPar){
 } // Adds a Library to the current Bundle-ClassPath of the Manifest file
 
 
-def createRunTimeLib(String libPar, String projectPar){
+def createRunTimeLib(String projectPar){
 	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
-	mf << "Bundle-ClassPath: lib/dependencies/"+libPar
+	mf << "Bundle-ClassPath: ."
 } // Creates a Bundle-ClassPath Section in the Manifest file
 
 def boolean checkForRunTimeLibs(String projectPar){
@@ -301,6 +310,26 @@ def boolean checkRunTimeLib(String libPar, String projectPar){								// checks 
 }// checks if lib is already present in Manifest file
 // if lib is present but is referenced from another folder than dependencyFolder the library from dependencyFolder will be referenced
 
+
+def deleteManifestClassPath(String projectPar){
+	
+	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
+	def newMf = new File(projectPar+"/MF")
+	boolean startDelete = false
+	newMf.delete()
+	mf.eachLine{ line ->
+		
+		if(line ==~ /[A-Z].*/) startDelete = false
+		if(line ==~ /.*Bundle-ClassPath:.*/)	startDelete = true
+		
+		if(!startDelete && !( line ==~ /(\ |\t)*/) )	newMf << line+"\n"
+	}
+
+	mf.delete()
+	newMf.renameTo(projectPar+"/META-INF/MANIFEST.MF")
+	
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //		--	!!! 				DEFINING SUB PROJECTS 							!!!	-- //
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -326,8 +355,8 @@ subprojects {
 	}
 	
 	task setClassPath(dependsOn: 'collectDependencies')<<{
-		
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
+		Boolean exclude = false	// if no lib/dependency folder is found this task will do nothing
 		if( excludeFromClassPath.every{ it != project.name }){
 			def dependencyList = []
 			try{
@@ -336,57 +365,55 @@ subprojects {
 						dependencyList << file.getName()  
 					}
 				}
-	
-				if(features.every{ it != project.name }){	
-					boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
-					for(int icp = 0; icp < dependencyList.size; icp++){
-						addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
-					
-						if(!BundleClassPathPresent){					// Adds Lib to Manifest File
-							createRunTimeLib(dependencyList[icp], project.name)
-							BundleClassPathPresent = true
-						}else{
-							if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
-								addRunTimeLib( dependencyList[icp], project.name)
-							}
-						}
-					}
-					/*dependencyList.each{ dep->
-					println project.name+": "+ dep	// could still be usefull for debugging, that's why it's not deleted
-					}*/	
+			}catch(Exception e){
+				exclude = true
+				println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
+			
 			}
+					
+			if( features.every{ it != project.name } && !exclude ){	
+					
+				if( excludeManifestClassPathDelete.every{ it != project.name }) deleteManifestClassPath( project.name )
+		
+				if( ! checkForRunTimeLibs(project.name) ){					// Adds Lib to Manifest File
+					createRunTimeLib( project.name)
+				}
+				for(int icp = 0; icp < dependencyList.size; icp++){
+	 				addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
+						
+					if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
+						addRunTimeLib( dependencyList[icp], project.name)
+					}	
+				}		
+							
 			def warningReadMe = new File(workspacePath+project.name+"/"+dependencyFolder+"_README.txt")
 			warningReadMe.delete()
 			warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
 			warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
 			warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
 			
-			
-			}catch(Exception e){
-				println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
-			}
-		}// if exclude projectAbfrage
-		
+			}	
+		}// if exclude		
 	}// setClassPath
 	
 	
 	task deleteFromClassPath()<<{		
 		
 		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
+			
+		boolean depsDelete = false
+		def depsFolder = new File(workspacePath+project.name+'/'+dependencyFolder)
+		if(depsFolder.exists()) depsDelete = true
+		depsFolder.deleteDir()
 		
 		try{
-			
-			boolean depsDelete = false
-			def depsFolder = new File(workspacePath+project.name+'/'+dependencyFolder)
-			if(depsFolder.exists()) depsDelete = true
-			depsFolder.deleteDir()
 
 			if(features.every{ it != project.name } && depsDelete){	
 				deleteLibFromCP(project.name)
 			}
 	
 		}catch(Exception e){
-			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
+			println project.name+": No Classpath File found: ClassPath will not be changed"
 		}
 			
 	}
