@@ -5,6 +5,7 @@
  * */
 package de.bmotionstudio.core.model.control;
 
+import de.bmotionstudio.core.model.attribute.AttributeSignalStatus;
 import de.bmotionstudio.core.model.attribute.AttributeTrackDirection;
 import de.bmotionstudio.core.model.attribute.BAttributeHeight;
 import de.bmotionstudio.core.model.attribute.BAttributeLabel;
@@ -24,8 +25,9 @@ public class Signal extends BControl {
 		aHeight.setShow(false);
 		aHeight.setEditable(false);
 		initAttribute(aHeight);
-		
+
 		initAttribute(new AttributeTrackDirection(AttributeTrackDirection.RIGHT));
+		initAttribute(new AttributeSignalStatus(AttributeSignalStatus.UNKNOWN));
 		initAttribute(new BAttributeLabel("Signal"));
 
 	}

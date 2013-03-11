@@ -14,6 +14,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 
+import de.bmotionstudio.core.model.attribute.AttributeSignalStatus;
+
 /**
  * @author Lukas Ladenberger
  * 
@@ -28,6 +30,7 @@ public class SignalFigure extends AbstractBMotionFigure {
 	private boolean isRight;
 	private Label label;
 	private Color foregroundcolor;
+	private int singalStatus;
 	
 	@Override
 	public void paint(Graphics g) {
@@ -57,17 +60,36 @@ public class SignalFigure extends AbstractBMotionFigure {
 				Point b;
 				Point c;
 
+				Point p1;
+				Point p2;
+				Point s11;
+				Point s12;
+				Point s21;
+				Point s22;
+				
 				int x = r.x + r.width / 2;
 				int y = r.y + r.height / 2;
 				
 				if (isRight) {
 
 					x = x - 10;
-					g.drawLine(x, y, x + LEG + RAD * 2, y);
+					
+					g.drawLine(x + RAD * 2, y, x + LEG + RAD * 2, y);
 					g.drawOval(x, y - RAD, RAD * 2, RAD * 2);
-					g.drawLine(x + RAD - 1, y - RAD, x + RAD - 1, y + RAD);
-					g.drawLine(x + RAD + 1, y - RAD, x + RAD + 1, y + RAD);
+					
+					// Proceed
+					p1 = new Point(x, y);
+					p2 = new Point(x + RAD * 2, y);
+					// g.drawLine(x, y, x + RAD * 2, y);
 
+					// Stop
+					s11 = new Point(x + RAD - 1, y - RAD);
+					s12 = new Point(x + RAD - 1, y + RAD);
+					s21 = new Point(x + RAD + 1, y - RAD);
+					s22 = new Point(x + RAD + 1, y + RAD);
+					// g.drawLine(x + RAD - 1, y - RAD, x + RAD - 1, y + RAD);
+					// g.drawLine(x + RAD + 1, y - RAD, x + RAD + 1, y + RAD);
+	
 					a = new Point(x + RAD, y - RAD);
 					b = new Point(x + RAD, y + RAD);
 					c = new Point(x + RAD, y);
@@ -76,19 +98,33 @@ public class SignalFigure extends AbstractBMotionFigure {
 
 					x = x - 18;
 					
-					g.drawLine(x, y, x + LEG + RAD * 2, y);
+					g.drawLine(x, y, x + LEG, y);
 					g.drawOval(x + LEG, y - RAD, RAD * 2, RAD * 2);
-					g.drawLine(x + LEG + RAD - 1, y - RAD, x + LEG + RAD - 1, y
-							+ RAD);
-					g.drawLine(x + LEG + RAD + 1, y - RAD, x + LEG + RAD + 1, y
-							+ RAD);
+					
+					// Proceed
+					p1 = new Point(x + LEG, y);
+					p2 = new Point(x + LEG + RAD * 2, y);
+					// 	g.drawLine(x + LEG, y, x + LEG + RAD * 2, y);
 
+					// Stop
+					s11 = new Point(x + LEG + RAD - 1, y - RAD);
+					s12 = new Point(x + LEG + RAD - 1, y + RAD);
+					s21 = new Point(x + LEG + RAD + 1, y - RAD);
+					s22 = new Point(x + LEG + RAD + 1, y + RAD);
+					// g.drawLine(x + LEG + RAD - 1, y - RAD, x + LEG + RAD - 1,
+					// y
+					// + RAD);
+					// g.drawLine(x + LEG + RAD + 1, y - RAD, x + LEG + RAD + 1,
+					// y
+					// + RAD);
+		
 					a = new Point(x + LEG + RAD, y - RAD);
 					b = new Point(x + LEG + RAD, y + RAD);
 					c = new Point(x + LEG + RAD, y);
 
 				}
 
+				// Attention line
 				a.translate(-c.x, -c.y);
 				b.translate(-c.x, -c.y);
 
@@ -96,8 +132,26 @@ public class SignalFigure extends AbstractBMotionFigure {
 				Point nb = rotate(b, -45);
 				na.translate(c);
 				nb.translate(c);
-				g.drawLine(na, nb);
-			
+				
+				switch (singalStatus) {
+				case AttributeSignalStatus.ATTENTION:
+					g.drawLine(na, nb);
+					break;
+				case AttributeSignalStatus.PROCEED:
+					g.drawLine(p1.x, p1.y, p2.x, p2.y);
+					break;
+				case AttributeSignalStatus.STOP:
+					g.drawLine(s11.x, s11.y, s12.x, s12.y);
+					g.drawLine(s21.x, s21.y, s22.x, s22.y);
+					break;
+				default:
+					g.drawLine(na, nb);
+					g.drawLine(p1.x, p1.y, p2.x, p2.y);
+					g.drawLine(s11.x, s11.y, s12.x, s12.y);
+					g.drawLine(s21.x, s21.y, s22.x, s22.y);
+					break;
+				}
+				
 			}
 
 			@Override
@@ -145,6 +199,11 @@ public class SignalFigure extends AbstractBMotionFigure {
 	public void setLabel(String label) {
 		this.label.setText(label);
 		this.label.repaint();
+	}
+
+	public void setSignalStatus(Integer singalStatus) {
+		this.singalStatus = singalStatus;
+		this.shapeFigure.repaint();
 	}
 
 }

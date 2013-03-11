@@ -54,6 +54,7 @@ public final class AttributeConstants {
 	public static final String ATTRIBUTE_MAIN = "de.bmotionstudio.core.model.attribute.BAttributeMain";
 	public static final String ATTRIBUTE_CONNECTION = "de.bmotionstudio.core.model.attribute.BAttributeConnection";
 
+	public static final String ATTRIBUTE_SIGNAL_STATUS = "de.bmotionstudio.core.model.attribute.AttributeSignalStatus";
 	public static final String ATTRIBUTE_TRACK_DIRECTION = "de.bmotionstudio.core.model.attribute.AttributeTrackDirection";
 	public static final String ATTRIBUTE_SWITCH_DIRECTION = "de.bmotionstudio.core.model.attribute.AttributeSwitchDirection";
 	public static final String ATTRIBUTE_SWITCH_POSITION = "de.bmotionstudio.core.model.attribute.AttributeSwitchPosition";
