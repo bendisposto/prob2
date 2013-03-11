@@ -374,11 +374,9 @@ subprojects {
 			if( features.every{ it != project.name } && !exclude ){	
 					
 				if( excludeManifestClassPathDelete.every{ it != project.name }) deleteManifestClassPath( project.name )
-					
-				boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
-				if(!BundleClassPathPresent){					// Adds Lib to Manifest File
+		
+				if( ! checkForRunTimeLibs(project.name) ){					// Adds Lib to Manifest File
 					createRunTimeLib( project.name)
-					BundleClassPathPresent = true
 				}
 				for(int icp = 0; icp < dependencyList.size; icp++){
 	 				addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
@@ -386,10 +384,7 @@ subprojects {
 					if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
 						addRunTimeLib( dependencyList[icp], project.name)
 					}	
-				}
-				/*dependencyList.each{ dep->
-					println project.name+": "+ dep	// could still be usefull for debugging, that's why it's not deleted
-				}*/			
+				}		
 							
 			def warningReadMe = new File(workspacePath+project.name+"/"+dependencyFolder+"_README.txt")
 			warningReadMe.delete()
@@ -398,9 +393,7 @@ subprojects {
 			warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
 			
 			}	
-	
-		}// if exclude
-		
+		}// if exclude		
 	}// setClassPath
 	
 	

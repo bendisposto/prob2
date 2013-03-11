@@ -7,8 +7,8 @@ project.ext {
 	groupID = "de.prob2"
 
 	excludeFromTychoBuild = ["de.prob.core.kernel"]
-	excludeFromClassPath = ['de.prob.core.rodin', 'de.prob.ui', 'de.prob.ui.rodin', 'de.prob2.feature']
-	excludeManifestClassPathDelete = ['de.bmotionstudio.core', 'de.bmotionstudio.rodin']
+	excludeFromClassPath = [ 'de.prob.core.rodin','de.prob.ui.rodin', 'de.prob2.feature' ]		// Projects defined here will also be exluded from changes of MF File
+	excludeManifestClassPathDelete = ['de.bmotionstudio.core', 'de.bmotionstudio.rodin']		// Projects defined here will still have classpath changes but no changes in the MF File
 }
 
 apply from: 'tycho_build.gradle'
