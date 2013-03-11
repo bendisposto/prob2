@@ -282,19 +282,23 @@
          point="de.bmotionstudio.core.observer">
       <observer
             class="de.bmotionstudio.core.model.observer.BExpressionObserver"
-            id="de.bmotionstudio.observer.BExpressionObserver">
+            id="de.bmotionstudio.observer.BExpressionObserver"
+            name="B Expression Observer">
       </observer>
       <observer
             class="de.bmotionstudio.core.model.observer.BPredicateObserver"
-            id="de.bmotionstudio.observer.BPredicateObserver">
+            id="de.bmotionstudio.observer.BPredicateObserver"
+            name="B Predicate Observer">
       </observer>
       <observer
             class="de.bmotionstudio.core.model.observer.CSPEventObserver"
-            id="de.bmotionstudio.observer.CSPEventObserver">
+            id="de.bmotionstudio.observer.CSPEventObserver"
+            name="CSP Event Observer">
       </observer>
       <observer
             class="de.bmotionstudio.core.model.observer.CSPExpressionObserver"
-            id="de.bmotionstudio.observer.CSPExpressionObserver">
+            id="de.bmotionstudio.observer.CSPExpressionObserver"
+            name="CSP Expression Observer">
       </observer>
    </extension>
    <extension

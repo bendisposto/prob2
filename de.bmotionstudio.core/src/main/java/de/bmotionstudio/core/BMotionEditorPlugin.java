@@ -55,22 +55,18 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	// The shared instance
 	private static BMotionEditorPlugin plugin;
 
-//	private static HashMap<String, IConfigurationElement> controlExtensions = new HashMap<String, IConfigurationElement>();
-
 	private static HashMap<String, IConfigurationElement> observerExtensions = new HashMap<String, IConfigurationElement>();
-
 	private static HashMap<String, IConfigurationElement> schedulerExtensions = new HashMap<String, IConfigurationElement>();
-
 	private static HashMap<Class<?>, IBControlService> controlServicesClass = new HashMap<Class<?>, IBControlService>();
 	private static HashMap<String, IBControlService> controlServicesId = new HashMap<String, IBControlService>();
 
 	private StateSpace currentStateSpace = null;
-	
-	IExtensionRegistry registry = Platform.getExtensionRegistry();
 
-	Injector injector = ServletContextListener.INJECTOR;
+	private IExtensionRegistry registry = Platform.getExtensionRegistry();
 
-	final AnimationSelector selector = injector
+	private Injector injector = ServletContextListener.INJECTOR;
+
+	private final AnimationSelector selector = injector
 			.getInstance(AnimationSelector.class);
 	
 	/**
@@ -209,14 +205,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	private void initExtensionClasses() {
 
 		ArrayList<String> elementIDs = new ArrayList<String>();
-//		elementIDs.add("control");
-//		initExtensionClass("de.bmotionstudio.core.control", elementIDs,
-//				"id", controlExtensions);
-
-//		elementIDs.clear();
-//		elementIDs.add("control");
-//		initExtensionClass("de.bmotionstudio.core.control", elementIDs,
-//				"id", controlServices);
 
 		elementIDs.clear();
 		elementIDs.add("observer");
@@ -232,10 +220,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 //				elementIDs, "class", schedulerExtensions);
 
 	}
-
-//	public static IConfigurationElement getControlExtension(String ident) {
-//		return controlExtensions.get(ident);
-//	}
 
 	public static IConfigurationElement getObserverExtension(String ident) {
 		return observerExtensions.get(ident);

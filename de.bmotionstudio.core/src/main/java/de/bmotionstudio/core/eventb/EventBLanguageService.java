@@ -8,7 +8,6 @@ package de.bmotionstudio.core.eventb;
 
 import org.eclipse.core.resources.IFile;
 import org.eventb.core.IContextRoot;
-import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
@@ -22,13 +21,6 @@ import de.bmotionstudio.core.model.control.Visualization;
  * 
  */
 public class EventBLanguageService implements ILanguageService {
-
-	private IEventBRoot getCorrespondingFile(IFile file, String machineFileName) {
-		IRodinProject rProject = RodinCore.valueOf(file.getProject());
-		IRodinFile rFile = rProject.getRodinFile(machineFileName);
-		IEventBRoot eventbRoot = (IEventBRoot) rFile.getRoot();
-		return eventbRoot;
-	}
 
 	@Override
 	public void startProBAnimator(Visualization v) {

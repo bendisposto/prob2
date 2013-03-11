@@ -23,10 +23,15 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.editor.figure.AbstractBMotionFigure;
@@ -131,18 +136,15 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 	@Override
 	public void performRequest(Request req) {
-		// TODO: Reimplement me!!!	
-//		if (!isRunning()) {
-//			if (req.getType().equals(RequestConstants.REQ_OPEN)) {
-//				try {
-//					IWorkbenchPage page = PlatformUI.getWorkbench()
-//							.getActiveWorkbenchWindow().getActivePage();
-//					page.showView(IPageLayout.ID_PROP_SHEET);
-//				} catch (PartInitException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
+		if (req.getType().equals(RequestConstants.REQ_OPEN)) {
+			try {
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				page.showView(IPageLayout.ID_PROP_SHEET);
+			} catch (PartInitException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
