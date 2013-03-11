@@ -11,7 +11,11 @@ public class WorksheetErrorEvent extends DefaultWorksheetEvent {
 	private boolean haltAll;
 
 	/**
+	 * Constructor for WorksheetErrorEvent
 	 * 
+	 * @param id
+	 * @param message
+	 * @param haltAll
 	 */
 	public WorksheetErrorEvent(int id, String message, boolean haltAll) {
 		super();
@@ -24,7 +28,7 @@ public class WorksheetErrorEvent extends DefaultWorksheetEvent {
 	 * @return the haltAll
 	 */
 	public boolean isHaltAll() {
-		return this.haltAll;
+		return haltAll;
 	}
 
 	/**

@@ -7,6 +7,14 @@ import javax.xml.bind.annotation.XmlID;
 
 import de.prob.worksheet.block.impl.DefaultBlock;
 
+/**
+ * This is the data interface for a worksheet document. It is implemented in the
+ * class WorksheetDocument.
+ * 
+ * @see de.prob.worksheet.document.impl.WorksheetDocument
+ * @author Rene
+ * 
+ */
 public interface IWorksheetData {
 
 	/**
@@ -137,10 +145,16 @@ public interface IWorksheetData {
 	/**
 	 * Returns the first block in the document
 	 * 
-	 * @return
+	 * @return the first block of the document
 	 */
 	public abstract DefaultBlock getFirst();
 
+	/**
+	 * Removes the block from the worksheets block list
+	 * 
+	 * @param block
+	 *            to be removed
+	 */
 	public abstract void removeBlock(DefaultBlock block);
 
 }

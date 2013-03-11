@@ -12,7 +12,7 @@ import java.util.HashMap;
  * Groovy Execution or JSR 223 compliant Engine
  * 
  * @author Rene
- * @see EvalStoreContext
+ * @see de.prob.worksheet.api.evalStore.EvalStoreContext
  */
 public interface IContext {
 

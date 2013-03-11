@@ -11,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 
 import org.eclipse.core.filesystem.EFS;
@@ -100,7 +99,6 @@ public class Worksheet extends EditorPart {
 			IProgressMonitor monitor) {
 		InputStream contentStream = getContentInputStream();
 		String content = Worksheet.getStringFromInputStream(contentStream);
-		URLConnection con = null;
 		BufferedWriter out = null;
 		try {
 			IFileStore fileStore = EFS.getStore(input.getURI());

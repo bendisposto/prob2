@@ -20,11 +20,11 @@
 		</encoder>
 	</appender>
 
-<logger name="de.prob" level="OFF" />
-<logger name="de.prob.worksheet" level="TRACE" />
-<logger name="de.prob.ui.worksheet" level="TRACE" />
+<logger name="de.prob" level="WARN" />
+<logger name="de.prob.worksheet" level="WARN" />
+<logger name="de.prob.ui.worksheet" level="WARN" />
 
-<root level="OFF">
+<root level="WARN">
 	<appender-ref ref="STDOUT" />
 	<appender-ref ref="FILE" />
 </root>

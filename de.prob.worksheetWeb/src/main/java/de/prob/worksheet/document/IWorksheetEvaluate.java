@@ -2,6 +2,15 @@ package de.prob.worksheet.document;
 
 import de.prob.worksheet.block.impl.DefaultBlock;
 
+/**
+ * This interface defines the necessary method for the evaluation of a worksheet
+ * document. It's default implementation is the class WorksheetDocument
+ * 
+ * @see de.prob.worksheet.document.impl.WorksheetDocument
+ * 
+ * @author Rene
+ * 
+ */
 public interface IWorksheetEvaluate {
 
 	/**
@@ -17,7 +26,7 @@ public interface IWorksheetEvaluate {
 	 * Marks all blocks from index to blocks.length. A marked block isn't
 	 * evaluated so his content could be incorrect
 	 * 
-	 * @param blockIndex
+	 * @param index
 	 */
 	public abstract void markAllAfter(int index);
 

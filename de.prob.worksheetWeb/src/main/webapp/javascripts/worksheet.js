@@ -50,7 +50,7 @@ function newDocument(id){
 		data = jQuery.parseJSON(xhr.responseText);
 		data = $.recursiveFunctionTest(data);
 		data.sessionId=wsid;
-		$('#ws-id-1').bind("worksheetinitialized",function(){
+		$('#ws-id-1').bind("",function(){
 			//DEBUG alert("new Document worksheetInitialized");
 			$("#loadingBar").hide();
 			$("#loadingSheet").hide();
@@ -59,7 +59,7 @@ function newDocument(id){
 			$("#loadingBar").show();
 			$("#loadingSheet").show();
 		});
-		$('#ws-id-1').bind("worksheetevalend",function(){
+		$('#ws-id-1').bind("worksheetinitialized worksheetevalend ",function(){
 			$("#loadingBar").hide();
 			$("#loadingSheet").hide();
 		});

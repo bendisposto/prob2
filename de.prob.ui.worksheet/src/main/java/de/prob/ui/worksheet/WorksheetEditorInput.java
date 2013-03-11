@@ -11,10 +11,11 @@ public class WorksheetEditorInput implements IEditorInput {
 
 	public WorksheetEditorInput() {
 		// TODO add method for setting the name ids correctly (allways 0..x )
-		createdInputs++;
-		myId = createdInputs;
+		WorksheetEditorInput.createdInputs++;
+		myId = WorksheetEditorInput.createdInputs;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {
 		// TODO find out if IAdapter needs to be filled

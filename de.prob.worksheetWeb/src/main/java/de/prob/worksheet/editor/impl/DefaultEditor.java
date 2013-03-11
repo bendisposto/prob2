@@ -185,7 +185,9 @@ public abstract class DefaultEditor implements IEditorData, IEditorUI {
 	 */
 	@Override
 	@JsonProperty(value = "content")
-	public void setEditorContent(final String editorContent) {
+	public void setEditorContent(String editorContent) {
+		if (editorContent == null)
+			editorContent = "";
 		EditorContent = editorContent;
 	}
 

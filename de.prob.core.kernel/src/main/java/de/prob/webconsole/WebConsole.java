@@ -6,15 +6,9 @@ import java.net.BindException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import org.eclipse.jetty.deploy.AppProvider;
-import org.eclipse.jetty.deploy.DeploymentManager;
-import org.eclipse.jetty.deploy.providers.WebAppProvider;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -27,17 +21,19 @@ import org.slf4j.LoggerFactory;
  */
 public class WebConsole {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WebConsole.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(WebConsole.class);
 	private static int PORT;
 
 	public static void run() throws Exception {
-		run(new Runnable() {
+		WebConsole.run(new Runnable() {
 
 			@Override
 			public void run() {
 				try {
 					Desktop.getDesktop().browse(
-							new URI("http://localhost:" + PORT+"/console"));
+							new URI("http://localhost:" + WebConsole.PORT
+									+ "/console"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (URISyntaxException e) {
@@ -55,45 +51,39 @@ public class WebConsole {
 
 		ProtectionDomain protectionDomain = WebConsole.class
 				.getProtectionDomain();
-		LOGGER.debug("Protection Domain: "+ protectionDomain.toString());
+		WebConsole.LOGGER.debug("Protection Domain: "
+				+ protectionDomain.toString());
 		String warFile = protectionDomain.getCodeSource().getLocation()
 				.toExternalForm();
-		LOGGER.debug("External Form: "+ warFile);
+		WebConsole.LOGGER.debug("External Form: " + warFile);
 
 		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/")))
 			warFile += "bin/";
-		
-		//Creating a context handler collection
+
+		// Creating a context handler collection
 		/*
-		ContextHandlerCollection contexts=new ContextHandlerCollection();
-		WebAppProvider wprv=new WebAppProvider();
-		wprv.setExtractWars(true);
-		DeploymentManager dmgr=new DeploymentManager();
-		Collection<AppProvider> prvs=new ArrayList<AppProvider>();
-
-		wprv.setMonitoredDirName(warFile+"webapps/");
-		wprv.setScanInterval(10);
-		prvs.add(wprv);
-		dmgr.setContexts(contexts);
-		dmgr.setAppProviders(prvs);
-		server.addBean(dmgr);
-		*/
-
-		
-	
+		 * ContextHandlerCollection contexts=new ContextHandlerCollection();
+		 * WebAppProvider wprv=new WebAppProvider(); wprv.setExtractWars(true);
+		 * DeploymentManager dmgr=new DeploymentManager();
+		 * Collection<AppProvider> prvs=new ArrayList<AppProvider>();
+		 * 
+		 * wprv.setMonitoredDirName(warFile+"webapps/");
+		 * wprv.setScanInterval(10); prvs.add(wprv); dmgr.setContexts(contexts);
+		 * dmgr.setAppProviders(prvs); server.addBean(dmgr);
+		 */
 
 		WebAppContext context = new WebAppContext(warFile, "/console");
 		context.setServer(server);
 
-		WebAppContext worksheetContext=new WebAppContext(warFile+"webapps/worksheet.war","/worksheet");
+		WebAppContext worksheetContext = new WebAppContext(warFile
+				+ "webapps/worksheet.war", "/worksheet");
 		worksheetContext.setExtractWAR(true);
 		worksheetContext.setServer(server);
-		
-		
+
 		// Add the handlers
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
-		//handlers.addHandler(contexts);
+		// handlers.addHandler(contexts);
 		handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
@@ -118,14 +108,14 @@ public class WebConsole {
 			throw new BindException("No free port found between 8080 and 8179");
 		}
 
-		PORT = port;
+		WebConsole.PORT = port;
 
 		openBrowser.run();
 		server.join();
 	}
 
 	public static int getPort() {
-		return PORT;
+		return WebConsole.PORT;
 	}
 
 }

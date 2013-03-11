@@ -3,13 +3,11 @@ package de.prob.ui.worksheet;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.slf4j.LoggerFactory;
 
 /**
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-
 	// The plug-in ID
 	public static final String PLUGIN_ID = "de.prob.ui.worksheetEditor"; //$NON-NLS-1$
 
@@ -32,7 +30,7 @@ public class Activator extends AbstractUIPlugin {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		plugin = this;
+		Activator.plugin = this;
 	}
 
 	/*
@@ -44,7 +42,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		plugin = null;
+		Activator.plugin = null;
 		super.stop(context);
 	}
 
@@ -54,7 +52,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
-		return plugin;
+		return Activator.plugin;
 	}
 
 	/**
@@ -66,6 +64,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+				path);
 	}
 }

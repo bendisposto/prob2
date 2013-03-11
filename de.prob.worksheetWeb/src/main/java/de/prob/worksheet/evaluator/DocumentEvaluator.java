@@ -68,17 +68,25 @@ public class DocumentEvaluator {
 		}
 		if (index > 0) {
 			blocks = doc.getBlocksFrom(index - 1);
-			DefaultBlock last = blocks[blocks.length - 1];
-			DefaultBlock secondLast = blocks[blocks.length - 2];
+			if (blocks.length >= 2) {
+				DefaultBlock last = blocks[blocks.length - 1];
+				DefaultBlock secondLast = blocks[blocks.length - 2];
 
-			if (last.getClass().equals(last.getClass())) {
-				if (!last.isInputAndOutput() && !last.isNeitherInNorOutput()
-						&& !secondLast.isInputAndOutput()
-						&& !secondLast.isNeitherInNorOutput()) {
-					if (last.getEditor().getEditorContent().trim().equals("")
-							&& secondLast.getEditor().getEditorContent().trim()
-									.equals(""))
-						doc.removeBlock(last);
+				if (last.getClass().equals(secondLast.getClass())) {
+					if (!last.isInputAndOutput()
+							&& !last.isNeitherInNorOutput()
+							&& !secondLast.isInputAndOutput()
+							&& !secondLast.isNeitherInNorOutput()) {
+						String lastContent = last.getEditor()
+								.getEditorContent();
+						String secondLastContent = secondLast.getEditor()
+								.getEditorContent();
+						if (lastContent != null
+								&& lastContent.trim().equals("")
+								&& secondLastContent != null
+								&& secondLastContent.trim().equals(""))
+							doc.removeBlock(last);
+					}
 				}
 			}
 		}

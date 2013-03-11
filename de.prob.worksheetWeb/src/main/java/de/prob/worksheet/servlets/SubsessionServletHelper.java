@@ -16,60 +16,69 @@ import de.prob.worksheet.document.impl.WorksheetDocument;
 import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 public class SubsessionServletHelper {
-	Logger logger = LoggerFactory.getLogger(SubsessionServletHelper.class);
+	static Logger logger = LoggerFactory
+			.getLogger(SubsessionServletHelper.class);
 
-	public void setSessionAttributes(HttpSession session, String subSessionId,
-			HashMap<String, Object> attributes) {
-		logger.trace("in: session={}, subSessionId={} ,attributes={}",
-				new Object[] { session, subSessionId, attributes });
-		logger.debug("Session attributes: " + attributes.toString());
+	public static void setSessionAttributes(HttpSession session,
+			String subSessionId, HashMap<String, Object> attributes) {
+		SubsessionServletHelper.logger.trace(
+				"in: session={}, subSessionId={} ,attributes={}", new Object[] {
+						session, subSessionId, attributes });
+		SubsessionServletHelper.logger.debug("Session attributes: "
+				+ attributes.toString());
 		session.setAttribute(subSessionId, attributes);
-		logger.trace("return:");
+		SubsessionServletHelper.logger.trace("return:");
 	}
 
-	public void setSessionProperties(HttpSession session) {
-		logger.trace("in: session={}", session);
+	public static void setSessionProperties(HttpSession session) {
+		SubsessionServletHelper.logger.trace("in: session={}", session);
 		if (session.isNew()) {
-			logger.debug("New Session initialized");
+			SubsessionServletHelper.logger.debug("New Session initialized");
 			session.setMaxInactiveInterval(-1);
 		}
-		logger.trace("return:");
+		SubsessionServletHelper.logger.trace("return:");
 	}
 
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getSessionAttributes(HttpSession session,
-			String subSessionId) {
-		logger.trace("in: session={}, subSessionId={}", session, subSessionId);
+	public static HashMap<String, Object> getSessionAttributes(
+			HttpSession session, String subSessionId) {
+		SubsessionServletHelper.logger.trace("in: session={}, subSessionId={}",
+				session, subSessionId);
 		HashMap<String, Object> attributes = (HashMap<String, Object>) session
 				.getAttribute(subSessionId);
 		if (attributes == null) {
 			attributes = new HashMap<String, Object>();
-			logger.debug("New 'Sub'session initialized with id :"
-					+ subSessionId);
+			SubsessionServletHelper.logger
+					.debug("New 'Sub'session initialized with id :"
+							+ subSessionId);
 		}
-		logger.trace("return: attributes={}", attributes);
+		SubsessionServletHelper.logger.trace("return: attributes={}",
+				attributes);
 		return attributes;
 	}
 
-	public ContextHistory getContextHistory(HashMap<String, Object> attributes) {
-		logger.trace("in: attributes={}", attributes);
+	public static ContextHistory getContextHistory(
+			HashMap<String, Object> attributes) {
+		SubsessionServletHelper.logger.trace("in: attributes={}", attributes);
 		Object temp = attributes.get("contextHistory");
 		ContextHistory contextHistory = null;
 		if (temp == null) {
 			contextHistory = new ContextHistory(new EvalStoreContext("init",
 					null));
-			logger.info("new ContextHistory created");
+			SubsessionServletHelper.logger.info("new ContextHistory created");
 			attributes.put("contextHistory", contextHistory);
 		} else {
 			contextHistory = (ContextHistory) temp;
 		}
-		logger.trace("return: contextHistory={}", contextHistory);
+		SubsessionServletHelper.logger.trace("return: contextHistory={}",
+				contextHistory);
 		return contextHistory;
 	}
 
-	public IWorksheetData getDocument(HashMap<String, Object> attributes,
-			boolean create) {
-		logger.trace("in: attributes={}, create={}", attributes, create);
+	public static IWorksheetData getDocument(
+			HashMap<String, Object> attributes, boolean create) {
+		SubsessionServletHelper.logger.trace("in: attributes={}, create={}",
+				attributes, create);
 		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");
 		if (doc == null && create) {
 
@@ -82,14 +91,15 @@ public class SubsessionServletHelper {
 			DocumentEvaluator evaluator = new DocumentEvaluator();
 			evaluator.evaluateFrom(doc, 0, new ContextHistory(
 					new EvalStoreContext("init", null)));
-			logger.debug("New WorksheetDocument initiaized");
+			SubsessionServletHelper.logger
+					.debug("New WorksheetDocument initiaized");
 			attributes.put("document", doc);
 		}
-		logger.trace("return: document={}", doc);
+		SubsessionServletHelper.logger.trace("return: document={}", doc);
 		return doc;
 	}
 
-	public void logParameters(HttpServletRequest req, String[] params) {
+	public static void logParameters(HttpServletRequest req, String[] params) {
 		String msg = "{ ";
 		for (int x = 0; x < params.length; x++) {
 			if (x != 0)
@@ -97,7 +107,7 @@ public class SubsessionServletHelper {
 			msg += params[x] + " : " + req.getParameter(params[x]);
 		}
 		msg += " }";
-		logger.debug(msg);
+		SubsessionServletHelper.logger.debug(msg);
 
 	}
 }

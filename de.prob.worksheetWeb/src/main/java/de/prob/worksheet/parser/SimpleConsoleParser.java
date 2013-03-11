@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
 
+@SuppressWarnings("rawtypes")
 public class SimpleConsoleParser {
 	private static final Class[] apis = new Class[] { EvalStoreAPI.class };
 
@@ -24,7 +25,7 @@ public class SimpleConsoleParser {
 		// worksheetAPImethodNames = ClassicalBWorksheetParser
 		// .initialGetWorksheetApiMethodNames();
 		// animatorCommands = new String[] { "GetErrorsCommand" };
-		this.init();
+		init();
 	}
 
 	public static String[] initialGetWorksheetApiMethodNames() {
@@ -40,7 +41,7 @@ public class SimpleConsoleParser {
 
 	public void init() {
 		for (final Class api : SimpleConsoleParser.apis) {
-			this.apiMethodNamesMap.putAll(SimpleConsoleParser
+			apiMethodNamesMap.putAll(SimpleConsoleParser
 					.getPublicMethodNamesMap(api));
 		}
 	}
@@ -88,9 +89,9 @@ public class SimpleConsoleParser {
 	}
 
 	public EvalObject[] parse(final String code) {
-		final String[] expressions = this.splitToExpressions(code);
-		final String[][] methods = this.expressionsToMethods(expressions);
-		final EvalObject[] evalObjects = this.methodsToEvalObjects(methods);
+		final String[] expressions = splitToExpressions(code);
+		final String[][] methods = expressionsToMethods(expressions);
+		final EvalObject[] evalObjects = methodsToEvalObjects(methods);
 		return evalObjects;
 	}
 
@@ -104,16 +105,17 @@ public class SimpleConsoleParser {
 		return expressions;
 	}
 
+	@SuppressWarnings("unchecked")
 	public EvalObject[] methodsToEvalObjects(final String[][] methods) {
 		final List<EvalObject> evalObjects = new ArrayList<EvalObject>();
 		for (final String[] method : methods) {
 			Method methodInstance = null;
 			try {
 				if (method.length > 0
-						&& this.apiMethodNamesMap.containsKey(method[0])) {
-					final Class api = this.apiMethodNamesMap.get(method[0]);
+						&& apiMethodNamesMap.containsKey(method[0])) {
+					final Class api = apiMethodNamesMap.get(method[0]);
 					methodInstance = api.getMethod(method[0],
-							this.toTypeArrayMinusFirst(method));
+							toTypeArrayMinusFirst(method));
 				} else {
 					// TODO check if something needs to be done when
 					// method.length=0
@@ -146,10 +148,10 @@ public class SimpleConsoleParser {
 			if (expression.equals("")) {
 				continue;
 			}
-			final String command = this.getCommand(expression);
-			if (this.apiMethodNamesMap.containsKey(command)) {
+			final String command = getCommand(expression);
+			if (apiMethodNamesMap.containsKey(command)) {
 				// its an ApiCommand
-				methods.add(this.parseApiMethod(expression));
+				methods.add(parseApiMethod(expression));
 
 			} else {
 				// FIXME is unknown at the moment i say it is a eval expression
@@ -160,7 +162,7 @@ public class SimpleConsoleParser {
 	}
 
 	private Class[] toTypeArrayMinusFirst(final Object[] array) {
-		return this.toTypeArray(Arrays.copyOfRange(array, 1, array.length));
+		return toTypeArray(Arrays.copyOfRange(array, 1, array.length));
 	}
 
 	private Class[] toTypeArray(final Object[] array) {
@@ -184,7 +186,6 @@ public class SimpleConsoleParser {
 		final Pattern reg = Pattern
 				.compile("^([a-zA-Z_$][a-zA-Z_0-9$]*)\\s*(\\((.*)\\)$)?");
 		final Matcher match = reg.matcher(expression);
-		final String command;
 		final ArrayList<String> parts = new ArrayList<String>();
 		String[] args = null;
 		if (match.matches()) {
@@ -193,7 +194,7 @@ public class SimpleConsoleParser {
 				parts.add(match.group(1).trim());
 			}
 			if (match.group(3) != null) {
-				args = this.splitArgs(match.group(3).trim());
+				args = splitArgs(match.group(3).trim());
 				if (args != null) {
 					parts.addAll(Arrays.asList(args));
 				}

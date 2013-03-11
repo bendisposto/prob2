@@ -29,9 +29,6 @@ public class OutputListener implements IWorksheetAPIListener {
 
 	ArrayList<DefaultBlock> outputBlocks;
 
-	/**
-	 * 
-	 */
 	public OutputListener(ArrayList<DefaultBlock> output) {
 		logger.trace("{}", output);
 		outputBlocks = output;

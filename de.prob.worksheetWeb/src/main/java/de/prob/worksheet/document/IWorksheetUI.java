@@ -6,6 +6,14 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import de.prob.worksheet.document.impl.WorksheetMenuNode;
 
+/**
+ * This interface defines the methods necessary for the Worksheet User
+ * Interface. It's default implementation is WorksheetDocument
+ * 
+ * @see de.prob.worksheet.document.impl.WorksheetDocument
+ * @author Rene
+ * 
+ */
 public interface IWorksheetUI {
 
 	/**

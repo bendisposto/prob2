@@ -81,12 +81,10 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		binding.setVariable("animations", selector);
 		binding.setVariable("tests", tests);
 		binding.setVariable("__console", sideeffects);
-		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
-				binding);
+		interpreter = new Interpreter(this.getClass().getClassLoader(), binding);
 
-		imports.addAll(Arrays.asList(IMPORTS));
-		this.parser = new Parser();
-
+		imports.addAll(Arrays.asList(GroovyExecution.IMPORTS));
+		parser = new Parser();
 		runInitScript(Resources.getResource("initscript"));
 	}
 
@@ -126,7 +124,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 
 	public synchronized String freshVar(final String prefix) {
 		String v;
-		Binding bindings = this.getBindings();
+		Binding bindings = getBindings();
 		do {
 			v = prefix + nextCounter(prefix);
 		} while (bindings.hasVariable(v));
@@ -249,7 +247,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	public void addImport(final String imp) {
-		this.imports.add(imp);
+		imports.add(imp);
 	}
 
 	@Override

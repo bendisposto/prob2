@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class WorksheetActionEvent extends DefaultWorksheetEvent {
+	/**
+	 * The static instance of a slf4j Logger for this class
+	 */
 	public static final Logger logger = LoggerFactory
 			.getLogger(WorksheetActionEvent.class);
 
@@ -37,21 +40,21 @@ public class WorksheetActionEvent extends DefaultWorksheetEvent {
 	 * @return the data state before the action was performed
 	 */
 	public Object getDataBefore() {
-		logger.trace("in:");
-		logger.trace("return: data={}", dataBefore);
-		return this.dataBefore;
+		WorksheetActionEvent.logger.trace("in:");
+		WorksheetActionEvent.logger.trace("return: data={}", dataBefore);
+		return dataBefore;
 	}
 
 	/**
 	 * Sets the data state before the action has been performed
 	 * 
-	 * @param dataBefore
+	 * @param data
 	 *            the data state before the action was performed
 	 */
 	public void setDataBefore(final Object data) {
-		logger.trace("in: data={}", data);
-		this.dataBefore = data;
-		logger.trace("return:");
+		WorksheetActionEvent.logger.trace("in: data={}", data);
+		dataBefore = data;
+		WorksheetActionEvent.logger.trace("return:");
 	}
 
 	/**
@@ -60,20 +63,20 @@ public class WorksheetActionEvent extends DefaultWorksheetEvent {
 	 * @return the data after action perform
 	 */
 	public Object getDataAfter() {
-		logger.trace("in:");
-		logger.trace("return: data={}", dataAfter);
-		return this.dataAfter;
+		WorksheetActionEvent.logger.trace("in:");
+		WorksheetActionEvent.logger.trace("return: data={}", dataAfter);
+		return dataAfter;
 	}
 
 	/**
 	 * Sets the data state after the action had been performed
 	 * 
-	 * @param dataAfter
+	 * @param data
 	 *            the data after the action perform to be set
 	 */
 	public void setDataAfter(final Object data) {
-		logger.trace("in: data={}", data);
-		this.dataAfter = data;
-		logger.trace("return:");
+		WorksheetActionEvent.logger.trace("in: data={}", data);
+		dataAfter = data;
+		WorksheetActionEvent.logger.trace("return:");
 	}
 }

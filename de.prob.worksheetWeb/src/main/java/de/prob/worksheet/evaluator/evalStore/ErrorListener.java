@@ -31,9 +31,6 @@ public class ErrorListener implements IWorksheetAPIListener {
 	public ArrayList<DefaultBlock> outputBlocks;
 	private boolean haltAll;
 
-	/**
-	 * 
-	 */
 	public ErrorListener(ArrayList<DefaultBlock> output) {
 		ErrorListener.logger.trace(output.toString());
 		setHaltAll(false);

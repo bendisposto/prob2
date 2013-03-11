@@ -14,13 +14,13 @@ BODY {
 	right: 0;
 	top: 0;
 	bottom: 0;
-	position: absolute;
+	position: fixed;
 	z-index: 1001;
 }
 
 #loadingSheet {
 	background-color: #888;
-	position: absolute;
+	position: fixed;
 	filter: alpha(opacity=50); /* internet explorer */
 	-khtml-opacity: 0.5;      /* khtml, old safari */
 	-moz-opacity: 0.5;       /* mozilla, netscape */
@@ -41,4 +41,8 @@ BODY {
 	left:0px;
 	right:0px;
 	width:auto;
+}
+.ui-editor-HTMLOutput, .ui-editor-HTMLErrorOutput{
+	word-wrap: break-word;
+	overflow: auto;
 }

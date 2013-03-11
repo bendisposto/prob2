@@ -23,6 +23,11 @@
 			//DEBUG alert("worksheet _create2");
 			this.element.addClass("ui-worksheet ui-widget");
 			this.element.attr("id",this.options.id);
+			this.element.attr("tabindex",0);
+			this.element.css("min-height",$(window).height()-1+"px");
+			$(window).resize($.proxy(function(){
+				this.element.css("min-height",$(window).height()-1+"px");
+			},this)); 
 			
 			if (this.options.hasMenu) {
 				var worksheetMenu = null;
@@ -59,7 +64,7 @@
 				this.element.bind("blockcontextmenu",$.proxy(function(event,id){
 					$("#"+id+"");
 				},this));
-				this.element.on("keydown",$.proxy(function(event){
+				this.element.bind("keydown",$.proxy(function(event){
 						if(event.ctrlKey){
 							switch(event.which){
 								case $.ui.keyCode.UP:
@@ -71,11 +76,11 @@
 							}
 						}
 						if(event.ctrlKey && event.altKey){
-							if(event.which==$.ui.keyCode.ENTER){
+							if(event.which==10 || event.which==13){
 								this.evaluate(this.options.blocks[0].id);
 							}
 						}
-							
+	
 					},this));
 			}
 		},

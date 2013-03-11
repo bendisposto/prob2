@@ -62,16 +62,6 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 					true);
 			EvalStoreAPI.logger.trace("return: No Animation is started");
 			return;
-			// TODO try to find a way to start an animation if no is present
-			/*
-			 * logger.debug("No History present! Injecting new IAnimator");
-			 * animator = ServletContextListener.INJECTOR
-			 * .getInstance(IAnimator.class); sId = "root"; animator.execute(new
-			 * StartAnimationCommand());
-			 * this.notifyOutputListeners(EvalStoreAPI.OUTPUT_STATE_ID,
-			 * EvalStoreAPI.OUTPUT_STATE_NAME, EvalStoreAPI.OUTPUT_STATE_DESC,
-			 * "New Animation started","HTML","");
-			 */
 		} else {
 			StateId stateId = currentHistory.getCurrentState();
 			sId = stateId.getId();
