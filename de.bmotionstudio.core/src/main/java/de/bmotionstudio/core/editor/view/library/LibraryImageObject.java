@@ -40,6 +40,8 @@ public class LibraryImageObject extends LibraryObject {
 			IPath path = new Path(file.getPath());
 			IFile targetFile = ResourcesPlugin.getWorkspace().getRoot()
 					.getFileForLocation(path);
+			if(targetFile == null)
+				return;
 			IProject project = targetFile.getProject();
 			project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		} catch (CoreException e) {
