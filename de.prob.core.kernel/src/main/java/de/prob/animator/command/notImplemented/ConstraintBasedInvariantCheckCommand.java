@@ -12,9 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.check.ModelCheckingResult;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -28,10 +30,6 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedInvariantCheckCommand.class);
-
-	public static enum ResultType {
-		VIOLATION_FOUND, NO_VIOLATION_FOUND, INTERRUPTED
-	};
 
 	public static class InvariantCheckCounterExample {
 		private final String eventName;
@@ -62,7 +60,7 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 
 	private final Collection<String> events;
 
-	private ResultType result;
+	private ModelCheckingResult result;
 	private Collection<InvariantCheckCounterExample> counterexamples;
 
 	/**
@@ -78,10 +76,6 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 
 	public Collection<String> getEvents() {
 		return events;
-	}
-
-	public ResultType getResult() {
-		return result;
 	}
 
 	public Collection<InvariantCheckCounterExample> getCounterExamples() {
@@ -110,15 +104,17 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		final ResultType result;
+		;
 		final Collection<InvariantCheckCounterExample> counterexamples;
 		if (resultTerm.hasFunctor("interrupted", 0)) {
-			result = ResultType.INTERRUPTED;
+			result = new ModelCheckingResult(
+					ModelCheckingResult.Result.not_yet_finished);
 			counterexamples = null;
 		} else if (resultTerm.isList()) {
 			ListPrologTerm ceTerm = (ListPrologTerm) resultTerm;
-			result = ceTerm.isEmpty() ? ResultType.NO_VIOLATION_FOUND
-					: ResultType.VIOLATION_FOUND;
+			result = ceTerm.isEmpty() ? new ModelCheckingResult(
+					ModelCheckingResult.Result.ok) : new ModelCheckingResult(
+					ModelCheckingResult.Result.invariant_violation);
 			counterexamples = Collections
 					.unmodifiableCollection(extractExamples(ceTerm));
 		} else {
@@ -127,27 +123,28 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 			logger.error(msg);
 			throw new ProBError(msg);
 		}
-		this.result = result;
 		this.counterexamples = counterexamples;
 	}
 
 	private Collection<InvariantCheckCounterExample> extractExamples(
 			final ListPrologTerm ceTerm) {
 		Collection<InvariantCheckCounterExample> examples = new ArrayList<ConstraintBasedInvariantCheckCommand.InvariantCheckCounterExample>();
-		// for (final PrologTerm t : ceTerm) {
-		// final CompoundPrologTerm term = (CompoundPrologTerm) t;
-		// final String eventName = PrologTerm.atomicString(term
-		// .getArgument(1));
-		// FIXME: Implement method fromPrologTerm for OpInfo
-		// final OpInfo step1 = Operation
-		// .fromPrologTerm((CompoundPrologTerm) term.getArgument(2));
-		// final OpInfo step2 = Operation
-		// .fromPrologTerm((CompoundPrologTerm) term.getArgument(3));
-		// final InvariantCheckCounterExample ce = new
-		// InvariantCheckCounterExample(
-		// eventName, step1, step2);
-		// examples.add(ce);
-		// }
+		for (final PrologTerm t : ceTerm) {
+			final CompoundPrologTerm term = (CompoundPrologTerm) t;
+			final String eventName = PrologTerm.atomicString(term
+					.getArgument(1));
+			final OpInfo step1 = new OpInfo(
+					(CompoundPrologTerm) term.getArgument(2));
+			final OpInfo step2 = new OpInfo(
+					(CompoundPrologTerm) term.getArgument(3));
+			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(
+					eventName, step1, step2);
+			examples.add(ce);
+		}
 		return examples;
+	}
+
+	public ModelCheckingResult getResult() {
+		return result;
 	}
 }
