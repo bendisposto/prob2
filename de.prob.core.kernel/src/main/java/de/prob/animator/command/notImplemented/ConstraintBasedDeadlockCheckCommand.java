@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.ICommand;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.check.ModelCheckingResult;
 import de.prob.exception.ProBError;
@@ -27,30 +28,21 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedDeadlockCheckCommand.class);
 
-	public static enum ResultType {
-		DEADLOCK_FOUND, NO_DEADLOCK, ERROR, INTERRUPTED
-	};
-
 	private static final String COMMAND_NAME = "deadlock_freedom_check";
 	private static final String RESULT_VARIABLE = "R";
-
-	private final PrologTerm predicate;
 
 	private ModelCheckingResult result;
 	private String deadlockStateId;
 	private OpInfo deadlockOperation;
+	private final IEvalElement formula;
 
 	/**
 	 * @param predicate
 	 *            is a parsed predicate or <code>null</code>
 	 * 
 	 */
-	public ConstraintBasedDeadlockCheckCommand(final PrologTerm predicate) {
-		this.predicate = predicate;
-	}
-
-	public PrologTerm getPredicate() {
-		return predicate;
+	public ConstraintBasedDeadlockCheckCommand(final IEvalElement formula) {
+		this.formula = formula;
 	}
 
 	public ModelCheckingResult getResult() {
@@ -68,8 +60,8 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(COMMAND_NAME);
-		if (predicate != null) {
-			predicate.toTermOutput(pto);
+		if (formula != null) {
+			formula.printProlog(pto);
 		}
 		pto.printVariable(RESULT_VARIABLE);
 		pto.closeTerm();
