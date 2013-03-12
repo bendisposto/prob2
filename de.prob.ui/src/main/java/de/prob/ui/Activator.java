@@ -33,6 +33,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final String IMG_DISABLED = "IMG_DISABLED";
 	public static final String IMG_TIMEOUT = "IMG_TIMEOUT";
 	public static final String IMG_ENABLED = "IMG_ENABLED";
+	public static final String IMG_SELECTED = "IMG_SELECTED";
 	public static final String IMG_DOUBLECLICK = "IMG_DOUBLECLICK";
 	public static final String OVERLAY = "OVERLAY";
 	public static final String CHANGE_STAR = "change_star";
@@ -131,6 +132,8 @@ public class Activator extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/timeout.png"));
 		reg.put(IMG_ENABLED,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled.png"));
+		reg.put(IMG_SELECTED,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/selected.png"));
 		reg.put(IMG_DOUBLECLICK,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/doubleclick.png"));
 		reg.put(OVERLAY,
@@ -144,7 +147,7 @@ public class Activator extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/probsplash.png"));
 		reg.put(IMG_LOADING,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/icon_loading.gif"));
-		
+
 		// JUnit Icons
 		reg.put(JUNIT_ERROR_OVR,
 				imageDescriptorFromPlugin(PLUGIN_ID,
@@ -184,5 +187,5 @@ public class Activator extends AbstractUIPlugin {
 						"icons/junit/obj16/exc_catch.gif"));
 
 	}
-	
+
 }
