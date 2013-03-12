@@ -359,7 +359,7 @@
       <view
             category="de.hhu.stups.prob"
             class="de.prob.ui.console.GroovyConsole"
-            icon="icons/sample.gif"
+            icon="icons/groovy.png"
             id="de.prob.ui.groovyconsole"
             name="Groovy Console"
             restorable="true">
@@ -367,7 +367,7 @@
       <view
             category="de.hhu.stups.prob"
             class="de.prob.ui.GroovyBindingView"
-            icon="icons/sample.gif"
+            icon="icons/groovy.png"
             id="de.prob.ui.groovybinding"
             name="Global Variables"
             restorable="true">
