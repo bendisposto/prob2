@@ -112,6 +112,42 @@ public class BMotionUtil {
 
 	}
 	
+	public static void unregisterVisualizationViewPart(File visualizationFile) {
+
+		VisualizationViewPart visualizationViewPart = null;
+
+		IWorkbenchWindow window = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+
+		if (window != null) {
+
+			IWorkbenchPage activePage = window.getActivePage();
+
+			if (activePage != null) {
+
+				String secId = visualizationFile.getName().replace(
+						"." + PerspectiveUtil.getExtension(visualizationFile),
+						"");
+
+				// Check if view is already open
+				IViewReference viewReference = activePage.findViewReference(
+						VisualizationViewPart.ID, secId);
+
+				if (viewReference != null) {
+					visualizationViewPart = (VisualizationViewPart) viewReference
+							.getPart(true);
+				}
+
+				if (visualizationViewPart != null
+						&& !visualizationViewPart.isInitialized())
+					visualizationViewPart.unregister();
+
+			}
+
+		}
+
+	}
+	
 	public static VisualizationViewPart initVisualizationViewPart(
 			File visualizationFile) {
 
@@ -283,10 +319,6 @@ public class BMotionUtil {
 		return xstream.toXML(visualizationView);
 	}
 
-	public static File[] getVisualizationViewFiles(File modelFile) {
-		return getVisualizationViewFiles(modelFile, "EventB");
-	}
-
 	public static File[] getVisualizationViewFiles(File modelFile,
 			String language) {
 
@@ -339,9 +371,18 @@ public class BMotionUtil {
 		return fileName;
 	}
 
-	public static void initVisualizationViews(File modelFile) {
-		File[] visualizationViewFiles = BMotionUtil
-				.getVisualizationViewFiles(modelFile);
+	public static void unregisterVisualizationViews(File modelFile,
+			String language) {
+		File[] visualizationViewFiles = BMotionUtil.getVisualizationViewFiles(
+				modelFile, language);
+		for (File f : visualizationViewFiles) {
+			BMotionUtil.initVisualizationViewPart(f);
+		}
+	}
+	
+	public static void initVisualizationViews(File modelFile, String language) {
+		File[] visualizationViewFiles = BMotionUtil.getVisualizationViewFiles(
+				modelFile, language);
 		for (File f : visualizationViewFiles) {
 			BMotionUtil.initVisualizationViewPart(f);
 		}

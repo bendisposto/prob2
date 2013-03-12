@@ -82,6 +82,7 @@ import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
@@ -91,6 +92,9 @@ public class VisualizationViewPart extends ViewPart implements
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
 	
 	private Injector injector = ServletContextListener.INJECTOR;
+
+	private final AnimationSelector selector = injector
+			.getInstance(AnimationSelector.class);
 	
 	private EditDomain editDomain;
 
@@ -114,6 +118,8 @@ public class VisualizationViewPart extends ViewPart implements
 	
 	private File visualizationFile;
 
+	private StateSpace currentStateSpace;
+	
 	private List<String> selectionActions = new ArrayList<String>();
 	private List<String> stackActions = new ArrayList<String>();
 	private List<String> propertyActions = new ArrayList<String>();
@@ -355,8 +361,7 @@ public class VisualizationViewPart extends ViewPart implements
 		super.dispose();
 	}
 
-	private void unregister() {
-		
+	public void unregister() {
 		if (getCommandStack() != null)
 			getCommandStack().removeCommandStackListener(this);
 		if (getActionRegistry() != null)
@@ -364,11 +369,7 @@ public class VisualizationViewPart extends ViewPart implements
 		setInitialized(false);
 		if (getVisualizationView() != null)
 			getVisualizationView().removePropertyChangeListener(this);
-		
-		final AnimationSelector selector = injector
-				.getInstance(AnimationSelector.class);
 		selector.unregisterHistoryChangeListener(this);
-		
 	}
 
 	@Override
@@ -441,6 +442,7 @@ public class VisualizationViewPart extends ViewPart implements
 		createMenu(getViewSite());
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
+		this.currentStateSpace = selector.getCurrentHistory().getStatespace();
 		setPartName(visualizationView.getName()
 				+ " ("
 				+ selector.getCurrentHistory().getModel().getModelFile()
@@ -681,10 +683,12 @@ public class VisualizationViewPart extends ViewPart implements
 
 	@Override
 	public void historyChange(History history) {
-		if(visualizationView != null)
-			checkObserver(history);			
+		if (this.currentStateSpace != history.getStatespace())
+			return;
+		if (visualizationView != null)
+			checkObserver(history);
 	}
-	
+
 	public void checkObserver(final History history) {
 
 		Display.getDefault().asyncExec(new Runnable() {

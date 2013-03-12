@@ -251,18 +251,18 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 
 	@Override
 	public void modelChanged(final StateSpace s) {
-
-		if (s.equals(currentStateSpace))
-			return;
-
-		currentStateSpace = s;
 		
-		// Open new perspective
+			// Open new perspective
 		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
+				
+				if (s == currentStateSpace)
+					return;
+				
 				File modelFile = s.getModel().getModelFile();
+				String language = BMotionUtil.getLanguageFromModel(s.getModel());
 				// Save old and close old perspective (if exists)
 				IPerspectiveDescriptor currentPerspective = BMotionStudio
 						.getCurrentPerspective();
@@ -282,9 +282,12 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 				}
 				IPerspectiveDescriptor perspective = PerspectiveUtil
 						.openPerspective(modelFile);
-				BMotionUtil.initVisualizationViews(modelFile);
+				BMotionUtil.initVisualizationViews(modelFile, language);
 				BMotionStudio.setCurrentModelFile(modelFile);
 				BMotionStudio.setCurrentPerspective(perspective);
+				
+				currentStateSpace = s;
+				
 			}
 
 		});
