@@ -13,6 +13,8 @@ import java.util.List;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -63,13 +65,20 @@ public class VisualizationViewDialog extends Dialog {
 		view.getTable().setLinesVisible(true);
 		view.getTable().setHeaderVisible(true);
 		view.addSelectionChangedListener(new ISelectionChangedListener() {
-
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				selection = sel.getFirstElement();
 			}
-			
+		});
+		view.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				selection = sel.getFirstElement();
+				setReturnCode(Dialog.OK);
+				close();
+			}
 		});
 		
 		final TableViewerColumn column1 = new TableViewerColumn(view,
