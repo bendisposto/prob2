@@ -1,9 +1,6 @@
 package de.prob.model.classicalb
 
 import static org.mockito.Mockito.*
-
-import org.jgrapht.graph.DirectedMultigraph
-
 import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
@@ -11,6 +8,7 @@ import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.representation.RefType
 import de.prob.model.representation.RefType.ERefType
 import de.prob.statespace.StateSpace
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
 class ClassicalBModelTest extends Specification {
 
@@ -19,7 +17,7 @@ class ClassicalBModelTest extends Specification {
 	def BParser bparser
 	def Start ast
 	def DependencyWalker dw
-	def DirectedMultigraph<ClassicalBMachine,RefType> graph
+	def DirectedSparseMultigraph<ClassicalBMachine,RefType> graph
 
 	def setup() {
 		model = new File(System.getProperties().get("user.dir")+"/groovyTests/machines/references/Foo.mch")
@@ -40,7 +38,7 @@ class ClassicalBModelTest extends Specification {
 
 	def "all the machine names are now saved in the graph"() {
 		expect:
-		graph.vertexSet().contains(a) == b
+		graph.getVertices().contains(a) == b
 
 		where:
 		a  	| b
@@ -53,43 +51,6 @@ class ClassicalBModelTest extends Specification {
 		"Bar"|true
 		"Baz"|false
 	}
-
-	//	def "the user can access machines from the string name"() {
-	//		setup:
-	//		def machine = new ClassicalBMachine()
-	//
-	//		when:
-	//		machine.setName(a)
-	//
-	//		then:
-	//		c.getMachine(a) == machine
-	//
-	//		where:
-	//		a <<[
-	//			"A",
-	//			"E",
-	//			"A",
-	//			"Foo",
-	//			"B",
-	//			"C",
-	//			"Bar"
-	//		]
-	//	}
-	//
-	//	def "when a machine is not in the graph, null is returned"() {
-	//		expect:
-	//		c.getMachine(b) == null
-	//
-	//		where:
-	//		b <<[
-	//			"I",
-	//			"am",
-	//			"not",
-	//			"in",
-	//			"the",
-	//			"graph"
-	//		]
-	//	}
 
 	def "the correct RefType connects the different machines"() {
 

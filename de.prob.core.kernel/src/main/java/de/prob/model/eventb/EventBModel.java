@@ -1,10 +1,10 @@
 package de.prob.model.eventb;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.io.File;
 
 import com.google.inject.Inject;
 
@@ -92,19 +92,19 @@ public class EventBModel extends AbstractModel {
 
 		for (Machine machine : getChildrenOfType(Machine.class)) {
 			for (Machine refinement : machine.getChildrenOfType(Machine.class)) {
-				graph.addEdge(machine.getName(), refinement.getName(),
-						new RefType(ERefType.REFINES));
+				graph.addEdge(new RefType(ERefType.REFINES), machine.getName(),
+						refinement.getName());
 			}
 			for (Context seen : machine.getChildrenOfType(Context.class)) {
-				graph.addEdge(machine.getName(), seen.getName(), new RefType(
-						ERefType.SEES));
+				graph.addEdge(new RefType(ERefType.SEES), machine.getName(),
+						seen.getName());
 			}
 		}
 		Set<Context> contexts = getChildrenOfType(Context.class);
 		for (Context context : contexts) {
 			for (Context seen : context.getChildrenOfType(Context.class)) {
-				graph.addEdge(context.getName(), seen.getName(), new RefType(
-						ERefType.EXTENDS));
+				graph.addEdge(new RefType(ERefType.EXTENDS), context.getName(),
+						seen.getName());
 			}
 		}
 	}

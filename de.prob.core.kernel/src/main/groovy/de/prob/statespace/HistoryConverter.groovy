@@ -83,10 +83,10 @@ class HistoryConverter {
 
 		trace.Operation.each {
 			def sha = it.sha.getAt(0).@value.toString()
-			def ops = s.outgoingEdgesOf(h.getCurrentState())
+			def ops = s.getOutEdges(h.getCurrentState())
 			def op = null
 			ops.each {
-				def state = s.getEdgeTarget(it)
+				def state = s.getDest(it)
 				if(state.hash == sha) {
 					op = it
 				}

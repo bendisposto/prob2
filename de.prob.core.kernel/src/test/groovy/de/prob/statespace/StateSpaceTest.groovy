@@ -51,16 +51,16 @@ class StateSpaceTest extends Specification {
 			s.ops.put(it.getId(),it)
 		}
 
-		s.addEdge(s.states.get("root"), s.states.get("2"), s.ops.get("b"))
-		s.addEdge(s.states.get("2"), s.states.get("3"), s.ops.get("c"))
-		s.addEdge(s.states.get("3"), s.states.get("4"), s.ops.get("d"))
-		s.addEdge(s.states.get("3"), s.states.get("5"), s.ops.get("e"))
+		s.addEdge(s.ops.get("b"), s.states.get("root"), s.states.get("2"))
+		s.addEdge(s.ops.get("c"), s.states.get("2"), s.states.get("3"))
+		s.addEdge(s.ops.get("d"), s.states.get("3"), s.states.get("4"))
+		s.addEdge(s.ops.get("e"), s.states.get("3"), s.states.get("5"))
 		s.explored.add(s.states.get("2"))
 		s.explored.add(s.states.get("3"))
 		s.explored.add(s.states.get("4"))
 		s.explored.add(s.states.get("5"))
 
-		s.addEdge(s.states.get("4"), s.states.get("6"),s.ops.get("f"))
+		s.addEdge(s.ops.get("f"), s.states.get("4"), s.states.get("6"))
 	}
 
 	def addVertices(List<String> ids, StateSpace s) {
@@ -100,7 +100,7 @@ class StateSpaceTest extends Specification {
 	}
 
 	def "The node is not a deadlock"() {
-		s.addEdge(s.states.get("1"), s.states.get("2"), new OpInfo("bla","blah","1","2",[],"2"))
+		s.addEdge(new OpInfo("bla","blah","1","2",[],"2"), s.states.get("1"), s.states.get("2"))
 
 		expect:
 		s.isDeadlock(s[1]) == false

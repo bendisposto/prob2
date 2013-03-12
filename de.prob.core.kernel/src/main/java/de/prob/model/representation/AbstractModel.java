@@ -3,19 +3,16 @@ package de.prob.model.representation;
 import java.io.File;
 import java.util.Map;
 
-import org.jgrapht.graph.ClassBasedEdgeFactory;
-import org.jgrapht.graph.DirectedMultigraph;
-
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 public abstract class AbstractModel extends AbstractElement {
 
 	protected StateSpace statespace;
 	protected File modelFile;
-	protected DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
-			new ClassBasedEdgeFactory<String, RefType>(RefType.class));
+	protected DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 
 	public StateSpace getStatespace() {
 		return statespace;
@@ -26,7 +23,7 @@ public abstract class AbstractModel extends AbstractElement {
 	// This is needed for the graph representation
 	public abstract Map<String, AbstractElement> getComponents();
 
-	public DirectedMultigraph<String, RefType> getGraph() {
+	public DirectedSparseMultigraph<String, RefType> getGraph() {
 		return graph;
 	}
 
@@ -35,7 +32,7 @@ public abstract class AbstractModel extends AbstractElement {
 	}
 
 	public ERefType getEdge(final String comp1, final String comp2) {
-		final RefType edge = graph.getEdge(comp1, comp2);
+		final RefType edge = graph.findEdge(comp1, comp2);
 		if (edge == null) {
 			return null;
 		}
