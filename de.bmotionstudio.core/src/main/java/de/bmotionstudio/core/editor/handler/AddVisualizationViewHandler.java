@@ -24,6 +24,7 @@ import com.google.inject.Injector;
 import de.bmotionstudio.core.editor.handler.VisualizationViewDialog.DummyObject;
 import de.bmotionstudio.core.util.BMotionUtil;
 import de.bmotionstudio.core.util.PerspectiveUtil;
+import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IModelChangedListener;
@@ -38,7 +39,7 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 	final AnimationSelector selector = injector
 			.getInstance(AnimationSelector.class);
 
-	private File modelFile;
+	private AbstractModel currentModel;
 	
 	public AddVisualizationViewHandler() {
 		updateEnablement();
@@ -82,15 +83,19 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 				
 				VisualizationViewDialog dialog = new VisualizationViewDialog(
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-								.getShell(), this.modelFile);
+								.getShell(), this.currentModel);
 				if (dialog.open() == Dialog.OK) {
 
 					Object selection = dialog.getSelection();
 					if (selection instanceof DummyObject
-							&& this.modelFile != null) {
+							&& this.currentModel != null) {
+						
+						DummyObject obj = (DummyObject) selection;
 						// Create a new visualization view
 						File visualizationViewFile = BMotionUtil
-								.createNewVisualizationViewFile(this.modelFile);
+								.createNewVisualizationViewFile(
+										this.currentModel.getModelFile(),
+										obj.getLanguage());
 						BMotionUtil
 								.createVisualizationViewPart(visualizationViewFile);
 					} else if (selection instanceof File) {
@@ -128,7 +133,7 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 
 	@Override
 	public void modelChanged(StateSpace s) {
-		this.modelFile = s.getModel().getModelFile();
+		this.currentModel = s.getModel();
 		updateEnablement();
 	}
 	
