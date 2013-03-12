@@ -16,7 +16,7 @@ class AnimationViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
 
 	private final Image imgEnabled = Activator.getDefault().getImageRegistry()
-			.getDescriptor(Activator.IMG_ENABLED).createImage();
+			.getDescriptor(Activator.IMG_SELECTED).createImage();
 	private History currentHistory;
 
 	@Override
