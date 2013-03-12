@@ -36,6 +36,10 @@ import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.editor.VisualizationViewPart;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.Visualization;
+import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractModel;
+import de.prob.scripting.CSPModel;
 
 public class BMotionUtil {
 
@@ -147,7 +151,8 @@ public class BMotionUtil {
 
 	}
 	
-	public static File createNewVisualizationViewFile(File modelFile) {
+	public static File createNewVisualizationViewFile(File modelFile,
+			String language) {
 
 		Assert.isNotNull(modelFile);
 
@@ -164,7 +169,7 @@ public class BMotionUtil {
 			FileWriter output = null;
 			BufferedWriter writer = null;
 			try {
-				String content = BMotionUtil.getInitialContent();
+				String content = BMotionUtil.getInitialContent(language);
 				output = new FileWriter(visualizationFile);
 				writer = new BufferedWriter(output);
 				writer.write(content);
@@ -262,12 +267,12 @@ public class BMotionUtil {
 
 	}
 
-	public static String getInitialContent()
+	public static String getInitialContent(String language)
 			throws UnsupportedEncodingException {
 		Visualization visualization = new Visualization();
 		// TODO Make language more generic!!!!
 		VisualizationView visualizationView = new VisualizationView(
-				visualization, "EventB");
+				visualization, language);
 		return getInitialContent(visualizationView);
 	}
 
@@ -279,6 +284,11 @@ public class BMotionUtil {
 	}
 
 	public static File[] getVisualizationViewFiles(File modelFile) {
+		return getVisualizationViewFiles(modelFile, "EventB");
+	}
+
+	public static File[] getVisualizationViewFiles(File modelFile,
+			String language) {
 
 		Assert.isNotNull(modelFile);
 
@@ -290,8 +300,14 @@ public class BMotionUtil {
 			for (File f : listFiles) {
 				String extension = PerspectiveUtil.getExtension(f);
 				if (extension != null
-						&& extension.equals(BMotionEditorPlugin.FILEEXT_STUDIO))
-					filteredFiles.add(f);
+						&& extension.equals(BMotionEditorPlugin.FILEEXT_STUDIO)) {
+					VisualizationView visualizationView = BMotionUtil
+							.getVisualizationViewFromFile(f);
+					if (visualizationView != null) {
+						if (visualizationView.getLanguage().equals(language))
+							filteredFiles.add(f);
+					}
+				}
 			}
 		}
 		File[] viewFiles = filteredFiles
@@ -329,6 +345,16 @@ public class BMotionUtil {
 		for (File f : visualizationViewFiles) {
 			BMotionUtil.initVisualizationViewPart(f);
 		}
+	}
+
+	public static String getLanguageFromModel(AbstractModel model) {
+		if (model instanceof EventBModel)
+			return "EventB";
+		else if (model instanceof ClassicalBModel)
+			return "ClassicalB";
+		else if (model instanceof CSPModel)
+			return "CSP";
+		return null;
 	}
 	
 }
