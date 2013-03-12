@@ -16,8 +16,6 @@ public class VisualizationView extends PropertyChangeSupportObject {
 
 	private String language;
 
-	private transient boolean dirty;
-
 	public VisualizationView(String name, Visualization visualization,
 			String language) {
 		this.name = name;
@@ -138,16 +136,6 @@ public class VisualizationView extends PropertyChangeSupportObject {
 			leftRuler = new BMotionRuler(false);
 		if (topRuler == null)
 			topRuler = new BMotionRuler(true);
-	}
-
-	public void setDirty(boolean dirty) {
-		boolean oldVal = this.dirty;
-		this.dirty = dirty;
-		firePropertyChange("dirty", oldVal, dirty);
-	}
-
-	public boolean isDirty() {
-		return dirty;
 	}
 	
 }
