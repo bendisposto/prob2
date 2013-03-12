@@ -29,6 +29,7 @@ import org.osgi.framework.BundleContext;
 import com.google.inject.Injector;
 import com.thoughtworks.xstream.XStream;
 
+import de.bmotionstudio.core.editor.VisualizationViewPart;
 import de.bmotionstudio.core.model.BMotionGuide;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.BConnection;
@@ -37,6 +38,7 @@ import de.bmotionstudio.core.model.control.Visualization;
 import de.bmotionstudio.core.util.BMotionUtil;
 import de.bmotionstudio.core.util.PerspectiveUtil;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
@@ -61,6 +63,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	private static HashMap<String, IBControlService> controlServicesId = new HashMap<String, IBControlService>();
 
 	private StateSpace currentStateSpace = null;
+	private History currentHistory = null;
 
 	private IExtensionRegistry registry = Platform.getExtensionRegistry();
 
@@ -251,16 +254,16 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 
 	@Override
 	public void modelChanged(final StateSpace s) {
-		
-			// Open new perspective
+
+		// Open new perspective
 		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
-				
+
 				if (s == currentStateSpace)
 					return;
-				
+
 				File modelFile = s.getModel().getModelFile();
 				String language = BMotionUtil.getLanguageFromModel(s.getModel());
 				// Save old and close old perspective (if exists)
@@ -278,6 +281,17 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 					// Close and delete current perspective, before opening the
 					// new one
 					PerspectiveUtil.closePerspective(currentPerspective);
+					// Check if dirty view parts exist
+					VisualizationViewPart[] visualizationViewParts = BMotionUtil
+							.getVisualizationViewParts(currentModelFile,
+									language);
+					for (VisualizationViewPart visPart : visualizationViewParts) {
+						if (visPart.isDirty()) {
+							if (currentHistory != null)
+								selector.changeCurrentHistory(currentHistory);
+							return;
+						}
+					}
 					PerspectiveUtil.deletePerspective(currentPerspective);
 				}
 				IPerspectiveDescriptor perspective = PerspectiveUtil
@@ -285,9 +299,10 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 				BMotionUtil.initVisualizationViews(modelFile, language);
 				BMotionStudio.setCurrentModelFile(modelFile);
 				BMotionStudio.setCurrentPerspective(perspective);
-				
+
 				currentStateSpace = s;
-				
+				currentHistory = selector.getCurrentHistory();
+
 			}
 
 		});

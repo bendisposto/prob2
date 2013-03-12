@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.PositionConstants;
@@ -53,6 +54,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISaveablePart;
+import org.eclipse.ui.ISaveablePart2;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
@@ -87,7 +90,7 @@ import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
 		CommandStackListener, PropertyChangeListener, IHistoryChangeListener,
-		ITabbedPropertySheetPageContributor {
+		ITabbedPropertySheetPageContributor, ISaveablePart2 {
 
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
 	
@@ -119,6 +122,8 @@ public class VisualizationViewPart extends ViewPart implements
 	private File visualizationFile;
 
 	private StateSpace currentStateSpace;
+	
+	private boolean dirty;
 	
 	private List<String> selectionActions = new ArrayList<String>();
 	private List<String> stackActions = new ArrayList<String>();
@@ -242,11 +247,11 @@ public class VisualizationViewPart extends ViewPart implements
 		zoomContributions.add(ZoomManager.FIT_WIDTH);
 		manager.setZoomLevelContributions(zoomContributions);
 		
-		if (visualizationFile != null) {
-			action = new SaveAction(visualizationView, visualizationFile);
-			action.setEnabled(false);
-			registry.registerAction(action);
-		}
+		// if (visualizationFile != null) {
+		// action = new SaveAction(visualizationView, visualizationFile);
+		// action.setEnabled(false);
+		// registry.registerAction(action);
+		// }
 		
 		getActionRegistry().registerAction(
 				new ToggleRulerVisibilityAction(getGraphicalViewer()) {
@@ -254,7 +259,7 @@ public class VisualizationViewPart extends ViewPart implements
 					public void run() {
 						super.run();
 						setChecked(!isChecked());
-						getVisualizationView().setDirty(true);
+						setDirty(true);
 					}
 				});
 		getActionRegistry().registerAction(
@@ -263,7 +268,7 @@ public class VisualizationViewPart extends ViewPart implements
 					public void run() {
 						super.run();
 						setChecked(!isChecked());
-						getVisualizationView().setDirty(true);
+						setDirty(true);
 					}
 				});
 		getActionRegistry().registerAction(
@@ -272,7 +277,7 @@ public class VisualizationViewPart extends ViewPart implements
 					public void run() {
 						super.run();
 						setChecked(!isChecked());
-						getVisualizationView().setDirty(true);
+						setDirty(true);
 					}
 				});
 
@@ -361,7 +366,7 @@ public class VisualizationViewPart extends ViewPart implements
 		super.dispose();
 	}
 
-	public void unregister() {
+	private void unregister() {
 		if (getCommandStack() != null)
 			getCommandStack().removeCommandStackListener(this);
 		if (getActionRegistry() != null)
@@ -375,7 +380,7 @@ public class VisualizationViewPart extends ViewPart implements
 	@Override
 	public void commandStackChanged(EventObject event) {
 		updateActions(stackActions);
-		getVisualizationView().setDirty(getCommandStack().isDirty());
+		setDirty(getCommandStack().isDirty());
 	}
 
 	/**
@@ -538,11 +543,11 @@ public class VisualizationViewPart extends ViewPart implements
 				.getToolBarManager()
 				.add(getActionRegistry().getAction(GEFActionConstants.ZOOM_OUT));
 
-		if (this.visualizationFile != null)
-			viewSite.getActionBars()
-					.getToolBarManager()
-					.add(getActionRegistry().getAction(
-							ActionFactory.SAVE.getId()));
+		// if (this.visualizationFile != null)
+		// viewSite.getActionBars()
+		// .getToolBarManager()
+		// .add(getActionRegistry().getAction(
+		// ActionFactory.SAVE.getId()));
 		
 		viewSite.getActionBars()
 				.getMenuManager()
@@ -647,36 +652,13 @@ public class VisualizationViewPart extends ViewPart implements
 
 		String propertyName = evt.getPropertyName();
 
-		String name = visualizationView.getName();
-		boolean dirty = visualizationView.isDirty();
-
-		if (propertyName.equals("name"))
-			name = evt.getNewValue().toString();
-
-		if (propertyName.equals("dirty"))
-			dirty = Boolean.valueOf(evt.getNewValue().toString());
-
-		if (propertyName.equals("dirty") || propertyName.equals("name")) {
-			
+		if (propertyName.equals("name")) {
+			String name = evt.getNewValue().toString();
 			final AnimationSelector selector = injector
 					.getInstance(AnimationSelector.class);
 			String modelName = selector.getCurrentHistory().getModel()
 					.getModelFile().getName();
-
-			name = name + " (" + modelName + ")";
-
-			if (dirty) {
-				setPartName("*" + name);
-			} else {
-				setPartName(name);
-			}
-
-		}
-
-		if (visualizationFile != null) {
-			IAction saveAction = getActionRegistry().getAction(
-					ActionFactory.SAVE.getId());
-			saveAction.setEnabled(dirty);
+			setPartName(name + " (" + modelName + ")");
 		}
 
 	}
@@ -726,6 +708,48 @@ public class VisualizationViewPart extends ViewPart implements
 	@Override
 	public String getContributorId() {
 		return getSite().getId();
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		SaveAction saveAction = new SaveAction(visualizationView,
+				visualizationFile);
+		saveAction.run();
+		getCommandStack().markSaveLocation();
+		firePropertyChange(ISaveablePart.PROP_DIRTY);
+	}
+
+	@Override
+	public void doSaveAs() {
+		// Nothing to do here, this is never allowed
+		throw new IllegalAccessError("No way to enter this method.");
+	}
+
+	public void setDirty(boolean dirty) {
+		if (isDirty() != dirty) {
+			this.dirty = dirty;
+			firePropertyChange(ISaveablePart.PROP_DIRTY);
+		}
+	}
+	
+	@Override
+	public boolean isDirty() {
+		return this.dirty;
+	}
+
+	@Override
+	public boolean isSaveAsAllowed() {
+		return false;
+	}
+
+	@Override
+	public boolean isSaveOnCloseNeeded() {
+		return true;
+	}
+
+	@Override
+	public int promptToSaveOnClose() {
+		return BMotionUtil.openSaveDialog();
 	}
 
 }

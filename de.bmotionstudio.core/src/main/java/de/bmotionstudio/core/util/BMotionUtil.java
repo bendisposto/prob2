@@ -67,84 +67,7 @@ public class BMotionUtil {
 			e.printStackTrace();
 		}
 
-		// Set the correct image path. In this case the image path is a
-		// subfolder called "images" in the corresponding project
-		// IFolder imageFolder = visualizationFile.getProject().getFolder(
-		// "images");
-		// if (!imageFolder.exists())
-		// imageFolder.create(true, true, new NullProgressMonitor());
-		// String imageFolderUrl = imageFolder.getLocationURI().toString()
-		// .replace("file:/", "");
-		// BMotionStudio.setImagePath(imageFolderUrl);
-		// -------------------------------------------------------------
-
-		// TODO reimplement me!!!
-		// Simulation simulation = null;
-
-		// if (obj instanceof Visualization) {
-
-		// TODO: We need a converter for "old" visualizations
-		// Visualization visualization = (Visualization) obj;
-		//
-		// simulation = new Simulation();
-		//
-		// String secId = UUID.randomUUID().toString();
-		//
-		// VisualizationView visualizationView = new VisualizationView(
-		// "New Visualization View", secId, visualization);
-		//
-		// simulation.addVisualizationView(visualizationView);
-
-		// } else if (obj instanceof Simulation) {
-		// simulation = (Simulation) obj;
-		// }
-
-		// if (simulation != null) {
-		// simulation.setLanguage(language);
-		// BMotionStudio.setCurrentSimulation(simulation);
-		// BMotionStudio.setCurrentPerspective(PerspectiveUtil
-		// .openPerspective(visualizationFile));
-		// BMotionStudio.setCurrentProjectFile(visualizationFile);
-		// PerspectiveUtil.initViews(simulation);
-		// }
-
 		return true;
-
-	}
-	
-	public static void unregisterVisualizationViewPart(File visualizationFile) {
-
-		VisualizationViewPart visualizationViewPart = null;
-
-		IWorkbenchWindow window = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
-
-		if (window != null) {
-
-			IWorkbenchPage activePage = window.getActivePage();
-
-			if (activePage != null) {
-
-				String secId = visualizationFile.getName().replace(
-						"." + PerspectiveUtil.getExtension(visualizationFile),
-						"");
-
-				// Check if view is already open
-				IViewReference viewReference = activePage.findViewReference(
-						VisualizationViewPart.ID, secId);
-
-				if (viewReference != null) {
-					visualizationViewPart = (VisualizationViewPart) viewReference
-							.getPart(true);
-				}
-
-				if (visualizationViewPart != null
-						&& !visualizationViewPart.isInitialized())
-					visualizationViewPart.unregister();
-
-			}
-
-		}
 
 	}
 	
@@ -386,6 +309,48 @@ public class BMotionUtil {
 		for (File f : visualizationViewFiles) {
 			BMotionUtil.initVisualizationViewPart(f);
 		}
+	}
+	
+	public static VisualizationViewPart[] getVisualizationViewParts(
+			File modelFile, String language) {
+
+		List<VisualizationViewPart> list = new ArrayList<VisualizationViewPart>();
+
+		IWorkbenchWindow window = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+
+		if (window != null) {
+
+			IWorkbenchPage activePage = window.getActivePage();
+
+			if (activePage != null) {
+
+				File[] visualizationViewFiles = BMotionUtil
+						.getVisualizationViewFiles(modelFile, language);
+				for (File f : visualizationViewFiles) {
+
+					String secId = f.getName().replace(
+							"." + PerspectiveUtil.getExtension(f), "");
+
+					// Check if view is already open
+					IViewReference viewReference = activePage
+							.findViewReference(VisualizationViewPart.ID, secId);
+
+					if (viewReference != null) {
+						VisualizationViewPart visualizationViewPart = (VisualizationViewPart) viewReference
+								.getPart(true);
+						if (visualizationViewPart != null)
+							list.add(visualizationViewPart);
+					}
+
+				}
+
+			}
+
+		}
+
+		return list.toArray(new VisualizationViewPart[list.size()]);
+
 	}
 
 	public static String getLanguageFromModel(AbstractModel model) {
