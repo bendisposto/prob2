@@ -378,13 +378,13 @@ subprojects {
 				if( ! checkForRunTimeLibs(project.name) ){					// Adds Lib to Manifest File
 					createRunTimeLib( project.name)
 				}
-			/*	for(int icp = 0; icp < dependencyList.size; icp++){
-	 				addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
+				for(int icp = 0; icp < dependencyList.size; icp++){
+	 				//addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
 						
 					if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
 						addRunTimeLib( dependencyList[icp], project.name)
 					}	
-				}*/		
+				}*	
 							
 			def warningReadMe = new File(workspacePath+project.name+"/"+dependencyFolder+"_README.txt")
 			warningReadMe.delete()
