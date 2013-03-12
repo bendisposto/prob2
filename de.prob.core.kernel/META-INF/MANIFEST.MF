@@ -105,7 +105,12 @@ Export-Package: com.google.common.annotations,
  groovy.util.slurpersupport,
  groovy.xml,
  groovy.xml.dom,
- groovy.xml.streamingmarkupsupport
+ groovy.xml.streamingmarkupsupport,
+ junit.framework,
+ org.junit,
+ org.junit.runner,
+ org.junit.runner.notification,
+ org.spockframework.runtime
 Bundle-ClassPath: .,
  lib/dependencies/activation-1.1.jar,
  lib/dependencies/answerparser-2.4.11-SNAPSHOT.jar,
