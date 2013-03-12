@@ -143,16 +143,16 @@ public class ModelChecker {
 					StateId src = states.get(sK);
 					if (src == null) {
 						src = new StateId(sK, s);
-						s.addVertex(src);
+						// s.addVertex(src);
 						states.put(sK, src);
 					}
 					StateId dest = states.get(dK);
 					if (dest == null) {
 						dest = new StateId(dK, s);
-						s.addVertex(dest);
+						// s.addVertex(dest);
 						states.put(dK, dest);
 					}
-					s.addEdge(src, dest, opInfo);
+					s.addEdge(opInfo, src, dest);
 					ops.put(opInfo.id, opInfo);
 				}
 			}

@@ -16,7 +16,7 @@ class StateId {
 		if (params == []) predicate = "TRUE = TRUE"
 		else predicate = params[0];
 		OpInfo op = space.opFromPredicate(this, method,predicate , 1)[0];
-		StateId newState = space.getEdgeTarget(op);
+		StateId newState = space.getDest(op);
 		space.explore(newState);
 		return newState;
 	}
@@ -61,7 +61,7 @@ class StateId {
 
 	def StateId anyOperation(filter) {
 		def ops = new ArrayList<OpInfo>()
-		ops.addAll(space.outgoingEdgesOf(this));
+		ops.addAll(space.getOutEdges(this));
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.name.matches(filter);
@@ -74,7 +74,7 @@ class StateId {
 		}
 		Collections.shuffle(ops)
 		def op = ops.get(0)
-		def ns = space.getEdgeTarget(op)
+		def ns = space.getDest(op)
 		space.explore(ns)
 		return ns;
 	}

@@ -130,7 +130,7 @@ class SyncHistory {
 		}
 
 		def h = histories.get(0)
-		def currentOpsOnH = h.s.outgoingEdgesOf(h.current.getCurrentState())
+		def currentOpsOnH = h.s.getOutEdges(h.current.getCurrentState())
 		def copy = new HashSet<OpInfo>(currentOpsOnH)
 
 		currentOpsOnH.each {
@@ -153,7 +153,7 @@ class SyncHistory {
 		histories.each {
 			history ->
 			sb.append("${histories.indexOf(history)}: ")
-			def o = history.s.outgoingEdgesOf(history.current.getCurrentState())
+			def o = history.s.getOutEdges(history.current.getCurrentState())
 			def list = []
 			o.each {
 				if(!syncedOps.contains(it.getName())) {
