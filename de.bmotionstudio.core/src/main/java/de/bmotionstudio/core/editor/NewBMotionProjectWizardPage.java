@@ -58,6 +58,7 @@ import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.ILanguageService;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.Visualization;
+import de.bmotionstudio.core.util.BMotionUtil;
 
 public class NewBMotionProjectWizardPage extends WizardPage {
 
@@ -130,7 +131,7 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 				visualization, "EventB");
 
 		XStream xstream = new XStream();
-		BMotionEditorPlugin.setAliases(xstream);
+		BMotionUtil.setAliases(xstream);
 		String content = xstream.toXML(visualizationView);
 		return new ByteArrayInputStream(content.getBytes("UTF-8"));
 

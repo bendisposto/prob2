@@ -11,11 +11,13 @@ public class VisualizationView extends PropertyChangeSupportObject {
 	private Visualization visualization;
 
 	private boolean rulerVisible, snapToGeometry, gridEnabled;
+
+	private double zoom;
 	
 	protected BMotionRuler leftRuler, topRuler;
 
 	private String language;
-
+	
 	public VisualizationView(String name, Visualization visualization,
 			String language) {
 		this.name = name;
@@ -24,6 +26,7 @@ public class VisualizationView extends PropertyChangeSupportObject {
 		this.rulerVisible = true;
 		this.snapToGeometry = true;
 		this.gridEnabled = false;
+		this.zoom = 1.0;
 		createRulers();
 	}
 
@@ -136,6 +139,16 @@ public class VisualizationView extends PropertyChangeSupportObject {
 			leftRuler = new BMotionRuler(false);
 		if (topRuler == null)
 			topRuler = new BMotionRuler(true);
+	}
+
+	public double getZoom() {
+		return zoom;
+	}
+
+	public void setZoom(double zoom) {
+		double oldVal = this.zoom;
+		this.zoom = zoom;
+		firePropertyChange("zoom", oldVal, zoom);
 	}
 	
 }

@@ -34,7 +34,10 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.editor.VisualizationViewPart;
+import de.bmotionstudio.core.model.BMotionGuide;
 import de.bmotionstudio.core.model.VisualizationView;
+import de.bmotionstudio.core.model.control.BConnection;
+import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
@@ -206,7 +209,7 @@ public class BMotionUtil {
 				}
 			};
 
-			BMotionEditorPlugin.setAliases(xstream);
+			BMotionUtil.setAliases(xstream);
 			Object obj = xstream.fromXML(inputStream);
 
 			return (VisualizationView) obj;
@@ -238,7 +241,7 @@ public class BMotionUtil {
 	public static String getInitialContent(VisualizationView visualizationView)
 			throws UnsupportedEncodingException {
 		XStream xstream = new XStream();
-		BMotionEditorPlugin.setAliases(xstream);
+		BMotionUtil.setAliases(xstream);
 		return xstream.toXML(visualizationView);
 	}
 
@@ -361,6 +364,14 @@ public class BMotionUtil {
 		else if (model instanceof CSPModel)
 			return "CSP";
 		return null;
+	}
+	
+	public static void setAliases(XStream xstream) {
+		xstream.alias("view", VisualizationView.class);
+		xstream.alias("control", BControl.class);
+		xstream.alias("visualization", Visualization.class);
+		xstream.alias("guide", BMotionGuide.class);
+		xstream.alias("connection", BConnection.class);
 	}
 	
 }

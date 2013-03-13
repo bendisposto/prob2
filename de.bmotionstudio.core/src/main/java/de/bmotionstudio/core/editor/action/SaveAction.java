@@ -9,9 +9,9 @@ import org.eclipse.ui.actions.ActionFactory;
 
 import com.thoughtworks.xstream.XStream;
 
-import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.model.VisualizationView;
+import de.bmotionstudio.core.util.BMotionUtil;
 
 public class SaveAction extends Action {
 
@@ -38,7 +38,7 @@ public class SaveAction extends Action {
 		try {
 			fileWriter = new FileWriter(this.visualizationFile);
 			XStream xstream = new XStream();
-			BMotionEditorPlugin.setAliases(xstream);
+			BMotionUtil.setAliases(xstream);
 			xstream.toXML(visualizationView, fileWriter);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();

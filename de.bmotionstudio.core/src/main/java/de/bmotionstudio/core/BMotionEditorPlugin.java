@@ -22,19 +22,14 @@ import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.google.inject.Injector;
-import com.thoughtworks.xstream.XStream;
 
 import de.bmotionstudio.core.editor.VisualizationViewPart;
-import de.bmotionstudio.core.model.BMotionGuide;
-import de.bmotionstudio.core.model.VisualizationView;
-import de.bmotionstudio.core.model.control.BConnection;
-import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.control.Visualization;
 import de.bmotionstudio.core.util.BMotionUtil;
 import de.bmotionstudio.core.util.PerspectiveUtil;
 import de.prob.statespace.AnimationSelector;
@@ -142,12 +137,15 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 
 	/**
 	 * Getting the current active page from the active workbench window.
-	 * <p>
 	 * 
-	 * @return current active workbench page
+	 * @return current active workbench page or null if not exists
 	 */
 	private IWorkbenchPage internalGetActivePage() {
-		return getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchWindow activeWorkbenchWindow = getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow != null)
+			return activeWorkbenchWindow.getActivePage();
+		return null;
 	}
 
 	private void initBControlServices() {
@@ -244,33 +242,30 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 		return controlServicesId;
 	}
 	
-	public static void setAliases(XStream xstream) {
-		xstream.alias("view", VisualizationView.class);
-		xstream.alias("control", BControl.class);
-		xstream.alias("visualization", Visualization.class);
-		xstream.alias("guide", BMotionGuide.class);
-		xstream.alias("connection", BConnection.class);
-	}
-
 	@Override
 	public void modelChanged(final StateSpace s) {
 
-		// Open new perspective
+		// If a model change was triggered, try to switch the perspective
 		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
-
+				
+				// Do nothing if the state space is the same
 				if (s == currentStateSpace)
 					return;
 
-				File modelFile = s.getModel().getModelFile();
-				String language = BMotionUtil.getLanguageFromModel(s.getModel());
-				// Save old and close old perspective (if exists)
+				File newModelFile = s.getModel().getModelFile();
+				String newLanguage = BMotionUtil.getLanguageFromModel(s
+						.getModel());
+				File currentModelFile = null;
+				if (currentStateSpace != null)
+					currentModelFile = currentStateSpace.getModel()
+							.getModelFile();
 				IPerspectiveDescriptor currentPerspective = BMotionStudio
 						.getCurrentPerspective();
-				File currentModelFile = BMotionStudio.getCurrentModelFile();
-				// Close and save old perspective
+				
+				// Save old and close old perspective (if exists)
 				if (currentPerspective != null && currentModelFile != null) {
 					// If yes ...
 					// Export the current perspective
@@ -281,10 +276,11 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 					// Close and delete current perspective, before opening the
 					// new one
 					PerspectiveUtil.closePerspective(currentPerspective);
-					// Check if dirty view parts exist
+					// Check if dirty view parts exist, if yes prompt the user
+					// for saving the dirty visualization parts
 					VisualizationViewPart[] visualizationViewParts = BMotionUtil
 							.getVisualizationViewParts(currentModelFile,
-									language);
+									newLanguage);
 					for (VisualizationViewPart visPart : visualizationViewParts) {
 						if (visPart.isDirty()) {
 							if (currentHistory != null)
@@ -294,10 +290,11 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 					}
 					PerspectiveUtil.deletePerspective(currentPerspective);
 				}
+				
+				// Switch to new perspective
 				IPerspectiveDescriptor perspective = PerspectiveUtil
-						.openPerspective(modelFile);
-				BMotionUtil.initVisualizationViews(modelFile, language);
-				BMotionStudio.setCurrentModelFile(modelFile);
+						.openPerspective(newModelFile);
+				BMotionUtil.initVisualizationViews(newModelFile, newLanguage);
 				BMotionStudio.setCurrentPerspective(perspective);
 
 				currentStateSpace = s;
@@ -315,16 +312,19 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 		// closing eclipse
 		IPerspectiveDescriptor currentPerspective = workbench
 				.getActiveWorkbenchWindow().getActivePage().getPerspective();
-		File currentModelFile = BMotionStudio.getCurrentModelFile();
+		File currentModelFile = null;
+		if (currentStateSpace != null)
+			currentModelFile = currentStateSpace.getModel().getModelFile();
 		IPerspectiveDescriptor probPerspective = BMotionStudio
 				.getCurrentPerspective();
-		
-		if(currentModelFile == null || probPerspective == null)
-			 return true;
-		
+
+		if (currentModelFile == null || probPerspective == null)
+			return true;
+
 		if (currentPerspective.getLabel().startsWith("ProB_")) {
-			PerspectiveUtil.exportPerspective(currentPerspective, PerspectiveUtil
-					.getPerspectiveFileFromModelFile(currentModelFile));
+			PerspectiveUtil.exportPerspective(currentPerspective,
+					PerspectiveUtil
+							.getPerspectiveFileFromModelFile(currentModelFile));
 		} else {
 			PerspectiveUtil.switchPerspective(probPerspective);
 			PerspectiveUtil.exportPerspective(probPerspective, PerspectiveUtil
