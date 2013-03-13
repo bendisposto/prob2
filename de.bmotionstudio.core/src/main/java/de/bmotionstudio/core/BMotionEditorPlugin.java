@@ -258,15 +258,15 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 				File newModelFile = s.getModel().getModelFile();
 				String newLanguage = BMotionUtil.getLanguageFromModel(s
 						.getModel());
-				File currentModelFile = null;
-				if (currentStateSpace != null)
-					currentModelFile = currentStateSpace.getModel()
-							.getModelFile();
 				IPerspectiveDescriptor currentPerspective = BMotionStudio
 						.getCurrentPerspective();
 				
 				// Save old and close old perspective (if exists)
-				if (currentPerspective != null && currentModelFile != null) {
+				if (currentPerspective != null && currentStateSpace != null) {
+					File currentModelFile = currentStateSpace.getModel()
+							.getModelFile();
+					String currentLanguage = BMotionUtil
+							.getLanguageFromModel(currentStateSpace.getModel());
 					// If yes ...
 					// Export the current perspective
 					File perspectiveFile = PerspectiveUtil
@@ -280,8 +280,9 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 					// for saving the dirty visualization parts
 					VisualizationViewPart[] visualizationViewParts = BMotionUtil
 							.getVisualizationViewParts(currentModelFile,
-									newLanguage);
+									currentLanguage);
 					for (VisualizationViewPart visPart : visualizationViewParts) {
+						System.out.println("DIRTY PARTS: " + visPart.isDirty());
 						if (visPart.isDirty()) {
 							if (currentHistory != null)
 								selector.changeCurrentHistory(currentHistory);

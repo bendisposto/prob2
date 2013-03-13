@@ -388,12 +388,14 @@ public class VisualizationViewPart extends ViewPart implements
 			getCommandStack().removeCommandStackListener(this);
 		if (getActionRegistry() != null)
 			getActionRegistry().dispose();
-		setInitialized(false);
 		if (getVisualizationView() != null)
 			getVisualizationView().removePropertyChangeListener(this);
 		selector.unregisterHistoryChangeListener(this);
-		getGraphicalViewer().removePropertyChangeListener(viewerListener);
-		rootEditPart.getZoomManager().removeZoomListener(zoomListener);
+		if (getGraphicalViewer() != null)
+			getGraphicalViewer().removePropertyChangeListener(viewerListener);
+		if (rootEditPart != null)
+			rootEditPart.getZoomManager().removeZoomListener(zoomListener);
+		setInitialized(false);
 	}
 
 	@Override
