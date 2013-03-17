@@ -10,16 +10,19 @@ import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.worksheet.block.impl.AnalyzeAstBlock;
 import de.prob.worksheet.block.impl.DocumentationBlock;
 import de.prob.worksheet.block.impl.EventBBlock;
 import de.prob.worksheet.block.impl.HTMLBlock;
 import de.prob.worksheet.block.impl.HTMLErrorBlock;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
 import de.prob.worksheet.block.impl.StoreValuesBlock;
+import de.prob.worksheet.block.impl.TreeBlock;
 import de.prob.worksheet.editor.impl.CkEditorEditor;
 import de.prob.worksheet.editor.impl.CodeMirrorTextEditor;
 import de.prob.worksheet.editor.impl.HTMLDiv;
 import de.prob.worksheet.editor.impl.HTMLDivError;
+import de.prob.worksheet.editor.impl.JitEditor;
 
 /**
  * The WorksheetObjectMapper extends the Jackson Object Mapper. It binds the
@@ -68,12 +71,11 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 */
 	private void initEditorResolvers() {
 		WorksheetObjectMapper.logger.trace("in:");
-		// addEditorResolver(new NamedType(CodeMirrorJSEditor.class,
-		// "javascript"));
 		addEditorResolver(new NamedType(HTMLDiv.class, "HTMLEditor"));
 		addEditorResolver(new NamedType(HTMLDivError.class, "errorHtml"));
 		addEditorResolver(new NamedType(CkEditorEditor.class, "Documentation"));
 		addEditorResolver(new NamedType(CodeMirrorTextEditor.class, "Event-B"));
+		addEditorResolver(new NamedType(JitEditor.class, "Tree"));
 		WorksheetObjectMapper.logger.trace("return:");
 	}
 
@@ -83,14 +85,15 @@ public class WorksheetObjectMapper extends ObjectMapper {
 	 */
 	private void initBlockResolvers() {
 		WorksheetObjectMapper.logger.trace("in:");
-		// addInputBlockResolver(new NamedType(JavascriptBlock.class,
-		// "Javascript"));
 		addOutputBlockResolver(new NamedType(HTMLBlock.class, "HTML"));
 		addOutputBlockResolver(new NamedType(HTMLErrorBlock.class, "Fehler"));
+		addOutputBlockResolver(new NamedType(TreeBlock.class, "Tree"));
 		addInputBlockResolver(new NamedType(InitializeStoreBlock.class,
 				"Get state from animation"));
 		addInputBlockResolver(new NamedType(StoreValuesBlock.class,
 				"Show state properties"));
+		addInputBlockResolver(new NamedType(AnalyzeAstBlock.class,
+				"Analyze Expression"));
 		addInputBlockResolver(new NamedType(EventBBlock.class, "Event-B"));
 
 		// TODO maybe add new List for new BlockTypes

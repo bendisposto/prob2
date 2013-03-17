@@ -118,7 +118,7 @@
 						if (document.createStyleSheet) {
 							document.createStyleSheet(newUrl);
 						} else {
-							$("head").append($("<link rel='stylesheet' href='"+newUrl+"' type='text/css' media='screen' />"));
+							$("head").append($("<link rel='stylesheet' href='"+newUrl+"' type='text/css' />"));
 						}
 						data.cssUrls.push(newUrl);
 					}

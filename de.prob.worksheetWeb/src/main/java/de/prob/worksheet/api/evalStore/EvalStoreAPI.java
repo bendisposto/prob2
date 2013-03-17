@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.be4.classicalb.core.parser.node.Node;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.EvalstoreCreateByStateCommand;
 import de.prob.animator.command.EvalstoreEvalCommand;
@@ -22,6 +23,7 @@ import de.prob.statespace.StateId;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.worksheet.api.DefaultWorksheetAPI;
 import de.prob.worksheet.api.IContext;
+import de.prob.worksheet.block.impl.HTMLBlock;
 import de.prob.worksheet.block.impl.StoreValuesBlock;
 import de.prob.worksheet.evaluator.evalStore.IEvalStoreConstants;
 
@@ -99,7 +101,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		EvalStoreAPI.logger.trace("{}", expression);
 		Long before = evalStoreId;
 		if (evalStoreId == null) {
-			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED,
+			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED_EVAL,
 					"No state is selected (call: Get state from animation)",
 					true);
 			return;
@@ -113,24 +115,10 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 				evalStoreId = storeResult.getResultingStoreId();
 				notifyActionListeners(IEvalStoreConstants.STORE_CHANGE, "",
 						before, evalStoreId);
-				EvalStoreAPI.logger.debug("{}", storeResult.getResult());
 
 				notifyOutputListeners(IEvalStoreConstants.CMD_RESULT,
 						storeResult.getResult().getValue(), "HTML", null);
 				storeResult.getResult().getValue();
-
-				EvalStoreAPI.logger.debug("Result.value = {}",
-						storeResult.getResult().value);
-				EvalStoreAPI.logger.debug("Result.explanation = {}",
-						storeResult.getResult().explanation);
-				EvalStoreAPI.logger.debug("Result.solution = {}",
-						storeResult.getResult().solution);
-				EvalStoreAPI.logger.debug("Result.getErrors = {}", storeResult
-						.getResult().getErrors());
-				EvalStoreAPI.logger.debug("Result.getQuanitfied = {}",
-						storeResult.getResult().getQuantifiedVars());
-				EvalStoreAPI.logger.debug("Result.getResultType = {}",
-						storeResult.getResult().getResultType());
 
 			} else {
 				if (storeResult.hasInterruptedOccurred()) {
@@ -151,11 +139,27 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 				}
 			}
 		} catch (Exception e) {
-			notifyErrorListeners(IEvalStoreConstants.EXCEPTION, e.getMessage(),
-					true);
+			if (e.getMessage() != null) {
+				notifyErrorListeners(IEvalStoreConstants.EXCEPTION,
+						e.getMessage(), true);
+				EvalStoreAPI.logger.error("{}", e.getMessage());
+			} else {
+				notifyErrorListeners(
+						IEvalStoreConstants.EXCEPTION,
+						"ProB has thrown an exception maybe your expression is not correctly spelled.",
+						true);
+				EvalStoreAPI.logger
+						.error("ProB has thrown an exceptrion maybe your expression is not correctly spelled.",
+								e.getMessage());
 
+			}
 		}
 
+	}
+
+	public void out(String out) {
+		notifyOutputListeners(IEvalStoreConstants.CMD_OUT, out,
+				HTMLBlock.PRINT_NAME, null);
 	}
 
 	public void getStoreValues() {
@@ -180,6 +184,105 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 			output = "{}";
 		notifyOutputListeners(IEvalStoreConstants.CMD_RESULT, output,
 				StoreValuesBlock.PRINT_NAME, null);
+	}
+
+	public void analyzeAst(String expr) {
+
+		try {
+			System.out.println(expr);
+			Long before = evalStoreId;
+			/*
+			 * if (evalStoreId == null) {
+			 * notifyOutputListeners(IEvalStoreConstants.CMD_RESULT,
+			 * "No State is selected! (call: Get state from animation)",
+			 * StoreValuesBlock.PRINT_NAME, null); return; }
+			 */
+			SubExpr test = new SubExpr();
+			Node ast = new EventB(expr).getAst();
+
+			ast.apply(test);
+			EvalStoreAPI.logger.debug("{}", test.exps);
+			EvalStoreAPI.logger.debug("{}", test.Nodes);
+			JNode root = test.Nodes.getLast();
+			for (int x = test.exps.size() - 1; x >= 0; x--) {
+				String exp = test.exps.get(x);
+				JNode node = root.find(exp);
+				String result = analyzeEvaluate(exp);
+				if (result != null && exp != null) {
+					node.setName(exp + "<br style='margin:2px;margin-top:0;'/>"
+							+ result);
+					if (result.equals("true")) {
+						node.setColor("#00ff00");
+					} else if (result.equals("false")) {
+						node.setColor("#ff0000");
+					} else {
+						node.setColor("#00ffff");
+					}
+				}
+			}
+			notifyOutputListeners(IEvalStoreConstants.CMD_TREE, "", "Tree",
+					root);
+		} catch (Exception e) {
+			if (e.getMessage() != null) {
+				notifyErrorListeners(IEvalStoreConstants.EXCEPTION,
+						e.getMessage(), true);
+				EvalStoreAPI.logger.error("{}", e.getMessage());
+			} else {
+				notifyErrorListeners(
+						IEvalStoreConstants.EXCEPTION,
+						"ProB has thrown an exception maybe your expression is not correctly spelled.",
+						true);
+				EvalStoreAPI.logger
+						.error("ProB has thrown an exceptrion maybe your expression is not correctly spelled.",
+								e.getMessage());
+			}
+		}
+	}
+
+	private String analyzeEvaluate(String expression) {
+		EvalStoreAPI.logger.trace("{}", expression);
+		EvalStoreAPI.logger.debug("evaluating: " + expression);
+		Long before = evalStoreId;
+		if (evalStoreId == null) {
+			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED_EVAL,
+					"No state is selected (call: Get state from animation)",
+					true);
+			return "Error";
+		}
+		IEvalElement eval = new EventB(expression);
+		EvalstoreEvalCommand cmd = new EvalstoreEvalCommand(evalStoreId, eval);
+		try {
+			animations.getCurrentHistory().getStatespace().execute(cmd);
+			EvalstoreResult storeResult = cmd.getResult();
+			if (storeResult.isSuccess()) {
+				evalStoreId = storeResult.getResultingStoreId();
+				notifyActionListeners(IEvalStoreConstants.STORE_CHANGE, "",
+						before, evalStoreId);
+
+				return storeResult.getResult().getValue();
+
+			} else {
+				if (storeResult.hasInterruptedOccurred()) {
+					EvalStoreAPI.logger.error("{}", storeResult.getResult());
+					return "No Success Interrupt";
+				}
+				if (storeResult.hasTimeoutOccurred()) {
+					EvalStoreAPI.logger.error("{}", storeResult.getResult());
+					return "No Success Timeout";
+				}
+				if (storeResult.getResult().hasError()) {
+					EvalStoreAPI.logger.error("{}", storeResult.getResult());
+					return "No Success Result Error: "
+							+ storeResult.getResult().getErrors();
+				}
+			}
+		} catch (Exception e) {
+			notifyErrorListeners(IEvalStoreConstants.EXCEPTION, e.getMessage(),
+					true);
+			return ("error");
+		}
+		return "";
+
 	}
 
 	@Override

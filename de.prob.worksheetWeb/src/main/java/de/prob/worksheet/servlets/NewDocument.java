@@ -53,7 +53,6 @@ public class NewDocument extends HttpServlet {
 				req.getSession(), req.getParameter("worksheetSessionId"));
 		// load or create the document
 		IWorksheetData doc = getDocument(attributes);
-
 		// store the session attributes
 		setSessionAttributes(req.getSession(),
 				req.getParameter("worksheetSessionId"), attributes);
@@ -108,8 +107,12 @@ public class NewDocument extends HttpServlet {
 			if (block1.isImmediateEvaluation()) {
 				DocumentEvaluator evaluator = new DocumentEvaluator();
 				evaluator.evaluateDocument(doc, getContextHistory(attributes));
+			} else {
+				doc.markAllAfter(0);
 			}
 			attributes.put("document", doc);
+		} else {
+			doc.markAllAfter(0);
 		}
 		return doc;
 

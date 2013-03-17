@@ -36,7 +36,7 @@ import de.prob.worksheet.editor.impl.DefaultEditor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @XmlSeeAlso(value = { EventBBlock.class, HTMLBlock.class, HTMLErrorBlock.class,
 		InitializeStoreBlock.class, StoreValuesBlock.class,
-		DocumentationBlock.class })
+		DocumentationBlock.class, TreeBlock.class, AnalyzeAstBlock.class })
 public abstract class DefaultBlock implements IBlockData, IBlockUI,
 		IBlockEvaluate {
 	public static final Logger logger = LoggerFactory
@@ -50,7 +50,7 @@ public abstract class DefaultBlock implements IBlockData, IBlockUI,
 	private DefaultEditor editor;
 	private String evaluatorType;
 	private boolean output;
-	private boolean mark;
+	private boolean mark = true;
 	private final ArrayList<String> outputBlockIds;
 	private boolean immediateEvaluation;
 	private boolean inputAndOutput;
@@ -64,7 +64,7 @@ public abstract class DefaultBlock implements IBlockData, IBlockUI,
 		editor = new CodeMirrorJSEditor();
 		hasMenu = true;
 		output = false;
-		mark = false;
+		mark = true;
 		evaluatorType = "state";
 		immediateEvaluation = false;
 		inputAndOutput = false;
@@ -289,6 +289,8 @@ public abstract class DefaultBlock implements IBlockData, IBlockUI,
 	@JsonProperty(value = "isOutput")
 	public void setOutput(boolean output) {
 		DefaultBlock.logger.trace("set: isOutput={}", output);
+		if (output)
+			mark = false;
 		this.output = output;
 	}
 
@@ -299,7 +301,7 @@ public abstract class DefaultBlock implements IBlockData, IBlockUI,
 	 */
 	@Override
 	@JsonProperty(value = "mark")
-	@XmlAttribute(name = "mark")
+	@XmlTransient
 	public boolean getMark() {
 		DefaultBlock.logger.trace("get: mark={}", mark);
 		return mark;
@@ -414,6 +416,8 @@ public abstract class DefaultBlock implements IBlockData, IBlockUI,
 
 	@Override
 	public void setNeitherInNorOutput(boolean neitherInNorOutput) {
+		if (neitherInNorOutput)
+			mark = false;
 		this.neitherInNorOutput = neitherInNorOutput;
 	}
 

@@ -1,0 +1,20 @@
+@CHARSET "ISO-8859-1";
+
+.cke_wysiwyg_frame {
+	width: 100% !important;
+}
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body>table,.context-menu-shadow {
+	display: none !important;
+}
+
+.ui-block-menu {
+	display: none !important;
+}
+.cke_top,.cke_bottom{
+	display: none !important;
+}

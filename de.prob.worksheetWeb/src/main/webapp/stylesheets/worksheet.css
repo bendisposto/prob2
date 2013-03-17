@@ -46,3 +46,22 @@ BODY {
 	word-wrap: break-word;
 	overflow: auto;
 }
+.tree{
+	height:300px;
+	overflow:hidden;
+	position:relative;
+}
+.tree>div>div{
+	overflow:auto;
+	
+}
+.node{
+	padding:5px !important;
+}
+
+.CodeMirror{
+	border:none !important;
+}
+.ui-editor-HTMLErrorOutput {
+	background-color: #FFD8DB;
+}

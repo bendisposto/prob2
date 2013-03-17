@@ -41,6 +41,7 @@
 							this._initMenu(this.options.menu);
 							this._setHasMenu(this.options.hasMenu);
 							this._setIsOutput(this.options.isOutput);
+							
 							// this.element.append("<div class=\"ui-sort-handle
 							// ui-icon ui-icon-arrow-4 ui-widget-content
 							// ui-corner-all\"></div>");
@@ -51,6 +52,7 @@
 								this._trigger("optionsChanged", 0,
 										[ this.options ]);
 							}
+							this._setMarked(this.options.mark);
 							this.element.focusin($.proxy(function() {
 								if (this.options.hasMenu) {
 									this.element.find(".ui-visible-on-focus")
@@ -97,9 +99,17 @@
 								}
 							},this));
 							this.element.contextMenu([
-							                         {'add documentation before': $.proxy(function(menuItem,menu){$('#ws-id-1').worksheet("addNewBlock",['Documentation',this.attr('id'),true]);},this.element)},
+							                         {'Add documentation before': $.proxy(function(menuItem,menu){$('#ws-id-1').worksheet("addNewBlock",['Documentation',this.attr('id'),true]);},this.element)},
+							                         {'Add documentation after': $.proxy(function(menuItem,menu){$('#ws-id-1').worksheet("addNewBlock",['Documentation',this.attr('id'),false]);},this.element)},
 							                         $.contextMenu.separator,
-							                         {'add documentation after': $.proxy(function(menuItem,menu){$('#ws-id-1').worksheet("addNewBlock",['Documentation',this.attr('id'),false]);},this.element)}],
+							                         {'Add block before': $.proxy(function(menuItem,menu){$('#ws-id-1').worksheet("addNewBlock",['Event-B',this.attr('id'),true]);},this.element)},
+							                         {'Add block after': $.proxy(function(menuItem,menu){$('#ws-id-1').worksheet("addNewBlock",['Event-B',this.attr('id'),false]);},this.element)},
+							                         $.contextMenu.separator,
+							                         {'Zoom in': function(){$("BODY").css("font-size",parseInt($("BODY").css("font-size"))+4+"px")}},
+							                         {'Zoom out': function(){$("BODY").css("font-size",parseInt($("BODY").css("font-size"))-4+"px")}},
+							                         $.contextMenu.separator,
+							                         {'Print worksheet': function(){window.print();}}
+							                         ],
 							                         {theme:'vista'});
 							this.element.find(".ui-block-menu").bind("menuselect",$.proxy(
 									function(event,ui){ui.item.trigger("menuitemselect",ui)},
@@ -255,10 +265,12 @@
 								this.removeOutputBlocks();
 								break;
 							case "mark":
+								this._setMarked(value);
 								break;
 							case "neitherInNorOutput":
 								this._setNeitherInNorOutput(value);
 								break;
+								
 							default:
 								break;
 							}
@@ -315,6 +327,7 @@
 											this._triggerInitialized();
 										}, this,newEditor));
 								newEditor.editor(editorOptions);
+								blockContentContainer.append($("<div style='clear:both'/>"));
 								
 							}
 
@@ -371,6 +384,24 @@
 								this.element.addClass("ui-no-in-no-out");
 							}else{
 								this.element.removeClass("ui-no-in-no-out");	
+							}
+						},
+						_setMarked:function(marked){
+							var marks=this.element.find(".block-marks");
+							var bcontent=this.element.find(".ui-block-content");
+							if(marked){
+								if(marks.length==0){
+									marks=$("<div class='block-marks'/>");
+									bcontent.prepend(marks);
+								}
+								bcontent.addClass("hasMarks");
+								marks.append($("<div class='block-mark marked'>!</div>"));
+							}else{
+								this.element.find(".marked").remove();
+								if(marks.find(".block-mark").length==0){
+									marks.remove();
+									bcontent.removeClass("hasMarks");
+								}
 							}
 						},
 						switchBlock:function(name){

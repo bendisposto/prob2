@@ -17,6 +17,7 @@ import de.prob.worksheet.editor.impl.HTMLDiv;
 @XmlType(name = "HTMLBlock")
 public class HTMLBlock extends DefaultBlock {
 	public static final String typeID = "HTML";
+	public static final String PRINT_NAME = "HTML";
 
 	@Inject
 	public HTMLBlock() {

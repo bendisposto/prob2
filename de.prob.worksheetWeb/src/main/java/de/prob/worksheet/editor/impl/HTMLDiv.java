@@ -10,7 +10,7 @@ public class HTMLDiv extends DefaultEditor {
 		setCSSHREFs(new String[] {});
 		setJavascriptHREFs(new String[] {});
 
-		setHTMLContent("<div class=\"ui-editor-HTMLOutput ui-editor-border ui-editor-padding\"></div>");
+		setHTMLContent("<div class=\"ui-editor-HTMLOutput ui-editor-padding\"></div>");
 		setGetContentScript("function(){return $(\"#\"+this.id+\"\").editor(\"getEditorObject\").html();}");
 		setInitializationScript("function(){return $($(\"#\"+this.id+\" .ui-editor-HTMLOutput\")[0])}");
 		setSetContentScript("function(content){$(\"#\"+this.id+\"\").editor(\"getEditorObject\").empty();\nreturn $(\"#\"+this.id+\"\").editor(\"getEditorObject\").append(content)}");

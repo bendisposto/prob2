@@ -43,6 +43,7 @@ public class BlockEvaluator {
 			block.setToUnicode(outputs[0].isToUnicode());
 			outputs[0] = block;
 		}
+		block.setMark(false);
 		doc.insertOutputBlocks(block, outputs);
 
 		// TODO history isn't stored here

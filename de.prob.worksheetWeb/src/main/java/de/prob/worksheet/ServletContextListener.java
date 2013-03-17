@@ -35,8 +35,9 @@ public class ServletContextListener implements
 	 * @return guice injector
 	 */
 	protected Injector getInjector() {
-		logger.trace("in:");
-		logger.trace("return: injector={}", ServletContextListener.INJECTOR);
+		ServletContextListener.logger.trace("in:");
+		ServletContextListener.logger.trace("return: injector={}",
+				ServletContextListener.INJECTOR);
 		return ServletContextListener.INJECTOR;
 	}
 
@@ -49,8 +50,8 @@ public class ServletContextListener implements
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		logger.trace("in: event={}", sce);
-		logger.trace("return:");
+		ServletContextListener.logger.trace("in: event={}", sce);
+		ServletContextListener.logger.trace("return:");
 	}
 
 	/*
@@ -61,8 +62,8 @@ public class ServletContextListener implements
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		logger.trace("in: event={}", sce);
-		logger.trace("return:");
+		ServletContextListener.logger.trace("in: event={}", sce);
+		ServletContextListener.logger.trace("return:");
 	}
 
 }

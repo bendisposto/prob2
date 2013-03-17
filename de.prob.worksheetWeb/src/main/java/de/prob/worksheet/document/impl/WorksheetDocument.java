@@ -295,7 +295,9 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	public void markAllAfter(final int index) {
 		WorksheetDocument.logger.trace("in: index={}", index);
 		for (int x = index; x < blocks.size(); x++) {
-			blocks.get(x).setMark(true);
+			if (!blocks.get(x).isOutput()
+					&& !blocks.get(x).isNeitherInNorOutput())
+				blocks.get(x).setMark(true);
 		}
 		WorksheetDocument.logger.trace("return:");
 	}
@@ -330,7 +332,8 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 				outputIds);
 		for (final String outputId : outputIds) {
 			final int index = getBlockIndexById(outputId);
-			blocks.remove(index);
+			if (index != -1)
+				blocks.remove(index);
 		}
 		block.setOutputBlockIds(null);
 		WorksheetDocument.logger.debug("Worksheet Blocks={}", blocks);
@@ -365,7 +368,7 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	public int getBlockIndexById(final String id) {
 		WorksheetDocument.logger.trace("in: id={}", id);
 		int x = 0;
-		for (final IBlockData block : blocks) {
+		for (IBlockData block : blocks) {
 			if (block.getId().equals(id)) {
 				WorksheetDocument.logger.trace("return: index={}", x);
 				return x;
@@ -466,6 +469,8 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 		IBlockData oldBlock = getBlockById(id);
 		newBlock.setId(oldBlock.getId());
 		newBlock.setOutputBlockIds(oldBlock.getOutputBlockIds());
+		newBlock.getEditor().setEditorContent(
+				oldBlock.getEditor().getEditorContent());
 		blocks.set(index, newBlock);
 		WorksheetDocument.logger.debug("Worksheet Blocks=={}", blocks);
 		WorksheetDocument.logger.trace("return:");
@@ -488,7 +493,7 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 		}
 
 		for (final DefaultBlock outBlock : blocks) {
-			if (block.isImmediateEvaluation()) {
+			if (block.isInputAndOutput()) {
 				setBlock(index, outBlock);
 				block = outBlock;
 				continue;

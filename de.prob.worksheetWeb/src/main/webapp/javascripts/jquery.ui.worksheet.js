@@ -330,34 +330,51 @@
 			return this.dirty;
 		},
 		switchBlock:function(options){
+			
 			this._trigger("switchBlockStart",0,[options]);
 			this._trigger("evalStart",0,[options.blockId]);
-			var content = this._addParameter("", "blockId", options.blockId);
-			content = this._addParameter(content, "type", options.type);
+			var msg=this.options.blocks[this.getBlockIndexById(options.blockId)];
+			if(typeof msg =="undefined" || msg==null){
+				//jTODO decide how to react on not existing blockId Error
+				return;
+			}
+            if(typeof msg.menu !=="undefined" && msg.menu!=null)
+            	delete msg.menu;
+            
+			var content = this._addParameter("", "block", $.toJSON(msg));
 			content = this._addParameter(content,"worksheetSessionId", this.options.sessionId);
-			$.ajax("switchBlock", {
+			$.ajax("setBlock", {
 				type : "POST",
 				data : content
 			}).done($.proxy(function(data, status, xhr) {
-				var text=xhr.responseText;
-				data = jQuery.parseJSON(xhr.responseText);
-				data = $.recursiveFunctionTest(data);
-
-				var index=this.getBlockIndexById(data[0].id);
-				for(var x=this.options.blocks.length-1;x>=index;x--){
-					this.removeBlock(x);
-				}
-
-				var lastInputIndex=0;
-				for ( var x = 0; x < data.length; x++) {
-					 this.appendBlock(data[x]);
-					 if(!data[x].isOutput){
-						 lastInputIndex=x;
-					 }
-				}
-				$("#"+data[lastInputIndex].id).block("setFocus");
-				this._trigger("evalEnd",0,[]);
-				this._trigger("blockSwitched",0,[]);
+			
+				var content = this._addParameter("", "blockId", options.blockId);
+				content = this._addParameter(content, "type", options.type);
+				content = this._addParameter(content,"worksheetSessionId", this.options.sessionId);
+				$.ajax("switchBlock", {
+					type : "POST",
+					data : content
+				}).done($.proxy(function(data, status, xhr) {
+					var text=xhr.responseText;
+					data = jQuery.parseJSON(xhr.responseText);
+					data = $.recursiveFunctionTest(data);
+	
+					var index=this.getBlockIndexById(data[0].id);
+					for(var x=this.options.blocks.length-1;x>=index;x--){
+						this.removeBlock(x);
+					}
+	
+					var lastInputIndex=0;
+					for ( var x = 0; x < data.length; x++) {
+						 this.appendBlock(data[x]);
+						 if(!data[x].isOutput){
+							 lastInputIndex=x;
+						 }
+					}
+					$("#"+data[lastInputIndex].id).block("setFocus");
+					this._trigger("evalEnd",0,[]);
+					this._trigger("blockSwitched",0,[]);
+				},this));
 			},this));
 		},
 		focusPreviousInputBlock:function(){

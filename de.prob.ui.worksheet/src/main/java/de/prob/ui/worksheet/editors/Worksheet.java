@@ -26,17 +26,16 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchListener;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.EditorPart;
@@ -48,7 +47,8 @@ import de.prob.ui.worksheet.WorksheetEditorInput;
 
 //import org.eclipse.core.internal.resources.ResourceException;
 
-public class Worksheet extends EditorPart {
+public class Worksheet extends EditorPart implements DisposeListener,
+		LocationListener {
 	static Logger logger = LoggerFactory.getLogger(Worksheet.class);
 	// Worksheet States
 	private boolean worksheetLoaded = false;
@@ -437,10 +437,11 @@ public class Worksheet extends EditorPart {
 	// FIXME set port dynamically
 	@Override
 	public void createPartControl(Composite parent) {
-
+		parent.addDisposeListener(this);
 		worksheetBrowser = new Browser(parent, SWT.NONE);
 		worksheetBrowser.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true));
+		worksheetBrowser.addLocationListener(this);
 		new de.prob.ui.worksheet.editors.browserFunction.setDirty(
 				worksheetBrowser, "setDirty", this);
 		new de.prob.ui.worksheet.editors.browserFunction.domReady(
@@ -451,41 +452,10 @@ public class Worksheet extends EditorPart {
 				worksheetBrowser, "setWorksheetLoaded", this);
 		worksheetBrowser.setUrl("http://localhost:8080/worksheet/");
 
-		// Snippet Start (from
-		// http://wiki.eclipse.org/FAQ_Close_All_Editors_On_Shutdown)
-		// TODO find a better solution maybe just remove the snippet
-		// (http://wiki.eclipse.org/Eclipse_Plug-in_Development_FAQ#How_do_I_prevent_a_particular_editor_from_being_restored_on_the_next_workbench_startup.3F)
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		final IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow()
-				.getActivePage();
-
-		// workbench.getWorkingSetManager().addPropertyChangeListener(this);
-
-		workbench.addWorkbenchListener(new IWorkbenchListener() {
-			@Override
-			public boolean preShutdown(IWorkbench workbench, boolean forced) {
-				if (activePage != null) {
-					IEditorReference[] refs = activePage.getEditorReferences();
-					if (refs != null) {
-						for (IEditorReference ref : refs)
-							if (ref.getPart(false) instanceof Worksheet)
-								activePage.closeEditor(
-										(IEditorPart) ref.getPart(false), true);
-					}
-				}
-				return true;
-			}
-
-			@Override
-			public void postShutdown(IWorkbench workbench) {
-
-			}
-		});
 	}
 
 	@Override
 	public void dispose() {
-		sendCloseDocument();
 		super.dispose();
 	}
 
@@ -532,5 +502,25 @@ public class Worksheet extends EditorPart {
 
 	public void setSessionID(String sessionID) {
 		this.sessionID = sessionID;
+	}
+
+	static int coun = 0;
+
+	@Override
+	public void widgetDisposed(DisposeEvent e) {
+		Worksheet.coun++;
+		System.out.println("disposed " + Worksheet.coun);
+	}
+
+	@Override
+	public void changing(LocationEvent event) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void changed(LocationEvent event) {
+		// TODO Auto-generated method stub
+
 	}
 }

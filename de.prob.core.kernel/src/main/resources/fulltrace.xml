@@ -22,7 +22,10 @@
 
 <logger name="de.prob" level="WARN" />
 <logger name="de.prob.worksheet" level="WARN" />
+<logger name="de.prob.worksheet.evaluator" level="TRACE" />
+
 <logger name="de.prob.ui.worksheet" level="WARN" />
+
 
 <root level="WARN">
 	<appender-ref ref="STDOUT" />

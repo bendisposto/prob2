@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.block.impl.EventBBlock;
-import de.prob.worksheet.block.impl.JavascriptBlock;
 import de.prob.worksheet.document.impl.WorksheetDocument;
 
 public class DocumentEvaluator {
@@ -27,8 +26,12 @@ public class DocumentEvaluator {
 
 	public void evaluateFrom(WorksheetDocument doc, String blockId,
 			ContextHistory contextHistory) {
+		DocumentEvaluator.logger.trace(
+				"in: doc={}, blockId={}, contextHistory={}", new Object[] {
+						doc, blockId, contextHistory });
 		final int index = doc.getBlockIndexById(blockId);
 		this.evaluateFrom(doc, index, contextHistory);
+		DocumentEvaluator.logger.trace("out:");
 	}
 
 	public void evaluateFrom(WorksheetDocument doc, int index,
@@ -56,7 +59,7 @@ public class DocumentEvaluator {
 					String content = blocks[blocks.length - 1].getEditor()
 							.getEditorContent();
 					if (content != null && !content.trim().equals("")) {
-						doc.appendBlock(new JavascriptBlock());
+						doc.appendBlock(new EventBBlock());
 					}
 				}
 			}

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 
+import de.prob.worksheet.block.impl.AnalyzeAstBlock;
 import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.block.impl.DocumentationBlock;
 import de.prob.worksheet.block.impl.EventBBlock;
@@ -13,6 +14,7 @@ import de.prob.worksheet.block.impl.HTMLBlock;
 import de.prob.worksheet.block.impl.HTMLErrorBlock;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
 import de.prob.worksheet.block.impl.StoreValuesBlock;
+import de.prob.worksheet.block.impl.TreeBlock;
 import de.prob.worksheet.evaluator.IEvaluator;
 import de.prob.worksheet.evaluator.evalStore.StateEvaluator;
 
@@ -46,6 +48,11 @@ public class WorksheetModule extends AbstractModule {
 				.to(HTMLBlock.class);
 		this.bind(DefaultBlock.class).annotatedWith(Names.named("Fehler"))
 				.to(HTMLErrorBlock.class);
+		this.bind(DefaultBlock.class).annotatedWith(Names.named("Tree"))
+				.to(TreeBlock.class);
+		this.bind(DefaultBlock.class)
+				.annotatedWith(Names.named("Analyze Expression"))
+				.to(AnalyzeAstBlock.class);
 
 		this.bind(DefaultBlock.class)
 				.annotatedWith(Names.named("Get state from animation"))

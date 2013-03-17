@@ -18,6 +18,7 @@ import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.block.impl.HTMLErrorBlock;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
 import de.prob.worksheet.block.impl.StoreValuesBlock;
+import de.prob.worksheet.editor.impl.HTMLDivError;
 
 /**
  * @author Rene
@@ -55,14 +56,17 @@ public class ErrorListener implements IWorksheetAPIListener {
 		switch (event.getId()) {
 		case IEvalStoreConstants.NOT_INITIALIZED:
 			block = new StoreValuesBlock();
+			block.setEditor(new HTMLDivError());
 			block.setToUnicode(false);
 			addOutput(block, typedEvent.getMessage(), typedEvent.isHaltAll());
 			break;
 		case IEvalStoreConstants.NO_ANIMATION:
 			block = new InitializeStoreBlock();
+			block.setEditor(new HTMLDivError());
 			block.setToUnicode(false);
 			addOutput(block, typedEvent.getMessage(), typedEvent.isHaltAll());
 			break;
+
 		default:
 			block = new HTMLErrorBlock();
 			block.setToUnicode(false);

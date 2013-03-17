@@ -79,7 +79,16 @@ public class WebConsole {
 				+ "webapps/worksheet.war", "/worksheet");
 		worksheetContext.setExtractWAR(true);
 		worksheetContext.setServer(server);
+		server.setStopAtShutdown(true);
+		/*
+		 * MBeanContainer mbContainer = new MBeanContainer(
+		 * ManagementFactory.getPlatformMBeanServer());
+		 * server.getContainer().addEventListener(mbContainer);
+		 * server.addBean(mbContainer);
+		 */
 
+		// Register loggers as MBeans
+		// mbContainer.addBean(Log.getLog());
 		// Add the handlers
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
@@ -92,6 +101,7 @@ public class WebConsole {
 		do {
 			try {
 				Connector connector = new SelectChannelConnector();
+				connector.setStatsOn(true);
 				connector.setServer(server);
 				String hostname = System.getProperty("prob.host", "127.0.0.1");
 				connector.setHost(hostname);

@@ -10,5 +10,9 @@ public interface IEvalStoreConstants {
 	public static int TIMEOUT = 7;
 	public static int CMD_ERROR = 8;
 	public static int CONTEXT_ERROR = 9;
+	public static int CMD_TREE = 10;
+	public static int NO_ANIMATION_EVAL = 11;
+	public static int NOT_INITIALIZED_EVAL = 12;
+	public static int CMD_OUT = 13;
 
 }

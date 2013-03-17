@@ -45,25 +45,26 @@ public class SwitchBlock extends HttpServlet {
 	protected void doPost(final HttpServletRequest req,
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
-		this.logParameters(req);
+		logParameters(req);
 		resp.setCharacterEncoding("UTF-8");
 		// initialize the session
-		this.setSessionProperties(req.getSession());
+		setSessionProperties(req.getSession());
 
 		// Load the session attibutes
-		HashMap<String, Object> attributes = this.getSessionAttributes(
+		HashMap<String, Object> attributes = getSessionAttributes(
 				req.getSession(), req.getParameter("worksheetSessionId"));
 
 		// load or create the document
-		WorksheetDocument doc = this.getDocument(attributes);
+		WorksheetDocument doc = getDocument(attributes);
 
 		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 
 		// create new Block of whished type
-		DefaultBlock newBlock = ServletContextListener.INJECTOR.getInstance(Key.get(
-				DefaultBlock.class, Names.named(req.getParameter("type"))));
+		DefaultBlock newBlock = ServletContextListener.INJECTOR
+				.getInstance(Key.get(DefaultBlock.class,
+						Names.named(req.getParameter("type"))));
 		// Switch Block in Document
-		doc.switchBlockType((String) req.getParameter("blockId"), newBlock);
+		doc.switchBlockType(req.getParameter("blockId"), newBlock);
 
 		// Maybe move this lineof code to the end of the method
 		int startIndex = doc.getBlockIndex(newBlock);
@@ -71,13 +72,14 @@ public class SwitchBlock extends HttpServlet {
 		// if needed Evaluate the Document
 		if (newBlock.isImmediateEvaluation() || !newBlock.isOutput()) {
 			DocumentEvaluator documentEvalutor = new DocumentEvaluator();
+			logger.debug("evaluating switched block");
 			documentEvalutor.evaluateFrom(doc, newBlock.getId(),
 					getContextHistory(attributes));
 		}
 		logger.debug("contextHistory: {}", attributes);
 		// store the session attributes
 
-		this.setSessionAttributes(req.getSession(),
+		setSessionAttributes(req.getSession(),
 				req.getParameter("worksheetSessionId"), attributes);
 
 		// print the json string to the response

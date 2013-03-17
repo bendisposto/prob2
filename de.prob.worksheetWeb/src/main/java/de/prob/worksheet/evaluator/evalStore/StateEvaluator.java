@@ -21,7 +21,8 @@ import de.prob.worksheet.parser.SimpleConsoleParser.EvalObject;
 
 public class StateEvaluator implements IEvaluator {
 
-	Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory
+			.getLogger(StateEvaluator.class);
 
 	public EvalStoreAPI api = null;
 	OutputListener outListener;
@@ -50,7 +51,7 @@ public class StateEvaluator implements IEvaluator {
 	 */
 	@Override
 	public void setInitialContext(IContext context) {
-		logger.trace("{}", context);
+		StateEvaluator.logger.trace("{}", context);
 		contextHistory = new ContextHistory(context);
 		actionListener = new HistoryListener(contextHistory);
 		api.addActionListener(actionListener);
@@ -66,13 +67,15 @@ public class StateEvaluator implements IEvaluator {
 	 */
 	@Override
 	public void evaluate(final String script) {
-		logger.trace(script);
+		StateEvaluator.logger.trace(script);
 		if (api == null) {
-			logger.error("Evaluator isn't correctly initialized. Api is missing.");
+			StateEvaluator.logger
+					.error("Evaluator isn't correctly initialized. Api is missing.");
 			return;
 		}
 		if (contextHistory.size() == 0) {
-			logger.error("Evaluator isn't correctly initialized. initialContext is missing.");
+			StateEvaluator.logger
+					.error("Evaluator isn't correctly initialized. initialContext is missing.");
 			return;
 		}
 		evaluateScript(script);
@@ -80,7 +83,7 @@ public class StateEvaluator implements IEvaluator {
 	}
 
 	private void evaluateObject(EvalObject evalObject) {
-		logger.trace(evalObject.toString());
+		StateEvaluator.logger.trace(evalObject.toString());
 		// TODO Change to parserError thrown by Parser
 
 		if (evalObject.methodInstance == null) {
@@ -93,7 +96,7 @@ public class StateEvaluator implements IEvaluator {
 					true));
 		}
 
-		logger.debug("{}", contextHistory.last());
+		StateEvaluator.logger.debug("{}", contextHistory.last());
 		api.setContext(contextHistory.last());
 
 		if (evalObject.methodInstance instanceof Method) {
@@ -102,6 +105,9 @@ public class StateEvaluator implements IEvaluator {
 				final Object[] args = Arrays.copyOfRange(evalObject.method, 1,
 						evalObject.method.length);
 				try {
+					StateEvaluator.logger.debug("evaluator invokes +"
+							+ evalObject.methodInstance + " with args: "
+							+ Arrays.toString(args));
 					((Method) evalObject.methodInstance).invoke(api, args);
 				} catch (final IllegalAccessException e) {
 					errorListener.notify(new WorksheetErrorEvent(3001,
@@ -132,7 +138,7 @@ public class StateEvaluator implements IEvaluator {
 	}
 
 	private void evaluateObjects(EvalObject[] evalObjects) {
-		logger.trace(Arrays.toString(evalObjects));
+		StateEvaluator.logger.trace(Arrays.toString(evalObjects));
 		for (EvalObject object : evalObjects) {
 			if (errorListener.isHaltAll())
 				break;
@@ -141,16 +147,19 @@ public class StateEvaluator implements IEvaluator {
 	}
 
 	private void evaluateScript(String script) {
-		logger.trace(script);
+		StateEvaluator.logger.trace(script);
+		StateEvaluator.logger.debug("StateEvaluator starts evaluation: "
+				+ script);
 		EvalObject[] evalObjects = parseScript(script);
 		evaluateObjects(evalObjects);
 	}
 
 	private EvalObject[] parseScript(String script) {
-		logger.trace(script);
+		StateEvaluator.logger.trace(script);
+		StateEvaluator.logger.debug("StateEvaluator parses: " + script);
 		final SimpleConsoleParser cbwParser = new SimpleConsoleParser();
 		final EvalObject[] evalObjects = cbwParser.parse(script);
-		logger.trace(Arrays.toString(evalObjects));
+		StateEvaluator.logger.trace(Arrays.toString(evalObjects));
 		return evalObjects;
 	}
 
@@ -164,7 +173,7 @@ public class StateEvaluator implements IEvaluator {
 		outputBlocks = outListener.outputBlocks;
 		DefaultBlock[] ret = outputBlocks.toArray(new DefaultBlock[outputBlocks
 				.size()]);
-		logger.trace(Arrays.toString(ret));
+		StateEvaluator.logger.trace(Arrays.toString(ret));
 		return ret;
 	}
 
@@ -175,7 +184,7 @@ public class StateEvaluator implements IEvaluator {
 	 */
 	@Override
 	public ContextHistory getContextHistory() {
-		logger.trace("{}", contextHistory);
+		StateEvaluator.logger.trace("{}", contextHistory);
 		return contextHistory;
 	}
 
