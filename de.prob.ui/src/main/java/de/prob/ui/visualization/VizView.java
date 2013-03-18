@@ -15,9 +15,7 @@ public class VizView extends ViewPart {
 	public static final String ID = "de.prob.ui.viz.VizView";
 
 	private final int port;
-	private Browser consoleBrowser;
-
-	private String htmlPage;
+	private Browser browser;
 
 	public VizView() {
 		port = WebConsole.getPort();
@@ -37,19 +35,19 @@ public class VizView extends ViewPart {
 		gridData.grabExcessHorizontalSpace = true;
 		gridData.grabExcessVerticalSpace = true;
 
-		consoleBrowser = new Browser(sashForm, SWT.NONE);
+		browser = new Browser(sashForm, SWT.NONE);
 
-		consoleBrowser.setLayoutData(gridData);
+		browser.setLayoutData(gridData);
 		sashForm.setLayoutData(gridData);
 
 	}
 
-	public Browser getConsoleBrowser() {
-		return consoleBrowser;
+	public Browser getBrowser() {
+		return browser;
 	}
 	
 	public void init(String url) {
-		consoleBrowser.setUrl("http://localhost:" + port + "/"+url);
+		browser.setUrl("http://localhost:" + port + "/"+url);
 	}
 
 

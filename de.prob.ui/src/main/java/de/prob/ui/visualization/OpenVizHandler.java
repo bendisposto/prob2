@@ -10,8 +10,11 @@ public class OpenVizHandler extends AbstractHandler implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		String parameter = event
+		.getParameter("de.prob.ui.viz.name");
+		
 		try {
-			VisualizationUtil.createVisualizationViewPart("test.html");
+			VisualizationUtil.createVisualizationViewPart(parameter);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

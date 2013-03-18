@@ -10,11 +10,6 @@
                    label="Submit Bugreport"
                    style="push">
              </command>
-             <command
-                   commandId="de.prob.ui.openViz"
-                   label="Open Visualization"
-                   style="push">
-             </command>
 
       </menuContribution>
       
@@ -141,6 +136,19 @@
                  style="push">
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:analyze">
+           <command
+                 commandId="de.prob.ui.openViz"
+                 label="Open State Space Visualization"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.viz.name"
+                    value="statespace.html">
+              </parameter>
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
@@ -193,6 +201,11 @@
             <command
                   id="de.prob.ui.openViz"
                   name="Open Visualization">
+               <commandParameter
+                     id="de.prob.ui.viz.name"
+                     name="Visualization Type"
+                     optional="true">
+               </commandParameter>
             </command>
    </extension>
    
