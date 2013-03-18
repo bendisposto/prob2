@@ -10,6 +10,11 @@
                    label="Submit Bugreport"
                    style="push">
              </command>
+             <command
+                   commandId="de.prob.ui.openViz"
+                   label="Open Visualization"
+                   style="push">
+             </command>
 
       </menuContribution>
       
@@ -185,6 +190,10 @@
                   id="de.prob.ui.bugreport"
                   name="Submit Bug Report">
             </command>
+            <command
+                  id="de.prob.ui.openViz"
+                  name="Open Visualization">
+            </command>
    </extension>
    
    <extension
@@ -321,6 +330,12 @@
                class="de.prob.ui.ticket.SubmitBugreportHandler">
          </class>
       </handler>
+      <handler
+            commandId="de.prob.ui.openViz">
+         <class
+               class="de.prob.ui.visualization.OpenVizHandler">
+         </class>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -392,6 +407,14 @@
             icon="icons/Consistency.png"
             id="de.prob.ui.model_check"
             name="Model Checking"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.visualization.VizView"
+            id="de.prob.ui.viz.VizView"
+            name="Visualization"
             restorable="true">
       </view>
    </extension>
