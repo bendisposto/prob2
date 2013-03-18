@@ -1,7 +1,5 @@
 package de.prob.ui.visualization;
 
-import java.io.File;
-
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
