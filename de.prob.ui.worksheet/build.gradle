@@ -43,7 +43,7 @@ repositories {
 }
 
 dependencies{
-	providedCompile project(':de.prob.core.kernel'){
+	compile project(':de.prob.core.kernel'){
 		transitive = true
 	}
 }

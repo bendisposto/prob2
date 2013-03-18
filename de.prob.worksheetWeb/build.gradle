@@ -53,35 +53,8 @@ dependencies{
 	compile project(':de.prob.core.kernel')
 
 	compile 'com.fasterxml.jackson.core:jackson-core:2.1.2'
-	//runtime 'com.fasterxml.jackson.core:jackson-core:2.1.2'
 	compile 'com.fasterxml.jackson.core:jackson-annotations:2.1.2'
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.1.2'
-	compile('com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.1.2'){
-		transitive=false
-	}
-	compile 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.1.2'
-	/*
-	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
-
-	compile 'com.google.inject.extensions:guice-assistedinject:3.0' // Apache Licence 2.0
-
-	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
-
-	compile 'org.mortbay.jetty:servlet-api:3.0.20100224'
-
-	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3' // EPL
-	compile 'org.eclipse.jetty:jetty-server:8.0.0.M3' // EPL
-	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3' // EPL
-	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3' // EPL
-	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3' // EPL
-
-	compile 'org.slf4j:slf4j-api:1.6.1'
-
-	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
-	compile 'ch.qos.logback:logback-classic:0.9.29' // EPL
-	compile 'ch.qos.logback:logback-access:0.9.29' // EPL
-	*/
-
 	
 	testCompile 'junit:junit:4.8.2'
 	
