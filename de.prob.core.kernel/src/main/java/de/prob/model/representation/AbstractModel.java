@@ -1,6 +1,9 @@
 package de.prob.model.representation;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import de.prob.model.representation.RefType.ERefType;
@@ -42,7 +45,22 @@ public abstract class AbstractModel extends AbstractElement {
 
 	@Override
 	public String toString() {
-		return graph.toString();
+		StringBuilder sb = new StringBuilder();
+		sb.append("(");
+		sb.append(graph.getVertices().toString());
+		sb.append(", ");
+		
+		Collection<RefType> edges = graph.getEdges();
+		List<String> s = new ArrayList<String>();
+		for (RefType refType : edges) {
+			String src = graph.getSource(refType);
+			String dest = graph.getDest(refType);
+			s.add(refType.toString()+"=("+src+","+dest+")");
+		}
+		sb.append(s.toString());
+		sb.append(")");
+		
+		return sb.toString();
 	}
 
 	public Object asType(final Class<?> className) {

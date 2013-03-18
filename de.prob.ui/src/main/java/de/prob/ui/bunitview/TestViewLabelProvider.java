@@ -107,7 +107,8 @@ public class TestViewLabelProvider extends LabelProvider implements
 	 * @return
 	 */
 	private boolean isFailure(final Failure f) {
-		if (f.getException() instanceof AssertionFailedError
+		if (f.getException() instanceof AssertionFailedError ||
+				f.getException() instanceof AssertionError
 				|| f.getException() instanceof SpockComparisonFailure) {
 			return true;
 		}
