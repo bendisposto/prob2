@@ -81,6 +81,8 @@ public class ErrorListener implements IWorksheetAPIListener {
 		ErrorListener.logger.trace("output:{}", output);
 		ErrorListener.logger.trace("halt{}", haltAll);
 		ErrorListener.logger.debug("block.toUnicode={}", block.isToUnicode());
+		ErrorListener.logger.debug("block.getEditor={}", block.getEditor());
+
 		block.setOutput(true);
 		block.getEditor().setEditorContent(output);
 		outputBlocks.add(block);

@@ -101,7 +101,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		EvalStoreAPI.logger.trace("{}", expression);
 		Long before = evalStoreId;
 		if (evalStoreId == null) {
-			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED_EVAL,
+			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED,
 					"No state is selected (call: Get state from animation)",
 					true);
 			return;
@@ -164,9 +164,9 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 
 	public void getStoreValues() {
 		if (evalStoreId == null) {
-			notifyOutputListeners(IEvalStoreConstants.CMD_RESULT,
+			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED,
 					"No State is selected! (call: Get state from animation)",
-					StoreValuesBlock.PRINT_NAME, null);
+					true);
 			return;
 		}
 		GetStateValuesCommand cmd = GetStateValuesCommand

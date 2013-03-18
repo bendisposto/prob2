@@ -44,7 +44,6 @@ public abstract class DefaultBlock implements IBlockData, IBlockUI,
 	public static final String typeID = "default";
 
 	private String id;
-	private String worksheetId;
 	private boolean hasMenu;
 	private final ArrayList<WorksheetMenuNode> menu;
 	private DefaultEditor editor;
@@ -139,31 +138,6 @@ public abstract class DefaultBlock implements IBlockData, IBlockUI,
 	public void setId(String id) {
 		DefaultBlock.logger.trace("set: id={}", id);
 		this.id = id;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.prob.worksheet.block.IBlockUI#getWorksheetId()
-	 */
-	@Override
-	@JsonProperty(value = "worksheetId")
-	@XmlAttribute(name = "worksheetId")
-	public String getWorksheetId() {
-		DefaultBlock.logger.trace("get: id={}", worksheetId);
-		return worksheetId;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.prob.worksheet.block.IBlockUI#setWorksheetId(java.lang.String)
-	 */
-	@Override
-	@JsonProperty(value = "worksheetId")
-	public void setWorksheetId(String worksheetId) {
-		DefaultBlock.logger.trace("set: id={}", worksheetId);
-		this.worksheetId = worksheetId;
 	}
 
 	/*

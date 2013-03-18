@@ -9,13 +9,6 @@ import de.prob.worksheet.document.impl.WorksheetMenuNode;
 
 public interface IBlockUI {
 
-	@JsonProperty(value = "worksheetId")
-	@XmlAttribute(name = "worksheetId")
-	public abstract String getWorksheetId();
-
-	@JsonProperty(value = "worksheetId")
-	public abstract void setWorksheetId(String worksheetId);
-
 	@JsonProperty(value = "hasMenu")
 	@XmlTransient
 	public abstract boolean getHasMenu();

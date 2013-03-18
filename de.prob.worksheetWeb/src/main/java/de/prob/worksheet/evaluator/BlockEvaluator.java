@@ -38,8 +38,9 @@ public class BlockEvaluator {
 		DefaultBlock[] outputs = evaluator.getOutputs();
 
 		if (block.isInputAndOutput()) {
-			block.getEditor().setEditorContent(
-					outputs[0].getEditor().getEditorContent());
+			block.setEditor(outputs[0].getEditor());
+			// block.getEditor().setEditorContent(
+			// outputs[0].getEditor().getEditorContent());
 			block.setToUnicode(outputs[0].isToUnicode());
 			outputs[0] = block;
 		}
