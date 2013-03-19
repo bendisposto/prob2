@@ -23,7 +23,7 @@ public class DocumentEvaluatorTest {
 
 		DocumentEvaluator evaluator = new DocumentEvaluator();
 		evaluator.evaluateFrom(doc, 0, new ContextHistory(new EvalStoreContext(
-				"root", null)));
+				"root", null, null)));
 
 		IBlockData[] res = doc.getBlocks();
 		assertTrue(res.length == 3);
@@ -32,7 +32,7 @@ public class DocumentEvaluatorTest {
 		doc.switchBlockType("ws-block-id-1", newBlock);
 		assertTrue(res.length == 3);
 		evaluator.evaluateFrom(doc, 0, new ContextHistory(new EvalStoreContext(
-				"root", null)));
+				"root", null, null)));
 
 		res = doc.getBlocks();
 		assertTrue(res.length == 2);

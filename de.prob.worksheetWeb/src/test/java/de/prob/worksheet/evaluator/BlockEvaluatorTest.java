@@ -39,7 +39,7 @@ public class BlockEvaluatorTest {
 				new HTMLErrorBlock() });
 		BlockEvaluator evaluater = new BlockEvaluator();
 		evaluater.evaluate(doc, inBlock, new ContextHistory(
-				new EvalStoreContext("root", null)));
+				new EvalStoreContext("root", null, null)));
 		IBlockData[] res = doc.getBlocksFrom(0);
 		assertTrue(res.length == 2);
 	}
