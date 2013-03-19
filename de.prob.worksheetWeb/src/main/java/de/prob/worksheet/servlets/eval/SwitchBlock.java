@@ -26,6 +26,7 @@ import de.prob.worksheet.evaluator.DocumentEvaluator;
 
 @WebServlet(urlPatterns = { "/SwitchBlock" })
 public class SwitchBlock extends HttpServlet {
+	private static final long serialVersionUID = -1903390313586306774L;
 	Logger logger = LoggerFactory.getLogger(SwitchBlock.class);
 
 	/*
@@ -108,7 +109,7 @@ public class SwitchBlock extends HttpServlet {
 		ContextHistory contextHistory = null;
 		if (temp == null) {
 			contextHistory = new ContextHistory(new EvalStoreContext("init",
-					null));
+					null, null));
 			logger.info("new ContextHistory created");
 			attributes.put("contextHistory", contextHistory);
 		} else {

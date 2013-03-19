@@ -126,7 +126,7 @@ public class NewDocument extends HttpServlet {
 			// TODO change if new Modules with other Contexts and different
 			// EntryPoints will be added
 			contextHistory = new ContextHistory(new EvalStoreContext("init",
-					null));
+					null, null));
 			logger.info("new ContextHistory created");
 			attributes.put("contextHistory", contextHistory);
 		} else {

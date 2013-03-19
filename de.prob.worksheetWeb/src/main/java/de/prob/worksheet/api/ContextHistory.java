@@ -329,7 +329,6 @@ public class ContextHistory implements Iterable<IContext> {
 				found = true;
 			}
 			if (found) {
-				next.destroy();
 				it.remove();
 			}
 		}

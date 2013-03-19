@@ -87,13 +87,7 @@ public interface IContext {
 	public boolean equals(Object obj);
 
 	/**
-	 * Makes necessary cleanups when a context is not used any more
-	 * 
-	 */
-	public void destroy();
-
-	/**
-	 * Returns a duplicate of this Context
+	 * Returns a clone of this Context without cloning bindings
 	 * 
 	 * @return the duplicate
 	 */

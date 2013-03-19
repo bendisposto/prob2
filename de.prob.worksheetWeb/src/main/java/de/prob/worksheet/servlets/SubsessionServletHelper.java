@@ -64,7 +64,7 @@ public class SubsessionServletHelper {
 		ContextHistory contextHistory = null;
 		if (temp == null) {
 			contextHistory = new ContextHistory(new EvalStoreContext("init",
-					null));
+					null, null));
 			SubsessionServletHelper.logger.info("new ContextHistory created");
 			attributes.put("contextHistory", contextHistory);
 		} else {
@@ -90,7 +90,7 @@ public class SubsessionServletHelper {
 
 			DocumentEvaluator evaluator = new DocumentEvaluator();
 			evaluator.evaluateFrom(doc, 0, new ContextHistory(
-					new EvalStoreContext("init", null)));
+					new EvalStoreContext("init", null, null)));
 			SubsessionServletHelper.logger
 					.debug("New WorksheetDocument initiaized");
 			attributes.put("document", doc);

@@ -83,7 +83,7 @@ public interface IWorksheetAPI {
 	 *            data that has changed
 	 */
 	public abstract void notifyActionListeners(int id, String message,
-			Object dataBefore, Object dataAfter);
+			Object dataAfter);
 
 	/**
 	 * Registeres an ActionListern for this APIs events

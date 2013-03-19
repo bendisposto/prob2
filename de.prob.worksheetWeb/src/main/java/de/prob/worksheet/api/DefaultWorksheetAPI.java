@@ -151,15 +151,13 @@ public abstract class DefaultWorksheetAPI implements IWorksheetAPI {
 	 */
 	@Override
 	public void notifyActionListeners(final int id, final String message,
-			final Object dataBefore, final Object dataAfter) {
-		DefaultWorksheetAPI.logger.trace(
-				"in: id{}, message{}, before{}, after{}", new Object[] { id,
-						message, dataBefore, dataAfter });
+			final Object dataAfter) {
+		DefaultWorksheetAPI.logger.trace("in: id{}, message{}, after{}",
+				new Object[] { id, message, dataAfter });
 
 		final WorksheetActionEvent event = new WorksheetActionEvent();
 		event.setId(id);
 		event.setMessage(message);
-		event.setDataBefore(dataBefore);
 		event.setDataAfter(dataAfter);
 		for (final IWorksheetAPIListener listener : actionListeners) {
 			listener.notify(event);

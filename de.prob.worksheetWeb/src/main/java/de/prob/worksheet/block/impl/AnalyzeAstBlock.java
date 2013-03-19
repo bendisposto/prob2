@@ -1,6 +1,9 @@
 package de.prob.worksheet.block.impl;
 
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.prob.worksheet.editor.impl.CodeMirrorTextEditor;
 
@@ -20,6 +23,14 @@ public class AnalyzeAstBlock extends DefaultBlock {
 	@Override
 	public String getOverrideEditorContent() {
 		return "analyzeAst(\"" + getEditor().getEditorContent() + "\")";
+	}
+
+	@Override
+	@JsonProperty("outputBlockIds")
+	@XmlTransient
+	public String[] getOutputBlockIds() {
+		// TODO Auto-generated method stub
+		return super.getOutputBlockIds();
 	}
 
 }

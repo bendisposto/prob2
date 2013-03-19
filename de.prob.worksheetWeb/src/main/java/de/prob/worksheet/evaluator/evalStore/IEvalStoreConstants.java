@@ -14,5 +14,6 @@ public interface IEvalStoreConstants {
 	public static int NO_ANIMATION_EVAL = 11;
 	public static int NOT_INITIALIZED_EVAL = 12;
 	public static int CMD_OUT = 13;
+	public static int ANIMATION_STOPPED = 14;
 
 }

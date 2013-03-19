@@ -97,7 +97,7 @@ public class Evaluate extends HttpServlet {
 		ContextHistory contextHistory = null;
 		if (temp == null) {
 			contextHistory = new ContextHistory(new EvalStoreContext("init",
-					null));
+					null, null));
 			logger.info("new ContextHistory created");
 			attributes.put("contextHistory", contextHistory);
 		} else {
