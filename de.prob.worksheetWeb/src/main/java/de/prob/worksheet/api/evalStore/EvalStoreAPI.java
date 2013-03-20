@@ -96,7 +96,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 
 		// check preconditions
 		if (evalStoreId == null || animation == null) {
-			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED,
+			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED_EVAL,
 					"No state is selected (call: Get state from animation)",
 					true);
 			logger.debug("animation={}, StoreId={}", animation, evalStoreId);
@@ -205,6 +205,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 			ast.apply(test);
 			JNode root = test.Nodes.getLast();
 
+			analyzeEvaluate(expr);
 			// evaluate Nodes of Node Tree
 			for (int x = test.exps.size() - 1; x >= 0; x--) {
 				String exp = test.exps.get(x);
@@ -246,7 +247,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		EvalStoreAPI.logger.debug("evaluating: " + expression);
 		// check preconditions
 		if (evalStoreId == null || animation == null) {
-			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED,
+			notifyErrorListeners(IEvalStoreConstants.NOT_INITIALIZED_EVAL,
 					"No state is selected (call: Get state from animation)",
 					true);
 			return "Error";

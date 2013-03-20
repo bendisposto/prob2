@@ -10,22 +10,20 @@ import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.api.ContextHistory;
 import de.prob.worksheet.api.IContext;
 import de.prob.worksheet.block.impl.DefaultBlock;
-import de.prob.worksheet.document.IWorksheetEvaluate;
+import de.prob.worksheet.document.impl.WorksheetDocument;
 
 public class BlockEvaluator {
 	Logger logger = LoggerFactory.getLogger(BlockEvaluator.class);
 
-	public void evaluate(IWorksheetEvaluate doc, final DefaultBlock block,
-			ContextHistory contextHistory) {
+	public void evaluate(WorksheetDocument doc, final DefaultBlock block) {
 		logger.trace("{}", doc);
 		logger.trace("{}", block);
-		logger.trace("{}", contextHistory);
 
 		if (block.isOutput())
 			return;
 
 		IEvaluator evaluator = initializeEvaluator(block.getEvaluatorType(),
-				contextHistory.getInitialContextForId(block.getId()));
+				doc.history.getInitialContextForId(block.getId()));
 
 		String script = block.getOverrideEditorContent();
 		if (script == null) {
@@ -46,12 +44,11 @@ public class BlockEvaluator {
 		}
 		block.setMark(false);
 		doc.insertOutputBlocks(block, outputs);
-
-		// TODO history isn't stored here
+		// TODO Refactor in order to get Blocks at the correct position
 		ContextHistory blockHistory = evaluator.getContextHistory();
 		logger.debug("id={}, history={}", block.getId(), blockHistory);
-		contextHistory.setContextsForId(block.getId(), blockHistory);
-		logger.debug("Worksheet History= {}", contextHistory);
+		doc.setContexts(block.getId(), blockHistory);
+		logger.debug("Worksheet History= {}", doc.history);
 		return;
 	}
 

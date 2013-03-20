@@ -66,7 +66,12 @@ public class ErrorListener implements IWorksheetAPIListener {
 			block.setToUnicode(false);
 			addOutput(block, typedEvent.getMessage(), typedEvent.isHaltAll());
 			break;
-
+		case IEvalStoreConstants.NOT_INITIALIZED_EVAL:
+			block = new HTMLErrorBlock();
+			block.setEditor(new HTMLDivError());
+			block.setToUnicode(false);
+			addOutput(block, typedEvent.getMessage(), typedEvent.isHaltAll());
+			break;
 		default:
 			block = new HTMLErrorBlock();
 			block.setToUnicode(false);

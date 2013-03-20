@@ -76,7 +76,7 @@ public class ContextHistoryTest {
 		bContextHistory2.add(new EvalStoreContext("", 2l, null));
 		bContextHistory2.add(new EvalStoreContext("", 3l, null));
 
-		bContextHistory.setContextsForId("id2", bContextHistory2);
+		bContextHistory.setContexts("id2", bContextHistory2);
 
 		ArrayList<IContext> map = new ArrayList<IContext>();
 		map.add(new EvalStoreContext("init", null, null));
@@ -180,7 +180,7 @@ public class ContextHistoryTest {
 		bContextHistory.add(new EvalStoreContext("id3", 6l, null));
 		bContextHistory.add(new EvalStoreContext("id3", 7l, null));
 
-		bContextHistory.removeHistoryAfterInitial("id2");
+		bContextHistory.reset("id2");
 		ArrayList<IContext> map = new ArrayList<IContext>();
 		map.add(new EvalStoreContext("init", null, null));
 		map.add(new EvalStoreContext("id1", 1l, null));
@@ -197,7 +197,7 @@ public class ContextHistoryTest {
 		bContextHistory.add(new EvalStoreContext("id3", 6l, null));
 		bContextHistory.add(new EvalStoreContext("id3", 7l, null));
 
-		bContextHistory.removeHistoryAfterInitial("id3");
+		bContextHistory.reset("id3");
 		map = new ArrayList<IContext>();
 		map.add(new EvalStoreContext("init", null, null));
 		map.add(new EvalStoreContext("id1", 1l, null));
@@ -216,4 +216,11 @@ public class ContextHistoryTest {
 
 	}
 
+	@Test
+	public void insertEmptyContext() {
+		ContextHistory test = new ContextHistory(new EvalStoreContext("root",
+				null, null));
+		test.insertEmptyContext("root", "block-1");
+		assertEquals(2, test.size());
+	}
 }

@@ -4,8 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import de.prob.worksheet.api.ContextHistory;
-import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
@@ -22,8 +20,7 @@ public class DocumentEvaluatorTest {
 		doc.appendBlock(inBlock);
 
 		DocumentEvaluator evaluator = new DocumentEvaluator();
-		evaluator.evaluateFrom(doc, 0, new ContextHistory(new EvalStoreContext(
-				"root", null, null)));
+		evaluator.evaluateFrom(doc, 0);
 
 		IBlockData[] res = doc.getBlocks();
 		assertTrue(res.length == 3);
@@ -31,8 +28,7 @@ public class DocumentEvaluatorTest {
 		DefaultBlock newBlock = new InitializeStoreBlock();
 		doc.switchBlockType("ws-block-id-1", newBlock);
 		assertTrue(res.length == 3);
-		evaluator.evaluateFrom(doc, 0, new ContextHistory(new EvalStoreContext(
-				"root", null, null)));
+		evaluator.evaluateFrom(doc, 0);
 
 		res = doc.getBlocks();
 		assertTrue(res.length == 2);

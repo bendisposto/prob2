@@ -13,6 +13,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import de.prob.worksheet.api.ContextHistory;
+import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.document.IWorksheetData;
@@ -60,6 +64,10 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	 */
 	private String id;
 
+	@XmlTransient
+	@JsonIgnore
+	public ContextHistory history;
+
 	/**
 	 * A counter used to count how many blocks have been added to this document.
 	 * It's used to set unique id's for the blocks
@@ -75,7 +83,9 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 		hasBody = true;
 		blocks = new ArrayList<DefaultBlock>();
 		menu = new ArrayList<WorksheetMenuNode>();
+		history = new ContextHistory(new EvalStoreContext("root", null, null));
 		WorksheetDocument.logger.trace("return:");
+
 	}
 
 	/*
@@ -104,6 +114,15 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 		WorksheetDocument.logger.trace("in: blocks={}", blocks);
 		this.blocks.clear();
 		this.blocks.addAll(Arrays.asList(blocks));
+
+		// clear history and insert an empty context for any input block
+		this.history.reset();
+		for (DefaultBlock block : blocks) {
+			if (!block.isOutput() && !block.isNeitherInNorOutput()) {
+				String id = block.getId();
+				history.addEmptyContext(id);
+			}
+		}
 		WorksheetDocument.logger.trace("return:");
 	}
 
@@ -243,12 +262,31 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	public void insertBlock(final int index, final DefaultBlock block) {
 		WorksheetDocument.logger.trace("in: index={}, block={}", index, block);
 		assert (blockCounter < Integer.MAX_VALUE);
-
 		blocks.add(index, block);
 		blockCounter++;
 		block.setId("ws-block-id-" + blockCounter);
-		WorksheetDocument.logger.debug("Worksheet Blocks={}", blocks);
+
+		if (!block.isOutput() && !block.isNeitherInNorOutput()) {
+			DefaultBlock previous = getPreviousInputBlock(index);
+			if (previous != null) {
+				history.insertEmptyContext(previous.getId(), block.getId());
+			} else {
+				assert (this.getBlockIndex(block) == 0);
+				history.insertEmptyContext("root", block.getId());
+			}
+		}
+
 		WorksheetDocument.logger.trace("return:");
+	}
+
+	private DefaultBlock getPreviousInputBlock(int index) {
+		for (int x = index - 1; x >= 0; x--) {
+			DefaultBlock block = blocks.get(x);
+			if (!block.isOutput() && !block.isNeitherInNorOutput()) {
+				return block;
+			}
+		}
+		return null;
 	}
 
 	/*
@@ -311,7 +349,11 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	@Override
 	public void setBlock(final int index, final DefaultBlock block) {
 		WorksheetDocument.logger.trace("in: index={}, block={}", index, block);
+		DefaultBlock oldBlock = blocks.get(index);
 		blocks.set(index, block);
+		if (!block.getId().equals(oldBlock.getId())) {
+			logger.error("\nWhen setBlock is called the ID of the block should not change\n");
+		}
 		WorksheetDocument.logger.debug("Worksheet Blocks={}", blocks);
 		WorksheetDocument.logger.trace("return:");
 	}
@@ -424,6 +466,8 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	 * 
 	 * @see de.prob.worksheet.IWorksheetEvaluate#moveBlockTo(java.lang.String,
 	 * int)
+	 * 
+	 * @unused
 	 */
 	@Override
 	public void moveBlockTo(final String id, final int index) {
@@ -440,6 +484,8 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	 * @see
 	 * de.prob.worksheet.IWorksheetEvaluate#moveBlocksTo(java.lang.String[],
 	 * int)
+	 * 
+	 * @unused
 	 */
 	@Override
 	public void moveBlocksTo(final String[] ids, final int index) {
@@ -556,5 +602,12 @@ public class WorksheetDocument implements IWorksheetData, IWorksheetUI,
 	public void removeBlock(DefaultBlock block) {
 		int index = getBlockIndex(block);
 		blocks.remove(index);
+		if (!block.isOutput() && !block.isNeitherInNorOutput()) {
+			history.remove(block.getId());
+		}
+	}
+
+	public void setContexts(String id, ContextHistory blockHistory) {
+		history.setContexts(id, blockHistory);
 	}
 }

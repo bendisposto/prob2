@@ -92,4 +92,6 @@ public interface IContext {
 	 * @return the duplicate
 	 */
 	public IContext getDuplicate();
+
+	public void resetBindings();
 }

@@ -151,6 +151,8 @@
 												data : content
 											}).done($.proxy(function(){
 												this._trigger("syncEnd",1,this.options.id);
+											},this)).fail($.proxy(function(jqXhr,textStatus,error){
+												$("#ws-id-1").data("worksheet")._alert(jqXhr.responseText);
 											},this));
 						},
 						

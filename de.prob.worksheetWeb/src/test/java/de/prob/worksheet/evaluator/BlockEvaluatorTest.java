@@ -5,8 +5,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.prob.worksheet.api.ContextHistory;
-import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.IBlockData;
 import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.block.impl.HTMLBlock;
@@ -38,8 +36,8 @@ public class BlockEvaluatorTest {
 		doc.insertOutputBlocks(inBlock, new DefaultBlock[] { new HTMLBlock(),
 				new HTMLErrorBlock() });
 		BlockEvaluator evaluater = new BlockEvaluator();
-		evaluater.evaluate(doc, inBlock, new ContextHistory(
-				new EvalStoreContext("root", null, null)));
+		// evaluater.evaluate(doc, inBlock, new ContextHistory(
+		// new EvalStoreContext("root", null, null)));
 		IBlockData[] res = doc.getBlocksFrom(0);
 		assertTrue(res.length == 2);
 	}

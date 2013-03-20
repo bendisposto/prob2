@@ -18,8 +18,6 @@ import com.google.inject.name.Names;
 
 import de.prob.worksheet.ServletContextListener;
 import de.prob.worksheet.WorksheetObjectMapper;
-import de.prob.worksheet.api.ContextHistory;
-import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.impl.DefaultBlock;
 import de.prob.worksheet.document.impl.WorksheetDocument;
 import de.prob.worksheet.evaluator.DocumentEvaluator;
@@ -57,6 +55,7 @@ public class SwitchBlock extends HttpServlet {
 
 		// load or create the document
 		WorksheetDocument doc = getDocument(attributes);
+		logger.debug("in contextHistory: {}", doc.history);
 
 		final WorksheetObjectMapper mapper = new WorksheetObjectMapper();
 
@@ -74,10 +73,9 @@ public class SwitchBlock extends HttpServlet {
 		if (newBlock.isImmediateEvaluation() || !newBlock.isOutput()) {
 			DocumentEvaluator documentEvalutor = new DocumentEvaluator();
 			logger.debug("evaluating switched block");
-			documentEvalutor.evaluateFrom(doc, newBlock.getId(),
-					getContextHistory(attributes));
+			documentEvalutor.evaluateFrom(doc, newBlock.getId());
 		}
-		logger.debug("contextHistory: {}", attributes);
+		logger.debug("out contextHistory: {}", doc.history);
 		// store the session attributes
 
 		setSessionAttributes(req.getSession(),
@@ -101,22 +99,6 @@ public class SwitchBlock extends HttpServlet {
 		}
 		logger.debug("Session attributes: " + attributes.toString());
 		return attributes;
-	}
-
-	private ContextHistory getContextHistory(HashMap<String, Object> attributes) {
-		logger.trace("{}", attributes);
-		Object temp = attributes.get("contextHistory");
-		ContextHistory contextHistory = null;
-		if (temp == null) {
-			contextHistory = new ContextHistory(new EvalStoreContext("init",
-					null, null));
-			logger.info("new ContextHistory created");
-			attributes.put("contextHistory", contextHistory);
-		} else {
-			contextHistory = (ContextHistory) temp;
-		}
-		logger.trace("{}", contextHistory);
-		return contextHistory;
 	}
 
 	private void setSessionAttributes(HttpSession session, String wsid,

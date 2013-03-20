@@ -123,4 +123,10 @@ public class EvalStoreContext implements IContext {
 				(Long) this.getBinding("EvalStoreId"),
 				(StateSpace) this.getBinding("StateSpace"));
 	}
+
+	@Override
+	public void resetBindings() {
+		this.evalStoreId = null;
+		this.stateSpace = null;
+	}
 }

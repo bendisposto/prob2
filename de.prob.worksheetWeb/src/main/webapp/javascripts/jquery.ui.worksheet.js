@@ -276,8 +276,13 @@
 						 }
 					}
 					$("#"+data[lastInputIndex].id).block("setFocus");
+					this.setDirty(true);
 					this._trigger("evalEnd",0,[blockId]);
+				},this)).fail($.proxy(function(jqXhr,textStatus,error){
+					this._alert(jqXhr.responseText);
 				},this));
+			},this)).fail($.proxy(function(jqXhr,textStatus,error){
+				this._alert(jqXhr.responseText);
 			},this));
 		},
 		_addParameter : function(res, key, value) {
@@ -373,8 +378,13 @@
 					}
 					$("#"+data[lastInputIndex].id).block("setFocus");
 					this._trigger("evalEnd",0,[]);
+					this.setDirty(true);
 					this._trigger("blockSwitched",0,[]);
+				},this)).fail($.proxy(function(jqXhr,textStatus,error){
+					this._alert(jqXhr.responseText);
 				},this));
+			},this)).fail($.proxy(function(jqXhr,textStatus,error){
+				this._alert(jqXhr.responseText);
 			},this));
 		},
 		focusPreviousInputBlock:function(){
@@ -431,20 +441,7 @@
 				data = jQuery.parseJSON(xhr.responseText);
 				data = $.recursiveFunctionTest(data);
 				if(data.length>1){
-					//TODO add Handling for immediate EvaluationBlocks
-					/*var index=this.getBlockIndexById(data[0].id);
-					for(var x=this.options.blocks.length-1;x>=index;x--){
-						this.removeBlock(x);
-					}
-					
-					var lastInputIndex=0;
-					for ( var x = 0; x < data.length; x++) {
-						this.appendBlock(data[x]);
-						if(!data[x].isOutput){
-							lastInputIndex=x;
-						}	
-					}
-					$("#"+data[lastInputIndex].id).block("setFocus");*/
+					//FEATURE add Handling for immediate EvaluationBlocks
 				}else{
 					var index=this.getBlockIndexById(id);
 					if(index<0)
@@ -454,8 +451,26 @@
 					this.insertBlock(data[0], index);
 					$("#"+data[0].id).block("setFocus");
 				}
+				this.setDirty(true);
 				this._trigger("addBlockEnd",0,[]);
-			},this,options[1],options[2]));
+			},this,options[1],options[2])).fail($.proxy(function(jqXhr,textStatus,error){
+				this._alert(jqXhr.responseText);
+			},this));
+		},
+		_alert:function(msg){
+			msg=$("<div id='modalDialog'>"+msg+"</div>");
+			$("BODY").append(msg);
+			msg.dialog({
+			      modal: true,
+			      buttons: {
+			        Ok: function() {
+			          $( this ).dialog( "close" );
+			        }
+			      },
+			      close:function(event,ui){
+			          $("#modalDialog").remove();
+			      }
+			    });
 		}
 
 	});

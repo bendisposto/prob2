@@ -8,6 +8,9 @@ import java.util.ListIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.prob.statespace.StateSpace;
+import de.prob.worksheet.api.evalStore.EvalStoreContext;
+
 /**
  * The ContextHistory stores a list of IContext objects in the order they are
  * added or merged. It removes siblings which are equal.
@@ -27,6 +30,7 @@ public class ContextHistory implements Iterable<IContext> {
 	 * An ArrayList for storing the Contexts of this ContextHistory
 	 */
 	private ArrayList<IContext> history;
+	private ArrayList<Integer> originalIndexes;
 
 	/**
 	 * The constructor for the ContextHistory Object.
@@ -47,33 +51,6 @@ public class ContextHistory implements Iterable<IContext> {
 	}
 
 	/**
-	 * Returns the IContext which is initial (that means the last one before it)
-	 * for a given id. If the id doesn't have a context the last context of the
-	 * History is returned
-	 * 
-	 * @param id
-	 *            for which the initialContext should be retrieved
-	 * @return the initial Context for the id
-	 */
-	public IContext getInitialContextForId(String id) {
-		logger.trace("in: id={}", id);
-		logger.debug("History={}", history);
-		Iterator<IContext> it = history.iterator();
-		IContext last = null;
-		IContext next;
-		while (it.hasNext()) {
-			next = it.next();
-			if (next.getId().equals(id)) {
-				logger.trace("return: context={}", last);
-				return last;
-			}
-			last = next;
-		}
-		logger.trace("return: context={}", last);
-		return last;
-	}
-
-	/**
 	 * Inserts a ContextHistory into this History and sets all IContext ids of
 	 * the inserted History, except the first one, to id.
 	 * 
@@ -86,13 +63,11 @@ public class ContextHistory implements Iterable<IContext> {
 	 * @param contextHistory
 	 *            the History to insert
 	 */
-	public void setContextsForId(String id, ContextHistory contextHistory) {
+	public void setContextsForId(int index, String id,
+			ContextHistory contextHistory) {
 		logger.trace("in: id={}, context={}", id, contextHistory);
 
-		// TODO Feature: dispose IContext when his Binding is not present in
-		// History after remove (when implemented in CLI)
 		this.removeContextsWithId(id);
-
 		int initialContextIndex = this.getIndexForLastContext(contextHistory
 				.get(0));
 		if (initialContextIndex == -1)
@@ -192,30 +167,6 @@ public class ContextHistory implements Iterable<IContext> {
 		return removed;
 	}
 
-	/**
-	 * Returns the IContext for the given index
-	 * 
-	 * @param index
-	 *            of the context
-	 * @return the context at index
-	 */
-	public IContext get(int index) {
-		logger.trace("in: index={}", index);
-		logger.trace("return: context={}", this.history.get(index));
-		return this.history.get(index);
-	}
-
-	/**
-	 * Returns the number of IContext Objects in this history
-	 * 
-	 * @return the size of the history
-	 */
-	public int size() {
-		logger.trace("in:");
-		logger.trace("return: size={}", history.size());
-		return history.size();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -226,18 +177,6 @@ public class ContextHistory implements Iterable<IContext> {
 		logger.trace("in:");
 		logger.trace("return: iterator={}", this.history.iterator());
 		return this.history.iterator();
-	}
-
-	/**
-	 * Returns the last Context in the History
-	 * 
-	 * @return the last Context
-	 */
-	public IContext last() {
-		logger.trace("in:");
-		logger.debug("History={}", history);
-		logger.trace("return: context={}", history.get(history.size() - 1));
-		return history.get(history.size() - 1);
 	}
 
 	/**
@@ -289,28 +228,6 @@ public class ContextHistory implements Iterable<IContext> {
 		logger.trace("return:");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return history.toString();
-	}
-
-	/**
-	 * Returns an ordered ArrayList of IContext Objects containing all Contexts
-	 * of this History
-	 * 
-	 * @return the Contexts of this history
-	 */
-	public ArrayList<IContext> getHistory() {
-		logger.trace("in:");
-		logger.trace("return: History={}", history);
-		return history;
-	}
-
 	/**
 	 * Removes all IContext after and including the contexts with the given id
 	 * 
@@ -336,4 +253,218 @@ public class ContextHistory implements Iterable<IContext> {
 		return;
 	}
 
+	// Refactoring
+	public void reset() {
+		logger.trace("in");
+		IContext initial = this.history.get(0);
+		this.history.clear();
+		this.history.add(initial);
+	}
+
+	public void addEmptyContext(String id) {
+		logger.trace("in");
+		// TODO change from EvalStoreContext to a special empty Context
+		EvalStoreContext context = new EvalStoreContext(id, null, null);
+		history.add(context);
+	}
+
+	public void insertEmptyContext(String previousId, String newId) {
+		logger.trace("in: previous={},new={}", previousId, newId);
+		ListIterator<IContext> it = history.listIterator();
+		boolean reached = false;
+		IContext next;
+		while (it.hasNext()) {
+			next = it.next();
+			if (!reached && next.getId().equals(previousId)) {
+				reached = true;
+			}
+			if (reached && !next.getId().equals(previousId)) {
+				// insert now
+				if (it.hasPrevious())
+					next = it.previous();
+				it.add(new EvalStoreContext(newId, null, null));
+				break;
+			}
+			if (!it.hasNext()) {
+				it.add(new EvalStoreContext(newId, null, null));
+			}
+		}
+		logger.debug("history={}", history);
+	}
+
+	public void remove(String id) {
+		logger.trace("in");
+		ListIterator<IContext> it = history.listIterator();
+		IContext next;
+		while (it.hasNext()) {
+			next = it.next();
+			if (next.getId().equals(id)) {
+				it.remove();
+			}
+		}
+	}
+
+	public void setContexts(String id, ContextHistory blockHistory) {
+		logger.trace("in: id={}, blockHository={}", id, blockHistory);
+		/*
+		 * Cases: 1. Keine neue History für die id 2.
+		 */
+
+		int insertIndex = firstIndexForId(id);
+		remove(id);
+		if (blockHistory.size() == 1) {
+			history.add(insertIndex, new EvalStoreContext(id,
+					(Long) blockHistory.get(0).getBinding("EvalStoreId"),
+					(StateSpace) blockHistory.get(0).getBinding("StateSpace")));
+		} else {
+			blockHistory.history.remove(0);
+			for (IContext context : blockHistory.history)
+				context.setId(id);
+			history.addAll(insertIndex, blockHistory.history);
+		}
+		logger.debug("History={}", history);
+	}
+
+	private int firstIndexForId(String id) {
+		logger.trace("in");
+		ListIterator<IContext> it = history.listIterator();
+		IContext next;
+		while (it.hasNext()) {
+			int nextIndex = it.nextIndex();
+			next = it.next();
+			if (next.getId().equals(id))
+				return nextIndex;
+		}
+		return -1;
+	}
+
+	private int lastIndexForId(String id) {
+		logger.trace("in");
+		ListIterator<IContext> it = history.listIterator();
+		boolean reached = false;
+		IContext next;
+		while (it.hasNext()) {
+			int nextIndex = it.nextIndex();
+			next = it.next();
+			if (!reached && next.getId().equals(id)) {
+				reached = true;
+			}
+			if (reached && !next.getId().equals(id)) {
+				// insert now
+				if (it.hasPrevious())
+					nextIndex--;
+				return nextIndex;
+			}
+		}
+		return -1;
+	}
+
+	public void reset(String id) {
+		logger.trace("in");
+		ListIterator<IContext> it = history.listIterator();
+		boolean reachedFirst = false;
+		IContext next;
+		String lastId = null;
+		while (it.hasNext()) {
+			int nextIndex = it.nextIndex();
+			next = it.next();
+
+			if (!reachedFirst && next.getId().equals(id)) {
+				reachedFirst = true;
+			}
+			if (reachedFirst) {
+				next.resetBindings();
+			}
+			if (reachedFirst && lastId.equals(next.getId())) {
+				it.remove();
+			}
+			lastId = next.getId();
+		}
+	}
+
+	// refactoring copied from previous
+	/**
+	 * Returns the IContext which is initial (that means the last one before it)
+	 * for a given id. If the id doesn't have a context the last context of the
+	 * History is returned
+	 * 
+	 * @param id
+	 *            for which the initialContext should be retrieved
+	 * @return the initial Context for the id
+	 */
+	public IContext getInitialContextForId(String id) {
+		logger.trace("in: id={}", id);
+		logger.debug("History={}", history);
+		Iterator<IContext> it = history.iterator();
+		IContext last = null;
+		IContext next;
+		while (it.hasNext()) {
+			next = it.next();
+			if (next.getId().equals(id)) {
+				logger.trace("return: context={}", last);
+				return last;
+			}
+			last = next;
+		}
+		logger.trace("return: context={}", last);
+		return last;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return history.toString();
+	}
+
+	/**
+	 * Returns an ordered ArrayList of IContext Objects containing all Contexts
+	 * of this History
+	 * 
+	 * @return the Contexts of this history
+	 */
+	public ArrayList<IContext> getHistory() {
+		logger.trace("in:");
+		logger.trace("return: History={}", history);
+		return history;
+	}
+
+	/**
+	 * Returns the last Context in the History
+	 * 
+	 * @return the last Context
+	 */
+	public IContext last() {
+		logger.trace("in:");
+		logger.debug("History={}", history);
+		logger.trace("return: context={}", history.get(history.size() - 1));
+		return history.get(history.size() - 1);
+	}
+
+	/**
+	 * Returns the IContext for the given index
+	 * 
+	 * @param index
+	 *            of the context
+	 * @return the context at index
+	 */
+	public IContext get(int index) {
+		logger.trace("in: index={}", index);
+		logger.trace("return: context={}", this.history.get(index));
+		return this.history.get(index);
+	}
+
+	/**
+	 * Returns the number of IContext Objects in this history
+	 * 
+	 * @return the size of the history
+	 */
+	public int size() {
+		logger.trace("in:");
+		logger.trace("return: size={}", history.size());
+		return history.size();
+	}
 }

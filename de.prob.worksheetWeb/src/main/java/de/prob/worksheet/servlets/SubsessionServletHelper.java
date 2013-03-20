@@ -1,6 +1,9 @@
 package de.prob.worksheet.servlets;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -8,8 +11,6 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.worksheet.api.ContextHistory;
-import de.prob.worksheet.api.evalStore.EvalStoreContext;
 import de.prob.worksheet.block.impl.InitializeStoreBlock;
 import de.prob.worksheet.document.IWorksheetData;
 import de.prob.worksheet.document.impl.WorksheetDocument;
@@ -46,68 +47,76 @@ public class SubsessionServletHelper {
 				session, subSessionId);
 		HashMap<String, Object> attributes = (HashMap<String, Object>) session
 				.getAttribute(subSessionId);
-		if (attributes == null) {
-			attributes = new HashMap<String, Object>();
-			SubsessionServletHelper.logger
-					.debug("New 'Sub'session initialized with id :"
-							+ subSessionId);
-		}
+
 		SubsessionServletHelper.logger.trace("return: attributes={}",
 				attributes);
 		return attributes;
 	}
 
-	public static ContextHistory getContextHistory(
-			HashMap<String, Object> attributes) {
-		SubsessionServletHelper.logger.trace("in: attributes={}", attributes);
-		Object temp = attributes.get("contextHistory");
-		ContextHistory contextHistory = null;
-		if (temp == null) {
-			contextHistory = new ContextHistory(new EvalStoreContext("init",
-					null, null));
-			SubsessionServletHelper.logger.info("new ContextHistory created");
-			attributes.put("contextHistory", contextHistory);
+	public static boolean createNewSession(HttpSession session,
+			String subSessionId) {
+		HashMap<String, Object> attributes = (HashMap<String, Object>) session
+				.getAttribute(subSessionId);
+		if (attributes == null) {
+			attributes = new HashMap<String, Object>();
+			session.setAttribute(subSessionId, attributes);
+			SubsessionServletHelper.logger
+					.debug("New 'Sub'session initialized with id :"
+							+ subSessionId);
+
+			return true;
 		} else {
-			contextHistory = (ContextHistory) temp;
+			logger.error("SubSession " + subSessionId + " already exists");
+			return false;
 		}
-		SubsessionServletHelper.logger.trace("return: contextHistory={}",
-				contextHistory);
-		return contextHistory;
 	}
 
-	public static IWorksheetData getDocument(
-			HashMap<String, Object> attributes, boolean create) {
-		SubsessionServletHelper.logger.trace("in: attributes={}, create={}",
-				attributes, create);
+	public static WorksheetDocument getDocument(
+			HashMap<String, Object> attributes) {
+		SubsessionServletHelper.logger.trace("in: attributes={}", attributes);
 		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");
-		if (doc == null && create) {
-
-			doc = new WorksheetDocument();
-			doc.setId("ws-id-1");
-
-			final InitializeStoreBlock initBlock = new InitializeStoreBlock();
-			doc.insertBlock(0, initBlock);
-
-			DocumentEvaluator evaluator = new DocumentEvaluator();
-			evaluator.evaluateFrom(doc, 0, new ContextHistory(
-					new EvalStoreContext("init", null, null)));
-			SubsessionServletHelper.logger
-					.debug("New WorksheetDocument initiaized");
-			attributes.put("document", doc);
-		}
 		SubsessionServletHelper.logger.trace("return: document={}", doc);
 		return doc;
 	}
 
-	public static void logParameters(HttpServletRequest req, String[] params) {
-		String msg = "{ ";
-		for (int x = 0; x < params.length; x++) {
-			if (x != 0)
-				msg += " , ";
-			msg += params[x] + " : " + req.getParameter(params[x]);
+	public static void logParameters(HttpServletRequest req) {
+		String msg = "Parameter: { ";
+		Iterator<Entry<String, String[]>> it = req.getParameterMap().entrySet()
+				.iterator();
+		Entry<String, String[]> next = null;
+		while (it.hasNext()) {
+			if (next != null) {
+				msg += ", ";
+			}
+			next = it.next();
+			msg += next.getKey() + " : " + Arrays.toString(next.getValue());
 		}
 		msg += " }";
-		SubsessionServletHelper.logger.debug(msg);
+		logger.debug(msg);
+	}
 
+	public static IWorksheetData getNewDocument(
+			HashMap<String, Object> attributes) {
+		WorksheetDocument doc = (WorksheetDocument) attributes.get("document");
+		if (doc == null) {
+			doc = new WorksheetDocument();
+			doc.setId("ws-id-1");
+
+			logger.debug("New WorksheetDocument initiaized");
+
+			final InitializeStoreBlock block1 = new InitializeStoreBlock();
+			block1.setMark(true);
+			doc.insertBlock(0, block1);
+			if (block1.isImmediateEvaluation()) {
+				DocumentEvaluator evaluator = new DocumentEvaluator();
+				evaluator.evaluateDocument(doc);
+			} else {
+				doc.markAllAfter(0);
+			}
+			attributes.put("document", doc);
+		} else {
+			doc.markAllAfter(0);
+		}
+		return doc;
 	}
 }
