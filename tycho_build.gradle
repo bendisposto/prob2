@@ -379,7 +379,7 @@ subprojects {
 					createRunTimeLib( project.name)
 				}
 				for(int icp = 0; icp < dependencyList.size; icp++){
-	 				//addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
+	 				addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
 						
 					if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
 						addRunTimeLib( dependencyList[icp], project.name)
