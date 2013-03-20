@@ -23,5 +23,8 @@ We assume, you have a fresh copy of Eclipse 4.2 and an empty workspace at hand. 
 10. Start the configuration again. This time it will start Rodin.
 11. Open the Groovy Console view (in the view category "Others") and type 'upgrade latest'. This will download a fresh copy of the Prolog binaries.
 
+IMPORTANT:
+The PermGenSpace for the application grows to nearly 100MB so the vm option -XX:MaxPermSize=120m needs to be set
+
   
 (c) 2012 Jens Bendisposto, all rights reserved
