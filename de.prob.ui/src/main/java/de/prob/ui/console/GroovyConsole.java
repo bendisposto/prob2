@@ -43,10 +43,10 @@ public class GroovyConsole extends ViewPart {
 
 		consoleBrowser = new Browser(sashForm, SWT.NONE);
 		consoleBrowser.setUrl("http://localhost:" + port
-				+ "/console/console.html");
+				+ "/console.html");
 		outputBrowser = new Browser(sashForm, SWT.NONE);
 		outputBrowser.setUrl("http://localhost:" + port
-				+ "/console/sysout.html");
+				+ "/sysout.html");
 
 		consoleBrowser.setLayoutData(gridData);
 		outputBrowser.setLayoutData(gridData);

@@ -117,6 +117,9 @@ dependencies {
 
 	compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
 
+	compile 'com.fasterxml.jackson.core:jackson-core:2.1.2'
+	compile 'com.fasterxml.jackson.core:jackson-annotations:2.1.2'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.1.2'
 
 	compile 'com.atlassian.jira:jira-rest-java-client:2.0.0-m2'
 	testCompile 'junit:junit:4.8.2'

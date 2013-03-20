@@ -72,13 +72,14 @@ public class WebConsole {
 		 * dmgr.setAppProviders(prvs); server.addBean(dmgr);
 		 */
 
-		WebAppContext context = new WebAppContext(warFile, "/console");
+		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
-
+		/*
 		WebAppContext worksheetContext = new WebAppContext(warFile
 				+ "webapps/worksheet.war", "/worksheet");
 		worksheetContext.setExtractWAR(true);
 		worksheetContext.setServer(server);
+		*/
 		server.setStopAtShutdown(true);
 		/*
 		 * MBeanContainer mbContainer = new MBeanContainer(
@@ -93,7 +94,7 @@ public class WebConsole {
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
 		// handlers.addHandler(contexts);
-		handlers.addHandler(worksheetContext);
+		//handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
 		int port = 8080;

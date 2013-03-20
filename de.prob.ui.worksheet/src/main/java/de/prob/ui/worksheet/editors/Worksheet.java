@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.ui.worksheet.WorksheetEditorInput;
+import de.prob.webconsole.WebConsole;
 
 //import org.eclipse.core.internal.resources.ResourceException;
 
@@ -450,7 +451,7 @@ public class Worksheet extends EditorPart implements DisposeListener,
 				worksheetBrowser, "editorSetSessionId", this);
 		new de.prob.ui.worksheet.editors.browserFunction.setWorksheetLoaded(
 				worksheetBrowser, "setWorksheetLoaded", this);
-		worksheetBrowser.setUrl("http://localhost:8080/worksheet/");
+		worksheetBrowser.setUrl("http://localhost:"+WebConsole.getPort()+"/worksheet.html");
 
 	}
 
