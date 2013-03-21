@@ -24,17 +24,14 @@ public class CSPInitObserver extends Observer {
 	
 	private Boolean isCustom;
 	
-	private static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
+	private transient static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
 	
 	@Override
 	public void check(History history, BControl control) {
-
 		HistoryElement current = history.getCurrent();
 		OpInfo op = current.getOp();
-		
 		if (op == null
 				|| (op != null && op.getName().equals("start_cspm_MAIN"))) {
-
 			if (isCustom) {
 				String parseExpression = parseExpression(value.toString(),
 						control, history);
@@ -47,9 +44,7 @@ public class CSPInitObserver extends Observer {
 			} else {
 				control.setAttributeValue(attribute, value);
 			}
-
 		}
-
 	}
 	
 	private String parseExpression(String expressionString,
