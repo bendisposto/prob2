@@ -393,7 +393,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return new HashMap<IEvalElement, EvaluationResult>();
 	}
 
-	private boolean canBeEvaluated(final StateId stateId) {
+	public boolean canBeEvaluated(final StateId stateId) {
 		for (OpInfo opInfo : getOutEdges(stateId)) {
 			if (opInfo.getName().equals("$setup_constants")
 					|| opInfo.getName().equals("$initialise_machine")) {

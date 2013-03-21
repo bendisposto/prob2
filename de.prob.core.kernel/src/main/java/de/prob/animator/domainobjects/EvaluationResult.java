@@ -90,5 +90,9 @@ public class EvaluationResult {
 		}
 		return result;
 	}
+	
+	public String getStateId() {
+		return stateid;
+	}
 
 }
