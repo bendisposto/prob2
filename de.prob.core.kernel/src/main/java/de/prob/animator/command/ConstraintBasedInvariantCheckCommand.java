@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.prob.animator.command.notImplemented;
+package de.prob.animator.command;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,9 +10,8 @@ import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.OpInfo;
-import de.prob.check.ModelCheckingResult;
+import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -60,7 +59,7 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 
 	private final Collection<String> events;
 
-	private ModelCheckingResult result;
+	private ConstraintBasedCheckingResult result;
 	private Collection<InvariantCheckCounterExample> counterexamples;
 
 	/**
@@ -107,14 +106,14 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 		;
 		final Collection<InvariantCheckCounterExample> counterexamples;
 		if (resultTerm.hasFunctor("interrupted", 0)) {
-			result = new ModelCheckingResult(
-					ModelCheckingResult.Result.not_yet_finished);
+			result = new ConstraintBasedCheckingResult(
+					ConstraintBasedCheckingResult.Result.interrupted);
 			counterexamples = null;
 		} else if (resultTerm.isList()) {
 			ListPrologTerm ceTerm = (ListPrologTerm) resultTerm;
-			result = ceTerm.isEmpty() ? new ModelCheckingResult(
-					ModelCheckingResult.Result.ok) : new ModelCheckingResult(
-					ModelCheckingResult.Result.invariant_violation);
+			result = ceTerm.isEmpty() ? new ConstraintBasedCheckingResult(
+					ConstraintBasedCheckingResult.Result.no_invariant_violation_found) : new ConstraintBasedCheckingResult(
+							ConstraintBasedCheckingResult.Result.invariant_violation);
 			counterexamples = Collections
 					.unmodifiableCollection(extractExamples(ceTerm));
 		} else {
@@ -144,7 +143,7 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 		return examples;
 	}
 
-	public ModelCheckingResult getResult() {
+	public ConstraintBasedCheckingResult getResult() {
 		return result;
 	}
 }
