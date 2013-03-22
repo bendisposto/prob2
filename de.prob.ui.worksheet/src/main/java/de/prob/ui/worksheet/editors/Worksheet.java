@@ -168,7 +168,7 @@ public class Worksheet extends EditorPart implements DisposeListener,
 		String body = "";
 
 		try {
-			url = new URL("http://localhost:8080/worksheet/saveDocument");
+			url = new URL("http://localhost:"+WebConsole.getPort()+"/saveDocument");
 
 			body = Worksheet.addPOSTParameter(body, "worksheetSessionId",
 					Integer.toString(subSessionId));
@@ -217,7 +217,7 @@ public class Worksheet extends EditorPart implements DisposeListener,
 		String body = "";
 
 		try {
-			url = new URL("http://localhost:8080/worksheet/closeDocument");
+			url = new URL("http://localhost:"+WebConsole.getPort()+"/closeDocument");
 
 			body = Worksheet.addPOSTParameter(body, "worksheetSessionId",
 					Integer.toString(subSessionId));
