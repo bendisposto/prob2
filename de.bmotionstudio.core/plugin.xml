@@ -563,6 +563,18 @@
                   id="de.bmotionstudio.observer.CSPInitObserver">
             </observer>
          </control>
+         <control
+               id="de.bmotionstudio.control.Composite">
+            <observer
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
+            </observer>
+         </control>
       </include>   
    </extension>
    <extension

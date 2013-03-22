@@ -71,9 +71,15 @@ public class CompositePart extends BMSAbstractEditPart {
 
 		}
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE))
-			((CompositeFigure) figure).setVisible(Boolean.valueOf(value
-					.toString()));
+		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE)) {
+			Boolean visible = Boolean.valueOf(value.toString());
+			((CompositeFigure) figure).setVisible(visible);
+			// Handle children
+			for (BControl child : getCastedModel().getChildren()) {
+				child.setAttributeValue(AttributeConstants.ATTRIBUTE_VISIBLE,
+						visible);
+			}
+		}
 
 	}
 

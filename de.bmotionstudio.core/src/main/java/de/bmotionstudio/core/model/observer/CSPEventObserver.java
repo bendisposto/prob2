@@ -32,13 +32,13 @@ public class CSPEventObserver extends Observer {
 	private transient static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
 
 	private transient List<String> listOfOps;
+
+	private transient int setPosition = 0;
 	
-	private transient boolean restored;
+	private transient boolean restored = false;
 	
 	@Override
 	public void check(History history, BControl control) {
-
-		restored = false;
 		
 		if (currentHisOps == null)
 			currentHisOps = new ArrayList<OpInfo>();
@@ -49,28 +49,36 @@ public class CSPEventObserver extends Observer {
 
 		if (diff > 1) {
 			for (int i = currentHisOps.size(); i < newHisOps.size(); i++) {
-				runme(newHisOps.get(i), control, history);
+				runme(newHisOps.get(i), i, control, history);
 			}
-		} else if (diff == 1) {
-			runme(history.getCurrent().getOp(), control, history);
 		} else if (diff < 0) {
-			if(!checkIfAlreadyRestored(control)) {
+			if (!checkIfAlreadyRestored(control)) {
 				control.restoreDefaultValue(attribute);
 				restored = true;
 			}
 			for (int i = 0; i < newHisOps.size(); i++) {
-				runme(newHisOps.get(i), control, history);
+				runme(newHisOps.get(i), i, control, history);
 			}
+		} else {
+			runme(history.getCurrent().getOp(), -1, control, history);
 		}
 
 		currentHisOps = newHisOps;
 
 	}
 	
+	@Override
+	public void afterCheck(History history, BControl control) {
+		setPosition = 0;
+		restored = false;
+	}
+
 	private boolean checkIfAlreadyRestored(BControl control) {
 		for (Observer o : control.getObservers()) {
 			if (o instanceof CSPEventObserver) {
-				if (((CSPEventObserver) o).isRestored())
+				CSPEventObserver cspO = (CSPEventObserver) o;
+				if (((CSPEventObserver) o).isRestored()
+						&& cspO.getAttribute().equals(attribute))
 					return true;
 			}
 		}
@@ -81,8 +89,30 @@ public class CSPEventObserver extends Observer {
 		return restored;
 	}
 
-	private void runme(OpInfo op, BControl control, History history) {
+	private int getSetPosition() {
+		return setPosition;
+	}
+		
+	private int getMaxSetPosition(BControl control) {
 
+		int maxSetPosition = 0;
+		for (Observer o : control.getObservers()) {
+			if (o instanceof CSPEventObserver) {
+				CSPEventObserver cspO = (CSPEventObserver) o;
+				if (cspO.getSetPosition() > maxSetPosition
+						&& cspO.getAttribute().equals(attribute))
+					maxSetPosition = cspO.getSetPosition();
+			}
+		}
+		return maxSetPosition;
+
+	}
+
+	private void runme(OpInfo op, int pos, BControl control, History history) {
+
+		if(op == null)
+			return;
+		
 		String AsImplodedString = "";
 
 		String opName = op.getName();
@@ -134,6 +164,12 @@ public class CSPEventObserver extends Observer {
 			}
 			
 			if (listOfOps.contains(opNameWithParameter)) {
+
+				int maxSetPosition = getMaxSetPosition(control);
+
+				if (pos < maxSetPosition && pos != -1)
+					return;
+
 				if (isCustom) {
 					String parseExpression = parseExpression(value.toString(),
 							control, op);
@@ -147,6 +183,9 @@ public class CSPEventObserver extends Observer {
 				} else {
 					control.setAttributeValue(attribute, value, true, false);
 				}
+				
+				setPosition = pos;
+				
 			}
 
 		}

@@ -56,7 +56,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.ISaveablePart2;
@@ -715,22 +714,14 @@ public class VisualizationViewPart extends ViewPart implements
 
 	public void checkObserver(final History history) {
 
-		Display.getDefault().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-
-				Visualization visualization = visualizationView
-						.getVisualization();
-				List<BControl> allBControls = new ArrayList<BControl>();
-				allBControls.add(visualization);
-				collectAllBControls(allBControls, visualization);
-				for (BControl c : allBControls)
-					c.checkObserver(history);
-
-			}
-
-		});
+		Visualization visualization = visualizationView.getVisualization();
+		List<BControl> allBControls = new ArrayList<BControl>();
+		allBControls.add(visualization);
+		collectAllBControls(allBControls, visualization);
+		for (BControl c : allBControls)
+			c.checkObserver(history);
+		for (BControl c : allBControls)
+			c.afterCheckObserver(history);
 
 	}
 

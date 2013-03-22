@@ -550,6 +550,21 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 			con.checkObserver(history);
 		}
 	}
+	
+	public void afterCheckObserver(History history) {
+		for (Observer observer : getObservers()) {
+			observer.afterCheck(history, BControl.this);
+		}
+		// TODO: Currently connection observer are checked twice (source +
+		// target) => change this, so that observer are checked only on time per
+		// state!!!
+		for (BConnection con : getSourceConnections()) {
+			con.afterCheckObserver(history);
+		}
+		for (BConnection con : getTargetConnections()) {
+			con.afterCheckObserver(history);
+		}
+	}
 
 	// TODO: Reimplement me!!!
 	// public void executeEvent(String eventID) {
