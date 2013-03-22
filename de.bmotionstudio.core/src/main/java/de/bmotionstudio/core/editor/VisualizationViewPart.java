@@ -465,16 +465,19 @@ public class VisualizationViewPart extends ViewPart implements
 		createActions();
 		buildActions();
 		createMenu(getViewSite());
+		getGraphicalViewer().setContents(visualization);
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		this.currentStateSpace = selector.getCurrentHistory().getStatespace();
-		setPartName(visualizationView.getName()
-				+ " ("
-				+ selector.getCurrentHistory().getModel().getModelFile()
-						.getName() + ")");
-		getGraphicalViewer().setContents(visualization);
-		selector.registerHistoryChangeListener(this);
-		setInitialized(true);
+		History currentHistory = selector.getCurrentHistory();
+		String partName = visualizationView.getName();
+		if (currentHistory != null) {
+			this.currentStateSpace = currentHistory.getStatespace();
+			partName = partName + " ("
+					+ currentHistory.getModel().getModelFile().getName() + ")";
+			selector.registerHistoryChangeListener(this);
+			setInitialized(true);
+		}
+		setPartName(partName);
 	}
 	
 	protected void hookGraphicalViewer() {

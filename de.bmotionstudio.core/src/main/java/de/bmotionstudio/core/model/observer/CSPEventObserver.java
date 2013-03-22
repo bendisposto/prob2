@@ -1,5 +1,6 @@
 package de.bmotionstudio.core.model.observer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +16,6 @@ import de.prob.animator.domainobjects.OpInfo;
 import de.prob.exception.ProBError;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.History;
-import de.prob.statespace.HistoryElement;
 
 public class CSPEventObserver extends Observer {
 
@@ -27,97 +27,156 @@ public class CSPEventObserver extends Observer {
 	
 	private Boolean isCustom;
 	
-	private static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
+	private transient List<OpInfo> currentHisOps = new ArrayList<OpInfo>();
+	
+	private transient static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
+
+	private transient List<String> listOfOps;
+	
+	private transient boolean restored;
 	
 	@Override
 	public void check(History history, BControl control) {
 
+		restored = false;
+		
+		if (currentHisOps == null)
+			currentHisOps = new ArrayList<OpInfo>();
+
+		List<OpInfo> newHisOps = history.getCurrent().getOpList();
+
+		int diff = newHisOps.size() - currentHisOps.size();
+
+		if (diff > 1) {
+			for (int i = currentHisOps.size(); i < newHisOps.size(); i++) {
+				runme(newHisOps.get(i), control, history);
+			}
+		} else if (diff == 1) {
+			runme(history.getCurrent().getOp(), control, history);
+		} else if (diff < 0) {
+			if(!checkIfAlreadyRestored(control)) {
+				control.restoreDefaultValue(attribute);
+				restored = true;
+			}
+			for (int i = 0; i < newHisOps.size(); i++) {
+				runme(newHisOps.get(i), control, history);
+			}
+		}
+
+		currentHisOps = newHisOps;
+
+	}
+	
+	private boolean checkIfAlreadyRestored(BControl control) {
+		for (Observer o : control.getObservers()) {
+			if (o instanceof CSPEventObserver) {
+				if (((CSPEventObserver) o).isRestored())
+					return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isRestored() {
+		return restored;
+	}
+
+	private void runme(OpInfo op, BControl control, History history) {
+
 		String AsImplodedString = "";
 
-		HistoryElement current = history.getCurrent();
-		OpInfo op = current.getOp();
-		
-		if (op != null) {
-			
-			String opName = op.getName();
-			
-			List<String> opParameter = op.getParams();
-			if (opParameter.size() > 0) {
-				String[] inputArray = opParameter
-						.toArray(new String[opParameter.size()]);
-				StringBuffer sb = new StringBuffer();
-				sb.append(inputArray[0]);
-				for (int i = 1; i < inputArray.length; i++) {
-					sb.append(".");
-					sb.append(inputArray[i]);
-				}
-				AsImplodedString = "." + sb.toString();
+		String opName = op.getName();
+
+		List<String> opParameter = op.getParams();
+		if (opParameter.size() > 0) {
+			String[] inputArray = opParameter.toArray(new String[opParameter
+					.size()]);
+			StringBuffer sb = new StringBuffer();
+			sb.append(inputArray[0]);
+			for (int i = 1; i < inputArray.length; i++) {
+				sb.append(".");
+				sb.append(inputArray[i]);
 			}
-			String cspExpression = "bmsresult = member(" + opName
-					+ AsImplodedString + "," + expression + ")";
-			
-			System.out.println("=====> " + cspExpression);
-			
-			CSP cspEval = new CSP(cspExpression, (CSPModel) history.getModel());
-			
-			try {
+			AsImplodedString = "." + sb.toString();
+		}
 
-				EvaluationResult eval = history.evalCurrent(cspEval);
-				if (eval != null && !eval.hasError()) {
+		String opNameWithParameter = opName + AsImplodedString;
 
-					String result = eval.value;
-					Boolean bResult = Boolean.valueOf(result);
-					if (bResult) {
+		if (op != null) {
 
-						if (isCustom) {
-							String parseExpression = parseExpression(
-									value.toString(), control, history);
-							CSP cspE = new CSP("bmsresult=" + parseExpression,
-									(CSPModel) history.getModel());
-							EvaluationResult subEval = history
-									.evalCurrent(cspE);
-							if (subEval != null && !subEval.hasError()) {
-								control.setAttributeValue(attribute,
-										subEval.value);
-							}
-						} else {
-							control.setAttributeValue(attribute, value);
-						}
+			if (listOfOps == null) {
+
+				listOfOps = new ArrayList<String>();
+
+				String cspExpression = "bmsresult = " + expression;
+
+				CSP cspEval = new CSP(cspExpression,
+						(CSPModel) history.getModel());
+
+				try {
+
+					EvaluationResult eval = history.evalCurrent(cspEval);
+					if (eval != null && !eval.hasError()) {
+
+						String result = eval.value;
+						result = result.replace("}", "").replace("{", "");
+
+						String[] split = result.split(",");
+
+						java.util.Collections.addAll(listOfOps, split);
 
 					}
 
+				} catch (ProBError e) {
+					System.err.println(e.getMessage());
 				}
 
-			} catch (ProBError e) {
-				System.err.println(e.getMessage());
 			}
 			
+			if (listOfOps.contains(opNameWithParameter)) {
+				if (isCustom) {
+					String parseExpression = parseExpression(value.toString(),
+							control, op);
+					CSP cspE = new CSP("bmsresult=" + parseExpression,
+							(CSPModel) history.getModel());
+					EvaluationResult subEval = history.evalCurrent(cspE);
+					if (subEval != null && !subEval.hasError()) {
+						control.setAttributeValue(attribute, subEval.value,
+								true, false);
+					}
+				} else {
+					control.setAttributeValue(attribute, value, true, false);
+				}
+			}
+
 		}
 
 	}
 	
-	private String parseExpression(String expressionString,
-			BControl control, History history) {
+	private String parseExpression(String expressionString, BControl control,
+			OpInfo op) {
 
 		String finalExpression = expressionString;
-		
-		OpInfo op = history.getCurrent().getOp();
+
 		List<String> params = op.getParams();
-		
-		// Find expressions and collect ExpressionEvalElements
-		final Matcher matcher = PATTERN.matcher(expressionString);
-		while (matcher.find()) {
-			int subExpr = Integer.valueOf(matcher.group(1));
-			String para = params.get(subExpr);
-			if (para != null)
-				finalExpression = finalExpression.replace("$" + subExpr + "$",
-						para);
+
+		if (params.size() > 0) {
+
+			// Find expressions and collect ExpressionEvalElements
+			final Matcher matcher = PATTERN.matcher(expressionString);
+			while (matcher.find()) {
+				int subExpr = Integer.valueOf(matcher.group(1));
+				String para = params.get(subExpr);
+				if (para != null)
+					finalExpression = finalExpression.replace("$" + subExpr
+							+ "$", para);
+			}
+
 		}
-		
-		System.out.println(finalExpression);
+
 		return finalExpression;
 
-	}	
+	}
 	
 	public String getAttribute() {
 		return attribute;
@@ -174,5 +233,5 @@ public class CSPEventObserver extends Observer {
 	public ObserverWizard getWizard(Shell shell, BControl control) {
 		return new CSPEventObserverWizard(shell, control, this);
 	}
-
+	
 }

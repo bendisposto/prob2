@@ -24,6 +24,7 @@ import de.bmotionstudio.core.editor.view.library.AttributeRequest;
 import de.bmotionstudio.core.editor.view.library.LibraryImageCommand;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
 import de.prob.webconsole.ServletContextListener;
 
 public class BImagePart extends BMSAbstractEditPart {
@@ -40,20 +41,21 @@ public class BImagePart extends BMSAbstractEditPart {
 		if (aID.equals(AttributeConstants.ATTRIBUTE_IMAGE)) {
 			
 			if (value != null && value.toString().length() > 0) {
-				
+				// TODO: What is if we open the visualization without a running
+				// model?
 				final AnimationSelector selector = injector
 						.getInstance(AnimationSelector.class);
-
-				String path = selector.getCurrentHistory().getModel()
-						.getModelFile().getParent()
-						+ "/images";
-				String imagePath = path + File.separator + value.toString();
-				
-				if (new File(imagePath).exists()) {
-					((BMSImageFigure) figure).setImage(imagePath);
+				History currentHistory = selector.getCurrentHistory();
+				if (currentHistory != null) {
+					String path = currentHistory.getModel().getModelFile()
+							.getParent()
+							+ "/images";
+					String imagePath = path + File.separator + value.toString();
+					if (new File(imagePath).exists())
+						((BMSImageFigure) figure).setImage(imagePath);
 				}
-				
-			}		
+
+			}
 					
 		}
 
