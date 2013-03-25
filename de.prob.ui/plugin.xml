@@ -149,6 +149,17 @@
               </parameter>
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:de.prob.ui.model_check">
+           <command
+                 commandId="de.prob.ui.deadlock_check"
+                 icon="icons/DeadlockCheck.png"
+                 label="Deadlock Freedom Check"
+                 mnemonic="D"
+                 style="push">
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
@@ -206,6 +217,10 @@
                      name="Visualization Type"
                      optional="true">
                </commandParameter>
+            </command>
+            <command
+                  id="de.prob.ui.deadlock_check"
+                  name="Deadlock Freedom Check">
             </command>
    </extension>
    
@@ -348,6 +363,20 @@
          <class
                class="de.prob.ui.visualization.OpenVizHandler">
          </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.deadlock_check">
+         <class
+               class="de.prob.ui.constraint.DeadlockCheckHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
       </handler>
    </extension>
    <extension
