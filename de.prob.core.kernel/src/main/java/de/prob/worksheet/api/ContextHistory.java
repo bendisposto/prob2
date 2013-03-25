@@ -307,7 +307,7 @@ public class ContextHistory implements Iterable<IContext> {
 	public void setContexts(String id, ContextHistory blockHistory) {
 		logger.trace("in: id={}, blockHository={}", id, blockHistory);
 		/*
-		 * Cases: 1. Keine neue History für die id 2.
+		 * Cases: 1. Keine neue History fuer die id 2.
 		 */
 
 		int insertIndex = firstIndexForId(id);
