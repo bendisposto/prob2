@@ -3,8 +3,6 @@
  */
 package de.prob.ui.constraint;
 
-import java.util.concurrent.Callable;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -64,14 +62,6 @@ public class DeadlockCheckHandler extends AbstractHandler {
 		final IEvalElement predicate = parsePredicate(s, value);
 		final ConstraintBasedDeadlockCheckCommand command = new ConstraintBasedDeadlockCheckCommand(
 				predicate);
-		Callable<ConstraintBasedCheckingResult> toCall = new Callable<ConstraintBasedCheckingResult>() {
-
-			@Override
-			public ConstraintBasedCheckingResult call() throws Exception {
-				s.execute(command);
-				return command.getResult();
-			}
-		};
 
 		Display.getDefault().asyncExec(new Runnable() {
 

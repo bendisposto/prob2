@@ -151,12 +151,19 @@
         </menuContribution>
         <menuContribution
               allPopups="false"
-              locationURI="menu:de.prob.ui.model_check">
+              locationURI="toolbar:de.prob.ui.model_check">
            <command
                  commandId="de.prob.ui.deadlock_check"
                  icon="icons/DeadlockCheck.png"
                  label="Deadlock Freedom Check"
                  mnemonic="D"
+                 style="push">
+           </command>
+           <command
+                 commandId="de.prob.ui.inv_check"
+                 icon="icons/CBCInvariantCheck.png"
+                 label="Invariant Preservation Check"
+                 mnemonic="I"
                  style="push">
            </command>
         </menuContribution>
@@ -221,6 +228,10 @@
             <command
                   id="de.prob.ui.deadlock_check"
                   name="Deadlock Freedom Check">
+            </command>
+            <command
+                  id="de.prob.ui.inv_check"
+                  name="Invariant Preservation Check">
             </command>
    </extension>
    
@@ -368,6 +379,20 @@
             commandId="de.prob.ui.deadlock_check">
          <class
                class="de.prob.ui.constraint.DeadlockCheckHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.inv_check">
+         <class
+               class="de.prob.ui.constraint.InvariantCheckHandler">
          </class>
          <enabledWhen>
             <with
