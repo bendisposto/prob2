@@ -95,7 +95,7 @@ public class DeadlockCheckHandler extends AbstractHandler {
 					message = "Errors occured during the execution of the command";
 					break;
 				case interrupted:
-					message = "The execution of the command was interrupted";
+					message = "A time out occured or the constraint based checking was interrupted.";
 					break;
 				default:
 					break;
@@ -159,6 +159,10 @@ public class DeadlockCheckHandler extends AbstractHandler {
 
 		@Override
 		public String isValid(final String newText) {
+			if(newText.equals("")) {
+				return null;
+			}
+
 			if(model instanceof EventBModel) {
 				try {
 					pred = new EventB(newText);
