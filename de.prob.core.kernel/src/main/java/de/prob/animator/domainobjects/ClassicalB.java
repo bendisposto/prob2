@@ -24,11 +24,10 @@ import de.prob.prolog.output.IPrologTermOutput;
  * 
  * @author joy
  */
-public class ClassicalB implements IEvalElement {
+public class ClassicalB extends AbstractEvalElement {
 
 	public FormulaUUID uuid = new FormulaUUID();
 
-	private final String code;
 	private final Start ast;
 
 	/**
@@ -67,11 +66,6 @@ public class ClassicalB implements IEvalElement {
 				.toString() : PREDICATE.toString();
 	}
 
-	@Override
-	public String getCode() {
-		return code;
-	}
-
 	/**
 	 * @return {@link Start} ast corresponding to the formula
 	 */
@@ -98,14 +92,6 @@ public class ClassicalB implements IEvalElement {
 		final PrettyPrinter prettyPrinter = new PrettyPrinter();
 		predicate.apply(prettyPrinter);
 		return prettyPrinter.getPrettyPrint();
-	}
-
-	@Override
-	public boolean equals(final Object that) {
-		if (that instanceof ClassicalB) {
-			return ((ClassicalB) that).getCode().equals(this.getCode());
-		}
-		return false;
 	}
 
 }
