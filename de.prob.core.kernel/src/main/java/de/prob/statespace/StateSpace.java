@@ -10,9 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
@@ -38,7 +35,7 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
  * The StateSpace is where the animation of a given model is carried out. The
  * methods in the StateSpace allow the user to:
  * 
- * 1) Find new states and operations
+ * 1) Explore new states and operations
  * 
  * 2) Inspect different states within the StateSpace
  * 
@@ -54,8 +51,6 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
  * 
  */
 public class StateSpace extends StateSpaceGraph implements IAnimator {
-
-	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 
 	private transient IAnimator animator;
 

@@ -5,7 +5,7 @@ import java.util.Collection;
 import de.prob.animator.domainobjects.OpInfo;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
-public class StateSpaceGraph {
+class StateSpaceGraph {
 
 	private final DirectedSparseMultigraph<StateId, OpInfo> graph;
 
