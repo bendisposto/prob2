@@ -1,5 +1,12 @@
 package de.prob.ui;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -23,6 +30,9 @@ public class Activator extends AbstractUIPlugin {
 	public static final Injector INJECTOR = ServletContextListener.INJECTOR;
 
 	public static final Main MAIN = INJECTOR.getInstance(Main.class);
+
+	private final Collection<Job> jobs = new ArrayList<Job>();
+	private final IJobChangeListener jobFinishedListener = new JobFinishedListener();
 
 	// IMAGES
 	public static final String IMG_FILTER = "IMG_FILTER";
@@ -100,6 +110,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void stop(final BundleContext context) throws Exception {
+		cancelAllJobs();
 		plugin = null;
 		super.stop(context);
 	}
@@ -186,6 +197,31 @@ public class Activator extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID,
 						"icons/junit/obj16/exc_catch.gif"));
 
+	}
+
+	private void cancelAllJobs() {
+		synchronized (jobs) {
+			for (final Job job : jobs) {
+				job.cancel();
+			}
+		}
+	}
+
+	public void registerJob(final Job job) {
+		synchronized (jobs) {
+			jobs.add(job);
+			job.addJobChangeListener(jobFinishedListener);
+		}
+	}
+
+	private class JobFinishedListener extends JobChangeAdapter {
+		@Override
+		public void done(final IJobChangeEvent event) {
+			super.done(event);
+			synchronized (jobs) {
+				jobs.remove(event.getJob());
+			}
+		}
 	}
 
 }

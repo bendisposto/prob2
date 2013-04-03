@@ -6,10 +6,9 @@ package de.prob.ui.constraint;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -20,13 +19,13 @@ import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
+import de.prob.ui.ProBCommandJob;
 import de.prob.webconsole.ServletContextListener;
 
 
@@ -63,57 +62,11 @@ public class DeadlockCheckHandler extends AbstractHandler {
 		final ConstraintBasedDeadlockCheckCommand command = new ConstraintBasedDeadlockCheckCommand(
 				predicate);
 
-		Display.getDefault().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-
-				s.execute(command);
-				ConstraintBasedCheckingResult result = command.getResult();
-
-				String message = "";
-				boolean traceAvailable = false;
-				switch (result.getResult()) {
-				case no_deadlock_found:
-					message = "No deadlock found.";
-					break;
-				case deadlock:
-					message = "Deadlock found";
-					traceAvailable = true;
-					break;
-				case errors:
-					message = "Errors occured during the execution of the command";
-					break;
-				case interrupted:
-					message = "A time out occured or the constraint based checking was interrupted.";
-					break;
-				default:
-					break;
-				}
-
-				String[] buttons = null;
-				if (traceAvailable) {
-					buttons = new String[] { "Ok", "Open Trace" };
-				} else {
-					buttons = new String[] { "Ok" };
-				}
-
-				final String finalMsg = message;
-				final String[] finalButtons = buttons;
-
-				MessageDialog dialog = new MessageDialog(shell,
-						"Model Checking Result", null, finalMsg,
-						MessageDialog.INFORMATION, finalButtons, 0);
-
-				int userAnswer = dialog.open();
-
-				if (userAnswer == 1) {
-					String id = command.getDeadlockStateId();
-					History trace = s.getTrace(id);
-					currentHistory.notifyAnimationChange(currentHistory, trace);
-				}
-			}
-		});
+		final Job job = new ProBCommandJob("Checking for Deadlock Freedom",
+				s, command);
+		job.setUser(true);
+		job.addJobChangeListener(new DeadlockCheckFinishedListener(shell));
+		job.schedule();
 	}
 
 	private IEvalElement parsePredicate(final StateSpace s,

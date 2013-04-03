@@ -11,20 +11,20 @@ import java.util.Set;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.google.inject.Injector;
 
 import de.prob.animator.command.ConstraintBasedInvariantCheckCommand;
-import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.model.representation.BEvent;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
+import de.prob.ui.ProBCommandJob;
 import de.prob.webconsole.ServletContextListener;
 
 /**
@@ -70,43 +70,9 @@ public class InvariantCheckHandler extends AbstractHandler {
 					throws ExecutionException {
 		final ConstraintBasedInvariantCheckCommand command = new ConstraintBasedInvariantCheckCommand(
 				events);
-		Display.getDefault().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-
-				s.execute(command);
-				ConstraintBasedCheckingResult result = command.getResult();
-
-				String message = "";
-				switch (result.getResult()) {
-				case no_invariant_violation_found:
-					message = "No Invariant Violation found.";
-					break;
-				case invariant_violation:
-					message = "Invariant Violation found";
-					break;
-				case errors:
-					message = "Errors occured during the execution of the command";
-					break;
-				case interrupted:
-					message = "A time out occured or the constraint based checking was interrupted.";
-					break;
-				default:
-					break;
-				}
-
-				final String[] buttons = new String[] { "Ok" };
-
-				final String finalMsg = message;
-
-				MessageDialog dialog = new MessageDialog(shell,
-						"Model Checking Result", null, finalMsg,
-						MessageDialog.INFORMATION, buttons, 0);
-
-				int userAnswer = dialog.open();
-			}
-		});
+		final Job job = new ProBCommandJob("Checking for Invariant Preservation", s, command);
+		job.setUser(true);
+		job.addJobChangeListener(new InvariantCheckFinishedListener(shell));
+		job.schedule();
 	}
-
 }
