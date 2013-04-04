@@ -17,6 +17,7 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
+import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
@@ -208,7 +209,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
-			throws BException {
+					throws BException {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
@@ -393,14 +394,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return new HashMap<IEvalElement, EvaluationResult>();
 	}
 
-	private boolean canBeEvaluated(final StateId stateId) {
-		for (OpInfo opInfo : getOutEdges(stateId)) {
-			if (opInfo.getName().equals("$setup_constants")
-					|| opInfo.getName().equals("$initialise_machine")) {
-				return false;
-			}
-		}
-		return true;
+	public boolean canBeEvaluated(final StateId stateId) {
+		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(stateId.getId());
+		execute(cmd);
+		return cmd.getResult();
 	}
 
 	/**
