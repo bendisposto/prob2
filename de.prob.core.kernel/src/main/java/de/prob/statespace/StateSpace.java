@@ -63,6 +63,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private ICommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
+	private final HashSet<StateId> canBeEvaluated = new HashSet<StateId>();
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
@@ -116,6 +117,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		extractInformation(state, command);
 
 		explored.add(state);
+		if(command.isInitialised()) {
+			canBeEvaluated.add(state);
+		}
+
 		if (!state.getId().equals("root")) {
 			setLastCalculatedStateId(new BigInteger(state.getId()));
 		}
@@ -395,9 +400,16 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public boolean canBeEvaluated(final StateId stateId) {
+		if(canBeEvaluated.contains(stateId)) {
+			return true;
+		}
 		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(stateId.getId());
 		execute(cmd);
-		return cmd.getResult();
+		boolean result = cmd.getResult();
+		if(result) {
+			canBeEvaluated.add(stateId);
+		}
+		return result;
 	}
 
 	/**
