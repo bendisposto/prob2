@@ -19,7 +19,6 @@ import de.prob.animator.command.GetVersionCommand;
 import de.prob.cli.CliVersionNumber;
 import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.Downloader;
-import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 @SuppressWarnings("serial")
