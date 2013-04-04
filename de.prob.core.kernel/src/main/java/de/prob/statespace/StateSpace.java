@@ -1,6 +1,5 @@
 package de.prob.statespace;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -63,7 +62,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final List<IStatesCalculatedListener> stateSpaceListeners = new ArrayList<IStatesCalculatedListener>();
 
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
-	private BigInteger lastCalculatedStateId;
+	private long lastCalculatedStateId;
 	private AbstractModel model;
 	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
 
@@ -76,8 +75,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		this.animator = animator;
-
-		lastCalculatedStateId = new BigInteger("-1");
+		lastCalculatedStateId = -1;
 	}
 
 	public StateId getRoot() {
@@ -106,7 +104,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		explored.add(state);
 		if (!state.getId().equals("root")) {
-			setLastCalculatedStateId(new BigInteger(state.getId()));
+			updateLastCalculatedStateId(state.numericalId());
 		}
 		final List<OpInfo> enabledOperations = command.getEnabledOperations();
 
@@ -193,7 +191,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
 		final List<OpInfo> newOps = command.getOperations();
-		setLastCalculatedStateId(new BigInteger(stateId.getId()));
+		updateLastCalculatedStateId(stateId.numericalId());
 
 		// (id,name,src,dest,args)
 		for (final OpInfo op : newOps) {
@@ -698,13 +696,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return new HashSet<OpInfo>(outgoingEdgesOf);
 	}
 
-	public BigInteger getLastCalculatedStateId() {
+	public long getLastCalculatedStateId() {
 		return lastCalculatedStateId;
 	}
 
-	public void setLastCalculatedStateId(final BigInteger lastCalculatedId) {
-		if (lastCalculatedId.intValue() > lastCalculatedStateId.intValue()) {
-			lastCalculatedStateId = lastCalculatedId;
-		}
+	public void updateLastCalculatedStateId(final long lastCalculatedId) {
+		lastCalculatedStateId = Math.max(lastCalculatedStateId,
+				lastCalculatedId);
 	}
 }

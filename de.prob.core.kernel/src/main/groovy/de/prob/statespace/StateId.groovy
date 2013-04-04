@@ -50,6 +50,11 @@ class StateId {
 		return id;
 	};
 
+	def long numericalId() {
+		return id == "root" ? -1 : id as long;
+	}
+
+
 	def boolean equals(Object that) {
 		return this.id.equals(that.getId());
 	}
