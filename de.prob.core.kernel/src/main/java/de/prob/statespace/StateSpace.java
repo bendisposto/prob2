@@ -62,7 +62,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final List<IStatesCalculatedListener> stateSpaceListeners = new ArrayList<IStatesCalculatedListener>();
 
-	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private BigInteger lastCalculatedStateId;
 	private AbstractModel model;
@@ -72,16 +71,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
 	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
 
-	public final StateId __root;
-
 	@Inject
 	public StateSpace(final IAnimator animator,
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		this.animator = animator;
-		__root = new StateId("root", this);
-		addVertex(__root);
-		states.put(__root.getId(), __root);
+
 		lastCalculatedStateId = new BigInteger("-1");
 	}
 
@@ -121,8 +116,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 				final StateId newState = new StateId(op.dest, this);
 				addVertex(newState);
-				states.put(newState.getId(), newState);
-				addEdge(op, states.get(op.src), states.get(op.dest));
+				addEdge(op, getVertex(op.src), getVertex(op.dest));
 			}
 		}
 		notifyStateSpaceChange();
@@ -148,16 +142,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	public String explore(final int i) {
 		final String si = String.valueOf(i);
 		return explore(si);
-	}
-
-	/**
-	 * Returns the StateId for the given key
-	 * 
-	 * @param key
-	 * @return StateId for the specified key
-	 */
-	public StateId getVertex(final String key) {
-		return states.get(key);
 	}
 
 	/**
@@ -217,7 +201,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			StateId vertex = getVertex(op.dest);
 			if (vertex == null) {
 				vertex = new StateId(op.dest, this);
-				states.put(vertex.getId(), vertex);
 				addVertex(vertex);
 			}
 			if (!containsEdge(op)) {
@@ -589,7 +572,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @return trace in the form of a {@link History} object
 	 */
 	public History getTrace(final String state) {
-		final StateId id = states.get(state);
+		final StateId id = getVertex(state);
 		StateId root = this.getRoot();
 
 		DijkstraShortestPath<StateId, OpInfo> dijkstra = new DijkstraShortestPath<StateId, OpInfo>(
