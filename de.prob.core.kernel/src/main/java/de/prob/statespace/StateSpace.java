@@ -325,7 +325,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param state
 	 */
-	public void evaluateFormulas(final StateId state) {
+	private void evaluateFormulas(final StateId state) {
 		if (!canBeEvaluated(state)) {
 			return;
 		}

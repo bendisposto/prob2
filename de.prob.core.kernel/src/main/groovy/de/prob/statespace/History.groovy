@@ -208,7 +208,7 @@ class History {
 			OpInfo op = ops.get(0)
 
 			StateId newState = s.getState(op)
-			s.evaluateFormulas(ops.get(0))
+			s.explore(ops.get(0))
 
 			current = new HistoryElement(currentState,newState,op,previous)
 			currentState = newState
