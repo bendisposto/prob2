@@ -1,8 +1,13 @@
 package de.prob.statespace
 
+import de.prob.animator.domainobjects.CSP
 import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.EventB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.OpInfo
+import de.prob.model.classicalb.ClassicalBModel
+import de.prob.model.eventb.EventBModel
+import de.prob.scripting.CSPModel
 
 
 class StateId {
@@ -21,14 +26,27 @@ class StateId {
 		return newState;
 	}
 
-	
+
 	def value(String key) {
 		def v = space.valuesAt(this);
-		def e = v.find { it.getKey().code == key}
-	    return e.getValue().value;
+		for (def entry : v.entrySet()) {
+			if(entry.getKey().code == key) {
+				return entry.getValue().value
+			}
+		}
+		def m = space.getModel();
+		if(m instanceof ClassicalBModel) {
+			return space.eval(this, [key as ClassicalB]).get(0).value
+		}
+		if(m instanceof EventBModel) {
+			return space.eval(this, [key as EventB]).get(0).value
+		}
+		if(m instanceof CSPModel) {
+			return space.eval(this, [key as CSP]).get(0).value
+		}
 	}
-	
-	
+
+
 	def eval(formula) {
 		def f = formula;
 		if (!(formula instanceof IEvalElement)) {

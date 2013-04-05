@@ -92,7 +92,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem()
-				.setHelp(viewer.getControl(), "de.prob.ui.viewer");
+		.setHelp(viewer.getControl(), "de.prob.ui.viewer");
 		hookContextMenu();
 		hookDoubleClickAction();
 		modelLoaded = false;
@@ -127,7 +127,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 				public void run() {
 					final History newHistory = currentHistory.add(opInfo.id);
 					newHistory
-							.notifyAnimationChange(currentHistory, newHistory);
+					.notifyAnimationChange(currentHistory, newHistory);
 				}
 			};
 			executeOp.setText(Joiner.on(",").join(opInfo.params));
@@ -227,9 +227,13 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		public void doubleClick(final DoubleClickEvent event) {
 			final List<OpInfo> selectedOperations = getSelectedOperations();
 			if (selectedOperations != null && !selectedOperations.isEmpty()) {
-				final History newHistory = currentHistory
-						.add(selectedOperations.get(0).id);
-				newHistory.notifyAnimationChange(currentHistory, newHistory);
+				try {
+					final History newHistory = currentHistory
+							.add(selectedOperations.get(0).id);
+					newHistory.notifyAnimationChange(currentHistory, newHistory);
+				} catch(IllegalArgumentException e) {
+					// Happens when the user tries to execute too many operations in the OperationView too quickly
+				}
 			}
 		}
 	}
@@ -254,7 +258,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	private void updateModel(final AbstractModel model) {
 		currentModel = model;
 		((OperationsContentProvider) viewer.getContentProvider())
-				.setAllOperations(getOperationNames(model));
+		.setAllOperations(getOperationNames(model));
 	}
 
 	private Map<String, Object> getOperationNames(final AbstractModel model) {

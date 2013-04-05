@@ -14,6 +14,14 @@ import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 
+/**
+ * The ModelChecker is a thread safe encapsulation of the model checking
+ * process. It uses the {@link Callable} and {@link Future} objects to make a
+ * thread that can be started, executed, and cancelled.
+ * 
+ * @author joy
+ * 
+ */
 public class ModelChecker {
 
 	private final Worker worker;
@@ -29,6 +37,10 @@ public class ModelChecker {
 		executor = Executors.newSingleThreadExecutor();
 	}
 
+	/**
+	 * @return result of the {@link Future#cancel(boolean)} with value true if
+	 *         the future has been created. Otherwise false.
+	 */
 	public boolean cancel() {
 		if (f != null) {
 			return f.cancel(true);
@@ -36,6 +48,10 @@ public class ModelChecker {
 		return false;
 	}
 
+	/**
+	 * @return the {@link ModelCheckingResult} of the model checking process if
+	 *         the model checking has been started.
+	 */
 	public ModelCheckingResult getResult() {
 		try {
 			if (f != null) {
@@ -51,14 +67,25 @@ public class ModelChecker {
 		return null;
 	}
 
+	/**
+	 * Starts the model checking process. Creates a {@link Future} of type
+	 * {@link ModelCheckingResult} by submitting the {@link Worker} to a single
+	 * threaded {@link ExecutorService}
+	 */
 	public void start() {
 		f = executor.submit(worker);
 	}
 
+	/**
+	 * @return true, if the calculation is finished. Otherwise, false.
+	 */
 	public boolean isDone() {
 		return f != null && f.isDone();
 	}
 
+	/**
+	 * @return {@link Future#isCancelled()}
+	 */
 	public boolean isCancelled() {
 		return f.isCancelled();
 	}
@@ -80,10 +107,20 @@ public class ModelChecker {
 		private long last;
 		private ModelCheckingResult res;
 
+		/**
+		 * implements {@link Callable}. When called, the Worker performs model
+		 * checking until an result is found or until the user cancels the
+		 * operation.
+		 * 
+		 * @param s
+		 *            {@link StateSpace} object in which to perform the model
+		 *            checking
+		 * @param options
+		 */
 		public Worker(final StateSpace s, final List<String> options) {
 			this.s = s;
 			this.options = options;
-			this.last = s.getLastCalculatedStateId();
+			last = s.getLastCalculatedStateId();
 		}
 
 		@Override
