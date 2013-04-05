@@ -369,6 +369,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return new HashMap<IEvalElement, EvaluationResult>();
 	}
 
+	
 	private boolean canBeEvaluated(final StateId stateId) {
 		for (OpInfo opInfo : getOutEdges(stateId)) {
 			if (opInfo.getName().equals("$setup_constants")
@@ -462,9 +463,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	@Override
 	public String toString() {
-		String result = "";
-		result += super.toString();
-		return result;
+		return super.toString();
 	}
 
 	/**
