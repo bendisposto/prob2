@@ -42,7 +42,6 @@ public class PredicateServlet extends HttpServlet {
 		String formula = req.getParameter("formula");
 
 		History currentHistory = animations.getCurrentHistory();
-
 		if (!formulas.containsKey(formula)) {
 			InsertFormulaForVisualizationCommand cmd = new InsertFormulaForVisualizationCommand(
 					new ClassicalB(formula));

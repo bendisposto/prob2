@@ -12,24 +12,27 @@ import de.prob.prolog.term.PrologTerm;
 
 public class ExpandedFormula {
 
-	private String label;
+	private String name;
 	private Object value;
-	private final List<ExpandedFormula> children = new ArrayList<ExpandedFormula>();
+	private List<ExpandedFormula> children;
 
 	public ExpandedFormula(final CompoundPrologTerm cpt) {
 		init(cpt);
 	}
 
 	public void init(final CompoundPrologTerm cpt) {
-		label = cpt.getArgument(1).getFunctor();
+		name = cpt.getArgument(1).getFunctor();
 		// Value
 		PrologTerm v = cpt.getArgument(2);
 		value = getValue(v);
 		// Children
 		ListPrologTerm list = BindingGenerator.getList(cpt.getArgument(3));
-		for (PrologTerm prologTerm : list) {
-			children.add(new ExpandedFormula(BindingGenerator.getCompoundTerm(
-					prologTerm, 3)));
+		if (!list.isEmpty()) {
+			children = new ArrayList<ExpandedFormula>();
+			for (PrologTerm prologTerm : list) {
+				children.add(new ExpandedFormula(BindingGenerator
+						.getCompoundTerm(prologTerm, 3)));
+			}
 		}
 	}
 
@@ -50,7 +53,7 @@ public class ExpandedFormula {
 	}
 
 	public String getLabel() {
-		return label;
+		return name;
 	}
 
 	public Object getValue() {

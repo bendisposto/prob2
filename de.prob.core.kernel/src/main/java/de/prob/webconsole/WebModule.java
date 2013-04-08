@@ -10,6 +10,7 @@ import de.prob.webconsole.servlets.GroovyBindingsServlet;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.GroovyShellServlet;
 import de.prob.webconsole.servlets.ImportsServlet;
+import de.prob.webconsole.servlets.PredicateServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
 import de.prob.webconsole.servlets.StateSpaceServlet;
 import de.prob.webconsole.servlets.VersionServlet;
@@ -28,6 +29,7 @@ public class WebModule extends ServletModule {
 		serve("/scrollback*").with(ScrollbackServlet.class);
 		serve("/formula*").with(FormulaOverHistoryServlet.class);
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
+		serve("/predicate_exp*").with(PredicateServlet.class);
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);
 		bind(ProBTestRunner.class);
