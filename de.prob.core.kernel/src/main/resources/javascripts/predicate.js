@@ -16,13 +16,51 @@ var vis = d3.select("#body").append("svg:svg")
   .append("svg:g")
     .attr("transform", "translate(" + m[3] + "," + m[0] + ")");  
 
+var nodeLength = {};
+var valueLength = {};
+
 function buildTree(treeData)
 {
     root = treeData
     root.x0 = h / 2;
     root.y0 = 0;
 
+    var labels = {};
+    var values = {};
+
+    calculateSize(root);
+
     update(root);
+}
+
+// static calculation of size of labels
+function calculateSize(data) {
+  var toCalc = vis.selectAll("g.node")
+      .data(tree.nodes(root).reverse());
+
+  var l = toCalc.enter().append("svg:text")
+        .attr("class","l")
+        .attr("font-size","11px")
+        .text(function(d) {return d.name});
+
+  var v = toCalc.enter().append("svg:text")
+        .attr("class","v")
+        .attr("font-size","11px")
+        .text(function(d) {return d.value});
+
+  var toDel = $(".l");
+
+  for (var i = 0 ; i < toDel.length; i++) {
+    nodeLength[toDel[i].textContent] = toDel[i].getBBox().width;
+  };
+
+  toDel = $(".v");
+    for (var i = 0 ; i < toDel.length; i++) {
+    valueLength[toDel[i].textContent] = toDel[i].getBBox().width;
+  };
+
+  l.remove();
+  v.remove();
 }
 
 function update(source) {
@@ -31,9 +69,17 @@ function update(source) {
   // Compute the new tree layout.
   var nodes = tree.nodes(root).reverse();
 
+  var calcWidth = function(key) {
+    var labelL = nodeLength[key.name];
+    var valueL = valueLength[key.value];
+    if( labelL >= valueL) {
+      return labelL;
+    } 
+    return valueL;
+  };
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 180 + root.name.length*4; });
+  nodes.forEach(function(d) { d.y = d.depth * 180 + calcWidth(root); });
 
   // Update the nodes…
   var node = vis.selectAll("g.node")
@@ -45,27 +91,58 @@ function update(source) {
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .on("click", function(d) { toggle(d); update(d); });
 
-  nodeEnter.append("svg:circle")
-      .attr("r", 1e-6)
-      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+  nodeEnter.append("svg:rect")
+                .attr("width",function(d) { return calcWidth(d)+20})
+                .attr("height",60)
+                .attr("y",-30)
+                .attr("x", function(d) { return d.children || d._children ? -(calcWidth(d)+20) : 0})
+                .attr("rx",10)
+                .style("fill", function(d) { if(d.value === true) {
+                                        return "#73BE73";
+                                    } else if(d.value === false) {
+                                        return "#C06666";
+                                    } else {
+                                        return "#fff";
+                                    };
+                             });
 
   nodeEnter.append("svg:text")
+      .attr("class","label")
       .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-      .attr("dy", ".35em")
+      .attr("dy", "-1em")
       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
       .text(function(d) { return d.name; })
       .style("fill-opacity", 1e-6);
+
+  nodeEnter.append("svg:text")
+      .attr("class","value")
+      .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+      .attr("dy", "1em")
+      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+      .text(function(d) { return d.value; })
+      .style("fill-opacity", 1e-6)
+
+  // Resize Rectangles to fit text
+
+
+
+ // $(".rL").attr("width",$(".tL").width()+20);
+ // $(".rL").attr("height",$(".tL").height()*2);
+ // $(".rL").attr("y",-($(".rL").attr("height")/2));
+ // $(".rL").attr("x",-($(".rL").attr("width")));
 
   // Transition nodes to their new position.
   var nodeUpdate = node.transition()
       .duration(duration)
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
-  nodeUpdate.select("circle")
-      .attr("r", 4.5)
-      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+  nodeUpdate.select("rect")
+      .style("fill-opacity", 0.7);
 
-  nodeUpdate.select("text")
+  nodeUpdate.select("text.label")
+      .style("fill-opacity", 1);
+
+  nodeUpdate.select("text.value")
       .style("fill-opacity", 1);
 
   // Transition exiting nodes to the parent's new position.
@@ -74,11 +151,14 @@ function update(source) {
       .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
       .remove();
 
-  nodeExit.select("circle")
-      .attr("r", 1e-6);
+  nodeExit.select("rect")
+      .attr("fill-opacity", 1e-6);
 
-  nodeExit.select("text")
+  nodeExit.select("text.label")
       .style("fill-opacity", 1e-6);
+
+  nodeExit.select("text.value")
+      .style("fill-opacity", 1e-6)
 
   // Update the links…
   var link = vis.selectAll("path.link")
@@ -114,6 +194,8 @@ function update(source) {
     d.x0 = d.x;
     d.y0 = d.y;
   });
+
+  vis.selectAll("node")
 }
 
 // Toggle children.
