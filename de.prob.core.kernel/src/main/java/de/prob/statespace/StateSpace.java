@@ -57,7 +57,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private ICommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
-	private final HashSet<StateId> canBeEvaluated = new HashSet<StateId>();
+	private final HashSet<StateId> initializedStates = new HashSet<StateId>();
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
@@ -105,9 +105,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		extractInformation(state, command);
 
 		explored.add(state);
-		if(command.isInitialised()) {
-			canBeEvaluated.add(state);
-		}
 
 		if (!state.getId().equals("root")) {
 			updateLastCalculatedStateId(state.numericalId());
@@ -137,6 +134,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		if (command.isTimeoutOccured()) {
 			timeoutOccured.add(state);
 		}
+		if (command.isInitialised()) {
+			initializedStates.add(state);
+		}
 	}
 
 	public String explore(final String state) {
@@ -144,6 +144,8 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public String explore(final int i) {
+		if (i == -1)
+			return explore("root");
 		final String si = String.valueOf(i);
 		return explore(si);
 	}
@@ -376,14 +378,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public boolean canBeEvaluated(final StateId stateId) {
-		if(canBeEvaluated.contains(stateId)) {
+		if (initializedStates.contains(stateId)) {
 			return true;
 		}
-		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(stateId.getId());
+		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(
+				stateId.getId());
 		execute(cmd);
 		boolean result = cmd.getResult();
-		if(result) {
-			canBeEvaluated.add(stateId);
+		if (result) {
+			initializedStates.add(stateId);
 		}
 		return result;
 	}
