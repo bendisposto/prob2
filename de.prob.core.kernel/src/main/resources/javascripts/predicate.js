@@ -1,4 +1,4 @@
-var m = [20, 120, 20, $(window).width()],
+var m = [20, 120, 20, 120],
     w = 1280 - m[1] - m[3],
     h = 800 - m[0] - m[2],
     i = 0,
@@ -235,7 +235,11 @@ function toggle(d) {
 }
 
 function displayFormula() {
-    var line = $("#formula")[0].value;
+
+  vis.selectAll(".link").remove();
+  vis.selectAll(".node").remove();
+
+  var line = $("#formula")[0].value;
 	$.getJSON("predicate_exp", {
 		formula : line
 	}, buildTree);
