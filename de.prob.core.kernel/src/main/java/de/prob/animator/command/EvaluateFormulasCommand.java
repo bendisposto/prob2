@@ -31,7 +31,6 @@ public class EvaluateFormulasCommand implements ICommand {
 	private final String stateId;
 	private final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
 
-	// FIXME: Why does this command need access to the id?
 	public EvaluateFormulasCommand(final List<IEvalElement> evalElements,
 			final String id) {
 		this.evalElements = evalElements;
