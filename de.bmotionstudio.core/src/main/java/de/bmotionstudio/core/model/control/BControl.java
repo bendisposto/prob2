@@ -29,6 +29,8 @@ import de.bmotionstudio.core.internal.BControlPropertySource;
 import de.bmotionstudio.core.model.BMotionGuide;
 import de.bmotionstudio.core.model.PropertyChangeSupportObject;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
+import de.bmotionstudio.core.model.attribute.AttributeSourceConnections;
+import de.bmotionstudio.core.model.attribute.AttributeTargetConnections;
 import de.bmotionstudio.core.model.attribute.BAttributeCoordinates;
 import de.bmotionstudio.core.model.attribute.BAttributeCustom;
 import de.bmotionstudio.core.model.attribute.BAttributeHeight;
@@ -39,6 +41,7 @@ import de.bmotionstudio.core.model.attribute.BAttributeVisible;
 import de.bmotionstudio.core.model.attribute.BAttributeWidth;
 import de.bmotionstudio.core.model.attribute.BAttributeX;
 import de.bmotionstudio.core.model.attribute.BAttributeY;
+import de.bmotionstudio.core.model.attribute.ConnectionList;
 import de.bmotionstudio.core.model.event.Event;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.prob.statespace.History;
@@ -69,11 +72,6 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 	private BMotionGuide verticalGuide, horizontalGuide;
 
-	// List of outgoing Connections
-	private List<BConnection> sourceConnections;
-	// List of incoming Connections
-	private List<BConnection> targetConnections;
-
 	private transient Rectangle layout = null;
 
 	private transient Point location = null;
@@ -87,8 +85,6 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		this.observer = new ArrayList<Observer>();
 		this.events = new ArrayList<Event>();
 		this.attributes = new HashMap<String, AbstractAttribute>();
-		this.sourceConnections = new ArrayList<BConnection>();
-		this.targetConnections = new ArrayList<BConnection>();
 		this.newControl = true;
 		init();
 	}
@@ -102,47 +98,31 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		return this;
 	}
 
-	/**
-	 * Remove an incoming or outgoing connection from this shape.
-	 * 
-	 * @param conn
-	 *            a non-null connection instance
-	 * @throws IllegalArgumentException
-	 *             if the parameter is null
-	 */
 	public void removeConnection(BConnection conn) {
 		if (conn == null) {
 			throw new IllegalArgumentException();
 		}
-		if (conn.getSource() == this) {
-			getSourceConnections().remove(conn);
+		if (conn.getSource().equals(getID())) {
+			getSourceConnections().remove(conn.getID());
 			firePropertyChange(BControlPropertyConstants.SOURCE_CONNECTIONS,
 					null, conn);
-		} else if (conn.getTarget() == this) {
-			getTargetConnections().remove(conn);
+		} else if (conn.getTarget().equals(getID())) {
+			getTargetConnections().remove(conn.getID());
 			firePropertyChange(BControlPropertyConstants.TARGET_CONNECTIONS,
 					null, conn);
 		}
 	}
 
-	/**
-	 * Add an incoming or outgoing connection to this shape.
-	 * 
-	 * @param conn
-	 *            a non-null connection instance
-	 * @throws IllegalArgumentException
-	 *             if the connection is null or has not distinct endpoints
-	 */
 	public void addConnection(BConnection conn) {
-		if (conn == null || conn.getSource() == conn.getTarget()) {
+		if (conn == null || conn.getSource().equals(conn.getTarget())) {
 			throw new IllegalArgumentException();
 		}
-		if (conn.getSource() == this) {
-			getSourceConnections().add(conn);
+		if (conn.getSource().equals(getID())) {
+			getSourceConnections().add(conn.getID());
 			firePropertyChange(BControlPropertyConstants.SOURCE_CONNECTIONS,
 					null, conn);
-		} else if (conn.getTarget() == this) {
-			getTargetConnections().add(conn);
+		} else if (conn.getTarget().equals(getID())) {
+			getTargetConnections().add(conn.getID());
 			firePropertyChange(BControlPropertyConstants.TARGET_CONNECTIONS,
 					null, conn);
 		}
@@ -208,6 +188,16 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		BAttributeCustom aCustom = new BAttributeCustom("");
 		aCustom.setGroup(AbstractAttribute.ROOT);
 		initAttribute(aCustom);
+
+		AttributeSourceConnections aSourceConnections = new AttributeSourceConnections(
+				new ConnectionList());
+		aSourceConnections.setGroup(AbstractAttribute.ROOT);
+		initAttribute(aSourceConnections);
+
+		AttributeTargetConnections aTargetConnections = new AttributeTargetConnections(
+				new ConnectionList());
+		aTargetConnections.setGroup(AbstractAttribute.ROOT);
+		initAttribute(aTargetConnections);
 
 	}
 
@@ -475,6 +465,17 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		return this.parent;
 	}
 
+	public Visualization getVisualization() {
+		return getVisualizationRecursive(getParent());
+	}
+	
+	private Visualization getVisualizationRecursive(BControl parent) {
+		if (parent instanceof Visualization)
+			return (Visualization) parent;
+		else
+			return getVisualizationRecursive(parent.getParent());
+	}
+	
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		if (adapter == IPropertySource.class) {
 			return new BControlPropertySource(this);
@@ -490,9 +491,6 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 	public BControl clone() throws CloneNotSupportedException {
 
 		BControl clonedControl = (BControl) super.clone();
-
-		clonedControl.sourceConnections = new ArrayList<BConnection>();
-		clonedControl.targetConnections = new ArrayList<BConnection>();
 
 		clonedControl.setParent(getParent());
 
@@ -540,14 +538,19 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		for (Observer observer : getObservers()) {
 			observer.check(history, BControl.this);
 		}
+		Visualization visualization = getVisualization();
 		// TODO: Currently connection observer are checked twice (source +
 		// target) => change this, so that observer are checked only on time per
 		// state!!!
-		for (BConnection con : getSourceConnections()) {
-			con.checkObserver(history);
+		for (String con : getSourceConnections().getConnections()) {
+			BConnection connection = visualization.getConnection(con);
+			if (connection != null)
+				connection.checkObserver(history);
 		}
-		for (BConnection con : getTargetConnections()) {
-			con.checkObserver(history);
+		for (String con : getTargetConnections().getConnections()) {
+			BConnection connection = visualization.getConnection(con);
+			if (connection != null)
+				connection.checkObserver(history);
 		}
 	}
 	
@@ -555,14 +558,19 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		for (Observer observer : getObservers()) {
 			observer.afterCheck(history, BControl.this);
 		}
+		Visualization visualization = getVisualization();
 		// TODO: Currently connection observer are checked twice (source +
 		// target) => change this, so that observer are checked only on time per
 		// state!!!
-		for (BConnection con : getSourceConnections()) {
-			con.afterCheckObserver(history);
+		for (String con : getSourceConnections().getConnections()) {
+			BConnection connection = visualization.getConnection(con);
+			if (connection != null)
+				connection.afterCheckObserver(history);
 		}
-		for (BConnection con : getTargetConnections()) {
-			con.afterCheckObserver(history);
+		for (String con : getTargetConnections().getConnections()) {
+			BConnection connection = visualization.getConnection(con);
+			if (connection != null)
+				connection.afterCheckObserver(history);
 		}
 	}
 
@@ -596,37 +604,52 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 	/**
 	 * Return a List of outgoing Connections.
 	 */
-	public List<BConnection> getSourceConnections() {
-		if (this.sourceConnections == null)
-			this.sourceConnections = new ArrayList<BConnection>();
-		return this.sourceConnections;
-	}
-
-	public void setSourceConnections(List<BConnection> connections) {
-		this.sourceConnections = connections;
-	}
-
-	public void setTargetConnections(List<BConnection> connections) {
-		this.targetConnections = connections;
+	public ConnectionList getSourceConnections() {
+		AbstractAttribute atrSourceConnections = getAttribute(AttributeConstants.ATTRIBUTE_SOURCE_CONNECTIONS);
+		return (ConnectionList) atrSourceConnections.getValue();
 	}
 
 	/**
 	 * Return a List of incoming Connections.
 	 */
-	public List<BConnection> getTargetConnections() {
-		if (this.targetConnections == null)
-			this.targetConnections = new ArrayList<BConnection>();
-		return this.targetConnections;
+	public ConnectionList getTargetConnections() {
+		AbstractAttribute atrTargetConnections = getAttribute(AttributeConstants.ATTRIBUTE_TARGET_CONNECTIONS);
+		return (ConnectionList) atrTargetConnections.getValue();
 	}
 
+	/**
+	 * Return a List of outgoing Connections.
+	 */
+	public List<BConnection> getSourceConnectionInstances() {
+		List<BConnection> connectionInstanceList = new ArrayList<BConnection>();
+		List<String> sourceConnections = getSourceConnections().getConnections();
+		for (String con : sourceConnections) {
+			BConnection connection = getVisualization().getConnection(con);
+			if (connection != null)
+				connectionInstanceList.add(connection);
+		}
+		return connectionInstanceList;
+	}
+
+	/**
+	 * Return a List of incoming Connections.
+	 */
+	public List<BConnection> getTargetConnectionInstances() {
+		List<BConnection> connectionInstanceList = new ArrayList<BConnection>();
+		List<String> targetConnections = getTargetConnections().getConnections();
+		for (String con : targetConnections) {
+			BConnection connection = getVisualization().getConnection(con);
+			if (connection != null)
+				connectionInstanceList.add(connection);
+		}
+		return connectionInstanceList;
+	}
+
+	
 	public boolean hasConnections() {
-		return !getTargetConnections().isEmpty()
-				|| !getSourceConnections().isEmpty();
+		return !getTargetConnections().getConnections().isEmpty()
+				|| !getSourceConnections().getConnections().isEmpty();
 	}
-
-//	public boolean showInOutlineView() {
-//		return true;
-//	}
 
 	public void setObservers(List<Observer> observers) {
 		this.observer = observers;
@@ -635,8 +658,6 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 	public void setEvents(List<Event> events) {
 		this.events = events;
 	}
-
-//	public abstract String getType();
 
 	protected void initAttribute(AbstractAttribute atr) {
 

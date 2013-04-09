@@ -64,8 +64,9 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	public PropertyDescriptor getPropertyDescriptor() {
 		propertyDescriptor = new PropertyDescriptor(getID(), getName());
 		if (isEditable()) {
-			propertyDescriptor = preparePropertyDescriptor();
-			if (propertyDescriptor != null) {
+			PropertyDescriptor preparePropertyDescriptor = preparePropertyDescriptor();
+			if (preparePropertyDescriptor != null) {
+				propertyDescriptor = preparePropertyDescriptor;
 				propertyDescriptor.setValidator(new ICellEditorValidator() {
 					public String isValid(Object value) {
 						return validateValue(value, control);

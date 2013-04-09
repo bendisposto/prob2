@@ -35,8 +35,11 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 
 				Segment track = (Segment) newObject;
 				TrackNode trackNode = (TrackNode) model;
+				track.setParent(trackNode.getVisualization());
 				cmd = new ConnectionCreateCommand(trackNode);
 				((ConnectionCreateCommand) cmd).setConnection(track);
+				trackNode.getVisualization().getConnections()
+						.put(track.getID(), track);
 				request.setStartCommand(cmd);
 
 			}
