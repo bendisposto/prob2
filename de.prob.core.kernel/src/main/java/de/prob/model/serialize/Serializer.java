@@ -1,7 +1,11 @@
 package de.prob.model.serialize;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
@@ -25,5 +29,28 @@ public class Serializer {
 			bytes = xml.getBytes();
 		}
 		return Base64.encodeBase64String(bytes);
+	}
+
+	public static ModelObject deserialize(final String code) {
+		byte[] decoded = Base64.decodeBase64(code);
+		ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
+		GZIPInputStream gzis;
+		StringBuffer res = new StringBuffer();
+		try {
+			gzis = new GZIPInputStream(bais);
+			InputStreamReader reader = new InputStreamReader(gzis);
+			BufferedReader in = new BufferedReader(reader);
+
+			String readed;
+			while ((readed = in.readLine()) != null) {
+				res.append(readed);
+				res.append('\n');
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		XStream xStream = new XStream();
+		return (ModelObject) xStream.fromXML(res.toString());
 	}
 }
