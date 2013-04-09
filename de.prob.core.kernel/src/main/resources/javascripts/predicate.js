@@ -1,4 +1,4 @@
-var m = [20, 120, 20, 120],
+var m = [20, 120, 20, $(window).width()],
     w = 1280 - m[1] - m[3],
     h = 800 - m[0] - m[2],
     i = 0,
@@ -14,7 +14,7 @@ var vis = d3.select("#body").append("svg:svg")
     .attr("width", w + m[1] + m[3])
     .attr("height", h + m[0] + m[2])
   .append("svg:g")
-    .attr("transform", "translate(" + m[3] + "," + m[0] + ")");  
+    .attr("transform", "translate(" + 25 + "," + m[0] + ")");  
 
 var nodeLength = {};
 var valueLength = {};
@@ -78,6 +78,34 @@ function update(source) {
     return valueL;
   };
 
+  var hasChildren = function(d) {
+    return d.children || d._children;
+  };
+
+  var calcColor = function(d) {
+    if(hasChildren(d)) {
+      return colorMain(d);
+    } else {
+      if(d.value === true) {
+        return "#A6F1A6";
+      } else if(d.value === false) {
+        return "#F39999";
+      } else {
+        return "#fff";
+      };
+    };
+  };
+
+  var colorMain = function(d) {
+      if(d.value === true) {
+        return "#73BE73";
+      } else if(d.value === false) {
+        return "#C06666";
+      } else {
+        return "#CCC";
+      };
+  };
+
   // Normalize for fixed-depth.
   nodes.forEach(function(d) { d.y = d.depth * 180 + calcWidth(root); });
 
@@ -92,33 +120,28 @@ function update(source) {
       .on("click", function(d) { toggle(d); update(d); });
 
   nodeEnter.append("svg:rect")
-                .attr("width",function(d) { return calcWidth(d)+20})
+                .attr("width",function(d) { return calcWidth(d)+20; })
                 .attr("height",60)
                 .attr("y",-30)
-                .attr("x", function(d) { return d.children || d._children ? -(calcWidth(d)+20) : 0})
+                .attr("x", function(d) { return hasChildren(d) ? -(calcWidth(d)+20) : 0; })
                 .attr("rx",10)
-                .style("fill", function(d) { if(d.value === true) {
-                                        return "#73BE73";
-                                    } else if(d.value === false) {
-                                        return "#C06666";
-                                    } else {
-                                        return "#fff";
-                                    };
-                             });
+                .style("fill", function(d) { return calcColor(d); })
+                .style("stroke", function(d) { return colorMain(d); })
+                .style("stroke-width", 1e-6);
 
   nodeEnter.append("svg:text")
       .attr("class","label")
-      .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+      .attr("x", function(d) { return hasChildren(d) ? -10 : 10; })
       .attr("dy", "-1em")
-      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+      .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
       .text(function(d) { return d.name; })
       .style("fill-opacity", 1e-6);
 
   nodeEnter.append("svg:text")
       .attr("class","value")
-      .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+      .attr("x", function(d) { return hasChildren(d) ? -10 : 10; })
       .attr("dy", "1em")
-      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+      .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
       .text(function(d) { return d.value; })
       .style("fill-opacity", 1e-6)
 
@@ -137,7 +160,8 @@ function update(source) {
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
   nodeUpdate.select("rect")
-      .style("fill-opacity", 0.7);
+      .style("fill-opacity", 0.7)
+      .style("stroke-width", "2px");
 
   nodeUpdate.select("text.label")
       .style("fill-opacity", 1);
@@ -152,13 +176,14 @@ function update(source) {
       .remove();
 
   nodeExit.select("rect")
-      .attr("fill-opacity", 1e-6);
+      .attr("fill-opacity", 1e-6)
+      .style("stroke-width", 1e-6);
 
   nodeExit.select("text.label")
       .style("fill-opacity", 1e-6);
 
   nodeExit.select("text.value")
-      .style("fill-opacity", 1e-6)
+      .style("fill-opacity", 1e-6);
 
   // Update the links…
   var link = vis.selectAll("path.link")

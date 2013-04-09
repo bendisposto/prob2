@@ -28,7 +28,7 @@ svg.append("g")
         .call(xAxis)
     .append("text")
         .attr("class", "label")
-        .attr("x", width)
+        .attr("x", w)
         .attr("y", -6)
         .style("text-anchor", "end")
         .text("Number of Animation Steps");
