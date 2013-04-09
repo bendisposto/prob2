@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
 <!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
@@ -13,7 +12,7 @@
 <meta charset="utf-8">
 <title>ProB Webshell</title>
 <meta name="description" content="">
-<meta name="author" content="Jens Bendisposto">
+<meta name="author" content="Joy Clark">
 
 <!-- Mobile Specific Metas
     ================================================== -->
@@ -28,32 +27,22 @@
 <link rel="stylesheet" href="stylesheets/pepper.css">
 
 <style type="text/css">
- .axis path,
- .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
+ .node circle {
+    cursor: pointer;
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
   }
-    
-  .axis text {
-        font-family: sans-serif;
-        font-size: 11px;
-   }
 
-   .x.axis path {
-   	  display: none;
-   }
+  .node text {
+    font-size: 11px;
+  }
 
-   .line {
-   	  fill: none;
-   	  stroke: #4682B4;
-   	  stroke-width: 1.5px;
-   }
-
-.connection {
- fill:none;
-  stroke:black;
-}
+  path.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+  }
 
 
 </style>
@@ -69,11 +58,11 @@
 	<div class="container">
 		<div id="show" class="sixteen columns">
 		<form>
-		Enter an Integer valued classical B formula:
-		<input id="formula" name="formula"> 
+		Enter a classical B predicate:
+		<input id="formula" name="formula">
 		<input type="button" value="Show" onClick="javascript:displayFormula()"/>
 		</form>
-		<svg><svg>
+		<div id="body"></div>
 		</div>
 	</div>
 	<!-- container -->
@@ -83,7 +72,7 @@
 	<!-- <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script> -->
 	<script src="javascripts/jquery-1.7.2.min.js"></script>
 	<script src="javascripts/d3.v2.min.js"></script>
-	<script src="javascripts/oszilloscope.js"></script>
+	<script src="javascripts/predicate.js"></script>
 
 
 

@@ -17,6 +17,7 @@ import com.google.inject.Singleton;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
+import de.prob.statespace.StateId;
 
 @SuppressWarnings("serial")
 @Singleton
@@ -50,22 +51,14 @@ public class FormulaOverHistoryServlet extends HttpServlet {
 
 		String formula = req.getParameter("formula");
 
-		History history = animations.getCurrentHistory();
-		while (history.canGoBack()) {
-			history = history.back();
-		}
-
 		int c = 0;
-
-		while (history.canGoForward()) {
-			String id = history.getCurrentState().getId();
-			if (id.equals("root")) {
-				// skip root state
-			} else {
-				EvaluationResult e = history.evalCurrent(formula);
-				result.add(new Element(id, c++, e.value));
-			}
-			history = history.forward();
+		
+		History history = animations.getCurrentHistory();
+		if(history != null) {
+			List<EvaluationResult> calc = history.eval(formula);
+			for (EvaluationResult evaluationResult : calc) {
+				result.add(new Element(evaluationResult.getStateId(),c++,evaluationResult.value));
+			}			
 		}
 
 		Gson g = new Gson();
