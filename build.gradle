@@ -49,7 +49,8 @@ project(':de.prob.core.rodin'){
 		def setExports = { 
 			if( it ==~ /Export-Package:.*/ )  it = it + ",\n" + exports
 
-			if( it ==~ /Bundle-ClassPath: ..*/ ) it = it + ",\n" + lib
+			if( it ==~ /Bundle-ClassPath: .(\ |\t)*/ ) it = it + ",\n" + lib
+			if( it ==~ /Bundle-ClassPath: .(\ |\t)*,(\ |\t)*/ ) it = it + "\n" + lib + ","
 			if( !(it ==~ /(\ |\t)*de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional.*/ ) ){				//	 This check is only necessary because of the optional identifier cannot be handled anymore 
 				mf << it+"\n"
 			}																//
@@ -170,7 +171,7 @@ def String getExportedPackages(){
 
 	def getExports = { 
 		
-		if(it ==~ /[A-Z].*/) catchEntries == false
+		if(it ==~ /[A-Z].*/) catchEntries = false
 		
 		if( catchEntries )   exportList << it
 			

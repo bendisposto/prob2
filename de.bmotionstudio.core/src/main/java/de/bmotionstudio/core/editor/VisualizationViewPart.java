@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.PositionConstants;
@@ -27,6 +29,7 @@ import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.commands.CommandStackListener;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
+import org.eclipse.gef.editparts.ZoomListener;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.ui.actions.ActionRegistry;
@@ -39,6 +42,7 @@ import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
 import org.eclipse.gef.ui.actions.UndoAction;
 import org.eclipse.gef.ui.actions.UpdateAction;
+import org.eclipse.gef.ui.actions.ZoomComboContributionItem;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
@@ -51,8 +55,10 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISaveablePart;
+import org.eclipse.ui.ISaveablePart2;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
@@ -82,15 +88,19 @@ import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
 		CommandStackListener, PropertyChangeListener, IHistoryChangeListener,
-		ITabbedPropertySheetPageContributor {
+		ITabbedPropertySheetPageContributor, ISaveablePart2 {
 
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
 	
 	private Injector injector = ServletContextListener.INJECTOR;
+
+	private final AnimationSelector selector = injector
+			.getInstance(AnimationSelector.class);
 	
 	private EditDomain editDomain;
 
@@ -114,9 +124,35 @@ public class VisualizationViewPart extends ViewPart implements
 	
 	private File visualizationFile;
 
+	private StateSpace currentStateSpace;
+	
+	private boolean dirty;
+	
 	private List<String> selectionActions = new ArrayList<String>();
 	private List<String> stackActions = new ArrayList<String>();
 	private List<String> propertyActions = new ArrayList<String>();
+	
+	private String[] viewerProperties = new String[] {
+			SnapToGrid.PROPERTY_GRID_VISIBLE, SnapToGrid.PROPERTY_GRID_ENABLED,
+			RulerProvider.PROPERTY_RULER_VISIBILITY,
+			SnapToGeometry.PROPERTY_SNAP_ENABLED };
+
+	private PropertyChangeListener viewerListener = new PropertyChangeListener() {
+		@Override
+		public void propertyChange(PropertyChangeEvent event) {
+			String propertyName = event.getPropertyName();
+			if (Arrays.asList(viewerProperties).contains(propertyName)) {
+				setDirty(true);
+			}
+		}
+	};
+	
+	private ZoomListener zoomListener = new ZoomListener() {
+		@Override
+		public void zoomChanged(double zoom) {
+			setDirty(true);
+		}
+	};
 
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class type) {
@@ -236,19 +272,12 @@ public class VisualizationViewPart extends ViewPart implements
 		zoomContributions.add(ZoomManager.FIT_WIDTH);
 		manager.setZoomLevelContributions(zoomContributions);
 		
-		if (visualizationFile != null) {
-			action = new SaveAction(visualizationView, visualizationFile);
-			action.setEnabled(false);
-			registry.registerAction(action);
-		}
-		
 		getActionRegistry().registerAction(
 				new ToggleRulerVisibilityAction(getGraphicalViewer()) {
 					@Override
 					public void run() {
 						super.run();
 						setChecked(!isChecked());
-						getVisualizationView().setDirty(true);
 					}
 				});
 		getActionRegistry().registerAction(
@@ -257,7 +286,6 @@ public class VisualizationViewPart extends ViewPart implements
 					public void run() {
 						super.run();
 						setChecked(!isChecked());
-						getVisualizationView().setDirty(true);
 					}
 				});
 		getActionRegistry().registerAction(
@@ -266,7 +294,6 @@ public class VisualizationViewPart extends ViewPart implements
 					public void run() {
 						super.run();
 						setChecked(!isChecked());
-						getVisualizationView().setDirty(true);
 					}
 				});
 
@@ -356,25 +383,24 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	private void unregister() {
-		
 		if (getCommandStack() != null)
 			getCommandStack().removeCommandStackListener(this);
 		if (getActionRegistry() != null)
 			getActionRegistry().dispose();
-		setInitialized(false);
 		if (getVisualizationView() != null)
 			getVisualizationView().removePropertyChangeListener(this);
-		
-		final AnimationSelector selector = injector
-				.getInstance(AnimationSelector.class);
 		selector.unregisterHistoryChangeListener(this);
-		
+		if (getGraphicalViewer() != null)
+			getGraphicalViewer().removePropertyChangeListener(viewerListener);
+		if (rootEditPart != null)
+			rootEditPart.getZoomManager().removeZoomListener(zoomListener);
+		setInitialized(false);
 	}
 
 	@Override
 	public void commandStackChanged(EventObject event) {
 		updateActions(stackActions);
-		getVisualizationView().setDirty(getCommandStack().isDirty());
+		setDirty(getCommandStack().isDirty());
 	}
 
 	/**
@@ -435,19 +461,22 @@ public class VisualizationViewPart extends ViewPart implements
 		Visualization visualization = visualizationView.getVisualization();
 		configureGraphicalViewer();
 		hookGraphicalViewer();
-		loadProperties(visualizationView);
 		createActions();
 		buildActions();
 		createMenu(getViewSite());
+		getGraphicalViewer().setContents(visualization);
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		setPartName(visualizationView.getName()
-				+ " ("
-				+ selector.getCurrentHistory().getModel().getModelFile()
-						.getName() + ")");
-		getGraphicalViewer().setContents(visualization);
-		selector.registerHistoryChangeListener(this);
-		setInitialized(true);
+		History currentHistory = selector.getCurrentHistory();
+		String partName = visualizationView.getName();
+		if (currentHistory != null) {
+			this.currentStateSpace = currentHistory.getStatespace();
+			partName = partName + " ("
+					+ currentHistory.getModel().getModelFile().getName() + ")";
+			selector.registerHistoryChangeListener(this);
+			setInitialized(true);
+		}
+		setPartName(partName);
 	}
 	
 	protected void hookGraphicalViewer() {
@@ -484,6 +513,11 @@ public class VisualizationViewPart extends ViewPart implements
 				graphicalViewer, getActionRegistry(),
 				visualizationView.getLanguage());
 		graphicalViewer.setContextMenu(provider);
+		
+		loadProperties(visualizationView);
+		
+		graphicalViewer.addPropertyChangeListener(viewerListener);
+		rootEditPart.getZoomManager().addZoomListener(zoomListener);
 		
 	}
 
@@ -529,19 +563,21 @@ public class VisualizationViewPart extends ViewPart implements
 
 		viewSite.getActionBars().getToolBarManager().add(new Separator());
 
+		ZoomComboContributionItem zoomCombo = new ZoomComboContributionItem(
+				getSite().getPage()) {
+			protected int computeWidth(Control control) {
+				return 75;
+			}
+		};
+		zoomCombo.setZoomManager(rootEditPart.getZoomManager());
+		viewSite.getActionBars().getToolBarManager().add(zoomCombo);
+
 		viewSite.getActionBars().getToolBarManager()
 				.add(getActionRegistry().getAction(GEFActionConstants.ZOOM_IN));
-		viewSite
-				.getActionBars()
+		viewSite.getActionBars()
 				.getToolBarManager()
 				.add(getActionRegistry().getAction(GEFActionConstants.ZOOM_OUT));
 
-		if (this.visualizationFile != null)
-			viewSite.getActionBars()
-					.getToolBarManager()
-					.add(getActionRegistry().getAction(
-							ActionFactory.SAVE.getId()));
-		
 		viewSite.getActionBars()
 				.getMenuManager()
 				.add(getActionRegistry().getAction(
@@ -556,10 +592,6 @@ public class VisualizationViewPart extends ViewPart implements
 						GEFActionConstants.TOGGLE_RULER_VISIBILITY));
 
 		viewSite.getActionBars().updateActionBars();
-
-		// TODO Reimplement me!
-		// pageSite.getActionBars().getToolBarManager()
-		// .add(new ZoomComboContributionItem(pageSite.getPage()));
 
 	}
 
@@ -593,6 +625,22 @@ public class VisualizationViewPart extends ViewPart implements
 				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 				MouseWheelZoomHandler.SINGLETON);
 
+		rootEditPart.getZoomManager().setZoom(visualizationView.getZoom());
+
+	}
+	
+	protected void saveProperties() {
+		getVisualizationView().setRulerVisible(
+				((Boolean) getGraphicalViewer().getProperty(
+						RulerProvider.PROPERTY_RULER_VISIBILITY))
+						.booleanValue());
+		getVisualizationView().setGridEnabled(
+				((Boolean) getGraphicalViewer().getProperty(
+						SnapToGrid.PROPERTY_GRID_ENABLED)).booleanValue());
+		getVisualizationView().setSnapToGeometry(
+				((Boolean) getGraphicalViewer().getProperty(
+						SnapToGeometry.PROPERTY_SNAP_ENABLED)).booleanValue());
+		getVisualizationView().setZoom(rootEditPart.getZoomManager().getZoom());
 	}
 	
 	/**
@@ -642,67 +690,38 @@ public class VisualizationViewPart extends ViewPart implements
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-
+		
 		String propertyName = evt.getPropertyName();
-
-		String name = visualizationView.getName();
-		boolean dirty = visualizationView.isDirty();
-
-		if (propertyName.equals("name"))
-			name = evt.getNewValue().toString();
-
-		if (propertyName.equals("dirty"))
-			dirty = Boolean.valueOf(evt.getNewValue().toString());
-
-		if (propertyName.equals("dirty") || propertyName.equals("name")) {
-			
+		
+		if (propertyName.equals("name")) {
+			String name = evt.getNewValue().toString();
 			final AnimationSelector selector = injector
 					.getInstance(AnimationSelector.class);
 			String modelName = selector.getCurrentHistory().getModel()
 					.getModelFile().getName();
-
-			name = name + " (" + modelName + ")";
-
-			if (dirty) {
-				setPartName("*" + name);
-			} else {
-				setPartName(name);
-			}
-
-		}
-
-		if (visualizationFile != null) {
-			IAction saveAction = getActionRegistry().getAction(
-					ActionFactory.SAVE.getId());
-			saveAction.setEnabled(dirty);
+			setPartName(name + " (" + modelName + ")");
 		}
 
 	}
 
 	@Override
 	public void historyChange(History history) {
-		if(visualizationView != null)
-			checkObserver(history);			
+		if (this.currentStateSpace != history.getStatespace())
+			return;
+		if (visualizationView != null)
+			checkObserver(history);
 	}
-	
+
 	public void checkObserver(final History history) {
 
-		Display.getDefault().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-
-				Visualization visualization = visualizationView
-						.getVisualization();
-				List<BControl> allBControls = new ArrayList<BControl>();
-				allBControls.add(visualization);
-				collectAllBControls(allBControls, visualization);
-				for (BControl c : allBControls)
-					c.checkObserver(history);
-
-			}
-
-		});
+		Visualization visualization = visualizationView.getVisualization();
+		List<BControl> allBControls = new ArrayList<BControl>();
+		allBControls.add(visualization);
+		collectAllBControls(allBControls, visualization);
+		for (BControl c : allBControls)
+			c.checkObserver(history);
+		for (BControl c : allBControls)
+			c.afterCheckObserver(history);
 
 	}
 
@@ -722,6 +741,49 @@ public class VisualizationViewPart extends ViewPart implements
 	@Override
 	public String getContributorId() {
 		return getSite().getId();
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		saveProperties();
+		SaveAction saveAction = new SaveAction(visualizationView,
+				visualizationFile);
+		saveAction.run();
+		getCommandStack().markSaveLocation();
+		firePropertyChange(ISaveablePart.PROP_DIRTY);
+	}
+
+	@Override
+	public void doSaveAs() {
+		// Nothing to do here, this is never allowed
+		throw new IllegalAccessError("No way to enter this method.");
+	}
+
+	public void setDirty(boolean dirty) {
+		if (isDirty() != dirty) {
+			this.dirty = dirty;
+			firePropertyChange(ISaveablePart.PROP_DIRTY);
+		}
+	}
+	
+	@Override
+	public boolean isDirty() {
+		return this.dirty;
+	}
+
+	@Override
+	public boolean isSaveAsAllowed() {
+		return false;
+	}
+
+	@Override
+	public boolean isSaveOnCloseNeeded() {
+		return true;
+	}
+
+	@Override
+	public int promptToSaveOnClose() {
+		return BMotionUtil.openSaveDialog();
 	}
 
 }

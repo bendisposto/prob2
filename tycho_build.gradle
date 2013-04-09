@@ -384,7 +384,7 @@ subprojects {
 					if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
 						addRunTimeLib( dependencyList[icp], project.name)
 					}	
-				}		
+				}	
 							
 			def warningReadMe = new File(workspacePath+project.name+"/"+dependencyFolder+"_README.txt")
 			warningReadMe.delete()

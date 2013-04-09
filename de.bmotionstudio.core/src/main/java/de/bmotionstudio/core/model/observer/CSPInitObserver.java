@@ -24,17 +24,14 @@ public class CSPInitObserver extends Observer {
 	
 	private Boolean isCustom;
 	
-	private static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
-	
+	private transient static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
+
 	@Override
 	public void check(History history, BControl control) {
-
 		HistoryElement current = history.getCurrent();
 		OpInfo op = current.getOp();
-		
 		if (op == null
 				|| (op != null && op.getName().equals("start_cspm_MAIN"))) {
-
 			if (isCustom) {
 				String parseExpression = parseExpression(value.toString(),
 						control, history);
@@ -42,16 +39,16 @@ public class CSPInitObserver extends Observer {
 						(CSPModel) history.getModel());
 				EvaluationResult subEval = history.evalCurrent(cspE);
 				if (subEval != null && !subEval.hasError()) {
-					control.setAttributeValue(attribute, subEval.value);
+					control.setAttributeValue(attribute, subEval.value, true,
+							false);
+					control.getAttribute(attribute).setValue(subEval.value);
 				}
 			} else {
-				control.setAttributeValue(attribute, value);
+				control.getAttribute(attribute).setValue(value);
 			}
-
 		}
-
 	}
-	
+
 	private String parseExpression(String expressionString,
 			BControl control, History history) {
 

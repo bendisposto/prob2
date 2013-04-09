@@ -7,9 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.jgrapht.graph.ClassBasedEdgeFactory;
-import org.jgrapht.graph.DirectedMultigraph;
-
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
@@ -21,6 +18,7 @@ import de.prob.model.representation.Machine;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.StateSchema;
 import de.prob.statespace.StateSpace;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 public class ClassicalBModel extends AbstractModel {
 
@@ -33,13 +31,13 @@ public class ClassicalBModel extends AbstractModel {
 		this.statespace = statespace;
 	}
 
-	public DirectedMultigraph<String, RefType> initialize(final Start mainast,
-			final RecursiveMachineLoader rml, final File modelFile) {
+	public DirectedSparseMultigraph<String, RefType> initialize(
+			final Start mainast, final RecursiveMachineLoader rml,
+			final File modelFile) {
 
 		this.modelFile = modelFile;
 
-		final DirectedMultigraph<String, RefType> graph = new DirectedMultigraph<String, RefType>(
-				new ClassBasedEdgeFactory<String, RefType>(RefType.class));
+		final DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 
 		final DomBuilder d = new DomBuilder();
 		mainMachine = d.build(mainast);
@@ -52,8 +50,8 @@ public class ClassicalBModel extends AbstractModel {
 
 		do {
 			fpReached = true;
-			final Set<String> vertices = new HashSet<String>();
-			vertices.addAll(graph.vertexSet());
+			final Set<String> vertices = new HashSet<String>(
+					graph.getVertices());
 			for (final String machineName : vertices) {
 				final Start ast = rml.getParsedMachines().get(machineName);
 				if (!done.contains(machineName)) {

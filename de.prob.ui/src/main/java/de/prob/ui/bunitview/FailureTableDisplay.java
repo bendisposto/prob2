@@ -16,6 +16,7 @@ package de.prob.ui.bunitview;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -31,11 +32,15 @@ public class FailureTableDisplay implements ITraceDisplay {
 	private final Image fStackIcon = Activator.getDefault().getImageRegistry()
 			.get(Activator.JUNIT_STACK);
 
+	private final Font COURIER;
+
 	public FailureTableDisplay(final Table table) {
 		fTable = table;
+		COURIER = new Font(table.getDisplay(), "Monospace", 10, SWT.NONE);
 		fTable.getParent().addDisposeListener(new DisposeListener() {
 			@Override
 			public void widgetDisposed(final DisposeEvent e) {
+				COURIER.dispose();
 				disposeIcons();
 			}
 		});
@@ -44,6 +49,8 @@ public class FailureTableDisplay implements ITraceDisplay {
 	@Override
 	public void addTraceLine(final int lineType, final String label) {
 		TableItem tableItem = newTableItem();
+		tableItem.setFont(COURIER);
+
 		switch (lineType) {
 		case TextualTrace.LINE_TYPE_EXCEPTION:
 			tableItem.setImage(fExceptionIcon);

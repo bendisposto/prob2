@@ -45,7 +45,7 @@ public class PerspectiveUtil {
 		if (activeWorkbenchWindow != null) {
 			IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
 			if (page != null)
-				page.closePerspective(perspectiveDescriptor, false, true);
+				page.closePerspective(perspectiveDescriptor, true, false);
 		}
 	}
 

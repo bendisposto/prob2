@@ -136,6 +136,55 @@
                  style="push">
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:analyze">
+           <command
+                 commandId="de.prob.ui.openViz"
+                 label="Open State Space Visualization"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.viz.name"
+                    value="statespace.html">
+              </parameter>
+           </command>
+           <command
+                 commandId="de.prob.ui.openViz"
+                 label="Open Value Over Time Visualization"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.viz.name"
+                    value="oszilloscope.html">
+              </parameter>
+           </command>
+           <command
+                 commandId="de.prob.ui.openViz"
+                 label="Open Predicate Visualization"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.viz.name"
+                    value="predicate.html">
+              </parameter>
+           </command>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="toolbar:de.prob.ui.model_check">
+           <command
+                 commandId="de.prob.ui.deadlock_check"
+                 icon="icons/DeadlockCheck.png"
+                 label="Deadlock Freedom Check"
+                 mnemonic="D"
+                 style="push">
+           </command>
+           <command
+                 commandId="de.prob.ui.inv_check"
+                 icon="icons/CBCInvariantCheck.png"
+                 label="Invariant Preservation Check"
+                 mnemonic="I"
+                 style="push">
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
@@ -184,6 +233,23 @@
             <command
                   id="de.prob.ui.bugreport"
                   name="Submit Bug Report">
+            </command>
+            <command
+                  id="de.prob.ui.openViz"
+                  name="Open Visualization">
+               <commandParameter
+                     id="de.prob.ui.viz.name"
+                     name="Visualization Type"
+                     optional="true">
+               </commandParameter>
+            </command>
+            <command
+                  id="de.prob.ui.deadlock_check"
+                  name="Deadlock Freedom Check">
+            </command>
+            <command
+                  id="de.prob.ui.inv_check"
+                  name="Invariant Preservation Check">
             </command>
    </extension>
    
@@ -321,6 +387,40 @@
                class="de.prob.ui.ticket.SubmitBugreportHandler">
          </class>
       </handler>
+      <handler
+            commandId="de.prob.ui.openViz">
+         <class
+               class="de.prob.ui.visualization.OpenVizHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.deadlock_check">
+         <class
+               class="de.prob.ui.constraint.DeadlockCheckHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.inv_check">
+         <class
+               class="de.prob.ui.constraint.InvariantCheckHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -359,7 +459,7 @@
       <view
             category="de.hhu.stups.prob"
             class="de.prob.ui.console.GroovyConsole"
-            icon="icons/sample.gif"
+            icon="icons/groovy.png"
             id="de.prob.ui.groovyconsole"
             name="Groovy Console"
             restorable="true">
@@ -367,7 +467,7 @@
       <view
             category="de.hhu.stups.prob"
             class="de.prob.ui.GroovyBindingView"
-            icon="icons/sample.gif"
+            icon="icons/groovy.png"
             id="de.prob.ui.groovybinding"
             name="Global Variables"
             restorable="true">
@@ -392,6 +492,14 @@
             icon="icons/Consistency.png"
             id="de.prob.ui.model_check"
             name="Model Checking"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.visualization.VizView"
+            id="de.prob.ui.viz.VizView"
+            name="Visualization"
             restorable="true">
       </view>
    </extension>

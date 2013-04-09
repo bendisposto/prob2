@@ -277,8 +277,7 @@ public class ObserverSection extends AbstractPropertySection implements
 			IWorkbenchPart part = getPart();
 			if (part instanceof VisualizationViewPart) {
 				VisualizationViewPart viewPart = (VisualizationViewPart) part;
-				if (viewPart.getVisualizationView() != null)
-					viewPart.getVisualizationView().setDirty(true);
+				viewPart.setDirty(true);
 			}
 		}
 

@@ -93,7 +93,7 @@ class History {
 
 	def History add(final String opId) {
 		OpInfo op = s.getOps().get(opId)
-		if (!s.outgoingEdgesOf(current.getCurrentState()).contains(op))
+		if (!s.getOutEdges(current.getCurrentState()).contains(op))
 			throw new IllegalArgumentException(opId
 			+ " is not a valid operation on this state")
 
@@ -184,7 +184,7 @@ class History {
 
 	def String getOp(final String name, final List<String> params) {
 		Set<OpInfo> outgoingEdges = s
-				.outgoingEdgesOf(current.getCurrentState())
+				.getOutEdges(current.getCurrentState())
 		String id = null
 		for (OpInfo op : outgoingEdges) {
 			if (op.getName().equals(name) && op.getParams().equals(params)) {
@@ -203,7 +203,7 @@ class History {
 		for(int i = 0; i < numOfSteps; i++) {
 			previous = current
 			List<OpInfo> ops = new ArrayList<OpInfo>()
-			ops.addAll(s.outgoingEdgesOf(currentState))
+			ops.addAll(s.getOutEdges(currentState))
 			Collections.shuffle(ops)
 			OpInfo op = ops.get(0)
 
@@ -233,7 +233,7 @@ class History {
 
 	def History anyOperation(filter) {
 		def ops = new ArrayList<OpInfo>()
-		ops.addAll(s.outgoingEdgesOf(current.getCurrentState()));
+		ops.addAll(s.getOutEdges(current.getCurrentState()));
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.name.matches(filter);
@@ -285,7 +285,7 @@ class History {
 	}
 
 	def Set<OpInfo> getNextTransitions() {
-		return s.outgoingEdgesOf(current.getCurrentState())
+		return s.getOutEdges(current.getCurrentState())
 	}
 
 	def StateId getCurrentState() {

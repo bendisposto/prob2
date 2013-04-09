@@ -6,8 +6,9 @@
 
 package de.bmotionstudio.core.model.control;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.bmotionstudio.core.ButtonGroupHelper;
 import de.bmotionstudio.core.model.VisualizationView;
@@ -17,63 +18,57 @@ public class Visualization extends BControl {
 	private transient List<String> allBControlIDs;
 	
 	private transient VisualizationView visualizationView;
+	
+	private Map<String,BConnection> connections;
 
-	public List<String> getAllBControlIDs() {
-		if (allBControlIDs == null)
-			allBControlIDs = getAllBControlNames();
-		return allBControlIDs;
-	}
-
-	private transient Boolean isRunning;
+//	public List<String> getAllBControlIDs() {
+//		if (allBControlIDs == null)
+//			allBControlIDs = getAllBControlNames();
+//		return allBControlIDs;
+//	}
 
 	public Visualization() {
 		ButtonGroupHelper.reset();
+		this.connections = new HashMap<String, BConnection>();
 	}
 
 	@Override
 	protected Object readResolve() {
 		super.readResolve();
-		this.isRunning = false;
+		for (BConnection con : getConnections().values())
+			con.setParent(this);
 		ButtonGroupHelper.reset();
 		init();
 		return this;
 	}
 
-	public void setIsRunning(Boolean bol) {
-		this.isRunning = bol;
-	}
+//	public List<String> getAllBControlNames() {
+//		return getAllBControlNames(getChildren());
+//	}
 
-	public Boolean isRunning() {
-		return isRunning;
-	}
+//	private List<String> getAllBControlNames(List<BControl> children) {
+//		List<String> list = new ArrayList<String>();
+//		for (BControl control : children) {
+//			list.add(control.getID());
+//			// Check children
+//			List<BControl> subchildren = control.getChildren();
+//			if (children.size() > 0)
+//				list.addAll(getAllBControlNames(subchildren));
+//			// Check connections
+//			List<BControl> connections = new ArrayList<BControl>();
+//			connections.addAll(control.getSourceConnections());
+//			connections.addAll(control.getTargetConnections());
+//			if (connections.size() > 0)
+//				list.addAll(getAllBControlNames(connections));
+//		}
+//		return list;
+//	}
 
-	public List<String> getAllBControlNames() {
-		return getAllBControlNames(getChildren());
-	}
-
-	private List<String> getAllBControlNames(List<BControl> children) {
-		List<String> list = new ArrayList<String>();
-		for (BControl control : children) {
-			list.add(control.getID());
-			// Check children
-			List<BControl> subchildren = control.getChildren();
-			if (children.size() > 0)
-				list.addAll(getAllBControlNames(subchildren));
-			// Check connections
-			List<BControl> connections = new ArrayList<BControl>();
-			connections.addAll(control.getSourceConnections());
-			connections.addAll(control.getTargetConnections());
-			if (connections.size() > 0)
-				list.addAll(getAllBControlNames(connections));
-		}
-		return list;
-	}
-
-	public String getMaxIDString(String type) {
-		String newID = getMaxID(type, 0, getAllBControlIDs());
-		getAllBControlIDs().add(newID);
-		return newID;
-	}
+//	public String getMaxIDString(String type) {
+//		String newID = getMaxID(type, 0, getAllBControlIDs());
+//		getAllBControlIDs().add(newID);
+//		return newID;
+//	}
 
 	// old method
 	private String getMaxID(String type, int count, List<String> allIDs) {
@@ -85,9 +80,9 @@ public class Visualization extends BControl {
 		}
 	}
 
-	public boolean checkIfIdExists(String ID) {
-		return getAllBControlNames().contains(ID);
-	}
+//	public boolean checkIfIdExists(String ID) {
+//		return getAllBControlNames().contains(ID);
+//	}
 
 	public BControl getBControl(String ID) {
 		return getBControl(ID, getChildren());
@@ -98,11 +93,7 @@ public class Visualization extends BControl {
 			if (control.getID().equals(ID)) {
 				return control;
 			}
-			for (BConnection c : control.getSourceConnections()) {
-				if (c.getID().equals(ID))
-					return c;
-			}
-			for (BConnection c : control.getTargetConnections()) {
+			for (BConnection c : getConnections().values()) {
 				if (c.getID().equals(ID))
 					return c;
 			}
@@ -116,6 +107,11 @@ public class Visualization extends BControl {
 		return null;
 	}
 
+	@Override
+	public Visualization getVisualization() {
+		return this;
+	}
+	
 	@Override
 	protected void initAttributes() {
 	}
@@ -133,4 +129,26 @@ public class Visualization extends BControl {
 		this.visualizationView = visualizationView;
 	}
 
+	public Map<String,BConnection> getConnections() {
+		if(connections == null)
+			connections = new HashMap<String, BConnection>();
+		return connections;
+	}
+
+	public void setConnections(Map<String,BConnection> connections) {
+		this.connections = connections;
+	}
+	
+	public BConnection getConnection(String id) {
+		return this.connections.get(id);
+	}
+
+	public void removeConnection(BConnection connection) {
+		this.connections.remove(connection.getID());
+	}
+	
+	public void removeConnection(String id) {
+		this.connections.remove(id);
+	}
+	
 }

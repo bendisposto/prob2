@@ -34,8 +34,15 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.editor.VisualizationViewPart;
+import de.bmotionstudio.core.model.BMotionGuide;
 import de.bmotionstudio.core.model.VisualizationView;
+import de.bmotionstudio.core.model.control.BConnection;
+import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
+import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.eventb.EventBModel;
+import de.prob.model.representation.AbstractModel;
+import de.prob.scripting.CSPModel;
 
 public class BMotionUtil {
 
@@ -62,47 +69,6 @@ public class BMotionUtil {
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
-
-		// Set the correct image path. In this case the image path is a
-		// subfolder called "images" in the corresponding project
-		// IFolder imageFolder = visualizationFile.getProject().getFolder(
-		// "images");
-		// if (!imageFolder.exists())
-		// imageFolder.create(true, true, new NullProgressMonitor());
-		// String imageFolderUrl = imageFolder.getLocationURI().toString()
-		// .replace("file:/", "");
-		// BMotionStudio.setImagePath(imageFolderUrl);
-		// -------------------------------------------------------------
-
-		// TODO reimplement me!!!
-		// Simulation simulation = null;
-
-		// if (obj instanceof Visualization) {
-
-		// TODO: We need a converter for "old" visualizations
-		// Visualization visualization = (Visualization) obj;
-		//
-		// simulation = new Simulation();
-		//
-		// String secId = UUID.randomUUID().toString();
-		//
-		// VisualizationView visualizationView = new VisualizationView(
-		// "New Visualization View", secId, visualization);
-		//
-		// simulation.addVisualizationView(visualizationView);
-
-		// } else if (obj instanceof Simulation) {
-		// simulation = (Simulation) obj;
-		// }
-
-		// if (simulation != null) {
-		// simulation.setLanguage(language);
-		// BMotionStudio.setCurrentSimulation(simulation);
-		// BMotionStudio.setCurrentPerspective(PerspectiveUtil
-		// .openPerspective(visualizationFile));
-		// BMotionStudio.setCurrentProjectFile(visualizationFile);
-		// PerspectiveUtil.initViews(simulation);
-		// }
 
 		return true;
 
@@ -147,7 +113,8 @@ public class BMotionUtil {
 
 	}
 	
-	public static File createNewVisualizationViewFile(File modelFile) {
+	public static File createNewVisualizationViewFile(File modelFile,
+			String language) {
 
 		Assert.isNotNull(modelFile);
 
@@ -164,7 +131,7 @@ public class BMotionUtil {
 			FileWriter output = null;
 			BufferedWriter writer = null;
 			try {
-				String content = BMotionUtil.getInitialContent();
+				String content = BMotionUtil.getInitialContent(language);
 				output = new FileWriter(visualizationFile);
 				writer = new BufferedWriter(output);
 				writer.write(content);
@@ -242,7 +209,7 @@ public class BMotionUtil {
 				}
 			};
 
-			BMotionEditorPlugin.setAliases(xstream);
+			BMotionUtil.setAliases(xstream);
 			Object obj = xstream.fromXML(inputStream);
 
 			return (VisualizationView) obj;
@@ -262,23 +229,24 @@ public class BMotionUtil {
 
 	}
 
-	public static String getInitialContent()
+	public static String getInitialContent(String language)
 			throws UnsupportedEncodingException {
 		Visualization visualization = new Visualization();
 		// TODO Make language more generic!!!!
 		VisualizationView visualizationView = new VisualizationView(
-				visualization, "EventB");
+				visualization, language);
 		return getInitialContent(visualizationView);
 	}
 
 	public static String getInitialContent(VisualizationView visualizationView)
 			throws UnsupportedEncodingException {
 		XStream xstream = new XStream();
-		BMotionEditorPlugin.setAliases(xstream);
+		BMotionUtil.setAliases(xstream);
 		return xstream.toXML(visualizationView);
 	}
 
-	public static File[] getVisualizationViewFiles(File modelFile) {
+	public static File[] getVisualizationViewFiles(File modelFile,
+			String language) {
 
 		Assert.isNotNull(modelFile);
 
@@ -290,8 +258,14 @@ public class BMotionUtil {
 			for (File f : listFiles) {
 				String extension = PerspectiveUtil.getExtension(f);
 				if (extension != null
-						&& extension.equals(BMotionEditorPlugin.FILEEXT_STUDIO))
-					filteredFiles.add(f);
+						&& extension.equals(BMotionEditorPlugin.FILEEXT_STUDIO)) {
+					VisualizationView visualizationView = BMotionUtil
+							.getVisualizationViewFromFile(f);
+					if (visualizationView != null) {
+						if (visualizationView.getLanguage().equals(language))
+							filteredFiles.add(f);
+					}
+				}
 			}
 		}
 		File[] viewFiles = filteredFiles
@@ -323,12 +297,81 @@ public class BMotionUtil {
 		return fileName;
 	}
 
-	public static void initVisualizationViews(File modelFile) {
-		File[] visualizationViewFiles = BMotionUtil
-				.getVisualizationViewFiles(modelFile);
+	public static void unregisterVisualizationViews(File modelFile,
+			String language) {
+		File[] visualizationViewFiles = BMotionUtil.getVisualizationViewFiles(
+				modelFile, language);
 		for (File f : visualizationViewFiles) {
 			BMotionUtil.initVisualizationViewPart(f);
 		}
+	}
+	
+	public static void initVisualizationViews(File modelFile, String language) {
+		File[] visualizationViewFiles = BMotionUtil.getVisualizationViewFiles(
+				modelFile, language);
+		for (File f : visualizationViewFiles) {
+			BMotionUtil.initVisualizationViewPart(f);
+		}
+	}
+	
+	public static VisualizationViewPart[] getVisualizationViewParts(
+			File modelFile, String language) {
+
+		List<VisualizationViewPart> list = new ArrayList<VisualizationViewPart>();
+
+		IWorkbenchWindow window = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+
+		if (window != null) {
+
+			IWorkbenchPage activePage = window.getActivePage();
+
+			if (activePage != null) {
+
+				File[] visualizationViewFiles = BMotionUtil
+						.getVisualizationViewFiles(modelFile, language);
+				for (File f : visualizationViewFiles) {
+
+					String secId = f.getName().replace(
+							"." + PerspectiveUtil.getExtension(f), "");
+
+					// Check if view is already open
+					IViewReference viewReference = activePage
+							.findViewReference(VisualizationViewPart.ID, secId);
+
+					if (viewReference != null) {
+						VisualizationViewPart visualizationViewPart = (VisualizationViewPart) viewReference
+								.getPart(true);
+						if (visualizationViewPart != null)
+							list.add(visualizationViewPart);
+					}
+
+				}
+
+			}
+
+		}
+
+		return list.toArray(new VisualizationViewPart[list.size()]);
+
+	}
+
+	public static String getLanguageFromModel(AbstractModel model) {
+		if (model instanceof EventBModel)
+			return "EventB";
+		else if (model instanceof ClassicalBModel)
+			return "ClassicalB";
+		else if (model instanceof CSPModel)
+			return "CSP";
+		return null;
+	}
+	
+	public static void setAliases(XStream xstream) {
+		xstream.alias("view", VisualizationView.class);
+		xstream.alias("control", BControl.class);
+		xstream.alias("visualization", Visualization.class);
+		xstream.alias("guide", BMotionGuide.class);
+		xstream.alias("connection", BConnection.class);
 	}
 	
 }

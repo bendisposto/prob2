@@ -9,16 +9,16 @@ import org.eclipse.ui.actions.ActionFactory;
 
 import com.thoughtworks.xstream.XStream;
 
-import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.model.VisualizationView;
+import de.bmotionstudio.core.util.BMotionUtil;
 
 public class SaveAction extends Action {
 
 	public static String ID = "de.bmotionstudio.core.actions.saveVisualizationViewAction";
-	
+
 	private VisualizationView visualizationView;
-	
+
 	private File visualizationFile;
 
 	public SaveAction(VisualizationView visualizationView,
@@ -34,22 +34,12 @@ public class SaveAction extends Action {
 
 	@Override
 	public void run() {
-
-		// ByteArrayOutputStream out = new ByteArrayOutputStream();
-		// OutputStreamWriter writer = null;
 		FileWriter fileWriter = null;
-
 		try {
-
 			fileWriter = new FileWriter(this.visualizationFile);
-			// writer = new OutputStreamWriter(out, "UTF8");
 			XStream xstream = new XStream();
-			BMotionEditorPlugin.setAliases(xstream);
+			BMotionUtil.setAliases(xstream);
 			xstream.toXML(visualizationView, fileWriter);
-			// visualizationFile.setContents(
-			// new ByteArrayInputStream(out.toByteArray()), true, false,
-			// new NullProgressMonitor());
-			visualizationView.setDirty(false);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} finally {
@@ -60,7 +50,6 @@ public class SaveAction extends Action {
 				e.printStackTrace();
 			}
 		}
-
 	}
-	
+
 }

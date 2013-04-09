@@ -2,6 +2,7 @@ package de.prob.animator.command;
 
 import java.util.List;
 
+import de.prob.animator.IAnimator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.PrologTermDelegate;
@@ -60,9 +61,9 @@ public class ComposedCommand implements ICommand {
 	}
 
 	public String createPrefix(final int i) {
-		if (i < LETTERS.length)
+		if (i < LETTERS.length) {
 			return String.valueOf(LETTERS[i]);
-		else {
+		} else {
 			final int letternum = i % LETTERS.length;
 			final int number = i / LETTERS.length;
 			return String.valueOf(LETTERS[letternum]) + number;
@@ -77,9 +78,10 @@ public class ComposedCommand implements ICommand {
 			final PrefixMap<PrologTerm> prefixMap = new PrefixMap<PrologTerm>(
 					bindings);
 			processPrefixedCommand(prefixMap, index);
-		} else
+		} else {
 			throw new IllegalArgumentException(
 					"cannot reprocess command, command unknown");
+		}
 	}
 
 	private int indexOf(final ICommand command) {
@@ -119,7 +121,7 @@ public class ComposedCommand implements ICommand {
 	 * This simplified map prefixes every query to the map with a given string.
 	 */
 	private static final class PrefixMap<V> implements
-			ISimplifiedROMap<String, V> {
+	ISimplifiedROMap<String, V> {
 		private final ISimplifiedROMap<String, V> map;
 		private String prefix;
 
@@ -137,5 +139,12 @@ public class ComposedCommand implements ICommand {
 			return map.toString();
 		}
 
+	}
+
+	public ICommand[] runInDebugMode(final IAnimator animator) {
+		for (ICommand cmd : cmds) {
+			animator.execute(cmd);
+		}
+		return cmds;
 	}
 }

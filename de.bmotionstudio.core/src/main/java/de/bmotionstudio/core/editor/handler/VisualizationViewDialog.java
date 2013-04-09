@@ -13,6 +13,8 @@ import java.util.List;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -28,6 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.util.BMotionUtil;
+import de.prob.model.representation.AbstractModel;
 
 public class VisualizationViewDialog extends Dialog {
 
@@ -35,11 +38,11 @@ public class VisualizationViewDialog extends Dialog {
 	
 	private Object selection;
 	
-	private File modelFile;
-	
-	public VisualizationViewDialog(Shell parentShell, File modelFile) {
+	private AbstractModel currentModel;
+
+	public VisualizationViewDialog(Shell parentShell, AbstractModel currentModel) {
 		super(parentShell);
-		this.modelFile = modelFile;
+		this.currentModel = currentModel;
 	}
 
 	@Override
@@ -63,13 +66,20 @@ public class VisualizationViewDialog extends Dialog {
 		view.getTable().setLinesVisible(true);
 		view.getTable().setHeaderVisible(true);
 		view.addSelectionChangedListener(new ISelectionChangedListener() {
-
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				selection = sel.getFirstElement();
 			}
-			
+		});
+		view.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				selection = sel.getFirstElement();
+				setReturnCode(Dialog.OK);
+				close();
+			}
 		});
 		
 		final TableViewerColumn column1 = new TableViewerColumn(view,
@@ -89,11 +99,16 @@ public class VisualizationViewDialog extends Dialog {
 		});
 
 		List<Object> content = new ArrayList<Object>();
-		if (this.modelFile != null) {
-			File[] visualizationViewFiles = BMotionUtil
-					.getVisualizationViewFiles(this.modelFile);
-			java.util.Collections.addAll(content, visualizationViewFiles);
-			content.add(new DummyObject());
+		if (this.currentModel != null) {
+			String language = BMotionUtil
+					.getLanguageFromModel(this.currentModel);
+			if (language != null) {
+				File[] visualizationViewFiles = BMotionUtil
+						.getVisualizationViewFiles(
+								this.currentModel.getModelFile(), language);
+				java.util.Collections.addAll(content, visualizationViewFiles);
+				content.add(new DummyObject(language));
+			}
 		}
 		view.setInput(content);
 		
@@ -117,9 +132,21 @@ public class VisualizationViewDialog extends Dialog {
 	}
 	
 	class DummyObject {
+
+		private String language;
+
+		public DummyObject(String language) {
+			this.language = language;
+		}
+
 		public String getName() {
 			return "< New Visualization View >";
 		}
+
+		public String getLanguage() {
+			return language;
+		}
+
 	}
 
 }

@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Shell;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.PropertyChangeSupportObject;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.statespace.History;
 
 /**
  * 
@@ -68,6 +69,9 @@ public abstract class Observer extends PropertyChangeSupportObject implements
 	
 	public String getDescription() {
 		return null;
+	}
+	
+	public void afterCheck(History history, BControl control) {
 	}
 
 }

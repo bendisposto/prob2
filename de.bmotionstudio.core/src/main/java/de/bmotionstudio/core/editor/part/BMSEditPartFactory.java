@@ -35,7 +35,7 @@ public class BMSEditPartFactory implements EditPartFactory {
 
 		if (part != null)
 			part.setModel(control);
-
+		
 		// TODO: check if part == null
 		return part;
 

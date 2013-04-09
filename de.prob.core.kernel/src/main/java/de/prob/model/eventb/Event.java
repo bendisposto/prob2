@@ -47,6 +47,10 @@ public class Event extends BEvent {
 
 	@Override
 	public String toString() {
+		return getName();
+	}
+	
+	public String print() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Name: " + getName() + "\n");
 		sb.append("Type: " + type.toString() + "\n");

@@ -18,30 +18,46 @@ var yAxis = d3.svg.axis()
                     .scale(yScale)
                     .orient("left").ticks(2);
                     
+  
+
+var line = d3.svg.line().x(function(d){return xScale(d.t)}) .y(function(d){ return yScale(d.value) });
+
 svg.append("g")
         .attr("class", "axis")
         .attr("transform", "translate("+0+"," + (h - 2*padding) + ")")
-        .call(xAxis); 
+        .call(xAxis)
+    .append("text")
+        .attr("class", "label")
+        .attr("x", w)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text("Number of Animation Steps");
    
 svg.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(" + 3*padding + ",0)")
-        .call(yAxis);     
+        .call(yAxis);   
 
-var line = d3.svg.line().x(function(d){return xScale(d.t)}) .y(function(d){ return yScale(d.value) });
-
-svg.append("path").attr("d", line(dataset)).attr("class","connection");
+svg.append("path")
+        .attr("d", line(dataset))
+        .attr("class","connection");
 
  svg.selectAll("circle").data(dataset).enter()
    .append("circle")
+   .attr("class","point")
    .attr("r",2)
    .attr("cx",function(d) { return xScale(d.t);  })
    .attr("cy",function(d) { return yScale(d.value);});
   
+	
 }
 
 
 function displayFormula() {
+    svg.selectAll(".axis").remove();
+    svg.selectAll(".connection").remove();
+    svg.selectAll(".point").remove();
+
     var line = $("#formula")[0].value;
 	$.getJSON("formula", {
 		formula : line

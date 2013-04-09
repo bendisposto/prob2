@@ -21,17 +21,17 @@ repositories {
     maven {
       name "cobra"
       url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-    } 
+    }
     maven {
     	name "spock snapshot"
     	url "http://oss.sonatype.org/content/repositories/snapshots/"
-    } 
-	
+    }
+
 	maven {
 		name "jira client"
 		url "https://m2proxy.atlassian.com/repository/public"
 	}
-	
+
 	maven{
 		name "jira java client"
 		url "https://maven.atlassian.com/content/groups/public"
@@ -64,7 +64,7 @@ def parser_version = '2.4.11-SNAPSHOT'
 
 dependencies {
 
-	groovy 'org.codehaus.groovy:groovy-all:2.0.5' 
+	groovy 'org.codehaus.groovy:groovy-all:2.0.5'
 
 	compile 'com.google.guava:guava:r09' // Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
@@ -78,10 +78,13 @@ dependencies {
 	compile 'org.slf4j:slf4j-api:1.6.1' // MIT
 	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
 	compile 'ch.qos.logback:logback-classic:0.9.29' // EPL
-	
-	compile 'jgrapht:jgrapht:0.8.3' // LGPL <---
-	compile 'jgraphx:jgraphx:1.10.1.0' // BSD
-	
+
+	compile 'net.sf.jung:jung-visualization:2.0.1'
+	compile 'net.sf.jung:jung-jai:2.0.1'
+	compile 'net.sf.jung:jung-graph-impl:2.0.1'
+	compile 'net.sf.jung:jung-api:2.0.1'
+	compile 'net.sf.jung:jung-algorithms:2.0.1'
+
 	//compile 'org.reflections:reflections:0.9.8' // do WTF you want license
 	//compile 'org.javassist:javassist:3.16.1-GA' // Apache
 	compile 'com.thoughtworks.xstream:xstream:1.4.3' // BSD
@@ -125,7 +128,7 @@ dependencies {
 	testCompile 'junit:junit:4.8.2'
 	compile 'org.mockito:mockito-core:1.8.5'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
-	
+
 }
 
 task createBuildConstants  {
@@ -254,7 +257,7 @@ task downloadCli << {
 			System.err.println("\n!!\tError: CLI download for linux only\n")
 		dir = getProBDirectory();
 		delete file(dir)
-	    new File(dir).mkdirs() 
+	    new File(dir).mkdirs()
 		targetdir = dir
 		targetzip = dir+"probcli_linux.zip"
 		url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_linux.zip"
@@ -275,9 +278,9 @@ task integrationtests(dependsOn: ['classes','downloadCli'], type:JavaExec){
 }
 
 eclipse {
-  project { 
+  project {
  	 name = 'de.prob.core.kernel'
-     natures   'org.eclipse.pde.PluginNature' 
+     natures   'org.eclipse.pde.PluginNature'
      buildCommand   'org.eclipse.pde.ManifestBuilder'
      buildCommand 'org.eclipse.pde.SchemaBuilder'
   }

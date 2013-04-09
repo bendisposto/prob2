@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jgrapht.graph.DirectedMultigraph;
-
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.AImplementationMachineParseUnit;
@@ -21,20 +19,22 @@ import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+
 public class DependencyWalker extends DepthFirstAdapter {
 
-	private final DirectedMultigraph<String, RefType> graph;
+	private final DirectedSparseMultigraph<String, RefType> graph;
 	private final String src;
 	private final Map<String, Start> map;
 	private final Set<ClassicalBMachine> machines;
 
 	public DependencyWalker(final String machine,
 			final Set<ClassicalBMachine> machines,
-			final DirectedMultigraph<String, RefType> graph,
+			final DirectedSparseMultigraph<String, RefType> graph2,
 			final Map<String, Start> map) {
 		src = machine;
 		this.machines = machines;
-		this.graph = graph;
+		this.graph = graph2;
 		this.map = map;
 	}
 
@@ -112,7 +112,7 @@ public class DependencyWalker extends DepthFirstAdapter {
 		final String name = newMachine.getName();
 		machines.add(newMachine);
 		graph.addVertex(name);
-		graph.addEdge(src, name, refType);
+		graph.addEdge(refType, src, name);
 	}
 
 	public Set<ClassicalBMachine> getMachines() {

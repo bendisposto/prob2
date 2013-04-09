@@ -1,5 +1,12 @@
 package de.prob.ui;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -24,6 +31,9 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final Main MAIN = INJECTOR.getInstance(Main.class);
 
+	private final Collection<Job> jobs = new ArrayList<Job>();
+	private final IJobChangeListener jobFinishedListener = new JobFinishedListener();
+
 	// IMAGES
 	public static final String IMG_FILTER = "IMG_FILTER";
 	public static final String IMG_FORWARD = "IMG_FORWARD";
@@ -33,6 +43,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final String IMG_DISABLED = "IMG_DISABLED";
 	public static final String IMG_TIMEOUT = "IMG_TIMEOUT";
 	public static final String IMG_ENABLED = "IMG_ENABLED";
+	public static final String IMG_SELECTED = "IMG_SELECTED";
 	public static final String IMG_DOUBLECLICK = "IMG_DOUBLECLICK";
 	public static final String OVERLAY = "OVERLAY";
 	public static final String CHANGE_STAR = "change_star";
@@ -99,6 +110,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void stop(final BundleContext context) throws Exception {
+		cancelAllJobs();
 		plugin = null;
 		super.stop(context);
 	}
@@ -131,6 +143,8 @@ public class Activator extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/timeout.png"));
 		reg.put(IMG_ENABLED,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled.png"));
+		reg.put(IMG_SELECTED,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/selected.png"));
 		reg.put(IMG_DOUBLECLICK,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/doubleclick.png"));
 		reg.put(OVERLAY,
@@ -144,7 +158,7 @@ public class Activator extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/probsplash.png"));
 		reg.put(IMG_LOADING,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/icon_loading.gif"));
-		
+
 		// JUnit Icons
 		reg.put(JUNIT_ERROR_OVR,
 				imageDescriptorFromPlugin(PLUGIN_ID,
@@ -184,5 +198,30 @@ public class Activator extends AbstractUIPlugin {
 						"icons/junit/obj16/exc_catch.gif"));
 
 	}
-	
+
+	private void cancelAllJobs() {
+		synchronized (jobs) {
+			for (final Job job : jobs) {
+				job.cancel();
+			}
+		}
+	}
+
+	public void registerJob(final Job job) {
+		synchronized (jobs) {
+			jobs.add(job);
+			job.addJobChangeListener(jobFinishedListener);
+		}
+	}
+
+	private class JobFinishedListener extends JobChangeAdapter {
+		@Override
+		public void done(final IJobChangeEvent event) {
+			super.done(event);
+			synchronized (jobs) {
+				jobs.remove(event.getJob());
+			}
+		}
+	}
+
 }

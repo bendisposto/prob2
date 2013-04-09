@@ -1,14 +1,14 @@
 /**
  * 
  */
-package de.prob.animator.command.notImplemented;
+package de.prob.animator.command;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
-import de.prob.check.ModelCheckingResult;
+import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.exception.ProBError;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -27,33 +27,24 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedDeadlockCheckCommand.class);
 
-	public static enum ResultType {
-		DEADLOCK_FOUND, NO_DEADLOCK, ERROR, INTERRUPTED
-	};
-
 	private static final String COMMAND_NAME = "deadlock_freedom_check";
 	private static final String RESULT_VARIABLE = "R";
 
-	private final PrologTerm predicate;
-
-	private ModelCheckingResult result;
+	private ConstraintBasedCheckingResult result;
 	private String deadlockStateId;
 	private OpInfo deadlockOperation;
+	private final IEvalElement formula;
 
 	/**
 	 * @param predicate
 	 *            is a parsed predicate or <code>null</code>
 	 * 
 	 */
-	public ConstraintBasedDeadlockCheckCommand(final PrologTerm predicate) {
-		this.predicate = predicate;
+	public ConstraintBasedDeadlockCheckCommand(final IEvalElement formula) {
+		this.formula = formula;
 	}
 
-	public PrologTerm getPredicate() {
-		return predicate;
-	}
-
-	public ModelCheckingResult getResult() {
+	public ConstraintBasedCheckingResult getResult() {
 		return result;
 	}
 
@@ -68,8 +59,8 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(COMMAND_NAME);
-		if (predicate != null) {
-			predicate.toTermOutput(pto);
+		if (formula != null) {
+			formula.printProlog(pto);
 		}
 		pto.printVariable(RESULT_VARIABLE);
 		pto.closeTerm();
@@ -79,21 +70,21 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		final ModelCheckingResult result;
+		final ConstraintBasedCheckingResult result;
 		if (resultTerm.hasFunctor("no_deadlock_found", 0)) {
-			result = new ModelCheckingResult(ModelCheckingResult.Result.ok);
+			result = new ConstraintBasedCheckingResult(ConstraintBasedCheckingResult.Result.no_deadlock_found);
 		} else if (resultTerm.hasFunctor("errors", 1)) {
-			result = new ModelCheckingResult(
-					ModelCheckingResult.Result.general_error);
+			result = new ConstraintBasedCheckingResult(
+					ConstraintBasedCheckingResult.Result.errors);
 		} else if (resultTerm.hasFunctor("interrupted", 0)) {
-			result = new ModelCheckingResult(
-					ModelCheckingResult.Result.not_yet_finished);
+			result = new ConstraintBasedCheckingResult(
+					ConstraintBasedCheckingResult.Result.interrupted);
 		} else if (resultTerm.hasFunctor("deadlock", 2)) {
 
 			CompoundPrologTerm deadlockTerm = BindingGenerator.getCompoundTerm(
 					resultTerm, 2);
-			result = new ModelCheckingResult(
-					ModelCheckingResult.Result.deadlock);
+			result = new ConstraintBasedCheckingResult(
+					ConstraintBasedCheckingResult.Result.deadlock);
 
 			deadlockOperation = new OpInfo(BindingGenerator.getCompoundTerm(
 					deadlockTerm.getArgument(1), 8));

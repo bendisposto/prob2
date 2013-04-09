@@ -1,8 +1,13 @@
 package de.prob.statespace
 
+import de.prob.animator.domainobjects.CSP
 import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.EventB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.OpInfo
+import de.prob.model.classicalb.ClassicalBModel
+import de.prob.model.eventb.EventBModel
+import de.prob.scripting.CSPModel
 
 
 class StateId {
@@ -16,19 +21,32 @@ class StateId {
 		if (params == []) predicate = "TRUE = TRUE"
 		else predicate = params[0];
 		OpInfo op = space.opFromPredicate(this, method,predicate , 1)[0];
-		StateId newState = space.getEdgeTarget(op);
+		StateId newState = space.getDest(op);
 		space.explore(newState);
 		return newState;
 	}
 
-	
+
 	def value(String key) {
 		def v = space.valuesAt(this);
-		def e = v.find { it.getKey().code == key}
-	    return e.getValue().value;
+		for (def entry : v.entrySet()) {
+			if(entry.getKey().code == key) {
+				return entry.getValue().value
+			}
+		}
+		def m = space.getModel();
+		if(m instanceof ClassicalBModel) {
+			return space.eval(this, [key as ClassicalB]).get(0).value
+		}
+		if(m instanceof EventBModel) {
+			return space.eval(this, [key as EventB]).get(0).value
+		}
+		if(m instanceof CSPModel) {
+			return space.eval(this, [key as CSP]).get(0).value
+		}
 	}
-	
-	
+
+
 	def eval(formula) {
 		def f = formula;
 		if (!(formula instanceof IEvalElement)) {
@@ -61,7 +79,7 @@ class StateId {
 
 	def StateId anyOperation(filter) {
 		def ops = new ArrayList<OpInfo>()
-		ops.addAll(space.outgoingEdgesOf(this));
+		ops.addAll(space.getOutEdges(this));
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.name.matches(filter);
@@ -74,7 +92,7 @@ class StateId {
 		}
 		Collections.shuffle(ops)
 		def op = ops.get(0)
-		def ns = space.getEdgeTarget(op)
+		def ns = space.getDest(op)
 		space.explore(ns)
 		return ns;
 	}

@@ -27,9 +27,9 @@ public class StatisticsViewLabelProvider extends LabelProvider implements
 			if (element.equals("Calculated States")) {
 				return "" + currentS.getExplored().size();
 			} else if (element.equals("Total States")) {
-				return "" + currentS.vertexSet().size();
+				return "" + currentS.getVertices().size();
 			} else if (element.equals("Transitions")) {
-				return "" + currentS.edgeSet().size();
+				return "" + currentS.getEdges().size();
 			}
 		}
 		return "";

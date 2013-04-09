@@ -22,6 +22,8 @@ public interface IObserver {
 	 */
 	public void check(History history, BControl control);
 	
+	public void afterCheck(History history, BControl control);
+	
 	public String getName();
 	
 	public void setName(String name);

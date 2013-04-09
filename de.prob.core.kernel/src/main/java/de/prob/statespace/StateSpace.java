@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.jgrapht.alg.DijkstraShortestPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +17,7 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
+import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
@@ -32,6 +32,7 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
 import de.prob.scripting.CSPModel;
+import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 
 /**
  * 
@@ -62,6 +63,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private ICommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
+	private final HashSet<StateId> canBeEvaluated = new HashSet<StateId>();
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
@@ -115,6 +117,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		extractInformation(state, command);
 
 		explored.add(state);
+		if(command.isInitialised()) {
+			canBeEvaluated.add(state);
+		}
+
 		if (!state.getId().equals("root")) {
 			setLastCalculatedStateId(new BigInteger(state.getId()));
 		}
@@ -127,7 +133,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 				final StateId newState = new StateId(op.dest, this);
 				addVertex(newState);
 				states.put(newState.getId(), newState);
-				addEdge(states.get(op.src), states.get(op.dest), op);
+				addEdge(op, states.get(op.src), states.get(op.dest));
 			}
 		}
 		notifyStateSpaceChange();
@@ -187,7 +193,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @return explored target StateId for op
 	 */
 	public StateId getState(final OpInfo op) {
-		final StateId edgeTarget = getEdgeTarget(op);
+		final StateId edgeTarget = getDest(op);
 		if (!isExplored(edgeTarget)) {
 			explore(edgeTarget);
 		}
@@ -208,7 +214,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
-			throws BException {
+					throws BException {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
@@ -227,7 +233,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			}
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
-				addEdge(getVertex(op.src), vertex, op);
+				addEdge(op, getVertex(op.src), vertex);
 			}
 		}
 		notifyStateSpaceChange();
@@ -244,7 +250,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		if (!isExplored(state)) {
 			explore(state);
 		}
-		return outDegreeOf(state) == 0;
+		return outDegree(state) == 0;
 	}
 
 	/**
@@ -393,14 +399,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return new HashMap<IEvalElement, EvaluationResult>();
 	}
 
-	private boolean canBeEvaluated(final StateId stateId) {
-		for (OpInfo opInfo : outgoingEdgesOf(stateId)) {
-			if (opInfo.getName().equals("$setup_constants")
-					|| opInfo.getName().equals("$initialise_machine")) {
-				return false;
-			}
+	public boolean canBeEvaluated(final StateId stateId) {
+		if(canBeEvaluated.contains(stateId)) {
+			return true;
 		}
-		return true;
+		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(stateId.getId());
+		execute(cmd);
+		boolean result = cmd.getResult();
+		if(result) {
+			canBeEvaluated.add(stateId);
+		}
+		return result;
 	}
 
 	/**
@@ -536,7 +545,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public String printOps(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
-		final Collection<OpInfo> opIds = outgoingEdgesOf(state);
+		final Collection<OpInfo> opIds = getOutEdges(state);
 		Set<String> withTO = operationsWithTimeout.get(state);
 
 		sb.append("Operations: \n");
@@ -596,11 +605,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	public History getTrace(final String state) {
 		final StateId id = states.get(state);
 		StateId root = this.getRoot();
-		List<OpInfo> findPathBetween = DijkstraShortestPath.findPathBetween(
-				this.getGraph(), root, id);
-		DijkstraShortestPath<StateId, OpInfo> dijkstraShortestPath = new DijkstraShortestPath<StateId, OpInfo>(
-				this.getGraph(), root, id);
-		final List<OpInfo> path = dijkstraShortestPath.getPathEdgeList();
+
+		DijkstraShortestPath<StateId, OpInfo> dijkstra = new DijkstraShortestPath<StateId, OpInfo>(
+				this.getGraph());
+		List<OpInfo> path = dijkstra.getPath(root, id);
 		History h = new History(this);
 		for (final OpInfo opInfo : path) {
 			h = h.add(opInfo.getId());
@@ -713,12 +721,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	@Override
-	public Set<OpInfo> outgoingEdgesOf(final StateId arg0) {
-		Set<OpInfo> outgoingEdgesOf = super.outgoingEdgesOf(arg0);
+	public Set<OpInfo> getOutEdges(final StateId arg0) {
+		Collection<OpInfo> outgoingEdgesOf = super.getOutEdges(arg0);
 		for (OpInfo opInfo : outgoingEdgesOf) {
 			opInfo.ensureEvaluated(this);
 		}
-		return outgoingEdgesOf;
+		return new HashSet<OpInfo>(outgoingEdgesOf);
 	}
 
 	public BigInteger getLastCalculatedStateId() {
