@@ -66,6 +66,9 @@ public class LoadCommand extends AbstractShellCommand {
 		if (extension.equals(".csp")) {
 			command = name + " = api.csp_load('" + filename + "')";
 		}
+		if (extension.equals(".eventb")) {
+			command = name = " = api.eb_load('" + filename + "')";
+		}
 		if (command != "") {
 			exec.evaluate(command);
 			Object model = exec.getBindings().getVariable(name);
