@@ -17,6 +17,7 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
+import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
@@ -62,6 +63,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private ICommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
+	private final HashSet<StateId> canBeEvaluated = new HashSet<StateId>();
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
@@ -115,6 +117,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		extractInformation(state, command);
 
 		explored.add(state);
+		if(command.isInitialised()) {
+			canBeEvaluated.add(state);
+		}
+
 		if (!state.getId().equals("root")) {
 			setLastCalculatedStateId(new BigInteger(state.getId()));
 		}
@@ -208,7 +214,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
-			throws BException {
+					throws BException {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
@@ -393,14 +399,17 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return new HashMap<IEvalElement, EvaluationResult>();
 	}
 
-	private boolean canBeEvaluated(final StateId stateId) {
-		for (OpInfo opInfo : getOutEdges(stateId)) {
-			if (opInfo.getName().equals("$setup_constants")
-					|| opInfo.getName().equals("$initialise_machine")) {
-				return false;
-			}
+	public boolean canBeEvaluated(final StateId stateId) {
+		if(canBeEvaluated.contains(stateId)) {
+			return true;
 		}
-		return true;
+		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(stateId.getId());
+		execute(cmd);
+		boolean result = cmd.getResult();
+		if(result) {
+			canBeEvaluated.add(stateId);
+		}
+		return result;
 	}
 
 	/**
