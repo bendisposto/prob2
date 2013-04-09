@@ -38,10 +38,13 @@ svg.append("g")
         .attr("transform", "translate(" + 3*padding + ",0)")
         .call(yAxis);   
 
-svg.append("path").attr("d", line(dataset)).attr("class","connection");
+svg.append("path")
+        .attr("d", line(dataset))
+        .attr("class","connection");
 
  svg.selectAll("circle").data(dataset).enter()
    .append("circle")
+   .attr("class","point")
    .attr("r",2)
    .attr("cx",function(d) { return xScale(d.t);  })
    .attr("cy",function(d) { return yScale(d.value);});
@@ -51,6 +54,10 @@ svg.append("path").attr("d", line(dataset)).attr("class","connection");
 
 
 function displayFormula() {
+    svg.selectAll(".axis").remove();
+    svg.selectAll(".connection").remove();
+    svg.selectAll(".point").remove();
+
     var line = $("#formula")[0].value;
 	$.getJSON("formula", {
 		formula : line
