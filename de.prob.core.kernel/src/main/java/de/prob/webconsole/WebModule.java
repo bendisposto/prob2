@@ -14,6 +14,15 @@ import de.prob.webconsole.servlets.PredicateServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
 import de.prob.webconsole.servlets.StateSpaceServlet;
 import de.prob.webconsole.servlets.VersionServlet;
+import de.prob.worksheet.servlets.CloseDocument;
+import de.prob.worksheet.servlets.LoadDocument;
+import de.prob.worksheet.servlets.NewBlock;
+import de.prob.worksheet.servlets.NewDocument;
+import de.prob.worksheet.servlets.SaveDocument;
+import de.prob.worksheet.servlets.eval.Evaluate;
+import de.prob.worksheet.servlets.eval.SwitchBlock;
+import de.prob.worksheet.servlets.sync.GetBlock;
+import de.prob.worksheet.servlets.sync.SetBlock;
 
 public class WebModule extends ServletModule {
 
@@ -28,8 +37,26 @@ public class WebModule extends ServletModule {
 		serve("/versions*").with(VersionServlet.class);
 		serve("/scrollback*").with(ScrollbackServlet.class);
 		serve("/formula*").with(FormulaOverHistoryServlet.class);
+		
+	
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
 		serve("/predicate_exp*").with(PredicateServlet.class);
+
+
+		//Worksheet servlets
+		serve("/saveDocument*").with(SaveDocument.class);
+		serve("/newDocument*").with(NewDocument.class);
+		serve("/loadDocument*").with(LoadDocument.class);
+		serve("/closeDocument*").with(CloseDocument.class);
+		serve("/newBlock*").with(NewBlock.class);
+		serve("/worksheetEvaluate*").with(Evaluate.class);
+		serve("/setBlock*").with(SetBlock.class);
+		
+		//unused
+		serve("/switchBlock*").with(SwitchBlock.class);
+		serve("/getBlock*").with(GetBlock.class);
+
+
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);
 		bind(ProBTestRunner.class);

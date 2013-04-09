@@ -1,0 +1,8 @@
+.ui-editor .ui-editor-border{
+	border: 1px;
+	border-top:none;
+	border-color:#eee;
+}
+.ui-editor-padding{
+	padding:6px;
+}

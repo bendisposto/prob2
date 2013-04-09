@@ -55,7 +55,6 @@ public class EventB implements IEvalElement {
 
 		if (!parseResult.hasProblem()) {
 			ast = preparePredicateAst(parseResult);
-
 		} else {
 			kind = EXPRESSION.toString();
 			parseResult = FormulaFactory.getDefault().parseExpression(unicode,
@@ -102,7 +101,7 @@ public class EventB implements IEvalElement {
 	@Override
 	public boolean equals(final Object that) {
 		if (that instanceof EventB) {
-			return ((EventB) that).getCode().equals(this.getCode());
+			return ((EventB) that).getCode().equals(getCode());
 		}
 		return false;
 	}
@@ -128,4 +127,13 @@ public class EventB implements IEvalElement {
 		return getCode();
 	}
 
+	public Node getAst() {
+		if (ast == null) {
+			ensureParsed();
+		}
+
+		assert ast != null;
+
+		return ast;
+	}
 }
