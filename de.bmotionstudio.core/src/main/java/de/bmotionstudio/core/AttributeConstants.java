@@ -15,6 +15,9 @@ public final class AttributeConstants {
 	public static final String ATTRIBUTE_CUSTOM = "de.bmotionstudio.core.model.attribute.BAttributeCustom";
 	public static final String ATTRIBUTE_ID = "de.bmotionstudio.core.model.attribute.BAttributeID";
 	public static final String ATTRIBUTE_VISIBLE = "de.bmotionstudio.core.model.attribute.BAttributeVisible";
+	
+	public static final String ATTRIBUTE_SOURCE_CONNECTIONS = "de.bmotionstudio.core.model.attribute.AttributeSourceConnections";
+	public static final String ATTRIBUTE_TARGET_CONNECTIONS = "de.bmotionstudio.core.model.attribute.AttributeTargetConnections";
 
 	public static final String ATTRIBUTE_COLUMNS = "de.bmotionstudio.core.model.attribute.BAttributeColumns";
 	public static final String ATTRIBUTE_ROWS = "de.bmotionstudio.core.model.attribute.BAttributeRows";

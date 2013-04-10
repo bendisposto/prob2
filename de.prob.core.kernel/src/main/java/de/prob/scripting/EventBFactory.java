@@ -6,10 +6,15 @@ import java.util.Collection;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import de.prob.animator.command.LoadEventBCommand;
+import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.serialize.ModelObject;
+import de.prob.model.serialize.Serializer;
+import de.prob.statespace.StateSpace;
 
 public class EventBFactory {
 
@@ -25,12 +30,34 @@ public class EventBFactory {
 			final Collection<Context> contexts, final File modelFile) {
 		EventBModel model = modelProvider.get();
 
+		setModelInformation(mainComponent, machines, contexts, modelFile, model);
+
+		return model;
+	}
+
+	private void setModelInformation(final AbstractElement mainComponent,
+			final Collection<EventBMachine> machines,
+			final Collection<Context> contexts, final File modelFile,
+			final EventBModel model) {
 		model.setMainComponent(mainComponent);
 		model.addMachines(machines);
 		model.addContexts(contexts);
 		model.setModelFile(modelFile);
 
 		model.isFinished();
+	}
+
+	public EventBModel load(final String cmd, final String coded) {
+		EventBModel model = modelProvider.get();
+
+		ModelObject mo = Serializer.deserialize(coded);
+
+		setModelInformation(mo.getMainComponent(), mo.getMachines(),
+				mo.getContexts(), mo.getModelFile(), model);
+
+		StateSpace s = model.getStatespace();
+		s.execute(new LoadEventBCommand(cmd));
+		s.execute(new StartAnimationCommand());
 
 		return model;
 	}

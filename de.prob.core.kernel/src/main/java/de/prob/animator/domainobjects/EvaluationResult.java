@@ -90,6 +90,10 @@ public class EvaluationResult {
 		}
 		return result;
 	}
+	
+	public String getStateId() {
+		return stateid;
+	}
 
 	public String getStateid() {
 		return stateid;

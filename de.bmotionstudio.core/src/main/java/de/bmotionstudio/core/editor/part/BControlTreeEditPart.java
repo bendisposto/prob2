@@ -60,22 +60,22 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 				if (BMotionEditorPlugin.getControlServicesClass()
 						.get(control.getClass()).showInOutlineView())
 					toShowElements.add(control);
-				List<BConnection> sourceConnections = control
-						.getSourceConnections();
-				for (BConnection con : sourceConnections) {
-					if (BMotionEditorPlugin.getControlServicesClass()
-							.get(con.getClass()).showInOutlineView()
-							&& !toShowElements.contains(con))
-						toShowElements.add(con);
-				}
-				List<BConnection> targetConnections = control
-						.getTargetConnections();
-				for (BConnection con : targetConnections) {
-					if (BMotionEditorPlugin.getControlServicesClass()
-							.get(con.getClass()).showInOutlineView()
-							&& !toShowElements.contains(con))
-						toShowElements.add(con);
-				}
+//				List<BConnection> sourceConnections = control
+//						.getSourceConnections();
+//				for (BConnection con : sourceConnections) {
+//					if (BMotionEditorPlugin.getControlServicesClass()
+//							.get(con.getClass()).showInOutlineView()
+//							&& !toShowElements.contains(con))
+//						toShowElements.add(con);
+//				}
+//				List<BConnection> targetConnections = control
+//						.getTargetConnections();
+//				for (BConnection con : targetConnections) {
+//					if (BMotionEditorPlugin.getControlServicesClass()
+//							.get(con.getClass()).showInOutlineView()
+//							&& !toShowElements.contains(con))
+//						toShowElements.add(con);
+//				}
 			}
 
 		}

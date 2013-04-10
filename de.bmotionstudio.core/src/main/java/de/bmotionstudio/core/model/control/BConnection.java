@@ -19,47 +19,40 @@ import de.bmotionstudio.core.model.attribute.BAttributeLineWidth;
 
 public class BConnection extends BControl {
 
-	/** True, if the connection is attached to its endpoints. */
 	protected boolean isConnected;
-	/** Connection's source endpoint. */
-	protected BControl source;
-	/** Connection's target endpoint. */
-	protected BControl target;
+
+	protected String source;
+
+	protected String target;
 
 	/**
 	 * Disconnect this connection from the shapes it is attached to.
 	 */
 	public void disconnect() {
 		if (isConnected) {
-			source.removeConnection(this);
-			target.removeConnection(this);
+			BControl sourceControl = getVisualization().getBControl(source);
+			BControl targetControl = getVisualization().getBControl(target);
+			if(sourceControl != null)
+				sourceControl.removeConnection(this);
+			if(targetControl != null)
+				targetControl.removeConnection(this);
 			isConnected = false;
 		}
 	}
 
-	/**
-	 * Returns the source endpoint of this connection.
-	 * 
-	 * @return a non-null Shape instance
-	 */
-	public BControl getSource() {
+	public String getSource() {
 		return source;
 	}
 
-	/**
-	 * Returns the target endpoint of this connection.
-	 * 
-	 * @return a non-null Shape instance
-	 */
-	public BControl getTarget() {
+	public String getTarget() {
 		return target;
 	}
 
-	public void setTarget(BControl c) {
+	public void setTarget(String c) {
 		this.target = c;
 	}
 
-	public void setSource(BControl c) {
+	public void setSource(String c) {
 		this.source = c;
 	}
 
@@ -69,8 +62,10 @@ public class BConnection extends BControl {
 	 */
 	public void reconnect() {
 		if (!isConnected) {
-			source.addConnection(this);
-			target.addConnection(this);
+			BControl sourceControl = getVisualization().getBControl(source);
+			BControl targetControl = getVisualization().getBControl(target);
+			sourceControl.addConnection(this);
+			targetControl.addConnection(this);
 			isConnected = true;
 		}
 	}
@@ -87,7 +82,7 @@ public class BConnection extends BControl {
 	 * @throws IllegalArgumentException
 	 *             if any of the paramers are null or newSource == newTarget
 	 */
-	public void reconnect(BControl newSource, BControl newTarget) {
+	public void reconnect(String newSource, String newTarget) {
 		if (newSource == null || newTarget == null || newSource == newTarget) {
 			throw new IllegalArgumentException();
 		}

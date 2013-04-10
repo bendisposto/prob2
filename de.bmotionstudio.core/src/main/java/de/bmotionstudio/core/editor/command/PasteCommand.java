@@ -61,75 +61,75 @@ public class PasteCommand extends Command {
 	@Override
 	public void execute() {
 
-		if (!canExecute())
-			return;
-
-		try {
-
-			for (BControl parent : parentControls) {
-
-				// Copy/Paste controls
-				Iterator<BControl> it = mappingControl.keySet().iterator();
-				while (it.hasNext()) {
-					BControl control = (BControl) it.next();
-					control.setParent(parent);
-					BControl clone = (BControl) control.clone();
-					clone.setParent(parent);
-					int x = Integer.valueOf(Integer.valueOf(clone
-							.getAttributeValue(AttributeConstants.ATTRIBUTE_X)
-							.toString()));
-					int y = Integer.valueOf(Integer.valueOf(clone
-							.getAttributeValue(AttributeConstants.ATTRIBUTE_Y)
-							.toString()));
-					clone.setAttributeValue(AttributeConstants.ATTRIBUTE_X, x
-							+ cHelper.getDistance());
-					clone.setAttributeValue(AttributeConstants.ATTRIBUTE_Y, y
-							+ cHelper.getDistance());
-					mappingControl.put(control, clone);
-					cHelper.setDistance(cHelper.getDistance() + 10);
-				}
-				
-				// Copy/Paste connections
-				HashMap<BControl, BControl> helpMap = new HashMap<BControl, BControl>();
-				helpMap.putAll(cHelper.getAlreadyClonedMap());
-				helpMap.putAll(mappingControl);
-				Iterator<BControl> it2 = helpMap.keySet().iterator();
-				while (it2.hasNext()) {
-					BControl control = it2.next();
-					// Clone connections
-					for (BConnection c : control.getSourceConnections())
-						copyPasteConnection(c, helpMap);
-					for (BConnection c : control.getTargetConnections())
-						copyPasteConnection(c, helpMap);
-				}
-
-				redo();
-
-			}
-
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
+//		if (!canExecute())
+//			return;
+//
+//		try {
+//
+//			for (BControl parent : parentControls) {
+//
+//				// Copy/Paste controls
+//				Iterator<BControl> it = mappingControl.keySet().iterator();
+//				while (it.hasNext()) {
+//					BControl control = (BControl) it.next();
+//					control.setParent(parent);
+//					BControl clone = (BControl) control.clone();
+//					clone.setParent(parent);
+//					int x = Integer.valueOf(Integer.valueOf(clone
+//							.getAttributeValue(AttributeConstants.ATTRIBUTE_X)
+//							.toString()));
+//					int y = Integer.valueOf(Integer.valueOf(clone
+//							.getAttributeValue(AttributeConstants.ATTRIBUTE_Y)
+//							.toString()));
+//					clone.setAttributeValue(AttributeConstants.ATTRIBUTE_X, x
+//							+ cHelper.getDistance());
+//					clone.setAttributeValue(AttributeConstants.ATTRIBUTE_Y, y
+//							+ cHelper.getDistance());
+//					mappingControl.put(control, clone);
+//					cHelper.setDistance(cHelper.getDistance() + 10);
+//				}
+//				
+//				// Copy/Paste connections
+//				HashMap<BControl, BControl> helpMap = new HashMap<BControl, BControl>();
+//				helpMap.putAll(cHelper.getAlreadyClonedMap());
+//				helpMap.putAll(mappingControl);
+//				Iterator<BControl> it2 = helpMap.keySet().iterator();
+//				while (it2.hasNext()) {
+//					BControl control = it2.next();
+//					// Clone connections
+//					for (BConnection c : control.getSourceConnections())
+//						copyPasteConnection(c, helpMap);
+//					for (BConnection c : control.getTargetConnections())
+//						copyPasteConnection(c, helpMap);
+//				}
+//
+//				redo();
+//
+//			}
+//
+//		} catch (CloneNotSupportedException e) {
+//			e.printStackTrace();
+//		}
 
 	}
 
 	private void copyPasteConnection(BConnection c,
 			HashMap<BControl, BControl> controlMap)
 			throws CloneNotSupportedException {
-		BConnection newConnection = mappingConnection.get(c);
-		if (newConnection == null) {
-			newConnection = (BConnection) c.clone();
-			newConnection.disconnect();
-			mappingConnection.put(c, newConnection);
-		}
-		BControl t = controlMap.get(newConnection.getTarget());
-		if (t == null)
-			t = newConnection.getTarget();
-		BControl s = controlMap.get(newConnection.getSource());
-		if (s == null)
-			s = newConnection.getSource();
-		newConnection.setTarget(t);
-		newConnection.setSource(s);
+//		BConnection newConnection = mappingConnection.get(c);
+//		if (newConnection == null) {
+//			newConnection = (BConnection) c.clone();
+//			newConnection.disconnect();
+//			mappingConnection.put(c, newConnection);
+//		}
+//		BControl t = controlMap.get(newConnection.getTarget());
+//		if (t == null)
+//			t = newConnection.getTarget();
+//		BControl s = controlMap.get(newConnection.getSource());
+//		if (s == null)
+//			s = newConnection.getSource();
+//		newConnection.setTarget(t);
+//		newConnection.setSource(s);
 	}
 
 	@Override

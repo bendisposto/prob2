@@ -148,6 +148,24 @@
                     value="statespace.html">
               </parameter>
            </command>
+           <command
+                 commandId="de.prob.ui.openViz"
+                 label="Open Value Over Time Visualization"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.viz.name"
+                    value="oszilloscope.html">
+              </parameter>
+           </command>
+           <command
+                 commandId="de.prob.ui.openViz"
+                 label="Open Predicate Visualization"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.viz.name"
+                    value="predicate.html">
+              </parameter>
+           </command>
         </menuContribution>
         <menuContribution
               allPopups="false"

@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+
+
+eclipse {
+  project {
+	  name = 'de.prob.ui'
+	 natures   'org.eclipse.pde.PluginNature'
+	 buildCommand   'org.eclipse.pde.ManifestBuilder'
+	 buildCommand 'org.eclipse.pde.SchemaBuilder'
+  }
+  
+  classpath {
+	  file {
+		  whenMerged { classpath ->
+			  classpath.entries += new org.gradle.plugins.ide.eclipse.model.Container("org.eclipse.pde.core.requiredPlugins");
+		  }
+		}
+  }
+  
+}
+
+
+
+
+

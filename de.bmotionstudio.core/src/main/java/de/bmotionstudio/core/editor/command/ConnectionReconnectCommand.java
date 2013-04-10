@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2004, 2005 Elias Volanakis and others.
-�* All rights reserved. This program and the accompanying materials
-�* are made available under the terms of the Eclipse Public License v1.0
-�* which accompanies this distribution, and is available at
-�* http://www.eclipse.org/legal/epl-v10.html
-�*
-�* Contributors:
-�*����Elias Volanakis - initial API and implementation
-�*******************************************************************************/
 package de.bmotionstudio.core.editor.command;
 
 import java.util.Iterator;
@@ -17,34 +7,6 @@ import org.eclipse.gef.commands.Command;
 import de.bmotionstudio.core.model.control.BConnection;
 import de.bmotionstudio.core.model.control.BControl;
 
-/**
- * A command to reconnect a connection to a different start point or end point.
- * The command can be undone or redone.
- * <p>
- * This command is designed to be used together with a GraphicalNodeEditPolicy.
- * To use this command propertly, following steps are necessary:
- * </p>
- * <ol>
- * <li>Create a subclass of GraphicalNodeEditPolicy.</li>
- * <li>Override the <tt>getReconnectSourceCommand(...)</tt> method. Here you
- * need to obtain the Connection model element from the ReconnectRequest, create
- * a new ConnectionReconnectCommand, set the new connection <i>source</i> by
- * calling the <tt>setNewSource(Shape)</tt> method and return the command
- * instance.
- * <li>Override the <tt>getReconnectTargetCommand(...)</tt> method.</li>
- * Here again you need to obtain the Connection model element from the
- * ReconnectRequest, create a new ConnectionReconnectCommand, set the new
- * connection <i>target</i> by calling the <tt>setNewTarget(Shape)</tt> method
- * and return the command instance.</li>
- * </ol>
- * 
- * @see org.eclipse.gef.examples.shapes.parts.ShapeEditPart#createEditPolicies()
- *      for an example of the above procedure.
- * @see org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy
- * @see #setNewSource(Shape)
- * @see #setNewTarget(Shape)
- * @author Elias Volanakis
- */
 public class ConnectionReconnectCommand extends Command {
 
 	/** The connection instance to reconnect. */
@@ -82,8 +44,8 @@ public class ConnectionReconnectCommand extends Command {
 			return false;
 		}
 		// return false, if the connection exists already
-		for (Iterator<BConnection> iter = newSource.getSourceConnections()
-				.iterator(); iter.hasNext();) {
+		for (Iterator<BConnection> iter = newSource
+				.getSourceConnectionInstances().iterator(); iter.hasNext();) {
 			BConnection conn = (BConnection) iter.next();
 			// return false if a newSource -> oldTarget connection exists
 			// already
@@ -105,7 +67,7 @@ public class ConnectionReconnectCommand extends Command {
 			return false;
 		}
 		// return false, if the connection exists already
-		for (Iterator<BConnection> iter = newTarget.getTargetConnections()
+		for (Iterator<BConnection> iter = newTarget.getTargetConnectionInstances()
 				.iterator(); iter.hasNext();) {
 			BConnection conn = (BConnection) iter.next();
 			// return false if a oldSource -> newTarget connection exists
@@ -124,9 +86,9 @@ public class ConnectionReconnectCommand extends Command {
 	 */
 	public void execute() {
 		if (newSource != null) {
-			connection.reconnect(newSource, oldTarget);
+			connection.reconnect(newSource.getID(), oldTarget.getID());
 		} else if (newTarget != null) {
-			connection.reconnect(oldSource, newTarget);
+			connection.reconnect(oldSource.getID(), newTarget.getID());
 		} else {
 			throw new IllegalStateException("Should not happen");
 		}
@@ -192,13 +154,17 @@ public class ConnectionReconnectCommand extends Command {
 	 * Reconnect the connection to its original source and target endpoints.
 	 */
 	public void undo() {
-		connection.reconnect(oldSource, oldTarget);
+		connection.reconnect(oldSource.getID(), oldTarget.getID());
 	}
 
 	public void setConnection(BConnection conn) {
 		this.connection = conn;
-		this.oldSource = conn.getSource();
-		this.oldTarget = conn.getTarget();
+		BControl sourceControl = conn.getVisualization().getBControl(
+				conn.getSource());
+		BControl targetControl = conn.getVisualization().getBControl(
+				conn.getTarget());
+		this.oldSource = sourceControl;
+		this.oldTarget = targetControl;
 	}
 
 	public BConnection getConnection() {

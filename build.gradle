@@ -6,7 +6,7 @@ project.ext {
 
 	excludeFromTychoBuild = ["de.prob.core.kernel"]
 	excludeFromClassPath = [ 'de.prob.core.rodin','de.prob.ui.rodin', 'de.prob2.feature' ]		// Projects defined here will also be exluded from changes of MF File
-	excludeManifestClassPathDelete = ['de.bmotionstudio.core', 'de.bmotionstudio.rodin']		// Projects defined here will still have classpath changes but no changes in the MF File
+	excludeManifestClassPathDelete = ['de.bmotionstudio.core', 'de.bmotionstudio.rodin','de.prob.ui.worksheet']		// Projects defined here will still have classpath changes but no changes in the MF File
 }
 
 apply from: 'tycho_build.gradle'
@@ -80,6 +80,14 @@ project(':de.prob.core.rodin'){
 		def oldbMotion = new File( workspacePath + "de.bmotionstudio.core/META-INF/MANIFEST.MF" )
 		oldbMotion.delete()
 		UiMF.renameTo( workspacePath + "de.bmotionstudio.core/META-INF/MANIFEST.MF")
+		
+	    // same for prob.ui.worksheet
+	    def oldUiWorkSheetMF = new File( workspacePath + "de.prob.ui.worksheet/META-INF/MANIFEST.MF" ).getText("UTF-8")
+	    UiMF = new File( workspacePath + "de.prob.ui.worksheet/META-INF/MF" )
+	    oldUiWorkSheetMF.eachLine( deleteKernel )
+	    def oldUiWorkSheet = new File( workspacePath + "de.prob.ui.worksheet/META-INF/MANIFEST.MF" )
+	    oldUiWorkSheet.delete()
+	    UiMF.renameTo( workspacePath + "de.prob.ui.worksheet/META-INF/MANIFEST.MF")
 				
 	}
 	

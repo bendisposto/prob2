@@ -1,0 +1,49 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+eclipse{
+	project{
+		natures 'org.eclipse.pde.PluginNature' , 'org.eclipse.jdt.core.javanature'
+		buildCommand 'org.eclipse.jdt.core.javabuilder'
+		buildCommand 'org.eclipse.pde.ManifestBuilder'
+		buildCommand 'org.eclipse.pde.SchemaBuilder'
+	}
+	jdt{
+		sourceCompatibility = 1.6
+		targetCompatibility = 1.6
+	}
+	classpath{ containers 'org.eclipse.pde.core.requiredPlugins' }
+}
+
+jar{
+	manifest {
+		attributes(
+				"Manifest-Version": 1.0,
+				"Bundle-ManifestVersion": 2,
+				"Bundle-Name": "WorksheetEditor",
+				"Bundle-SymbolicName": "de.prob.ui.worksheet; singleton:=true",
+				"Bundle-Version": "1.0.0.qualifier",
+				"Bundle-Activator": "de.prob.ui.worksheet.Activator",
+				"Require-Bundle": "org.eclipse.core.runtime, org.eclipse.ui,org.eventb.core;bundle-version=\"2.5.1\",org.rodinp;bundle-version=\"[1.3.1,1.7.0)\",org.eventb.emf.persistence;bundle-version=\"2.4.0\",de.prob.core.rodin;bundle-version=\"1.0.0\",org.eclipse.ui.ide;bundle-version=\"3.7.0\",org.eclipse.core.filesystem;bundle-version=\"1.3.100\",org.eclipse.ui.editors",
+				"Bundle-ActivationPolicy": "lazy",
+				"Bundle-RequiredExecutionEnvironment": "JavaSE-1.6",
+				"Bundle-ClassPath":".")
+	}
+}
+
+repositories {
+	maven {
+		name "cobra"
+		url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
+	}
+	maven {
+		name "spock snapshot"
+		url "http://oss.sonatype.org/content/repositories/snapshots/"
+	}
+}
+
+dependencies{
+	compile project(':de.prob.core.kernel'){
+		transitive = true
+	}
+}

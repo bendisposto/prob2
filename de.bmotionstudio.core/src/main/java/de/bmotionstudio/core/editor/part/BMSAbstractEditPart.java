@@ -238,7 +238,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	 * ()
 	 */
 	protected List<?> getModelSourceConnections() {
-		return getCastedModel().getSourceConnections();
+		return getCastedModel().getSourceConnectionInstances();
 	}
 
 	/*
@@ -249,7 +249,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	 * ()
 	 */
 	protected List<?> getModelTargetConnections() {
-		return getCastedModel().getTargetConnections();
+		return getCastedModel().getTargetConnectionInstances();
 	}
 
 	/*

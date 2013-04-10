@@ -114,4 +114,13 @@ public class EventB extends AbstractEvalElement {
 		return getCode();
 	}
 
+	public Node getAst() {
+		if (ast == null) {
+			ensureParsed();
+		}
+
+		assert ast != null;
+
+		return ast;
+	}
 }

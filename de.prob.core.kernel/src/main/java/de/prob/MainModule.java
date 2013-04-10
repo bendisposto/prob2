@@ -33,6 +33,7 @@ import de.prob.scripting.Api;
 import de.prob.scripting.Downloader;
 import de.prob.statespace.ModelModule;
 import de.prob.webconsole.WebModule;
+import de.prob.worksheet.WorksheetModule;
 
 public class MainModule extends AbstractModule {
 
@@ -50,6 +51,8 @@ public class MainModule extends AbstractModule {
 		install(new AnimatorModule());
 		install(new ModelModule());
 		install(new WebModule());
+		install(new WorksheetModule());
+		
 		bind(Api.class);
 		bind(CommandLineParser.class).to(PosixParser.class);
 

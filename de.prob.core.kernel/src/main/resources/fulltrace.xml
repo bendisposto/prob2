@@ -1,11 +1,34 @@
 <included>
-<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+
+<appender  name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 	<encoder>
 		<pattern>%d %-4relative [%thread] %-5level %logger{35} Method: %method Line: %line - %msg%n%ex{full}</pattern>
 	</encoder>
 </appender>
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>Worksheet.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>Worksheet.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
 
-<root level="trace">
+		<encoder>
+			<pattern>%d %-4relative [%thread] %-5level %logger{35} Method: %method Line: %line - %msg%n%ex{full}</pattern>
+		</encoder>
+	</appender>
+
+<logger name="de.prob" level="WARN" />
+<logger name="de.prob.worksheet" level="WARN" />
+<logger name="de.prob.worksheet.evaluator" level="TRACE" />
+
+<logger name="de.prob.ui.worksheet" level="WARN" />
+
+
+<root level="WARN">
 	<appender-ref ref="STDOUT" />
+	<appender-ref ref="FILE" />
 </root>
 </included>

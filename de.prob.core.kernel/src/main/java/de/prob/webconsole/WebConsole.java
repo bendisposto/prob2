@@ -21,17 +21,19 @@ import org.slf4j.LoggerFactory;
  */
 public class WebConsole {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WebConsole.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(WebConsole.class);
 	private static int PORT;
 
 	public static void run() throws Exception {
-		run(new Runnable() {
+		WebConsole.run(new Runnable() {
 
 			@Override
 			public void run() {
 				try {
 					Desktop.getDesktop().browse(
-							new URI("http://localhost:" + PORT));
+							new URI("http://localhost:" + WebConsole.PORT
+									+ "/console"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (URISyntaxException e) {
@@ -45,25 +47,54 @@ public class WebConsole {
 
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
 
-		
 		Server server = new Server();
 
 		ProtectionDomain protectionDomain = WebConsole.class
 				.getProtectionDomain();
-		LOGGER.debug("Protection Domain: "+ protectionDomain.toString());
+		WebConsole.LOGGER.debug("Protection Domain: "
+				+ protectionDomain.toString());
 		String warFile = protectionDomain.getCodeSource().getLocation()
 				.toExternalForm();
-		LOGGER.debug("External Form: "+ warFile);
+		WebConsole.LOGGER.debug("External Form: " + warFile);
 
 		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/")))
 			warFile += "bin/";
 
+		// Creating a context handler collection
+		/*
+		 * ContextHandlerCollection contexts=new ContextHandlerCollection();
+		 * WebAppProvider wprv=new WebAppProvider(); wprv.setExtractWars(true);
+		 * DeploymentManager dmgr=new DeploymentManager();
+		 * Collection<AppProvider> prvs=new ArrayList<AppProvider>();
+		 * 
+		 * wprv.setMonitoredDirName(warFile+"webapps/");
+		 * wprv.setScanInterval(10); prvs.add(wprv); dmgr.setContexts(contexts);
+		 * dmgr.setAppProviders(prvs); server.addBean(dmgr);
+		 */
+
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
+		/*
+		WebAppContext worksheetContext = new WebAppContext(warFile
+				+ "webapps/worksheet.war", "/worksheet");
+		worksheetContext.setExtractWAR(true);
+		worksheetContext.setServer(server);
+		*/
+		server.setStopAtShutdown(true);
+		/*
+		 * MBeanContainer mbContainer = new MBeanContainer(
+		 * ManagementFactory.getPlatformMBeanServer());
+		 * server.getContainer().addEventListener(mbContainer);
+		 * server.addBean(mbContainer);
+		 */
 
+		// Register loggers as MBeans
+		// mbContainer.addBean(Log.getLog());
 		// Add the handlers
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
+		// handlers.addHandler(contexts);
+		//handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
 		int port = 8080;
@@ -71,6 +102,7 @@ public class WebConsole {
 		do {
 			try {
 				Connector connector = new SelectChannelConnector();
+				connector.setStatsOn(true);
 				connector.setServer(server);
 				String hostname = System.getProperty("prob.host", "127.0.0.1");
 				connector.setHost(hostname);
@@ -87,14 +119,14 @@ public class WebConsole {
 			throw new BindException("No free port found between 8080 and 8179");
 		}
 
-		PORT = port;
+		WebConsole.PORT = port;
 
 		openBrowser.run();
 		server.join();
 	}
 
 	public static int getPort() {
-		return PORT;
+		return WebConsole.PORT;
 	}
 
 }

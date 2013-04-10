@@ -50,6 +50,8 @@ public class BMSConnectionEditPolicy extends GraphicalNodeEditPolicy {
 			BControl source = (BControl) getHost().getModel();
 			cmd = new ConnectionCreateCommand(source);
 			BConnection con = (BConnection) newObject;
+			con.setParent(source.getVisualization());
+			source.getVisualization().getConnections().put(con.getID(), con);
 			cmd.setConnection(con);
 			request.setStartCommand(cmd);
 		}

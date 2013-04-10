@@ -48,6 +48,8 @@ public class ConnectionDeleteCommand extends Command {
 	 */
 	public void execute() {
 		connection.disconnect();
+		connection.getVisualization().getConnections()
+				.remove(connection.getID());
 	}
 
 	/*
