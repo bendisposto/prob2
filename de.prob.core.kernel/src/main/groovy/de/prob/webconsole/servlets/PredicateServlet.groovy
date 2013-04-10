@@ -1,30 +1,31 @@
 package de.prob.webconsole.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.ServletException
+import javax.servlet.http.HttpServlet
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.google.gson.Gson
+import com.google.inject.Inject
+import com.google.inject.Singleton
 
-import com.google.gson.Gson;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import de.prob.animator.command.ExpandFormulaCommand;
-import de.prob.animator.command.InsertFormulaForVisualizationCommand;
-import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.ExpandedFormula;
-import de.prob.animator.domainobjects.FormulaId;
-import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.animator.command.ExpandFormulaCommand
+import de.prob.animator.command.InsertFormulaForVisualizationCommand
+import de.prob.animator.domainobjects.ClassicalB
+import de.prob.animator.domainobjects.ExpandedFormula
+import de.prob.animator.domainobjects.FormulaId
+import de.prob.statespace.AnimationSelector
+import de.prob.statespace.History
 
 @SuppressWarnings("serial")
 @Singleton
 public class PredicateServlet extends HttpServlet {
+
+	public static int idNr = 0;
+
+	public static String getNewId() {
+		return "pred"+idNr++;
+	}
 
 	private final AnimationSelector animations;
 	private final Map<String, FormulaId> formulas = new HashMap<String, FormulaId>();
@@ -59,6 +60,5 @@ public class PredicateServlet extends HttpServlet {
 		String json = g.toJson(expandedFormula);
 		out.println(json);
 		out.close();
-
 	}
 }

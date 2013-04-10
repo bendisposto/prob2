@@ -251,6 +251,15 @@
                   id="de.prob.ui.inv_check"
                   name="Invariant Preservation Check">
             </command>
+            <command
+                  id="de.prob.ui.viz.pred"
+                  name="Open Predicate Visualization">
+               <commandParameter
+                     id="de.prob.ui.commandParameter1"
+                     name="name"
+                     optional="true">
+               </commandParameter>
+            </command>
    </extension>
    
    <extension
