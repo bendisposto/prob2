@@ -5,7 +5,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 /**
  * Objects that implement this interface correctly are automatically recognized
  * as a formula that can be evaluated. The user can easily get the prolog
- * represenation of the given formula.
+ * representation of the given formula.
  * 
  * @author joy
  * 

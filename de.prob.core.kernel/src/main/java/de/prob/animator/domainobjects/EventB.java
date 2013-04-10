@@ -30,11 +30,10 @@ import de.prob.unicode.UnicodeTranslator;
  * @author joy
  * 
  */
-public class EventB implements IEvalElement {
+public class EventB extends AbstractEvalElement {
 
 	public FormulaUUID uuid = new FormulaUUID();
 
-	private final String code;
 	private String kind;
 	private Node ast = null;
 
@@ -55,6 +54,7 @@ public class EventB implements IEvalElement {
 
 		if (!parseResult.hasProblem()) {
 			ast = preparePredicateAst(parseResult);
+
 		} else {
 			kind = EXPRESSION.toString();
 			parseResult = FormulaFactory.getDefault().parseExpression(unicode,
@@ -91,19 +91,6 @@ public class EventB implements IEvalElement {
 		}
 		final String error = Joiner.on(", \n").join(msgs);
 		throw new EvaluationException("Cannot parse " + code + ":\n " + error);
-	}
-
-	@Override
-	public String getCode() {
-		return code;
-	}
-
-	@Override
-	public boolean equals(final Object that) {
-		if (that instanceof EventB) {
-			return ((EventB) that).getCode().equals(getCode());
-		}
-		return false;
 	}
 
 	@Override

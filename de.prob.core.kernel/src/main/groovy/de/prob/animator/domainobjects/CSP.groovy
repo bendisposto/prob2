@@ -14,7 +14,7 @@ import de.prob.scripting.CSPModel
  */
 class CSP implements IEvalElement {
 
-	private String code,home;
+	private String home;
 	private CSPModel model;
 
 	/**
@@ -65,13 +65,5 @@ class CSP implements IEvalElement {
 	@Override
 	public String toString() {
 		return code;
-	}
-
-	@Override
-	public boolean equals(final Object that) {
-		if (that instanceof CSP) {
-			return ((CSP) that).getCode().equals(this.getCode());
-		}
-		return false;
 	}
 }

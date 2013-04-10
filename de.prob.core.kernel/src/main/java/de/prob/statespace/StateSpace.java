@@ -1,6 +1,5 @@
 package de.prob.statespace;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
@@ -56,22 +52,19 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
  */
 public class StateSpace extends StateSpaceGraph implements IAnimator {
 
-	Logger logger = LoggerFactory.getLogger(StateSpace.class);
-
 	private transient IAnimator animator;
 
 	private ICommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
-	private final HashSet<StateId> canBeEvaluated = new HashSet<StateId>();
+	private final HashSet<StateId> initializedStates = new HashSet<StateId>();
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
 	private final List<IStatesCalculatedListener> stateSpaceListeners = new ArrayList<IStatesCalculatedListener>();
 
-	private final HashMap<String, StateId> states = new HashMap<String, StateId>();
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
-	private BigInteger lastCalculatedStateId;
+	private long lastCalculatedStateId;
 	private AbstractModel model;
 	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
 
@@ -79,17 +72,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
 	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
 
-	public final StateId __root;
-
 	@Inject
 	public StateSpace(final IAnimator animator,
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		this.animator = animator;
-		__root = new StateId("root", this);
-		addVertex(__root);
-		states.put(__root.getId(), __root);
-		lastCalculatedStateId = new BigInteger("-1");
+		lastCalculatedStateId = -1;
 	}
 
 	public StateId getRoot() {
@@ -117,12 +105,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		extractInformation(state, command);
 
 		explored.add(state);
-		if(command.isInitialised()) {
-			canBeEvaluated.add(state);
-		}
 
 		if (!state.getId().equals("root")) {
-			setLastCalculatedStateId(new BigInteger(state.getId()));
+			updateLastCalculatedStateId(state.numericalId());
 		}
 		final List<OpInfo> enabledOperations = command.getEnabledOperations();
 
@@ -132,8 +117,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 				final StateId newState = new StateId(op.dest, this);
 				addVertex(newState);
-				states.put(newState.getId(), newState);
-				addEdge(op, states.get(op.src), states.get(op.dest));
+				addEdge(op, getVertex(op.src), getVertex(op.dest));
 			}
 		}
 		notifyStateSpaceChange();
@@ -150,6 +134,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		if (command.isTimeoutOccured()) {
 			timeoutOccured.add(state);
 		}
+		if (command.isInitialised()) {
+			initializedStates.add(state);
+		}
 	}
 
 	public String explore(final String state) {
@@ -157,18 +144,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public String explore(final int i) {
+		if (i == -1)
+			return explore("root");
 		final String si = String.valueOf(i);
 		return explore(si);
-	}
-
-	/**
-	 * Returns the StateId for the given key
-	 * 
-	 * @param key
-	 * @return StateId for the specified key
-	 */
-	public StateId getVertex(final String key) {
-		return states.get(key);
 	}
 
 	/**
@@ -214,13 +193,13 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
-					throws BException {
+			throws BException {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
 		animator.execute(command);
 		final List<OpInfo> newOps = command.getOperations();
-		setLastCalculatedStateId(new BigInteger(stateId.getId()));
+		updateLastCalculatedStateId(stateId.numericalId());
 
 		// (id,name,src,dest,args)
 		for (final OpInfo op : newOps) {
@@ -228,7 +207,6 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			StateId vertex = getVertex(op.dest);
 			if (vertex == null) {
 				vertex = new StateId(op.dest, this);
-				states.put(vertex.getId(), vertex);
 				addVertex(vertex);
 			}
 			if (!containsEdge(op)) {
@@ -355,7 +333,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param state
 	 */
-	public void evaluateFormulas(final StateId state) {
+	private void evaluateFormulas(final StateId state) {
 		if (!canBeEvaluated(state)) {
 			return;
 		}
@@ -400,14 +378,15 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public boolean canBeEvaluated(final StateId stateId) {
-		if(canBeEvaluated.contains(stateId)) {
+		if (initializedStates.contains(stateId)) {
 			return true;
 		}
-		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(stateId.getId());
+		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(
+				stateId.getId());
 		execute(cmd);
 		boolean result = cmd.getResult();
-		if(result) {
-			canBeEvaluated.add(stateId);
+		if (result) {
+			initializedStates.add(stateId);
 		}
 		return result;
 	}
@@ -495,9 +474,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 */
 	@Override
 	public String toString() {
-		String result = "";
-		result += super.toString();
-		return result;
+		return super.toString();
 	}
 
 	/**
@@ -603,7 +580,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * @return trace in the form of a {@link History} object
 	 */
 	public History getTrace(final String state) {
-		final StateId id = states.get(state);
+		final StateId id = getVertex(state);
 		StateId root = this.getRoot();
 
 		DijkstraShortestPath<StateId, OpInfo> dijkstra = new DijkstraShortestPath<StateId, OpInfo>(
@@ -729,13 +706,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		return new HashSet<OpInfo>(outgoingEdgesOf);
 	}
 
-	public BigInteger getLastCalculatedStateId() {
+	public long getLastCalculatedStateId() {
 		return lastCalculatedStateId;
 	}
 
-	public void setLastCalculatedStateId(final BigInteger lastCalculatedId) {
-		if (lastCalculatedId.intValue() > lastCalculatedStateId.intValue()) {
-			lastCalculatedStateId = lastCalculatedId;
-		}
+	public void updateLastCalculatedStateId(final long lastCalculatedId) {
+		lastCalculatedStateId = Math.max(lastCalculatedStateId,
+				lastCalculatedId);
 	}
 }
