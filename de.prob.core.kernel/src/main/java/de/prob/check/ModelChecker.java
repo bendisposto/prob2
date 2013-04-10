@@ -1,6 +1,5 @@
 package de.prob.check;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -91,10 +90,6 @@ public class ModelChecker {
 		return f.isCancelled();
 	}
 
-	public BigInteger getLastTransition() {
-		return worker.getLast();
-	}
-
 	public static RuntimeException launderThrowable(final Throwable t) {
 		if (t instanceof RuntimeException) {
 			return (RuntimeException) t;
@@ -109,7 +104,7 @@ public class ModelChecker {
 
 		private final StateSpace s;
 		private final List<String> options;
-		private BigInteger last;
+		private long last;
 		private ModelCheckingResult res;
 
 		/**
@@ -164,16 +159,14 @@ public class ModelChecker {
 			HashMap<String, StateId> states = s.getStates();
 			HashMap<String, OpInfo> ops = s.getOps();
 
-			BigInteger i = s.getLastCalculatedStateId();
+			long i = s.getLastCalculatedStateId();
 
 			for (OpInfo opInfo : newOps) {
 				if (!ops.containsKey(opInfo.id)) {
 					String sK = opInfo.src;
 					if (!sK.equals("root")) {
 						int value = Integer.parseInt(sK);
-						if (value > i.intValue()) {
-							i = new BigInteger(sK);
-						}
+						i = Math.max(value, i);
 					}
 
 					String dK = opInfo.dest;
@@ -193,15 +186,12 @@ public class ModelChecker {
 					ops.put(opInfo.id, opInfo);
 				}
 			}
-			s.setLastCalculatedStateId(i);
+			s.updateLastCalculatedStateId(i);
 			last = i;
 
 			s.notifyStateSpaceChange();
 		}
 
-		public BigInteger getLast() {
-			return last;
-		}
 	}
 
 }

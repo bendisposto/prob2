@@ -19,7 +19,7 @@ class History {
 	def final StateSpace s
 
 	def EvaluationResult evalCurrent(formula) {
-		if(!s.canBeEvaluated(getCurrentState())) {
+		if(!s.initializedStates(getCurrentState())) {
 			return null
 		}
 		def f = formula;
@@ -39,7 +39,7 @@ class History {
 
 		def ops = head.getOpList()
 		ops.each {
-			if(s.canBeEvaluated(s.getVertex(it.dest))) {
+			if(s.initializedStates(s.getVertex(it.dest))) {
 				cmds << new EvaluateFormulasCommand([f], it.dest)
 			}
 		}
@@ -208,7 +208,7 @@ class History {
 			OpInfo op = ops.get(0)
 
 			StateId newState = s.getState(op)
-			s.evaluateFormulas(ops.get(0))
+			s.explore(ops.get(0))
 
 			current = new HistoryElement(currentState,newState,op,previous)
 			currentState = newState

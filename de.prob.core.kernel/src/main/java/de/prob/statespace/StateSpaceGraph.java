@@ -1,16 +1,31 @@
 package de.prob.statespace;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 import de.prob.animator.domainobjects.OpInfo;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
-public class StateSpaceGraph {
+class StateSpaceGraph {
 
 	private final DirectedSparseMultigraph<StateId, OpInfo> graph;
+	protected final HashMap<String, StateId> states = new HashMap<String, StateId>();
+	public final StateId __root;
 
 	public StateSpaceGraph(final DirectedSparseMultigraph<StateId, OpInfo> graph) {
 		this.graph = graph;
+		__root = new StateId("root", this);
+		addVertex(__root);
+	}
+
+	/**
+	 * Returns the StateId for the given key
+	 * 
+	 * @param key
+	 * @return StateId for the specified key
+	 */
+	public StateId getVertex(final String key) {
+		return states.get(key);
 	}
 
 	public DirectedSparseMultigraph<StateId, OpInfo> getGraph() {
@@ -31,6 +46,7 @@ public class StateSpaceGraph {
 	}
 
 	public boolean addVertex(final StateId arg0) {
+		states.put(arg0.getId(), arg0);
 		return graph.addVertex(arg0);
 	}
 

@@ -6,7 +6,6 @@
 
 package de.prob.animator.command;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +29,11 @@ public class ConsistencyCheckingCommand implements ICommand {
 	private final String OPS = "Ops";
 
 	Logger logger = LoggerFactory.getLogger(ConsistencyCheckingCommand.class);
-	private final BigInteger last;
+	private final long last;
 	private final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
 	public ConsistencyCheckingCommand(final int time,
-			final List<String> options, final BigInteger last) {
+			final List<String> options, final long last) {
 		this.time = time;
 		this.options = options;
 		this.last = last;
