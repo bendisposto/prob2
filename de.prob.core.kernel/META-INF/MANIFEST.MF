@@ -112,6 +112,8 @@ Export-Package: com.google.common.annotations,
  junit.runner,
  junit.swingui,
  junit.textui,
+ org.junit.runner,
+ org.junit.runner.manipulation,
  org.junit.runner.notification,
  org.slf4j
 Bundle-ClassPath: .,
