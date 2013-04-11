@@ -14,6 +14,7 @@ public class ExpandedFormula {
 
 	private String name;
 	private Object value;
+	private String id;
 	private List<ExpandedFormula> children;
 
 	public ExpandedFormula(final CompoundPrologTerm cpt) {
@@ -26,12 +27,14 @@ public class ExpandedFormula {
 		PrologTerm v = cpt.getArgument(2);
 		value = getValue(v);
 		// Children
-		ListPrologTerm list = BindingGenerator.getList(cpt.getArgument(3));
+		id = cpt.getArgument(3).getFunctor();
+
+		ListPrologTerm list = BindingGenerator.getList(cpt.getArgument(4));
 		if (!list.isEmpty()) {
 			children = new ArrayList<ExpandedFormula>();
 			for (PrologTerm prologTerm : list) {
 				children.add(new ExpandedFormula(BindingGenerator
-						.getCompoundTerm(prologTerm, 3)));
+						.getCompoundTerm(prologTerm, 4)));
 			}
 		}
 	}
@@ -68,6 +71,14 @@ public class ExpandedFormula {
 	public String toString() {
 		Gson gson = new Gson();
 		return gson.toJson(this);
+	}
+
+	@Override
+	public boolean equals(final Object that) {
+		if (that instanceof ExpandedFormula) {
+
+		}
+		return false;
 	}
 
 }

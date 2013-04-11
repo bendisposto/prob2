@@ -1,5 +1,8 @@
+package de.prob.webconsole.servlets
 
-<!DOCTYPE html>
+class HTMLResources {
+
+	def static pred_head = '''<!DOCTYPE html>
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
 <!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
 <!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
@@ -48,7 +51,9 @@
 </style>
 
 </head>
-<body onload="initialize('pred1');">
+<body onload="initialize('''
+
+	def static pred_tail = ''');">
 
 	<!-- Primary Page Layout
       ================================================== -->
@@ -67,4 +72,5 @@
 	<!-- End Document
   ================================================== -->
 </body>
-</html>
+</html>'''
+}

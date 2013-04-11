@@ -234,13 +234,33 @@ function toggle(d) {
   }
 }
 
-function displayFormula() {
+var functionCtr = 0;
 
+function initialize(id) {
+
+  setInterval(function() {
+
+    $.getJSON("predicate", {
+      sessionId : id,
+      getFormula : false
+    }, function(res) {
+      if(res.count !== functionCtr) {
+        refresh(id);
+      };
+    });
+
+  }, 300);
+};
+
+function refresh(id) {
   vis.selectAll(".link").remove();
   vis.selectAll(".node").remove();
 
-  var line = $("#formula")[0].value;
-	$.getJSON("predicate_exp", {
-		formula : line
-	}, buildTree);
+  $.getJSON("predicate", {
+    sessionId : id,
+    getFormula : true
+  }, function(res) {
+    functionCtr = res.count;
+    buildTree(res.data);
+  });
 }
