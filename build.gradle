@@ -659,6 +659,7 @@ def String getExportedPackages(){
  org.jgrapht.util,
  org.objectweb.asm,
  org.objectweb.asm.signature,
+ org.junit.runner.notification,
  org.slf4j,
  org.slf4j.helpers,
  org.slf4j.impl,
