@@ -662,6 +662,7 @@ def String getExportedPackages(){
  org.junit.runner,
  org.junit.runner.manipulation,
  org.junit.runner.notification,
+ org.spockframework.runtime,
  org.slf4j,
  org.slf4j.helpers,
  org.slf4j.impl,

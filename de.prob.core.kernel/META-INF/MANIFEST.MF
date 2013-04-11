@@ -115,7 +115,8 @@ Export-Package: com.google.common.annotations,
  org.junit.runner,
  org.junit.runner.manipulation,
  org.junit.runner.notification,
- org.slf4j
+ org.slf4j,
+ org.spockframework.runtime
 Bundle-ClassPath: .,
  lib/dependencies/xstream-1.4.3.jar,
  lib/dependencies/xpp3_min-1.1.4c.jar,
