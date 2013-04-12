@@ -3,7 +3,9 @@ package de.prob.webconsole.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,57 +17,170 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
-import de.prob.statespace.StateId;
+import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.StateSpace;
+import de.prob.visualization.AnimationNotLoadedException;
 
 @SuppressWarnings("serial")
 @Singleton
-public class FormulaOverHistoryServlet extends HttpServlet {
+public class FormulaOverHistoryServlet extends HttpServlet implements
+		IHistoryChangeListener {
+
+	public static int idNr = 0;
+
+	public static String getNewId() {
+		return "value" + idNr++;
+	}
 
 	private final AnimationSelector animations;
+	private final Map<String, Session> sessions = new HashMap<String, Session>();
+	private final Map<String, List<Object>> dataSets = new HashMap<String, List<Object>>();
+	private History history;
 
 	@Inject
 	public FormulaOverHistoryServlet(final AnimationSelector animations) {
 		this.animations = animations;
-	}
-
-	@SuppressWarnings("unused")
-	private static class Element {
-		public final String stateid;
-		public final Integer value;
-		public final Integer t;
-
-		public Element(final String string, final int t, final Object value) {
-			this.stateid = string;
-			this.t = t;
-			this.value = Integer.parseInt((String) value);
-		}
+		animations.registerHistoryChangeListener(this);
 	}
 
 	@Override
 	public void doGet(final HttpServletRequest req,
 			final HttpServletResponse res) throws ServletException, IOException {
-		List<Object> result = new ArrayList<Object>();
+
+		if (req.getParameter("init") != null) {
+			initializePage(req, res);
+		} else if (req.getParameter("sessionId") != null) {
+			normalResponse(req, res);
+		} else {
+			res.getWriter().close();
+		}
+
+	}
+
+	private void initializePage(final HttpServletRequest req,
+			final HttpServletResponse res) throws IOException {
+		res.setContentType("text/html");
+
+		String sId = req.getParameter("init");
+
+		String html = "";
+		if (sessions.containsKey(sId)) {
+			html = HTMLResources.getValueVsTimeHTML(sId);
+		}
+
+		PrintWriter out;
+
+		out = res.getWriter();
+		out.print(html);
+		out.close();
+
+	}
+
+	private void normalResponse(final HttpServletRequest req,
+			final HttpServletResponse res) throws IOException {
 		PrintWriter out = res.getWriter();
+		Map<String, Object> resp = new HashMap<String, Object>();
 
-		String formula = req.getParameter("formula");
+		String sessionId = req.getParameter("sessionId");
+		Boolean getFormula = Boolean.valueOf(req.getParameter("getFormula"));
 
-		int c = 0;
-		
-		History history = animations.getCurrentHistory();
-		if(history != null) {
-			List<EvaluationResult> calc = history.eval(formula);
-			for (EvaluationResult evaluationResult : calc) {
-				result.add(new Element(evaluationResult.getStateId(),c++,evaluationResult.value));
-			}			
+		if (sessions.containsKey(sessionId)) {
+			if (getFormula) {
+				resp.put("data", dataSets.get(sessionId));
+			}
+			resp.put("count", sessions.get(sessionId).count);
+		} else {
+			resp.put("count", 0);
+			resp.put("data", "");
 		}
 
 		Gson g = new Gson();
-		String json = g.toJson(result);
+
+		String json = g.toJson(resp);
 		out.println(json);
 		out.close();
+	}
 
+	@Override
+	public void historyChange(final History history) {
+		this.history = history;
+
+		for (Session s : sessions.values()) {
+			calculateSession(s);
+		}
+
+	}
+
+	public void calculateSession(final Session session) {
+		if (history != null && history.getS() == session.stateSpace) {
+			List<EvaluationResult> results = history.eval(session.formula);
+			List<Object> result = new ArrayList<Object>();
+
+			int c = 0;
+			for (EvaluationResult it : results) {
+				result.add(new Element(it.getStateId(), c, it.getValue()));
+				result.add(new Element(it.getStateId(), c + 1, it.getValue()));
+				c++;
+			}
+
+			dataSets.put(session.sessionId, result);
+			session.inc();
+		}
+	}
+
+	public String openSession(final IEvalElement formula)
+			throws AnimationNotLoadedException {
+		if (history == null) {
+			throw new AnimationNotLoadedException("Could not visualize "
+					+ formula.getCode() + " because no animation is loaded");
+		}
+		StateSpace s = history.getStatespace();
+		String sessionId = getNewId();
+
+		Session session = new Session(sessionId, s, formula);
+		sessions.put(sessionId, session);
+		calculateSession(session);
+
+		return sessionId;
+	}
+
+	public void closeSession(final String sessionId) {
+		sessions.remove(sessionId);
+		dataSets.remove(sessionId);
+	}
+
+	private class Element {
+		public final String stateid;
+		public final Integer value;
+		public final Integer t;
+
+		public Element(final String string, final int t, final Object value) {
+			stateid = string;
+			this.t = t;
+			this.value = Integer.parseInt((String) value);
+		}
+	}
+
+	private class Session {
+
+		public final String sessionId;
+		public final StateSpace stateSpace;
+		public final IEvalElement formula;
+		public int count = 0;
+
+		public Session(final String sessionId, final StateSpace stateSpace,
+				final IEvalElement formula) {
+			this.sessionId = sessionId;
+			this.stateSpace = stateSpace;
+			this.formula = formula;
+		}
+
+		public void inc() {
+			count++;
+		}
 	}
 
 }
