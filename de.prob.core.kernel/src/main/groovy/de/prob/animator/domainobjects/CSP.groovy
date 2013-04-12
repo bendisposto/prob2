@@ -69,4 +69,10 @@ class CSP implements IEvalElement {
 	public String toString() {
 		return code;
 	}
+
+	@Override
+	public String serialized() {
+		Gson g = new Gson();
+		return "#CSP:"+g.toJson(this);
+	}
 }
