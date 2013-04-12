@@ -140,30 +140,21 @@
               allPopups="false"
               locationURI="menu:analyze">
            <command
-                 commandId="de.prob.ui.openViz"
-                 label="Open State Space Visualization"
-                 style="push">
-              <parameter
-                    name="de.prob.ui.viz.name"
-                    value="statespace.html">
-              </parameter>
-           </command>
-           <command
-                 commandId="de.prob.ui.openViz"
-                 label="Open Value Over Time Visualization"
-                 style="push">
-              <parameter
-                    name="de.prob.ui.viz.name"
-                    value="oszilloscope.html">
-              </parameter>
-           </command>
-           <command
-                 commandId="de.prob.ui.openViz"
+                 commandId="de.prob.ui.viz.pred"
                  label="Open Predicate Visualization"
                  style="push">
               <parameter
-                    name="de.prob.ui.viz.name"
-                    value="predicate.html">
+                    name="de.prob.ui.viz.eval"
+                    value="enter">
+              </parameter>
+           </command>
+           <command
+                 commandId="de.prob.ui.viz.formula"
+                 label="Open Time vs Value Visualization"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.viz.eval"
+                    value="enter">
               </parameter>
            </command>
         </menuContribution>
@@ -235,15 +226,6 @@
                   name="Submit Bug Report">
             </command>
             <command
-                  id="de.prob.ui.openViz"
-                  name="Open Visualization">
-               <commandParameter
-                     id="de.prob.ui.viz.name"
-                     name="Visualization Type"
-                     optional="true">
-               </commandParameter>
-            </command>
-            <command
                   id="de.prob.ui.deadlock_check"
                   name="Deadlock Freedom Check">
             </command>
@@ -255,8 +237,17 @@
                   id="de.prob.ui.viz.pred"
                   name="Open Predicate Visualization">
                <commandParameter
-                     id="de.prob.ui.commandParameter1"
-                     name="name"
+                     id="de.prob.ui.viz.eval"
+                     name="eval"
+                     optional="true">
+               </commandParameter>
+            </command>
+            <command
+                  id="de.prob.ui.viz.formula"
+                  name="Open Value vs Time Visualization">
+               <commandParameter
+                     id="de.prob.ui.viz.eval"
+                     name="eval"
                      optional="true">
                </commandParameter>
             </command>
@@ -397,10 +388,18 @@
          </class>
       </handler>
       <handler
-            commandId="de.prob.ui.openViz">
+            commandId="de.prob.ui.viz.pred">
          <class
-               class="de.prob.ui.visualization.OpenVizHandler">
+               class="de.prob.ui.visualization.OpenPredicateVizHandler">
          </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
       </handler>
       <handler
             commandId="de.prob.ui.deadlock_check">
@@ -420,6 +419,20 @@
             commandId="de.prob.ui.inv_check">
          <class
                class="de.prob.ui.constraint.InvariantCheckHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.viz.formula">
+         <class
+               class="de.prob.ui.visualization.OpenTimeValueVizHandler">
          </class>
          <enabledWhen>
             <with

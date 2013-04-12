@@ -18,19 +18,19 @@ import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.webconsole.ServletContextListener;
-import de.prob.webconsole.servlets.PredicateServlet;
+import de.prob.webconsole.servlets.FormulaOverHistoryServlet;
 
-public class OpenPredicateVizHandler extends AbstractHandler implements
+public class OpenTimeValueVizHandler extends AbstractHandler implements
 		IHandler {
 
-	Logger logger = LoggerFactory.getLogger(OpenPredicateVizHandler.class);
+	Logger logger = LoggerFactory.getLogger(OpenTimeValueVizHandler.class);
 
-	private final PredicateServlet servlet;
+	private final FormulaOverHistoryServlet servlet;
 	private final EvalElementFactory evalFactory;
 
-	public OpenPredicateVizHandler() {
+	public OpenTimeValueVizHandler() {
 		servlet = ServletContextListener.INJECTOR
-				.getInstance(PredicateServlet.class);
+				.getInstance(FormulaOverHistoryServlet.class);
 		evalFactory = ServletContextListener.INJECTOR
 				.getInstance(EvalElementFactory.class);
 	}
@@ -48,7 +48,7 @@ public class OpenPredicateVizHandler extends AbstractHandler implements
 			IEvalElement formula = evalFactory.deserialize(encodedFormula);
 			String sessionId = servlet.openSession(formula);
 			VisualizationUtil.createVisualizationViewPart(sessionId,
-					"predicate/?init=" + sessionId);
+					"formula/?init=" + sessionId);
 		} catch (PartInitException e) {
 			logger.error("Could not create predicate visualization view: "
 					+ e.getMessage());
