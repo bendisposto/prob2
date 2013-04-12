@@ -39,7 +39,7 @@ public class ClassicalB implements IEvalElement {
 	public ClassicalB(final String code) {
 		this.code = code;
 		try {
-			this.ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
+			ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
 		} catch (BException e) {
 			throw new EvaluationException(e.getMessage(), e);
 		}
@@ -52,7 +52,7 @@ public class ClassicalB implements IEvalElement {
 	 */
 	public ClassicalB(final Start ast) {
 		this.ast = ast;
-		this.code = prettyprint(ast);
+		code = prettyprint(ast);
 	}
 
 	/**
@@ -106,6 +106,11 @@ public class ClassicalB implements IEvalElement {
 			return ((ClassicalB) that).getCode().equals(this.getCode());
 		}
 		return false;
+	}
+
+	@Override
+	public String serialized() {
+		return "#ClassicalB:" + code;
 	}
 
 }

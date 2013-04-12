@@ -136,4 +136,9 @@ public class EventB implements IEvalElement {
 
 		return ast;
 	}
+
+	@Override
+	public String serialized() {
+		return "#EventB:" + code;
+	}
 }

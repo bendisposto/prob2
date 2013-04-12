@@ -31,4 +31,6 @@ public interface IEvalElement {
 	 *         kinds need to be defined to recognize the formula.
 	 */
 	public abstract String getKind();
+
+	public String serialized();
 }
