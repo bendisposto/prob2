@@ -14,7 +14,7 @@ public class ExpandedFormula {
 
 	private String name;
 	private Object value;
-	private String id;
+	private String fId;
 	private List<ExpandedFormula> children;
 
 	public ExpandedFormula(final CompoundPrologTerm cpt) {
@@ -27,7 +27,7 @@ public class ExpandedFormula {
 		PrologTerm v = cpt.getArgument(2);
 		value = getValue(v);
 		// Children
-		id = cpt.getArgument(3).getFunctor();
+		fId = cpt.getArgument(3).getFunctor();
 
 		ListPrologTerm list = BindingGenerator.getList(cpt.getArgument(4));
 		if (!list.isEmpty()) {
