@@ -123,4 +123,9 @@ public class EventB extends AbstractEvalElement {
 
 		return ast;
 	}
+
+	@Override
+	public String serialized() {
+		return "#EventB:" + code;
+	}
 }

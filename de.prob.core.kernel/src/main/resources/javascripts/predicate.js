@@ -1,5 +1,5 @@
 var m = [20, 120, 20, 120],
-    w = 1280 - m[1] - m[3],
+    w = 3000 - m[1] - m[3],
     h = 800 - m[0] - m[2],
     i = 0,
     root;
@@ -22,7 +22,7 @@ var valueLength = {};
 function buildTree(treeData)
 {
     root = treeData
-    root.x0 = h / 2;
+    root.x0 = $(window).height() / 2;
     root.y0 = 0;
 
     var labels = {};
@@ -234,13 +234,35 @@ function toggle(d) {
   }
 }
 
-function displayFormula() {
+var functionCtr = 0;
 
+function initialize(id) {
+
+  var refreshId = setInterval(function() {
+
+    $.getJSON("predicate", {
+      sessionId : id,
+      getFormula : false
+    }, function(res) {
+      if(res.count !== functionCtr) {
+        refresh(id);
+      };
+    });
+
+  }, 300);
+};
+
+function refresh(id) {
   vis.selectAll(".link").remove();
   vis.selectAll(".node").remove();
 
-  var line = $("#formula")[0].value;
-	$.getJSON("predicate_exp", {
-		formula : line
-	}, buildTree);
+  $.getJSON("predicate", {
+    sessionId : id,
+    getFormula : true
+  }, function(res) {
+    functionCtr = res.count;
+    if(res.data !== "") {
+      buildTree(res.data);     
+    };
+  });
 }

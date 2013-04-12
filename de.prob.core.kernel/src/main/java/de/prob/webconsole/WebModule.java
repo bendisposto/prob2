@@ -37,13 +37,11 @@ public class WebModule extends ServletModule {
 		serve("/versions*").with(VersionServlet.class);
 		serve("/scrollback*").with(ScrollbackServlet.class);
 		serve("/formula*").with(FormulaOverHistoryServlet.class);
-		
-	
+
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
-		serve("/predicate_exp*").with(PredicateServlet.class);
+		serve("/predicate*").with(PredicateServlet.class);
 
-
-		//Worksheet servlets
+		// Worksheet servlets
 		serve("/saveDocument*").with(SaveDocument.class);
 		serve("/newDocument*").with(NewDocument.class);
 		serve("/loadDocument*").with(LoadDocument.class);
@@ -51,11 +49,10 @@ public class WebModule extends ServletModule {
 		serve("/newBlock*").with(NewBlock.class);
 		serve("/worksheetEvaluate*").with(Evaluate.class);
 		serve("/setBlock*").with(SetBlock.class);
-		
-		//unused
+
+		// unused
 		serve("/switchBlock*").with(SwitchBlock.class);
 		serve("/getBlock*").with(GetBlock.class);
-
 
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);

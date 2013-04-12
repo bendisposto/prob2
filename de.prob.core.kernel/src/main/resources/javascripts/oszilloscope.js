@@ -52,14 +52,36 @@ svg.append("path")
 	
 }
 
+var functionCtr = 0;
 
-function displayFormula() {
-    svg.selectAll(".axis").remove();
-    svg.selectAll(".connection").remove();
-    svg.selectAll(".point").remove();
+function initialize(id) {
 
-    var line = $("#formula")[0].value;
+  setInterval(function() {
+    $.getJSON("formula", {
+      sessionId : id,
+      getFormula : false
+    }, function(res) {
+      if(res.count != functionCtr) {
+        refresh(id);
+      };
+    });
+  }, 300);
+
+}
+
+
+function refresh(id) {
+  svg.selectAll(".axis").remove();
+  svg.selectAll(".connection").remove();
+  svg.selectAll(".point").remove();
+
 	$.getJSON("formula", {
-		formula : line
-	}, doIt);
+		sessionId : id,
+    getFormula : true
+	}, function(res) {
+    functionCtr = res.count;
+    if(res.data !== "") {
+      doIt(res.data);
+    };
+  });
 }

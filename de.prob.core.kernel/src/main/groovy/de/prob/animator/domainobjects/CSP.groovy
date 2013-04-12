@@ -2,6 +2,8 @@
 
 package de.prob.animator.domainobjects
 
+import com.google.gson.Gson
+
 import de.prob.Main
 import de.prob.prolog.output.IPrologTermOutput
 import de.prob.scripting.CSPModel
@@ -14,8 +16,9 @@ import de.prob.scripting.CSPModel
  */
 class CSP implements IEvalElement {
 
-	private String home;
-	private CSPModel model;
+
+	private String code,home;
+	private String modelContent;
 
 	/**
 	 * When a new formula is entered, the entire model must be reparsed. For this reason,
@@ -27,7 +30,7 @@ class CSP implements IEvalElement {
 	public CSP(String formula, CSPModel model) {
 		this.code = formula;
 		this.home = Main.getProBDirectory();
-		this.model = model;
+		this.modelContent = model.getContent();
 	}
 
 	public String getCode() {
@@ -35,7 +38,7 @@ class CSP implements IEvalElement {
 	}
 
 	public void printProlog(IPrologTermOutput pout) {
-		def nc = model.getContent()+"\n"+code;
+		def nc = modelContent+"\n"+code;
 		File tf = File.createTempFile("cspm", ".csp")
 		tf << nc;
 		def procname = home+"lib"+File.separator+"cspm"

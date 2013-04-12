@@ -17,12 +17,14 @@ public class VizView extends ViewPart {
 	private final int port;
 	private Browser browser;
 
+	private String sessionId;
+
 	public VizView() {
 		port = WebConsole.getPort();
 	}
 
 	@Override
-	public void createPartControl(Composite shell) {
+	public void createPartControl(final Composite shell) {
 		GridLayout gl_shell = new GridLayout(1, true);
 		gl_shell.marginHeight = 0;
 		shell.setLayout(gl_shell);
@@ -45,14 +47,23 @@ public class VizView extends ViewPart {
 	public Browser getBrowser() {
 		return browser;
 	}
-	
-	public void init(String url) {
-		browser.setUrl("http://localhost:" + port + "/"+url);
-	}
 
+	public void init(final String url) {
+		browser.setUrl("http://localhost:" + port + "/" + url);
+	}
 
 	@Override
 	public void setFocus() {
+		browser.setFocus();
+	}
+
+	@Override
+	public void dispose() {
+
+		if (browser != null) {
+			browser.dispose();
+		}
+		super.dispose();
 	}
 
 }

@@ -38,7 +38,7 @@ public class ClassicalB extends AbstractEvalElement {
 	public ClassicalB(final String code) {
 		this.code = code;
 		try {
-			this.ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
+			ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
 		} catch (BException e) {
 			throw new EvaluationException(e.getMessage(), e);
 		}
@@ -51,7 +51,7 @@ public class ClassicalB extends AbstractEvalElement {
 	 */
 	public ClassicalB(final Start ast) {
 		this.ast = ast;
-		this.code = prettyprint(ast);
+		code = prettyprint(ast);
 	}
 
 	/**
@@ -94,4 +94,8 @@ public class ClassicalB extends AbstractEvalElement {
 		return prettyPrinter.getPrettyPrint();
 	}
 
+	@Override
+	public String serialized() {
+		return "#ClassicalB:" + code;
+	}
 }
