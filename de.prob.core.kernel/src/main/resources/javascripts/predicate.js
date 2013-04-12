@@ -1,5 +1,5 @@
 var m = [20, 120, 20, 120],
-    w = 1280 - m[1] - m[3],
+    w = 3000 - m[1] - m[3],
     h = 800 - m[0] - m[2],
     i = 0,
     root;
@@ -22,7 +22,7 @@ var valueLength = {};
 function buildTree(treeData)
 {
     root = treeData
-    root.x0 = h / 2;
+    root.x0 = $(window).height() / 2;
     root.y0 = 0;
 
     var labels = {};
@@ -238,7 +238,7 @@ var functionCtr = 0;
 
 function initialize(id) {
 
-  setInterval(function() {
+  var refreshId = setInterval(function() {
 
     $.getJSON("predicate", {
       sessionId : id,
@@ -261,6 +261,8 @@ function refresh(id) {
     getFormula : true
   }, function(res) {
     functionCtr = res.count;
-    buildTree(res.data);
+    if(res.data !== "") {
+      buildTree(res.data);     
+    };
   });
 }

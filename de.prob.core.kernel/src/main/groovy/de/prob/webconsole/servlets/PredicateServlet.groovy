@@ -46,8 +46,10 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 		def init = req.getParameter("init")
 		if(init != null) {
 			initializePage(req, res)
-		} else {
+		} else if(req.getParameter("sessionId") != null) {
 			normalResponse(req, res)
+		} else {
+			res.getWriter().close();
 		}
 	}
 
@@ -57,9 +59,12 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 
 		def sId = req.getParameter("init")
 
-		PrintWriter out = res.getWriter()
-		String html = HTMLResources.pred_head+"\'"+sId+"\'"+HTMLResources.pred_tail
+		String html = ""
+		if(sessions.containsKey(sId)) {
+			html = HTMLResources.getPredicateHTML(sId);
+		}
 
+		PrintWriter out = res.getWriter()
 		out.print(html)
 		out.close();
 	}
@@ -72,11 +77,15 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 		String sessionId = req.getParameter("sessionId")
 		def getFormula = req.getParameter("getFormula")
 
-		if(getFormula) {
-			resp["data"] = formulas.get(sessionId)
+		if(sessions.containsKey(sessionId)) {
+			if(getFormula) {
+				resp["data"] = formulas.get(sessionId)
+			}
+			resp["count"] = sessions.get(sessionId).count
+		} else {
+			resp["count"] = 0
+			resp["data"] = ""
 		}
-
-		resp["count"] = sessions.get(sessionId).count
 
 		Gson g = new Gson()
 
@@ -95,7 +104,7 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 	}
 
 	def calculateSession(Session s) {
-		if(history.getS() == s.stateSpace) {
+		if(history != null && history.getS() == s.stateSpace) {
 			ExpandFormulaCommand cmd = new ExpandFormulaCommand(s.formulaId, history.getCurrentState().getId())
 			s.stateSpace.execute(cmd)
 			formulas[s.sessionId] = cmd.getResult()
@@ -113,8 +122,7 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 		s.execute(cmd)
 		def formulaId = cmd.getFormulaId()
 
-		def sessionId = "pred1"
-		//def sessionId = getNewId()
+		def sessionId = getNewId()
 
 		def sess = new Session(sessionId,s,formulaId)
 		sessions[sessionId] = sess
@@ -144,6 +152,5 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 	def closeSession(String sessionId) {
 		sessions.remove(sessionId);
 		formulas.remove(sessionId);
-		changed.remove(sessionId);
 	}
 }
