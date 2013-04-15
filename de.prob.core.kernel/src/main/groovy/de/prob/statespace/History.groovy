@@ -19,7 +19,7 @@ class History {
 	def final StateSpace s
 
 	def EvaluationResult evalCurrent(formula) {
-		if(!s.initializedStates(getCurrentState())) {
+		if(!s.canBeEvaluated(getCurrentState())) {
 			return null
 		}
 		def f = formula;
@@ -39,7 +39,7 @@ class History {
 
 		def ops = head.getOpList()
 		ops.each {
-			if(s.initializedStates(s.getVertex(it.dest))) {
+			if(s.canBeEvaluated(s.getVertex(it.dest))) {
 				cmds << new EvaluateFormulasCommand([f], it.dest)
 			}
 		}
@@ -150,7 +150,8 @@ class History {
 	}
 
 	@Override
-	def String toString() {		return s.printOps(current.getCurrentState()) + getRep()
+	def String toString() {
+		return s.printOps(current.getCurrentState()) + getRep()
 	}
 
 	def String getRep() {
@@ -161,7 +162,7 @@ class History {
 		head.getOpList().each {
 			ops << it.getRep(s as AbstractModel)
 		}
-        def curTrans = current?.getOp()?.getRep(s as AbstractModel) ?: "n/a"
+		def curTrans = current?.getOp()?.getRep(s as AbstractModel) ?: "n/a"
 
 		return "${ops} Current Transition is: ${curTrans}"
 	}
