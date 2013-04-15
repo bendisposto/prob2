@@ -1,0 +1,27 @@
+/* CSS styling for the Value vs Time visualization */
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+   }
+
+   .x.axis path {
+   	  display: none;
+   }
+
+   .line {
+   	  fill: none;
+   	  stroke: #4682B4;
+   	  stroke-width: 1.5px;
+   }
+
+.connection {
+ fill:none;
+  stroke:black;
+}

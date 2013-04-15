@@ -1,7 +1,10 @@
 
 var w = 600;
 var h = 400;
-var svg = d3.select("svg").attr("width",w).attr("height",h);
+d3.select("#body").append("svg:svg");
+var svg = d3.select("svg")
+      .attr("width",w)
+      .attr("height",h);
 
 var padding = 10;
 
