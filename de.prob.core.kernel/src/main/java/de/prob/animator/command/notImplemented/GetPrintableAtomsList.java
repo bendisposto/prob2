@@ -2,7 +2,7 @@ package de.prob.animator.command.notImplemented;
 
 import java.util.List;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
@@ -12,7 +12,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author Jens Bendisposto
  * 
  */
-public class GetPrintableAtomsList implements ICommand {
+public class GetPrintableAtomsList extends AbstractCommand {
 
 	private static final String PROLOG_VARIABLE = "L";
 	private final String prologPredicate;

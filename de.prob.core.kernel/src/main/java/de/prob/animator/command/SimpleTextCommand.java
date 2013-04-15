@@ -9,7 +9,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class SimpleTextCommand implements IRawCommand, ICommand {
+public class SimpleTextCommand extends AbstractCommand implements IRawCommand {
 
 	private final String command;
 	private final String resultVar;

@@ -19,7 +19,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public final class GetTraceCommand implements ICommand {
+public final class GetTraceCommand extends AbstractCommand {
 
 	private static final String TRACE_VARIABLE = "Trace";
 	Logger logger = LoggerFactory.getLogger(GetTraceCommand.class);
@@ -31,11 +31,11 @@ public final class GetTraceCommand implements ICommand {
 
 		public Occurence(final String text) {
 			this.text = text;
-			this.count = 1;
+			count = 1;
 		}
 
 		public synchronized void inc() {
-			this.count++;
+			count++;
 		}
 
 		@Override
@@ -53,8 +53,7 @@ public final class GetTraceCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			{
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		List<Occurence> res = new LinkedList<Occurence>();
 
 		ListPrologTerm list = BindingGenerator.getList(bindings
@@ -75,7 +74,7 @@ public final class GetTraceCommand implements ICommand {
 			actions.add(occurence.toString());
 		}
 
-		this.trace = actions;
+		trace = actions;
 
 	}
 

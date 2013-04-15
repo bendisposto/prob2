@@ -11,7 +11,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class GetOpFromId implements ICommand {
+public class GetOpFromId extends AbstractCommand {
 
 	private final String opId;
 	private final String TERM = "JavaOpTerm";

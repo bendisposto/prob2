@@ -21,7 +21,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class ConsistencyCheckingCommand implements ICommand {
+public class ConsistencyCheckingCommand extends AbstractCommand {
 	private final int time;
 	private final List<String> options;
 	private ModelCheckingResult result;

@@ -5,7 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -20,7 +20,7 @@ import de.prob.prolog.term.PrologTerm;
  * @see EvaluationGetValuesCommand
  * @author plagge
  */
-public class EvaluationExpandCommand implements ICommand {
+public class EvaluationExpandCommand extends AbstractCommand {
 	private static final String LABEL_VARNAME = "Lbl";
 	private static final String CHILDREN_VARNAME = "Chs";
 

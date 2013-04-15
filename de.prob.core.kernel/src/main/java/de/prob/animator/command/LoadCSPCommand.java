@@ -4,7 +4,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
-public class LoadCSPCommand implements ICommand {
+public class LoadCSPCommand extends AbstractCommand {
 
 	private final String path;
 

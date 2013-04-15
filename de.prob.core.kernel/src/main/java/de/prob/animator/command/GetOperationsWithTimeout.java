@@ -14,7 +14,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class GetOperationsWithTimeout implements ICommand {
+public class GetOperationsWithTimeout extends AbstractCommand {
 
 	private static final String TIMEOUT_VARIABLE = "TO";
 	private final String state;
@@ -26,8 +26,7 @@ public class GetOperationsWithTimeout implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			 {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm list = BindingGenerator.getList(bindings,
 				TIMEOUT_VARIABLE);
 		timeouts = PrologTerm.atomicStrings(list);

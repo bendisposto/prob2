@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 
 import de.prob.animator.IAnimator;
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 
 public abstract class ProBJobFinishedListener extends JobChangeAdapter {
 
@@ -29,6 +29,6 @@ public abstract class ProBJobFinishedListener extends JobChangeAdapter {
 		}
 	}
 
-	abstract protected void showResult(ICommand command,
+	abstract protected void showResult(AbstractCommand command,
 			IAnimator animator);
 }

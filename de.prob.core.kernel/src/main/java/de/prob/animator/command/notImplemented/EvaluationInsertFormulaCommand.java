@@ -3,7 +3,7 @@
  */
 package de.prob.animator.command.notImplemented;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -25,7 +25,7 @@ import de.prob.prolog.term.PrologTerm;
  * 
  * @author plagge
  */
-public class EvaluationInsertFormulaCommand implements ICommand {
+public class EvaluationInsertFormulaCommand extends AbstractCommand {
 
 	// FIXME: This command must be refactored with EvaluationElement object
 	// public static enum FormulaType {

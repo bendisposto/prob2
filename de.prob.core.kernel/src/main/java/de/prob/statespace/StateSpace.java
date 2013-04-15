@@ -17,7 +17,7 @@ import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -54,7 +54,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private transient IAnimator animator;
 
-	private ICommand loadcmd;
+	private AbstractCommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
 	private final HashSet<StateId> initializedStates = new HashSet<StateId>();
@@ -429,12 +429,12 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	// ANIMATOR
 
 	@Override
-	public void execute(final ICommand command) {
+	public void execute(final AbstractCommand command) {
 		animator.execute(command);
 	}
 
 	@Override
-	public void execute(final ICommand... commands) {
+	public void execute(final AbstractCommand... commands) {
 		animator.execute(commands);
 	}
 
@@ -597,11 +597,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		this.animator = animator;
 	}
 
-	public ICommand getLoadcmd() {
+	public AbstractCommand getLoadcmd() {
 		return loadcmd;
 	}
 
-	public void setLoadcmd(final ICommand loadcmd) {
+	public void setLoadcmd(final AbstractCommand loadcmd) {
 		this.loadcmd = loadcmd;
 	}
 

@@ -7,7 +7,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
-public class GetVersionCommand implements ICommand {
+public class GetVersionCommand extends AbstractCommand {
 
 	private String major, minor, service, qualifier, svnrevision,
 			lastchangeddate, prologinfo;

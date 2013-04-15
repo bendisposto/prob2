@@ -4,7 +4,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
-public class GetPreferenceCommand implements ICommand {
+public class GetPreferenceCommand extends AbstractCommand {
 
 	private final String VALUE = "Value";
 	private final String key;

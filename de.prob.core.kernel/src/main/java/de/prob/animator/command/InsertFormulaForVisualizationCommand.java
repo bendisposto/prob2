@@ -6,18 +6,18 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
-public class InsertFormulaForVisualizationCommand implements ICommand {
+public class InsertFormulaForVisualizationCommand extends AbstractCommand {
 
-	private IEvalElement formula;
+	private final IEvalElement formula;
 	private final String ID = "Id";
 	private FormulaId formulaId;
 
-	public InsertFormulaForVisualizationCommand(IEvalElement formula) {
-		this.formula = formula;	
+	public InsertFormulaForVisualizationCommand(final IEvalElement formula) {
+		this.formula = formula;
 	}
-	
+
 	@Override
-	public void writeCommand(IPrologTermOutput pto) {
+	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("evaluation_insert_formula");
 		formula.printProlog(pto);
 		pto.printAtom("user");
@@ -26,12 +26,13 @@ public class InsertFormulaForVisualizationCommand implements ICommand {
 	}
 
 	@Override
-	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		PrologTerm prologTerm = bindings.get(ID);
-		
+
 		formulaId = new FormulaId(prologTerm.getFunctor());
 	}
-	
+
 	public FormulaId getFormulaId() {
 		return formulaId;
 	}

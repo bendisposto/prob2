@@ -19,12 +19,12 @@ package de.prob.animator.command.notImplemented;
 //import de.prob.core.domainobjects.State;
 //import de.prob.eventb.translator.FormulaTranslator;
 //import de.prob.exceptions.ProBException;
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.PrologTerm;
 //import de.prob.prolog.term.CompoundPrologTerm;
 //import de.prob.prolog.term.ListPrologTerm;
-import de.prob.prolog.term.PrologTerm;
 
 /**
  * This command sends a list of expression IDs and a state ID to ProB and
@@ -34,16 +34,17 @@ import de.prob.prolog.term.PrologTerm;
  * @see EvaluationGetTopLevelCommand
  * @author plagge
  */
-public class EvaluationGetValuesCommand implements ICommand {
+public class EvaluationGetValuesCommand extends AbstractCommand {
 
 	@Override
-	public void writeCommand(IPrologTermOutput pto) {
+	public void writeCommand(final IPrologTermOutput pto) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		// TODO Auto-generated method stub
 
 	}

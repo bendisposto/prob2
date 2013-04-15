@@ -3,7 +3,7 @@ package de.prob.animator;
 import java.util.Collections;
 import java.util.Map;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.core.sablecc.node.Start;
@@ -18,7 +18,7 @@ class CommandProcessor {
 	private ProBInstance cli;
 
 	public ISimplifiedROMap<String, PrologTerm> sendCommand(
-			final ICommand command) {
+			final AbstractCommand command) {
 
 		String query = "";
 		if (command instanceof IRawCommand) {

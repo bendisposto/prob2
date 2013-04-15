@@ -14,7 +14,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -26,7 +26,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author plagge
  * 
  */
-public class GetMachineObjectsCommand implements ICommand {
+public class GetMachineObjectsCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory.getLogger(GetMachineObjectsCommand.class);
 	private List<String> constants;

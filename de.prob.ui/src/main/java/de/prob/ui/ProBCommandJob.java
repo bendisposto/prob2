@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import de.prob.animator.IAnimator;
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 
 /**
  * This jobs takes a command as argument and executes its during the run. If the
@@ -20,12 +20,12 @@ import de.prob.animator.command.ICommand;
  */
 public class ProBCommandJob extends Job {
 	private final IAnimator animator;
-	private final ICommand command;
+	private final AbstractCommand command;
 
 	private boolean commandFailed = false;
 
 	public ProBCommandJob(final String name, final IAnimator animator,
-			final ICommand command) {
+			final AbstractCommand command) {
 		super(name);
 		this.animator = animator;
 		this.command = command;
@@ -50,7 +50,7 @@ public class ProBCommandJob extends Job {
 		animator.sendInterrupt();
 	}
 
-	public ICommand getCommand() {
+	public AbstractCommand getCommand() {
 		return command;
 	}
 

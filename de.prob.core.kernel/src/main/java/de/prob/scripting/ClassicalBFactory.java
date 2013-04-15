@@ -18,7 +18,7 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.animator.command.ComposedCommand;
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
@@ -78,13 +78,13 @@ public class ClassicalBFactory {
 	 */
 	private void startAnimation(final ClassicalBModel classicalBModel,
 			final RecursiveMachineLoader rml, final Map<String, String> prefs) {
-		List<ICommand> cmds = new ArrayList<ICommand>();
+		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
 
 		for (Entry<String, String> pref : prefs.entrySet()) {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 
-		final ICommand loadcmd = new LoadBProjectCommand(rml);
+		final AbstractCommand loadcmd = new LoadBProjectCommand(rml);
 		cmds.add(loadcmd);
 		cmds.add(new StartAnimationCommand());
 		classicalBModel.getStatespace().execute(new ComposedCommand(cmds));

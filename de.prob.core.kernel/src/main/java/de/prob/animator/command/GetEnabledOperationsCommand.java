@@ -27,7 +27,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public final class GetEnabledOperationsCommand implements ICommand {
+public final class GetEnabledOperationsCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory.getLogger(GetEnabledOperationsCommand.class);
 

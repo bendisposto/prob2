@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.ConstraintBasedDeadlockCheckCommand;
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.ui.ProBJobFinishedListener;
 
@@ -29,7 +29,7 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 	}
 
 	@Override
-	protected void showResult(final ICommand cmd,
+	protected void showResult(final AbstractCommand cmd,
 			final IAnimator animator) {
 		final ConstraintBasedDeadlockCheckCommand command = (ConstraintBasedDeadlockCheckCommand) cmd;
 		final ConstraintBasedCheckingResult result = command.getResult();

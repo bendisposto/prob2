@@ -8,7 +8,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class ExpandFormulaCommand implements ICommand {
+public class ExpandFormulaCommand extends AbstractCommand {
 
 	private final String stateId;
 	private final String TREE = "TREE";

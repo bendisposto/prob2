@@ -27,7 +27,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public final class GetDefaultPreferencesCommand implements ICommand {
+public final class GetDefaultPreferencesCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory.getLogger(GetDefaultPreferencesCommand.class);
 	private static final String PREFS_VARIABLE = "Prefs";
