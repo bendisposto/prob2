@@ -8,7 +8,7 @@ sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
 def core_version = '2.0.0-milestone-9-SNAPSHOT'
-def parser_version = '2.4.11-SNAPSHOT'
+def parser_version = '2.4.18-SNAPSHOT'
 
 
 project.version = '2.0.0-milestone-9-SNAPSHOT'
