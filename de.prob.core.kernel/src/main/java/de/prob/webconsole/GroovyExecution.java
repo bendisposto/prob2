@@ -20,9 +20,11 @@ import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IStatesCalculatedListener;
+import de.prob.statespace.StateSpace;
 import de.prob.testing.TestRegistry;
 
 /**
@@ -67,7 +69,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			"import de.prob.model.representation.*;",
 			"import de.prob.model.classicalb.*;",
 			"import de.prob.model.eventb.*;",
-			"import de.prob.animator.domainobjects.*;" ,
+			"import de.prob.animator.domainobjects.*;",
 			"import de.prob.animator.commands.*;" };
 	private final ShellCommands shellCommands;
 
@@ -89,7 +91,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		runInitScript(Resources.getResource("initscript"));
 	}
 
-	public void runInitScript(URL url) {
+	public void runInitScript(final URL url) {
 		String script = "";
 		try {
 			script = Resources.toString(url, Charsets.UTF_8);
@@ -252,7 +254,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	@Override
-	public void newTransitions() {
+	public void newTransitions(final StateSpace s, final List<OpInfo> ops) {
 		notifyListerners();
 	}
 

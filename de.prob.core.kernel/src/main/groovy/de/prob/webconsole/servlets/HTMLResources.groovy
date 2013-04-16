@@ -7,7 +7,11 @@ class HTMLResources {
 	}
 
 	def static String getValueVsTimeHTML(String sessionId) {
-		return getHTML(sessionId,"Value vss Time","valueOverTime.css","oszilloscope.js")
+		return getHTML(sessionId,"Value vs Time","valueOverTime.css","oszilloscope.js")
+	}
+
+	public static String getSSVizHTML(String sessionId) {
+		return getHTML(sessionId,"State Space Visualization","statespace.css","statespace.js");
 	}
 
 	/**

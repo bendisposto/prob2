@@ -1,5 +1,6 @@
 package de.prob.check;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -136,7 +137,6 @@ public class ModelChecker {
 						.name());
 				abort = res.isAbort();
 			}
-			s.notifyStateSpaceChange();
 			return res;
 		}
 
@@ -161,8 +161,10 @@ public class ModelChecker {
 
 			long i = s.getLastCalculatedStateId();
 
+			List<OpInfo> toNotify = new ArrayList<OpInfo>();
 			for (OpInfo opInfo : newOps) {
 				if (!ops.containsKey(opInfo.id)) {
+					toNotify.add(opInfo);
 					String sK = opInfo.src;
 					if (!sK.equals("root")) {
 						int value = Integer.parseInt(sK);
@@ -189,7 +191,7 @@ public class ModelChecker {
 			s.updateLastCalculatedStateId(i);
 			last = i;
 
-			s.notifyStateSpaceChange();
+			s.notifyStateSpaceChange(toNotify);
 		}
 
 	}

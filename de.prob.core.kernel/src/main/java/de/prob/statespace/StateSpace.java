@@ -111,16 +111,18 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		}
 		final List<OpInfo> enabledOperations = command.getEnabledOperations();
 
+		List<OpInfo> newOps = new ArrayList<OpInfo>();
 		for (final OpInfo op : enabledOperations) {
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
+				newOps.add(op);
 
 				final StateId newState = new StateId(op.dest, this);
 				addVertex(newState);
 				addEdge(op, getVertex(op.src), getVertex(op.dest));
 			}
 		}
-		notifyStateSpaceChange();
+		notifyStateSpaceChange(newOps);
 		evaluateFormulas(state);
 		return toString();
 	}
@@ -144,8 +146,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public String explore(final int i) {
-		if (i == -1)
+		if (i == -1) {
 			return explore("root");
+		}
 		final String si = String.valueOf(i);
 		return explore(si);
 	}
@@ -201,6 +204,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		final List<OpInfo> newOps = command.getOperations();
 		updateLastCalculatedStateId(stateId.numericalId());
 
+		List<OpInfo> toNotify = new ArrayList<OpInfo>();
 		// (id,name,src,dest,args)
 		for (final OpInfo op : newOps) {
 
@@ -211,10 +215,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			}
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
+				toNotify.add(op);
 				addEdge(op, getVertex(op.src), vertex);
 			}
 		}
-		notifyStateSpaceChange();
+		notifyStateSpaceChange(toNotify);
 		return newOps;
 	}
 
@@ -460,9 +465,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		stateSpaceListeners.remove(l);
 	}
 
-	public void notifyStateSpaceChange() {
+	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
-			listener.newTransitions();
+			listener.newTransitions(this, newOps);
 		}
 	}
 

@@ -12,7 +12,7 @@ public class VisualizationUtil {
 	public static VizView createVisualizationViewPart(final String sessionId,
 			final String relativeUrl) throws PartInitException {
 
-		String secId = "de.prob.ui.viz.VizView." + sessionId;
+		String secId = "de.prob.ui.viz.VizView.nr" + counter++;
 
 		IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();

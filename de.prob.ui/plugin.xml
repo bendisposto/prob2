@@ -157,6 +157,11 @@
                     value="enter">
               </parameter>
            </command>
+           <command
+                 commandId="de.prob.ui.viz.statespace"
+                 label="Open State Space Visualization"
+                 style="push">
+           </command>
         </menuContribution>
         <menuContribution
               allPopups="false"
@@ -250,6 +255,10 @@
                      name="eval"
                      optional="true">
                </commandParameter>
+            </command>
+            <command
+                  id="de.prob.ui.viz.statespace"
+                  name="Open State Space Visualization">
             </command>
    </extension>
    
@@ -433,6 +442,20 @@
             commandId="de.prob.ui.viz.formula">
          <class
                class="de.prob.ui.visualization.OpenTimeValueVizHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.viz.statespace">
+         <class
+               class="de.prob.ui.visualization.OpenStateSpaceVizHandler">
          </class>
          <enabledWhen>
             <with
