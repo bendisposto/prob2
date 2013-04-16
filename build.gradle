@@ -192,7 +192,7 @@ def String getExportedPackages(){
 	String exports = ""
 	for( int i = 0; i < exportList.size; i ++ ){
 		if( i >= ( exportList.size - 1 ) ){
-			exports = exports = exports + "\n" + exportList[i] + ","
+			exports = exports = exports + "\n" + exportList[i]
 		}else{
 			if( i > 0 )	 exports = exports +"\n" + exportList[i]
 			else		 exports = exports + exportList[i]	
