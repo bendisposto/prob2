@@ -1,13 +1,13 @@
 package de.prob.model.eventb;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Invariant;
-import de.prob.model.representation.InvariantList;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.NamedEntityList;
 import de.prob.model.representation.Variable;
 
 public class EventBMachine extends Machine {
@@ -41,7 +41,7 @@ public class EventBMachine extends Machine {
 	}
 
 	public List<EventBVariable> getVariables() {
-		List<EventBVariable> vars = new ArrayList<EventBVariable>();
+		List<EventBVariable> vars = new NamedEntityList<EventBVariable>();
 		Set<Variable> c = getChildrenOfType(Variable.class);
 		for (Variable variable : c) {
 			vars.add((EventBVariable) variable);
@@ -50,6 +50,33 @@ public class EventBMachine extends Machine {
 	}
 
 	public List<EventBInvariant> getInvariants() {
-		return new InvariantList(getChildrenOfType(Invariant.class));
+		List<EventBInvariant> invs = new NamedEntityList<EventBInvariant>();
+		Collection<Invariant> kids = getChildrenOfType(Invariant.class);
+		for (Invariant invariant : kids) {
+			if (invariant instanceof EventBInvariant) {
+				invs.add((EventBInvariant) invariant);
+			}
+		}
+		return invs;
 	}
+
+	public Variant getVariant() {
+		Set<Variant> kids = getChildrenOfType(Variant.class);
+		if (!kids.isEmpty()) {
+			return kids.iterator().next();
+		}
+		return null;
+	}
+
+	public List<Event> getEvents() {
+		List<Event> events = new NamedEntityList<Event>();
+		Set<BEvent> kids = getChildrenOfType(BEvent.class);
+		for (BEvent bEvent : kids) {
+			if (bEvent instanceof Event) {
+				events.add((Event) bEvent);
+			}
+		}
+		return events;
+	}
+
 }

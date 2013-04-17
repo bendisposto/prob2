@@ -1,5 +1,6 @@
 package de.prob.model.eventb;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -7,6 +8,7 @@ import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Action;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Guard;
+import de.prob.model.representation.NamedEntityList;
 
 public class Event extends BEvent {
 
@@ -49,20 +51,20 @@ public class Event extends BEvent {
 	public String toString() {
 		return getName();
 	}
-	
+
 	public String print() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Name: " + getName() + "\n");
 		sb.append("Type: " + type.toString() + "\n");
-		addChildren("Refines", getChildrenOfType(Event.class), sb);
-		addChildren("Any", getChildrenOfType(EventParameter.class), sb);
-		addChildren("Where", getChildrenOfType(Guard.class), sb);
-		addChildren("With", getChildrenOfType(Witness.class), sb);
-		addChildren("Then", getChildrenOfType(Action.class), sb);
+		printChildren("Refines", getChildrenOfType(Event.class), sb);
+		printChildren("Any", getChildrenOfType(EventParameter.class), sb);
+		printChildren("Where", getChildrenOfType(Guard.class), sb);
+		printChildren("With", getChildrenOfType(Witness.class), sb);
+		printChildren("Then", getChildrenOfType(Action.class), sb);
 		return sb.toString();
 	}
 
-	private void addChildren(final String name,
+	private void printChildren(final String name,
 			final Set<? extends AbstractElement> childrenOfType,
 			final StringBuilder sb) {
 		if (!childrenOfType.isEmpty()) {
@@ -71,5 +73,51 @@ public class Event extends BEvent {
 				sb.append("\t" + abstractElement.toString() + "\n");
 			}
 		}
+	}
+
+	public Event getRefines() {
+		Iterator<Event> iterator = getChildrenOfType(Event.class).iterator();
+		if (iterator.hasNext()) {
+			return iterator.next();
+		}
+		return null;
+	}
+
+	public List<EventBGuard> getGuards() {
+		List<EventBGuard> guards = new NamedEntityList<EventBGuard>();
+		Set<Guard> kids = getChildrenOfType(Guard.class);
+		for (Guard guard : kids) {
+			if (guard instanceof EventBGuard) {
+				guards.add((EventBGuard) guard);
+			}
+		}
+		return guards;
+	}
+
+	public List<EventBAction> getActions() {
+		List<EventBAction> actions = new NamedEntityList<EventBAction>();
+		Set<Action> kids = getChildrenOfType(Action.class);
+		for (Action action : kids) {
+			if (action instanceof EventBAction) {
+				actions.add((EventBAction) action);
+			}
+		}
+		return actions;
+	}
+
+	public Witness getWitness() {
+		Iterator<Witness> iterator = getChildrenOfType(Witness.class)
+				.iterator();
+		if (iterator.hasNext()) {
+			return iterator.next();
+		}
+		return null;
+	}
+
+	public List<EventParameter> getParameters() {
+		List<EventParameter> params = new NamedEntityList<EventParameter>();
+		Set<EventParameter> kids = getChildrenOfType(EventParameter.class);
+		params.addAll(kids);
+		return params;
 	}
 }

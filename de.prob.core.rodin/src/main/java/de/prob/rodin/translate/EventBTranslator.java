@@ -163,11 +163,11 @@ public class EventBTranslator {
 
 			List<EventBInvariant> invariants = new ArrayList<EventBInvariant>();
 			for (ISCInvariant iscInvariant : root.getSCInvariants()) {
-				String elementName = iscInvariant.getElementName();
+				String label = iscInvariant.getLabel();
 				String predicateString = iscInvariant.getPredicateString();
 				boolean theorem = iscInvariant.isTheorem();
-				invariants.add(new EventBInvariant(elementName,
-						predicateString, theorem));
+				invariants.add(new EventBInvariant(label, predicateString,
+						theorem));
 			}
 			machine.addInvariants(invariants);
 
