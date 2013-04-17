@@ -1,14 +1,10 @@
 package de.prob.model.eventb;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.Action;
-import de.prob.model.representation.BEvent;
-import de.prob.model.representation.Guard;
-import de.prob.model.representation.NamedEntityList;
+import de.prob.model.representation.AbstractElement
+import de.prob.model.representation.Action
+import de.prob.model.representation.BEvent
+import de.prob.model.representation.Guard
+import de.prob.model.representation.ModelElementList
 
 public class Event extends BEvent {
 
@@ -84,7 +80,7 @@ public class Event extends BEvent {
 	}
 
 	public List<EventBGuard> getGuards() {
-		List<EventBGuard> guards = new NamedEntityList<EventBGuard>();
+		List<EventBGuard> guards = new ModelElementList<EventBGuard>();
 		Set<Guard> kids = getChildrenOfType(Guard.class);
 		for (Guard guard : kids) {
 			if (guard instanceof EventBGuard) {
@@ -95,7 +91,7 @@ public class Event extends BEvent {
 	}
 
 	public List<EventBAction> getActions() {
-		List<EventBAction> actions = new NamedEntityList<EventBAction>();
+		List<EventBAction> actions = new ModelElementList<EventBAction>();
 		Set<Action> kids = getChildrenOfType(Action.class);
 		for (Action action : kids) {
 			if (action instanceof EventBAction) {
@@ -115,9 +111,24 @@ public class Event extends BEvent {
 	}
 
 	public List<EventParameter> getParameters() {
-		List<EventParameter> params = new NamedEntityList<EventParameter>();
+		List<EventParameter> params = new ModelElementList<EventParameter>();
 		Set<EventParameter> kids = getChildrenOfType(EventParameter.class);
 		params.addAll(kids);
 		return params;
+	}
+
+	def getProperty(String prop) {
+		if(prop == "refines") {
+			return getRefines()
+		} else if(prop == "guards") {
+			return getGuards()
+		} else if(prop == "actions") {
+			return getActions()
+		} else if(prop == "witness") {
+			return getWitness()
+		} else if(prop == "parameters") {
+			return getParameters()
+		}
+		Event.getMetaClass().getProperty(this, prop)
 	}
 }

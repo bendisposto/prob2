@@ -5,7 +5,7 @@ import de.prob.animator.domainobjects.IEvalElement
 
 
 
-public class NamedEntityList<E> implements List<E> {
+public class ModelElementList<E> implements List<E> {
 
 	def List<E> list = new ArrayList<E>()
 	def Map<String,E> keys = new HashMap<String,E>();
@@ -134,7 +134,7 @@ public class NamedEntityList<E> implements List<E> {
 
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
-		NamedEntityList<E> newList = new NamedEntityList<E>()
+		ModelElementList<E> newList = new ModelElementList<E>()
 		List<E> sub = list.subList(fromIndex, toIndex)
 		newList.addAll(sub)
 		return newList

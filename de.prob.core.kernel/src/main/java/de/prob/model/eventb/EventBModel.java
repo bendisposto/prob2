@@ -2,8 +2,6 @@ package de.prob.model.eventb;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import com.google.inject.Inject;
@@ -28,7 +26,7 @@ public class EventBModel extends AbstractModel {
 
 	@Override
 	public StateSchema getStateSchema() {
-		return this.schema;
+		return schema;
 	}
 
 	public void addMachines(final Collection<EventBMachine> collection) {
@@ -67,27 +65,14 @@ public class EventBModel extends AbstractModel {
 		return "";
 	}
 
-	@Override
-	public AbstractElement getComponent(final String name) {
-		for (Machine machine : getChildrenOfType(Machine.class)) {
-			if (machine.getName().equals(name)) {
-				return machine;
-			}
-		}
-		for (Context context : getChildrenOfType(Context.class)) {
-			if (context.getName().equals(name)) {
-				return context;
-			}
-		}
-		return null;
-	}
-
 	public void calculateGraph() {
 		for (Machine machine : getChildrenOfType(Machine.class)) {
 			graph.addVertex(machine.getName());
+			components.put(machine.getName(), machine);
 		}
 		for (Context context : getChildrenOfType(Context.class)) {
 			graph.addVertex(context.getName());
+			components.put(context.getName(), context);
 		}
 
 		for (Machine machine : getChildrenOfType(Machine.class)) {
@@ -107,18 +92,6 @@ public class EventBModel extends AbstractModel {
 						seen.getName());
 			}
 		}
-	}
-
-	@Override
-	public Map<String, AbstractElement> getComponents() {
-		Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
-		for (Machine machine : getChildrenOfType(Machine.class)) {
-			components.put(machine.getName(), machine);
-		}
-		for (Context context : getChildrenOfType(Context.class)) {
-			components.put(context.getName(), context);
-		}
-		return components;
 	}
 
 }

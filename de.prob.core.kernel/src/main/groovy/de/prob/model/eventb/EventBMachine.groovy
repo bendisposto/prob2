@@ -1,14 +1,10 @@
 package de.prob.model.eventb;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import de.prob.model.representation.BEvent;
-import de.prob.model.representation.Invariant;
-import de.prob.model.representation.Machine;
-import de.prob.model.representation.NamedEntityList;
-import de.prob.model.representation.Variable;
+import de.prob.model.representation.BEvent
+import de.prob.model.representation.Invariant
+import de.prob.model.representation.Machine
+import de.prob.model.representation.ModelElementList
+import de.prob.model.representation.Variable
 
 public class EventBMachine extends Machine {
 
@@ -41,7 +37,7 @@ public class EventBMachine extends Machine {
 	}
 
 	public List<EventBVariable> getVariables() {
-		List<EventBVariable> vars = new NamedEntityList<EventBVariable>();
+		List<EventBVariable> vars = new ModelElementList<EventBVariable>();
 		Set<Variable> c = getChildrenOfType(Variable.class);
 		for (Variable variable : c) {
 			vars.add((EventBVariable) variable);
@@ -50,7 +46,7 @@ public class EventBMachine extends Machine {
 	}
 
 	public List<EventBInvariant> getInvariants() {
-		List<EventBInvariant> invs = new NamedEntityList<EventBInvariant>();
+		List<EventBInvariant> invs = new ModelElementList<EventBInvariant>();
 		Collection<Invariant> kids = getChildrenOfType(Invariant.class);
 		for (Invariant invariant : kids) {
 			if (invariant instanceof EventBInvariant) {
@@ -69,7 +65,7 @@ public class EventBMachine extends Machine {
 	}
 
 	public List<Event> getEvents() {
-		List<Event> events = new NamedEntityList<Event>();
+		List<Event> events = new ModelElementList<Event>();
 		Set<BEvent> kids = getChildrenOfType(BEvent.class);
 		for (BEvent bEvent : kids) {
 			if (bEvent instanceof Event) {
@@ -79,4 +75,16 @@ public class EventBMachine extends Machine {
 		return events;
 	}
 
+	def getProperty(String prop) {
+		if(prop == "variables") {
+			return getVariables()
+		} else if(prop == "invariants") {
+			return getInvariants()
+		} else if(prop == "variant") {
+			return getVariant()
+		} else if(prop == "events") {
+			return getEvents()
+		}
+		Machine.getMetaClass().getProperty(this, prop)
+	}
 }
