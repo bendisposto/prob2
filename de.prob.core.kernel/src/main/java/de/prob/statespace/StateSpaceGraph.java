@@ -6,7 +6,7 @@ import java.util.HashMap;
 import de.prob.animator.domainobjects.OpInfo;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
-class StateSpaceGraph {
+public class StateSpaceGraph {
 
 	private final DirectedSparseMultigraph<StateId, OpInfo> graph;
 	protected final HashMap<String, StateId> states = new HashMap<String, StateId>();

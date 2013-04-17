@@ -5,5 +5,5 @@ import java.util.List;
 import de.prob.animator.domainobjects.OpInfo;
 
 public interface IStatesCalculatedListener {
-	public void newTransitions(StateSpace s, List<OpInfo> newOps);
+	public void newTransitions(StateSpaceGraph s, List<OpInfo> newOps);
 }

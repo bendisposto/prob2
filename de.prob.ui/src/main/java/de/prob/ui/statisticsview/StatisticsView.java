@@ -18,6 +18,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.StateSpaceGraph;
 import de.prob.webconsole.ServletContextListener;
 
 public class StatisticsView extends ViewPart implements IModelChangedListener,
@@ -108,7 +109,7 @@ public class StatisticsView extends ViewPart implements IModelChangedListener,
 	}
 
 	@Override
-	public void newTransitions(final StateSpace s, final List<OpInfo> ops) {
+	public void newTransitions(final StateSpaceGraph s, final List<OpInfo> ops) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {

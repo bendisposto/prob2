@@ -24,7 +24,7 @@ import de.prob.animator.domainobjects.OpInfo;
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IStatesCalculatedListener;
-import de.prob.statespace.StateSpace;
+import de.prob.statespace.StateSpaceGraph;
 import de.prob.testing.TestRegistry;
 
 /**
@@ -254,7 +254,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	@Override
-	public void newTransitions(final StateSpace s, final List<OpInfo> ops) {
+	public void newTransitions(final StateSpaceGraph s, final List<OpInfo> ops) {
 		notifyListerners();
 	}
 

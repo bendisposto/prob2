@@ -61,7 +61,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
-	private final List<IStatesCalculatedListener> stateSpaceListeners = new ArrayList<IStatesCalculatedListener>();
+	private final Set<IStatesCalculatedListener> stateSpaceListeners = new HashSet<IStatesCalculatedListener>();
 
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private long lastCalculatedStateId;
