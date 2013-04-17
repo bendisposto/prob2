@@ -1,10 +1,8 @@
 package de.prob.model.classicalb;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import com.google.inject.Inject;
@@ -66,32 +64,16 @@ public class ClassicalBModel extends AbstractModel {
 
 		put(Machine.class, machines);
 
+		for (ClassicalBMachine classicalBMachine : machines) {
+			components.put(classicalBMachine.getName(), classicalBMachine);
+		}
+
 		statespace.setModel(this);
 		return graph;
 	}
 
 	public ClassicalBMachine getMainMachine() {
 		return mainMachine;
-	}
-
-	@Override
-	public AbstractElement getComponent(final String name) {
-		Set<Machine> components = getChildrenOfType(Machine.class);
-		for (Machine machine : components) {
-			if (machine.getName().equals(name)) {
-				return machine;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public Map<String, AbstractElement> getComponents() {
-		Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
-		for (Machine machine : getChildrenOfType(Machine.class)) {
-			components.put(machine.getName(), machine);
-		}
-		return components;
 	}
 
 	@Override
