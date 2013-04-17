@@ -1,13 +1,14 @@
 package de.prob.webconsole.servlets;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,22 +25,27 @@ import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.StateSpaceGraph;
 import de.prob.visualization.AnimationNotLoadedException;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 
 @SuppressWarnings("serial")
 @Singleton
 public class StateSpaceServlet extends HttpServlet implements
 		IModelChangedListener, IStatesCalculatedListener {
 
+	private static int sessionId = 0;
+
+	public static int getSessionId() {
+		return sessionId++;
+	}
+
 	private final List<StateSpace> spaces = new ArrayList<StateSpace>();
 	private final List<StateSpaceData> dataObjects = new ArrayList<StateSpaceData>();
-	private final AnimationSelector animations;
+	private final Map<StateSpace, Set<Integer>> sessionMap = new HashMap<StateSpace, Set<Integer>>();
 	private StateSpace currentStateSpace;
 
 	@Inject
 	public StateSpaceServlet(final AnimationSelector animations) {
-		this.animations = animations;
 		animations.registerModelChangedListener(this);
 	}
 
@@ -81,11 +87,16 @@ public class StateSpaceServlet extends HttpServlet implements
 
 		int sessionId = Integer.parseInt(req.getParameter("sessionId"));
 		Boolean getFormula = Boolean.valueOf(req.getParameter("getSS"));
+		Boolean getAllStates = Boolean.valueOf(req.getParameter("getAll"));
 
 		if (sessionId >= 0 && sessionId < spaces.size()
 				&& spaces.get(sessionId) != null) {
 			if (getFormula) {
-				resp.put("data", dataObjects.get(sessionId).getData());
+				if (getAllStates) {
+					resp.put("data", dataObjects.get(sessionId).getData());
+				} else {
+					resp.put("data", dataObjects.get(sessionId).getChanges());
+				}
 			}
 			resp.put("count", dataObjects.get(sessionId).count());
 		} else {
@@ -101,21 +112,23 @@ public class StateSpaceServlet extends HttpServlet implements
 	}
 
 	@Override
-	public void newTransitions(final StateSpace s, final List<OpInfo> newOps) {
-		StateSpaceData d = dataObjects.get(spaces.indexOf(s));
-		d.addNewLinks(s, newOps);
+	public void newTransitions(final StateSpaceGraph s,
+			final List<OpInfo> newOps) {
+		Set<Integer> sessIds = sessionMap.get(s);
+		for (Integer integer : sessIds) {
+			StateSpaceData d = dataObjects.get(integer);
+			d.addNewLinks(s, newOps);
+		}
+
 	}
 
 	@Override
 	public void modelChanged(final StateSpace s) {
-		currentStateSpace = s;
-		if (!spaces.contains(s)) {
-			spaces.add(s);
-			StateSpaceData d = new StateSpaceData();
-			calculateData(s, d);
-			dataObjects.add(d);
-			s.registerStateSpaceListener(this);
+		if (!sessionMap.containsKey(currentStateSpace)) {
+			sessionMap.put(currentStateSpace, new HashSet<Integer>());
 		}
+		currentStateSpace = s;
+		s.registerStateSpaceListener(this);
 	}
 
 	public String openSession() throws AnimationNotLoadedException {
@@ -123,32 +136,33 @@ public class StateSpaceServlet extends HttpServlet implements
 			throw new AnimationNotLoadedException(
 					"Could not start state space visualization because no animation is loaded");
 		}
-		return spaces.indexOf(currentStateSpace) + "";
+		int sId = getSessionId();
+		spaces.add(currentStateSpace);
+		StateSpaceData d = new StateSpaceData();
+		calculateData(currentStateSpace, d);
+		dataObjects.add(d);
+		currentStateSpace.registerStateSpaceListener(this);
+		sessionMap.get(currentStateSpace).add(sId);
+
+		return sId + "";
 	}
 
 	public void closeSession(final String id) {
 		int iD = Integer.parseInt(id);
+		StateSpace s = spaces.get(iD);
+		sessionMap.get(s).remove(iD);
+
 		spaces.set(iD, null);
 		dataObjects.set(iD, null);
 	}
 
 	private void calculateData(final StateSpace s, final StateSpaceData d) {
-		SpringLayout<StateId, OpInfo> layout = new SpringLayout<StateId, OpInfo>(
-				s.getGraph());
-
-		Dimension preferredSize = new Dimension(1000, 1500);
-		layout.setSize(preferredSize);
-
-		layout.initialize();
-		Collection<StateId> vertices = layout.getGraph().getVertices();
+		Collection<StateId> vertices = s.getGraph().getVertices();
 		for (StateId stateId : vertices) {
-			d.addNode(0, 0, stateId);
-			// Point2D transform = layout.transform(stateId);
-			// d.addNode((int) (transform.getX()), (int) (transform.getY()),
-			// stateId);
+			d.addNode(stateId);
 		}
 
-		Collection<OpInfo> edges = layout.getGraph().getEdges();
+		Collection<OpInfo> edges = s.getGraph().getEdges();
 		for (OpInfo opInfo : edges) {
 			d.addLink(opInfo);
 		}

@@ -10,20 +10,23 @@ var svg = d3.select("#body").append("svg")
     .attr("width",width)
     .attr("height", height);
 
-function buildGraph(data) {
+var nodes = [];
+var links = [];
+
+function buildGraph() {
     force
-        .nodes(data.nodes)
-        .links(data.links)
+        .nodes(nodes)
+        .links(links)
         .start();
 
     var link = svg.selectAll(".link")
-          .data(data.links)
+          .data(links)
         .enter().append("line")
           .attr("class", "link")
           .style("stroke-width", function(d) { return 2; });
 
     var node = svg.selectAll(".node")
-          .data(data.nodes)
+          .data(nodes)
         .enter().append("g")
           .attr("class", "node")
           .call(force.drag);
@@ -40,13 +43,16 @@ function buildGraph(data) {
     node.append("title")
       .text(function(d) { return d.name; });
 
-    var safety = 0;
-    while(force.alpha() > 0) {
-      force.tick();
-      if(safety++ > 5000) {
-        break;
-      }
+    if(nodes.length > 50) {
+      var safety = 0;
+      while(force.alpha() > 0) {
+        force.tick();
+        if(safety++ > 5000) {
+          break;
+        }
+      };      
     };
+
 
     force.resume();
     force.on("tick", function() {
@@ -69,10 +75,11 @@ setInterval(function() {
 	
   	$.getJSON("statespace_servlet", {
   		sessionId : id,
-      getSS : false
+      getSS : false,
+      getAll : false
   	}, function(res) {
       if(res.count !== ssCtr) {
-        refresh(id);
+        refresh(id, ssCtr === 0);
       };
     });
 	
@@ -80,18 +87,37 @@ setInterval(function() {
   }, 300);
 };
 
-function refresh(id) {
+function refresh(id,getAllStates) {
   svg.selectAll(".link").remove();
   svg.selectAll(".node").remove();
 
 
   $.getJSON("statespace_servlet", {
     sessionId : id,
-    getSS : true
+    getSS : true,
+    getAll : getAllStates
   }, function(res) {
     ssCtr = res.count;
     if(res.data !== "") {
-      buildGraph(res.data);
+      var n = res.data.nodes
+      var l = res.data.links
+
+      for (var i = 0; i < n.length; i++) {
+        var node = n[i];
+        var index = node.parentIndex;
+        if(index !== -1 && index < nodes.length) {
+          var tN = nodes[index];
+          if(typeof(tN.x) !== 'undefined') {
+            node["x"] = tN.x;
+            node["y"] = tN.y;
+          };
+        };
+        nodes.push(n[i]);
+      };
+      for (var i = 0; i < l.length; i++) {
+        links.push(l[i]);
+      };
+      buildGraph();
     };
   });
 }

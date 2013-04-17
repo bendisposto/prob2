@@ -7,47 +7,70 @@ import java.util.Map;
 
 import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.StateId;
-import de.prob.statespace.StateSpace;
+import de.prob.statespace.StateSpaceGraph;
 
 public class StateSpaceData {
 
 	private final Data data;
 	private final Map<String, Node> nodes = new HashMap<String, Node>();
 	private final Map<String, Link> links = new HashMap<String, Link>();
+	private Data changes;
 
 	public StateSpaceData() {
 		data = new Data();
+		changes = new Data();
 	}
 
-	public void addNode(final int x, final int y, final StateId id) {
-		Node node = new Node(x, y, id.getId(), id.getId());
+	private Node addNode(final StateId id, final int parentIndex) {
+		Node node = new Node(id.getId(), id.getId(), parentIndex);
 		nodes.put(id.getId(), node);
 		data.nodes.add(node);
+		return node;
 	}
 
-	public void addLink(final OpInfo op) {
+	public Node addNode(final StateId id) {
+		return addNode(id, -1);
+	}
+
+	public Link addLink(final OpInfo op) {
 		Node src = nodes.get(op.src);
 		Node dest = nodes.get(op.dest);
 		Link link = new Link(op.id, data.nodes.indexOf(src),
 				data.nodes.indexOf(dest));
 		links.put(op.id, link);
 		data.links.add(link);
+		return link;
 	}
 
-	public void addNewLinks(final StateSpace s, final List<OpInfo> ops) {
+	public void addNewLinks(final StateSpaceGraph g, final List<OpInfo> ops) {
 		for (OpInfo opInfo : ops) {
-			Node src = nodes.get(opInfo.src);
-			if (src == null) {
-				addNode(0, 0, s.getVertex(opInfo.src));
-			}
+			if (!links.containsKey(opInfo.id)) {
+				if (!nodes.containsKey(opInfo.src)) {
+					Node newSrc = addNode(g.getVertex(opInfo.src));
+					changes.nodes.add(newSrc);
+				}
 
-			Node dest = nodes.get(opInfo.dest);
-			if (dest == null) {
-				addNode(src.x, src.y, s.getVertex(opInfo.dest));
-			}
+				if (!nodes.containsKey(opInfo.dest)) {
+					Node newDest = addNode(g.getVertex(opInfo.dest),
+							data.nodes.indexOf(nodes.get(opInfo.src)));
+					changes.nodes.add(newDest);
+				}
 
-			addLink(opInfo);
+				Link newLink = addLink(opInfo);
+				changes.links.add(newLink);
+			}
 		}
+	}
+
+	/**
+	 * @return an Data Object containing the changes since the last time the
+	 *         StateSpaceData was polled for data. The changes are returned and
+	 *         deleted.
+	 */
+	public Data getChanges() {
+		Data changes = this.changes;
+		this.changes = new Data();
+		return changes;
 	}
 
 	public boolean containsNode(final String id) {
@@ -85,16 +108,14 @@ public class StateSpaceData {
 	}
 
 	private class Node {
-		public int x;
-		public int y;
 		public String id;
 		public String name;
+		private final int parentIndex;
 
-		public Node(final int x, final int y, final String id, final String name) {
-			this.x = x;
-			this.y = y;
+		public Node(final String id, final String name, final int parentIndex) {
 			this.id = id;
 			this.name = name;
+			this.parentIndex = parentIndex;
 		}
 	}
 
@@ -103,9 +124,9 @@ public class StateSpaceData {
 		public int target;
 		public final String id;
 
-		public Link(final String id, final int source, final int target) {
-			this.source = source;
-			this.target = target;
+		public Link(final String id, final int i, final int j) {
+			source = i;
+			target = j;
 			this.id = id;
 		}
 	}
