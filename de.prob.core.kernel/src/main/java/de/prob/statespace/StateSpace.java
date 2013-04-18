@@ -2,6 +2,7 @@ package de.prob.statespace;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,15 +14,16 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
-import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.OpInfo;
+import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
@@ -101,28 +103,41 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 		final ExploreStateCommand command = new ExploreStateCommand(
 				state.getId());
-		animator.execute(command);
-		extractInformation(state, command);
+		try {
+			animator.execute(command);
+			extractInformation(state, command);
 
-		explored.add(state);
+			explored.add(state);
 
-		if (!state.getId().equals("root")) {
-			updateLastCalculatedStateId(state.numericalId());
-		}
-		final List<OpInfo> enabledOperations = command.getEnabledOperations();
+			if (!state.getId().equals("root")) {
+				updateLastCalculatedStateId(state.numericalId());
+			}
+			final List<OpInfo> enabledOperations = command
+					.getEnabledOperations();
 
-		for (final OpInfo op : enabledOperations) {
-			if (!containsEdge(op)) {
+			for (final OpInfo op : enabledOperations) {
+				if (!containsEdge(op)) {
+					ops.put(op.id, op);
+
+					final StateId newState = new StateId(op.dest, this);
+					addVertex(newState);
+					addEdge(op, getVertex(op.src), getVertex(op.dest));
+				}
+			}
+			notifyStateSpaceChange();
+			evaluateFormulas(state);
+		} catch (ProBError e) {
+			if (state == getRoot()) {
+				explored.add(state);
+				OpInfo op = new OpInfo("FAIL", "NO INITIALIZATION FOUND",
+						state.getId(), state.getId(),
+						Collections.<String> emptyList(), "");
 				ops.put(op.id, op);
-
-				final StateId newState = new StateId(op.dest, this);
-				addVertex(newState);
-				addEdge(op, getVertex(op.src), getVertex(op.dest));
+				addEdge(op, state, state);
 			}
 		}
-		notifyStateSpaceChange();
-		evaluateFormulas(state);
 		return toString();
+
 	}
 
 	private void extractInformation(final StateId state,
@@ -144,8 +159,9 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	}
 
 	public String explore(final int i) {
-		if (i == -1)
+		if (i == -1) {
 			return explore("root");
+		}
 		final String si = String.valueOf(i);
 		return explore(si);
 	}
