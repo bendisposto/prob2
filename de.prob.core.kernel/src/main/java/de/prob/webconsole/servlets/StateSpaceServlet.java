@@ -115,16 +115,18 @@ public class StateSpaceServlet extends HttpServlet implements
 	public void newTransitions(final StateSpaceGraph s,
 			final List<OpInfo> newOps) {
 		Set<Integer> sessIds = sessionMap.get(s);
-		for (Integer integer : sessIds) {
-			StateSpaceData d = dataObjects.get(integer);
-			d.addNewLinks(s, newOps);
+		if (sessIds != null) {
+			for (Integer integer : sessIds) {
+				StateSpaceData d = dataObjects.get(integer);
+				d.addNewLinks(s, newOps);
+			}
 		}
 
 	}
 
 	@Override
 	public void modelChanged(final StateSpace s) {
-		if (!sessionMap.containsKey(currentStateSpace)) {
+		if (s != null && !sessionMap.containsKey(currentStateSpace)) {
 			sessionMap.put(currentStateSpace, new HashSet<Integer>());
 		}
 		currentStateSpace = s;
