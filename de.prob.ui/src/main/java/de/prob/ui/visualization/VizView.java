@@ -48,7 +48,8 @@ public class VizView extends ViewPart {
 		return browser;
 	}
 
-	public void init(final String url) {
+	public void init(final String url, final String sessionId) {
+		this.sessionId = sessionId;
 		browser.setUrl("http://localhost:" + port + "/" + url);
 	}
 

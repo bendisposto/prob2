@@ -22,7 +22,7 @@ public class VisualizationUtil {
 				IWorkbenchPage.VIEW_VISIBLE);
 
 		if (vizView != null) {
-			vizView.init(relativeUrl);
+			vizView.init(relativeUrl, sessionId);
 		}
 
 		return vizView;
