@@ -1,28 +1,63 @@
-var m = [20, 120, 20, 120],
-    w = 3000 - m[1] - m[3],
-    h = 800 - m[0] - m[2],
-    i = 0,
-    root;
+var width;
+var height;
+
+function calculateDimensions() {
+  if( typeof( window.innerWidth ) == 'number' ) { width = window.innerWidth; height = window.innerHeight; } // NORMAL BROWSERS 
+  else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) { 
+    width = document.documentElement.clientWidth; height = document.documentElement.clientHeight; } // IE6+ 
+  else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) { 
+    width = document.body.clientWidth; height = document.body.clientHeight; }
+}
+
+calculateDimensions();
+var root;
+var i = 0;
 
 var tree = d3.layout.tree()
-    .size([h, w]);
+    .size([height, width]);
 
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
 
+var drag = d3.behavior.drag()
+  .origin(Object)
+  .on("drag", function(d) {
+    d.x += d3.event.dx;
+    d.y += d3.event.dy;
+    d3.select(this)
+        .attr('x', d.x)
+        .attr('y', d.y)
+        .attr('transform', 'translate('+d.x+","+d.y+")");
+  });
+
 var vis = d3.select("#body").append("svg:svg")
-    .attr("width", w + m[1] + m[3])
-    .attr("height", h + m[0] + m[2])
+    .attr("width", width)
+    .attr("height", height)
+    .attr("pointer-events","all")
   .append("svg:g")
-    .attr("transform", "translate(" + 25 + "," + m[0] + ")");  
+    .call(d3.behavior.zoom().on("zoom",redraw))
+  .append("svg:g");
+
+vis.append("svg:rect")
+    .attr("class","canvas")
+    .attr("width",width)
+    .attr("height",height)
+    .style("fill-opacity",1e-6);
+
+function redraw() {
+  vis.attr("transform","translate("+d3.event.translate+") scale("+d3.event.scale+")");
+}
 
 var nodeLength = {};
 var valueLength = {};
 
 function buildTree(treeData)
 {
+    vis.selectAll(".link").remove();
+    vis.selectAll(".node").remove();
+
     root = treeData
-    root.x0 = $(window).height() / 2;
+    root.x0 = height / 2;
     root.y0 = 0;
 
     var labels = {};
@@ -63,20 +98,22 @@ function calculateSize(data) {
   v.remove();
 }
 
-function update(source) {
-  var duration = d3.event && d3.event.altKey ? 5000 : 500;
-
-  // Compute the new tree layout.
-  var nodes = tree.nodes(root).reverse();
-
-  var calcWidth = function(key) {
+function calcWidth(key) {
     var labelL = nodeLength[key.name];
     var valueL = valueLength[key.value];
     if( labelL >= valueL) {
       return labelL;
     } 
     return valueL;
-  };
+};
+
+function update(source) {
+  var duration = d3.event && d3.event.altKey ? 5000 : 500;
+
+  // Compute the new tree layout.
+  var nodes = tree.nodes(root).reverse();
+
+
 
   var hasChildren = function(d) {
     return d.children || d._children;
@@ -107,7 +144,7 @@ function update(source) {
   };
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 180 + calcWidth(root); });
+  nodes.forEach(function(d) { d.y = d.depth * 180 + 40 + calcWidth(root) ; });
 
   // Update the nodes…
   var node = vis.selectAll("g.node")
@@ -253,8 +290,6 @@ function initialize(id) {
 };
 
 function refresh(id) {
-  vis.selectAll(".link").remove();
-  vis.selectAll(".node").remove();
 
   $.getJSON("predicate", {
     sessionId : id,
@@ -262,6 +297,7 @@ function refresh(id) {
   }, function(res) {
     functionCtr = res.count;
     if(res.data !== "") {
+      data = res.data;
       buildTree(res.data);     
     };
   });
