@@ -19,17 +19,6 @@ var tree = d3.layout.tree()
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
 
-var drag = d3.behavior.drag()
-  .origin(Object)
-  .on("drag", function(d) {
-    d.x += d3.event.dx;
-    d.y += d3.event.dy;
-    d3.select(this)
-        .attr('x', d.x)
-        .attr('y', d.y)
-        .attr('transform', 'translate('+d.x+","+d.y+")");
-  });
-
 var vis = d3.select("#body").append("svg:svg")
     .attr("width", width)
     .attr("height", height)
@@ -51,7 +40,7 @@ function redraw() {
 var nodeLength = {};
 var valueLength = {};
 
-function buildTree(treeData)
+function buildTree(treeData, attrs)
 {
     vis.selectAll(".link").remove();
     vis.selectAll(".node").remove();
@@ -65,7 +54,7 @@ function buildTree(treeData)
 
     calculateSize(root);
 
-    update(root);
+    update(root, attrs);
 }
 
 // static calculation of size of labels
@@ -107,7 +96,7 @@ function calcWidth(key) {
     return valueL;
 };
 
-function update(source) {
+function update(source, attrs) {
   var duration = d3.event && d3.event.altKey ? 5000 : 500;
 
   // Compute the new tree layout.
@@ -258,6 +247,14 @@ function update(source) {
   });
 
   vis.selectAll("node")
+
+    for (var ii = 0; ii < attrs.length; ii++) {
+      var selected = svg.selectAll(attrs[ii].selector);
+      var attributes = attrs[ii].attributes;
+      for (var j = attributes.length - 1; j >= 0; j--) {
+        selected.attr(attributes[j].name,attributes[j].attr);
+      };
+    };
 }
 
 // Toggle children.
@@ -298,7 +295,7 @@ function refresh(id) {
     functionCtr = res.count;
     if(res.data !== "") {
       data = res.data;
-      buildTree(res.data);     
+      buildTree(res.data, res.attrs);     
     };
   });
 }

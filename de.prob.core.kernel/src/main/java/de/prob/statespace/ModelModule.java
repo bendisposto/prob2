@@ -5,6 +5,7 @@ import com.google.inject.AbstractModule;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.scripting.CSPModel;
+import de.prob.visualization.VisualizationSelector;
 
 public class ModelModule extends AbstractModule {
 
@@ -16,5 +17,6 @@ public class ModelModule extends AbstractModule {
 		bind(EventBModel.class);
 		bind(CSPModel.class);
 		bind(AnimationSelector.class);
+		bind(VisualizationSelector.class);
 	}
 }

@@ -35,7 +35,7 @@ function redraw() {
 var nodes = [];
 var links = [];
 
-function buildGraph() {
+function buildGraph(attrs) {
     force
         .nodes(nodes)
         .links(links)
@@ -66,19 +66,29 @@ function buildGraph() {
           .data(nodes)
         .enter().append("g")
           .attr("class", "node")
+          .attr("id",function(d) {return "n"+d.id})
           .call(force.drag);
 
     node.append("circle")
       .attr("r",20)
-      .attr("id",function(d) { return "n"+d.id});
+      .attr("id",function(d) { return "c"+d.id});
 
     node.append("text")
       .attr("dy", ".35em")
       .attr("text-anchor","middle")
+      .attr("id", function(d) { return "t"+d.id})
       .text(function(d) {return d.name; });
 
     node.append("title")
       .text(function(d) { return d.name; });
+
+    for (var i = 0; i < attrs.length; i++) {
+      var selected = svg.selectAll(attrs[i].selector);
+      var attributes = attrs[i].attributes;
+      for (var j = 0; j < attributes.length; j++) {
+        selected.attr(attributes[j].name,attributes[j].attr);
+      };
+    };
 
     if(nodes.length > 50) {
       var safety = 0;
@@ -107,6 +117,7 @@ function buildGraph() {
 
       node.attr("transform", function(d) { return "translate("+d.x+","+d.y+")"});
     });
+
 
 }
 
@@ -161,7 +172,7 @@ function refresh(id,getAllStates) {
       for (var i = 0; i < l.length; i++) {
         links.push(l[i]);
       };
-      buildGraph();
+      buildGraph(res.attrs);
     };
   });
 }

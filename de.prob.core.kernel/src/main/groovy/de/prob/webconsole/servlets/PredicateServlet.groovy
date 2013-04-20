@@ -18,9 +18,12 @@ import de.prob.statespace.History
 import de.prob.statespace.IHistoryChangeListener
 import de.prob.statespace.StateSpace
 import de.prob.visualization.AnimationNotLoadedException
+import de.prob.visualization.IVisualizationServlet
+import de.prob.visualization.Selection
+import de.prob.visualization.VisualizationSelector
 
 @Singleton
-class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
+class PredicateServlet extends HttpServlet implements IHistoryChangeListener, IVisualizationServlet {
 
 	def static int idNr = 0
 
@@ -31,12 +34,16 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 	def final AnimationSelector animations
 	def Map<String,Session> sessions = new HashMap<String, Session>()
 	def Map<String, ExpandedFormula> formulas = new HashMap<String, ExpandedFormula>()
+	def Map<String, List<Selection>> userOptions = new HashMap<String, List<Selection>>()
 	def History history
+	private final VisualizationSelector visualizations;
 
 	@Inject
-	def PredicateServlet(final AnimationSelector animations) {
+	def PredicateServlet(final AnimationSelector animations, final VisualizationSelector visualizations) {
+		this.visualizations = visualizations;
 		this.animations = animations
 		animations.registerHistoryChangeListener(this)
+		visualizations.registerServlet(this, "Predicate Visualizations");
 	}
 
 	@Override
@@ -82,6 +89,7 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 				resp["data"] = formulas.get(sessionId)
 			}
 			resp["count"] = sessions.get(sessionId).count
+			resp["attrs"] = userOptions.get(sessionId)
 		} else {
 			resp["count"] = 0
 			resp["data"] = ""
@@ -127,6 +135,7 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 		def sess = new Session(sessionId,s,formulaId)
 		sessions[sessionId] = sess
 		calculateSession(sess)
+		visualizations.registerSession(sessionId, this)
 
 		return sessionId
 	}
@@ -152,5 +161,15 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener {
 	def closeSession(String sessionId) {
 		sessions.remove(sessionId);
 		formulas.remove(sessionId);
+	}
+
+	@Override
+	public void addUserDefinitions(String id, Selection selection) {
+		Session session = sessions.get(id);
+		session.inc();
+		if (!userOptions.containsKey(id)) {
+			userOptions.put(id, new ArrayList<Selection>());
+		}
+		userOptions.get(id).add(selection);
 	}
 }

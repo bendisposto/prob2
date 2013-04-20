@@ -27,11 +27,14 @@ import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.StateSpaceGraph;
 import de.prob.visualization.AnimationNotLoadedException;
+import de.prob.visualization.IVisualizationServlet;
+import de.prob.visualization.Selection;
+import de.prob.visualization.VisualizationSelector;
 
 @SuppressWarnings("serial")
 @Singleton
 public class StateSpaceServlet extends HttpServlet implements
-		IModelChangedListener, IStatesCalculatedListener {
+		IModelChangedListener, IStatesCalculatedListener, IVisualizationServlet {
 
 	private static int sessionId = 0;
 
@@ -42,10 +45,15 @@ public class StateSpaceServlet extends HttpServlet implements
 	private final List<StateSpace> spaces = new ArrayList<StateSpace>();
 	private final List<StateSpaceData> dataObjects = new ArrayList<StateSpaceData>();
 	private final Map<StateSpace, Set<Integer>> sessionMap = new HashMap<StateSpace, Set<Integer>>();
+	private final List<List<Selection>> userOptions = new ArrayList<List<Selection>>();
 	private StateSpace currentStateSpace;
+	private final VisualizationSelector visualizations;
 
 	@Inject
-	public StateSpaceServlet(final AnimationSelector animations) {
+	public StateSpaceServlet(final AnimationSelector animations,
+			final VisualizationSelector visualizations) {
+		this.visualizations = visualizations;
+		visualizations.registerServlet(this, "State Space Visualizations");
 		animations.registerModelChangedListener(this);
 	}
 
@@ -98,7 +106,9 @@ public class StateSpaceServlet extends HttpServlet implements
 					resp.put("data", dataObjects.get(sessionId).getChanges());
 				}
 			}
-			resp.put("count", dataObjects.get(sessionId).count());
+			resp.put("count", dataObjects.get(sessionId).count()
+					+ userOptions.get(sessionId).size());
+			resp.put("attrs", userOptions.get(sessionId));
 		} else {
 			resp.put("count", 0);
 			resp.put("data", "");
@@ -127,10 +137,10 @@ public class StateSpaceServlet extends HttpServlet implements
 	@Override
 	public void modelChanged(final StateSpace s) {
 		if (s != null && !sessionMap.containsKey(currentStateSpace)) {
-			sessionMap.put(currentStateSpace, new HashSet<Integer>());
+			sessionMap.put(s, new HashSet<Integer>());
+			currentStateSpace = s;
+			s.registerStateSpaceListener(this);
 		}
-		currentStateSpace = s;
-		s.registerStateSpaceListener(this);
 	}
 
 	public String openSession() throws AnimationNotLoadedException {
@@ -143,8 +153,10 @@ public class StateSpaceServlet extends HttpServlet implements
 		StateSpaceData d = new StateSpaceData();
 		calculateData(currentStateSpace, d);
 		dataObjects.add(d);
+		userOptions.add(new ArrayList<Selection>());
 		currentStateSpace.registerStateSpaceListener(this);
 		sessionMap.get(currentStateSpace).add(sId);
+		visualizations.registerSession(sId + "", this);
 
 		return sId + "";
 	}
@@ -168,5 +180,11 @@ public class StateSpaceServlet extends HttpServlet implements
 		for (OpInfo opInfo : edges) {
 			d.addLink(opInfo);
 		}
+	}
+
+	@Override
+	public void addUserDefinitions(final String id, final Selection selection) {
+		List<Selection> list = userOptions.get(Integer.parseInt(id));
+		list.add(selection);
 	}
 }
