@@ -641,7 +641,7 @@ task tycho(dependsOn: [createPoms] , type:Exec) {
 	"""}
 
 
-	def end() {"""	
+	def end() {"""
 	</project>
 	"""}
 	
@@ -771,22 +771,6 @@ def String reposiBuildStep(){
 
 				</executions>
 		    </plugin>
-		
-			<plugin>
-			   <groupId>org.eclipse.tycho</groupId>
-			   <artifactId>target-platform-configuration</artifactId>
-			   <version>${tycho-version}</version>
-			   <configuration>
-			      <filters>
-			         <filter>
-			            <type>eclipse-plugin</type>
-			            <id>unwanted.bundle.id</id>
-			            <removeAll />
-			         </filter>
-			      </filters>
-			   </configuration>
-			</plugin>
-		
 		  </plugins>
 		</build>
 		"""
