@@ -26,6 +26,6 @@ We assume, you have a fresh copy of Eclipse 4.2 and an empty workspace at hand. 
 IMPORTANT:
 -  The PermGenSpace for the application grows to nearly 100MB so the vm option -XX:MaxPermSize=120m needs to be set
 
--  When adding additional projects which are dependant on de.prob.core.kernel make sure to mark them as optional in their MANIFEST files for the tycho build
+-  When adding additional projects which are dependant on de.prob.core.kernel make sure to mark it as optional in their MANIFEST files for the tycho build
   
 (c) 2012 Jens Bendisposto et.al. , all rights reserved
