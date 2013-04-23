@@ -102,8 +102,6 @@ function update(source, attrs) {
   // Compute the new tree layout.
   var nodes = tree.nodes(root).reverse();
 
-
-
   var hasChildren = function(d) {
     return d.children || d._children;
   };
@@ -146,11 +144,10 @@ function update(source, attrs) {
       .on("click", function(d) { toggle(d); update(d); });
 
   nodeEnter.append("svg:rect")
-                .attr("width",function(d) { return calcWidth(d)+20; })
                 .attr("height",60)
                 .attr("y",-30)
-                .attr("x", function(d) { return hasChildren(d) ? -(calcWidth(d)+20) : 0; })
                 .attr("rx",10)
+                .attr("id",function(d) { return "r"+d.fId})
                 .style("fill", function(d) { return calcColor(d); })
                 .style("stroke", function(d) { return colorMain(d); })
                 .style("stroke-width", 1e-6);
@@ -161,7 +158,17 @@ function update(source, attrs) {
       .attr("dy", "-1em")
       .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
       .text(function(d) { return d.name; })
-      .style("fill-opacity", 1e-6);
+      .style("fill-opacity", 1e-6)
+      .attr("id", function(d) {
+        var textW = this.getBBox().width;
+        console.log(textW);
+        var newX = hasChildren(d) ? -(textW+20) : 0;
+        d3.select("#r"+d.fId)
+          .attr("width",textW+20)
+          .attr("x",newX);
+        d["tW"] = textW;
+        return "t"+d.fId;
+      });
 
   nodeEnter.append("svg:text")
       .attr("class","value")
@@ -170,6 +177,16 @@ function update(source, attrs) {
       .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
       .text(function(d) { return d.value; })
       .style("fill-opacity", 1e-6)
+      .attr("id",function(d) {
+        var textW = this.getBBox().width;
+        if(textW > d.tW) {
+          var newX = hasChildren(d) ? -(textW+20) : 0;
+          d3.select("#r"+d.fId)
+            .attr("width",textW+20)
+            .attr("x",newX);
+        }
+        return "v"+d.fId;
+      });
 
   // Resize Rectangles to fit text
 
