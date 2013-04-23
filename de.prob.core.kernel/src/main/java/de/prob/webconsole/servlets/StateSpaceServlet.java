@@ -109,9 +109,11 @@ public class StateSpaceServlet extends HttpServlet implements
 			resp.put("count", dataObjects.get(sessionId).count()
 					+ userOptions.get(sessionId).size());
 			resp.put("attrs", userOptions.get(sessionId));
+			resp.put("varCount", dataObjects.get(sessionId).varSize());
 		} else {
 			resp.put("count", 0);
 			resp.put("data", "");
+			resp.put("varCount", 0);
 		}
 
 		Gson g = new Gson();
@@ -127,7 +129,7 @@ public class StateSpaceServlet extends HttpServlet implements
 		Set<Integer> sessIds = sessionMap.get(s);
 		if (sessIds != null) {
 			for (Integer integer : sessIds) {
-				StateSpaceData d = dataObjects.get(integer);
+				final StateSpaceData d = dataObjects.get(integer);
 				d.addNewLinks(s, newOps);
 			}
 		}
@@ -150,7 +152,7 @@ public class StateSpaceServlet extends HttpServlet implements
 		}
 		int sId = getSessionId();
 		spaces.add(currentStateSpace);
-		StateSpaceData d = new StateSpaceData();
+		StateSpaceData d = new StateSpaceData(currentStateSpace);
 		calculateData(currentStateSpace, d);
 		dataObjects.add(d);
 		userOptions.add(new ArrayList<Selection>());

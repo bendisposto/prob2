@@ -35,32 +35,30 @@ function redraw() {
 var nodes = [];
 var links = [];
 
-function buildGraph(attrs) {
+function buildGraph(attrs,n) {
     force
         .nodes(nodes)
         .links(links)
         .start();
 
-    // build the arrow
-    svg.append("svg:defs").selectAll("marker")
-          .data(["end"])
-        .enter().append("svg:marker")
-          .attr("id", String)
-          .attr("viewBox", "0 -5 10 10")
-          .attr("refX", 32)
-          .attr("refY", -1.5)
-          .attr("markerWidth", 6)
-          .attr("markerHeight", 6)
-          .attr("orient", "auto")
-        .append("svg:path")
-          .attr("d", "M0,-5L10,0L0,5");
+    var l = svg.append("svg:g");
 
-
-    var path = svg.append("svg:g").selectAll("path")
+    var path = l.selectAll("path")
           .data(links)
         .enter().append("svg:path")
           .attr("class", "link")
-          .style("marker-end", "url(#end)");
+          .attr("id",function(d) { return "arc"+d.id });
+
+    var text = l.selectAll("text")
+            .data(links)
+          .enter().append("svg:text")
+            .attr("text-anchor","start")
+            .attr("dx","25")
+            .attr("font-size","3px");
+
+    text.append("textPath")
+              .attr("xlink:href",function(d) { return "#arc"+d.id })
+              .text(function(d) {return d.name});
 
     var node = svg.selectAll(".node")
           .data(nodes)
@@ -69,15 +67,36 @@ function buildGraph(attrs) {
           .attr("id",function(d) {return "n"+d.id})
           .call(force.drag);
 
-    node.append("circle")
-      .attr("r",20)
-      .attr("id",function(d) { return "c"+d.id});
+    var boxH = n*5+5;
 
-    node.append("text")
-      .attr("dy", ".35em")
-      .attr("text-anchor","middle")
-      .attr("id", function(d) { return "t"+d.id})
-      .text(function(d) {return d.name; });
+    node.append("rect")
+      .attr("width","40")
+      .attr("height",boxH+"")
+      .attr("rx","5")
+      .attr("ry","5")
+      .attr("id",function(d) { return "r"+d.id});
+
+    for(var i = 0 ; i < n ; i++) {
+      node.append("text")
+        .attr("stroke-width","0px")
+        .attr("class","nText")
+        .attr("text-anchor","middle")
+        .attr("dy",function(d) { return 5*(i+1)+"" })
+        .attr("font-size","3px")
+        .attr("fill","white")
+        .text(function(d) {return d.vars[i]; })
+        .attr("id", function(d) {return "t"+d.id});
+    }
+
+    d3.selectAll(".nText")
+        .attr("dx",function(d) {
+          var textW = this.getBBox().width;
+          if(textW > 35) {
+            d3.select("#r"+d.id).attr("width",textW+5+"");
+            return Math.round((textW - 35)/2 + 20) + "";
+          }
+          return "20";
+        });
 
     node.append("title")
       .text(function(d) { return d.name; });
@@ -106,16 +125,24 @@ function buildGraph(attrs) {
       path.attr("d", function(d) {
         var dx = d.target.x - d.source.x,
             dy = d.target.y - d.source.y,
-            dr = Math.sqrt(dx * dx + dy * dy);
-        return "M" + 
+            dr =  Math.sqrt(dx * dx + dy * dy);
+          if(dr === 0) {
+            var srcx = d.target.x,
+                srcy = d.target.y,
+                xMinus30 = srcx - 30,
+                yMinus20 = srcy -20,
+                yPlus20 = srcy + 20;
+            return "M"+srcx+","+srcy+" L"+xMinus30+","+yPlus20+" L"+xMinus30+","+yMinus20+" L"+srcx+","+srcy;
+          } else { return "M" + 
             d.source.x + "," + 
             d.source.y + "A" + 
             dr + "," + dr + " 0 0,1 " + 
             d.target.x + "," + 
             d.target.y;
+          };
     });
 
-      node.attr("transform", function(d) { return "translate("+d.x+","+d.y+")"});
+      node.attr("transform", function(d) {var nx = d.x-20, ny = d.y-20; return "translate("+nx+","+ny+")"});
     });
 
 
@@ -172,7 +199,7 @@ function refresh(id,getAllStates) {
       for (var i = 0; i < l.length; i++) {
         links.push(l[i]);
       };
-      buildGraph(res.attrs);
+      buildGraph(res.attrs,res.varCount);
     };
   });
 }
