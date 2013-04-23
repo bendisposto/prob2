@@ -36,6 +36,7 @@ public class OpInfo {
 	public final String dest;
 	public List<String> params = new ArrayList<String>();
 	public String targetState;
+	public String rep = null;
 	public boolean evaluated;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
@@ -116,7 +117,7 @@ public class OpInfo {
 		targetState = getIdFromPrologTerm(opTerm.getArgument(8));
 
 		this.id = id;
-		this.name = PrologTerm.atomicString(opTerm.getArgument(2));
+		name = PrologTerm.atomicString(opTerm.getArgument(2));
 		this.src = src;
 		this.dest = dest;
 		evaluated = true;
@@ -159,6 +160,13 @@ public class OpInfo {
 	}
 
 	public String getRep(final AbstractModel m) {
+		if (rep == null) {
+			rep = generateRep(m);
+		}
+		return rep;
+	}
+
+	private String generateRep(final AbstractModel m) {
 		if (!evaluated) {
 			ensureEvaluated(m.getStatespace());
 		}
