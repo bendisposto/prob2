@@ -134,6 +134,7 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener, IV
 
 		def sess = new Session(sessionId,s,formulaId)
 		sessions[sessionId] = sess
+		userOptions[sessionId] = []
 		calculateSession(sess)
 		visualizations.registerSession(sessionId, this)
 
