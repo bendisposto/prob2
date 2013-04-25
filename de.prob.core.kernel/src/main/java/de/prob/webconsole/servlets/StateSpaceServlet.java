@@ -19,16 +19,21 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.animator.domainobjects.OpInfo;
+import de.prob.animator.command.ApplySignatureMergeCommand;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IModelChangedListener;
+import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
+import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
-import de.prob.statespace.StateSpaceGraph;
+import de.prob.statespace.derived.SignatureMergedStateSpace;
+import de.prob.visualization.AbstractData;
 import de.prob.visualization.AnimationNotLoadedException;
+import de.prob.visualization.DerivedStateSpaceData;
 import de.prob.visualization.IVisualizationServlet;
 import de.prob.visualization.Selection;
+import de.prob.visualization.StateSpaceData;
 import de.prob.visualization.VisualizationSelector;
 
 @SuppressWarnings("serial")
@@ -38,14 +43,14 @@ public class StateSpaceServlet extends HttpServlet implements
 
 	private static int sessionId = 0;
 
-	public static int getSessionId() {
-		return sessionId++;
+	public static String getSessionId() {
+		return "space" + sessionId++;
 	}
 
-	private final List<StateSpace> spaces = new ArrayList<StateSpace>();
-	private final List<StateSpaceData> dataObjects = new ArrayList<StateSpaceData>();
-	private final Map<StateSpace, Set<Integer>> sessionMap = new HashMap<StateSpace, Set<Integer>>();
-	private final List<List<Selection>> userOptions = new ArrayList<List<Selection>>();
+	private final Map<String, IStateSpace> spaces = new HashMap<String, IStateSpace>();
+	private final Map<String, AbstractData> dataObjects = new HashMap<String, AbstractData>();
+	private final Map<IStateSpace, Set<String>> sessionMap = new HashMap<IStateSpace, Set<String>>();
+	private final Map<String, List<Selection>> userOptions = new HashMap<String, List<Selection>>();
 	private StateSpace currentStateSpace;
 	private final VisualizationSelector visualizations;
 
@@ -74,10 +79,10 @@ public class StateSpaceServlet extends HttpServlet implements
 			final HttpServletResponse res) throws IOException {
 		res.setContentType("text/html");
 
-		int sId = Integer.parseInt(req.getParameter("init"));
+		String sId = req.getParameter("init");
 
 		String html = "";
-		if (sId >= 0 && sId < spaces.size() && spaces.get(sId) != null) {
+		if (dataObjects.containsKey(sId)) {
 			html = HTMLResources.getSSVizHTML(sId + "");
 		}
 
@@ -93,23 +98,23 @@ public class StateSpaceServlet extends HttpServlet implements
 		PrintWriter out = res.getWriter();
 		Map<String, Object> resp = new HashMap<String, Object>();
 
-		int sessionId = Integer.parseInt(req.getParameter("sessionId"));
+		String sessionId = req.getParameter("sessionId");
 		Boolean getFormula = Boolean.valueOf(req.getParameter("getSS"));
 		Boolean getAllStates = Boolean.valueOf(req.getParameter("getAll"));
 
-		if (sessionId >= 0 && sessionId < spaces.size()
-				&& spaces.get(sessionId) != null) {
+		if (dataObjects.containsKey(sessionId)) {
+			AbstractData data = dataObjects.get(sessionId);
+			userOptions.get(sessionId).addAll(data.getStyling());
 			if (getFormula) {
 				if (getAllStates) {
-					resp.put("data", dataObjects.get(sessionId).getData());
+					resp.put("data", data.getData());
 				} else {
-					resp.put("data", dataObjects.get(sessionId).getChanges());
+					resp.put("data", data.getChanges());
 				}
 			}
-			resp.put("count", dataObjects.get(sessionId).count()
-					+ userOptions.get(sessionId).size());
+			resp.put("count", data.count() + userOptions.get(sessionId).size());
 			resp.put("attrs", userOptions.get(sessionId));
-			resp.put("varCount", dataObjects.get(sessionId).varSize());
+			resp.put("varCount", data.varSize());
 		} else {
 			resp.put("count", 0);
 			resp.put("data", "");
@@ -124,13 +129,13 @@ public class StateSpaceServlet extends HttpServlet implements
 	}
 
 	@Override
-	public void newTransitions(final StateSpaceGraph s,
-			final List<OpInfo> newOps) {
-		Set<Integer> sessIds = sessionMap.get(s);
+	public void newTransitions(final IStateSpace s,
+			final List<? extends OpInfo> newOps) {
+		Set<String> sessIds = sessionMap.get(s);
 		if (sessIds != null) {
-			for (Integer integer : sessIds) {
-				final StateSpaceData d = dataObjects.get(integer);
-				d.addNewLinks(s, newOps);
+			for (String id : sessIds) {
+				final AbstractData d = dataObjects.get(id);
+				d.addNewLinks(s.getSSGraph(), newOps);
 			}
 		}
 
@@ -138,10 +143,12 @@ public class StateSpaceServlet extends HttpServlet implements
 
 	@Override
 	public void modelChanged(final StateSpace s) {
-		if (s != null && !sessionMap.containsKey(currentStateSpace)) {
-			sessionMap.put(s, new HashSet<Integer>());
+		if (s != null) {
 			currentStateSpace = s;
-			s.registerStateSpaceListener(this);
+			if (!sessionMap.containsKey(currentStateSpace)) {
+				sessionMap.put(s, new HashSet<String>());
+				s.registerStateSpaceListener(this);
+			}
 		}
 	}
 
@@ -150,12 +157,12 @@ public class StateSpaceServlet extends HttpServlet implements
 			throw new AnimationNotLoadedException(
 					"Could not start state space visualization because no animation is loaded");
 		}
-		int sId = getSessionId();
-		spaces.add(currentStateSpace);
+		String sId = getSessionId();
+		spaces.put(sId, currentStateSpace);
 		StateSpaceData d = new StateSpaceData(currentStateSpace);
 		calculateData(currentStateSpace, d);
-		dataObjects.add(d);
-		userOptions.add(new ArrayList<Selection>());
+		dataObjects.put(sId, d);
+		userOptions.put(sId, new ArrayList<Selection>());
 		currentStateSpace.registerStateSpaceListener(this);
 		sessionMap.get(currentStateSpace).add(sId);
 		visualizations.registerSession(sId + "", this);
@@ -164,29 +171,59 @@ public class StateSpaceServlet extends HttpServlet implements
 	}
 
 	public void closeSession(final String id) {
-		int iD = Integer.parseInt(id);
-		StateSpace s = spaces.get(iD);
-		sessionMap.get(s).remove(iD);
+		IStateSpace s = spaces.get(id);
+		sessionMap.get(s).remove(id);
 
-		spaces.set(iD, null);
-		dataObjects.set(iD, null);
+		spaces.remove(s);
+		dataObjects.remove(id);
+		userOptions.remove(id);
 	}
 
-	private void calculateData(final StateSpace s, final StateSpaceData d) {
-		Collection<StateId> vertices = s.getGraph().getVertices();
+	private void calculateData(final IStateSpace s, final AbstractData d) {
+		Collection<StateId> vertices = s.getSSGraph().getVertices();
 		for (StateId stateId : vertices) {
 			d.addNode(stateId);
 		}
 
-		Collection<OpInfo> edges = s.getGraph().getEdges();
+		Collection<OpInfo> edges = s.getSSGraph().getEdges();
 		for (OpInfo opInfo : edges) {
 			d.addLink(opInfo);
 		}
 	}
 
+	public void createSigMergeGraph(final String sessionId) {
+		IStateSpace iStateSpace = spaces.get(sessionId);
+		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand();
+		iStateSpace.execute(cmd);
+		SignatureMergedStateSpace space = new SignatureMergedStateSpace(
+				iStateSpace);
+		space.addStates(cmd.getStates());
+		space.addTransitions(cmd.getOps());
+
+		spaces.remove(sessionId);
+		dataObjects.remove(sessionId);
+		userOptions.remove(sessionId);
+		sessionMap.get(iStateSpace).remove(sessionId);
+
+		if (sessionMap.get(iStateSpace).isEmpty()) {
+			iStateSpace.deregisterStateSpaceListener(this);
+		}
+
+		spaces.put(sessionId, space);
+		AbstractData d = new DerivedStateSpaceData();
+		calculateData(space, d);
+		dataObjects.put(sessionId, d);
+		userOptions.put(sessionId, new ArrayList<Selection>());
+		space.registerStateSpaceListener(this);
+		if (!sessionMap.containsKey(space)) {
+			sessionMap.put(space, new HashSet<String>());
+		}
+		sessionMap.get(space).add(sessionId);
+
+	}
+
 	@Override
 	public void addUserDefinitions(final String id, final Selection selection) {
-		List<Selection> list = userOptions.get(Integer.parseInt(id));
-		list.add(selection);
+		userOptions.get(id).add(selection);
 	}
 }
