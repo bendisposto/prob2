@@ -20,11 +20,11 @@ import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
-import de.prob.statespace.StateSpaceGraph;
+import de.prob.statespace.OpInfo;
 import de.prob.testing.TestRegistry;
 import de.prob.visualization.VisualizationSelector;
 
@@ -256,7 +256,8 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	@Override
-	public void newTransitions(final StateSpaceGraph s, final List<OpInfo> ops) {
+	public void newTransitions(final IStateSpace s,
+			final List<? extends OpInfo> ops) {
 		notifyListerners();
 	}
 

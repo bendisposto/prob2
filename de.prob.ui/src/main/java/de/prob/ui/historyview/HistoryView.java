@@ -17,10 +17,10 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Injector;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.OpInfo;
 import de.prob.webconsole.ServletContextListener;
 
 /**

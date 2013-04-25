@@ -3,13 +3,13 @@ package de.prob.animator.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.OpInfo;
 
 public class GetOpFromId implements ICommand {
 

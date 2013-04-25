@@ -3,7 +3,6 @@ package de.prob.statespace;
 import java.util.Collection;
 import java.util.HashMap;
 
-import de.prob.animator.domainobjects.OpInfo;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 public class StateSpaceGraph {

@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import de.prob.animator.command.ConsistencyCheckingCommand;
-import de.prob.animator.domainobjects.OpInfo;
+import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 

@@ -5,7 +5,6 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 import de.prob.animator.IAnimator
-import de.prob.animator.domainobjects.OpInfo
 import de.prob.exception.ProBError
 
 class StateSpaceTest extends Specification {

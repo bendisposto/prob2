@@ -21,7 +21,6 @@ import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
@@ -50,7 +49,7 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
  * @author joy
  * 
  */
-public class StateSpace extends StateSpaceGraph implements IAnimator {
+public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	private transient IAnimator animator;
 
@@ -457,15 +456,18 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param l
 	 */
+	@Override
 	public void registerStateSpaceListener(final IStatesCalculatedListener l) {
 		stateSpaceListeners.add(l);
 	}
 
+	@Override
 	public void deregisterStateSpaceListener(final IStatesCalculatedListener l) {
 		stateSpaceListeners.remove(l);
 	}
 
-	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
+	@Override
+	public void notifyStateSpaceChange(final List<? extends OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
 			listener.newTransitions(this, newOps);
 		}
@@ -718,5 +720,10 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	public void updateLastCalculatedStateId(final long lastCalculatedId) {
 		lastCalculatedStateId = Math.max(lastCalculatedStateId,
 				lastCalculatedId);
+	}
+
+	@Override
+	public StateSpaceGraph getSSGraph() {
+		return this;
 	}
 }

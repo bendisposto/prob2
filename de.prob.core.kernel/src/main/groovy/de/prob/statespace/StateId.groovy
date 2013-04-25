@@ -4,7 +4,6 @@ import de.prob.animator.domainobjects.CSP
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EventB
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.OpInfo
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.scripting.CSPModel
@@ -12,7 +11,7 @@ import de.prob.scripting.CSPModel
 
 class StateId {
 
-	def id;
+	protected def id;
 	def StateSpace space;
 
 	def invokeMethod(String method,  params) {

@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import de.prob.animator.domainobjects.OpInfo;
+import de.prob.statespace.OpInfo;
 
 public class SelectOperationDialog extends Dialog {
 

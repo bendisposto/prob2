@@ -1,4 +1,4 @@
-package de.prob.animator.domainobjects;
+package de.prob.statespace;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpFromId;
+import de.prob.animator.domainobjects.ValueTranslator;
 import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -19,7 +20,6 @@ import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.scripting.CSPModel;
-import de.prob.statespace.StateSpace;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -224,5 +224,14 @@ public class OpInfo {
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		md.update(targetState.getBytes());
 		return new BigInteger(1, md.digest()).toString(16);
+	}
+
+	/**
+	 * @return the saved String representation. Can be null if rep has not yet
+	 *         been generated. To generate the String rep for a given model use
+	 *         {{@link #getRep(AbstractModel)};
+	 */
+	public String getRep() {
+		return rep;
 	}
 }

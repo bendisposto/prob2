@@ -3,7 +3,6 @@ package de.prob.statespace;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.animator.domainobjects.OpInfo;
 
 /**
  * This class is used within the {@link History} object to create the linked

@@ -1,6 +1,5 @@
 package de.prob.statespace
 
-import de.prob.animator.domainobjects.OpInfo
 
 
 

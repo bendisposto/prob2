@@ -32,7 +32,6 @@ import org.eclipse.ui.services.ISourceProviderService;
 import com.google.common.base.Joiner;
 import com.google.inject.Injector;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.BEvent;
@@ -40,6 +39,7 @@ import de.prob.model.representation.Machine;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.OpInfo;
 import de.prob.ui.services.HistoryActiveProvider;
 import de.prob.ui.services.ModelLoadedProvider;
 import de.prob.webconsole.ServletContextListener;
