@@ -10,7 +10,7 @@ function calculateDimensions() {
 
 calculateDimensions();
 var force = d3.layout.force()
-    .charge(-250)
+    .charge(-150)
     .linkDistance(160)
     .size([width, height]);
 
@@ -47,7 +47,8 @@ function buildGraph(attrs,n) {
           .data(links)
         .enter().append("svg:path")
           .attr("class", "link")
-          .attr("id",function(d) { return "arc"+d.id });
+          .attr("id",function(d) { return "arc"+d.id })
+          .style("stroke",function(d) { return d.color });
 
     var text = l.selectAll("text")
             .data(links)
