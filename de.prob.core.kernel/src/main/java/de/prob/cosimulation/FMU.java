@@ -167,14 +167,6 @@ public class FMU {
 		return fmiComponent;
 	}
 
-	public static void main(String[] args) throws IOException {
-		String fmuFileName = "/Users/bendisposto/Desktop/waterTankEnv.fmu";
-		// URL resource = ClassLoader.getSystemResource(fmuFileName);
-		FMU f = new FMU(fmuFileName);
-		f.initialize(0.0, 10.0);
-		f.terminate();
-		System.out.println("FMI Version: " + f.getFmiVersion());
-	}
 
 	/**
 	 * Return a function by name.
