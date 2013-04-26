@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.Machine;
@@ -12,6 +13,7 @@ import de.prob.model.representation.Variable;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.StateSpaceGraph;
 
 public class StateSpaceData extends AbstractData {
 
@@ -52,6 +54,15 @@ public class StateSpaceData extends AbstractData {
 		data.nodes.add(node);
 		count++;
 		return node;
+	}
+
+	@Override
+	public void addNewLinks(final StateSpaceGraph graph,
+			final List<? extends OpInfo> newOps) {
+		List<OpInfo> ops = new ArrayList<OpInfo>();
+		ops.addAll(newOps);
+		s.execute(new GetOpsFromIds(ops));
+		super.addNewLinks(graph, newOps);
 	}
 
 	@Override

@@ -234,4 +234,12 @@ public class OpInfo {
 	public String getRep() {
 		return rep;
 	}
+
+	public void setInfo(final String name, final List<String> params,
+			final String targetState) {
+		this.name = name;
+		this.params = params;
+		this.targetState = targetState;
+		evaluated = true;
+	}
 }
