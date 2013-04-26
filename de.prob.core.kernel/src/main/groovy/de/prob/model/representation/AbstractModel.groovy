@@ -1,30 +1,28 @@
 package de.prob.model.representation;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import de.prob.model.representation.RefType.ERefType;
-import de.prob.statespace.History;
-import de.prob.statespace.StateSpace;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import de.prob.model.representation.RefType.ERefType
+import de.prob.statespace.History
+import de.prob.statespace.StateSpace
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
 public abstract class AbstractModel extends AbstractElement {
 
 	protected StateSpace statespace;
 	protected File modelFile;
 	protected DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
+	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
 
 	public StateSpace getStatespace() {
 		return statespace;
 	}
 
-	public abstract AbstractElement getComponent(String name);
+	public AbstractElement getComponent(final String name) {
+		return components.get(name);
+	}
 
-	// This is needed for the graph representation
-	public abstract Map<String, AbstractElement> getComponents();
+	public Map<String, AbstractElement> getComponents() {
+		return components;
+	}
 
 	public DirectedSparseMultigraph<String, RefType> getGraph() {
 		return graph;
@@ -49,17 +47,17 @@ public abstract class AbstractModel extends AbstractElement {
 		sb.append("(");
 		sb.append(graph.getVertices().toString());
 		sb.append(", ");
-		
+
 		Collection<RefType> edges = graph.getEdges();
 		List<String> s = new ArrayList<String>();
 		for (RefType refType : edges) {
 			String src = graph.getSource(refType);
 			String dest = graph.getDest(refType);
-			s.add(refType.toString()+"=("+src+","+dest+")");
+			s.add(refType.toString() + "=(" + src + "," + dest + ")");
 		}
 		sb.append(s.toString());
 		sb.append(")");
-		
+
 		return sb.toString();
 	}
 
@@ -71,7 +69,7 @@ public abstract class AbstractModel extends AbstractElement {
 			return new History(statespace);
 		}
 		throw new ClassCastException("No element of type " + className
-				+ " found.");
+		+ " found.");
 	}
 
 	public abstract StateSchema getStateSchema();
@@ -80,5 +78,9 @@ public abstract class AbstractModel extends AbstractElement {
 
 	public File getModelFile() {
 		return modelFile;
+	}
+
+	def getProperty(final String name) {
+		return components.get(name);
 	}
 }

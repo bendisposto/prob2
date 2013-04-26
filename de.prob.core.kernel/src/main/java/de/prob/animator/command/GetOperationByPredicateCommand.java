@@ -29,7 +29,7 @@ import de.prob.statespace.OpInfo;
  * @author Jens Bendisposto
  * 
  */
-public final class GetOperationByPredicateCommand implements ICommand {
+public final class GetOperationByPredicateCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory
 			.getLogger(GetOperationByPredicateCommand.class);
@@ -46,7 +46,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 		this.stateId = stateId;
 		this.name = name;
 		this.nrOfSolutions = nrOfSolutions;
-		this.evalElement = predicate;
+		evalElement = predicate;
 	}
 
 	/**
@@ -56,7 +56,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	 * 
 	 * @throws ProBException
 	 * 
-	 * @see de.prob.animator.command.ICommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
+	 * @see de.prob.animator.command.AbstractCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
@@ -76,12 +76,11 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	 * 
 	 * 
 	 * 
-	 * @see de.prob.animator.command.ICommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
+	 * @see de.prob.animator.command.AbstractCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			 {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 
 		operation.clear();
 

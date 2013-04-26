@@ -20,7 +20,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class LoadBProjectCommand implements ICommand {
+public class LoadBProjectCommand extends AbstractCommand {
 	Logger logger = LoggerFactory.getLogger(LoadBProjectCommand.class);
 	private NodeIdAssignment nodeIdMapping;
 	private final RecursiveMachineLoader rml;

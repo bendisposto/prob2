@@ -11,9 +11,9 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.inject.Inject;
 
+import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.GetErrorsCommand;
-import de.prob.animator.command.ICommand;
 import de.prob.cli.ProBInstance;
 import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
@@ -26,6 +26,7 @@ class AnimatorImpl implements IAnimator {
 	private final Logger logger = LoggerFactory.getLogger(AnimatorImpl.class);
 	private final CommandProcessor processor;
 	private final GetErrorsCommand getErrors;
+	public static boolean DEBUG = false;
 
 	@Inject
 	public AnimatorImpl(@Nullable final ProBInstance cli,
@@ -37,7 +38,7 @@ class AnimatorImpl implements IAnimator {
 	}
 
 	@Override
-	public void execute(final ICommand command) {
+	public void execute(final AbstractCommand command) {
 		if (cli == null) {
 			// System.out.println("Probcli is missing. Try \"upgrade\".");
 			logger.error("Probcli is missing. Try \"upgrade\".");
@@ -45,8 +46,15 @@ class AnimatorImpl implements IAnimator {
 		}
 		ISimplifiedROMap<String, PrologTerm> bindings = null;
 		try {
-			bindings = processor.sendCommand(command);
-			command.processResult(bindings);
+			if (DEBUG && !command.getSubcommands().isEmpty()) {
+				List<AbstractCommand> cmds = command.getSubcommands();
+				for (AbstractCommand abstractCommand : cmds) {
+					execute(abstractCommand);
+				}
+			} else {
+				bindings = processor.sendCommand(command);
+				command.processResult(bindings);
+			}
 		} finally {
 			getErrors();
 		}
@@ -72,13 +80,17 @@ class AnimatorImpl implements IAnimator {
 	}
 
 	@Override
-	public void execute(final ICommand... commands) {
+	public void execute(final AbstractCommand... commands) {
 		execute(new ComposedCommand(commands));
 	}
 
 	@Override
 	public void sendInterrupt() {
 		cli.sendInterrupt();
+	}
+
+	public static void setDebug(final boolean debug) {
+		DEBUG = debug;
 	}
 
 }

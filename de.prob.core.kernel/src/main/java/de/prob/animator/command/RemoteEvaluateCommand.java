@@ -21,7 +21,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author bendisposto
  * 
  */
-public class RemoteEvaluateCommand implements ICommand {
+public class RemoteEvaluateCommand extends AbstractCommand {
 
 	public enum EEvaluationStrategy {
 		EXISTENTIAL("evaluate_formula", true), UNIVERSAL("evaluate_tautology",

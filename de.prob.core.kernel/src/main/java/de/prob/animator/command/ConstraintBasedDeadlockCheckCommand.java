@@ -22,7 +22,7 @@ import de.prob.statespace.OpInfo;
  * 
  * @author plagge
  */
-public class ConstraintBasedDeadlockCheckCommand implements ICommand {
+public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedDeadlockCheckCommand.class);
@@ -72,7 +72,8 @@ public class ConstraintBasedDeadlockCheckCommand implements ICommand {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
 		final ConstraintBasedCheckingResult result;
 		if (resultTerm.hasFunctor("no_deadlock_found", 0)) {
-			result = new ConstraintBasedCheckingResult(ConstraintBasedCheckingResult.Result.no_deadlock_found);
+			result = new ConstraintBasedCheckingResult(
+					ConstraintBasedCheckingResult.Result.no_deadlock_found);
 		} else if (resultTerm.hasFunctor("errors", 1)) {
 			result = new ConstraintBasedCheckingResult(
 					ConstraintBasedCheckingResult.Result.errors);

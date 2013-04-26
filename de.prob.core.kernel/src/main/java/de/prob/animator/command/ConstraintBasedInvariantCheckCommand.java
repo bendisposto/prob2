@@ -25,7 +25,7 @@ import de.prob.statespace.OpInfo;
  * 
  * @author plagge
  */
-public class ConstraintBasedInvariantCheckCommand implements ICommand {
+public class ConstraintBasedInvariantCheckCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedInvariantCheckCommand.class);
@@ -112,7 +112,8 @@ public class ConstraintBasedInvariantCheckCommand implements ICommand {
 		} else if (resultTerm.isList()) {
 			ListPrologTerm ceTerm = (ListPrologTerm) resultTerm;
 			result = ceTerm.isEmpty() ? new ConstraintBasedCheckingResult(
-					ConstraintBasedCheckingResult.Result.no_invariant_violation_found) : new ConstraintBasedCheckingResult(
+					ConstraintBasedCheckingResult.Result.no_invariant_violation_found)
+					: new ConstraintBasedCheckingResult(
 							ConstraintBasedCheckingResult.Result.invariant_violation);
 			counterexamples = Collections
 					.unmodifiableCollection(extractExamples(ceTerm));

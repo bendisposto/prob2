@@ -20,7 +20,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author plagge
  * 
  */
-public class EvalstoreEvalCommand implements ICommand {
+public class EvalstoreEvalCommand extends AbstractCommand {
 
 	private static final String RESULT_VAR = "Result";
 	private final long evalstoreId;

@@ -2,6 +2,7 @@ package de.prob.statespace;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,14 +14,15 @@ import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
-import de.prob.animator.command.ICommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
@@ -53,7 +55,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	private transient IAnimator animator;
 
-	private ICommand loadcmd;
+	private AbstractCommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
 	private final HashSet<StateId> initializedStates = new HashSet<StateId>();
@@ -100,30 +102,43 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 		final ExploreStateCommand command = new ExploreStateCommand(
 				state.getId());
-		animator.execute(command);
-		extractInformation(state, command);
+		try {
+			animator.execute(command);
+			extractInformation(state, command);
 
-		explored.add(state);
+			explored.add(state);
 
-		if (!state.getId().equals("root")) {
-			updateLastCalculatedStateId(state.numericalId());
-		}
-		final List<OpInfo> enabledOperations = command.getEnabledOperations();
+			if (!state.getId().equals("root")) {
+				updateLastCalculatedStateId(state.numericalId());
+			}
+			final List<OpInfo> enabledOperations = command
+					.getEnabledOperations();
 
-		List<OpInfo> newOps = new ArrayList<OpInfo>();
-		for (final OpInfo op : enabledOperations) {
-			if (!containsEdge(op)) {
+			List<OpInfo> newOps = new ArrayList<OpInfo>();
+			for (final OpInfo op : enabledOperations) {
+				if (!containsEdge(op)) {
+					ops.put(op.id, op);
+					newOps.add(op);
+
+					final StateId newState = new StateId(op.dest, this);
+					addVertex(newState);
+					addEdge(op, getVertex(op.src), getVertex(op.dest));
+				}
+			}
+			evaluateFormulas(state);
+			notifyStateSpaceChange(newOps);
+		} catch (ProBError e) {
+			if (state == getRoot()) {
+				explored.add(state);
+				OpInfo op = new OpInfo("FAIL", "NO INITIALIZATION FOUND",
+						state.getId(), state.getId(),
+						Collections.<String> emptyList(), "");
 				ops.put(op.id, op);
-				newOps.add(op);
-
-				final StateId newState = new StateId(op.dest, this);
-				addVertex(newState);
-				addEdge(op, getVertex(op.src), getVertex(op.dest));
+				addEdge(op, state, state);
 			}
 		}
-		notifyStateSpaceChange(newOps);
-		evaluateFormulas(state);
 		return toString();
+
 	}
 
 	private void extractInformation(final StateId state,
@@ -433,12 +448,12 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	// ANIMATOR
 
 	@Override
-	public void execute(final ICommand command) {
+	public void execute(final AbstractCommand command) {
 		animator.execute(command);
 	}
 
 	@Override
-	public void execute(final ICommand... commands) {
+	public void execute(final AbstractCommand... commands) {
 		animator.execute(commands);
 	}
 
@@ -604,11 +619,11 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		this.animator = animator;
 	}
 
-	public ICommand getLoadcmd() {
+	public AbstractCommand getLoadcmd() {
 		return loadcmd;
 	}
 
-	public void setLoadcmd(final ICommand loadcmd) {
+	public void setLoadcmd(final AbstractCommand loadcmd) {
 		this.loadcmd = loadcmd;
 	}
 

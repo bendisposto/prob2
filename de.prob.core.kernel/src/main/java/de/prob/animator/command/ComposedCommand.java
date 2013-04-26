@@ -1,5 +1,6 @@
 package de.prob.animator.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.prob.animator.IAnimator;
@@ -16,18 +17,18 @@ import de.prob.prolog.term.PrologTerm;
  * @author plagge
  * 
  */
-public class ComposedCommand implements ICommand {
+public class ComposedCommand extends AbstractCommand {
 	private static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			.toCharArray();
 
-	private final ICommand[] cmds;
+	private final AbstractCommand[] cmds;
 
-	public ComposedCommand(final ICommand... cmds) {
+	public ComposedCommand(final AbstractCommand... cmds) {
 		this.cmds = cmds;
 	}
 
-	public ComposedCommand(final List<ICommand> cmds) {
-		this.cmds = cmds.toArray(new ICommand[cmds.size()]);
+	public ComposedCommand(final List<AbstractCommand> cmds) {
+		this.cmds = cmds.toArray(new AbstractCommand[cmds.size()]);
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class ComposedCommand implements ICommand {
 		}
 	}
 
-	public void getResultForCommand(final ICommand command,
+	public void getResultForCommand(final AbstractCommand command,
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final int index = indexOf(command);
 		// added second condition in case command is not included in cmds
@@ -84,7 +85,7 @@ public class ComposedCommand implements ICommand {
 		}
 	}
 
-	private int indexOf(final ICommand command) {
+	private int indexOf(final AbstractCommand command) {
 		int index;
 		for (index = 0; index < cmds.length; index++) {
 			if (cmds[index].equals(command)) {
@@ -121,7 +122,7 @@ public class ComposedCommand implements ICommand {
 	 * This simplified map prefixes every query to the map with a given string.
 	 */
 	private static final class PrefixMap<V> implements
-	ISimplifiedROMap<String, V> {
+			ISimplifiedROMap<String, V> {
 		private final ISimplifiedROMap<String, V> map;
 		private String prefix;
 
@@ -141,10 +142,19 @@ public class ComposedCommand implements ICommand {
 
 	}
 
-	public ICommand[] runInDebugMode(final IAnimator animator) {
-		for (ICommand cmd : cmds) {
+	public AbstractCommand[] runInDebugMode(final IAnimator animator) {
+		for (AbstractCommand cmd : cmds) {
 			animator.execute(cmd);
 		}
 		return cmds;
+	}
+
+	@Override
+	public List<AbstractCommand> getSubcommands() {
+		List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
+		for (AbstractCommand iCommand : cmds) {
+			commands.add(iCommand);
+		}
+		return commands;
 	}
 }

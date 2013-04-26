@@ -20,7 +20,7 @@ import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public final class ComputeCoverageCommand implements ICommand {
+public final class ComputeCoverageCommand extends AbstractCommand {
 
 	private ComputeCoverageResult coverageResult;
 	Logger logger = LoggerFactory.getLogger(ComputeCoverageCommand.class);
@@ -104,5 +104,4 @@ public final class ComputeCoverageCommand implements ICommand {
 				.printVariable("TotalTransSum").printVariable("NodeStat")
 				.printVariable("OpStat").printVariable("Uncovered").closeTerm();
 	}
-
 }

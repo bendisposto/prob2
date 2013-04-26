@@ -21,7 +21,7 @@ import de.prob.prolog.term.PrologTerm;
  * 
  * @author plagge
  */
-public class GetStateBasedErrorsCommand implements ICommand {
+public class GetStateBasedErrorsCommand extends AbstractCommand {
 
 	private final String stateId;
 	private Collection<StateError> stateErrors;
@@ -48,7 +48,7 @@ public class GetStateBasedErrorsCommand implements ICommand {
 				errors.add(new StateError(compoundTerm));
 			}
 		}
-		this.stateErrors = errors;
+		stateErrors = errors;
 	}
 
 	@Override

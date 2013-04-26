@@ -5,7 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
@@ -18,7 +18,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class GetOperationParameterNamesCommand implements ICommand {
+public class GetOperationParameterNamesCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory
 			.getLogger(GetOperationParameterNamesCommand.class);

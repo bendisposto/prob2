@@ -13,7 +13,7 @@ import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.CheckInvariantStatusCommand;
 import de.prob.animator.command.CheckMaxOperationReachedStatusCommand;
 import de.prob.animator.command.CheckTimeoutStatusCommand;
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -26,7 +26,7 @@ import de.prob.prolog.term.PrologTerm;
  * {@link CheckMaxOperationReachedStatusCommand} or
  * {@link CheckTimeoutStatusCommand}
  */
-public class CheckBooleanPropertyCommand implements ICommand {
+public class CheckBooleanPropertyCommand extends AbstractCommand {
 
 	private final Logger logger = LoggerFactory
 			.getLogger(CheckBooleanPropertyCommand.class);
@@ -56,7 +56,8 @@ public class CheckBooleanPropertyCommand implements ICommand {
 		if (!"true".equals(functor) && !"false".equals(functor)) {
 			result = null;
 			logger.error("Expected true or false, but was: {}", functor);
-			throw new ResultParserException("Expected true or false, but was: "+functor,null);
+			throw new ResultParserException("Expected true or false, but was: "
+					+ functor, null);
 		}
 	}
 
@@ -75,9 +76,10 @@ public class CheckBooleanPropertyCommand implements ICommand {
 	}
 
 	public boolean getResult() {
-		if (result == null)
+		if (result == null) {
 			throw new IllegalStateException(
 					"Cannot get result before finishing query");
+		}
 		return result;
 	}
 

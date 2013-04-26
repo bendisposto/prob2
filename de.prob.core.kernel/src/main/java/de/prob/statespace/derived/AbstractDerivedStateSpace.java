@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
@@ -86,12 +86,12 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 	}
 
 	@Override
-	public void execute(final ICommand command) {
+	public void execute(final AbstractCommand command) {
 		stateSpace.execute(command);
 	}
 
 	@Override
-	public void execute(final ICommand... commands) {
+	public void execute(final AbstractCommand... commands) {
 		stateSpace.execute(commands);
 	}
 

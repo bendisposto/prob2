@@ -163,11 +163,11 @@ public class EventBTranslator {
 
 			List<EventBInvariant> invariants = new ArrayList<EventBInvariant>();
 			for (ISCInvariant iscInvariant : root.getSCInvariants()) {
-				String elementName = iscInvariant.getElementName();
+				String label = iscInvariant.getLabel();
 				String predicateString = iscInvariant.getPredicateString();
 				boolean theorem = iscInvariant.isTheorem();
-				invariants.add(new EventBInvariant(elementName,
-						predicateString, theorem));
+				invariants.add(new EventBInvariant(label, predicateString,
+						theorem));
 			}
 			machine.addInvariants(invariants);
 
@@ -184,6 +184,7 @@ public class EventBTranslator {
 			}
 			machine.addEvents(events);
 		} catch (RodinDBException e) {
+			//FIXME Proper Error Message 
 			e.printStackTrace();
 		}
 		machines.put(machine.getName(), machine);

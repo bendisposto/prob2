@@ -10,7 +10,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class GetCurrentPreferencesCommand implements ICommand {
+public class GetCurrentPreferencesCommand extends AbstractCommand {
 
 	private final String PREFERENCES = "Preferences";
 	private final Map<String, String> preferences = new HashMap<String, String>();

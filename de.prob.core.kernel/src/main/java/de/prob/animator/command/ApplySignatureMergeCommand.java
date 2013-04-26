@@ -13,7 +13,7 @@ import de.prob.statespace.OpInfo;
 import de.prob.statespace.derived.DerivedOp;
 import de.prob.statespace.derived.DerivedStateId;
 
-public class ApplySignatureMergeCommand implements ICommand {
+public class ApplySignatureMergeCommand extends AbstractCommand {
 
 	public final String SPACE = "StateSpace";
 	public final List<DerivedStateId> states = new ArrayList<DerivedStateId>();

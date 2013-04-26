@@ -73,12 +73,4 @@ public class ExpandedFormula {
 		return gson.toJson(this);
 	}
 
-	@Override
-	public boolean equals(final Object that) {
-		if (that instanceof ExpandedFormula) {
-
-		}
-		return false;
-	}
-
 }

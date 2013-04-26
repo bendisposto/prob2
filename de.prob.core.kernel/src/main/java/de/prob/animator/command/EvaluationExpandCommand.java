@@ -1,14 +1,15 @@
-package de.prob.animator.command.notImplemented;
+package de.prob.animator.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.animator.command.ICommand;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
@@ -20,19 +21,18 @@ import de.prob.prolog.term.PrologTerm;
  * @see EvaluationGetValuesCommand
  * @author plagge
  */
-public class EvaluationExpandCommand implements ICommand {
+public class EvaluationExpandCommand extends AbstractCommand {
 	private static final String LABEL_VARNAME = "Lbl";
 	private static final String CHILDREN_VARNAME = "Chs";
-
-	private final PrologTerm evaluationElement;
 
 	Logger logger = LoggerFactory.getLogger(EvaluationExpandCommand.class);
 
 	private String label;
-	private List<PrologTerm> children;
+	private final List<String> childrenIds = new ArrayList<String>();
+	private final String id;
 
-	public EvaluationExpandCommand(final PrologTerm evaluationElement) {
-		this.evaluationElement = evaluationElement;
+	public EvaluationExpandCommand(final String id) {
+		this.id = id;
 	}
 
 	@Override
@@ -40,14 +40,18 @@ public class EvaluationExpandCommand implements ICommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		label = BindingGenerator
 				.getCompoundTerm(bindings.get(LABEL_VARNAME), 0).getFunctor();
-		children = BindingGenerator.getList(bindings.get(CHILDREN_VARNAME));
+		ListPrologTerm list = BindingGenerator.getList(bindings
+				.get(CHILDREN_VARNAME));
+		for (PrologTerm prologTerm : list) {
+			childrenIds.add(prologTerm.getFunctor());
+		}
 
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("evaluation_expand_formula");
-		evaluationElement.toTermOutput(pto);
+		pto.printAtomOrNumber(id);
 		pto.printVariable(LABEL_VARNAME);
 		pto.printVariable(CHILDREN_VARNAME);
 		pto.closeTerm();
@@ -57,7 +61,7 @@ public class EvaluationExpandCommand implements ICommand {
 		return label;
 	}
 
-	public List<PrologTerm> getChildrenIds() {
-		return children;
+	public List<String> getChildrenIds() {
+		return childrenIds;
 	}
 }

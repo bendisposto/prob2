@@ -1,33 +1,36 @@
 package de.prob.animator.command;
 
-
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
-public class DeserializeStateCommand implements ICommand {
+public class DeserializeStateCommand extends AbstractCommand {
 
-    private String id;
-    private final String state;
+	private String id;
+	private final String state;
 
-    public DeserializeStateCommand(String state) {
-        this.state = state;
-    }
+	public DeserializeStateCommand(final String state) {
+		this.state = state;
+	}
 
-    public void processResult(ISimplifiedROMap<String, PrologTerm> bindings){
-        this.id = bindings.get("Id").toString();
-    }
+	@Override
+	public void processResult(
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
+		id = bindings.get("Id").toString();
+	}
 
-    public void writeCommand(IPrologTermOutput pto) {
-        pto.openTerm("deserialize").printVariable("Id").printAtom(state).closeTerm();
-    }
+	@Override
+	public void writeCommand(final IPrologTermOutput pto) {
+		pto.openTerm("deserialize").printVariable("Id").printAtom(state)
+				.closeTerm();
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getState() {
-        return state;
-    }
+	public String getState() {
+		return state;
+	}
 
 }

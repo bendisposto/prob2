@@ -22,7 +22,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class EvaluateFormulasCommand implements ICommand {
+public class EvaluateFormulasCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory.getLogger(EvaluateFormulasCommand.class);
 
@@ -34,7 +34,7 @@ public class EvaluateFormulasCommand implements ICommand {
 	public EvaluateFormulasCommand(final List<IEvalElement> evalElements,
 			final String id) {
 		this.evalElements = evalElements;
-		this.stateId = id;
+		stateId = id;
 	}
 
 	public List<EvaluationResult> getValues() {

@@ -23,7 +23,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class CbcSolveCommand implements ICommand {
+public class CbcSolveCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory.getLogger(CbcSolveCommand.class);
 
@@ -34,7 +34,7 @@ public class CbcSolveCommand implements ICommand {
 	private String result;
 
 	public CbcSolveCommand(final IEvalElement evalElement) {
-		this.evalElements = evalElement;
+		evalElements = evalElement;
 	}
 
 	public List<EvaluationResult> getValues() {
@@ -80,7 +80,7 @@ public class CbcSolveCommand implements ICommand {
 
 	}
 
-	private String translate(CompoundPrologTerm t) {
+	private String translate(final CompoundPrologTerm t) {
 		return t.getArgument(1) + "=" + t.getArgument(3).getFunctor();
 	}
 

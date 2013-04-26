@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.ConstraintBasedInvariantCheckCommand;
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.check.ConstraintBasedCheckingResult.Result;
 import de.prob.ui.ProBJobFinishedListener;
 
@@ -26,7 +26,7 @@ public class InvariantCheckFinishedListener extends ProBJobFinishedListener {
 	}
 
 	@Override
-	protected void showResult(final ICommand command,
+	protected void showResult(final AbstractCommand command,
 			final IAnimator animator) {
 		final ConstraintBasedInvariantCheckCommand invCmd = (ConstraintBasedInvariantCheckCommand) command;
 		final Result result = invCmd.getResult().getResult();
