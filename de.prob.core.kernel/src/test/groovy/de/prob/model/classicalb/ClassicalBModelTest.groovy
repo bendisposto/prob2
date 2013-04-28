@@ -32,8 +32,8 @@ class ClassicalBModelTest extends Specification {
 
 
 		c.initialize(ast, rml, null)
-
-		graph = c.graph
+		
+		graph = c.getGraph()
 	}
 
 	def "all the machine names are now saved in the graph"() {
