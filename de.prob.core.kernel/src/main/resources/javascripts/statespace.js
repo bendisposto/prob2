@@ -54,8 +54,9 @@ function buildGraph(attrs,n) {
             .data(links)
           .enter().append("svg:text")
             .attr("text-anchor","start")
-            .attr("dx","25")
-            .attr("font-size","3px");
+            .attr("dx","30")
+            .attr("font-size","3px")
+            .attr("id",function(d) { return "lt"+d.id});
 
     text.append("textPath")
               .attr("xlink:href",function(d) { return "#arc"+d.id })
@@ -86,7 +87,7 @@ function buildGraph(attrs,n) {
         .attr("font-size","3px")
         .attr("fill","white")
         .text(function(d) {return d.vars[i]; })
-        .attr("id", function(d) {return "t"+d.id});
+        .attr("id", function(d) {return "nt"+d.id});
     }
 
     d3.selectAll(".nText")
@@ -106,8 +107,12 @@ function buildGraph(attrs,n) {
       var selected = svg.selectAll(attrs[i].selector);
       var attributes = attrs[i].attributes;
       for (var j = 0; j < attributes.length; j++) {
-        selected.attr(attributes[j].name,attributes[j].attr);
+        selected.attr(attributes[j].name,attributes[j].value);
       };
+      var styles = attrs[i].styles;
+      for (var j = 0; j < styles.length; j++) {
+        selected.style(styles[j].name,styles[j].value);
+      }
     };
 
     if(nodes.length > 50) {
@@ -120,21 +125,28 @@ function buildGraph(attrs,n) {
       };      
     };
 
+    var cycleGen =  d3.svg.line()
+                          .x(function(d) {return d.x; })
+                          .y(function(d) {return d.y; })
+                          .interpolate("basis-closed");
 
     force.resume();
     force.on("tick", function() {
       path.attr("d", function(d) {
-        var dx = d.target.x - d.source.x,
-            dy = d.target.y - d.source.y,
-            dr =  Math.sqrt(dx * dx + dy * dy);
-          if(dr === 0) {
-            var srcx = d.target.x,
-                srcy = d.target.y,
-                xMinus30 = srcx - 30,
-                yMinus20 = srcy -20,
-                yPlus20 = srcy + 20;
-            return "M"+srcx+","+srcy+" L"+xMinus30+","+yPlus20+" L"+xMinus30+","+yMinus20+" L"+srcx+","+srcy;
-          } else { return "M" + 
+        if(d.loop) {
+          d3.select("#lt"+d.id).attr("dx",80);
+          var factor = 1+d.lNr*0.1;
+          var linedata = [
+              {x: d.source.x-10, y: d.source.y+10},
+              {x: d.source.x+40*factor, y: d.source.y-20*factor},
+              {x: d.source.x+50*factor, y: d.source.y+10*factor}
+          ];
+          return cycleGen(linedata);
+        } else {
+          var dx = d.target.x - d.source.x,
+              dy = d.target.y - d.source.y,
+              dr =  Math.sqrt(dx * dx + dy * dy)*(1-d.lNr*0.1);
+          return "M" + 
             d.source.x + "," + 
             d.source.y + "A" + 
             dr + "," + dr + " 0 0,1 " + 
@@ -143,13 +155,13 @@ function buildGraph(attrs,n) {
           };
     });
 
-      node.attr("transform", function(d) {var nx = d.x-20, ny = d.y-20; return "translate("+nx+","+ny+")"});
+      node.attr("transform", function(d) {var nx = d.x-20, ny = d.y-boxH/2; return "translate("+nx+","+ny+")"});
     });
 
 
 }
 
-
+var linkMap = d3.map();
 var ssCtr = 0;
 
 function initialize(id) {
@@ -198,9 +210,22 @@ function refresh(id,getAllStates) {
         nodes.push(n[i]);
       };
       for (var i = 0; i < l.length; i++) {
+        var entry = l[i].source+"-"+l[i].target;
+        var linkNr = 1;
+        if(linkMap.has(entry)) {
+          linkNr = linkMap.set(entry,linkMap.get(entry)+1);
+        } else {
+          linkMap.set(entry,1);
+        };
+
+        var loop = l[i].source === l[i].target;
+
+        l[i]["lNr"] = linkNr;
+        l[i]["loop"] = loop;
         links.push(l[i]);
+
       };
-      buildGraph(res.attrs,res.varCount);
+      buildGraph(res.data.styling,res.varCount);
     };
   });
 }
