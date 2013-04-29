@@ -31,7 +31,18 @@ ArrayList.metaClass.asType = { Class type ->
 }
 
 transform = { s,c ->
-	new Transformer(s).with c
+	def x
+	if(s instanceof String) {
+		x = new Transformer(s).with c 
+	} else {
+		d = []
+		s.each {
+			d << "#r"+it.getId()
+		}
+		r = com.google.common.base.Joiner.on(",").join(d)
+		x = new Transformer(r).with c
+	}
+	x
 }
 
 
