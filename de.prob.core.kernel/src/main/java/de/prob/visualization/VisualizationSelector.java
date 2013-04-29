@@ -10,14 +10,26 @@ import java.util.Set;
 import javax.servlet.http.HttpServlet;
 
 import com.google.common.base.Joiner;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import de.prob.webconsole.GroovyExecution;
 
 @Singleton
 public class VisualizationSelector {
 
+	private static int ctr = 0;
+
 	Map<IVisualizationServlet, String> servlets = new HashMap<IVisualizationServlet, String>();
 	Map<IVisualizationServlet, List<String>> servletToId = new HashMap<IVisualizationServlet, List<String>>();
 	Map<String, IVisualizationServlet> idToServlet = new HashMap<String, IVisualizationServlet>();
+	private final GroovyExecution e;
+
+	@Inject
+	public VisualizationSelector(final GroovyExecution e) {
+		this.e = e;
+		e.getBindings().setVariable("viz", this);
+	}
 
 	public void registerServlet(final IVisualizationServlet servlet,
 			final String name) {
@@ -27,6 +39,8 @@ public class VisualizationSelector {
 
 	public void registerSession(final String sessionId,
 			final IVisualizationServlet servlet) {
+		e.getBindings().setVariable("viz" + ctr++,
+				new Visualization(e, sessionId, servlet));
 		idToServlet.put(sessionId, servlet);
 		servletToId.get(servlet).add(sessionId);
 	}
@@ -59,11 +73,11 @@ public class VisualizationSelector {
 		return b.toString();
 	}
 
-	public Selection selectAll(final String selection) {
-		return new Selection(selection);
+	public Transformer selectAll(final String selection) {
+		return new Transformer(selection);
 	}
 
-	public void addToSession(final String session, final Selection selection) {
+	public void addToSession(final String session, final Transformer selection) {
 		idToServlet.get(session).addUserDefinitions(session, selection);
 	}
 

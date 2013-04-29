@@ -19,7 +19,7 @@ import de.prob.statespace.IHistoryChangeListener
 import de.prob.statespace.StateSpace
 import de.prob.visualization.AnimationNotLoadedException
 import de.prob.visualization.IVisualizationServlet
-import de.prob.visualization.Selection
+import de.prob.visualization.Transformer
 import de.prob.visualization.VisualizationSelector
 
 @Singleton
@@ -34,7 +34,7 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener, IV
 	def final AnimationSelector animations
 	def Map<String,Session> sessions = new HashMap<String, Session>()
 	def Map<String, ExpandedFormula> formulas = new HashMap<String, ExpandedFormula>()
-	def Map<String, List<Selection>> userOptions = new HashMap<String, List<Selection>>()
+	def Map<String, List<Transformer>> userOptions = new HashMap<String, List<Transformer>>()
 	def History history
 	private final VisualizationSelector visualizations;
 
@@ -165,11 +165,11 @@ class PredicateServlet extends HttpServlet implements IHistoryChangeListener, IV
 	}
 
 	@Override
-	public void addUserDefinitions(String id, Selection selection) {
+	public void addUserDefinitions(String id, Transformer selection) {
 		Session session = sessions.get(id);
 		session.inc();
 		if (!userOptions.containsKey(id)) {
-			userOptions.put(id, new ArrayList<Selection>());
+			userOptions.put(id, new ArrayList<Transformer>());
 		}
 		userOptions.get(id).add(selection);
 	}

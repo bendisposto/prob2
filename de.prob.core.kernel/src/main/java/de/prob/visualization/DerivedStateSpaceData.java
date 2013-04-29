@@ -60,12 +60,12 @@ public class DerivedStateSpaceData extends AbstractData {
 	}
 
 	@Override
-	public List<Selection> getStyling() {
+	public Data getChanges() {
 		String selector = Joiner.on(',').join(dotted);
-		userOptions.add(new Selection(selector).attr("stroke-dasharray",
-				"10,10"));
+		Transformer s = new Transformer(selector).attr("stroke-dasharray", "2,2");
 		dotted = new ArrayList<String>();
-		return super.getStyling();
+		addStyling(s);
+		return super.getChanges();
 	}
 
 }

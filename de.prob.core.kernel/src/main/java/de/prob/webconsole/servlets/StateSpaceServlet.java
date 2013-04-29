@@ -2,7 +2,6 @@ package de.prob.webconsole.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +31,7 @@ import de.prob.visualization.AbstractData;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.DerivedStateSpaceData;
 import de.prob.visualization.IVisualizationServlet;
-import de.prob.visualization.Selection;
+import de.prob.visualization.Transformer;
 import de.prob.visualization.StateSpaceData;
 import de.prob.visualization.VisualizationSelector;
 
@@ -50,7 +49,6 @@ public class StateSpaceServlet extends HttpServlet implements
 	private final Map<String, IStateSpace> spaces = new HashMap<String, IStateSpace>();
 	private final Map<String, AbstractData> dataObjects = new HashMap<String, AbstractData>();
 	private final Map<IStateSpace, Set<String>> sessionMap = new HashMap<IStateSpace, Set<String>>();
-	private final Map<String, List<Selection>> userOptions = new HashMap<String, List<Selection>>();
 	private StateSpace currentStateSpace;
 	private final VisualizationSelector visualizations;
 
@@ -104,7 +102,6 @@ public class StateSpaceServlet extends HttpServlet implements
 
 		if (dataObjects.containsKey(sessionId)) {
 			AbstractData data = dataObjects.get(sessionId);
-			userOptions.get(sessionId).addAll(data.getStyling());
 			if (getFormula) {
 				if (getAllStates) {
 					resp.put("data", data.getData());
@@ -112,8 +109,7 @@ public class StateSpaceServlet extends HttpServlet implements
 					resp.put("data", data.getChanges());
 				}
 			}
-			resp.put("count", data.count() + userOptions.get(sessionId).size());
-			resp.put("attrs", userOptions.get(sessionId));
+			resp.put("count", data.count());
 			resp.put("varCount", data.varSize());
 		} else {
 			resp.put("count", 0);
@@ -162,7 +158,6 @@ public class StateSpaceServlet extends HttpServlet implements
 		StateSpaceData d = new StateSpaceData(currentStateSpace);
 		calculateData(currentStateSpace, d);
 		dataObjects.put(sId, d);
-		userOptions.put(sId, new ArrayList<Selection>());
 		currentStateSpace.registerStateSpaceListener(this);
 		sessionMap.get(currentStateSpace).add(sId);
 		visualizations.registerSession(sId + "", this);
@@ -176,7 +171,6 @@ public class StateSpaceServlet extends HttpServlet implements
 
 		spaces.remove(s);
 		dataObjects.remove(id);
-		userOptions.remove(id);
 	}
 
 	private void calculateData(final IStateSpace s, final AbstractData d) {
@@ -202,7 +196,6 @@ public class StateSpaceServlet extends HttpServlet implements
 
 		spaces.remove(sessionId);
 		dataObjects.remove(sessionId);
-		userOptions.remove(sessionId);
 		sessionMap.get(iStateSpace).remove(sessionId);
 
 		if (sessionMap.get(iStateSpace).isEmpty()) {
@@ -213,7 +206,6 @@ public class StateSpaceServlet extends HttpServlet implements
 		AbstractData d = new DerivedStateSpaceData();
 		calculateData(space, d);
 		dataObjects.put(sessionId, d);
-		userOptions.put(sessionId, new ArrayList<Selection>());
 		space.registerStateSpaceListener(this);
 		if (!sessionMap.containsKey(space)) {
 			sessionMap.put(space, new HashSet<String>());
@@ -223,7 +215,7 @@ public class StateSpaceServlet extends HttpServlet implements
 	}
 
 	@Override
-	public void addUserDefinitions(final String id, final Selection selection) {
-		userOptions.get(id).add(selection);
+	public void addUserDefinitions(final String id, final Transformer selection) {
+		dataObjects.get(id).addStyling(selection);
 	}
 }

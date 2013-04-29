@@ -26,7 +26,6 @@ import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
 import de.prob.testing.TestRegistry;
-import de.prob.visualization.VisualizationSelector;
 
 /**
  * This servlet takes a line from the web interface and evaluates it using
@@ -71,20 +70,20 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			"import de.prob.model.classicalb.*;",
 			"import de.prob.model.eventb.*;",
 			"import de.prob.animator.domainobjects.*;",
-			"import de.prob.animator.commands.*;" };
+			"import de.prob.animator.commands.*;",
+			"import de.prob.visualization.*" };
 	private final ShellCommands shellCommands;
 
 	@Inject
 	public GroovyExecution(final Api api, final ShellCommands shellCommands,
 			final AnimationSelector selector, final OutputBuffer sideeffects,
-			final TestRegistry tests, final VisualizationSelector viz) {
+			final TestRegistry tests) {
 		this.shellCommands = shellCommands;
 		this.sideeffects = sideeffects;
 		final Binding binding = new Binding();
 		binding.setVariable("api", api);
 		binding.setVariable("animations", selector);
 		binding.setVariable("tests", tests);
-		binding.setVariable("viz", viz);
 		binding.setVariable("__console", sideeffects);
 		interpreter = new Interpreter(this.getClass().getClassLoader(), binding);
 

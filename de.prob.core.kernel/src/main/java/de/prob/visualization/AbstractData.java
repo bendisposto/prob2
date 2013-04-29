@@ -14,7 +14,6 @@ public abstract class AbstractData {
 	protected final Data data;
 	protected final Map<String, Node> nodes = new HashMap<String, Node>();
 	protected final Map<String, Link> links = new HashMap<String, Link>();
-	protected List<Selection> userOptions = new ArrayList<Selection>();
 	protected int count = 0;
 	protected Data changes;
 
@@ -52,10 +51,18 @@ public abstract class AbstractData {
 		}
 	}
 
+	public void addStyling(final Transformer s) {
+		data.styling.add(s);
+		changes.styling.add(s);
+		count++;
+	}
+
 	protected class Data {
 
 		public List<Node> nodes = new ArrayList<Node>();
 		public List<Link> links = new ArrayList<Link>();
+
+		public List<Transformer> styling = new ArrayList<Transformer>();
 	}
 
 	protected class Node {
@@ -106,13 +113,8 @@ public abstract class AbstractData {
 	public Data getChanges() {
 		Data changes = this.changes;
 		this.changes = new Data();
+		this.changes.styling.addAll(data.styling);
 		return changes;
-	}
-
-	public List<Selection> getStyling() {
-		List<Selection> styling = userOptions;
-		userOptions = new ArrayList<Selection>();
-		return styling;
 	}
 
 	public boolean containsNode(final String id) {
