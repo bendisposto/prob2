@@ -28,6 +28,6 @@ IMPORTANT:
 
 -  When adding additional projects which are dependant on de.prob.core.kernel make sure to mark it as optional in their MANIFEST files for the tycho build
 
--  You can find a Tutorial and an example how to use the tycho build script here: https://github.com/birkhoff/tychoBuildScriptTutorial
+-  You can find a tutorial and an example how to use the tycho build script here: https://github.com/birkhoff/tychoBuildScriptTutorial
 
 (c) 2012 Jens Bendisposto et.al. , all rights reserved
