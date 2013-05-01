@@ -27,7 +27,7 @@ public class ComposedCommand extends AbstractCommand {
 		this.cmds = cmds;
 	}
 
-	public ComposedCommand(final List<AbstractCommand> cmds) {
+	public ComposedCommand(final List<? extends AbstractCommand> cmds) {
 		this.cmds = cmds.toArray(new AbstractCommand[cmds.size()]);
 	}
 

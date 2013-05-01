@@ -49,7 +49,8 @@ public class StateSpaceData extends AbstractData {
 			}
 		}
 
-		Node node = new Node(id.getId(), id.getId(), parentIndex, vs);
+		Node node = new Node(id.getId(), id.getId(), parentIndex, vs, s
+				.getInvariantOk().contains(id));
 		nodes.put(id.getId(), node);
 		data.nodes.add(node);
 		count++;

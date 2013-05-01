@@ -1,6 +1,7 @@
 package de.prob.animator.command;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.prob.parser.ISimplifiedROMap;
@@ -13,8 +14,8 @@ public class GetOpsFromIds extends AbstractCommand {
 	List<GetOpFromId> cmds = new ArrayList<GetOpFromId>();
 	ComposedCommand allCommands;
 
-	public GetOpsFromIds(final List<OpInfo> newOps) {
-		for (OpInfo opInfo : newOps) {
+	public GetOpsFromIds(final Collection<OpInfo> edges) {
+		for (OpInfo opInfo : edges) {
 			if (!opInfo.isEvaluated()) {
 				toCheck.add(opInfo);
 				cmds.add(new GetOpFromId(opInfo.id));

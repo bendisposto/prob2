@@ -9,11 +9,11 @@ package de.prob.animator.command.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.CheckInvariantStatusCommand;
 import de.prob.animator.command.CheckMaxOperationReachedStatusCommand;
 import de.prob.animator.command.CheckTimeoutStatusCommand;
-import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -81,6 +81,10 @@ public class CheckBooleanPropertyCommand extends AbstractCommand {
 					"Cannot get result before finishing query");
 		}
 		return result;
+	}
+
+	public String getStateId() {
+		return stateId;
 	}
 
 }

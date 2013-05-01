@@ -155,6 +155,10 @@ public class StateSpaceServlet extends HttpServlet implements
 	@Override
 	public void newTransitions(final IStateSpace s,
 			final List<? extends OpInfo> newOps) {
+		if (s instanceof StateSpace) {
+			((StateSpace) s).checkInvariants();
+		}
+
 		Set<String> sessIds = sessionMap.get(s);
 		if (sessIds != null) {
 			for (String id : sessIds) {
@@ -196,12 +200,17 @@ public class StateSpaceServlet extends HttpServlet implements
 	}
 
 	private void calculateData(final IStateSpace s, final AbstractData d) {
+		if (s instanceof StateSpace) {
+			((StateSpace) s).checkInvariants();
+		}
+
 		Collection<StateId> vertices = s.getSSGraph().getVertices();
 		for (StateId stateId : vertices) {
 			d.addNode(stateId);
 		}
 
-		Collection<OpInfo> edges = s.getSSGraph().getEdges();
+		Collection<OpInfo> edges = s instanceof StateSpace ? ((StateSpace) s)
+				.getEvaluatedOps() : s.getSSGraph().getEdges();
 		for (OpInfo opInfo : edges) {
 			d.addLink(opInfo);
 		}

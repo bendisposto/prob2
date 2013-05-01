@@ -16,9 +16,12 @@ import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckInitialisationStatusCommand;
+import de.prob.animator.command.CheckInvariantStatusCommand;
+import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
+import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -740,5 +743,33 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	@Override
 	public StateSpaceGraph getSSGraph() {
 		return this;
+	}
+
+	public Set<StateId> getInvariantOk() {
+		return invariantOk;
+	}
+
+	public Set<StateId> checkInvariants() {
+		Collection<StateId> vertices = getVertices();
+		List<CheckInvariantStatusCommand> cmds = new ArrayList<CheckInvariantStatusCommand>();
+		for (StateId stateId : vertices) {
+			if (!invariantOk.contains(stateId)) {
+				cmds.add(new CheckInvariantStatusCommand(stateId.getId()));
+			}
+		}
+		execute(new ComposedCommand(cmds));
+		for (CheckInvariantStatusCommand cmd : cmds) {
+			if (!cmd.isInvariantViolated()) {
+				invariantOk.add(states.get(cmd.getStateId()));
+			}
+		}
+		return invariantOk;
+	}
+
+	public Collection<OpInfo> getEvaluatedOps() {
+		Collection<OpInfo> edges = getEdges();
+		GetOpsFromIds cmd = new GetOpsFromIds(edges);
+		execute(cmd);
+		return edges;
 	}
 }

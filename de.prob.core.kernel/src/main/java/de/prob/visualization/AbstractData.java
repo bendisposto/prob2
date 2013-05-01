@@ -81,13 +81,15 @@ public abstract class AbstractData {
 		public String name;
 		public final int parentIndex;
 		public final List<String> vars;
+		public Object invOk;
 
 		public Node(final String id, final String name, final int parentIndex,
-				final List<String> vars) {
+				final List<String> vars, final Object invOk) {
 			this.id = id;
 			this.name = name;
 			this.parentIndex = parentIndex;
 			this.vars = vars;
+			this.invOk = invOk;
 		}
 	}
 

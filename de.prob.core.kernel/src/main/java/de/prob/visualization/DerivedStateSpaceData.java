@@ -22,7 +22,7 @@ public class DerivedStateSpaceData extends AbstractData {
 			vs.add(((DerivedStateId) id).getCount() + "");
 		}
 
-		Node node = new Node(id.getId(), id.getId(), parentIndex, vs);
+		Node node = new Node(id.getId(), id.getId(), parentIndex, vs, "unknown");
 		nodes.put(id.getId(), node);
 		data.nodes.add(node);
 		count++;
