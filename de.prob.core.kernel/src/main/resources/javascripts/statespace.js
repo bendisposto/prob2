@@ -259,6 +259,7 @@ function refresh(id,getAllStates,mode) {
       };
       styling = res.data.styling;
       varCount = res.varCount;
+      stopped.value = false;
       buildGraph(styling,varCount);
     };
   });
@@ -277,11 +278,11 @@ function calculateHeader(id,m) {
         .enter()          
       .append("img")
         .attr("class","push")
-        .attr("src",function(d) { return d.value ? "../images/pause-icon.png" : "../images/play-icon.png"})
+        .attr("src",function(d) { return d.value ? "../images/play-icon.png" : "../images/pause-icon.png"})
         .attr("width","20")
         .attr("height","20")
         .attr("align","top")
-        .on("click",function(d) { var x = d.value; d.value = !x});
+        .on("click",function(d) { var x = d.value; d.value = !x; d3.select(".push").attr("src",function(d) { return d.value ? "../images/play-icon.png" : "../images/pause-icon.png"})});
 
   var list = menu.append("li")
                 .attr("class","dropdown")
