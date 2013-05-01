@@ -87,4 +87,9 @@ public class StateSpaceData extends AbstractData {
 		return vars.size();
 	}
 
+	@Override
+	public int getMode() {
+		return 1;
+	}
+
 }

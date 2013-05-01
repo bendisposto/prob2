@@ -4,29 +4,22 @@ import de.prob.statespace.OpInfo;
 
 public class DerivedOp extends OpInfo {
 
-	private final String color;
-	private final String style;
+	private int count;
 
 	public DerivedOp(final String id, final String src, final String dest,
-			final String label, final String color, final String style) {
+			final String label, final String count) {
 		super(id, src, dest);
 		rep = label;
-		if (color.equals("blue")) {
-			this.color = "cornflowerblue";
-		} else if (color.equals("black")) {
-			this.color = "#666";
-		} else {
-			this.color = color;
-		}
-		this.style = style;
+		this.count = Integer.parseInt(count);
+
 	}
 
-	public String getColor() {
-		return color;
+	public int getCount() {
+		return count;
 	}
 
-	public String getStyle() {
-		return style;
+	public void setCount(final int count) {
+		this.count = count;
 	}
 
 	@Override

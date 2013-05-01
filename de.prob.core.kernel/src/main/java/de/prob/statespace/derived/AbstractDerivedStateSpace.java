@@ -1,6 +1,7 @@
 package de.prob.statespace.derived;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,10 +19,10 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		implements IStatesCalculatedListener, IStateSpace {
 
 	protected final StateSpace stateSpace;
-	private int idGenerator;
 
 	public AbstractDerivedStateSpace(final IStateSpace stateSpace) {
 		super(new DirectedSparseMultigraph<StateId, OpInfo>());
+		removeVertex(__root);
 		if (stateSpace instanceof StateSpace) {
 			this.stateSpace = (StateSpace) stateSpace;
 		} else if (stateSpace instanceof AbstractDerivedStateSpace) {
@@ -31,7 +32,6 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 			throw new UnsupportedOperationException(
 					"Could not create AbstractDerivedStateSpace because the instance of IStateSpace was not recognized");
 		}
-		idGenerator = 0;
 	}
 
 	Set<IStatesCalculatedListener> listeners = new HashSet<IStatesCalculatedListener>();
@@ -63,18 +63,29 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 
 	public void addStates(final List<DerivedStateId> states) {
 		for (DerivedStateId derivedStateId : states) {
-			addVertex(derivedStateId);
+			if (containsVertex(derivedStateId)) {
+				DerivedStateId v = (DerivedStateId) getVertex(derivedStateId
+						.getId());
+				v.setCount(derivedStateId.getCount());
+			} else {
+				addVertex(derivedStateId);
+			}
 		}
 	}
 
 	public List<DerivedOp> addTransitions(final List<DerivedOp> ops) {
 		List<DerivedOp> newOps = new ArrayList<DerivedOp>();
 		for (DerivedOp op : ops) {
-			if (!containsEdge(op)) {
-				DerivedOp d = new DerivedOp((idGenerator++) + "", op.getSrc(),
-						op.getDest(), op.getRep(), op.getColor(), op.getStyle());
-				newOps.add(d);
-				addEdge(d, states.get(op.getSrc()), states.get(op.getDest()));
+			if (containsEdge(op)) {
+				Collection<OpInfo> edges = getEdges();
+				for (OpInfo opInfo : edges) {
+					if (opInfo.equals(op)) {
+						((DerivedOp) opInfo).setCount(op.getCount());
+					}
+				}
+			} else {
+				newOps.add(op);
+				addEdge(op, states.get(op.getSrc()), states.get(op.getDest()));
 			}
 		}
 		return newOps;

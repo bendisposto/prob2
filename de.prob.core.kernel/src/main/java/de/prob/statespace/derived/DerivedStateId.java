@@ -5,21 +5,26 @@ import de.prob.statespace.StateId;
 public class DerivedStateId extends StateId {
 
 	private final String label;
-	private final boolean invOk;
+	private int count;
 
 	public DerivedStateId(final String id, final String label,
-			final boolean invOk) {
+			final String witness, final String count) {
 		super(id, null);
 		this.label = label;
-		this.invOk = invOk;
+		this.count = Integer.parseInt(count);
+
 	}
 
 	public String getLabel() {
 		return label;
 	}
 
-	public boolean isInvOk() {
-		return invOk;
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(final int count) {
+		this.count = count;
 	}
 
 	@Override

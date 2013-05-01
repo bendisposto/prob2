@@ -30,6 +30,8 @@ public abstract class AbstractData {
 
 	public abstract int varSize();
 
+	public abstract int getMode();
+
 	public void addNewLinks(final StateSpaceGraph graph,
 			final List<? extends OpInfo> newOps) {
 		for (OpInfo opInfo : newOps) {
@@ -57,12 +59,21 @@ public abstract class AbstractData {
 		count++;
 	}
 
+	public void setReset(final boolean value) {
+		data.reset = value;
+	}
+
+	public boolean getReset() {
+		return data.reset;
+	}
+
 	protected class Data {
 
 		public List<Node> nodes = new ArrayList<Node>();
 		public List<Link> links = new ArrayList<Link>();
 
 		public List<Transformer> styling = new ArrayList<Transformer>();
+		public boolean reset = false;
 	}
 
 	protected class Node {

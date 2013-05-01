@@ -26,13 +26,14 @@ import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.derived.AbstractDerivedStateSpace;
 import de.prob.statespace.derived.SignatureMergedStateSpace;
 import de.prob.visualization.AbstractData;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.DerivedStateSpaceData;
 import de.prob.visualization.IVisualizationServlet;
-import de.prob.visualization.Transformer;
 import de.prob.visualization.StateSpaceData;
+import de.prob.visualization.Transformer;
 import de.prob.visualization.VisualizationSelector;
 
 @SuppressWarnings("serial")
@@ -65,10 +66,29 @@ public class StateSpaceServlet extends HttpServlet implements
 			final HttpServletResponse res) throws ServletException, IOException {
 		if (req.getParameter("init") != null) {
 			initializePage(req, res);
+		} else if (req.getParameter("cmd") != null) {
+			performCommand(req, res);
 		} else if (req.getParameter("sessionId") != null) {
 			normalResponse(req, res);
 		} else {
 			res.getWriter().close();
+		}
+
+	}
+
+	private void performCommand(final HttpServletRequest req,
+			final HttpServletResponse res) {
+		String sId = req.getParameter("sessionId");
+		String cmd = req.getParameter("cmd");
+
+		if (cmd.equals("sig_merge") && dataObjects.containsKey(sId)) {
+			createSigMergeGraph(sId);
+		} else if (cmd.equals("org_ss") && dataObjects.containsKey(sId)) {
+			IStateSpace ss = spaces.get(sId);
+			if (ss instanceof AbstractDerivedStateSpace) {
+				createStateSpaceGraph(sId,
+						((AbstractDerivedStateSpace) ss).getStateSpace());
+			}
 		}
 
 	}
@@ -111,10 +131,14 @@ public class StateSpaceServlet extends HttpServlet implements
 			}
 			resp.put("count", data.count());
 			resp.put("varCount", data.varSize());
+			resp.put("reset", data.getReset());
+			resp.put("mode", data.getMode());
 		} else {
 			resp.put("count", 0);
 			resp.put("data", "");
 			resp.put("varCount", 0);
+			resp.put("reset", true);
+			resp.put("mode", 0);
 		}
 
 		Gson g = new Gson();
@@ -122,6 +146,10 @@ public class StateSpaceServlet extends HttpServlet implements
 		String json = g.toJson(resp);
 		out.println(json);
 		out.close();
+
+		if (dataObjects.containsKey(sessionId)) {
+			dataObjects.get(sessionId).setReset(false);
+		}
 	}
 
 	@Override
@@ -154,14 +182,8 @@ public class StateSpaceServlet extends HttpServlet implements
 					"Could not start state space visualization because no animation is loaded");
 		}
 		String sId = getSessionId();
-		spaces.put(sId, currentStateSpace);
-		StateSpaceData d = new StateSpaceData(currentStateSpace);
-		calculateData(currentStateSpace, d);
-		dataObjects.put(sId, d);
-		currentStateSpace.registerStateSpaceListener(this);
-		sessionMap.get(currentStateSpace).add(sId);
+		createStateSpaceGraph(sId, currentStateSpace);
 		visualizations.registerSession(sId + "", this);
-
 		return sId + "";
 	}
 
@@ -185,6 +207,22 @@ public class StateSpaceServlet extends HttpServlet implements
 		}
 	}
 
+	public void createStateSpaceGraph(final String sessionId,
+			final StateSpace space) {
+		if (dataObjects.containsKey(sessionId)) {
+			closeSession(sessionId);
+		}
+
+		spaces.put(sessionId, space);
+		StateSpaceData d = new StateSpaceData(space);
+		d.setReset(true);
+		calculateData(space, d);
+		dataObjects.put(sessionId, d);
+		currentStateSpace.registerStateSpaceListener(this);
+		sessionMap.get(space).add(sessionId);
+
+	}
+
 	public void createSigMergeGraph(final String sessionId) {
 		IStateSpace iStateSpace = spaces.get(sessionId);
 		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand();
@@ -194,9 +232,7 @@ public class StateSpaceServlet extends HttpServlet implements
 		space.addStates(cmd.getStates());
 		space.addTransitions(cmd.getOps());
 
-		spaces.remove(sessionId);
-		dataObjects.remove(sessionId);
-		sessionMap.get(iStateSpace).remove(sessionId);
+		closeSession(sessionId);
 
 		if (sessionMap.get(iStateSpace).isEmpty()) {
 			iStateSpace.deregisterStateSpaceListener(this);
@@ -211,7 +247,7 @@ public class StateSpaceServlet extends HttpServlet implements
 			sessionMap.put(space, new HashSet<String>());
 		}
 		sessionMap.get(space).add(sessionId);
-
+		d.setReset(true);
 	}
 
 	@Override

@@ -43,11 +43,10 @@ public class ApplySignatureMergeCommand extends AbstractCommand {
 				CompoundPrologTerm cpt = (CompoundPrologTerm) pt;
 				String src = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
 				String label = cpt.getArgument(2).toString();
-				String dest = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
-				String id = null;
-				String color = cpt.getArgument(4).getFunctor();
-				String style = cpt.getArgument(5).getFunctor();
-				ops.add(new DerivedOp(id, src, dest, label, color, style));
+				String count = cpt.getArgument(3).getFunctor();
+				String dest = OpInfo.getIdFromPrologTerm(cpt.getArgument(4));
+				String id = OpInfo.getIdFromPrologTerm(cpt.getArgument(5));
+				ops.add(new DerivedOp(id, src, dest, label, count));
 			}
 		}
 
@@ -59,13 +58,10 @@ public class ApplySignatureMergeCommand extends AbstractCommand {
 			if (prologTerm instanceof CompoundPrologTerm) {
 				CompoundPrologTerm cpt = (CompoundPrologTerm) prologTerm;
 				String label = cpt.getArgument(1).toString();
-				String id = OpInfo.getIdFromPrologTerm(cpt.getArgument(2));
-				PrologTerm pt = cpt.getArgument(3);
-				boolean invOk = false;
-				if (pt.getFunctor().equals("ok")) {
-					invOk = true;
-				}
-				states.add(new DerivedStateId(id, label, invOk));
+				String count = cpt.getArgument(2).getFunctor();
+				String witness = cpt.getArgument(3).getFunctor();
+				String id = OpInfo.getIdFromPrologTerm(cpt.getArgument(4));
+				states.add(new DerivedStateId(id, label, witness, count));
 			}
 		}
 

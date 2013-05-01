@@ -73,6 +73,10 @@ public class StateSpaceGraph {
 		return getOutEdges(sId).contains(oId);
 	}
 
+	protected boolean removeVertex(final StateId id) {
+		return graph.removeVertex(id);
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

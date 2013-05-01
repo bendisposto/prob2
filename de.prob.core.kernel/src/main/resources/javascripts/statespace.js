@@ -1,4 +1,4 @@
-var width, height;
+var width, height, force, svg;
 
 function calculateDimensions() {
   if( typeof( window.innerWidth ) == 'number' ) { width = window.innerWidth; height = window.innerHeight; } // NORMAL BROWSERS 
@@ -8,38 +8,44 @@ function calculateDimensions() {
     width = document.body.clientWidth; height = document.body.clientHeight; }
 }
 
-calculateDimensions();
-var force = d3.layout.force()
+function init() {
+  calculateDimensions();
+  force = d3.layout.force()
     .charge(-150)
     .linkDistance(160)
     .size([width, height]);
 
-var svg = d3.select("#body").append("svg:svg")
-    .attr("width",width)
-    .attr("height",height)
-    .attr("pointer-events","all")
-  .append("svg:g")
-    .call(d3.behavior.zoom().on("zoom", redraw))
-  .append("svg:g");
+  svg = d3.select("#body").append("svg:svg")
+      .attr("class","background")
+      .attr("viewBox","0 0 "+width+" "+height)
+      .attr("pointer-events","all")
+    .append("svg:g")
+      .call(d3.behavior.zoom().on("zoom", redraw))
+    .append("svg:g");
 
-svg.append("svg:rect")
-    .attr("class","canvas")
-    .attr("width",width)
-    .attr("height",height)
-    .style("fill-opacity",1e-6);
+
+}
 
 function redraw() {
   svg.attr("transform","translate("+d3.event.translate+")"+ " scale("+d3.event.scale+")");
 }
 
+
 var nodes = [];
 var links = [];
+var stopped = {value:false};
 
 function buildGraph(attrs,n) {
     force
         .nodes(nodes)
         .links(links)
         .start();
+
+    svg.append("svg:rect")
+        .attr("class","canvas")
+        .attr("height",height)
+        .attr("width",width)
+        .style("fill-opacity",1e-6);
 
     var l = svg.append("svg:g");
 
@@ -53,6 +59,7 @@ function buildGraph(attrs,n) {
     var text = l.selectAll("text")
             .data(links)
           .enter().append("svg:text")
+            .attr("class","linkT")
             .attr("text-anchor","start")
             .attr("dx","30")
             .attr("font-size","3px")
@@ -132,39 +139,43 @@ function buildGraph(attrs,n) {
 
     force.resume();
     force.on("tick", function() {
-      path.attr("d", function(d) {
-        if(d.loop) {
-          d3.select("#lt"+d.id).attr("dx",80);
-          var factor = 1+d.lNr*0.1;
-          var linedata = [
-              {x: d.source.x-10, y: d.source.y+10},
-              {x: d.source.x+40*factor, y: d.source.y-20*factor},
-              {x: d.source.x+50*factor, y: d.source.y+10*factor}
-          ];
-          return cycleGen(linedata);
-        } else {
-          var dx = d.target.x - d.source.x,
-              dy = d.target.y - d.source.y,
-              dr =  Math.sqrt(dx * dx + dy * dy)*(1-d.lNr*0.1);
-          return "M" + 
-            d.source.x + "," + 
-            d.source.y + "A" + 
-            dr + "," + dr + " 0 0,1 " + 
-            d.target.x + "," + 
-            d.target.y;
-          };
-    });
+      if(!stopped.value) {
+        path.attr("d", function(d) {
+          if(d.loop) {
+            d3.select("#lt"+d.id).attr("dx",80);
+            var factor = 1+d.lNr*0.1;
+            var linedata = [
+                {x: d.source.x-10, y: d.source.y+10},
+                {x: d.source.x+40*factor, y: d.source.y-20*factor},
+                {x: d.source.x+50*factor, y: d.source.y+10*factor}
+            ];
+            return cycleGen(linedata);
+          } else {
+            var dx = d.target.x - d.source.x,
+                dy = d.target.y - d.source.y,
+                dr =  Math.sqrt(dx * dx + dy * dy)*(1-d.lNr*0.1);
+            return "M" + 
+              d.source.x + "," + 
+              d.source.y + "A" + 
+              dr + "," + dr + " 0 0,1 " + 
+              d.target.x + "," + 
+              d.target.y;
+            };
+      });
 
-      node.attr("transform", function(d) {var nx = d.x-20, ny = d.y-boxH/2; return "translate("+nx+","+ny+")"});
-    });
-
-
+        node.attr("transform", function(d) {var nx = d.x-20, ny = d.y-boxH/2; return "translate("+nx+","+ny+")"});
+    }});
 }
 
 var linkMap = d3.map();
 var ssCtr = 0;
+var mode = 1;
+var sId;
 
 function initialize(id) {
+sId = id;
+calculateHeader(id, mode);
+init();
 // setup output polling
 setInterval(function() {
 	
@@ -173,8 +184,11 @@ setInterval(function() {
       getSS : false,
       getAll : false
   	}, function(res) {
+      if(res.mode !== mode) {
+        calculateHeader(id,res.mode);
+      }
       if(res.count !== ssCtr) {
-        refresh(id, ssCtr === 0);
+        refresh(id, ssCtr === 0 || res.reset);
       };
     });
 	
@@ -182,9 +196,16 @@ setInterval(function() {
   }, 300);
 };
 
-function refresh(id,getAllStates) {
+function refresh(id,getAllStates,mode) {
+  if(getAllStates) {
+    nodes = [];
+    links = [];
+  }
+
   svg.selectAll(".link").remove();
   svg.selectAll(".node").remove();
+  svg.selectAll(".linkT").remove();
+  svg.selectAll(".canvas").remove();
 
 
   $.getJSON("statespace_servlet", {
@@ -225,7 +246,60 @@ function refresh(id,getAllStates) {
         links.push(l[i]);
 
       };
-      buildGraph(res.data.styling,res.varCount);
+      styling = res.data.styling;
+      varCount = res.varCount;
+      buildGraph(styling,varCount);
     };
   });
+}
+
+function calculateHeader(id,m) {
+  mode = m;
+  d3.selectAll(".menuOps").remove();
+  var cmds = [{name:"Original State Space",cmd:"org_ss",id:1},{name:"Signature Merge",cmd:"sig_merge",id:2}]
+
+  var menu = d3.select("#menu").append("ul").attr("class","menuOps");
+  var pause = menu.append("li");
+
+  pause.selectAll("push")
+        .data([stopped])
+        .enter()          
+      .append("img")
+        .attr("class","push")
+        .attr("src",function(d) { return d.value ? "../images/pause-icon.png" : "../images/play-icon.png"})
+        .attr("width","20")
+        .attr("height","20")
+        .attr("align","top")
+        .on("click",function(d) { var x = d.value; d.value = !x});
+
+  var list = menu.append("li")
+                .attr("class","dropdown")
+              .append("select")
+                .on("change",function() {doCmd(id,this.options[this.selectedIndex].__data__.cmd)});
+
+  list.selectAll("option")
+      .data(cmds)
+      .enter()
+    .append("option")
+      .attr("id",function(d) {return "op"+d.id})
+      .text(function(d) {return d.name});
+
+  list.select("#op"+m)
+      .attr("selected",true);
+
+}
+
+function doCmd(id,cmd) {
+  $.getJSON("statespace_servlet", {
+      sessionId : id,
+      cmd : cmd
+  });
+}
+
+function resize() {
+  calculateDimensions();
+  d3.select("#background")
+    .attr("width",width)
+    .attr("height",height);
+  refresh(sId,false,mode);
 }

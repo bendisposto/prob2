@@ -3,16 +3,11 @@ package de.prob.visualization;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Joiner;
-
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
-import de.prob.statespace.derived.DerivedOp;
 import de.prob.statespace.derived.DerivedStateId;
 
 public class DerivedStateSpaceData extends AbstractData {
-
-	List<String> dotted = new ArrayList<String>();
 
 	@Override
 	public Node addNode(final StateId id) {
@@ -24,6 +19,7 @@ public class DerivedStateSpaceData extends AbstractData {
 		List<String> vs = new ArrayList<String>();
 		if (id instanceof DerivedStateId) {
 			vs.add(((DerivedStateId) id).getLabel());
+			vs.add(((DerivedStateId) id).getCount() + "");
 		}
 
 		Node node = new Node(id.getId(), id.getId(), parentIndex, vs);
@@ -35,19 +31,10 @@ public class DerivedStateSpaceData extends AbstractData {
 
 	@Override
 	public Link addLink(final OpInfo op) {
-		String color = "#666";
-		if (op instanceof DerivedOp) {
-			color = ((DerivedOp) op).getColor();
-			String style = ((DerivedOp) op).getStyle();
-			if (style.equals("dotted")) {
-				dotted.add("#arc" + op.getId());
-			}
-		}
-
 		Node src = nodes.get(op.src);
 		Node dest = nodes.get(op.dest);
 		Link link = new Link(op.id, data.nodes.indexOf(src),
-				data.nodes.indexOf(dest), op.getRep(), color);
+				data.nodes.indexOf(dest), op.getRep(), "#666");
 		links.put(op.id, link);
 		data.links.add(link);
 		count++;
@@ -56,16 +43,11 @@ public class DerivedStateSpaceData extends AbstractData {
 
 	@Override
 	public int varSize() {
-		return 1;
+		return 2;
 	}
 
 	@Override
-	public Data getChanges() {
-		String selector = Joiner.on(',').join(dotted);
-		Transformer s = new Transformer(selector).attr("stroke-dasharray", "2,2");
-		dotted = new ArrayList<String>();
-		addStyling(s);
-		return super.getChanges();
+	public int getMode() {
+		return 2;
 	}
-
 }
