@@ -41,11 +41,13 @@ public class StateSpaceData extends AbstractData {
 	@Override
 	protected Node addNode(final StateId id, final int parentIndex) {
 		List<String> vs = new ArrayList<String>();
-		Map<IEvalElement, EvaluationResult> valuesAt = s.valuesAt(id);
-		for (IEvalElement var : vars) {
-			EvaluationResult res = valuesAt.get(var);
-			if (res != null) {
-				vs.add(var.getCode() + "=" + res.getValue());
+		Map<IEvalElement, EvaluationResult> values = s.getValues().get(id);
+		if (values != null) {
+			for (IEvalElement var : vars) {
+				EvaluationResult res = values.get(var);
+				if (res != null) {
+					vs.add(var.getCode() + "=" + res.getValue());
+				}
 			}
 		}
 

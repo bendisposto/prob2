@@ -202,6 +202,8 @@ public class StateSpaceServlet extends HttpServlet implements
 	private void calculateData(final IStateSpace s, final AbstractData d) {
 		if (s instanceof StateSpace) {
 			((StateSpace) s).checkInvariants();
+			((StateSpace) s).calculateVariables();
+			((StateSpace) s).getEvaluatedOps();
 		}
 
 		Collection<StateId> vertices = s.getSSGraph().getVertices();
@@ -209,8 +211,7 @@ public class StateSpaceServlet extends HttpServlet implements
 			d.addNode(stateId);
 		}
 
-		Collection<OpInfo> edges = s instanceof StateSpace ? ((StateSpace) s)
-				.getEvaluatedOps() : s.getSSGraph().getEdges();
+		Collection<OpInfo> edges = s.getSSGraph().getEdges();
 		for (OpInfo opInfo : edges) {
 			d.addLink(opInfo);
 		}

@@ -766,10 +766,64 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return invariantOk;
 	}
 
+	public Set<StateId> checkInitialized() {
+		Collection<StateId> vertices = getVertices();
+		List<CheckInitialisationStatusCommand> cmds = new ArrayList<CheckInitialisationStatusCommand>();
+		for (StateId stateId : vertices) {
+			if (!initializedStates.contains(stateId)) {
+				cmds.add(new CheckInitialisationStatusCommand(stateId.getId()));
+			}
+		}
+		execute(new ComposedCommand(cmds));
+		for (CheckInitialisationStatusCommand cmd : cmds) {
+			if (cmd.isInitialized()) {
+				initializedStates.add(states.get(cmd.getStateId()));
+			}
+		}
+
+		return initializedStates;
+	}
+
 	public Collection<OpInfo> getEvaluatedOps() {
 		Collection<OpInfo> edges = getEdges();
 		GetOpsFromIds cmd = new GetOpsFromIds(edges);
 		execute(cmd);
 		return edges;
+	}
+
+	public Map<StateId, Map<IEvalElement, EvaluationResult>> calculateVariables() {
+		checkInitialized();
+		List<IEvalElement> toEval = new ArrayList<IEvalElement>();
+		Set<Machine> machines = model.getChildrenOfType(Machine.class);
+		for (Machine machine : machines) {
+			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
+				toEval.add(variable.getExpression());
+			}
+		}
+
+		Collection<StateId> vertices = getVertices();
+		List<EvaluateFormulasCommand> cmds = new ArrayList<EvaluateFormulasCommand>();
+		for (StateId stateId : vertices) {
+			if (initializedStates.contains(stateId)
+					&& !values.containsKey(stateId)) {
+				cmds.add(new EvaluateFormulasCommand(toEval, stateId.getId()));
+			}
+		}
+
+		execute(new ComposedCommand(cmds));
+		for (EvaluateFormulasCommand cmd : cmds) {
+			Map<IEvalElement, EvaluationResult> map = new HashMap<IEvalElement, EvaluationResult>();
+			List<EvaluationResult> vs = cmd.getValues();
+			for (EvaluationResult eR : vs) {
+				map.put(toEval.get(vs.indexOf(eR)), eR);
+			}
+			values.put(states.get(cmd.getStateId()), map);
+		}
+
+		return values;
+	}
+
+	public Map<StateId, Map<IEvalElement, EvaluationResult>> getValues() {
+		return values;
 	}
 }
