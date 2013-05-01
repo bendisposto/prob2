@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.exception.ProBError;
 import de.prob.parser.BindingGenerator;
@@ -15,6 +14,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.OpInfo;
 
 /**
  * This command makes ProB search for a deadlock with an optional predicate to

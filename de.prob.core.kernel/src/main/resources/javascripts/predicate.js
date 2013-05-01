@@ -1,28 +1,52 @@
-var m = [20, 120, 20, 120],
-    w = 3000 - m[1] - m[3],
-    h = 800 - m[0] - m[2],
-    i = 0,
-    root;
+var width;
+var height;
+
+function calculateDimensions() {
+  if( typeof( window.innerWidth ) == 'number' ) { width = window.innerWidth; height = window.innerHeight; } // NORMAL BROWSERS 
+  else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) { 
+    width = document.documentElement.clientWidth; height = document.documentElement.clientHeight; } // IE6+ 
+  else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) { 
+    width = document.body.clientWidth; height = document.body.clientHeight; }
+}
+
+calculateDimensions();
+var root;
+var i = 0;
 
 var tree = d3.layout.tree()
-    .size([h, w]);
+    .size([height, width]);
 
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
 
 var vis = d3.select("#body").append("svg:svg")
-    .attr("width", w + m[1] + m[3])
-    .attr("height", h + m[0] + m[2])
+    .attr("width", width)
+    .attr("height", height)
+    .attr("pointer-events","all")
   .append("svg:g")
-    .attr("transform", "translate(" + 25 + "," + m[0] + ")");  
+    .call(d3.behavior.zoom().on("zoom",redraw))
+  .append("svg:g");
+
+vis.append("svg:rect")
+    .attr("class","canvas")
+    .attr("width",width)
+    .attr("height",height)
+    .style("fill-opacity",1e-6);
+
+function redraw() {
+  vis.attr("transform","translate("+d3.event.translate+") scale("+d3.event.scale+")");
+}
 
 var nodeLength = {};
 var valueLength = {};
 
-function buildTree(treeData)
+function buildTree(treeData, attrs)
 {
+    vis.selectAll(".link").remove();
+    vis.selectAll(".node").remove();
+
     root = treeData
-    root.x0 = $(window).height() / 2;
+    root.x0 = height / 2;
     root.y0 = 0;
 
     var labels = {};
@@ -30,7 +54,7 @@ function buildTree(treeData)
 
     calculateSize(root);
 
-    update(root);
+    update(root, attrs);
 }
 
 // static calculation of size of labels
@@ -63,20 +87,20 @@ function calculateSize(data) {
   v.remove();
 }
 
-function update(source) {
-  var duration = d3.event && d3.event.altKey ? 5000 : 500;
-
-  // Compute the new tree layout.
-  var nodes = tree.nodes(root).reverse();
-
-  var calcWidth = function(key) {
+function calcWidth(key) {
     var labelL = nodeLength[key.name];
     var valueL = valueLength[key.value];
     if( labelL >= valueL) {
       return labelL;
     } 
     return valueL;
-  };
+};
+
+function update(source, attrs) {
+  var duration = d3.event && d3.event.altKey ? 5000 : 500;
+
+  // Compute the new tree layout.
+  var nodes = tree.nodes(root).reverse();
 
   var hasChildren = function(d) {
     return d.children || d._children;
@@ -107,7 +131,7 @@ function update(source) {
   };
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 180 + calcWidth(root); });
+  nodes.forEach(function(d) { d.y = d.depth * 180 + 40 + calcWidth(root) ; });
 
   // Update the nodes…
   var node = vis.selectAll("g.node")
@@ -120,11 +144,10 @@ function update(source) {
       .on("click", function(d) { toggle(d); update(d); });
 
   nodeEnter.append("svg:rect")
-                .attr("width",function(d) { return calcWidth(d)+20; })
                 .attr("height",60)
                 .attr("y",-30)
-                .attr("x", function(d) { return hasChildren(d) ? -(calcWidth(d)+20) : 0; })
                 .attr("rx",10)
+                .attr("id",function(d) { return "r"+d.fId})
                 .style("fill", function(d) { return calcColor(d); })
                 .style("stroke", function(d) { return colorMain(d); })
                 .style("stroke-width", 1e-6);
@@ -135,7 +158,17 @@ function update(source) {
       .attr("dy", "-1em")
       .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
       .text(function(d) { return d.name; })
-      .style("fill-opacity", 1e-6);
+      .style("fill-opacity", 1e-6)
+      .attr("id", function(d) {
+        var textW = this.getBBox().width;
+        console.log(textW);
+        var newX = hasChildren(d) ? -(textW+20) : 0;
+        d3.select("#r"+d.fId)
+          .attr("width",textW+20)
+          .attr("x",newX);
+        d["tW"] = textW;
+        return "t"+d.fId;
+      });
 
   nodeEnter.append("svg:text")
       .attr("class","value")
@@ -144,6 +177,16 @@ function update(source) {
       .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
       .text(function(d) { return d.value; })
       .style("fill-opacity", 1e-6)
+      .attr("id",function(d) {
+        var textW = this.getBBox().width;
+        if(textW > d.tW) {
+          var newX = hasChildren(d) ? -(textW+20) : 0;
+          d3.select("#r"+d.fId)
+            .attr("width",textW+20)
+            .attr("x",newX);
+        }
+        return "v"+d.fId;
+      });
 
   // Resize Rectangles to fit text
 
@@ -221,6 +264,14 @@ function update(source) {
   });
 
   vis.selectAll("node")
+
+    for (var ii = 0; ii < attrs.length; ii++) {
+      var selected = svg.selectAll(attrs[ii].selector);
+      var attributes = attrs[ii].attributes;
+      for (var j = attributes.length - 1; j >= 0; j--) {
+        selected.attr(attributes[j].name,attributes[j].attr);
+      };
+    };
 }
 
 // Toggle children.
@@ -253,8 +304,6 @@ function initialize(id) {
 };
 
 function refresh(id) {
-  vis.selectAll(".link").remove();
-  vis.selectAll(".node").remove();
 
   $.getJSON("predicate", {
     sessionId : id,
@@ -262,7 +311,8 @@ function refresh(id) {
   }, function(res) {
     functionCtr = res.count;
     if(res.data !== "") {
-      buildTree(res.data);     
+      data = res.data;
+      buildTree(res.data, res.attrs);     
     };
   });
 }

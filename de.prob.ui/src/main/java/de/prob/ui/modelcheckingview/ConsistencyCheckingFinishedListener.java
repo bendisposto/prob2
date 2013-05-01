@@ -8,9 +8,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.check.ModelCheckingResult;
 import de.prob.statespace.History;
+import de.prob.statespace.OpInfo;
 
 public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
 

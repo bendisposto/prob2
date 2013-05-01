@@ -1,5 +1,7 @@
 package de.prob.ui.statisticsview;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -13,7 +15,9 @@ import com.google.inject.Injector;
 
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IModelChangedListener;
+import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
+import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
@@ -105,7 +109,8 @@ public class StatisticsView extends ViewPart implements IModelChangedListener,
 	}
 
 	@Override
-	public void newTransitions() {
+	public void newTransitions(final IStateSpace s,
+			final List<? extends OpInfo> ops) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {

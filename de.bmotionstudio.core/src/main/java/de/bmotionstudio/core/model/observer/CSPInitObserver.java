@@ -11,10 +11,10 @@ import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationResult;
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.History;
 import de.prob.statespace.HistoryElement;
+import de.prob.statespace.OpInfo;
 
 public class CSPInitObserver extends Observer {
 

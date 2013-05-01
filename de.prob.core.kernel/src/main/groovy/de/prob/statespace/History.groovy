@@ -6,7 +6,6 @@ import de.prob.animator.command.EvaluateFormulasCommand
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvaluationResult
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.OpInfo
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel

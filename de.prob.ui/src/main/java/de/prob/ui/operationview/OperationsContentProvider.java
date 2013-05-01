@@ -9,8 +9,8 @@ import java.util.Set;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.statespace.History;
+import de.prob.statespace.OpInfo;
 
 /**
  * Creates a new list of Operations, merging the list of available operations

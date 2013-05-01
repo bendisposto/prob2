@@ -1,11 +1,14 @@
 
 var w = 600;
 var h = 400;
-var svg = d3.select("svg").attr("width",w).attr("height",h);
+d3.select("#body").append("svg:svg");
+var svg = d3.select("svg")
+      .attr("width",w)
+      .attr("height",h);
 
 var padding = 10;
 
-function doIt(dataset) {
+function doIt(dataset, attrs) {
 
  var xScale = d3.scale.linear().domain([0, d3.max(dataset, function(d) { return d.t; })]).range([4*padding, w-padding]);
  var yScale = d3.scale.linear().domain([0, d3.max(dataset, function(d) { return d.value; })]).range([h-4*padding, padding]);
@@ -49,7 +52,13 @@ svg.append("path")
    .attr("cx",function(d) { return xScale(d.t);  })
    .attr("cy",function(d) { return yScale(d.value);});
   
-	
+	for (var i = 0; i < attrs.length; i++) {
+      var selected = svg.selectAll(attrs[i].selector);
+      var attributes = attrs[i].attributes;
+      for (var j = 0; j < attributes.length ; j++) {
+        selected.attr(attributes[j].name,attributes[j].attr);
+      };
+  };
 }
 
 var functionCtr = 0;
@@ -81,7 +90,7 @@ function refresh(id) {
 	}, function(res) {
     functionCtr = res.count;
     if(res.data !== "") {
-      doIt(res.data);
+      doIt(res.data, res.attrs);
     };
   });
 }

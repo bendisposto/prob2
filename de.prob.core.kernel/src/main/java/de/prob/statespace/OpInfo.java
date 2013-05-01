@@ -1,4 +1,4 @@
-package de.prob.animator.domainobjects;
+package de.prob.statespace;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpFromId;
+import de.prob.animator.domainobjects.ValueTranslator;
 import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -19,7 +20,6 @@ import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.scripting.CSPModel;
-import de.prob.statespace.StateSpace;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -36,6 +36,7 @@ public class OpInfo {
 	public final String dest;
 	public List<String> params = new ArrayList<String>();
 	public String targetState;
+	public String rep = null;
 	public boolean evaluated;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
@@ -116,7 +117,7 @@ public class OpInfo {
 		targetState = getIdFromPrologTerm(opTerm.getArgument(8));
 
 		this.id = id;
-		this.name = PrologTerm.atomicString(opTerm.getArgument(2));
+		name = PrologTerm.atomicString(opTerm.getArgument(2));
 		this.src = src;
 		this.dest = dest;
 		evaluated = true;
@@ -159,6 +160,13 @@ public class OpInfo {
 	}
 
 	public String getRep(final AbstractModel m) {
+		if (rep == null) {
+			rep = generateRep(m);
+		}
+		return rep;
+	}
+
+	private String generateRep(final AbstractModel m) {
 		if (!evaluated) {
 			ensureEvaluated(m.getStatespace());
 		}
@@ -216,5 +224,22 @@ public class OpInfo {
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		md.update(targetState.getBytes());
 		return new BigInteger(1, md.digest()).toString(16);
+	}
+
+	/**
+	 * @return the saved String representation. Can be null if rep has not yet
+	 *         been generated. To generate the String rep for a given model use
+	 *         {{@link #getRep(AbstractModel)};
+	 */
+	public String getRep() {
+		return rep;
+	}
+
+	public void setInfo(final String name, final List<String> params,
+			final String targetState) {
+		this.name = name;
+		this.params = params;
+		this.targetState = targetState;
+		evaluated = true;
 	}
 }

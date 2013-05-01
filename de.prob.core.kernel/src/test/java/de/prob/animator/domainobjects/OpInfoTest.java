@@ -9,6 +9,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.VariablePrologTerm;
+import de.prob.statespace.OpInfo;
 
 public class OpInfoTest {
 

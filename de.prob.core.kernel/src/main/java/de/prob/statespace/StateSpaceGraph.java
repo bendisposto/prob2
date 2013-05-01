@@ -3,10 +3,9 @@ package de.prob.statespace;
 import java.util.Collection;
 import java.util.HashMap;
 
-import de.prob.animator.domainobjects.OpInfo;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
-class StateSpaceGraph {
+public class StateSpaceGraph {
 
 	private final DirectedSparseMultigraph<StateId, OpInfo> graph;
 	protected final HashMap<String, StateId> states = new HashMap<String, StateId>();
@@ -72,6 +71,10 @@ class StateSpaceGraph {
 
 	public boolean isOutEdge(final StateId sId, final OpInfo oId) {
 		return getOutEdges(sId).contains(oId);
+	}
+
+	protected boolean removeVertex(final StateId id) {
+		return graph.removeVertex(id);
 	}
 
 	@Override

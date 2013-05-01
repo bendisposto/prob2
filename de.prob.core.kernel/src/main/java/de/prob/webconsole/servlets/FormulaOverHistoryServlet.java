@@ -23,11 +23,14 @@ import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.visualization.AnimationNotLoadedException;
+import de.prob.visualization.IVisualizationServlet;
+import de.prob.visualization.Transformer;
+import de.prob.visualization.VisualizationSelector;
 
 @SuppressWarnings("serial")
 @Singleton
 public class FormulaOverHistoryServlet extends HttpServlet implements
-		IHistoryChangeListener {
+		IHistoryChangeListener, IVisualizationServlet {
 
 	public static int idNr = 0;
 
@@ -38,12 +41,17 @@ public class FormulaOverHistoryServlet extends HttpServlet implements
 	private final AnimationSelector animations;
 	private final Map<String, Session> sessions = new HashMap<String, Session>();
 	private final Map<String, List<Object>> dataSets = new HashMap<String, List<Object>>();
+	private final Map<String, List<Transformer>> userOptions = new HashMap<String, List<Transformer>>();
 	private History history;
+	private final VisualizationSelector visualizations;
 
 	@Inject
-	public FormulaOverHistoryServlet(final AnimationSelector animations) {
+	public FormulaOverHistoryServlet(final AnimationSelector animations,
+			final VisualizationSelector visualizations) {
 		this.animations = animations;
+		this.visualizations = visualizations;
 		animations.registerHistoryChangeListener(this);
+		visualizations.registerServlet(this, "Value over Time Visualizations");
 	}
 
 	@Override
@@ -92,6 +100,7 @@ public class FormulaOverHistoryServlet extends HttpServlet implements
 				resp.put("data", dataSets.get(sessionId));
 			}
 			resp.put("count", sessions.get(sessionId).count);
+			resp.put("attrs", userOptions.get(sessionId));
 		} else {
 			resp.put("count", 0);
 			resp.put("data", "");
@@ -143,6 +152,7 @@ public class FormulaOverHistoryServlet extends HttpServlet implements
 		Session session = new Session(sessionId, s, formula);
 		sessions.put(sessionId, session);
 		calculateSession(session);
+		visualizations.registerSession(sessionId, this);
 
 		return sessionId;
 	}
@@ -181,6 +191,17 @@ public class FormulaOverHistoryServlet extends HttpServlet implements
 		public void inc() {
 			count++;
 		}
+	}
+
+	@Override
+	public void addUserDefinitions(final String id, final Transformer selection) {
+		Session session = sessions.get(id);
+		session.inc();
+		if (!userOptions.containsKey(id)) {
+			userOptions.put(id, new ArrayList<Transformer>());
+		}
+		userOptions.get(id).add(selection);
+
 	}
 
 }

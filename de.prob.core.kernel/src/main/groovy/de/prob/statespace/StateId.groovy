@@ -4,15 +4,15 @@ import de.prob.animator.domainobjects.CSP
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EventB
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.animator.domainobjects.OpInfo
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.scripting.CSPModel
+import de.prob.statespace.derived.AbstractDerivedStateSpace
 
 
 class StateId {
 
-	def id;
+	protected def id;
 	def StateSpace space;
 
 	def invokeMethod(String method,  params) {
@@ -57,7 +57,11 @@ class StateId {
 
 	def StateId(id, space) {
 		this.id = id;
-		this.space = space;
+		if(space instanceof StateSpace) {
+			this.space = space;
+		} else if(space instanceof AbstractDerivedStateSpace) {
+			this.space = ((AbstractDerivedStateSpace) space).getStateSpace()
+		}
 	}
 
 	def String toString() {

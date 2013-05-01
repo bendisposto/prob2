@@ -16,13 +16,15 @@ import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckInitialisationStatusCommand;
+import de.prob.animator.command.CheckInvariantStatusCommand;
+import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
+import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
@@ -52,7 +54,7 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
  * @author joy
  * 
  */
-public class StateSpace extends StateSpaceGraph implements IAnimator {
+public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	private transient IAnimator animator;
 
@@ -63,7 +65,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
-	private final List<IStatesCalculatedListener> stateSpaceListeners = new ArrayList<IStatesCalculatedListener>();
+	private final Set<IStatesCalculatedListener> stateSpaceListeners = new HashSet<IStatesCalculatedListener>();
 
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private long lastCalculatedStateId;
@@ -115,17 +117,19 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			final List<OpInfo> enabledOperations = command
 					.getEnabledOperations();
 
+			List<OpInfo> newOps = new ArrayList<OpInfo>();
 			for (final OpInfo op : enabledOperations) {
 				if (!containsEdge(op)) {
 					ops.put(op.id, op);
+					newOps.add(op);
 
 					final StateId newState = new StateId(op.dest, this);
 					addVertex(newState);
 					addEdge(op, getVertex(op.src), getVertex(op.dest));
 				}
 			}
-			notifyStateSpaceChange();
 			evaluateFormulas(state);
+			notifyStateSpaceChange(newOps);
 		} catch (ProBError e) {
 			if (state == getRoot()) {
 				explored.add(state);
@@ -217,6 +221,7 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 		final List<OpInfo> newOps = command.getOperations();
 		updateLastCalculatedStateId(stateId.numericalId());
 
+		List<OpInfo> toNotify = new ArrayList<OpInfo>();
 		// (id,name,src,dest,args)
 		for (final OpInfo op : newOps) {
 
@@ -227,10 +232,11 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 			}
 			if (!containsEdge(op)) {
 				ops.put(op.id, op);
+				toNotify.add(op);
 				addEdge(op, getVertex(op.src), vertex);
 			}
 		}
-		notifyStateSpaceChange();
+		notifyStateSpaceChange(toNotify);
 		return newOps;
 	}
 
@@ -468,17 +474,20 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	 * 
 	 * @param l
 	 */
+	@Override
 	public void registerStateSpaceListener(final IStatesCalculatedListener l) {
 		stateSpaceListeners.add(l);
 	}
 
+	@Override
 	public void deregisterStateSpaceListener(final IStatesCalculatedListener l) {
 		stateSpaceListeners.remove(l);
 	}
 
-	public void notifyStateSpaceChange() {
+	@Override
+	public void notifyStateSpaceChange(final List<? extends OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
-			listener.newTransitions();
+			listener.newTransitions(this, newOps);
 		}
 	}
 
@@ -729,5 +738,38 @@ public class StateSpace extends StateSpaceGraph implements IAnimator {
 	public void updateLastCalculatedStateId(final long lastCalculatedId) {
 		lastCalculatedStateId = Math.max(lastCalculatedStateId,
 				lastCalculatedId);
+	}
+
+	@Override
+	public StateSpaceGraph getSSGraph() {
+		return this;
+	}
+
+	public Set<StateId> getInvariantOk() {
+		return invariantOk;
+	}
+
+	public Set<StateId> checkInvariants() {
+		Collection<StateId> vertices = getVertices();
+		List<CheckInvariantStatusCommand> cmds = new ArrayList<CheckInvariantStatusCommand>();
+		for (StateId stateId : vertices) {
+			if (!invariantOk.contains(stateId)) {
+				cmds.add(new CheckInvariantStatusCommand(stateId.getId()));
+			}
+		}
+		execute(new ComposedCommand(cmds));
+		for (CheckInvariantStatusCommand cmd : cmds) {
+			if (!cmd.isInvariantViolated()) {
+				invariantOk.add(states.get(cmd.getStateId()));
+			}
+		}
+		return invariantOk;
+	}
+
+	public Collection<OpInfo> getEvaluatedOps() {
+		Collection<OpInfo> edges = getEdges();
+		GetOpsFromIds cmd = new GetOpsFromIds(edges);
+		execute(cmd);
+		return edges;
 	}
 }

@@ -30,6 +30,21 @@ ArrayList.metaClass.asType = { Class type ->
         oldArrayListAsType.invoke(delegate, c)
 }
 
+transform = { s,c ->
+	def x
+	if(s instanceof String) {
+		x = new Transformer(s).with c 
+	} else {
+		d = []
+		s.each {
+			d << "#r"+it.getId()
+		}
+		r = com.google.common.base.Joiner.on(",").join(d)
+		x = new Transformer(r).with c
+	}
+	x
+}
+
 
 /* Redirect print and println to our own buffered console*/
 Script.getMetaClass().print = { s -> __console.append(s) }
@@ -64,4 +79,5 @@ api.metaClass.eventb_load { file ->
 				
 		model		
 				
-		} 
+		}
+		 

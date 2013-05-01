@@ -10,11 +10,11 @@ import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Joiner;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventParameter;
 import de.prob.model.representation.BEvent;
+import de.prob.statespace.OpInfo;
 import de.prob.ui.Activator;
 
 class OperationViewLabelProvider extends LabelProvider implements
