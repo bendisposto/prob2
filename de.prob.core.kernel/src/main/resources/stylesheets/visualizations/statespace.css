@@ -13,3 +13,20 @@ path.link {
   stroke: #999;
   stroke-opacity: .6;
 }
+
+#menu {
+	background: rgb(255,255,255) transparent;
+	background: rgba(255,255,255,0.1);
+}
+
+#menu ul {
+	list-style-type: none;
+	background: rgb(255,255,255) transparent;
+	background: rgba(255,255,255,0.1);
+	margin-bottom: 0;
+	margin-top: 0;
+}
+
+#menu ul li {
+	display: inline;
+}

@@ -51,6 +51,7 @@ class HTMLResources {
 </head>
 <body onload="initialize('''+"'"+sessionId+"'"+''')">
 
+			<div id="menu"></div>
 			<div id="body"></div>
 
 			<!-- JS
