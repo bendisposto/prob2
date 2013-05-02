@@ -160,6 +160,7 @@ public class StateSpaceServlet extends HttpServlet implements
 		if (sessIds != null && !sessIds.isEmpty()) {
 			if (s instanceof StateSpace) {
 				((StateSpace) s).checkInvariants();
+				((StateSpace) s).calculateVariables();
 			}
 			for (String id : sessIds) {
 				final AbstractData d = dataObjects.get(id);
