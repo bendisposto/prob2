@@ -155,12 +155,12 @@ public class StateSpaceServlet extends HttpServlet implements
 	@Override
 	public void newTransitions(final IStateSpace s,
 			final List<? extends OpInfo> newOps) {
-		if (s instanceof StateSpace) {
-			((StateSpace) s).checkInvariants();
-		}
 
 		Set<String> sessIds = sessionMap.get(s);
-		if (sessIds != null) {
+		if (sessIds != null && !sessIds.isEmpty()) {
+			if (s instanceof StateSpace) {
+				((StateSpace) s).checkInvariants();
+			}
 			for (String id : sessIds) {
 				final AbstractData d = dataObjects.get(id);
 				d.addNewLinks(s.getSSGraph(), newOps);

@@ -65,7 +65,7 @@ function buildGraph(attrs,n) {
             .attr("font-size","3px")
             .attr("id",function(d) { return "lt"+d.id});
 
-    text.append("textPath")
+    var transLabels = text.append("textPath")
               .attr("xlink:href",function(d) { return "#arc"+d.id })
               .text(function(d) {return d.name});
 
@@ -174,7 +174,9 @@ function buildGraph(attrs,n) {
             };
       });
 
-        node.attr("transform", function(d) {var nx = d.x-20, ny = d.y-boxH/2; return "translate("+nx+","+ny+")"});
+      transLabels.attr("xlink:href",function(d) { return "#arc"+d.id });
+
+      node.attr("transform", function(d) {var nx = d.x-20, ny = d.y-boxH/2; return "translate("+nx+","+ny+")"});
     }});
 }
 
