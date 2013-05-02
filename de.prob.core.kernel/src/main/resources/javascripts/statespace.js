@@ -11,7 +11,7 @@ function calculateDimensions() {
 function init() {
   calculateDimensions();
   force = d3.layout.force()
-    .charge(-150)
+    .charge(-500)
     .linkDistance(160)
     .size([width, height]);
 
