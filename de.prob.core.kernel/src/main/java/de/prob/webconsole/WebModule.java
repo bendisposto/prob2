@@ -14,6 +14,7 @@ import de.prob.webconsole.servlets.PredicateServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
 import de.prob.webconsole.servlets.StateSpaceServlet;
 import de.prob.webconsole.servlets.VersionServlet;
+import de.prob.worksheet.WorksheetServlet;
 
 public class WebModule extends ServletModule {
 
@@ -31,6 +32,7 @@ public class WebModule extends ServletModule {
 
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
 		serve("/predicate*").with(PredicateServlet.class);
+		serve("/exec*").with(WorksheetServlet.class);
 
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);
