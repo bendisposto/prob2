@@ -33,7 +33,7 @@ public class WebConsole {
 				try {
 					Desktop.getDesktop().browse(
 							new URI("http://localhost:" + WebConsole.PORT
-									+ "/console"));
+									+ ""));
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (URISyntaxException e) {

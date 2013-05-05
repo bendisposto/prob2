@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Worksheet</title>
+<link rel="stylesheet" href="stylesheets/bootstrap.css">
+<link rel="stylesheet" href="stylesheets/codemirror.css">
+<link rel="stylesheet" href="stylesheets/ynot.css">
+
+<script src="javascripts/jquery.js"></script>
+<script src="javascripts/bootstrap.js"></script>
+<script src="javascripts/codemirror.js"></script>
+<script src="javascripts/modes/clojure.js"></script>
+<script src="javascripts/modes/markdown.js"></script>
+<script src="javascripts/modes/javascript.js"></script>
+<script src="javascripts/markdown.js"></script>
+<script src="javascripts/mustache.js"></script>
+<script src="javascripts/jquery-ui.js"></script>
+<script src="javascripts/ynot_boxes.js"></script>
+<script src="javascripts/ynot.js"></script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+
+</head>
+<body onload="javascript:init()">
+	<div class="container">
+		<h1>ynot?</h1>
+		<div class="row">
+			<div class="top-bar span12">
+				<div id="ts" class="btn-toolbar" style="margin: 0;">
+					<div class="btn-group">
+						<button id="ts_button" class="btn btn-primary dropdown-toggle"
+							data-toggle="dropdown">
+							Markdown <span class="caret"></span>
+						</button>
+						<ul id="ts_menu" class="dropdown-menu">
+							<li><a href="#"
+								onclick="javascript:setDefaultType(settings.groovy)">Groovy</a></li>
+	
+							<li><a href="#"
+								onclick="javascript:setDefaultType(settings.b)">B</a></li>
+	
+							<li><a href="#"
+								onclick="javascript:setDefaultType(settings.markdown)">Markdown</a></li>
+	
+							<li><a href="#"
+								onclick="javascript:setDefaultType(settings.javascript)">JavaScript
+									(Browser)</a></li>
+						</ul>
+					</div> 
+				</div>	
+			</div>
+		</div>
+	
+
+		<div id="boxes"></div>
+
+		<script type="text/javascript"
+			src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+
+</html>
