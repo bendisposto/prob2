@@ -259,8 +259,23 @@ function evalGroovy(text, info) {
 	}, function(data) {
 		r.addClass("renderer");
 		printRenderer(r, data.result)
+		$("#wsbox" + info.id).height(r.height() + 8);
+		
 	});
-
+}
+function evalB(text, info) {
+	var r = info.renderer;
+	r.removeClass("renderer");
+	info.renderer.html('<img src="images/loading.gif" class="preload"  />');
+	$.getJSON("exec", {
+		input : text,
+		lang : "b"
+	}, function(data) {
+		r.addClass("renderer");
+		printRenderer(r, data.result)
+		$("#wsbox" + info.id).height(r.height() + 8);
+		
+	});
 }
 
 function evalMarkdown(text, info) {
@@ -328,10 +343,7 @@ var settings = {
 	},
 	b : {
 		lang : "B",
-		evalfkt : function(text, info) {
-			printRenderer(info.renderer, "B said: I build my own " + text
-					+ ". With Blackjack and Hookers.")
-		},
+		evalfkt : evalB,
 		codemirror : {
 			mode : 'javascript',
 			lineNumbers : false,

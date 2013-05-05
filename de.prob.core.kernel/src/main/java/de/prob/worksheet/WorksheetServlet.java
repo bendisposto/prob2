@@ -3,6 +3,7 @@ package de.prob.worksheet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -14,18 +15,24 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvaluationException;
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.statespace.AnimationSelector;
 import de.prob.webconsole.GroovyExecution;
-import de.prob.webconsole.OutputBuffer;
 
 @SuppressWarnings("serial")
 @Singleton
 public class WorksheetServlet extends HttpServlet {
 
 	private GroovyExecution executor;
+	private AnimationSelector animations;
 
 	@Inject
-	public WorksheetServlet(GroovyExecution executor, OutputBuffer sideeffects) {
+	public WorksheetServlet(GroovyExecution executor,
+			AnimationSelector animations) {
 		this.executor = executor;
+		this.animations = animations;
 	}
 
 	@Override
@@ -41,8 +48,19 @@ public class WorksheetServlet extends HttpServlet {
 		if ("groovy".equals(language)) {
 			String result = executor.evaluate(command);
 			resp.put("result", result);
-			// resp.put("result", e.getCause());
-			// resp.put("error", true);
+		}
+
+		if ("b".equals(language)) {
+			try {
+				ClassicalB formula = new ClassicalB(command);
+				Object eval = animations.getCurrentHistory().getCurrentState()
+						.eval(formula);
+				resp.put("result", "<p>"+command + " is </p><p> " + eval+"</p>");
+			} catch (EvaluationException e) {
+				resp.put("result", "Exception while processing '" + command
+						+ "'. " + e.getMessage());
+				resp.put("error", true);
+			}
 		}
 
 		if (resp.isEmpty()) {
