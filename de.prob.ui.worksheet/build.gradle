@@ -7,7 +7,7 @@ apply plugin: 'maven'
 
 eclipse {
   project {
-	  name = 'de.prob.ui'
+	  name = 'de.prob.ui.worksheet'
 	 natures   'org.eclipse.pde.PluginNature'
 	 buildCommand   'org.eclipse.pde.ManifestBuilder'
 	 buildCommand 'org.eclipse.pde.SchemaBuilder'
