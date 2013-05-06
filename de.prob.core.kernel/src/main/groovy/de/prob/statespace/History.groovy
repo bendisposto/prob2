@@ -268,6 +268,10 @@ class History {
 			animationListeners.add(l)
 	}
 
+	def void deregisterAnimationListener(final IAnimationListener l) {
+		animationListeners.remove(l)
+	}
+
 	def void notifyAnimationChange(final History oldHistory,final History newHistory) {
 		for (IAnimationListener listener : animationListeners) {
 			listener.currentStateChanged(oldHistory,newHistory)

@@ -8,6 +8,7 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 public abstract class AbstractModel extends AbstractElement {
 
 	protected StateSpace statespace;
+	protected boolean dirty = false;
 	protected File modelFile;
 	protected DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
@@ -82,5 +83,13 @@ public abstract class AbstractModel extends AbstractElement {
 
 	def getProperty(final String name) {
 		return components.get(name);
+	}
+
+	def setDirty() {
+		dirty = true
+	}
+
+	def isDirty() {
+		return dirty
 	}
 }
