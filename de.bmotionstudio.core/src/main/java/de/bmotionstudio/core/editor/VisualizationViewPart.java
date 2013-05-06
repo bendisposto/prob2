@@ -389,7 +389,6 @@ public class VisualizationViewPart extends ViewPart implements
 			getActionRegistry().dispose();
 		if (getVisualizationView() != null)
 			getVisualizationView().removePropertyChangeListener(this);
-		selector.unregisterHistoryChangeListener(this);
 		if (getGraphicalViewer() != null)
 			getGraphicalViewer().removePropertyChangeListener(viewerListener);
 		if (rootEditPart != null)

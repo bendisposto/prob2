@@ -99,7 +99,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	@Override
 	public void stop(final BundleContext context) throws Exception {
 		plugin = null;
-		selector.unregisterModelChangedListener(this);
 		PlatformUI.getWorkbench().removeWorkbenchListener(this);
 		super.stop(context);
 	}

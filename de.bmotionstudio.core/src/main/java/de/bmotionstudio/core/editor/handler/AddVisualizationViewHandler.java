@@ -143,7 +143,6 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 				.getActiveWorkbenchWindow();
 		if (activeWorkbenchWindow != null) {
 			activeWorkbenchWindow.removePerspectiveListener(this);
-			selector.unregisterModelChangedListener(this);
 		}
 		super.dispose();
 	}

@@ -1,5 +1,6 @@
 package de.prob.statespace;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +22,8 @@ import de.prob.model.representation.AbstractElement;
 @Singleton
 public class AnimationSelector implements IAnimationListener {
 
-	List<IHistoryChangeListener> historyListeners = new ArrayList<IHistoryChangeListener>();
-	List<IModelChangedListener> modelListeners = new ArrayList<IModelChangedListener>();
+	List<WeakReference<IHistoryChangeListener>> historyListeners = new ArrayList<WeakReference<IHistoryChangeListener>>();
+	List<WeakReference<IModelChangedListener>> modelListeners = new ArrayList<WeakReference<IModelChangedListener>>();
 
 	List<StateSpace> statespaces = new ArrayList<StateSpace>();
 	List<History> histories = new ArrayList<History>();
@@ -38,34 +39,20 @@ public class AnimationSelector implements IAnimationListener {
 	 */
 	public void registerHistoryChangeListener(
 			final IHistoryChangeListener listener) {
-		historyListeners.add(listener);
+
+		historyListeners
+				.add(new WeakReference<IHistoryChangeListener>(listener));
 		if (currentHistory != null) {
 			notifyHistoryChange(currentHistory);
 		}
 	}
 
-	/**
-	 * An {@link IHistoryChangeListener} can unregister itself via this method
-	 * when it no longer wants to receive updates
-	 * 
-	 * @param listener
-	 */
-	public void unregisterHistoryChangeListener(
-			final IHistoryChangeListener listener) {
-		historyListeners.remove(listener);
-	}
-
 	public void registerModelChangedListener(
 			final IModelChangedListener listener) {
-		modelListeners.add(listener);
+		modelListeners.add(new WeakReference<IModelChangedListener>(listener));
 		if (currentStateSpace != null) {
 			notifyModelChanged(currentStateSpace);
 		}
-	}
-
-	public void unregisterModelChangedListener(
-			final IModelChangedListener listener) {
-		modelListeners.remove(listener);
 	}
 
 	/**
@@ -116,14 +103,16 @@ public class AnimationSelector implements IAnimationListener {
 	 * @param history
 	 */
 	public void notifyHistoryChange(final History history) {
-		for (final IHistoryChangeListener listener : historyListeners) {
-			listener.historyChange(history);
+		for (final WeakReference<IHistoryChangeListener> listener : historyListeners) {
+			IHistoryChangeListener historyChangeListener = listener.get();
+			historyChangeListener.historyChange(history);
 		}
 	}
 
 	private void notifyModelChanged(final StateSpace s) {
-		for (IModelChangedListener listener : modelListeners) {
-			listener.modelChanged(s);
+		for (WeakReference<IModelChangedListener> listener : modelListeners) {
+			IModelChangedListener modelChangedListener = listener.get();
+			modelChangedListener.modelChanged(s);
 		}
 	}
 
