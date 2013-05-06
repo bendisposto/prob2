@@ -270,7 +270,7 @@ function refresh(id,getAllStates,mode) {
 function calculateHeader(id,m) {
   mode = m;
   d3.selectAll(".menuOps").remove();
-  var cmds = [{name:"Original State Space",cmd:"org_ss",id:1},{name:"Signature Merge",cmd:"sig_merge",id:2}]
+  var cmds = [{name:"Original State Space",cmd:"org_ss",id:1},{name:"Signature Merge",cmd:"sig_merge",id:2},{name:"Transition Diagram",cmd:"trans_diag",id:3}];
 
   var menu = d3.select("#menu").append("ul").attr("class","menuOps");
   var pause = menu.append("li");
@@ -304,9 +304,15 @@ function calculateHeader(id,m) {
 }
 
 function doCmd(id,cmd) {
+  var p = "";
+  if(cmd === "trans_diag") {
+    p = prompt("Input a B Expression","Input the expression here");
+  }
+
   $.getJSON("statespace_servlet", {
       sessionId : id,
-      cmd : cmd
+      cmd : cmd,
+      param : p
   });
 }
 

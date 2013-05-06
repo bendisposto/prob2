@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.animator.command.ApplySignatureMergeCommand;
+import de.prob.animator.command.CalculateTransitionDiagramCommand;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.IStateSpace;
@@ -28,6 +29,7 @@ import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.derived.AbstractDerivedStateSpace;
 import de.prob.statespace.derived.SignatureMergedStateSpace;
+import de.prob.statespace.derived.TransitionDiagram;
 import de.prob.visualization.AbstractData;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.DerivedStateSpaceData;
@@ -80,6 +82,7 @@ public class StateSpaceServlet extends HttpServlet implements
 			final HttpServletResponse res) {
 		String sId = req.getParameter("sessionId");
 		String cmd = req.getParameter("cmd");
+		String p = req.getParameter("param");
 
 		if (cmd.equals("sig_merge") && dataObjects.containsKey(sId)) {
 			createSigMergeGraph(sId);
@@ -89,6 +92,8 @@ public class StateSpaceServlet extends HttpServlet implements
 				createStateSpaceGraph(sId,
 						((AbstractDerivedStateSpace) ss).getStateSpace());
 			}
+		} else if (cmd.equals("trans_diag") && dataObjects.containsKey(sId)) {
+			createTransitionDiagram(sId, p);
 		}
 
 	}
@@ -243,21 +248,39 @@ public class StateSpaceServlet extends HttpServlet implements
 		space.addStates(cmd.getStates());
 		space.addTransitions(cmd.getOps());
 
+		changeStateSpaces(sessionId, iStateSpace, space);
+	}
+
+	public void createTransitionDiagram(final String sessionId,
+			final String parameter) {
+		IStateSpace iStateSpace = spaces.get(sessionId);
+		CalculateTransitionDiagramCommand cmd = new CalculateTransitionDiagramCommand(
+				parameter);
+		iStateSpace.execute(cmd);
+		TransitionDiagram space = new TransitionDiagram(iStateSpace, parameter);
+		space.addStates(cmd.getStates());
+		space.addTransitions(cmd.getOps());
+
+		changeStateSpaces(sessionId, iStateSpace, space);
+	}
+
+	public void changeStateSpaces(final String sessionId,
+			final IStateSpace from, final IStateSpace to) {
 		closeSession(sessionId);
 
-		if (sessionMap.get(iStateSpace).isEmpty()) {
-			iStateSpace.deregisterStateSpaceListener(this);
+		if (sessionMap.get(from).isEmpty()) {
+			from.deregisterStateSpaceListener(this);
 		}
 
-		spaces.put(sessionId, space);
+		spaces.put(sessionId, to);
 		AbstractData d = new DerivedStateSpaceData();
-		calculateData(space, d);
+		calculateData(to, d);
 		dataObjects.put(sessionId, d);
-		space.registerStateSpaceListener(this);
-		if (!sessionMap.containsKey(space)) {
-			sessionMap.put(space, new HashSet<String>());
+		to.registerStateSpaceListener(this);
+		if (!sessionMap.containsKey(to)) {
+			sessionMap.put(to, new HashSet<String>());
 		}
-		sessionMap.get(space).add(sessionId);
+		sessionMap.get(to).add(sessionId);
 		d.setReset(true);
 	}
 
