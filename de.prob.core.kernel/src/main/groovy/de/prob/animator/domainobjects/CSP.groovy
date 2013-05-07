@@ -48,7 +48,7 @@ class CSP implements IEvalElement {
 		 * For more detailed description of all translating options just type
 		 *  "cspmf translate --help" on the command line
 		 */
-		def process = (procname+" translate "+" --expressionToPrologTerm="+code+" "+fileName).execute()
+		def process = [procname,"translate","--expressionToPrologTerm="+code,fileName].execute()
 		process.waitFor()
 		if (process.exitValue() != 0) {
 			throw new EvaluationException("Error parsing CSP "+process.err.text);
