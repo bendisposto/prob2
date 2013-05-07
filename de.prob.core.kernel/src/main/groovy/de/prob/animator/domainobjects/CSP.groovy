@@ -18,7 +18,7 @@ class CSP implements IEvalElement {
 
 
 	private String code,home;
-	private String modelContent;
+	private String fileName;
 
 	/**
 	 * When a new formula is entered, the entire model must be reparsed. For this reason,
@@ -30,7 +30,7 @@ class CSP implements IEvalElement {
 	public CSP(String formula, CSPModel model) {
 		this.code = formula;
 		this.home = Main.getProBDirectory();
-		this.modelContent = model.getContent();
+		this.fileName = model.getModelFile().getAbsolutePath()
 	}
 
 	public String getCode() {
@@ -38,22 +38,22 @@ class CSP implements IEvalElement {
 	}
 
 	public void printProlog(IPrologTermOutput pout) {
-		def nc = modelContent+"\n"+code;
-		File tf = File.createTempFile("cspm", ".csp")
-		tf << nc;
-		def procname = home+"lib"+File.separator+"cspm"
-		def fn = tf.getAbsolutePath()
-		def process = (procname+" translate "+fn+" --prologOut="+fn+".cspm.pl").execute()
+		def procname = home+"lib"+File.separator+"cspmf"
+		/* Calling the cspmf command:
+		 * cspmf translate [OPTIONS] FILE
+		 * where OPTIONS could be:
+		    --prologOut=FILE   translate a CSP-M file to Prolog
+            --expressionToPrologTerm=STRING   translate a single CSP-M expression to Prolog
+            --declarationToPrologTerm=STRING  translate a single CSP-M declaration to Prolog
+		 * For more detailed description of all translating options just type
+		 *  "cspmf translate --help" on the command line
+		 */
+		def process = (procname+" translate "+" --expressionToPrologTerm="+code+" "+fileName).execute()
 		process.waitFor()
-
 		if (process.exitValue() != 0) {
 			throw new EvaluationException("Error parsing CSP "+process.err.text);
 		}
-		def s =""
-		def c =  new File(fn+".cspm.pl").eachLine {
-			if (it.startsWith("'bindval'")) s = it
-		}
-		pout.printString(s);
+		pout.printString(process.getText());
 	}
 
 	/**
