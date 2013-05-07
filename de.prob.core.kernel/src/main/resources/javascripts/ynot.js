@@ -1,3 +1,5 @@
+var session;
+
 var globalcount = 0;
 
 var currentMode = null;
@@ -255,8 +257,10 @@ function evalGroovy(text, info) {
 	info.renderer.html('<img src="images/loading.gif" class="preload"  />');
 	$.getJSON("exec", {
 		input : text,
-		lang : "groovy"
+		lang : "groovy",
+		'session': session
 	}, function(data) {
+	    session = data.session;
 		r.addClass("renderer");
 		printRenderer(r, data.result)
 		$("#wsbox" + info.id).height(r.height() + 8);
@@ -269,8 +273,10 @@ function evalB(text, info) {
 	info.renderer.html('<img src="images/loading.gif" class="preload"  />');
 	$.getJSON("exec", {
 		input : text,
-		lang : "b"
+		lang : "b",
+		'session': session
 	}, function(data) {
+	    session = data.session;
 		r.addClass("renderer");
 		printRenderer(r, data.result)
 		$("#wsbox" + info.id).height(r.height() + 8);

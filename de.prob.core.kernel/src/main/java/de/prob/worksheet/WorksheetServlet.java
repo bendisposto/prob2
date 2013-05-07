@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,43 +27,65 @@ import de.prob.webconsole.GroovyExecution;
 @Singleton
 public class WorksheetServlet extends HttpServlet {
 
-	private GroovyExecution executor;
-	private AnimationSelector animations;
+	private static int sessioncount = 0;
+	private ScriptEngineProvider sep;
+
+	private Map<String, ScriptEngine> sessions = new HashMap<String, ScriptEngine>();
 
 	@Inject
-	public WorksheetServlet(GroovyExecution executor,
-			AnimationSelector animations) {
-		this.executor = executor;
-		this.animations = animations;
+	public WorksheetServlet(ScriptEngineProvider sep) {
+		this.sep = sep;
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("got it");
 		PrintWriter out = response.getWriter();
+		Map<String, Object> resp = new HashMap<String, Object>();
 
 		String language = request.getParameter("lang");
 		String command = request.getParameter("input");
+		String session = request.getParameter("session");
 
-		Map<String, Object> resp = new HashMap<String, Object>();
+		if (session == null || session.equals("null")) {
+			int c = sessioncount++;
+			resp.put("session", c);
+			session = String.valueOf(c);
+		}
+		ScriptEngine executor = getExecutor(session);
+
 		if ("groovy".equals(language)) {
-			String result = executor.evaluate(command);
-			resp.put("result", result);
+			Object result = "";
+			try {
+				result = executor.eval(command);
+				resp.put("result", result.toString());
+			} catch (ScriptException e) {
+				resp.put("error", true);
+				resp.put("result", "Exception while processing '" + command
+						+ "'. " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 
 		if ("b".equals(language)) {
+			Object result = "";
+
 			try {
-				ClassicalB formula = new ClassicalB(command);
-				Object eval = animations.getCurrentHistory().getCurrentState()
-						.eval(formula);
-				resp.put("result", "<p>"+command + " is </p><p> " + eval+"</p>");
-			} catch (EvaluationException e) {
+				result = executor
+						.eval("animations.getCurrentHistory().getCurrentState().eval("
+								+ command + ")");
+				resp.put("result", "<p>" + command + " is </p><p> " + result
+						+ "</p>");
+			} catch (ScriptException e) {
+				resp.put("error", true);
 				resp.put("result", "Exception while processing '" + command
 						+ "'. " + e.getMessage());
-				resp.put("error", true);
+				e.printStackTrace();
 			}
+
 		}
+
+		System.out.println("used " + executor);
 
 		if (resp.isEmpty()) {
 			resp.put("result", "empty result");
@@ -75,4 +99,12 @@ public class WorksheetServlet extends HttpServlet {
 		;
 	}
 
+	private ScriptEngine getExecutor(String session) {
+		ScriptEngine scriptEngine = sessions.get(session);
+		if (scriptEngine == null) {
+			scriptEngine = sep.get();
+			sessions.put(session, scriptEngine);
+		}
+		return scriptEngine;
+	}
 }
