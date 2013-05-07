@@ -125,14 +125,16 @@ public class AnimationSelector implements IAnimationListener {
 	public void notifyHistoryChange(final History history) {
 		for (final WeakReference<IHistoryChangeListener> listener : historyListeners) {
 			IHistoryChangeListener historyChangeListener = listener.get();
-			historyChangeListener.historyChange(history);
+			if (historyChangeListener != null)
+				historyChangeListener.historyChange(history);
 		}
 	}
 
 	private void notifyModelChanged(final StateSpace s) {
 		for (WeakReference<IModelChangedListener> listener : modelListeners) {
 			IModelChangedListener modelChangedListener = listener.get();
-			modelChangedListener.modelChanged(s);
+			if (modelChangedListener != null)
+				modelChangedListener.modelChanged(s);
 		}
 	}
 
