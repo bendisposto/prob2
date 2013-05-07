@@ -10,7 +10,7 @@ public class Transformer {
 	public static final List<String> STYLES = Arrays.asList(new String[] {
 			"fill", "font", "stroke", "stroke-dasharray" });
 
-	private final String selector;
+	private String selector;
 	private final List<Attribute> attributes;
 	private final List<Style> styles;
 
@@ -68,5 +68,9 @@ public class Transformer {
 			this.name = name;
 			this.value = value;
 		}
+	}
+
+	public void updateSelector(final String selector) {
+		this.selector = selector;
 	}
 }

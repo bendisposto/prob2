@@ -164,7 +164,6 @@ public class StateSpaceServlet extends HttpServlet implements
 		Set<String> sessIds = sessionMap.get(s);
 		if (sessIds != null && !sessIds.isEmpty()) {
 			if (s instanceof StateSpace) {
-				((StateSpace) s).checkInvariants();
 				((StateSpace) s).calculateVariables();
 			}
 			for (String id : sessIds) {
@@ -207,7 +206,6 @@ public class StateSpaceServlet extends HttpServlet implements
 
 	private void calculateData(final IStateSpace s, final AbstractData d) {
 		if (s instanceof StateSpace) {
-			((StateSpace) s).checkInvariants();
 			((StateSpace) s).calculateVariables();
 			((StateSpace) s).getEvaluatedOps();
 		}

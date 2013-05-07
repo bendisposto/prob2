@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Joiner;
+
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -19,11 +21,17 @@ public class StateSpaceData extends AbstractData {
 
 	private final StateSpace s;
 	private final List<IEvalElement> vars;
+	private final Transformer invOK;
+	private final Transformer invKO;
+	private final List<String> toInvOk = new ArrayList<String>();
+	private final List<String> toInvKo = new ArrayList<String>();
 
 	public StateSpaceData(final StateSpace s) {
 		super();
 		this.s = s;
 		vars = extractVariables(s);
+		invOK = new Transformer("").set("fill", "#799C79");
+		invKO = new Transformer("").set("fill", "#B56C6C");
 	}
 
 	private List<IEvalElement> extractVariables(final StateSpace s) {
@@ -51,12 +59,26 @@ public class StateSpaceData extends AbstractData {
 			}
 		}
 
-		Node node = new Node(id.getId(), id.getId(), parentIndex, vs, s
-				.getInvariantOk().contains(id));
+		Object inv = calculateInvariant(s, id);
+
+		Node node = new Node(id.getId(), id.getId(), parentIndex, vs, inv);
 		nodes.put(id.getId(), node);
 		data.nodes.add(node);
 		count++;
 		return node;
+	}
+
+	private Object calculateInvariant(final StateSpace s, final StateId id) {
+		if (s.getExplored().contains(id)) {
+			Set<StateId> invariantOk = s.getInvariantOk();
+			if (invariantOk.contains(id)) {
+				toInvOk.add("#r" + id.getId());
+				return true;
+			}
+			toInvKo.add("#r" + id.getId());
+			return false;
+		}
+		return "unknown";
 	}
 
 	@Override
@@ -65,6 +87,9 @@ public class StateSpaceData extends AbstractData {
 		List<OpInfo> ops = new ArrayList<OpInfo>();
 		ops.addAll(newOps);
 		s.execute(new GetOpsFromIds(ops));
+		for (OpInfo opInfo : ops) {
+			calculateInvariant(s, s.getVertex(opInfo.dest));
+		}
 		super.addNewLinks(graph, newOps);
 	}
 
@@ -93,6 +118,32 @@ public class StateSpaceData extends AbstractData {
 	@Override
 	public int getMode() {
 		return 1;
+	}
+
+	@Override
+	public Data getData() {
+		invOK.updateSelector(Joiner.on(",").join(toInvOk));
+		invKO.updateSelector(Joiner.on(",").join(toInvKo));
+		if (!toInvOk.isEmpty() && !data.styling.contains(invOK)) {
+			addStyling(invOK);
+		}
+		if (!toInvKo.isEmpty() && !data.styling.contains(invKO)) {
+			addStyling(invKO);
+		}
+		return super.getData();
+	}
+
+	@Override
+	public Data getChanges() {
+		invOK.updateSelector(Joiner.on(",").join(toInvOk));
+		invKO.updateSelector(Joiner.on(",").join(toInvKo));
+		if (!toInvOk.isEmpty() && !data.styling.contains(invOK)) {
+			addStyling(invOK);
+		}
+		if (!toInvKo.isEmpty() && !data.styling.contains(invKO)) {
+			addStyling(invKO);
+		}
+		return super.getChanges();
 	}
 
 }
