@@ -88,6 +88,7 @@ public class StateSpaceData extends AbstractData {
 		ops.addAll(newOps);
 		s.execute(new GetOpsFromIds(ops));
 		for (OpInfo opInfo : ops) {
+			calculateInvariant(s, s.getVertex(opInfo.src));
 			calculateInvariant(s, s.getVertex(opInfo.dest));
 		}
 		super.addNewLinks(graph, newOps);
