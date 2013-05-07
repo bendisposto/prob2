@@ -23,7 +23,7 @@ class AnimationSelectorTest extends Specification {
 
 	def "It is possible to register a listener"() {
 		expect:
-		selector.historyListeners.contains(listener)
+		selector.historyListeners.size() == 1
 	}
 
 	def "It is possible to notify the listener"() {
