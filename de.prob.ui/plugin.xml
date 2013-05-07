@@ -547,6 +547,15 @@
             name="Visualization"
             restorable="true">
       </view>
+      <view
+            allowMultiple="true"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.console.Worksheet"
+            icon="icons/star.png"
+            id="de.prob.ui.worksheet"
+            name="Worksheet"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
