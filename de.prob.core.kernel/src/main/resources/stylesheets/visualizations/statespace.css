@@ -6,6 +6,7 @@ path.link {
 .node {
   stroke: #fff;
   stroke-width: 1.5px;
+  fill: #555;
 }
 
 .link {
