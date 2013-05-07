@@ -74,6 +74,7 @@ dependencies {
 	compile 'jline:jline:0.9.94' // BSD
 
 	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
+	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
 	compile 'com.google.inject.extensions:guice-assistedinject:3.0' // Apache Licence 2.0
 	compile 'org.slf4j:slf4j-api:1.6.1' // MIT
 	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
@@ -97,7 +98,6 @@ dependencies {
 	compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' // Rodin
 
 	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
-	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
 	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3' // EPL
