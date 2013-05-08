@@ -246,7 +246,8 @@ public class StateSpaceServlet extends HttpServlet implements
 		space.addStates(cmd.getStates());
 		space.addTransitions(cmd.getOps());
 
-		changeStateSpaces(sessionId, iStateSpace, space);
+		AbstractData d = changeStateSpaces(sessionId, iStateSpace, space);
+		d.setMode(2);
 	}
 
 	public void createTransitionDiagram(final String sessionId,
@@ -259,10 +260,11 @@ public class StateSpaceServlet extends HttpServlet implements
 		space.addStates(cmd.getStates());
 		space.addTransitions(cmd.getOps());
 
-		changeStateSpaces(sessionId, iStateSpace, space);
+		AbstractData d = changeStateSpaces(sessionId, iStateSpace, space);
+		d.setMode(3);
 	}
 
-	public void changeStateSpaces(final String sessionId,
+	public AbstractData changeStateSpaces(final String sessionId,
 			final IStateSpace from, final IStateSpace to) {
 		closeSession(sessionId);
 
@@ -280,6 +282,7 @@ public class StateSpaceServlet extends HttpServlet implements
 		}
 		sessionMap.get(to).add(sessionId);
 		d.setReset(true);
+		return d;
 	}
 
 	@Override

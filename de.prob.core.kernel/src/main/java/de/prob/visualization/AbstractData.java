@@ -16,6 +16,7 @@ public abstract class AbstractData {
 	protected final Map<String, Link> links = new HashMap<String, Link>();
 	protected int count = 0;
 	protected Data changes;
+	protected int mode;
 
 	public AbstractData() {
 		data = new Data();
@@ -148,6 +149,10 @@ public abstract class AbstractData {
 
 	public boolean isEmpty() {
 		return nodes.isEmpty() && links.isEmpty();
+	}
+
+	public void setMode(final int mode) {
+		this.mode = mode;
 	}
 
 }

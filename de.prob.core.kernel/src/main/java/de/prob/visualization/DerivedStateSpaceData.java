@@ -48,6 +48,7 @@ public class DerivedStateSpaceData extends AbstractData {
 
 	@Override
 	public int getMode() {
-		return 2;
+		return mode;
 	}
+
 }
