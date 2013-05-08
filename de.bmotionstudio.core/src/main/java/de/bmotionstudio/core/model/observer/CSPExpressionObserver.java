@@ -24,7 +24,7 @@ public class CSPExpressionObserver extends Observer {
 		if (attribute == null || expression == null)
 			return;
 
-		CSP cspEval = new CSP("bmsresult=" + expression,
+		CSP cspEval = new CSP(expression,
 				(CSPModel) history.getModel());
 
 		try {

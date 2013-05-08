@@ -35,7 +35,7 @@ public class CSPInitObserver extends Observer {
 			if (isCustom) {
 				String parseExpression = parseExpression(value.toString(),
 						control, history);
-				CSP cspE = new CSP("bmsresult=" + parseExpression,
+				CSP cspE = new CSP(parseExpression,
 						(CSPModel) history.getModel());
 				EvaluationResult subEval = history.evalCurrent(cspE);
 				if (subEval != null && !subEval.hasError()) {
