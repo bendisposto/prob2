@@ -22,6 +22,7 @@ import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
+import de.prob.animator.command.GetStatesFromPredicate;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -197,6 +198,17 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			explore(edgeTarget);
 		}
 		return edgeTarget;
+	}
+
+	public List<StateId> getStatesFromPredicate(final IEvalElement predicate) {
+		GetStatesFromPredicate cmd = new GetStatesFromPredicate(predicate);
+		execute(cmd);
+		List<String> ids = cmd.getIds();
+		List<StateId> sIds = new ArrayList<StateId>();
+		for (String s : ids) {
+			sIds.add(getVertex(s));
+		}
+		return sIds;
 	}
 
 	/**
