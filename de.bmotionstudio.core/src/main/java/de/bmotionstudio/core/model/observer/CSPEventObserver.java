@@ -136,9 +136,7 @@ public class CSPEventObserver extends Observer {
 
 			if (listOfOps == null) {
 
-				listOfOps = new ArrayList<String>();
-
-				String cspExpression = "bmsresult = " + expression;
+				String cspExpression = expression;
 
 				CSP cspEval = new CSP(cspExpression,
 						(CSPModel) history.getModel());
@@ -147,14 +145,11 @@ public class CSPEventObserver extends Observer {
 
 					EvaluationResult eval = history.evalCurrent(cspEval);
 					if (eval != null && !eval.hasError()) {
-
 						String result = eval.value;
 						result = result.replace("}", "").replace("{", "");
-
 						String[] split = result.split(",");
-
+						listOfOps = new ArrayList<String>();
 						java.util.Collections.addAll(listOfOps, split);
-
 					}
 
 				} catch (ProBError e) {
@@ -163,7 +158,7 @@ public class CSPEventObserver extends Observer {
 
 			}
 			
-			if (listOfOps.contains(opNameWithParameter)) {
+			if (listOfOps != null && listOfOps.contains(opNameWithParameter)) {
 
 				int maxSetPosition = getMaxSetPosition(control);
 
@@ -173,7 +168,7 @@ public class CSPEventObserver extends Observer {
 				if (isCustom) {
 					String parseExpression = parseExpression(value.toString(),
 							control, op);
-					CSP cspE = new CSP("bmsresult=" + parseExpression,
+					CSP cspE = new CSP(parseExpression,
 							(CSPModel) history.getModel());
 					EvaluationResult subEval = history.evalCurrent(cspE);
 					if (subEval != null && !subEval.hasError()) {
