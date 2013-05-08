@@ -42,7 +42,7 @@ function setBoxType(box, options) {
 	$("#lang_button" + newE.id).html(function() {
 		return newE.options.lang + '  <span class="caret"></span>'
 	});
-
+    updateServlet();
 }
 
 function reEval(rep) {
@@ -62,10 +62,11 @@ function reorder(e, x) {
 	np = findEditor(x.item[0].id.substr(5));
 	rep = Math.min(op, np);
 	reEval(rep)
+	updateServlet();
 }
 
 function init() {
-	currentMode = settings.markdown;
+	currentMode = settings.b;
 	createEditor(currentMode);
 	$(function() {
 		$("#boxes").sortable({
@@ -75,6 +76,7 @@ function init() {
 			forcePlaceholderSize : true
 		});
 	});
+	updateServlet();
 }
 // <div class="span1 topmenu">{{lang}}</div> \
 
@@ -99,7 +101,7 @@ function deleteEditor(nr) {
 	} else if (currentEditor === editors.length) {
 		createEditor(currentMode);
 	}
-
+    updateServlet();
 	return rme;
 }
 
@@ -256,15 +258,16 @@ function evalGroovy(text, info) {
 	r.removeClass("renderer");
 	info.renderer.html('<img src="images/loading.gif" class="preload"  />');
 	$.getJSON("exec", {
-		input : text,
-		lang : "groovy",
+	    'command': 'eval',
+		'text' : text,
+		'lang' : "groovy",
 		'session': session
 	}, function(data) {
 	    session = data.session;
 		r.addClass("renderer");
 		printRenderer(r, data.result)
 		$("#wsbox" + info.id).height(r.height() + 8);
-		
+
 	});
 }
 function evalB(text, info) {
@@ -272,15 +275,16 @@ function evalB(text, info) {
 	r.removeClass("renderer");
 	info.renderer.html('<img src="images/loading.gif" class="preload"  />');
 	$.getJSON("exec", {
-		input : text,
-		lang : "b",
+	    'command': 'eval',
+		'text' : text,
+		'lang' : "b",
 		'session': session
 	}, function(data) {
 	    session = data.session;
 		r.addClass("renderer");
 		printRenderer(r, data.result)
 		$("#wsbox" + info.id).height(r.height() + 8);
-		
+
 	});
 }
 
@@ -358,4 +362,28 @@ var settings = {
 			viewportMargin : Infinity,
 		}
 	}
+}
+
+function updateServlet() {
+   var d = [];
+   editors.forEach(
+    function(editor) {
+          d.push({   'id': editor.id, 
+                      'lang': editor.options.lang, 
+                     'text': editor.codemirror.getValue()
+              })
+   });
+
+  var request = $.ajax({ 
+     url: "exec",
+     type: "GET",
+     data: {
+      'session' : session, 
+      'command': 'update',
+      'data': d,
+      'count': editors.length
+     },
+     dataType: "html"
+});
+
 }
