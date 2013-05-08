@@ -24,6 +24,7 @@ public class AnimationSelector implements IAnimationListener {
 
 	List<WeakReference<IHistoryChangeListener>> historyListeners = new ArrayList<WeakReference<IHistoryChangeListener>>();
 	List<WeakReference<IModelChangedListener>> modelListeners = new ArrayList<WeakReference<IModelChangedListener>>();
+	List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
 
 	List<StateSpace> statespaces = new ArrayList<StateSpace>();
 	List<History> histories = new ArrayList<History>();
@@ -55,6 +56,25 @@ public class AnimationSelector implements IAnimationListener {
 		}
 	}
 
+	public void unregisterModelChangedListener(
+			final IModelChangedListener listener) {
+		modelListeners.remove(listener);
+	}
+
+	public void registerAnimationListener(final IAnimationListener l) {
+		animationListeners.add(l);
+		for (History h : histories) {
+			h.registerAnimationListener(l);
+		}
+	}
+
+	public void deregisterAnimationListener(final IAnimationListener l) {
+		animationListeners.remove(l);
+		for (History h : histories) {
+			h.deregisterAnimationListener(l);
+		}
+	}
+	
 	/**
 	 * Changes the current history to the specified {@link History} and notifies
 	 * a history change ({@link AnimationSelector#notifyHistoryChange(History)})
@@ -105,14 +125,16 @@ public class AnimationSelector implements IAnimationListener {
 	public void notifyHistoryChange(final History history) {
 		for (final WeakReference<IHistoryChangeListener> listener : historyListeners) {
 			IHistoryChangeListener historyChangeListener = listener.get();
-			historyChangeListener.historyChange(history);
+			if (historyChangeListener != null)
+				historyChangeListener.historyChange(history);
 		}
 	}
 
 	private void notifyModelChanged(final StateSpace s) {
 		for (WeakReference<IModelChangedListener> listener : modelListeners) {
 			IModelChangedListener modelChangedListener = listener.get();
-			modelChangedListener.modelChanged(s);
+			if (modelChangedListener != null)
+				modelChangedListener.modelChanged(s);
 		}
 	}
 

@@ -78,23 +78,12 @@ function buildGraph(attrs,n) {
 
     var boxH = n*5+5;
 
-    var invColor = function(invOk) {
-      if(invOk === true) {
-        return "#799C79";
-      } else if(invOk === false) {
-        return "#B56C6C";
-      } else {
-        return "#555";
-      }
-    };
-
     node.append("rect")
       .attr("width","40")
       .attr("height",boxH+"")
       .attr("rx","5")
       .attr("ry","5")
-      .attr("id",function(d) { return "r"+d.id})
-      .style("fill",function(d) { return invColor(d.invOk) });
+      .attr("id",function(d) { return "r"+d.id});
 
     for(var i = 0 ; i < n ; i++) {
       node.append("text")
@@ -270,7 +259,7 @@ function refresh(id,getAllStates,mode) {
 function calculateHeader(id,m) {
   mode = m;
   d3.selectAll(".menuOps").remove();
-  var cmds = [{name:"Original State Space",cmd:"org_ss",id:1},{name:"Signature Merge",cmd:"sig_merge",id:2}]
+  var cmds = [{name:"Original State Space",cmd:"org_ss",id:1},{name:"Signature Merge",cmd:"sig_merge",id:2},{name:"Transition Diagram",cmd:"trans_diag",id:3}];
 
   var menu = d3.select("#menu").append("ul").attr("class","menuOps");
   var pause = menu.append("li");
@@ -304,9 +293,15 @@ function calculateHeader(id,m) {
 }
 
 function doCmd(id,cmd) {
+  var p = "";
+  if(cmd === "trans_diag") {
+    p = prompt("Input a B Expression","Input the expression here");
+  }
+
   $.getJSON("statespace_servlet", {
       sessionId : id,
-      cmd : cmd
+      cmd : cmd,
+      param : p
   });
 }
 
