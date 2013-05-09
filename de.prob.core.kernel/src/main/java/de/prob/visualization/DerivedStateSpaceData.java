@@ -85,11 +85,6 @@ public class DerivedStateSpaceData extends AbstractData {
 	}
 
 	@Override
-	public int getMode() {
-		return mode;
-	}
-
-	@Override
 	public void updateTransformers() {
 		Map<String, Set<DerivedStateId>> nCs = space.getNodeColors();
 		for (Entry<String, Set<DerivedStateId>> e : nCs.entrySet()) {

@@ -31,7 +31,9 @@ public abstract class AbstractData {
 
 	public abstract int varSize();
 
-	public abstract int getMode();
+	public int getMode() {
+		return mode;
+	}
 
 	public void addNewLinks(final StateSpaceGraph graph,
 			final List<? extends OpInfo> newOps) {
@@ -77,6 +79,7 @@ public abstract class AbstractData {
 
 		public List<Transformer> styling = new ArrayList<Transformer>();
 		public boolean reset = false;
+		public String content = "";
 	}
 
 	protected class Node {
