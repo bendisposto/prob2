@@ -1,12 +1,14 @@
 package de.prob.statespace.derived;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.prob.animator.command.AbstractCommand;
+import de.prob.animator.command.AbstractReduceStateSpaceCmd;
 import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
@@ -19,8 +21,12 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		implements IStatesCalculatedListener, IStateSpace {
 
 	protected final StateSpace stateSpace;
+	public Map<String, Set<DerivedStateId>> nodeColors = new HashMap<String, Set<DerivedStateId>>();
+	public Map<String, Set<DerivedOp>> transStyle = new HashMap<String, Set<DerivedOp>>();
+	public Map<String, Set<DerivedOp>> transColor = new HashMap<String, Set<DerivedOp>>();
 
-	public AbstractDerivedStateSpace(final IStateSpace stateSpace) {
+	public AbstractDerivedStateSpace(final IStateSpace stateSpace,
+			final AbstractReduceStateSpaceCmd cmd) {
 		super(new DirectedSparseMultigraph<StateId, OpInfo>());
 		removeVertex(__root);
 		if (stateSpace instanceof StateSpace) {
@@ -32,6 +38,9 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 			throw new UnsupportedOperationException(
 					"Could not create AbstractDerivedStateSpace because the instance of IStateSpace was not recognized");
 		}
+		setNodeColors(cmd.getNodeColors());
+		setTransStyle(cmd.getTransStyle());
+		setTransColor(cmd.getTransColor());
 	}
 
 	Set<IStatesCalculatedListener> listeners = new HashSet<IStatesCalculatedListener>();
@@ -76,14 +85,7 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 	public List<DerivedOp> addTransitions(final List<DerivedOp> ops) {
 		List<DerivedOp> newOps = new ArrayList<DerivedOp>();
 		for (DerivedOp op : ops) {
-			if (containsEdge(op)) {
-				Collection<OpInfo> edges = getEdges();
-				for (OpInfo opInfo : edges) {
-					if (opInfo.equals(op)) {
-						((DerivedOp) opInfo).setCount(op.getCount());
-					}
-				}
-			} else {
+			if (!containsEdge(op)) {
 				newOps.add(op);
 				addEdge(op, states.get(op.getSrc()), states.get(op.getDest()));
 			}
@@ -109,5 +111,29 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 	@Override
 	public void sendInterrupt() {
 		stateSpace.sendInterrupt();
+	}
+
+	public Map<String, Set<DerivedStateId>> getNodeColors() {
+		return nodeColors;
+	}
+
+	public Map<String, Set<DerivedOp>> getTransColor() {
+		return transColor;
+	}
+
+	public Map<String, Set<DerivedOp>> getTransStyle() {
+		return transStyle;
+	}
+
+	public void setNodeColors(final Map<String, Set<DerivedStateId>> nodeColors) {
+		this.nodeColors = nodeColors;
+	}
+
+	public void setTransColor(final Map<String, Set<DerivedOp>> transColor) {
+		this.transColor = transColor;
+	}
+
+	public void setTransStyle(final Map<String, Set<DerivedOp>> transStyle) {
+		this.transStyle = transStyle;
 	}
 }

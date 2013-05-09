@@ -4,22 +4,10 @@ import de.prob.statespace.OpInfo;
 
 public class DerivedOp extends OpInfo {
 
-	private int count;
-
 	public DerivedOp(final String id, final String src, final String dest,
-			final String label, final String count) {
+			final String label) {
 		super(id, src, dest);
 		rep = label;
-		this.count = Integer.parseInt(count);
-
-	}
-
-	public int getCount() {
-		return count;
-	}
-
-	public void setCount(final int count) {
-		this.count = count;
 	}
 
 	@Override

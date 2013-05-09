@@ -68,6 +68,8 @@ public abstract class AbstractData {
 		return data.reset;
 	}
 
+	public abstract void updateTransformers();
+
 	protected class Data {
 
 		public List<Node> nodes = new ArrayList<Node>();

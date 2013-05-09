@@ -1,13 +1,41 @@
 package de.prob.visualization;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import com.google.common.base.Joiner;
 
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
+import de.prob.statespace.StateSpaceGraph;
+import de.prob.statespace.derived.AbstractDerivedStateSpace;
+import de.prob.statespace.derived.DerivedOp;
 import de.prob.statespace.derived.DerivedStateId;
 
 public class DerivedStateSpaceData extends AbstractData {
+
+	public int varSize = 2;
+	private final AbstractDerivedStateSpace space;
+	private final Map<String, Transformer> styles = new HashMap<String, Transformer>();
+
+	public DerivedStateSpaceData(final AbstractDerivedStateSpace space) {
+		this.space = space;
+
+		styles.put("orange", new Transformer("").style("fill", "#E6906E"));
+		styles.put("red", new Transformer("").style("fill", "#B56C6C"));
+		styles.put("blue", new Transformer("").style("fill", "#5684A0"));
+		styles.put("green", new Transformer("").style("fill", "#799C79"));
+
+		styles.put("lightgray", new Transformer("").style("stroke", "#B2B2B2"));
+		styles.put("black", new Transformer("").style("stroke", "#000"));
+
+		styles.put("dashed",
+				new Transformer("").attr("stroke-dasharray", "2,2"));
+	}
 
 	@Override
 	public Node addNode(final StateId id) {
@@ -18,8 +46,11 @@ public class DerivedStateSpaceData extends AbstractData {
 	protected Node addNode(final StateId id, final int parentIndex) {
 		List<String> vs = new ArrayList<String>();
 		if (id instanceof DerivedStateId) {
-			vs.add(((DerivedStateId) id).getLabel());
+			vs.addAll(((DerivedStateId) id).getLabels());
 			vs.add(((DerivedStateId) id).getCount() + "");
+		}
+		if (vs.size() > varSize) {
+			varSize = vs.size();
 		}
 
 		Node node = new Node(id.getId(), id.getId(), parentIndex, vs, "unknown");
@@ -42,13 +73,75 @@ public class DerivedStateSpaceData extends AbstractData {
 	}
 
 	@Override
+	public void addNewLinks(final StateSpaceGraph graph,
+			final List<? extends OpInfo> newOps) {
+		updateTransformers();
+		super.addNewLinks(graph, newOps);
+	}
+
+	@Override
 	public int varSize() {
-		return 2;
+		return varSize;
 	}
 
 	@Override
 	public int getMode() {
 		return mode;
+	}
+
+	@Override
+	public void updateTransformers() {
+		Map<String, Set<DerivedStateId>> nCs = space.getNodeColors();
+		for (Entry<String, Set<DerivedStateId>> e : nCs.entrySet()) {
+			Set<DerivedStateId> v = e.getValue();
+			if (!v.isEmpty()) {
+				List<String> toSelect = new ArrayList<String>();
+				for (DerivedStateId derivedStateId : v) {
+					toSelect.add("#r" + derivedStateId.getId());
+				}
+				Transformer transformer = styles.get(e.getKey());
+				transformer.updateSelector(Joiner.on(",").join(toSelect));
+				if (!data.styling.contains(transformer)) {
+					addStyling(transformer);
+				} else {
+					count++;
+				}
+			}
+		}
+
+		Map<String, Set<DerivedOp>> tCs = space.getTransColor();
+		for (Entry<String, Set<DerivedOp>> e : tCs.entrySet()) {
+			Set<DerivedOp> v = e.getValue();
+			if (!v.isEmpty()) {
+				List<String> toSelect = new ArrayList<String>();
+				for (DerivedOp derivedOp : v) {
+					toSelect.add("#arc" + derivedOp.getId());
+				}
+				Transformer transformer = styles.get(e.getKey());
+				transformer.updateSelector(Joiner.on(",").join(toSelect));
+				if (!data.styling.contains(transformer)) {
+					addStyling(transformer);
+				} else {
+					count++;
+				}
+			}
+		}
+
+		Set<DerivedOp> dashed = space.getTransStyle().get("dashed");
+		if (dashed != null && !dashed.isEmpty()) {
+			List<String> toSelect = new ArrayList<String>();
+			for (DerivedOp derivedOp : dashed) {
+				toSelect.add("#arc" + derivedOp.getId());
+			}
+			Transformer transformer = styles.get("dashed");
+			transformer.updateSelector(Joiner.on(",").join(toSelect));
+			if (!data.styling.contains(transformer)) {
+				addStyling(transformer);
+			} else {
+				count++;
+			}
+		}
+
 	}
 
 }

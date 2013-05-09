@@ -112,13 +112,15 @@ function buildGraph(attrs,n) {
 
     for (var i = 0; i < attrs.length; i++) {
       var selected = svg.selectAll(attrs[i].selector);
-      var attributes = attrs[i].attributes;
-      for (var j = 0; j < attributes.length; j++) {
-        selected.attr(attributes[j].name,attributes[j].value);
-      };
-      var styles = attrs[i].styles;
-      for (var j = 0; j < styles.length; j++) {
-        selected.style(styles[j].name,styles[j].value);
+      if(selected !== "") {
+        var attributes = attrs[i].attributes;
+        for (var j = 0; j < attributes.length; j++) {
+          selected.attr(attributes[j].name,attributes[j].value);
+        };
+        var styles = attrs[i].styles;
+        for (var j = 0; j < styles.length; j++) {
+          selected.style(styles[j].name,styles[j].value);
+        }        
       }
     };
 
@@ -202,6 +204,7 @@ function refresh(id,getAllStates,mode) {
   if(getAllStates) {
     nodes = [];
     links = [];
+    linkMap = d3.map();
   }
 
   svg.selectAll(".link").remove();

@@ -219,6 +219,8 @@ public class StateSpaceServlet extends HttpServlet implements
 		for (OpInfo opInfo : edges) {
 			d.addLink(opInfo);
 		}
+
+		d.updateTransformers();
 	}
 
 	public void createStateSpaceGraph(final String sessionId,
@@ -242,7 +244,7 @@ public class StateSpaceServlet extends HttpServlet implements
 		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand();
 		iStateSpace.execute(cmd);
 		SignatureMergedStateSpace space = new SignatureMergedStateSpace(
-				iStateSpace);
+				iStateSpace, cmd);
 		space.addStates(cmd.getStates());
 		space.addTransitions(cmd.getOps());
 
@@ -256,7 +258,8 @@ public class StateSpaceServlet extends HttpServlet implements
 		CalculateTransitionDiagramCommand cmd = new CalculateTransitionDiagramCommand(
 				parameter);
 		iStateSpace.execute(cmd);
-		TransitionDiagram space = new TransitionDiagram(iStateSpace, parameter);
+		TransitionDiagram space = new TransitionDiagram(iStateSpace, parameter,
+				cmd);
 		space.addStates(cmd.getStates());
 		space.addTransitions(cmd.getOps());
 
@@ -273,7 +276,8 @@ public class StateSpaceServlet extends HttpServlet implements
 		}
 
 		spaces.put(sessionId, to);
-		AbstractData d = new DerivedStateSpaceData();
+		AbstractData d = new DerivedStateSpaceData(
+				(AbstractDerivedStateSpace) to);
 		calculateData(to, d);
 		dataObjects.put(sessionId, d);
 		to.registerStateSpaceListener(this);
