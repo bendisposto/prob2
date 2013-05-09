@@ -110,19 +110,7 @@ function buildGraph(attrs,n) {
     node.append("title")
       .text(function(d) { return d.name; });
 
-    for (var i = 0; i < attrs.length; i++) {
-      var selected = svg.selectAll(attrs[i].selector);
-      if(selected !== "") {
-        var attributes = attrs[i].attributes;
-        for (var j = 0; j < attributes.length; j++) {
-          selected.attr(attributes[j].name,attributes[j].value);
-        };
-        var styles = attrs[i].styles;
-        for (var j = 0; j < styles.length; j++) {
-          selected.style(styles[j].name,styles[j].value);
-        }        
-      }
-    };
+    applyStyling(attrs);
 
     if(nodes.length > 50) {
       var safety = 0;
@@ -171,7 +159,24 @@ function buildGraph(attrs,n) {
     }});
 }
 
-function drawDotty(svg,content) {
+function applyStyling(styling) {
+  for (var i = 0; i < styling.length; i++) {
+    var selector = styling[i].selector;
+    if(selector !== "") {
+      var selected = d3.selectAll(selector);
+      var attributes = styling[i].attributes;
+      for (var j = 0; j < attributes.length; j++) {
+        selected.attr(attributes[j].name,attributes[j].value);
+      };
+      var styles = styling[i].styles;
+      for (var j = 0; j < styles.length; j++) {
+        selected.style(styles[j].name,styles[j].value);
+      }        
+    };
+  }
+}
+
+function drawDotty(svg,content,styling) {
   svg.append("svg:rect")
         .attr("class","canvas")
         .attr("id","toReplace")
@@ -181,6 +186,7 @@ function drawDotty(svg,content) {
 
   var m = Viz(content, "svg");
   $("#toReplace").replaceWith(m);
+  applyStyling(styling);
 }
 
 var linkMap = d3.map();
@@ -223,6 +229,7 @@ function refresh(id,getAllStates) {
   svg.selectAll(".node").remove();
   svg.selectAll(".linkT").remove();
   svg.selectAll(".canvas").remove();
+  svg.selectAll("g svg").remove();
 
 
   $.getJSON("statespace_servlet", {
@@ -234,7 +241,7 @@ function refresh(id,getAllStates) {
     if(res.data !== "") {
       if(res.mode > 3) {
         if(res.data.content != "") {
-          drawDotty(svg,res.data.content);
+          drawDotty(svg,res.data.content,res.data.styling);
         };
       } else {
         forD3(res);
@@ -284,7 +291,7 @@ function forD3(res) {
 function calculateHeader(id,m) {
   mode = m;
   d3.selectAll(".menuOps").remove();
-  var cmds = [{name:"Original State Space",cmd:"org_ss",id:1},{name:"Signature Merge",cmd:"sig_merge",id:2},{name:"Transition Diagram",cmd:"trans_diag",id:3},{name:"Transition Diagram (dotty)",cmd:"d_trans_diag",id:4}];
+  var cmds = [{name:"Original State Space",cmd:"org_ss",id:1},{name:"Signature Merge",cmd:"sig_merge",id:2},{name:"Transition Diagram",cmd:"trans_diag",id:3},{name: "Signature Merge (dotty)",cmd:"d_sig_merge",id:4},{name:"Transition Diagram (dotty)",cmd:"d_trans_diag",id:5}];
 
   var menu = d3.select("#menu").append("ul").attr("class","menuOps");
   var pause = menu.append("li");

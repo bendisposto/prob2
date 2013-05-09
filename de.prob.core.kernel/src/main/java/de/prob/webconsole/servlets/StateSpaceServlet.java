@@ -29,6 +29,7 @@ import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.derived.AbstractDerivedStateSpace;
 import de.prob.statespace.derived.AbstractDottyGraph;
+import de.prob.statespace.derived.DottySignatureMerge;
 import de.prob.statespace.derived.DottyTransitionDiagram;
 import de.prob.statespace.derived.SignatureMergedStateSpace;
 import de.prob.statespace.derived.TransitionDiagram;
@@ -97,6 +98,8 @@ public class StateSpaceServlet extends HttpServlet implements
 			}
 		} else if (cmd.equals("trans_diag") && dataObjects.containsKey(sId)) {
 			createTransitionDiagram(sId, p);
+		} else if (cmd.equals("d_sig_merge") && dataObjects.containsKey(sId)) {
+			createDottySignatureMerge(sId);
 		} else if (cmd.equals("d_trans_diag") && dataObjects.containsKey(sId)) {
 			createDottyTransitionDiagram(sId, p);
 		}
@@ -316,6 +319,14 @@ public class StateSpaceServlet extends HttpServlet implements
 		dataObjects.get(id).addStyling(selection);
 	}
 
+	public void createDottySignatureMerge(final String sessionId) {
+		IStateSpace iStateSpace = spaces.get(sessionId);
+		DottySignatureMerge space = new DottySignatureMerge(iStateSpace);
+
+		AbstractData d = changeStateSpaces(sessionId, iStateSpace, space);
+		d.setMode(4);
+	}
+
 	public void createDottyTransitionDiagram(final String sessionId,
 			final String expression) {
 		IStateSpace iStateSpace = spaces.get(sessionId);
@@ -323,6 +334,6 @@ public class StateSpaceServlet extends HttpServlet implements
 				expression);
 
 		AbstractData d = changeStateSpaces(sessionId, iStateSpace, space);
-		d.setMode(4);
+		d.setMode(5);
 	}
 }
