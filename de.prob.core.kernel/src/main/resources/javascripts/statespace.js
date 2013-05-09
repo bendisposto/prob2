@@ -171,6 +171,18 @@ function buildGraph(attrs,n) {
     }});
 }
 
+function drawDotty(svg,content) {
+  svg.append("svg:rect")
+        .attr("class","canvas")
+        .attr("id","toReplace")
+        .attr("height",height)
+        .attr("width",width)
+        .style("fill-opacity",1e-6);
+
+  var m = Viz(content, "svg");
+  $("#toReplace").replaceWith(m);
+}
+
 var linkMap = d3.map();
 var ssCtr = 0;
 var mode = 1;
@@ -200,7 +212,7 @@ setInterval(function() {
   }, 300);
 };
 
-function refresh(id,getAllStates,mode) {
+function refresh(id,getAllStates) {
   if(getAllStates) {
     nodes = [];
     links = [];
@@ -220,6 +232,18 @@ function refresh(id,getAllStates,mode) {
   }, function(res) {
     ssCtr = res.count;
     if(res.data !== "") {
+      if(res.mode > 3) {
+        if(res.data.content != "") {
+          drawDotty(svg,res.data.content);
+        };
+      } else {
+        forD3(res);
+      }
+    };
+  });
+}
+
+function forD3(res) {
       var n = res.data.nodes
       var l = res.data.links
 
@@ -255,14 +279,12 @@ function refresh(id,getAllStates,mode) {
       varCount = res.varCount;
       stopped.value = false;
       buildGraph(styling,varCount);
-    };
-  });
 }
 
 function calculateHeader(id,m) {
   mode = m;
   d3.selectAll(".menuOps").remove();
-  var cmds = [{name:"Original State Space",cmd:"org_ss",id:1},{name:"Signature Merge",cmd:"sig_merge",id:2},{name:"Transition Diagram",cmd:"trans_diag",id:3}];
+  var cmds = [{name:"Original State Space",cmd:"org_ss",id:1},{name:"Signature Merge",cmd:"sig_merge",id:2},{name:"Transition Diagram",cmd:"trans_diag",id:3},{name:"Transition Diagram (dotty)",cmd:"d_trans_diag",id:4}];
 
   var menu = d3.select("#menu").append("ul").attr("class","menuOps");
   var pause = menu.append("li");
@@ -297,7 +319,7 @@ function calculateHeader(id,m) {
 
 function doCmd(id,cmd) {
   var p = "";
-  if(cmd === "trans_diag") {
+  if(cmd === "trans_diag" || cmd === "d_trans_diag") {
     p = prompt("Input a B Expression","Input the expression here");
   }
 

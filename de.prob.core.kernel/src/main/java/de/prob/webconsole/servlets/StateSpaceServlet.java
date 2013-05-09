@@ -28,11 +28,14 @@ import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.derived.AbstractDerivedStateSpace;
+import de.prob.statespace.derived.AbstractDottyGraph;
+import de.prob.statespace.derived.DottyTransitionDiagram;
 import de.prob.statespace.derived.SignatureMergedStateSpace;
 import de.prob.statespace.derived.TransitionDiagram;
 import de.prob.visualization.AbstractData;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.DerivedStateSpaceData;
+import de.prob.visualization.DottyData;
 import de.prob.visualization.IVisualizationServlet;
 import de.prob.visualization.StateSpaceData;
 import de.prob.visualization.Transformer;
@@ -94,6 +97,8 @@ public class StateSpaceServlet extends HttpServlet implements
 			}
 		} else if (cmd.equals("trans_diag") && dataObjects.containsKey(sId)) {
 			createTransitionDiagram(sId, p);
+		} else if (cmd.equals("d_trans_diag") && dataObjects.containsKey(sId)) {
+			createDottyTransitionDiagram(sId, p);
 		}
 
 	}
@@ -276,9 +281,13 @@ public class StateSpaceServlet extends HttpServlet implements
 		}
 
 		spaces.put(sessionId, to);
-		AbstractData d = new DerivedStateSpaceData(
-				(AbstractDerivedStateSpace) to);
-		calculateData(to, d);
+		AbstractData d = null;
+		if (to instanceof AbstractDerivedStateSpace) {
+			d = changeToDerivedSS(sessionId, from,
+					(AbstractDerivedStateSpace) to);
+		} else if (to instanceof AbstractDottyGraph) {
+			d = changeToDottySS(sessionId, from, (AbstractDottyGraph) to);
+		}
 		dataObjects.put(sessionId, d);
 		to.registerStateSpaceListener(this);
 		if (!sessionMap.containsKey(to)) {
@@ -289,8 +298,31 @@ public class StateSpaceServlet extends HttpServlet implements
 		return d;
 	}
 
+	public AbstractData changeToDerivedSS(final String sessionId,
+			final IStateSpace from, final AbstractDerivedStateSpace to) {
+		AbstractData d = new DerivedStateSpaceData(to);
+		calculateData(to, d);
+		return d;
+	}
+
+	public AbstractData changeToDottySS(final String sessionId,
+			final IStateSpace from, final AbstractDottyGraph to) {
+		AbstractData d = new DottyData(to);
+		return d;
+	}
+
 	@Override
 	public void addUserDefinitions(final String id, final Transformer selection) {
 		dataObjects.get(id).addStyling(selection);
+	}
+
+	public void createDottyTransitionDiagram(final String sessionId,
+			final String expression) {
+		IStateSpace iStateSpace = spaces.get(sessionId);
+		DottyTransitionDiagram space = new DottyTransitionDiagram(iStateSpace,
+				expression);
+
+		AbstractData d = changeStateSpaces(sessionId, iStateSpace, space);
+		d.setMode(4);
 	}
 }

@@ -34,6 +34,8 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		} else if (stateSpace instanceof AbstractDerivedStateSpace) {
 			this.stateSpace = ((AbstractDerivedStateSpace) stateSpace)
 					.getStateSpace();
+		} else if (stateSpace instanceof AbstractDottyGraph) {
+			this.stateSpace = ((AbstractDottyGraph) stateSpace).getStateSpace();
 		} else {
 			throw new UnsupportedOperationException(
 					"Could not create AbstractDerivedStateSpace because the instance of IStateSpace was not recognized");
