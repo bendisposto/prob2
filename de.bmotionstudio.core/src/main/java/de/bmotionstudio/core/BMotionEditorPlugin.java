@@ -249,53 +249,63 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 
 			@Override
 			public void run() {
-				
-				// Do nothing if the state space is the same
-				if (s == currentStateSpace)
-					return;
 
 				File newModelFile = s.getModel().getModelFile();
-				String newLanguage = BMotionUtil.getLanguageFromModel(s
-						.getModel());
-				IPerspectiveDescriptor currentPerspective = BMotionStudio
-						.getCurrentPerspective();
-				
-				// Save old and close old perspective (if exists)
-				if (currentPerspective != null && currentStateSpace != null) {
-					File currentModelFile = currentStateSpace.getModel()
-							.getModelFile();
-					String currentLanguage = BMotionUtil
-							.getLanguageFromModel(currentStateSpace.getModel());
-					// If yes ...
-					// Export the current perspective
-					File perspectiveFile = PerspectiveUtil
-							.getPerspectiveFileFromModelFile(currentModelFile);
-					PerspectiveUtil.exportPerspective(currentPerspective,
-							perspectiveFile);
-					// Close and delete current perspective, before opening the
-					// new one
-					PerspectiveUtil.closePerspective(currentPerspective);
-					// Check if dirty view parts exist, if yes prompt the user
-					// for saving the dirty visualization parts
-					VisualizationViewPart[] visualizationViewParts = BMotionUtil
-							.getVisualizationViewParts(currentModelFile,
-									currentLanguage);
-					for (VisualizationViewPart visPart : visualizationViewParts) {
-						System.out.println("DIRTY PARTS: " + visPart.isDirty());
-						if (visPart.isDirty()) {
-							if (currentHistory != null)
-								selector.changeCurrentHistory(currentHistory);
-							return;
+
+				if (currentStateSpace == null
+						|| (currentStateSpace != null && !(newModelFile
+								.getPath().equals(currentStateSpace.getModel()
+								.getModelFile().getPath())))) {
+
+					String newLanguage = BMotionUtil.getLanguageFromModel(s
+							.getModel());
+					IPerspectiveDescriptor currentPerspective = BMotionStudio
+							.getCurrentPerspective();
+
+					// Save old and close old perspective (if exists)
+					if (currentPerspective != null && currentStateSpace != null) {
+
+						File currentModelFile = currentStateSpace.getModel()
+								.getModelFile();
+
+						String currentLanguage = BMotionUtil
+								.getLanguageFromModel(currentStateSpace
+										.getModel());
+						// If yes ...
+						// Export the current perspective
+						File perspectiveFile = PerspectiveUtil
+								.getPerspectiveFileFromModelFile(currentModelFile);
+						PerspectiveUtil.exportPerspective(currentPerspective,
+								perspectiveFile);
+						// Close and delete current perspective, before opening
+						// the
+						// new one
+						PerspectiveUtil.closePerspective(currentPerspective);
+						// Check if dirty view parts exist, if yes prompt the
+						// user
+						// for saving the dirty visualization parts
+						VisualizationViewPart[] visualizationViewParts = BMotionUtil
+								.getVisualizationViewParts(currentModelFile,
+										currentLanguage);
+						for (VisualizationViewPart visPart : visualizationViewParts) {
+							if (visPart.isDirty()) {
+								if (currentHistory != null)
+									selector.changeCurrentHistory(currentHistory);
+								return;
+							}
 						}
+						PerspectiveUtil.deletePerspective(currentPerspective);
+
 					}
-					PerspectiveUtil.deletePerspective(currentPerspective);
+
+					// Switch to new perspective
+					IPerspectiveDescriptor perspective = PerspectiveUtil
+							.openPerspective(newModelFile);
+					BMotionUtil.initVisualizationViews(newModelFile,
+							newLanguage);
+					BMotionStudio.setCurrentPerspective(perspective);
+
 				}
-				
-				// Switch to new perspective
-				IPerspectiveDescriptor perspective = PerspectiveUtil
-						.openPerspective(newModelFile);
-				BMotionUtil.initVisualizationViews(newModelFile, newLanguage);
-				BMotionStudio.setCurrentPerspective(perspective);
 
 				currentStateSpace = s;
 				currentHistory = selector.getCurrentHistory();

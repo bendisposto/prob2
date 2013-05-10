@@ -17,21 +17,21 @@ public class BExpressionObserver extends Observer {
 
 	@Override
 	public void check(History history, BControl control) {
-		
+
 		if (attribute == null || expression == null)
 			return;
 
 		EvaluationResult evalResult = history.evalCurrent(expression);
-		
+
 		if (evalResult != null && !evalResult.hasError()) {
 
 			String result = evalResult.value;
 			AbstractAttribute atr = control.getAttribute(attribute);
 			Object unmarshalResult = atr.unmarshal(result);
-			control.setAttributeValue(attribute, unmarshalResult);
+			control.setAttributeValue(attribute, unmarshalResult, true, false);
 
 		}
-		
+
 	}
 
 	@Override

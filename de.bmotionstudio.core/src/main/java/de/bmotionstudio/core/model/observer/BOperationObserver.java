@@ -1,44 +1,48 @@
 package de.bmotionstudio.core.model.observer;
 
+import java.util.List;
+
 import org.eclipse.swt.widgets.Shell;
 
+import de.be4.classicalb.core.parser.exceptions.BException;
+import de.bmotionstudio.core.editor.wizard.observer.BOperationObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
-import de.bmotionstudio.core.editor.wizard.observer.BPredicateObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.History;
+import de.prob.statespace.OpInfo;
 
-public class BPredicateObserver extends Observer {
+public class BOperationObserver extends Observer {
 
-	private String predicate;
-	
-	private String attribute;
-	
+	private String operation, attribute, predicate;
+
 	private Object value;
 	
 	@Override
 	public void check(History history, BControl control) {
 
-		if (predicate == null || attribute == null || value == null)
+		if (operation == null || attribute == null || value == null)
 			return;
 
-		EvaluationResult evalResult = history.evalCurrent(predicate);
+		if (predicate == null || (predicate != null && predicate.length() < 1))
+			predicate = "TRUE";
 
-		if (evalResult != null && !evalResult.hasError()) {
-
-			String result = evalResult.value;
-			Boolean bResult = Boolean.valueOf(result);
-			if (bResult)
+		try {
+			List<OpInfo> opFromPredicate = history.getStatespace()
+					.opFromPredicate(history.getCurrentState(), operation,
+							predicate, 1);
+			if (opFromPredicate != null && !opFromPredicate.isEmpty())
 				control.setAttributeValue(attribute, value, true, false);
-
+		} catch (BException e) {
+			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
 	public ObserverWizard getWizard(Shell shell, BControl control) {
-		return new BPredicateObserverWizard(shell, control, this);
+		return new BOperationObserverWizard(shell, control, this);
 	}
+
 
 	public String getPredicate() {
 		return predicate;
@@ -60,6 +64,16 @@ public class BPredicateObserver extends Observer {
 		firePropertyChange("attribute", oldVal, attribute);
 	}
 
+	public String getOperation() {
+		return operation;
+	}
+
+	public void setOperation(String operation) {
+		String oldVal = this.operation;
+		this.operation = operation;
+		firePropertyChange("operation", oldVal, operation);
+	}
+	
 	public Object getValue() {
 		return value;
 	}
@@ -69,15 +83,15 @@ public class BPredicateObserver extends Observer {
 		this.value = value;
 		firePropertyChange("value", oldVal, value);
 	}
-
-	@Override
-	public String getType() {
-		return "B Predicate Observer";
-	}
 	
 	@Override
+	public String getType() {
+		return "B Operation Observer";
+	}
+
+	@Override
 	public String getDescription() {
-		return "This observer sets the value of an attribute whenever the entered predicate was evaluated to true.";
+		return "";
 	}
 
 }

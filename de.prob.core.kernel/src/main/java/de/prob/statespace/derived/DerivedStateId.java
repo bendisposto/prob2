@@ -1,22 +1,28 @@
 package de.prob.statespace.derived;
 
+import java.util.List;
+
 import de.prob.statespace.StateId;
 
 public class DerivedStateId extends StateId {
 
-	private final String label;
+	private final List<String> labels;
 	private int count;
 
-	public DerivedStateId(final String id, final String label,
-			final String witness, final String count) {
+	public DerivedStateId(final String id, final List<String> labels,
+			final int count) {
 		super(id, null);
-		this.label = label;
-		this.count = Integer.parseInt(count);
-
+		this.labels = labels;
+		this.count = count;
 	}
 
-	public String getLabel() {
-		return label;
+	public List<String> getLabels() {
+		return labels;
+	}
+
+	@Override
+	public String toString() {
+		return id + ": " + labels;
 	}
 
 	public int getCount() {
@@ -25,11 +31,6 @@ public class DerivedStateId extends StateId {
 
 	public void setCount(final int count) {
 		this.count = count;
-	}
-
-	@Override
-	public String toString() {
-		return id + ": " + label;
 	}
 
 	@Override
