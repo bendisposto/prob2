@@ -12,7 +12,6 @@ public class SignatureMergedStateSpace extends AbstractDerivedStateSpace {
 	public SignatureMergedStateSpace(final IStateSpace stateSpace,
 			final AbstractReduceStateSpaceCmd cmd) {
 		super(stateSpace, cmd);
-		stateSpace.registerStateSpaceListener(this);
 	}
 
 	@Override

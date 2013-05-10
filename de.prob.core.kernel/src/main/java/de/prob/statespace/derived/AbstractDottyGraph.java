@@ -29,6 +29,7 @@ public abstract class AbstractDottyGraph implements IStateSpace,
 			throw new UnsupportedOperationException(
 					"Could not create AbstractDerivedStateSpace because the instance of IStateSpace was not recognized");
 		}
+		this.space.registerStateSpaceListener(this);
 	}
 
 	protected abstract void calculate();

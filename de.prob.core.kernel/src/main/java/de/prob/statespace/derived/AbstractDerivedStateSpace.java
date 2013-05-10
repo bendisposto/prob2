@@ -43,6 +43,7 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		setNodeColors(cmd.getNodeColors());
 		setTransStyle(cmd.getTransStyle());
 		setTransColor(cmd.getTransColor());
+		this.stateSpace.registerStateSpaceListener(this);
 	}
 
 	Set<IStatesCalculatedListener> listeners = new HashSet<IStatesCalculatedListener>();

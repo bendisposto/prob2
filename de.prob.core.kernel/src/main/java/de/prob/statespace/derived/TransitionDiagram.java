@@ -15,7 +15,6 @@ public class TransitionDiagram extends AbstractDerivedStateSpace {
 			final String expression, final AbstractReduceStateSpaceCmd cmd) {
 		super(stateSpace, cmd);
 		this.expression = expression;
-		stateSpace.registerStateSpaceListener(this);
 	}
 
 	@Override
