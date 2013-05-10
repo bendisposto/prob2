@@ -6,6 +6,7 @@
 
 package de.bmotionstudio.core.model.attribute;
 
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class AttributeSourceConnections extends AbstractAttribute {
@@ -16,7 +17,15 @@ public class AttributeSourceConnections extends AbstractAttribute {
 
 	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
-		return null;
+		PropertyDescriptor descriptor = new PropertyDescriptor(
+				getID(), getName());
+		descriptor.setLabelProvider(new LabelProvider() {
+			public String getText(Object element) {
+				return String.valueOf(((ConnectionList) element)
+						.getConnections().size());
+			}
+		});
+		return descriptor;
 	}
 
 	@Override
