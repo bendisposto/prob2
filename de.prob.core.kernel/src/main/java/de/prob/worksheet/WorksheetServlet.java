@@ -2,23 +2,18 @@ package de.prob.worksheet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -26,12 +21,14 @@ import com.google.inject.Singleton;
 @Singleton
 public class WorksheetServlet extends HttpServlet {
 
-	private static int sessioncount = 0;
+	private int session_count = 0;
+	private long message_count = 0;
 	private ScriptEngineProvider sep;
 
-	private static Map<String, Editor> editors = new HashMap<String, Editor>();
+	private final Map<String, ScriptEngine> sessions = new HashMap<String, ScriptEngine>();
+	private final Map<String, Queue<String>> queues = new HashMap<String, Queue<String>>();
 
-	private Map<String, ScriptEngine> sessions = new HashMap<String, ScriptEngine>();
+	private final Gson g = new Gson();
 
 	@Inject
 	public WorksheetServlet(ScriptEngineProvider sep) {
@@ -41,81 +38,137 @@ public class WorksheetServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		Gson g = new Gson();
+
 		PrintWriter out = response.getWriter();
-		Map<String, Object> resp = new HashMap<String, Object>();
 
-		String language = request.getParameter("lang");
-		String command = request.getParameter("command");
 		String session = request.getParameter("session");
+		String cmds = request.getParameter("cmd");
 
-		if (session == null || session.equals("null")) {
-			int c = sessioncount++;
-			resp.put("session", c);
+		if (session == null || session.equals("null") || session.isEmpty()) {
+			int c = session_count++;
 			session = String.valueOf(c);
 		}
+		Queue<String> q = getQueue(session);
 
-		language = language == null ? "" : language; // I wish I could use
-														// groovy's elvis
-														// operator
+		System.out.println(session + " " + cmds);
 
-		if ("update".equals(command)) {
-			editors.clear();
-			int count = Integer.valueOf(request.getParameter("count"));
-			for (int i = 0; i < count; i++) {
-				String id = request.getParameter("data[" + i + "][id]");
-				String lang = request.getParameter("data[" + i + "][lang]");
-				String text = request.getParameter("data[" + i + "][text]");
-				editors.put(id, new Editor(id, lang, text));
-			}
-		}
-		if ("eval".equals(command)) {
-			String text = request.getParameter("text");
-			text = text == null ? "" : text;
+		Map<String, Object> resp = makeEmptyResponse(session);
+		ECmd cmd = ECmd.valueOf(cmds);
+		switch (cmd) {
+		case init:
+			resp.put("cmd", "set_top");
+			resp.put("lang", "groovy");
+			break;
 
-			ScriptEngine executor = getExecutor(session);
-
-			if ("groovy".equals(language) && !text.isEmpty()) {
-				Object result = "";
-				try {
-					result = executor.eval(text);
-					resp.put("result", result.toString());
-				} catch (ScriptException e) {
-					resp.put("error", true);
-					resp.put("result", "Exception while processing '" + text
-							+ "'. " + e.getMessage());
-					e.printStackTrace();
-				}
-			}
-
-			if ("b".equals(language) && !text.isEmpty()) {
-				Object result = "";
-
-				try {
-					result = executor
-							.eval("animations.getCurrentHistory().getCurrentState().eval(\""
-									+ text + "\")");
-					resp.put("result", "<p>" + text + " is </p><p> " + result
-							+ "</p>");
-				} catch (ScriptException e) {
-					resp.put("error", true);
-					resp.put("result", "Exception while processing '" + text
-							+ "'. " + e.getMessage());
-					e.printStackTrace();
-				}
-			}
-
-			System.out.println("used " + executor);
-
-			if (!resp.containsKey("result")) {
-				resp.put("result", "empty result");
-			}
+		default:
+			break;
 		}
 
-		String json = g.toJson(resp);
-		out.println(json);
+		String json = "";
+		// Send Policy
+		switch (cmd) {
+		case session:
+			json = g.toJson(makeEmptyResponse(session));
+			break;
+		case updates:
+			if (!q.isEmpty())
+				json = dequeue(q);
+			break;
+
+		default:
+			enqueue(q, g.toJson(resp));
+			break;
+		}
+
+		//
+		// language = language == null ? "" : language; // I wish I could use
+		// // groovy's elvis
+		// // operator
+		//
+		// if ("update".equals(command)) {
+		// editors.clear();
+		// int count = Integer.valueOf(request.getParameter("count"));
+		// for (int i = 0; i < count; i++) {
+		// String id = request.getParameter("data[" + i + "][id]");
+		// String lang = request.getParameter("data[" + i + "][lang]");
+		// String text = request.getParameter("data[" + i + "][text]");
+		// editors.put(id, new Editor(id, lang, text));
+		// }
+		// }
+		// if ("eval".equals(command)) {
+		// String text = request.getParameter("text");
+		// text = text == null ? "" : text;
+		//
+		// ScriptEngine executor = getExecutor(session);
+		//
+		// if ("groovy".equals(language) && !text.isEmpty()) {
+		// Object result = "";
+		// try {
+		// result = executor.eval(text);
+		// resp.put("result", result.toString());
+		// } catch (ScriptException e) {
+		// resp.put("error", true);
+		// resp.put("result", "Exception while processing '" + text
+		// + "'. " + e.getMessage());
+		// e.printStackTrace();
+		// }
+		// }
+		//
+		// if ("b".equals(language) && !text.isEmpty()) {
+		// Object result = "";
+		//
+		// try {
+		// result = executor
+		// .eval("animations.getCurrentHistory().getCurrentState().eval(\""
+		// + text + "\")");
+		// resp.put("result", "<p>" + text + " is </p><p> " + result
+		// + "</p>");
+		// } catch (ScriptException e) {
+		// resp.put("error", true);
+		// resp.put("result", "Exception while processing '" + text
+		// + "'. " + e.getMessage());
+		// e.printStackTrace();
+		// }
+		// }
+		//
+		// System.out.println("used " + executor);
+		//
+		// if (!resp.containsKey("result")) {
+		// resp.put("result", "empty result");
+		// }
+		// }
+
+		if (!json.isEmpty())
+			out.println(json);
 		out.close();
 
+	}
+
+	private Map<String, Object> makeEmptyResponse(String session) {
+		Map<String, Object> resp;
+		resp = new HashMap<String, Object>();
+		resp.put("session", session);
+		resp.put("id", message_count++);
+		return resp;
+	}
+
+	private Queue<String> getQueue(String session) {
+		Queue<String> queue = queues.get(session);
+		if (queue == null) {
+			queue = new LinkedBlockingQueue<String>();
+			queues.put(session, queue);
+		}
+		return queue;
+	}
+
+	private String dequeue(Queue<String> q) {
+		if (q.isEmpty())
+			return null;
+		return q.poll();
+	}
+
+	private void enqueue(Queue<String> q, String json) {
+		q.add(json);
 	}
 
 	private ScriptEngine getExecutor(String session) {

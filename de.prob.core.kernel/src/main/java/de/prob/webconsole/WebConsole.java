@@ -30,15 +30,15 @@ public class WebConsole {
 
 			@Override
 			public void run() {
-				try {
-					Desktop.getDesktop().browse(
-							new URI("http://localhost:" + WebConsole.PORT
-									+ ""));
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
+				// try {
+				// Desktop.getDesktop().browse(
+				// new URI("http://localhost:" + WebConsole.PORT
+				// + ""));
+				// } catch (IOException e) {
+				// e.printStackTrace();
+				// } catch (URISyntaxException e) {
+				// e.printStackTrace();
+				// }
 			}
 		});
 	}

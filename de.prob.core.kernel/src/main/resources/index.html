@@ -26,42 +26,17 @@
 </script>
 
 <!-- The Application -->
+<script src="javascripts/ynot.lib.js"></script>
 <script src="javascripts/ynot.js"></script>
 
 </head>
 <body onload="javascript:init()">
 	<div class="container">
 		<div class="row">
-			<div class="top-bar span12">
-				<div id="ts" class="btn-toolbar" style="margin: 0;">
-					<div class="btn-group">
-						<button id="ts_button" class="btn btn-primary dropdown-toggle"
-							data-toggle="dropdown">
-							B <span class="caret"></span>
-						</button>
-						<ul id="ts_menu" class="dropdown-menu">
-							<li><a href="#"
-								onclick="javascript:setDefaultType(settings.groovy)">Groovy</a></li>
-	
-							<li><a href="#"
-								onclick="javascript:setDefaultType(settings.b)">B</a></li>
-	
-							<li><a href="#"
-								onclick="javascript:setDefaultType(settings.markdown)">Markdown</a></li>
-	
-							<li><a href="#"
-								onclick="javascript:setDefaultType(settings.javascript)">JavaScript
-									(Browser)</a></li>
-						</ul>
-					</div> 
-				</div>	
-			</div>
+			<div class="top-bar span12"></div>
 		</div>
-	
-
 		<div id="boxes"></div>
-
-		<script type="text/javascript"
+ 		<script type="text/javascript"
 			src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 

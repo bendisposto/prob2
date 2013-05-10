@@ -1,46 +1,45 @@
 "use strict";
 
-function get_template(url) {
-    var html;
-    $.ajax({
-        url : url,
-        success : function(result) {
-            if (result.isOk === false) {
-                alert(result.message);
-            } else {
-                html = result;
-            }
-        },
-        async : false
-    });
-    return html;
-}
-
-var session = null, globalcount = 0, currentMode = null, editors = [], currentEditor = null, boxtemplate = get_template('templates/worksheet_box.html');
+var session = get_session();
+var globalcount = 0;
+var currentMode = null;
+var editors = [];
+var currentEditor = null;
+var lastcommand = -1;
+var boxtemplate = get_template('templates/worksheet_box.html');
+var topbartemplate = get_template('templates/worksheet_topbar.html')
 
 function reEval(rep) {
     console.log('Reevaluate Worksheet, starting with pos ', rep);
 }
 
-function reorder(e, x) {
-    boxes = $(".worksheetbox");
-    neditors = [];
-    op = findEditor(x.item[0].id.substr(5));
+function reorder() {
+    var boxes = $(".worksheetbox");
+    var neditors = [];
     for ( var i = 0; i < boxes.length; i++) {
-        id = boxes[i].id.substr(5);
-        e = findEditor(id);
-        neditors.push(editors[e]);
+        var id = boxes[i].id.substr(5);
+        neditors.push(id);
     }
-    editors = neditors;
-    np = findEditor(x.item[0].id.substr(5));
-    rep = Math.min(op, np);
-    reEval(rep)
-    updateServlet();
+    var msg = {
+        'cmd' : 'reorder',
+        'order' : neditors
+    };
+    async_query(session, msg);
+}
+
+function dispatch_setTop(lang) {
+    var view = {
+        'mode' : lang
+    }
+    var output = Mustache.render(topbartemplate, view);
+    $(output).appendTo(".top-bar")
 }
 
 function init() {
-    currentMode = settings.b;
-    createEditor(currentMode);
+
+    // currentMode = settings.groovy;
+    // createEditor(currentMode);
+
     $(function() {
         $("#boxes").sortable({
             placeholder : "ui-sortable-placeholder",
@@ -49,9 +48,38 @@ function init() {
             forcePlaceholderSize : true
         });
     });
-    updateServlet();
+
+    var msg = {
+        'cmd' : 'init'
+    };
+    async_query(session, msg);
+
+    setInterval(function() {
+        $.getJSON("exec", {
+            'cmd' : 'updates',
+            'since' : lastcommand,
+            'session' : session
+        }, function(data) {
+            if (data != null && data != "") {
+                lastcommand = data.id;
+                dispatch(data)
+            }
+        })
+    }, 4000);
 }
-// <div class="span1 topmenu">{{lang}}</div> \
+
+function dispatch(data) {
+    var cmd = data.cmd;
+    switch (cmd) {
+    case 'set_top':
+        dispatch_setTop(data.lang);
+        break;
+
+    default:
+        break;
+    }
+    console.log(data);
+}
 
 function deleteEditorById(id) {
     nr = findEditor(id);
@@ -144,10 +172,6 @@ function previousEditor() {
 
 function configureCodemirror(info) {
 
-    // Evaluate on unfocus
-
-    // if (info.id % 2 === 0) { // used for debugging stylesheets
-
     info.codemirror.on("blur", function() {
         info.codemirror.save();
         disableEditor(info);
@@ -155,7 +179,6 @@ function configureCodemirror(info) {
         var pos = findEditor(info.id)
         reEval(pos);
     });
-    // }
 
     // prevent newline if Shift +Enter is pressed
     info.codemirror.getWrapperElement().onkeypress = function(e) {
@@ -227,58 +250,58 @@ function disableEditor(info) {
     info.codemirror.getWrapperElement().style.display = "none";
 }
 
-function evalGroovy(text, info) {
-    var r = info.renderer;
-    r.removeClass("renderer");
-    info.renderer.html('<img src="images/loading.gif" class="preload"  />');
-    $.getJSON("exec", {
-        'command' : 'eval',
-        'text' : text,
-        'lang' : "groovy",
-        'session' : session
-    }, function(data) {
-        session = data.session;
-        r.addClass("renderer");
-        printRenderer(r, data.result)
-        $("#wsbox" + info.id).height(r.height() + 8);
-
-    });
-}
-function evalB(text, info) {
-    var r = info.renderer;
-    r.removeClass("renderer");
-    info.renderer.html('<img src="images/loading.gif" class="preload"  />');
-    $.getJSON("exec", {
-        'command' : 'eval',
-        'text' : text,
-        'lang' : "b",
-        'session' : session
-    }, function(data) {
-        session = data.session;
-        r.addClass("renderer");
-        printRenderer(r, data.result)
-        $("#wsbox" + info.id).height(r.height() + 8);
-
-    });
-}
-
-function evalMarkdown(text, info) {
-    var t = markdown.toHTML(text);
-    printRenderer(info.renderer, t);
-}
-function evalJavaScript(text, info) {
-    var printResult = true;
-    var r = null;
-    try {
-        r = eval(text);
-    } catch (e) {
-        r = '<div class="jserror">' + e + '</div>';
-    }
-    if (r == undefined)
-        r = "undefined";
-    if (printResult)
-        printRenderer(info.renderer, r);
-}
+// function evalGroovy(text, info) {
+// var r = info.renderer;
+// r.removeClass("renderer");
+// info.renderer.html('<img src="images/loading.gif" class="preload" />');
+// $.getJSON("exec", {
+// 'command' : 'eval',
+// 'text' : text,
+// 'lang' : "groovy",
+// 'session' : session
+// }, function(data) {
+// session = data.session;
+// r.addClass("renderer");
+// printRenderer(r, data.result)
+// $("#wsbox" + info.id).height(r.height() + 8);
+//
+// });
+// }
+// function evalB(text, info) {
+// var r = info.renderer;
+// r.removeClass("renderer");
+// info.renderer.html('<img src="images/loading.gif" class="preload" />');
+// $.getJSON("exec", {
+// 'command' : 'eval',
+// 'text' : text,
+// 'lang' : "b",
+// 'session' : session
+// }, function(data) {
+// session = data.session;
+// r.addClass("renderer");
+// printRenderer(r, data.result)
+// $("#wsbox" + info.id).height(r.height() + 8);
+//
+// });
+// }
+//
+// function evalMarkdown(text, info) {
+// var t = markdown.toHTML(text);
+// printRenderer(info.renderer, t);
+// }
+// function evalJavaScript(text, info) {
+// var printResult = true;
+// var r = null;
+// try {
+// r = eval(text);
+// } catch (e) {
+// r = '<div class="jserror">' + e + '</div>';
+// }
+// if (r == undefined)
+// r = "undefined";
+// if (printResult)
+// printRenderer(info.renderer, r);
+// }
 
 function printRenderer(renderer, out) {
     var output = String(out);
@@ -354,25 +377,26 @@ function setBoxType(box, options) {
 }
 
 function updateServlet() {
-    var d = [];
-    editors.forEach(function(editor) {
-        d.push({
-            'id' : editor.id,
-            'lang' : editor.options.lang,
-            'text' : editor.codemirror.getValue()
-        })
-    });
-
-    var request = $.ajax({
-        url : "exec",
-        type : "GET",
-        data : {
-            'session' : session,
-            'command' : 'update',
-            'data' : d,
-            'count' : editors.length
-        },
-        dataType : "html"
-    });
-
 }
+// var d = [];
+// editors.forEach(function(editor) {
+// d.push({
+// 'id' : editor.id,
+// 'lang' : editor.options.lang,
+// 'text' : editor.codemirror.getValue()
+// })
+// });
+//
+// var request = $.ajax({
+// url : "exec",
+// type : "GET",
+// data : {
+// 'session' : session,
+// 'command' : 'update',
+// 'data' : d,
+// 'count' : editors.length
+// },
+// dataType : "html"
+// });
+//
+// }
