@@ -88,7 +88,6 @@ import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
-import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
@@ -98,9 +97,6 @@ public class VisualizationViewPart extends ViewPart implements
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
 	
 	private Injector injector = ServletContextListener.INJECTOR;
-
-	private final AnimationSelector selector = injector
-			.getInstance(AnimationSelector.class);
 	
 	private EditDomain editDomain;
 
@@ -123,8 +119,6 @@ public class VisualizationViewPart extends ViewPart implements
 	private KeyHandler sharedKeyHandler;
 	
 	private File visualizationFile;
-
-	private StateSpace currentStateSpace;
 	
 	private boolean dirty;
 	
@@ -469,7 +463,6 @@ public class VisualizationViewPart extends ViewPart implements
 		History currentHistory = selector.getCurrentHistory();
 		String partName = visualizationView.getName();
 		if (currentHistory != null) {
-			this.currentStateSpace = currentHistory.getStatespace();
 			partName = partName + " ("
 					+ currentHistory.getModel().getModelFile().getName() + ")";
 			selector.registerHistoryChangeListener(this);
@@ -705,8 +698,6 @@ public class VisualizationViewPart extends ViewPart implements
 
 	@Override
 	public void historyChange(History history) {
-		if (this.currentStateSpace != history.getStatespace())
-			return;
 		if (visualizationView != null)
 			checkObserver(history);
 	}
