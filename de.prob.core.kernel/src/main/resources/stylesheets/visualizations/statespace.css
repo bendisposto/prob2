@@ -9,6 +9,11 @@ path.link {
   fill: #555;
 }
 
+.node text {
+  stroke: none;
+  fill: black;
+}
+
 .link {
   stroke: #999;
   stroke-opacity: .6;

@@ -32,6 +32,7 @@ public class StateSpaceData extends AbstractData {
 		vars = extractVariables(s);
 		invOK = new Transformer("").set("fill", "#799C79");
 		invKO = new Transformer("").set("fill", "#B56C6C");
+		mode = 1;
 	}
 
 	private List<IEvalElement> extractVariables(final StateSpace s) {
@@ -91,6 +92,7 @@ public class StateSpaceData extends AbstractData {
 			calculateInvariant(s, s.getVertex(opInfo.src));
 			calculateInvariant(s, s.getVertex(opInfo.dest));
 		}
+		updateTransformers();
 		super.addNewLinks(graph, newOps);
 	}
 
@@ -117,12 +119,7 @@ public class StateSpaceData extends AbstractData {
 	}
 
 	@Override
-	public int getMode() {
-		return 1;
-	}
-
-	@Override
-	public Data getData() {
+	public void updateTransformers() {
 		invOK.updateSelector(Joiner.on(",").join(toInvOk));
 		invKO.updateSelector(Joiner.on(",").join(toInvKo));
 		if (!toInvOk.isEmpty() && !data.styling.contains(invOK)) {
@@ -131,20 +128,6 @@ public class StateSpaceData extends AbstractData {
 		if (!toInvKo.isEmpty() && !data.styling.contains(invKO)) {
 			addStyling(invKO);
 		}
-		return super.getData();
-	}
-
-	@Override
-	public Data getChanges() {
-		invOK.updateSelector(Joiner.on(",").join(toInvOk));
-		invKO.updateSelector(Joiner.on(",").join(toInvKo));
-		if (!toInvOk.isEmpty() && !data.styling.contains(invOK)) {
-			addStyling(invOK);
-		}
-		if (!toInvKo.isEmpty() && !data.styling.contains(invKO)) {
-			addStyling(invKO);
-		}
-		return super.getChanges();
 	}
 
 }

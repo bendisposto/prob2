@@ -57,8 +57,9 @@ class HTMLResources {
 			<!-- JS
 			  ================================================== -->
 			<!-- <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script> -->
-			<script src="../javascripts/jquery-1.7.2.min.js"></script>
+			<script src="../javascripts/jquery-1.9.1.min.js"></script>
 			<script src="../javascripts/d3.v2.min.js"></script>
+			<script src="../javascripts/viz.js"></script>
 			<script src="../javascripts/'''+javascript+'''"></script>
 
 			<!-- End Document
