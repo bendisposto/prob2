@@ -18,18 +18,18 @@ public class BPredicateObserver extends Observer {
 	
 	@Override
 	public void check(History history, BControl control) {
-		
-		if(predicate == null || attribute == null || value == null)
+
+		if (predicate == null || attribute == null || value == null)
 			return;
-		
+
 		EvaluationResult evalResult = history.evalCurrent(predicate);
-		
+
 		if (evalResult != null && !evalResult.hasError()) {
 
 			String result = evalResult.value;
 			Boolean bResult = Boolean.valueOf(result);
 			if (bResult)
-				control.setAttributeValue(attribute, value);
+				control.setAttributeValue(attribute, value, true, false);
 
 		}
 		
