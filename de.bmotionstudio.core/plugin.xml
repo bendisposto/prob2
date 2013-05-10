@@ -558,19 +558,7 @@
             </observer>
          </control>
          <control
-               id="de.bmotionstudio.control.Track">
-            <observer
-                  id="de.bmotionstudio.observer.BPredicateObserver">
-            </observer>
-            <observer
-                  id="de.bmotionstudio.observer.BExpressionObserver">
-            </observer>
-            <observer
-                  id="de.bmotionstudio.observer.BOperationObserver">
-            </observer>
-         </control>
-         <control
-               id="de.bmotionstudio.control.Switch">
+               id="de.bmotionstudio.control.Segment">
             <observer
                   id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
