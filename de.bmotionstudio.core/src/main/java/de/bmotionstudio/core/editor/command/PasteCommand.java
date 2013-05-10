@@ -14,7 +14,6 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
-import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.model.control.BConnection;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
@@ -34,7 +33,7 @@ public class PasteCommand extends Command {
 		cHelper = (CopyPasteHelper) Clipboard.getDefault().getContents();
 		if (cHelper == null)
 			return false;
-		ArrayList<BControl> myList = cHelper.getList();
+		List<BControl> myList = cHelper.getControlList();
 		if (myList.isEmpty())
 			return false;
 		Iterator<?> it = myList.iterator();

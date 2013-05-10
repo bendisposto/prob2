@@ -8,27 +8,44 @@ package de.bmotionstudio.core.editor.command;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.bmotionstudio.core.model.control.BControl;
+import de.bmotionstudio.core.model.observer.Observer;
 
 public class CopyPasteHelper {
 
-	private ArrayList<BControl> list = new ArrayList<BControl>();
+	private List<BControl> controlList = new ArrayList<BControl>();
+	private List<Observer> observerList = new ArrayList<Observer>();
+	
 	private Map<BControl, BControl> alreadyCloned = new HashMap<BControl, BControl>();
+	
 	private int distance = 10;
 
 	public CopyPasteHelper(ArrayList<BControl> list, int distance) {
-		this.list = list;
+		this.controlList = list;
 		this.setDistance(distance);
 	}
 
-	public void setList(ArrayList<BControl> list) {
-		this.list = list;
+	public CopyPasteHelper(List<Observer> list) {
+		this.observerList = list;
 	}
 
-	public ArrayList<BControl> getList() {
-		return list;
+	public void setControlList(ArrayList<BControl> list) {
+		this.controlList = list;
+	}
+
+	public List<BControl> getControlList() {
+		return controlList;
+	}
+	
+	public void setObserverList(ArrayList<Observer> list) {
+		this.observerList = list;
+	}
+
+	public List<Observer> getObserverList() {
+		return observerList;
 	}
 
 	public void setDistance(int distance) {
