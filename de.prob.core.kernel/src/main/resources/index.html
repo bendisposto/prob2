@@ -7,21 +7,26 @@
 <link rel="stylesheet" href="stylesheets/codemirror.css">
 <link rel="stylesheet" href="stylesheets/ynot.css">
 
+<!-- Libraries Modes -->
 <script src="javascripts/jquery.js"></script>
 <script src="javascripts/bootstrap.js"></script>
-<script src="javascripts/codemirror.js"></script>
-<script src="javascripts/modes/clojure.js"></script>
-<script src="javascripts/modes/markdown.js"></script>
-<script src="javascripts/modes/javascript.js"></script>
 <script src="javascripts/markdown.js"></script>
 <script src="javascripts/mustache.js"></script>
 <script src="javascripts/jquery-ui.js"></script>
-<script src="javascripts/ynot.js"></script>
 
+<!-- CodeMirror  -->
+<script src="javascripts/codemirror.js"></script>
+<script src="javascripts/modes/groovy.js"></script>
+<script src="javascripts/modes/markdown.js"></script>
+<script src="javascripts/modes/javascript.js"></script>
+
+<!-- Latex Math Rendering -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>
 
+<!-- The Application -->
+<script src="javascripts/ynot.js"></script>
 
 </head>
 <body onload="javascript:init()">
