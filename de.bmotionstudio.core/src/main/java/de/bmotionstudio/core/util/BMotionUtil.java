@@ -37,7 +37,6 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.BMotionEditorPlugin;
-import de.bmotionstudio.core.editor.HTMLVisualizationViewPart;
 import de.bmotionstudio.core.editor.VisualizationViewPart;
 import de.bmotionstudio.core.model.BMotionGuide;
 import de.bmotionstudio.core.model.VisualizationView;
@@ -188,30 +187,6 @@ public class BMotionUtil {
 
 	}
 	
-	private static int counter = 0;
-	
-	public static HTMLVisualizationViewPart createHTMLVisualizationViewPart(
-			final String sessionId, final String relativeUrl)
-			throws PartInitException {
-
-		String secId = VisualizationViewPart.ID + ".nr" + counter++;
-
-		IWorkbenchWindow window = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
-		IWorkbenchPage activePage = window.getActivePage();
-
-		HTMLVisualizationViewPart vizView = (HTMLVisualizationViewPart) activePage
-				.showView(HTMLVisualizationViewPart.ID, secId,
-						IWorkbenchPage.VIEW_VISIBLE);
-
-		if (vizView != null) {
-			vizView.init(relativeUrl, sessionId);
-		}
-
-		return vizView;
-
-	}
-
 	public static VisualizationView getVisualizationViewFromFile(
 			File visualizationFile) {
 
