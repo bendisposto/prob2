@@ -80,16 +80,9 @@ function dispatch(data) {
     console.log(data);
 }
 
-function deleteEditorById(id) {
-    nr = findEditor(id);
-    deleteEditor(nr);
-}
-
-
 function deleteBox(id) {
     $("#wsbox" + rme.id).remove();
 }
-
 
 function setDefaultType(mode) {
     currentMode = mode;
