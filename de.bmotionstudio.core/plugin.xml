@@ -103,15 +103,6 @@
                   label="Add Visualization View"
                   style="push">
             </command>
-            <separator
-                  name="group.filter"
-                  visible="true">
-            </separator>
-            <command
-                  commandId="de.bmotionstudio.core.command.addHTMLVisualizationView"
-                  label="Add HTML Visualization View"
-                  style="push">
-            </command>
          </menu>
       </menuContribution>
    </extension>
