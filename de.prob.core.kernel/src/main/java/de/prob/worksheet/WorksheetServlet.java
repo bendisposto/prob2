@@ -2,9 +2,13 @@ package de.prob.worksheet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.script.ScriptEngine;
@@ -13,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -27,6 +32,7 @@ public class WorksheetServlet extends HttpServlet {
 
 	private final Map<String, ScriptEngine> sessions = new HashMap<String, ScriptEngine>();
 	private final Map<String, Queue<String>> queues = new HashMap<String, Queue<String>>();
+	private final List<Editor> editors = new ArrayList<Editor>();
 
 	private final Gson g = new Gson();
 
@@ -41,6 +47,17 @@ public class WorksheetServlet extends HttpServlet {
 
 		PrintWriter out = response.getWriter();
 
+		Set<Entry<String, String[]>> entrySet = request.getParameterMap()
+				.entrySet();
+		for (Entry<String, String[]> entry : entrySet) {
+			String k = entry.getKey();
+			String v = Joiner.on(",").join(entry.getValue());
+			System.out.print(k + "=>" + v);
+			System.out.print(" ");
+		}
+
+		System.out.println();
+
 		String session = request.getParameter("session");
 		String cmds = request.getParameter("cmd");
 
@@ -50,14 +67,16 @@ public class WorksheetServlet extends HttpServlet {
 		}
 		Queue<String> q = getQueue(session);
 
-		System.out.println(session + " " + cmds);
-
-		Map<String, Object> resp = makeEmptyResponse(session);
 		ECmd cmd = ECmd.valueOf(cmds);
 		switch (cmd) {
 		case init:
-			resp.put("cmd", "set_top");
-			resp.put("lang", "groovy");
+			enqueue(q,
+					makeJsonResponse(session, "cmd", "set_top", "lang",
+							"groovy"));
+			editors.add(0, new Editor("0", "groovy", ""));
+			enqueue(q,
+					makeJsonResponse(session, "cmd", "append_box", "id", "0",
+							"lang", "groovy", "content", ""));
 			break;
 
 		default:
@@ -75,8 +94,13 @@ public class WorksheetServlet extends HttpServlet {
 				json = dequeue(q);
 			break;
 
+		case leave:
+			String box = request.getParameter("box");
+			String direction = request.getParameter("direction");
+			int id = Integer.parseInt(box);
+
+			break;
 		default:
-			enqueue(q, g.toJson(resp));
 			break;
 		}
 
@@ -141,14 +165,27 @@ public class WorksheetServlet extends HttpServlet {
 		if (!json.isEmpty())
 			out.println(json);
 		out.close();
+	}
 
+	public String makeJsonResponse(String session, String... args) {
+		if (args.length % 2 != 0)
+			throw new IllegalArgumentException(
+					"Require an even number of key/values");
+
+		Map<String, Object> response = makeEmptyResponse(session);
+		for (int i = 0; i < args.length; i = i + 2) {
+			response.put(args[i], args[i + 1]);
+		}
+
+		String json = g.toJson(response);
+		return json;
 	}
 
 	private Map<String, Object> makeEmptyResponse(String session) {
 		Map<String, Object> resp;
 		resp = new HashMap<String, Object>();
-		resp.put("session", session);
 		resp.put("id", message_count++);
+		resp.put("session", session);
 		return resp;
 	}
 

@@ -9,6 +9,5 @@ public class Editor {
 		this.id = id;
 		this.lang = lang;
 		this.text = text;
-
 	}
 }

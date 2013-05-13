@@ -1,9 +1,8 @@
 "use strict";
 
 var session = get_session();
-var globalcount = 0;
 var currentMode = null;
-var editors = [];
+var editors = {};
 var currentEditor = null;
 var lastcommand = -1;
 var boxtemplate = get_template('templates/worksheet_box.html');
@@ -106,10 +105,6 @@ function deleteEditor(nr) {
     return rme;
 }
 
-function freshId() {
-    return globalcount++;
-}
-
 function setDefaultType(mode) {
     currentMode = mode;
     $("#ts_button").html(function() {
@@ -117,100 +112,97 @@ function setDefaultType(mode) {
     });
 }
 
-function createEditor(options) {
-    var id = freshId();
+function createEditor(options, id) {
 
     var view = {
         'id' : id,
         'lang' : options.lang,
-
     };
+
     var output = Mustache.render(boxtemplate, view);
     $(output).appendTo("#boxes");
-    var box = $("#wsbox" + id)
     var textarea = $("#code" + id)[0];
     var editor = CodeMirror.fromTextArea(textarea, options.codemirror);
-    var renderer = $("#renderer" + id);
     // $("#wsbox" + id + " .CodeMirror").addClass('span11')
 
     $(".CodeMirror-hscrollbar").remove(); // Hack! no horizontal
     // scrollbars
-    var editorinfo = {
-        'codemirror' : editor,
-        'renderer' : renderer,
-        'options' : options,
-        'box' : box[0],
-        'id' : id
-    };
 
-    configureCodemirror(editorinfo);
-    editors.push(editorinfo);
-    editor.focus();
+    configureCodemirror(id, editor);
+    editors[id] = editor;
 }
+//
+// function nextEditor() {
+// currentEditor++;
+// if (currentEditor === editors.length) {
+// createEditor(currentMode);
+// } else {
+// var info = editors[currentEditor];
+// disableRenderer(info);
+// enableEditor(info);
+// info.codemirror.focus();
+// }
+// }
+//
+// function previousEditor() {
+// if (currentEditor > 0) {
+// currentEditor--;
+// var info = editors[currentEditor];
+// disableRenderer(info);
+// enableEditor(info);
+// info.codemirror.focus();
+// }
+// }
 
-function nextEditor() {
-    currentEditor++;
-    if (currentEditor === editors.length) {
-        createEditor(currentMode);
-    } else {
-        var info = editors[currentEditor];
-        disableRenderer(info);
-        enableEditor(info);
-        info.codemirror.focus();
-    }
-}
+function configureCodemirror(id, codemirror) {
 
-function previousEditor() {
-    if (currentEditor > 0) {
-        currentEditor--;
-        var info = editors[currentEditor];
-        disableRenderer(info);
-        enableEditor(info);
-        info.codemirror.focus();
-    }
-}
-
-function configureCodemirror(info) {
-
-    info.codemirror.on("blur", function() {
-        info.codemirror.save();
-        disableEditor(info);
-        enableRenderer(info);
-        var pos = findEditor(info.id)
-        reEval(pos);
+    codemirror.on("blur", function() {
+        codemirror.save();
+        async_query(session, {
+            "cmd" : "leave",
+            "box" : id,
+            "direction" : "none"
+        });
     });
 
     // prevent newline if Shift +Enter is pressed
-    info.codemirror.getWrapperElement().onkeypress = function(e) {
+    codemirror.getWrapperElement().onkeypress = function(e) {
         if (event.shiftKey && event.keyCode === 13)
             e.preventDefault();
     };
 
-    info.codemirror.addKeyMap({
+    codemirror.addKeyMap({
         'Shift-Enter' : function(cm) {
             nextEditor();
             return true;
         },
         'Up' : function(cm) {
             var pos = cm.getCursor().line;
-            if (pos === 0) {
-                previousEditor();
-            } else
-                return CodeMirror.Pass;
+            async_query(session, {
+                "cmd" : "leave",
+                "box" : id,
+                "direction" : "up"
+            })
+            return CodeMirror.Pass;
         },
         'Down' : function(cm) {
             var cnt = cm.doc.lineCount();
             var pos = cm.getCursor().line;
             if (pos === cnt - 1) {
-                nextEditor();
+                async_query(session, {
+                    "cmd" : "leave",
+                    "box" : id,
+                    "direction" : "down"
+                })
             } else
                 return CodeMirror.Pass;
         }
     });
 
-    info.renderer.dblclick(function(evt) {
-        disableRenderer(info);
-        enableEditor(info);
+    $("#renderer" + id).dblclick(function(evt) {
+        console.log("click")
+        // disableRenderer(id);
+        // enableEditor(id);
     });
 
 }
@@ -314,7 +306,6 @@ function printRenderer(renderer, out) {
 var settings = {
     markdown : {
         lang : "Markdown",
-        evalfkt : evalMarkdown,
         codemirror : {
             mode : 'markdown',
             lineNumbers : false,
@@ -328,7 +319,6 @@ var settings = {
     },
     groovy : {
         lang : "Groovy",
-        evalfkt : evalGroovy,
         codemirror : {
             mode : 'groovy',
             lineNumbers : true,
@@ -339,7 +329,6 @@ var settings = {
     },
     javascript : {
         lang : "JavaScript",
-        evalfkt : evalJavaScript,
         codemirror : {
             mode : 'javascript',
             lineNumbers : true,
@@ -350,7 +339,6 @@ var settings = {
     },
     b : {
         lang : "B",
-        evalfkt : evalB,
         codemirror : {
             mode : 'javascript',
             lineNumbers : false,
