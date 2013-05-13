@@ -85,25 +85,11 @@ function deleteEditorById(id) {
     deleteEditor(nr);
 }
 
-function deleteEditor(nr) {
-    if (currentEditor > nr) {
-        currentEditor--;
-    }
 
-    var rme = editors.splice(nr, 1)[0];
+function deleteBox(id) {
     $("#wsbox" + rme.id).remove();
-
-    if (nr === currentEditor) {
-        var info = editors[currentEditor];
-        disableRenderer(info);
-        enableEditor(info);
-        info.codemirror.focus();
-    } else if (currentEditor === editors.length) {
-        createEditor(currentMode);
-    }
-    updateServlet();
-    return rme;
 }
+
 
 function setDefaultType(mode) {
     currentMode = mode;
