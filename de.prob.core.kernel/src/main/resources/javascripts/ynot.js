@@ -2,10 +2,10 @@
 
 var session = get_session();
 var currentMode = null;
-var editors = {};
 var currentEditor = null;
 var lastcommand = -1;
-var boxtemplate = get_template('templates/worksheet_box.html');
+var renderertemplate = get_template('templates/worksheet_renderer.html');
+var editortemplate = get_template('templates/worksheet_editor.html');
 var topbartemplate = get_template('templates/worksheet_topbar.html')
 
 function reEval(rep) {
@@ -112,25 +112,27 @@ function setDefaultType(mode) {
     });
 }
 
-function createEditor(options, id) {
+function appendEditor(options, id) {
+   $(Mustache.render('<div id="renderer{{id}}">', {'id':id})).appendTo("#boxes");
+   activateEditor(options,id);
+}
 
+function activateEditor(options,id){
     var view = {
-        'id' : id,
-        'lang' : options.lang,
+            'id' : id,
+            'lang' : options.lang,
     };
-
-    var output = Mustache.render(boxtemplate, view);
-    $(output).appendTo("#boxes");
+    var output = Mustache.render(editortemplate, view);
+    $("#renderer"+id).replaceWith(output);
     var textarea = $("#code" + id)[0];
-    var editor = CodeMirror.fromTextArea(textarea, options.codemirror);
-    // $("#wsbox" + id + " .CodeMirror").addClass('span11')
-
+    currentEditor = CodeMirror.fromTextArea(textarea, options.codemirror);
     $(".CodeMirror-hscrollbar").remove(); // Hack! no horizontal
     // scrollbars
-
-    configureCodemirror(id, editor);
-    editors[id] = editor;
+    
+    configureCodemirror(id);
 }
+
+
 //
 // function nextEditor() {
 // currentEditor++;
@@ -154,10 +156,10 @@ function createEditor(options, id) {
 // }
 // }
 
-function configureCodemirror(id, codemirror) {
+function configureCodemirror(id) {
 
-    codemirror.on("blur", function() {
-        codemirror.save();
+    currentEditor.on("blur", function() {
+        currentEditor.save();
         async_query(session, {
             "cmd" : "leave",
             "box" : id,
@@ -166,12 +168,12 @@ function configureCodemirror(id, codemirror) {
     });
 
     // prevent newline if Shift +Enter is pressed
-    codemirror.getWrapperElement().onkeypress = function(e) {
+    currentEditor.getWrapperElement().onkeypress = function(e) {
         if (event.shiftKey && event.keyCode === 13)
             e.preventDefault();
     };
 
-    codemirror.addKeyMap({
+    currentEditor.addKeyMap({
         'Shift-Enter' : function(cm) {
             nextEditor();
             return true;

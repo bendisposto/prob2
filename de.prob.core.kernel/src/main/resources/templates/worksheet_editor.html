@@ -1,0 +1,31 @@
+<!--  Template for a single box in a worksheet   -->
+<div class="worksheetbox row" id="wsbox{{id}}">
+	<div class="span10 editorbox">
+		<textarea id="code{{id}}" name="code{{id}}" rows="3"></textarea>
+	</div>
+	<div class="controlfield">
+		<button class="close">
+			<a href="javascript:deleteEditorById({{id}})" class="close">
+				&times; </a>
+		</button>
+		<div class="btn-group">
+			<button id="lang_button{{id}}"
+				class="btn btn-mini btn-primary dropdown-toggle"
+				data-toggle="dropdown">
+				{{lang}} <span class="caret"></span>
+			</button>
+			<ul id="ts_menu" class="dropdown-menu">
+				<li><a href="#"
+					onclick="javascript:setBoxType({{id}},settings.groovy)">Groovy</a></li>
+				<li><a href="#"
+					onclick="javascript:setBoxType({{id}},settings.b)">B</a></li>
+				<li><a href="#"
+					onclick="javascript:setBoxType({{id}},settings.markdown)">Markdown</a></li>
+				<li><a href="#"
+					onclick="javascript:setBoxType({{id}},settings.javascript)">JavaScript
+						(Browser)</a></li>
+			</ul>
+			</button>
+		</div>
+	</div>
+</div>
