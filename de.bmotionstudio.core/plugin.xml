@@ -133,11 +133,6 @@
             id="de.bmotionstudio.core.command.addVisualizationView"
             name="Add Visualization View">
       </command>
-      <command
-            defaultHandler="de.bmotionstudio.core.editor.handler.AddHTMLVisualizationViewHandler"
-            id="de.bmotionstudio.core.command.addHTMLVisualizationView"
-            name="Add HTML Visualization View">
-      </command>
    </extension>
    
  <extension
