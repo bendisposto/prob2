@@ -2,7 +2,7 @@ package de.prob.worksheet;
 
 public class Editor {
 	public final String id;
-	public final String text;
+	private String text;
 	public final String lang;
 
 	public Editor(String id, String lang, String text) {
@@ -10,4 +10,13 @@ public class Editor {
 		this.lang = lang;
 		this.text = text;
 	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public String getText() {
+		return text;
+	}
+
 }

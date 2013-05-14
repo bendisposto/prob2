@@ -59,9 +59,11 @@ function init() {
             'since' : lastcommand,
             'session' : session
         }, function(data) {
-            if (data != null && data != "") {
-                lastcommand = data.id;
-                dispatch(data)
+            if (data != null && data != "" && data != []) {
+                for ( var i = 0; i < data.length; i++) {
+                    lastcommand = data[i].id;
+                    dispatch(JSON.parse(data[i]));
+                }
             }
         })
     }, 4000);
@@ -73,6 +75,13 @@ function dispatch(data) {
     case 'set_top':
         dispatch_setTop(data.lang);
         break;
+    case 'append_box':
+        var options = eval("settings." + data.lang);
+        appendEditor(options, data.id);
+        break;
+    case 'delete':
+        deleteBoxFromDom(data.id);
+        break;
 
     default:
         break;
@@ -81,7 +90,15 @@ function dispatch(data) {
 }
 
 function deleteBox(id) {
-    $("#wsbox" + rme.id).remove();
+    var msg = {
+        'cmd' : 'delete',
+        'box' : id
+    };
+    async_query(session, msg);
+}
+
+function deleteBoxFromDom(id) {
+    $("#wsbox" + id).remove();
 }
 
 function setDefaultType(mode) {
@@ -92,25 +109,26 @@ function setDefaultType(mode) {
 }
 
 function appendEditor(options, id) {
-   $(Mustache.render('<div id="renderer{{id}}">', {'id':id})).appendTo("#boxes");
-   activateEditor(options,id);
+    $(Mustache.render('<div id="renderer{{id}}">', {
+        'id' : id
+    })).appendTo("#boxes");
+    activateEditor(options, id);
 }
 
-function activateEditor(options,id){
+function activateEditor(options, id) {
     var view = {
-            'id' : id,
-            'lang' : options.lang,
+        'id' : id,
+        'lang' : options.lang,
     };
     var output = Mustache.render(editortemplate, view);
-    $("#renderer"+id).replaceWith(output);
+    $("#renderer" + id).replaceWith(output);
     var textarea = $("#code" + id)[0];
     currentEditor = CodeMirror.fromTextArea(textarea, options.codemirror);
     $(".CodeMirror-hscrollbar").remove(); // Hack! no horizontal
     // scrollbars
-    
+
     configureCodemirror(id);
 }
-
 
 //
 // function nextEditor() {
@@ -142,7 +160,8 @@ function configureCodemirror(id) {
         async_query(session, {
             "cmd" : "leave",
             "box" : id,
-            "direction" : "none"
+            "direction" : "none",
+            "text" : currentEditor.getValue()
         });
     });
 

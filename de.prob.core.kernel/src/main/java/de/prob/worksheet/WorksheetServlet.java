@@ -26,13 +26,13 @@ import com.google.inject.Singleton;
 @Singleton
 public class WorksheetServlet extends HttpServlet {
 
-	private int session_count = 0;
-	private long message_count = 0;
+	private int counter = 0;
+
 	private ScriptEngineProvider sep;
 
 	private final Map<String, ScriptEngine> sessions = new HashMap<String, ScriptEngine>();
 	private final Map<String, Queue<String>> queues = new HashMap<String, Queue<String>>();
-	private final List<Editor> editors = new ArrayList<Editor>();
+	private final Map<String, Editor> editors = new HashMap<String, Editor>();
 
 	private final Gson g = new Gson();
 
@@ -62,22 +62,25 @@ public class WorksheetServlet extends HttpServlet {
 		String cmds = request.getParameter("cmd");
 
 		if (session == null || session.equals("null") || session.isEmpty()) {
-			int c = session_count++;
+			int c = nextId();
 			session = String.valueOf(c);
 		}
 		Queue<String> q = getQueue(session);
 
 		ECmd cmd = ECmd.valueOf(cmds);
+		String box = request.getParameter("box");
 		switch (cmd) {
 		case init:
 			enqueue(q,
-					makeJsonResponse(session, "cmd", "set_top", "lang",
-							"groovy"));
-			editors.add(0, new Editor("0", "groovy", ""));
-			enqueue(q,
-					makeJsonResponse(session, "cmd", "append_box", "id", "0",
-							"lang", "groovy", "content", ""));
+					toJson(session, "cmd", "set_top", "lang", defaultLanguage()));
+			appendNewBox(session, q);
 			break;
+		case delete:
+			editors.remove(box);
+			enqueue(q, toJson(session, "cmd", "delete", "id", box));
+			if (editors.isEmpty()) {
+				appendNewBox(session, q);
+			}
 
 		default:
 			break;
@@ -90,84 +93,74 @@ public class WorksheetServlet extends HttpServlet {
 			json = g.toJson(makeEmptyResponse(session));
 			break;
 		case updates:
-			if (!q.isEmpty())
-				json = dequeue(q);
+			if (!q.isEmpty()) {
+				ArrayList<String> list = new ArrayList<String>();
+				do {
+					String s = dequeue(q);
+					list.add(s);
+				} while (!q.isEmpty());
+				json = g.toJson(list);
+			}
 			break;
 
 		case leave:
-			String box = request.getParameter("box");
+			String content = request.getParameter("text");
 			String direction = request.getParameter("direction");
 			int id = Integer.parseInt(box);
+			unfocus(box, content);
+			enqueue(q, toJson(session, "cmd", "unfocus", "id", box));
+
+			if ("up".equals(direction)) {
+				if (id > 0) {
+					String newId = String.valueOf(id - 1);
+					enqueue(q, toJson(session, "cmd", "activate", "id", newId));
+				}
+			}
+			if ("down".equals(direction)) {
+				if (id < editors.size() - 1) {
+					String newId = String.valueOf(id + 1);
+					enqueue(q, toJson(session, "cmd", "activate", "id", newId));
+				} else {
+					appendNewBox(session, q);
+				}
+			}
 
 			break;
 		default:
 			break;
 		}
 
-		//
-		// language = language == null ? "" : language; // I wish I could use
-		// // groovy's elvis
-		// // operator
-		//
-		// if ("update".equals(command)) {
-		// editors.clear();
-		// int count = Integer.valueOf(request.getParameter("count"));
-		// for (int i = 0; i < count; i++) {
-		// String id = request.getParameter("data[" + i + "][id]");
-		// String lang = request.getParameter("data[" + i + "][lang]");
-		// String text = request.getParameter("data[" + i + "][text]");
-		// editors.put(id, new Editor(id, lang, text));
-		// }
-		// }
-		// if ("eval".equals(command)) {
-		// String text = request.getParameter("text");
-		// text = text == null ? "" : text;
-		//
-		// ScriptEngine executor = getExecutor(session);
-		//
-		// if ("groovy".equals(language) && !text.isEmpty()) {
-		// Object result = "";
-		// try {
-		// result = executor.eval(text);
-		// resp.put("result", result.toString());
-		// } catch (ScriptException e) {
-		// resp.put("error", true);
-		// resp.put("result", "Exception while processing '" + text
-		// + "'. " + e.getMessage());
-		// e.printStackTrace();
-		// }
-		// }
-		//
-		// if ("b".equals(language) && !text.isEmpty()) {
-		// Object result = "";
-		//
-		// try {
-		// result = executor
-		// .eval("animations.getCurrentHistory().getCurrentState().eval(\""
-		// + text + "\")");
-		// resp.put("result", "<p>" + text + " is </p><p> " + result
-		// + "</p>");
-		// } catch (ScriptException e) {
-		// resp.put("error", true);
-		// resp.put("result", "Exception while processing '" + text
-		// + "'. " + e.getMessage());
-		// e.printStackTrace();
-		// }
-		// }
-		//
-		// System.out.println("used " + executor);
-		//
-		// if (!resp.containsKey("result")) {
-		// resp.put("result", "empty result");
-		// }
-		// }
-
 		if (!json.isEmpty())
 			out.println(json);
 		out.close();
 	}
 
-	public String makeJsonResponse(String session, String... args) {
+	private void unfocus(String box, String content) {
+		Editor editor = editors.get(box);
+		editor.setText(content);
+
+		System.out.println("Unfocused editor");
+		System.out.println("Content is: " + editor.getText());
+		System.out.println("Language is: " + editor.lang);
+	}
+
+	private int nextId() {
+		return counter++;
+	}
+
+	private void appendNewBox(String session, Queue<String> q) {
+		String id = String.valueOf(nextId());
+		editors.put(id, new Editor("0", defaultLanguage(), ""));
+		enqueue(q,
+				toJson(session, "cmd", "append_box", "id", id, "lang",
+						defaultLanguage(), "content", ""));
+	}
+
+	private String defaultLanguage() {
+		return "groovy";
+	}
+
+	public String toJson(String session, String... args) {
 		if (args.length % 2 != 0)
 			throw new IllegalArgumentException(
 					"Require an even number of key/values");
@@ -184,7 +177,7 @@ public class WorksheetServlet extends HttpServlet {
 	private Map<String, Object> makeEmptyResponse(String session) {
 		Map<String, Object> resp;
 		resp = new HashMap<String, Object>();
-		resp.put("id", message_count++);
+		resp.put("id", nextId());
 		resp.put("session", session);
 		return resp;
 	}
