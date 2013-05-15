@@ -1,10 +1,8 @@
 
 var w = 600;
 var h = 400;
-d3.select("#body").append("svg:svg");
-var svg = d3.select("svg")
-      .attr("width",w)
-      .attr("height",h);
+var dim = calculateDimensions();
+var svg = createCanvas("#body",dim.width,dim.height);
 
 var padding = 10;
 
