@@ -1,19 +1,3 @@
-function get_template(url) {
-    var html;
-    $.ajax({
-        url : url,
-        success : function(result) {
-            if (result.isOk === false) {
-                alert(result.message);
-            } else {
-                html = result;
-            }
-        },
-        async : false
-    });
-    return html;
-}
-
 function get_session() {
     var s;
     $.ajax({
@@ -32,8 +16,12 @@ function get_session() {
 
 function async_query(session, msg) {
     msg.session = session;
+    msg.type = "sending";
+    if (msg.cmd != "updates")
+        console.log(msg)
     $.ajax({
         url : "exec",
         data : msg
     })
+
 }

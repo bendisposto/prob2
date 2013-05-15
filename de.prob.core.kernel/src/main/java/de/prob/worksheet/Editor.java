@@ -2,13 +2,13 @@ package de.prob.worksheet;
 
 public class Editor {
 	public final String id;
+	public final EBoxTypes type;
 	private String text;
-	public final String lang;
 
 	public Editor(String id, String lang, String text) {
 		this.id = id;
-		this.lang = lang;
 		this.text = text;
+		this.type = EBoxTypes.valueOf(lang);
 	}
 
 	public void setText(String text) {
