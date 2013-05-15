@@ -1,82 +1,28 @@
-var width;
-var height;
-
-function applyStyling(styling) {
-    var i, j, selector, selected, attributes, styles;
-    for (i = 0; i < styling.length; i = i + 1) {
-        selector = styling[i].selector;
-        if (selector !== "") {
-            selected = d3.selectAll(selector);
-            attributes = styling[i].attributes;
-            for (j = 0; j < attributes.length; j = j + 1) {
-                selected.attr(attributes[j].name, attributes[j].value);
-            }
-            styles = styling[i].styles;
-            for (j = 0; j < styles.length; j = j + 1) {
-                selected.style(styles[j].name, styles[j].value);
-            }
-        }
-    }
-}
-
-function calculateDimensions() {
-  if( typeof( window.innerWidth ) == 'number' ) { width = window.innerWidth; height = window.innerHeight; } // NORMAL BROWSERS 
-  else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) { 
-    width = document.documentElement.clientWidth; height = document.documentElement.clientHeight; } // IE6+ 
-  else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) { 
-    width = document.body.clientWidth; height = document.body.clientHeight; }
-}
-
-calculateDimensions();
-var root;
-var i = 0;
-
-var tree = d3.layout.tree()
-    .size([height, width]);
-
-var diagonal = d3.svg.diagonal()
-    .projection(function(d) { return [d.y, d.x]; });
-
-var vis = d3.select("#body").append("svg:svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("pointer-events","all")
-  .append("svg:g")
-    .call(d3.behavior.zoom().on("zoom",redraw))
-  .append("svg:g");
-
-vis.append("svg:rect")
-    .attr("class","canvas")
-    .attr("width",width)
-    .attr("height",height)
-    .style("fill-opacity",1e-6);
-
-function redraw() {
-  vis.attr("transform","translate("+d3.event.translate+") scale("+d3.event.scale+")");
-}
-
 var nodeLength = {};
 var valueLength = {};
 
-function buildTree(treeData, attrs)
-{
+function buildTree(vis, tree, treeData, height) {
+    var root, labels, values, i, diagonal;
     vis.selectAll(".link").remove();
     vis.selectAll(".node").remove();
 
     root = treeData
     root.x0 = height / 2;
     root.y0 = 0;
+    i = 0;
+    diagonal = d3.svg.diagonal()
+                        .projection(function(d) { return [d.y, d.x]; });
 
-    var labels = {};
-    var values = {};
+    labels = {};
+    values = {};
 
-    calculateSize(root);
+    calculateSize(vis, tree, root);
 
-    update(root, attrs);
+    update(vis, tree, root, root, i, diagonal);
 }
 
 // static calculation of size of labels
-function calculateSize(data) {
+function calculateSize(vis, tree, root) {
   var toCalc = vis.selectAll("g.node")
       .data(tree.nodes(root).reverse());
 
@@ -114,54 +60,55 @@ function calcWidth(key) {
     return valueL;
 };
 
-function update(source, attrs) {
-  var duration = d3.event && d3.event.altKey ? 5000 : 500;
+function update(vis, tree, root, source, i, diagonal) {
 
-  // Compute the new tree layout.
-  var nodes = tree.nodes(root).reverse();
+    var duration = d3.event && d3.event.altKey ? 5000 : 500;
 
-  var hasChildren = function(d) {
-    return d.children || d._children;
-  };
+    // Compute the new tree layout.
+    var nodes = tree.nodes(root).reverse();
 
-  var calcColor = function(d) {
-    if(hasChildren(d)) {
-      return colorMain(d);
-    } else {
-      if(d.value === true) {
-        return "#A6F1A6";
-      } else if(d.value === false) {
-        return "#F39999";
-      } else {
-        return "#fff";
-      };
+    var hasChildren = function(d) {
+        return d.children || d._children;
     };
-  };
 
-  var colorMain = function(d) {
-      if(d.value === true) {
-        return "#73BE73";
-      } else if(d.value === false) {
-        return "#C06666";
-      } else {
-        return "#CCC";
-      };
-  };
+    var calcColor = function(d) {
+        if(hasChildren(d)) {
+            return colorMain(d);
+        } else {
+            if(d.value === true) {
+                return "#A6F1A6";
+            } else if(d.value === false) {
+                return "#F39999";
+            } else {
+                return "#fff";
+            };
+        };
+    };
 
-  // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 180 + 40 + calcWidth(root) ; });
+    var colorMain = function(d) {
+        if(d.value === true) {
+            return "#73BE73";
+        } else if(d.value === false) {
+            return "#C06666";
+        } else {
+            return "#CCC";
+        };
+    };
 
-  // Update the nodes…
-  var node = vis.selectAll("g.node")
-      .data(nodes, function(d) { return d.id || (d.id = ++i); });
+    // Normalize for fixed-depth.
+    nodes.forEach(function(d) { d.y = d.depth * 180 + 40 + calcWidth(root) ; });
 
-  // Enter any new nodes at the parent's previous position.
-  var nodeEnter = node.enter().append("svg:g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-      .on("click", function(d) { toggle(d); update(d); });
+    // Update the nodes…
+    var node = vis.selectAll("g.node")
+        .data(nodes, function(d) { return d.id || (d.id = ++i); });
 
-  nodeEnter.append("svg:rect")
+    // Enter any new nodes at the parent's previous position.
+    var nodeEnter = node.enter().append("svg:g")
+        .attr("class", "node")
+        .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+        .on("click", function(d) { toggle(d); update(vis, tree, root, d, attrs, i, diagonal); });
+
+    nodeEnter.append("svg:rect")
                 .attr("height",60)
                 .attr("y",-30)
                 .attr("rx",10)
@@ -170,161 +117,159 @@ function update(source, attrs) {
                 .style("stroke", function(d) { return colorMain(d); })
                 .style("stroke-width", 1e-6);
 
-  nodeEnter.append("svg:text")
-      .attr("class","label")
-      .attr("x", function(d) { return hasChildren(d) ? -10 : 10; })
-      .attr("dy", "-1em")
-      .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
-      .text(function(d) { return d.name; })
-      .style("fill-opacity", 1e-6)
-      .attr("id", function(d) {
-        var textW = this.getBBox().width;
-        console.log(textW);
-        var newX = hasChildren(d) ? -(textW+20) : 0;
-        d3.select("#r"+d.fId)
-          .attr("width",textW+20)
-          .attr("x",newX);
-        d["tW"] = textW;
-        return "t"+d.fId;
-      });
+    nodeEnter.append("svg:text")
+        .attr("class","label")
+        .attr("x", function(d) { return hasChildren(d) ? -10 : 10; })
+        .attr("dy", "-1em")
+        .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
+        .text(function(d) { return d.name; })
+        .style("fill-opacity", 1e-6)
+        .attr("id", function(d) {
+            var textW = this.getBBox().width;
+            console.log(textW);
+            var newX = hasChildren(d) ? -(textW+20) : 0;
+            d3.select("#r"+d.fId)
+                .attr("width",textW+20)
+                .attr("x",newX);
+            d["tW"] = textW;
+            return "t"+d.fId;
+        });
 
-  nodeEnter.append("svg:text")
-      .attr("class","value")
-      .attr("x", function(d) { return hasChildren(d) ? -10 : 10; })
-      .attr("dy", "1em")
-      .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
-      .text(function(d) { return d.value; })
-      .style("fill-opacity", 1e-6)
-      .attr("id",function(d) {
-        var textW = this.getBBox().width;
-        if(textW > d.tW) {
-          var newX = hasChildren(d) ? -(textW+20) : 0;
-          d3.select("#r"+d.fId)
-            .attr("width",textW+20)
-            .attr("x",newX);
-        }
-        return "v"+d.fId;
-      });
+    nodeEnter.append("svg:text")
+        .attr("class","value")
+        .attr("x", function(d) { return hasChildren(d) ? -10 : 10; })
+        .attr("dy", "1em")
+        .attr("text-anchor", function(d) { return hasChildren(d) ? "end" : "start"; })
+        .text(function(d) { return d.value; })
+        .style("fill-opacity", 1e-6)
+        .attr("id",function(d) {
+            var textW = this.getBBox().width;
+            if(textW > d.tW) {
+              var newX = hasChildren(d) ? -(textW+20) : 0;
+              d3.select("#r"+d.fId)
+                .attr("width",textW+20)
+                .attr("x",newX);
+            }
+            return "v"+d.fId;
+        });
 
-  // Resize Rectangles to fit text
+    // Transition nodes to their new position.
+    var nodeUpdate = node.transition()
+        .duration(duration)
+        .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
+    nodeUpdate.select("rect")
+        .style("fill-opacity", 0.7)
+        .style("stroke-width", "2px");
 
+    nodeUpdate.select("text.label")
+        .style("fill-opacity", 1);
 
- // $(".rL").attr("width",$(".tL").width()+20);
- // $(".rL").attr("height",$(".tL").height()*2);
- // $(".rL").attr("y",-($(".rL").attr("height")/2));
- // $(".rL").attr("x",-($(".rL").attr("width")));
+    nodeUpdate.select("text.value")
+        .style("fill-opacity", 1);
 
-  // Transition nodes to their new position.
-  var nodeUpdate = node.transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+    // Transition exiting nodes to the parent's new position.
+    var nodeExit = node.exit().transition()
+        .duration(duration)
+        .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+        .remove();
 
-  nodeUpdate.select("rect")
-      .style("fill-opacity", 0.7)
-      .style("stroke-width", "2px");
+    nodeExit.select("rect")
+        .attr("fill-opacity", 1e-6)
+        .style("stroke-width", 1e-6);
 
-  nodeUpdate.select("text.label")
-      .style("fill-opacity", 1);
+    nodeExit.select("text.label")
+        .style("fill-opacity", 1e-6);
 
-  nodeUpdate.select("text.value")
-      .style("fill-opacity", 1);
+    nodeExit.select("text.value")
+        .style("fill-opacity", 1e-6);
 
-  // Transition exiting nodes to the parent's new position.
-  var nodeExit = node.exit().transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
-      .remove();
+    // Update the links…
+    var link = vis.selectAll("path.link")
+        .data(tree.links(nodes), function(d) { return d.target.id; });
 
-  nodeExit.select("rect")
-      .attr("fill-opacity", 1e-6)
-      .style("stroke-width", 1e-6);
+    // Enter any new links at the parent's previous position.
+    link.enter().insert("svg:path", "g")
+        .attr("class", "link")
+        .attr("d", function(d) {
+            var o = {x: source.x0, y: source.y0};
+            return diagonal({source: o, target: o});
+        })
+        .transition()
+        .duration(duration)
+        .attr("d", diagonal);
 
-  nodeExit.select("text.label")
-      .style("fill-opacity", 1e-6);
+    // Transition links to their new position.
+    link.transition()
+        .duration(duration)
+        .attr("d", diagonal);
 
-  nodeExit.select("text.value")
-      .style("fill-opacity", 1e-6);
+    // Transition exiting nodes to the parent's new position.
+    link.exit().transition()
+        .duration(duration)
+        .attr("d", function(d) {
+            var o = {x: source.x, y: source.y};
+            return diagonal({source: o, target: o});
+        })
+        .remove();
 
-  // Update the links…
-  var link = vis.selectAll("path.link")
-      .data(tree.links(nodes), function(d) { return d.target.id; });
+    // Stash the old positions for transition.
+    nodes.forEach(function(d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
+    });
 
-  // Enter any new links at the parent's previous position.
-  link.enter().insert("svg:path", "g")
-      .attr("class", "link")
-      .attr("d", function(d) {
-        var o = {x: source.x0, y: source.y0};
-        return diagonal({source: o, target: o});
-      })
-    .transition()
-      .duration(duration)
-      .attr("d", diagonal);
-
-  // Transition links to their new position.
-  link.transition()
-      .duration(duration)
-      .attr("d", diagonal);
-
-  // Transition exiting nodes to the parent's new position.
-  link.exit().transition()
-      .duration(duration)
-      .attr("d", function(d) {
-        var o = {x: source.x, y: source.y};
-        return diagonal({source: o, target: o});
-      })
-      .remove();
-
-  // Stash the old positions for transition.
-  nodes.forEach(function(d) {
-    d.x0 = d.x;
-    d.y0 = d.y;
-  });
-
-  vis.selectAll("node")
-
-    applyStyling(attrs);
+    vis.selectAll("node");
 }
 
 // Toggle children.
 function toggle(d) {
-  if (d.children) {
-    d._children = d.children;
-    d.children = null;
-  } else {
-    d.children = d._children;
-    d._children = null;
-  }
+    if (d.children) {
+        d._children = d.children;
+        d.children = null;
+    } else {
+        d.children = d._children;
+        d._children = null;
+    }
 }
 
-var functionCtr = 0;
-
 function initialize(id) {
-
-  var refreshId = setInterval(function() {
-
-    $.getJSON("predicate", {
-      sessionId : id,
-      getFormula : false
-    }, function(res) {
-      if(res.count !== functionCtr) {
-        refresh(id);
-      };
-    });
-
-  }, 300);
+    var dim = calculateDimensions();
+    init(id,"body", dim.width, dim.height);
 };
 
-function refresh(id) {
+function init(id, positionId, width, height) {
+    var functionCtr, vis, tree;
+    functionCtr = 0;
+    vis = createCanvas("#" + positionId, width, height);
+    tree = d3.layout.tree()
+            .size([height, width]);
 
-  $.getJSON("predicate", {
-    sessionId : id,
-    getFormula : true
-  }, function(res) {
-    functionCtr = res.count;
-    if(res.data !== "") {
-      data = res.data;
-      buildTree(res.data, res.attrs);     
-    };
-  });
+    var refreshId = setInterval(function() {
+
+        $.getJSON("predicate", {
+            sessionId : id,
+            getFormula : false
+        }, function(res) {
+            if(res.count !== functionCtr) {
+              refresh(id, vis, tree, height);
+              functionCtr = res.count;
+            };
+        });
+
+    }, 300);
+}
+
+function refresh(id, vis, tree, height) {
+
+    $.getJSON("predicate", {
+        sessionId : id,
+        getFormula : true
+    }, function(res) {
+        if(res.data !== "") {
+            data = res.data;
+            buildTree(vis, tree, res.data, height);  
+            applyStyling(res.attrs);   
+        };
+    });
 }
