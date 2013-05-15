@@ -535,6 +535,10 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 	}
 
 	public void checkObserver(History history) {
+		
+		for(AbstractAttribute a : getAttributes().values())
+			a.restoreValue();
+		
 		for (Observer observer : getObservers()) {
 			observer.check(history, BControl.this);
 		}
@@ -552,6 +556,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 			if (connection != null)
 				connection.checkObserver(history);
 		}
+		
 	}
 	
 	public void afterCheckObserver(History history) {

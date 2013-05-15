@@ -76,6 +76,15 @@
             name="Outline"
             restorable="true">
       </view>
+      <view
+            allowMultiple="true"
+            category="de.bmotionstudio.views"
+            class="de.bmotionstudio.core.editor.HTMLVisualizationViewPart"
+            icon="icons/logo_bmotion.png"
+            id="de.bmotionstudio.core.view.HTMLVisualizationView"
+            name="Visualization"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -94,10 +103,6 @@
                   label="Add Visualization View"
                   style="push">
             </command>
-            <separator
-                  name="group.filter"
-                  visible="true">
-            </separator>
          </menu>
       </menuContribution>
    </extension>
@@ -305,6 +310,11 @@
             id="de.bmotionstudio.observer.CSPInitObserver"
             name="CSP Init Observer">
       </observer>
+      <observer
+            class="de.bmotionstudio.core.model.observer.BOperationObserver"
+            id="de.bmotionstudio.observer.BOperationObserver"
+            name="B Operation Observer">
+      </observer>
    </extension>
    <extension
          point="de.bmotionstudio.core.installActions">
@@ -337,6 +347,9 @@
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Button">
@@ -345,6 +358,9 @@
             </observer>
             <observer
                   id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
@@ -355,6 +371,9 @@
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Radiobutton">
@@ -363,6 +382,9 @@
             </observer>
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
@@ -373,6 +395,9 @@
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Composite">
@@ -381,6 +406,9 @@
             </observer>
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
@@ -391,6 +419,9 @@
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Rectangle">
@@ -399,6 +430,9 @@
             </observer>
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
@@ -409,6 +443,9 @@
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Ellipse">
@@ -417,6 +454,9 @@
             </observer>
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
@@ -427,6 +467,9 @@
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Column">
@@ -435,6 +478,9 @@
             </observer>
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
@@ -445,6 +491,9 @@
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Signal">
@@ -453,6 +502,9 @@
             </observer>
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
@@ -463,6 +515,9 @@
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Tank">
@@ -471,6 +526,9 @@
             </observer>
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
@@ -481,23 +539,20 @@
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
          </control>
          <control
-               id="de.bmotionstudio.control.Track">
+               id="de.bmotionstudio.control.Segment">
             <observer
                   id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
                   id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
-         </control>
-         <control
-               id="de.bmotionstudio.control.Switch">
             <observer
-                  id="de.bmotionstudio.observer.BPredicateObserver">
-            </observer>
-            <observer
-                  id="de.bmotionstudio.observer.BExpressionObserver">
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
       </include>
