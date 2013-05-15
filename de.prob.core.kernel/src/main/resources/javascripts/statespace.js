@@ -1,4 +1,4 @@
-function buildGraph(svg, force, n, stopped, nodes, links, linkMap) {
+function buildGraph(svg, force, n, stopped) {
     force
         .nodes(nodes)
         .links(links)
@@ -188,7 +188,7 @@ function calculateHeader(divM,id, m, stopped) {
 
 }
 
-function forD3(svg, res, force, stopped, nodes, links, linkMap) {
+function forD3(svg, res, force, stopped) {
     var n, l, node, index, tN, entry, linkNr, loop, i, varCount;
     n = res.data.nodes;
     l = res.data.links;
@@ -222,10 +222,10 @@ function forD3(svg, res, force, stopped, nodes, links, linkMap) {
     }
     varCount = res.varCount;
     stopped.value = false;
-    buildGraph(svg, force, varCount, stopped, nodes, links, linkMap);
+    buildGraph(svg, force, varCount, stopped);
 }
 
-function refresh(svg, id, getAllStates, force, width, height, stopped, nodes, links, linkMap) {
+function refresh(svg, id, getAllStates, force, width, height, stopped) {
     if (getAllStates) {
         nodes = [];
         links = [];
@@ -250,7 +250,7 @@ function refresh(svg, id, getAllStates, force, width, height, stopped, nodes, li
                     drawDotty(svg, res.data.content, width, height);
                 }
             } else {
-                forD3(svg, res, force, stopped, nodes, links, linkMap);
+                forD3(svg, res, force, stopped);
             }
             applyStyling(res.data.styling);
         }
@@ -262,9 +262,11 @@ function initialize(id) {
     
     init(id,"body",1,dim.width,dim.height);
 }
+ 
+var links, nodes, linkMap;
 
 function init(id,positionId,m,width,height) {
-    var menu, mode, force, ssCtr, svg, stopped, nodes, links, linkMap;
+    var menu, mode, force, ssCtr, svg, stopped, elements;
     mode = m;
     ssCtr = 0;
     menu = d3.select("#"+positionId)
@@ -298,7 +300,7 @@ function init(id,positionId,m,width,height) {
                 calculateHeader(menu, id, res.mode, stopped);
             }
             if (res.count !== ssCtr) {
-                refresh(svg, id, ssCtr === 0 || res.reset, force, width, height, stopped, nodes, links, linkMap);
+                refresh(svg, id, ssCtr === 0 || res.reset, force, width, height, stopped);
                 ssCtr = res.count;
             }
         });
