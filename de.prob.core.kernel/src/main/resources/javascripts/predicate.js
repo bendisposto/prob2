@@ -1,6 +1,24 @@
 var width;
 var height;
 
+function applyStyling(styling) {
+    var i, j, selector, selected, attributes, styles;
+    for (i = 0; i < styling.length; i = i + 1) {
+        selector = styling[i].selector;
+        if (selector !== "") {
+            selected = d3.selectAll(selector);
+            attributes = styling[i].attributes;
+            for (j = 0; j < attributes.length; j = j + 1) {
+                selected.attr(attributes[j].name, attributes[j].value);
+            }
+            styles = styling[i].styles;
+            for (j = 0; j < styles.length; j = j + 1) {
+                selected.style(styles[j].name, styles[j].value);
+            }
+        }
+    }
+}
+
 function calculateDimensions() {
   if( typeof( window.innerWidth ) == 'number' ) { width = window.innerWidth; height = window.innerHeight; } // NORMAL BROWSERS 
   else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) { 
@@ -265,13 +283,7 @@ function update(source, attrs) {
 
   vis.selectAll("node")
 
-    for (var ii = 0; ii < attrs.length; ii++) {
-      var selected = svg.selectAll(attrs[ii].selector);
-      var attributes = attrs[ii].attributes;
-      for (var j = attributes.length - 1; j >= 0; j--) {
-        selected.attr(attributes[j].name,attributes[j].attr);
-      };
-    };
+    applyStyling(attrs);
 }
 
 // Toggle children.

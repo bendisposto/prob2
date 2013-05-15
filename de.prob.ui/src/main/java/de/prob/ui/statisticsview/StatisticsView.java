@@ -15,7 +15,6 @@ import com.google.inject.Injector;
 
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IModelChangedListener;
-import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateSpace;
@@ -109,8 +108,7 @@ public class StatisticsView extends ViewPart implements IModelChangedListener,
 	}
 
 	@Override
-	public void newTransitions(final IStateSpace s,
-			final List<? extends OpInfo> ops) {
+	public void newTransitions(final List<? extends OpInfo> ops) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {

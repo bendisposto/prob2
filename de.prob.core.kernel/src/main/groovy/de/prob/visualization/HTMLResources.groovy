@@ -1,4 +1,4 @@
-package de.prob.webconsole.servlets
+package de.prob.visualization
 
 class HTMLResources {
 
