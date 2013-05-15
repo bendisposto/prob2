@@ -50,13 +50,12 @@ public abstract class AbstractDottyGraph implements IStateSpace,
 	}
 
 	@Override
-	public abstract void newTransitions(final IStateSpace s,
-			final List<? extends OpInfo> newOps);
+	public abstract void newTransitions(final List<? extends OpInfo> newOps);
 
 	@Override
 	public void notifyStateSpaceChange(final List<? extends OpInfo> newOps) {
 		for (IStatesCalculatedListener l : listeners) {
-			l.newTransitions(this, newOps);
+			l.newTransitions(newOps);
 		}
 	}
 

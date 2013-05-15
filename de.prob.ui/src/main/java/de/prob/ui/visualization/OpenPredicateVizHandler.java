@@ -18,7 +18,7 @@ import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.webconsole.ServletContextListener;
-import de.prob.webconsole.servlets.PredicateServlet;
+import de.prob.webconsole.servlets.visualizations.PredicateServlet;
 
 public class OpenPredicateVizHandler extends AbstractHandler implements
 		IHandler {

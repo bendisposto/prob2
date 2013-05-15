@@ -1,4 +1,4 @@
-package de.prob.webconsole.servlets
+package de.prob.visualization
 
 class HTMLResources {
 
@@ -51,7 +51,6 @@ class HTMLResources {
 </head>
 <body onload="initialize('''+"'"+sessionId+"'"+''')">
 
-			<div id="menu"></div>
 			<div id="body"></div>
 
 			<!-- JS
@@ -60,6 +59,7 @@ class HTMLResources {
 			<script src="../javascripts/jquery-1.9.1.min.js"></script>
 			<script src="../javascripts/d3.v2.min.js"></script>
 			<script src="../javascripts/viz.js"></script>
+			<script src="../javascripts/prob_visualization.js"></script>
 			<script src="../javascripts/'''+javascript+'''"></script>
 
 			<!-- End Document

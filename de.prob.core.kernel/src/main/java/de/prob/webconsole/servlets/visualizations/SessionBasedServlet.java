@@ -1,0 +1,66 @@
+package de.prob.webconsole.servlets.visualizations;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public abstract class SessionBasedServlet extends HttpServlet {
+
+	protected static int count = 0;
+	Map<String, ISessionServlet> sessions = new HashMap<String, ISessionServlet>();
+
+	@Override
+	protected void doGet(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
+		String init = req.getParameter("init");
+		String sId = req.getParameter("sessionId");
+		if (init != null) {
+			initializePage(req, resp);
+		} else if (sId != null && sessions.containsKey(sId)) {
+			sessions.get(sId).doGet(req, resp);
+		} else {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+	}
+
+	protected void initializePage(final HttpServletRequest req,
+			final HttpServletResponse resp) throws IOException {
+		resp.setContentType("text/html");
+
+		String sId = req.getParameter("init");
+
+		if (sessions.containsKey(sId)) {
+			String html = getHTML(sId);
+
+			PrintWriter out;
+
+			out = resp.getWriter();
+			out.print(html);
+			out.close();
+		} else {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+	}
+
+	protected abstract String getHTML(String id);
+
+	protected abstract String getSessionId();
+
+	protected String openSession(final ISessionServlet s) {
+		String sessionId = getSessionId();
+		sessions.put(sessionId, s);
+		return sessionId;
+	}
+
+	protected void closeSession(final String id) {
+		sessions.remove(id);
+	}
+
+}
