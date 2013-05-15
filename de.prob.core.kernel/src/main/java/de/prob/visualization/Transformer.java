@@ -10,9 +10,9 @@ public class Transformer {
 	public static final List<String> STYLES = Arrays.asList(new String[] {
 			"fill", "font", "stroke", "stroke-dasharray" });
 
-	private String selector;
-	private final List<Attribute> attributes;
-	private final List<Style> styles;
+	public String selector;
+	public final List<Attribute> attributes;
+	public final List<Style> styles;
 
 	public Transformer(final String selector) {
 		this.selector = selector;
@@ -20,19 +20,12 @@ public class Transformer {
 		styles = new ArrayList<Style>();
 	}
 
-	public Transformer(final String selector, final List<Attribute> attributes,
-			final List<Style> styles) {
-		this.selector = selector;
-		this.attributes = attributes;
-		this.styles = styles;
-	}
-
-	public Transformer attr(final String name, final String value) {
+	private Transformer attr(final String name, final String value) {
 		attributes.add(new Attribute(name, value));
 		return this;
 	}
 
-	public Transformer style(final String name, final String value) {
+	private Transformer style(final String name, final String value) {
 		styles.add(new Style(name, value));
 		return this;
 	}
@@ -70,7 +63,16 @@ public class Transformer {
 		}
 	}
 
-	public void updateSelector(final String selector) {
+	public Transformer updateSelector(final String selector) {
 		this.selector = selector;
+		return this;
+	}
+
+	public List<Attribute> getAttributes() {
+		return attributes;
+	}
+
+	public List<Style> getStyles() {
+		return styles;
 	}
 }
