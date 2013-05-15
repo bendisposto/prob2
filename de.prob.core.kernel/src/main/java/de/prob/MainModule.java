@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.script.ScriptEngine;
+
 import jline.ConsoleReader;
 
 import org.apache.commons.cli.CommandLineParser;
@@ -16,6 +18,7 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.codehaus.groovy.tools.shell.Interpreter;
+import org.pegdown.PegDownProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +36,7 @@ import de.prob.scripting.Api;
 import de.prob.scripting.Downloader;
 import de.prob.statespace.ModelModule;
 import de.prob.webconsole.WebModule;
+import de.prob.worksheet.ScriptEngineProvider;
 
 public class MainModule extends AbstractModule {
 
@@ -60,6 +64,8 @@ public class MainModule extends AbstractModule {
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
 				.toInstance(Main.class.getClassLoader());
 		bind(Downloader.class);
+		bind(PegDownProcessor.class);
+		bind(ScriptEngine.class).toProvider(ScriptEngineProvider.class);
 	}
 
 	@Provides

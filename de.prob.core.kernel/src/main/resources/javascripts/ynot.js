@@ -84,8 +84,9 @@ function reorder() {
 }
 
 function dispatch_setTop(lang) {
+    var l = eval("settings." + lang).lang
     var view = {
-        'mode' : lang
+        'mode' : l
     }
     var output = Mustache.render(get_template("worksheet_topbar.html"), view);
     $(output).appendTo(".top-bar")
@@ -150,6 +151,9 @@ function dispatch(data) {
     case 'delete':
         deleteBoxFromDom(data.id);
         break;
+    case 'eval':
+        deleteBoxFromDom(data.id);
+        break;
     case 'focus':
         currentEditor.focus();
         if (data.direction === "from_below") {
@@ -170,8 +174,16 @@ function dispatch(data) {
         break;
     case 'render':
         var view = JSON.parse(data.args);
-        var rend = Mustache.render(get_template(data.template), view);
-        $("#wsbox" + data.id).replaceWith(rend);
+        view["lang"] = eval("settings." + data.lang).lang;
+        var rend = null;
+        if (data.template != "none") {
+            rend = Mustache.render(get_template(data.template), view);
+            $("#wsbox" + data.id).replaceWith(rend);
+        } else {
+            rend = Mustache.render(get_template("plain_renderer.html"), view);
+            $("#wsbox" + data.id).replaceWith(rend);
+            $("#renderer" + data.id).append(view.text)
+        }
         $("#renderer" + data.id).dblclick(function(evt) {
             async_query(session, {
                 "cmd" : "renderer_dblclick",
@@ -200,10 +212,13 @@ function deleteBoxFromDom(id) {
 }
 
 function setDefaultType(mode) {
-    currentMode = mode;
     $("#ts_button").html(function() {
         return mode.lang + " <span class='caret'></span>"
     });
+    async_query(session, {
+        'cmd' : 'default_lang',
+        'lang' : mode.key
+    })
 }
 
 function appendEditor(options, id) {
@@ -320,6 +335,7 @@ function disableEditor(info) {
 // var t = markdown.toHTML(text);
 // printRenderer(info.renderer, t);
 // }
+
 // function evalJavaScript(text, info) {
 // var printResult = true;
 // var r = null;
@@ -342,9 +358,38 @@ function printRenderer(renderer, out) {
         renderer.html(output);
 }
 
+function get_session() {
+    var s;
+    $.ajax({
+        url : "exec?cmd=session",
+        success : function(result) {
+            if (result.isOk === false) {
+                alert(result.message);
+            } else {
+                s = JSON.parse(result).session;
+            }
+        },
+        async : false
+    });
+    return s;
+}
+
+function async_query(session, msg) {
+    msg.session = session;
+    msg.type = "sending";
+    if (msg.cmd != "updates")
+        console.log(msg)
+    $.ajax({
+        url : "exec",
+        data : msg
+    })
+
+}
+
 var settings = {
     markdown : {
         lang : "Markdown",
+        key : "markdown",
         codemirror : {
             mode : 'markdown',
             lineNumbers : false,
@@ -357,6 +402,7 @@ var settings = {
         }
     },
     groovy : {
+        key : "groovy",
         lang : "Groovy",
         codemirror : {
             mode : 'groovy',
@@ -367,6 +413,7 @@ var settings = {
         }
     },
     javascript : {
+        key : "javascript",
         lang : "JavaScript",
         codemirror : {
             mode : 'javascript',
@@ -377,6 +424,7 @@ var settings = {
         }
     },
     b : {
+        key : "b",
         lang : "B",
         codemirror : {
             mode : 'javascript',
@@ -389,18 +437,11 @@ var settings = {
 }
 
 function setBoxType(box, options) {
-    createEditor(options);
-    var on = findEditor(box)
-    var oldE = editors[on];
-    var text = oldE.codemirror.getValue();
-    var newE = editors.splice(-1)[0];
-    newE.codemirror.setValue(text);
-    editors[on] = newE;
-    $("#wsbox" + oldE.id).replaceWith($("#wsbox" + newE.id))
-    $("#lang_button" + newE.id).html(function() {
-        return newE.options.lang + '  <span class="caret"></span>'
-    });
-    updateServlet();
+    async_query(session, {
+        'cmd' : 'switch_box_lang',
+        'lang' : options.key,
+        'box' : box
+    })
 }
 
 function updateServlet() {

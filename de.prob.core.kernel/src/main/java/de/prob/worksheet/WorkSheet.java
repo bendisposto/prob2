@@ -3,30 +3,44 @@ package de.prob.worksheet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.pegdown.PegDownProcessor;
+
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
+import com.google.inject.Inject;
 
 public class WorkSheet {
 
+	private static final String DIR_FROM_ABOVE = "from_above";
+	private static final String DIR_FROM_BELOW = "from_below";
+	private static final String DIR_FROM_SOMEWHERE_ELSE = "from_somewhere_else";
 	private String session;
 	private final Queue<String> q = new LinkedBlockingQueue<String>();
 	private final ArrayList<Editor> editors = new ArrayList<Editor>();
 	private int active = -1;
 	private int message_counter = 0;
 	private final Gson g = new Gson();
+	private ScriptEngine groovy;
+	private String defaultlang = "groovy";
+	private PegDownProcessor pegdown;
 
-	public WorkSheet() {
+	@Inject
+	public WorkSheet(ScriptEngine groovy, PegDownProcessor pegdown) {
+		this.groovy = groovy;
+		this.pegdown = pegdown;
 	}
 
 	public void doGet(String session, HttpServletRequest request,
@@ -69,6 +83,13 @@ public class WorkSheet {
 			String c = request.getParameter("text");
 			handleRendererDblClick(box, c);
 			break;
+		case default_lang:
+			defaultlang = request.getParameter("lang");
+			break;
+		case switch_box_lang:
+			String newlang = request.getParameter("lang");
+			switchLanguage(box, newlang);
+			break;
 
 		case leave:
 			String content = request.getParameter("text");
@@ -84,6 +105,16 @@ public class WorkSheet {
 		out.close();
 	}
 
+	private void switchLanguage(String box, String newlang) {
+		Integer id = Integer.valueOf(box);
+		String content = editors.get(id).getText();
+		Editor editor = new Editor(box, newlang, content);
+		editors.set(id, editor);
+		enqueue(unfocus(box, content, editors));
+		// active = Integer.valueOf(box);
+
+	}
+
 	private void leaveBox(String session, String box, String content,
 			String direction) {
 		int id = Integer.parseInt(box);
@@ -95,14 +126,14 @@ public class WorkSheet {
 		if ("up".equals(direction)) {
 			if (id > 0) {
 				int nid = id - 1;
-				activate(nid, "from_below");
+				activate(nid, DIR_FROM_BELOW);
 				active = nid;
 			}
 		}
 		if ("down".equals(direction)) {
 			if (id < editors.size() - 1) {
 				int nid = id + 1;
-				activate(nid, "from_above");
+				activate(nid, DIR_FROM_ABOVE);
 				active = nid;
 			} else {
 				appendNewBox(session, q, editors);
@@ -114,7 +145,7 @@ public class WorkSheet {
 		if (active >= 0) {
 			enqueue(unfocus(String.valueOf(active), text, editors));
 		}
-		activate(box, "from_somewhere_else");
+		activate(box, DIR_FROM_SOMEWHERE_ELSE);
 		active = Integer.valueOf(box);
 	}
 
@@ -175,7 +206,7 @@ public class WorkSheet {
 	}
 
 	private String defaultLanguage() {
-		return "groovy";
+		return defaultlang;
 	}
 
 	private void appendNewBox(String session, Queue<String> q,
@@ -221,22 +252,41 @@ public class WorkSheet {
 		Map<String, String> lemap = new HashMap<String, String>();
 
 		lemap.put("id", box);
-		lemap.put("lang", editor.type.toString());
-		lemap.put("text", evaluate(editor));
+
+		String evaluated = evaluate(editor);
+		lemap.put("text", evaluated);
 
 		String a = g.toJson(lemap);
 		return toJson("cmd", "render", "id", box, "template",
-				"worksheet_renderer.html", "args", a);
+				getTemplate(editor.type), "lang", editor.type.toString(),
+				"args", a);
+	}
+
+	private String getTemplate(EBoxTypes type) {
+		switch (type) {
+		case markdown:
+			return "none";
+		default:
+			return "worksheet_renderer.html";
+		}
 	}
 
 	private String evaluate(Editor editor) {
 		EBoxTypes type = editor.type;
+		String text = editor.getText();
 		switch (type) {
 		case groovy:
-			return "Groovy said nothing about " + editor.getText();
+			Object result;
+			try {
+				result = groovy.eval(text);
+			} catch (ScriptException e) {
+				return "Error";
+			}
+			return result == null ? "null" : result.toString();
 		case b:
-			return "GTFO! " + editor.getText()
-					+ "\n Do I look like a calculator?";
+			return "GTFO! " + text + "\n Do I look like a calculator?";
+		case markdown:
+			return pegdown.markdownToHtml(text);
 		default:
 			return "";
 		}

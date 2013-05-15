@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
@@ -19,7 +21,11 @@ public class WorksheetServlet extends HttpServlet {
 
 	private final Map<String, WorkSheet> worksheets = new HashMap<String, WorkSheet>();
 
-	public WorksheetServlet() {
+	private Provider<WorkSheet> wsp;
+
+	@Inject
+	public WorksheetServlet(Provider<WorkSheet> wsp) {
+		this.wsp = wsp;
 	}
 
 	@Override
@@ -34,7 +40,6 @@ public class WorksheetServlet extends HttpServlet {
 		}
 
 		WorkSheet ws = getSheet(session);
-
 		ws.doGet(session, request, response);
 
 	}
@@ -49,7 +54,7 @@ public class WorksheetServlet extends HttpServlet {
 	private WorkSheet getSheet(String session) {
 		WorkSheet ws = worksheets.get(session);
 		if (ws == null) {
-			ws = new WorkSheet(); // TODO Injection
+			ws = wsp.get();
 			worksheets.put(session, ws);
 		}
 		return ws;
