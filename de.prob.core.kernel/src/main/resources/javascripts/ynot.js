@@ -78,7 +78,7 @@ function reorder() {
     }
     var msg = {
         'cmd' : 'reorder',
-        'order' : neditors
+        'order' : JSON.stringify(neditors)
     };
     async_query(session, msg);
 }

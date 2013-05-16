@@ -2,7 +2,9 @@ package de.prob.worksheet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,7 +22,9 @@ import org.pegdown.PegDownProcessor;
 
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 public class WorkSheet {
 
@@ -33,14 +37,19 @@ public class WorkSheet {
 	private int active = -1;
 	private int message_counter = 0;
 	private final Gson g = new Gson();
-	private ScriptEngine groovy;
 	private String defaultlang = "groovy";
 	private PegDownProcessor pegdown;
+	Type collectionType = new TypeToken<Collection<String>>() {
+	}.getType();
+	private Provider<ScriptEngine> groovyProvider;
+	private ScriptEngine groovy;
 
 	@Inject
-	public WorkSheet(ScriptEngine groovy, PegDownProcessor pegdown) {
-		this.groovy = groovy;
+	public WorkSheet(ScriptEngineProvider groovyProvider,
+			PegDownProcessor pegdown) {
+		this.groovyProvider = groovyProvider;
 		this.pegdown = pegdown;
+		groovy = groovyProvider.get();
 	}
 
 	public void doGet(String session, HttpServletRequest request,
@@ -48,12 +57,16 @@ public class WorkSheet {
 		this.session = session;
 		PrintWriter out = response.getWriter();
 
-		printparams(request);
+		// printparams(request);
 
 		String cmds = request.getParameter("cmd");
 
 		ECmd cmd = ECmd.valueOf(cmds);
 		String box = request.getParameter("box");
+		int id = -1;
+		if (box != null)
+			Integer.parseInt(box);
+
 		switch (cmd) {
 		case init:
 			enqueue("cmd", "set_top", "lang", defaultLanguage());
@@ -65,7 +78,8 @@ public class WorkSheet {
 			if (editors.isEmpty()) {
 				appendNewBox(session, q, editors);
 			}
-
+			reEvalWorksheet(id);
+			break;
 		default:
 			break;
 		}
@@ -91,6 +105,19 @@ public class WorkSheet {
 			switchLanguage(box, newlang);
 			break;
 
+		case reorder:
+			String order = request.getParameter("order");
+			ArrayList<Editor> reordered = new ArrayList<Editor>();
+			Collection<String> fromJson = g.fromJson(order, collectionType);
+			for (Object object : fromJson) {
+				int i = Integer.parseInt((String) object);
+				reordered.add(editors.get(i));
+			}
+			editors.clear();
+			editors.addAll(reordered);
+			reEvalWorksheet(id);
+
+			break;
 		case leave:
 			String content = request.getParameter("text");
 			String direction = request.getParameter("direction");
@@ -110,7 +137,7 @@ public class WorkSheet {
 		String content = editors.get(id).getText();
 		Editor editor = new Editor(box, newlang, content);
 		editors.set(id, editor);
-		enqueue(unfocus(box, content, editors));
+		unfocus(box, content, editors);
 		// active = Integer.valueOf(box);
 
 	}
@@ -121,7 +148,7 @@ public class WorkSheet {
 		if (active != id || active < 0)
 			return;
 
-		enqueue(unfocus(box, content, editors));
+		unfocus(box, content, editors);
 
 		if ("up".equals(direction)) {
 			if (id > 0) {
@@ -141,9 +168,13 @@ public class WorkSheet {
 		}
 	}
 
+	private void activate(int nid, String dirFromAbove) {
+		activate(String.valueOf(nid), dirFromAbove);
+	}
+
 	private void handleRendererDblClick(String box, String text) {
 		if (active >= 0) {
-			enqueue(unfocus(String.valueOf(active), text, editors));
+			unfocus(String.valueOf(active), text, editors);
 		}
 		activate(box, DIR_FROM_SOMEWHERE_ELSE);
 		active = Integer.valueOf(box);
@@ -163,12 +194,24 @@ public class WorkSheet {
 	}
 
 	private void activate(String box, String direction) {
-		int id = Integer.parseInt(box);
-		activate(id, direction);
+		int id = findEditor(box);
+		Editor e = editors.get(id);
+		enqueue("cmd", "activate", "id", e.id, "lang", e.type.toString(),
+				"text", e.getText());
+		enqueue("cmd", "focus", "id", e.id, "direction", direction);
+	}
+
+	private int findEditor(String box) {
+		for (int i = 0; i < editors.size(); i++) {
+			Editor e = editors.get(i);
+			if (e.id.equals(box))
+				return i;
+		}
+		return -1;
 	}
 
 	@SuppressWarnings("unused")
-	private void printparams(HttpServletRequest request) { // Debug method
+	private void printParams(HttpServletRequest request) { // Debug method
 		if ("updates".equals(request.getParameter("cmd")))
 			return;
 		Set<Entry<String, String[]>> entrySet = request.getParameterMap()
@@ -182,13 +225,12 @@ public class WorkSheet {
 		System.out.println();
 	}
 
-	private void activate(int id, String direction) {
-		Editor e = editors.get(id);
-		String sid = String.valueOf(id);
-
-		enqueue("cmd", "activate", "id", sid, "lang", e.type.toString(),
-				"text", e.getText());
-		enqueue("cmd", "focus", "id", sid, "direction", direction);
+	@SuppressWarnings("unused")
+	private void printEditors() { // Debug method
+		for (int i = 0; i < editors.size(); i++) {
+			Editor e = editors.get(i);
+			System.out.println(i + " " + " " + e.type + " " + e.getText());
+		}
 	}
 
 	private String dequeue() {
@@ -242,13 +284,25 @@ public class WorkSheet {
 		return resp;
 	}
 
-	private String unfocus(final String box, final String content,
+	private void unfocus(final String box, final String content,
 			ArrayList<Editor> editors) {
 		active = -1;
-		Editor editor = editors.get(Integer.parseInt(box));
-
+		int id = Integer.parseInt(box);
+		Editor editor = editors.get(id);
 		editor.setText(content);
+		reEvalWorksheet(id);
+	}
 
+	private void reEvalWorksheet(int id) {
+		groovy = groovyProvider.get();
+		for (int i = 0; i < editors.size(); i++) {
+			enqueueUpdate(i);
+		}
+	}
+
+	private void enqueueUpdate(int id) {
+		Editor editor = editors.get(id);
+		String box = editor.id;
 		Map<String, String> lemap = new HashMap<String, String>();
 
 		lemap.put("id", box);
@@ -257,9 +311,9 @@ public class WorkSheet {
 		lemap.put("text", evaluated);
 
 		String a = g.toJson(lemap);
-		return toJson("cmd", "render", "id", box, "template",
+		enqueue(toJson("cmd", "render", "id", box, "template",
 				getTemplate(editor.type), "lang", editor.type.toString(),
-				"args", a);
+				"args", a));
 	}
 
 	private String getTemplate(EBoxTypes type) {

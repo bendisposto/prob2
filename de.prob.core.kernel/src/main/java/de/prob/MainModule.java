@@ -37,6 +37,7 @@ import de.prob.scripting.Downloader;
 import de.prob.statespace.ModelModule;
 import de.prob.webconsole.WebModule;
 import de.prob.worksheet.ScriptEngineProvider;
+import de.prob.worksheet.WorkSheet;
 
 public class MainModule extends AbstractModule {
 
@@ -65,7 +66,8 @@ public class MainModule extends AbstractModule {
 				.toInstance(Main.class.getClassLoader());
 		bind(Downloader.class);
 		bind(PegDownProcessor.class);
-		bind(ScriptEngine.class).toProvider(ScriptEngineProvider.class);
+		bind(ScriptEngineProvider.class);
+		bind(WorkSheet.class);
 	}
 
 	@Provides
