@@ -70,7 +70,4 @@ public final class AttributeConstants {
 	public static final String ATTRIBUTE_MEASURE_INTERVAL = "de.bmotionstudio.core.model.attribute.AttributeMeasureInterval";
 	public static final String ATTRIBUTE_BLOCKS = "de.bmotionstudio.core.model.attribute.AttributeBlocks";
 
-	public static final String EVENT_MOUSECLICK = "de.bmotionstudio.core.model.event.OnClickEvent";
-	public static final String EVENT_MOUSEDBLCLICK = "de.bmotionstudio.core.model.event.OnDblClickEvent";
-
 }

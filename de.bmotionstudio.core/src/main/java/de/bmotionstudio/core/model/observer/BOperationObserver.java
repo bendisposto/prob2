@@ -1,6 +1,7 @@
 package de.bmotionstudio.core.model.observer;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.swt.widgets.Shell;
 
@@ -24,17 +25,27 @@ public class BOperationObserver extends Observer {
 		if (operation == null || attribute == null || value == null)
 			return;
 
-		if (predicate == null || (predicate != null && predicate.length() < 1))
-			predicate = "TRUE";
+		if (predicate == null || (predicate != null && predicate.length() < 1)) {
+			
+			Set<OpInfo> opList = history.getNextTransitions();
+			for (OpInfo o : opList) {
+				if (o.getName().equals(operation))
+					control.setAttributeValue(attribute, value, true, false);
+			}
 
-		try {
-			List<OpInfo> opFromPredicate = history.getStatespace()
-					.opFromPredicate(history.getCurrentState(), operation,
-							BMotionUtil.parseFormula(predicate, control), 1);
-			if (opFromPredicate != null && !opFromPredicate.isEmpty())
-				control.setAttributeValue(attribute, value, true, false);
-		} catch (BException e) {
-			e.printStackTrace();
+		} else {
+
+			try {
+				List<OpInfo> opFromPredicate = history
+						.getStatespace()
+						.opFromPredicate(history.getCurrentState(), operation,
+								BMotionUtil.parseFormula(predicate, control), 1);
+				if (opFromPredicate != null && !opFromPredicate.isEmpty())
+					control.setAttributeValue(attribute, value, true, false);
+			} catch (BException e) {
+				e.printStackTrace();
+			}
+
 		}
 
 	}

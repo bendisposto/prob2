@@ -6,14 +6,22 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import de.prob.animator.command.ApplySignatureMergeCommand;
 import de.prob.animator.command.CalculateTransitionDiagramCommand;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.BEvent;
+import de.prob.model.representation.Machine;
 import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
@@ -35,11 +43,20 @@ public class StateSpaceSession implements ISessionServlet,
 		IStatesCalculatedListener, IVisualizationServlet {
 	private IStateSpace space;
 	private AbstractData data;
+	private final Map<String, EnabledEvent> includedEvents = new HashMap<String, EnabledEvent>();
 
-	public StateSpaceSession(final IStateSpace space) {
+	public StateSpaceSession(final StateSpace space) {
 		this.space = space;
 		if (space != null) {
 			data = createStateSpaceGraph();
+		}
+		AbstractElement mainComponent = space.getModel().getMainComponent();
+		if (mainComponent instanceof Machine) {
+			Set<BEvent> events = mainComponent.getChildrenOfType(BEvent.class);
+			for (BEvent bEvent : events) {
+				EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
+				includedEvents.put(bEvent.getName(), e);
+			}
 		}
 	}
 
@@ -60,6 +77,7 @@ public class StateSpaceSession implements ISessionServlet,
 
 		if (space != null) {
 			if (cmd.equals("sig_merge")) {
+				recalculateEvents(p);
 				data = createSigMergeGraph();
 			} else if (cmd.equals("org_ss")) {
 				data = createStateSpaceGraph();
@@ -71,6 +89,26 @@ public class StateSpaceSession implements ISessionServlet,
 				data = createDottyTransitionDiagram(p);
 			}
 		}
+
+	}
+
+	private void recalculateEvents(final String p) {
+		JsonElement parse = new JsonParser().parse(p);
+		JsonArray array = parse.getAsJsonArray();
+		boolean changed = false;
+		for (JsonElement jsonElement : array) {
+			JsonObject object = jsonElement.getAsJsonObject();
+			String name = object.get("name").getAsString();
+			boolean checked = object.get("checked").getAsBoolean();
+			if (includedEvents.get(name).checked != checked) {
+				includedEvents.put(name, new EnabledEvent(name, checked));
+			}
+		}
+		updateSigMerge();
+	}
+
+	private void updateSigMerge() {
+		// TODO Auto-generated method stub
 
 	}
 
@@ -93,6 +131,7 @@ public class StateSpaceSession implements ISessionServlet,
 		resp.put("varCount", data.varSize());
 		resp.put("reset", data.getReset());
 		resp.put("mode", data.getMode());
+		resp.put("events", includedEvents.values());
 
 		Gson g = new Gson();
 
@@ -217,5 +256,15 @@ public class StateSpaceSession implements ISessionServlet,
 	@Override
 	public void apply(final Transformer styling) {
 		data.addStyling(styling);
+	}
+
+	class EnabledEvent {
+		public String name;
+		public Boolean checked;
+
+		public EnabledEvent(final String name, final Boolean enabled) {
+			this.name = name;
+			checked = enabled;
+		}
 	}
 }

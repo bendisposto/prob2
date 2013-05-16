@@ -6,6 +6,7 @@
 
 package de.bmotionstudio.core.editor.figure;
 
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -25,6 +26,7 @@ public class TextFigure extends AbstractBMotionFigure {
 	protected Image layerImage;
 	private Color foregroundColor;
 	private Font font;
+	private int alpha;
 
 	public TextFigure() {
 		setBorder(new MarginBorder(1));
@@ -78,6 +80,15 @@ public class TextFigure extends AbstractBMotionFigure {
 	public Font getFont() {
 		return textFlow.getFont();
 	}
+	
+	public void setAlpha(Integer alpha) {
+		this.alpha = alpha;
+		repaint();
+	}
+	
+	public int getAlpha() {
+		return this.alpha;
+	}
 
 	public void setLayout(Rectangle rect) {
 		getParent().setConstraint(this, rect);
@@ -91,6 +102,12 @@ public class TextFigure extends AbstractBMotionFigure {
 			font.dispose();
 		if (layerImage != null)
 			layerImage.dispose();
+	}
+	
+	@Override
+	protected void paintFigure(Graphics graphics) {
+		graphics.setAlpha(alpha);
+		super.paintFigure(graphics);
 	}
 
 }

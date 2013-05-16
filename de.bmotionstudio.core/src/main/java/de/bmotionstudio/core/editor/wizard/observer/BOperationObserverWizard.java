@@ -26,8 +26,6 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -40,14 +38,11 @@ import org.eclipse.swt.widgets.Text;
 
 import com.google.inject.Injector;
 
-import de.be4.classicalb.core.parser.BParser;
-import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.core.editor.edit.AttributeExpressionEdittingSupport;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.observer.BOperationObserver;
 import de.bmotionstudio.core.model.observer.Observer;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
@@ -176,57 +171,7 @@ public class BOperationObserverWizard extends ObserverWizard {
 		
 		predicateText = new Text(container, SWT.BORDER);
 		predicateText.setLayoutData(gridDataFill);
-		predicateText.addModifyListener(new ModifyListener() {
 			
-			@Override
-			public void modifyText(ModifyEvent e) {
-
-				try {
-					
-					messageText.setText("");
-					
-					BParser.parse(BParser.PREDICATE_PREFIX
-							+ predicateText.getText());
-					
-					final AnimationSelector selector = injector
-							.getInstance(AnimationSelector.class);
-					History currentHistory = selector.getCurrentHistory();
-					
-					if(currentHistory != null) {
-					
-						EvaluationResult eval = currentHistory
-								.evalCurrent(predicateText.getText());
-
-						if (eval != null) {
-
-							if (!eval.hasError()) {
-								messageText.setText("Result: "
-										+ eval.getValue());
-								messageText
-										.setForeground(ColorConstants.darkGreen);
-							} else {
-								messageText.setForeground(ColorConstants.red);
-								messageText.setText("Error: "
-										+ eval.getErrors());
-							}
-
-							messageText.redraw();
-
-						}
-
-					}
-					
-				} catch (BException e1) {
-					messageText.setForeground(ColorConstants.red);
-					messageText.setText("Error: " + e1.getMessage());
-				} finally {
-					messageText.redraw();
-				}
-
-			}
-			
-		});
-		
 		label = new Label(container,SWT.NONE);
 		label.setText("Attribute:");
 		label.setLayoutData(gridDataLabel);
@@ -349,7 +294,7 @@ public class BOperationObserverWizard extends ObserverWizard {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				
-				if(evt.getPropertyName().equals("expression")) {
+				if(evt.getPropertyName().equals("predicate")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					History currentHistory = selector.getCurrentHistory();

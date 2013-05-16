@@ -6,11 +6,12 @@
 
 package de.bmotionstudio.core.editor;
 
-import org.eclipse.core.runtime.CoreException;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartViewer;
@@ -23,20 +24,16 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionFactory;
 
-import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.IBControlService;
-import de.bmotionstudio.core.IInstallMenu;
 import de.bmotionstudio.core.model.control.BControl;
 
 public class BMSContextMenuProvider extends ContextMenuProvider {
 
 	private ActionRegistry actionRegistry;
 
-	private IExtensionRegistry registry = Platform.getExtensionRegistry();
-
-	private String[] eventIDs = { AttributeConstants.EVENT_MOUSECLICK };
+	// private String[] eventIDs = { AttributeConstants.EVENT_MOUSECLICK };
 
 	private String language;
 	
@@ -76,46 +73,47 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 			AbstractEditPart editPart = (AbstractEditPart) sel;
 			// buildCustomMenu(menu, editPart);
 			buildObserverMenu(menu, editPart);
-			//buildEventMenu(menu, editPart);
+			buildEventMenu(menu, editPart);
 		}
 
 	}
 
-	private void buildCustomMenu(IMenuManager menu, AbstractEditPart editPart) {
-
-		Object model = editPart.getModel();
-
-		if (model instanceof BControl) {
-
-			IExtensionPoint extensionPoint = registry
-					.getExtensionPoint("de.bmotionstudio.core.installMenu");
-			for (IExtension extension : extensionPoint.getExtensions()) {
-				for (IConfigurationElement configurationElement : extension
-						.getConfigurationElements()) {
-
-					if ("menu".equals(configurationElement.getName())) {
-
-						try {
-
-							IInstallMenu installMenuClass = (IInstallMenu) configurationElement
-									.createExecutableExtension("class");
-
-							installMenuClass.installMenu(menu,
-									getActionRegistry());
-
-						} catch (final CoreException e) {
-							e.printStackTrace();
-						}
-
-					}
-
-				}
-
-			}
-
-		}
-
-	}
+	// private void buildCustomMenu(IMenuManager menu, AbstractEditPart
+	// editPart) {
+	//
+	// Object model = editPart.getModel();
+	//
+	// if (model instanceof BControl) {
+	//
+	// IExtensionPoint extensionPoint = registry
+	// .getExtensionPoint("de.bmotionstudio.core.installMenu");
+	// for (IExtension extension : extensionPoint.getExtensions()) {
+	// for (IConfigurationElement configurationElement : extension
+	// .getConfigurationElements()) {
+	//
+	// if ("menu".equals(configurationElement.getName())) {
+	//
+	// try {
+	//
+	// IInstallMenu installMenuClass = (IInstallMenu) configurationElement
+	// .createExecutableExtension("class");
+	//
+	// installMenuClass.installMenu(menu,
+	// getActionRegistry());
+	//
+	// } catch (final CoreException e) {
+	// e.printStackTrace();
+	// }
+	//
+	// }
+	//
+	// }
+	//
+	// }
+	//
+	// }
+	//
+	// }
 
 	private void buildObserverMenu(IMenuManager menu, AbstractEditPart editPart) {
 
@@ -193,83 +191,32 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 
 	}
 
-	// TODO: Reimplement me!!!
-//	private void buildEventMenu(IMenuManager menu, AbstractEditPart editPart) {
-//
-//		Object model = editPart.getModel();
-//
-//		if (model instanceof BControl && !(model instanceof Visualization)) {
-//
-//			MenuManager handleEventMenu = new MenuManager("Events",
-//					BMotionStudioImage.getImageDescriptor(
-//							BMotionEditorPlugin.PLUGIN_ID,
-//							"icons/icon_event.png"), "eventMenu");
-//			menu.appendToGroup(GEFActionConstants.GROUP_ADD, handleEventMenu);
-//
-//			BControl bcontrol = (BControl) model;
-//
-//			// Has event
-//			if (bcontrol.hasEvent(eventIDs[0])) {
-//
-//				SchedulerEvent event = bcontrol.getEvent(eventIDs[0]);
-//
-//				OpenSchedulerEventAction action = (OpenSchedulerEventAction) getActionRegistry()
-//						.getAction(
-//								"de.bmotionstudio.gef.editor.SchedulerEventAction."
-//										+ event.getID());
-//				action.setEventID(eventIDs[0]);
-//				action.setText(event.getName());
-//				action.setImageDescriptor(BMotionStudioImage
-//						.getImageDescriptor(BMotionEditorPlugin.PLUGIN_ID,
-//								"icons/icon_chop.gif"));
-//				handleEventMenu.add(action);
-//
-//			} else { // Has no event
-//
-//				IExtensionPoint schedulerExtensionPoint = registry
-//						.getExtensionPoint("de.bmotionstudio.gef.editor.schedulerEvent");
-//				for (IExtension schedulerExtension : schedulerExtensionPoint
-//						.getExtensions()) {
-//					for (IConfigurationElement configSchedulerElement : schedulerExtension
-//							.getConfigurationElements()) {
-//
-//						if ("schedulerEvent".equals(configSchedulerElement
-//								.getName())) {
-//
-//							String sClassName = configSchedulerElement
-//									.getAttribute("class");
-//							Boolean show = Boolean
-//									.valueOf(configSchedulerElement
-//											.getAttribute("menu"));
-//
-//							if (show) {
-//
-//								OpenSchedulerEventAction action = (OpenSchedulerEventAction) getActionRegistry()
-//										.getAction(
-//												"de.bmotionstudio.gef.editor.SchedulerEventAction."
-//														+ sClassName);
-//								action.setEventID(eventIDs[0]);
-//								action.setText(configSchedulerElement
-//										.getAttribute("name"));
-//
-//								action.setImageDescriptor(null);
-//
-//								// }
-//
-//								handleEventMenu.add(action);
-//
-//							}
-//
-//						}
-//
-//					}
-//
-//				}
-//
-//			}
-//		}
-//
-//	}
+	private void buildEventMenu(IMenuManager menu, AbstractEditPart editPart) {
+
+		final MenuManager handleMenu = new MenuManager("New Event",
+				BMotionImage.getImageDescriptor(BMotionEditorPlugin.PLUGIN_ID,
+						"icons/icon_event.png"), "eventMenu");
+		menu.appendToGroup(GEFActionConstants.GROUP_ADD, handleMenu);
+
+		HashMap<String, IConfigurationElement> eventExtensions = BMotionEditorPlugin
+				.getEventExtensions();
+		for (IConfigurationElement config : eventExtensions.values()) {
+
+			String langID = config.getAttribute("language");
+			String[] split = langID.split(",");
+			if (Arrays.asList(split).contains(language)) {
+				String id = config.getAttribute("id");
+				String name = config.getAttribute("name");
+				IAction action = getActionRegistry().getAction(
+						"de.bmotionstudio.core.eventAction." + id);
+				action.setText(name);
+				if (handleMenu.find(action.getId()) == null)
+					handleMenu.add(action);
+			}
+
+		}
+
+	}
 
 	private ActionRegistry getActionRegistry() {
 		return actionRegistry;

@@ -53,7 +53,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	private static BMotionEditorPlugin plugin;
 
 	private static HashMap<String, IConfigurationElement> observerExtensions = new HashMap<String, IConfigurationElement>();
-	private static HashMap<String, IConfigurationElement> schedulerExtensions = new HashMap<String, IConfigurationElement>();
+	private static HashMap<String, IConfigurationElement> eventExtensions = new HashMap<String, IConfigurationElement>();
 	private static HashMap<Class<?>, IBControlService> controlServicesClass = new HashMap<Class<?>, IBControlService>();
 	private static HashMap<String, IBControlService> controlServicesId = new HashMap<String, IBControlService>();
 
@@ -208,16 +208,15 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 
 		elementIDs.clear();
 		elementIDs.add("observer");
-		initExtensionClass("de.bmotionstudio.core.observer", elementIDs,
-				"id", observerExtensions);
+		initExtensionClass("de.bmotionstudio.core.observer", elementIDs, "id",
+				observerExtensions);
 
 		initBControlServices();
-		
-		// TODO: Reimplement me!!!
-//		elementIDs.clear();
-//		elementIDs.add("schedulerEvent");
-//		initExtensionClass("de.bmotionstudio.gef.editor.schedulerEvent",
-//				elementIDs, "class", schedulerExtensions);
+
+		elementIDs.clear();
+		elementIDs.add("event");
+		initExtensionClass("de.bmotionstudio.core.event", elementIDs, "id",
+				eventExtensions);
 
 	}
 
@@ -225,12 +224,12 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 		return observerExtensions.get(ident);
 	}
 
-	public static IConfigurationElement getSchedulerExtension(String ident) {
-		return schedulerExtensions.get(ident);
+	public static IConfigurationElement getEventExtension(String ident) {
+		return eventExtensions.get(ident);
 	}
 
-	public static HashMap<String, IConfigurationElement> getSchedulerExtensions() {
-		return schedulerExtensions;
+	public static HashMap<String, IConfigurationElement> getEventExtensions() {
+		return eventExtensions;
 	}
 
 	public static HashMap<Class<?>, IBControlService> getControlServicesClass() {

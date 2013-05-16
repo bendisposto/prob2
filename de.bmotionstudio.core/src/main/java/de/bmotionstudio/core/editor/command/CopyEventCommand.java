@@ -12,19 +12,19 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
-import de.bmotionstudio.core.model.observer.Observer;
+import de.bmotionstudio.core.model.event.Event;
 
-public class CopyObserverCommand extends Command {
+public class CopyEventCommand extends Command {
 
-	private List<Observer> observerList = new ArrayList<Observer>();
+	private List<Event> list = new ArrayList<Event>();
 
-	public CopyObserverCommand(List<Observer> observerList) {
-		this.observerList = observerList;
+	public CopyEventCommand(List<Event> list) {
+		this.list = list;
 	}
-	
+
 	@Override
 	public boolean canExecute() {
-		if (observerList == null || observerList.isEmpty())
+		if (list == null || list.isEmpty())
 			return false;
 		return true;
 	}
@@ -32,9 +32,9 @@ public class CopyObserverCommand extends Command {
 	@Override
 	public void execute() {
 		if (canExecute()) {
-			CopyPasteHelper contents = new CopyPasteHelper();
-			contents.setObserverList(observerList);
-			Clipboard.getDefault().setContents(contents);
+			CopyPasteHelper copyPasteHelper = new CopyPasteHelper();
+			copyPasteHelper.setEventList(list);
+			Clipboard.getDefault().setContents(copyPasteHelper);
 		}
 	}
 

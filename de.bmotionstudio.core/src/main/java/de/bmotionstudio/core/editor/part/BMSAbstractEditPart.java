@@ -10,15 +10,20 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.draw2d.ButtonModel;
 import org.eclipse.draw2d.ChangeEvent;
 import org.eclipse.draw2d.ChangeListener;
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.NodeEditPart;
@@ -33,42 +38,62 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import com.google.inject.Injector;
+
 import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.editor.figure.AbstractBMotionFigure;
 import de.bmotionstudio.core.editor.view.library.AbstractLibraryCommand;
 import de.bmotionstudio.core.editor.view.library.AttributeRequest;
+import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.BControlPropertyConstants;
 import de.bmotionstudio.core.model.control.Visualization;
+import de.bmotionstudio.core.model.event.Event;
 import de.bmotionstudio.core.model.observer.IObserverListener;
 import de.bmotionstudio.core.model.observer.Observer;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
+import de.prob.statespace.IHistoryChangeListener;
+import de.prob.webconsole.ServletContextListener;
 
 public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		implements PropertyChangeListener, IObserverListener, IAdaptable,
-		NodeEditPart {
-
+		NodeEditPart, IHistoryChangeListener {
+	
+	private Injector injector = ServletContextListener.INJECTOR;
+	final AnimationSelector selector = injector
+			.getInstance(AnimationSelector.class);
+	
 	private final Cursor cursorHover = new Cursor(Display.getCurrent(),
 			SWT.CURSOR_HAND);
-
+	private final Cursor cursorDefault = new Cursor(Display.getCurrent(),
+			SWT.CURSOR_ARROW);
+	
 	protected ConnectionAnchor anchor;
 
+	private Label tooltipLabel;
+	
 	private ChangeListener changeListener = new ChangeListener() {
+
 		@Override
 		public void handleStateChanged(ChangeEvent event) {
-			// TODO: Reimplement me!!!
-//			if (getCastedModel().hasEvent(AttributeConstants.EVENT_MOUSECLICK)) {
-//				if (event.getPropertyName().equals(
-//						ButtonModel.MOUSEOVER_PROPERTY))
-//					getFigure().setCursor(cursorHover);
-//			}
-//			if (event.getPropertyName()
-//					.equals(ButtonModel.PRESSED_PROPERTY)) {
-//				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
-//				if (f.getModel().isPressed())
-//					executeEvent(AttributeConstants.EVENT_MOUSECLICK);
-//			}
+
+			if (!getCastedModel().getEvents().isEmpty()) {
+				if (event.getPropertyName().equals(
+						ButtonModel.MOUSEOVER_PROPERTY))
+					getFigure().setCursor(cursorHover);
+			}
+
+			if (event.getPropertyName().equals(ButtonModel.PRESSED_PROPERTY)) {
+				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
+				History currentHistory = selector.getCurrentHistory();
+				if (f.getModel().isPressed())
+					executeEvent(currentHistory, Event.CLICK_ACTION);
+			}
+
 		}
+
 	};
 
 	private String[] layoutAttributes = {
@@ -82,11 +107,14 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		if (!isActive()) {
 			super.activate();
 			((BControl) getModel()).addPropertyChangeListener(this);
+			VisualizationView visualizationView = ((BControl) getModel())
+					.getVisualization().getVisualizationView();
+			visualizationView.addPropertyChangeListener(this);
+			selector.registerHistoryChangeListener(this);
 			if (getFigure() instanceof AbstractBMotionFigure) {
 				AbstractBMotionFigure af = (AbstractBMotionFigure) getFigure();
-//				if (isRunning())
-//					af.addChangeListener(changeListener);
 				af.activateFigure();
+				updateClickable(af, visualizationView.isLocked());
 			}
 		}
 	}
@@ -95,10 +123,10 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		if (isActive()) {
 			super.deactivate();
 			((BControl) getModel()).removePropertyChangeListener(this);
+			((BControl) getModel()).getVisualization().getVisualizationView()
+					.removePropertyChangeListener(this);
 			if (getFigure() instanceof AbstractBMotionFigure) {
 				AbstractBMotionFigure af = (AbstractBMotionFigure) getFigure();
-//				if (isRunning())
-//					af.removeChangeListener(changeListener);
 				af.deactivateFigure();
 			}
 		}
@@ -108,30 +136,16 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 	@Override
 	protected void createEditPolicies() {
-//		if (isRunning())
-//			prepareRunPolicies();
-//		else
-			prepareEditPolicies();
+		prepareEditPolicies();
 	}
 
 	protected abstract void prepareEditPolicies();
 
-//	protected Boolean isRunning() {
-//		return ((BControl) getModel()).getVisualization().isRunning();
-//	}
-
 	@Override
 	protected IFigure createFigure() {
-		final IFigure figure = createEditFigure();
-		 if (figure instanceof AbstractBMotionFigure) {
-		 AbstractBMotionFigure bmsFigure = (AbstractBMotionFigure) figure;
-		// Boolean isRunning = isRunning();
-		// bmsFigure.setRunning(isRunning);
-		// if (!isRunning) {
-		 bmsFigure.setEnabled(false);
-		 }
-		// }
-		return figure;
+		IFigure createEditFigure = createEditFigure();
+		createEditFigure.setToolTip(getTooltipFigure());
+		return createEditFigure;
 	}
 
 	@Override
@@ -172,12 +186,32 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		}
 	}
 
+	private void updateClickable(AbstractBMotionFigure f, boolean locked) {
+		f.setLocked(locked);
+		f.setEnabled(locked);
+		if (locked) {
+			f.addChangeListener(changeListener);
+		} else {
+			f.removeChangeListener(changeListener);
+			f.setCursor(cursorDefault);
+		}
+	}
+	
 	@Override
 	public void propertyChange(final PropertyChangeEvent evt) {
+		
 		final IFigure figure = (IFigure) getFigure();
 		final BControl model = (BControl) getModel();
 		String propName = evt.getPropertyName();
 
+		if (evt.getSource() instanceof VisualizationView
+				&& propName.equals("locked")
+				&& figure instanceof AbstractBMotionFigure) {
+			Boolean locked = Boolean.valueOf(evt.getNewValue().toString());
+			AbstractBMotionFigure f = (AbstractBMotionFigure) figure;
+			updateClickable(f, locked);
+		}
+		
 		if (BControlPropertyConstants.SOURCE_CONNECTIONS.equals(propName)) {
 			refreshSourceConnections();
 		} else if (BControlPropertyConstants.TARGET_CONNECTIONS
@@ -194,16 +228,16 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		} else {
 			// Custom attribute
 			refreshEditFigure(figure, model, evt);
-		}
+		}	
+		
 	}
 
 	public List<BControl> getModelChildren() {
 		return new ArrayList<BControl>();
 	}
 
-	public void executeEvent(String event) {
-		// TODO: Reimplement me!!!
-		// getCastedModel().executeEvent(event);
+	public void executeEvent(History history, String event) {
+		getCastedModel().executeEvent(history, event);
 	}
 
 	@Override
@@ -223,6 +257,18 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		return (BControl) getModel();
 	}
 
+	protected IFigure getTooltipFigure() {
+
+		Figure fig = new Figure();
+		fig.setLayoutManager(new FlowLayout());
+
+		tooltipLabel = new Label();
+		fig.add(tooltipLabel);
+
+		return fig;
+
+	}
+	
 	protected ConnectionAnchor getConnectionAnchor() {
 		if (anchor == null) {
 			anchor = new ChopboxAnchor(getFigure());
@@ -230,6 +276,24 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		return anchor;
 	}
 
+	@Override
+	public void historyChange(History history) {
+		
+		List<Event> events = getCastedModel().getEvents();
+		
+		StringBuilder str = new StringBuilder();
+		Iterator<Event> iterator = events.iterator();
+		while (iterator.hasNext()) {
+			Event e = iterator.next();
+			str.append(e.getTooltipText(history, getCastedModel()));
+			if (iterator.hasNext())
+				str.append("\n");
+		}
+
+		tooltipLabel.setText(str.toString());
+	
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -297,5 +361,5 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
 		return getConnectionAnchor();
 	}
-
+	
 }
