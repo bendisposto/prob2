@@ -54,12 +54,12 @@ import de.bmotionstudio.core.model.observer.IObserverListener;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.IAnimationListener;
 import de.prob.webconsole.ServletContextListener;
 
 public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		implements PropertyChangeListener, IObserverListener, IAdaptable,
-		NodeEditPart, IHistoryChangeListener {
+		NodeEditPart, IAnimationListener {
 	
 	private Injector injector = ServletContextListener.INJECTOR;
 	final AnimationSelector selector = injector
@@ -110,7 +110,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 			VisualizationView visualizationView = ((BControl) getModel())
 					.getVisualization().getVisualizationView();
 			visualizationView.addPropertyChangeListener(this);
-			selector.registerHistoryChangeListener(this);
+			selector.registerAnimationListener(this);
 			if (getFigure() instanceof AbstractBMotionFigure) {
 				AbstractBMotionFigure af = (AbstractBMotionFigure) getFigure();
 				af.activateFigure();
@@ -127,6 +127,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 					.removePropertyChangeListener(this);
 			if (getFigure() instanceof AbstractBMotionFigure) {
 				AbstractBMotionFigure af = (AbstractBMotionFigure) getFigure();
+				selector.deregisterAnimationListener(this);
 				af.deactivateFigure();
 			}
 		}
@@ -258,15 +259,11 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	}
 
 	protected IFigure getTooltipFigure() {
-
 		Figure fig = new Figure();
 		fig.setLayoutManager(new FlowLayout());
-
 		tooltipLabel = new Label();
 		fig.add(tooltipLabel);
-
 		return fig;
-
 	}
 	
 	protected ConnectionAnchor getConnectionAnchor() {
@@ -277,21 +274,23 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	}
 
 	@Override
-	public void historyChange(History history) {
-		
+	public void currentStateChanged(History oldHistory, History newHistory) {
+		if (tooltipLabel == null)
+			return;
 		List<Event> events = getCastedModel().getEvents();
-		
 		StringBuilder str = new StringBuilder();
 		Iterator<Event> iterator = events.iterator();
 		while (iterator.hasNext()) {
 			Event e = iterator.next();
-			str.append(e.getTooltipText(history, getCastedModel()));
+			str.append(e.getTooltipText(newHistory, getCastedModel()));
 			if (iterator.hasNext())
 				str.append("\n");
 		}
-
 		tooltipLabel.setText(str.toString());
+	}
 	
+	@Override
+	public void removeHistory(History history) {
 	}
 	
 	/*
