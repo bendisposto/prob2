@@ -33,7 +33,7 @@ public class BAttributeBackgroundVisible extends AbstractAttribute {
 
 	@Override
 	public String getName() {
-		return "Visible";
+		return "Background Visible";
 	}
 
 	@Override

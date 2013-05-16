@@ -58,6 +58,9 @@ public class TextPart extends BMSAbstractEditPart {
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE))
 			((TextFigure) figure).setVisible(Boolean.valueOf(value.toString()));
+		
+		if (aID.equals(AttributeConstants.ATTRIBUTE_ALPHA))
+			((TextFigure) figure).setAlpha(Integer.valueOf(value.toString()));
 
 	}
 
