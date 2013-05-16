@@ -8,6 +8,7 @@ import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.core.editor.wizard.observer.BOperationObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
+import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.statespace.History;
 import de.prob.statespace.OpInfo;
 
@@ -29,7 +30,7 @@ public class BOperationObserver extends Observer {
 		try {
 			List<OpInfo> opFromPredicate = history.getStatespace()
 					.opFromPredicate(history.getCurrentState(), operation,
-							predicate, 1);
+							BMotionUtil.parseFormula(predicate, control), 1);
 			if (opFromPredicate != null && !opFromPredicate.isEmpty())
 				control.setAttributeValue(attribute, value, true, false);
 		} catch (BException e) {

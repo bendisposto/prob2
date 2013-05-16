@@ -13,6 +13,9 @@ class HistoryConverter {
 		file << "${model.toString()} -->"
 
 		file << "<trace>"
+		file << "<model>"
+		file << model.getModelFile().getAbsolutePath()
+		file << "</model>"
 		def trace = history as ArrayList
 		trace.each {
 			def op = it.edge
@@ -38,7 +41,7 @@ class HistoryConverter {
     def next = { h, hash, name, args, strict ->
         def s = h as StateSpace
         def oldh = h
-        def ns = s.outgoingEdgesOf(h.getCurrentState())
+        def ns = s.getOutEdges(h.getCurrentState())
         def n = (ns.grep {it.sha() == hash})
 	    if (n.isEmpty()) {
             if (strict) {
@@ -106,4 +109,11 @@ class HistoryConverter {
 
 		h
 	}
+	
+	def static xmlToSpock(def xmlFile) {
+		def trace = new XmlSlurper().parse(xmlFile)
+		
+	}
+	
+	
 }

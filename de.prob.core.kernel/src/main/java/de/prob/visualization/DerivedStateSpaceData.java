@@ -25,16 +25,15 @@ public class DerivedStateSpaceData extends AbstractData {
 	public DerivedStateSpaceData(final AbstractDerivedStateSpace space) {
 		this.space = space;
 
-		styles.put("orange", new Transformer("").style("fill", "#E6906E"));
-		styles.put("red", new Transformer("").style("fill", "#B56C6C"));
-		styles.put("blue", new Transformer("").style("fill", "#5684A0"));
-		styles.put("green", new Transformer("").style("fill", "#799C79"));
+		styles.put("orange", new Transformer("").set("fill", "#E6906E"));
+		styles.put("red", new Transformer("").set("fill", "#B56C6C"));
+		styles.put("blue", new Transformer("").set("fill", "#5684A0"));
+		styles.put("green", new Transformer("").set("fill", "#799C79"));
 
-		styles.put("lightgray", new Transformer("").style("stroke", "#B2B2B2"));
-		styles.put("black", new Transformer("").style("stroke", "#000"));
+		styles.put("lightgray", new Transformer("").set("stroke", "#B2B2B2"));
+		styles.put("black", new Transformer("").set("stroke", "#000"));
 
-		styles.put("dashed",
-				new Transformer("").attr("stroke-dasharray", "2,2"));
+		styles.put("dashed", new Transformer("").set("stroke-dasharray", "2,2"));
 	}
 
 	@Override

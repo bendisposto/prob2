@@ -121,21 +121,23 @@ public class BOperationObserverWizard extends ObserverWizard {
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
 		History currentHistory = selector.getCurrentHistory();
-		AbstractModel model = currentHistory.getModel();
-		if (model instanceof EventBModel) {
-			EventBModel eventBModel = (EventBModel) model;
-			AbstractElement mainComponent = eventBModel.getMainComponent();
-			if (mainComponent instanceof EventBMachine) {
-				EventBMachine eMachine = (EventBMachine) mainComponent;
-				List<Event> events = eMachine.getEvents();
-				for (Event e : events)
+		if (currentHistory != null) {
+			AbstractModel model = currentHistory.getModel();
+			if (model instanceof EventBModel) {
+				EventBModel eventBModel = (EventBModel) model;
+				AbstractElement mainComponent = eventBModel.getMainComponent();
+				if (mainComponent instanceof EventBMachine) {
+					EventBMachine eMachine = (EventBMachine) mainComponent;
+					List<Event> events = eMachine.getEvents();
+					for (Event e : events)
+						eventList.add(e.getName());
+				}
+			} else if (model instanceof ClassicalBModel) {
+				ClassicalBModel cModel = (ClassicalBModel) model;
+				ClassicalBMachine mainMachine = cModel.getMainMachine();
+				for (Operation e : mainMachine.getOperations())
 					eventList.add(e.getName());
 			}
-		} else if (model instanceof ClassicalBModel) {
-			ClassicalBModel cModel = (ClassicalBModel) model;
-			ClassicalBMachine mainMachine = cModel.getMainMachine();
-			for (Operation e : mainMachine.getOperations())
-				eventList.add(e.getName());
 		}
 
 		operationCombo.setInput(eventList);

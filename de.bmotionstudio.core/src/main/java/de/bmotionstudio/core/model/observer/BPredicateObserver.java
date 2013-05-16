@@ -2,9 +2,10 @@ package de.bmotionstudio.core.model.observer;
 
 import org.eclipse.swt.widgets.Shell;
 
-import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.BPredicateObserverWizard;
+import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
+import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.History;
 
@@ -22,7 +23,8 @@ public class BPredicateObserver extends Observer {
 		if (predicate == null || attribute == null || value == null)
 			return;
 
-		EvaluationResult evalResult = history.evalCurrent(predicate);
+		EvaluationResult evalResult = history.evalCurrent(BMotionUtil
+				.parseFormula(predicate, control));
 
 		if (evalResult != null && !evalResult.hasError()) {
 

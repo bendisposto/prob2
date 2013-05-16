@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.webconsole.ServletContextListener;
-import de.prob.webconsole.servlets.StateSpaceServlet;
+import de.prob.webconsole.servlets.visualizations.StateSpaceServlet;
 
 public class OpenStateSpaceVizHandler extends AbstractHandler implements
 		IHandler {
@@ -35,10 +35,10 @@ public class OpenStateSpaceVizHandler extends AbstractHandler implements
 			VisualizationUtil.createVisualizationViewPart(sessionId,
 					"statespace_servlet/?init=" + sessionId);
 		} catch (PartInitException e) {
-			logger.error("Could not create predicate visualization view: "
+			logger.error("Could not create state space visualization view: "
 					+ e.getMessage());
 		} catch (AnimationNotLoadedException e) {
-			logger.error("Could not create predicate visualization because an animation is not loaded: "
+			logger.error("Could not create state space visualization because an animation is not loaded: "
 					+ e.getMessage());
 		}
 		return null;

@@ -15,12 +15,10 @@ public class TransitionDiagram extends AbstractDerivedStateSpace {
 			final String expression, final AbstractReduceStateSpaceCmd cmd) {
 		super(stateSpace, cmd);
 		this.expression = expression;
-		stateSpace.registerStateSpaceListener(this);
 	}
 
 	@Override
-	public void newTransitions(final IStateSpace s,
-			final List<? extends OpInfo> newOps) {
+	public void newTransitions(final List<? extends OpInfo> newOps) {
 		CalculateTransitionDiagramCommand cmd = new CalculateTransitionDiagramCommand(
 				expression);
 		stateSpace.execute(cmd);

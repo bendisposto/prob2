@@ -73,7 +73,9 @@ import com.google.inject.Injector;
 import de.bmotionstudio.core.ActionConstants;
 import de.bmotionstudio.core.editor.action.AddObserverAction;
 import de.bmotionstudio.core.editor.action.CopyAction;
+import de.bmotionstudio.core.editor.action.CopyObserverAction;
 import de.bmotionstudio.core.editor.action.PasteAction;
+import de.bmotionstudio.core.editor.action.PasteObserverAction;
 import de.bmotionstudio.core.editor.action.RemoveObserverAction;
 import de.bmotionstudio.core.editor.action.SaveAction;
 import de.bmotionstudio.core.editor.part.BMSEditPartFactory;
@@ -332,6 +334,14 @@ public class VisualizationViewPart extends ViewPart implements
 		removeObserverAction.setId(ActionConstants.ACTION_REMOVE_OBSERVER);
 		registry.registerAction(removeObserverAction);
 
+		CopyObserverAction copyObserverAction = new CopyObserverAction(this);
+		copyObserverAction.setId(ActionConstants.ACTION_COPY_OBSERVER);
+		registry.registerAction(copyObserverAction);
+
+		PasteObserverAction pasteObserverAction = new PasteObserverAction(this);
+		pasteObserverAction.setId(ActionConstants.ACTION_PASTE_OBSERVER);
+		registry.registerAction(pasteObserverAction);
+		
 	}
 
 	// TODO: Reimplement me!!!

@@ -499,7 +499,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	@Override
 	public void notifyStateSpaceChange(final List<? extends OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
-			listener.newTransitions(this, newOps);
+			listener.newTransitions(newOps);
 		}
 	}
 
@@ -838,4 +838,5 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public Map<StateId, Map<IEvalElement, EvaluationResult>> getValues() {
 		return values;
 	}
+
 }

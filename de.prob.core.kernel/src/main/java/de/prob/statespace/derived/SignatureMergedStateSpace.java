@@ -12,12 +12,10 @@ public class SignatureMergedStateSpace extends AbstractDerivedStateSpace {
 	public SignatureMergedStateSpace(final IStateSpace stateSpace,
 			final AbstractReduceStateSpaceCmd cmd) {
 		super(stateSpace, cmd);
-		stateSpace.registerStateSpaceListener(this);
 	}
 
 	@Override
-	public void newTransitions(final IStateSpace s,
-			final List<? extends OpInfo> o) {
+	public void newTransitions(final List<? extends OpInfo> o) {
 		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand();
 		stateSpace.execute(cmd);
 		addStates(cmd.getStates());

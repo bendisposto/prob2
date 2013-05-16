@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -46,7 +47,9 @@ import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.BMotionImage;
 import de.bmotionstudio.core.IBControlService;
 import de.bmotionstudio.core.editor.VisualizationViewPart;
+import de.bmotionstudio.core.editor.action.CopyObserverAction;
 import de.bmotionstudio.core.editor.action.ObserverHelpAction;
+import de.bmotionstudio.core.editor.action.PasteObserverAction;
 import de.bmotionstudio.core.editor.action.RemoveObserverAction;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.VisualizationView;
@@ -307,14 +310,18 @@ public class ObserverSection extends AbstractPropertySection implements
 				contextMenuManager.createContextMenu(listViewer.getControl());
 				contextMenuManager.setRemoveAllWhenShown(true);
 				contextMenuManager.addMenuListener(new IMenuListener() {
+					@SuppressWarnings("unchecked")
 					@Override
 					public void menuAboutToShow(IMenuManager manager) {
+						
 						updateMenuManager((MenuManager) manager,
 								selectedControl, true);
-						if (!listViewer.getSelection().isEmpty()) {
 
-							ActionRegistry actionRegistry = (ActionRegistry) getPart()
-									.getAdapter(ActionRegistry.class);
+						ISelection selection = listViewer.getSelection();
+						ActionRegistry actionRegistry = (ActionRegistry) getPart()
+								.getAdapter(ActionRegistry.class);
+						
+						if (!selection.isEmpty()) {
 
 							RemoveObserverAction removeObserverAction = (RemoveObserverAction) actionRegistry
 									.getAction(ActionConstants.ACTION_REMOVE_OBSERVER);
@@ -323,7 +330,24 @@ public class ObserverSection extends AbstractPropertySection implements
 							removeObserverAction.setObserver(selectedObserver);
 							manager.add(removeObserverAction);
 
+							CopyObserverAction copyObserverAction = (CopyObserverAction) actionRegistry
+									.getAction(ActionConstants.ACTION_COPY_OBSERVER);
+							copyObserverAction.setText("Copy Observer");
+							
+							IStructuredSelection ss = (IStructuredSelection) selection;
+							List<?> list = ss.toList();
+							copyObserverAction.setList((List<Observer>) list);
+							manager.add(copyObserverAction);
+							
 						}
+						
+						PasteObserverAction pasteObserverAction = (PasteObserverAction) actionRegistry
+								.getAction(ActionConstants.ACTION_PASTE_OBSERVER);
+						pasteObserverAction.setText("Paste Observer");
+						pasteObserverAction.setControl(selectedControl);
+						pasteObserverAction.update();
+						manager.add(pasteObserverAction);
+						
 					}
 				});
 				listViewer.getControl().setMenu(contextMenuManager.getMenu());

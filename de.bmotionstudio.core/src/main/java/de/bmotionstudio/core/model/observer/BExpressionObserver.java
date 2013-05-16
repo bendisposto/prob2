@@ -6,6 +6,7 @@ import de.bmotionstudio.core.editor.wizard.observer.BExpressionObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
+import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.History;
 
@@ -21,7 +22,8 @@ public class BExpressionObserver extends Observer {
 		if (attribute == null || expression == null)
 			return;
 
-		EvaluationResult evalResult = history.evalCurrent(expression);
+		EvaluationResult evalResult = history.evalCurrent(BMotionUtil
+				.parseFormula(expression, control));
 
 		if (evalResult != null && !evalResult.hasError()) {
 

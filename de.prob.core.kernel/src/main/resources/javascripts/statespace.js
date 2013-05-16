@@ -1,74 +1,8 @@
-var width, height, force, svg;
-var nodes = [];
-var links = [];
-var stopped = {value: false};
-var linkMap = d3.map();
-var ssCtr = 0;
-var mode = 1;
-var sId;
-
-function calculateDimensions() {
-    if (typeof (window.innerWidth) === 'number') {
-        width = window.innerWidth;
-        height = window.innerHeight; //NORMAL BROWSERS
-    } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
-        width = document.documentElement.clientWidth;
-        height = document.documentElement.clientHeight; // IE6+
-    } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
-        width = document.body.clientWidth;
-        height = document.body.clientHeight;
-    }
-}
-
-function redraw() {
-    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
-}
-
-function init() {
-    calculateDimensions();
-    force = d3.layout.force()
-              .charge(-500)
-              .linkDistance(160)
-              .size([width, height]);
-
-    svg = d3.select("#body").append("svg:svg")
-        .attr("class", "background")
-        .attr("viewBox", "0 0 " + width + " " + height)
-        .attr("pointer-events", "all")
-      .append("svg:g")
-        .call(d3.behavior.zoom().on("zoom", redraw))
-      .append("svg:g");
-}
-
-function applyStyling(styling) {
-    var i, j, selector, selected, attributes, styles;
-    for (i = 0; i < styling.length; i = i + 1) {
-        selector = styling[i].selector;
-        if (selector !== "") {
-            selected = d3.selectAll(selector);
-            attributes = styling[i].attributes;
-            for (j = 0; j < attributes.length; j = j + 1) {
-                selected.attr(attributes[j].name, attributes[j].value);
-            }
-            styles = styling[i].styles;
-            for (j = 0; j < styles.length; j = j + 1) {
-                selected.style(styles[j].name, styles[j].value);
-            }
-        }
-    }
-}
-
-function buildGraph(attrs, n) {
+function buildGraph(svg, force, n, stopped) {
     force
         .nodes(nodes)
         .links(links)
         .start();
-
-    svg.append("svg:rect")
-        .attr("class", "canvas")
-        .attr("height", height)
-        .attr("width", width)
-        .style("fill-opacity", 1e-6);
 
     var l, path, text, transLabels, node, boxH, cycleGen, i, safety;
 
@@ -135,8 +69,6 @@ function buildGraph(attrs, n) {
     node.append("title")
         .text(function(d) { return d.name; });
 
-    applyStyling(attrs);
-
     if (nodes.length > 50) {
         safety = 0;
         while (force.alpha() > 0) {
@@ -184,7 +116,7 @@ function buildGraph(attrs, n) {
     });
 }
 
-function drawDotty(svg, content, styling) {
+function drawDotty(svg, content, width, height) {
     svg.append("svg:rect")
         .attr("class", "canvas")
         .attr("id", "toReplace")
@@ -194,7 +126,6 @@ function drawDotty(svg, content, styling) {
 
     var m = Viz(content, "svg");
     $("#toReplace").replaceWith(m);
-    applyStyling(styling);
 }
 
 function doCmd(id, cmd) {
@@ -210,9 +141,8 @@ function doCmd(id, cmd) {
     });
 }
 
-function calculateHeader(id, m) {
-    var cmds, menu, pause, list;
-    mode = m;
+function calculateHeader(divM,id, m, stopped) {
+    var cmds, pause, list;
 
     d3.selectAll(".menuOps").remove();
     cmds = [
@@ -223,7 +153,7 @@ function calculateHeader(id, m) {
         {name: "Transition Diagram (dotty)", cmd: "d_trans_diag", id: 5}
     ];
 
-    menu = d3.select("#menu").append("ul").attr("class", "menuOps");
+    menu = divM.append("ul").attr("class", "menuOps");
     pause = menu.append("li");
 
     pause.selectAll("push")
@@ -258,8 +188,8 @@ function calculateHeader(id, m) {
 
 }
 
-function forD3(res) {
-    var n, l, node, index, tN, entry, linkNr, loop, i, styling, varCount;
+function forD3(svg, res, force, stopped) {
+    var n, l, node, index, tN, entry, linkNr, loop, i, varCount;
     n = res.data.nodes;
     l = res.data.links;
 
@@ -290,13 +220,12 @@ function forD3(res) {
         l[i].loop = loop;
         links.push(l[i]);
     }
-    styling = res.data.styling;
     varCount = res.varCount;
     stopped.value = false;
-    buildGraph(styling, varCount);
+    buildGraph(svg, force, varCount, stopped);
 }
 
-function refresh(id, getAllStates) {
+function refresh(svg, id, getAllStates, force, width, height, stopped) {
     if (getAllStates) {
         nodes = [];
         links = [];
@@ -306,7 +235,6 @@ function refresh(id, getAllStates) {
     svg.selectAll(".link").remove();
     svg.selectAll(".node").remove();
     svg.selectAll(".linkT").remove();
-    svg.selectAll(".canvas").remove();
     svg.selectAll("g svg").remove();
 
 
@@ -315,23 +243,51 @@ function refresh(id, getAllStates) {
         getSS : true,
         getAll : getAllStates
     }, function(res) {
-        ssCtr = res.count;
+
         if (res.data !== "") {
             if (res.mode > 3) {
                 if (res.data.content !== "") {
-                    drawDotty(svg, res.data.content, res.data.styling);
+                    drawDotty(svg, res.data.content, width, height);
                 }
             } else {
-                forD3(res);
+                forD3(svg, res, force, stopped);
             }
+            applyStyling(res.data.styling);
         }
     });
 }
 
 function initialize(id) {
-    sId = id;
-    calculateHeader(id, mode);
-    init();
+    var dim = calculateDimensions();
+    
+    init(id,"body",1,dim.width,dim.height);
+}
+ 
+var links, nodes, linkMap;
+
+function init(id,positionId,m,width,height) {
+    var menu, mode, force, ssCtr, svg, stopped, elements;
+    mode = m;
+    ssCtr = 0;
+    menu = d3.select("#"+positionId)
+        .append("div")
+        .attr("id",positionId+"-menu");
+    d3.select("#"+positionId)
+        .append("div")
+        .attr("id",positionId+"-viz");
+
+    stopped = {value: false};
+    calculateHeader(menu,id, mode, stopped);
+    force = d3.layout.force()
+              .charge(-500)
+              .linkDistance(160)
+              .size([width, height]);
+    svg = createCanvas("#"+positionId+"-viz",width,height);
+    nodes = [];
+    links = [];
+    linkMap = d3.map();
+
+
     // setup output polling
     setInterval(function() {
         $.getJSON("statespace_servlet", {
@@ -340,19 +296,15 @@ function initialize(id) {
             getAll : false
         }, function(res) {
             if (res.mode !== mode) {
-                calculateHeader(id, res.mode);
+                mode = res.mode;
+                calculateHeader(menu, id, res.mode, stopped);
             }
             if (res.count !== ssCtr) {
-                refresh(id, ssCtr === 0 || res.reset);
+                refresh(svg, id, ssCtr === 0 || res.reset, force, width, height, stopped);
+                ssCtr = res.count;
             }
         });
     }, 300);
 }
 
-function resize() {
-    calculateDimensions();
-    d3.select("#background")
-        .attr("width", width)
-        .attr("height", height);
-    refresh(sId, false, mode);
-}
+

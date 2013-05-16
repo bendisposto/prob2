@@ -5,16 +5,17 @@ import com.google.inject.servlet.ServletModule;
 import de.prob.testing.ProBTestRunner;
 import de.prob.testing.TestRegistry;
 import de.prob.webconsole.servlets.CompletionServlet;
-import de.prob.webconsole.servlets.FormulaOverHistoryServlet;
 import de.prob.webconsole.servlets.GroovyBindingsServlet;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.GroovyShellServlet;
 import de.prob.webconsole.servlets.ImportsServlet;
-import de.prob.webconsole.servlets.PredicateServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
-import de.prob.webconsole.servlets.StateSpaceServlet;
 import de.prob.webconsole.servlets.VersionServlet;
 import de.prob.worksheet.WorksheetServlet;
+
+import de.prob.webconsole.servlets.visualizations.PredicateServlet;
+import de.prob.webconsole.servlets.visualizations.StateSpaceServlet;
+import de.prob.webconsole.servlets.visualizations.ValueOverTimeServlet;
 
 public class WebModule extends ServletModule {
 
@@ -28,15 +29,17 @@ public class WebModule extends ServletModule {
 		serve("/outputs*").with(GroovyOutputServlet.class);
 		serve("/versions*").with(VersionServlet.class);
 		serve("/scrollback*").with(ScrollbackServlet.class);
-		serve("/formula*").with(FormulaOverHistoryServlet.class);
-
-		serve("/statespace_servlet*").with(StateSpaceServlet.class);
-		serve("/predicate*").with(PredicateServlet.class);
 		serve("/exec*").with(WorksheetServlet.class);
+
 
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);
 		bind(ProBTestRunner.class);
 		bind(TestRegistry.class);
+
+		
+		serve("/formula*").with(ValueOverTimeServlet.class);
+		serve("/statespace_servlet*").with(StateSpaceServlet.class);
+		serve("/predicate*").with(PredicateServlet.class);
 	}
 }

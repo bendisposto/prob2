@@ -103,15 +103,6 @@
                   label="Add Visualization View"
                   style="push">
             </command>
-            <separator
-                  name="group.filter"
-                  visible="true">
-            </separator>
-            <command
-                  commandId="de.bmotionstudio.core.command.addHTMLVisualizationView"
-                  label="Add HTML Visualization View"
-                  style="push">
-            </command>
          </menu>
       </menuContribution>
    </extension>
@@ -141,11 +132,6 @@
             defaultHandler="de.bmotionstudio.core.editor.handler.AddVisualizationViewHandler"
             id="de.bmotionstudio.core.command.addVisualizationView"
             name="Add Visualization View">
-      </command>
-      <command
-            defaultHandler="de.bmotionstudio.core.editor.handler.AddHTMLVisualizationViewHandler"
-            id="de.bmotionstudio.core.command.addHTMLVisualizationView"
-            name="Add HTML Visualization View">
       </command>
    </extension>
    
@@ -558,19 +544,7 @@
             </observer>
          </control>
          <control
-               id="de.bmotionstudio.control.Track">
-            <observer
-                  id="de.bmotionstudio.observer.BPredicateObserver">
-            </observer>
-            <observer
-                  id="de.bmotionstudio.observer.BExpressionObserver">
-            </observer>
-            <observer
-                  id="de.bmotionstudio.observer.BOperationObserver">
-            </observer>
-         </control>
-         <control
-               id="de.bmotionstudio.control.Switch">
+               id="de.bmotionstudio.control.Segment">
             <observer
                   id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>

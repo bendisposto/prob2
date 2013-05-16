@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -30,8 +32,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
+import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.editor.VisualizationViewPart;
 import de.bmotionstudio.core.model.BMotionGuide;
@@ -182,7 +186,7 @@ public class BMotionUtil {
 		return visualizationViewPart;
 
 	}
-
+	
 	public static VisualizationView getVisualizationViewFromFile(
 			File visualizationFile) {
 
@@ -209,10 +213,15 @@ public class BMotionUtil {
 				}
 			};
 
-			BMotionUtil.setAliases(xstream);
-			Object obj = xstream.fromXML(inputStream);
+			VisualizationView obj = null;
+			try {
+				BMotionUtil.setAliases(xstream);
+				obj = (VisualizationView) xstream.fromXML(inputStream);
+			} catch (ConversionException e) {
 
-			return (VisualizationView) obj;
+			}
+
+			return obj;
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -372,6 +381,31 @@ public class BMotionUtil {
 		xstream.alias("visualization", Visualization.class);
 		xstream.alias("guide", BMotionGuide.class);
 		xstream.alias("connection", BConnection.class);
+	}
+	
+	public static String parseFormula(String expressionString, BControl control) {
+
+		// Search for control ids
+		Pattern cPattern = Pattern.compile("(\\w+)");
+		Matcher cMatcher = cPattern.matcher(expressionString);
+
+		while (cMatcher.find()) {
+
+			String controlID = cMatcher.group(1);
+
+			if (controlID.equals("this")) {
+
+				expressionString = expressionString.replace(controlID, control
+						.getAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM)
+						.toString());
+
+			} else {
+				// TODO: Return error if no control exists
+			}
+		}
+
+		return expressionString;
+
 	}
 	
 }
