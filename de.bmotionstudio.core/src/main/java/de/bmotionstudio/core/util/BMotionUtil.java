@@ -385,6 +385,9 @@ public class BMotionUtil {
 	
 	public static String parseFormula(String expressionString, BControl control) {
 
+		if (expressionString == null)
+			return null;
+
 		// Search for control ids
 		Pattern cPattern = Pattern.compile("(\\w+)");
 		Matcher cMatcher = cPattern.matcher(expressionString);

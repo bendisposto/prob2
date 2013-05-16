@@ -1,11 +1,11 @@
 package de.bmotionstudio.core.model.event;
 
-import de.bmotionstudio.core.Animation;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.statespace.History;
 
 public interface IEvent {
 
-	public abstract void execute(Animation animation, BControl bcontrol);
+	public abstract void execute(History history, BControl control);
 
 	public String getName();
 	
@@ -13,6 +13,6 @@ public interface IEvent {
 	
 	public String getDescription();
 	
-	public String getID();
+	public String getType();
 	
 }

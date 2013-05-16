@@ -276,7 +276,7 @@ public class BPredicateObserverWizard extends ObserverWizard {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				
-				if(evt.getPropertyName().equals("expression")) {
+				if(evt.getPropertyName().equals("predicate")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					History currentHistory = selector.getCurrentHistory();

@@ -1,43 +1,28 @@
 package de.bmotionstudio.core.model.event;
 
-import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.swt.widgets.Shell;
 
-import de.bmotionstudio.core.BMotionEditorPlugin;
-import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
+import de.bmotionstudio.core.editor.wizard.event.EventWizard;
 import de.bmotionstudio.core.model.PropertyChangeSupportObject;
 import de.bmotionstudio.core.model.control.BControl;
 
 public abstract class Event extends PropertyChangeSupportObject implements
 		IEvent {
 
-	private transient String type;
-	private transient String description;
-	private transient String ID;
-
+	public static final transient String CLICK_ACTION = "click";
+	public static final transient String MOUSEOVER_ACTION = "mouseover";
+	
 	private String name;
+	
+	private String action;
 
 	public Event() {
-		init();
+		this.name = getType();
+		this.action = CLICK_ACTION;
 	}
-
+	
 	protected Object readResolve() {
-		init();
 		return this;
-	}
-
-	/**
-	 * This method initializes the observer. Gets the ID, name and description
-	 * from the corresponding extension point
-	 */
-	private void init() {
-		IConfigurationElement configElement = BMotionEditorPlugin
-				.getObserverExtension(getClass().getName());
-		if (configElement != null) {
-			this.setID(configElement.getAttribute("class"));
-			this.setName(configElement.getAttribute("name"));
-			this.setDescription(configElement.getAttribute("description"));
-		}
 	}
 
 	/**
@@ -56,36 +41,12 @@ public abstract class Event extends PropertyChangeSupportObject implements
 	 *            The corresponding control
 	 * @return the corresponding wizard
 	 */
-	public abstract ObserverWizard getWizard(Shell shell, BControl control);
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
+	public abstract EventWizard getWizard(Shell shell, BControl control);
 
 	public String getDescription() {
-		return description;
+		return null;
 	}
-
-	public void setDescription(String description) {
-		String oldVal = this.description;
-		this.description = description;
-		firePropertyChange("description", oldVal, description);
-	}
-
-	public String getID() {
-		return ID;
-	}
-
-	public void setID(String ID) {
-		String oldVal = this.ID;
-		this.ID = ID;
-		firePropertyChange("ID", oldVal, ID);
-	}
-
+	
 	public String getName() {
 		return name;
 	}
@@ -94,6 +55,16 @@ public abstract class Event extends PropertyChangeSupportObject implements
 		String oldVal = this.name;
 		this.name = name;
 		firePropertyChange("name", oldVal, name);
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		String oldVal = this.action;
+		this.action = action;
+		firePropertyChange("action", oldVal, action);
 	}
 	
 }
