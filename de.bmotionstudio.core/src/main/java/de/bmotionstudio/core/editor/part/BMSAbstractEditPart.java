@@ -10,6 +10,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -19,7 +20,10 @@ import org.eclipse.draw2d.ChangeEvent;
 import org.eclipse.draw2d.ChangeListener;
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.NodeEditPart;
@@ -50,14 +54,17 @@ import de.bmotionstudio.core.model.observer.IObserverListener;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
+import de.prob.statespace.IHistoryChangeListener;
 import de.prob.webconsole.ServletContextListener;
 
 public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		implements PropertyChangeListener, IObserverListener, IAdaptable,
-		NodeEditPart {
+		NodeEditPart, IHistoryChangeListener {
 	
 	private Injector injector = ServletContextListener.INJECTOR;
-
+	final AnimationSelector selector = injector
+			.getInstance(AnimationSelector.class);
+	
 	private final Cursor cursorHover = new Cursor(Display.getCurrent(),
 			SWT.CURSOR_HAND);
 	private final Cursor cursorDefault = new Cursor(Display.getCurrent(),
@@ -65,6 +72,8 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	
 	protected ConnectionAnchor anchor;
 
+	private Label tooltipLabel;
+	
 	private ChangeListener changeListener = new ChangeListener() {
 
 		@Override
@@ -78,8 +87,6 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 			if (event.getPropertyName().equals(ButtonModel.PRESSED_PROPERTY)) {
 				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
-				final AnimationSelector selector = injector
-						.getInstance(AnimationSelector.class);
 				History currentHistory = selector.getCurrentHistory();
 				if (f.getModel().isPressed())
 					executeEvent(currentHistory, Event.CLICK_ACTION);
@@ -103,6 +110,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 			VisualizationView visualizationView = ((BControl) getModel())
 					.getVisualization().getVisualizationView();
 			visualizationView.addPropertyChangeListener(this);
+			selector.registerHistoryChangeListener(this);
 			if (getFigure() instanceof AbstractBMotionFigure) {
 				AbstractBMotionFigure af = (AbstractBMotionFigure) getFigure();
 				af.activateFigure();
@@ -135,7 +143,9 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 	@Override
 	protected IFigure createFigure() {
-		return createEditFigure();
+		IFigure createEditFigure = createEditFigure();
+		createEditFigure.setToolTip(getTooltipFigure());
+		return createEditFigure;
 	}
 
 	@Override
@@ -247,6 +257,18 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		return (BControl) getModel();
 	}
 
+	protected IFigure getTooltipFigure() {
+
+		Figure fig = new Figure();
+		fig.setLayoutManager(new FlowLayout());
+
+		tooltipLabel = new Label();
+		fig.add(tooltipLabel);
+
+		return fig;
+
+	}
+	
 	protected ConnectionAnchor getConnectionAnchor() {
 		if (anchor == null) {
 			anchor = new ChopboxAnchor(getFigure());
@@ -254,6 +276,24 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		return anchor;
 	}
 
+	@Override
+	public void historyChange(History history) {
+		
+		List<Event> events = getCastedModel().getEvents();
+		
+		StringBuilder str = new StringBuilder();
+		Iterator<Event> iterator = events.iterator();
+		while (iterator.hasNext()) {
+			Event e = iterator.next();
+			str.append(e.getTooltipText(history, getCastedModel()));
+			if (iterator.hasNext())
+				str.append("\n");
+		}
+
+		tooltipLabel.setText(str.toString());
+	
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

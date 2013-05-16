@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Shell;
 import de.bmotionstudio.core.editor.wizard.event.EventWizard;
 import de.bmotionstudio.core.model.PropertyChangeSupportObject;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.statespace.History;
 
 public abstract class Event extends PropertyChangeSupportObject implements
 		IEvent {
@@ -65,6 +66,10 @@ public abstract class Event extends PropertyChangeSupportObject implements
 		String oldVal = this.action;
 		this.action = action;
 		firePropertyChange("action", oldVal, action);
+	}
+
+	public String getTooltipText(History history, BControl control) {
+		return "";
 	}
 	
 }
