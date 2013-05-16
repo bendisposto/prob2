@@ -20,11 +20,13 @@ public class AbstractBMotionFigure extends Clickable {
 
 	protected boolean visible;
 	protected boolean isRunning;
+	private boolean locked;
 	public static final int HIDDEN_ALPHA_VALUE = 35;
 
 	public AbstractBMotionFigure() {
 		this.visible = true;
 		this.isRunning = false;
+		this.locked = false;
 	}
 
 	public void deactivateFigure() {
@@ -35,18 +37,16 @@ public class AbstractBMotionFigure extends Clickable {
 
 	@Override
 	public void setVisible(boolean visible) {
-		if (!isRunning()) {
-			this.visible = visible;
-			repaint();
-		} else {
-			super.setVisible(visible);
-		}
+		// this.visible = visible;
+		// repaint();
+		//
+		super.setVisible(visible);
 	}
 
 	@Override
 	public void paint(Graphics g) {
 		Rectangle clientArea = getClientArea();
-		if (!this.visible && !isRunning()) {
+		if (!this.visible) {
 			g.drawImage(
 					BMotionImage.getImage(BMotionImage.IMG_ICON_CONTROL_HIDDEN),
 					clientArea.x, clientArea.y);
@@ -55,12 +55,17 @@ public class AbstractBMotionFigure extends Clickable {
 		super.paint(g);
 	}
 
-	public boolean isRunning() {
-		return isRunning;
+	@Override
+	public boolean isEnabled() {
+		return isLocked();
 	}
 
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
+	public boolean isLocked() {
+		return locked;
 	}
 
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+	
 }

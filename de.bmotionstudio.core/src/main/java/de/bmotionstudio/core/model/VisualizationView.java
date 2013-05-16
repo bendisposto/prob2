@@ -10,7 +10,7 @@ public class VisualizationView extends PropertyChangeSupportObject {
 
 	private Visualization visualization;
 
-	private boolean rulerVisible, snapToGeometry, gridEnabled;
+	private boolean rulerVisible, snapToGeometry, gridEnabled, locked;
 
 	private double zoom;
 	
@@ -26,6 +26,7 @@ public class VisualizationView extends PropertyChangeSupportObject {
 		this.rulerVisible = true;
 		this.snapToGeometry = true;
 		this.gridEnabled = false;
+		this.locked = false;
 		this.zoom = 1.0;
 		createRulers();
 	}
@@ -149,6 +150,16 @@ public class VisualizationView extends PropertyChangeSupportObject {
 		double oldVal = this.zoom;
 		this.zoom = zoom;
 		firePropertyChange("zoom", oldVal, zoom);
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		boolean oldVal = this.locked;
+		this.locked = locked;
+		firePropertyChange("locked", oldVal, locked);
 	}
 	
 }

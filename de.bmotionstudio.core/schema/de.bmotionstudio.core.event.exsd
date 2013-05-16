@@ -3,7 +3,7 @@
 <schema targetNamespace="de.bmotionstudio.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="de.bmotionstudio.core" id="de.bmotionstudio.core.action" name="BMotion Studio Action"/>
+         <meta.schema plugin="de.bmotionstudio.core" id="de.bmotionstudio.core.event" name="BMotion Studio Event"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
@@ -18,7 +18,7 @@
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="schedulerEvent"/>
+            <element ref="event"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,14 +47,28 @@
       </complexType>
    </element>
 
-   <element name="schedulerEvent">
+   <element name="event">
       <annotation>
          <appInfo>
             <meta.element labelAttribute="id"/>
          </appInfo>
       </annotation>
       <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
          <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="language" type="string" use="required">
             <annotation>
                <documentation>
                   
@@ -67,22 +81,8 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="de.bmotionstudio.core.scheduler.SchedulerEvent:"/>
+                  <meta.attribute kind="java" basedOn="de.bmotionstudio.core.model.event.Event:"/>
                </appInfo>
-            </annotation>
-         </attribute>
-         <attribute name="description" type="string">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="menu" type="boolean" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
             </annotation>
          </attribute>
       </complexType>

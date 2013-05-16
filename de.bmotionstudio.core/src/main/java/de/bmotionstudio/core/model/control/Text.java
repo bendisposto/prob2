@@ -8,6 +8,7 @@ package de.bmotionstudio.core.model.control;
 
 import org.eclipse.draw2d.ColorConstants;
 
+import de.bmotionstudio.core.model.attribute.BAttributeAlpha;
 import de.bmotionstudio.core.model.attribute.BAttributeBackgroundColor;
 import de.bmotionstudio.core.model.attribute.BAttributeBackgroundVisible;
 import de.bmotionstudio.core.model.attribute.BAttributeFont;
@@ -29,9 +30,10 @@ public class Text extends BControl {
 		initAttribute(new BAttributeTextColor(ColorConstants.black.getRGB()));
 		initAttribute(new BAttributeBackgroundColor(
 				ColorConstants.white.getRGB()));
-		initAttribute(new BAttributeBackgroundVisible(true));
+		initAttribute(new BAttributeBackgroundVisible(false));
 		initAttribute(new BAttributeFont(
 				"1||9.75|0|WINDOWS|1|-13|0|0|0|400|0|0|0|0|0|0|0|0|"));
+		initAttribute(new BAttributeAlpha(255));
 
 	}
 

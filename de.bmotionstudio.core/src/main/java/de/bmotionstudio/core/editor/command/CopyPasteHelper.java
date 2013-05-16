@@ -12,12 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 import de.bmotionstudio.core.model.control.BControl;
+import de.bmotionstudio.core.model.event.Event;
 import de.bmotionstudio.core.model.observer.Observer;
 
 public class CopyPasteHelper {
 
 	private List<BControl> controlList = new ArrayList<BControl>();
 	private List<Observer> observerList = new ArrayList<Observer>();
+	private List<Event> eventList = new ArrayList<Event>();
 	
 	private Map<BControl, BControl> alreadyCloned = new HashMap<BControl, BControl>();
 	
@@ -28,11 +30,10 @@ public class CopyPasteHelper {
 		this.setDistance(distance);
 	}
 
-	public CopyPasteHelper(List<Observer> list) {
-		this.observerList = list;
+	public CopyPasteHelper() {
 	}
-
-	public void setControlList(ArrayList<BControl> list) {
+	
+	public void setControlList(List<BControl> list) {
 		this.controlList = list;
 	}
 
@@ -40,7 +41,7 @@ public class CopyPasteHelper {
 		return controlList;
 	}
 	
-	public void setObserverList(ArrayList<Observer> list) {
+	public void setObserverList(List<Observer> list) {
 		this.observerList = list;
 	}
 
@@ -48,6 +49,14 @@ public class CopyPasteHelper {
 		return observerList;
 	}
 
+	public void setEventList(List<Event> list) {
+		this.eventList = list;
+	}
+
+	public List<Event> getEventList() {
+		return eventList;
+	}
+	
 	public void setDistance(int distance) {
 		this.distance = distance;
 	}

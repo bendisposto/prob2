@@ -36,10 +36,6 @@ public class WebModule extends ServletModule {
 		serve("/outputs*").with(GroovyOutputServlet.class);
 		serve("/versions*").with(VersionServlet.class);
 		serve("/scrollback*").with(ScrollbackServlet.class);
-		serve("/formula*").with(ValueOverTimeServlet.class);
-
-		serve("/statespace_servlet*").with(StateSpaceServlet.class);
-		serve("/predicate*").with(PredicateServlet.class);
 
 		// Worksheet servlets
 		serve("/saveDocument*").with(SaveDocument.class);
@@ -58,5 +54,10 @@ public class WebModule extends ServletModule {
 		bind(OutputBuffer.class);
 		bind(ProBTestRunner.class);
 		bind(TestRegistry.class);
+
+		
+		serve("/formula*").with(ValueOverTimeServlet.class);
+		serve("/statespace_servlet*").with(StateSpaceServlet.class);
+		serve("/predicate*").with(PredicateServlet.class);
 	}
 }

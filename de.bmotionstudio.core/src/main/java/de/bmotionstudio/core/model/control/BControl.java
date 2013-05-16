@@ -579,16 +579,15 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		}
 	}
 
-	// TODO: Reimplement me!!!
-	// public void executeEvent(String eventID) {
-	// if (hasAttribute(AttributeConstants.ATTRIBUTE_ENABLED)) {
-	// if (!(Boolean) getAttributeValue(AttributeConstants.ATTRIBUTE_ENABLED))
-	// return;
-	// }
-	// SchedulerEvent e = getEvents().get(eventID);
-	// if (e != null)
-	// e.execute(getVisualization().getAnimation(), this);
-	// }
+	public void executeEvent(History history, String event) {
+		if (hasAttribute(AttributeConstants.ATTRIBUTE_ENABLED)) {
+			if (!(Boolean) getAttributeValue(AttributeConstants.ATTRIBUTE_ENABLED))
+				return;
+		}
+		for (Event e : getEvents()) {
+			e.execute(history, this);
+		}
+	}
 
 	public void setVerticalGuide(BMotionGuide verticalGuide) {
 		this.verticalGuide = verticalGuide;

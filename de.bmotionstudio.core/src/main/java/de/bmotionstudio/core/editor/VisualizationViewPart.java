@@ -71,11 +71,16 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributo
 import com.google.inject.Injector;
 
 import de.bmotionstudio.core.ActionConstants;
+import de.bmotionstudio.core.editor.action.AddEventAction;
 import de.bmotionstudio.core.editor.action.AddObserverAction;
 import de.bmotionstudio.core.editor.action.CopyAction;
+import de.bmotionstudio.core.editor.action.CopyEventAction;
 import de.bmotionstudio.core.editor.action.CopyObserverAction;
+import de.bmotionstudio.core.editor.action.LockVisualizationAction;
 import de.bmotionstudio.core.editor.action.PasteAction;
+import de.bmotionstudio.core.editor.action.PasteEventAction;
 import de.bmotionstudio.core.editor.action.PasteObserverAction;
+import de.bmotionstudio.core.editor.action.RemoveEventAction;
 import de.bmotionstudio.core.editor.action.RemoveObserverAction;
 import de.bmotionstudio.core.editor.action.SaveAction;
 import de.bmotionstudio.core.editor.part.BMSEditPartFactory;
@@ -251,7 +256,7 @@ public class VisualizationViewPart extends ViewPart implements
 		action = new DeleteAction((IWorkbenchPart) this);
 		registry.registerAction(action);
 		getSelectionActions().add(action.getId());
-
+		
 		action = new SelectAllAction(this);
 		registry.registerAction(action);
 
@@ -293,10 +298,13 @@ public class VisualizationViewPart extends ViewPart implements
 					}
 				});
 
+		action = new LockVisualizationAction((IWorkbenchPart) this);
+		getActionRegistry().registerAction(action);
+		getStackActions().add(action.getId());
+		
 		installObserverActions();
-		// TODO: Reimplement me!!!
-//		installSchedulerActions();
-
+		installEventActions();
+		
 	}
 
 	private void installObserverActions() {
@@ -344,42 +352,49 @@ public class VisualizationViewPart extends ViewPart implements
 		
 	}
 
-	// TODO: Reimplement me!!!
-//	private void installSchedulerActions() {
-//
-//		IAction action;
-//		ActionRegistry registry = getActionRegistry();
-//
-//		IExtensionRegistry reg = Platform.getExtensionRegistry();
-//		IExtensionPoint extensionPoint = reg
-//				.getExtensionPoint("de.bmotionstudio.gef.editor.schedulerEvent");
-//		for (IExtension extension : extensionPoint.getExtensions()) {
-//			for (IConfigurationElement configurationElement : extension
-//					.getConfigurationElements()) {
-//
-//				if ("schedulerEvent".equals(configurationElement.getName())) {
-//
-//					String sClassName = configurationElement
-//							.getAttribute("class");
-//
-//					action = new OpenSchedulerEventAction(this);
-//					action.setId("de.bmotionstudio.gef.editor.SchedulerEventAction."
-//							+ sClassName);
-//					((OpenSchedulerEventAction) action)
-//							.setClassName(sClassName);
-//					registry.registerAction(action);
-//					getSelectionActions().add(
-//							"de.bmotionstudio.gef.editor.SchedulerEventAction."
-//									+ sClassName);
-//
-//				}
-//
-//			}
-//
-//		}
-//
-//	}
+	private void installEventActions() {
 
+		IAction action;
+		ActionRegistry registry = getActionRegistry();
+
+		// Register Add Observer Actions
+		IExtensionRegistry reg = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = reg
+				.getExtensionPoint("de.bmotionstudio.core.event");
+		for (IExtension extension : extensionPoint.getExtensions()) {
+			for (IConfigurationElement configurationElement : extension
+					.getConfigurationElements()) {
+
+				if ("event".equals(configurationElement.getName())) {
+
+					String oID = configurationElement.getAttribute("id");
+					action = new AddEventAction(this);
+					action.setId("de.bmotionstudio.core.eventAction." + oID);
+					((AddEventAction) action).setEventId(oID);
+					registry.registerAction(action);
+					getSelectionActions().add(
+							"de.bmotionstudio.core.eventAction." + oID);
+
+				}
+
+			}
+
+		}
+
+		RemoveEventAction removeAction = new RemoveEventAction(this);
+		removeAction.setId(ActionConstants.ACTION_REMOVE_EVENT);
+		registry.registerAction(removeAction);
+
+		CopyEventAction copyAction = new CopyEventAction(this);
+		copyAction.setId(ActionConstants.ACTION_COPY_EVENT);
+		registry.registerAction(copyAction);
+
+		PasteEventAction pasteAction = new PasteEventAction(this);
+		pasteAction.setId(ActionConstants.ACTION_PASTE_EVENT);
+		registry.registerAction(pasteAction);
+
+	}
+	
 	@Override
 	public void dispose() {
 		unregister();
@@ -421,8 +436,9 @@ public class VisualizationViewPart extends ViewPart implements
 		Iterator<String> iter = actionIds.iterator();
 		while (iter.hasNext()) {
 			IAction action = registry.getAction(iter.next());
-			if (action instanceof UpdateAction)
+			if (action instanceof UpdateAction) {
 				((UpdateAction) action).update();
+			}
 		}
 	}
 
@@ -564,6 +580,11 @@ public class VisualizationViewPart extends ViewPart implements
 						.getAction(ActionFactory.DELETE.getId()));
 
 		viewSite.getActionBars().getToolBarManager().add(new Separator());
+
+		viewSite.getActionBars()
+				.getToolBarManager()
+				.add(getActionRegistry().getAction(
+						ActionConstants.ACTION_LOCK_VISUALIZATION));
 
 		ZoomComboContributionItem zoomCombo = new ZoomComboContributionItem(
 				getSite().getPage()) {

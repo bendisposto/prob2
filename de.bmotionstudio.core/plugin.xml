@@ -5,7 +5,7 @@
    <extension-point id="de.bmotionstudio.core.installMenu" name="Context Menu" schema="schema/de.bmotionstudio.core.installMenu.exsd"/>
    <extension-point id="de.bmotionstudio.core.control" name="Control" schema="schema/de.bmotionstudio.core.control.exsd"/>
    <extension-point id="de.bmotionstudio.core.language" name="BMotion Studio Language Loader" schema="schema/de.bmotionstudio.core.language.exsd"/>
-   <extension-point id="de.bmotionstudio.core.action" name="BMotion Studio Action" schema="schema/de.bmotionstudio.core.action.exsd"/>
+   <extension-point id="de.bmotionstudio.core.event" name="BMotion Studio Event" schema="schema/de.bmotionstudio.core.event.exsd"/>
    <extension-point id="de.bmotionstudio.core.observer" name="BMotion Studio Observer" schema="schema/de.bmotionstudio.core.observer.exsd"/>
    <extension-point id="de.bmotionstudio.core.paletteEntry" name="Add a custom Palette Entry" schema="schema/de.bmotionstudio.core.paletteEntry.exsd"/>
    <extension-point id="de.bmotionstudio.core.includeObserver" name="Include Observer Extension Point" schema="schema/de.bmotionstudio.core.includeObserver.exsd"/>
@@ -315,6 +315,15 @@
             id="de.bmotionstudio.observer.BOperationObserver"
             name="B Operation Observer">
       </observer>
+   </extension>
+   <extension
+         point="de.bmotionstudio.core.event">
+      <event
+            class="de.bmotionstudio.core.model.event.ExecuteBOperationEvent"
+            id="de.bmotionstudio.event.ExecuteBOperationEvent"
+            name="Execute B Operation Event"
+            language="EventB,ClassicalB">
+      </event>
    </extension>
    <extension
          point="de.bmotionstudio.core.installActions">
@@ -657,6 +666,13 @@
                image="icons/icon_observer.gif"
                label="Observer">
          </propertyTab>
+         <propertyTab
+               afterTab="de.bmotionstudio.core.propertyTabObserver"
+               category="de.bmotionstudio.core.propertyTabs"
+               id="de.bmotionstudio.core.propertyTabEvents"
+               image="icons/icon_event.png"
+               label="Events">
+         </propertyTab>
       </propertyTabs>
    </extension>
    <extension
@@ -675,6 +691,14 @@
                class="de.bmotionstudio.core.editor.view.property.ObserverSection"
                id="de.bmotionstudio.core.propertySectionObserver"
                tab="de.bmotionstudio.core.propertyTabObserver">
+            <input
+                  type="org.eclipse.gef.editparts.AbstractEditPart">
+            </input>
+         </propertySection>
+         <propertySection
+               class="de.bmotionstudio.core.editor.view.property.EventSection"
+               id="de.bmotionstudio.core.propertySectionEvents"
+               tab="de.bmotionstudio.core.propertyTabEvents">
             <input
                   type="org.eclipse.gef.editparts.AbstractEditPart">
             </input>
