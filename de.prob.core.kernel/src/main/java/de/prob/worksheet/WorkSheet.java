@@ -1,5 +1,7 @@
 package de.prob.worksheet;
 
+import groovy.lang.MissingPropertyException;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
@@ -18,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.pegdown.PegDownProcessor;
 
 import com.google.common.base.Joiner;
@@ -33,14 +36,23 @@ public class WorkSheet {
 	private static final String DIR_FROM_SOMEWHERE_ELSE = "from_somewhere_else";
 	private String session;
 	private final Queue<String> q = new LinkedBlockingQueue<String>();
-	private final ArrayList<Editor> editors = new ArrayList<Editor>();
+	private ArrayList<String> order = new ArrayList<String>();
+
+	private final Map<String, Editor> editors = new HashMap<String, Editor>();
+
 	private int active = -1;
+
+	private static final String RENDERER_TEMPLATE_SIMPLE_TEXT = "worksheet_renderer.html";
+	private static final String RENDERER_TEMPLATE_HTML = "none";
+
 	private int message_counter = 0;
 	private final Gson g = new Gson();
 	private String defaultlang = "groovy";
 	private PegDownProcessor pegdown;
+
 	Type collectionType = new TypeToken<Collection<String>>() {
 	}.getType();
+
 	private Provider<ScriptEngine> groovyProvider;
 	private ScriptEngine groovy;
 
@@ -57,28 +69,25 @@ public class WorkSheet {
 		this.session = session;
 		PrintWriter out = response.getWriter();
 
-		// printparams(request);
+		printParams(request);
 
 		String cmds = request.getParameter("cmd");
 
 		ECmd cmd = ECmd.valueOf(cmds);
 		String box = request.getParameter("box");
-		int id = -1;
-		if (box != null)
-			Integer.parseInt(box);
 
 		switch (cmd) {
 		case init:
 			enqueue("cmd", "set_top", "lang", defaultLanguage());
-			appendNewBox(session, q, editors);
+			appendNewBox();
 			break;
 		case delete:
 			editors.remove(box);
 			enqueue("cmd", "delete", "id", box);
 			if (editors.isEmpty()) {
-				appendNewBox(session, q, editors);
+				appendNewBox();
 			}
-			reEvalWorksheet(id);
+			reEvalWorksheet(box);
 			break;
 		default:
 			break;
@@ -106,16 +115,10 @@ public class WorkSheet {
 			break;
 
 		case reorder:
-			String order = request.getParameter("order");
-			ArrayList<Editor> reordered = new ArrayList<Editor>();
-			Collection<String> fromJson = g.fromJson(order, collectionType);
-			for (Object object : fromJson) {
-				int i = Integer.parseInt((String) object);
-				reordered.add(editors.get(i));
-			}
-			editors.clear();
-			editors.addAll(reordered);
-			reEvalWorksheet(id);
+			String o = request.getParameter("order");
+			Collection<String> fromJson = g.fromJson(o, collectionType);
+			order = new ArrayList<String>(fromJson);
+			reEvalWorksheet(box);
 
 			break;
 		case leave:
@@ -133,22 +136,22 @@ public class WorkSheet {
 	}
 
 	private void switchLanguage(String box, String newlang) {
-		Integer id = Integer.valueOf(box);
-		String content = editors.get(id).getText();
+		String content = editors.get(box).getText();
 		Editor editor = new Editor(box, newlang, content);
-		editors.set(id, editor);
-		unfocus(box, content, editors);
+		editors.put(box, editor);
+		unfocus(box, content);
 		// active = Integer.valueOf(box);
 
 	}
 
 	private void leaveBox(String session, String box, String content,
 			String direction) {
-		int id = Integer.parseInt(box);
+
+		int id = order.indexOf(box);
 		if (active != id || active < 0)
 			return;
 
-		unfocus(box, content, editors);
+		unfocus(box, content);
 
 		if ("up".equals(direction)) {
 			if (id > 0) {
@@ -158,26 +161,30 @@ public class WorkSheet {
 			}
 		}
 		if ("down".equals(direction)) {
-			if (id < editors.size() - 1) {
+			if (id < order.size() - 1) {
 				int nid = id + 1;
 				activate(nid, DIR_FROM_ABOVE);
 				active = nid;
 			} else {
-				appendNewBox(session, q, editors);
+				appendNewBox();
 			}
 		}
 	}
 
-	private void activate(int nid, String dirFromAbove) {
-		activate(String.valueOf(nid), dirFromAbove);
+	private void activate(int nid, String direction) {
+		Editor e = editors.get(order.get(nid));
+		enqueue("cmd", "activate", "id", e.id, "lang", e.type.toString(),
+				"text", e.getText());
+		enqueue("cmd", "focus", "id", e.id, "direction", direction);
 	}
 
 	private void handleRendererDblClick(String box, String text) {
+		System.out.println(active + " " + box);
 		if (active >= 0) {
-			unfocus(String.valueOf(active), text, editors);
+			unfocus(order.get(active), text);
 		}
-		activate(box, DIR_FROM_SOMEWHERE_ELSE);
-		active = Integer.valueOf(box);
+		active = order.indexOf(box);
+		activate(active, DIR_FROM_SOMEWHERE_ELSE);
 	}
 
 	private String createUpdateMessage() {
@@ -191,23 +198,6 @@ public class WorkSheet {
 			r = g.toJson(list);
 		}
 		return r;
-	}
-
-	private void activate(String box, String direction) {
-		int id = findEditor(box);
-		Editor e = editors.get(id);
-		enqueue("cmd", "activate", "id", e.id, "lang", e.type.toString(),
-				"text", e.getText());
-		enqueue("cmd", "focus", "id", e.id, "direction", direction);
-	}
-
-	private int findEditor(String box) {
-		for (int i = 0; i < editors.size(); i++) {
-			Editor e = editors.get(i);
-			if (e.id.equals(box))
-				return i;
-		}
-		return -1;
 	}
 
 	@SuppressWarnings("unused")
@@ -227,8 +217,10 @@ public class WorkSheet {
 
 	@SuppressWarnings("unused")
 	private void printEditors() { // Debug method
-		for (int i = 0; i < editors.size(); i++) {
-			Editor e = editors.get(i);
+
+		for (int i = 0; i < order.size(); i++) {
+			String id = order.get(i);
+			Editor e = editors.get(id);
 			System.out.println(i + " " + " " + e.type + " " + e.getText());
 		}
 	}
@@ -251,11 +243,11 @@ public class WorkSheet {
 		return defaultlang;
 	}
 
-	private void appendNewBox(String session, Queue<String> q,
-			ArrayList<Editor> editors) {
+	private void appendNewBox() {
 		String id = String.valueOf(editors.size());
 		active = editors.size();
-		editors.add(new Editor(id, defaultLanguage(), ""));
+		editors.put(id, new Editor(id, defaultLanguage(), ""));
+		order.add(id);
 		enqueue("cmd", "append_box", "id", id, "lang", defaultLanguage(),
 				"content", "");
 		enqueue("cmd", "focus", "id", id);
@@ -284,65 +276,75 @@ public class WorkSheet {
 		return resp;
 	}
 
-	private void unfocus(final String box, final String content,
-			ArrayList<Editor> editors) {
+	private void unfocus(final String box, final String content) {
 		active = -1;
-		int id = Integer.parseInt(box);
-		Editor editor = editors.get(id);
+		Editor editor = editors.get(box);
 		editor.setText(content);
-		reEvalWorksheet(id);
+		reEvalWorksheet(box);
 	}
 
-	private void reEvalWorksheet(int id) {
+	private void reEvalWorksheet(String box) {
 		groovy = groovyProvider.get();
-		for (int i = 0; i < editors.size(); i++) {
-			enqueueUpdate(i);
+		for (String b : order) {
+			enqueueUpdate(b);
 		}
 	}
 
-	private void enqueueUpdate(int id) {
+	private void enqueueUpdate(String id) {
 		Editor editor = editors.get(id);
 		String box = editor.id;
 		Map<String, String> lemap = new HashMap<String, String>();
 
 		lemap.put("id", box);
 
-		String evaluated = evaluate(editor);
-		lemap.put("text", evaluated);
+		RenderResult res = evaluate(editor);
+
+		lemap.put("text", res.json);
 
 		String a = g.toJson(lemap);
-		enqueue(toJson("cmd", "render", "id", box, "template",
-				getTemplate(editor.type), "lang", editor.type.toString(),
-				"args", a));
+		enqueue(toJson("cmd", "render", "id", box, "template", res.template,
+				"lang", editor.type.toString(), "args", a));
 	}
 
-	private String getTemplate(EBoxTypes type) {
-		switch (type) {
-		case markdown:
-			return "none";
-		default:
-			return "worksheet_renderer.html";
-		}
-	}
+	private RenderResult evaluate(Editor editor) {
 
-	private String evaluate(Editor editor) {
 		EBoxTypes type = editor.type;
 		String text = editor.getText();
 		switch (type) {
 		case groovy:
-			Object result;
+			Object result = null;
 			try {
 				result = groovy.eval(text);
 			} catch (ScriptException e) {
-				return "Error";
+				String message = e.getMessage();
+				return new RenderResult(RENDERER_TEMPLATE_HTML,
+						pegdown.markdownToHtml("          "
+								+ cleanGroovyException(e).replaceAll("\n",
+										"\n        ")));
 			}
-			return result == null ? "null" : result.toString();
+			return new RenderResult(RENDERER_TEMPLATE_SIMPLE_TEXT,
+					result == null ? "null" : result.toString());
 		case b:
-			return "GTFO! " + text + "\n Do I look like a calculator?";
+			return new RenderResult(RENDERER_TEMPLATE_SIMPLE_TEXT, "GTFO! "
+					+ text + "\n Do I look like a calculator?");
 		case markdown:
-			return pegdown.markdownToHtml(text);
+			return new RenderResult(RENDERER_TEMPLATE_HTML,
+					pegdown.markdownToHtml(text));
 		default:
-			return "";
+			return new RenderResult(RENDERER_TEMPLATE_HTML, "DIE!");
 		}
+	}
+
+	private String cleanGroovyException(ScriptException e) {
+
+		String message = e.getMessage();
+		if (e.getCause() instanceof MultipleCompilationErrorsException)
+			return message.replaceAll("(.*\n.*Script.*?groovy): ", "");
+		if (e.getCause().getCause() instanceof MissingPropertyException) {
+			String r1 = message.replaceAll(".*property:", "No such property: ");
+			String r2 = r1.replaceAll("for.*", "");
+			return r2;
+		}
+		return message;
 	}
 }
