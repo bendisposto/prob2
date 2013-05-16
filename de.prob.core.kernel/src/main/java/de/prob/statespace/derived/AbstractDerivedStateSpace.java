@@ -43,18 +43,18 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		setNodeColors(cmd.getNodeColors());
 		setTransStyle(cmd.getTransStyle());
 		setTransColor(cmd.getTransColor());
+		this.stateSpace.registerStateSpaceListener(this);
 	}
 
 	Set<IStatesCalculatedListener> listeners = new HashSet<IStatesCalculatedListener>();
 
 	@Override
-	public abstract void newTransitions(final IStateSpace s,
-			final List<? extends OpInfo> newOps);
+	public abstract void newTransitions(final List<? extends OpInfo> newOps);
 
 	@Override
 	public void notifyStateSpaceChange(final List<? extends OpInfo> newOps) {
 		for (IStatesCalculatedListener l : listeners) {
-			l.newTransitions(this, newOps);
+			l.newTransitions(newOps);
 		}
 	}
 

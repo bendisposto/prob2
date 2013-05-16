@@ -36,7 +36,7 @@ public class FailureTableDisplay implements ITraceDisplay {
 
 	public FailureTableDisplay(final Table table) {
 		fTable = table;
-		COURIER = new Font(table.getDisplay(), "Monospace", 10, SWT.NONE);
+		COURIER = new Font(table.getDisplay(), "Courier", 12, SWT.NONE);
 		fTable.getParent().addDisposeListener(new DisposeListener() {
 			@Override
 			public void widgetDisposed(final DisposeEvent e) {

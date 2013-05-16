@@ -19,12 +19,7 @@ path.link {
   stroke-opacity: .6;
 }
 
-#menu {
-	background: rgb(255,255,255) transparent;
-	background: rgba(255,255,255,0.1);
-}
-
-#menu ul {
+.menuOps {
 	list-style-type: none;
 	background: rgb(255,255,255) transparent;
 	background: rgba(255,255,255,0.1);
@@ -32,6 +27,6 @@ path.link {
 	margin-top: 0;
 }
 
-#menu ul li {
+.menuOps li {
 	display: inline;
 }

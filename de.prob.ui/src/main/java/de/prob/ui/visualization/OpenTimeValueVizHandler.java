@@ -18,19 +18,19 @@ import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.webconsole.ServletContextListener;
-import de.prob.webconsole.servlets.FormulaOverHistoryServlet;
+import de.prob.webconsole.servlets.visualizations.ValueOverTimeServlet;
 
 public class OpenTimeValueVizHandler extends AbstractHandler implements
 		IHandler {
 
 	Logger logger = LoggerFactory.getLogger(OpenTimeValueVizHandler.class);
 
-	private final FormulaOverHistoryServlet servlet;
+	private final ValueOverTimeServlet servlet;
 	private final EvalElementFactory evalFactory;
 
 	public OpenTimeValueVizHandler() {
 		servlet = ServletContextListener.INJECTOR
-				.getInstance(FormulaOverHistoryServlet.class);
+				.getInstance(ValueOverTimeServlet.class);
 		evalFactory = ServletContextListener.INJECTOR
 				.getInstance(EvalElementFactory.class);
 	}
