@@ -2,6 +2,7 @@ package de.prob.webconsole.servlets.visualizations;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +44,8 @@ public class StateSpaceSession implements ISessionServlet,
 		IStatesCalculatedListener, IVisualizationServlet {
 	private IStateSpace space;
 	private AbstractData data;
-	private final Map<String, EnabledEvent> includedEvents = new HashMap<String, EnabledEvent>();
+	private final Map<String, EnabledEvent> events = new HashMap<String, EnabledEvent>();
+	private final List<String> disabledEvents = new ArrayList<String>();
 
 	public StateSpaceSession(final StateSpace space) {
 		this.space = space;
@@ -52,10 +54,10 @@ public class StateSpaceSession implements ISessionServlet,
 		}
 		AbstractElement mainComponent = space.getModel().getMainComponent();
 		if (mainComponent instanceof Machine) {
-			Set<BEvent> events = mainComponent.getChildrenOfType(BEvent.class);
-			for (BEvent bEvent : events) {
+			Set<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
+			for (BEvent bEvent : ops) {
 				EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
-				includedEvents.put(bEvent.getName(), e);
+				events.put(bEvent.getName(), e);
 			}
 		}
 	}
@@ -84,6 +86,7 @@ public class StateSpaceSession implements ISessionServlet,
 			} else if (cmd.equals("trans_diag")) {
 				data = createTransitionDiagram(p);
 			} else if (cmd.equals("d_sig_merge")) {
+				recalculateEvents(p);
 				data = createDottySignatureMerge();
 			} else if (cmd.equals("d_trans_diag")) {
 				data = createDottyTransitionDiagram(p);
@@ -95,21 +98,27 @@ public class StateSpaceSession implements ISessionServlet,
 	private void recalculateEvents(final String p) {
 		JsonElement parse = new JsonParser().parse(p);
 		JsonArray array = parse.getAsJsonArray();
-		boolean changed = false;
+		List<String> disabled = new ArrayList<String>();
 		for (JsonElement jsonElement : array) {
 			JsonObject object = jsonElement.getAsJsonObject();
 			String name = object.get("name").getAsString();
 			boolean checked = object.get("checked").getAsBoolean();
-			if (includedEvents.get(name).checked != checked) {
-				includedEvents.put(name, new EnabledEvent(name, checked));
+			if (events.get(name).checked != checked) {
+				events.put(name, new EnabledEvent(name, checked));
+
+				// If the box checked for the event and it is in the disabled
+				// list, remove it
+				if (checked && disabledEvents.contains(name)) {
+					disabledEvents.remove(name);
+				} else {
+					// If the box is not checked and it is not in the disabled
+					// list, add it
+					if (!disabled.contains(name)) {
+						disabledEvents.add(name);
+					}
+				}
 			}
 		}
-		updateSigMerge();
-	}
-
-	private void updateSigMerge() {
-		// TODO Auto-generated method stub
-
 	}
 
 	private void normalResponse(final HttpServletRequest req,
@@ -131,7 +140,7 @@ public class StateSpaceSession implements ISessionServlet,
 		resp.put("varCount", data.varSize());
 		resp.put("reset", data.getReset());
 		resp.put("mode", data.getMode());
-		resp.put("events", includedEvents.values());
+		resp.put("events", events.values());
 
 		Gson g = new Gson();
 
@@ -159,9 +168,11 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createSigMergeGraph() {
-		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand();
+		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand(
+				disabledEvents);
 		space.execute(cmd);
-		SignatureMergedStateSpace s = new SignatureMergedStateSpace(space, cmd);
+		SignatureMergedStateSpace s = new SignatureMergedStateSpace(space, cmd,
+				disabledEvents);
 		s.addStates(cmd.getStates());
 		s.addTransitions(cmd.getOps());
 		AbstractData d = changeStateSpaceTo(s);
@@ -183,7 +194,7 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createDottySignatureMerge() {
-		DottySignatureMerge s = new DottySignatureMerge(space);
+		DottySignatureMerge s = new DottySignatureMerge(space, disabledEvents);
 
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(4);
