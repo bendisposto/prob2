@@ -167,7 +167,9 @@ function createSSGraph(id,positionId,m,events,width,height) {
             .style("fill-opacity", 1e-6);
 
         var m = Viz(content, "svg");
+        alert("I was really drawn!"+ m);
         $("#toReplace").replaceWith(m);
+
     }
 
     function forD3(svg, res, force, stopped) {

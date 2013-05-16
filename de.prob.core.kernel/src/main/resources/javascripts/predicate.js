@@ -106,7 +106,7 @@ function update(vis, tree, root, source, i, diagonal) {
     var nodeEnter = node.enter().append("svg:g")
         .attr("class", "node")
         .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-        .on("click", function(d) { toggle(d); update(vis, tree, root, d, attrs, i, diagonal); });
+        .on("click", function(d) { toggle(d); update(vis, tree, root, d, i, diagonal); });
 
     nodeEnter.append("svg:rect")
                 .attr("height",60)
