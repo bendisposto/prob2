@@ -2,18 +2,27 @@ package de.prob.webconsole.servlets.visualizations;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import de.prob.animator.command.ApplySignatureMergeCommand;
 import de.prob.animator.command.CalculateTransitionDiagramCommand;
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.BEvent;
+import de.prob.model.representation.Machine;
 import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
@@ -35,11 +44,21 @@ public class StateSpaceSession implements ISessionServlet,
 		IStatesCalculatedListener, IVisualizationServlet {
 	private IStateSpace space;
 	private AbstractData data;
+	private final Map<String, EnabledEvent> events = new HashMap<String, EnabledEvent>();
+	private final List<String> disabledEvents = new ArrayList<String>();
 
-	public StateSpaceSession(final IStateSpace space) {
+	public StateSpaceSession(final StateSpace space) {
 		this.space = space;
 		if (space != null) {
 			data = createStateSpaceGraph();
+		}
+		AbstractElement mainComponent = space.getModel().getMainComponent();
+		if (mainComponent instanceof Machine) {
+			Set<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
+			for (BEvent bEvent : ops) {
+				EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
+				events.put(bEvent.getName(), e);
+			}
 		}
 	}
 
@@ -60,18 +79,46 @@ public class StateSpaceSession implements ISessionServlet,
 
 		if (space != null) {
 			if (cmd.equals("sig_merge")) {
+				recalculateEvents(p);
 				data = createSigMergeGraph();
 			} else if (cmd.equals("org_ss")) {
 				data = createStateSpaceGraph();
 			} else if (cmd.equals("trans_diag")) {
 				data = createTransitionDiagram(p);
 			} else if (cmd.equals("d_sig_merge")) {
+				recalculateEvents(p);
 				data = createDottySignatureMerge();
 			} else if (cmd.equals("d_trans_diag")) {
 				data = createDottyTransitionDiagram(p);
 			}
 		}
 
+	}
+
+	private void recalculateEvents(final String p) {
+		JsonElement parse = new JsonParser().parse(p);
+		JsonArray array = parse.getAsJsonArray();
+		List<String> disabled = new ArrayList<String>();
+		for (JsonElement jsonElement : array) {
+			JsonObject object = jsonElement.getAsJsonObject();
+			String name = object.get("name").getAsString();
+			boolean checked = object.get("checked").getAsBoolean();
+			if (events.get(name).checked != checked) {
+				events.put(name, new EnabledEvent(name, checked));
+
+				// If the box checked for the event and it is in the disabled
+				// list, remove it
+				if (checked && disabledEvents.contains(name)) {
+					disabledEvents.remove(name);
+				} else {
+					// If the box is not checked and it is not in the disabled
+					// list, add it
+					if (!disabled.contains(name)) {
+						disabledEvents.add(name);
+					}
+				}
+			}
+		}
 	}
 
 	private void normalResponse(final HttpServletRequest req,
@@ -93,6 +140,7 @@ public class StateSpaceSession implements ISessionServlet,
 		resp.put("varCount", data.varSize());
 		resp.put("reset", data.getReset());
 		resp.put("mode", data.getMode());
+		resp.put("events", events.values());
 
 		Gson g = new Gson();
 
@@ -120,9 +168,11 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createSigMergeGraph() {
-		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand();
+		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand(
+				disabledEvents);
 		space.execute(cmd);
-		SignatureMergedStateSpace s = new SignatureMergedStateSpace(space, cmd);
+		SignatureMergedStateSpace s = new SignatureMergedStateSpace(space, cmd,
+				disabledEvents);
 		s.addStates(cmd.getStates());
 		s.addTransitions(cmd.getOps());
 		AbstractData d = changeStateSpaceTo(s);
@@ -144,7 +194,7 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createDottySignatureMerge() {
-		DottySignatureMerge s = new DottySignatureMerge(space);
+		DottySignatureMerge s = new DottySignatureMerge(space, disabledEvents);
 
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(4);
@@ -217,5 +267,15 @@ public class StateSpaceSession implements ISessionServlet,
 	@Override
 	public void apply(final Transformer styling) {
 		data.addStyling(styling);
+	}
+
+	class EnabledEvent {
+		public String name;
+		public Boolean checked;
+
+		public EnabledEvent(final String name, final Boolean enabled) {
+			this.name = name;
+			checked = enabled;
+		}
 	}
 }

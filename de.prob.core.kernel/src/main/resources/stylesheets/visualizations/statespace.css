@@ -30,3 +30,11 @@ path.link {
 .menuOps li {
 	display: inline;
 }
+
+.menuOps fieldset {
+	margin-top: 15px;
+}
+
+.menuOps fieldset li {
+	display: block;
+}
