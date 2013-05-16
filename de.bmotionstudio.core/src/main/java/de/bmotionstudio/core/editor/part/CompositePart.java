@@ -24,8 +24,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
+import com.google.inject.Injector;
+
 import de.bmotionstudio.core.AttributeConstants;
-import de.bmotionstudio.core.BMotionStudio;
 import de.bmotionstudio.core.editor.editpolicy.BMSConnectionEditPolicy;
 import de.bmotionstudio.core.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.core.editor.editpolicy.BMSEditLayoutPolicy;
@@ -36,9 +37,14 @@ import de.bmotionstudio.core.editor.view.library.AttributeRequest;
 import de.bmotionstudio.core.editor.view.library.LibraryImageCommand;
 import de.bmotionstudio.core.editor.view.library.LibraryVariableCommand;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.History;
+import de.prob.webconsole.ServletContextListener;
 
 public class CompositePart extends BMSAbstractEditPart {
 
+	private Injector injector = ServletContextListener.INJECTOR;
+	
 	@Override
 	protected IFigure createEditFigure() {
 		IFigure figure = new CompositeFigure();
@@ -59,14 +65,23 @@ public class CompositePart extends BMSAbstractEditPart {
 		// ((BComposite) figure).setAlpha(Integer.valueOf(value.toString()));
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_IMAGE)) {
-			
+
 			if (value != null && value.toString().length() > 0) {
-				String imagePath = BMotionStudio.getImagePath()
-						+ File.separator + value.toString();
-				if (new File(imagePath).exists()) {
-					((CompositeFigure) figure).setImage(new Image(Display
-							.getDefault(), imagePath));
+				// TODO: What is if we open the visualization without a running
+				// model?
+				final AnimationSelector selector = injector
+						.getInstance(AnimationSelector.class);
+				History currentHistory = selector.getCurrentHistory();
+				if (currentHistory != null) {
+					String path = currentHistory.getModel().getModelFile()
+							.getParent()
+							+ "/images";
+					String imagePath = path + File.separator + value.toString();
+					if (new File(imagePath).exists())
+						((CompositeFigure) figure).setImage(new Image(Display
+								.getDefault(), imagePath));
 				}
+
 			}
 
 		}
