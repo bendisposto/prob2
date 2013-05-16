@@ -363,6 +363,17 @@ function calculateHeader(menu, id, m, stopped, checks) {
                 }
             });
     }
+
+    if( m === 3 || m === 5 ) {
+        var button = menu2.append("li")
+                        .append("button")
+                        .attr("type","button")
+                        .text("Change Expression")
+                        .on("click", function() {
+                            var command = m === 3 ? "trans_diag" : "d_trans_diag";
+                            doCmd( id, command, checks );
+                        });
+    }
 }
 
 function initialize(id) {
