@@ -26,8 +26,10 @@ public class DottySignatureMerge extends AbstractDottyGraph {
 
 	@Override
 	public void newTransitions(final List<? extends OpInfo> newOps) {
-		calculate();
-		notifyStateSpaceChange(newOps);
+		if (!newOps.isEmpty()) {
+			calculate();
+			notifyStateSpaceChange(newOps);
+		}
 	}
 
 }

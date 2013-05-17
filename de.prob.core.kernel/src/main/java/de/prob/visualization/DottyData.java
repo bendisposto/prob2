@@ -18,7 +18,7 @@ public class DottyData extends AbstractData {
 		data.content = space.getContent();
 		changes.content = space.getContent();
 		rand = new Random();
-		count = (rand.nextInt(13) % 5000);
+		count = data.content.length();
 	}
 
 	@Override
@@ -39,9 +39,10 @@ public class DottyData extends AbstractData {
 	@Override
 	public void addNewLinks(final StateSpaceGraph graph,
 			final List<? extends OpInfo> newOps) {
+		data.reset = true;
 		data.content = space.getContent();
 		changes.content = space.getContent();
-		count = (count + rand.nextInt(8) % 4500);
+		count = data.content.length();
 	}
 
 	@Override
@@ -51,13 +52,6 @@ public class DottyData extends AbstractData {
 
 	@Override
 	public void updateTransformers() {
-	}
-
-	@Override
-	public Data getChanges() {
-		Data d = super.getChanges();
-		changes.content = space.getContent();
-		return d;
 	}
 
 }

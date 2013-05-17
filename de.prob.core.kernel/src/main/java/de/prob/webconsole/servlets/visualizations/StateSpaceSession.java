@@ -135,6 +135,7 @@ public class StateSpaceSession implements ISessionServlet,
 			} else {
 				resp.put("data", data.getChanges());
 			}
+			data.setReset(false);
 		}
 		resp.put("count", data.count());
 		resp.put("varCount", data.varSize());
@@ -147,8 +148,6 @@ public class StateSpaceSession implements ISessionServlet,
 		String json = g.toJson(resp);
 		out.println(json);
 		out.close();
-
-		data.setReset(false);
 	}
 
 	private AbstractData createStateSpaceGraph() {

@@ -17,6 +17,7 @@ public abstract class AbstractDottyGraph implements IStateSpace,
 	protected StateSpace space;
 	protected Set<IStatesCalculatedListener> listeners = new HashSet<IStatesCalculatedListener>();
 	protected String content;
+	private boolean registered;
 
 	public AbstractDottyGraph(final IStateSpace space) {
 		if (space instanceof StateSpace) {
@@ -61,12 +62,20 @@ public abstract class AbstractDottyGraph implements IStateSpace,
 
 	@Override
 	public void registerStateSpaceListener(final IStatesCalculatedListener l) {
+		if (!registered) {
+			space.registerStateSpaceListener(this);
+			registered = true;
+		}
 		listeners.add(l);
 	}
 
 	@Override
 	public void deregisterStateSpaceListener(final IStatesCalculatedListener l) {
 		listeners.remove(l);
+		if (listeners.isEmpty()) {
+			space.deregisterStateSpaceListener(this);
+			registered = false;
+		}
 	}
 
 	public StateSpace getStateSpace() {

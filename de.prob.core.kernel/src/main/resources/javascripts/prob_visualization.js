@@ -31,27 +31,40 @@ function applyStyling(styling) {
     }
 }
 
+var zoom;
+
 function createCanvas(positionId,width,height) {
     var svg, redrawSvg;
+    zoom = d3.behavior.zoom().on("zoom",function() {
+        redrawCanvas(svg);
+    });
     svg = d3.select(positionId).append("svg:svg")
         .attr("class", "background")
         .attr("viewBox", "0 0 " + width + " " + height)
         .attr("pointer-events", "all")
+        .attr("id","svg-viz")
       .append("svg:g")
-        .call(d3.behavior.zoom().on("zoom", function() {
-            redrawCanvas(svg);
-        }))
-      .append("svg:g");
+        .call(zoom)
+      .append("svg:g")
+        .attr("class","zoomed");
 
     svg.append("svg:rect")
         .attr("class","canvas")
-        .attr("width",width)
-        .attr("height",height)
+        .attr("viewBox", "0 0 " + width + " " + height)
         .style("fill-opacity",1e-6);
 
-    redrawCanvas = function(canvas) {
+    function redrawCanvas(canvas) {
         canvas.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
     }
 
+    resetZoom(svg);
+
     return svg;
 }
+
+function resetZoom(svg) {
+    zoom.scale(1);
+    zoom.translate([0, 0]);
+    svg.transition().duration(500).attr("transform","translate("+zoom.translate()+") scale("+zoom.scale()+")");
+}
+

@@ -1,5 +1,5 @@
 function createSSGraph(id,positionId,m,events,width,height) {
-    var links, nodes, linkMap, menu, mode, force, ssCtr, svg, stopped, elements;
+    var ctr, links, nodes, linkMap, menu, mode, force, ssCtr, svg, stopped, elements , debug;
     mode = m;
     ssCtr = 0;
     menu = d3.select("#"+positionId)
@@ -8,6 +8,10 @@ function createSSGraph(id,positionId,m,events,width,height) {
     d3.select("#"+positionId)
         .append("div")
         .attr("id",positionId+"-viz");
+    debug = d3.select("#"+positionId)
+        .append("div")
+        .attr("id",positionId+"-debug")
+        .attr("class","messageBox");
 
     stopped = {value: false};
     calculateHeader(menu, id, mode, stopped,events);
@@ -19,7 +23,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
     nodes = [];
     links = [];
     linkMap = d3.map();
-
+    ctr = 0;
 
     // setup output polling
     setInterval(function() {
@@ -28,6 +32,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
             getSS : false,
             getAll : false
         }, function(res) {
+            var result;
             if (res.mode !== mode) {
                 mode = res.mode;
                 calculateHeader(menu, id, res.mode, stopped, res.events);
@@ -158,18 +163,36 @@ function createSSGraph(id,positionId,m,events,width,height) {
         });
     }
 
+    function clearNotifications(messageType) {
+        if(debug !== undefined) {
+            debug.selectAll(messageType).remove();     
+        }
+    }
+
+    function notifyUser(message,messageType) {
+        if( debug !== undefined ) {
+            debug.append("p")
+                .attr("class",messageType)
+                .text(message);      
+        }
+    }
+
+    function redraw(element) {
+        var element = $(element);
+
+    }
+
     function drawDotty(svg, content) {
-        svg.append("svg:rect")
-            .attr("class", "canvas")
-            .attr("id", "toReplace")
-            .attr("height", height)
-            .attr("width", width)
-            .style("fill-opacity", 1e-6);
+
+        svg.append("g")
+            .attr("id", "toReplace");
 
         var m = Viz(content, "svg");
-        alert("I was really drawn!"+ m);
-        $("#toReplace").replaceWith(m);
-
+        try {
+            $("#toReplace").replaceWith(m);
+        } catch(e) {
+            alert("Dotty graph not rendered. " + e.message)
+        }
     }
 
     function forD3(svg, res, force, stopped) {
@@ -209,7 +232,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
         buildGraph(svg, force, varCount, stopped);
     }
 
-    function refresh(svg, id, getAllStates, force, stopped) {
+    function reset(getAllStates) {
         if (getAllStates) {
             nodes = [];
             links = [];
@@ -220,6 +243,10 @@ function createSSGraph(id,positionId,m,events,width,height) {
         svg.selectAll(".node").remove();
         svg.selectAll(".linkT").remove();
         svg.selectAll("g svg").remove();
+    }
+
+    function refresh(svg, id, getAllStates, force, stopped) {
+        reset(getAllStates);
 
 
         $.getJSON("statespace_servlet", {
@@ -227,14 +254,17 @@ function createSSGraph(id,positionId,m,events,width,height) {
             getSS : true,
             getAll : getAllStates
         }, function(res) {
-
             if (res.data !== "") {
                 if (res.mode > 3) {
                     if (res.data.content !== "") {
-                        drawDotty(svg, res.data.content);
-                    }
+                        return drawDotty(svg, res.data.content);
+                    } 
+                    resetZoom(svg);
                 } else {
                     forD3(svg, res, force, stopped);
+                    if(getAllStates) {
+                        resetZoom(svg);
+                    }
                 }
                 applyStyling(res.data.styling);
             }
@@ -262,7 +292,7 @@ function doCmd(id, cmd, enabled) {
 function calculateHeader(menu, id, m, stopped, checks) {
     var cmds, pause, list, menu2, settings;
 
-    d3.selectAll(".menuOps").remove();
+    menu.selectAll(".menuOps").remove();
     cmds = [
         {name: "Original State Space", cmd: "org_ss", id: 1},
         {name: "Signature Merge", cmd: "sig_merge", id: 2},

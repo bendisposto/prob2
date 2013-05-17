@@ -51,6 +51,13 @@ public class VizView extends ViewPart {
 	public void init(final String url, final String sessionId) {
 		this.sessionId = sessionId;
 		browser.setUrl("http://localhost:" + port + "/" + url);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		browser.refresh();
+
 	}
 
 	@Override

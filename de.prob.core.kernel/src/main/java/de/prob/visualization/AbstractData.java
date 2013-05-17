@@ -117,6 +117,7 @@ public abstract class AbstractData {
 	}
 
 	public Data getData() {
+		System.out.println("Get Data in Abstract Data!");
 		return data;
 	}
 
@@ -158,6 +159,11 @@ public abstract class AbstractData {
 
 	public void setMode(final int mode) {
 		this.mode = mode;
+	}
+
+	@Override
+	public String toString() {
+		return data.content;
 	}
 
 }
