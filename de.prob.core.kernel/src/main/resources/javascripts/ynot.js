@@ -296,60 +296,6 @@ function disableEditor(info) {
     info.codemirror.getWrapperElement().style.display = "none";
 }
 
-// function evalGroovy(text, info) {
-// var r = info.renderer;
-// r.removeClass("renderer");
-// info.renderer.html('<img src="images/loading.gif" class="preload" />');
-// $.getJSON("exec", {
-// 'command' : 'eval',
-// 'text' : text,
-// 'lang' : "groovy",
-// 'session' : session
-// }, function(data) {
-// session = data.session;
-// r.addClass("renderer");
-// printRenderer(r, data.result)
-// $("#wsbox" + info.id).height(r.height() + 8);
-//
-// });
-// }
-// function evalB(text, info) {
-// var r = info.renderer;
-// r.removeClass("renderer");
-// info.renderer.html('<img src="images/loading.gif" class="preload" />');
-// $.getJSON("exec", {
-// 'command' : 'eval',
-// 'text' : text,
-// 'lang' : "b",
-// 'session' : session
-// }, function(data) {
-// session = data.session;
-// r.addClass("renderer");
-// printRenderer(r, data.result)
-// $("#wsbox" + info.id).height(r.height() + 8);
-//
-// });
-// }
-//
-// function evalMarkdown(text, info) {
-// var t = markdown.toHTML(text);
-// printRenderer(info.renderer, t);
-// }
-
-// function evalJavaScript(text, info) {
-// var printResult = true;
-// var r = null;
-// try {
-// r = eval(text);
-// } catch (e) {
-// r = '<div class="jserror">' + e + '</div>';
-// }
-// if (r == undefined)
-// r = "undefined";
-// if (printResult)
-// printRenderer(info.renderer, r);
-// }
-
 function printRenderer(renderer, out) {
     var output = String(out);
     if (output === "")
@@ -383,7 +329,6 @@ function async_query(session, msg) {
         url : "exec",
         data : msg
     })
-
 }
 
 var settings = {
@@ -444,27 +389,3 @@ function setBoxType(box, options) {
     })
 }
 
-function updateServlet() {
-}
-// var d = [];
-// editors.forEach(function(editor) {
-// d.push({
-// 'id' : editor.id,
-// 'lang' : editor.options.lang,
-// 'text' : editor.codemirror.getValue()
-// })
-// });
-//
-// var request = $.ajax({
-// url : "exec",
-// type : "GET",
-// data : {
-// 'session' : session,
-// 'command' : 'update',
-// 'data' : d,
-// 'count' : editors.length
-// },
-// dataType : "html"
-// });
-//
-// }
