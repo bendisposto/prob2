@@ -313,8 +313,8 @@ function calculateHeader(menu, id, m, stopped, checks) {
         .append("img")
           .attr("class", "push")
           .attr("src", function(d) { return d.value ? "../images/play-icon.png" : "../images/pause-icon.png"; })
-          .attr("width", "20")
-          .attr("height", "20")
+          .attr("width", "25")
+          .attr("height", "25")
           .attr("align", "top")
           .on("click", function(d) {
             var x = d.value;
@@ -401,6 +401,7 @@ function calculateHeader(menu, id, m, stopped, checks) {
 
     if( m === 3 || m === 5 ) {
         var form = menu2.append("li")
+                        .attr("class","transDiagOp")
                         .append("form");
 
         form.append("label")
