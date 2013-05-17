@@ -316,7 +316,6 @@ public class WorkSheet {
 			try {
 				result = groovy.eval(text);
 			} catch (ScriptException e) {
-				String message = e.getMessage();
 				return new RenderResult(RENDERER_TEMPLATE_HTML,
 						pegdown.markdownToHtml("          "
 								+ cleanGroovyException(e).replaceAll("\n",
