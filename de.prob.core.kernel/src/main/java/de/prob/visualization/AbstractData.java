@@ -117,7 +117,6 @@ public abstract class AbstractData {
 	}
 
 	public Data getData() {
-		System.out.println("Get Data in Abstract Data!");
 		return data;
 	}
 

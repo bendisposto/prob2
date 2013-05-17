@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.servlets.visualizations.StateSpaceServlet;
+import de.prob.webconsole.servlets.visualizations.StateSpaceSession;
 
 public class OpenStateSpaceVizHandler extends AbstractHandler implements
 		IHandler {
@@ -32,8 +33,11 @@ public class OpenStateSpaceVizHandler extends AbstractHandler implements
 
 		try {
 			String sessionId = servlet.openSession();
-			VisualizationUtil.createVisualizationViewPart(sessionId,
-					"statespace_servlet/?init=" + sessionId);
+			StateSpaceSession sessionServlet = servlet
+					.getSessionServlet(sessionId);
+			VizView vizView = VisualizationUtil.createVisualizationViewPart(
+					sessionId, "statespace_servlet/?init=" + sessionId);
+			sessionServlet.registerRefreshListener(vizView);
 		} catch (PartInitException e) {
 			logger.error("Could not create state space visualization view: "
 					+ e.getMessage());

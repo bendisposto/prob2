@@ -63,4 +63,8 @@ public abstract class SessionBasedServlet extends HttpServlet {
 		sessions.remove(id);
 	}
 
+	public StateSpaceSession getSessionServlet(final String sessionId) {
+		return (StateSpaceSession) sessions.get(sessionId);
+	}
+
 }

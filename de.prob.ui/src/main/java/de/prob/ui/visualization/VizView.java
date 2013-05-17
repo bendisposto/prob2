@@ -6,11 +6,13 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
 import de.prob.webconsole.WebConsole;
+import de.prob.webconsole.servlets.visualizations.IRefreshListener;
 
-public class VizView extends ViewPart {
+public class VizView extends ViewPart implements IRefreshListener {
 
 	public static final String ID = "de.prob.ui.viz.VizView";
 
@@ -18,6 +20,7 @@ public class VizView extends ViewPart {
 	private Browser browser;
 
 	private String sessionId;
+	private String url;
 
 	public VizView() {
 		port = WebConsole.getPort();
@@ -50,13 +53,9 @@ public class VizView extends ViewPart {
 
 	public void init(final String url, final String sessionId) {
 		this.sessionId = sessionId;
-		browser.setUrl("http://localhost:" + port + "/" + url);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		browser.refresh();
+		this.url = "http://localhost:" + port + "/" + url;
+		browser.setUrl(this.url);
+		refresh();
 
 	}
 
@@ -74,4 +73,13 @@ public class VizView extends ViewPart {
 		super.dispose();
 	}
 
+	@Override
+	public void refresh() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				browser.refresh();
+			}
+		});
+	}
 }

@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +47,7 @@ public class StateSpaceSession implements ISessionServlet,
 	private AbstractData data;
 	private final Map<String, EnabledEvent> events = new HashMap<String, EnabledEvent>();
 	private final List<String> disabledEvents = new ArrayList<String>();
+	private final Set<IRefreshListener> refreshListeners = new HashSet<IRefreshListener>();
 
 	public StateSpaceSession(final StateSpace space) {
 		this.space = space;
@@ -197,6 +199,7 @@ public class StateSpaceSession implements ISessionServlet,
 
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(4);
+		notifyRefresh();
 		return d;
 	}
 
@@ -205,6 +208,7 @@ public class StateSpaceSession implements ISessionServlet,
 
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(5);
+		notifyRefresh();
 		return d;
 	}
 
@@ -260,7 +264,11 @@ public class StateSpaceSession implements ISessionServlet,
 		if (space instanceof StateSpace) {
 			((StateSpace) space).calculateVariables();
 		}
+		if (space instanceof AbstractDottyGraph) {
+			notifyRefresh();
+		}
 		data.addNewLinks(space.getSSGraph(), newOps);
+
 	}
 
 	@Override
@@ -275,6 +283,20 @@ public class StateSpaceSession implements ISessionServlet,
 		public EnabledEvent(final String name, final Boolean enabled) {
 			this.name = name;
 			checked = enabled;
+		}
+	}
+
+	public void registerRefreshListener(final IRefreshListener l) {
+		refreshListeners.add(l);
+	}
+
+	public void deregisterRefreshListener(final IRefreshListener l) {
+		refreshListeners.remove(l);
+	}
+
+	public void notifyRefresh() {
+		for (IRefreshListener l : refreshListeners) {
+			l.refresh();
 		}
 	}
 }
