@@ -15,7 +15,7 @@ import de.bmotionstudio.core.model.VisualizationView;
 
 public class Visualization extends BControl {
 
-	private transient List<String> allBControlIDs;
+//	private transient List<String> allBControlIDs;
 	
 	private transient VisualizationView visualizationView;
 	
@@ -71,14 +71,14 @@ public class Visualization extends BControl {
 //	}
 
 	// old method
-	private String getMaxID(String type, int count, List<String> allIDs) {
-		String newID = "control_" + count;
-		if (allIDs.contains(newID)) {
-			return getMaxID(type, (count + 1), allIDs);
-		} else {
-			return newID;
-		}
-	}
+//	private String getMaxID(String type, int count, List<String> allIDs) {
+//		String newID = "control_" + count;
+//		if (allIDs.contains(newID)) {
+//			return getMaxID(type, (count + 1), allIDs);
+//		} else {
+//			return newID;
+//		}
+//	}
 
 //	public boolean checkIfIdExists(String ID) {
 //		return getAllBControlNames().contains(ID);

@@ -6,10 +6,18 @@
 
 package de.bmotionstudio.core.model.observer;
 
+import java.util.List;
+import java.util.Map;
+
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.History;
 
 public interface IObserver {
+
+	public List<IEvalElement> prepareObserver(History history,
+			BControl control);
 
 	/**
 	 * This method is called after every state change. The method tells the
@@ -20,14 +28,15 @@ public interface IObserver {
 	 * @param bcontrol
 	 *            The corresponding control
 	 */
-	public void check(History history, BControl control);
-	
+	public void check(History history, BControl control,
+			Map<String, EvaluationResult> results);
+
 	public void afterCheck(History history, BControl control);
-	
+
 	public String getName();
-	
+
 	public void setName(String name);
-	
+
 	public String getDescription();
 
 	public String getType();

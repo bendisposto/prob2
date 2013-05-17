@@ -1,6 +1,7 @@
 package de.bmotionstudio.core.model.observer;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.widgets.Shell;
@@ -10,6 +11,7 @@ import de.bmotionstudio.core.editor.wizard.observer.BOperationObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.util.BMotionUtil;
+import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.History;
 import de.prob.statespace.OpInfo;
 
@@ -20,13 +22,14 @@ public class BOperationObserver extends Observer {
 	private Object value;
 	
 	@Override
-	public void check(History history, BControl control) {
+	public void check(History history, BControl control,
+			Map<String, EvaluationResult> results) {
 
 		if (operation == null || attribute == null || value == null)
 			return;
 
 		if (predicate == null || (predicate != null && predicate.length() < 1)) {
-			
+
 			Set<OpInfo> opList = history.getNextTransitions();
 			for (OpInfo o : opList) {
 				if (o.getName().equals(operation))
@@ -103,7 +106,7 @@ public class BOperationObserver extends Observer {
 
 	@Override
 	public String getDescription() {
-		return "";
+		return "This observer sets the value of an attribute whenever the given operation is enabled in the current state.";
 	}
 
 }

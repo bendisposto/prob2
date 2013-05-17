@@ -1,12 +1,18 @@
 package de.bmotionstudio.core.model.observer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.editor.wizard.observer.BPredicateObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.util.BMotionUtil;
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.History;
 
 public class BPredicateObserver extends Observer {
@@ -17,24 +23,36 @@ public class BPredicateObserver extends Observer {
 	
 	private Object value;
 	
+	private transient List<IEvalElement> formulas;
+	
 	@Override
-	public void check(History history, BControl control) {
+	public List<IEvalElement> prepareObserver(History history,
+			BControl control) {
+		if (formulas == null)
+			formulas = new ArrayList<IEvalElement>();
+		formulas.clear();
+		if (predicate != null)
+			formulas.add(new ClassicalB(BMotionUtil.parseFormula(predicate,
+					control)));
+		return formulas;
+	}
 
-		if (predicate == null || attribute == null || value == null)
+	@Override
+	public void check(History history, BControl control,
+			Map<String, EvaluationResult> results) {
+
+		if (attribute == null || value == null || predicate == null)
 			return;
 
-		EvaluationResult evalResult = history.evalCurrent(BMotionUtil
-				.parseFormula(predicate, control));
-
+		String fpredicate = BMotionUtil.parseFormula(predicate, control);
+		EvaluationResult evalResult = results.get(fpredicate);
 		if (evalResult != null && !evalResult.hasError()) {
-
 			String result = evalResult.value;
 			Boolean bResult = Boolean.valueOf(result);
 			if (bResult)
 				control.setAttributeValue(attribute, value, true, false);
-
 		}
-		
+
 	}
 
 	@Override

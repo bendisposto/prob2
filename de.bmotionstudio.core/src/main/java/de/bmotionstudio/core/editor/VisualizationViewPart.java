@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -91,7 +92,10 @@ import de.bmotionstudio.core.model.BMotionRuler;
 import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
+import de.bmotionstudio.core.model.observer.Observer;
 import de.bmotionstudio.core.util.BMotionUtil;
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
@@ -128,6 +132,8 @@ public class VisualizationViewPart extends ViewPart implements
 	private File visualizationFile;
 	
 	private boolean dirty;
+	
+	private File modelFile;
 	
 	private List<String> selectionActions = new ArrayList<String>();
 	private List<String> stackActions = new ArrayList<String>();
@@ -489,8 +495,8 @@ public class VisualizationViewPart extends ViewPart implements
 		History currentHistory = selector.getCurrentHistory();
 		String partName = visualizationView.getName();
 		if (currentHistory != null) {
-			partName = partName + " ("
-					+ currentHistory.getModel().getModelFile().getName() + ")";
+			modelFile = currentHistory.getModel().getModelFile();
+			partName = partName + " (" + modelFile.getName() + ")";
 			selector.registerHistoryChangeListener(this);
 			setInitialized(true);
 		}
@@ -733,14 +739,43 @@ public class VisualizationViewPart extends ViewPart implements
 			checkObserver(history);
 	}
 
-	public void checkObserver(final History history) {
+	public void checkObserver(History history) {
+				
+		if(history == null)
+			return;
+		
+		// Proceed only if the state can be evaluated and the visualization
+		// corresponds to the active animation
+		if (!history.getStatespace().canBeEvaluated(history.getCurrentState())
+				|| !(history.getModel().getModelFile().getName()
+						.equals(modelFile.getName())))
+			return;
 
+		// Collect all controls		
 		Visualization visualization = visualizationView.getVisualization();
 		List<BControl> allBControls = new ArrayList<BControl>();
 		allBControls.add(visualization);
 		collectAllBControls(allBControls, visualization);
+		
+		// Collect all evaluation elements from observer
+		List<IEvalElement> l = new ArrayList<IEvalElement>();
+		for (BControl c : allBControls) {
+			Map<Observer, List<IEvalElement>> prepareObserver = c
+					.prepareObserver(history);
+			for (List<IEvalElement> ll : prepareObserver.values()) {
+				for (IEvalElement f : ll) {
+					l.add(f);
+				}
+			}
+		}
+		
+		// Get all evaluation results at once
+		Map<String, EvaluationResult> results = BMotionUtil
+				.getEvaluationResults(history, l);
+
+		// Check observer with evaluation results
 		for (BControl c : allBControls)
-			c.checkObserver(history);
+			c.checkObserver(history, results);
 		for (BControl c : allBControls)
 			c.afterCheckObserver(history);
 
