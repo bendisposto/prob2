@@ -83,6 +83,7 @@ public class WorkSheet {
 			break;
 		case delete:
 			editors.remove(box);
+			order.remove(box);
 			enqueue("cmd", "delete", "id", box);
 			if (editors.isEmpty()) {
 				appendNewBox();
@@ -335,7 +336,6 @@ public class WorkSheet {
 	}
 
 	private String cleanGroovyException(ScriptException e) {
-
 		String message = e.getMessage();
 		if (e.getCause() instanceof MultipleCompilationErrorsException)
 			return message.replaceAll("(.*\n.*Script.*?groovy): ", "");
@@ -346,4 +346,14 @@ public class WorkSheet {
 		}
 		return message;
 	}
+
+	public void save() {
+		for (String box : order) {
+			Editor e = editors.get(box);
+			System.out.println("<" + e.type + ">");
+			System.out.println(e.getText());
+			System.out.println("</" + e.type + ">");
+		}
+	}
+
 }
