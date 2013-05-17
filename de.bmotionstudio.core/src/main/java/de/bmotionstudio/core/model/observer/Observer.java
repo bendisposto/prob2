@@ -6,11 +6,15 @@
 
 package de.bmotionstudio.core.model.observer;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.PropertyChangeSupportObject;
 import de.bmotionstudio.core.model.control.BControl;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.History;
 
 /**
@@ -69,6 +73,11 @@ public abstract class Observer extends PropertyChangeSupportObject implements
 	
 	public String getDescription() {
 		return null;
+	}
+	
+	public List<IEvalElement> prepareObserver(History history,
+			BControl control) {
+		return Collections.emptyList();
 	}
 	
 	public void afterCheck(History history, BControl control) {

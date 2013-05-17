@@ -10,7 +10,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -54,16 +53,17 @@ import de.bmotionstudio.core.model.observer.IObserverListener;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
-import de.prob.statespace.IAnimationListener;
 import de.prob.webconsole.ServletContextListener;
 
 public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		implements PropertyChangeListener, IObserverListener, IAdaptable,
-		NodeEditPart, IAnimationListener {
+		NodeEditPart {
 	
 	private Injector injector = ServletContextListener.INJECTOR;
 	final AnimationSelector selector = injector
 			.getInstance(AnimationSelector.class);
+	
+//	private History currentHistory;
 	
 	private final Cursor cursorHover = new Cursor(Display.getCurrent(),
 			SWT.CURSOR_HAND);
@@ -73,6 +73,8 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	protected ConnectionAnchor anchor;
 
 	private Label tooltipLabel;
+	
+//	private File modelFile;
 	
 	private ChangeListener changeListener = new ChangeListener() {
 
@@ -110,7 +112,6 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 			VisualizationView visualizationView = ((BControl) getModel())
 					.getVisualization().getVisualizationView();
 			visualizationView.addPropertyChangeListener(this);
-			selector.registerAnimationListener(this);
 			if (getFigure() instanceof AbstractBMotionFigure) {
 				AbstractBMotionFigure af = (AbstractBMotionFigure) getFigure();
 				af.activateFigure();
@@ -127,7 +128,6 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 					.removePropertyChangeListener(this);
 			if (getFigure() instanceof AbstractBMotionFigure) {
 				AbstractBMotionFigure af = (AbstractBMotionFigure) getFigure();
-				selector.deregisterAnimationListener(this);
 				af.deactivateFigure();
 			}
 		}
@@ -144,9 +144,10 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 	@Override
 	protected IFigure createFigure() {
-		IFigure createEditFigure = createEditFigure();
-		createEditFigure.setToolTip(getTooltipFigure());
-		return createEditFigure;
+		IFigure fig = createEditFigure();
+//		if (!(this instanceof VisualizationPart))
+//			fig.setToolTip(getTooltipFigure());
+		return fig;
 	}
 
 	@Override
@@ -273,26 +274,40 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		return anchor;
 	}
 
-	@Override
-	public void currentStateChanged(History oldHistory, History newHistory) {
-		if (tooltipLabel == null)
-			return;
-		List<Event> events = getCastedModel().getEvents();
-		StringBuilder str = new StringBuilder();
-		Iterator<Event> iterator = events.iterator();
-		while (iterator.hasNext()) {
-			Event e = iterator.next();
-			str.append(e.getTooltipText(newHistory, getCastedModel()));
-			if (iterator.hasNext())
-				str.append("\n");
-		}
-		tooltipLabel.setText(str.toString());
-	}
-	
-	@Override
-	public void removeHistory(History history) {
-	}
-	
+//	public void historyChange(History history) {
+//
+//		if (history == null || tooltipLabel == null)
+//			return;
+//
+//		if (modelFile == null)
+//			modelFile = history.getModel().getModelFile();
+//
+//		// Proceed only if the state can be evaluated and the visualization
+//		// corresponds to the active animation
+//		if (!history.getStatespace().canBeEvaluated(history.getCurrentState())
+//				|| !(history.getModel().getModelFile().getName()
+//						.equals(modelFile.getName())))
+//			return;
+//
+//		if ((currentHistory != null && currentHistory.getCurrentState() == history
+//				.getCurrentState()))
+//			return;
+//
+//		System.out.println("BLUB");
+//		
+//		List<Event> events = getCastedModel().getEvents();
+//		StringBuilder str = new StringBuilder();
+//		Iterator<Event> iterator = events.iterator();
+//		while (iterator.hasNext()) {
+//			Event e = iterator.next();
+//			str.append(e.getTooltipText(history, getCastedModel()));
+//			if (iterator.hasNext())
+//				str.append("\n");
+//		}
+//		tooltipLabel.setText(str.toString());
+//		currentHistory = history;
+//	}
+		
 	/*
 	 * (non-Javadoc)
 	 * 

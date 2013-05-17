@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -43,6 +44,8 @@ import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.observer.BOperationObserver;
 import de.bmotionstudio.core.model.observer.Observer;
+import de.bmotionstudio.core.util.BMotionUtil;
+import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.classicalb.Operation;
@@ -293,16 +296,22 @@ public class BOperationObserverWizard extends ObserverWizard {
 
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				
-				if(evt.getPropertyName().equals("predicate")) {
+
+				if (evt.getPropertyName().equals("predicate")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					History currentHistory = selector.getCurrentHistory();
-					getObserver().check(currentHistory, getControl());
+					Map<String, EvaluationResult> evaluationResults = BMotionUtil
+							.getEvaluationResults(
+									currentHistory,
+									getControl().prepareObserver(getObserver(),
+											currentHistory));
+					getObserver().check(currentHistory, getControl(),
+							evaluationResults);
 				}
-				
+
 			}
-			
+
 		});
 		
 		initBindings(dbc);

@@ -2,6 +2,7 @@ package de.bmotionstudio.core.model.observer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +39,8 @@ public class CSPEventObserver extends Observer {
 	private transient boolean restored = false;
 	
 	@Override
-	public void check(History history, BControl control) {
+	public void check(History history, BControl control,
+			Map<String, EvaluationResult> results) {
 		
 		if (currentHisOps == null)
 			currentHisOps = new ArrayList<OpInfo>();

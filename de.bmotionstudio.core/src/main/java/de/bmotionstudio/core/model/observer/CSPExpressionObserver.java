@@ -1,5 +1,7 @@
 package de.bmotionstudio.core.model.observer;
 
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.editor.wizard.observer.CSPExpressionObserverWizard;
@@ -19,7 +21,8 @@ public class CSPExpressionObserver extends Observer {
 	private String expression;
 
 	@Override
-	public void check(History history, BControl control) {
+	public void check(History history, BControl control,
+			Map<String, EvaluationResult> results) {
 
 		if (attribute == null || expression == null)
 			return;

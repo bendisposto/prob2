@@ -2,6 +2,7 @@ package de.bmotionstudio.core.editor.wizard.observer;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Map;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -33,6 +34,8 @@ import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.observer.CSPExpressionObserver;
 import de.bmotionstudio.core.model.observer.Observer;
+import de.bmotionstudio.core.util.BMotionUtil;
+import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.webconsole.ServletContextListener;
@@ -206,7 +209,13 @@ public class CSPExpressionObserverWizard extends ObserverWizard {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					History currentHistory = selector.getCurrentHistory();
-					getObserver().check(currentHistory, getControl());
+					Map<String, EvaluationResult> evaluationResults = BMotionUtil
+							.getEvaluationResults(
+									currentHistory,
+									getControl().prepareObserver(getObserver(),
+											currentHistory));
+					getObserver().check(currentHistory, getControl(),
+							evaluationResults);
 				}
 				
 			}

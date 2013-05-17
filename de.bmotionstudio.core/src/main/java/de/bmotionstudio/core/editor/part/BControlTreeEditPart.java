@@ -22,7 +22,6 @@ import org.eclipse.ui.PlatformUI;
 import de.bmotionstudio.core.AttributeConstants;
 import de.bmotionstudio.core.BMotionEditorPlugin;
 import de.bmotionstudio.core.editor.editpolicy.BMSDeletePolicy;
-import de.bmotionstudio.core.model.control.BConnection;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.BControlPropertyConstants;
 import de.bmotionstudio.core.model.control.Visualization;
