@@ -190,6 +190,9 @@ function createSSGraph(id,positionId,m,events,width,height) {
         var m = Viz(content, "svg");
         try {
             $("#toReplace").replaceWith(m);
+            svg.select("svg")
+                .attr("id","toReplace");
+            $("#toReplace").replaceWith(m);
         } catch(e) {
             alert("Dotty graph not rendered. " + e.message)
         }
@@ -397,14 +400,27 @@ function calculateHeader(menu, id, m, stopped, checks) {
     }
 
     if( m === 3 || m === 5 ) {
-        var button = menu2.append("li")
-                        .append("button")
-                        .attr("type","button")
-                        .text("Change Expression")
-                        .on("click", function() {
-                            var command = m === 3 ? "trans_diag" : "d_trans_diag";
-                            doCmd( id, command, checks );
-                        });
+        var form = menu2.append("li")
+                        .append("form");
+
+        form.append("label")
+            .text("Change Expression: ");
+
+        form.append("input")
+            .attr("type","text")
+            .attr("id","new_expr");
+
+        form.append("input")
+            .attr("type","button")
+            .attr("value","Submit")
+            .on("click", function() {
+                var command = m === 3 ? "trans_diag" : "d_trans_diag";
+                $.getJSON("statespace_servlet", {
+                    sessionId : id,
+                    cmd : command,
+                    param : $("#new_expr").val()
+                });
+            });
     }
 }
 
