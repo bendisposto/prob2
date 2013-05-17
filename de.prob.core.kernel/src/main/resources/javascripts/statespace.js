@@ -167,7 +167,9 @@ function createSSGraph(id,positionId,m,events,width,height) {
             .style("fill-opacity", 1e-6);
 
         var m = Viz(content, "svg");
+        alert("I was really drawn!"+ m);
         $("#toReplace").replaceWith(m);
+
     }
 
     function forD3(svg, res, force, stopped) {
@@ -362,6 +364,17 @@ function calculateHeader(menu, id, m, stopped, checks) {
                     settingsOpen.value = false;
                 }
             });
+    }
+
+    if( m === 3 || m === 5 ) {
+        var button = menu2.append("li")
+                        .append("button")
+                        .attr("type","button")
+                        .text("Change Expression")
+                        .on("click", function() {
+                            var command = m === 3 ? "trans_diag" : "d_trans_diag";
+                            doCmd( id, command, checks );
+                        });
     }
 }
 
