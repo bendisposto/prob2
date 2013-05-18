@@ -75,7 +75,7 @@ public class VizView extends ViewPart implements IRefreshListener {
 
 	@Override
 	public void refresh() {
-		Display.getDefault().asyncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
 				browser.refresh();

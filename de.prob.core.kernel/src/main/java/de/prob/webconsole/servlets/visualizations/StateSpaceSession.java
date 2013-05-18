@@ -197,18 +197,18 @@ public class StateSpaceSession implements ISessionServlet,
 	private AbstractData createDottySignatureMerge() {
 		DottySignatureMerge s = new DottySignatureMerge(space, disabledEvents);
 
+		notifyRefresh();
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(4);
-		notifyRefresh();
 		return d;
 	}
 
 	private AbstractData createDottyTransitionDiagram(final String expression) {
 		DottyTransitionDiagram s = new DottyTransitionDiagram(space, expression);
 
+		notifyRefresh();
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(5);
-		notifyRefresh();
 		return d;
 	}
 

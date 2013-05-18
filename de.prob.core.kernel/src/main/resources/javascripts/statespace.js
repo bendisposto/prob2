@@ -325,7 +325,10 @@ function calculateHeader(menu, id, m, stopped, checks) {
     list = menu2.append("li")
                   .attr("class", "dropdown")
                 .append("select")
-                  .on("change", function() {doCmd(id, this.options[this.selectedIndex].__data__.cmd, checks); });
+                  .on("change", function() {
+                        stopped.value = true; 
+                        doCmd(id, this.options[this.selectedIndex].__data__.cmd, checks); 
+                    });
 
     list.selectAll("option")
         .data(cmds)
@@ -377,6 +380,7 @@ function calculateHeader(menu, id, m, stopped, checks) {
             .attr("value","Submit")
             .on("click",function() {
                 var command = m === 2 ? "sig_merge" : "d_sig_merge";
+                stopped.value = true;
                 doCmd(id, command, checks);
             });
     }
@@ -415,6 +419,7 @@ function calculateHeader(menu, id, m, stopped, checks) {
             .attr("type","button")
             .attr("value","Submit")
             .on("click", function() {
+                stopped.value = true;
                 var command = m === 3 ? "trans_diag" : "d_trans_diag";
                 $.getJSON("statespace_servlet", {
                     sessionId : id,
