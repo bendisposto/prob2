@@ -83,7 +83,7 @@ function refresh(svg, id, w, h) {
         functionCtr = res.count;
         if(res.data !== "") {
             doIt(svg, res.data, w, h);
-            applyStyling(res.attrs);
+            applyStyling(res.styling);
         };
     });
 }

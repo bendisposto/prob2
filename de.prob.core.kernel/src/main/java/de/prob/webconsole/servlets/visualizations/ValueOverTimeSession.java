@@ -50,7 +50,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 			response.put("data", result);
 		}
 		response.put("count", count);
-		response.put("attrs", styling);
+		response.put("styling", styling);
 
 		Gson g = new Gson();
 

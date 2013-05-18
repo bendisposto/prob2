@@ -269,7 +269,7 @@ function refresh(id, vis, tree, height) {
         if(res.data !== "") {
             data = res.data;
             buildTree(vis, tree, res.data, height);  
-            applyStyling(res.attrs);   
+            applyStyling(res.styling);   
         };
     });
 }
