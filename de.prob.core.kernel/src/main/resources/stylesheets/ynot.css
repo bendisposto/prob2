@@ -42,10 +42,13 @@ img.preload {
 }
 
 .worksheetbox {
+    margin-top:4px;
+    margin-bottom:4px;
 	min-height: 32px;
 	border: 1px dashed #aaa;
 	height: auto;
 	padding-top: 8px;
+	border-radius: 8px;
 }
 
 .ui-sortable-placeholder {
