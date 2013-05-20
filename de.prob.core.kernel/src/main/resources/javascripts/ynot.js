@@ -61,13 +61,8 @@ var editorkeys = function(id) {
 
 var templates = {};
 get_template("server_disconnected.html"); // won't be able to get it later ;-)
-get_template('worksheet_renderer.html');
 get_template('worksheet_editor.html');
 get_template('worksheet_topbar.html')
-
-function reEval(rep) {
-    console.log('Reevaluate Worksheet, starting with pos ', rep);
-}
 
 function reorder() {
     var boxes = $(".worksheetbox");
@@ -173,17 +168,15 @@ function dispatch(data) {
         activateEditor(options, data.id, data.text);
         break;
     case 'render':
-        var view = JSON.parse(data.args);
-        view["lang"] = eval("settings." + data.lang).lang;
-        var rend = null;
-        if (data.template != "none") {
-            rend = Mustache.render(get_template(data.template), view);
-            $("#wsbox" + data.id).replaceWith(rend);
-        } else {
-            rend = Mustache.render(get_template("plain_renderer.html"), view);
-            $("#wsbox" + data.id).replaceWith(rend);
-            $("#renderer" + data.id).append(view.text)
-        }
+        var view = {
+            "id" : data.id,
+            "lang" : eval("settings." + data.lang).lang
+        };
+        var rend = rend = Mustache.render(get_template("plain_renderer.html"),
+                view);
+
+        $("#wsbox" + data.id).replaceWith(rend);
+        $("#renderer" + data.id).append(data.html)
         $("#renderer" + data.id).dblclick(function(evt) {
             async_query(session, {
                 "cmd" : "renderer_dblclick",
@@ -229,7 +222,14 @@ function appendEditor(options, id) {
 }
 
 function activateEditor(options, id) {
-    var text = arguments[2];
+    if (options.codemirror != undefined) {
+        activateCodeEditor(options, id, arguments[2]);
+    } else {
+
+    }
+}
+
+function activateCodeEditor(options, id, text) {
     if (text == undefined)
         text = ""
     var view = {
@@ -258,50 +258,6 @@ function activateEditor(options, id) {
         if (e.keyCode === 13)
             console.log("enter")
     };
-
-}
-
-function enableRenderer(info) {
-    var editor = info.codemirror;
-    var text = editor.getValue();
-    var evalfkt = info.options.evalfkt;
-    var renderer = info.renderer;
-    var output = evalfkt(text, info);
-    renderer[0].style.display = "block";
-    MathJax.Hub.Queue([ "Typeset", MathJax.Hub, renderer[0] ]);
-    $("#wsbox" + info.id).height(renderer.height() + 8);
-}
-
-function disableRenderer(info) {
-    info.renderer[0].style.display = "none";
-}
-
-function enableEditor(info) {
-    var editor = info.codemirror;
-    var wrapper = editor.getWrapperElement();
-    wrapper.style.display = "block";
-    currentEditor = findEditor(info.id);
-    editor.focus();
-}
-
-function findEditor(id) {
-    for ( var i = 0; i < editors.length; i++) {
-        if (editors[i].id == id)
-            return i;
-    }
-}
-
-function disableEditor(info) {
-    var editor = info.codemirror;
-    info.codemirror.getWrapperElement().style.display = "none";
-}
-
-function printRenderer(renderer, out) {
-    var output = String(out);
-    if (output === "")
-        renderer.html("<p>&nbsp;</p>");
-    else
-        renderer.html(output);
 }
 
 function get_session() {
@@ -357,12 +313,12 @@ var settings = {
             viewportMargin : Infinity,
         }
     },
-    javascript : {
-        key : "javascript",
-        lang : "JavaScript",
+    load : {
+        key : "load",
+        lang : "Load  Model",
         codemirror : {
             mode : 'javascript',
-            lineNumbers : true,
+            lineNumbers : false,
             lineWrapping : true,
             theme : "default",
             viewportMargin : Infinity,
@@ -388,4 +344,3 @@ function setBoxType(box, options) {
         'box' : box
     })
 }
-

@@ -1,6 +1,6 @@
 package de.prob.worksheet;
 
 public enum EBoxTypes {
-	groovy, b, markdown, unknown;
+	groovy, b, markdown, load, unknown;
 
 }

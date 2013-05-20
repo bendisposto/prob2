@@ -51,12 +51,14 @@ public class WorkSheet {
 
 	private Provider<ScriptEngine> groovyProvider;
 	private ScriptEngine groovy;
+	private EditorFactory editorFactory;
 
 	@Inject
 	public WorkSheet(ScriptEngineProvider groovyProvider,
-			PegDownProcessor pegdown) {
+			PegDownProcessor pegdown, EditorFactory editorFactory) {
 		this.groovyProvider = groovyProvider;
 		this.pegdown = pegdown;
+		this.editorFactory = editorFactory;
 		groovy = groovyProvider.get();
 	}
 
@@ -134,7 +136,7 @@ public class WorkSheet {
 
 	private void switchLanguage(String box, String newlang) {
 		String content = editors.get(box).getText();
-		DefaultEditor editor = EditorFactory
+		DefaultEditor editor = editorFactory
 				.createEditor(newlang, box, content);
 		editors.put(box, editor);
 		unfocus(box, content);
@@ -244,7 +246,7 @@ public class WorkSheet {
 	private void appendNewBox() {
 		String id = String.valueOf(editors.size());
 		active = editors.size();
-		DefaultEditor editor = EditorFactory.createEditor(defaultLanguage(),
+		DefaultEditor editor = editorFactory.createEditor(defaultLanguage(),
 				id, "");
 		editors.put(id, editor);
 		order.add(id);
@@ -284,26 +286,35 @@ public class WorkSheet {
 	}
 
 	private void reEvalWorksheet(String box) {
-		groovy = groovyProvider.get();
-		for (String b : order) {
-			enqueueUpdate(b);
+		if (lastrelevant(box)) {
+			enqueueUpdate(box);
+		} else {
+			groovy = groovyProvider.get();
+			for (String b : order) {
+				enqueueUpdate(b);
+			}
 		}
+	}
+
+	private boolean lastrelevant(String box) {
+		if (order.get(order.size() - 1).equals(box))
+			return true;
+		boolean r = true;
+		for (int i = order.indexOf(box) + 1; i < order.size(); i++) {
+			DefaultEditor editor = editors.get(order.get(i));
+			r = r && editor.getText().isEmpty();
+		}
+		return r;
 	}
 
 	private void enqueueUpdate(String id) {
 		DefaultEditor editor = editors.get(id);
 		String box = editor.id;
-		Map<String, String> lemap = new HashMap<String, String>();
 
-		lemap.put("id", box);
+		String html = editor.evaluate(this);
 
-		RenderResult res = editor.evaluate(this);
-
-		lemap.put("text", res.json);
-
-		String a = g.toJson(lemap);
-		enqueue(toJson("cmd", "render", "id", box, "template", res.template,
-				"lang", editor.type.toString(), "args", a));
+		enqueue(toJson("cmd", "render", "id", box, "lang",
+				editor.type.toString(), "html", html));
 	}
 
 	public void save() {

@@ -33,7 +33,7 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 		Bindings bindings = engine.getBindings(ScriptContext.GLOBAL_SCOPE);
 		bindings.put("api", api);
 		bindings.put("animations", animations);
-		return engine;
+		return new GroovySE(engine);
 	}
 
 }

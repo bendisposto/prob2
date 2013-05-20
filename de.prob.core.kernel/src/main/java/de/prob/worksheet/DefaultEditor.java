@@ -19,8 +19,9 @@ public class DefaultEditor {
 		return text;
 	}
 
-	protected RenderResult evaluate(WorkSheet ws) {
-		return new RenderResult(WorkSheet.RENDERER_TEMPLATE_HTML, "DIE!");
+	protected String evaluate(WorkSheet ws) {
+		return ""; // new RenderResult(WorkSheet.RENDERER_TEMPLATE_HTML,
+					// "DIE!");
 	};
 
 }
