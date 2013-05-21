@@ -36,21 +36,30 @@ import de.prob.statespace.derived.DottyTransitionDiagram;
 import de.prob.statespace.derived.SignatureMergedStateSpace;
 import de.prob.statespace.derived.TransitionDiagram;
 import de.prob.visualization.AbstractData;
+import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.DerivedStateSpaceData;
 import de.prob.visualization.DottyData;
+import de.prob.visualization.DynamicTransformer;
 import de.prob.visualization.StateSpaceData;
 import de.prob.visualization.Transformer;
 
 public class StateSpaceSession implements ISessionServlet,
 		IStatesCalculatedListener, IVisualizationServlet {
+	private final String filename;
 	private IStateSpace space;
 	private AbstractData data;
+	private String expression;
 	private final Map<String, EnabledEvent> events = new HashMap<String, EnabledEvent>();
 	private final List<String> disabledEvents = new ArrayList<String>();
 	private final Set<IRefreshListener> refreshListeners = new HashSet<IRefreshListener>();
+	private final AnimationProperties props;
+	private final String sessionId;
 
-	public StateSpaceSession(final StateSpace space) {
+	public StateSpaceSession(final String sessionId, final StateSpace space,
+			final AnimationProperties props) {
+		this.sessionId = sessionId;
 		this.space = space;
+		this.props = props;
 		if (space != null) {
 			data = createStateSpaceGraph();
 		}
@@ -62,6 +71,48 @@ public class StateSpaceSession implements ISessionServlet,
 				events.put(bEvent.getName(), e);
 			}
 		}
+		filename = props.getPropFileFromModelFile(space.getModel()
+				.getModelFile().getAbsolutePath());
+		props.setProperty(filename, sessionId, serialize());
+	}
+
+	public StateSpaceSession(final String sessionId, final StateSpace space,
+			final int mode, final List<String> disabledEvents,
+			final String expression, final List<Transformer> transformers,
+			final AnimationProperties props) {
+		this.sessionId = sessionId;
+		this.space = space;
+		this.props = props;
+		if (space != null) {
+			data = createStateSpaceGraph();
+		}
+		AbstractElement mainComponent = space.getModel().getMainComponent();
+		if (mainComponent instanceof Machine) {
+			Set<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
+			for (BEvent bEvent : ops) {
+				EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
+				events.put(bEvent.getName(), e);
+			}
+		}
+		filename = props.getPropFileFromModelFile(space.getModel()
+				.getModelFile().getAbsolutePath());
+		disabledEvents.addAll(disabledEvents);
+		this.expression = expression;
+		if (mode == 2) {
+			data = createSigMergeGraph();
+		} else if (mode == 3) {
+			data = createTransitionDiagram(expression);
+		} else if (mode == 4) {
+			data = createDottySignatureMerge();
+		} else if (mode == 5) {
+			data = createDottyTransitionDiagram(expression);
+		}
+
+		for (Transformer transformer : transformers) {
+			data.addStyling(transformer);
+		}
+
+		props.setProperty(filename, sessionId, serialize());
 	}
 
 	@Override
@@ -87,14 +138,16 @@ public class StateSpaceSession implements ISessionServlet,
 				data = createStateSpaceGraph();
 			} else if (cmd.equals("trans_diag")) {
 				data = createTransitionDiagram(p);
+				expression = p;
 			} else if (cmd.equals("d_sig_merge")) {
 				recalculateEvents(p);
 				data = createDottySignatureMerge();
 			} else if (cmd.equals("d_trans_diag")) {
 				data = createDottyTransitionDiagram(p);
+				expression = p;
 			}
 		}
-
+		props.setProperty(filename, sessionId, serialize());
 	}
 
 	private void recalculateEvents(final String p) {
@@ -274,6 +327,9 @@ public class StateSpaceSession implements ISessionServlet,
 	@Override
 	public void apply(final Transformer styling) {
 		data.addStyling(styling);
+		if (styling instanceof DynamicTransformer) {
+			props.setProperty(filename, sessionId, serialize());
+		}
 	}
 
 	class EnabledEvent {
@@ -297,6 +353,39 @@ public class StateSpaceSession implements ISessionServlet,
 	public void notifyRefresh() {
 		for (IRefreshListener l : refreshListeners) {
 			l.refresh();
+		}
+	}
+
+	public String serialize() {
+		final List<String> serializedDyTrans = new ArrayList<String>();
+		List<Transformer> styling = data.getStyling();
+		for (Transformer transformer : styling) {
+			if (transformer instanceof DynamicTransformer) {
+				serializedDyTrans.add(((DynamicTransformer) transformer)
+						.serialize());
+			}
+		}
+
+		ToSerialize toSerialize = new ToSerialize(data.getMode(),
+				disabledEvents, expression, serializedDyTrans);
+
+		Gson g = new Gson();
+
+		return g.toJson(toSerialize);
+	}
+
+	class ToSerialize {
+		public int mode;
+		public List<String> disabled;
+		public String expr;
+		public List<String> transformers;
+
+		public ToSerialize(final int mode, final List<String> disabled,
+				final String expr, final List<String> transformers) {
+			this.mode = mode;
+			this.disabled = disabled;
+			this.expr = expr;
+			this.transformers = transformers;
 		}
 	}
 }

@@ -165,4 +165,8 @@ public abstract class AbstractData {
 		return data.content;
 	}
 
+	public List<Transformer> getStyling() {
+		return data.styling;
+	}
+
 }

@@ -32,11 +32,14 @@ public class OpenStateSpaceVizHandler extends AbstractHandler implements
 		Shell shell = HandlerUtil.getActiveShell(event);
 
 		try {
-			String sessionId = servlet.openSession();
+			String sessionId = VisualizationUtil.createSessionId();
+			servlet.openSession(sessionId);
+
 			StateSpaceSession sessionServlet = servlet
 					.getSessionServlet(sessionId);
-			VizView vizView = VisualizationUtil.createVisualizationViewPart(
-					sessionId, "statespace_servlet/?init=" + sessionId);
+			VizView vizView = VisualizationUtil
+					.createVisualizationViewPart("statespace_servlet/?init="
+							+ sessionId);
 			sessionServlet.registerRefreshListener(vizView);
 		} catch (PartInitException e) {
 			logger.error("Could not create state space visualization view: "

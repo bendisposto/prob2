@@ -46,9 +46,10 @@ public class OpenPredicateVizHandler extends AbstractHandler implements
 
 		try {
 			IEvalElement formula = evalFactory.deserialize(encodedFormula);
-			String sessionId = servlet.openSession(formula);
-			VisualizationUtil.createVisualizationViewPart(sessionId,
-					"predicate/?init=" + sessionId);
+			String sessionId = VisualizationUtil.createSessionId();
+			servlet.openSession(sessionId, formula);
+			VisualizationUtil.createVisualizationViewPart("predicate/?init="
+					+ sessionId);
 		} catch (PartInitException e) {
 			logger.error("Could not create predicate visualization view: "
 					+ e.getMessage());

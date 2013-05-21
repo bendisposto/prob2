@@ -4,13 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Joiner;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import de.prob.animator.command.FilterStatesForPredicateCommand;
+import de.prob.animator.domainobjects.EvalElementFactory;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
+import de.prob.webconsole.ServletContextListener;
 
 public class DynamicTransformer extends Transformer implements
 		IStatesCalculatedListener {
@@ -72,4 +79,58 @@ public class DynamicTransformer extends Transformer implements
 		return selector + "," + newSelector;
 	}
 
+	public String serialize() {
+		ToSerialize toSerialize = new ToSerialize(predicate.serialized(),
+				attributes, styles);
+
+		Gson g = new Gson();
+		return g.toJson(toSerialize);
+	}
+
+	public static Transformer deserialize(final String json, final StateSpace s) {
+		JsonParser parser = new JsonParser();
+		JsonObject object = parser.parse(json).getAsJsonObject();
+
+		EvalElementFactory deserializer = ServletContextListener.INJECTOR
+				.getInstance(EvalElementFactory.class);
+		DynamicTransformer transformer = new DynamicTransformer(
+				deserializer.deserialize(object.get("predicate").getAsString()),
+				s);
+
+		JsonElement e = object.get("attrs");
+		if (e != null) {
+			JsonArray array = e.getAsJsonArray();
+			for (JsonElement jsonElement : array) {
+				JsonObject asJsonObject = jsonElement.getAsJsonObject();
+				transformer.set(asJsonObject.get("name").getAsString(),
+						asJsonObject.get("value").getAsString());
+			}
+		}
+		e = object.get("styles");
+		if (e != null) {
+			JsonArray array = e.getAsJsonArray();
+			for (JsonElement jsonElement : array) {
+				JsonObject asJsonObject = jsonElement.getAsJsonObject();
+				transformer.set(asJsonObject.get("name").getAsString(),
+						asJsonObject.get("value").getAsString());
+			}
+		}
+
+		return transformer;
+	}
+
+	class ToSerialize {
+
+		private final String predicate;
+		private final List<Attribute> attrs;
+		private final List<Style> styles;
+
+		public ToSerialize(final String predicate, final List<Attribute> attrs,
+				final List<Style> styles) {
+			this.predicate = predicate;
+			this.attrs = attrs;
+			this.styles = styles;
+		}
+
+	}
 }
