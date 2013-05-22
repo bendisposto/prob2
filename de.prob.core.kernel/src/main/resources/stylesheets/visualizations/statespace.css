@@ -3,15 +3,15 @@ path.link {
 	stroke-width: 1px;
 }
 
-.node {
+.state {
   stroke: #fff;
   stroke-width: 1.5px;
   fill: #555;
 }
 
-.node text {
+.state text {
   stroke: none;
-  fill: black;
+  fill: white;
 }
 
 .link {

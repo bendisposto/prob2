@@ -78,7 +78,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
         node = svg.selectAll(".node")
               .data(nodes)
             .enter().append("g")
-              .attr("class", "node")
+              .attr("class", "state")
               .attr("id", function(d) { return "n" + d.id; })
               .call(force.drag);
 
@@ -243,7 +243,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
         }
 
         svg.selectAll(".link").remove();
-        svg.selectAll(".node").remove();
+        svg.selectAll(".state").remove();
         svg.selectAll(".linkT").remove();
         svg.selectAll("g svg").remove();
     }
