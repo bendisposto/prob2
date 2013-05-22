@@ -4,17 +4,22 @@ function doIt(svg, dataset, xLabel, w, h) {
 
     var xMax = 0;
     var yMax = 0;
-    var tempMax = 0;
+    var xMin = 99999999;
+    var temp = 0;
     var color = d3.scale.category20();
 
     for( i = 0 ; i < dataset.length ; i = i + 1 ) {
-        tempMax = d3.max(dataset[i].dataset, function(d) { return d.t; });
-        if( tempMax > xMax ) {
-            xMax = tempMax;
+        temp = d3.max(dataset[i].dataset, function(d) { return d.t; });
+        if( temp > xMax ) {
+            xMax = temp;
         }
-        tempMax = d3.max(dataset[i].dataset, function(d) { return d.value; });
-        if( tempMax > yMax ) {
-            yMax = tempMax;
+        temp = d3.min(dataset[i].dataset, function(d) { return d.t; });
+        if( temp < xMin ) {
+            xMin = temp;
+        }
+        temp = d3.max(dataset[i].dataset, function(d) { return d.value; });
+        if( temp > yMax ) {
+            yMax = temp;
         }
     }
 
@@ -25,7 +30,7 @@ function doIt(svg, dataset, xLabel, w, h) {
 
     color.domain(elementNames);
 
-    var xScale = d3.scale.linear().domain([0, xMax]).range([4*padding, w-padding]);
+    var xScale = d3.scale.linear().domain([xMin, xMax]).range([4*padding, w-padding]);
     var yScale = d3.scale.linear().domain([0, yMax]).range([h-4*padding, padding]);
 
     var xAxis = d3.svg.axis()

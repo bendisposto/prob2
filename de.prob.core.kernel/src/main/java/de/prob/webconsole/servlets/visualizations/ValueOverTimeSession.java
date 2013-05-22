@@ -179,10 +179,14 @@ public class ValueOverTimeSession implements ISessionServlet,
 					}
 				} else if (timeRes.size() == results.size()) {
 					for (EvaluationResult it : results) {
+						int index = results.indexOf(it);
 						points.add(new Element(it.getStateId(), timeRes.get(
-								results.indexOf(it)).getValue(), it.getValue()));
-						points.add(new Element(it.getStateId(), timeRes.get(
-								results.indexOf(it)).getValue(), it.getValue()));
+								index).getValue(), it.getValue()));
+						if (index < results.size() - 1) {
+							points.add(new Element(it.getStateId(), timeRes
+									.get(index + 1).getValue(), it.getValue()));
+						}
+
 					}
 				}
 
