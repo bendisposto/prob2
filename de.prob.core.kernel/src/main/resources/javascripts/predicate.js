@@ -16,49 +16,8 @@ function buildTree(vis, tree, treeData, height) {
     labels = {};
     values = {};
 
-    calculateSize(vis, tree, root);
-
     update(vis, tree, root, root, i, diagonal);
 }
-
-// static calculation of size of labels
-function calculateSize(vis, tree, root) {
-  var toCalc = vis.selectAll("g.node")
-      .data(tree.nodes(root).reverse());
-
-  var l = toCalc.enter().append("svg:text")
-        .attr("class","l")
-        .attr("font-size","11px")
-        .text(function(d) {return d.name});
-
-  var v = toCalc.enter().append("svg:text")
-        .attr("class","v")
-        .attr("font-size","11px")
-        .text(function(d) {return d.value});
-
-  var toDel = $(".l");
-
-  for (var i = 0 ; i < toDel.length; i++) {
-    nodeLength[toDel[i].textContent] = toDel[i].getBBox().width;
-  };
-
-  toDel = $(".v");
-    for (var i = 0 ; i < toDel.length; i++) {
-    valueLength[toDel[i].textContent] = toDel[i].getBBox().width;
-  };
-
-  l.remove();
-  v.remove();
-}
-
-function calcWidth(key) {
-    var labelL = nodeLength[key.name];
-    var valueL = valueLength[key.value];
-    if( labelL >= valueL) {
-      return labelL;
-    } 
-    return valueL;
-};
 
 function update(vis, tree, root, source, i, diagonal) {
 
@@ -96,7 +55,7 @@ function update(vis, tree, root, source, i, diagonal) {
     };
 
     // Normalize for fixed-depth.
-    nodes.forEach(function(d) { d.y = d.depth * 180 + 40 + calcWidth(root) ; });
+    
 
     // Update the nodes…
     var node = vis.selectAll("g.node")
@@ -149,9 +108,12 @@ function update(vis, tree, root, source, i, diagonal) {
               d3.select("#r"+d.fId)
                 .attr("width",textW+20)
                 .attr("x",newX);
+              d["tW"] = textW;
             }
             return "v"+d.fId;
         });
+
+    nodes.forEach(function(d) { d.y = d.depth * 180 + 40 + root.tW; });
 
     // Transition nodes to their new position.
     var nodeUpdate = node.transition()

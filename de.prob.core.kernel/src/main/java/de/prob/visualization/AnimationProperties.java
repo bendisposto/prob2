@@ -61,7 +61,7 @@ public class AnimationProperties {
 	}
 
 	public String getPropFileFromModelFile(final String modelFile) {
-		return modelFile.substring(0, modelFile.lastIndexOf(".")) + ".vizprops";
+		return modelFile.substring(0, modelFile.lastIndexOf(".")) + ".viz";
 	}
 
 }
