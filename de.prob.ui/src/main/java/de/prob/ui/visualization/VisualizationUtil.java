@@ -21,7 +21,7 @@ public class VisualizationUtil {
 		VizView vizView = (VizView) activePage.showView(VizView.ID,
 				relativeUrl, IWorkbenchPage.VIEW_VISIBLE);
 
-		if (vizView != null && !vizView.isInitialized()) {
+		if (vizView != null) {
 			vizView.init(relativeUrl);
 		}
 

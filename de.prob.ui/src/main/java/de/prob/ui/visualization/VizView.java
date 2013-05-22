@@ -21,11 +21,9 @@ public class VizView extends ViewPart implements IRefreshListener {
 
 	private String secondaryId;
 	private String url;
-	private boolean initialized;
 
 	public VizView() {
 		port = WebConsole.getPort();
-		initialized = false;
 	}
 
 	@Override
@@ -60,7 +58,6 @@ public class VizView extends ViewPart implements IRefreshListener {
 	}
 
 	public void init(final String url) {
-		initialized = true;
 		this.url = "http://localhost:" + port + "/" + url;
 		browser.setUrl(this.url);
 		refresh();
@@ -88,9 +85,5 @@ public class VizView extends ViewPart implements IRefreshListener {
 				browser.refresh();
 			}
 		});
-	}
-
-	public boolean isInitialized() {
-		return initialized;
 	}
 }
