@@ -50,7 +50,7 @@ function createCanvas(positionId,width,height) {
 
     svg.append("svg:rect")
         .attr("class","canvas")
-        .attr("viewBox", "0 0 " + width + " " + height)
+        .attr("viewBox","0 0 " + width + " " + height)
         .style("fill-opacity",1e-6);
 
     function redrawCanvas(canvas) {

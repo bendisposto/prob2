@@ -39,12 +39,8 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 			throw new AnimationNotLoadedException("Could not visualize "
 					+ formula.getCode() + " because no animation is loaded");
 		}
-		ValueOverTimeSession session = new ValueOverTimeSession(formula,
-				animations);
-		String propFile = properties.getPropFileFromModelFile(animations
-				.getCurrentHistory().getModel().getModelFile()
-				.getAbsolutePath());
-		properties.setProperty(propFile, sessionId, formula.serialized());
+		ValueOverTimeSession session = new ValueOverTimeSession(sessionId,
+				formula, animations, properties);
 		super.openSession(sessionId, session);
 		visualizations.registerSession(sessionId, session);
 		return sessionId;
@@ -62,16 +58,17 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 					.getCurrentHistory().getModel().getModelFile()
 					.getAbsolutePath());
 			Properties props = properties.getProperties(propFile);
-			String formula = props.getProperty(id);
-			if (formula != null) {
-				IEvalElement iEvalElement = deserializer.deserialize(formula);
-				try {
-					openSession(id, iEvalElement);
-				} catch (AnimationNotLoadedException e) {
+			String json = props.getProperty(id);
+			if (json != null) {
+				if (animations.getCurrentHistory() == null) {
 					return null;
 				}
+				ValueOverTimeSession session = new ValueOverTimeSession(id,
+						json, animations, properties, deserializer);
+				super.openSession(id, session);
+				visualizations.registerSession(id, session);
+				return id;
 			}
-
 		}
 		return null;
 	}
