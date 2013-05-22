@@ -1,4 +1,4 @@
-function doIt(svg, dataset, w, h) {
+function doIt(svg, dataset, xLabel, w, h) {
     var i;
     var padding = 10;
 
@@ -47,7 +47,7 @@ function doIt(svg, dataset, w, h) {
         .attr("x", w)
         .attr("y", -6)
         .style("text-anchor", "end")
-        .text("Number of Animation Steps");
+        .text(xLabel);
    
     svg.append("g")
         .attr("class", "axis")
@@ -145,7 +145,7 @@ function refresh(svg, id, w, h) {
   	}, function(res) {
         functionCtr = res.count;
         if(res.data !== "") {
-            doIt(svg, res.data, w, h);
+            doIt(svg, res.data, res.xLabel, w, h);
             applyStyling(res.styling);
         };
     });

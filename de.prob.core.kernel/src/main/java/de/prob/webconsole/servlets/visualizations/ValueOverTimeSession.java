@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import de.prob.animator.domainobjects.CSP;
@@ -42,11 +43,14 @@ public class ValueOverTimeSession implements ISessionServlet,
 	private final AnimationProperties properties;
 	private final String saveFile;
 	private final String sessionId;
+	private final IEvalElement time;
 
 	public ValueOverTimeSession(final String sessionId,
-			final IEvalElement formula, final AnimationSelector animations,
+			final IEvalElement formula, final IEvalElement time,
+			final AnimationSelector animations,
 			final AnimationProperties properties) {
 		this.sessionId = sessionId;
+		this.time = time;
 		this.properties = properties;
 		currentHistory = animations.getCurrentHistory();
 		animations.registerHistoryChangeListener(this);
@@ -71,13 +75,26 @@ public class ValueOverTimeSession implements ISessionServlet,
 		JsonParser parser = new JsonParser();
 		JsonElement parsed = parser.parse(json);
 		if (parsed != null) {
-			JsonArray asJsonArray = parsed.getAsJsonArray();
-			for (JsonElement jsonElement : asJsonArray) {
-				String string = jsonElement.getAsString();
-				if (string != null) {
-					formulas.add(deserializer.deserialize(string));
+			JsonObject asJson = parsed.getAsJsonObject();
+			JsonElement timeString = asJson.get("time");
+			if (timeString != null) {
+				time = deserializer.deserialize(timeString.getAsString());
+			} else {
+				time = null;
+			}
+
+			JsonElement f = asJson.get("formula");
+			if (f != null) {
+				JsonArray asJsonArray = f.getAsJsonArray();
+				for (JsonElement jsonElement : asJsonArray) {
+					String string = jsonElement.getAsString();
+					if (string != null) {
+						formulas.add(deserializer.deserialize(string));
+					}
 				}
 			}
+		} else {
+			time = null;
 		}
 		vizType = formulas.get(0).getClass().getSimpleName();
 		datasets = calculate();
@@ -129,6 +146,8 @@ public class ValueOverTimeSession implements ISessionServlet,
 
 		if (getFormula) {
 			response.put("data", datasets);
+			response.put("xLabel", time == null ? "Number of Animation Steps"
+					: time.getCode());
 		}
 		response.put("count", count);
 		response.put("styling", styling);
@@ -139,17 +158,32 @@ public class ValueOverTimeSession implements ISessionServlet,
 	public List<Object> calculate() {
 		List<Object> result = new ArrayList<Object>();
 		if (currentHistory != null && currentHistory.getS() == stateSpace) {
+			List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
+			if (time != null) {
+				timeRes = currentHistory.eval(time);
+			}
+
 			for (IEvalElement formula : formulas) {
 
 				List<EvaluationResult> results = currentHistory.eval(formula);
 				List<Object> points = new ArrayList<Object>();
 
-				int c = 0;
-				for (EvaluationResult it : results) {
-					points.add(new Element(it.getStateId(), c, it.getValue()));
-					points.add(new Element(it.getStateId(), c + 1, it
-							.getValue()));
-					c++;
+				if (timeRes.isEmpty()) {
+					int c = 0;
+					for (EvaluationResult it : results) {
+						points.add(new Element(it.getStateId(), c + "", it
+								.getValue()));
+						points.add(new Element(it.getStateId(), (c + 1) + "",
+								it.getValue()));
+						c++;
+					}
+				} else if (timeRes.size() == results.size()) {
+					for (EvaluationResult it : results) {
+						points.add(new Element(it.getStateId(), timeRes.get(
+								results.indexOf(it)).getValue(), it.getValue()));
+						points.add(new Element(it.getStateId(), timeRes.get(
+								results.indexOf(it)).getValue(), it.getValue()));
+					}
 				}
 
 				Map<String, Object> datum = new HashMap<String, Object>();
@@ -167,9 +201,9 @@ public class ValueOverTimeSession implements ISessionServlet,
 		public final Integer value;
 		public final Integer t;
 
-		public Element(final String string, final int t, final Object value) {
+		public Element(final String string, final String t, final Object value) {
 			stateid = string;
-			this.t = t;
+			this.t = Integer.parseInt(t);
 			if (value.equals("TRUE")) {
 				this.value = 1;
 			} else if (value.equals("FALSE")) {
@@ -195,10 +229,16 @@ public class ValueOverTimeSession implements ISessionServlet,
 	}
 
 	public String serialize() {
-		List<String> serialized = new ArrayList<String>();
-		for (IEvalElement e : formulas) {
-			serialized.add(e.serialized());
+		Map<String, Object> serialized = new HashMap<String, Object>();
+		if (time != null) {
+			serialized.put("time", time.serialized());
 		}
+
+		List<String> f = new ArrayList<String>();
+		for (IEvalElement e : formulas) {
+			f.add(e.serialized());
+		}
+		serialized.put("formula", f);
 
 		Gson g = new Gson();
 

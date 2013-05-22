@@ -33,14 +33,15 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 		this.deserializer = deserializer;
 	}
 
-	public String openSession(final String sessionId, final IEvalElement formula)
+	public String openSession(final String sessionId,
+			final IEvalElement formula, final IEvalElement time)
 			throws AnimationNotLoadedException {
 		if (animations.getCurrentHistory() == null) {
 			throw new AnimationNotLoadedException("Could not visualize "
 					+ formula.getCode() + " because no animation is loaded");
 		}
 		ValueOverTimeSession session = new ValueOverTimeSession(sessionId,
-				formula, animations, properties);
+				formula, time, animations, properties);
 		super.openSession(sessionId, session);
 		visualizations.registerSession(sessionId, session);
 		return sessionId;

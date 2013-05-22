@@ -4,8 +4,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -49,17 +48,22 @@ public class OpenTimeValueVizHandler extends AbstractHandler implements
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Shell shell = HandlerUtil.getActiveShell(event);
 		String encodedFormula = event.getParameter("de.prob.ui.viz.eval");
+		String timeExpression = "";
 
 		if (encodedFormula.equals("enter")
 				&& animations.getCurrentHistory() != null) {
-			encodedFormula = askForValue(shell, animations.getCurrentHistory()
+			Answer answer = askForValue(shell, animations.getCurrentHistory()
 					.getModel());
+			encodedFormula = answer.formula;
+			timeExpression = answer.timeExpression;
 		}
 
 		try {
 			IEvalElement formula = evalFactory.deserialize(encodedFormula);
+			IEvalElement time = timeExpression.equals("") ? null : evalFactory
+					.deserialize(timeExpression);
 			String sessionId = VisualizationUtil.createSessionId();
-			servlet.openSession(sessionId, formula);
+			servlet.openSession(sessionId, formula, time);
 			VisualizationUtil.createVisualizationViewPart("formula/?init="
 					+ sessionId);
 		} catch (PartInitException e) {
@@ -72,43 +76,38 @@ public class OpenTimeValueVizHandler extends AbstractHandler implements
 		return null;
 	}
 
-	private String askForValue(final Shell shell, final AbstractModel model) {
-		InputDialog inputDialog = new InputDialog(shell, "Formula Input",
-				"Enter a formula for visualization:", null,
-				new IInputValidator() {
-					String errormsg = "Input must be a valid formula";
+	private Answer askForValue(final Shell shell, final AbstractModel model) {
+		SpecifyFormulaDialog dialog = new SpecifyFormulaDialog(shell, model);
+		dialog.create();
+		if (dialog.open() == Window.OK) {
 
-					@Override
-					public String isValid(final String newText) {
-						try {
-							if (model instanceof ClassicalBModel) {
-								new ClassicalB(newText);
-							} else if (model instanceof EventBModel) {
-								new EventB(newText);
-							} else if (model instanceof CSPModel) {
-								new CSP(newText, (CSPModel) model);
-							}
-						} catch (Exception e) {
-							return errormsg;
-						}
-						return null;
-					}
-				});
-		inputDialog.open();
-		String answer = inputDialog.getValue();
-		if (answer != null) {
+			String expr = dialog.getExpression();
+			String time = dialog.getTimeExpression();
 			if (model instanceof ClassicalBModel) {
-				return new ClassicalB(answer).serialized();
+				return new Answer(new ClassicalB(expr).serialized(),
+						time.equals("") ? ""
+								: new ClassicalB(time).serialized());
 			} else if (model instanceof EventBModel) {
-				new EventB(answer).serialized();
+				return new Answer(new EventB(expr).serialized(),
+						time.equals("") ? "" : new EventB(time).serialized());
 			} else if (model instanceof CSPModel) {
-				new CSP(answer, (CSPModel) model).serialized();
+				return new Answer(new CSP(expr, (CSPModel) model).serialized(),
+						time.equals("") ? ""
+								: new CSP(time, (CSPModel) model).serialized());
 			}
-
-			return new ClassicalB(answer).serialized();
-		} else {
-			throw new EvaluationException("String not a valid formula");
 		}
+		throw new EvaluationException("String not a valid formula");
+	}
+
+	class Answer {
+		public String formula;
+		public String timeExpression;
+
+		public Answer(final String formula, final String timeExpression) {
+			this.formula = formula;
+			this.timeExpression = timeExpression;
+		}
+
 	}
 
 }
