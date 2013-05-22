@@ -181,6 +181,25 @@
                  style="push">
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="popup:de.prob.ui.StateView">
+           <command
+                 commandId="de.prob.ui.createFormViz"
+                 style="push">
+              <visibleWhen>
+                 <with
+                       variable="selection">
+                    <iterate
+                          operator="or">
+                       <instanceof
+                             value="de.prob.model.representation.IEval">
+                       </instanceof>
+                    </iterate>
+                 </with>
+              </visibleWhen>
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
@@ -259,6 +278,11 @@
             <command
                   id="de.prob.ui.viz.statespace"
                   name="Open State Space Visualization">
+            </command>
+            <command
+                  description="Takes formula from State View and opens a visualization"
+                  id="de.prob.ui.createFormViz"
+                  name="Create Formula Visualization">
             </command>
    </extension>
    
@@ -465,6 +489,12 @@
                </equals>
             </with>
          </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.createFormViz">
+         <class
+               class="de.prob.ui.stateview.CreateFormulaVisualizationHandler">
+         </class>
       </handler>
    </extension>
    <extension

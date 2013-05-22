@@ -2,6 +2,7 @@ package de.prob.ui.stateview;
 
 import java.util.Set;
 
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -9,6 +10,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
@@ -46,7 +48,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "de.prob.ui.operationview.OperationView";
+	public static final String ID = "de.prob.ui.StateView";
 
 	private History currentHistory;
 	private AbstractModel currentModel;
@@ -85,6 +87,14 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 		PlatformUI.getWorkbench().getHelpSystem()
 				.setHelp(viewer.getControl(), "de.prob.ui.viewer");
 
+		prepareHook();
+	}
+
+	private void prepareHook() {
+		MenuManager menuManager = new MenuManager();
+		Menu menu = menuManager.createContextMenu(viewer.getTree());
+		viewer.getTree().setMenu(menu);
+		getSite().registerContextMenu(menuManager, viewer);
 		getSite().setSelectionProvider(viewer);
 	}
 
