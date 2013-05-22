@@ -84,7 +84,14 @@ public class ValueOverTimeSession implements ISessionServlet,
 		public Element(final String string, final int t, final Object value) {
 			stateid = string;
 			this.t = t;
-			this.value = Integer.parseInt((String) value);
+			if (value.equals("TRUE")) {
+				this.value = 1;
+			} else if (value.equals("FALSE")) {
+				this.value = 0;
+			} else {
+				this.value = Integer.parseInt((String) value);
+			}
+
 		}
 	}
 
