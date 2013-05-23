@@ -3,7 +3,6 @@ package de.prob.worksheet;
 import java.io.IOException;
 import java.io.Reader;
 
-import javax.script.AbstractScriptEngine;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;

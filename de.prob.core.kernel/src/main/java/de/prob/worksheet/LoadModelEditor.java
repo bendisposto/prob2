@@ -1,7 +1,5 @@
 package de.prob.worksheet;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
 import org.pegdown.PegDownProcessor;
@@ -28,7 +26,8 @@ public class LoadModelEditor extends DefaultEditor {
 			ScriptEngine groovy = ws.getGroovy();
 			groovy.put("model", b_load);
 			groovy.eval("trace = model as History");
-			return "Successfully loaded " + getText()
+			return "Successfully loaded "
+					+ getText()
 					+ ".\n Stored model in variable 'model' and a trace in variable 'trace'";
 		} catch (Exception e) {
 			return pegdown.markdownToHtml("          "
