@@ -35,7 +35,7 @@ public class DynamicTransformer extends Transformer implements
 		space.registerStateSpaceListener(this);
 		List<String> toConvert = new ArrayList<String>();
 		for (StateId id : filtered) {
-			toConvert.add("#r" + id.getId());
+			toConvert.add("#s" + id.getId());
 		}
 		updateSelector(Joiner.on(",").join(toConvert));
 	}
@@ -67,7 +67,7 @@ public class DynamicTransformer extends Transformer implements
 		List<String> toConvert = new ArrayList<String>();
 		for (String string : f) {
 			filtered.add(space.getVertex(string));
-			toConvert.add("#r" + string);
+			toConvert.add("#s" + string);
 		}
 		String newSelector = Joiner.on(",").join(toConvert);
 		if (selector == "") {

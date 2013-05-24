@@ -59,7 +59,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 .data(links)
               .enter().append("svg:path")
                 .attr("class", "link")
-                .attr("id", function(d) { return "arc" + d.id; })
+                .attr("id", function(d) { return "t" + d.id; })
                 .style("stroke", function(d) { return d.color; });
 
         text = l.selectAll("text")
@@ -69,10 +69,10 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 .attr("text-anchor", "start")
                 .attr("dx", "30")
                 .attr("font-size", "3px")
-                .attr("id", function(d) { return "lt" + d.id; });
+                .attr("id", function(d) { return "tt" + d.id; });
 
         transLabels = text.append("textPath")
-                  .attr("xlink:href", function(d) { return "#arc" + d.id; })
+                  .attr("xlink:href", function(d) { return "#t" + d.id; })
                   .text(function(d) { return d.name; });
 
         node = svg.selectAll(".node")
@@ -89,7 +89,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
             .attr("height", boxH.toString())
             .attr("rx", "5")
             .attr("ry", "5")
-            .attr("id", function(d) { return "r" + d.id; });
+            .attr("id", function(d) { return "s" + d.id; });
 
         for (i = 0; i < n; i += 1) {
             node.append("text")
@@ -100,14 +100,14 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 .attr("font-size", "3px")
                 .attr("fill", "white")
                 .text(function(d) { return d.vars[i]; })
-                .attr("id", function(d) { return "nt" + d.id; });
+                .attr("id", function(d) { return "st" + d.id; });
         }
 
         d3.selectAll(".nText")
             .attr("dx", function(d) {
                 var textW = this.getBBox().width;
                 if (textW > 35) {
-                    d3.select("#r" + d.id).attr("width", (textW + 5).toString());
+                    d3.select("#s" + d.id).attr("width", (textW + 5).toString());
                     return Math.round((textW - 35) / 2 + 20).toString();
                 }
                 return "20";
@@ -138,7 +138,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 path.attr("d", function(d) {
                     var factor, linedata, dx, dy, dr;
                     if (d.loop) {
-                        d3.select("#lt" + d.id).attr("dx", 80);
+                        d3.select("#tt" + d.id).attr("dx", 80);
                         factor = 1 + d.lNr * 0.1;
                         linedata = [
                             {x: d.source.x - 10, y: d.source.y + 10},
@@ -153,7 +153,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
                     return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
                 });
 
-                transLabels.attr("xlink:href", function(d) { return "#arc" + d.id; });
+                transLabels.attr("xlink:href", function(d) { return "#t" + d.id; });
 
                 node.attr("transform", function(d) {
                     var nx = d.x - 20, ny = d.y - boxH / 2;

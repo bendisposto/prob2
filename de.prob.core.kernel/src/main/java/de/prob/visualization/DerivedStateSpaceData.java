@@ -91,7 +91,7 @@ public class DerivedStateSpaceData extends AbstractData {
 			if (!v.isEmpty()) {
 				List<String> toSelect = new ArrayList<String>();
 				for (DerivedStateId derivedStateId : v) {
-					toSelect.add("#r" + derivedStateId.getId());
+					toSelect.add("#s" + derivedStateId.getId());
 				}
 				Transformer transformer = styles.get(e.getKey());
 				transformer.updateSelector(Joiner.on(",").join(toSelect));
@@ -109,7 +109,7 @@ public class DerivedStateSpaceData extends AbstractData {
 			if (!v.isEmpty()) {
 				List<String> toSelect = new ArrayList<String>();
 				for (DerivedOp derivedOp : v) {
-					toSelect.add("#arc" + derivedOp.getId());
+					toSelect.add("#t" + derivedOp.getId());
 				}
 				Transformer transformer = styles.get(e.getKey());
 				transformer.updateSelector(Joiner.on(",").join(toSelect));
@@ -125,7 +125,7 @@ public class DerivedStateSpaceData extends AbstractData {
 		if (dashed != null && !dashed.isEmpty()) {
 			List<String> toSelect = new ArrayList<String>();
 			for (DerivedOp derivedOp : dashed) {
-				toSelect.add("#arc" + derivedOp.getId());
+				toSelect.add("#t" + derivedOp.getId());
 			}
 			Transformer transformer = styles.get("dashed");
 			transformer.updateSelector(Joiner.on(",").join(toSelect));

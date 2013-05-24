@@ -81,7 +81,11 @@ public class StateSpaceServlet extends SessionBasedServlet implements
 			disabled.add(jsonElement.getAsString());
 		}
 
-		String expression = parsed.get("expr").getAsString();
+		JsonElement jsonE = parsed.get("expr");
+		String expression = "";
+		if (jsonE != null) {
+			expression = jsonE.getAsString();
+		}
 
 		List<Transformer> transformers = new ArrayList<Transformer>();
 		for (JsonElement jsonElement : parsed.get("transformers")
