@@ -160,4 +160,13 @@ public abstract class AbstractData {
 		this.mode = mode;
 	}
 
+	@Override
+	public String toString() {
+		return data.content;
+	}
+
+	public List<Transformer> getStyling() {
+		return data.styling;
+	}
+
 }

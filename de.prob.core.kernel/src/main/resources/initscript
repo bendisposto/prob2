@@ -30,17 +30,21 @@ ArrayList.metaClass.asType = { Class type ->
         oldArrayListAsType.invoke(delegate, c)
 }
 
-transform = { s,c ->
+transform = { a1,a2,a3=null ->
 	def x
-	if(s instanceof String) {
-		x = new Transformer(s).with c 
+	if( a3 != null ) {
+		x = new DynamicTransformer(a1,a2).with a3
 	} else {
-		d = []
-		s.each {
-			d << "#r"+it.getId()
+		if(a1 instanceof String) {
+			x = new Transformer(a1).with a2 
+		} else {
+			d = []
+			a1.each {
+				d << "#r"+it.getId()
+			}
+			def r = com.google.common.base.Joiner.on(",").join(a1)
+			x = new Transformer(r).with a2
 		}
-		r = com.google.common.base.Joiner.on(",").join(d)
-		x = new Transformer(r).with c
 	}
 	x
 }

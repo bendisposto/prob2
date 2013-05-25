@@ -59,7 +59,7 @@ public class PredicateSession implements ISessionServlet,
 			response.put("data", expanded);
 		}
 		response.put("count", count);
-		response.put("attrs", styling);
+		response.put("styling", styling);
 
 		Gson g = new Gson();
 

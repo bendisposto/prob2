@@ -1,5 +1,5 @@
 function createSSGraph(id,positionId,m,events,width,height) {
-    var links, nodes, linkMap, menu, mode, force, ssCtr, svg, stopped, elements;
+    var ctr, links, nodes, linkMap, menu, mode, force, ssCtr, svg, stopped, elements , debug;
     mode = m;
     ssCtr = 0;
     menu = d3.select("#"+positionId)
@@ -8,6 +8,10 @@ function createSSGraph(id,positionId,m,events,width,height) {
     d3.select("#"+positionId)
         .append("div")
         .attr("id",positionId+"-viz");
+    debug = d3.select("#"+positionId)
+        .append("div")
+        .attr("id",positionId+"-debug")
+        .attr("class","messageBox");
 
     stopped = {value: false};
     calculateHeader(menu, id, mode, stopped,events);
@@ -19,7 +23,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
     nodes = [];
     links = [];
     linkMap = d3.map();
-
+    ctr = 0;
 
     // setup output polling
     setInterval(function() {
@@ -28,6 +32,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
             getSS : false,
             getAll : false
         }, function(res) {
+            var result;
             if (res.mode !== mode) {
                 mode = res.mode;
                 calculateHeader(menu, id, res.mode, stopped, res.events);
@@ -54,7 +59,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 .data(links)
               .enter().append("svg:path")
                 .attr("class", "link")
-                .attr("id", function(d) { return "arc" + d.id; })
+                .attr("id", function(d) { return "t" + d.id; })
                 .style("stroke", function(d) { return d.color; });
 
         text = l.selectAll("text")
@@ -64,16 +69,16 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 .attr("text-anchor", "start")
                 .attr("dx", "30")
                 .attr("font-size", "3px")
-                .attr("id", function(d) { return "lt" + d.id; });
+                .attr("id", function(d) { return "tt" + d.id; });
 
         transLabels = text.append("textPath")
-                  .attr("xlink:href", function(d) { return "#arc" + d.id; })
+                  .attr("xlink:href", function(d) { return "#t" + d.id; })
                   .text(function(d) { return d.name; });
 
         node = svg.selectAll(".node")
               .data(nodes)
             .enter().append("g")
-              .attr("class", "node")
+              .attr("class", "state")
               .attr("id", function(d) { return "n" + d.id; })
               .call(force.drag);
 
@@ -84,7 +89,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
             .attr("height", boxH.toString())
             .attr("rx", "5")
             .attr("ry", "5")
-            .attr("id", function(d) { return "r" + d.id; });
+            .attr("id", function(d) { return "s" + d.id; });
 
         for (i = 0; i < n; i += 1) {
             node.append("text")
@@ -95,14 +100,14 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 .attr("font-size", "3px")
                 .attr("fill", "white")
                 .text(function(d) { return d.vars[i]; })
-                .attr("id", function(d) { return "nt" + d.id; });
+                .attr("id", function(d) { return "st" + d.id; });
         }
 
         d3.selectAll(".nText")
             .attr("dx", function(d) {
                 var textW = this.getBBox().width;
                 if (textW > 35) {
-                    d3.select("#r" + d.id).attr("width", (textW + 5).toString());
+                    d3.select("#s" + d.id).attr("width", (textW + 5).toString());
                     return Math.round((textW - 35) / 2 + 20).toString();
                 }
                 return "20";
@@ -133,7 +138,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 path.attr("d", function(d) {
                     var factor, linedata, dx, dy, dr;
                     if (d.loop) {
-                        d3.select("#lt" + d.id).attr("dx", 80);
+                        d3.select("#tt" + d.id).attr("dx", 80);
                         factor = 1 + d.lNr * 0.1;
                         linedata = [
                             {x: d.source.x - 10, y: d.source.y + 10},
@@ -148,7 +153,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
                     return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
                 });
 
-                transLabels.attr("xlink:href", function(d) { return "#arc" + d.id; });
+                transLabels.attr("xlink:href", function(d) { return "#t" + d.id; });
 
                 node.attr("transform", function(d) {
                     var nx = d.x - 20, ny = d.y - boxH / 2;
@@ -158,16 +163,39 @@ function createSSGraph(id,positionId,m,events,width,height) {
         });
     }
 
+    function clearNotifications(messageType) {
+        if(debug !== undefined) {
+            debug.selectAll(messageType).remove();     
+        }
+    }
+
+    function notifyUser(message,messageType) {
+        if( debug !== undefined ) {
+            debug.append("p")
+                .attr("class",messageType)
+                .text(message);      
+        }
+    }
+
+    function redraw(element) {
+        var element = $(element);
+
+    }
+
     function drawDotty(svg, content) {
-        svg.append("svg:rect")
-            .attr("class", "canvas")
-            .attr("id", "toReplace")
-            .attr("height", height)
-            .attr("width", width)
-            .style("fill-opacity", 1e-6);
+
+        svg.append("g")
+            .attr("id", "toReplace");
 
         var m = Viz(content, "svg");
-        $("#toReplace").replaceWith(m);
+        try {
+            $("#toReplace").replaceWith(m);
+            svg.select("svg")
+                .attr("id","toReplace");
+            $("#toReplace").replaceWith(m);
+        } catch(e) {
+            alert("Dotty graph not rendered. " + e.message)
+        }
     }
 
     function forD3(svg, res, force, stopped) {
@@ -207,7 +235,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
         buildGraph(svg, force, varCount, stopped);
     }
 
-    function refresh(svg, id, getAllStates, force, stopped) {
+    function reset(getAllStates) {
         if (getAllStates) {
             nodes = [];
             links = [];
@@ -215,9 +243,13 @@ function createSSGraph(id,positionId,m,events,width,height) {
         }
 
         svg.selectAll(".link").remove();
-        svg.selectAll(".node").remove();
+        svg.selectAll(".state").remove();
         svg.selectAll(".linkT").remove();
         svg.selectAll("g svg").remove();
+    }
+
+    function refresh(svg, id, getAllStates, force, stopped) {
+        reset(getAllStates);
 
 
         $.getJSON("statespace_servlet", {
@@ -225,14 +257,17 @@ function createSSGraph(id,positionId,m,events,width,height) {
             getSS : true,
             getAll : getAllStates
         }, function(res) {
-
             if (res.data !== "") {
                 if (res.mode > 3) {
                     if (res.data.content !== "") {
-                        drawDotty(svg, res.data.content);
-                    }
+                        return drawDotty(svg, res.data.content);
+                    } 
+                    resetZoom(svg);
                 } else {
                     forD3(svg, res, force, stopped);
+                    if(getAllStates) {
+                        resetZoom(svg);
+                    }
                 }
                 applyStyling(res.data.styling);
             }
@@ -260,7 +295,7 @@ function doCmd(id, cmd, enabled) {
 function calculateHeader(menu, id, m, stopped, checks) {
     var cmds, pause, list, menu2, settings;
 
-    d3.selectAll(".menuOps").remove();
+    menu.selectAll(".menuOps").remove();
     cmds = [
         {name: "Original State Space", cmd: "org_ss", id: 1},
         {name: "Signature Merge", cmd: "sig_merge", id: 2},
@@ -278,8 +313,8 @@ function calculateHeader(menu, id, m, stopped, checks) {
         .append("img")
           .attr("class", "push")
           .attr("src", function(d) { return d.value ? "../images/play-icon.png" : "../images/pause-icon.png"; })
-          .attr("width", "20")
-          .attr("height", "20")
+          .attr("width", "25")
+          .attr("height", "25")
           .attr("align", "top")
           .on("click", function(d) {
             var x = d.value;
@@ -290,7 +325,10 @@ function calculateHeader(menu, id, m, stopped, checks) {
     list = menu2.append("li")
                   .attr("class", "dropdown")
                 .append("select")
-                  .on("change", function() {doCmd(id, this.options[this.selectedIndex].__data__.cmd, checks); });
+                  .on("change", function() {
+                        stopped.value = true; 
+                        doCmd(id, this.options[this.selectedIndex].__data__.cmd, checks); 
+                    });
 
     list.selectAll("option")
         .data(cmds)
@@ -342,6 +380,7 @@ function calculateHeader(menu, id, m, stopped, checks) {
             .attr("value","Submit")
             .on("click",function() {
                 var command = m === 2 ? "sig_merge" : "d_sig_merge";
+                stopped.value = true;
                 doCmd(id, command, checks);
             });
     }
@@ -361,6 +400,32 @@ function calculateHeader(menu, id, m, stopped, checks) {
                     menu2.select(".settingBox").remove();
                     settingsOpen.value = false;
                 }
+            });
+    }
+
+    if( m === 3 || m === 5 ) {
+        var form = menu2.append("li")
+                        .attr("class","transDiagOp")
+                        .append("form");
+
+        form.append("label")
+            .text("Change Expression: ");
+
+        form.append("input")
+            .attr("type","text")
+            .attr("id","new_expr");
+
+        form.append("input")
+            .attr("type","button")
+            .attr("value","Submit")
+            .on("click", function() {
+                stopped.value = true;
+                var command = m === 3 ? "trans_diag" : "d_trans_diag";
+                $.getJSON("statespace_servlet", {
+                    sessionId : id,
+                    cmd : command,
+                    param : $("#new_expr").val()
+                });
             });
     }
 }

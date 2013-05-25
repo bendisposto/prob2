@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,13 +45,17 @@ import de.bmotionstudio.core.model.VisualizationView;
 import de.bmotionstudio.core.model.control.BConnection;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
+import de.prob.animator.command.EvaluateFormulasCommand;
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.CSPModel;
+import de.prob.statespace.History;
 
 public class BMotionUtil {
-
+	
 	public static int openSaveDialog() {
 		MessageDialog dg = new MessageDialog(
 				Display.getDefault().getActiveShell(),
@@ -409,6 +415,18 @@ public class BMotionUtil {
 
 		return expressionString;
 
+	}
+	
+	public static Map<String, EvaluationResult> getEvaluationResults(
+			History history, List<IEvalElement> evals) {
+		EvaluateFormulasCommand cmd = new EvaluateFormulasCommand(evals,
+				history.getCurrentState().getId());
+		history.getStatespace().execute(cmd);
+		Map<String, EvaluationResult> results = new HashMap<String, EvaluationResult>();
+		List<EvaluationResult> values = cmd.getValues();
+		for (EvaluationResult e : values)
+			results.put(e.code, e);
+		return results;
 	}
 	
 }

@@ -32,6 +32,10 @@ public class StateSpaceData extends AbstractData {
 		vars = extractVariables(s);
 		invOK = new Transformer("").set("fill", "#799C79");
 		invKO = new Transformer("").set("fill", "#B56C6C");
+		addStyling(new Transformer("#sroot").set("width", "30px").set("height",
+				"20px"));
+		addStyling(new Transformer("#stroot").set("dx", "15px").set("dy",
+				"13px"));
 		mode = 1;
 	}
 
@@ -59,6 +63,9 @@ public class StateSpaceData extends AbstractData {
 				}
 			}
 		}
+		if (id.equals(s.getRoot())) {
+			vs.add("root");
+		}
 
 		Object inv = calculateInvariant(s, id);
 
@@ -73,10 +80,10 @@ public class StateSpaceData extends AbstractData {
 		if (s.getExplored().contains(id)) {
 			Set<StateId> invariantOk = s.getInvariantOk();
 			if (invariantOk.contains(id)) {
-				toInvOk.add("#r" + id.getId());
+				toInvOk.add("#s" + id.getId());
 				return true;
 			}
-			toInvKo.add("#r" + id.getId());
+			toInvKo.add("#s" + id.getId());
 			return false;
 		}
 		return "unknown";
@@ -124,6 +131,10 @@ public class StateSpaceData extends AbstractData {
 		invKO.updateSelector(Joiner.on(",").join(toInvKo));
 		if (!toInvOk.isEmpty() && !data.styling.contains(invOK)) {
 			addStyling(invOK);
+			addStyling(new Transformer("#sroot").set("fill", "#000"));
+			addStyling(new Transformer("#stroot").set("fill", "#fff")
+					.set("stroke", "#fff").set("font-size", "12px")
+					.set("stroke-width", "1px"));
 		}
 		if (!toInvKo.isEmpty() && !data.styling.contains(invKO)) {
 			addStyling(invKO);

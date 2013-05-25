@@ -1,6 +1,7 @@
 package de.bmotionstudio.core.model.observer;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,8 @@ public class CSPInitObserver extends Observer {
 	private transient static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
 
 	@Override
-	public void check(History history, BControl control) {
+	public void check(History history, BControl control,
+			Map<String, EvaluationResult> results) {
 		HistoryElement current = history.getCurrent();
 		OpInfo op = current.getOp();
 		if (op == null

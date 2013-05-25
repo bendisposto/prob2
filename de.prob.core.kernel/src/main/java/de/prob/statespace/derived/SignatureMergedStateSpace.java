@@ -9,14 +9,19 @@ import de.prob.statespace.OpInfo;
 
 public class SignatureMergedStateSpace extends AbstractDerivedStateSpace {
 
+	private final List<String> disabledEvents;
+
 	public SignatureMergedStateSpace(final IStateSpace stateSpace,
-			final AbstractReduceStateSpaceCmd cmd) {
+			final AbstractReduceStateSpaceCmd cmd,
+			final List<String> disabledEvents) {
 		super(stateSpace, cmd);
+		this.disabledEvents = disabledEvents;
 	}
 
 	@Override
 	public void newTransitions(final List<? extends OpInfo> o) {
-		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand();
+		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand(
+				disabledEvents);
 		stateSpace.execute(cmd);
 		addStates(cmd.getStates());
 		List<DerivedOp> newOps = addTransitions(cmd.getOps());

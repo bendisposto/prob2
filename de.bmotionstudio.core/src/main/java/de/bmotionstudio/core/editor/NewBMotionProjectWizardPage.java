@@ -399,10 +399,8 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 
 		private final String machineName;
 		private final String machineLanguage;
-		private final IFile file;
 
 		public MachineEntry(IFile file, String machineLanguage) {
-			this.file = file;
 			this.machineName = file.getName();
 			this.machineLanguage = machineLanguage;
 		}
@@ -413,10 +411,6 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 
 		public String getMachineLanguage() {
 			return this.machineLanguage;
-		}
-
-		public IFile getMachineFile() {
-			return this.file;
 		}
 
 	}

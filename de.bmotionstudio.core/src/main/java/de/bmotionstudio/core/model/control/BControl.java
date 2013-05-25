@@ -44,6 +44,8 @@ import de.bmotionstudio.core.model.attribute.BAttributeY;
 import de.bmotionstudio.core.model.attribute.ConnectionList;
 import de.bmotionstudio.core.model.event.Event;
 import de.bmotionstudio.core.model.observer.Observer;
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.History;
 
 /**
@@ -534,13 +536,25 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 	}
 
-	public void checkObserver(History history) {
-		
-		for(AbstractAttribute a : getAttributes().values())
+	public Map<Observer, List<IEvalElement>> prepareObserver(History history) {
+		Map<Observer, List<IEvalElement>> formulaMap = new HashMap<Observer, List<IEvalElement>>();
+		for (Observer observer : getObservers())
+			formulaMap.put(observer, prepareObserver(observer, history));
+		return formulaMap;
+	}
+
+	public List<IEvalElement> prepareObserver(Observer observer, History history) {
+		return observer.prepareObserver(history, BControl.this);
+	}
+	
+	public void checkObserver(History history,
+			Map<String, EvaluationResult> results) {
+
+		for (AbstractAttribute a : getAttributes().values())
 			a.restoreValue();
-		
+
 		for (Observer observer : getObservers()) {
-			observer.check(history, BControl.this);
+			observer.check(history, BControl.this, results);
 		}
 		Visualization visualization = getVisualization();
 		// TODO: Currently connection observer are checked twice (source +
@@ -549,14 +563,14 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		for (String con : getSourceConnections().getConnections()) {
 			BConnection connection = visualization.getConnection(con);
 			if (connection != null)
-				connection.checkObserver(history);
+				connection.checkObserver(history, results);
 		}
 		for (String con : getTargetConnections().getConnections()) {
 			BConnection connection = visualization.getConnection(con);
 			if (connection != null)
-				connection.checkObserver(history);
+				connection.checkObserver(history, results);
 		}
-		
+
 	}
 	
 	public void afterCheckObserver(History history) {

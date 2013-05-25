@@ -1,5 +1,9 @@
 package de.bmotionstudio.core.model.observer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.core.editor.wizard.observer.BExpressionObserverWizard;
@@ -7,7 +11,9 @@ import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.util.BMotionUtil;
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.History;
 
 public class BExpressionObserver extends Observer {
@@ -16,22 +22,34 @@ public class BExpressionObserver extends Observer {
 
 	private String expression;
 
+	private transient List<IEvalElement> formulas;
+	
 	@Override
-	public void check(History history, BControl control) {
+	public List<IEvalElement> prepareObserver(History history, BControl control) {
+		if (formulas == null)
+			formulas = new ArrayList<IEvalElement>();
+		formulas.clear();
+		if (expression != null)
+			formulas.add(new ClassicalB(BMotionUtil.parseFormula(expression,
+					control)));
+		return formulas;
+	}
+	
+	@Override
+	public void check(History history, BControl control,
+			Map<String, EvaluationResult> results) {
 
 		if (attribute == null || expression == null)
 			return;
 
-		EvaluationResult evalResult = history.evalCurrent(BMotionUtil
-				.parseFormula(expression, control));
+		EvaluationResult evalResult = results.get(BMotionUtil.parseFormula(
+				expression, control));
 
 		if (evalResult != null && !evalResult.hasError()) {
-
 			String result = evalResult.value;
 			AbstractAttribute atr = control.getAttribute(attribute);
 			Object unmarshalResult = atr.unmarshal(result);
 			control.setAttributeValue(attribute, unmarshalResult, true, false);
-
 		}
 
 	}

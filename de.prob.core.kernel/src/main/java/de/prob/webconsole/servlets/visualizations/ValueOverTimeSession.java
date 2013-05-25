@@ -11,46 +11,111 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import de.prob.animator.domainobjects.CSP;
+import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvalElementFactory;
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.scripting.CSPModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.History;
 import de.prob.statespace.IHistoryChangeListener;
 import de.prob.statespace.StateSpace;
+import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.Transformer;
 
 public class ValueOverTimeSession implements ISessionServlet,
 		IHistoryChangeListener, IVisualizationServlet {
+
+	private final String vizType;
 	private final StateSpace stateSpace;
-	private final IEvalElement formula;
+	private final List<IEvalElement> formulas = new ArrayList<IEvalElement>();
 	private int count = 0;
 	private History currentHistory;
-	private List<Object> result;
+	private List<Object> datasets = new ArrayList<Object>();
 	private final List<Transformer> styling = new ArrayList<Transformer>();
+	private final AnimationProperties properties;
+	private final String saveFile;
+	private final String sessionId;
+	private final IEvalElement time;
 
-	public ValueOverTimeSession(final IEvalElement formula,
-			final AnimationSelector animations) {
+	public ValueOverTimeSession(final String sessionId,
+			final IEvalElement formula, final IEvalElement time,
+			final AnimationSelector animations,
+			final AnimationProperties properties) {
+		this.sessionId = sessionId;
+		this.time = time;
+		this.properties = properties;
 		currentHistory = animations.getCurrentHistory();
 		animations.registerHistoryChangeListener(this);
 		stateSpace = currentHistory.getStatespace();
-		this.formula = formula;
-		result = calculate();
+		formulas.add(formula);
+		vizType = formula.getClass().getSimpleName();
+		datasets = calculate();
+		saveFile = properties.getPropFileFromModelFile(stateSpace.getModel()
+				.getModelFile().getAbsolutePath());
+		properties.setProperty(saveFile, sessionId, serialize());
+	}
+
+	public ValueOverTimeSession(final String sessionId, final String json,
+			final AnimationSelector animations,
+			final AnimationProperties properties,
+			final EvalElementFactory deserializer) {
+		this.sessionId = sessionId;
+		this.properties = properties;
+		currentHistory = animations.getCurrentHistory();
+		animations.registerHistoryChangeListener(this);
+		stateSpace = currentHistory.getStatespace();
+		JsonParser parser = new JsonParser();
+		JsonElement parsed = parser.parse(json);
+		if (parsed != null) {
+			JsonObject asJson = parsed.getAsJsonObject();
+			JsonElement timeString = asJson.get("time");
+			if (timeString != null) {
+				time = deserializer.deserialize(timeString.getAsString());
+			} else {
+				time = null;
+			}
+
+			JsonElement f = asJson.get("formula");
+			if (f != null) {
+				JsonArray asJsonArray = f.getAsJsonArray();
+				for (JsonElement jsonElement : asJsonArray) {
+					String string = jsonElement.getAsString();
+					if (string != null) {
+						formulas.add(deserializer.deserialize(string));
+					}
+				}
+			}
+		} else {
+			time = null;
+		}
+		vizType = formulas.get(0).getClass().getSimpleName();
+		datasets = calculate();
+		saveFile = properties.getPropFileFromModelFile(stateSpace.getModel()
+				.getModelFile().getAbsolutePath());
+		properties.setProperty(saveFile, sessionId, serialize());
+
 	}
 
 	@Override
 	public void doGet(final HttpServletRequest req,
 			final HttpServletResponse resp) throws IOException {
 		PrintWriter out = resp.getWriter();
-		Map<String, Object> response = new HashMap<String, Object>();
+		Map<String, Object> response;
 
-		Boolean getFormula = Boolean.valueOf(req.getParameter("getFormula"));
-
-		if (getFormula) {
-			response.put("data", result);
+		if (req.getParameter("cmd") != null) {
+			doCommand(req);
+			response = new HashMap<String, Object>();
+		} else {
+			response = doNormalResponse(req);
 		}
-		response.put("count", count);
-		response.put("attrs", styling);
 
 		Gson g = new Gson();
 
@@ -59,20 +124,79 @@ public class ValueOverTimeSession implements ISessionServlet,
 		out.close();
 	}
 
+	public void doCommand(final HttpServletRequest req) {
+		String formula = req.getParameter("param");
+		if (formula != null) {
+			if (vizType.equals("ClassicalB")) {
+				formulas.add(new ClassicalB(formula));
+			} else if (vizType.equals("EventB")) {
+				formulas.add(new EventB(formula));
+			} else if (vizType.equals("CSP")) {
+				formulas.add(new CSP(formula, (CSPModel) stateSpace.getModel()));
+			}
+		}
+		datasets = calculate();
+		properties.setProperty(saveFile, sessionId, serialize());
+	}
+
+	public Map<String, Object> doNormalResponse(final HttpServletRequest req) {
+		Map<String, Object> response = new HashMap<String, Object>();
+
+		Boolean getFormula = Boolean.valueOf(req.getParameter("getFormula"));
+
+		if (getFormula) {
+			response.put("data", datasets);
+			response.put("xLabel", time == null ? "Number of Animation Steps"
+					: time.getCode());
+		}
+		response.put("count", count);
+		response.put("styling", styling);
+
+		return response;
+	}
+
 	public List<Object> calculate() {
 		List<Object> result = new ArrayList<Object>();
 		if (currentHistory != null && currentHistory.getS() == stateSpace) {
-			List<EvaluationResult> results = currentHistory.eval(formula);
-
-			int c = 0;
-			for (EvaluationResult it : results) {
-				result.add(new Element(it.getStateId(), c, it.getValue()));
-				result.add(new Element(it.getStateId(), c + 1, it.getValue()));
-				c++;
+			List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
+			if (time != null) {
+				timeRes = currentHistory.eval(time);
 			}
 
-			count++;
+			for (IEvalElement formula : formulas) {
+
+				List<EvaluationResult> results = currentHistory.eval(formula);
+				List<Object> points = new ArrayList<Object>();
+
+				if (timeRes.isEmpty()) {
+					int c = 0;
+					for (EvaluationResult it : results) {
+						points.add(new Element(it.getStateId(), c + "", it
+								.getValue()));
+						points.add(new Element(it.getStateId(), (c + 1) + "",
+								it.getValue()));
+						c++;
+					}
+				} else if (timeRes.size() == results.size()) {
+					for (EvaluationResult it : results) {
+						int index = results.indexOf(it);
+						points.add(new Element(it.getStateId(), timeRes.get(
+								index).getValue(), it.getValue()));
+						if (index < results.size() - 1) {
+							points.add(new Element(it.getStateId(), timeRes
+									.get(index + 1).getValue(), it.getValue()));
+						}
+
+					}
+				}
+
+				Map<String, Object> datum = new HashMap<String, Object>();
+				datum.put("name", formula.getCode());
+				datum.put("dataset", points);
+				result.add(datum);
+			}
 		}
+		count++;
 		return result;
 	}
 
@@ -81,10 +205,17 @@ public class ValueOverTimeSession implements ISessionServlet,
 		public final Integer value;
 		public final Integer t;
 
-		public Element(final String string, final int t, final Object value) {
+		public Element(final String string, final String t, final Object value) {
 			stateid = string;
-			this.t = t;
-			this.value = Integer.parseInt((String) value);
+			this.t = Integer.parseInt(t);
+			if (value.equals("TRUE")) {
+				this.value = 1;
+			} else if (value.equals("FALSE")) {
+				this.value = 0;
+			} else {
+				this.value = Integer.parseInt((String) value);
+			}
+
 		}
 	}
 
@@ -92,13 +223,30 @@ public class ValueOverTimeSession implements ISessionServlet,
 	public void historyChange(final History history) {
 		currentHistory = history;
 
-		result = calculate();
+		datasets = calculate();
 	}
 
 	@Override
 	public void apply(final Transformer styling) {
 		this.styling.add(styling);
 		count++;
+	}
+
+	public String serialize() {
+		Map<String, Object> serialized = new HashMap<String, Object>();
+		if (time != null) {
+			serialized.put("time", time.serialized());
+		}
+
+		List<String> f = new ArrayList<String>();
+		for (IEvalElement e : formulas) {
+			f.add(e.serialized());
+		}
+		serialized.put("formula", f);
+
+		Gson g = new Gson();
+
+		return g.toJson(serialized);
 	}
 
 }

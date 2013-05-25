@@ -24,6 +24,7 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 	public Map<String, Set<DerivedStateId>> nodeColors = new HashMap<String, Set<DerivedStateId>>();
 	public Map<String, Set<DerivedOp>> transStyle = new HashMap<String, Set<DerivedOp>>();
 	public Map<String, Set<DerivedOp>> transColor = new HashMap<String, Set<DerivedOp>>();
+	public boolean registered = false;
 
 	public AbstractDerivedStateSpace(final IStateSpace stateSpace,
 			final AbstractReduceStateSpaceCmd cmd) {
@@ -43,7 +44,6 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		setNodeColors(cmd.getNodeColors());
 		setTransStyle(cmd.getTransStyle());
 		setTransColor(cmd.getTransColor());
-		this.stateSpace.registerStateSpaceListener(this);
 	}
 
 	Set<IStatesCalculatedListener> listeners = new HashSet<IStatesCalculatedListener>();
@@ -60,12 +60,20 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 
 	@Override
 	public void registerStateSpaceListener(final IStatesCalculatedListener l) {
+		if (!registered) {
+			stateSpace.registerStateSpaceListener(this);
+			registered = true;
+		}
 		listeners.add(l);
 	}
 
 	@Override
 	public void deregisterStateSpaceListener(final IStatesCalculatedListener l) {
 		listeners.remove(l);
+		if (listeners.isEmpty()) {
+			stateSpace.deregisterStateSpaceListener(this);
+			registered = false;
+		}
 	}
 
 	public StateSpace getStateSpace() {

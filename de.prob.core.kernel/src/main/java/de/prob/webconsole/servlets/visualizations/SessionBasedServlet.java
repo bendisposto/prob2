@@ -20,9 +20,12 @@ public abstract class SessionBasedServlet extends HttpServlet {
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
 		String init = req.getParameter("init");
+		String secId = req.getParameter("secId");
 		String sId = req.getParameter("sessionId");
 		if (init != null) {
 			initializePage(req, resp);
+		} else if (secId != null) {
+
 		} else if (sId != null && sessions.containsKey(sId)) {
 			sessions.get(sId).doGet(req, resp);
 		} else {
@@ -39,22 +42,27 @@ public abstract class SessionBasedServlet extends HttpServlet {
 		if (sessions.containsKey(sId)) {
 			String html = getHTML(sId);
 
-			PrintWriter out;
-
-			out = resp.getWriter();
+			PrintWriter out = resp.getWriter();
 			out.print(html);
 			out.close();
 		} else {
-			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			String s = loadSession(sId);
+			if (s != null) {
+				String html = getHTML(sId);
+				PrintWriter out = resp.getWriter();
+				out.print(html);
+				out.close();
+			} else {
+				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			}
 		}
 	}
 
 	protected abstract String getHTML(String id);
 
-	protected abstract String getSessionId();
+	protected abstract String loadSession(String id);
 
-	protected String openSession(final ISessionServlet s) {
-		String sessionId = getSessionId();
+	protected String openSession(final String sessionId, final ISessionServlet s) {
 		sessions.put(sessionId, s);
 		return sessionId;
 	}
@@ -63,4 +71,7 @@ public abstract class SessionBasedServlet extends HttpServlet {
 		sessions.remove(id);
 	}
 
+	public StateSpaceSession getSessionServlet(final String sessionId) {
+		return (StateSpaceSession) sessions.get(sessionId);
+	}
 }

@@ -7,7 +7,6 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,21 +15,17 @@ import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalElementFactory;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.webconsole.ServletContextListener;
-import de.prob.webconsole.servlets.visualizations.PredicateServlet;
 
 public class OpenPredicateVizHandler extends AbstractHandler implements
 		IHandler {
 
 	Logger logger = LoggerFactory.getLogger(OpenPredicateVizHandler.class);
 
-	private final PredicateServlet servlet;
 	private final EvalElementFactory evalFactory;
 
 	public OpenPredicateVizHandler() {
-		servlet = ServletContextListener.INJECTOR
-				.getInstance(PredicateServlet.class);
+
 		evalFactory = ServletContextListener.INJECTOR
 				.getInstance(EvalElementFactory.class);
 	}
@@ -44,18 +39,10 @@ public class OpenPredicateVizHandler extends AbstractHandler implements
 			encodedFormula = askForValue(shell);
 		}
 
-		try {
-			IEvalElement formula = evalFactory.deserialize(encodedFormula);
-			String sessionId = servlet.openSession(formula);
-			VisualizationUtil.createVisualizationViewPart(sessionId,
-					"predicate/?init=" + sessionId);
-		} catch (PartInitException e) {
-			logger.error("Could not create predicate visualization view: "
-					+ e.getMessage());
-		} catch (AnimationNotLoadedException e) {
-			logger.error("Could not create predicate visualization because an animation is not loaded: "
-					+ e.getMessage());
-		}
+		IEvalElement e = evalFactory.deserialize(encodedFormula);
+		OpenFormula open = new OpenFormula();
+		open.run(e);
+
 		return null;
 	}
 

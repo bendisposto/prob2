@@ -27,7 +27,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "de.prob.ui.operationview.OperationView";
+	public static final String ID = "de.prob.ui.AnimationsView";
 
 	private TableViewer viewer;
 

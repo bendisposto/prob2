@@ -10,55 +10,15 @@ function buildTree(vis, tree, treeData, height) {
     root.x0 = height / 2;
     root.y0 = 0;
     i = 0;
+    root.calculated = false;
     diagonal = d3.svg.diagonal()
                         .projection(function(d) { return [d.y, d.x]; });
 
     labels = {};
     values = {};
 
-    calculateSize(vis, tree, root);
-
     update(vis, tree, root, root, i, diagonal);
 }
-
-// static calculation of size of labels
-function calculateSize(vis, tree, root) {
-  var toCalc = vis.selectAll("g.node")
-      .data(tree.nodes(root).reverse());
-
-  var l = toCalc.enter().append("svg:text")
-        .attr("class","l")
-        .attr("font-size","11px")
-        .text(function(d) {return d.name});
-
-  var v = toCalc.enter().append("svg:text")
-        .attr("class","v")
-        .attr("font-size","11px")
-        .text(function(d) {return d.value});
-
-  var toDel = $(".l");
-
-  for (var i = 0 ; i < toDel.length; i++) {
-    nodeLength[toDel[i].textContent] = toDel[i].getBBox().width;
-  };
-
-  toDel = $(".v");
-    for (var i = 0 ; i < toDel.length; i++) {
-    valueLength[toDel[i].textContent] = toDel[i].getBBox().width;
-  };
-
-  l.remove();
-  v.remove();
-}
-
-function calcWidth(key) {
-    var labelL = nodeLength[key.name];
-    var valueL = valueLength[key.value];
-    if( labelL >= valueL) {
-      return labelL;
-    } 
-    return valueL;
-};
 
 function update(vis, tree, root, source, i, diagonal) {
 
@@ -96,7 +56,7 @@ function update(vis, tree, root, source, i, diagonal) {
     };
 
     // Normalize for fixed-depth.
-    nodes.forEach(function(d) { d.y = d.depth * 180 + 40 + calcWidth(root) ; });
+    
 
     // Update the nodes…
     var node = vis.selectAll("g.node")
@@ -106,7 +66,8 @@ function update(vis, tree, root, source, i, diagonal) {
     var nodeEnter = node.enter().append("svg:g")
         .attr("class", "node")
         .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-        .on("click", function(d) { toggle(d); update(vis, tree, root, d, attrs, i, diagonal); });
+        .on("click", function(d) { toggle(d); update(vis, tree, root, d, i, diagonal); })
+        .attr("id", function(d) { return "node" + d.fId; });
 
     nodeEnter.append("svg:rect")
                 .attr("height",60)
@@ -126,7 +87,6 @@ function update(vis, tree, root, source, i, diagonal) {
         .style("fill-opacity", 1e-6)
         .attr("id", function(d) {
             var textW = this.getBBox().width;
-            console.log(textW);
             var newX = hasChildren(d) ? -(textW+20) : 0;
             d3.select("#r"+d.fId)
                 .attr("width",textW+20)
@@ -149,9 +109,70 @@ function update(vis, tree, root, source, i, diagonal) {
               d3.select("#r"+d.fId)
                 .attr("width",textW+20)
                 .attr("x",newX);
+              d["tW"] = textW;
             }
             return "v"+d.fId;
         });
+
+    var main = root.name;
+    if(main.indexOf("&") !== -1 && !root.calculated) {
+        var rootName = main.split("&");
+        for( i = 0 ; i < rootName.length - 1; i = i + 1 ) {
+            rootName[i] = rootName[i] + "&";
+        }
+        var boxH = 30 + rootName.length * 15;
+        var upperLimit = -(boxH / 2);
+        var rootNode = vis.select("#node" + root.fId);
+
+        var rootRect = rootNode.select("#r"+root.fId)
+            .attr("height", 30 + rootName.length * 15)
+            .attr("y", upperLimit);
+
+        rootNode.selectAll(".label").remove();
+        rootNode.select(".value").remove();
+
+        var textW = 0;
+        rootNode.selectAll("text")
+                .data(rootName)
+                .enter()
+               .append("text")
+                .attr("class","label")
+                .attr("x", -10)
+                .attr("dy", function(d) { return upperLimit + 15 + rootName.indexOf(d) * 15; })
+                .attr("text-anchor", "end" )
+                .text(function(d) { return d; })
+                .style("fill-opacity", 1e-6)
+                .attr("id", function(d) {
+                    var tW = this.getBBox().width;
+                    if( tW > textW ) {
+                        textW = tW;
+                    }
+                    return "t"+ root.fId + rootName.indexOf(d) ;
+                });
+        console.log(textW);
+
+        rootNode.append("svg:text")
+            .attr("class","value")
+            .attr("x", -10)
+            .attr("dy", boxH + upperLimit - 8)
+            .attr("text-anchor","end")
+            .text(root.value)
+            .style("fill-opacity", 1e-6)
+            .attr("id",function(d) {
+                var tW = this.getBBox().width;
+                if(tW > textW) {
+                  textW = tW;
+                }
+                return "v" + root.fId;
+            });
+
+        root.tW = textW;
+        rootRect.attr("width", textW + 20)
+                .attr("x", -(textW + 20));
+        root.calculated = true;
+    }
+
+    nodes.forEach(function(d) { d.y = d.depth * 180 + 40 + root.tW; });
 
     // Transition nodes to their new position.
     var nodeUpdate = node.transition()
@@ -162,10 +183,10 @@ function update(vis, tree, root, source, i, diagonal) {
         .style("fill-opacity", 0.7)
         .style("stroke-width", "2px");
 
-    nodeUpdate.select("text.label")
+    nodeUpdate.selectAll("text.label")
         .style("fill-opacity", 1);
 
-    nodeUpdate.select("text.value")
+    nodeUpdate.selectAll("text.value")
         .style("fill-opacity", 1);
 
     // Transition exiting nodes to the parent's new position.
@@ -269,7 +290,7 @@ function refresh(id, vis, tree, height) {
         if(res.data !== "") {
             data = res.data;
             buildTree(vis, tree, res.data, height);  
-            applyStyling(res.attrs);   
+            applyStyling(res.styling);   
         };
     });
 }

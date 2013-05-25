@@ -1,6 +1,7 @@
 package de.prob.visualization;
 
 import java.util.List;
+import java.util.Random;
 
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
@@ -10,12 +11,14 @@ import de.prob.statespace.derived.AbstractDottyGraph;
 public class DottyData extends AbstractData {
 
 	private final AbstractDottyGraph space;
+	private final Random rand;
 
 	public DottyData(final AbstractDottyGraph space) {
 		this.space = space;
 		data.content = space.getContent();
 		changes.content = space.getContent();
-		count++;
+		rand = new Random();
+		count = data.content.length();
 	}
 
 	@Override
@@ -36,9 +39,10 @@ public class DottyData extends AbstractData {
 	@Override
 	public void addNewLinks(final StateSpaceGraph graph,
 			final List<? extends OpInfo> newOps) {
+		data.reset = true;
 		data.content = space.getContent();
 		changes.content = space.getContent();
-		count++;
+		count = data.content.length();
 	}
 
 	@Override
@@ -48,13 +52,6 @@ public class DottyData extends AbstractData {
 
 	@Override
 	public void updateTransformers() {
-	}
-
-	@Override
-	public Data getChanges() {
-		Data d = super.getChanges();
-		changes.content = space.getContent();
-		return d;
 	}
 
 }

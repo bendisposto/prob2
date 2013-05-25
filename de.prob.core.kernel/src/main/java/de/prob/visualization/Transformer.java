@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 
 public class Transformer {
 	public static final List<String> STYLES = Arrays.asList(new String[] {
-			"fill", "font", "stroke", "stroke-dasharray" });
+			"fill", "font", "stroke", "stroke-dasharray", "stroke-width" });
 
 	public String selector;
 	public final List<Attribute> attributes;

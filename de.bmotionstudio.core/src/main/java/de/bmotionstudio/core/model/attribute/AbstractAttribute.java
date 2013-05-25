@@ -43,6 +43,7 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	public AbstractAttribute(Object value) {
 		this.value = value;
 		this.defaultValue = value;
+		this.initValue = value;
 		this.group = AttributeConstants.ATTRIBUTE_MISC;
 		this.editable = true;
 		this.show = true;

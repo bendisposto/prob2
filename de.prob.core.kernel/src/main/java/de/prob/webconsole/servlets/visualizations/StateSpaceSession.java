@@ -2,8 +2,10 @@ package de.prob.webconsole.servlets.visualizations;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,30 +36,83 @@ import de.prob.statespace.derived.DottyTransitionDiagram;
 import de.prob.statespace.derived.SignatureMergedStateSpace;
 import de.prob.statespace.derived.TransitionDiagram;
 import de.prob.visualization.AbstractData;
+import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.DerivedStateSpaceData;
 import de.prob.visualization.DottyData;
+import de.prob.visualization.DynamicTransformer;
 import de.prob.visualization.StateSpaceData;
 import de.prob.visualization.Transformer;
 
 public class StateSpaceSession implements ISessionServlet,
 		IStatesCalculatedListener, IVisualizationServlet {
+	private final String filename;
 	private IStateSpace space;
 	private AbstractData data;
-	private final Map<String, EnabledEvent> includedEvents = new HashMap<String, EnabledEvent>();
+	private String expression;
+	private final Map<String, EnabledEvent> events = new HashMap<String, EnabledEvent>();
+	private final List<String> disabledEvents = new ArrayList<String>();
+	private final Set<IRefreshListener> refreshListeners = new HashSet<IRefreshListener>();
+	private final AnimationProperties props;
+	private final String sessionId;
 
-	public StateSpaceSession(final StateSpace space) {
+	public StateSpaceSession(final String sessionId, final StateSpace space,
+			final AnimationProperties props) {
+		this.sessionId = sessionId;
 		this.space = space;
+		this.props = props;
 		if (space != null) {
 			data = createStateSpaceGraph();
 		}
 		AbstractElement mainComponent = space.getModel().getMainComponent();
 		if (mainComponent instanceof Machine) {
-			Set<BEvent> events = mainComponent.getChildrenOfType(BEvent.class);
-			for (BEvent bEvent : events) {
+			Set<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
+			for (BEvent bEvent : ops) {
 				EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
-				includedEvents.put(bEvent.getName(), e);
+				events.put(bEvent.getName(), e);
 			}
 		}
+		filename = props.getPropFileFromModelFile(space.getModel()
+				.getModelFile().getAbsolutePath());
+		props.setProperty(filename, sessionId, serialize());
+	}
+
+	public StateSpaceSession(final String sessionId, final StateSpace space,
+			final int mode, final List<String> disabledEvents,
+			final String expression, final List<Transformer> transformers,
+			final AnimationProperties props) {
+		this.sessionId = sessionId;
+		this.space = space;
+		this.props = props;
+		if (space != null) {
+			data = createStateSpaceGraph();
+		}
+		AbstractElement mainComponent = space.getModel().getMainComponent();
+		if (mainComponent instanceof Machine) {
+			Set<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
+			for (BEvent bEvent : ops) {
+				EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
+				events.put(bEvent.getName(), e);
+			}
+		}
+		filename = props.getPropFileFromModelFile(space.getModel()
+				.getModelFile().getAbsolutePath());
+		disabledEvents.addAll(disabledEvents);
+		this.expression = expression;
+		if (mode == 2) {
+			data = createSigMergeGraph();
+		} else if (mode == 3) {
+			data = createTransitionDiagram(expression);
+		} else if (mode == 4) {
+			data = createDottySignatureMerge();
+		} else if (mode == 5) {
+			data = createDottyTransitionDiagram(expression);
+		}
+
+		for (Transformer transformer : transformers) {
+			data.addStyling(transformer);
+		}
+
+		props.setProperty(filename, sessionId, serialize());
 	}
 
 	@Override
@@ -83,33 +138,42 @@ public class StateSpaceSession implements ISessionServlet,
 				data = createStateSpaceGraph();
 			} else if (cmd.equals("trans_diag")) {
 				data = createTransitionDiagram(p);
+				expression = p;
 			} else if (cmd.equals("d_sig_merge")) {
+				recalculateEvents(p);
 				data = createDottySignatureMerge();
 			} else if (cmd.equals("d_trans_diag")) {
 				data = createDottyTransitionDiagram(p);
+				expression = p;
 			}
 		}
-
+		props.setProperty(filename, sessionId, serialize());
 	}
 
 	private void recalculateEvents(final String p) {
 		JsonElement parse = new JsonParser().parse(p);
 		JsonArray array = parse.getAsJsonArray();
-		boolean changed = false;
+		List<String> disabled = new ArrayList<String>();
 		for (JsonElement jsonElement : array) {
 			JsonObject object = jsonElement.getAsJsonObject();
 			String name = object.get("name").getAsString();
 			boolean checked = object.get("checked").getAsBoolean();
-			if (includedEvents.get(name).checked != checked) {
-				includedEvents.put(name, new EnabledEvent(name, checked));
+			if (events.get(name).checked != checked) {
+				events.put(name, new EnabledEvent(name, checked));
+
+				// If the box checked for the event and it is in the disabled
+				// list, remove it
+				if (checked && disabledEvents.contains(name)) {
+					disabledEvents.remove(name);
+				} else {
+					// If the box is not checked and it is not in the disabled
+					// list, add it
+					if (!disabled.contains(name)) {
+						disabledEvents.add(name);
+					}
+				}
 			}
 		}
-		updateSigMerge();
-	}
-
-	private void updateSigMerge() {
-		// TODO Auto-generated method stub
-
 	}
 
 	private void normalResponse(final HttpServletRequest req,
@@ -126,20 +190,19 @@ public class StateSpaceSession implements ISessionServlet,
 			} else {
 				resp.put("data", data.getChanges());
 			}
+			data.setReset(false);
 		}
 		resp.put("count", data.count());
 		resp.put("varCount", data.varSize());
 		resp.put("reset", data.getReset());
 		resp.put("mode", data.getMode());
-		resp.put("events", includedEvents.values());
+		resp.put("events", events.values());
 
 		Gson g = new Gson();
 
 		String json = g.toJson(resp);
 		out.println(json);
 		out.close();
-
-		data.setReset(false);
 	}
 
 	private AbstractData createStateSpaceGraph() {
@@ -159,9 +222,11 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createSigMergeGraph() {
-		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand();
+		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand(
+				disabledEvents);
 		space.execute(cmd);
-		SignatureMergedStateSpace s = new SignatureMergedStateSpace(space, cmd);
+		SignatureMergedStateSpace s = new SignatureMergedStateSpace(space, cmd,
+				disabledEvents);
 		s.addStates(cmd.getStates());
 		s.addTransitions(cmd.getOps());
 		AbstractData d = changeStateSpaceTo(s);
@@ -183,8 +248,9 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createDottySignatureMerge() {
-		DottySignatureMerge s = new DottySignatureMerge(space);
+		DottySignatureMerge s = new DottySignatureMerge(space, disabledEvents);
 
+		notifyRefresh();
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(4);
 		return d;
@@ -193,6 +259,7 @@ public class StateSpaceSession implements ISessionServlet,
 	private AbstractData createDottyTransitionDiagram(final String expression) {
 		DottyTransitionDiagram s = new DottyTransitionDiagram(space, expression);
 
+		notifyRefresh();
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(5);
 		return d;
@@ -250,12 +317,19 @@ public class StateSpaceSession implements ISessionServlet,
 		if (space instanceof StateSpace) {
 			((StateSpace) space).calculateVariables();
 		}
+		if (space instanceof AbstractDottyGraph) {
+			notifyRefresh();
+		}
 		data.addNewLinks(space.getSSGraph(), newOps);
+
 	}
 
 	@Override
 	public void apply(final Transformer styling) {
 		data.addStyling(styling);
+		if (styling instanceof DynamicTransformer) {
+			props.setProperty(filename, sessionId, serialize());
+		}
 	}
 
 	class EnabledEvent {
@@ -265,6 +339,53 @@ public class StateSpaceSession implements ISessionServlet,
 		public EnabledEvent(final String name, final Boolean enabled) {
 			this.name = name;
 			checked = enabled;
+		}
+	}
+
+	public void registerRefreshListener(final IRefreshListener l) {
+		refreshListeners.add(l);
+	}
+
+	public void deregisterRefreshListener(final IRefreshListener l) {
+		refreshListeners.remove(l);
+	}
+
+	public void notifyRefresh() {
+		for (IRefreshListener l : refreshListeners) {
+			l.refresh();
+		}
+	}
+
+	public String serialize() {
+		final List<String> serializedDyTrans = new ArrayList<String>();
+		List<Transformer> styling = data.getStyling();
+		for (Transformer transformer : styling) {
+			if (transformer instanceof DynamicTransformer) {
+				serializedDyTrans.add(((DynamicTransformer) transformer)
+						.serialize());
+			}
+		}
+
+		ToSerialize toSerialize = new ToSerialize(data.getMode(),
+				disabledEvents, expression, serializedDyTrans);
+
+		Gson g = new Gson();
+
+		return g.toJson(toSerialize);
+	}
+
+	class ToSerialize {
+		public int mode;
+		public List<String> disabled;
+		public String expr;
+		public List<String> transformers;
+
+		public ToSerialize(final int mode, final List<String> disabled,
+				final String expr, final List<String> transformers) {
+			this.mode = mode;
+			this.disabled = disabled;
+			this.expr = expr;
+			this.transformers = transformers;
 		}
 	}
 }

@@ -8,22 +8,28 @@ import de.prob.statespace.OpInfo;
 
 public class DottySignatureMerge extends AbstractDottyGraph {
 
-	public DottySignatureMerge(final IStateSpace space) {
+	private final List<String> disabledEvents;
+
+	public DottySignatureMerge(final IStateSpace space,
+			final List<String> disabledEvents) {
 		super(space);
+		this.disabledEvents = disabledEvents;
 		calculate();
 	}
 
 	@Override
 	protected void calculate() {
-		GetDottyForSigMergeCmd cmd = new GetDottyForSigMergeCmd();
+		GetDottyForSigMergeCmd cmd = new GetDottyForSigMergeCmd(disabledEvents);
 		execute(cmd);
 		content = cmd.getContent();
 	}
 
 	@Override
 	public void newTransitions(final List<? extends OpInfo> newOps) {
-		calculate();
-		notifyStateSpaceChange(newOps);
+		if (!newOps.isEmpty()) {
+			calculate();
+			notifyStateSpaceChange(newOps);
+		}
 	}
 
 }

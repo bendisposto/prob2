@@ -3,6 +3,7 @@ package de.prob.statespace;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.inject.Singleton;
 
@@ -22,9 +23,9 @@ import de.prob.model.representation.AbstractElement;
 @Singleton
 public class AnimationSelector implements IAnimationListener {
 
-	List<WeakReference<IHistoryChangeListener>> historyListeners = new ArrayList<WeakReference<IHistoryChangeListener>>();
-	List<WeakReference<IModelChangedListener>> modelListeners = new ArrayList<WeakReference<IModelChangedListener>>();
-	List<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
+	List<WeakReference<IHistoryChangeListener>> historyListeners = new CopyOnWriteArrayList<WeakReference<IHistoryChangeListener>>();
+	List<WeakReference<IModelChangedListener>> modelListeners = new CopyOnWriteArrayList<WeakReference<IModelChangedListener>>();
+	List<IAnimationListener> animationListeners = new CopyOnWriteArrayList<IAnimationListener>();
 
 	List<StateSpace> statespaces = new ArrayList<StateSpace>();
 	List<History> histories = new ArrayList<History>();
@@ -74,7 +75,7 @@ public class AnimationSelector implements IAnimationListener {
 			h.deregisterAnimationListener(l);
 		}
 	}
-	
+
 	/**
 	 * Changes the current history to the specified {@link History} and notifies
 	 * a history change ({@link AnimationSelector#notifyHistoryChange(History)})
@@ -125,16 +126,18 @@ public class AnimationSelector implements IAnimationListener {
 	public void notifyHistoryChange(final History history) {
 		for (final WeakReference<IHistoryChangeListener> listener : historyListeners) {
 			IHistoryChangeListener historyChangeListener = listener.get();
-			if (historyChangeListener != null)
+			if (historyChangeListener != null) {
 				historyChangeListener.historyChange(history);
+			}
 		}
 	}
 
 	private void notifyModelChanged(final StateSpace s) {
 		for (WeakReference<IModelChangedListener> listener : modelListeners) {
 			IModelChangedListener modelChangedListener = listener.get();
-			if (modelChangedListener != null)
+			if (modelChangedListener != null) {
 				modelChangedListener.modelChanged(s);
+			}
 		}
 	}
 
