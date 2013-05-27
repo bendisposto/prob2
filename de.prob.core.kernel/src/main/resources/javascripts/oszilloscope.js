@@ -88,8 +88,12 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
     for( i = 0 ; i < dataset.length ; i = i + 1 ) {
         var data = dataset[i].dataset;
         for( j = 0 ; j < data.length ; j = j + 1 ) {
-            if( data[j].type === "BOOL" ) {
-                data[j].value = data[j].value * yMax;
+            if( data[j].scaleV === undefined) {
+                if( data[j].type === "BOOL" ) {
+                    data[j].scaleV = data[j].value * yMax;
+                } else {
+                    data[j].scaleV = data[j].value;
+                }
             }
         }
     }
@@ -105,7 +109,7 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
                     .scale(yScale)
                     .orient("left").ticks(2);
 
-    var line = d3.svg.line().x(function(d){return xScale(d.t)}).y(function(d){ return yScale(d.value) });
+    var line = d3.svg.line().x(function(d){return xScale(d.t)}).y(function(d){ return yScale(d.scaleV) });
 
     svg.append("g")
         .attr("class", "axis")
@@ -178,8 +182,6 @@ function doIt(id, svg, dataset, xLabel, w, h) {
         .attr("transform","translate(" + (w + 10) + "," + (h - 20) +")")
         .attr("class","button")
         .on("click",function() { changeMode(id, svg, dataset); doIt(id, svg, dataset, xLabel, w, h); });
-
-
 
     var rect =button.append("rect")
         .attr("height","20px")
