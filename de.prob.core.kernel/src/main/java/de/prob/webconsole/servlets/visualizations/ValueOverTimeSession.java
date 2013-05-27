@@ -44,6 +44,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 	private final String saveFile;
 	private final String sessionId;
 	private final IEvalElement time;
+	private String mode;
 
 	public ValueOverTimeSession(final String sessionId,
 			final IEvalElement formula, final IEvalElement time,
@@ -60,6 +61,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 		datasets = calculate();
 		saveFile = properties.getPropFileFromModelFile(stateSpace.getModel()
 				.getModelFile().getAbsolutePath());
+		mode = "over";
 		properties.setProperty(saveFile, sessionId, serialize());
 	}
 
@@ -93,6 +95,11 @@ public class ValueOverTimeSession implements ISessionServlet,
 					}
 				}
 			}
+
+			JsonElement m = asJson.get("mode");
+			if (m != null) {
+				mode = m.getAsString();
+			}
 		} else {
 			time = null;
 		}
@@ -125,18 +132,29 @@ public class ValueOverTimeSession implements ISessionServlet,
 	}
 
 	public void doCommand(final HttpServletRequest req) {
-		String formula = req.getParameter("param");
-		if (formula != null) {
-			if (vizType.equals("ClassicalB")) {
-				formulas.add(new ClassicalB(formula));
-			} else if (vizType.equals("EventB")) {
-				formulas.add(new EventB(formula));
-			} else if (vizType.equals("CSP")) {
-				formulas.add(new CSP(formula, (CSPModel) stateSpace.getModel()));
+		String command = req.getParameter("cmd");
+		String param = req.getParameter("param");
+
+		if (command.equals("add_formula")) {
+			if (param != null) {
+				if (vizType.equals("ClassicalB")) {
+					formulas.add(new ClassicalB(param));
+				} else if (vizType.equals("EventB")) {
+					formulas.add(new EventB(param));
+				} else if (vizType.equals("CSP")) {
+					formulas.add(new CSP(param, (CSPModel) stateSpace
+							.getModel()));
+				}
+			}
+			datasets = calculate();
+			properties.setProperty(saveFile, sessionId, serialize());
+		} else if (command.equals("mode_change")) {
+			if (param != null) {
+				mode = param;
+				properties.setProperty(saveFile, sessionId, serialize());
 			}
 		}
-		datasets = calculate();
-		properties.setProperty(saveFile, sessionId, serialize());
+
 	}
 
 	public Map<String, Object> doNormalResponse(final HttpServletRequest req) {
@@ -151,6 +169,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 		}
 		response.put("count", count);
 		response.put("styling", styling);
+		response.put("mode", mode);
 
 		return response;
 	}
@@ -247,6 +266,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 			f.add(e.serialized());
 		}
 		serialized.put("formula", f);
+		serialized.put("mode", mode);
 
 		Gson g = new Gson();
 
