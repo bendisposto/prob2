@@ -1,5 +1,5 @@
 function doIt(svg, dataset, xLabel, w, h) {
-    var i;
+    var i,j;
     var padding = 10;
 
     var xMax = 0;
@@ -20,6 +20,15 @@ function doIt(svg, dataset, xLabel, w, h) {
         temp = d3.max(dataset[i].dataset, function(d) { return d.value; });
         if( temp > yMax ) {
             yMax = temp;
+        }
+    }
+
+    for( i = 0 ; i < dataset.length ; i = i + 1 ) {
+        var data = dataset[i].dataset;
+        for( j = 0 ; j < data.length ; j = j + 1 ) {
+            if( data[j].type === "BOOL" ) {
+                data[j].value = data[j].value * yMax;
+            }
         }
     }
 
