@@ -1,6 +1,3 @@
-var nodeLength = {};
-var valueLength = {};
-
 function buildTree(vis, tree, treeData, height) {
     var root, labels, values, i, diagonal;
     vis.selectAll(".link").remove();
@@ -256,10 +253,10 @@ function toggle(d) {
 
 function initialize(id) {
     var dim = calculateDimensions();
-    init(id,"body", dim.width, dim.height);
+    createFormulaViz(id,"body", dim.width, dim.height);
 };
 
-function init(id, positionId, width, height) {
+function createFormulaViz(id, positionId, width, height) {
     var functionCtr, vis, tree;
     functionCtr = 0;
     vis = createCanvas("#" + positionId, width, height);

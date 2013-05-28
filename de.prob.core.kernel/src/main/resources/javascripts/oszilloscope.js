@@ -222,10 +222,10 @@ function doIt(id, svg, dataset, xLabel, w, h) {
 
 function initialize(id) {
     var dim = calculateDimensions();
-    init(id, "body", dim.width, dim.height, 600, 400);
+    createValueOverTimeViz(id, "body", dim.width, dim.height, 600, 400);
 }
 
-function init(id, positionId, width, height, diagramWidth, diagramHeight) {
+function createValueOverTimeViz(id, positionId, width, height, diagramWidth, diagramHeight) {
     var functionCtr, svg, menu;
 
     functionCtr = 0;
