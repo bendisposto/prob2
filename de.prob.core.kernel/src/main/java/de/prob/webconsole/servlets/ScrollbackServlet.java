@@ -43,12 +43,24 @@ public class ScrollbackServlet extends HttpServlet {
 		String[] r = readFile(home);
 
 		LinkedHashSet<String> copy = new LinkedHashSet<String>();
-		copy.addAll(Arrays.asList(r));
+		LinkedHashSet<String> rcopy = new LinkedHashSet<String>();
 
-		write(copy);
+		for (int i = 1; i <= r.length; i++) {
+			int j = r.length - i;
+			copy.add(r[j]);
+		}
+
+		String[] rr = copy.toArray(new String[] {});
+
+		for (int i = 1; i <= rr.length; i++) {
+			int j = rr.length - i;
+			rcopy.add(rr[j]);
+		}
+
+		write(rcopy);
 
 		Gson g = new Gson();
-		String json = g.toJson(copy);
+		String json = g.toJson(rcopy);
 		out.println(json);
 		out.close();
 	}

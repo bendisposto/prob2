@@ -38,7 +38,7 @@ class AnimatorImpl implements IAnimator {
 	}
 
 	@Override
-	public void execute(final AbstractCommand command) {
+	public synchronized void execute(final AbstractCommand command) {
 		if (cli == null) {
 			// System.out.println("Probcli is missing. Try \"upgrade\".");
 			logger.error("Probcli is missing. Try \"upgrade\".");
@@ -60,7 +60,7 @@ class AnimatorImpl implements IAnimator {
 		}
 	}
 
-	private void getErrors() {
+	private synchronized void getErrors() {
 		ISimplifiedROMap<String, PrologTerm> errorbindings;
 		List<String> errors;
 		errorbindings = processor.sendCommand(getErrors);
