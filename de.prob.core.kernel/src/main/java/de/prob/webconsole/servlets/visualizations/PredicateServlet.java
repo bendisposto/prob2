@@ -49,8 +49,8 @@ public class PredicateServlet extends SessionBasedServlet {
 	}
 
 	@Override
-	protected String getHTML(final String id) {
-		return HTMLResources.getPredicateHTML(id);
+	protected String getHTML(final String id, final String w, final String h) {
+		return HTMLResources.getPredicateHTML(id, w, h);
 	}
 
 	@Override
@@ -61,10 +61,11 @@ public class PredicateServlet extends SessionBasedServlet {
 					.getAbsolutePath());
 			Properties props = properties.getProperties(propFile);
 			String formula = props.getProperty(id);
+			System.out.println(formula);
 			if (formula != null) {
 				IEvalElement iEvalElement = deserializer.deserialize(formula);
 				try {
-					openSession(id, iEvalElement);
+					return openSession(id, iEvalElement);
 				} catch (AnimationNotLoadedException e) {
 					return null;
 				}

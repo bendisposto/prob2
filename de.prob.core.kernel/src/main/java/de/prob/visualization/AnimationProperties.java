@@ -16,7 +16,7 @@ public class AnimationProperties {
 
 	Map<String, Properties> properties = new HashMap<String, Properties>();
 
-	public Properties getProperties(final String filename) {
+	public synchronized Properties getProperties(final String filename) {
 		if (properties.containsKey(filename)) {
 			return properties.get(filename);
 		}
@@ -39,12 +39,13 @@ public class AnimationProperties {
 		return props;
 	}
 
-	public String getProperty(final String filename, final String sessionId) {
+	public synchronized String getProperty(final String filename,
+			final String sessionId) {
 		return getProperties(filename).getProperty(sessionId);
 	}
 
-	public void setProperty(final String filename, final String sessionId,
-			final String sessionInfo) {
+	public synchronized void setProperty(final String filename,
+			final String sessionId, final String sessionInfo) {
 		Properties props = getProperties(filename);
 		Object prop = props.setProperty(sessionId, sessionInfo);
 		if (!sessionInfo.equals(prop)) {
@@ -60,7 +61,7 @@ public class AnimationProperties {
 		}
 	}
 
-	public String getPropFileFromModelFile(final String modelFile) {
+	public synchronized String getPropFileFromModelFile(final String modelFile) {
 		return modelFile.substring(0, modelFile.lastIndexOf(".")) + ".viz";
 	}
 

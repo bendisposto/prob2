@@ -57,8 +57,8 @@ public class StateSpaceServlet extends SessionBasedServlet implements
 	}
 
 	@Override
-	protected String getHTML(final String id) {
-		return HTMLResources.getSSVizHTML(id);
+	protected String getHTML(final String id, final String w, final String h) {
+		return HTMLResources.getSSVizHTML(id, w, h);
 	}
 
 	@Override
@@ -71,6 +71,7 @@ public class StateSpaceServlet extends SessionBasedServlet implements
 				.getModel().getModelFile().getAbsolutePath());
 		Properties props = properties.getProperties(propFile);
 		String json = props.getProperty(id);
+		System.out.println(json);
 
 		JsonParser parser = new JsonParser();
 		JsonObject parsed = parser.parse(json).getAsJsonObject();

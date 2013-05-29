@@ -48,8 +48,8 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 	}
 
 	@Override
-	protected String getHTML(final String id) {
-		return HTMLResources.getValueVsTimeHTML(id);
+	protected String getHTML(final String id, final String w, final String h) {
+		return HTMLResources.getValueVsTimeHTML(id, w, h);
 	}
 
 	@Override
@@ -61,6 +61,7 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 			Properties props = properties.getProperties(propFile);
 			String json = props.getProperty(id);
 			if (json != null) {
+				System.out.println(json);
 				if (animations.getCurrentHistory() == null) {
 					return null;
 				}
