@@ -17,13 +17,13 @@ import de.prob.model.representation.Constant;
 import de.prob.model.representation.IEval;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Variable;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.StateId;
 
 class StateViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
 
-	public History currentHistory;
+	public Trace currentHistory;
 
 	@Override
 	public String getColumnText(final Object obj, final int index) {
@@ -89,7 +89,7 @@ class StateViewLabelProvider extends LabelProvider implements
 				.getImage(ISharedImages.IMG_OBJ_ELEMENT);
 	}
 
-	public void setInput(final History currentHistory2) {
+	public void setInput(final Trace currentHistory2) {
 		currentHistory = currentHistory2;
 
 	}

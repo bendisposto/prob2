@@ -23,8 +23,8 @@ import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
@@ -43,14 +43,14 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class StateView extends ViewPart implements IHistoryChangeListener {
+public class StateView extends ViewPart implements IAnimationChangedListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "de.prob.ui.StateView";
 
-	private History currentHistory;
+	private Trace currentHistory;
 	private AbstractModel currentModel;
 
 	Injector injector = ServletContextListener.INJECTOR;
@@ -141,7 +141,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history) {
+	public void historyChange(final Trace history) {
 
 		Display.getDefault().asyncExec(new Runnable() {
 
@@ -151,7 +151,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 					updateModelInfo(null);
 				} else {
 					currentHistory = history;
-					contentProvider.setCurrentHistory(currentHistory);
+					contentProvider.setCurrentTrace(currentHistory);
 					labelProvider.setInput(currentHistory);
 
 					final AbstractModel model = history.getModel();

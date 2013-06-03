@@ -18,11 +18,11 @@ import org.eclipse.ui.part.ViewPart;
 import com.google.inject.Injector;
 
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangedListener;
 import de.prob.webconsole.ServletContextListener;
 
-public class AnimationsView extends ViewPart implements IHistoryChangeListener {
+public class AnimationsView extends ViewPart implements IAnimationChangedListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -115,12 +115,12 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history) {
+	public void historyChange(final Trace history) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				if (!viewer.getTable().isDisposed()) {
-					labelProvider.setCurrentHistory(history);
+					labelProvider.setCurrentTrace(history);
 					viewer.setInput(selector);
 					packTableColumns();
 				}
@@ -128,13 +128,13 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 		});
 	}
 
-	public History getSelection() {
+	public Trace getSelection() {
 		if (viewer.getSelection() != null
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof History) {
-				return (History) ssel.getFirstElement();
+			if (ssel.getFirstElement() instanceof Trace) {
+				return (Trace) ssel.getFirstElement();
 			} else {
 				System.out.println("Selection is: "
 						+ ssel.getFirstElement().getClass());

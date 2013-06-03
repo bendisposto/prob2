@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.Viewer;
 
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.StateSchema;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 /**
  * Creates a new list of Operations, merging the list of available operations
@@ -15,7 +15,7 @@ import de.prob.statespace.History;
  */
 public class StateContentProvider implements ITreeContentProvider {
 
-	public History currentHistory;
+	public Trace currentTrace;
 
 	@Override
 	public void dispose() {
@@ -28,8 +28,8 @@ public class StateContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getElements(final Object inputElement) {
-		if (currentHistory != null) {
-			AbstractModel model = currentHistory.getModel();
+		if (currentTrace != null) {
+			AbstractModel model = currentTrace.getModel();
 			if (model != null) {
 				StateSchema schema = model.getStateSchema();
 				if (schema != null) {
@@ -52,8 +52,8 @@ public class StateContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(final Object element) {
-		if (currentHistory != null) {
-			AbstractModel model = currentHistory.getModel();
+		if (currentTrace != null) {
+			AbstractModel model = currentTrace.getModel();
 			if (model != null) {
 				StateSchema schema = model.getStateSchema();
 				if (schema != null) {
@@ -64,7 +64,7 @@ public class StateContentProvider implements ITreeContentProvider {
 		return false;
 	}
 
-	public void setCurrentHistory(final History currentHistory) {
-		this.currentHistory = currentHistory;
+	public void setCurrentTrace(final Trace currentTrace) {
+		this.currentTrace = currentTrace;
 	}
 }

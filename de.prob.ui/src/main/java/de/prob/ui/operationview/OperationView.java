@@ -37,9 +37,9 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Machine;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.IAnimationChangedListener;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.Trace;
 import de.prob.ui.services.HistoryActiveProvider;
 import de.prob.ui.services.ModelLoadedProvider;
 import de.prob.webconsole.ServletContextListener;
@@ -59,7 +59,8 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class OperationView extends ViewPart implements IHistoryChangeListener {
+public class OperationView extends ViewPart implements
+		IAnimationChangedListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -67,11 +68,13 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
 	private TableViewer viewer;
-	private History currentHistory;
+	private Trace currentTrace;
 	private AbstractModel currentModel;
 	private boolean modelLoaded;
 
 	Injector injector = ServletContextListener.INJECTOR;
+
+	private AnimationSelector animations;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -79,9 +82,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	 */
 	@Override
 	public void createPartControl(final Composite parent) {
-		final AnimationSelector selector = injector
-				.getInstance(AnimationSelector.class);
-		selector.registerHistoryChangeListener(this);
+		animations = injector.getInstance(AnimationSelector.class);
+		animations.registerHistoryChangeListener(this);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		createColumns();
@@ -125,9 +127,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 			final Action executeOp = new Action() {
 				@Override
 				public void run() {
-					final History newHistory = currentHistory.add(opInfo.id);
-					newHistory
-							.notifyAnimationChange(currentHistory, newHistory);
+					final Trace newTrace = currentTrace.add(opInfo.id);
+					animations.replaceTrace(currentTrace, newTrace);
 				}
 			};
 			executeOp.setText(Joiner.on(",").join(opInfo.params));
@@ -172,8 +173,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history) {
-		currentHistory = history;
+	public void historyChange(final Trace history) {
+		currentTrace = history;
 		if (history == null) {
 			updateModelLoadedProvider(false);
 			modelLoaded = false;
@@ -228,10 +229,9 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 			final List<OpInfo> selectedOperations = getSelectedOperations();
 			if (selectedOperations != null && !selectedOperations.isEmpty()) {
 				try {
-					final History newHistory = currentHistory
-							.add(selectedOperations.get(0).id);
-					newHistory
-							.notifyAnimationChange(currentHistory, newHistory);
+					final Trace newTrace = currentTrace.add(selectedOperations
+							.get(0).id);
+					animations.replaceTrace(currentTrace, newTrace);
 				} catch (IllegalArgumentException e) {
 					// Happens when the user tries to execute too many
 					// operations in the OperationView too quickly
@@ -249,7 +249,7 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		sourceProvider.setEnabled(b);
 	}
 
-	private void updateHistoryEnabled(final History history) {
+	private void updateHistoryEnabled(final Trace history) {
 		final ISourceProviderService service = (ISourceProviderService) this
 				.getSite().getService(ISourceProviderService.class);
 		final HistoryActiveProvider sourceProvider = (HistoryActiveProvider) service

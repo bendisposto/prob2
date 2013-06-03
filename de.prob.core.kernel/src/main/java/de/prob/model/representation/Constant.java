@@ -2,7 +2,7 @@ package de.prob.model.representation;
 
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.unicode.UnicodeTranslator;
 
 public abstract class Constant extends AbstractElement implements IEval {
@@ -30,7 +30,7 @@ public abstract class Constant extends AbstractElement implements IEval {
 
 	// Experimental. Would allow the user to calculate the value once and cache
 	// it.
-	public EvaluationResult getValue(final History h) {
+	public EvaluationResult getValue(final Trace h) {
 		if (result == null) {
 			result = h.evalCurrent(getEvaluate());
 		}

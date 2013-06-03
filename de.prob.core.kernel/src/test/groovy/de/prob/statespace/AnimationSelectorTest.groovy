@@ -10,11 +10,11 @@ class AnimationSelectorTest extends Specification {
 	def listener
 
 	def setup() {
-		history = mock(History.class);
+		history = mock(Trace.class);
 		selector = new AnimationSelector();
-		listener = new IHistoryChangeListener() {
+		listener = new IAnimationChangedListener() {
 					def count = 0;
-					void historyChange(History arg0) {
+					void historyChange(Trace arg0) {
 						count++;
 					};
 				}

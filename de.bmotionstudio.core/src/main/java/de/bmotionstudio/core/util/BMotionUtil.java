@@ -52,7 +52,7 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.CSPModel;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 public class BMotionUtil {
 	
@@ -418,7 +418,7 @@ public class BMotionUtil {
 	}
 	
 	public static Map<String, EvaluationResult> getEvaluationResults(
-			History history, List<IEvalElement> evals) {
+			Trace history, List<IEvalElement> evals) {
 		EvaluateFormulasCommand cmd = new EvaluateFormulasCommand(evals,
 				history.getCurrentState().getId());
 		history.getStatespace().execute(cmd);

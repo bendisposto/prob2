@@ -18,7 +18,7 @@ import de.prob.animator.command.GetStateValuesCommand;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.worksheet.api.DefaultWorksheetAPI;
@@ -48,7 +48,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		EvalStoreAPI.logger.trace("in:");
 
 		// initialize new API Context
-		History currentHistory = animations.getCurrentHistory();
+		Trace currentHistory = animations.getCurrentHistory();
 		String sId;
 		animation = null;
 		if (currentHistory == null) {

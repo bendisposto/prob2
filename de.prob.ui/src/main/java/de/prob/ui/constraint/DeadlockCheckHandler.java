@@ -23,7 +23,7 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.StateSpace;
 import de.prob.ui.ProBCommandJob;
 import de.prob.webconsole.ServletContextListener;
@@ -41,7 +41,7 @@ public class DeadlockCheckHandler extends AbstractHandler {
 			throws ExecutionException {
 		Injector injector = ServletContextListener.INJECTOR;
 		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
-		History currentHistory = selector.getCurrentHistory();
+		Trace currentHistory = selector.getCurrentHistory();
 
 		final IInputValidator validator = new PredicateValidator(currentHistory.getModel());
 		final InputDialog dialog = new InputDialog(
@@ -55,7 +55,7 @@ public class DeadlockCheckHandler extends AbstractHandler {
 		}
 	}
 
-	private void startCheck(final History currentHistory, final String value,
+	private void startCheck(final Trace currentHistory, final String value,
 			final Shell shell) throws ExecutionException {
 		final StateSpace s = currentHistory.getS();
 		final IEvalElement predicate = parsePredicate(s, value);

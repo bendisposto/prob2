@@ -24,20 +24,20 @@ import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.Transformer;
 
 public class ValueOverTimeSession implements ISessionServlet,
-		IHistoryChangeListener, IVisualizationServlet {
+		IAnimationChangedListener, IVisualizationServlet {
 
 	private final String vizType;
 	private final StateSpace stateSpace;
 	private final List<IEvalElement> formulas = new ArrayList<IEvalElement>();
 	private int count = 0;
-	private History currentHistory;
+	private Trace currentHistory;
 	private List<Object> datasets = new ArrayList<Object>();
 	private final List<Transformer> styling = new ArrayList<Transformer>();
 	private final AnimationProperties properties;
@@ -243,7 +243,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 	}
 
 	@Override
-	public void historyChange(final History history) {
+	public void historyChange(final Trace history) {
 		currentHistory = history;
 
 		datasets = calculate();

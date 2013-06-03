@@ -22,7 +22,7 @@ import com.google.inject.Injector;
 import de.prob.animator.command.ConstraintBasedInvariantCheckCommand;
 import de.prob.model.representation.BEvent;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.StateSpace;
 import de.prob.ui.ProBCommandJob;
 import de.prob.webconsole.ServletContextListener;
@@ -37,7 +37,7 @@ public class InvariantCheckHandler extends AbstractHandler {
 		final Shell shell = HandlerUtil.getActiveShell(event);
 		Injector injector = ServletContextListener.INJECTOR;
 		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
-		History currentHistory = selector.getCurrentHistory();
+		Trace currentHistory = selector.getCurrentHistory();
 		Set<BEvent> events = currentHistory.getModel().getMainComponent().getChildrenOfType(BEvent.class);
 
 		List<String> names = new ArrayList<String>();

@@ -13,7 +13,7 @@ import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 public class BPredicateObserver extends Observer {
 
@@ -26,7 +26,7 @@ public class BPredicateObserver extends Observer {
 	private transient List<IEvalElement> formulas;
 	
 	@Override
-	public List<IEvalElement> prepareObserver(History history,
+	public List<IEvalElement> prepareObserver(Trace history,
 			BControl control) {
 		if (formulas == null)
 			formulas = new ArrayList<IEvalElement>();
@@ -38,7 +38,7 @@ public class BPredicateObserver extends Observer {
 	}
 
 	@Override
-	public void check(History history, BControl control,
+	public void check(Trace history, BControl control,
 			Map<String, EvaluationResult> results) {
 
 		if (attribute == null || value == null || predicate == null)

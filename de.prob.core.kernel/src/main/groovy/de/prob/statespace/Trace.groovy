@@ -10,11 +10,10 @@ import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
 
-class History {
+class Trace {
 
-	def final HistoryElement current
-	def final HistoryElement head
-	def final List<IAnimationListener> animationListeners
+	def final TraceElement current
+	def final TraceElement head
 	def final StateSpace s
 
 	def EvaluationResult evalCurrent(formula) {
@@ -55,42 +54,36 @@ class History {
 	}
 
 
-	def History(final StateSpace s) {
+	def Trace(final StateSpace s) {
 		this.s = s
-		head = new HistoryElement(s.getState(s.getVertex("root")))
+		head = new TraceElement(s.getState(s.getVertex("root")))
 		current = head
-		animationListeners = new ArrayList<IAnimationListener>()
 	}
 
-	def History(final AbstractModel m) {
+	def Trace(final AbstractModel m) {
 		this.s = m.getStatespace()
-		head = new HistoryElement(s.getState(s.getVertex("root")))
+		head = new TraceElement(s.getState(s.getVertex("root")))
 		current = head
-		animationListeners = new ArrayList<IAnimationListener>()
 	}
 
-	def History(final StateSpace s, final HistoryElement head,
-	final List<IAnimationListener> animationListeners) {
+	def Trace(final StateSpace s, final TraceElement head) {
 		this.s = s
 		this.head = head
 		this.current = head
-		this.animationListeners = animationListeners
 	}
 
-	def History(final StateSpace s, final HistoryElement head,
-	final HistoryElement current,
-	final List<IAnimationListener> animationListeners) {
+	def Trace(final StateSpace s, final TraceElement head,
+	final TraceElement current) {
 		this.s = s
 		this.head = head
 		this.current = current
-		this.animationListeners = animationListeners
 	}
 
-	def History add(final String name, final List<String> params) {
+	def Trace add(final String name, final List<String> params) {
 		return add(getOp(name, params))
 	}
 
-	def History add(final String opId) {
+	def Trace add(final String opId) {
 		OpInfo op = s.getOps().get(opId)
 		if (!s.getOutEdges(current.getCurrentState()).contains(op))
 			throw new IllegalArgumentException(opId
@@ -98,14 +91,13 @@ class History {
 
 		StateId newState = s.getState(op)
 
-		def newHE = new HistoryElement(current.getCurrentState(), newState, op, current)
-		History newHistory = new History(s, newHE,
-				animationListeners)
+		def newHE = new TraceElement(current.getCurrentState(), newState, op, current)
+		Trace newHistory = new Trace(s, newHE)
 
 		return newHistory
 	}
 
-	def History add(final int i) {
+	def Trace add(final int i) {
 		String opId = String.valueOf(i)
 		return add(opId)
 	}
@@ -113,10 +105,9 @@ class History {
 	/**
 	 * Moves one step back in the animation if this is possible.
 	 */
-	def History back() {
+	def Trace back() {
 		if (canGoBack()) {
-			History history = new History(s, head, current.getPrevious(),
-					animationListeners)
+			Trace history = new Trace(s, head, current.getPrevious())
 			return history
 		}
 		return this
@@ -128,13 +119,13 @@ class History {
 	 *
 	 * @return
 	 */
-	def History forward() {
+	def Trace forward() {
 		if (canGoForward()) {
-			HistoryElement p = head
+			TraceElement p = head
 			while (p.getPrevious() != current) {
 				p = p.getPrevious()
 			}
-			History history = new History(s, head, p, animationListeners)
+			Trace history = new Trace(s, head, p)
 			return history
 		}
 		return this
@@ -176,7 +167,7 @@ class History {
 		+ " not found.")
 	}
 
-	def History add(final String opName, final String predicate)
+	def Trace add(final String opName, final String predicate)
 	throws BException {
 		OpInfo op = findOneOp(opName, predicate)
 		return add(op.id)
@@ -195,11 +186,11 @@ class History {
 		return id
 	}
 
-	def History randomAnimation(final int numOfSteps) {
+	def Trace randomAnimation(final int numOfSteps) {
 		StateId currentState = this.current.getCurrentState()
-		History oldHistory = this
-		HistoryElement previous = this.current
-		HistoryElement current = this.current
+		Trace oldHistory = this
+		TraceElement previous = this.current
+		TraceElement current = this.current
 		for(int i = 0; i < numOfSteps; i++) {
 			previous = current
 			List<OpInfo> ops = new ArrayList<OpInfo>()
@@ -210,15 +201,15 @@ class History {
 			StateId newState = s.getState(op)
 			s.explore(ops.get(0))
 
-			current = new HistoryElement(currentState,newState,op,previous)
+			current = new TraceElement(currentState,newState,op,previous)
 			currentState = newState
 		}
 
-		History newHistory = new History(s, current, animationListeners)
+		Trace newHistory = new Trace(s, current)
 		return newHistory
 	}
 
-	def History invokeMethod(String method,  params) {
+	def Trace invokeMethod(String method,  params) {
 		String predicate;
 
 		if(method.startsWith("\$")) {
@@ -231,7 +222,7 @@ class History {
 		return add(op.id)
 	}
 
-	def History anyOperation(filter) {
+	def Trace anyOperation(filter) {
 		def ops = new ArrayList<OpInfo>()
 		ops.addAll(s.getOutEdges(current.getCurrentState()));
 		if (filter != null && filter instanceof String) {
@@ -252,36 +243,8 @@ class History {
 		return this
 	}
 
-	def History anyEvent(filter) {
+	def Trace anyEvent(filter) {
 		anyOperation(filter);
-	}
-
-	/**
-	 * Adds an IAnimationListener to the list of animationListeners. This
-	 * listener will be notified whenever an animation step is performed
-	 * (whenever the current state changes).
-	 *
-	 * @param l
-	 */
-	def void registerAnimationListener(final IAnimationListener l) {
-		if(!animationListeners.contains(l))
-			animationListeners.add(l)
-	}
-
-	def void deregisterAnimationListener(final IAnimationListener l) {
-		animationListeners.remove(l)
-	}
-
-	def void notifyAnimationChange(final History oldHistory,final History newHistory) {
-		for (IAnimationListener listener : animationListeners) {
-			listener.currentStateChanged(oldHistory,newHistory)
-		}
-	}
-
-	def void notifyHistoryRemoval() {
-		for (IAnimationListener listener : animationListeners) {
-			listener.removeHistory(this)
-		}
 	}
 
 	def StateSpace getStatespace() {

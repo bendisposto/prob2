@@ -97,12 +97,12 @@ import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangedListener;
 import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
-		CommandStackListener, PropertyChangeListener, IHistoryChangeListener,
+		CommandStackListener, PropertyChangeListener, IAnimationChangedListener,
 		ITabbedPropertySheetPageContributor, ISaveablePart2 {
 
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
@@ -492,7 +492,7 @@ public class VisualizationViewPart extends ViewPart implements
 		getGraphicalViewer().setContents(visualization);
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		History currentHistory = selector.getCurrentHistory();
+		Trace currentHistory = selector.getCurrentHistory();
 		String partName = visualizationView.getName();
 		if (currentHistory != null) {
 			modelFile = currentHistory.getModel().getModelFile();
@@ -734,12 +734,12 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	@Override
-	public void historyChange(History history) {
+	public void historyChange(Trace history) {
 		if (visualizationView != null)
 			checkObserver(history);
 	}
 
-	public void checkObserver(History history) {
+	public void checkObserver(Trace history) {
 				
 		if(history == null)
 			return;

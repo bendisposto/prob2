@@ -18,17 +18,17 @@ import de.prob.animator.domainobjects.ExpandedFormula;
 import de.prob.animator.domainobjects.FormulaId;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.visualization.Transformer;
 
 public class PredicateSession implements ISessionServlet,
-		IHistoryChangeListener, IVisualizationServlet {
+		IAnimationChangedListener, IVisualizationServlet {
 
 	private final IEvalElement formula;
 	private final StateSpace stateSpace;
-	private History currentHistory;
+	private Trace currentHistory;
 	private final FormulaId formulaId;
 	private ExpandedFormula expanded;
 	private final List<Transformer> styling = new ArrayList<Transformer>();
@@ -69,7 +69,7 @@ public class PredicateSession implements ISessionServlet,
 	}
 
 	@Override
-	public void historyChange(final History history) {
+	public void historyChange(final Trace history) {
 		if (currentHistory != history) {
 			currentHistory = history;
 			calculate();

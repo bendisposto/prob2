@@ -4,7 +4,7 @@ package de.prob.statespace
 
 
 class SyncHistory {
-	def List<History> histories
+	def List<Trace> histories
 	def List<String> syncedOps
 
 	def SyncHistory head
@@ -15,7 +15,7 @@ class SyncHistory {
 		histories = []
 		statespaces.each {
 			s ->
-			histories << new History(s)
+			histories << new Trace(s)
 		}
 		this.syncedOps = syncedOps
 		this.head = this
@@ -43,7 +43,7 @@ class SyncHistory {
 		if(!syncedOps.contains(syncedOp)) {
 			throw new IllegalArgumentException("The given operation has not been specified as a syncronized operation")
 		}
-		def map = new HashMap<History, String>()
+		def map = new HashMap<Trace, String>()
 		histories.each {
 			history ->
 			def op = history.getOp(syncedOp,params)

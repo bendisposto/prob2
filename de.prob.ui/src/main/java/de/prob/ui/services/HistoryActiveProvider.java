@@ -6,7 +6,7 @@ import java.util.Map;
 import org.eclipse.ui.AbstractSourceProvider;
 import org.eclipse.ui.ISources;
 
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 public class HistoryActiveProvider extends AbstractSourceProvider {
 
@@ -45,7 +45,7 @@ public class HistoryActiveProvider extends AbstractSourceProvider {
 		return forward;
 	}
 
-	public void historyChange(final History history) {
+	public void historyChange(final Trace history) {
 		if (history == null) {
 			backward = false;
 			forward = false;

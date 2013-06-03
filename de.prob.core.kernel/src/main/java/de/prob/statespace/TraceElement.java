@@ -5,7 +5,7 @@ import java.util.List;
 
 
 /**
- * This class is used within the {@link History} object to create the linked
+ * This class is used within the {@link Trace} object to create the linked
  * list of operations. Each HistoryElement references a particular operation
  * that has been executed. This includes saving the {@link StateId} source and
  * {@link StateId} destination, as well as the {@link OpInfo}. It also contains
@@ -16,16 +16,16 @@ import java.util.List;
  * @author joy
  * 
  */
-public class HistoryElement {
+public class TraceElement {
 	private final StateId src;
 	private final StateId dest;
 	private final OpInfo edge;
 
-	private final HistoryElement previous;
+	private final TraceElement previous;
 
 	private final List<OpInfo> opList;
 
-	public HistoryElement(final StateId src) {
+	public TraceElement(final StateId src) {
 		this.src = src;
 
 		// WHEN THE STATE IS ROOT, EVERYTHING IS NULL
@@ -36,8 +36,8 @@ public class HistoryElement {
 		opList = new ArrayList<OpInfo>();
 	}
 
-	public HistoryElement(final StateId src, final StateId dest,
-			final OpInfo edge, final HistoryElement previous) {
+	public TraceElement(final StateId src, final StateId dest,
+			final OpInfo edge, final TraceElement previous) {
 		this.src = src;
 		this.dest = dest;
 		this.edge = edge;
@@ -74,7 +74,7 @@ public class HistoryElement {
 	/**
 	 * @return returns the pointer to the previous HistoryElement
 	 */
-	public HistoryElement getPrevious() {
+	public TraceElement getPrevious() {
 		return previous;
 	}
 
