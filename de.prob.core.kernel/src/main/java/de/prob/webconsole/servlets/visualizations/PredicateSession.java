@@ -18,17 +18,17 @@ import de.prob.animator.domainobjects.ExpandedFormula;
 import de.prob.animator.domainobjects.FormulaId;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.visualization.Transformer;
 
 public class PredicateSession implements ISessionServlet,
-		IHistoryChangeListener, IVisualizationServlet {
+		IAnimationChangeListener, IVisualizationServlet {
 
 	private final IEvalElement formula;
 	private final StateSpace stateSpace;
-	private History currentHistory;
+	private Trace currentTrace;
 	private final FormulaId formulaId;
 	private ExpandedFormula expanded;
 	private final List<Transformer> styling = new ArrayList<Transformer>();
@@ -36,15 +36,15 @@ public class PredicateSession implements ISessionServlet,
 
 	public PredicateSession(final AnimationSelector animations,
 			final IEvalElement formula) {
-		currentHistory = animations.getCurrentHistory();
-		stateSpace = currentHistory.getStatespace();
+		currentTrace = animations.getCurrentTrace();
+		stateSpace = currentTrace.getStateSpace();
 		this.formula = formula;
 		InsertFormulaForVisualizationCommand cmd = new InsertFormulaForVisualizationCommand(
 				formula);
 		stateSpace.execute(cmd);
 		formulaId = cmd.getFormulaId();
 		calculate();
-		animations.registerHistoryChangeListener(this);
+		animations.registerAnimationChangeListener(this);
 	}
 
 	@Override
@@ -69,17 +69,17 @@ public class PredicateSession implements ISessionServlet,
 	}
 
 	@Override
-	public void historyChange(final History history) {
-		if (currentHistory != history) {
-			currentHistory = history;
+	public void traceChange(final Trace trace) {
+		if (currentTrace != trace) {
+			currentTrace = trace;
 			calculate();
 		}
 	}
 
 	public void calculate() {
-		if (currentHistory != null && currentHistory.getS() == stateSpace) {
+		if (currentTrace != null && currentTrace.getStateSpace() == stateSpace) {
 			ExpandFormulaCommand cmd = new ExpandFormulaCommand(formulaId,
-					currentHistory.getCurrentState().getId());
+					currentTrace.getCurrentState().getId());
 			stateSpace.execute(cmd);
 			expanded = cmd.getResult();
 			count++;

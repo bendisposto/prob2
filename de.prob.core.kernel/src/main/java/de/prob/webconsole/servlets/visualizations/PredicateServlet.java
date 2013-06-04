@@ -34,13 +34,13 @@ public class PredicateServlet extends SessionBasedServlet {
 
 	public String openSession(final String sessionId, final IEvalElement formula)
 			throws AnimationNotLoadedException {
-		if (animations.getCurrentHistory() == null) {
+		if (animations.getCurrentTrace() == null) {
 			throw new AnimationNotLoadedException("Could not visualize "
 					+ formula.getCode() + " because no animation is loaded");
 		}
 		PredicateSession session = new PredicateSession(animations, formula);
 		String propFile = properties.getPropFileFromModelFile(animations
-				.getCurrentHistory().getModel().getModelFile()
+				.getCurrentTrace().getModel().getModelFile()
 				.getAbsolutePath());
 		properties.setProperty(propFile, sessionId, formula.serialized());
 		super.openSession(sessionId, session);
@@ -49,22 +49,23 @@ public class PredicateServlet extends SessionBasedServlet {
 	}
 
 	@Override
-	protected String getHTML(final String id) {
-		return HTMLResources.getPredicateHTML(id);
+	protected String getHTML(final String id, final String w, final String h) {
+		return HTMLResources.getPredicateHTML(id, w, h);
 	}
 
 	@Override
 	protected String loadSession(final String id) {
-		if (animations.getCurrentHistory() != null) {
+		if (animations.getCurrentTrace() != null) {
 			String propFile = properties.getPropFileFromModelFile(animations
-					.getCurrentHistory().getModel().getModelFile()
+					.getCurrentTrace().getModel().getModelFile()
 					.getAbsolutePath());
 			Properties props = properties.getProperties(propFile);
 			String formula = props.getProperty(id);
+			System.out.println(formula);
 			if (formula != null) {
 				IEvalElement iEvalElement = deserializer.deserialize(formula);
 				try {
-					openSession(id, iEvalElement);
+					return openSession(id, iEvalElement);
 				} catch (AnimationNotLoadedException e) {
 					return null;
 				}

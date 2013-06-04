@@ -97,12 +97,12 @@ import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
-		CommandStackListener, PropertyChangeListener, IHistoryChangeListener,
+		CommandStackListener, PropertyChangeListener, IAnimationChangeListener,
 		ITabbedPropertySheetPageContributor, ISaveablePart2 {
 
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
@@ -492,12 +492,12 @@ public class VisualizationViewPart extends ViewPart implements
 		getGraphicalViewer().setContents(visualization);
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		History currentHistory = selector.getCurrentHistory();
+		Trace currentHistory = selector.getCurrentTrace();
 		String partName = visualizationView.getName();
 		if (currentHistory != null) {
 			modelFile = currentHistory.getModel().getModelFile();
 			partName = partName + " (" + modelFile.getName() + ")";
-			selector.registerHistoryChangeListener(this);
+			selector.registerAnimationChangeListener(this);
 			setInitialized(true);
 		}
 		setPartName(partName);
@@ -726,7 +726,7 @@ public class VisualizationViewPart extends ViewPart implements
 			String name = evt.getNewValue().toString();
 			final AnimationSelector selector = injector
 					.getInstance(AnimationSelector.class);
-			String modelName = selector.getCurrentHistory().getModel()
+			String modelName = selector.getCurrentTrace().getModel()
 					.getModelFile().getName();
 			setPartName(name + " (" + modelName + ")");
 		}
@@ -734,19 +734,19 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	@Override
-	public void historyChange(History history) {
+	public void traceChange(Trace history) {
 		if (visualizationView != null)
 			checkObserver(history);
 	}
 
-	public void checkObserver(History history) {
+	public void checkObserver(Trace history) {
 				
 		if(history == null)
 			return;
 		
 		// Proceed only if the state can be evaluated and the visualization
 		// corresponds to the active animation
-		if (!history.getStatespace().canBeEvaluated(history.getCurrentState())
+		if (!history.getStateSpace().canBeEvaluated(history.getCurrentState())
 				|| !(history.getModel().getModelFile().getName()
 						.equals(modelFile.getName())))
 			return;

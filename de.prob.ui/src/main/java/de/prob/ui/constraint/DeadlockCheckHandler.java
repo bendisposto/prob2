@@ -23,7 +23,7 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.StateSpace;
 import de.prob.ui.ProBCommandJob;
 import de.prob.webconsole.ServletContextListener;
@@ -41,9 +41,9 @@ public class DeadlockCheckHandler extends AbstractHandler {
 			throws ExecutionException {
 		Injector injector = ServletContextListener.INJECTOR;
 		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
-		History currentHistory = selector.getCurrentHistory();
+		Trace currentTrace = selector.getCurrentTrace();
 
-		final IInputValidator validator = new PredicateValidator(currentHistory.getModel());
+		final IInputValidator validator = new PredicateValidator(currentTrace.getModel());
 		final InputDialog dialog = new InputDialog(
 				shell,
 				"Deadlock Freedom Check",
@@ -51,13 +51,13 @@ public class DeadlockCheckHandler extends AbstractHandler {
 				"", validator);
 		final int status = dialog.open();
 		if (status == InputDialog.OK) {
-			startCheck(currentHistory, dialog.getValue(), shell);
+			startCheck(currentTrace, dialog.getValue(), shell);
 		}
 	}
 
-	private void startCheck(final History currentHistory, final String value,
+	private void startCheck(final Trace currentTrace, final String value,
 			final Shell shell) throws ExecutionException {
-		final StateSpace s = currentHistory.getS();
+		final StateSpace s = currentTrace.getStateSpace();
 		final IEvalElement predicate = parsePredicate(s, value);
 		final ConstraintBasedDeadlockCheckCommand command = new ConstraintBasedDeadlockCheckCommand(
 				predicate);

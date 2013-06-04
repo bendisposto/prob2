@@ -33,7 +33,7 @@ import de.bmotionstudio.core.editor.VisualizationViewPart;
 import de.bmotionstudio.core.util.BMotionUtil;
 import de.bmotionstudio.core.util.PerspectiveUtil;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
@@ -58,7 +58,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	private static HashMap<String, IBControlService> controlServicesId = new HashMap<String, IBControlService>();
 
 	private StateSpace currentStateSpace = null;
-	private History currentHistory = null;
+	private Trace currentHistory = null;
 
 	private IExtensionRegistry registry = Platform.getExtensionRegistry();
 
@@ -289,7 +289,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 						for (VisualizationViewPart visPart : visualizationViewParts) {
 							if (visPart.isDirty()) {
 								if (currentHistory != null)
-									selector.changeCurrentHistory(currentHistory);
+									selector.changeCurrentAnimation(currentHistory);
 								return;
 							}
 						}
@@ -307,7 +307,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 				}
 
 				currentStateSpace = s;
-				currentHistory = selector.getCurrentHistory();
+				currentHistory = selector.getCurrentTrace();
 
 			}
 

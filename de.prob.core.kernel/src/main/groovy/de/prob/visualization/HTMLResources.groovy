@@ -2,16 +2,32 @@ package de.prob.visualization
 
 class HTMLResources {
 
-	def static String getPredicateHTML(String sessionId) {
-		return getHTML(sessionId,"Predicate Visualization","predicate.css","predicate.js")
+	def static String getPredicateHTML(String sessionId, String w, String h) {
+		if(w != null && h != null) {
+			String loadcmd = "createFormulaViz('${sessionId}', 'body', ${w}, ${h})"
+			return getHTML(loadcmd,"Predicate Visualization","predicate.css","predicate.js")
+		}
+		String loadcmd = "initialize('${sessionId}')"
+		return getHTML(loadcmd,"Predicate Visualization","predicate.css","predicate.js")
 	}
 
-	def static String getValueVsTimeHTML(String sessionId) {
-		return getHTML(sessionId,"Value vs Time","valueOverTime.css","oszilloscope.js")
+	def static String getValueVsTimeHTML(String sessionId, String w, String h) {
+		if(w != null && h != null) {
+			String loadcmd = "createValueOverTimeViz('${sessionId}', 'body', ${w}, ${h}, 600, 400)"
+			return getHTML(loadcmd,"Value vs Time","valueOverTime.css","oszilloscope.js")
+		}
+		String loadcmd = "initialize('${sessionId}')"
+		return getHTML(loadcmd,"Value vs Time","valueOverTime.css","oszilloscope.js")
 	}
 
-	public static String getSSVizHTML(String sessionId) {
-		return getHTML(sessionId,"State Space Visualization","statespace.css","statespace.js");
+	public static String getSSVizHTML(String sessionId, String w, String h) {
+		if(w != null && h != null) {
+			String loadcmd = "createSSGraph('${sessionId}','body',1,[],${w},${h})"
+			return getHTML(loadcmd,"State Space Visualization","statespace.css","statespace.js")
+		}
+
+		String loadcmd = "initialize('${sessionId}')"
+		return getHTML(loadcmd,"State Space Visualization","statespace.css","statespace.js");
 	}
 
 	/**
@@ -20,7 +36,7 @@ class HTMLResources {
 	 * @param javascript ( "MyJavascript.js" that is saved in folder javascripts )
 	 * @return String representation of the HTML for the page
 	 */
-	def static String getHTML(String sessionId, String title, String stylesheet, String javascript) {
+	def static String getHTML(String loadcmd, String title, String stylesheet, String javascript) {
 		return '''<!DOCTYPE html>
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
 <!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
@@ -49,7 +65,7 @@ class HTMLResources {
 <link rel="stylesheet" href="../stylesheets/pepper.css">
 <link rel="stylesheet" href="../stylesheets/visualizations/'''+stylesheet+'''"
 </head>
-<body onload="initialize('''+"'"+sessionId+"'"+''')">
+<body onload="'''+loadcmd+'''">
 
 			<div id="body"></div>
 

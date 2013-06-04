@@ -1,7 +1,7 @@
 s = api.b_load(dir+"/machines/Lift.mch").getStatespace()
 x = api.b_load(dir+"/machines/Lift.mch").getStatespace()
 import de.prob.statespace.*
-h = new SyncHistory([s,x],["inc"])
+h = new SyncedTraces([s,x],["inc"])
 assert h.toString().contains("0: [] Current Transition is: null\n1: [] Current Transition is: null\n")
 h = h.add("\$initialise_machine",["4"],0)
 assert h.toString().contains("0: [\$initialise_machine(4)] Current Transition is: \$initialise_machine(4)\n1: [] Current Transition is: null\n")

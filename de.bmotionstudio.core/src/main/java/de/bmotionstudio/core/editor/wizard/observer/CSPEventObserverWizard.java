@@ -49,7 +49,7 @@ import de.bmotionstudio.core.model.observer.Observer;
 import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class CSPEventObserverWizard extends ObserverWizard {
@@ -254,7 +254,7 @@ public class CSPEventObserverWizard extends ObserverWizard {
 								"value"))) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					History currentHistory = selector.getCurrentHistory();
+					Trace currentHistory = selector.getCurrentTrace();
 					Map<String, EvaluationResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
 									currentHistory,

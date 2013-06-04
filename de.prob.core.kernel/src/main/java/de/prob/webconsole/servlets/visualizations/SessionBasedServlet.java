@@ -20,12 +20,9 @@ public abstract class SessionBasedServlet extends HttpServlet {
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
 		String init = req.getParameter("init");
-		String secId = req.getParameter("secId");
 		String sId = req.getParameter("sessionId");
 		if (init != null) {
 			initializePage(req, resp);
-		} else if (secId != null) {
-
 		} else if (sId != null && sessions.containsKey(sId)) {
 			sessions.get(sId).doGet(req, resp);
 		} else {
@@ -38,9 +35,11 @@ public abstract class SessionBasedServlet extends HttpServlet {
 		resp.setContentType("text/html");
 
 		String sId = req.getParameter("init");
+		String w = req.getParameter("w");
+		String h = req.getParameter("h");
 
 		if (sessions.containsKey(sId)) {
-			String html = getHTML(sId);
+			String html = getHTML(sId, w, h);
 
 			PrintWriter out = resp.getWriter();
 			out.print(html);
@@ -48,7 +47,7 @@ public abstract class SessionBasedServlet extends HttpServlet {
 		} else {
 			String s = loadSession(sId);
 			if (s != null) {
-				String html = getHTML(sId);
+				String html = getHTML(sId, w, h);
 				PrintWriter out = resp.getWriter();
 				out.print(html);
 				out.close();
@@ -58,7 +57,7 @@ public abstract class SessionBasedServlet extends HttpServlet {
 		}
 	}
 
-	protected abstract String getHTML(String id);
+	protected abstract String getHTML(String id, String w, String h);
 
 	protected abstract String loadSession(String id);
 

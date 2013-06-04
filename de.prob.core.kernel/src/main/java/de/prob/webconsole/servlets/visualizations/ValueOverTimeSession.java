@@ -24,26 +24,27 @@ import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.Transformer;
 
 public class ValueOverTimeSession implements ISessionServlet,
-		IHistoryChangeListener, IVisualizationServlet {
+		IAnimationChangeListener, IVisualizationServlet {
 
 	private final String vizType;
 	private final StateSpace stateSpace;
 	private final List<IEvalElement> formulas = new ArrayList<IEvalElement>();
 	private int count = 0;
-	private History currentHistory;
+	private Trace currentTrace;
 	private List<Object> datasets = new ArrayList<Object>();
 	private final List<Transformer> styling = new ArrayList<Transformer>();
 	private final AnimationProperties properties;
 	private final String saveFile;
 	private final String sessionId;
 	private final IEvalElement time;
+	private String mode;
 
 	public ValueOverTimeSession(final String sessionId,
 			final IEvalElement formula, final IEvalElement time,
@@ -52,14 +53,15 @@ public class ValueOverTimeSession implements ISessionServlet,
 		this.sessionId = sessionId;
 		this.time = time;
 		this.properties = properties;
-		currentHistory = animations.getCurrentHistory();
-		animations.registerHistoryChangeListener(this);
-		stateSpace = currentHistory.getStatespace();
+		currentTrace = animations.getCurrentTrace();
+		animations.registerAnimationChangeListener(this);
+		stateSpace = currentTrace.getStateSpace();
 		formulas.add(formula);
 		vizType = formula.getClass().getSimpleName();
 		datasets = calculate();
 		saveFile = properties.getPropFileFromModelFile(stateSpace.getModel()
 				.getModelFile().getAbsolutePath());
+		mode = "over";
 		properties.setProperty(saveFile, sessionId, serialize());
 	}
 
@@ -69,9 +71,9 @@ public class ValueOverTimeSession implements ISessionServlet,
 			final EvalElementFactory deserializer) {
 		this.sessionId = sessionId;
 		this.properties = properties;
-		currentHistory = animations.getCurrentHistory();
-		animations.registerHistoryChangeListener(this);
-		stateSpace = currentHistory.getStatespace();
+		currentTrace = animations.getCurrentTrace();
+		animations.registerAnimationChangeListener(this);
+		stateSpace = currentTrace.getStateSpace();
 		JsonParser parser = new JsonParser();
 		JsonElement parsed = parser.parse(json);
 		if (parsed != null) {
@@ -92,6 +94,11 @@ public class ValueOverTimeSession implements ISessionServlet,
 						formulas.add(deserializer.deserialize(string));
 					}
 				}
+			}
+
+			JsonElement m = asJson.get("mode");
+			if (m != null) {
+				mode = m.getAsString();
 			}
 		} else {
 			time = null;
@@ -125,18 +132,29 @@ public class ValueOverTimeSession implements ISessionServlet,
 	}
 
 	public void doCommand(final HttpServletRequest req) {
-		String formula = req.getParameter("param");
-		if (formula != null) {
-			if (vizType.equals("ClassicalB")) {
-				formulas.add(new ClassicalB(formula));
-			} else if (vizType.equals("EventB")) {
-				formulas.add(new EventB(formula));
-			} else if (vizType.equals("CSP")) {
-				formulas.add(new CSP(formula, (CSPModel) stateSpace.getModel()));
+		String command = req.getParameter("cmd");
+		String param = req.getParameter("param");
+
+		if (command.equals("add_formula")) {
+			if (param != null) {
+				if (vizType.equals("ClassicalB")) {
+					formulas.add(new ClassicalB(param));
+				} else if (vizType.equals("EventB")) {
+					formulas.add(new EventB(param));
+				} else if (vizType.equals("CSP")) {
+					formulas.add(new CSP(param, (CSPModel) stateSpace
+							.getModel()));
+				}
+			}
+			datasets = calculate();
+			properties.setProperty(saveFile, sessionId, serialize());
+		} else if (command.equals("mode_change")) {
+			if (param != null) {
+				mode = param;
+				properties.setProperty(saveFile, sessionId, serialize());
 			}
 		}
-		datasets = calculate();
-		properties.setProperty(saveFile, sessionId, serialize());
+
 	}
 
 	public Map<String, Object> doNormalResponse(final HttpServletRequest req) {
@@ -151,21 +169,22 @@ public class ValueOverTimeSession implements ISessionServlet,
 		}
 		response.put("count", count);
 		response.put("styling", styling);
+		response.put("mode", mode);
 
 		return response;
 	}
 
 	public List<Object> calculate() {
 		List<Object> result = new ArrayList<Object>();
-		if (currentHistory != null && currentHistory.getS() == stateSpace) {
+		if (currentTrace != null && currentTrace.getStateSpace() == stateSpace) {
 			List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
 			if (time != null) {
-				timeRes = currentHistory.eval(time);
+				timeRes = currentTrace.eval(time);
 			}
 
 			for (IEvalElement formula : formulas) {
 
-				List<EvaluationResult> results = currentHistory.eval(formula);
+				List<EvaluationResult> results = currentTrace.eval(formula);
 				List<Object> points = new ArrayList<Object>();
 
 				if (timeRes.isEmpty()) {
@@ -204,24 +223,28 @@ public class ValueOverTimeSession implements ISessionServlet,
 		public final String stateid;
 		public final Integer value;
 		public final Integer t;
+		public final String type;
 
 		public Element(final String string, final String t, final Object value) {
 			stateid = string;
 			this.t = Integer.parseInt(t);
 			if (value.equals("TRUE")) {
 				this.value = 1;
+				type = "BOOL";
 			} else if (value.equals("FALSE")) {
 				this.value = 0;
+				type = "BOOL";
 			} else {
 				this.value = Integer.parseInt((String) value);
+				type = "INT";
 			}
 
 		}
 	}
 
 	@Override
-	public void historyChange(final History history) {
-		currentHistory = history;
+	public void traceChange(final Trace trace) {
+		currentTrace = trace;
 
 		datasets = calculate();
 	}
@@ -243,6 +266,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 			f.add(e.serialized());
 		}
 		serialized.put("formula", f);
+		serialized.put("mode", mode);
 
 		Gson g = new Gson();
 

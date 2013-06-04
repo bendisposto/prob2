@@ -15,7 +15,7 @@ import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.PropertyChangeSupportObject;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 /**
  * 
@@ -75,12 +75,12 @@ public abstract class Observer extends PropertyChangeSupportObject implements
 		return null;
 	}
 	
-	public List<IEvalElement> prepareObserver(History history,
+	public List<IEvalElement> prepareObserver(Trace history,
 			BControl control) {
 		return Collections.emptyList();
 	}
 	
-	public void afterCheck(History history, BControl control) {
+	public void afterCheck(Trace history, BControl control) {
 	}
 
 }

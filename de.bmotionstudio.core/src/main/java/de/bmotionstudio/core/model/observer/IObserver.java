@@ -12,11 +12,11 @@ import java.util.Map;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 public interface IObserver {
 
-	public List<IEvalElement> prepareObserver(History history,
+	public List<IEvalElement> prepareObserver(Trace history,
 			BControl control);
 
 	/**
@@ -28,10 +28,10 @@ public interface IObserver {
 	 * @param bcontrol
 	 *            The corresponding control
 	 */
-	public void check(History history, BControl control,
+	public void check(Trace history, BControl control,
 			Map<String, EvaluationResult> results);
 
-	public void afterCheck(History history, BControl control);
+	public void afterCheck(Trace history, BControl control);
 
 	public String getName();
 

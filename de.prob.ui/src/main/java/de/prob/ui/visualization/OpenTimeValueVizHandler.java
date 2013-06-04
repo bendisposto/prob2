@@ -51,8 +51,8 @@ public class OpenTimeValueVizHandler extends AbstractHandler implements
 		String timeExpression = "";
 
 		if (encodedFormula.equals("enter")
-				&& animations.getCurrentHistory() != null) {
-			Answer answer = askForValue(shell, animations.getCurrentHistory()
+				&& animations.getCurrentTrace() != null) {
+			Answer answer = askForValue(shell, animations.getCurrentTrace()
 					.getModel());
 			encodedFormula = answer.formula;
 			timeExpression = answer.timeExpression;

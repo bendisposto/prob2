@@ -15,12 +15,10 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import com.google.inject.Injector;
-
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 /**
@@ -38,7 +36,7 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class HistoryView extends ViewPart implements IHistoryChangeListener {
+public class HistoryView extends ViewPart implements IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -46,16 +44,16 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener {
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
 	private TableViewer viewer;
-	private History currentHistory; // FIXME not used?
+	private Trace currentTrace;
 
-	Injector injector = ServletContextListener.INJECTOR;
+	AnimationSelector animations;
 
 	class ViewLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
 		@Override
 		public String getColumnText(final Object obj, final int index) {
 			if (obj instanceof OpInfo) {
-				return ((OpInfo) obj).getRep(currentHistory.getS().getModel());
+				return ((OpInfo) obj).getRep(currentTrace.getStateSpace().getModel());
 			}
 			return "";
 		}
@@ -76,9 +74,9 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener {
 	 * The constructor.
 	 */
 	public HistoryView() {
-		AnimationSelector selector = injector
+		animations = ServletContextListener.INJECTOR
 				.getInstance(AnimationSelector.class);
-		selector.registerHistoryChangeListener(this);
+		animations.registerAnimationChangeListener(this);
 	}
 
 	/**
@@ -117,14 +115,14 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history) {
-		currentHistory = history;
+	public void traceChange(final Trace trace) {
+		currentTrace = trace;
 		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
 				if (!viewer.getTable().isDisposed()) {
-					viewer.setInput(history);
+					viewer.setInput(trace);
 				}
 			}
 		});
@@ -152,12 +150,11 @@ public class HistoryView extends ViewPart implements IHistoryChangeListener {
 		public void doubleClick(final DoubleClickEvent event) {
 			OpInfo selectedOperation = getSelectedOperation();
 			if (selectedOperation != null) {
-				History oldHistory = currentHistory;
-				while (currentHistory.getCurrent().getOp() != selectedOperation) {
-					currentHistory = currentHistory.back();
+				Trace oldTrace = currentTrace;
+				while (currentTrace.getCurrent().getOp() != selectedOperation) {
+					currentTrace = currentTrace.back();
 				}
-				currentHistory
-						.notifyAnimationChange(oldHistory, currentHistory);
+				animations.replaceTrace(oldTrace, currentTrace);
 			}
 		}
 	}

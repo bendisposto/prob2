@@ -9,7 +9,7 @@ import java.util.Set;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.OpInfo;
 
 /**
@@ -34,9 +34,9 @@ class OperationsContentProvider implements IStructuredContentProvider {
 		List<Object> ops= new ArrayList<Object>();
 		Map<String,Object> enabledOps = new HashMap<String, Object>();
 		
-		if( inputElement instanceof History) {
-			History history = (History) inputElement;
-			Set<OpInfo> nextTransitions = history.getNextTransitions();
+		if( inputElement instanceof Trace) {
+			Trace trace = (Trace) inputElement;
+			Set<OpInfo> nextTransitions = trace.getNextTransitions();
 			for (OpInfo opInfo : nextTransitions) {
 				if(enabledOps.containsKey(opInfo.name)) {
 					List<OpInfo> opList = (ArrayList<OpInfo>) enabledOps.get(opInfo.name);

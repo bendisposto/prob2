@@ -7,8 +7,8 @@ import java.util.List;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import de.prob.statespace.History;
-import de.prob.statespace.HistoryElement;
+import de.prob.statespace.Trace;
+import de.prob.statespace.TraceElement;
 
 /**
  * Creates a new list of Operations, merging the list of available operations
@@ -30,9 +30,9 @@ class HistoryContentProvider implements IStructuredContentProvider {
 	@Override
 	public Object[] getElements(final Object inputElement) {
 		List<Object> ops = new ArrayList<Object>();
-		if (inputElement instanceof History) {
-			History history = (History) inputElement;
-			HistoryElement current = history.getCurrent();
+		if (inputElement instanceof Trace) {
+			Trace trace = (Trace) inputElement;
+			TraceElement current = trace.getCurrent();
 			ops.addAll(current.getOpList());
 			Collections.reverse(ops);
 		}

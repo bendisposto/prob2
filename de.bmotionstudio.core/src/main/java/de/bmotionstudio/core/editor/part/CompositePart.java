@@ -38,7 +38,7 @@ import de.bmotionstudio.core.editor.view.library.LibraryImageCommand;
 import de.bmotionstudio.core.editor.view.library.LibraryVariableCommand;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class CompositePart extends BMSAbstractEditPart {
@@ -71,7 +71,7 @@ public class CompositePart extends BMSAbstractEditPart {
 				// model?
 				final AnimationSelector selector = injector
 						.getInstance(AnimationSelector.class);
-				History currentHistory = selector.getCurrentHistory();
+				Trace currentHistory = selector.getCurrentTrace();
 				if (currentHistory != null) {
 					String path = currentHistory.getModel().getModelFile()
 							.getParent()

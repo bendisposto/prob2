@@ -8,19 +8,21 @@ import org.eclipse.core.commands.IHandler;
 import com.google.inject.Injector;
 
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
-public class HistoryForwardHandler extends AbstractHandler implements IHandler {
+public class TraceForwardHandler extends AbstractHandler implements IHandler {
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		Injector injector = ServletContextListener.INJECTOR;
-		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
-		
-		History currentHistory = selector.getCurrentHistory();
-		History forwardHistory = currentHistory.forward();
-		forwardHistory.notifyAnimationChange(currentHistory, forwardHistory);
+		AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
+
+		Trace currentTrace = selector.getCurrentTrace();
+		Trace forwardTrace = currentTrace.forward();
+		selector.replaceTrace(currentTrace, forwardTrace);
 		return null;
 	}
 }

@@ -52,6 +52,8 @@ class Downloader extends AbstractShellCommand {
 	}
 
 	def  availableVersions() {
+		if (config.isEmpty())
+			config = downloadConfig();
 		config.collect { it.getKey()}
 	}
 
@@ -183,6 +185,9 @@ class Downloader extends AbstractShellCommand {
 	@Override
 	public Object perform(List<String> m, GroovyExecution exec)
 	throws IOException {
+		if (config.isEmpty()) {
+			config = downloadConfig()
+		}
 		if (m.size() < 2) {
 			return listVersions()
 		}

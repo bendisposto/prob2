@@ -55,7 +55,7 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class BOperationObserverWizard extends ObserverWizard {
@@ -118,7 +118,7 @@ public class BOperationObserverWizard extends ObserverWizard {
 		// Collect event of the active machine
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		History currentHistory = selector.getCurrentHistory();
+		Trace currentHistory = selector.getCurrentTrace();
 		if (currentHistory != null) {
 			AbstractModel model = currentHistory.getModel();
 			if (model instanceof EventBModel) {
@@ -300,7 +300,7 @@ public class BOperationObserverWizard extends ObserverWizard {
 				if (evt.getPropertyName().equals("predicate")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					History currentHistory = selector.getCurrentHistory();
+					Trace currentHistory = selector.getCurrentTrace();
 					Map<String, EvaluationResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
 									currentHistory,

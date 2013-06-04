@@ -1,7 +1,7 @@
 import de.prob.statespace.*
 m = api.b_load(dir+"/machines/scheduler.mch")
 s = m.getStatespace()
-h = new History(s)
+h = new Trace(s)
 h1 = h.anyOperation(".*i.*")
 assert h1 != h
 h2 = h1.anyOperation(".*z.*")

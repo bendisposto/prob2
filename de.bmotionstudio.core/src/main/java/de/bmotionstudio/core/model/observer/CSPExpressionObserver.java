@@ -12,7 +12,7 @@ import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.exception.ProBError;
 import de.prob.scripting.CSPModel;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 public class CSPExpressionObserver extends Observer {
 
@@ -21,7 +21,7 @@ public class CSPExpressionObserver extends Observer {
 	private String expression;
 
 	@Override
-	public void check(History history, BControl control,
+	public void check(Trace history, BControl control,
 			Map<String, EvaluationResult> results) {
 
 		if (attribute == null || expression == null)

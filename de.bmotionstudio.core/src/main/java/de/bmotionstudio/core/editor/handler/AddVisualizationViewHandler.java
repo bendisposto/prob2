@@ -26,7 +26,7 @@ import de.bmotionstudio.core.util.BMotionUtil;
 import de.bmotionstudio.core.util.PerspectiveUtil;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
@@ -53,7 +53,7 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 
 	void updateEnablement() {
 		boolean isEnabled = false;
-		History currentHistory = selector.getCurrentHistory();
+		Trace currentHistory = selector.getCurrentTrace();
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		if (activeWorkbenchWindow != null) {

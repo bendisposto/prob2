@@ -46,7 +46,7 @@ import de.bmotionstudio.core.model.event.Event;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 /**
  * 
@@ -536,18 +536,18 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 	}
 
-	public Map<Observer, List<IEvalElement>> prepareObserver(History history) {
+	public Map<Observer, List<IEvalElement>> prepareObserver(Trace history) {
 		Map<Observer, List<IEvalElement>> formulaMap = new HashMap<Observer, List<IEvalElement>>();
 		for (Observer observer : getObservers())
 			formulaMap.put(observer, prepareObserver(observer, history));
 		return formulaMap;
 	}
 
-	public List<IEvalElement> prepareObserver(Observer observer, History history) {
+	public List<IEvalElement> prepareObserver(Observer observer, Trace history) {
 		return observer.prepareObserver(history, BControl.this);
 	}
 	
-	public void checkObserver(History history,
+	public void checkObserver(Trace history,
 			Map<String, EvaluationResult> results) {
 
 		for (AbstractAttribute a : getAttributes().values())
@@ -573,7 +573,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 	}
 	
-	public void afterCheckObserver(History history) {
+	public void afterCheckObserver(Trace history) {
 		for (Observer observer : getObservers()) {
 			observer.afterCheck(history, BControl.this);
 		}
@@ -593,7 +593,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		}
 	}
 
-	public void executeEvent(History history, String event) {
+	public void executeEvent(Trace history, String event) {
 		if (hasAttribute(AttributeConstants.ATTRIBUTE_ENABLED)) {
 			if (!(Boolean) getAttributeValue(AttributeConstants.ATTRIBUTE_ENABLED))
 				return;

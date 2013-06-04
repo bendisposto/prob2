@@ -1,11 +1,11 @@
 package de.bmotionstudio.core.model.event;
 
 import de.bmotionstudio.core.model.control.BControl;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 public interface IEvent {
 
-	public abstract void execute(History history, BControl control);
+	public abstract void execute(Trace history, BControl control);
 
 	public String getName();
 	

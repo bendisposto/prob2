@@ -23,8 +23,8 @@ import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
@@ -43,14 +43,14 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class StateView extends ViewPart implements IHistoryChangeListener {
+public class StateView extends ViewPart implements IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "de.prob.ui.StateView";
 
-	private History currentHistory;
+	private Trace currentTrace;
 	private AbstractModel currentModel;
 
 	Injector injector = ServletContextListener.INJECTOR;
@@ -67,7 +67,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 	public StateView() {
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		selector.registerHistoryChangeListener(this);
+		selector.registerAnimationChangeListener(this);
 	}
 
 	/**
@@ -141,20 +141,20 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history) {
+	public void traceChange(final Trace trace) {
 
 		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
-				if (history == null) {
+				if (trace == null) {
 					updateModelInfo(null);
 				} else {
-					currentHistory = history;
-					contentProvider.setCurrentHistory(currentHistory);
-					labelProvider.setInput(currentHistory);
+					currentTrace = trace;
+					contentProvider.setCurrentTrace(currentTrace);
+					labelProvider.setInput(currentTrace);
 
-					final AbstractModel model = history.getModel();
+					final AbstractModel model = trace.getModel();
 					if (model != currentModel) {
 						updateModelInfo(model);
 					}
@@ -179,7 +179,7 @@ public class StateView extends ViewPart implements IHistoryChangeListener {
 
 	private void updateModelInfo(final AbstractModel model) {
 		currentModel = model;
-		StateSpace s = currentHistory.getStatespace();
+		StateSpace s = currentTrace.getStateSpace();
 
 		Set<Machine> machines = model.getChildrenOfType(Machine.class);
 		for (Machine machine : machines) {
