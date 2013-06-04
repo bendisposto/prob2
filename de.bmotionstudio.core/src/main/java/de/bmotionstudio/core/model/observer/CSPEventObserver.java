@@ -15,7 +15,7 @@ import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.exception.ProBError;
 import de.prob.scripting.CSPModel;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.OpInfo;
 
 public class CSPEventObserver extends Observer {
@@ -39,7 +39,7 @@ public class CSPEventObserver extends Observer {
 	private transient boolean restored = false;
 	
 	@Override
-	public void check(History history, BControl control,
+	public void check(Trace history, BControl control,
 			Map<String, EvaluationResult> results) {
 		
 		if (currentHisOps == null)
@@ -70,7 +70,7 @@ public class CSPEventObserver extends Observer {
 	}
 	
 	@Override
-	public void afterCheck(History history, BControl control) {
+	public void afterCheck(Trace history, BControl control) {
 		setPosition = 0;
 		restored = false;
 	}
@@ -110,7 +110,7 @@ public class CSPEventObserver extends Observer {
 
 	}
 
-	private void runme(OpInfo op, int pos, BControl control, History history) {
+	private void runme(OpInfo op, int pos, BControl control, Trace history) {
 
 		if(op == null)
 			return;

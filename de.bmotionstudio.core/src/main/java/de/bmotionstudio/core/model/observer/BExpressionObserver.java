@@ -14,7 +14,7 @@ import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
 public class BExpressionObserver extends Observer {
 
@@ -25,7 +25,7 @@ public class BExpressionObserver extends Observer {
 	private transient List<IEvalElement> formulas;
 	
 	@Override
-	public List<IEvalElement> prepareObserver(History history, BControl control) {
+	public List<IEvalElement> prepareObserver(Trace history, BControl control) {
 		if (formulas == null)
 			formulas = new ArrayList<IEvalElement>();
 		formulas.clear();
@@ -36,7 +36,7 @@ public class BExpressionObserver extends Observer {
 	}
 	
 	@Override
-	public void check(History history, BControl control,
+	public void check(Trace history, BControl control,
 			Map<String, EvaluationResult> results) {
 
 		if (attribute == null || expression == null)

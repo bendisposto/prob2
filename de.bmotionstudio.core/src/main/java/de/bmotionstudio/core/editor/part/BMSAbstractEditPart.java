@@ -52,7 +52,7 @@ import de.bmotionstudio.core.model.event.Event;
 import de.bmotionstudio.core.model.observer.IObserverListener;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
@@ -89,7 +89,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 			if (event.getPropertyName().equals(ButtonModel.PRESSED_PROPERTY)) {
 				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
-				History currentHistory = selector.getCurrentHistory();
+				Trace currentHistory = selector.getCurrentTrace();
 				if (f.getModel().isPressed())
 					executeEvent(currentHistory, Event.CLICK_ACTION);
 			}
@@ -238,7 +238,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		return new ArrayList<BControl>();
 	}
 
-	public void executeEvent(History history, String event) {
+	public void executeEvent(Trace history, String event) {
 		getCastedModel().executeEvent(history, event);
 	}
 

@@ -9,17 +9,23 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import de.prob.check.ModelCheckingResult;
-import de.prob.statespace.History;
+import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.Trace;
+import de.prob.webconsole.ServletContextListener;
 
 public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
 
 	private final Composite container;
-	private final History currentHistory;
+	private final Trace currentTrace;
+	private final AnimationSelector animations;
 
-	public ConsistencyCheckingFinishedListener(final Composite container, final History currentHistory) {
+	public ConsistencyCheckingFinishedListener(final Composite container,
+			final Trace currentTrace) {
 		this.container = container;
-		this.currentHistory = currentHistory;
+		this.currentTrace = currentTrace;
+		animations = ServletContextListener.INJECTOR
+				.getInstance(AnimationSelector.class);
 	}
 
 	@Override
@@ -34,7 +40,7 @@ public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
 		} else {
 			final String message = "The job has a wrong type. Expected ProBCommandJob but got "
 					+ job.getClass();
-			//Logger.notifyUserWithoutBugreport(message);
+			// Logger.notifyUserWithoutBugreport(message);
 		}
 	}
 
@@ -97,8 +103,8 @@ public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
 
 				if (result == 1) {
 					String id = OpInfo.getIdFromPrologTerm(res.getArgument(0));
-					History trace = currentHistory.getS().getTrace(id);
-					currentHistory.notifyAnimationChange(currentHistory, trace);
+					Trace trace = currentTrace.getStateSpace().getTrace(id);
+					animations.replaceTrace(currentTrace, trace);
 				}
 			}
 		};

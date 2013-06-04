@@ -614,16 +614,16 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * (specified with an integer id value).
 	 * 
 	 * @param state
-	 * @return trace in the form of a {@link History} object
+	 * @return trace in the form of a {@link Trace} object
 	 */
-	public History getTrace(final String state) {
+	public Trace getTrace(final String state) {
 		final StateId id = getVertex(state);
 		StateId root = this.getRoot();
 
 		DijkstraShortestPath<StateId, OpInfo> dijkstra = new DijkstraShortestPath<StateId, OpInfo>(
 				this.getGraph());
 		List<OpInfo> path = dijkstra.getPath(root, id);
-		History h = new History(this);
+		Trace h = new Trace(this);
 		for (final OpInfo opInfo : path) {
 			h = h.add(opInfo.getId());
 		}
@@ -673,13 +673,13 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	/**
 	 * This method allows the conversion of the StateSpace to a Model or a
-	 * History. This corresponds to the Groovy operator "as". The user convert a
+	 * Trace. This corresponds to the Groovy operator "as". The user convert a
 	 * StateSpace to an {@link AbstractModel}, {@link EventBModel},
 	 * {@link ClassicalBModel}, or {@link CSPModel}. If they specify the class
-	 * {@link History}, a new History object will be created and returned.
+	 * {@link Trace}, a new Trace object will be created and returned.
 	 * 
 	 * @param className
-	 * @return the Model or History corresponding to the StateSpace instance
+	 * @return the Model or Trace corresponding to the StateSpace instance
 	 */
 	public Object asType(final Class<?> className) {
 		if (className.getSimpleName().equals("AbstractModel")) {
@@ -700,8 +700,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 				return model;
 			}
 		}
-		if (className.getSimpleName().equals("History")) {
-			return new History(this);
+		if (className.getSimpleName().equals("Trace")) {
+			return new Trace(this);
 		}
 		throw new ClassCastException("An element of class " + className
 				+ " was not found");

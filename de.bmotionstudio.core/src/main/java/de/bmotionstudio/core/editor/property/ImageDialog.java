@@ -115,7 +115,7 @@ public class ImageDialog extends Dialog {
 						final AnimationSelector selector = injector
 								.getInstance(AnimationSelector.class);
 
-						String imagePath = selector.getCurrentHistory()
+						String imagePath = selector.getCurrentTrace()
 								.getModel().getModelFile().getParent()
 								+ "/images";
 
@@ -179,7 +179,7 @@ public class ImageDialog extends Dialog {
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
 		
-		String imagePath = selector.getCurrentHistory().getModel().getModelFile().getParent() + "/images";
+		String imagePath = selector.getCurrentTrace().getModel().getModelFile().getParent() + "/images";
 		
 		File dir = new File(imagePath);
 		File[] fileList = dir.listFiles(new FilenameFilter() {

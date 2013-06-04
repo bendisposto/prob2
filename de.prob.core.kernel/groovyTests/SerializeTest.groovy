@@ -1,7 +1,7 @@
 import de.prob.statespace.*
 import de.prob.animator.command.*
 s = api.b_load(dir+"/machines/scheduler.mch").getStatespace()
-h = new History(s)
+h = new Trace(s)
 h = h.add(0)
 h = h.add(1)
 h = h.add(2)

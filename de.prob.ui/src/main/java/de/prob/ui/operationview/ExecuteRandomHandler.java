@@ -12,11 +12,12 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import com.google.inject.Injector;
 
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Shell shell = HandlerUtil.getActiveShell(event);
 		int steps = -1;
@@ -44,15 +45,16 @@ public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 
 	public void animate(final int steps) {
 		Injector injector = ServletContextListener.INJECTOR;
-		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
-		
-		History currentHistory = selector.getCurrentHistory();
-		History newHistory = currentHistory;
+		AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
+
+		Trace currentTrace = selector.getCurrentTrace();
+		Trace newTrace = currentTrace;
 		for (int i = 0; i < steps; i++) {
-			newHistory = newHistory.anyEvent(null);
+			newTrace = newTrace.anyEvent(null);
 		}
-		
-		newHistory.notifyAnimationChange(currentHistory, newHistory);
+
+		selector.replaceTrace(currentTrace, newTrace);
 	}
 
 	private int askForValue(final Shell shell) {
@@ -60,6 +62,7 @@ public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 				"Number of steps:", "1", new IInputValidator() {
 					String errormsg = "Number must be a non-negative Integer.";
 
+					@Override
 					public String isValid(final String newText) {
 						Integer num;
 						try {
@@ -77,7 +80,8 @@ public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 		String answer = inputDialog.getValue();
 		if (answer != null) {
 			return Integer.parseInt(answer);
-		} else
+		} else {
 			throw new NumberFormatException();
+		}
 	}
 }

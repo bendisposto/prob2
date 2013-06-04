@@ -17,13 +17,13 @@ import de.prob.model.representation.Constant;
 import de.prob.model.representation.IEval;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Variable;
-import de.prob.statespace.History;
 import de.prob.statespace.StateId;
+import de.prob.statespace.Trace;
 
 class StateViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
 
-	public History currentHistory;
+	public Trace currentTrace;
 
 	@Override
 	public String getColumnText(final Object obj, final int index) {
@@ -38,11 +38,11 @@ class StateViewLabelProvider extends LabelProvider implements
 		}
 
 		if (index == 1 && obj instanceof IEval) {
-			return getValue(((IEval) obj), currentHistory.getCurrentState());
+			return getValue(((IEval) obj), currentTrace.getCurrentState());
 		}
 
 		if (index == 2 && obj instanceof IEval) {
-			return getValue(((IEval) obj), currentHistory.getCurrent().getSrc());
+			return getValue(((IEval) obj), currentTrace.getCurrent().getSrc());
 		}
 		return "";
 	}
@@ -69,10 +69,10 @@ class StateViewLabelProvider extends LabelProvider implements
 	private String getValue(final IEval o, final StateId state) {
 		EvaluationResult result;
 		if (o instanceof Constant) {
-			result = ((Constant) o).getValue(currentHistory);
+			result = ((Constant) o).getValue(currentTrace);
 		} else {
-			Map<IEvalElement, EvaluationResult> values = currentHistory
-					.getStatespace().valuesAt(state);
+			Map<IEvalElement, EvaluationResult> values = currentTrace
+					.getStateSpace().valuesAt(state);
 			result = values.get(o.getEvaluate());
 		}
 		return result != null ? result.value : "";
@@ -89,8 +89,8 @@ class StateViewLabelProvider extends LabelProvider implements
 				.getImage(ISharedImages.IMG_OBJ_ELEMENT);
 	}
 
-	public void setInput(final History currentHistory2) {
-		currentHistory = currentHistory2;
+	public void setInput(final Trace currentTrace) {
+		this.currentTrace = currentTrace;
 
 	}
 

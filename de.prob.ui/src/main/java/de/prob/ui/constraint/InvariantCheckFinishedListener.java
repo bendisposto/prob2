@@ -8,8 +8,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
 import de.prob.animator.IAnimator;
-import de.prob.animator.command.ConstraintBasedInvariantCheckCommand;
 import de.prob.animator.command.AbstractCommand;
+import de.prob.animator.command.ConstraintBasedInvariantCheckCommand;
 import de.prob.check.ConstraintBasedCheckingResult.Result;
 import de.prob.ui.ProBJobFinishedListener;
 
@@ -47,15 +47,14 @@ public class InvariantCheckFinishedListener extends ProBJobFinishedListener {
 		case invariant_violation:
 			dialogType = MessageDialog.ERROR;
 			dialogTitle = "Invariant Violation found";
-			message = "An invariant violation has been found.";//\nThe first found example will be shown in the history.";
-			// Implement way to display
-			//displayViolation(invCmd, animator);
+			message = "An invariant violation has been found.";
+			// TODO: Implement way to display
+			// displayViolation(invCmd, animator);
 			break;
 		default:
-			//Logger.notifyUser("Unexpected result: " + result);
+			// Logger.notifyUser("Unexpected result: " + result);
 			return;
 		}
-
 
 		if (shell.isDisposed()) {
 			System.out.println("Invariant Check finished: " + dialogTitle);
@@ -70,23 +69,5 @@ public class InvariantCheckFinishedListener extends ProBJobFinishedListener {
 			shell.getDisplay().asyncExec(runnable);
 		}
 	}
-
-	//	private void displayViolation(
-	//			final ConstraintBasedInvariantCheckCommand cmd,
-	//			final Animator animator) {
-	//		final ConstraintBasedInvariantCheckCommand.InvariantCheckCounterExample example = cmd
-	//				.getCounterExamples().iterator().next();
-	//		final Operation step1 = example.getStep1();
-	//		final Operation step2 = example.getStep2();
-	//		try {
-	//			// we do not reset the history because we want to keep the root
-	//			// state, we just start a new path from root
-	//			animator.getHistory().gotoPos(0);
-	//			ExecuteOperationCommand.executeOperation(animator, step1);
-	//			ExecuteOperationCommand.executeOperation(animator, step2);
-	//		} catch (ProBException e) {
-	//			e.notifyUserOnce();
-	//		}
-	//	}
 
 }

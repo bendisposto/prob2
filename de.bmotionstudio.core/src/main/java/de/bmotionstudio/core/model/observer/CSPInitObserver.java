@@ -13,8 +13,8 @@ import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.scripting.CSPModel;
-import de.prob.statespace.History;
-import de.prob.statespace.HistoryElement;
+import de.prob.statespace.Trace;
+import de.prob.statespace.TraceElement;
 import de.prob.statespace.OpInfo;
 
 public class CSPInitObserver extends Observer {
@@ -28,9 +28,9 @@ public class CSPInitObserver extends Observer {
 	private transient static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
 
 	@Override
-	public void check(History history, BControl control,
+	public void check(Trace history, BControl control,
 			Map<String, EvaluationResult> results) {
-		HistoryElement current = history.getCurrent();
+		TraceElement current = history.getCurrent();
 		OpInfo op = current.getOp();
 		if (op == null
 				|| (op != null && op.getName().equals("start_cspm_MAIN"))) {
@@ -52,7 +52,7 @@ public class CSPInitObserver extends Observer {
 	}
 
 	private String parseExpression(String expressionString,
-			BControl control, History history) {
+			BControl control, Trace history) {
 
 		String finalExpression = expressionString;
 		

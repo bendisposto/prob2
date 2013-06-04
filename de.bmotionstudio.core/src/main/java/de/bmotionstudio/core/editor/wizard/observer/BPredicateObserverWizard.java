@@ -50,7 +50,7 @@ import de.bmotionstudio.core.model.observer.BPredicateObserver;
 import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class BPredicateObserverWizard extends ObserverWizard {
@@ -119,7 +119,7 @@ public class BPredicateObserverWizard extends ObserverWizard {
 					
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					History currentHistory = selector.getCurrentHistory();
+					Trace currentHistory = selector.getCurrentTrace();
 					
 					if(currentHistory != null) {
 					
@@ -281,7 +281,7 @@ public class BPredicateObserverWizard extends ObserverWizard {
 				if(evt.getPropertyName().equals("predicate")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					History currentHistory = selector.getCurrentHistory();
+					Trace currentHistory = selector.getCurrentTrace();
 					Map<String, EvaluationResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
 									currentHistory,

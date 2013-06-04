@@ -18,7 +18,7 @@ import de.prob.animator.command.GetStateValuesCommand;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.worksheet.api.DefaultWorksheetAPI;
@@ -38,7 +38,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 	@Inject
 	public EvalStoreAPI(AnimationSelector animations) {
 		EvalStoreAPI.logger.trace("in: animations={}",
-				animations.getHistories());
+				animations.getTraces());
 		this.animations = animations;
 
 		EvalStoreAPI.logger.trace("return:");
@@ -48,7 +48,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		EvalStoreAPI.logger.trace("in:");
 
 		// initialize new API Context
-		History currentHistory = animations.getCurrentHistory();
+		Trace currentHistory = animations.getCurrentTrace();
 		String sId;
 		animation = null;
 		if (currentHistory == null) {
@@ -61,7 +61,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		} else {
 			StateId stateId = currentHistory.getCurrentState();
 			sId = stateId.getId();
-			animation = currentHistory.getStatespace();
+			animation = currentHistory.getStateSpace();
 		}
 
 		// create a new EvalStore from State
@@ -184,7 +184,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		try {
 			GetStateValuesCommand cmd = GetStateValuesCommand
 					.getEvalstoreValuesCommand(evalStoreId);
-			animations.getCurrentHistory().getStatespace().execute(cmd);
+			animations.getCurrentTrace().getStateSpace().execute(cmd);
 
 			// generate Output String
 			String output = generateStoreValuesOutput(cmd);
@@ -263,7 +263,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 			IEvalElement eval = new EventB(expression);
 			EvalstoreEvalCommand cmd = new EvalstoreEvalCommand(evalStoreId,
 					eval);
-			animations.getCurrentHistory().getStatespace().execute(cmd);
+			animations.getCurrentTrace().getStateSpace().execute(cmd);
 			EvalstoreResult storeResult = cmd.getResult();
 			if (storeResult.isSuccess()) {
 				evalStoreId = storeResult.getResultingStoreId();

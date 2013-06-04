@@ -10,41 +10,47 @@ import de.bmotionstudio.core.editor.wizard.event.BExecuteOperationWizard;
 import de.bmotionstudio.core.editor.wizard.event.EventWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.util.BMotionUtil;
-import de.prob.statespace.History;
+import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.Trace;
+import de.prob.webconsole.ServletContextListener;
 
 public class ExecuteBOperationEvent extends Event {
 
+	private final AnimationSelector animations = ServletContextListener.INJECTOR
+			.getInstance(AnimationSelector.class);
 	private String operation;
-	
-	private String predicate;
-	
-	@Override
-	public void execute(History history, BControl control) {
 
-		if(operation == null)
+	private String predicate;
+
+	@Override
+	public void execute(final Trace history, final BControl control) {
+
+		if (operation == null) {
 			return;
-		
+		}
+
 		try {
 
 			String fpredicate = predicate;
 
 			if (fpredicate == null
-					|| (fpredicate != null && fpredicate.length() < 1))
+					|| (fpredicate != null && fpredicate.length() < 1)) {
 				fpredicate = "1=1";
+			}
 
-			History newHistory = history.add(operation,
+			Trace newHistory = history.add(operation,
 					BMotionUtil.parseFormula(fpredicate, control));
-			newHistory.notifyAnimationChange(history, newHistory);
+			animations.replaceTrace(history, newHistory);
 
 		} catch (BException e1) {
 		} catch (IllegalArgumentException e2) {
 		}
-		
+
 	}
-	
+
 	@Override
-	public EventWizard getWizard(Shell shell, BControl control) {
+	public EventWizard getWizard(final Shell shell, final BControl control) {
 		return new BExecuteOperationWizard(shell, control, this);
 	}
 
@@ -52,7 +58,7 @@ public class ExecuteBOperationEvent extends Event {
 		return operation;
 	}
 
-	public void setOperation(String operation) {
+	public void setOperation(final String operation) {
 		String oldVal = this.operation;
 		this.operation = operation;
 		firePropertyChange("operation", oldVal, operation);
@@ -62,44 +68,47 @@ public class ExecuteBOperationEvent extends Event {
 		return predicate;
 	}
 
-	public void setPredicate(String predicate) {
+	public void setPredicate(final String predicate) {
 		String oldVal = this.predicate;
 		this.predicate = predicate;
 		firePropertyChange("predicate", oldVal, predicate);
 	}
-	
+
 	@Override
 	public String getType() {
 		return "Execute B Operation";
 	}
-	
+
 	@Override
-	public String getTooltipText(History history, BControl control) {
+	public String getTooltipText(final Trace history, final BControl control) {
 		String p = (predicate == null) ? "" : BMotionUtil.parseFormula(
 				predicate, control);
 		return "Execute B Operation: " + operation + "(" + p + ") ("
 				+ checkIfOperationEnabled(history, control) + ")";
 	}
-	
-	private boolean checkIfOperationEnabled(History history, BControl control) {
+
+	private boolean checkIfOperationEnabled(final Trace history,
+			final BControl control) {
 
 		if (predicate == null || (predicate != null && predicate.length() < 1)) {
 
 			Set<OpInfo> opList = history.getNextTransitions();
 			for (OpInfo o : opList) {
-				if (o.getName().equals(operation))
+				if (o.getName().equals(operation)) {
 					return true;
+				}
 			}
 
 		} else {
 
 			try {
 				List<OpInfo> opFromPredicate = history
-						.getStatespace()
+						.getStateSpace()
 						.opFromPredicate(history.getCurrentState(), operation,
 								BMotionUtil.parseFormula(predicate, control), 1);
-				if (opFromPredicate != null && !opFromPredicate.isEmpty())
+				if (opFromPredicate != null && !opFromPredicate.isEmpty()) {
 					return true;
+				}
 			} catch (BException e) {
 				e.printStackTrace();
 			}

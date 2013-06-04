@@ -12,7 +12,7 @@ import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.EvaluationResult;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.OpInfo;
 
 public class BOperationObserver extends Observer {
@@ -22,7 +22,7 @@ public class BOperationObserver extends Observer {
 	private Object value;
 	
 	@Override
-	public void check(History history, BControl control,
+	public void check(Trace history, BControl control,
 			Map<String, EvaluationResult> results) {
 
 		if (operation == null || attribute == null || value == null)
@@ -40,7 +40,7 @@ public class BOperationObserver extends Observer {
 
 			try {
 				List<OpInfo> opFromPredicate = history
-						.getStatespace()
+						.getStateSpace()
 						.opFromPredicate(history.getCurrentState(), operation,
 								BMotionUtil.parseFormula(predicate, control), 1);
 				if (opFromPredicate != null && !opFromPredicate.isEmpty())

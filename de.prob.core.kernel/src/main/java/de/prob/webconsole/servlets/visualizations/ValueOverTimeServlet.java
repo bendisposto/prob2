@@ -36,7 +36,7 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 	public String openSession(final String sessionId,
 			final IEvalElement formula, final IEvalElement time)
 			throws AnimationNotLoadedException {
-		if (animations.getCurrentHistory() == null) {
+		if (animations.getCurrentTrace() == null) {
 			throw new AnimationNotLoadedException("Could not visualize "
 					+ formula.getCode() + " because no animation is loaded");
 		}
@@ -54,15 +54,15 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 
 	@Override
 	protected String loadSession(final String id) {
-		if (animations.getCurrentHistory() != null) {
+		if (animations.getCurrentTrace() != null) {
 			String propFile = properties.getPropFileFromModelFile(animations
-					.getCurrentHistory().getModel().getModelFile()
+					.getCurrentTrace().getModel().getModelFile()
 					.getAbsolutePath());
 			Properties props = properties.getProperties(propFile);
 			String json = props.getProperty(id);
 			if (json != null) {
 				System.out.println(json);
-				if (animations.getCurrentHistory() == null) {
+				if (animations.getCurrentTrace() == null) {
 					return null;
 				}
 				ValueOverTimeSession session = new ValueOverTimeSession(id,

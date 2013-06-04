@@ -6,14 +6,14 @@ import java.util.Map;
 import org.eclipse.ui.AbstractSourceProvider;
 import org.eclipse.ui.ISources;
 
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 
-public class HistoryActiveProvider extends AbstractSourceProvider {
+public class TraceActiveProvider extends AbstractSourceProvider {
 
 	public static final String ENABLED = "enabled";
 	public static final String DISABLED = "disabled";
-	public static final String FORWARD_SERVICE = "de.prob.ui.history.forward_service";
-	public static final String BACKWARD_SERVICE = "de.prob.ui.history.backward_service";
+	public static final String FORWARD_SERVICE = "de.prob.ui.trace.forward_service";
+	public static final String BACKWARD_SERVICE = "de.prob.ui.trace.backward_service";
 
 	private boolean forward = false;
 	private boolean backward = false;
@@ -45,13 +45,13 @@ public class HistoryActiveProvider extends AbstractSourceProvider {
 		return forward;
 	}
 
-	public void historyChange(final History history) {
-		if (history == null) {
+	public void traceChange(final Trace trace) {
+		if (trace == null) {
 			backward = false;
 			forward = false;
 		} else {
-			backward = history.canGoBack();
-			forward = history.canGoForward();
+			backward = trace.canGoBack();
+			forward = trace.canGoForward();
 		}
 		fireSourceChanged(ISources.WORKBENCH, getCurrentState());
 	}

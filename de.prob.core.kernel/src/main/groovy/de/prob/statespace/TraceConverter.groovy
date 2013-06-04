@@ -3,27 +3,25 @@ package de.prob.statespace
 import de.prob.model.representation.AbstractModel
 
 
-class HistoryConverter {
-	def static File save(History history,String fileName) {
+class TraceConverter {
+	def static File save(Trace trace, String fileName) {
 		def file = new File(fileName);
 		file.newWriter()
 
 		file << "<!-- Model for this trace has the following graph:"
-		def model = history as AbstractModel;
+		def model = trace as AbstractModel;
 		file << "${model.toString()} -->"
 
 		file << "<trace>"
 		file << "<model>"
 		file << model.getModelFile().getAbsolutePath()
 		file << "</model>"
-		def trace = history as ArrayList
-		trace.each {
+		def t = trace as ArrayList
+		t.each {
 			def op = it.edge
 			if(op != null) {
 				file << "<Operation name=\"${op.getName()}\">"
-				op.getParams().each {
-					param -> file << "<Parameter name=\"$param\"/>"
-				}
+				op.getParams().each { param -> file << "<Parameter name=\"$param\"/>" }
 				file << "<sha value=\"${op.sha()}\"/>"
 				file << "</Operation>"
 			}
@@ -57,7 +55,7 @@ class HistoryConverter {
         h
     }
 
-    def h = m as History
+    def h = m as Trace
 '''
 
 		def trace = new XmlSlurper().parse(xmlFile)
@@ -65,9 +63,7 @@ class HistoryConverter {
 		trace.Operation.each {
 			def sha = it.sha.getAt(0).@value.toString()
 			def params = []
-			it.Parameter.each {
-				params << "\"${it.@name}\""
-			}
+			it.Parameter.each { params << "\"${it.@name}\"" }
 			def name = "${it.@name}"
 			if(name.startsWith("\$")) {
 				name = "\\${name}"
@@ -78,15 +74,15 @@ class HistoryConverter {
 		file << "h  }"
 	}
 
-	def static History restore(AbstractModel model,String fileName) {
-		def History h = model as History
-		def StateSpace s = h as StateSpace
+	def static Trace restore(AbstractModel model,String fileName) {
+		def Trace t = model as Trace
+		def StateSpace s = t as StateSpace
 
 		def trace = new XmlSlurper().parse(fileName)
 
 		trace.Operation.each {
 			def sha = it.sha.getAt(0).@value.toString()
-			def ops = s.getOutEdges(h.getCurrentState())
+			def ops = s.getOutEdges(t.getCurrentState())
 			def op = null
 			ops.each {
 				def state = s.getDest(it)
@@ -97,23 +93,18 @@ class HistoryConverter {
 
 			if(op == null) {
 				def params = []
-						it.Parameter.each {
-					params << "${it.@name}"
-				}
+				it.Parameter.each { params << "${it.@name}" }
 				def name = "${it.@name}"
-				h = h.add("${it.@name}", params)
+				t = t.add("${it.@name}", params)
 			} else {
-				h = h.add(op.id)
+				t = t.add(op.id)
 			}
 		}
 
-		h
+		t
 	}
-	
+
 	def static xmlToSpock(def xmlFile) {
 		def trace = new XmlSlurper().parse(xmlFile)
-		
 	}
-	
-	
 }

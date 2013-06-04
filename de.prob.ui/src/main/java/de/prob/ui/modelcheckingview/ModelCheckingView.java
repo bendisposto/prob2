@@ -22,21 +22,21 @@ import org.eclipse.ui.part.ViewPart;
 import de.prob.check.ConsistencyCheckingSearchOption;
 import de.prob.check.ModelChecker;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.Trace;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 public class ModelCheckingView extends ViewPart implements
-IModelChangedListener, IHistoryChangeListener {
+IModelChangedListener, IAnimationChangeListener {
 
 	private final Set<ConsistencyCheckingSearchOption> options = new HashSet<ConsistencyCheckingSearchOption>();
 
 	private Composite container;
 	private Text formulas;
 	private StateSpace s;
-	private History currentHistory;
+	private Trace currentTrace;
 	private Job job;
 
 
@@ -45,7 +45,7 @@ IModelChangedListener, IHistoryChangeListener {
 		final AnimationSelector selector = ServletContextListener.INJECTOR
 				.getInstance(AnimationSelector.class);
 		selector.registerModelChangedListener(this);
-		selector.registerHistoryChangeListener(this);
+		selector.registerAnimationChangeListener(this);
 		container = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout(2, true);
 		container.setLayout(layout);
@@ -105,7 +105,7 @@ IModelChangedListener, IHistoryChangeListener {
 		if (s != null) {
 			job = new ModelCheckingJob("Consistency Checking",new ModelChecker(s, optionsToString()));
 			job.setUser(true);
-			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(container,currentHistory));
+			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(container,currentTrace));
 			job.schedule();
 		}
 	}
@@ -175,7 +175,7 @@ IModelChangedListener, IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history) {
-		currentHistory = history;
+	public void traceChange(final Trace trace) {
+		currentTrace = trace;
 	}
 }

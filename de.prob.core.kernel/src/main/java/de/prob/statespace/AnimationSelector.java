@@ -13,39 +13,38 @@ import de.prob.model.representation.AbstractElement;
  * This class provides a registry of all currently running animations. It
  * provides the user to communicate between the UI and the console, and provides
  * a listener framework so that the user can animate machines using
- * {@link History} objects to represent the different animations. It also
- * maintains a pointer to one {@link History} object which is the current
+ * {@link Trace} objects to represent the different animations. It also
+ * maintains a pointer to one {@link Trace} object which is the current
  * animation.
  * 
  * @author joy
  * 
  */
 @Singleton
-public class AnimationSelector implements IAnimationListener {
+public class AnimationSelector {
 
-	List<WeakReference<IHistoryChangeListener>> historyListeners = new CopyOnWriteArrayList<WeakReference<IHistoryChangeListener>>();
+	List<WeakReference<IAnimationChangeListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<IAnimationChangeListener>>();
 	List<WeakReference<IModelChangedListener>> modelListeners = new CopyOnWriteArrayList<WeakReference<IModelChangedListener>>();
-	List<IAnimationListener> animationListeners = new CopyOnWriteArrayList<IAnimationListener>();
 
 	List<StateSpace> statespaces = new ArrayList<StateSpace>();
-	List<History> histories = new ArrayList<History>();
+	List<Trace> traces = new ArrayList<Trace>();
 
-	History currentHistory = null;
+	Trace currentTrace = null;
 	StateSpace currentStateSpace = null;
 
 	/**
-	 * An {@link IHistoryChangeListener} can register itself via this method
+	 * An {@link IAnimationChangeListener} can register itself via this method
 	 * when it wants to receive updates about any changes in the current state.
 	 * 
 	 * @param listener
 	 */
-	public void registerHistoryChangeListener(
-			final IHistoryChangeListener listener) {
+	public void registerAnimationChangeListener(
+			final IAnimationChangeListener listener) {
 
-		historyListeners
-				.add(new WeakReference<IHistoryChangeListener>(listener));
-		if (currentHistory != null) {
-			notifyHistoryChange(currentHistory);
+		traceListeners
+				.add(new WeakReference<IAnimationChangeListener>(listener));
+		if (currentTrace != null) {
+			notifyAnimationChange(currentTrace);
 		}
 	}
 
@@ -62,52 +61,36 @@ public class AnimationSelector implements IAnimationListener {
 		modelListeners.remove(listener);
 	}
 
-	public void registerAnimationListener(final IAnimationListener l) {
-		animationListeners.add(l);
-		for (History h : histories) {
-			h.registerAnimationListener(l);
-		}
-	}
-
-	public void deregisterAnimationListener(final IAnimationListener l) {
-		animationListeners.remove(l);
-		for (History h : histories) {
-			h.deregisterAnimationListener(l);
-		}
-	}
-
 	/**
-	 * Changes the current history to the specified {@link History} and notifies
-	 * a history change ({@link AnimationSelector#notifyHistoryChange(History)})
+	 * Changes the current trace to the specified {@link Trace} and notifies an
+	 * animation change ({@link AnimationSelector#notifyAnimationChange(Trace)})
 	 * 
-	 * @param history
+	 * @param trace
 	 */
-	public void changeCurrentHistory(final History history) {
-		currentHistory = history;
-		notifyHistoryChange(history);
+	public void changeCurrentAnimation(final Trace trace) {
+		currentTrace = trace;
+		notifyAnimationChange(trace);
 
-		if (currentHistory != null
-				&& currentHistory.getStatespace() != currentStateSpace) {
-			currentStateSpace = currentHistory.getStatespace();
+		if (currentTrace != null
+				&& currentTrace.getStateSpace() != currentStateSpace) {
+			currentStateSpace = currentTrace.getStateSpace();
 			notifyModelChanged(currentStateSpace);
 		}
 	}
 
 	/**
-	 * Adds the specified {@link History} history to the registry, registers
-	 * itself as the {@link IAnimationListener} within the history, sets the
-	 * current history to history, and notifies a history change (
-	 * {@link AnimationSelector#notifyHistoryChange(History)})
+	 * Adds the specified {@link Trace} trace to the registry, sets the current
+	 * trace to trace, and notifies an animation change (
+	 * {@link AnimationSelector#notifyAnimationChange(Trace)})
 	 * 
-	 * @param history
+	 * @param trace
 	 */
-	public void addNewHistory(final History history) {
-		histories.add(history);
-		history.registerAnimationListener(this);
-		currentHistory = history;
-		notifyHistoryChange(history);
+	public void addNewAnimation(final Trace trace) {
+		traces.add(trace);
+		currentTrace = trace;
+		notifyAnimationChange(trace);
 
-		StateSpace s = history.getStatespace();
+		StateSpace s = trace.getStateSpace();
 		if (!statespaces.contains(s)) {
 			statespaces.add(s);
 		}
@@ -118,16 +101,16 @@ public class AnimationSelector implements IAnimationListener {
 	}
 
 	/**
-	 * Let all {@link IHistoryChangeListener}s know that the current history has
-	 * changed
+	 * Let all {@link IAnimationChangeListener}s know that the current animation
+	 * has changed
 	 * 
-	 * @param history
+	 * @param trace
 	 */
-	public void notifyHistoryChange(final History history) {
-		for (final WeakReference<IHistoryChangeListener> listener : historyListeners) {
-			IHistoryChangeListener historyChangeListener = listener.get();
-			if (historyChangeListener != null) {
-				historyChangeListener.historyChange(history);
+	public void notifyAnimationChange(final Trace trace) {
+		for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
+			IAnimationChangeListener animationChangeListener = listener.get();
+			if (animationChangeListener != null) {
+				animationChangeListener.traceChange(trace);
 			}
 		}
 	}
@@ -142,17 +125,17 @@ public class AnimationSelector implements IAnimationListener {
 	}
 
 	/**
-	 * @return the current {@link History}
+	 * @return the current {@link Trace}
 	 */
-	public History getCurrentHistory() {
-		return currentHistory;
+	public Trace getCurrentTrace() {
+		return currentTrace;
 	}
 
 	/**
-	 * @return the list of {@link History} objects in the registry.
+	 * @return the list of {@link Trace} objects in the registry.
 	 */
-	public List<History> getHistories() {
-		return histories;
+	public List<Trace> getTraces() {
+		return traces;
 	}
 
 	public List<StateSpace> getStatespaces() {
@@ -160,12 +143,12 @@ public class AnimationSelector implements IAnimationListener {
 	}
 
 	/**
-	 * @param history
+	 * @param trace
 	 * @return the {@link AbstractElement} model that corresponds to the given
-	 *         {@link History}
+	 *         {@link Trace}
 	 */
-	public AbstractElement getModel(final History history) {
-		return history.getModel();
+	public AbstractElement getModel(final Trace trace) {
+		return trace.getModel();
 	}
 
 	@Override
@@ -174,70 +157,67 @@ public class AnimationSelector implements IAnimationListener {
 	}
 
 	/**
-	 * notify all of the listeners using the current history
-	 * {@link AnimationSelector#notifyHistoryChange(History)}
+	 * notify all of the listeners using the current trace
+	 * {@link AnimationSelector#notifyAnimationChange(Trace)}
 	 */
 	public void refresh() {
-		notifyHistoryChange(currentHistory);
+		notifyAnimationChange(currentTrace);
 		notifyModelChanged(currentStateSpace);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Lets the AnimationSelector know that the {@link Trace} object with
+	 * reference oldTrace has been changed to newTrace so that the
+	 * AnimationSelector can update its registry.
 	 * 
-	 * @see
-	 * de.prob.statespace.IAnimationListener#currentStateChanged(de.prob.statespace
-	 * .History, de.prob.statespace.History)
+	 * @param oldTrace
+	 * @param newTrace
 	 */
-	@Override
-	public void currentStateChanged(final History oldHistory,
-			final History newHistory) {
-		if (oldHistory.equals(currentHistory)) {
-			notifyHistoryChange(newHistory);
+	public void replaceTrace(final Trace oldTrace, final Trace newTrace) {
+		if (oldTrace.equals(currentTrace)) {
+			notifyAnimationChange(newTrace);
 		}
-		int indexOf = histories.indexOf(oldHistory);
-		histories.set(indexOf, newHistory);
-		currentHistory = newHistory;
+		int indexOf = traces.indexOf(oldTrace);
+		traces.set(indexOf, newTrace);
+		currentTrace = newTrace;
 
-		if (currentHistory != null
-				&& currentHistory.getStatespace() != currentStateSpace) {
-			currentStateSpace = currentHistory.getStatespace();
+		if (currentTrace != null
+				&& currentTrace.getStateSpace() != currentStateSpace) {
+			currentStateSpace = currentTrace.getStateSpace();
 			notifyModelChanged(currentStateSpace);
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Lets the {@link IAnimationListener} know that it should remove the
+	 * {@link Trace} object from its registry.
 	 * 
-	 * @see
-	 * de.prob.statespace.IAnimationListener#removeHistory(de.prob.statespace
-	 * .History)
+	 * @param trace
 	 */
-	@Override
-	public void removeHistory(final History history) {
-		remove(history);
+	public void removeTrace(final Trace trace) {
+		remove(trace);
 		refresh();
 	}
 
-	private void remove(final History history) {
-		if (!histories.contains(history)) {
+	private void remove(final Trace trace) {
+		if (!traces.contains(trace)) {
 			return;
 		}
-		if (currentHistory == history) {
-			int indexOf = histories.indexOf(history);
-			histories.remove(history);
-			if (histories.isEmpty()) {
-				currentHistory = null;
+		if (currentTrace == trace) {
+			int indexOf = traces.indexOf(trace);
+			traces.remove(trace);
+			if (traces.isEmpty()) {
+				currentTrace = null;
 				return;
 			}
-			if (indexOf == histories.size()) {
-				currentHistory = histories.get(indexOf - 1);
+			if (indexOf == traces.size()) {
+				currentTrace = traces.get(indexOf - 1);
 				return;
 			}
-			currentHistory = histories.get(indexOf);
+			currentTrace = traces.get(indexOf);
 			return;
 		}
-		histories.remove(history);
+		traces.remove(trace);
 	}
 
 }
