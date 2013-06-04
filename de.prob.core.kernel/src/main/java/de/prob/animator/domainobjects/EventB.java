@@ -44,6 +44,7 @@ public class EventB extends AbstractEvalElement {
 	 */
 	public EventB(final String code) {
 		this.code = UnicodeTranslator.toAscii(code);
+		ensureParsed();
 	}
 
 	private void ensureParsed() {
