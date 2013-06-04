@@ -289,7 +289,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 						for (VisualizationViewPart visPart : visualizationViewParts) {
 							if (visPart.isDirty()) {
 								if (currentHistory != null)
-									selector.changeCurrentHistory(currentHistory);
+									selector.changeCurrentAnimation(currentHistory);
 								return;
 							}
 						}
@@ -307,7 +307,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 				}
 
 				currentStateSpace = s;
-				currentHistory = selector.getCurrentHistory();
+				currentHistory = selector.getCurrentTrace();
 
 			}
 

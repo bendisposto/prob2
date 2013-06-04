@@ -98,11 +98,11 @@ import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
-import de.prob.statespace.IAnimationChangedListener;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
-		CommandStackListener, PropertyChangeListener, IAnimationChangedListener,
+		CommandStackListener, PropertyChangeListener, IAnimationChangeListener,
 		ITabbedPropertySheetPageContributor, ISaveablePart2 {
 
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
@@ -492,12 +492,12 @@ public class VisualizationViewPart extends ViewPart implements
 		getGraphicalViewer().setContents(visualization);
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		Trace currentHistory = selector.getCurrentHistory();
+		Trace currentHistory = selector.getCurrentTrace();
 		String partName = visualizationView.getName();
 		if (currentHistory != null) {
 			modelFile = currentHistory.getModel().getModelFile();
 			partName = partName + " (" + modelFile.getName() + ")";
-			selector.registerHistoryChangeListener(this);
+			selector.registerAnimationChangeListener(this);
 			setInitialized(true);
 		}
 		setPartName(partName);
@@ -726,7 +726,7 @@ public class VisualizationViewPart extends ViewPart implements
 			String name = evt.getNewValue().toString();
 			final AnimationSelector selector = injector
 					.getInstance(AnimationSelector.class);
-			String modelName = selector.getCurrentHistory().getModel()
+			String modelName = selector.getCurrentTrace().getModel()
 					.getModelFile().getName();
 			setPartName(name + " (" + modelName + ")");
 		}
@@ -734,7 +734,7 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	@Override
-	public void historyChange(Trace history) {
+	public void traceChange(Trace history) {
 		if (visualizationView != null)
 			checkObserver(history);
 	}

@@ -38,7 +38,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 	@Inject
 	public EvalStoreAPI(AnimationSelector animations) {
 		EvalStoreAPI.logger.trace("in: animations={}",
-				animations.getHistories());
+				animations.getTraces());
 		this.animations = animations;
 
 		EvalStoreAPI.logger.trace("return:");
@@ -48,7 +48,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		EvalStoreAPI.logger.trace("in:");
 
 		// initialize new API Context
-		Trace currentHistory = animations.getCurrentHistory();
+		Trace currentHistory = animations.getCurrentTrace();
 		String sId;
 		animation = null;
 		if (currentHistory == null) {
@@ -184,7 +184,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		try {
 			GetStateValuesCommand cmd = GetStateValuesCommand
 					.getEvalstoreValuesCommand(evalStoreId);
-			animations.getCurrentHistory().getStatespace().execute(cmd);
+			animations.getCurrentTrace().getStatespace().execute(cmd);
 
 			// generate Output String
 			String output = generateStoreValuesOutput(cmd);
@@ -263,7 +263,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 			IEvalElement eval = new EventB(expression);
 			EvalstoreEvalCommand cmd = new EvalstoreEvalCommand(evalStoreId,
 					eval);
-			animations.getCurrentHistory().getStatespace().execute(cmd);
+			animations.getCurrentTrace().getStatespace().execute(cmd);
 			EvalstoreResult storeResult = cmd.getResult();
 			if (storeResult.isSuccess()) {
 				evalStoreId = storeResult.getResultingStoreId();

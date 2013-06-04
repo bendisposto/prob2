@@ -673,13 +673,13 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	/**
 	 * This method allows the conversion of the StateSpace to a Model or a
-	 * History. This corresponds to the Groovy operator "as". The user convert a
+	 * Trace. This corresponds to the Groovy operator "as". The user convert a
 	 * StateSpace to an {@link AbstractModel}, {@link EventBModel},
 	 * {@link ClassicalBModel}, or {@link CSPModel}. If they specify the class
-	 * {@link Trace}, a new History object will be created and returned.
+	 * {@link Trace}, a new Trace object will be created and returned.
 	 * 
 	 * @param className
-	 * @return the Model or History corresponding to the StateSpace instance
+	 * @return the Model or Trace corresponding to the StateSpace instance
 	 */
 	public Object asType(final Class<?> className) {
 		if (className.getSimpleName().equals("AbstractModel")) {
@@ -700,7 +700,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 				return model;
 			}
 		}
-		if (className.getSimpleName().equals("History")) {
+		if (className.getSimpleName().equals("Trace")) {
 			return new Trace(this);
 		}
 		throw new ClassCastException("An element of class " + className

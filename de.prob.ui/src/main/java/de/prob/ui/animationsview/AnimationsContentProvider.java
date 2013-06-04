@@ -27,7 +27,7 @@ class AnimationsContentProvider implements IStructuredContentProvider {
 		List<Object> animations = new ArrayList<Object>();
 		if( inputElement instanceof AnimationSelector) {
 			AnimationSelector aS = (AnimationSelector) inputElement;
-			animations.addAll(aS.getHistories());
+			animations.addAll(aS.getTraces());
 		} else {
 			System.out.println(inputElement.getClass());
 		}

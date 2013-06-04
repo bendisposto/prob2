@@ -49,22 +49,16 @@
                  label="Execute Random Operations"
                  style="pulldown">
            </command>
-   <!--       <command
-                 commandId="de.prob.ui.history.restartAnim"
-                 icon="icons/refresh.gif"
-                 label="Restart Animation"
-                 style="push">
-           </command> -->
            <command
-                 commandId="de.prob.ui.history.back"
+                 commandId="de.prob.ui.trace.back"
                  icon="icons/back.gif"
-                 label="History Back"
+                 label="Move Back in Trace"
                  style="push">
            </command>
            <command
-                 commandId="de.prob.ui.history.forward"
+                 commandId="de.prob.ui.trace.forward"
                  icon="icons/forward.gif"
-                 label="History Forward"
+                 label="Move Forward in Trace"
                  style="push">
            </command>
         </menuContribution>
@@ -111,9 +105,9 @@
               allPopups="false"
               locationURI="popup:de.prob.ui.AnimationsView">
            <command
-                 commandId="de.prob.ui.remove_history"
+                 commandId="de.prob.ui.remove_trace"
                  icon="icons/rem_co.gif"
-                 label="Remove History"
+                 label="Remove Trace"
                  style="push">
            </command>
         </menuContribution>
@@ -210,17 +204,13 @@
             name="Event-B Animate / Model Check">
       </command>
             <command
-                  id="de.prob.ui.history.back"
-                  name="History Back">
+                  id="de.prob.ui.trace.back"
+                  name="Move Back in Trace">
             </command>
             <command
-                  id="de.prob.ui.history.forward"
-                  name="History Forward">
+                  id="de.prob.ui.trace.forward"
+                  name="Move Forward in Trace">
             </command>
-     <!--       <command
-                  id="de.prob.ui.history.restartAnim"
-                  name="Restart Animation">
-            </command> -->
             <command
                   id="de.prob.ui.randomoperation"
                   name="Execute Random Events">
@@ -231,9 +221,9 @@
                </commandParameter>
             </command>
             <command
-                  description="Removes a history from the animations object"
-                  id="de.prob.ui.remove_history"
-                  name="Remove History">
+                  description="Removes a trace from the animations object"
+                  id="de.prob.ui.remove_trace"
+                  name="Remove Trace">
             </command>
             <command
                   description="Removes a variable from the groovy shell"
@@ -325,9 +315,9 @@
             </enabledWhen>
       </handler>
       <handler
-            commandId="de.prob.ui.history.back">
+            commandId="de.prob.ui.trace.back">
          <class
-               class="de.prob.ui.operationview.HistoryBackHandler">
+               class="de.prob.ui.operationview.TraceBackHandler">
          </class>
          <enabledWhen>
             <and>
@@ -338,7 +328,7 @@
                   </equals>
                </with>
                <with
-                     variable="de.prob.ui.history.backward_service">
+                     variable="de.prob.ui.trace.backward_service">
                   <equals
                         value="enabled">
                   </equals>
@@ -347,9 +337,9 @@
          </enabledWhen>
       </handler>
       <handler
-            commandId="de.prob.ui.history.forward">
+            commandId="de.prob.ui.trace.forward">
          <class
-               class="de.prob.ui.operationview.HistoryForwardHandler">
+               class="de.prob.ui.operationview.TraceForwardHandler">
          </class>
          <enabledWhen>
             <and>
@@ -360,26 +350,12 @@
                   </equals>
                </with>
                <with
-                     variable="de.prob.ui.history.forward_service">
+                     variable="de.prob.ui.trace.forward_service">
                   <equals
                         value="enabled">
                   </equals>
                </with>
             </and>
-         </enabledWhen>
-      </handler>
-      <handler
-            commandId="de.prob.ui.history.restartAnim">
-         <class
-               class="de.prob.ui.operationview.RestartAnimationHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="de.prob.ui.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
          </enabledWhen>
       </handler>
       <handler
@@ -397,9 +373,9 @@
          </class>
       </handler>
       <handler
-            commandId="de.prob.ui.remove_history">
+            commandId="de.prob.ui.remove_trace">
          <class
-               class="de.prob.ui.animationsview.RemoveHistoryHandler">
+               class="de.prob.ui.animationsview.RemoveTraceHandler">
          </class>
       </handler>
       <handler
@@ -609,13 +585,13 @@
    <extension
          point="org.eclipse.ui.services">
       <sourceProvider
-            provider="de.prob.ui.services.HistoryActiveProvider">
+            provider="de.prob.ui.services.TraceActiveProvider">
          <variable
-               name="de.prob.ui.history.forward_service"
+               name="de.prob.ui.trace.forward_service"
                priorityLevel="workbench">
          </variable>
          <variable
-               name="de.prob.ui.history.backward_service"
+               name="de.prob.ui.trace.backward_service"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>

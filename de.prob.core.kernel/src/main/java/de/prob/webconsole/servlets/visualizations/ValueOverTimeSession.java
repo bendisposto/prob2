@@ -25,19 +25,19 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
-import de.prob.statespace.IAnimationChangedListener;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.Transformer;
 
 public class ValueOverTimeSession implements ISessionServlet,
-		IAnimationChangedListener, IVisualizationServlet {
+		IAnimationChangeListener, IVisualizationServlet {
 
 	private final String vizType;
 	private final StateSpace stateSpace;
 	private final List<IEvalElement> formulas = new ArrayList<IEvalElement>();
 	private int count = 0;
-	private Trace currentHistory;
+	private Trace currentTrace;
 	private List<Object> datasets = new ArrayList<Object>();
 	private final List<Transformer> styling = new ArrayList<Transformer>();
 	private final AnimationProperties properties;
@@ -53,9 +53,9 @@ public class ValueOverTimeSession implements ISessionServlet,
 		this.sessionId = sessionId;
 		this.time = time;
 		this.properties = properties;
-		currentHistory = animations.getCurrentHistory();
-		animations.registerHistoryChangeListener(this);
-		stateSpace = currentHistory.getStatespace();
+		currentTrace = animations.getCurrentTrace();
+		animations.registerAnimationChangeListener(this);
+		stateSpace = currentTrace.getStatespace();
 		formulas.add(formula);
 		vizType = formula.getClass().getSimpleName();
 		datasets = calculate();
@@ -71,9 +71,9 @@ public class ValueOverTimeSession implements ISessionServlet,
 			final EvalElementFactory deserializer) {
 		this.sessionId = sessionId;
 		this.properties = properties;
-		currentHistory = animations.getCurrentHistory();
-		animations.registerHistoryChangeListener(this);
-		stateSpace = currentHistory.getStatespace();
+		currentTrace = animations.getCurrentTrace();
+		animations.registerAnimationChangeListener(this);
+		stateSpace = currentTrace.getStatespace();
 		JsonParser parser = new JsonParser();
 		JsonElement parsed = parser.parse(json);
 		if (parsed != null) {
@@ -176,15 +176,15 @@ public class ValueOverTimeSession implements ISessionServlet,
 
 	public List<Object> calculate() {
 		List<Object> result = new ArrayList<Object>();
-		if (currentHistory != null && currentHistory.getS() == stateSpace) {
+		if (currentTrace != null && currentTrace.getS() == stateSpace) {
 			List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
 			if (time != null) {
-				timeRes = currentHistory.eval(time);
+				timeRes = currentTrace.eval(time);
 			}
 
 			for (IEvalElement formula : formulas) {
 
-				List<EvaluationResult> results = currentHistory.eval(formula);
+				List<EvaluationResult> results = currentTrace.eval(formula);
 				List<Object> points = new ArrayList<Object>();
 
 				if (timeRes.isEmpty()) {
@@ -243,8 +243,8 @@ public class ValueOverTimeSession implements ISessionServlet,
 	}
 
 	@Override
-	public void historyChange(final Trace history) {
-		currentHistory = history;
+	public void traceChange(final Trace trace) {
+		currentTrace = trace;
 
 		datasets = calculate();
 	}

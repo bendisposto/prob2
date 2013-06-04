@@ -48,13 +48,13 @@ public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 		AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
 
-		Trace currentHistory = selector.getCurrentHistory();
-		Trace newHistory = currentHistory;
+		Trace currentTrace = selector.getCurrentTrace();
+		Trace newTrace = currentTrace;
 		for (int i = 0; i < steps; i++) {
-			newHistory = newHistory.anyEvent(null);
+			newTrace = newTrace.anyEvent(null);
 		}
 
-		selector.replaceTrace(currentHistory, newHistory);
+		selector.replaceTrace(currentTrace, newTrace);
 	}
 
 	private int askForValue(final Shell shell) {

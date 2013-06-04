@@ -71,7 +71,7 @@ public class CompositePart extends BMSAbstractEditPart {
 				// model?
 				final AnimationSelector selector = injector
 						.getInstance(AnimationSelector.class);
-				Trace currentHistory = selector.getCurrentHistory();
+				Trace currentHistory = selector.getCurrentTrace();
 				if (currentHistory != null) {
 					String path = currentHistory.getModel().getModelFile()
 							.getParent()

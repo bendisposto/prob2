@@ -89,7 +89,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 			if (event.getPropertyName().equals(ButtonModel.PRESSED_PROPERTY)) {
 				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
-				Trace currentHistory = selector.getCurrentHistory();
+				Trace currentHistory = selector.getCurrentTrace();
 				if (f.getModel().isPressed())
 					executeEvent(currentHistory, Event.CLICK_ACTION);
 			}

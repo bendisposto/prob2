@@ -31,8 +31,8 @@ class HistoryContentProvider implements IStructuredContentProvider {
 	public Object[] getElements(final Object inputElement) {
 		List<Object> ops = new ArrayList<Object>();
 		if (inputElement instanceof Trace) {
-			Trace history = (Trace) inputElement;
-			TraceElement current = history.getCurrent();
+			Trace trace = (Trace) inputElement;
+			TraceElement current = trace.getCurrent();
 			ops.addAll(current.getOpList());
 			Collections.reverse(ops);
 		}

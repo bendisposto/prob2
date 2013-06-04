@@ -3,15 +3,13 @@ package de.prob.statespace;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * This class is used within the {@link Trace} object to create the linked
- * list of operations. Each HistoryElement references a particular operation
- * that has been executed. This includes saving the {@link StateId} source and
+ * This class is used within the {@link Trace} object to create the linked list
+ * of operations. Each TraceElement references a particular operation that has
+ * been executed. This includes saving the {@link StateId} source and
  * {@link StateId} destination, as well as the {@link OpInfo}. It also contains
- * a list of all executed operations and a pointer to the previous
- * HistoryElement. When a State is root, everything except the source is set to
- * null.
+ * a list of all executed operations and a pointer to the previous TraceElement.
+ * When a State is root, everything except the source is set to null.
  * 
  * @author joy
  * 
@@ -29,9 +27,9 @@ public class TraceElement {
 		this.src = src;
 
 		// WHEN THE STATE IS ROOT, EVERYTHING IS NULL
-		this.dest = null;
-		this.edge = null;
-		this.previous = null;
+		dest = null;
+		edge = null;
+		previous = null;
 
 		opList = new ArrayList<OpInfo>();
 	}
@@ -47,7 +45,7 @@ public class TraceElement {
 		List<OpInfo> previousOpList = new ArrayList<OpInfo>(
 				previous.getOpList());
 		previousOpList.add(edge);
-		this.opList = previousOpList;
+		opList = previousOpList;
 	}
 
 	/**
@@ -72,7 +70,7 @@ public class TraceElement {
 	}
 
 	/**
-	 * @return returns the pointer to the previous HistoryElement
+	 * @return returns the pointer to the previous TraceElement
 	 */
 	public TraceElement getPrevious() {
 		return previous;
@@ -80,7 +78,7 @@ public class TraceElement {
 
 	/**
 	 * @return the current {@link StateId} that is associated with the
-	 *         HistoryElement. If the destination is null, this is source.
+	 *         TraceElement. If the destination is null, this is source.
 	 *         Otherwise, this is destination.
 	 */
 	public StateId getCurrentState() {

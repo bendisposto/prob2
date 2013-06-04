@@ -1,6 +1,6 @@
 import de.prob.statespace.*
 s = api.b_load(dir+"/machines/scheduler.mch").statespace
-h = new History(s)
+h = new Trace(s)
 h = h.add(0)
 h = h.add(4)
 h = h.add(6)

@@ -12,7 +12,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
-public class RemoveHistoryHandler extends AbstractHandler implements IHandler {
+public class RemoveTraceHandler extends AbstractHandler implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {

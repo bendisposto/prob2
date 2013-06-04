@@ -118,7 +118,7 @@ public class BOperationObserverWizard extends ObserverWizard {
 		// Collect event of the active machine
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		Trace currentHistory = selector.getCurrentHistory();
+		Trace currentHistory = selector.getCurrentTrace();
 		if (currentHistory != null) {
 			AbstractModel model = currentHistory.getModel();
 			if (model instanceof EventBModel) {
@@ -300,7 +300,7 @@ public class BOperationObserverWizard extends ObserverWizard {
 				if (evt.getPropertyName().equals("predicate")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					Trace currentHistory = selector.getCurrentHistory();
+					Trace currentHistory = selector.getCurrentTrace();
 					Map<String, EvaluationResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
 									currentHistory,

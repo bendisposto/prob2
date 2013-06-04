@@ -92,9 +92,9 @@ class Trace {
 		StateId newState = s.getState(op)
 
 		def newHE = new TraceElement(current.getCurrentState(), newState, op, current)
-		Trace newHistory = new Trace(s, newHE)
+		Trace newTrace = new Trace(s, newHE)
 
-		return newHistory
+		return newTrace
 	}
 
 	def Trace add(final int i) {
@@ -107,8 +107,8 @@ class Trace {
 	 */
 	def Trace back() {
 		if (canGoBack()) {
-			Trace history = new Trace(s, head, current.getPrevious())
-			return history
+			Trace trace = new Trace(s, head, current.getPrevious())
+			return trace
 		}
 		return this
 	}
@@ -125,8 +125,8 @@ class Trace {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious()
 			}
-			Trace history = new Trace(s, head, p)
-			return history
+			Trace trace = new Trace(s, head, p)
+			return trace
 		}
 		return this
 	}
@@ -188,7 +188,7 @@ class Trace {
 
 	def Trace randomAnimation(final int numOfSteps) {
 		StateId currentState = this.current.getCurrentState()
-		Trace oldHistory = this
+		Trace oldTrace = this
 		TraceElement previous = this.current
 		TraceElement current = this.current
 		for(int i = 0; i < numOfSteps; i++) {
@@ -205,8 +205,8 @@ class Trace {
 			currentState = newState
 		}
 
-		Trace newHistory = new Trace(s, current)
-		return newHistory
+		Trace newTrace = new Trace(s, current)
+		return newTrace
 	}
 
 	def Trace invokeMethod(String method,  params) {
@@ -288,6 +288,6 @@ class Trace {
 			}
 			return list.reverse()
 		}
-		throw new ClassCastException("Not able to convert History object to ${className}")
+		throw new ClassCastException("Not able to convert Trace object to ${className}")
 	}
 }

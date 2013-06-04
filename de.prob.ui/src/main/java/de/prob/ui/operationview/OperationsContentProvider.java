@@ -35,8 +35,8 @@ class OperationsContentProvider implements IStructuredContentProvider {
 		Map<String,Object> enabledOps = new HashMap<String, Object>();
 		
 		if( inputElement instanceof Trace) {
-			Trace history = (Trace) inputElement;
-			Set<OpInfo> nextTransitions = history.getNextTransitions();
+			Trace trace = (Trace) inputElement;
+			Set<OpInfo> nextTransitions = trace.getNextTransitions();
 			for (OpInfo opInfo : nextTransitions) {
 				if(enabledOps.containsKey(opInfo.name)) {
 					List<OpInfo> opList = (ArrayList<OpInfo>) enabledOps.get(opInfo.name);

@@ -53,7 +53,7 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 
 	void updateEnablement() {
 		boolean isEnabled = false;
-		Trace currentHistory = selector.getCurrentHistory();
+		Trace currentHistory = selector.getCurrentTrace();
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		if (activeWorkbenchWindow != null) {

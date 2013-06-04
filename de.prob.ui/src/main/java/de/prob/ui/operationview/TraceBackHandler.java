@@ -11,7 +11,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
-public class HistoryForwardHandler extends AbstractHandler implements IHandler {
+public class TraceBackHandler extends AbstractHandler implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -20,9 +20,9 @@ public class HistoryForwardHandler extends AbstractHandler implements IHandler {
 		AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
 
-		Trace currentTrace = selector.getCurrentHistory();
-		Trace forwardTrace = currentTrace.forward();
-		selector.replaceTrace(currentTrace, forwardTrace);
+		Trace currentTrace = selector.getCurrentTrace();
+		Trace backTrace = currentTrace.back();
+		selector.replaceTrace(currentTrace, backTrace);
 		return null;
 	}
 }

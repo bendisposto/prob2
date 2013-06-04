@@ -23,20 +23,20 @@ import de.prob.check.ConsistencyCheckingSearchOption;
 import de.prob.check.ModelChecker;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
-import de.prob.statespace.IAnimationChangedListener;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 public class ModelCheckingView extends ViewPart implements
-IModelChangedListener, IAnimationChangedListener {
+IModelChangedListener, IAnimationChangeListener {
 
 	private final Set<ConsistencyCheckingSearchOption> options = new HashSet<ConsistencyCheckingSearchOption>();
 
 	private Composite container;
 	private Text formulas;
 	private StateSpace s;
-	private Trace currentHistory;
+	private Trace currentTrace;
 	private Job job;
 
 
@@ -45,7 +45,7 @@ IModelChangedListener, IAnimationChangedListener {
 		final AnimationSelector selector = ServletContextListener.INJECTOR
 				.getInstance(AnimationSelector.class);
 		selector.registerModelChangedListener(this);
-		selector.registerHistoryChangeListener(this);
+		selector.registerAnimationChangeListener(this);
 		container = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout(2, true);
 		container.setLayout(layout);
@@ -105,7 +105,7 @@ IModelChangedListener, IAnimationChangedListener {
 		if (s != null) {
 			job = new ModelCheckingJob("Consistency Checking",new ModelChecker(s, optionsToString()));
 			job.setUser(true);
-			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(container,currentHistory));
+			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(container,currentTrace));
 			job.schedule();
 		}
 	}
@@ -175,7 +175,7 @@ IModelChangedListener, IAnimationChangedListener {
 	}
 
 	@Override
-	public void historyChange(final Trace history) {
-		currentHistory = history;
+	public void traceChange(final Trace trace) {
+		currentTrace = trace;
 	}
 }

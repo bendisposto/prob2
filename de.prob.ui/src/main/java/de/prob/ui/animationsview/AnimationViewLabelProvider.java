@@ -23,8 +23,8 @@ class AnimationViewLabelProvider extends LabelProvider implements
 	public String getColumnText(final Object obj, final int index) {
 		if (index == 0) {
 			if (obj instanceof Trace) {
-				final Trace history = (Trace) obj;
-				final AbstractElement component = history.getModel()
+				final Trace trace = (Trace) obj;
+				final AbstractElement component = trace.getModel()
 						.getMainComponent();
 
 				if (component instanceof Machine) {
@@ -40,17 +40,17 @@ class AnimationViewLabelProvider extends LabelProvider implements
 
 		if (index == 1) {
 			if (obj instanceof Trace) {
-				final Trace history = (Trace) obj;
-				if (!history.getCurrent().getSrc().getId().equals("root")) {
-					return history.getCurrent().getOp().toString();
+				final Trace trace = (Trace) obj;
+				if (!trace.getCurrent().getSrc().getId().equals("root")) {
+					return trace.getCurrent().getOp().toString();
 				}
 			}
 		}
 
 		if (index == 2) {
 			if (obj instanceof Trace) {
-				final Trace history = (Trace) obj;
-				return history.getCurrent().getOpList().size() + "";
+				final Trace trace = (Trace) obj;
+				return trace.getCurrent().getOpList().size() + "";
 			}
 		}
 		return "";

@@ -21,9 +21,9 @@ public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
 	private final AnimationSelector animations;
 
 	public ConsistencyCheckingFinishedListener(final Composite container,
-			final Trace currentHistory) {
+			final Trace currentTrace) {
 		this.container = container;
-		this.currentTrace = currentHistory;
+		this.currentTrace = currentTrace;
 		animations = ServletContextListener.INJECTOR
 				.getInstance(AnimationSelector.class);
 	}

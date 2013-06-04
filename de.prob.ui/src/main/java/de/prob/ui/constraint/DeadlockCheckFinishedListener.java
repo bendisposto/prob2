@@ -8,8 +8,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
 import de.prob.animator.IAnimator;
-import de.prob.animator.command.ConstraintBasedDeadlockCheckCommand;
 import de.prob.animator.command.AbstractCommand;
+import de.prob.animator.command.ConstraintBasedDeadlockCheckCommand;
 import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.ui.ProBJobFinishedListener;
 
@@ -57,7 +57,7 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 				dialogTitle = "DEADLOCK FOUND!";
 				message = "The model contains a deadlocking state satisfying the invariant, it will be shown in the state view.";
 				// Implement way to show deadlock
-				//displayDeadlock(command, animator);
+				// displayDeadlock(command, animator);
 				break;
 			case interrupted:
 				dialogType = MessageDialog.WARNING;
@@ -65,7 +65,7 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 				message = "The deadlock check has been interrupted by the user or a time-out.";
 				break;
 			default:
-				//Logger.notifyUser("Unexpected result: " + result);
+				// Logger.notifyUser("Unexpected result: " + result);
 				return;
 			}
 		}
@@ -83,18 +83,5 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 			shell.getDisplay().asyncExec(runnable);
 		}
 	}
-	//
-	//	private void displayDeadlock(final ConstraintBasedDeadlockCheckCommand cmd,
-	//			final Animator animator) {
-	//		final Operation operation = cmd.getDeadlockOperation();
-	//		try {
-	//			// we do not reset the history because we want to keep the root
-	//			// state, we just start a new path from root
-	//			animator.getHistory().gotoPos(0);
-	//			ExecuteOperationCommand.executeOperation(animator, operation);
-	//		} catch (ProBException e) {
-	//			e.notifyUserOnce();
-	//		}
-	//	}
 
 }

@@ -37,10 +37,10 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Machine;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangedListener;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
-import de.prob.ui.services.HistoryActiveProvider;
+import de.prob.ui.services.TraceActiveProvider;
 import de.prob.ui.services.ModelLoadedProvider;
 import de.prob.webconsole.ServletContextListener;
 
@@ -60,7 +60,7 @@ import de.prob.webconsole.ServletContextListener;
  */
 
 public class OperationView extends ViewPart implements
-		IAnimationChangedListener {
+		IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -83,7 +83,7 @@ public class OperationView extends ViewPart implements
 	@Override
 	public void createPartControl(final Composite parent) {
 		animations = injector.getInstance(AnimationSelector.class);
-		animations.registerHistoryChangeListener(this);
+		animations.registerAnimationChangeListener(this);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		createColumns();
@@ -173,17 +173,17 @@ public class OperationView extends ViewPart implements
 	}
 
 	@Override
-	public void historyChange(final Trace history) {
-		currentTrace = history;
-		if (history == null) {
+	public void traceChange(final Trace trace) {
+		currentTrace = trace;
+		if (trace == null) {
 			updateModelLoadedProvider(false);
 			modelLoaded = false;
 		} else if (!modelLoaded) {
 			updateModelLoadedProvider(true);
 			modelLoaded = true;
 		}
-		if (history != null) {
-			final AbstractModel model = history.getModel();
+		if (trace != null) {
+			final AbstractModel model = trace.getModel();
 			if (currentModel != model && viewer != null) {
 				updateModel(model);
 			}
@@ -193,13 +193,13 @@ public class OperationView extends ViewPart implements
 			@Override
 			public void run() {
 				if (!viewer.getTable().isDisposed()) {
-					viewer.setInput(history);
+					viewer.setInput(trace);
 					packTableColumns();
 				}
 			}
 		});
 		try {
-			updateHistoryEnabled(history);
+			updateAnimationEnabled(trace);
 		} catch (final Exception e) {
 		}
 	}
@@ -249,12 +249,12 @@ public class OperationView extends ViewPart implements
 		sourceProvider.setEnabled(b);
 	}
 
-	private void updateHistoryEnabled(final Trace history) {
+	private void updateAnimationEnabled(final Trace trace) {
 		final ISourceProviderService service = (ISourceProviderService) this
 				.getSite().getService(ISourceProviderService.class);
-		final HistoryActiveProvider sourceProvider = (HistoryActiveProvider) service
-				.getSourceProvider(HistoryActiveProvider.FORWARD_SERVICE);
-		sourceProvider.historyChange(history);
+		final TraceActiveProvider sourceProvider = (TraceActiveProvider) service
+				.getSourceProvider(TraceActiveProvider.FORWARD_SERVICE);
+		sourceProvider.traceChange(trace);
 	}
 
 	private void updateModel(final AbstractModel model) {

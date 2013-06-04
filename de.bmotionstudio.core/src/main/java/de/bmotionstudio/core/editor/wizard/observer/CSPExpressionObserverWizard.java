@@ -208,7 +208,7 @@ public class CSPExpressionObserverWizard extends ObserverWizard {
 				if(evt.getPropertyName().equals("expression")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					Trace currentHistory = selector.getCurrentHistory();
+					Trace currentHistory = selector.getCurrentTrace();
 					Map<String, EvaluationResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
 									currentHistory,

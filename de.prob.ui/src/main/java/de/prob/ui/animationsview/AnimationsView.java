@@ -19,10 +19,10 @@ import com.google.inject.Injector;
 
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
-import de.prob.statespace.IAnimationChangedListener;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.webconsole.ServletContextListener;
 
-public class AnimationsView extends ViewPart implements IAnimationChangedListener {
+public class AnimationsView extends ViewPart implements IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -41,7 +41,7 @@ public class AnimationsView extends ViewPart implements IAnimationChangedListene
 	 */
 	public AnimationsView() {
 		selector = injector.getInstance(AnimationSelector.class);
-		selector.registerHistoryChangeListener(this);
+		selector.registerAnimationChangeListener(this);
 	}
 
 	/**
@@ -115,12 +115,12 @@ public class AnimationsView extends ViewPart implements IAnimationChangedListene
 	}
 
 	@Override
-	public void historyChange(final Trace history) {
+	public void traceChange(final Trace trace) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				if (!viewer.getTable().isDisposed()) {
-					labelProvider.setCurrentTrace(history);
+					labelProvider.setCurrentTrace(trace);
 					viewer.setInput(selector);
 					packTableColumns();
 				}
@@ -148,7 +148,7 @@ public class AnimationsView extends ViewPart implements IAnimationChangedListene
 		@Override
 		public void doubleClick(final DoubleClickEvent event) {
 			if (getSelection() != null) {
-				selector.changeCurrentHistory(getSelection());
+				selector.changeCurrentAnimation(getSelection());
 			}
 		}
 	}

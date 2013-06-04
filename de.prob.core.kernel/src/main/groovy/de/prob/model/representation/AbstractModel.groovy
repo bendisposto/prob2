@@ -1,8 +1,8 @@
 package de.prob.model.representation;
 
 import de.prob.model.representation.RefType.ERefType
-import de.prob.statespace.Trace
 import de.prob.statespace.StateSpace
+import de.prob.statespace.Trace
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
 public abstract class AbstractModel extends AbstractElement {
@@ -66,7 +66,7 @@ public abstract class AbstractModel extends AbstractElement {
 		if (className.getSimpleName().equals("StateSpace")) {
 			return statespace;
 		}
-		if (className.getSimpleName().equals("History")) {
+		if (className.getSimpleName().equals("Trace")) {
 			return new Trace(statespace);
 		}
 		throw new ClassCastException("No element of type " + className

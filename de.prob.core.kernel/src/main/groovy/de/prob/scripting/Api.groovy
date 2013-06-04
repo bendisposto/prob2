@@ -205,7 +205,7 @@ public class Api {
 	//	public void toFile(final StateSpace s) {
 	//		XStream xstream = new XStream(new JettisonMappedXmlDriver());
 	//		xstream.omitField(IAnimator.class, "animator");
-	//		// xstream.omitField(History.class, "history");
+	//		// xstream.omitField(Trace.class, "trace");
 	//		String xml = xstream.toXML(s);
 	//		// System.out.println(xml);
 	//		try {

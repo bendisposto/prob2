@@ -55,7 +55,7 @@ class TraceConverter {
         h
     }
 
-    def h = m as History
+    def h = m as Trace
 '''
 
 		def trace = new XmlSlurper().parse(xmlFile)

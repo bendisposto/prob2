@@ -37,15 +37,15 @@ public class InvariantCheckHandler extends AbstractHandler {
 		final Shell shell = HandlerUtil.getActiveShell(event);
 		Injector injector = ServletContextListener.INJECTOR;
 		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
-		Trace currentHistory = selector.getCurrentHistory();
-		Set<BEvent> events = currentHistory.getModel().getMainComponent().getChildrenOfType(BEvent.class);
+		Trace currentTrace = selector.getCurrentTrace();
+		Set<BEvent> events = currentTrace.getModel().getMainComponent().getChildrenOfType(BEvent.class);
 
 		List<String> names = new ArrayList<String>();
 		for (BEvent bEvent : events) {
 			names.add(bEvent.getName());
 		}
 
-		performInvariantCheck(currentHistory.getStatespace(), names,  shell);
+		performInvariantCheck(currentTrace.getStatespace(), names,  shell);
 		return null;
 	}
 
