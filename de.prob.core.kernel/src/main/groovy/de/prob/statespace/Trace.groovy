@@ -61,20 +61,20 @@ class Trace {
 	}
 
 	def Trace(final AbstractModel m) {
-		this.s = m.getStatespace()
+		this.stateSpace = m.getStatespace()
 		head = new TraceElement(s.getState(s.getVertex("root")))
 		current = head
 	}
 
 	def Trace(final StateSpace s, final TraceElement head) {
-		this.s = s
+		this.stateSpace = s
 		this.head = head
 		this.current = head
 	}
 
 	def Trace(final StateSpace s, final TraceElement head,
 	final TraceElement current) {
-		this.s = s
+		this.stateSpace = s
 		this.head = head
 		this.current = current
 	}
