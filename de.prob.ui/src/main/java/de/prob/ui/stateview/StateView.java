@@ -179,7 +179,7 @@ public class StateView extends ViewPart implements IAnimationChangeListener {
 
 	private void updateModelInfo(final AbstractModel model) {
 		currentModel = model;
-		StateSpace s = currentTrace.getStatespace();
+		StateSpace s = currentTrace.getStateSpace();
 
 		Set<Machine> machines = model.getChildrenOfType(Machine.class);
 		for (Machine machine : machines) {

@@ -53,7 +53,7 @@ public class HistoryView extends ViewPart implements IAnimationChangeListener {
 		@Override
 		public String getColumnText(final Object obj, final int index) {
 			if (obj instanceof OpInfo) {
-				return ((OpInfo) obj).getRep(currentTrace.getS().getModel());
+				return ((OpInfo) obj).getRep(currentTrace.getStateSpace().getModel());
 			}
 			return "";
 		}

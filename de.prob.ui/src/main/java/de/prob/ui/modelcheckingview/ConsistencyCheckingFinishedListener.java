@@ -103,7 +103,7 @@ public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
 
 				if (result == 1) {
 					String id = OpInfo.getIdFromPrologTerm(res.getArgument(0));
-					Trace trace = currentTrace.getS().getTrace(id);
+					Trace trace = currentTrace.getStateSpace().getTrace(id);
 					animations.replaceTrace(currentTrace, trace);
 				}
 			}

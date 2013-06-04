@@ -55,7 +55,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 		this.properties = properties;
 		currentTrace = animations.getCurrentTrace();
 		animations.registerAnimationChangeListener(this);
-		stateSpace = currentTrace.getStatespace();
+		stateSpace = currentTrace.getStateSpace();
 		formulas.add(formula);
 		vizType = formula.getClass().getSimpleName();
 		datasets = calculate();
@@ -73,7 +73,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 		this.properties = properties;
 		currentTrace = animations.getCurrentTrace();
 		animations.registerAnimationChangeListener(this);
-		stateSpace = currentTrace.getStatespace();
+		stateSpace = currentTrace.getStateSpace();
 		JsonParser parser = new JsonParser();
 		JsonElement parsed = parser.parse(json);
 		if (parsed != null) {
@@ -176,7 +176,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 
 	public List<Object> calculate() {
 		List<Object> result = new ArrayList<Object>();
-		if (currentTrace != null && currentTrace.getS() == stateSpace) {
+		if (currentTrace != null && currentTrace.getStateSpace() == stateSpace) {
 			List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
 			if (time != null) {
 				timeRes = currentTrace.eval(time);

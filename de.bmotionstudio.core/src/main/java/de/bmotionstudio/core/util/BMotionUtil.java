@@ -421,7 +421,7 @@ public class BMotionUtil {
 			Trace history, List<IEvalElement> evals) {
 		EvaluateFormulasCommand cmd = new EvaluateFormulasCommand(evals,
 				history.getCurrentState().getId());
-		history.getStatespace().execute(cmd);
+		history.getStateSpace().execute(cmd);
 		Map<String, EvaluationResult> results = new HashMap<String, EvaluationResult>();
 		List<EvaluationResult> values = cmd.getValues();
 		for (EvaluationResult e : values)

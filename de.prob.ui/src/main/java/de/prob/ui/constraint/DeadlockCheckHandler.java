@@ -57,7 +57,7 @@ public class DeadlockCheckHandler extends AbstractHandler {
 
 	private void startCheck(final Trace currentTrace, final String value,
 			final Shell shell) throws ExecutionException {
-		final StateSpace s = currentTrace.getS();
+		final StateSpace s = currentTrace.getStateSpace();
 		final IEvalElement predicate = parsePredicate(s, value);
 		final ConstraintBasedDeadlockCheckCommand command = new ConstraintBasedDeadlockCheckCommand(
 				predicate);

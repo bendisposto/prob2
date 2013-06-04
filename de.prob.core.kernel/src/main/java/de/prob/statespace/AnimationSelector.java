@@ -72,8 +72,8 @@ public class AnimationSelector {
 		notifyAnimationChange(trace);
 
 		if (currentTrace != null
-				&& currentTrace.getStatespace() != currentStateSpace) {
-			currentStateSpace = currentTrace.getStatespace();
+				&& currentTrace.getStateSpace() != currentStateSpace) {
+			currentStateSpace = currentTrace.getStateSpace();
 			notifyModelChanged(currentStateSpace);
 		}
 	}
@@ -90,7 +90,7 @@ public class AnimationSelector {
 		currentTrace = trace;
 		notifyAnimationChange(trace);
 
-		StateSpace s = trace.getStatespace();
+		StateSpace s = trace.getStateSpace();
 		if (!statespaces.contains(s)) {
 			statespaces.add(s);
 		}
@@ -182,8 +182,8 @@ public class AnimationSelector {
 		currentTrace = newTrace;
 
 		if (currentTrace != null
-				&& currentTrace.getStatespace() != currentStateSpace) {
-			currentStateSpace = currentTrace.getStatespace();
+				&& currentTrace.getStateSpace() != currentStateSpace) {
+			currentStateSpace = currentTrace.getStateSpace();
 			notifyModelChanged(currentStateSpace);
 		}
 	}

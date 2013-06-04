@@ -72,7 +72,7 @@ class StateViewLabelProvider extends LabelProvider implements
 			result = ((Constant) o).getValue(currentTrace);
 		} else {
 			Map<IEvalElement, EvaluationResult> values = currentTrace
-					.getStatespace().valuesAt(state);
+					.getStateSpace().valuesAt(state);
 			result = values.get(o.getEvaluate());
 		}
 		return result != null ? result.value : "";

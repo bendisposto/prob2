@@ -103,7 +103,7 @@ public class ExecuteBOperationEvent extends Event {
 
 			try {
 				List<OpInfo> opFromPredicate = history
-						.getStatespace()
+						.getStateSpace()
 						.opFromPredicate(history.getCurrentState(), operation,
 								BMotionUtil.parseFormula(predicate, control), 1);
 				if (opFromPredicate != null && !opFromPredicate.isEmpty()) {

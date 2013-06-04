@@ -37,7 +37,7 @@ public class PredicateSession implements ISessionServlet,
 	public PredicateSession(final AnimationSelector animations,
 			final IEvalElement formula) {
 		currentTrace = animations.getCurrentTrace();
-		stateSpace = currentTrace.getStatespace();
+		stateSpace = currentTrace.getStateSpace();
 		this.formula = formula;
 		InsertFormulaForVisualizationCommand cmd = new InsertFormulaForVisualizationCommand(
 				formula);
@@ -77,7 +77,7 @@ public class PredicateSession implements ISessionServlet,
 	}
 
 	public void calculate() {
-		if (currentTrace != null && currentTrace.getS() == stateSpace) {
+		if (currentTrace != null && currentTrace.getStateSpace() == stateSpace) {
 			ExpandFormulaCommand cmd = new ExpandFormulaCommand(formulaId,
 					currentTrace.getCurrentState().getId());
 			stateSpace.execute(cmd);

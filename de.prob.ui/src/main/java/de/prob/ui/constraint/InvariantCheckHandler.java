@@ -45,7 +45,7 @@ public class InvariantCheckHandler extends AbstractHandler {
 			names.add(bEvent.getName());
 		}
 
-		performInvariantCheck(currentTrace.getStatespace(), names,  shell);
+		performInvariantCheck(currentTrace.getStateSpace(), names,  shell);
 		return null;
 	}
 

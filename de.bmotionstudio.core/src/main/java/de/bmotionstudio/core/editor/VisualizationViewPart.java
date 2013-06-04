@@ -746,7 +746,7 @@ public class VisualizationViewPart extends ViewPart implements
 		
 		// Proceed only if the state can be evaluated and the visualization
 		// corresponds to the active animation
-		if (!history.getStatespace().canBeEvaluated(history.getCurrentState())
+		if (!history.getStateSpace().canBeEvaluated(history.getCurrentState())
 				|| !(history.getModel().getModelFile().getName()
 						.equals(modelFile.getName())))
 			return;

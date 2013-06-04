@@ -61,7 +61,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		} else {
 			StateId stateId = currentHistory.getCurrentState();
 			sId = stateId.getId();
-			animation = currentHistory.getStatespace();
+			animation = currentHistory.getStateSpace();
 		}
 
 		// create a new EvalStore from State
@@ -184,7 +184,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		try {
 			GetStateValuesCommand cmd = GetStateValuesCommand
 					.getEvalstoreValuesCommand(evalStoreId);
-			animations.getCurrentTrace().getStatespace().execute(cmd);
+			animations.getCurrentTrace().getStateSpace().execute(cmd);
 
 			// generate Output String
 			String output = generateStoreValuesOutput(cmd);
@@ -263,7 +263,7 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 			IEvalElement eval = new EventB(expression);
 			EvalstoreEvalCommand cmd = new EvalstoreEvalCommand(evalStoreId,
 					eval);
-			animations.getCurrentTrace().getStatespace().execute(cmd);
+			animations.getCurrentTrace().getStateSpace().execute(cmd);
 			EvalstoreResult storeResult = cmd.getResult();
 			if (storeResult.isSuccess()) {
 				evalStoreId = storeResult.getResultingStoreId();

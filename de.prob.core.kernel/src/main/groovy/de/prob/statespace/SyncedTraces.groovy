@@ -72,7 +72,7 @@ class SyncedTraces {
 
 	def SyncedTraces add(String opId, int index) {
 		def trace = traces.get(index)
-		def op = trace.s.getOp(opId)
+		def op = trace.stateSpace.getOp(opId)
 		if(syncedOps.contains(op.getName())) {
 			return add(op.getName(),op.getParams())
 		}
@@ -119,7 +119,7 @@ class SyncedTraces {
 		}
 
 		def h = traces.get(0)
-		def currentOpsOnH = h.s.getOutEdges(h.current.getCurrentState())
+		def currentOpsOnH = h.stateSpace.getOutEdges(h.current.getCurrentState())
 		def copy = new HashSet<OpInfo>(currentOpsOnH)
 
 		currentOpsOnH.each { op ->
@@ -139,7 +139,7 @@ class SyncedTraces {
 		sb.append("synced: ${copy}\n")
 		traces.each { trace ->
 			sb.append("${traces.indexOf(trace)}: ")
-			def o = trace.s.getOutEdges(trace.current.getCurrentState())
+			def o = trace.stateSpace.getOutEdges(trace.current.getCurrentState())
 			def list = []
 			o.each {
 				if(!syncedOps.contains(it.getName())) {
