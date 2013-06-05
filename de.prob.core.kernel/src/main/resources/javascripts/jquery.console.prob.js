@@ -674,7 +674,7 @@
     };
     // Simple utility for printing messages
     $.fn.filledText = function(txt){
-        $(this).text(txt);
+        $(this).html(txt);
         $(this).html($(this).html().replace(/\n/g,'<br/>'));
         return this;
     };
