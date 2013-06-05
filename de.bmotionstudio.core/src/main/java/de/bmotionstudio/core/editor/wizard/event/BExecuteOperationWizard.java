@@ -94,9 +94,9 @@ public class BExecuteOperationWizard extends EventWizard {
 		// Collect event of the active machine
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		Trace currentHistory = selector.getCurrentTrace();
-		if (currentHistory != null) {
-			AbstractModel model = currentHistory.getModel();
+		Trace currentTrace = selector.getCurrentTrace();
+		if (currentTrace != null) {
+			AbstractModel model = currentTrace.getModel();
 			if (model instanceof EventBModel) {
 				EventBModel eventBModel = (EventBModel) model;
 				AbstractElement mainComponent = eventBModel.getMainComponent();

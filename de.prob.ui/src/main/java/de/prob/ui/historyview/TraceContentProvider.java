@@ -16,7 +16,7 @@ import de.prob.statespace.TraceElement;
  * they are divided into groups by their operation name
  * 
  */
-class HistoryContentProvider implements IStructuredContentProvider {
+class TraceContentProvider implements IStructuredContentProvider {
 
 	@Override
 	public void dispose() {

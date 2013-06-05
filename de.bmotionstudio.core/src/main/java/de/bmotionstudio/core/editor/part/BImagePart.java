@@ -45,9 +45,9 @@ public class BImagePart extends BMSAbstractEditPart {
 				// model?
 				final AnimationSelector selector = injector
 						.getInstance(AnimationSelector.class);
-				Trace currentHistory = selector.getCurrentTrace();
-				if (currentHistory != null) {
-					String path = currentHistory.getModel().getModelFile()
+				Trace currentTrace = selector.getCurrentTrace();
+				if (currentTrace != null) {
+					String path = currentTrace.getModel().getModelFile()
 							.getParent()
 							+ "/images";
 					String imagePath = path + File.separator + value.toString();
