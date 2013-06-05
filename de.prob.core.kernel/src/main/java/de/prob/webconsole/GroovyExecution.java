@@ -69,7 +69,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			"import de.prob.model.classicalb.*;",
 			"import de.prob.model.eventb.*;",
 			"import de.prob.animator.domainobjects.*;",
-			"import de.prob.animator.commands.*;",
+			"import de.prob.animator.command.*;",
 			"import de.prob.visualization.*" };
 	private final ShellCommands shellCommands;
 
