@@ -36,7 +36,8 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class HistoryView extends ViewPart implements IAnimationChangeListener {
+public class CurrentTraceView extends ViewPart implements
+		IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -53,7 +54,8 @@ public class HistoryView extends ViewPart implements IAnimationChangeListener {
 		@Override
 		public String getColumnText(final Object obj, final int index) {
 			if (obj instanceof OpInfo) {
-				return ((OpInfo) obj).getRep(currentTrace.getStateSpace().getModel());
+				return ((OpInfo) obj).getRep(currentTrace.getStateSpace()
+						.getModel());
 			}
 			return "";
 		}
@@ -73,7 +75,7 @@ public class HistoryView extends ViewPart implements IAnimationChangeListener {
 	/**
 	 * The constructor.
 	 */
-	public HistoryView() {
+	public CurrentTraceView() {
 		animations = ServletContextListener.INJECTOR
 				.getInstance(AnimationSelector.class);
 		animations.registerAnimationChangeListener(this);
@@ -87,7 +89,7 @@ public class HistoryView extends ViewPart implements IAnimationChangeListener {
 	public void createPartControl(final Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
-		viewer.setContentProvider(new HistoryContentProvider());
+		viewer.setContentProvider(new TraceContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(null);
 		viewer.setInput(getViewSite());

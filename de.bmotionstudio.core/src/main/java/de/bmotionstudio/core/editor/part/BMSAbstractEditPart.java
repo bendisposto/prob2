@@ -63,7 +63,6 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	final AnimationSelector selector = injector
 			.getInstance(AnimationSelector.class);
 	
-//	private History currentHistory;
 	
 	private final Cursor cursorHover = new Cursor(Display.getCurrent(),
 			SWT.CURSOR_HAND);
@@ -89,9 +88,9 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 			if (event.getPropertyName().equals(ButtonModel.PRESSED_PROPERTY)) {
 				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
-				Trace currentHistory = selector.getCurrentTrace();
+				Trace currentTrace = selector.getCurrentTrace();
 				if (f.getModel().isPressed())
-					executeEvent(currentHistory, Event.CLICK_ACTION);
+					executeEvent(currentTrace, Event.CLICK_ACTION);
 			}
 
 		}
@@ -274,7 +273,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		return anchor;
 	}
 
-//	public void historyChange(History history) {
+//	public void historyChange(Trace history) {
 //
 //		if (history == null || tooltipLabel == null)
 //			return;
@@ -289,7 +288,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 //						.equals(modelFile.getName())))
 //			return;
 //
-//		if ((currentHistory != null && currentHistory.getCurrentState() == history
+//		if ((currentTrace != null && currentTrace.getCurrentState() == history
 //				.getCurrentState()))
 //			return;
 //
@@ -305,7 +304,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 //				str.append("\n");
 //		}
 //		tooltipLabel.setText(str.toString());
-//		currentHistory = history;
+//		currentTrace = history;
 //	}
 		
 	/*

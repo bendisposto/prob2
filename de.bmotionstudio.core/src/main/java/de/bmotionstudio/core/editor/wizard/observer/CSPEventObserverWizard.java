@@ -125,11 +125,11 @@ public class CSPEventObserverWizard extends ObserverWizard {
 //					
 //					final AnimationSelector selector = injector
 //							.getInstance(AnimationSelector.class);
-//					History currentHistory = selector.getCurrentHistory();
+//					Trace currentTrace = selector.getCurrentTrace();
 //					
-//					if(currentHistory != null) {
+//					if(currentTrace != null) {
 //					
-//						EvaluationResult eval = currentHistory
+//						EvaluationResult eval = currentTrace
 //								.eval(predicateText.getText());
 //
 //						if (eval != null) {
@@ -254,13 +254,13 @@ public class CSPEventObserverWizard extends ObserverWizard {
 								"value"))) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					Trace currentHistory = selector.getCurrentTrace();
+					Trace currentTrace = selector.getCurrentTrace();
 					Map<String, EvaluationResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
-									currentHistory,
+									currentTrace,
 									getControl().prepareObserver(getObserver(),
-											currentHistory));
-					getObserver().check(currentHistory, getControl(),
+											currentTrace));
+					getObserver().check(currentTrace, getControl(),
 							evaluationResults);
 				}
 				

@@ -48,10 +48,10 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 		EvalStoreAPI.logger.trace("in:");
 
 		// initialize new API Context
-		Trace currentHistory = animations.getCurrentTrace();
+		Trace currentTrace = animations.getCurrentTrace();
 		String sId;
 		animation = null;
-		if (currentHistory == null) {
+		if (currentTrace == null) {
 			notifyErrorListeners(
 					IEvalStoreConstants.NO_ANIMATION,
 					"No Animation is started. You have to start an ProB animation before using the worksheet",
@@ -59,9 +59,9 @@ public class EvalStoreAPI extends DefaultWorksheetAPI {
 			EvalStoreAPI.logger.trace("return: No Animation is started");
 			return;
 		} else {
-			StateId stateId = currentHistory.getCurrentState();
+			StateId stateId = currentTrace.getCurrentState();
 			sId = stateId.getId();
-			animation = currentHistory.getStateSpace();
+			animation = currentTrace.getStateSpace();
 		}
 
 		// create a new EvalStore from State

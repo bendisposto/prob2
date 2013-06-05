@@ -58,7 +58,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	private static HashMap<String, IBControlService> controlServicesId = new HashMap<String, IBControlService>();
 
 	private StateSpace currentStateSpace = null;
-	private Trace currentHistory = null;
+	private Trace currentTrace = null;
 
 	private IExtensionRegistry registry = Platform.getExtensionRegistry();
 
@@ -66,7 +66,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 
 	private final AnimationSelector selector = injector
 			.getInstance(AnimationSelector.class);
-	
+
 	/**
 	 * The constructor
 	 */
@@ -102,7 +102,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 		PlatformUI.getWorkbench().removeWorkbenchListener(this);
 		super.stop(context);
 	}
-
 
 	/**
 	 * Returns the shared instance
@@ -162,7 +161,8 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 						IBControlService service = (IBControlService) configurationElement
 								.createExecutableExtension("service");
 						String id = configurationElement.getAttribute("id");
-						controlServicesClass.put(service.getControlClass(), service);
+						controlServicesClass.put(service.getControlClass(),
+								service);
 						controlServicesId.put(id, service);
 					} catch (CoreException e) {
 						e.printStackTrace();
@@ -175,7 +175,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 		}
 
 	}
-	
+
 	private void initExtensionClass(String extensionPointID,
 			ArrayList<String> elementIDs, String getAttribute,
 			HashMap<String, IConfigurationElement> hashMap) {
@@ -239,7 +239,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 	public static HashMap<String, IBControlService> getControlServicesId() {
 		return controlServicesId;
 	}
-	
+
 	@Override
 	public void modelChanged(final StateSpace s) {
 
@@ -288,8 +288,8 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 										currentLanguage);
 						for (VisualizationViewPart visPart : visualizationViewParts) {
 							if (visPart.isDirty()) {
-								if (currentHistory != null)
-									selector.changeCurrentAnimation(currentHistory);
+								if (currentTrace != null)
+									selector.changeCurrentAnimation(currentTrace);
 								return;
 							}
 						}
@@ -307,7 +307,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin implements
 				}
 
 				currentStateSpace = s;
-				currentHistory = selector.getCurrentTrace();
+				currentTrace = selector.getCurrentTrace();
 
 			}
 

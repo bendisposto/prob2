@@ -151,14 +151,14 @@ public class CSPExpressionObserverWizard extends ObserverWizard {
 //					
 //					final AnimationSelector selector = injector
 //							.getInstance(AnimationSelector.class);
-//					History currentHistory = selector.getCurrentHistory();
+//					Trace currentTrace = selector.getCurrentTrace();
 //					
-//					if (currentHistory != null) {
+//					if (currentTrace != null) {
 //
 //						CSP cspEval = new CSP(expressionText.getText(),
-//								(CSPModel) currentHistory.getModel());
+//								(CSPModel) currentTrace.getModel());
 //
-//						EvaluationResult eval = currentHistory.eval(cspEval);
+//						EvaluationResult eval = currentTrace.eval(cspEval);
 //
 //						if (eval != null) {
 //
@@ -208,13 +208,13 @@ public class CSPExpressionObserverWizard extends ObserverWizard {
 				if(evt.getPropertyName().equals("expression")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					Trace currentHistory = selector.getCurrentTrace();
+					Trace currentTrace = selector.getCurrentTrace();
 					Map<String, EvaluationResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
-									currentHistory,
+									currentTrace,
 									getControl().prepareObserver(getObserver(),
-											currentHistory));
-					getObserver().check(currentHistory, getControl(),
+											currentTrace));
+					getObserver().check(currentTrace, getControl(),
 							evaluationResults);
 				}
 				

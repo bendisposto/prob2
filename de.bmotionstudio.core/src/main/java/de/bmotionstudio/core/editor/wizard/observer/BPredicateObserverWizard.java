@@ -119,11 +119,11 @@ public class BPredicateObserverWizard extends ObserverWizard {
 					
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					Trace currentHistory = selector.getCurrentTrace();
+					Trace currentTrace = selector.getCurrentTrace();
 					
-					if(currentHistory != null) {
+					if(currentTrace != null) {
 					
-						EvaluationResult eval = currentHistory
+						EvaluationResult eval = currentTrace
 								.evalCurrent(predicateText.getText());
 
 						if (eval != null) {
@@ -281,13 +281,13 @@ public class BPredicateObserverWizard extends ObserverWizard {
 				if(evt.getPropertyName().equals("predicate")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					Trace currentHistory = selector.getCurrentTrace();
+					Trace currentTrace = selector.getCurrentTrace();
 					Map<String, EvaluationResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
-									currentHistory,
+									currentTrace,
 									getControl().prepareObserver(getObserver(),
-											currentHistory));
-					getObserver().check(currentHistory, getControl(),
+											currentTrace));
+					getObserver().check(currentTrace, getControl(),
 							evaluationResults);
 				}
 				
