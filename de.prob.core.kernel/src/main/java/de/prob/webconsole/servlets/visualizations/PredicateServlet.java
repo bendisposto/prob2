@@ -11,6 +11,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.HTMLResources;
+import de.prob.visualization.VisualizationException;
 import de.prob.visualization.VisualizationSelector;
 
 @Singleton
@@ -33,18 +34,25 @@ public class PredicateServlet extends SessionBasedServlet {
 	}
 
 	public String openSession(final String sessionId, final IEvalElement formula)
-			throws AnimationNotLoadedException {
+			throws AnimationNotLoadedException, VisualizationException {
 		if (animations.getCurrentTrace() == null) {
 			throw new AnimationNotLoadedException("Could not visualize "
 					+ formula.getCode() + " because no animation is loaded");
 		}
-		PredicateSession session = new PredicateSession(animations, formula);
-		String propFile = properties.getPropFileFromModelFile(animations
-				.getCurrentTrace().getModel().getModelFile()
-				.getAbsolutePath());
-		properties.setProperty(propFile, sessionId, formula.serialized());
-		super.openSession(sessionId, session);
-		visualizations.registerSession(sessionId, session);
+		try {
+			PredicateSession session = new PredicateSession(animations, formula);
+			String propFile = properties.getPropFileFromModelFile(animations
+					.getCurrentTrace().getModel().getModelFile()
+					.getAbsolutePath());
+			properties.setProperty(propFile, sessionId, formula.serialized());
+			super.openSession(sessionId, session);
+			visualizations.registerSession(sessionId, session);
+		} catch (Throwable e) {
+			throw new VisualizationException(
+					"Could not create predicate visualization because "
+							+ e.getClass().getSimpleName() + " with message "
+							+ e.getMessage() + " was thrown.");
+		}
 		return sessionId;
 	}
 
@@ -54,7 +62,7 @@ public class PredicateServlet extends SessionBasedServlet {
 	}
 
 	@Override
-	protected String loadSession(final String id) {
+	protected String loadSession(final String id) throws VisualizationException {
 		if (animations.getCurrentTrace() != null) {
 			String propFile = properties.getPropFileFromModelFile(animations
 					.getCurrentTrace().getModel().getModelFile()

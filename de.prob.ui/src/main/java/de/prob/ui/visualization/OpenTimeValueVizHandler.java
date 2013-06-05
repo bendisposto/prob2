@@ -25,6 +25,7 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.visualization.AnimationNotLoadedException;
+import de.prob.visualization.VisualizationException;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.servlets.visualizations.ValueOverTimeServlet;
 
@@ -67,10 +68,13 @@ public class OpenTimeValueVizHandler extends AbstractHandler implements
 			VisualizationUtil.createVisualizationViewPart("formula/?init="
 					+ sessionId);
 		} catch (PartInitException e) {
-			logger.error("Could not create predicate visualization view: "
+			logger.error("Could not create value vs time visualization view: "
 					+ e.getMessage());
 		} catch (AnimationNotLoadedException e) {
-			logger.error("Could not create predicate visualization because an animation is not loaded: "
+			logger.error("Could not create value vs time visualization because an animation is not loaded: "
+					+ e.getMessage());
+		} catch (VisualizationException e) {
+			logger.error("Could not create value vs time visualization because of an invalid formula"
 					+ e.getMessage());
 		}
 		return null;

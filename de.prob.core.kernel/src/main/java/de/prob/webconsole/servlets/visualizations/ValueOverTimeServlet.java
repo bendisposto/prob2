@@ -11,6 +11,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.HTMLResources;
+import de.prob.visualization.VisualizationException;
 import de.prob.visualization.VisualizationSelector;
 
 @SuppressWarnings("serial")
@@ -35,15 +36,22 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 
 	public String openSession(final String sessionId,
 			final IEvalElement formula, final IEvalElement time)
-			throws AnimationNotLoadedException {
+			throws AnimationNotLoadedException, VisualizationException {
 		if (animations.getCurrentTrace() == null) {
 			throw new AnimationNotLoadedException("Could not visualize "
 					+ formula.getCode() + " because no animation is loaded");
 		}
-		ValueOverTimeSession session = new ValueOverTimeSession(sessionId,
-				formula, time, animations, properties);
-		super.openSession(sessionId, session);
-		visualizations.registerSession(sessionId, session);
+		try {
+			ValueOverTimeSession session = new ValueOverTimeSession(sessionId,
+					formula, time, animations, properties);
+			super.openSession(sessionId, session);
+			visualizations.registerSession(sessionId, session);
+		} catch (Exception e) {
+			throw new VisualizationException(
+					"Could not create Value Over Time Session. Thrown: "
+							+ e.getClass().getSimpleName() + ": "
+							+ e.getMessage());
+		}
 		return sessionId;
 	}
 
@@ -53,7 +61,7 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 	}
 
 	@Override
-	protected String loadSession(final String id) {
+	protected String loadSession(final String id) throws VisualizationException {
 		if (animations.getCurrentTrace() != null) {
 			String propFile = properties.getPropFileFromModelFile(animations
 					.getCurrentTrace().getModel().getModelFile()
@@ -65,10 +73,17 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 				if (animations.getCurrentTrace() == null) {
 					return null;
 				}
-				ValueOverTimeSession session = new ValueOverTimeSession(id,
-						json, animations, properties, deserializer);
-				super.openSession(id, session);
-				visualizations.registerSession(id, session);
+				try {
+					ValueOverTimeSession session = new ValueOverTimeSession(id,
+							json, animations, properties, deserializer);
+					super.openSession(id, session);
+					visualizations.registerSession(id, session);
+				} catch (Exception e) {
+					throw new VisualizationException(
+							"Could not create Value Over Time Session. Thrown: "
+									+ e.getClass().getSimpleName() + ": "
+									+ e.getMessage());
+				}
 				return id;
 			}
 		}

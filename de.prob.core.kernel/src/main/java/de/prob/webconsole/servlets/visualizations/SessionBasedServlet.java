@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import de.prob.visualization.VisualizationException;
+
 public abstract class SessionBasedServlet extends HttpServlet {
 
 	protected static int count = 0;
@@ -45,21 +47,27 @@ public abstract class SessionBasedServlet extends HttpServlet {
 			out.print(html);
 			out.close();
 		} else {
-			String s = loadSession(sId);
-			if (s != null) {
-				String html = getHTML(sId, w, h);
-				PrintWriter out = resp.getWriter();
-				out.print(html);
-				out.close();
-			} else {
-				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			try {
+				String s = loadSession(sId);
+				if (s != null) {
+					String html = getHTML(sId, w, h);
+					PrintWriter out = resp.getWriter();
+					out.print(html);
+					out.close();
+				} else {
+					resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+				}
+			} catch (VisualizationException e) {
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+						e.getMessage());
 			}
 		}
 	}
 
 	protected abstract String getHTML(String id, String w, String h);
 
-	protected abstract String loadSession(String id);
+	protected abstract String loadSession(String id)
+			throws VisualizationException;
 
 	protected String openSession(final String sessionId, final ISessionServlet s) {
 		sessions.put(sessionId, s);

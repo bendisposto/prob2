@@ -18,6 +18,7 @@ import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.DynamicTransformer;
 import de.prob.visualization.HTMLResources;
 import de.prob.visualization.Transformer;
+import de.prob.visualization.VisualizationException;
 import de.prob.visualization.VisualizationSelector;
 
 @SuppressWarnings("serial")
@@ -44,15 +45,22 @@ public class StateSpaceServlet extends SessionBasedServlet implements
 	}
 
 	public String openSession(final String sessionId)
-			throws AnimationNotLoadedException {
+			throws AnimationNotLoadedException, VisualizationException {
 		if (currentStateSpace == null) {
 			throw new AnimationNotLoadedException(
 					"Could not start state space visualization because no animation is loaded");
 		}
-		StateSpaceSession session = new StateSpaceSession(sessionId,
-				currentStateSpace, properties);
-		super.openSession(sessionId, session);
-		visualizations.registerSession(sessionId, session);
+		try {
+			StateSpaceSession session = new StateSpaceSession(sessionId,
+					currentStateSpace, properties);
+			super.openSession(sessionId, session);
+			visualizations.registerSession(sessionId, session);
+		} catch (Throwable e) {
+			throw new VisualizationException(
+					"Could not create state space visualization because "
+							+ e.getClass().getSimpleName() + " with message "
+							+ e.getMessage() + " was thrown");
+		}
 		return sessionId;
 	}
 
@@ -62,7 +70,7 @@ public class StateSpaceServlet extends SessionBasedServlet implements
 	}
 
 	@Override
-	protected String loadSession(final String id) {
+	protected String loadSession(final String id) throws VisualizationException {
 		if (currentStateSpace == null) {
 			return null;
 		}
@@ -94,12 +102,19 @@ public class StateSpaceServlet extends SessionBasedServlet implements
 			transformers.add(DynamicTransformer.deserialize(
 					jsonElement.getAsString(), currentStateSpace));
 		}
+		try {
+			StateSpaceSession session = new StateSpaceSession(id,
+					currentStateSpace, mode, disabled, expression,
+					transformers, properties);
+			super.openSession(id, session);
+			visualizations.registerSession(id, session);
+		} catch (Throwable e) {
+			throw new VisualizationException(
+					"Could not create state space visualization because "
+							+ e.getClass().getSimpleName() + " with message "
+							+ e.getMessage() + " was thrown");
 
-		StateSpaceSession session = new StateSpaceSession(id,
-				currentStateSpace, mode, disabled, expression, transformers,
-				properties);
-		super.openSession(id, session);
-		visualizations.registerSession(id, session);
+		}
 		return id;
 	}
 

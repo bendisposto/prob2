@@ -251,7 +251,6 @@ function createSSGraph(id,positionId,m,events,width,height) {
     function refresh(svg, id, getAllStates, force, stopped) {
         reset(getAllStates);
 
-
         $.getJSON("statespace_servlet", {
             sessionId : id,
             getSS : true,

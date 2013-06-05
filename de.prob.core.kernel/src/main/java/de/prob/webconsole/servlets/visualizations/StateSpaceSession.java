@@ -13,6 +13,9 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -45,10 +48,13 @@ import de.prob.visualization.Transformer;
 
 public class StateSpaceSession implements ISessionServlet,
 		IStatesCalculatedListener, IVisualizationServlet {
+
+	Logger logger = LoggerFactory.getLogger(StateSpaceSession.class);
 	private final String filename;
 	private IStateSpace space;
 	private AbstractData data;
 	private String expression;
+	private final List<String> errors = new ArrayList<String>();
 	private final Map<String, EnabledEvent> events = new HashMap<String, EnabledEvent>();
 	private final List<String> disabledEvents = new ArrayList<String>();
 	private final Set<IRefreshListener> refreshListeners = new HashSet<IRefreshListener>();
@@ -130,24 +136,32 @@ public class StateSpaceSession implements ISessionServlet,
 		String cmd = req.getParameter("cmd");
 		String p = req.getParameter("param");
 
-		if (space != null) {
-			if (cmd.equals("sig_merge")) {
-				recalculateEvents(p);
-				data = createSigMergeGraph();
-			} else if (cmd.equals("org_ss")) {
-				data = createStateSpaceGraph();
-			} else if (cmd.equals("trans_diag")) {
-				data = createTransitionDiagram(p);
-				expression = p;
-			} else if (cmd.equals("d_sig_merge")) {
-				recalculateEvents(p);
-				data = createDottySignatureMerge();
-			} else if (cmd.equals("d_trans_diag")) {
-				data = createDottyTransitionDiagram(p);
-				expression = p;
+		try {
+			if (space != null) {
+				if (cmd.equals("sig_merge")) {
+					recalculateEvents(p);
+					data = createSigMergeGraph();
+				} else if (cmd.equals("org_ss")) {
+					data = createStateSpaceGraph();
+				} else if (cmd.equals("trans_diag")) {
+					data = createTransitionDiagram(p);
+					expression = p;
+				} else if (cmd.equals("d_sig_merge")) {
+					recalculateEvents(p);
+					data = createDottySignatureMerge();
+				} else if (cmd.equals("d_trans_diag")) {
+					data = createDottyTransitionDiagram(p);
+					expression = p;
+				}
 			}
+			props.setProperty(filename, sessionId, serialize());
+		} catch (Throwable e) {
+			errors.add("creating visualization of type " + cmd
+					+ " with parameter " + p + " resulted in this exception: "
+					+ e.getClass().getSimpleName() + ": " + e.getMessage());
+			logger.error(e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
-		props.setProperty(filename, sessionId, serialize());
+
 	}
 
 	private void recalculateEvents(final String p) {
@@ -197,6 +211,8 @@ public class StateSpaceSession implements ISessionServlet,
 		resp.put("reset", data.getReset());
 		resp.put("mode", data.getMode());
 		resp.put("events", events.values());
+		resp.put("errors", errors);
+		errors.clear();
 
 		Gson g = new Gson();
 
@@ -314,13 +330,18 @@ public class StateSpaceSession implements ISessionServlet,
 
 	@Override
 	public void newTransitions(final List<? extends OpInfo> newOps) {
-		if (space instanceof StateSpace) {
-			((StateSpace) space).calculateVariables();
+		try {
+			if (space instanceof StateSpace) {
+				((StateSpace) space).calculateVariables();
+			}
+			if (space instanceof AbstractDottyGraph) {
+				notifyRefresh();
+			}
+			data.addNewLinks(space.getSSGraph(), newOps);
+		} catch (Exception e) {
+			errors.add("Exception thrown at new transition " + e.getMessage());
+			logger.error(e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
-		if (space instanceof AbstractDottyGraph) {
-			notifyRefresh();
-		}
-		data.addNewLinks(space.getSSGraph(), newOps);
 
 	}
 
