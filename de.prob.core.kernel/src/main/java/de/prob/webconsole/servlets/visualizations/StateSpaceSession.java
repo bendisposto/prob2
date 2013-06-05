@@ -132,9 +132,10 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private void performCommand(final HttpServletRequest req,
-			final HttpServletResponse res) {
+			final HttpServletResponse res) throws IOException {
 		String cmd = req.getParameter("cmd");
 		String p = req.getParameter("param");
+		List<Object> result = new ArrayList<Object>();
 
 		try {
 			if (space != null) {
@@ -155,11 +156,18 @@ public class StateSpaceSession implements ISessionServlet,
 				}
 			}
 			props.setProperty(filename, sessionId, serialize());
+			result.add("success");
 		} catch (Throwable e) {
 			errors.add("creating visualization of type " + cmd
 					+ " with parameter " + p + " resulted in this exception: "
 					+ e.getClass().getSimpleName() + ": " + e.getMessage());
 			logger.error(e.getClass().getSimpleName() + ": " + e.getMessage());
+			result.add("failure");
+		} finally {
+			PrintWriter out = res.getWriter();
+			Gson g = new Gson();
+			out.println(g.toJson(result));
+			out.close();
 		}
 
 	}
@@ -273,8 +281,9 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createDottyTransitionDiagram(final String expression) {
+		System.out.println(expression);
 		DottyTransitionDiagram s = new DottyTransitionDiagram(space, expression);
-
+		System.out.println(space);
 		notifyRefresh();
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(5);

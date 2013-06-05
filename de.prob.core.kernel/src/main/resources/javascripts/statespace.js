@@ -1,4 +1,13 @@
 function createSSGraph(id,positionId,m,events,width,height) {
+    $(document).ready(function() {
+        $(window).keydown(function(event){
+            if(event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+
     var ctr, links, nodes, linkMap, menu, mode, force, ssCtr, svg, stopped, elements , debug;
     mode = m;
     ssCtr = 0;
@@ -20,6 +29,13 @@ function createSSGraph(id,positionId,m,events,width,height) {
               .linkDistance(160)
               .size([width, height]);
     svg = createCanvas("#"+positionId+"-viz",width,height);
+
+    svg.on("keydown",function() {
+        console.log(d3.event.keydown);
+        if(d3.event.keydown == 13) {
+            d3.event.preventDefault()
+        }
+    })
     nodes = [];
     links = [];
     linkMap = d3.map();
@@ -403,29 +419,39 @@ function calculateHeader(menu, id, m, stopped, checks) {
     }
 
     if( m === 3 || m === 5 ) {
-        var form = menu2.append("li")
-                        .attr("class","transDiagOp")
-                        .append("form");
-
-        form.append("label")
-            .text("Change Expression: ");
-
-        form.append("input")
-            .attr("type","text")
-            .attr("id","new_expr");
-
-        form.append("input")
-            .attr("type","button")
-            .attr("value","Submit")
-            .on("click", function() {
+        var cmdFunction = function() {
                 stopped.value = true;
                 var command = m === 3 ? "trans_diag" : "d_trans_diag";
                 $.getJSON("statespace_servlet", {
                     sessionId : id,
                     cmd : command,
                     param : $("#new_expr").val()
+                }, function(res) { 
+                    console.log(res); 
                 });
-            });
+            };
+
+        var form = menu2.append("li")
+                        .attr("class","transDiagOp")
+                        .append("form")
+                        .on("keydown",function() {
+                            if(d3.event.keyCode == 13) {
+                                cmdFunction();
+                            }
+                        });
+
+        form.append("label")
+            .text("Change Expression: ");
+
+        form.append("input")
+            .attr("type","text")
+            .attr("id","new_expr")
+            .on("");
+
+        form.append("input")
+            .attr("type","button")
+            .attr("value","Submit")
+            .on("click", cmdFunction());
     }
 }
 
