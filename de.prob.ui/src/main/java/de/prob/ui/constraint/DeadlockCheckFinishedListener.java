@@ -11,6 +11,9 @@ import de.prob.animator.IAnimator;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.ConstraintBasedDeadlockCheckCommand;
 import de.prob.check.ConstraintBasedCheckingResult;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.ui.ProBJobFinishedListener;
 
 /**
@@ -23,9 +26,13 @@ import de.prob.ui.ProBJobFinishedListener;
  */
 public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 	private final Shell shell;
+	private AnimationSelector selector;
+	private StateSpace statespace;
 
-	public DeadlockCheckFinishedListener(final Shell shell) {
+	public DeadlockCheckFinishedListener(final Shell shell, AnimationSelector selector, StateSpace s) {
 		this.shell = shell;
+		this.selector = selector;
+		this.statespace = s;
 	}
 
 	@Override
@@ -56,8 +63,9 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = "DEADLOCK FOUND!";
 				message = "The model contains a deadlocking state satisfying the invariant, it will be shown in the state view.";
-				// Implement way to show deadlock
-				// displayDeadlock(command, animator);
+
+				Trace traceToDeadlock = statespace.getTrace(command.getDeadlockStateId());
+				selector.replaceTrace(selector.getCurrentTrace(), traceToDeadlock);
 				break;
 			case interrupted:
 				dialogType = MessageDialog.WARNING;
