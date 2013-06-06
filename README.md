@@ -12,9 +12,8 @@ We assume, you have a fresh copy of Eclipse 4.2 and an empty workspace at hand. 
 1. Install Groovy-Eclipse for Juno using the Eclipse Marketplace.
 2. Clone the prob2 repository to some location (e.g. gitrepo/prob2). 
    We assume that gitrepo is a directory outside your Eclipse workspace. 
-3. cd into gitrepo/prob2 and call "git checkout worksheet" run `gradle magic` 
-4. run `gradle war` (needs to be called again after cleanUp of de.prob.core.kernel/bin)
-5. In Eclipse, choose File | Import | General | Existing projects into workspace. Select gitrepo/prob2 as root directory. 
+3. cd into gitrepo/prob2, switch to the development branch (git checkout develop) and run `gradle magic` 
+4. In Eclipse, choose File | Import | General | Existing projects into workspace. Select gitrepo/prob2 as root directory. 
 6. Import all projects.
 7. Open the file de.prob.core.rodin/prob_target.target and click "Set as Target Platform" (upper right corner). 
    This will take a while ...
