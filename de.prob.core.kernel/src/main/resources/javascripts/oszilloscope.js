@@ -22,6 +22,7 @@ function drawEach(svg, dataset, color, w, h, xLabel) {
                     .scale(xScale)
                     .orient("bottom");
 
+    // Set the tick count so no decimal points are shown
     if(dataset.length > 0 && dataset[0].dataset.length < 14) {
         xAxis.ticks(Math.round(dataset[0].dataset.length/2));
     }
@@ -40,12 +41,15 @@ function drawEach(svg, dataset, color, w, h, xLabel) {
     var line;
     var yHeight = h / dataset.length;
     var yScale;
-    var yAxis;
+    var yAxis, axis;
     var yMax, yMin;
+    var rangeMin, rangeMax;
     for( i = 0 ; i < dataset.length ; i++ ) {
         yMin = d3.min(dataset[i].dataset, function(d) { return d.value; });
         yMax = d3.max(dataset[i].dataset, function(d) { return d.value; });
-        yScale = d3.scale.linear().domain([yMin, yMax]).range([h-4*padding-yHeight*i, padding+h - yHeight * (i + 1)]);
+        rangeMin = h-4*padding-yHeight*i;
+        rangeMax = padding+h - yHeight * (i + 1);
+        yScale = d3.scale.linear().domain([yMin, yMax]).range([rangeMin, rangeMax]);
 
         line = d3.svg.line().x(function(d){return xScale(d.t)}).y(function(d){ return yScale(d.value) });
        
@@ -54,14 +58,30 @@ function drawEach(svg, dataset, color, w, h, xLabel) {
                     .orient("left")
                     .tickFormat(d3.format("d"))
                     .tickSubdivide(0);
+
+        // Set the tick count so no decimal points are shown
         if(yMax - yMin < 7) {
             yAxis.ticks(yMax - yMin);
         }
 
-        svg.append("g")
+        axis = svg.append("g")
             .attr("class", "axis")
             .attr("transform", "translate(" + 3*padding + ",0)")
             .call(yAxis);   
+
+        // If there is only one value in the dataset, artificially insert it 
+        //   because it will not be drawn by default
+        if(dataset[i].dataset.length > 0 && axis.selectAll("g")[0].length === 0) {
+            axis.append("g")
+                .attr("style","opacity: 1;")
+                .attr("transform","translate(0,"+rangeMin+")")
+               .append("text")
+                .attr("x",-9)
+                .attr("y",0)
+                .attr("dy",".32em")
+                .attr("text-anchor","end")
+                .text(dataset[i].dataset[0].value);
+        }
 
         svg.append("path")
             .attr("class","connection")
@@ -122,6 +142,7 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
                     .scale(xScale)
                     .orient("bottom");
 
+    // Set the tick count so no decimal points are shown
     if(dataset.length > 0 && dataset[0].dataset.length < 14) {
         xAxis.ticks(Math.round(dataset[0].dataset.length/2));
     }
@@ -131,6 +152,7 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
                     .orient("left")
                     .tickFormat(d3.format("d"))
                     .tickSubdivide(0);
+    // Set the tick count so no decimal points are shown
     if(yMax - yMin < 7) {
         yAxis.ticks(yMax - yMin);
     }
@@ -148,10 +170,24 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
         .style("text-anchor", "end")
         .text(xLabel);
    
-    svg.append("g")
+    var axis = svg.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(" + 3*padding + ",0)")
-        .call(yAxis);   
+        .call(yAxis); 
+
+    // If there is only one value in the dataset, artificially insert it 
+    //   because it will not be drawn by default
+    if(dataset.length > 0 && dataset[0].dataset.length > 0 && axis.selectAll("g")[0].length === 0) {
+        axis.append("g")
+            .attr("style","opacity: 1;")
+            .attr("transform","translate(0," + (h - 4 * padding) + ")")
+           .append("text")
+            .attr("x",-9)
+            .attr("y",0)
+            .attr("dy",".32em")
+            .attr("text-anchor","end")
+            .text(dataset[0].dataset[0].value);
+    }  
 
     svg.selectAll("connection")
                     .data(dataset)
