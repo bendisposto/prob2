@@ -39,7 +39,7 @@ function drawEach(svg, dataset, color, w, h, xLabel) {
     var yAxis;
     for( i = 0 ; i < dataset.length ; i++ ) {
 
-        yScale = d3.scale.linear().domain([0, d3.max(dataset[i].dataset, function(d) { return d.value; })]).range([h-4*padding-yHeight*i, padding+h - yHeight * (i + 1)]);
+        yScale = d3.scale.linear().domain([d3.min(dataset[i].dataset, function(d) { return d.value; }), d3.max(dataset[i].dataset, function(d) { return d.value; })]).range([h-4*padding-yHeight*i, padding+h - yHeight * (i + 1)]);
 
         line = d3.svg.line().x(function(d){return xScale(d.t)}).y(function(d){ return yScale(d.value) });
        
@@ -66,7 +66,8 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
 
     var xMax = 0;
     var yMax = 0;
-    var xMin = 99999999;
+    var xMin = Number.MAX_VALUE;
+    var yMin = Number.MAX_VALUE;
     var temp = 0;
 
 
@@ -83,7 +84,12 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
         if( temp > yMax ) {
             yMax = temp;
         }
+        temp = d3.min(dataset[i].dataset, function(d) { return d.value; });
+        if( temp < yMin ) {
+            yMin = temp;
+        }
     }
+
 
     for( i = 0 ; i < dataset.length ; i = i + 1 ) {
         var data = dataset[i].dataset;
@@ -99,7 +105,7 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
     }
 
     var xScale = d3.scale.linear().domain([xMin, xMax]).range([4*padding, w-padding]);
-    var yScale = d3.scale.linear().domain([0, yMax]).range([h-4*padding, padding]);
+    var yScale = d3.scale.linear().domain([yMin, yMax]).range([h-4*padding, padding]);
 
     var xAxis = d3.svg.axis()
                     .scale(xScale)
@@ -113,7 +119,7 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
 
     svg.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate("+0+"," + (h - 2*padding) + ")")
+        .attr("transform", function() { var y = yMin > 0 ? (h - 2*padding) : yScale(0); return "translate("+0+"," + y + ")"})
         .call(xAxis)
       .append("text")
         .attr("class", "label")
