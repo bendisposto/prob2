@@ -22,6 +22,10 @@ function drawEach(svg, dataset, color, w, h, xLabel) {
                     .scale(xScale)
                     .orient("bottom");
 
+    if(dataset.length > 0 && dataset[0].dataset.length < 14) {
+        xAxis.ticks(Math.round(dataset[0].dataset.length/2));
+    }
+
     svg.append("g")
             .attr("class", "axis")
             .attr("transform", "translate("+0+"," + (h - 2*padding) + ")")
@@ -37,15 +41,22 @@ function drawEach(svg, dataset, color, w, h, xLabel) {
     var yHeight = h / dataset.length;
     var yScale;
     var yAxis;
+    var yMax, yMin;
     for( i = 0 ; i < dataset.length ; i++ ) {
-
-        yScale = d3.scale.linear().domain([d3.min(dataset[i].dataset, function(d) { return d.value; }), d3.max(dataset[i].dataset, function(d) { return d.value; })]).range([h-4*padding-yHeight*i, padding+h - yHeight * (i + 1)]);
+        yMin = d3.min(dataset[i].dataset, function(d) { return d.value; });
+        yMax = d3.max(dataset[i].dataset, function(d) { return d.value; });
+        yScale = d3.scale.linear().domain([yMin, yMax]).range([h-4*padding-yHeight*i, padding+h - yHeight * (i + 1)]);
 
         line = d3.svg.line().x(function(d){return xScale(d.t)}).y(function(d){ return yScale(d.value) });
        
         yAxis = d3.svg.axis()
                     .scale(yScale)
-                    .orient("left").ticks(2);
+                    .orient("left")
+                    .tickFormat(d3.format("d"))
+                    .tickSubdivide(0);
+        if(yMax - yMin < 7) {
+            yAxis.ticks(yMax - yMin);
+        }
 
         svg.append("g")
             .attr("class", "axis")
@@ -110,10 +121,19 @@ function drawOver(svg, dataset, color, w, h, xLabel) {
     var xAxis = d3.svg.axis()
                     .scale(xScale)
                     .orient("bottom");
+
+    if(dataset.length > 0 && dataset[0].dataset.length < 14) {
+        xAxis.ticks(Math.round(dataset[0].dataset.length/2));
+    }
                     
     var yAxis = d3.svg.axis()
                     .scale(yScale)
-                    .orient("left").ticks(2);
+                    .orient("left")
+                    .tickFormat(d3.format("d"))
+                    .tickSubdivide(0);
+    if(yMax - yMin < 7) {
+        yAxis.ticks(yMax - yMin);
+    }
 
     var line = d3.svg.line().x(function(d){return xScale(d.t)}).y(function(d){ return yScale(d.scaleV) });
 
