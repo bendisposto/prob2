@@ -451,7 +451,7 @@ function calculateHeader(menu, id, m, stopped, checks) {
         form.append("input")
             .attr("type","button")
             .attr("value","Submit")
-            .on("click", cmdFunction());
+            .on("click", function() { cmdFunction(); });
     }
 }
 

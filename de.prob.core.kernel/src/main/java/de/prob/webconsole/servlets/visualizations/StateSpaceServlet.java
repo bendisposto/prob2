@@ -79,7 +79,12 @@ public class StateSpaceServlet extends SessionBasedServlet implements
 				.getModel().getModelFile().getAbsolutePath());
 		Properties props = properties.getProperties(propFile);
 		String json = props.getProperty(id);
-//		System.out.println(json);
+
+		// If there is no cached value for the session id, return null so that
+		// the session based servlet knows to throw a 404 exception
+		if (json == null) {
+			return null;
+		}
 
 		JsonParser parser = new JsonParser();
 		JsonObject parsed = parser.parse(json).getAsJsonObject();
