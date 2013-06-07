@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -30,6 +33,9 @@ import de.prob.annotations.Home;
 public class ScrollbackServlet extends HttpServlet {
 
 	private String home;
+
+	private final Logger logger = LoggerFactory
+			.getLogger(ScrollbackServlet.class);
 
 	@Inject
 	public ScrollbackServlet(@Home String home) {
@@ -104,10 +110,10 @@ public class ScrollbackServlet extends HttpServlet {
 			}
 			in.close();
 		} catch (Exception e) {
-			System.err.println("Error: " + e.getMessage());
+			logger.error("Exception while reading console scrollback file.", e);
+
 		}
 
 		return res.toArray(new String[res.size()]);
 	}
-
 }

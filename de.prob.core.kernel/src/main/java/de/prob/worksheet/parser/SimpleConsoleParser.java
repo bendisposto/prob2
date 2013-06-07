@@ -10,6 +10,9 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.prob.worksheet.api.evalStore.EvalStoreAPI;
 
 @SuppressWarnings("rawtypes")
@@ -17,6 +20,9 @@ public class SimpleConsoleParser {
 	private static final Class[] apis = new Class[] { EvalStoreAPI.class };
 
 	public TreeMap<String, Class> apiMethodNamesMap = new TreeMap<String, Class>();
+
+	private final Logger logger = LoggerFactory
+			.getLogger(SimpleConsoleParser.class);
 
 	// public String[] worksheetAPImethodNames;
 	// public String[] animatorCommands;
@@ -121,11 +127,11 @@ public class SimpleConsoleParser {
 					// method.length=0
 				}
 			} catch (final NoSuchMethodException e) {
-				System.err
-						.println("String seems to be an WorksheetApi method but isn't found with this parameters!");
-				e.printStackTrace();
+				logger.error(
+						"String seems to be an WorksheetApi method but isn't found with this parameters!",
+						e);
 			} catch (final SecurityException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 			if (methodInstance != null) {
 				final EvalObject newEval = new EvalObject();

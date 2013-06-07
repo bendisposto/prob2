@@ -7,6 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.bmotionstudio.core.editor.wizard.observer.CSPEventObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
@@ -23,25 +25,29 @@ public class CSPEventObserver extends Observer {
 	private String expression;
 
 	private String attribute;
-	
+
 	private Object value;
-	
+
 	private Boolean isCustom;
-	
+
 	private transient List<OpInfo> currentHisOps = new ArrayList<OpInfo>();
-	
-	private transient static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
+
+	private transient static final Pattern PATTERN = Pattern
+			.compile("\\$(.+?)\\$");
 
 	private transient List<String> listOfOps;
 
 	private transient int setPosition = 0;
-	
+
 	private transient boolean restored = false;
-	
+
+	private final Logger logger = LoggerFactory
+			.getLogger(CSPEventObserver.class);
+
 	@Override
 	public void check(Trace history, BControl control,
 			Map<String, EvaluationResult> results) {
-		
+
 		if (currentHisOps == null)
 			currentHisOps = new ArrayList<OpInfo>();
 
@@ -68,7 +74,7 @@ public class CSPEventObserver extends Observer {
 		currentHisOps = newHisOps;
 
 	}
-	
+
 	@Override
 	public void afterCheck(Trace history, BControl control) {
 		setPosition = 0;
@@ -94,7 +100,7 @@ public class CSPEventObserver extends Observer {
 	private int getSetPosition() {
 		return setPosition;
 	}
-		
+
 	private int getMaxSetPosition(BControl control) {
 
 		int maxSetPosition = 0;
@@ -112,9 +118,9 @@ public class CSPEventObserver extends Observer {
 
 	private void runme(OpInfo op, int pos, BControl control, Trace history) {
 
-		if(op == null)
+		if (op == null)
 			return;
-		
+
 		String AsImplodedString = "";
 
 		String opName = op.getName();
@@ -155,11 +161,11 @@ public class CSPEventObserver extends Observer {
 					}
 
 				} catch (ProBError e) {
-					System.err.println(e.getMessage());
+					logger.error("ProBError " + e.getMessage(), e);
 				}
 
 			}
-			
+
 			if (listOfOps != null && listOfOps.contains(opNameWithParameter)) {
 
 				int maxSetPosition = getMaxSetPosition(control);
@@ -180,15 +186,15 @@ public class CSPEventObserver extends Observer {
 				} else {
 					control.setAttributeValue(attribute, value, true, false);
 				}
-				
+
 				setPosition = pos;
-				
+
 			}
 
 		}
 
 	}
-	
+
 	private String parseExpression(String expressionString, BControl control,
 			OpInfo op) {
 
@@ -213,7 +219,7 @@ public class CSPEventObserver extends Observer {
 		return finalExpression;
 
 	}
-	
+
 	public String getAttribute() {
 		return attribute;
 	}
@@ -233,11 +239,11 @@ public class CSPEventObserver extends Observer {
 		this.expression = expression;
 		firePropertyChange("expression", oldVal, expression);
 	}
-	
+
 	public Boolean getIsCustom() {
 		return isCustom;
 	}
-	
+
 	public Boolean isCustom() {
 		if (isCustom == null)
 			isCustom = false;
@@ -249,7 +255,7 @@ public class CSPEventObserver extends Observer {
 		this.isCustom = isCustom;
 		firePropertyChange("isCustom", oldVal, isCustom);
 	}
-	
+
 	public Object getValue() {
 		return value;
 	}
@@ -269,5 +275,5 @@ public class CSPEventObserver extends Observer {
 	public ObserverWizard getWizard(Shell shell, BControl control) {
 		return new CSPEventObserverWizard(shell, control, this);
 	}
-	
+
 }

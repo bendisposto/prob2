@@ -3,6 +3,8 @@ package de.bmotionstudio.core.model.observer;
 import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.bmotionstudio.core.editor.wizard.observer.CSPExpressionObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
@@ -20,6 +22,9 @@ public class CSPExpressionObserver extends Observer {
 
 	private String expression;
 
+	private final Logger logger = LoggerFactory
+			.getLogger(CSPExpressionObserver.class);
+
 	@Override
 	public void check(Trace history, BControl control,
 			Map<String, EvaluationResult> results) {
@@ -27,8 +32,7 @@ public class CSPExpressionObserver extends Observer {
 		if (attribute == null || expression == null)
 			return;
 
-		CSP cspEval = new CSP(expression,
-				(CSPModel) history.getModel());
+		CSP cspEval = new CSP(expression, (CSPModel) history.getModel());
 
 		try {
 
@@ -44,7 +48,7 @@ public class CSPExpressionObserver extends Observer {
 			}
 
 		} catch (ProBError e) {
-			System.err.println(e.getMessage());
+			logger.error("ProBError " + e.getMessage(), e);
 		}
 
 	}
