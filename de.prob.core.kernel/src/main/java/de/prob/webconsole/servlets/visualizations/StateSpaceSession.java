@@ -281,9 +281,9 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createDottyTransitionDiagram(final String expression) {
-//		System.out.println(expression);
+		// System.out.println(expression);
 		DottyTransitionDiagram s = new DottyTransitionDiagram(space, expression);
-//		System.out.println(space);
+		// System.out.println(space);
 		notifyRefresh();
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(5);
@@ -310,6 +310,7 @@ public class StateSpaceSession implements ISessionServlet,
 		if (s instanceof StateSpace) {
 			((StateSpace) s).calculateVariables();
 			((StateSpace) s).getEvaluatedOps();
+			((StateSpace) s).checkInvariants();
 		}
 
 		Collection<StateId> vertices = s.getSSGraph().getVertices();
@@ -342,6 +343,7 @@ public class StateSpaceSession implements ISessionServlet,
 		try {
 			if (space instanceof StateSpace) {
 				((StateSpace) space).calculateVariables();
+				((StateSpace) space).checkInvariants();
 			}
 			if (space instanceof AbstractDottyGraph) {
 				notifyRefresh();

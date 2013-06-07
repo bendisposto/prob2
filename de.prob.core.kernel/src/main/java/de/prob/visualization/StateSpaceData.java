@@ -1,6 +1,7 @@
 package de.prob.visualization;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,15 +78,17 @@ public class StateSpaceData extends AbstractData {
 	}
 
 	private Object calculateInvariant(final StateSpace s, final StateId id) {
-		if (s.getExplored().contains(id)) {
-			Set<StateId> invariantOk = s.getInvariantOk();
-			if (invariantOk.contains(id)) {
-				toInvOk.add("#s" + id.getId());
-				return true;
-			}
+		Set<StateId> invariantOk = s.getInvariantOk();
+		HashSet<StateId> invariantKo = s.getInvariantKo();
+		if (invariantOk.contains(id)) {
+			toInvOk.add("#s" + id.getId());
+			return true;
+		}
+		if (invariantKo.contains(id)) {
 			toInvKo.add("#s" + id.getId());
 			return false;
 		}
+
 		return "unknown";
 	}
 

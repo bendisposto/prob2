@@ -63,6 +63,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
 	private final HashSet<StateId> initializedStates = new HashSet<StateId>();
+	private final HashSet<StateId> cannotBeEvaluated = new HashSet<StateId>();
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
 
@@ -74,6 +75,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
 
 	private final HashSet<StateId> invariantOk = new HashSet<StateId>();
+	private final HashSet<StateId> invariantKo = new HashSet<StateId>();
 	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
 	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
 
@@ -86,8 +88,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	public StateId getRoot() {
-		this.explore(__root);
-		return __root;
+		return getState(__root);
 	}
 
 	// MAKE CHANGES TO THE STATESPACE GRAPH
@@ -150,12 +151,17 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		operationsWithTimeout.put(state, command.getOperationsWithTimeout());
 		if (command.isInvariantOk()) {
 			invariantOk.add(state);
+		} else {
+			invariantKo.add(state);
 		}
+
 		if (command.isTimeoutOccured()) {
 			timeoutOccured.add(state);
 		}
 		if (command.isInitialised()) {
 			initializedStates.add(state);
+		} else {
+			cannotBeEvaluated.add(state);
 		}
 	}
 
@@ -272,6 +278,13 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return true if state has an invariant violation. False otherwise.
 	 */
 	public boolean hasInvariantViolation(final StateId state) {
+		if (invariantKo.contains(state)) {
+			return true;
+		}
+		if (invariantOk.contains(state)) {
+			return false;
+		}
+
 		if (!isExplored(state)) {
 			explore(state);
 		}
@@ -412,6 +425,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	public boolean canBeEvaluated(final StateId stateId) {
+		if (cannotBeEvaluated.contains(stateId)) {
+			return false;
+		}
 		if (initializedStates.contains(stateId)) {
 			return true;
 		}
@@ -761,11 +777,16 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return invariantOk;
 	}
 
+	public HashSet<StateId> getInvariantKo() {
+		return invariantKo;
+	}
+
 	public Set<StateId> checkInvariants() {
 		Collection<StateId> vertices = getVertices();
 		List<CheckInvariantStatusCommand> cmds = new ArrayList<CheckInvariantStatusCommand>();
 		for (StateId stateId : vertices) {
-			if (!invariantOk.contains(stateId)) {
+			if (!invariantOk.contains(stateId)
+					&& !invariantKo.contains(stateId)) {
 				cmds.add(new CheckInvariantStatusCommand(stateId.getId()));
 			}
 		}
@@ -782,7 +803,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		Collection<StateId> vertices = getVertices();
 		List<CheckInitialisationStatusCommand> cmds = new ArrayList<CheckInitialisationStatusCommand>();
 		for (StateId stateId : vertices) {
-			if (!initializedStates.contains(stateId)) {
+			if (!initializedStates.contains(stateId)
+					&& !cannotBeEvaluated.contains(stateId)) {
 				cmds.add(new CheckInitialisationStatusCommand(stateId.getId()));
 			}
 		}
@@ -790,6 +812,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		for (CheckInitialisationStatusCommand cmd : cmds) {
 			if (cmd.isInitialized()) {
 				initializedStates.add(states.get(cmd.getStateId()));
+			} else {
+				cannotBeEvaluated.add(states.get(cmd.getStateId()));
 			}
 		}
 
