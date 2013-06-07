@@ -195,10 +195,13 @@ public class OperationView extends ViewPart implements IAnimationChangeListener 
 
 			@Override
 			public void run() {
-				if (!viewer.getTable().isDisposed()) {
-					viewer.setInput(trace);
-					packTableColumns();
+				if( viewer != null) {
+					if (!viewer.getTable().isDisposed()) {
+						viewer.setInput(trace);
+						packTableColumns();
+					}					
 				}
+
 			}
 		});
 		try {
