@@ -69,7 +69,7 @@ public class PredicateServlet extends SessionBasedServlet {
 					.getAbsolutePath());
 			Properties props = properties.getProperties(propFile);
 			String formula = props.getProperty(id);
-			System.out.println(formula);
+//			System.out.println(formula);
 			if (formula != null) {
 				IEvalElement iEvalElement = deserializer.deserialize(formula);
 				try {

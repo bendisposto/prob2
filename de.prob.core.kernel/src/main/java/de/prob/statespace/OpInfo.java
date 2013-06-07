@@ -102,8 +102,8 @@ public class OpInfo {
 			try {
 				Object translated = valueTranslator.toGroovy(prologTerm);
 				String retranslated = valueTranslator.asString(translated);
-				System.out.println("T: " + translated.getClass() + " "
-						+ translated.toString() + " " + retranslated);
+				// System.out.println("T: " + translated.getClass() + " "
+				// + translated.toString() + " " + retranslated);
 			} catch (IllegalArgumentException e) {
 				// Ignore exception for now. Translation is not implemented for
 				// CSP

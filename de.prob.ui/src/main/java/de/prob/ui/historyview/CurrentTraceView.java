@@ -14,6 +14,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -46,6 +48,9 @@ public class CurrentTraceView extends ViewPart implements
 
 	private TableViewer viewer;
 	private Trace currentTrace;
+
+	private final Logger logger = LoggerFactory
+			.getLogger(CurrentTraceView.class);
 
 	AnimationSelector animations;
 
@@ -135,11 +140,11 @@ public class CurrentTraceView extends ViewPart implements
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof OpInfo) {
-				return (OpInfo) ssel.getFirstElement();
+			Object elem = ssel.getFirstElement();
+			if (elem instanceof OpInfo) {
+				return (OpInfo) elem;
 			} else {
-				System.out.println("Selection is: "
-						+ ssel.getFirstElement().getClass());
+				logger.warn("Selection is not an OpInfo. Class is {}", elem.getClass());
 			}
 		}
 		return null;

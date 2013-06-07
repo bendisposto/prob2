@@ -14,6 +14,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 
@@ -22,12 +24,15 @@ import de.prob.statespace.Trace;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.webconsole.ServletContextListener;
 
-public class AnimationsView extends ViewPart implements IAnimationChangeListener {
+public class AnimationsView extends ViewPart implements
+		IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "de.prob.ui.AnimationsView";
+
+	private final Logger logger = LoggerFactory.getLogger(AnimationsView.class);
 
 	private TableViewer viewer;
 
@@ -133,11 +138,11 @@ public class AnimationsView extends ViewPart implements IAnimationChangeListener
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof Trace) {
-				return (Trace) ssel.getFirstElement();
+			Object elem = ssel.getFirstElement();
+			if (elem instanceof Trace) {
+				return (Trace) elem;
 			} else {
-				System.out.println("Selection is: "
-						+ ssel.getFirstElement().getClass());
+				logger.warn("Selection was not a trace. Class is {}", elem.getClass());
 			}
 		}
 		return null;

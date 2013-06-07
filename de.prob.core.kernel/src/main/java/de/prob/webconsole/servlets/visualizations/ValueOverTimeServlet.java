@@ -69,7 +69,7 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 			Properties props = properties.getProperties(propFile);
 			String json = props.getProperty(id);
 			if (json != null) {
-				System.out.println(json);
+//				System.out.println(json);
 				if (animations.getCurrentTrace() == null) {
 					return null;
 				}

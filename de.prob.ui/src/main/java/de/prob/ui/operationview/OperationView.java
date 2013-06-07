@@ -28,6 +28,8 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Injector;
@@ -59,13 +61,14 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class OperationView extends ViewPart implements
-		IAnimationChangeListener {
+public class OperationView extends ViewPart implements IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "de.prob.ui.operationview.OperationView";
+
+	private final Logger logger = LoggerFactory.getLogger(OperationView.class);
 
 	private TableViewer viewer;
 	private Trace currentTrace;
@@ -210,13 +213,13 @@ public class OperationView extends ViewPart implements
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof ArrayList<?>) {
-				final List<OpInfo> opList = (ArrayList<OpInfo>) ssel
-						.getFirstElement();
+			Object elem = ssel.getFirstElement();
+			if (elem instanceof ArrayList<?>) {
+				final List<OpInfo> opList = (ArrayList<OpInfo>) elem;
 				return opList;
 			} else {
-				System.out.println("Selection is: "
-						+ ssel.getFirstElement().getClass());
+				logger.warn("Selection is not an ArrayList. Class is {}",
+						elem.getClass());
 			}
 		}
 		return null;

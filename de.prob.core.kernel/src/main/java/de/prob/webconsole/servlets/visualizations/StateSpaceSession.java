@@ -281,9 +281,9 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createDottyTransitionDiagram(final String expression) {
-		System.out.println(expression);
+//		System.out.println(expression);
 		DottyTransitionDiagram s = new DottyTransitionDiagram(space, expression);
-		System.out.println(space);
+//		System.out.println(space);
 		notifyRefresh();
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(5);

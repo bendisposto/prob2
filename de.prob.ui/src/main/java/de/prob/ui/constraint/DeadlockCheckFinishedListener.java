@@ -6,6 +6,8 @@ package de.prob.ui.constraint;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.AbstractCommand;
@@ -30,6 +32,9 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 	private final Shell shell;
 	private AnimationSelector selector;
 	private StateSpace statespace;
+
+	private final Logger logger = LoggerFactory
+			.getLogger(DeadlockCheckFinishedListener.class);
 
 	public DeadlockCheckFinishedListener(final Shell shell,
 			AnimationSelector selector, StateSpace s) {
@@ -87,8 +92,8 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 			}
 		}
 		if (shell.isDisposed()) {
-			System.out.println("Deadlock freedom check finished: "
-					+ dialogTitle);
+			logger.warn("Shell was disposed when trying to show dialog.");
+			logger.info("Deadlock freedom check finished: {}", dialogTitle);
 		} else {
 			final Runnable runnable = new Runnable() {
 				@Override
