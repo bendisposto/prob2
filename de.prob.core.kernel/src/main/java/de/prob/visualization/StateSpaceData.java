@@ -31,6 +31,9 @@ public class StateSpaceData extends AbstractData {
 		super();
 		this.s = s;
 		vars = extractVariables(s);
+		for (IEvalElement e : vars) {
+			s.subscribe(this, e);
+		}
 		invOK = new Transformer("").set("fill", "#799C79");
 		invKO = new Transformer("").set("fill", "#B56C6C");
 		addStyling(new Transformer("#sroot").set("width", "30px").set("height",
@@ -95,6 +98,14 @@ public class StateSpaceData extends AbstractData {
 	@Override
 	public void addNewLinks(final StateSpaceGraph graph,
 			final List<? extends OpInfo> newOps) {
+		HashSet<StateId> ids = new HashSet<StateId>();
+		for (OpInfo newOp : newOps) {
+			ids.add(s.getVertex(newOp.getSrc()));
+			ids.add(s.getVertex(newOp.getDest()));
+		}
+		s.evaluateForGivenStates(ids, vars);
+		s.checkInvariants();
+
 		List<OpInfo> ops = new ArrayList<OpInfo>();
 		ops.addAll(newOps);
 		s.execute(new GetOpsFromIds(ops));
@@ -141,6 +152,13 @@ public class StateSpaceData extends AbstractData {
 		}
 		if (!toInvKo.isEmpty() && !data.styling.contains(invKO)) {
 			addStyling(invKO);
+		}
+	}
+
+	@Override
+	public void closeData() {
+		for (IEvalElement e : vars) {
+			s.unsubscribe(this, e);
 		}
 	}
 

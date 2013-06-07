@@ -54,4 +54,10 @@ public class DottyData extends AbstractData {
 	public void updateTransformers() {
 	}
 
+	@Override
+	public void closeData() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

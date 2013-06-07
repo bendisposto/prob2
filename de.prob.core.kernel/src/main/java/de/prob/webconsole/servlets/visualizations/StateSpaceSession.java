@@ -24,9 +24,11 @@ import com.google.gson.JsonParser;
 
 import de.prob.animator.command.ApplySignatureMergeCommand;
 import de.prob.animator.command.CalculateTransitionDiagramCommand;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.Variable;
 import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
@@ -89,9 +91,6 @@ public class StateSpaceSession implements ISessionServlet,
 		this.sessionId = sessionId;
 		this.space = space;
 		this.props = props;
-		if (space != null) {
-			data = createStateSpaceGraph();
-		}
 		AbstractElement mainComponent = space.getModel().getMainComponent();
 		if (mainComponent instanceof Machine) {
 			Set<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
@@ -104,7 +103,9 @@ public class StateSpaceSession implements ISessionServlet,
 				.getModelFile().getAbsolutePath());
 		disabledEvents.addAll(disabledEvents);
 		this.expression = expression;
-		if (mode == 2) {
+		if (mode == 1) {
+			data = createStateSpaceGraph();
+		} else if (mode == 2) {
 			data = createSigMergeGraph();
 		} else if (mode == 3) {
 			data = createTransitionDiagram(expression);
@@ -139,6 +140,7 @@ public class StateSpaceSession implements ISessionServlet,
 
 		try {
 			if (space != null) {
+				data.closeData();
 				if (cmd.equals("sig_merge")) {
 					recalculateEvents(p);
 					data = createSigMergeGraph();
@@ -308,7 +310,16 @@ public class StateSpaceSession implements ISessionServlet,
 		}
 
 		if (s instanceof StateSpace) {
-			((StateSpace) s).calculateVariables();
+			List<IEvalElement> toEval = new ArrayList<IEvalElement>();
+			Set<Machine> machines = ((StateSpace) s).getModel()
+					.getChildrenOfType(Machine.class);
+			for (Machine machine : machines) {
+				for (Variable variable : machine
+						.getChildrenOfType(Variable.class)) {
+					toEval.add(variable.getExpression());
+				}
+			}
+			((StateSpace) s).evaluateForEveryState(toEval);
 			((StateSpace) s).getEvaluatedOps();
 			((StateSpace) s).checkInvariants();
 		}
@@ -341,10 +352,6 @@ public class StateSpaceSession implements ISessionServlet,
 	@Override
 	public void newTransitions(final List<? extends OpInfo> newOps) {
 		try {
-			if (space instanceof StateSpace) {
-				((StateSpace) space).calculateVariables();
-				((StateSpace) space).checkInvariants();
-			}
 			if (space instanceof AbstractDottyGraph) {
 				notifyRefresh();
 			}

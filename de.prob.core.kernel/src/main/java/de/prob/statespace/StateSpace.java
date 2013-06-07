@@ -827,36 +827,96 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return edges;
 	}
 
-	public Map<StateId, Map<IEvalElement, EvaluationResult>> calculateVariables() {
+	/*
+	 * What this method should do: 1) Extract all states from state space 2) For
+	 * each state For each formula Check to see if formula is cached. IF so,
+	 * transfer this value to the result ELSE, add command to be evaluated 3)
+	 * Execute all commands 4) For each command Add EvaluationResult to result
+	 * IF the formula is of interest to the user (the subscribers is not empty),
+	 * then cache it in values 5) return the result
+	 */
+	/**
+	 * Evaluates all of the formulas for every given state in the state space
+	 * (if they can be evaluated). Internally calls {@link #checkInitialized()}
+	 * and {@link #evaluateForGivenStates(Collection, List)} with
+	 * {@link #getVertices()} as the parameter. If the formulas are of interest
+	 * to a class (i.e. the an object has subscribed to the formula) the formula
+	 * is cached.
+	 * 
+	 * @param formulas
+	 * @return a map of the formulas and their result for every state in the
+	 *         state space
+	 */
+	public Map<StateId, Map<IEvalElement, EvaluationResult>> evaluateForEveryState(
+			final List<IEvalElement> formulas) {
 		checkInitialized();
-		List<IEvalElement> toEval = new ArrayList<IEvalElement>();
-		Set<Machine> machines = model.getChildrenOfType(Machine.class);
-		for (Machine machine : machines) {
-			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
-				toEval.add(variable.getExpression());
-			}
-		}
+		return evaluateForGivenStates(getVertices(), formulas);
+	}
 
-		Collection<StateId> vertices = getVertices();
+	/**
+	 * Evaluates all of the formulas for every specified state (if they can be
+	 * evaluated). Internally calls {@link #canBeEvaluated(StateId)}. If the
+	 * formulas are of interest to a class (i.e. the an object has subscribed to
+	 * the formula) the formula is cached.
+	 * 
+	 * @param states
+	 * @param formulas
+	 * @return a map of the formulas and their results for all of the specified
+	 *         states
+	 */
+	public Map<StateId, Map<IEvalElement, EvaluationResult>> evaluateForGivenStates(
+			final Collection<StateId> states, final List<IEvalElement> formulas) {
+		Map<StateId, Map<IEvalElement, EvaluationResult>> result = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
 		List<EvaluateFormulasCommand> cmds = new ArrayList<EvaluateFormulasCommand>();
-		for (StateId stateId : vertices) {
-			if (initializedStates.contains(stateId)
-					&& !values.containsKey(stateId)) {
-				cmds.add(new EvaluateFormulasCommand(toEval, stateId.getId()));
+
+		for (StateId stateId : states) {
+			if (canBeEvaluated(stateId)) {
+				Map<IEvalElement, EvaluationResult> res = new HashMap<IEvalElement, EvaluationResult>();
+				result.put(stateId, res);
+
+				// Check for cached values
+				Map<IEvalElement, EvaluationResult> map = values.get(stateId);
+				if (map == null) {
+					cmds.add(new EvaluateFormulasCommand(formulas, stateId
+							.getId()));
+				} else {
+					List<IEvalElement> toEval = new ArrayList<IEvalElement>();
+					for (IEvalElement f : formulas) {
+						if (map.containsKey(f)) {
+							res.put(f, map.get(f));
+						} else {
+							toEval.add(f);
+						}
+					}
+					cmds.add(new EvaluateFormulasCommand(toEval, stateId
+							.getId()));
+				}
 			}
 		}
 
 		execute(new ComposedCommand(cmds));
-		for (EvaluateFormulasCommand cmd : cmds) {
-			Map<IEvalElement, EvaluationResult> map = new HashMap<IEvalElement, EvaluationResult>();
-			List<EvaluationResult> vs = cmd.getValues();
-			for (EvaluationResult eR : vs) {
-				map.put(toEval.get(vs.indexOf(eR)), eR);
+
+		for (EvaluateFormulasCommand efCmd : cmds) {
+			List<IEvalElement> forms = efCmd.getFormulas();
+			List<EvaluationResult> vals = efCmd.getValues();
+			StateId id = getVertex(efCmd.getStateId());
+
+			for (IEvalElement formula : forms) {
+				if (formulaRegistry.containsKey(formula)
+						&& !formulaRegistry.get(formula).isEmpty()) {
+					if (!values.containsKey(id)) {
+						values.put(id,
+								new HashMap<IEvalElement, EvaluationResult>());
+					}
+					values.get(id).put(formula,
+							vals.get(formulas.indexOf(formula)));
+				}
+				result.get(id)
+						.put(formula, vals.get(formulas.indexOf(formula)));
 			}
-			values.put(states.get(cmd.getStateId()), map);
 		}
 
-		return values;
+		return result;
 	}
 
 	public Map<StateId, Map<IEvalElement, EvaluationResult>> getValues() {
