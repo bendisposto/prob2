@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
 import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
@@ -40,7 +40,7 @@ public class RemoteEvaluateCommand extends AbstractCommand {
 
 	}
 
-	Logger logger = LoggerFactory.getLogger(RemoteEvaluateCommand.class);
+	Logger logger = ProBLoggerFactory.getLogger(RemoteEvaluateCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
 	private final String formula;

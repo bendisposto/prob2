@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -26,7 +26,7 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class GetInvariantsCommand extends AbstractCommand {
 
-	Logger logger = LoggerFactory.getLogger(GetInvariantsCommand.class);
+	Logger logger = ProBLoggerFactory.getLogger(GetInvariantsCommand.class);
 	private static final String LIST = "LIST";
 	List<ClassicalB> invariant;
 	private final NodeIdAssignment nodeIdMapping;

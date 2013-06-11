@@ -8,10 +8,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.exception.ProBError;
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -27,7 +27,7 @@ import de.prob.statespace.OpInfo;
  */
 public class ConstraintBasedInvariantCheckCommand extends AbstractCommand {
 
-	Logger logger = LoggerFactory
+	Logger logger = ProBLoggerFactory
 			.getLogger(ConstraintBasedInvariantCheckCommand.class);
 
 	public static class InvariantCheckCounterExample {

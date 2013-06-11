@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.VisualizationException;
 import de.prob.webconsole.ServletContextListener;
@@ -19,7 +19,7 @@ import de.prob.webconsole.servlets.visualizations.StateSpaceSession;
 public class OpenStateSpaceVizHandler extends AbstractHandler implements
 		IHandler {
 
-	Logger logger = LoggerFactory.getLogger(OpenStateSpaceVizHandler.class);
+	Logger logger = ProBLoggerFactory.getLogger(OpenStateSpaceVizHandler.class);
 
 	private final StateSpaceServlet servlet;
 

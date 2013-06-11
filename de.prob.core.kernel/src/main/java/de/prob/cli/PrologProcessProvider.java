@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -14,15 +13,17 @@ import com.google.inject.Provider;
 import de.prob.Main;
 import de.prob.annotations.Home;
 import de.prob.cli.ModuleCli.DebuggingKey;
+import de.prob.exception.ProBLoggerFactory;
 
 class PrologProcessProvider implements Provider<ProcessHandle> {
 
-	private final Logger logger = LoggerFactory
+	private final Logger logger = ProBLoggerFactory
 			.getLogger(PrologProcessProvider.class);
 	private final String debuggingKey;
 	private final String dir;
 	private final OsSpecificInfo osInfo;
 
+	@Override
 	public ProcessHandle get() {
 		return makeProcess();
 	}
@@ -32,7 +33,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 			@DebuggingKey final String debuggingKey, @Home final String path) {
 		this.osInfo = osInfo;
 		this.debuggingKey = debuggingKey;
-		this.dir = checkCliPath(path);
+		dir = checkCliPath(path);
 
 	}
 
@@ -69,6 +70,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 
 	private void setShutdownHook(final Process p) {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			@Override
 			public void run() {
 				p.destroy();
 			}

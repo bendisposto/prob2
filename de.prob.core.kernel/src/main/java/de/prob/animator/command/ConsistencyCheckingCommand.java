@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.prob.check.ModelCheckingResult;
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -28,7 +28,8 @@ public class ConsistencyCheckingCommand extends AbstractCommand {
 	private final String RESULT = "Result";
 	private final String OPS = "Ops";
 
-	Logger logger = LoggerFactory.getLogger(ConsistencyCheckingCommand.class);
+	Logger logger = ProBLoggerFactory
+			.getLogger(ConsistencyCheckingCommand.class);
 	private final long last;
 	private final List<OpInfo> newOps = new ArrayList<OpInfo>();
 

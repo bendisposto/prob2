@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -29,7 +29,8 @@ import de.prob.statespace.OpInfo;
  */
 public final class GetEnabledOperationsCommand extends AbstractCommand {
 
-	Logger logger = LoggerFactory.getLogger(GetEnabledOperationsCommand.class);
+	Logger logger = ProBLoggerFactory
+			.getLogger(GetEnabledOperationsCommand.class);
 
 	private static final String OPERATIONS_VARIABLE = "PLOps";
 	private final String id;

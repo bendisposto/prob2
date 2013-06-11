@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -31,7 +31,7 @@ import de.prob.statespace.OpInfo;
  */
 public final class GetOperationByPredicateCommand extends AbstractCommand {
 
-	Logger logger = LoggerFactory
+	Logger logger = ProBLoggerFactory
 			.getLogger(GetOperationByPredicateCommand.class);
 	private static final String NEW_STATE_ID_VARIABLE = "NewStateID";
 	private final ClassicalB evalElement;

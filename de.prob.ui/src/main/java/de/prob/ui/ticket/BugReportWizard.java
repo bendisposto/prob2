@@ -10,7 +10,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
@@ -19,9 +18,11 @@ import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.atlassian.util.concurrent.Promise;
 
+import de.prob.exception.ProBLoggerFactory;
+
 public class BugReportWizard extends Wizard {
 
-	Logger logger = LoggerFactory.getLogger(BugReportWizard.class);
+	Logger logger = ProBLoggerFactory.getLogger(BugReportWizard.class);
 
 	private WizardPage1 page1;
 	private WizardPage2 page2;
@@ -43,10 +44,10 @@ public class BugReportWizard extends Wizard {
 	public BugReportWizard() {
 		super();
 		setNeedsProgressMonitor(true);
-		this.email = TICKET_PREFS.get("email", "");
-		this.savedUsername = TICKET_PREFS.getBoolean("saveUsr", false);
-		this.username = savedUsername ? TICKET_PREFS.get("usr", "") : "";
-		this.password = savedUsername ? TICKET_PREFS.get("pswd", "") : "";
+		email = TICKET_PREFS.get("email", "");
+		savedUsername = TICKET_PREFS.getBoolean("saveUsr", false);
+		username = savedUsername ? TICKET_PREFS.get("usr", "") : "";
+		password = savedUsername ? TICKET_PREFS.get("pswd", "") : "";
 
 	}
 
@@ -55,10 +56,10 @@ public class BugReportWizard extends Wizard {
 		super();
 		setNeedsProgressMonitor(true);
 
-		this.email = TICKET_PREFS.get("email", "");
-		this.savedUsername = TICKET_PREFS.getBoolean("saveUsr", false);
-		this.username = savedUsername ? TICKET_PREFS.get("usr", "") : "";
-		this.password = savedUsername ? TICKET_PREFS.get("pswd", "") : "";
+		email = TICKET_PREFS.get("email", "");
+		savedUsername = TICKET_PREFS.getBoolean("saveUsr", false);
+		username = savedUsername ? TICKET_PREFS.get("usr", "") : "";
+		password = savedUsername ? TICKET_PREFS.get("pswd", "") : "";
 		this.summary = summary;
 		this.addTrace = addTrace;
 		this.description = description;

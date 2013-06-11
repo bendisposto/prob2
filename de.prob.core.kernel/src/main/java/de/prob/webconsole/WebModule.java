@@ -9,6 +9,7 @@ import de.prob.webconsole.servlets.GroovyBindingsServlet;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.GroovyShellServlet;
 import de.prob.webconsole.servlets.ImportsServlet;
+import de.prob.webconsole.servlets.LogServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
 import de.prob.webconsole.servlets.VersionServlet;
 import de.prob.webconsole.servlets.visualizations.PredicateServlet;
@@ -55,7 +56,9 @@ public class WebModule extends ServletModule {
 		bind(ProBTestRunner.class);
 		bind(TestRegistry.class);
 
-		
+		// logging
+		serve("/log*").with(LogServlet.class);
+
 		serve("/formula*").with(ValueOverTimeServlet.class);
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
 		serve("/predicate*").with(PredicateServlet.class);

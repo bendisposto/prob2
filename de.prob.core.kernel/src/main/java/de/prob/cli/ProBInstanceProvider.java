@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -21,12 +20,13 @@ import com.google.inject.Singleton;
 
 import de.prob.annotations.Home;
 import de.prob.exception.CliError;
+import de.prob.exception.ProBLoggerFactory;
 
 @Singleton
 public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	private final static List<WeakReference<ProBInstance>> refs = new ArrayList<WeakReference<ProBInstance>>();
-	private final Logger logger = LoggerFactory
+	private final Logger logger = ProBLoggerFactory
 			.getLogger(ProBInstanceProvider.class);
 
 	private final PrologProcessProvider processProvider;
@@ -40,7 +40,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	@Inject
 	public ProBInstanceProvider(final PrologProcessProvider processProvider,
-			@Home String home, OsSpecificInfo osInfo) {
+			@Home final String home, final OsSpecificInfo osInfo) {
 		this.processProvider = processProvider;
 		this.home = home;
 		this.osInfo = osInfo;
@@ -115,9 +115,10 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		}
 		for (AbstractCliPattern<?> p : patterns) {
 			p.notifyNotFound();
-			if (p.notFoundIsFatal())
+			if (p.notFoundIsFatal()) {
 				throw new CliError("Missing info from CLI "
 						+ p.getClass().getSimpleName());
+			}
 		}
 	}
 

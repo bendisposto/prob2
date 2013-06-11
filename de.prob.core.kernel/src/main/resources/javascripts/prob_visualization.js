@@ -16,18 +16,23 @@ function calculateDimensions() {
 function applyStyling(styling) {
     var i, j, selector, selected, attributes, styles;
     for (i = 0; i < styling.length; i = i + 1) {
-        selector = styling[i].selector;
-        if (selector !== "") {
-            selected = d3.selectAll(selector);
-            attributes = styling[i].attributes;
-            for (j = 0; j < attributes.length; j = j + 1) {
-                selected.attr(attributes[j].name, attributes[j].value);
+        try {
+            selector = styling[i].selector;
+            if (selector !== "") {
+                selected = d3.selectAll(selector);
+                attributes = styling[i].attributes;
+                for (j = 0; j < attributes.length; j = j + 1) {
+                    selected.attr(attributes[j].name, attributes[j].value);
+                }
+                styles = styling[i].styles;
+                for (j = 0; j < styles.length; j = j + 1) {
+                    selected.style(styles[j].name, styles[j].value);
+                }
             }
-            styles = styling[i].styles;
-            for (j = 0; j < styles.length; j = j + 1) {
-                selected.style(styles[j].name, styles[j].value);
-            }
+        } catch(e) {
+            // Handle error. For now ignore, because there is not yet a good way to notify the user.
         }
+
     }
 }
 

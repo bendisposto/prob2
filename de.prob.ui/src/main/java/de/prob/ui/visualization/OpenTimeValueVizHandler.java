@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 
@@ -19,6 +18,7 @@ import de.prob.animator.domainobjects.EvalElementFactory;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
@@ -32,7 +32,7 @@ import de.prob.webconsole.servlets.visualizations.ValueOverTimeServlet;
 public class OpenTimeValueVizHandler extends AbstractHandler implements
 		IHandler {
 
-	Logger logger = LoggerFactory.getLogger(OpenTimeValueVizHandler.class);
+	Logger logger = ProBLoggerFactory.getLogger(OpenTimeValueVizHandler.class);
 
 	private final ValueOverTimeServlet servlet;
 	private final EvalElementFactory evalFactory;

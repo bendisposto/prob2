@@ -15,8 +15,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
@@ -49,7 +49,7 @@ public class CurrentTraceView extends ViewPart implements
 	private TableViewer viewer;
 	private Trace currentTrace;
 
-	private final Logger logger = LoggerFactory
+	private final Logger logger = ProBLoggerFactory
 			.getLogger(CurrentTraceView.class);
 
 	AnimationSelector animations;
@@ -144,7 +144,8 @@ public class CurrentTraceView extends ViewPart implements
 			if (elem instanceof OpInfo) {
 				return (OpInfo) elem;
 			} else {
-				logger.warn("Selection is not an OpInfo. Class is {}", elem.getClass());
+				logger.warn("Selection is not an OpInfo. Class is {}",
+						elem.getClass());
 			}
 		}
 		return null;

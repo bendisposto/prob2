@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpFromId;
 import de.prob.animator.domainobjects.ValueTranslator;
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -39,7 +39,7 @@ public class OpInfo {
 	public String rep = null;
 	public boolean evaluated;
 
-	Logger logger = LoggerFactory.getLogger(OpInfo.class);
+	Logger logger = ProBLoggerFactory.getLogger(OpInfo.class);
 
 	public OpInfo(final String id, final String src, final String dest) {
 		this(id, null, src, dest, new ArrayList<String>(), null);

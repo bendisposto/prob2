@@ -1,6 +1,6 @@
 package de.prob;
 
-import static java.io.File.*;
+import static java.io.File.separator;
 import groovy.lang.Binding;
 
 import java.io.IOException;
@@ -17,7 +17,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.codehaus.groovy.tools.shell.Interpreter;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -29,6 +28,7 @@ import de.prob.annotations.Home;
 import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.scripting.Api;
 import de.prob.scripting.Downloader;
 import de.prob.statespace.ModelModule;
@@ -37,7 +37,7 @@ import de.prob.worksheet.WorksheetModule;
 
 public class MainModule extends AbstractModule {
 
-	private static final Logger logger = LoggerFactory
+	private static final Logger logger = ProBLoggerFactory
 			.getLogger(MainModule.class);
 	private final Properties buildConstants;
 
@@ -52,7 +52,7 @@ public class MainModule extends AbstractModule {
 		install(new ModelModule());
 		install(new WebModule());
 		install(new WorksheetModule());
-		
+
 		bind(Api.class);
 		bind(CommandLineParser.class).to(PosixParser.class);
 

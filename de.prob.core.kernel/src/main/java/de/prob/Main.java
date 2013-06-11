@@ -14,8 +14,10 @@ import org.apache.commons.cli.ParseException;
 
 import com.google.inject.Inject;
 
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
+import de.prob.webconsole.servlets.LogServlet;
 
 public class Main {
 
@@ -61,11 +63,13 @@ public class Main {
 
 	public static String getProBDirectory() {
 		String homedir = System.getProperty("prob.home");
-		if (homedir != null)
+		if (homedir != null) {
 			return homedir + separator;
+		}
 		String env = System.getenv("PROB_HOME");
-		if (env != null)
+		if (env != null) {
 			return env + separator;
+		}
 		return System.getProperty("user.home") + separator + ".prob"
 				+ separator;
 	}
@@ -86,6 +90,10 @@ public class Main {
 				+ "ProB.txt");
 
 		Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
+
+		// Connect the logger and the servlet
+		ProBLoggerFactory.initialize(ServletContextListener.INJECTOR
+				.getInstance(LogServlet.class));
 
 		main.run(args);
 		System.exit(0);

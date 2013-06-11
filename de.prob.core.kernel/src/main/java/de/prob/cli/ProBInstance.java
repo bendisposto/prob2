@@ -4,12 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 import com.google.inject.Inject;
 
 import de.prob.exception.CliError;
+import de.prob.exception.ProBLoggerFactory;
 
 public class ProBInstance {
 
@@ -17,7 +17,7 @@ public class ProBInstance {
 
 	private volatile boolean shutingDown = false;
 
-	final Logger logger = LoggerFactory.getLogger(ProBInstance.class);
+	final Logger logger = ProBLoggerFactory.getLogger(ProBInstance.class);
 	private final Process process;
 
 	private final long userInterruptReference;

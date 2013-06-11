@@ -8,15 +8,15 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.model.representation.IEval;
 import de.prob.ui.visualization.OpenFormula;
 
 public class CreateFormulaVisualizationHandler extends AbstractHandler
 		implements IHandler {
 
-	private final Logger logger = LoggerFactory
+	private final Logger logger = ProBLoggerFactory
 			.getLogger(CreateFormulaVisualizationHandler.class);
 
 	@Override

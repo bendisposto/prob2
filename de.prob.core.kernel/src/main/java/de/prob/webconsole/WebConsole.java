@@ -13,7 +13,8 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import de.prob.exception.ProBLoggerFactory;
 
 /**
  * @author bendisposto
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WebConsole {
 
-	private static final Logger LOGGER = LoggerFactory
+	private static final Logger LOGGER = ProBLoggerFactory
 			.getLogger(WebConsole.class);
 	private static int PORT;
 
@@ -57,8 +58,9 @@ public class WebConsole {
 				.toExternalForm();
 		WebConsole.LOGGER.debug("External Form: " + warFile);
 
-		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/")))
+		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/"))) {
 			warFile += "bin/";
+		}
 
 		// Creating a context handler collection
 		/*
@@ -75,11 +77,11 @@ public class WebConsole {
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
 		/*
-		WebAppContext worksheetContext = new WebAppContext(warFile
-				+ "webapps/worksheet.war", "/worksheet");
-		worksheetContext.setExtractWAR(true);
-		worksheetContext.setServer(server);
-		*/
+		 * WebAppContext worksheetContext = new WebAppContext(warFile +
+		 * "webapps/worksheet.war", "/worksheet");
+		 * worksheetContext.setExtractWAR(true);
+		 * worksheetContext.setServer(server);
+		 */
 		server.setStopAtShutdown(true);
 		/*
 		 * MBeanContainer mbContainer = new MBeanContainer(
@@ -94,7 +96,7 @@ public class WebConsole {
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
 		// handlers.addHandler(contexts);
-		//handlers.addHandler(worksheetContext);
+		// handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
 		int port = 8080;

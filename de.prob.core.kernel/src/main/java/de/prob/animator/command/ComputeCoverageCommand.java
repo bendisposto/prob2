@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -23,7 +23,7 @@ import de.prob.prolog.term.PrologTerm;
 public final class ComputeCoverageCommand extends AbstractCommand {
 
 	private ComputeCoverageResult coverageResult;
-	Logger logger = LoggerFactory.getLogger(ComputeCoverageCommand.class);
+	Logger logger = ProBLoggerFactory.getLogger(ComputeCoverageCommand.class);
 
 	public final static class ComputeCoverageResult {
 		private final BigInteger totalNumberOfNodes;

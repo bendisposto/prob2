@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -26,6 +25,7 @@ import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.exception.ProBLoggerFactory;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -37,7 +37,7 @@ import de.prob.visualization.Transformer;
 public class ValueOverTimeSession implements ISessionServlet,
 		IAnimationChangeListener, IVisualizationServlet {
 
-	Logger logger = LoggerFactory.getLogger(ValueOverTimeSession.class);
+	Logger logger = ProBLoggerFactory.getLogger(ValueOverTimeSession.class);
 	private final String vizType;
 	private final StateSpace stateSpace;
 	private final List<IEvalElement> formulas = new ArrayList<IEvalElement>();

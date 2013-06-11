@@ -9,16 +9,18 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
+
+import de.prob.exception.ProBLoggerFactory;
 
 public class ProBConnection {
 
 	private Socket socket;
 	private BufferedInputStream inputStream;
 	private PrintStream outputStream;
-	private final Logger logger = LoggerFactory.getLogger(ProBConnection.class);
+	private final Logger logger = ProBLoggerFactory
+			.getLogger(ProBConnection.class);
 	private volatile boolean shutingDown;
 	private final String key;
 	private final int port;
@@ -80,9 +82,10 @@ public class ProBConnection {
 	private String getAnswer() throws IOException {
 		String input = null;
 		input = readAnswer();
-		if (input == null)
+		if (input == null) {
 			throw new IOException(
 					"ProB binary returned nothing - it might have crashed");
+		}
 		return input;
 	}
 
