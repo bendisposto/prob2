@@ -84,7 +84,6 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 .attr("class", "linkT")
                 .attr("text-anchor", "start")
                 .attr("dx", "50")
-                .attr("font-size","5px")
                 .attr("id", function(d) { return "tt" + d.id; });
 
         transLabels = text.append("textPath")

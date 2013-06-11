@@ -21,6 +21,10 @@ path.link {
   stroke-opacity: .6;
 }
 
+.linkT {
+	font-size: 9px;
+}
+
 .menuOps {
 	list-style-type: none;
 	background: rgb(255,255,255) transparent;
