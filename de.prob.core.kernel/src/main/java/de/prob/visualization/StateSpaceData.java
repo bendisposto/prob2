@@ -104,7 +104,6 @@ public class StateSpaceData extends AbstractData {
 			ids.add(s.getVertex(newOp.getDest()));
 		}
 		s.evaluateForGivenStates(ids, vars);
-		s.checkInvariants();
 
 		List<OpInfo> ops = new ArrayList<OpInfo>();
 		ops.addAll(newOps);

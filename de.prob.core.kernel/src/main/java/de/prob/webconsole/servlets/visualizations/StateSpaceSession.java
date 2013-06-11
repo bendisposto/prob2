@@ -321,7 +321,6 @@ public class StateSpaceSession implements ISessionServlet,
 			}
 			((StateSpace) s).evaluateForEveryState(toEval);
 			((StateSpace) s).getEvaluatedOps();
-			((StateSpace) s).checkInvariants();
 		}
 
 		Collection<StateId> vertices = s.getSSGraph().getVertices();
