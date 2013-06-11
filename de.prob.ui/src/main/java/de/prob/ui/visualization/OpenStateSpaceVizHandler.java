@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.visualization.AnimationNotLoadedException;
+import de.prob.visualization.VisualizationException;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.servlets.visualizations.StateSpaceServlet;
 import de.prob.webconsole.servlets.visualizations.StateSpaceSession;
@@ -47,6 +48,8 @@ public class OpenStateSpaceVizHandler extends AbstractHandler implements
 		} catch (AnimationNotLoadedException e) {
 			logger.error("Could not create state space visualization because an animation is not loaded: "
 					+ e.getMessage());
+		} catch (VisualizationException e) {
+			logger.error(e.getMessage());
 		}
 		return null;
 	}

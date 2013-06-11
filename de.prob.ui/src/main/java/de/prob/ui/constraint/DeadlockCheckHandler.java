@@ -51,11 +51,11 @@ public class DeadlockCheckHandler extends AbstractHandler {
 				"", validator);
 		final int status = dialog.open();
 		if (status == InputDialog.OK) {
-			startCheck(currentTrace, dialog.getValue(), shell);
+			startCheck(selector, currentTrace, dialog.getValue(), shell);
 		}
 	}
 
-	private void startCheck(final Trace currentTrace, final String value,
+	private void startCheck(AnimationSelector selector, final Trace currentTrace, final String value,
 			final Shell shell) throws ExecutionException {
 		final StateSpace s = currentTrace.getStateSpace();
 		final IEvalElement predicate = parsePredicate(s, value);
@@ -65,7 +65,7 @@ public class DeadlockCheckHandler extends AbstractHandler {
 		final Job job = new ProBCommandJob("Checking for Deadlock Freedom",
 				s, command);
 		job.setUser(true);
-		job.addJobChangeListener(new DeadlockCheckFinishedListener(shell));
+		job.addJobChangeListener(new DeadlockCheckFinishedListener(shell,selector,s));
 		job.schedule();
 	}
 

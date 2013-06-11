@@ -131,6 +131,5 @@ public class DynamicTransformer extends Transformer implements
 			this.attrs = attrs;
 			this.styles = styles;
 		}
-
 	}
 }

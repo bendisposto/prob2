@@ -7,12 +7,17 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.model.representation.IEval;
 import de.prob.ui.visualization.OpenFormula;
 
 public class CreateFormulaVisualizationHandler extends AbstractHandler
 		implements IHandler {
+
+	private final Logger logger = LoggerFactory
+			.getLogger(CreateFormulaVisualizationHandler.class);
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -25,11 +30,11 @@ public class CreateFormulaVisualizationHandler extends AbstractHandler
 		IStructuredSelection sel = (IStructuredSelection) selection;
 		Object x = sel.getFirstElement();
 		if (x instanceof IEval) {
-			System.out.println(x);
+			logger.trace("Handler execution on {}", x);
 			OpenFormula open = new OpenFormula();
 			open.run(((IEval) x).getEvaluate());
 		} else {
-			System.out.println(x.getClass());
+			logger.warn("Selection is not an IEval. Class is {}", x.getClass());
 		}
 		return null;
 	}

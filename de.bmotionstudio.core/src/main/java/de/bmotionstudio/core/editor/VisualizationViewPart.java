@@ -492,10 +492,10 @@ public class VisualizationViewPart extends ViewPart implements
 		getGraphicalViewer().setContents(visualization);
 		final AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		Trace currentHistory = selector.getCurrentTrace();
+		Trace currentTrace = selector.getCurrentTrace();
 		String partName = visualizationView.getName();
-		if (currentHistory != null) {
-			modelFile = currentHistory.getModel().getModelFile();
+		if (currentTrace != null) {
+			modelFile = currentTrace.getModel().getModelFile();
 			partName = partName + " (" + modelFile.getName() + ")";
 			selector.registerAnimationChangeListener(this);
 			setInitialized(true);

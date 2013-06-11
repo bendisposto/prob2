@@ -1,6 +1,7 @@
 package de.prob.visualization;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +31,9 @@ public class StateSpaceData extends AbstractData {
 		super();
 		this.s = s;
 		vars = extractVariables(s);
+		for (IEvalElement e : vars) {
+			s.subscribe(this, e);
+		}
 		invOK = new Transformer("").set("fill", "#799C79");
 		invKO = new Transformer("").set("fill", "#B56C6C");
 		addStyling(new Transformer("#sroot").set("width", "30px").set("height",
@@ -77,21 +81,31 @@ public class StateSpaceData extends AbstractData {
 	}
 
 	private Object calculateInvariant(final StateSpace s, final StateId id) {
-		if (s.getExplored().contains(id)) {
-			Set<StateId> invariantOk = s.getInvariantOk();
-			if (invariantOk.contains(id)) {
-				toInvOk.add("#s" + id.getId());
-				return true;
-			}
+		Set<StateId> invariantOk = s.getInvariantOk();
+		HashSet<StateId> invariantKo = s.getInvariantKo();
+		if (invariantOk.contains(id)) {
+			toInvOk.add("#s" + id.getId());
+			return true;
+		}
+		if (invariantKo.contains(id)) {
 			toInvKo.add("#s" + id.getId());
 			return false;
 		}
+
 		return "unknown";
 	}
 
 	@Override
 	public void addNewLinks(final StateSpaceGraph graph,
 			final List<? extends OpInfo> newOps) {
+		HashSet<StateId> ids = new HashSet<StateId>();
+		for (OpInfo newOp : newOps) {
+			ids.add(s.getVertex(newOp.getSrc()));
+			ids.add(s.getVertex(newOp.getDest()));
+		}
+		s.evaluateForGivenStates(ids, vars);
+		s.checkInvariants();
+
 		List<OpInfo> ops = new ArrayList<OpInfo>();
 		ops.addAll(newOps);
 		s.execute(new GetOpsFromIds(ops));
@@ -138,6 +152,13 @@ public class StateSpaceData extends AbstractData {
 		}
 		if (!toInvKo.isEmpty() && !data.styling.contains(invKO)) {
 			addStyling(invKO);
+		}
+	}
+
+	@Override
+	public void closeData() {
+		for (IEvalElement e : vars) {
+			s.unsubscribe(this, e);
 		}
 	}
 

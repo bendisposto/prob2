@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.visualization.AnimationNotLoadedException;
+import de.prob.visualization.VisualizationException;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.servlets.visualizations.PredicateServlet;
 
@@ -32,6 +33,8 @@ public class OpenFormula {
 		} catch (AnimationNotLoadedException e) {
 			logger.error("Could not create predicate visualization because an animation is not loaded: "
 					+ e.getMessage());
+		} catch (VisualizationException e) {
+			logger.error(e.getMessage());
 		}
 	}
 

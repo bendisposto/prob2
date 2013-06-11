@@ -6,6 +6,8 @@ package de.prob.ui.constraint;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.AbstractCommand;
@@ -24,6 +26,9 @@ public class InvariantCheckFinishedListener extends ProBJobFinishedListener {
 	public InvariantCheckFinishedListener(final Shell shell) {
 		this.shell = shell;
 	}
+
+	private final Logger logger = LoggerFactory
+			.getLogger(InvariantCheckFinishedListener.class);
 
 	@Override
 	protected void showResult(final AbstractCommand command,
@@ -57,7 +62,8 @@ public class InvariantCheckFinishedListener extends ProBJobFinishedListener {
 		}
 
 		if (shell.isDisposed()) {
-			System.out.println("Invariant Check finished: " + dialogTitle);
+			logger.warn("Shell was disposed when trying to show dialog.");
+			logger.info("Invariant Check finished: {}", dialogTitle);
 		} else {
 			final Runnable runnable = new Runnable() {
 				@Override

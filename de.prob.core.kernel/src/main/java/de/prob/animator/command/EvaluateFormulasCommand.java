@@ -37,6 +37,10 @@ public class EvaluateFormulasCommand extends AbstractCommand {
 		stateId = id;
 	}
 
+	public List<IEvalElement> getFormulas() {
+		return evalElements;
+	}
+
 	public List<EvaluationResult> getValues() {
 		return values;
 	}

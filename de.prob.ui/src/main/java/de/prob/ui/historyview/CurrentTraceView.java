@@ -14,6 +14,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -36,7 +38,8 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class HistoryView extends ViewPart implements IAnimationChangeListener {
+public class CurrentTraceView extends ViewPart implements
+		IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -46,6 +49,9 @@ public class HistoryView extends ViewPart implements IAnimationChangeListener {
 	private TableViewer viewer;
 	private Trace currentTrace;
 
+	private final Logger logger = LoggerFactory
+			.getLogger(CurrentTraceView.class);
+
 	AnimationSelector animations;
 
 	class ViewLabelProvider extends LabelProvider implements
@@ -53,7 +59,8 @@ public class HistoryView extends ViewPart implements IAnimationChangeListener {
 		@Override
 		public String getColumnText(final Object obj, final int index) {
 			if (obj instanceof OpInfo) {
-				return ((OpInfo) obj).getRep(currentTrace.getStateSpace().getModel());
+				return ((OpInfo) obj).getRep(currentTrace.getStateSpace()
+						.getModel());
 			}
 			return "";
 		}
@@ -73,7 +80,7 @@ public class HistoryView extends ViewPart implements IAnimationChangeListener {
 	/**
 	 * The constructor.
 	 */
-	public HistoryView() {
+	public CurrentTraceView() {
 		animations = ServletContextListener.INJECTOR
 				.getInstance(AnimationSelector.class);
 		animations.registerAnimationChangeListener(this);
@@ -87,7 +94,7 @@ public class HistoryView extends ViewPart implements IAnimationChangeListener {
 	public void createPartControl(final Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
-		viewer.setContentProvider(new HistoryContentProvider());
+		viewer.setContentProvider(new TraceContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(null);
 		viewer.setInput(getViewSite());
@@ -133,11 +140,11 @@ public class HistoryView extends ViewPart implements IAnimationChangeListener {
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof OpInfo) {
-				return (OpInfo) ssel.getFirstElement();
+			Object elem = ssel.getFirstElement();
+			if (elem instanceof OpInfo) {
+				return (OpInfo) elem;
 			} else {
-				System.out.println("Selection is: "
-						+ ssel.getFirstElement().getClass());
+				logger.warn("Selection is not an OpInfo. Class is {}", elem.getClass());
 			}
 		}
 		return null;

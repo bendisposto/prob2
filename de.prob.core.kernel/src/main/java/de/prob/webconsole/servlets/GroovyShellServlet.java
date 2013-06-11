@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -79,7 +81,9 @@ public class GroovyShellServlet extends HttpServlet {
 				}
 			}
 		}
-		String result = executor.evaluate(input);
+		String evaluationResult = executor.evaluate(input);
+
+		String result = StringEscapeUtils.escapeHtml(evaluationResult);
 
 		ResultObject r = new ResultObject(result, executor.isContinued());
 

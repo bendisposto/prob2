@@ -138,4 +138,10 @@ public class DerivedStateSpaceData extends AbstractData {
 
 	}
 
+	@Override
+	public void closeData() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

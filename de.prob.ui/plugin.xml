@@ -495,10 +495,10 @@
       </view>
       <view
             category="de.hhu.stups.prob"
-            class="de.prob.ui.historyview.HistoryView"
+            class="de.prob.ui.historyview.CurrentTraceView"
             icon="icons/sample.gif"
             id="de.prob.ui.HistoryView"
-            name="History">
+            name="Current Trace">
       </view>
       <view
             category="de.hhu.stups.prob"

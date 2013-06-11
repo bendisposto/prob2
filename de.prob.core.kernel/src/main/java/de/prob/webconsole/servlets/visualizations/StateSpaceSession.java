@@ -13,6 +13,9 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -21,9 +24,11 @@ import com.google.gson.JsonParser;
 
 import de.prob.animator.command.ApplySignatureMergeCommand;
 import de.prob.animator.command.CalculateTransitionDiagramCommand;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.Variable;
 import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
@@ -45,10 +50,13 @@ import de.prob.visualization.Transformer;
 
 public class StateSpaceSession implements ISessionServlet,
 		IStatesCalculatedListener, IVisualizationServlet {
+
+	Logger logger = LoggerFactory.getLogger(StateSpaceSession.class);
 	private final String filename;
 	private IStateSpace space;
 	private AbstractData data;
 	private String expression;
+	private final List<String> errors = new ArrayList<String>();
 	private final Map<String, EnabledEvent> events = new HashMap<String, EnabledEvent>();
 	private final List<String> disabledEvents = new ArrayList<String>();
 	private final Set<IRefreshListener> refreshListeners = new HashSet<IRefreshListener>();
@@ -83,9 +91,6 @@ public class StateSpaceSession implements ISessionServlet,
 		this.sessionId = sessionId;
 		this.space = space;
 		this.props = props;
-		if (space != null) {
-			data = createStateSpaceGraph();
-		}
 		AbstractElement mainComponent = space.getModel().getMainComponent();
 		if (mainComponent instanceof Machine) {
 			Set<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
@@ -98,7 +103,9 @@ public class StateSpaceSession implements ISessionServlet,
 				.getModelFile().getAbsolutePath());
 		disabledEvents.addAll(disabledEvents);
 		this.expression = expression;
-		if (mode == 2) {
+		if (mode == 1) {
+			data = createStateSpaceGraph();
+		} else if (mode == 2) {
 			data = createSigMergeGraph();
 		} else if (mode == 3) {
 			data = createTransitionDiagram(expression);
@@ -126,28 +133,45 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private void performCommand(final HttpServletRequest req,
-			final HttpServletResponse res) {
+			final HttpServletResponse res) throws IOException {
 		String cmd = req.getParameter("cmd");
 		String p = req.getParameter("param");
+		List<Object> result = new ArrayList<Object>();
 
-		if (space != null) {
-			if (cmd.equals("sig_merge")) {
-				recalculateEvents(p);
-				data = createSigMergeGraph();
-			} else if (cmd.equals("org_ss")) {
-				data = createStateSpaceGraph();
-			} else if (cmd.equals("trans_diag")) {
-				data = createTransitionDiagram(p);
-				expression = p;
-			} else if (cmd.equals("d_sig_merge")) {
-				recalculateEvents(p);
-				data = createDottySignatureMerge();
-			} else if (cmd.equals("d_trans_diag")) {
-				data = createDottyTransitionDiagram(p);
-				expression = p;
+		try {
+			if (space != null) {
+				data.closeData();
+				if (cmd.equals("sig_merge")) {
+					recalculateEvents(p);
+					data = createSigMergeGraph();
+				} else if (cmd.equals("org_ss")) {
+					data = createStateSpaceGraph();
+				} else if (cmd.equals("trans_diag")) {
+					data = createTransitionDiagram(p);
+					expression = p;
+				} else if (cmd.equals("d_sig_merge")) {
+					recalculateEvents(p);
+					data = createDottySignatureMerge();
+				} else if (cmd.equals("d_trans_diag")) {
+					data = createDottyTransitionDiagram(p);
+					expression = p;
+				}
 			}
+			props.setProperty(filename, sessionId, serialize());
+			result.add("success");
+		} catch (Throwable e) {
+			errors.add("creating visualization of type " + cmd
+					+ " with parameter " + p + " resulted in this exception: "
+					+ e.getClass().getSimpleName() + ": " + e.getMessage());
+			logger.error(e.getClass().getSimpleName() + ": " + e.getMessage());
+			result.add("failure");
+		} finally {
+			PrintWriter out = res.getWriter();
+			Gson g = new Gson();
+			out.println(g.toJson(result));
+			out.close();
 		}
-		props.setProperty(filename, sessionId, serialize());
+
 	}
 
 	private void recalculateEvents(final String p) {
@@ -197,6 +221,8 @@ public class StateSpaceSession implements ISessionServlet,
 		resp.put("reset", data.getReset());
 		resp.put("mode", data.getMode());
 		resp.put("events", events.values());
+		resp.put("errors", errors);
+		errors.clear();
 
 		Gson g = new Gson();
 
@@ -257,8 +283,9 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	private AbstractData createDottyTransitionDiagram(final String expression) {
+		// System.out.println(expression);
 		DottyTransitionDiagram s = new DottyTransitionDiagram(space, expression);
-
+		// System.out.println(space);
 		notifyRefresh();
 		AbstractData d = changeStateSpaceTo(s);
 		d.setMode(5);
@@ -283,8 +310,18 @@ public class StateSpaceSession implements ISessionServlet,
 		}
 
 		if (s instanceof StateSpace) {
-			((StateSpace) s).calculateVariables();
+			List<IEvalElement> toEval = new ArrayList<IEvalElement>();
+			Set<Machine> machines = ((StateSpace) s).getModel()
+					.getChildrenOfType(Machine.class);
+			for (Machine machine : machines) {
+				for (Variable variable : machine
+						.getChildrenOfType(Variable.class)) {
+					toEval.add(variable.getExpression());
+				}
+			}
+			((StateSpace) s).evaluateForEveryState(toEval);
 			((StateSpace) s).getEvaluatedOps();
+			((StateSpace) s).checkInvariants();
 		}
 
 		Collection<StateId> vertices = s.getSSGraph().getVertices();
@@ -314,13 +351,15 @@ public class StateSpaceSession implements ISessionServlet,
 
 	@Override
 	public void newTransitions(final List<? extends OpInfo> newOps) {
-		if (space instanceof StateSpace) {
-			((StateSpace) space).calculateVariables();
+		try {
+			if (space instanceof AbstractDottyGraph) {
+				notifyRefresh();
+			}
+			data.addNewLinks(space.getSSGraph(), newOps);
+		} catch (Exception e) {
+			errors.add("Exception thrown at new transition " + e.getMessage());
+			logger.error(e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
-		if (space instanceof AbstractDottyGraph) {
-			notifyRefresh();
-		}
-		data.addNewLinks(space.getSSGraph(), newOps);
 
 	}
 

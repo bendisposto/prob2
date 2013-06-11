@@ -155,11 +155,11 @@ public class BExpressionObserverWizard extends ObserverWizard {
 					
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					Trace currentHistory = selector.getCurrentTrace();
+					Trace currentTrace = selector.getCurrentTrace();
 					
-					if(currentHistory != null) {
+					if(currentTrace != null) {
 					
-					EvaluationResult eval = currentHistory.evalCurrent(expressionText
+					EvaluationResult eval = currentTrace.evalCurrent(expressionText
 							.getText());
 						
 						if (eval != null) {
@@ -210,13 +210,13 @@ public class BExpressionObserverWizard extends ObserverWizard {
 				if (evt.getPropertyName().equals("expression")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
-					Trace currentHistory = selector.getCurrentTrace();
+					Trace currentTrace = selector.getCurrentTrace();
 					Map<String, EvaluationResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
-									currentHistory,
+									currentTrace,
 									getControl().prepareObserver(getObserver(),
-											currentHistory));
-					getObserver().check(currentHistory, getControl(),
+											currentTrace));
+					getObserver().check(currentTrace, getControl(),
 							evaluationResults);
 				}
 

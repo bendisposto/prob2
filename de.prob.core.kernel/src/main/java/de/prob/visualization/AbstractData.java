@@ -169,4 +169,6 @@ public abstract class AbstractData {
 		return data.styling;
 	}
 
+	public abstract void closeData();
+
 }

@@ -53,7 +53,7 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 
 	void updateEnablement() {
 		boolean isEnabled = false;
-		Trace currentHistory = selector.getCurrentTrace();
+		Trace currentTrace = selector.getCurrentTrace();
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		if (activeWorkbenchWindow != null) {
@@ -63,7 +63,7 @@ public class AddVisualizationViewHandler extends AbstractHandler implements
 						.getPerspective();
 				if (currentPerspective != null
 						&& currentPerspective.getId().startsWith("ProB_")
-						&& currentHistory != null)
+						&& currentTrace != null)
 					isEnabled = true;
 			}
 		}

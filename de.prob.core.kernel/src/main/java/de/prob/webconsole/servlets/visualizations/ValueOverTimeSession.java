@@ -10,6 +10,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,20 +22,22 @@ import com.google.gson.JsonParser;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalElementFactory;
+import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.Transformer;
 
 public class ValueOverTimeSession implements ISessionServlet,
 		IAnimationChangeListener, IVisualizationServlet {
 
+	Logger logger = LoggerFactory.getLogger(ValueOverTimeSession.class);
 	private final String vizType;
 	private final StateSpace stateSpace;
 	private final List<IEvalElement> formulas = new ArrayList<IEvalElement>();
@@ -40,6 +45,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 	private Trace currentTrace;
 	private List<Object> datasets = new ArrayList<Object>();
 	private final List<Transformer> styling = new ArrayList<Transformer>();
+	private final List<String> errors = new ArrayList<String>();
 	private final AnimationProperties properties;
 	private final String saveFile;
 	private final String sessionId;
@@ -50,6 +56,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 			final IEvalElement formula, final IEvalElement time,
 			final AnimationSelector animations,
 			final AnimationProperties properties) {
+
 		this.sessionId = sessionId;
 		this.time = time;
 		this.properties = properties;
@@ -137,17 +144,37 @@ public class ValueOverTimeSession implements ISessionServlet,
 
 		if (command.equals("add_formula")) {
 			if (param != null) {
-				if (vizType.equals("ClassicalB")) {
-					formulas.add(new ClassicalB(param));
-				} else if (vizType.equals("EventB")) {
-					formulas.add(new EventB(param));
-				} else if (vizType.equals("CSP")) {
-					formulas.add(new CSP(param, (CSPModel) stateSpace
-							.getModel()));
+				IEvalElement formula = null;
+				try {
+					if (vizType.equals("ClassicalB")) {
+						formula = new ClassicalB(param);
+					} else if (vizType.equals("EventB")) {
+						formula = new EventB(param);
+					} else if (vizType.equals("CSP")) {
+						formula = new CSP(param,
+								(CSPModel) stateSpace.getModel());
+					}
+					formulas.add(formula);
+					List<Object> newData = calculate();
+					datasets = newData;
+					properties.setProperty(saveFile, sessionId, serialize());
+				} catch (EvaluationException e) {
+					errors.add("Could not parse formula " + param
+							+ " Failed with exception: " + e.getMessage());
+					logger.error(e.getClass().getSimpleName() + ": "
+							+ e.getMessage());
+				} catch (Exception e) {
+					formulas.remove(formula);
+					errors.add("Trying to calculate data with formula "
+							+ formula.getCode()
+							+ " resulted in this exception: "
+							+ e.getClass().getSimpleName() + ": "
+							+ e.getMessage());
+					logger.error(e.getClass().getSimpleName() + ": "
+							+ e.getMessage());
 				}
+
 			}
-			datasets = calculate();
-			properties.setProperty(saveFile, sessionId, serialize());
 		} else if (command.equals("mode_change")) {
 			if (param != null) {
 				mode = param;
@@ -170,6 +197,9 @@ public class ValueOverTimeSession implements ISessionServlet,
 		response.put("count", count);
 		response.put("styling", styling);
 		response.put("mode", mode);
+		response.put("errors", errors);
+
+		errors.clear();
 
 		return response;
 	}
@@ -246,7 +276,14 @@ public class ValueOverTimeSession implements ISessionServlet,
 	public void traceChange(final Trace trace) {
 		currentTrace = trace;
 
-		datasets = calculate();
+		try {
+			List<Object> newData = calculate();
+			datasets = newData;
+		} catch (Exception e) {
+			errors.add("Trying to calculate data with formula failed with this exception: "
+					+ e.getClass().getSimpleName() + ": " + e.getMessage());
+			logger.error(e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
 	}
 
 	@Override

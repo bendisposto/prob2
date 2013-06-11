@@ -39,9 +39,9 @@ public class ExecuteBOperationEvent extends Event {
 				fpredicate = "1=1";
 			}
 
-			Trace newHistory = history.add(operation,
+			Trace newTrace = history.add(operation,
 					BMotionUtil.parseFormula(fpredicate, control));
-			animations.replaceTrace(history, newHistory);
+			animations.replaceTrace(history, newTrace);
 
 		} catch (BException e1) {
 		} catch (IllegalArgumentException e2) {
