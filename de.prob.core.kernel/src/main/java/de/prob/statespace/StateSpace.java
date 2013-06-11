@@ -768,11 +768,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 				lastCalculatedId);
 	}
 
-	@Override
-	public StateSpaceGraph getSSGraph() {
-		return this;
-	}
-
 	public Set<StateId> getInvariantOk() {
 		return invariantOk;
 	}
