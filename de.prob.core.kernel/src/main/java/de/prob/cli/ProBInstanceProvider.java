@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -20,13 +21,12 @@ import com.google.inject.Singleton;
 
 import de.prob.annotations.Home;
 import de.prob.exception.CliError;
-import de.prob.exception.ProBLoggerFactory;
 
 @Singleton
 public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	private final static List<WeakReference<ProBInstance>> refs = new ArrayList<WeakReference<ProBInstance>>();
-	private final Logger logger = ProBLoggerFactory
+	private final Logger logger = LoggerFactory
 			.getLogger(ProBInstanceProvider.class);
 
 	private final PrologProcessProvider processProvider;

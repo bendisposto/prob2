@@ -12,16 +12,15 @@ import org.ptolemy.fmi.FMIScalarVariable;
 import org.ptolemy.fmi.FMUFile;
 import org.ptolemy.fmi.FMULibrary;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Function;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 
-import de.prob.exception.ProBLoggerFactory;
-
 public class FMU {
 
-	private static final Logger logger = ProBLoggerFactory.getLogger(FMU.class);
+	private static final Logger logger = LoggerFactory.getLogger(FMU.class);
 
 	/** The modelIdentifier from modelDescription.xml. */
 	String _modelIdentifier;

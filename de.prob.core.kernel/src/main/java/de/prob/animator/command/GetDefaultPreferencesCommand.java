@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.ProBPreference;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -29,8 +29,7 @@ import de.prob.prolog.term.PrologTerm;
  */
 public final class GetDefaultPreferencesCommand extends AbstractCommand {
 
-	Logger logger = ProBLoggerFactory
-			.getLogger(GetDefaultPreferencesCommand.class);
+	Logger logger = LoggerFactory.getLogger(GetDefaultPreferencesCommand.class);
 	private static final String PREFS_VARIABLE = "Prefs";
 	private List<ProBPreference> prefs;
 

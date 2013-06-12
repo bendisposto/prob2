@@ -4,11 +4,11 @@
 package de.prob.animator.command;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.exception.ProBError;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -24,7 +24,7 @@ import de.prob.statespace.OpInfo;
  */
 public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand {
 
-	Logger logger = ProBLoggerFactory
+	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedDeadlockCheckCommand.class);
 
 	private static final String COMMAND_NAME = "deadlock_freedom_check";

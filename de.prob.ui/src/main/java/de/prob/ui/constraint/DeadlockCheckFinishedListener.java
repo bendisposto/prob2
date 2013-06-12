@@ -7,12 +7,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.ConstraintBasedDeadlockCheckCommand;
 import de.prob.check.ConstraintBasedCheckingResult;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
@@ -32,7 +32,7 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 	private final AnimationSelector selector;
 	private final StateSpace statespace;
 
-	private final Logger logger = ProBLoggerFactory
+	private final Logger logger = LoggerFactory
 			.getLogger(DeadlockCheckFinishedListener.class);
 
 	public DeadlockCheckFinishedListener(final Shell shell,

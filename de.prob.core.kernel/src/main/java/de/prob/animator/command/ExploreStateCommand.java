@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 import de.prob.animator.domainobjects.StateError;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -32,7 +32,7 @@ import de.prob.statespace.OpInfo;
  */
 public final class ExploreStateCommand extends AbstractCommand {
 
-	Logger logger = ProBLoggerFactory.getLogger(ExploreStateCommand.class);
+	Logger logger = LoggerFactory.getLogger(ExploreStateCommand.class);
 
 	private final String stateId;
 	private final GetEnabledOperationsCommand getOpsCmd;

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -24,7 +25,6 @@ import com.google.gson.JsonParser;
 import de.prob.animator.command.ApplySignatureMergeCommand;
 import de.prob.animator.command.CalculateTransitionDiagramCommand;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Machine;
@@ -52,7 +52,7 @@ import de.prob.visualization.Transformer;
 public class StateSpaceSession implements ISessionServlet,
 		IStatesCalculatedListener, IVisualizationServlet {
 
-	Logger logger = ProBLoggerFactory.getLogger(StateSpaceSession.class);
+	Logger logger = LoggerFactory.getLogger(StateSpaceSession.class);
 	private final String filename;
 	private IStateSpace space;
 	private AbstractData data;

@@ -19,9 +19,10 @@ import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.representation.AbstractModel
 import de.prob.webconsole.ServletContextListener
 
+
 public class Api {
 
-	Logger logger = ProBLoggerFactory.getLogger(Api.class);
+	Logger logger = LoggerFactory.getLogger(Api.class);
 
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;

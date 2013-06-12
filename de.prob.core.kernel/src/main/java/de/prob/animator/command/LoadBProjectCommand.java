@@ -3,10 +3,10 @@ package de.prob.animator.command;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
@@ -21,7 +21,7 @@ import de.prob.prolog.term.PrologTerm;
  * 
  */
 public class LoadBProjectCommand extends AbstractCommand {
-	Logger logger = ProBLoggerFactory.getLogger(LoadBProjectCommand.class);
+	Logger logger = LoggerFactory.getLogger(LoadBProjectCommand.class);
 	private NodeIdAssignment nodeIdMapping;
 	private final RecursiveMachineLoader rml;
 

@@ -29,11 +29,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Injector;
 
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.BEvent;
@@ -68,8 +68,7 @@ public class OperationView extends ViewPart implements IAnimationChangeListener 
 	 */
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
-	private final Logger logger = ProBLoggerFactory
-			.getLogger(OperationView.class);
+	private final Logger logger = LoggerFactory.getLogger(OperationView.class);
 
 	private TableViewer viewer;
 	private Trace currentTrace;

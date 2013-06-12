@@ -2,9 +2,9 @@ package de.prob.ui.visualization;
 
 import org.eclipse.ui.PartInitException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.VisualizationException;
 import de.prob.webconsole.ServletContextListener;
@@ -12,7 +12,7 @@ import de.prob.webconsole.servlets.visualizations.PredicateServlet;
 
 public class OpenFormula {
 
-	Logger logger = ProBLoggerFactory.getLogger(OpenFormula.class);
+	Logger logger = LoggerFactory.getLogger(OpenFormula.class);
 
 	private final PredicateServlet servlet;
 

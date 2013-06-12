@@ -11,8 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -22,7 +22,7 @@ import de.prob.prolog.term.PrologTerm;
 public final class GetTraceCommand extends AbstractCommand {
 
 	private static final String TRACE_VARIABLE = "Trace";
-	Logger logger = ProBLoggerFactory.getLogger(GetTraceCommand.class);
+	Logger logger = LoggerFactory.getLogger(GetTraceCommand.class);
 
 	private final static class Occurence {
 		private final String text;

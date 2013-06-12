@@ -7,13 +7,13 @@
 package de.prob.animator.command.internal;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.CheckInvariantStatusCommand;
 import de.prob.animator.command.CheckMaxOperationReachedStatusCommand;
 import de.prob.animator.command.CheckTimeoutStatusCommand;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -28,7 +28,7 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class CheckBooleanPropertyCommand extends AbstractCommand {
 
-	private final Logger logger = ProBLoggerFactory
+	private final Logger logger = LoggerFactory
 			.getLogger(CheckBooleanPropertyCommand.class);
 
 	private static final String PROP_RESULT = "PropResult";

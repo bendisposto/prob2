@@ -6,9 +6,9 @@ package de.prob.cli;
 import java.util.regex.Matcher;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.exception.CliError;
-import de.prob.exception.ProBLoggerFactory;
 
 /**
  * This {@link AbstractCliPattern} looks for a network port number where the
@@ -21,8 +21,7 @@ import de.prob.exception.ProBLoggerFactory;
 class PortPattern extends AbstractCliPattern<Integer> {
 	int port;
 
-	private final Logger logger = ProBLoggerFactory
-			.getLogger(PortPattern.class);
+	private final Logger logger = LoggerFactory.getLogger(PortPattern.class);
 
 	public PortPattern() {
 		super("Port: (\\d+)$");

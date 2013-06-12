@@ -4,16 +4,16 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.webconsole.GroovyExecution;
 
 class Shell {
 
 	private final GroovyExecution executor;
-	private final Logger logger = ProBLoggerFactory.getLogger(Shell.class);
+	private final Logger logger = LoggerFactory.getLogger(Shell.class);
 
 	@Inject
 	public Shell(final GroovyExecution executor) {

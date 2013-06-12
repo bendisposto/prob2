@@ -8,13 +8,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.webconsole.GroovyExecution;
 
 public class OpenCommand extends AbstractShellCommand {
 
-	private final static Logger LOGGER = ProBLoggerFactory
+	private final static Logger LOGGER = LoggerFactory
 			.getLogger(OpenCommand.class);
 
 	@Override

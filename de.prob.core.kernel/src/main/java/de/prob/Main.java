@@ -14,7 +14,7 @@ import org.apache.commons.cli.ParseException;
 
 import com.google.inject.Inject;
 
-import de.prob.exception.ProBLoggerFactory;
+import de.prob.exception.ProBAppender;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 import de.prob.webconsole.servlets.LogServlet;
@@ -35,10 +35,11 @@ public class Main {
 
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell) {
+			final Shell shell, final LogServlet log) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
+		ProBAppender.initialize(log);
 	}
 
 	void run(final String[] args) {
@@ -90,10 +91,6 @@ public class Main {
 				+ "ProB.txt");
 
 		Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
-
-		// Connect the logger and the servlet
-		ProBLoggerFactory.initialize(ServletContextListener.INJECTOR
-				.getInstance(LogServlet.class));
 
 		main.run(args);
 		System.exit(0);

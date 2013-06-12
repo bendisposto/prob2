@@ -7,12 +7,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.ConstraintBasedInvariantCheckCommand;
 import de.prob.check.ConstraintBasedCheckingResult.Result;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.ui.ProBJobFinishedListener;
 
 /**
@@ -27,7 +27,7 @@ public class InvariantCheckFinishedListener extends ProBJobFinishedListener {
 		this.shell = shell;
 	}
 
-	private final Logger logger = ProBLoggerFactory
+	private final Logger logger = LoggerFactory
 			.getLogger(InvariantCheckFinishedListener.class);
 
 	@Override

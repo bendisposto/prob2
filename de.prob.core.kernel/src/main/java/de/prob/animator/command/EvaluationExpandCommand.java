@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -25,7 +25,7 @@ public class EvaluationExpandCommand extends AbstractCommand {
 	private static final String LABEL_VARNAME = "Lbl";
 	private static final String CHILDREN_VARNAME = "Chs";
 
-	Logger logger = ProBLoggerFactory.getLogger(EvaluationExpandCommand.class);
+	Logger logger = LoggerFactory.getLogger(EvaluationExpandCommand.class);
 
 	private String label;
 	private final List<String> childrenIds = new ArrayList<String>();

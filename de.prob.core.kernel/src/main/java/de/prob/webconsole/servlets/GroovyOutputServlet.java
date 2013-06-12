@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.webconsole.OutputBuffer;
 
 /**
@@ -30,7 +30,7 @@ import de.prob.webconsole.OutputBuffer;
 @Singleton
 public class GroovyOutputServlet extends HttpServlet {
 
-	private final Logger logger = ProBLoggerFactory
+	private final Logger logger = LoggerFactory
 			.getLogger(GroovyOutputServlet.class);
 	private final OutputBuffer sideeffects;
 

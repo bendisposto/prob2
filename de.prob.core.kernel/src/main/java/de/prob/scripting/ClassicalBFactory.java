@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -21,7 +22,6 @@ import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.model.classicalb.ClassicalBModel;
 
 /**
@@ -32,7 +32,7 @@ import de.prob.model.classicalb.ClassicalBModel;
  */
 public class ClassicalBFactory {
 
-	Logger logger = ProBLoggerFactory.getLogger(ClassicalBFactory.class);
+	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
 	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject

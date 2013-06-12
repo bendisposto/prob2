@@ -15,10 +15,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
@@ -32,8 +32,7 @@ public class AnimationsView extends ViewPart implements
 	 */
 	public static final String ID = "de.prob.ui.AnimationsView";
 
-	private final Logger logger = ProBLoggerFactory
-			.getLogger(AnimationsView.class);
+	private final Logger logger = LoggerFactory.getLogger(AnimationsView.class);
 
 	private TableViewer viewer;
 

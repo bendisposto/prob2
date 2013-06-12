@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
@@ -16,15 +17,13 @@ import de.prob.animator.command.GetErrorsCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
 
 class AnimatorImpl implements IAnimator {
 
 	private final ProBInstance cli;
-	private final Logger logger = ProBLoggerFactory
-			.getLogger(AnimatorImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(AnimatorImpl.class);
 	private final CommandProcessor processor;
 	private final GetErrorsCommand getErrors;
 	public static boolean DEBUG = false;

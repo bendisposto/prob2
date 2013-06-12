@@ -10,6 +10,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
@@ -18,11 +19,9 @@ import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.atlassian.util.concurrent.Promise;
 
-import de.prob.exception.ProBLoggerFactory;
-
 public class BugReportWizard extends Wizard {
 
-	Logger logger = ProBLoggerFactory.getLogger(BugReportWizard.class);
+	Logger logger = LoggerFactory.getLogger(BugReportWizard.class);
 
 	private WizardPage1 page1;
 	private WizardPage2 page2;

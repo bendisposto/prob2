@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -13,11 +14,10 @@ import com.google.inject.Provider;
 import de.prob.Main;
 import de.prob.annotations.Home;
 import de.prob.cli.ModuleCli.DebuggingKey;
-import de.prob.exception.ProBLoggerFactory;
 
 class PrologProcessProvider implements Provider<ProcessHandle> {
 
-	private final Logger logger = ProBLoggerFactory
+	private final Logger logger = LoggerFactory
 			.getLogger(PrologProcessProvider.class);
 	private final String debuggingKey;
 	private final String dir;

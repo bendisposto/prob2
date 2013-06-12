@@ -13,8 +13,7 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
-
-import de.prob.exception.ProBLoggerFactory;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author bendisposto
@@ -22,7 +21,7 @@ import de.prob.exception.ProBLoggerFactory;
  */
 public class WebConsole {
 
-	private static final Logger LOGGER = ProBLoggerFactory
+	private static final Logger LOGGER = LoggerFactory
 			.getLogger(WebConsole.class);
 	private static int PORT;
 

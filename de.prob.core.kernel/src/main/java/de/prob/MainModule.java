@@ -17,6 +17,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.codehaus.groovy.tools.shell.Interpreter;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -28,7 +29,6 @@ import de.prob.annotations.Home;
 import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.scripting.Api;
 import de.prob.scripting.Downloader;
 import de.prob.statespace.ModelModule;
@@ -37,7 +37,7 @@ import de.prob.worksheet.WorksheetModule;
 
 public class MainModule extends AbstractModule {
 
-	private static final Logger logger = ProBLoggerFactory
+	private static final Logger logger = LoggerFactory
 			.getLogger(MainModule.class);
 	private final Properties buildConstants;
 

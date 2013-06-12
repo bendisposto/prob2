@@ -9,18 +9,18 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalElementFactory;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.webconsole.ServletContextListener;
 
 public class OpenPredicateVizHandler extends AbstractHandler implements
 		IHandler {
 
-	Logger logger = ProBLoggerFactory.getLogger(OpenPredicateVizHandler.class);
+	Logger logger = LoggerFactory.getLogger(OpenPredicateVizHandler.class);
 
 	private final EvalElementFactory evalFactory;
 

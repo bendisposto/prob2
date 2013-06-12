@@ -6,8 +6,8 @@ import java.util.List;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.statespace.AnimationSelector;
 
 /**
@@ -18,7 +18,7 @@ import de.prob.statespace.AnimationSelector;
  */
 class AnimationsContentProvider implements IStructuredContentProvider {
 
-	private final Logger logger = ProBLoggerFactory
+	private final Logger logger = LoggerFactory
 			.getLogger(AnimationsContentProvider.class);
 
 	@Override

@@ -11,15 +11,15 @@ import java.util.List;
 import jline.FileNameCompletor;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-import de.prob.exception.ProBLoggerFactory;
 import de.prob.webconsole.GroovyExecution;
 
 public class RunScriptCommand extends AbstractShellCommand {
 
-	private final static Logger LOGGER = ProBLoggerFactory
+	private final static Logger LOGGER = LoggerFactory
 			.getLogger(RunScriptCommand.class);
 
 	@Override

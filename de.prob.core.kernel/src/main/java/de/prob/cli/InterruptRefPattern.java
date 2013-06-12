@@ -6,8 +6,7 @@ package de.prob.cli;
 import java.util.regex.Matcher;
 
 import org.slf4j.Logger;
-
-import de.prob.exception.ProBLoggerFactory;
+import org.slf4j.LoggerFactory;
 
 /**
  * Extracts the reference for user interrupt calls from the process' startup
@@ -20,7 +19,7 @@ class InterruptRefPattern extends AbstractCliPattern<Long> {
 
 	private Long reference;
 
-	private final Logger logger = ProBLoggerFactory
+	private final Logger logger = LoggerFactory
 			.getLogger(InterruptRefPattern.class);
 
 	public InterruptRefPattern() {

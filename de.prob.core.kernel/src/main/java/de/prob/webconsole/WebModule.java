@@ -57,7 +57,7 @@ public class WebModule extends ServletModule {
 		bind(TestRegistry.class);
 
 		// logging
-		serve("/log*").with(LogServlet.class);
+		serve("/get_log*").with(LogServlet.class);
 
 		serve("/formula*").with(ValueOverTimeServlet.class);
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
