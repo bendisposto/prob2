@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -32,18 +31,19 @@ import de.prob.annotations.Home;
 @Singleton
 public class ScrollbackServlet extends HttpServlet {
 
-	private String home;
+	private final String home;
 
 	private final Logger logger = LoggerFactory
 			.getLogger(ScrollbackServlet.class);
 
 	@Inject
-	public ScrollbackServlet(@Home String home) {
+	public ScrollbackServlet(@Home final String home) {
 		this.home = home + "scrollback";
 	}
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
+	@Override
+	public void doGet(final HttpServletRequest req,
+			final HttpServletResponse res) throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 
 		String[] r = readFile(home);
@@ -71,7 +71,7 @@ public class ScrollbackServlet extends HttpServlet {
 		out.close();
 	}
 
-	private void write(LinkedHashSet<String> copy) {
+	private void write(final LinkedHashSet<String> copy) {
 		BufferedWriter bw = null;
 		FileWriter fw = null;
 		final File scrollback = new File(home);
@@ -87,10 +87,12 @@ public class ScrollbackServlet extends HttpServlet {
 
 		} finally {
 			try {
-				if (fw != null)
+				if (fw != null) {
 					fw.close();
-				if (bw != null)
+				}
+				if (bw != null) {
 					bw.close();
+				}
 			} catch (IOException e) {
 				// who cares
 			}
@@ -98,7 +100,7 @@ public class ScrollbackServlet extends HttpServlet {
 
 	}
 
-	private String[] readFile(String home2) {
+	private String[] readFile(final String home2) {
 		List<String> res = new ArrayList<String>();
 		try {
 			FileInputStream fstream = new FileInputStream(home);

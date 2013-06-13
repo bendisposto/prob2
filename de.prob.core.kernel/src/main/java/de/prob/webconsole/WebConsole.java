@@ -57,8 +57,9 @@ public class WebConsole {
 				.toExternalForm();
 		WebConsole.LOGGER.debug("External Form: " + warFile);
 
-		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/")))
+		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/"))) {
 			warFile += "bin/";
+		}
 
 		// Creating a context handler collection
 		/*
@@ -75,11 +76,11 @@ public class WebConsole {
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
 		/*
-		WebAppContext worksheetContext = new WebAppContext(warFile
-				+ "webapps/worksheet.war", "/worksheet");
-		worksheetContext.setExtractWAR(true);
-		worksheetContext.setServer(server);
-		*/
+		 * WebAppContext worksheetContext = new WebAppContext(warFile +
+		 * "webapps/worksheet.war", "/worksheet");
+		 * worksheetContext.setExtractWAR(true);
+		 * worksheetContext.setServer(server);
+		 */
 		server.setStopAtShutdown(true);
 		/*
 		 * MBeanContainer mbContainer = new MBeanContainer(
@@ -94,7 +95,7 @@ public class WebConsole {
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
 		// handlers.addHandler(contexts);
-		//handlers.addHandler(worksheetContext);
+		// handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
 		int port = 8080;

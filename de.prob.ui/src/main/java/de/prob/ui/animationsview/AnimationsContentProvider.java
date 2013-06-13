@@ -21,13 +21,16 @@ class AnimationsContentProvider implements IStructuredContentProvider {
 	private final Logger logger = LoggerFactory
 			.getLogger(AnimationsContentProvider.class);
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput,
 			final Object newInput) {
 	}
 
+	@Override
 	public Object[] getElements(final Object inputElement) {
 		List<Object> animations = new ArrayList<Object>();
 		if (inputElement instanceof AnimationSelector) {

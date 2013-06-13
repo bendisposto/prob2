@@ -12,11 +12,11 @@ import de.prob.webconsole.GroovyExecution;
 
 class Shell {
 
-	private GroovyExecution executor;
+	private final GroovyExecution executor;
 	private final Logger logger = LoggerFactory.getLogger(Shell.class);
 
 	@Inject
-	public Shell(GroovyExecution executor) {
+	public Shell(final GroovyExecution executor) {
 		this.executor = executor;
 	}
 

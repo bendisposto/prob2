@@ -42,8 +42,8 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
-import de.prob.ui.services.TraceActiveProvider;
 import de.prob.ui.services.ModelLoadedProvider;
+import de.prob.ui.services.TraceActiveProvider;
 import de.prob.webconsole.ServletContextListener;
 
 /**
@@ -195,11 +195,11 @@ public class OperationView extends ViewPart implements IAnimationChangeListener 
 
 			@Override
 			public void run() {
-				if( viewer != null) {
+				if (viewer != null) {
 					if (!viewer.getTable().isDisposed()) {
 						viewer.setInput(trace);
 						packTableColumns();
-					}					
+					}
 				}
 
 			}

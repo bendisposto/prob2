@@ -30,17 +30,18 @@ import de.prob.webconsole.OutputBuffer;
 @Singleton
 public class GroovyOutputServlet extends HttpServlet {
 
-	private Logger logger = LoggerFactory.getLogger(GroovyOutputServlet.class);
-	private OutputBuffer sideeffects;
+	private final Logger logger = LoggerFactory
+			.getLogger(GroovyOutputServlet.class);
+	private final OutputBuffer sideeffects;
 
 	@Inject
-	public GroovyOutputServlet(OutputBuffer sideeffects) {
+	public GroovyOutputServlet(final OutputBuffer sideeffects) {
 		this.sideeffects = sideeffects;
 	}
 
 	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
+	public void doGet(final HttpServletRequest req,
+			final HttpServletResponse res) throws ServletException, IOException {
 		PrintWriter out = res.getWriter();
 		String input = req.getParameter("since");
 		int pos = 0;

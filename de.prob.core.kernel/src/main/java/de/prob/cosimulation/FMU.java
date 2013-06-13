@@ -33,7 +33,7 @@ public class FMU {
 
 	private final Map<String, FMIScalarVariable> variables = new HashMap<String, FMIScalarVariable>();
 
-	public FMU(String fmuFileName) throws IOException {
+	public FMU(final String fmuFileName) throws IOException {
 		modelDescription = FMUFile.parseFMUFile(fmuFileName);
 		String sharedLibrary = FMUFile.fmuSharedLibrary(modelDescription);
 
@@ -81,52 +81,52 @@ public class FMU {
 		return (String) function.invoke(String.class, new Object[0]);
 	}
 
-	public void initialize(double startTime, double endTime) {
+	public void initialize(final double startTime, final double endTime) {
 		invoke("_fmiInitializeSlave", new Object[] { component, startTime,
 				(byte) 1, endTime }, "Could not initialize slave: ");
 	}
 
-	public boolean getBoolean(String name) {
+	public boolean getBoolean(final String name) {
 		FMIScalarVariable fmiScalarVariable = variables.get(name);
 		return fmiScalarVariable.getBoolean(component);
 	}
 
-	public double getDouble(String name) {
+	public double getDouble(final String name) {
 		FMIScalarVariable fmiScalarVariable = variables.get(name);
 		return fmiScalarVariable.getDouble(component);
 	}
 
-	public int getInt(String name) {
+	public int getInt(final String name) {
 		FMIScalarVariable fmiScalarVariable = variables.get(name);
 		return fmiScalarVariable.getInt(component);
 	}
 
-	public String getString(String name) {
+	public String getString(final String name) {
 		FMIScalarVariable fmiScalarVariable = variables.get(name);
 		return fmiScalarVariable.getString(component);
 	}
 
-	public void set(String name, boolean b) {
+	public void set(final String name, final boolean b) {
 		FMIScalarVariable fmiScalarVariable = variables.get(name);
 		fmiScalarVariable.setBoolean(component, b);
 	}
 
-	public void set(String name, int i) {
+	public void set(final String name, final int i) {
 		FMIScalarVariable fmiScalarVariable = variables.get(name);
 		fmiScalarVariable.setInt(component, i);
 	}
 
-	public void set(String name, double d) {
+	public void set(final String name, final double d) {
 		FMIScalarVariable fmiScalarVariable = variables.get(name);
 		fmiScalarVariable.setDouble(component, d);
 	}
 
-	public void set(String name, String s) {
+	public void set(final String name, final String s) {
 		FMIScalarVariable fmiScalarVariable = variables.get(name);
 		fmiScalarVariable.setString(component, s);
 	}
 
-	public double doStep(double time, double delta_t) {
+	public double doStep(final double time, final double delta_t) {
 		Function doStep = getFunction("_fmiDoStep");
 		invoke(doStep, new Object[] { component, time, delta_t, (byte) 1 },
 				"Could not simulate, time was " + time + ": ");
@@ -156,9 +156,10 @@ public class FMU {
 		return modelDescription;
 	}
 
-	private Pointer instantiateFMU(String fmuLocation, String mimeType,
-			double timeout, byte visible, byte interactive,
-			FMICallbackFunctions.ByValue callbacks, byte loggingOn) {
+	private Pointer instantiateFMU(final String fmuLocation,
+			final String mimeType, final double timeout, final byte visible,
+			final byte interactive,
+			final FMICallbackFunctions.ByValue callbacks, final byte loggingOn) {
 		Function instantiateSlave = getFunction("_fmiInstantiateSlave");
 		Pointer fmiComponent = (Pointer) instantiateSlave.invoke(Pointer.class,
 				new Object[] { _modelIdentifier, modelDescription.guid,
@@ -166,7 +167,6 @@ public class FMU {
 						callbacks, loggingOn });
 		return fmiComponent;
 	}
-
 
 	/**
 	 * Return a function by name.
@@ -177,7 +177,7 @@ public class FMU {
 	 *            name.
 	 * @return the function.
 	 */
-	public Function getFunction(String name) {
+	public Function getFunction(final String name) {
 		// This is syntactic sugar.
 		logger.debug("Getting the {} function.", name);
 		return _nativeLibrary.getFunction(_modelIdentifier + name);
@@ -196,7 +196,8 @@ public class FMU {
 	 *            message should end with ": " because the return value of the
 	 *            function will be printed after the error message.
 	 */
-	public void invoke(String name, Object[] arguments, String message) {
+	public void invoke(final String name, final Object[] arguments,
+			final String message) {
 		Function function = getFunction(name);
 		invoke(function, arguments, message);
 	}
@@ -214,7 +215,8 @@ public class FMU {
 	 *            message should end with ": " because the return value of the
 	 *            function will be printed after the error message.
 	 */
-	public void invoke(Function function, Object[] arguments, String message) {
+	public void invoke(final Function function, final Object[] arguments,
+			final String message) {
 		logger.debug("Invoking  {}", function.getName());
 		int fmiFlag = ((Integer) function.invoke(Integer.class, arguments))
 				.intValue();

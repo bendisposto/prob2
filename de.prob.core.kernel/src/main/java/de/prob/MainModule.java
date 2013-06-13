@@ -1,6 +1,6 @@
 package de.prob;
 
-import static java.io.File.*;
+import static java.io.File.separator;
 import groovy.lang.Binding;
 
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class MainModule extends AbstractModule {
 		install(new ModelModule());
 		install(new WebModule());
 		install(new WorksheetModule());
-		
+
 		bind(Api.class);
 		bind(CommandLineParser.class).to(PosixParser.class);
 
