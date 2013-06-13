@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import de.prob.scripting.Api;
 import de.prob.worksheet.boxtypes.BEditor;
 import de.prob.worksheet.boxtypes.GroovyEditor;
+import de.prob.worksheet.boxtypes.LoadModelEditor;
 import de.prob.worksheet.boxtypes.MarkdownEditor;
 
 @Singleton
