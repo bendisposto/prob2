@@ -5,7 +5,6 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 import de.prob.animator.IAnimator
-import de.prob.animator.domainobjects.OpInfo
 import de.prob.exception.ProBError
 
 class StateSpaceTest extends Specification {
@@ -22,13 +21,13 @@ class StateSpaceTest extends Specification {
 		s = new StateSpace(mock, new DirectedMultigraphProvider())
 
 		def states = [
-			new StateId("1", "lorem",s),
-			new StateId("root", "lorem2",s),
-			new StateId("2", "ipsum",s),
-			new StateId("3", "dolor",s),
-			new StateId("4", "sit",s),
-			new StateId("5", "amit",s),
-			new StateId("6", "consetetur",s)
+			new StateId("1",s),
+			new StateId("root", s),
+			new StateId("2", s),
+			new StateId("3", s),
+			new StateId("4", s),
+			new StateId("5", s),
+			new StateId("6", s)
 		]
 
 		def ops = [ new OpInfo("b","b","root","2",[],"2"),
@@ -51,16 +50,16 @@ class StateSpaceTest extends Specification {
 			s.ops.put(it.getId(),it)
 		}
 
-		s.addEdge(s.states.get("root"), s.states.get("2"), s.ops.get("b"))
-		s.addEdge(s.states.get("2"), s.states.get("3"), s.ops.get("c"))
-		s.addEdge(s.states.get("3"), s.states.get("4"), s.ops.get("d"))
-		s.addEdge(s.states.get("3"), s.states.get("5"), s.ops.get("e"))
+		s.addEdge(s.ops.get("b"), s.states.get("root"), s.states.get("2"))
+		s.addEdge(s.ops.get("c"), s.states.get("2"), s.states.get("3"))
+		s.addEdge(s.ops.get("d"), s.states.get("3"), s.states.get("4"))
+		s.addEdge(s.ops.get("e"), s.states.get("3"), s.states.get("5"))
 		s.explored.add(s.states.get("2"))
 		s.explored.add(s.states.get("3"))
 		s.explored.add(s.states.get("4"))
 		s.explored.add(s.states.get("5"))
 
-		s.addEdge(s.states.get("4"), s.states.get("6"),s.ops.get("f"))
+		s.addEdge(s.ops.get("f"), s.states.get("4"), s.states.get("6"))
 	}
 
 	def addVertices(List<String> ids, StateSpace s) {
@@ -91,7 +90,7 @@ class StateSpaceTest extends Specification {
 
 	def "The state is not explored"() {
 		when:
-		def a = new StateId("7", "bla",s)
+		def a = new StateId("7", s)
 		s.addVertex(a)
 		s.states.put(a.getId(),a)
 
@@ -100,7 +99,7 @@ class StateSpaceTest extends Specification {
 	}
 
 	def "The node is not a deadlock"() {
-		s.addEdge(s.states.get("1"), s.states.get("2"), new OpInfo("bla","blah","1","2",[],"2"))
+		s.addEdge(new OpInfo("bla","blah","1","2",[],"2"), s.states.get("1"), s.states.get("2"))
 
 		expect:
 		s.isDeadlock(s[1]) == false
@@ -108,7 +107,7 @@ class StateSpaceTest extends Specification {
 
 	def "test register StateSpaceChangeListener"() {
 		when:
-		def l = mock(IStateSpaceChangeListener.class)
+		def l = mock(IStatesCalculatedListener.class)
 		s.registerStateSpaceListener(l)
 
 		then:

@@ -2,7 +2,7 @@ import de.prob.statespace.*
 import de.prob.animator.domainobjects.*;
 c = api.b_load(dir+"/machines/scheduler.mch")
 s = c.statespace
-h = new History(s)
+h = new Trace(s)
 h = h.add 0
 idAt0 = h.current.getCurrentState()
 h = h.add 3
@@ -14,7 +14,7 @@ assert !s.isOutEdge(h.current.getCurrentState(),s.getOps().get("1"))
 h = h.add 8
 idAt8 = h.current.getCurrentState()
 assert idAt0 == idAt8
-h2 = new History(s)
+h2 = new Trace(s)
 h2 = h2.add 0
 h2 = h2.add 3
 h2 = h2.add 9

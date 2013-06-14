@@ -23,7 +23,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class LoadBProjectFromStringCommand implements ICommand {
+public class LoadBProjectFromStringCommand extends AbstractCommand {
 
 	private final PrologTerm model;
 	Logger logger = LoggerFactory
@@ -31,7 +31,7 @@ public class LoadBProjectFromStringCommand implements ICommand {
 	private NodeIdAssignment nodeIdMapping;
 
 	public LoadBProjectFromStringCommand(final String s) throws BException {
-		this.model = getLoadTerm(s);
+		model = getLoadTerm(s);
 	}
 
 	@Override

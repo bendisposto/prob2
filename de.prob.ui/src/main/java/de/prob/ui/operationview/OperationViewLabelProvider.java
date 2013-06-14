@@ -10,10 +10,11 @@ import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Joiner;
 
-import de.prob.animator.domainobjects.OpInfo;
+import de.prob.model.classicalb.Operation;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventParameter;
 import de.prob.model.representation.BEvent;
+import de.prob.statespace.OpInfo;
 import de.prob.ui.Activator;
 
 class OperationViewLabelProvider extends LabelProvider implements
@@ -38,8 +39,8 @@ class OperationViewLabelProvider extends LabelProvider implements
 			} else if (obj instanceof OpInfo) {
 				final OpInfo op = (OpInfo) obj;
 				return op.name;
-			} else if (obj instanceof Event) {
-				final Event event = (Event) obj;
+			} else if (obj instanceof BEvent) {
+				final BEvent event = (BEvent) obj;
 				return event.getName();
 			} else {
 				return obj.getClass().toString();
@@ -62,6 +63,9 @@ class OperationViewLabelProvider extends LabelProvider implements
 					paramNames.add(param.getName());
 				}
 				return Joiner.on(",").join(paramNames);
+			} else if (obj instanceof Operation) {
+				Operation op = (Operation) obj;
+				return Joiner.on(",").join(op.getParameters());
 			} else {
 				return obj.getClass().toString();
 			}

@@ -25,7 +25,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public final class GetStateValuesCommand implements ICommand {
+public final class GetStateValuesCommand extends AbstractCommand {
 
 	private final Logger logger = LoggerFactory
 			.getLogger(GetStateBasedErrorsCommand.class);
@@ -40,15 +40,15 @@ public final class GetStateValuesCommand implements ICommand {
 		} catch (NumberFormatException e) {
 			id = new CompoundPrologTerm(stateID);
 		}
-		this.stateId = id;
+		stateId = id;
 	}
 
 	private GetStateValuesCommand(final PrologTerm stateID) {
-		this.stateId = stateID;
+		stateId = stateID;
 	}
 
 	public static GetStateValuesCommand getEvalstoreValuesCommand(
-			long evalstoreId) {
+			final long evalstoreId) {
 		final IntegerPrologTerm id = new IntegerPrologTerm(evalstoreId);
 		return new GetStateValuesCommand(new CompoundPrologTerm("es", id));
 	}

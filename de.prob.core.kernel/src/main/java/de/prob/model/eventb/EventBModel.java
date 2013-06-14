@@ -1,8 +1,7 @@
 package de.prob.model.eventb;
 
+import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import com.google.inject.Inject;
@@ -24,9 +23,10 @@ public class EventBModel extends AbstractModel {
 	public EventBModel(final StateSpace statespace) {
 		this.statespace = statespace;
 	}
-	
+
+	@Override
 	public StateSchema getStateSchema() {
-		return this.schema;
+		return schema;
 	}
 
 	public void addMachines(final Collection<EventBMachine> collection) {
@@ -35,6 +35,10 @@ public class EventBModel extends AbstractModel {
 
 	public void addContexts(final Collection<Context> contexts) {
 		put(Context.class, contexts);
+	}
+
+	public void setModelFile(final File modelFile) {
+		this.modelFile = modelFile;
 	}
 
 	public void isFinished() {
@@ -46,6 +50,7 @@ public class EventBModel extends AbstractModel {
 		this.mainComponent = mainComponent;
 	}
 
+	@Override
 	public AbstractElement getMainComponent() {
 		return mainComponent;
 	}
@@ -60,60 +65,33 @@ public class EventBModel extends AbstractModel {
 		return "";
 	}
 
-	@Override
-	public AbstractElement getComponent(final String name) {
-		for (Machine machine : getChildrenOfType(Machine.class)) {
-			if (machine.getName().equals(name)) {
-				return machine;
-			}
-		}
-		for (Context context : getChildrenOfType(Context.class)) {
-			if (context.getName().equals(name)) {
-				return context;
-			}
-		}
-		return null;
-	}
-
 	public void calculateGraph() {
 		for (Machine machine : getChildrenOfType(Machine.class)) {
 			graph.addVertex(machine.getName());
+			components.put(machine.getName(), machine);
 		}
 		for (Context context : getChildrenOfType(Context.class)) {
 			graph.addVertex(context.getName());
+			components.put(context.getName(), context);
 		}
 
 		for (Machine machine : getChildrenOfType(Machine.class)) {
 			for (Machine refinement : machine.getChildrenOfType(Machine.class)) {
-				graph.addEdge(machine.getName(), refinement.getName(),
-						new RefType(ERefType.REFINES));
+				graph.addEdge(new RefType(ERefType.REFINES), machine.getName(),
+						refinement.getName());
 			}
 			for (Context seen : machine.getChildrenOfType(Context.class)) {
-				graph.addEdge(machine.getName(), seen.getName(), new RefType(
-						ERefType.SEES));
+				graph.addEdge(new RefType(ERefType.SEES), machine.getName(),
+						seen.getName());
 			}
 		}
 		Set<Context> contexts = getChildrenOfType(Context.class);
 		for (Context context : contexts) {
 			for (Context seen : context.getChildrenOfType(Context.class)) {
-				graph.addEdge(context.getName(), seen.getName(), new RefType(
-						ERefType.EXTENDS));
+				graph.addEdge(new RefType(ERefType.EXTENDS), context.getName(),
+						seen.getName());
 			}
 		}
 	}
-
-	@Override
-	public Map<String, AbstractElement> getComponents() {
-		Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
-		for (Machine machine : getChildrenOfType(Machine.class)) {
-			components.put(machine.getName(), machine);
-		}
-		for (Context context : getChildrenOfType(Context.class)) {
-			components.put(context.getName(), context);
-		}
-		return components;
-	}
-
-	
 
 }

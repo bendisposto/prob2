@@ -24,16 +24,27 @@ import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.unicode.UnicodeTranslator;
 
-public class EventB implements IEvalElement {
+/**
+ * Representation of an Event-B formula
+ * 
+ * @author joy
+ * 
+ */
+public class EventB extends AbstractEvalElement {
 
 	public FormulaUUID uuid = new FormulaUUID();
 
-	private final String code;
 	private String kind;
 	private Node ast = null;
 
+	/**
+	 * @param code
+	 *            - The String which is a representation of the desired Event-B
+	 *            formula
+	 */
 	public EventB(final String code) {
 		this.code = UnicodeTranslator.toAscii(code);
+		ensureParsed();
 	}
 
 	private void ensureParsed() {
@@ -80,24 +91,11 @@ public class EventB implements IEvalElement {
 			msgs.add(astProblem.getMessage().toString());
 		}
 		final String error = Joiner.on(", \n").join(msgs);
-		throw new RuntimeException("Cannot parse " + code + ":\n " + error); // FIXME
+		throw new EvaluationException("Cannot parse " + code + ":\n " + error);
 	}
 
 	@Override
-	public String getCode() {
-		return code;
-	}
-
-	@Override
-	public boolean equals(final Object that) {
-		if (that instanceof EventB) {
-			return ((EventB) that).getCode().equals(this.getCode());
-		}
-		return false;
-	}
-
-	@Override
-	public void printProlog(final IPrologTermOutput pout)  {
+	public void printProlog(final IPrologTermOutput pout) {
 		if (ast == null) {
 			ensureParsed();
 		}
@@ -117,4 +115,23 @@ public class EventB implements IEvalElement {
 		return getCode();
 	}
 
+	public Node getAst() {
+		if (ast == null) {
+			ensureParsed();
+		}
+
+		assert ast != null;
+
+		return ast;
+	}
+
+	@Override
+	public String serialized() {
+		return "#EventB:" + code;
+	}
+
+	@Override
+	public FormulaUUID getFormulaId() {
+		return uuid;
+	}
 }

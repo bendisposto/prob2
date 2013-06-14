@@ -1,0 +1,128 @@
+/** 
+ * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * Heinrich Heine Universitaet Duesseldorf
+ * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
+ * */
+
+package de.bmotionstudio.core.editor.part;
+
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.CompoundSnapToHelper;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.SnapToGeometry;
+import org.eclipse.gef.SnapToGrid;
+import org.eclipse.gef.SnapToGuides;
+import org.eclipse.gef.SnapToHelper;
+import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
+import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
+import org.eclipse.gef.rulers.RulerProvider;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
+
+import de.bmotionstudio.core.AttributeConstants;
+import de.bmotionstudio.core.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.core.editor.editpolicy.BMSEditLayoutPolicy;
+import de.bmotionstudio.core.editor.editpolicy.ChangeAttributePolicy;
+import de.bmotionstudio.core.editor.figure.VisualizationFigure;
+import de.bmotionstudio.core.editor.view.library.AbstractLibraryCommand;
+import de.bmotionstudio.core.editor.view.library.AttributeRequest;
+import de.bmotionstudio.core.editor.view.library.LibraryImageCommand;
+import de.bmotionstudio.core.editor.view.library.LibraryVariableCommand;
+import de.bmotionstudio.core.model.control.BControl;
+
+public class VisualizationPart extends BMSAbstractEditPart {
+
+	@Override
+	public List<BControl> getModelChildren() {
+		return ((BControl) getModel()).getChildren();
+	}
+
+	@Override
+	protected IFigure createEditFigure() {
+		return new VisualizationFigure();
+	}
+
+	@Override
+	protected void prepareEditPolicies() {
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
+		installEditPolicy(EditPolicy.LAYOUT_ROLE, new BMSEditLayoutPolicy());
+		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, null);
+		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
+		installEditPolicy(EditPolicy.CONTAINER_ROLE, new SnapFeedbackPolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE,
+				new RootComponentEditPolicy());
+		installEditPolicy(ChangeAttributePolicy.CHANGE_ATTRIBUTE_POLICY,
+				new ChangeAttributePolicy());
+	}
+
+	@Override
+	public void refreshEditFigure(final IFigure figure, final BControl model,
+			final PropertyChangeEvent evt) {
+
+		Object value = evt.getNewValue();
+		String aID = evt.getPropertyName();
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR)) {
+			RGB rgbBG = (RGB) value;
+			((VisualizationFigure) figure)
+					.setBackgroundColor(new org.eclipse.swt.graphics.Color(
+							Display.getDefault(), rgbBG.red, rgbBG.green,
+							rgbBG.blue));
+		}
+
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Object getAdapter(final Class adapter) {
+		if (adapter == SnapToHelper.class) {
+			List snapStrategies = new ArrayList();
+			Boolean val = (Boolean) getViewer().getProperty(
+					RulerProvider.PROPERTY_RULER_VISIBILITY);
+			if (val != null && val.booleanValue()) {
+				snapStrategies.add(new SnapToGuides(this));
+			}
+			val = (Boolean) getViewer().getProperty(
+					SnapToGeometry.PROPERTY_SNAP_ENABLED);
+			if (val != null && val.booleanValue()) {
+				snapStrategies.add(new SnapToGeometry(this));
+			}
+			val = (Boolean) getViewer().getProperty(
+					SnapToGrid.PROPERTY_GRID_ENABLED);
+			if (val != null && val.booleanValue()) {
+				snapStrategies.add(new SnapToGrid(this));
+			}
+
+			if (snapStrategies.size() == 0) {
+				return null;
+			}
+			if (snapStrategies.size() == 1) {
+				return snapStrategies.get(0);
+			}
+
+			SnapToHelper ss[] = new SnapToHelper[snapStrategies.size()];
+			for (int i = 0; i < snapStrategies.size(); i++) {
+				ss[i] = (SnapToHelper) snapStrategies.get(i);
+			}
+			return new CompoundSnapToHelper(ss);
+		}
+		return super.getAdapter(adapter);
+	}
+
+	@Override
+	public AbstractLibraryCommand getLibraryCommand(AttributeRequest request) {
+		AbstractLibraryCommand command = null;
+		if (request.getAttributeTransferObject().getLibraryObject().getType()
+				.equals("variable")) {
+			command = new LibraryVariableCommand();
+		} else if (request.getAttributeTransferObject().getLibraryObject()
+				.getType().equals("image")) {
+			command = new LibraryImageCommand();
+		}
+		return command;
+	}
+
+}

@@ -7,6 +7,14 @@ import com.google.inject.Singleton;
 import de.prob.cli.ModuleCli.OsArch;
 import de.prob.cli.ModuleCli.OsName;
 
+/**
+ * Creates {@link OsSpecificInfo} for each instance of the ProB 2.0 software.
+ * This is determined from the System settings. The resulting
+ * {@link OsSpecificInfo} can be injected into any desired class.
+ * 
+ * @author joy
+ * 
+ */
 @Singleton
 class OsInfoProvider implements Provider<OsSpecificInfo> {
 
@@ -25,12 +33,14 @@ class OsInfoProvider implements Provider<OsSpecificInfo> {
 
 	private OsSpecificInfo whichOs(final String osString, final String osArch) {
 		String os = osString.toLowerCase();
-		if (os.indexOf("win") >= 0)
+		if (os.indexOf("win") >= 0) {
 			return new OsSpecificInfo("probcli.exe", null,
 					"send_user_interrupt.exe", "Windows", osString, "win32");
-		if (os.indexOf("mac") >= 0)
+		}
+		if (os.indexOf("mac") >= 0) {
 			return new OsSpecificInfo("probcli.sh", "sh",
 					"send_user_interrupt", "MacOs", osString, "leopard64");
+		}
 		if (os.indexOf("linux") >= 0) {
 			if (osArch.equals("i386")) {
 				return new OsSpecificInfo("probcli.sh", "sh",

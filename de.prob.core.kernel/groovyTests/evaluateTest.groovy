@@ -1,7 +1,7 @@
 import de.prob.statespace.*
 c = api.b_load(dir+"/machines/scheduler.mch")
 s = c.statespace
-h = new History(s)
+h = new Trace(s)
 h = h.add(0)
 h = h.add(3)
 assert "2" == h.current.getCurrentState().getId()

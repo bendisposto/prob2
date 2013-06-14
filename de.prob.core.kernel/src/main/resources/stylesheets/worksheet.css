@@ -1,0 +1,67 @@
+@CHARSET "UTF-8";
+
+BODY {
+	maring: 0;
+	font-size: 12px;
+	font-family: Verdana, Arial, sans-serif;
+	margin: 0px;
+}
+
+#loadingBar {
+	margin: auto;
+	padding: 0;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	position: fixed;
+	z-index: 1001;
+}
+
+#loadingSheet {
+	background-color: #888;
+	position: fixed;
+	filter: alpha(opacity=50); /* internet explorer */
+	-khtml-opacity: 0.5;      /* khtml, old safari */
+	-moz-opacity: 0.5;       /* mozilla, netscape */
+	opacity: 0.5;           /* fx, safari, opera */
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: auto;
+	height: auto;
+	margin: 0;
+	padding: 0;
+	z-index: 1000;
+}
+
+.editor-instance{
+	position:absolute;
+	left:0px;
+	right:0px;
+	width:auto;
+}
+.ui-editor-HTMLOutput, .ui-editor-HTMLErrorOutput{
+	word-wrap: break-word;
+	overflow: auto;
+}
+.tree{
+	height:300px;
+	overflow:hidden;
+	position:relative;
+}
+.tree>div>div{
+	overflow:auto;
+	
+}
+.node{
+	padding:5px !important;
+}
+
+.CodeMirror{
+	border:none !important;
+}
+.ui-editor-HTMLErrorOutput {
+	background-color: #FFD8DB;
+}

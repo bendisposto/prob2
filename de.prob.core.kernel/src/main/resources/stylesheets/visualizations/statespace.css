@@ -1,0 +1,57 @@
+path.link {
+	fill: none;
+	stroke-width: 1px;
+}
+
+.state {
+  stroke: #fff;
+  stroke-width: 1.5px;
+  fill: #555;
+  fill-opacity: 0.8;
+}
+
+.state text {
+  stroke: none;
+  fill: black;
+  font-size: 10px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+.linkT {
+	font-size: 9px;
+}
+
+.menuOps {
+	list-style-type: none;
+	background: rgb(255,255,255) transparent;
+	background: rgba(255,255,255,0.1);
+	margin-bottom: 0;
+	margin-top: 0;
+	font-family: Arial, Verdana, sans-serif;
+	font-size: 11px;
+}
+
+.menuOps img {
+	padding-top: 2px;
+}
+
+.menuOps li {
+	display: inline;
+}
+
+.menuOps fieldset {
+	margin-top: 15px;
+}
+
+.menuOps fieldset li {
+	display: block;
+}
+
+.menuOps .transDiagOp form {
+	padding-left: 20px;
+	display: inline;
+}

@@ -18,7 +18,7 @@ public class ProBTestRunner {
 	private final List<ProBTestListener> testListeners = new ArrayList<ProBTestListener>();
 	private Class<?>[] tests = {};
 
-	private static final String[] IMPORTS = new String[] {
+	public static final String[] IMPORTS = new String[] {
 			"import de.prob.statespace.*;",
 			"import de.prob.model.representation.*;",
 			"import de.prob.model.classicalb.*;",
@@ -56,7 +56,7 @@ public class ProBTestRunner {
 	}
 
 	public Object getTestClass(final String test) {
-		Object runScript2 = executor.runScript2(test);
+		Object runScript2 = executor.runScript2(test, true);
 		return runScript2;
 	}
 

@@ -1,6 +1,6 @@
 package de.prob.animator.command.internal;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
@@ -12,7 +12,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class GetAllOperationsNamesCommand implements ICommand {
+public class GetAllOperationsNamesCommand extends AbstractCommand {
 
 	private static final String NAMES_VARIABLE = "Names";
 	private ListPrologTerm term;

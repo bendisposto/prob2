@@ -14,7 +14,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class GetErrorsCommand implements ICommand {
+public class GetErrorsCommand extends AbstractCommand {
 	public static final String ERRORS_VARIABLE = "Errors";
 	private List<String> errors;
 

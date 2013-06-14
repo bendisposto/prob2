@@ -3,16 +3,20 @@ package de.prob;
 import java.io.File;
 import java.io.FilenameFilter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import de.prob.webconsole.GroovyExecution;
 
 class Shell {
 
-	private GroovyExecution executor;
+	private final GroovyExecution executor;
+	private final Logger logger = LoggerFactory.getLogger(Shell.class);
 
 	@Inject
-	public Shell(GroovyExecution executor) {
+	public Shell(final GroovyExecution executor) {
 		this.executor = executor;
 	}
 
@@ -33,10 +37,11 @@ class Shell {
 	}
 
 	private void runSingleScript(final String dir, final File script) {
-		System.out.println("Running " + script.getAbsolutePath());
+
+		logger.debug("Runnning script: {}", script.getAbsolutePath());
 
 		executor.getBindings().setVariable("dir", dir);
-		executor.runSilentScript(script.getAbsolutePath());
+		executor.runSilentScript(script.getAbsolutePath(), true);
 
 	}
 

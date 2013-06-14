@@ -14,20 +14,25 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
+import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
-public class AnimationsView extends ViewPart implements IHistoryChangeListener {
+public class AnimationsView extends ViewPart implements
+		IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "de.prob.ui.operationview.OperationView";
+	public static final String ID = "de.prob.ui.AnimationsView";
+
+	private final Logger logger = LoggerFactory.getLogger(AnimationsView.class);
 
 	private TableViewer viewer;
 
@@ -41,7 +46,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	 */
 	public AnimationsView() {
 		selector = injector.getInstance(AnimationSelector.class);
-		selector.registerHistoryChangeListener(this);
+		selector.registerAnimationChangeListener(this);
 	}
 
 	/**
@@ -115,12 +120,12 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history) {
+	public void traceChange(final Trace trace) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				if (!viewer.getTable().isDisposed()) {
-					labelProvider.setCurrentHistory(history);
+					labelProvider.setCurrentTrace(trace);
 					viewer.setInput(selector);
 					packTableColumns();
 				}
@@ -128,16 +133,17 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 		});
 	}
 
-	public History getSelection() {
+	public Trace getSelection() {
 		if (viewer.getSelection() != null
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof History) {
-				return (History) ssel.getFirstElement();
+			Object elem = ssel.getFirstElement();
+			if (elem instanceof Trace) {
+				return (Trace) elem;
 			} else {
-				System.out.println("Selection is: "
-						+ ssel.getFirstElement().getClass());
+				logger.warn("Selection was not a trace. Class is {}",
+						elem.getClass());
 			}
 		}
 		return null;
@@ -148,7 +154,7 @@ public class AnimationsView extends ViewPart implements IHistoryChangeListener {
 		@Override
 		public void doubleClick(final DoubleClickEvent event) {
 			if (getSelection() != null) {
-				selector.changeCurrentHistory(getSelection());
+				selector.changeCurrentAnimation(getSelection());
 			}
 		}
 	}

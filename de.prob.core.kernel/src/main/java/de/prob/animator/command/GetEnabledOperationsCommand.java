@@ -13,13 +13,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.OpInfo;
 
 /**
  * Calculates the enabled operations for a given state id
@@ -27,7 +27,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public final class GetEnabledOperationsCommand implements ICommand {
+public final class GetEnabledOperationsCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory.getLogger(GetEnabledOperationsCommand.class);
 

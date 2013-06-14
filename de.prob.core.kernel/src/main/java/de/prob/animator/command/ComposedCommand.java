@@ -1,7 +1,9 @@
 package de.prob.animator.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import de.prob.animator.IAnimator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.PrologTermDelegate;
@@ -15,18 +17,18 @@ import de.prob.prolog.term.PrologTerm;
  * @author plagge
  * 
  */
-public class ComposedCommand implements ICommand {
+public class ComposedCommand extends AbstractCommand {
 	private static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			.toCharArray();
 
-	private final ICommand[] cmds;
+	private final AbstractCommand[] cmds;
 
-	public ComposedCommand(final ICommand... cmds) {
+	public ComposedCommand(final AbstractCommand... cmds) {
 		this.cmds = cmds;
 	}
 
-	public ComposedCommand(final List<ICommand> cmds) {
-		this.cmds = cmds.toArray(new ICommand[cmds.size()]);
+	public ComposedCommand(final List<? extends AbstractCommand> cmds) {
+		this.cmds = cmds.toArray(new AbstractCommand[cmds.size()]);
 	}
 
 	@Override
@@ -60,16 +62,16 @@ public class ComposedCommand implements ICommand {
 	}
 
 	public String createPrefix(final int i) {
-		if (i < LETTERS.length)
+		if (i < LETTERS.length) {
 			return String.valueOf(LETTERS[i]);
-		else {
+		} else {
 			final int letternum = i % LETTERS.length;
 			final int number = i / LETTERS.length;
 			return String.valueOf(LETTERS[letternum]) + number;
 		}
 	}
 
-	public void getResultForCommand(final ICommand command,
+	public void getResultForCommand(final AbstractCommand command,
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final int index = indexOf(command);
 		// added second condition in case command is not included in cmds
@@ -77,12 +79,13 @@ public class ComposedCommand implements ICommand {
 			final PrefixMap<PrologTerm> prefixMap = new PrefixMap<PrologTerm>(
 					bindings);
 			processPrefixedCommand(prefixMap, index);
-		} else
+		} else {
 			throw new IllegalArgumentException(
 					"cannot reprocess command, command unknown");
+		}
 	}
 
-	private int indexOf(final ICommand command) {
+	private int indexOf(final AbstractCommand command) {
 		int index;
 		for (index = 0; index < cmds.length; index++) {
 			if (cmds[index].equals(command)) {
@@ -137,5 +140,21 @@ public class ComposedCommand implements ICommand {
 			return map.toString();
 		}
 
+	}
+
+	public AbstractCommand[] runInDebugMode(final IAnimator animator) {
+		for (AbstractCommand cmd : cmds) {
+			animator.execute(cmd);
+		}
+		return cmds;
+	}
+
+	@Override
+	public List<AbstractCommand> getSubcommands() {
+		List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
+		for (AbstractCommand iCommand : cmds) {
+			commands.add(iCommand);
+		}
+		return commands;
 	}
 }

@@ -50,21 +50,15 @@
                  style="pulldown">
            </command>
            <command
-                 commandId="de.prob.ui.history.restartAnim"
-                 icon="icons/refresh.gif"
-                 label="Restart Animation"
-                 style="push">
-           </command>
-           <command
-                 commandId="de.prob.ui.history.back"
+                 commandId="de.prob.ui.trace.back"
                  icon="icons/back.gif"
-                 label="History Back"
+                 label="Move Back in Trace"
                  style="push">
            </command>
            <command
-                 commandId="de.prob.ui.history.forward"
+                 commandId="de.prob.ui.trace.forward"
                  icon="icons/forward.gif"
-                 label="History Forward"
+                 label="Move Forward in Trace"
                  style="push">
            </command>
         </menuContribution>
@@ -111,9 +105,9 @@
               allPopups="false"
               locationURI="popup:de.prob.ui.AnimationsView">
            <command
-                 commandId="de.prob.ui.remove_history"
+                 commandId="de.prob.ui.remove_trace"
                  icon="icons/rem_co.gif"
-                 label="Remove History"
+                 label="Remove Trace"
                  style="push">
            </command>
         </menuContribution>
@@ -129,11 +123,75 @@
         </menuContribution>
         <menuContribution
               allPopups="false"
-              locationURI="toolbar:de.prob.ui.JUnitView">
+              locationURI="toolbar:de.prob.ui.BUnitView">
            <command
                  commandId="de.prob.ui.specifydirectory"
                  icon="icons/junit/etool16/new_testcase.gif"
                  style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:analyze">
+           <command
+                 commandId="de.prob.ui.viz.pred"
+                 label="Open Predicate Visualization"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.viz.eval"
+                    value="enter">
+              </parameter>
+           </command>
+           <command
+                 commandId="de.prob.ui.viz.formula"
+                 label="Open Time vs Value Visualization"
+                 style="push">
+              <parameter
+                    name="de.prob.ui.viz.eval"
+                    value="enter">
+              </parameter>
+           </command>
+           <command
+                 commandId="de.prob.ui.viz.statespace"
+                 label="Open State Space Visualization"
+                 style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="toolbar:de.prob.ui.model_check">
+           <command
+                 commandId="de.prob.ui.deadlock_check"
+                 icon="icons/DeadlockCheck.png"
+                 label="Deadlock Freedom Check"
+                 mnemonic="D"
+                 style="push">
+           </command>
+           <command
+                 commandId="de.prob.ui.inv_check"
+                 icon="icons/CBCInvariantCheck.png"
+                 label="Invariant Preservation Check"
+                 mnemonic="I"
+                 style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="popup:de.prob.ui.StateView">
+           <command
+                 commandId="de.prob.ui.createFormViz"
+                 style="push">
+              <visibleWhen>
+                 <with
+                       variable="selection">
+                    <iterate
+                          operator="or">
+                       <instanceof
+                             value="de.prob.model.representation.IEval">
+                       </instanceof>
+                    </iterate>
+                 </with>
+              </visibleWhen>
            </command>
         </menuContribution>
    </extension>
@@ -146,16 +204,12 @@
             name="Event-B Animate / Model Check">
       </command>
             <command
-                  id="de.prob.ui.history.back"
-                  name="History Back">
+                  id="de.prob.ui.trace.back"
+                  name="Move Back in Trace">
             </command>
             <command
-                  id="de.prob.ui.history.forward"
-                  name="History Forward">
-            </command>
-            <command
-                  id="de.prob.ui.history.restartAnim"
-                  name="Restart Animation">
+                  id="de.prob.ui.trace.forward"
+                  name="Move Forward in Trace">
             </command>
             <command
                   id="de.prob.ui.randomoperation"
@@ -167,9 +221,9 @@
                </commandParameter>
             </command>
             <command
-                  description="Removes a history from the animations object"
-                  id="de.prob.ui.remove_history"
-                  name="Remove History">
+                  description="Removes a trace from the animations object"
+                  id="de.prob.ui.remove_trace"
+                  name="Remove Trace">
             </command>
             <command
                   description="Removes a variable from the groovy shell"
@@ -177,13 +231,48 @@
                   name="Remove Variable">
             </command>
             <command
-                  defaultHandler="de.prob.ui.junitview.SpecifyTestDirectoryHandler"
+                  defaultHandler="de.prob.ui.bunitview.SpecifyTestDirectoryHandler"
                   id="de.prob.ui.specifydirectory"
                   name="Specify Test Directory">
             </command>
             <command
                   id="de.prob.ui.bugreport"
                   name="Submit Bug Report">
+            </command>
+            <command
+                  id="de.prob.ui.deadlock_check"
+                  name="Deadlock Freedom Check">
+            </command>
+            <command
+                  id="de.prob.ui.inv_check"
+                  name="Invariant Preservation Check">
+            </command>
+            <command
+                  id="de.prob.ui.viz.pred"
+                  name="Open Predicate Visualization">
+               <commandParameter
+                     id="de.prob.ui.viz.eval"
+                     name="eval"
+                     optional="true">
+               </commandParameter>
+            </command>
+            <command
+                  id="de.prob.ui.viz.formula"
+                  name="Open Value vs Time Visualization">
+               <commandParameter
+                     id="de.prob.ui.viz.eval"
+                     name="eval"
+                     optional="true">
+               </commandParameter>
+            </command>
+            <command
+                  id="de.prob.ui.viz.statespace"
+                  name="Open State Space Visualization">
+            </command>
+            <command
+                  description="Takes formula from State View and opens a visualization"
+                  id="de.prob.ui.createFormViz"
+                  name="Create Formula Visualization">
             </command>
    </extension>
    
@@ -226,9 +315,9 @@
             </enabledWhen>
       </handler>
       <handler
-            commandId="de.prob.ui.history.back">
+            commandId="de.prob.ui.trace.back">
          <class
-               class="de.prob.ui.operationview.HistoryBackHandler">
+               class="de.prob.ui.operationview.TraceBackHandler">
          </class>
          <enabledWhen>
             <and>
@@ -239,7 +328,7 @@
                   </equals>
                </with>
                <with
-                     variable="de.prob.ui.history.backward_service">
+                     variable="de.prob.ui.trace.backward_service">
                   <equals
                         value="enabled">
                   </equals>
@@ -248,9 +337,9 @@
          </enabledWhen>
       </handler>
       <handler
-            commandId="de.prob.ui.history.forward">
+            commandId="de.prob.ui.trace.forward">
          <class
-               class="de.prob.ui.operationview.HistoryForwardHandler">
+               class="de.prob.ui.operationview.TraceForwardHandler">
          </class>
          <enabledWhen>
             <and>
@@ -261,26 +350,12 @@
                   </equals>
                </with>
                <with
-                     variable="de.prob.ui.history.forward_service">
+                     variable="de.prob.ui.trace.forward_service">
                   <equals
                         value="enabled">
                   </equals>
                </with>
             </and>
-         </enabledWhen>
-      </handler>
-      <handler
-            commandId="de.prob.ui.history.restartAnim">
-         <class
-               class="de.prob.ui.operationview.RestartAnimationHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="de.prob.ui.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
          </enabledWhen>
       </handler>
       <handler
@@ -298,9 +373,9 @@
          </class>
       </handler>
       <handler
-            commandId="de.prob.ui.remove_history">
+            commandId="de.prob.ui.remove_trace">
          <class
-               class="de.prob.ui.animationsview.RemoveHistoryHandler">
+               class="de.prob.ui.animationsview.RemoveTraceHandler">
          </class>
       </handler>
       <handler
@@ -312,13 +387,89 @@
       <handler
             commandId="de.prob.ui.specifytestdir">
          <class
-               class="de.prob.ui.junitview.SpecifyTestDirectoryHandler">
+               class="de.prob.ui.bunitview.SpecifyTestDirectoryHandler">
          </class>
       </handler>
       <handler
             commandId="de.prob.ui.bugreport">
          <class
                class="de.prob.ui.ticket.SubmitBugreportHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.viz.pred">
+         <class
+               class="de.prob.ui.visualization.OpenPredicateVizHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.deadlock_check">
+         <class
+               class="de.prob.ui.constraint.DeadlockCheckHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.inv_check">
+         <class
+               class="de.prob.ui.constraint.InvariantCheckHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.viz.formula">
+         <class
+               class="de.prob.ui.visualization.OpenTimeValueVizHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.viz.statespace">
+         <class
+               class="de.prob.ui.visualization.OpenStateSpaceVizHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.ui.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.createFormViz">
+         <class
+               class="de.prob.ui.stateview.CreateFormulaVisualizationHandler">
          </class>
       </handler>
    </extension>
@@ -340,14 +491,14 @@
             class="de.prob.ui.stateview.StateView"
             icon="icons/sample.gif"
             id="de.prob.ui.StateView"
-            name="State View">
+            name="State Inspector">
       </view>
       <view
             category="de.hhu.stups.prob"
-            class="de.prob.ui.historyview.HistoryView"
+            class="de.prob.ui.historyview.CurrentTraceView"
             icon="icons/sample.gif"
             id="de.prob.ui.HistoryView"
-            name="History">
+            name="Current Trace">
       </view>
       <view
             category="de.hhu.stups.prob"
@@ -359,6 +510,7 @@
       <view
             category="de.hhu.stups.prob"
             class="de.prob.ui.console.GroovyConsole"
+            icon="icons/groovy.png"
             id="de.prob.ui.groovyconsole"
             name="Groovy Console"
             restorable="true">
@@ -366,17 +518,47 @@
       <view
             category="de.hhu.stups.prob"
             class="de.prob.ui.GroovyBindingView"
-            icon="de.hhu.stups.prob"
+            icon="icons/groovy.png"
             id="de.prob.ui.groovybinding"
             name="Global Variables"
             restorable="true">
       </view>
       <view
             category="de.hhu.stups.prob"
-            class="de.prob.ui.junitview.JUnitView"
+            class="de.prob.ui.bunitview.BUnitView"
             icon="icons/sample.gif"
-            id="de.prob.ui.JUnitView"
-            name="JUnit View">
+            id="de.prob.ui.BUnitView"
+            name="BUnit Tests">
+      </view>
+      <view
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.statisticsview.StatisticsView"
+            icon="icons/sample.gif"
+            id="de.prob.ui.StatisticsView"
+            name="Statistics">
+      </view>
+      <view
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.modelcheckingview.ModelCheckingView"
+            icon="icons/Consistency.png"
+            id="de.prob.ui.model_check"
+            name="Model Checking"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.visualization.VizView"
+            id="de.prob.ui.viz.VizView"
+            name="Visualization"
+            restorable="true">
+      </view>
+      <view
+            class="de.prob.ui.view.LogView"
+            icon="icons/sample.gif"
+            id="de.prob.ui.log"
+            name="Log View"
+            restorable="true">
       </view>
    </extension>
    <extension
@@ -410,13 +592,13 @@
    <extension
          point="org.eclipse.ui.services">
       <sourceProvider
-            provider="de.prob.ui.services.HistoryActiveProvider">
+            provider="de.prob.ui.services.TraceActiveProvider">
          <variable
-               name="de.prob.ui.history.forward_service"
+               name="de.prob.ui.trace.forward_service"
                priorityLevel="workbench">
          </variable>
          <variable
-               name="de.prob.ui.history.backward_service"
+               name="de.prob.ui.trace.backward_service"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>

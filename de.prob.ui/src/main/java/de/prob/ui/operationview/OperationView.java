@@ -24,23 +24,26 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Injector;
 
-import de.prob.animator.domainobjects.OpInfo;
-import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Machine;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
-import de.prob.statespace.IHistoryChangeListener;
-import de.prob.ui.services.HistoryActiveProvider;
+import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.OpInfo;
+import de.prob.statespace.Trace;
 import de.prob.ui.services.ModelLoadedProvider;
+import de.prob.ui.services.TraceActiveProvider;
 import de.prob.webconsole.ServletContextListener;
 
 /**
@@ -58,28 +61,23 @@ import de.prob.webconsole.ServletContextListener;
  * <p>
  */
 
-public class OperationView extends ViewPart implements IHistoryChangeListener {
+public class OperationView extends ViewPart implements IAnimationChangeListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "de.prob.ui.operationview.OperationView";
 
+	private final Logger logger = LoggerFactory.getLogger(OperationView.class);
+
 	private TableViewer viewer;
-	private History currentHistory;
-	private AbstractElement currentModel;
+	private Trace currentTrace;
+	private AbstractModel currentModel;
 	private boolean modelLoaded;
 
 	Injector injector = ServletContextListener.INJECTOR;
 
-	/**
-	 * The constructor.
-	 */
-	public OperationView() {
-		final AnimationSelector selector = injector
-				.getInstance(AnimationSelector.class);
-		selector.registerHistoryChangeListener(this);
-	}
+	private AnimationSelector animations;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -87,6 +85,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	 */
 	@Override
 	public void createPartControl(final Composite parent) {
+		animations = injector.getInstance(AnimationSelector.class);
+		animations.registerAnimationChangeListener(this);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		createColumns();
@@ -130,9 +130,8 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 			final Action executeOp = new Action() {
 				@Override
 				public void run() {
-					final History newHistory = currentHistory.add(opInfo.id);
-					newHistory
-							.notifyAnimationChange(currentHistory, newHistory);
+					final Trace newTrace = currentTrace.add(opInfo.id);
+					animations.replaceTrace(currentTrace, newTrace);
 				}
 			};
 			executeOp.setText(Joiner.on(",").join(opInfo.params));
@@ -177,33 +176,36 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 	}
 
 	@Override
-	public void historyChange(final History history) {
-		currentHistory = history;
-		if (history == null) {
+	public void traceChange(final Trace trace) {
+		currentTrace = trace;
+		if (trace == null) {
 			updateModelLoadedProvider(false);
 			modelLoaded = false;
 		} else if (!modelLoaded) {
 			updateModelLoadedProvider(true);
 			modelLoaded = true;
 		}
-		if (history != null) {
-			final AbstractElement model = history.getModel();
-			if (currentModel != model) {
+		if (trace != null) {
+			final AbstractModel model = trace.getModel();
+			if (currentModel != model && viewer != null) {
 				updateModel(model);
 			}
 		}
-		Display.getDefault().asyncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 
 			@Override
 			public void run() {
-				if (!viewer.getTable().isDisposed()) {
-					viewer.setInput(history);
-					packTableColumns();
+				if (viewer != null) {
+					if (!viewer.getTable().isDisposed()) {
+						viewer.setInput(trace);
+						packTableColumns();
+					}
 				}
+
 			}
 		});
 		try {
-			updateHistoryEnabled(history);
+			updateAnimationEnabled(trace);
 		} catch (final Exception e) {
 		}
 	}
@@ -214,13 +216,13 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 				&& viewer.getSelection() instanceof IStructuredSelection) {
 			final IStructuredSelection ssel = (IStructuredSelection) viewer
 					.getSelection();
-			if (ssel.getFirstElement() instanceof ArrayList<?>) {
-				final List<OpInfo> opList = (ArrayList<OpInfo>) ssel
-						.getFirstElement();
+			Object elem = ssel.getFirstElement();
+			if (elem instanceof ArrayList<?>) {
+				final List<OpInfo> opList = (ArrayList<OpInfo>) elem;
 				return opList;
 			} else {
-				System.out.println("Selection is: "
-						+ ssel.getFirstElement().getClass());
+				logger.warn("Selection is not an ArrayList. Class is {}",
+						elem.getClass());
 			}
 		}
 		return null;
@@ -232,50 +234,50 @@ public class OperationView extends ViewPart implements IHistoryChangeListener {
 		public void doubleClick(final DoubleClickEvent event) {
 			final List<OpInfo> selectedOperations = getSelectedOperations();
 			if (selectedOperations != null && !selectedOperations.isEmpty()) {
-				final History newHistory = currentHistory
-						.add(selectedOperations.get(0).id);
-				newHistory.notifyAnimationChange(currentHistory, newHistory);
+				try {
+					final Trace newTrace = currentTrace.add(selectedOperations
+							.get(0).id);
+					animations.replaceTrace(currentTrace, newTrace);
+				} catch (IllegalArgumentException e) {
+					// Happens when the user tries to execute too many
+					// operations in the OperationView too quickly
+				}
 			}
 		}
 	}
 
 	private void updateModelLoadedProvider(final boolean b) {
-		final ISourceProviderService service = (ISourceProviderService) getSite()
+		IWorkbenchPartSite site = getSite();
+		final ISourceProviderService service = (ISourceProviderService) site
 				.getService(ISourceProviderService.class);
 		final ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
 				.getSourceProvider(ModelLoadedProvider.SERVICE);
 		sourceProvider.setEnabled(b);
 	}
 
-	private void updateHistoryEnabled(final History history) {
+	private void updateAnimationEnabled(final Trace trace) {
 		final ISourceProviderService service = (ISourceProviderService) this
 				.getSite().getService(ISourceProviderService.class);
-		final HistoryActiveProvider sourceProvider = (HistoryActiveProvider) service
-				.getSourceProvider(HistoryActiveProvider.FORWARD_SERVICE);
-		sourceProvider.historyChange(history);
+		final TraceActiveProvider sourceProvider = (TraceActiveProvider) service
+				.getSourceProvider(TraceActiveProvider.FORWARD_SERVICE);
+		sourceProvider.traceChange(trace);
 	}
 
-	private void updateModel(final AbstractElement model) {
+	private void updateModel(final AbstractModel model) {
 		currentModel = model;
-		if (viewer == null) {
-			return; // nothing to do here
-		}
 		((OperationsContentProvider) viewer.getContentProvider())
 				.setAllOperations(getOperationNames(model));
 	}
 
-	private Map<String, Object> getOperationNames(final AbstractElement model) {
+	private Map<String, Object> getOperationNames(final AbstractModel model) {
 		final Map<String, Object> names = new HashMap<String, Object>();
-		if (model instanceof EventBModel) {
-			final EventBModel ebmodel = (EventBModel) model;
-			final AbstractElement component = ebmodel.getMainComponent();
-			if (component instanceof Machine) {
-				final Machine machine = (Machine) component;
-				Set<BEvent> childrenOfType = machine
-						.getChildrenOfType(BEvent.class);
-				for (BEvent event : childrenOfType) {
-					names.put(event.getName(), event);
-				}
+		final AbstractElement component = model.getMainComponent();
+		if (component instanceof Machine) {
+			final Machine machine = (Machine) component;
+			Set<BEvent> childrenOfType = machine
+					.getChildrenOfType(BEvent.class);
+			for (BEvent event : childrenOfType) {
+				names.put(event.getName(), event);
 			}
 		}
 		return names;

@@ -23,6 +23,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 	private final String dir;
 	private final OsSpecificInfo osInfo;
 
+	@Override
 	public ProcessHandle get() {
 		return makeProcess();
 	}
@@ -32,7 +33,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 			@DebuggingKey final String debuggingKey, @Home final String path) {
 		this.osInfo = osInfo;
 		this.debuggingKey = debuggingKey;
-		this.dir = checkCliPath(path);
+		dir = checkCliPath(path);
 
 	}
 
@@ -69,6 +70,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 
 	private void setShutdownHook(final Process p) {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			@Override
 			public void run() {
 				p.destroy();
 			}

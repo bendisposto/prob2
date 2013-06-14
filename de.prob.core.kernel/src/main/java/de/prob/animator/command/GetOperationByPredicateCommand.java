@@ -14,13 +14,13 @@ import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.OpInfo;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.OpInfo;
 
 /**
  * Command to execute an event that has not been enumerated by ProB, for further
@@ -29,7 +29,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author Jens Bendisposto
  * 
  */
-public final class GetOperationByPredicateCommand implements ICommand {
+public final class GetOperationByPredicateCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory
 			.getLogger(GetOperationByPredicateCommand.class);
@@ -46,7 +46,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 		this.stateId = stateId;
 		this.name = name;
 		this.nrOfSolutions = nrOfSolutions;
-		this.evalElement = predicate;
+		evalElement = predicate;
 	}
 
 	/**
@@ -56,7 +56,7 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	 * 
 	 * @throws ProBException
 	 * 
-	 * @see de.prob.animator.command.ICommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
+	 * @see de.prob.animator.command.AbstractCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
@@ -76,12 +76,11 @@ public final class GetOperationByPredicateCommand implements ICommand {
 	 * 
 	 * 
 	 * 
-	 * @see de.prob.animator.command.ICommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
+	 * @see de.prob.animator.command.AbstractCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			 {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 
 		operation.clear();
 

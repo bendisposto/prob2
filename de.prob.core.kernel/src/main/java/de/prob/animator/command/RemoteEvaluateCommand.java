@@ -21,7 +21,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author bendisposto
  * 
  */
-public class RemoteEvaluateCommand implements ICommand {
+public class RemoteEvaluateCommand extends AbstractCommand {
 
 	public enum EEvaluationStrategy {
 		EXISTENTIAL("evaluate_formula", true), UNIVERSAL("evaluate_tautology",
@@ -29,7 +29,7 @@ public class RemoteEvaluateCommand implements ICommand {
 		private final String prolog;
 		private final boolean existential;
 
-		EEvaluationStrategy(String prolog, boolean existential) {
+		EEvaluationStrategy(final String prolog, final boolean existential) {
 			this.prolog = prolog;
 			this.existential = existential;
 		}
@@ -49,7 +49,7 @@ public class RemoteEvaluateCommand implements ICommand {
 	private final EEvaluationStrategy quantifier;
 
 	public RemoteEvaluateCommand(final String formula,
-			EEvaluationStrategy quantifier) {
+			final EEvaluationStrategy quantifier) {
 		this.formula = formula;
 		this.quantifier = quantifier;
 	}
@@ -74,8 +74,8 @@ public class RemoteEvaluateCommand implements ICommand {
 				list.add(lpt.get(i).getArgument(1).getFunctor());
 			}
 
-			value = new EvaluationResult(code, "", "", Joiner.on(", ").join(
-					list), "error", new ArrayList<String>(), false);
+			value = new EvaluationResult("", code, "", "", Joiner.on(", ")
+					.join(list), "error", new ArrayList<String>(), false);
 		} else {
 			String v = term.getArgument(1).getFunctor();
 			String solution = term.getArgument(2).getFunctor();
@@ -84,8 +84,8 @@ public class RemoteEvaluateCommand implements ICommand {
 					.atomicStrings((ListPrologTerm) term.getArgument(4));
 			boolean enumerationWarnings = "true".equals(term.getArgument(5)
 					.getFunctor());
-			value = new EvaluationResult(formula, v, solution, "", resultType,
-					atomicStrings, enumerationWarnings);
+			value = new EvaluationResult("", formula, v, solution, "",
+					resultType, atomicStrings, enumerationWarnings);
 		}
 
 	}

@@ -92,7 +92,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			final String message = "Rodin Database Exception: \n"
 					+ re.getLocalizedMessage();
 			throw new IllegalArgumentException(modelTranslator.getClass()
-					.toString()+ message);
+					.toString() + message);
 		} catch (RuntimeException e) {
 			// spurious runtime exceptions were thrown, especially if older
 			// EventB= Projects were used without cleaning the project
@@ -101,7 +101,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 					+ "\n"
 					+ e.getLocalizedMessage();
 			throw new IllegalArgumentException(modelTranslator.getClass()
-					.toString()+ message);
+					.toString() + message);
 		}
 		return modelTranslator;
 	}
@@ -112,8 +112,9 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	public AEventBModelParseUnit getModelAST() {
 		if (broken) {
-//			final String message = "The machine contains Rodin Problems. Please fix it before animating";
-//			//Logger.notifyUserWithoutBugreport(message);
+			// final String message =
+			// "The machine contains Rodin Problems. Please fix it before animating";
+			// //Logger.notifyUserWithoutBugreport(message);
 			return model;
 		}
 		return model;
@@ -135,11 +136,11 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		origin = machine.getMachineRoot();
 	}
 
-	private void translate() throws RodinDBException,
-	IllegalArgumentException {
+	private void translate() throws RodinDBException, IllegalArgumentException {
 
-//		final String message = "machine.getRodinFile().isConsistent() [Note: Maybe you can fix this Rodin problem by refreshing and rebuilding the project]";
-//		//Logger.assertProB(message, machine.getRodinFile().isConsistent());
+		// final String message =
+		// "machine.getRodinFile().isConsistent() [Note: Maybe you can fix this Rodin problem by refreshing and rebuilding the project]";
+		// //Logger.assertProB(message, machine.getRodinFile().isConsistent());
 
 		broken = !machine.isAccurate(); // isAccurate() is not transitive, we
 		// need to collect the information also
@@ -200,15 +201,16 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		}
 
 		if (!bugs.isEmpty()) {
-			//String message = "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
-			//		+ StringUtils.join(bugs, ",");
-			//Logger.notifyUser(message);
+			// String message =
+			// "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
+			// + StringUtils.join(bugs, ",");
+			// Logger.notifyUser(message);
 		}
 
 	}
 
 	private void translateMachine() throws RodinDBException,
-	IllegalArgumentException {
+			IllegalArgumentException {
 		model.setName(new TIdentifierLiteral(machine.getRodinFile()
 				.getBareName()));
 
@@ -232,7 +234,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private AVariantModelClause processVariant() throws RodinDBException,
-	IllegalArgumentException {
+			IllegalArgumentException {
 		final ISCVariant[] variant = machine.getSCVariants();
 		final AVariantModelClause var;
 		if (variant.length == 1) {
@@ -243,14 +245,14 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		} else if (variant.length == 0) {
 			var = null;
 		} else
-			throw new IllegalArgumentException(machine.getComponentName()+
-					"expected at most one variant, but there were "
-							+ variant.length);
+			throw new IllegalArgumentException(machine.getComponentName()
+					+ "expected at most one variant, but there were "
+					+ variant.length);
 		return var;
 	}
 
 	private ARefinesModelClause processRefines() throws RodinDBException,
-	IllegalArgumentException {
+			IllegalArgumentException {
 		final ISCRefinesMachine[] refinesClauses = machine
 				.getSCRefinesClauses();
 		final ARefinesModelClause ref;
@@ -263,9 +265,9 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			ref = null;
 			refines = null;
 		} else
-			throw new IllegalArgumentException(machine.getComponentName()+
-					"expected at most one refined machine, but there were "
-							+ refinesClauses.length);
+			throw new IllegalArgumentException(machine.getComponentName()
+					+ "expected at most one refined machine, but there were "
+					+ refinesClauses.length);
 		return ref;
 	}
 
@@ -281,8 +283,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		return new ASeesModelClause(contexts);
 	}
 
-	private AEventsModelClause processEvents()
-			throws IllegalArgumentException, RodinDBException {
+	private AEventsModelClause processEvents() throws IllegalArgumentException,
+			RodinDBException {
 		final AEventsModelClause clause = new AEventsModelClause();
 		final ISCEvent[] events = machine.getSCEvents();
 		final List<PEvent> eventsList = new ArrayList<PEvent>(events.length);
@@ -337,8 +339,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			status = new AConvergentEventstatus();
 			break;
 		default:
-			throw new IllegalArgumentException(machine.getComponentName()+
-					"unexpected convergent status " + convergence);
+			throw new IllegalArgumentException(machine.getComponentName()
+					+ "unexpected convergent status " + convergence);
 		}
 		return status;
 	}
@@ -378,8 +380,6 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			final PredicateVisitor visitor = new PredicateVisitor(
 					new LinkedList<String>());
 			final Predicate guardPredicate = guard.getPredicate(ff, localEnv);
-			// System.out.println("GUARD: " + guard.getLabel() + " -> "
-			// + guardPredicate);
 			guardPredicate.accept(visitor);
 			final PPredicate predicate = visitor.getPredicate();
 			if (guard.isTheorem()) {

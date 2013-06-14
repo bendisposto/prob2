@@ -2,7 +2,7 @@ package de.prob.animator;
 
 import com.google.inject.ImplementedBy;
 
-import de.prob.animator.command.ICommand;
+import de.prob.animator.command.AbstractCommand;
 
 @ImplementedBy(AnimatorImpl.class)
 public interface IAnimator {
@@ -11,14 +11,14 @@ public interface IAnimator {
 	 * 
 	 * @param command
 	 */
-	public abstract void execute(ICommand command);
+	public abstract void execute(AbstractCommand command);
 
 	/**
 	 * Takes multiple commands and executes them.
 	 * 
 	 * @param commands
 	 */
-	public abstract void execute(ICommand... commands);
+	public abstract void execute(AbstractCommand... commands);
 
 	public void sendInterrupt();
 

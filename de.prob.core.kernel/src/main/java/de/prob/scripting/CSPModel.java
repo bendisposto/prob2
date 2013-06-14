@@ -1,14 +1,17 @@
 package de.prob.scripting;
 
+import java.io.File;
+import java.util.Map;
+
 import com.google.inject.Inject;
 
 import de.prob.model.representation.AbstractElement;
-import de.prob.statespace.History;
+import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.StateSchema;
 import de.prob.statespace.StateSpace;
 
-public class CSPModel extends AbstractElement {
+public class CSPModel extends AbstractModel {
 
-	private final StateSpace statespace;
 	private String content;
 
 	@Inject
@@ -16,8 +19,9 @@ public class CSPModel extends AbstractElement {
 		this.statespace = statespace;
 	}
 
-	public void init(final String content) {
+	public void init(final String content, final File modelFile) {
 		this.content = content;
+		this.modelFile = modelFile;
 		statespace.setModel(this);
 	}
 
@@ -25,18 +29,27 @@ public class CSPModel extends AbstractElement {
 		return content;
 	}
 
-	public Object asType(final Class<?> className) {
-		if (className.getSimpleName().equals("StateSpace")) {
-			return statespace;
-		}
-		if (className.getSimpleName().equals("History")) {
-			return new History(statespace);
-		}
-		throw new ClassCastException("No element of type " + className
-				+ " found.");
+	@Override
+	public AbstractElement getComponent(final String name) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public StateSpace getStatespace() {
-		return statespace;
+	@Override
+	public Map<String, AbstractElement> getComponents() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public StateSchema getStateSchema() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AbstractElement getMainComponent() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

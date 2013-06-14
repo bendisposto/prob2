@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+project.group = 'de.bmotionstudio'
+sourceCompatibility = 1.6
+def gradle_version = '1.0-rc-3'
+
+
+eclipse {
+  project { 
+     name = 'de.bmotionstudio.core'
+     natures   'org.eclipse.pde.PluginNature' 
+     buildCommand   'org.eclipse.pde.ManifestBuilder'
+     buildCommand 'org.eclipse.pde.SchemaBuilder'
+  }
+  
+  classpath {
+      file {
+          whenMerged { classpath ->
+              classpath.entries += new org.gradle.plugins.ide.eclipse.model.Container("org.eclipse.pde.core.requiredPlugins");
+          }
+        }
+  }
+   
+}
+

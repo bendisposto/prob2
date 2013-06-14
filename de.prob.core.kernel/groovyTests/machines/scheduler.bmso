@@ -1,0 +1,99 @@
+<view>
+  <name>New Visualization View</name>
+  <visualization>
+    <children/>
+    <observer/>
+    <events/>
+    <attributes>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeHeight</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeHeight>
+          <value class="int">100</value>
+        </de.bmotionstudio.core.model.attribute.BAttributeHeight>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeX</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeX>
+          <value class="int">100</value>
+        </de.bmotionstudio.core.model.attribute.BAttributeX>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeWidth</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeWidth>
+          <value class="int">100</value>
+        </de.bmotionstudio.core.model.attribute.BAttributeWidth>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeVisible</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeVisible>
+          <value class="boolean">true</value>
+        </de.bmotionstudio.core.model.attribute.BAttributeVisible>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeSize</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeSize/>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeY</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeY>
+          <value class="int">100</value>
+        </de.bmotionstudio.core.model.attribute.BAttributeY>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeID</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeID>
+          <value class="string">a28b1dd8-dcc3-4556-b39a-670bf9ff4581</value>
+        </de.bmotionstudio.core.model.attribute.BAttributeID>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeCustom</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeCustom>
+          <value class="string"></value>
+        </de.bmotionstudio.core.model.attribute.BAttributeCustom>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.AttributeSourceConnections</string>
+        <de.bmotionstudio.core.model.attribute.AttributeSourceConnections>
+          <value class="de.bmotionstudio.core.model.attribute.ConnectionList">
+            <connections/>
+          </value>
+        </de.bmotionstudio.core.model.attribute.AttributeSourceConnections>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeMisc</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeMisc>
+          <value class="string"></value>
+        </de.bmotionstudio.core.model.attribute.BAttributeMisc>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.AttributeTargetConnections</string>
+        <de.bmotionstudio.core.model.attribute.AttributeTargetConnections>
+          <value class="de.bmotionstudio.core.model.attribute.ConnectionList">
+            <connections/>
+          </value>
+        </de.bmotionstudio.core.model.attribute.AttributeTargetConnections>
+      </entry>
+      <entry>
+        <string>de.bmotionstudio.core.model.attribute.BAttributeCoordinates</string>
+        <de.bmotionstudio.core.model.attribute.BAttributeCoordinates/>
+      </entry>
+    </attributes>
+    <connections/>
+  </visualization>
+  <rulerVisible>true</rulerVisible>
+  <snapToGeometry>true</snapToGeometry>
+  <gridEnabled>false</gridEnabled>
+  <locked>false</locked>
+  <zoom>1.0</zoom>
+  <leftRuler>
+    <unit>2</unit>
+    <horizontal>false</horizontal>
+    <guides/>
+  </leftRuler>
+  <topRuler>
+    <unit>2</unit>
+    <horizontal>true</horizontal>
+    <guides/>
+  </topRuler>
+  <language>ClassicalB</language>
+</view>

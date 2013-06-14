@@ -5,7 +5,7 @@
    <extension-point id="de.bmotionstudio.core.installMenu" name="Context Menu" schema="schema/de.bmotionstudio.core.installMenu.exsd"/>
    <extension-point id="de.bmotionstudio.core.control" name="Control" schema="schema/de.bmotionstudio.core.control.exsd"/>
    <extension-point id="de.bmotionstudio.core.language" name="BMotion Studio Language Loader" schema="schema/de.bmotionstudio.core.language.exsd"/>
-   <extension-point id="de.bmotionstudio.core.schedulerEvent" name="Scheduler Event" schema="schema/de.bmotionstudio.core.schedulerEvent.exsd"/>
+   <extension-point id="de.bmotionstudio.core.event" name="BMotion Studio Event" schema="schema/de.bmotionstudio.core.event.exsd"/>
    <extension-point id="de.bmotionstudio.core.observer" name="BMotion Studio Observer" schema="schema/de.bmotionstudio.core.observer.exsd"/>
    <extension-point id="de.bmotionstudio.core.paletteEntry" name="Add a custom Palette Entry" schema="schema/de.bmotionstudio.core.paletteEntry.exsd"/>
    <extension-point id="de.bmotionstudio.core.includeObserver" name="Include Observer Extension Point" schema="schema/de.bmotionstudio.core.includeObserver.exsd"/>
@@ -76,6 +76,15 @@
             name="Outline"
             restorable="true">
       </view>
+      <view
+            allowMultiple="true"
+            category="de.bmotionstudio.views"
+            class="de.bmotionstudio.core.editor.HTMLVisualizationViewPart"
+            icon="icons/logo_bmotion.png"
+            id="de.bmotionstudio.core.view.HTMLVisualizationView"
+            name="Visualization"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -94,47 +103,7 @@
                   label="Add Visualization View"
                   style="push">
             </command>
-            <separator
-                  name="group.filter"
-                  visible="true">
-            </separator>
-            <command
-                  commandId="de.bmotionstudio.command.startVisualizationFromEditor"
-                  icon="icons/icon_run.png"
-                  label="Start Visualization"
-                  style="push">
-               <visibleWhen
-                     checkEnabled="true">
-                  <with
-                        variable="activeEditorId">
-                     <equals
-                           value="de.bmotionstudio.core.BMotionStudioEditor">
-                     </equals>
-                  </with>
-               </visibleWhen>
-            </command>
          </menu>
-      </menuContribution>
-      <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar">
-         <toolbar
-               id="de.bmotionstudio.core.toolbar">
-            <command
-                  commandId="de.bmotionstudio.command.startVisualizationFromEditor"
-                  icon="icons/icon_run.png"
-                  label="Start Visualization"
-                  style="push">
-               <visibleWhen
-                     checkEnabled="true">
-                  <with
-                        variable="activeEditorId">
-                     <equals
-                           value="de.bmotionstudio.core.BMotionStudioEditor">
-                     </equals>
-                  </with>
-               </visibleWhen>
-            </command>
-         </toolbar>
       </menuContribution>
    </extension>
    <extension
@@ -143,15 +112,6 @@
             defaultHandler="de.bmotionstudio.core.editor.handler.OpenWebsiteHandler"
             id="de.bmotionstudio.core.command.openBMotionStudioWebsite"
             name="Open website">
-      </command>
-      <command
-            id="de.bmotionstudio.command.startVisualizationFromEditor"
-            name="Start Visualization from Editor">
-      </command>
-      <command
-            defaultHandler="de.bmotionstudio.core.editor.handler.StartVisualizationFileHandler"
-            id="de.bmotionstudio.command.startVisualizationFromFile"
-            name="Start Visualization from File">
       </command>
       <command
             description="SnapToGeometry"
@@ -174,21 +134,6 @@
             name="Add Visualization View">
       </command>
    </extension>
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            class="de.bmotionstudio.core.editor.handler.StartVisualizationEditorHandler"
-            commandId="de.bmotionstudio.command.startVisualizationFromEditor">
-         <enabledWhen>
-            <with
-                  variable="activeEditorId">
-               <equals
-                     value="de.bmotionstudio.core.BMotionStudioEditor">
-               </equals>
-            </with>
-         </enabledWhen>
-      </handler>
-   </extension>
    
  <extension
          point="de.bmotionstudio.core.control">
@@ -201,105 +146,105 @@
             icon="icons/eclipse16/image_obj.gif"
             id="de.bmotionstudio.control.Image"
             name="Image"
-            service="de.bmotionstudio.core.service.control.BImageService">
+            service="de.bmotionstudio.core.service.BImageService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_button.gif"
             id="de.bmotionstudio.control.Button"
             name="Button"
-            service="de.bmotionstudio.core.service.control.BButtonService">
+            service="de.bmotionstudio.core.service.BButtonService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_radiobutton_c.gif"
             id="de.bmotionstudio.control.Radiobutton"
             name="Radiobutton"
-            service="de.bmotionstudio.core.service.control.BRadioButtonService">
+            service="de.bmotionstudio.core.service.BRadioButtonService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_checked.gif"
             id="de.bmotionstudio.control.Checkbox"
             name="Checkbox"
-            service="de.bmotionstudio.core.service.control.BCheckboxService">
+            service="de.bmotionstudio.core.service.BCheckboxService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/eclipse16/overview_obj.gif"
             id="de.bmotionstudio.control.Composite"
             name="Composite"
-            service="de.bmotionstudio.core.service.control.BCompositeService">
+            service="de.bmotionstudio.core.service.BCompositeService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_text.gif"
             id="de.bmotionstudio.control.Text"
             name="Text"
-            service="de.bmotionstudio.core.service.control.BTextService">
+            service="de.bmotionstudio.core.service.BTextService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_textfield.gif"
             id="de.bmotionstudio.control.Textfield"
             name="Textfield"
-            service="de.bmotionstudio.core.service.control.BTextfieldService">
+            service="de.bmotionstudio.core.service.BTextfieldService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_rectangle.gif"
             id="de.bmotionstudio.control.Rectangle"
             name="Rectanlge"
-            service="de.bmotionstudio.core.service.control.BRectangleService">
+            service="de.bmotionstudio.core.service.BRectangleService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_ellipse.gif"
             id="de.bmotionstudio.control.Ellipse"
             name="Ellipse"
-            service="de.bmotionstudio.core.service.control.BEllipseService">
+            service="de.bmotionstudio.core.service.BEllipseService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/controls/icon_connection16.gif"
             id="de.bmotionstudio.control.Connection"
             name="Connection"
-            service="de.bmotionstudio.core.service.control.BConnectionService">
+            service="de.bmotionstudio.core.service.BConnectionService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/eclipse16/prop_ps.gif"
             id="de.bmotionstudio.control.Table"
             name="Table"
-            service="de.bmotionstudio.core.service.control.BTableService">
+            service="de.bmotionstudio.core.service.BTableService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/eclipse16/prop_ps2.gif"
             id="de.bmotionstudio.control.Column"
             name="Column"
-            service="de.bmotionstudio.core.service.control.BTableColumnService">
+            service="de.bmotionstudio.core.service.BTableColumnService">
       </control>
       <control
             groupid="de.bmotionstudio.core.group.main"
             icon="icons/eclipse16/prop_ps3.gif"
             id="de.bmotionstudio.control.Cell"
             name="Cell"
-            service="de.bmotionstudio.core.service.control.BTableCellService">
+            service="de.bmotionstudio.core.service.BTableCellService">
       </control>
       <control
-            groupid="de.bmotionstudio.core.railway.group"
-            icon="icons/controls/icon_signal.gif"
-            id="de.bmotionstudio.control.Signal"
-            name="Signal"
-            service="de.bmotionstudio.core.service.control.SignalService">
+            groupid="de.bmotionstudio.core.industry.group"
+            icon="icons/controls/icon_trafficlight.gif"
+            id="de.bmotionstudio.control.Trafficlight"
+            name="Trafficlight"
+            service="de.bmotionstudio.core.service.TrafficlightService">
       </control>
       <control
-            groupid="de.bmotionstudio.core.railway.group"
+            groupid="de.bmotionstudio.core.industry.group"
             icon="icons/eclipse16/smartmode_co.gif"
             id="de.bmotionstudio.control.Light"
             name="Light"
-            service="de.bmotionstudio.core.service.control.LightService">
+            service="de.bmotionstudio.core.service.LightService">
       </control>
       <group
             id="de.bmotionstudio.core.industry.group"
@@ -310,7 +255,7 @@
             icon="icons/controls/icon_tank.gif"
             id="de.bmotionstudio.control.Tank"
             name="Tank"
-            service="de.bmotionstudio.core.service.control.TankService">
+            service="de.bmotionstudio.core.service.TankService">
       </control>
       <group
             id="de.bmotionstudio.core.railway.group"
@@ -321,33 +266,64 @@
             icon="icons/controls/icon_tracknode.gif"
             id="de.bmotionstudio.control.Tracknode"
             name="Node"
-            service="de.bmotionstudio.core.service.control.TrackNodeService">
+            service="de.bmotionstudio.core.service.TrackNodeService">
       </control>
       <control
             groupid="de.bmotionstudio.core.railway.group"
-            icon="icons/controls/icon_track.gif"
-            id="de.bmotionstudio.control.Track"
-            name="Trac"
-            service="de.bmotionstudio.core.service.control.TrackService">
+            icon="icons/controls/icon_segment.gif"
+            id="de.bmotionstudio.control.Segment"
+            name="Segment"
+            service="de.bmotionstudio.core.service.SegmentService">
       </control>
       <control
             groupid="de.bmotionstudio.core.railway.group"
-            icon="icons/controls/icon_switch.gif"
-            id="de.bmotionstudio.control.Switch"
-            name="Switch"
-            service="de.bmotionstudio.core.service.control.SwitchService">
+            icon="icons/controls/icon_trafficlight.gif"
+            id="de.bmotionstudio.control.Signal"
+            name="Signal"
+            service="de.bmotionstudio.core.service.SignalService">
       </control>
    </extension>
    <extension
          point="de.bmotionstudio.core.observer">
       <observer
-            class="de.bmotionstudio.core.model.observer.ExpressionObserver"
-            id="de.bmotionstudio.observer.ExpressionObserver">
+            class="de.bmotionstudio.core.model.observer.BExpressionObserver"
+            id="de.bmotionstudio.observer.BExpressionObserver"
+            name="B Expression Observer">
       </observer>
       <observer
-            class="de.bmotionstudio.core.model.observer.PredicateObserver"
-            id="de.bmotionstudio.observer.PredicateObserver">
+            class="de.bmotionstudio.core.model.observer.BPredicateObserver"
+            id="de.bmotionstudio.observer.BPredicateObserver"
+            name="B Predicate Observer">
       </observer>
+      <observer
+            class="de.bmotionstudio.core.model.observer.CSPEventObserver"
+            id="de.bmotionstudio.observer.CSPEventObserver"
+            name="CSP Event Observer">
+      </observer>
+      <observer
+            class="de.bmotionstudio.core.model.observer.CSPExpressionObserver"
+            id="de.bmotionstudio.observer.CSPExpressionObserver"
+            name="CSP Expression Observer">
+      </observer>
+      <observer
+            class="de.bmotionstudio.core.model.observer.CSPInitObserver"
+            id="de.bmotionstudio.observer.CSPInitObserver"
+            name="CSP Init Observer">
+      </observer>
+      <observer
+            class="de.bmotionstudio.core.model.observer.BOperationObserver"
+            id="de.bmotionstudio.observer.BOperationObserver"
+            name="B Operation Observer">
+      </observer>
+   </extension>
+   <extension
+         point="de.bmotionstudio.core.event">
+      <event
+            class="de.bmotionstudio.core.model.event.ExecuteBOperationEvent"
+            id="de.bmotionstudio.event.ExecuteBOperationEvent"
+            name="Execute B Operation Event"
+            language="EventB,ClassicalB">
+      </event>
    </extension>
    <extension
          point="de.bmotionstudio.core.installActions">
@@ -375,196 +351,514 @@
          <control
                id="de.bmotionstudio.control.Image">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Button">
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Checkbox">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Radiobutton">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Textfield">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Composite">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Text">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Rectangle">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Connection">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Ellipse">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Table">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Column">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Cell">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Signal">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Light">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Tank">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
                id="de.bmotionstudio.control.Tracknode">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
-            </observer>
-         </control>
-         <control
-               id="de.bmotionstudio.control.Track">
-            <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
          <control
-               id="de.bmotionstudio.control.Switch">
+               id="de.bmotionstudio.control.Segment">
             <observer
-                  id="de.bmotionstudio.observer.PredicateObserver">
+                  id="de.bmotionstudio.observer.BPredicateObserver">
             </observer>
             <observer
-                  id="de.bmotionstudio.observer.ExpressionObserver">
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
             </observer>
          </control>
       </include>
       <include
             language="CSP">
          <control
-               id="de.bmotionstudio.core.rectangle">
+               id="de.bmotionstudio.control.Rectangle">
             <observer
-                  id="de.bmotionstudio.core.observer.CSPEventObserver">
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
             </observer>
          </control>
          <control
-               id="de.bmotionstudio.core.tank">
+               id="de.bmotionstudio.control.Tank">
             <observer
-                  id="de.bmotionstudio.core.observer.CSPEventObserver">
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
             </observer>
          </control>
-      </include>   
-   </extension>
-   <extension
-         point="org.eclipse.ui.startup">
-      <startup
-            class="de.bmotionstudio.core.BMotionStartup">
-      </startup>
+         <control
+               id="de.bmotionstudio.control.Text">
+            <observer
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Image">
+            <observer
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Segment">
+            <observer
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Composite">
+            <observer
+                  id="de.bmotionstudio.observer.CSPEventObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.CSPInitObserver">
+            </observer>
+         </control>
+      </include>
+       <include
+            language="ClassicalB">
+         <control
+               id="de.bmotionstudio.control.Image">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Button">
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Checkbox">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Radiobutton">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Textfield">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Composite">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Text">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Rectangle">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Connection">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Ellipse">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Table">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Column">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Cell">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Signal">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Light">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Tank">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Tracknode">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.control.Segment">
+            <observer
+                  id="de.bmotionstudio.observer.BPredicateObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BExpressionObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.observer.BOperationObserver">
+            </observer>
+         </control>
+      </include> 
    </extension>
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
@@ -591,6 +885,13 @@
                image="icons/icon_observer.gif"
                label="Observer">
          </propertyTab>
+         <propertyTab
+               afterTab="de.bmotionstudio.core.propertyTabObserver"
+               category="de.bmotionstudio.core.propertyTabs"
+               id="de.bmotionstudio.core.propertyTabEvents"
+               image="icons/icon_event.png"
+               label="Events">
+         </propertyTab>
       </propertyTabs>
    </extension>
    <extension
@@ -613,6 +914,20 @@
                   type="org.eclipse.gef.editparts.AbstractEditPart">
             </input>
          </propertySection>
+         <propertySection
+               class="de.bmotionstudio.core.editor.view.property.EventSection"
+               id="de.bmotionstudio.core.propertySectionEvents"
+               tab="de.bmotionstudio.core.propertyTabEvents">
+            <input
+                  type="org.eclipse.gef.editparts.AbstractEditPart">
+            </input>
+         </propertySection>
       </propertySections>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="de.bmotionstudio.core.ProBStartup">
+      </startup>
    </extension>
 </plugin>

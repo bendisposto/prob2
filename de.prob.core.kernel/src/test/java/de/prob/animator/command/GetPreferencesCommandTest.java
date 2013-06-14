@@ -21,7 +21,7 @@ public class GetPreferencesCommandTest {
 
 	@Test
 	public void testGetPreferences() {
-		GetPreferencesCommand gpc = new GetPreferencesCommand();
+		GetDefaultPreferencesCommand gpc = new GetDefaultPreferencesCommand();
 		assertEquals(gpc.getPreferences(), null);
 	}
 
@@ -44,7 +44,7 @@ public class GetPreferencesCommandTest {
 						new CompoundPrologTerm("thief"),
 						new CompoundPrologTerm("bar"))));
 
-		GetPreferencesCommand command = new GetPreferencesCommand();
+		GetDefaultPreferencesCommand command = new GetDefaultPreferencesCommand();
 		command.processResult(map);
 
 		List<ProBPreference> prefs = command.getPreferences();
@@ -69,7 +69,7 @@ public class GetPreferencesCommandTest {
 	@Test
 	public void testWriteCommand() {
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
-		GetPreferencesCommand command = new GetPreferencesCommand();
+		GetDefaultPreferencesCommand command = new GetDefaultPreferencesCommand();
 		command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();
 
@@ -92,7 +92,7 @@ public class GetPreferencesCommandTest {
 		when(map.get(anyString())).thenReturn(
 				new ListPrologTerm(new CompoundPrologTerm("blah blah blah")));
 
-		GetPreferencesCommand command = new GetPreferencesCommand();
+		GetDefaultPreferencesCommand command = new GetDefaultPreferencesCommand();
 		command.processResult(map);
 	}
 
@@ -105,7 +105,7 @@ public class GetPreferencesCommandTest {
 		when(map.get(anyString())).thenReturn(
 				new CompoundPrologTerm("blah blah blah"));
 
-		GetPreferencesCommand command = new GetPreferencesCommand();
+		GetDefaultPreferencesCommand command = new GetDefaultPreferencesCommand();
 		command.processResult(map);
 	}
 

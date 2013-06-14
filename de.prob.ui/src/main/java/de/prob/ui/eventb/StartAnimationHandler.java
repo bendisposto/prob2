@@ -26,7 +26,7 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.rodin.translate.EventBTranslator;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.History;
+import de.prob.statespace.Trace;
 import de.prob.statespace.StateSpace;
 import de.prob.ui.eventb.internal.TranslatorFactory;
 import de.prob.webconsole.GroovyExecution;
@@ -51,7 +51,8 @@ public class StartAnimationHandler extends AbstractHandler {
 				.getInstance(EventBFactory.class);
 
 		EventBModel model = instance.load(eventBTranslator.getMainComponent(),
-				eventBTranslator.getMachines(), eventBTranslator.getContexts());
+				eventBTranslator.getMachines(), eventBTranslator.getContexts(),
+				eventBTranslator.getModelFile());
 
 		StringWriter writer = new StringWriter();
 		PrintWriter pto = new PrintWriter(writer);
@@ -71,10 +72,10 @@ public class StartAnimationHandler extends AbstractHandler {
 		s.execute(new LoadEventBCommand(cmd));
 		s.execute(new StartAnimationCommand());
 
-		History h = new History(s);
+		Trace h = new Trace(s);
 		AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
-		selector.addNewHistory(h);
+		selector.addNewAnimation(h);
 		final GroovyExecution ge = injector.getInstance(GroovyExecution.class);
 		Binding bindings = ge.getBindings();
 		try {

@@ -19,8 +19,8 @@ public class ComposedCommandTest {
 
 	@Test
 	public void testWriteCommand()  {
-		ICommand foo = mock(ICommand.class);
-		ICommand bar = mock(ICommand.class);
+		AbstractCommand foo = mock(AbstractCommand.class);
+		AbstractCommand bar = mock(AbstractCommand.class);
 		ComposedCommand cmd = new ComposedCommand(foo, bar);
 		cmd.writeCommand(mock(IPrologTermOutput.class));
 		verify(foo).writeCommand(any(IPrologTermOutput.class));
@@ -29,9 +29,9 @@ public class ComposedCommandTest {
 
 	@Test
 	public void testWriteCommandAlternateConstructor()  {
-		ICommand foo = mock(ICommand.class);
-		ICommand bar = mock(ICommand.class);
-		ArrayList<ICommand> list = new ArrayList<ICommand>();
+		AbstractCommand foo = mock(AbstractCommand.class);
+		AbstractCommand bar = mock(AbstractCommand.class);
+		ArrayList<AbstractCommand> list = new ArrayList<AbstractCommand>();
 		list.add(foo);
 		list.add(bar);
 		ComposedCommand cmd = new ComposedCommand(list);
@@ -43,8 +43,8 @@ public class ComposedCommandTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testProcessResult()  {
-		ICommand foo = mock(ICommand.class);
-		ICommand bar = mock(ICommand.class);
+		AbstractCommand foo = mock(AbstractCommand.class);
+		AbstractCommand bar = mock(AbstractCommand.class);
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 		ComposedCommand cmd = new ComposedCommand(foo, bar);
 		cmd.processResult(map);
@@ -81,14 +81,14 @@ public class ComposedCommandTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testCommandNotKnown()  {
-		ICommand foo = mock(ICommand.class);
-		ICommand bar = mock(ICommand.class);
+		AbstractCommand foo = mock(AbstractCommand.class);
+		AbstractCommand bar = mock(AbstractCommand.class);
 		ComposedCommand cmd = new ComposedCommand(foo, bar);
 		cmd.writeCommand(mock(IPrologTermOutput.class));
 		verify(foo).writeCommand(any(IPrologTermOutput.class));
 		verify(bar).writeCommand(any(IPrologTermOutput.class));
 		
-		ICommand baz = mock(ICommand.class);
+		AbstractCommand baz = mock(AbstractCommand.class);
 		@SuppressWarnings("unchecked")
 		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
 		cmd.getResultForCommand(baz, map);

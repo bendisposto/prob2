@@ -81,7 +81,7 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="name" type="string">
+         <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
                   The name of the control. The name will be displayed in the Palette
@@ -111,7 +111,7 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="de.bmotionstudio.core.AbstractBControlService:de.bmotionstudio.gef.editor.IBControlService"/>
+                  <meta.attribute kind="java" basedOn="de.bmotionstudio.core.AbstractBControlService:de.bmotionstudio.core.IBControlService"/>
                </appInfo>
             </annotation>
          </attribute>

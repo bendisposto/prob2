@@ -7,20 +7,22 @@
 package de.prob.animator.command;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
-import de.prob.animator.domainobjects.OpInfo;
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.OpInfo;
 
 /**
  * Calculates the enabled operations, the state values, the initialization, the
@@ -30,13 +32,13 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public final class ExploreStateCommand implements ICommand {
+public final class ExploreStateCommand extends AbstractCommand {
 
 	Logger logger = LoggerFactory.getLogger(ExploreStateCommand.class);
 
 	private final String stateId;
 	private final GetEnabledOperationsCommand getOpsCmd;
-	private final GetStateValuesCommand getValuesCmd;
+	private final EvaluateRegisteredFormulasCommand evalFormulasCmd;
 	private final CheckBooleanPropertyCommand checkInitialisedCmd;
 	private final CheckInvariantStatusCommand checkInvCmd;
 	private final CheckBooleanPropertyCommand checkMaxOpCmd;
@@ -45,33 +47,19 @@ public final class ExploreStateCommand implements ICommand {
 	private final ComposedCommand allCommands;
 	private final GetOperationsWithTimeout checkTimeoutOpsCmd;
 
-	private boolean initialised;
-
-	private boolean invariantOk;
-
-	private boolean timeoutOccured;
-
-	private boolean maxOperationsReached;
-
-	private List<OpInfo> enabledOperations;
-
-	private HashMap<String, String> variables;
-
-	private Collection<StateError> stateErrors;
-
-	private Set<String> timeouts;
-
-	public ExploreStateCommand(final String stateID) {
+	public ExploreStateCommand(final String stateID,
+			final Collection<IEvalElement> formulas) {
 		stateId = stateID;
 		getOpsCmd = new GetEnabledOperationsCommand(stateId);
-		getValuesCmd = new GetStateValuesCommand(stateId);
+		evalFormulasCmd = new EvaluateRegisteredFormulasCommand(stateID,
+				formulas);
 		checkInitialisedCmd = new CheckInitialisationStatusCommand(stateId);
 		checkInvCmd = new CheckInvariantStatusCommand(stateId);
 		checkMaxOpCmd = new CheckMaxOperationReachedStatusCommand(stateId);
 		checkTimeoutCmd = new CheckTimeoutStatusCommand(stateId);
 		checkTimeoutOpsCmd = new GetOperationsWithTimeout(stateId);
 		getStateErrCmd = new GetStateBasedErrorsCommand(stateId);
-		this.allCommands = new ComposedCommand(getOpsCmd, getValuesCmd,
+		allCommands = new ComposedCommand(getOpsCmd, evalFormulasCmd,
 				checkInitialisedCmd, checkInvCmd, checkMaxOpCmd,
 				checkTimeoutCmd, checkTimeoutOpsCmd, getStateErrCmd);
 
@@ -83,22 +71,16 @@ public final class ExploreStateCommand implements ICommand {
 
 	@Override
 	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)  {
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		allCommands.processResult(bindings);
 
-		initialised = checkInitialisedCmd.getResult();
-		invariantOk = !checkInvCmd.isInvariantViolated();
-		timeoutOccured = checkTimeoutCmd.getResult();
-		maxOperationsReached = checkMaxOpCmd.getResult();
-		enabledOperations = getOpsCmd.getEnabledOperations();
-		variables = getValuesCmd.getResult();
-		stateErrors = getStateErrCmd.getResult();
+		boolean initialised = checkInitialisedCmd.getResult();
+		boolean timeoutOccured = checkTimeoutCmd.getResult();
+		List<OpInfo> enabledOperations = getOpsCmd.getEnabledOperations();
 
 		if (!initialised && enabledOperations.isEmpty() && !timeoutOccured) {
 			logger.error("ProB could not find valid constants. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms");
 		}
-
-		timeouts = new HashSet<String>(checkTimeoutOpsCmd.getTimeouts());
 	}
 
 	@Override
@@ -107,34 +89,40 @@ public final class ExploreStateCommand implements ICommand {
 	}
 
 	public boolean isInitialised() {
-		return initialised;
+		return checkInitialisedCmd.getResult();
 	}
 
 	public boolean isInvariantOk() {
-		return invariantOk;
+		return !checkInvCmd.isInvariantViolated();
 	}
 
 	public boolean isTimeoutOccured() {
-		return timeoutOccured;
+		return checkTimeoutCmd.getResult();
 	}
 
 	public boolean isMaxOperationsReached() {
-		return maxOperationsReached;
+		return checkMaxOpCmd.getResult();
 	}
 
 	public List<OpInfo> getEnabledOperations() {
-		return enabledOperations;
+		return getOpsCmd.getEnabledOperations();
 	}
 
-	public HashMap<String, String> getVariables() {
-		return variables;
+	public Map<IEvalElement, EvaluationResult> getFormulaResults() {
+		return evalFormulasCmd.getResults();
 	}
 
 	public Collection<StateError> getStateErrors() {
-		return stateErrors;
+		return getStateErrCmd.getResult();
 	}
 
 	public Set<String> getOperationsWithTimeout() {
-		return timeouts;
+		return new HashSet<String>(checkTimeoutOpsCmd.getTimeouts());
+	}
+
+	@Override
+	public List<AbstractCommand> getSubcommands() {
+		List<AbstractCommand> subcommands = allCommands.getSubcommands();
+		return subcommands;
 	}
 }

@@ -52,6 +52,8 @@ class Downloader extends AbstractShellCommand {
 	}
 
 	def  availableVersions() {
+		if (config.isEmpty())
+			config = downloadConfig();
 		config.collect { it.getKey()}
 	}
 
@@ -145,14 +147,14 @@ class Downloader extends AbstractShellCommand {
 	}
 
 	def installCSPM() {
-		def target = probhome+"lib"+File.separator+"cspm"
+		def target = probhome+"lib"+File.separator+"cspmf"
 		def dirName = osInfo.dirName
 		if(dirName == "win32") {
 			target += ".exe"
 		}
 		def File f = new File(target);
 
-		def targetName = "cspm-"
+		def targetName = "cspmf-"
 		if(dirName == "linux") {
 			targetName += "linux32"
 		}
@@ -162,10 +164,10 @@ class Downloader extends AbstractShellCommand {
 		if(dirName == "win32") {
 			targetName += "windows"
 		}
-		download("http://nightly.cobra.cs.uni-duesseldorf.de/cspm/"+targetName,target)
+		download("http://nightly.cobra.cs.uni-duesseldorf.de/cspmf/"+targetName,target)
 		new File(target).setExecutable(true)
 
-		return "--CSP Parser cspm upgraded to latest copy--"
+		return "--CSP Parser cspmf upgraded to latest copy--"
 	}
 
 
@@ -183,6 +185,9 @@ class Downloader extends AbstractShellCommand {
 	@Override
 	public Object perform(List<String> m, GroovyExecution exec)
 	throws IOException {
+		if (config.isEmpty()) {
+			config = downloadConfig()
+		}
 		if (m.size() < 2) {
 			return listVersions()
 		}

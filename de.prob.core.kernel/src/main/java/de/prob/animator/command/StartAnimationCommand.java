@@ -4,7 +4,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
-public final class StartAnimationCommand implements ICommand {
+public final class StartAnimationCommand extends AbstractCommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.printAtom("start_animation");

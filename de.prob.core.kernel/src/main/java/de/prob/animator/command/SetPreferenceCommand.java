@@ -17,7 +17,7 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public final class SetPreferenceCommand implements ICommand {
+public final class SetPreferenceCommand extends AbstractCommand {
 
 	private final String key;
 	private final String value;

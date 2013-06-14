@@ -4,7 +4,6 @@ Bundle-Name: ProB UI
 Bundle-SymbolicName: de.prob.ui;singleton:=true
 Bundle-ActivationPolicy: lazy
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: .
 Bundle-Vendor: STUPS group
 Bundle-Activator: de.prob.ui.Activator
 Require-Bundle: org.eclipse.core.runtime,
@@ -16,4 +15,41 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: de.prob.ui,
  de.prob.ui.eventb.internal
-
+Bundle-ClassPath: .,
+ lib/dependencies/stax-api-1.0.1.jar,
+ lib/dependencies/stax-api-1.0-2.jar,
+ lib/dependencies/spring-core-2.5.6.jar,
+ lib/dependencies/spring-context-2.5.6.jar,
+ lib/dependencies/spring-beans-2.5.6.jar,
+ lib/dependencies/slf4j-api-1.6.4.jar,
+ lib/dependencies/sal-api-2.7.0.jar,
+ lib/dependencies/joda-time-1.6.jar,
+ lib/dependencies/jira-rest-java-client-2.0.0-m2.jar,
+ lib/dependencies/jettison-1.1.jar,
+ lib/dependencies/jersey-json-1.5.jar,
+ lib/dependencies/jersey-core-1.5.jar,
+ lib/dependencies/jersey-client-1.5.jar,
+ lib/dependencies/jaxb-impl-2.2.3.jar,
+ lib/dependencies/jaxb-api-2.2.2.jar,
+ lib/dependencies/jackson-xc-1.5.5.jar,
+ lib/dependencies/jackson-mapper-asl-1.5.5.jar,
+ lib/dependencies/jackson-jaxrs-1.5.5.jar,
+ lib/dependencies/jackson-core-asl-1.5.5.jar,
+ lib/dependencies/httpmime-4.1.2.jar,
+ lib/dependencies/httpcore-nio-4.2.2.jar,
+ lib/dependencies/httpcore-4.2.2.jar,
+ lib/dependencies/httpclient-cache-4.2.1-atlassian-2.jar,
+ lib/dependencies/httpclient-4.2.1-atlassian-2.jar,
+ lib/dependencies/httpasyncclient-cache-4.0-beta3-atlassian-1.jar,
+ lib/dependencies/httpasyncclient-4.0-beta3-atlassian-1.jar,
+ lib/dependencies/guava-13.0.jar,
+ lib/dependencies/commons-logging-1.1.1.jar,
+ lib/dependencies/commons-lang-2.4.jar,
+ lib/dependencies/commons-codec-1.6.jar,
+ lib/dependencies/atlassian-util-concurrent-2.4.0-M9.jar,
+ lib/dependencies/atlassian-httpclient-spi-0.11.0.jar,
+ lib/dependencies/atlassian-httpclient-api-0.11.0.jar,
+ lib/dependencies/atlassian-httpclient-apache-httpcomponents-0.11.0.jar,
+ lib/dependencies/atlassian-event-2.2.0.jar,
+ lib/dependencies/aopalliance-1.0.jar,
+ lib/dependencies/activation-1.1.jar

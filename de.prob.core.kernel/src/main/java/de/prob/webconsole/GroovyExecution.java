@@ -22,7 +22,8 @@ import com.google.inject.Singleton;
 
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IStateSpaceChangeListener;
+import de.prob.statespace.IStatesCalculatedListener;
+import de.prob.statespace.OpInfo;
 import de.prob.testing.TestRegistry;
 
 /**
@@ -36,7 +37,7 @@ import de.prob.testing.TestRegistry;
  * 
  */
 @Singleton
-public class GroovyExecution implements IStateSpaceChangeListener {
+public class GroovyExecution implements IStatesCalculatedListener {
 
 	private final ArrayList<String> inputs = new ArrayList<String>();
 	private final ArrayList<String> imports = new ArrayList<String>();
@@ -67,7 +68,9 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 			"import de.prob.model.representation.*;",
 			"import de.prob.model.classicalb.*;",
 			"import de.prob.model.eventb.*;",
-			"import de.prob.animator.domainobjects.*;" };
+			"import de.prob.animator.domainobjects.*;",
+			"import de.prob.animator.command.*;",
+			"import de.prob.visualization.*" };
 	private final ShellCommands shellCommands;
 
 	@Inject
@@ -81,21 +84,22 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 		binding.setVariable("animations", selector);
 		binding.setVariable("tests", tests);
 		binding.setVariable("__console", sideeffects);
-		this.interpreter = new Interpreter(this.getClass().getClassLoader(),
-				binding);
+		interpreter = new Interpreter(this.getClass().getClassLoader(), binding);
 
-		imports.addAll(Arrays.asList(IMPORTS));
+		imports.addAll(Arrays.asList(GroovyExecution.IMPORTS));
+		parser = new Parser();
+		runInitScript(Resources.getResource("initscript"));
+		runInitScript(Resources.getResource("loadrodin"));
+	}
 
-		URL url = Resources.getResource("initscript");
-
+	public void runInitScript(final URL url) {
 		String script = "";
 		try {
 			script = Resources.toString(url, Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.parser = new Parser();
-		runSilentScript(script);
+		runSilentScript(script, false);
 	}
 
 	public void registerListener(final IGroovyExecutionListener listener) {
@@ -124,7 +128,7 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 
 	public synchronized String freshVar(final String prefix) {
 		String v;
-		Binding bindings = this.getBindings();
+		Binding bindings = getBindings();
 		do {
 			v = prefix + nextCounter(prefix);
 		} while (bindings.hasVariable(v));
@@ -137,24 +141,25 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 		return runScript(content, s);
 	}
 
-	public String runSilentScript(final String content) {
-		return runScript(content, null, true);
+	public String runSilentScript(final String content,
+			final boolean printExceptions) {
+		return runScript(content, null, true, printExceptions);
 	}
 
 	public String runScript(final String content, final String prefix) {
-		return runScript(content, prefix, false);
+		return runScript(content, prefix, false, true);
 	}
 
 	public String runScript(final String content, final String prefix,
-			final boolean silent) {
-		Object result = runScript2(content);
+			final boolean silent, final boolean printExceptions) {
+		Object result = runScript2(content, printExceptions);
 		if (!silent && result != null) {
 			getBindings().setVariable(freshVar(prefix), result);
 		}
 		return result == null ? "null" : result.toString();
 	}
 
-	public Object runScript2(final String content) {
+	public Object runScript2(final String content, final boolean printStackTrace) {
 		try {
 			final ArrayList<String> eval = new ArrayList<String>();
 			eval.addAll(imports);
@@ -163,7 +168,9 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 			try {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
-				printStackTrace(sideeffects, e);
+				if (printStackTrace) {
+					printStackTrace(sideeffects, e);
+				}
 			} finally {
 				inputs.clear();
 			}
@@ -247,11 +254,11 @@ public class GroovyExecution implements IStateSpaceChangeListener {
 	}
 
 	public void addImport(final String imp) {
-		this.imports.add(imp);
+		imports.add(imp);
 	}
 
 	@Override
-	public void newTransition(final String opName, final boolean isDestStateNew) {
+	public void newTransitions(final List<? extends OpInfo> ops) {
 		notifyListerners();
 	}
 

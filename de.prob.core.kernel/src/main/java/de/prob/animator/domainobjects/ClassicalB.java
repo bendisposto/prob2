@@ -19,34 +19,56 @@ import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class ClassicalB implements IEvalElement {
+/**
+ * Representation of a ClassicalB formula.
+ * 
+ * @author joy
+ */
+public class ClassicalB extends AbstractEvalElement {
 
 	public FormulaUUID uuid = new FormulaUUID();
 
-	private final String code;
 	private final Start ast;
 
-	public ClassicalB(final String code) throws BException {
+	/**
+	 * @param code
+	 *            will be parsed and the resulting {@link Start} ast saved
+	 * @throws EvaluationException
+	 */
+	public ClassicalB(final String code) {
 		this.code = code;
-		this.ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
+		try {
+			ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
+		} catch (BException e) {
+			throw new EvaluationException(e.getMessage(), e);
+		}
 	}
 
+	/**
+	 * @param ast
+	 *            is saved and the string representation determined from the ast
+	 *            and saved
+	 */
 	public ClassicalB(final Start ast) {
 		this.ast = ast;
-		this.code = prettyprint(ast);
+		code = prettyprint(ast);
 	}
 
+	/**
+	 * @see de.prob.animator.domainobjects.IEvalElement#getKind()
+	 * 
+	 * @return kind {@link EvalElementType#toString()}. Either '#EXPRESSION' or
+	 *         '#PREDICATE'
+	 */
 	@Override
 	public String getKind() {
 		return ast.getPParseUnit() instanceof AExpressionParseUnit ? EXPRESSION
 				.toString() : PREDICATE.toString();
 	}
 
-	@Override
-	public String getCode() {
-		return code;
-	}
-
+	/**
+	 * @return {@link Start} ast corresponding to the formula
+	 */
 	public Start getAst() {
 		return ast;
 	}
@@ -73,11 +95,12 @@ public class ClassicalB implements IEvalElement {
 	}
 
 	@Override
-	public boolean equals(final Object that) {
-		if (that instanceof ClassicalB) {
-			return ((ClassicalB) that).getCode().equals(this.getCode());
-		}
-		return false;
+	public String serialized() {
+		return "#ClassicalB:" + code;
 	}
 
+	@Override
+	public FormulaUUID getFormulaId() {
+		return uuid;
+	}
 }

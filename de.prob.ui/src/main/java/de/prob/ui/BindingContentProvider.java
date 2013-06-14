@@ -31,7 +31,8 @@ public class BindingContentProvider implements IStructuredContentProvider {
 		this.executor = (GroovyExecution) newInput;
 	}
 
-	@SuppressWarnings("rawtypes") //interfacing with a dynamic language 
+	@SuppressWarnings("rawtypes")
+	// interfacing with a dynamic language
 	@Override
 	public Object[] getElements(Object inputElement) {
 		if (executor == null) {
@@ -46,9 +47,11 @@ public class BindingContentProvider implements IStructuredContentProvider {
 			String key = (String) e.getKey();
 			Object value = e.getValue();
 			if (key.startsWith(filter)
-					&& !(key.startsWith("__") || key.startsWith("this$")))
+					&& !(key.startsWith("__") || key.startsWith("this$"))
+					&& value != null) {
 				res.add(new BindingTableEntry(key, value.getClass()
 						.getSimpleName(), value.toString()));
+			}
 		}
 		return res.toArray(new Object[res.size()]);
 	}

@@ -1,6 +1,5 @@
 package de.prob.model.representation;
 
-import org.apache.commons.codec.digest.DigestUtils;
 
 public abstract class BEvent extends AbstractElement {
 
@@ -17,9 +16,5 @@ public abstract class BEvent extends AbstractElement {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	public String sha() {
-		return DigestUtils.shaHex(toString());
 	}
 }

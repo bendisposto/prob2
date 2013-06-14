@@ -1,5 +1,7 @@
 package de.prob.model.representation;
 
+import de.prob.unicode.UnicodeTranslator;
+
 public class BSet extends AbstractElement {
 
 	private final String name;
@@ -14,6 +16,6 @@ public class BSet extends AbstractElement {
 	
 	@Override
 	public String toString() {
-		return name;
+		return UnicodeTranslator.toUnicode(name);
 	}
 }

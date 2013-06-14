@@ -80,9 +80,10 @@ public class ProBConnection {
 	private String getAnswer() throws IOException {
 		String input = null;
 		input = readAnswer();
-		if (input == null)
+		if (input == null) {
 			throw new IOException(
 					"ProB binary returned nothing - it might have crashed");
+		}
 		return input;
 	}
 
