@@ -9,7 +9,7 @@ project.ext {
 	excludeManifestClassPathDelete = ['de.bmotionstudio.core', 'de.bmotionstudio.rodin','de.prob.ui.worksheet']		// Projects defined here will still have classpath changes but no changes in the MF File
 }
 
-def core_version = '2.0.0-milestone-11'
+
 apply from: 'tycho_build.gradle'
 
 task wrapper(type: Wrapper) {
@@ -79,9 +79,6 @@ task collectArtifacts(type:Copy) {
 
 subprojects{
 	apply plugin: 'eclipse'
-
-    project.version = '2.0.0-milestone-11'
-
 
 
 	task magic(dependsOn: ['clean', 'cleanEclipse', 'eclipse', 'deleteFromClassPath','setClassPath']) {
