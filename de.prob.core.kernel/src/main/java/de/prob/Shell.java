@@ -41,7 +41,7 @@ class Shell {
 		logger.debug("Runnning script: {}", script.getAbsolutePath());
 
 		executor.getBindings().setVariable("dir", dir);
-		executor.runSilentScript(script.getAbsolutePath());
+		executor.runSilentScript(script.getAbsolutePath(), true);
 
 	}
 
