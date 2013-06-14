@@ -5,6 +5,7 @@ package de.prob.animator.domainobjects
 import com.google.gson.Gson
 
 import de.prob.Main
+import de.prob.model.representation.FormulaUUID
 import de.prob.prolog.output.IPrologTermOutput
 import de.prob.scripting.CSPModel
 
@@ -16,7 +17,7 @@ import de.prob.scripting.CSPModel
  */
 class CSP implements IEvalElement {
 
-
+	private FormulaUUID uuid = new FormulaUUID();
 	private String code,home;
 	private String fileName;
 
@@ -30,7 +31,7 @@ class CSP implements IEvalElement {
 	public CSP(String formula, CSPModel model) {
 		this.code = formula;
 		this.home = Main.getProBDirectory();
-		this.fileName = model.getModelFile().getAbsolutePath()		
+		this.fileName = model.getModelFile().getAbsolutePath()
 	}
 
 	public String getCode() {
@@ -42,13 +43,18 @@ class CSP implements IEvalElement {
 		/* Calling the cspmf command:
 		 * cspmf translate [OPTIONS] FILE
 		 * where OPTIONS could be:
-		    --prologOut=FILE   translate a CSP-M file to Prolog
-            --expressionToPrologTerm=STRING   translate a single CSP-M expression to Prolog
-            --declarationToPrologTerm=STRING  translate a single CSP-M declaration to Prolog
+		 --prologOut=FILE   translate a CSP-M file to Prolog
+		 --expressionToPrologTerm=STRING   translate a single CSP-M expression to Prolog
+		 --declarationToPrologTerm=STRING  translate a single CSP-M declaration to Prolog
 		 * For more detailed description of all translating options just type
 		 *  "cspmf translate --help" on the command line
 		 */
-		def process = [procname,"translate","--expressionToPrologTerm="+code,fileName].execute()
+		def process = [
+			procname,
+			"translate",
+			"--expressionToPrologTerm="+code,
+			fileName
+		].execute()
 		process.waitFor()
 		if (process.exitValue() != 0) {
 			throw new EvaluationException("Error parsing CSP "+process.err.text);
@@ -63,13 +69,18 @@ class CSP implements IEvalElement {
 		/* Calling the cspmf command:
 		 * cspmf translate [OPTIONS] FILE
 		 * where OPTIONS could be:
-			--prologOut=FILE   translate a CSP-M file to Prolog
-			--expressionToPrologTerm=STRING   translate a single CSP-M expression to Prolog
-			--declarationToPrologTerm=STRING  translate a single CSP-M declaration to Prolog
+		 --prologOut=FILE   translate a CSP-M file to Prolog
+		 --expressionToPrologTerm=STRING   translate a single CSP-M expression to Prolog
+		 --declarationToPrologTerm=STRING  translate a single CSP-M declaration to Prolog
 		 * For more detailed description of all translating options just type
 		 *  "cspmf translate --help" on the command line
 		 */
-		def process = [procname,"translate","--declarationToPrologTerm="+code,fileName].execute()
+		def process = [
+			procname,
+			"translate",
+			"--declarationToPrologTerm="+code,
+			fileName
+		].execute()
 		process.waitFor()
 		if (process.exitValue() != 0) {
 			throw new EvaluationException("Error parsing CSP "+process.err.text);
@@ -95,5 +106,10 @@ class CSP implements IEvalElement {
 	public String serialized() {
 		Gson g = new Gson();
 		return "#CSP:"+g.toJson(this);
+	}
+
+	@Override
+	public FormulaUUID getFormulaId() {
+		return uuid;
 	}
 }

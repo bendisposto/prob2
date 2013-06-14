@@ -2,6 +2,7 @@ package de.prob.scripting;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Set;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -12,6 +13,8 @@ import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.Machine;
+import de.prob.model.representation.Variable;
 import de.prob.model.serialize.ModelObject;
 import de.prob.model.serialize.Serializer;
 import de.prob.statespace.StateSpace;
@@ -59,6 +62,19 @@ public class EventBFactory {
 		s.execute(new LoadEventBCommand(cmd));
 		s.execute(new StartAnimationCommand());
 
+		subscribeVariables(model);
+
 		return model;
+	}
+
+	private void subscribeVariables(final EventBModel m) {
+		Set<Machine> machines = m.getChildrenOfType(Machine.class);
+		for (Machine machine : machines) {
+			Set<Variable> childrenOfType = machine
+					.getChildrenOfType(Variable.class);
+			for (Variable variable : childrenOfType) {
+				m.getStatespace().subscribe(this, variable.getExpression());
+			}
+		}
 	}
 }

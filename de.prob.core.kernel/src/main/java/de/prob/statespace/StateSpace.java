@@ -19,10 +19,12 @@ import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.CheckInvariantStatusCommand;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluateFormulasCommand;
+import de.prob.animator.command.EvaluateRegisteredFormulasCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetStatesFromPredicate;
+import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -30,8 +32,6 @@ import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.Machine;
-import de.prob.model.representation.Variable;
 import de.prob.scripting.CSPModel;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 
@@ -66,6 +66,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private final HashSet<StateId> cannotBeEvaluated = new HashSet<StateId>();
 
 	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
+	private final Set<IEvalElement> subscribedFormulas = new HashSet<IEvalElement>();
 
 	private final Set<IStatesCalculatedListener> stateSpaceListeners = new HashSet<IStatesCalculatedListener>();
 
@@ -106,7 +107,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 
 		final ExploreStateCommand command = new ExploreStateCommand(
-				state.getId());
+				state.getId(), subscribedFormulas);
 		try {
 			animator.execute(command);
 			extractInformation(state, command);
@@ -130,7 +131,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 					addEdge(op, getVertex(op.src), getVertex(op.dest));
 				}
 			}
-			evaluateFormulas(state);
 			notifyStateSpaceChange(newOps);
 		} catch (ProBError e) {
 			if (state == getRoot()) {
@@ -143,7 +143,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			}
 		}
 		return toString();
-
 	}
 
 	private void extractInformation(final StateId state,
@@ -162,6 +161,14 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			initializedStates.add(state);
 		} else {
 			cannotBeEvaluated.add(state);
+		}
+
+		Map<IEvalElement, EvaluationResult> res = command.getFormulaResults();
+		if (values.containsKey(state)) {
+			Map<IEvalElement, EvaluationResult> map = values.get(state);
+			map.putAll(res);
+		} else {
+			values.put(state, res);
 		}
 	}
 
@@ -379,31 +386,24 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * the given state and caches them.
 	 * 
 	 * @param state
+	 * @return
 	 */
 	private void evaluateFormulas(final StateId state) {
 		if (!canBeEvaluated(state)) {
 			return;
 		}
-		final Set<IEvalElement> formulas = formulaRegistry.keySet();
-		final List<IEvalElement> toEvaluate = new ArrayList<IEvalElement>();
-		Map<IEvalElement, EvaluationResult> valueMap = new HashMap<IEvalElement, EvaluationResult>();
 
-		// Check to see which formulas have subscribers. These are the ones that
-		// will be calculated
-		for (final IEvalElement iEvalElement : formulas) {
-			if (!formulaRegistry.get(iEvalElement).isEmpty()) {
-				toEvaluate.add(iEvalElement);
-			}
-		}
-		final List<EvaluationResult> results = eval(state, toEvaluate);
+		EvaluateRegisteredFormulasCommand cmd = new EvaluateRegisteredFormulasCommand(
+				state.getId(), subscribedFormulas);
 
-		assert results.size() == toEvaluate.size();
-		if (results != null) {
-			for (int i = 0; i < results.size(); i++) {
-				valueMap.put(toEvaluate.get(i), results.get(i));
-			}
+		execute(cmd);
+		Map<IEvalElement, EvaluationResult> results = cmd.getResults();
+
+		if (values.containsKey(state)) {
+			values.get(state).putAll(results);
+		} else {
+			values.put(state, results);
 		}
-		values.put(state, valueMap);
 	}
 
 	/**
@@ -415,11 +415,11 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 *         objects
 	 */
 	public Map<IEvalElement, EvaluationResult> valuesAt(final StateId stateId) {
-		if (canBeEvaluated(stateId)) {
-			evaluateFormulas(stateId);
-		}
 		if (values.containsKey(stateId)) {
 			return values.get(stateId);
+		}
+		if (canBeEvaluated(stateId)) {
+			evaluateFormulas(stateId);
 		}
 		return new HashMap<IEvalElement, EvaluationResult>();
 	}
@@ -457,6 +457,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			HashSet<Object> subscribers = new HashSet<Object>();
 			subscribers.add(subscriber);
 			formulaRegistry.put(formulaOfInterest, subscribers);
+			execute(new RegisterFormulaCommand(formulaOfInterest));
+			subscribedFormulas.add(formulaOfInterest);
 		}
 	}
 
@@ -473,6 +475,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			final Set<Object> subscribers = formulaRegistry
 					.get(formulaOfInterest);
 			subscribers.remove(subscriber);
+			if (subscribers.isEmpty()) {
+				subscribedFormulas.remove(formulaOfInterest);
+			}
 		}
 	}
 
@@ -668,13 +673,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 */
 	public void setModel(final AbstractModel model) {
 		this.model = model;
-
-		Set<Machine> machines = model.getChildrenOfType(Machine.class);
-		for (Machine machine : machines) {
-			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
-				subscribe(this, variable.getExpression());
-			}
-		}
 	}
 
 	/**
