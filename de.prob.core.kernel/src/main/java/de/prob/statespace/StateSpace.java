@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
@@ -25,6 +28,7 @@ import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetStatesFromPredicate;
 import de.prob.animator.command.RegisterFormulaCommand;
+import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -57,6 +61,7 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
  */
 public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
+	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 	private transient IAnimator animator;
 
 	private AbstractCommand loadcmd;
@@ -444,13 +449,23 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	/**
 	 * If a class is interested in having a particular formula calculated and
 	 * cached whenever a new state is explored, then they "subscribe" to that
-	 * formula with a reference to themselves.
+	 * formula with a reference to themselves. This should only be used for
+	 * B-Type formulas ({@code EventB} or {@code ClassicalB}). {@code CSP}
+	 * formulas will not be subscribed, because CSP evaluation is not state
+	 * based.
 	 * 
 	 * @param subscriber
 	 * @param formulaOfInterest
 	 */
 	public void subscribe(final Object subscriber,
 			final IEvalElement formulaOfInterest) {
+		if (formulaOfInterest instanceof CSP) {
+			logger.info(
+					"CSP formula {} not subscribed because CSP evaluation is not state based. Use eval method instead",
+					formulaOfInterest.getCode());
+			return;
+		}
+
 		if (formulaRegistry.containsKey(formulaOfInterest)) {
 			formulaRegistry.get(formulaOfInterest).add(subscriber);
 		} else {
