@@ -78,6 +78,11 @@ task collectArtifacts(type:Copy) {
 
 subprojects{
 	apply plugin: 'eclipse'
+
+    project.version = '2.0.0-milestone-11'
+    def core_version = '2.0.0-milestone-11'
+
+
 	task magic(dependsOn: ['clean', 'cleanEclipse', 'eclipse', 'deleteFromClassPath','setClassPath']) {
       doFirst {
 println """\
