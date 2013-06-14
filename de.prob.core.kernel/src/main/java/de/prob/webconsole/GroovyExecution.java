@@ -89,6 +89,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		imports.addAll(Arrays.asList(GroovyExecution.IMPORTS));
 		parser = new Parser();
 		runInitScript(Resources.getResource("initscript"));
+		runInitScript(Resources.getResource("loadrodin"));
 	}
 
 	public void runInitScript(final URL url) {
