@@ -25,11 +25,17 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 
+import com.google.inject.Injector;
+
 import de.bmotionstudio.core.BMotionImage;
-import de.bmotionstudio.core.BMotionStudio;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.Trace;
+import de.prob.webconsole.ServletContextListener;
 
 public class ImportImagesAction extends AbstractLibraryAction {
-
+	
+	private Injector injector = ServletContextListener.INJECTOR;
+	
 	public ImportImagesAction(LibraryPage page) {
 		super(page);
 		setText("Import images...");
@@ -58,52 +64,64 @@ public class ImportImagesAction extends AbstractLibraryAction {
 
 		try {
 
-			String imagePath = BMotionStudio.getImagePath();
-			NullProgressMonitor monitor = new NullProgressMonitor();
+			final AnimationSelector selector = injector
+					.getInstance(AnimationSelector.class);
 
-			// // Iterate the selected files
-			for (String fileName : selectedFileNames) {
+			Trace currentTrace = selector.getCurrentTrace();
+			if (currentTrace != null) {
 
-				String targetImagePath = imagePath + File.separator + fileName;
-				IPath path = new Path(targetImagePath);
-				IFile targetFile = ResourcesPlugin.getWorkspace().getRoot()
-						.getFileForLocation(path);
-				if(targetFile == null)
-					return;			
-				
-				IContainer parent = targetFile.getParent();
-				if (parent instanceof IFolder) {
-					IFolder folder = (IFolder) parent;
-					if (!folder.exists())
-						folder.create(true, true, monitor);
-				}
+				String imagePath = currentTrace.getModel().getModelFile()
+						.getParent()
+						+ "/images";
 
-				File sourceFile = new File(sourceFolderPath + File.separator
-						+ fileName);
-				FileInputStream fileInputStream = new FileInputStream(
-						sourceFile);
+				NullProgressMonitor monitor = new NullProgressMonitor();
 
-				if (!targetFile.exists()) {
-					targetFile.create(fileInputStream, true, monitor);
-				} else {
-					// The file already exists; asks for confirmation
-					MessageBox mb = new MessageBox(fd.getParent(),
-							SWT.ICON_WARNING | SWT.YES | SWT.NO);
-					mb.setMessage(fileName
-							+ " already exists. Do you want to replace it?");
-					// If they click Yes, we're done and we drop out. If
-					// they click No, we redisplay the File Dialog
-					if (mb.open() == SWT.YES)
-						targetFile.setContents(fileInputStream, true, false,
-								monitor);
-				}
-				
-				try {
-					IProject project = targetFile.getProject();
-					project.refreshLocal(IResource.DEPTH_INFINITE,
-							new NullProgressMonitor());
-				} catch (CoreException e) {
-					e.printStackTrace();
+				// // Iterate the selected files
+				for (String fileName : selectedFileNames) {
+
+					String targetImagePath = imagePath + File.separator
+							+ fileName;
+					IPath path = new Path(targetImagePath);
+					IFile targetFile = ResourcesPlugin.getWorkspace().getRoot()
+							.getFileForLocation(path);
+					if (targetFile == null)
+						return;
+
+					IContainer parent = targetFile.getParent();
+					if (parent instanceof IFolder) {
+						IFolder folder = (IFolder) parent;
+						if (!folder.exists())
+							folder.create(true, true, monitor);
+					}
+
+					File sourceFile = new File(sourceFolderPath
+							+ File.separator + fileName);
+					FileInputStream fileInputStream = new FileInputStream(
+							sourceFile);
+
+					if (!targetFile.exists()) {
+						targetFile.create(fileInputStream, true, monitor);
+					} else {
+						// The file already exists; asks for confirmation
+						MessageBox mb = new MessageBox(fd.getParent(),
+								SWT.ICON_WARNING | SWT.YES | SWT.NO);
+						mb.setMessage(fileName
+								+ " already exists. Do you want to replace it?");
+						// If they click Yes, we're done and we drop out. If
+						// they click No, we redisplay the File Dialog
+						if (mb.open() == SWT.YES)
+							targetFile.setContents(fileInputStream, true,
+									false, monitor);
+					}
+
+					try {
+						IProject project = targetFile.getProject();
+						project.refreshLocal(IResource.DEPTH_INFINITE,
+								new NullProgressMonitor());
+					} catch (CoreException e) {
+						e.printStackTrace();
+					}
+
 				}
 
 			}

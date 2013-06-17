@@ -60,6 +60,11 @@ public class LibraryView extends PageBookView {
 			return view;
 		return null;
 	}
+	
+	@Override
+	public void partOpened(IWorkbenchPart part) {
+		super.partOpened(part);
+	}
 
 
 	public void partBroughtToTop(IWorkbenchPart part) {
