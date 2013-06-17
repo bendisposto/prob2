@@ -10,7 +10,11 @@ public class MarkdownRenderer implements IRenderer {
 	@Override
 	public String render(WorkSheet context, Object content) {
 		PegDownProcessor pegdown = context.getPegdown();
-		return pegdown.markdownToHtml((String) content);
+		String text = (String) content;
+		String rendered = pegdown.markdownToHtml(text);
+		if (rendered.isEmpty())
+			rendered = "&nbsp;";
+		return rendered;
 	}
 
 }
