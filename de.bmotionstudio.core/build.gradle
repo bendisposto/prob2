@@ -6,9 +6,8 @@ project.group = 'de.bmotionstudio'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
-project.version = '2.0.0-milestone-9-SNAPSHOT'
-
-def core_version = '2.0.0-milestone-9-SNAPSHOT'
+    project.version = '2.0.0-milestone-12-SNAPSHOT'
+    def core_version = '2.0.0-milestone-12-SNAPSHOT'
 
 eclipse {
   project { 

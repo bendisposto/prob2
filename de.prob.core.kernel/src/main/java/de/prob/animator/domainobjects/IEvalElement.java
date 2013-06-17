@@ -1,5 +1,6 @@
 package de.prob.animator.domainobjects;
 
+import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 
 /**
@@ -33,4 +34,6 @@ public interface IEvalElement {
 	public abstract String getKind();
 
 	public String serialized();
+
+	public FormulaUUID getFormulaId();
 }

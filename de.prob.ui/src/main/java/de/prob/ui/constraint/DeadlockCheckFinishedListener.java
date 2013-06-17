@@ -14,7 +14,6 @@ import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.ConstraintBasedDeadlockCheckCommand;
 import de.prob.check.ConstraintBasedCheckingResult;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
@@ -30,17 +29,17 @@ import de.prob.ui.ProBJobFinishedListener;
  */
 public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 	private final Shell shell;
-	private AnimationSelector selector;
-	private StateSpace statespace;
+	private final AnimationSelector selector;
+	private final StateSpace statespace;
 
 	private final Logger logger = LoggerFactory
 			.getLogger(DeadlockCheckFinishedListener.class);
 
 	public DeadlockCheckFinishedListener(final Shell shell,
-			AnimationSelector selector, StateSpace s) {
+			final AnimationSelector selector, final StateSpace s) {
 		this.shell = shell;
 		this.selector = selector;
-		this.statespace = s;
+		statespace = s;
 	}
 
 	@Override

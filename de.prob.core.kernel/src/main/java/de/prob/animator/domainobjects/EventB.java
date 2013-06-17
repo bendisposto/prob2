@@ -129,4 +129,9 @@ public class EventB extends AbstractEvalElement {
 	public String serialized() {
 		return "#EventB:" + code;
 	}
+
+	@Override
+	public FormulaUUID getFormulaId() {
+		return uuid;
+	}
 }

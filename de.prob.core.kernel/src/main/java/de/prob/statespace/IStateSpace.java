@@ -11,6 +11,4 @@ public interface IStateSpace extends IAnimator {
 	public void registerStateSpaceListener(final IStatesCalculatedListener l);
 
 	public void deregisterStateSpaceListener(final IStatesCalculatedListener l);
-
-	public StateSpaceGraph getSSGraph();
 }

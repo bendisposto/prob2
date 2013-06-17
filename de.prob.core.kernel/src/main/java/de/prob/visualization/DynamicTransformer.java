@@ -64,17 +64,18 @@ public class DynamicTransformer extends Transformer implements
 	}
 
 	private String recalculateSelector(final List<String> f) {
+		if (f.isEmpty()) {
+			return selector;
+		}
+
 		List<String> toConvert = new ArrayList<String>();
 		for (String string : f) {
 			filtered.add(space.getVertex(string));
 			toConvert.add("#s" + string);
 		}
 		String newSelector = Joiner.on(",").join(toConvert);
-		if (selector == "") {
+		if (selector.equals("")) {
 			return newSelector;
-		}
-		if (newSelector == "") {
-			return selector;
 		}
 		return selector + "," + newSelector;
 	}

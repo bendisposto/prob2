@@ -8,6 +8,8 @@ import java.util.regex.Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.prob.exception.CliError;
+
 /**
  * This {@link AbstractCliPattern} looks for a network port number where the
  * executable listens for commands.
@@ -26,7 +28,8 @@ class PortPattern extends AbstractCliPattern<Integer> {
 	}
 
 	@Override
-	protected void setValue(Matcher matcher) throws IllegalArgumentException {
+	protected void setValue(final Matcher matcher)
+			throws IllegalArgumentException {
 		port = Integer.parseInt(matcher.group(1));
 		logger.info("Server has startet and listens on port " + port);
 	}

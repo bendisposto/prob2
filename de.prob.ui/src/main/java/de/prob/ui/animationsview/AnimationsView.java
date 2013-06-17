@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Injector;
 
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class AnimationsView extends ViewPart implements
@@ -142,7 +142,8 @@ public class AnimationsView extends ViewPart implements
 			if (elem instanceof Trace) {
 				return (Trace) elem;
 			} else {
-				logger.warn("Selection was not a trace. Class is {}", elem.getClass());
+				logger.warn("Selection was not a trace. Class is {}",
+						elem.getClass());
 			}
 		}
 		return null;

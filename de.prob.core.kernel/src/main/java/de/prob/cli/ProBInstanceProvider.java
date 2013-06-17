@@ -40,7 +40,7 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 
 	@Inject
 	public ProBInstanceProvider(final PrologProcessProvider processProvider,
-			@Home String home, OsSpecificInfo osInfo) {
+			@Home final String home, final OsSpecificInfo osInfo) {
 		this.processProvider = processProvider;
 		this.home = home;
 		this.osInfo = osInfo;
@@ -115,9 +115,10 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 		}
 		for (AbstractCliPattern<?> p : patterns) {
 			p.notifyNotFound();
-			if (p.notFoundIsFatal())
+			if (p.notFoundIsFatal()) {
 				throw new CliError("Missing info from CLI "
 						+ p.getClass().getSimpleName());
+			}
 		}
 	}
 

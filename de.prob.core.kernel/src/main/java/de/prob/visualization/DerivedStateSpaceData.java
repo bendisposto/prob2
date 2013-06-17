@@ -46,7 +46,8 @@ public class DerivedStateSpaceData extends AbstractData {
 		List<String> vs = new ArrayList<String>();
 		if (id instanceof DerivedStateId) {
 			vs.addAll(((DerivedStateId) id).getLabels());
-			vs.add(((DerivedStateId) id).getCount() + "");
+			vs.add("");
+			vs.add("# states: " + ((DerivedStateId) id).getCount());
 		}
 		if (vs.size() > varSize) {
 			varSize = vs.size();

@@ -98,4 +98,9 @@ public class ClassicalB extends AbstractEvalElement {
 	public String serialized() {
 		return "#ClassicalB:" + code;
 	}
+
+	@Override
+	public FormulaUUID getFormulaId() {
+		return uuid;
+	}
 }

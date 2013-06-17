@@ -56,7 +56,7 @@ public class ProBTestRunner {
 	}
 
 	public Object getTestClass(final String test) {
-		Object runScript2 = executor.runScript2(test);
+		Object runScript2 = executor.runScript2(test, true);
 		return runScript2;
 	}
 

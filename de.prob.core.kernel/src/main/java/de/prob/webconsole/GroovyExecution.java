@@ -89,6 +89,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		imports.addAll(Arrays.asList(GroovyExecution.IMPORTS));
 		parser = new Parser();
 		runInitScript(Resources.getResource("initscript"));
+		runInitScript(Resources.getResource("loadrodin"));
 	}
 
 	public void runInitScript(final URL url) {
@@ -98,7 +99,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		runSilentScript(script);
+		runSilentScript(script, false);
 	}
 
 	public void registerListener(final IGroovyExecutionListener listener) {
@@ -140,24 +141,25 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		return runScript(content, s);
 	}
 
-	public String runSilentScript(final String content) {
-		return runScript(content, null, true);
+	public String runSilentScript(final String content,
+			final boolean printExceptions) {
+		return runScript(content, null, true, printExceptions);
 	}
 
 	public String runScript(final String content, final String prefix) {
-		return runScript(content, prefix, false);
+		return runScript(content, prefix, false, true);
 	}
 
 	public String runScript(final String content, final String prefix,
-			final boolean silent) {
-		Object result = runScript2(content);
+			final boolean silent, final boolean printExceptions) {
+		Object result = runScript2(content, printExceptions);
 		if (!silent && result != null) {
 			getBindings().setVariable(freshVar(prefix), result);
 		}
 		return result == null ? "null" : result.toString();
 	}
 
-	public Object runScript2(final String content) {
+	public Object runScript2(final String content, final boolean printStackTrace) {
 		try {
 			final ArrayList<String> eval = new ArrayList<String>();
 			eval.addAll(imports);
@@ -166,7 +168,9 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			try {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
-				printStackTrace(sideeffects, e);
+				if (printStackTrace) {
+					printStackTrace(sideeffects, e);
+				}
 			} finally {
 				inputs.clear();
 			}

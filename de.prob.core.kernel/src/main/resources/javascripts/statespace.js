@@ -25,8 +25,8 @@ function createSSGraph(id,positionId,m,events,width,height) {
     stopped = {value: false};
     calculateHeader(menu, id, mode, stopped,events);
     force = d3.layout.force()
-              .charge(-500)
-              .linkDistance(160)
+              .charge(-1000)
+              .linkDistance(300)
               .size([width, height]);
     svg = createCanvas("#"+positionId+"-viz",width,height);
 
@@ -83,8 +83,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
               .enter().append("svg:text")
                 .attr("class", "linkT")
                 .attr("text-anchor", "start")
-                .attr("dx", "30")
-                .attr("font-size", "3px")
+                .attr("dx", "50")
                 .attr("id", function(d) { return "tt" + d.id; });
 
         transLabels = text.append("textPath")
@@ -98,10 +97,10 @@ function createSSGraph(id,positionId,m,events,width,height) {
               .attr("id", function(d) { return "n" + d.id; })
               .call(force.drag);
 
-        boxH = n * 5 + 5;
+        boxH = n * 10 + 5;
 
         node.append("rect")
-            .attr("width", "40")
+            .attr("width", function(d) { d.tW = 35; return "40" })
             .attr("height", boxH.toString())
             .attr("rx", "5")
             .attr("ry", "5")
@@ -112,8 +111,7 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 .attr("stroke-width", "0px")
                 .attr("class", "nText")
                 .attr("text-anchor", "middle")
-                .attr("dy", function() { return (5 * (i + 1)).toString(); })
-                .attr("font-size", "3px")
+                .attr("dy", function() { return (10 * (i + 1)).toString(); })
                 .attr("fill", "white")
                 .text(function(d) { return d.vars[i]; })
                 .attr("id", function(d) { return "st" + d.id; });
@@ -122,11 +120,12 @@ function createSSGraph(id,positionId,m,events,width,height) {
         d3.selectAll(".nText")
             .attr("dx", function(d) {
                 var textW = this.getBBox().width;
-                if (textW > 35) {
+                if (textW > d.tW) {
                     d3.select("#s" + d.id).attr("width", (textW + 5).toString());
+                    d.tW = textW;
                     return Math.round((textW - 35) / 2 + 20).toString();
                 }
-                return "20";
+                return Math.round((d.tW - 35) / 2 + 20).toString();
             });
 
         node.append("title")
@@ -154,12 +153,12 @@ function createSSGraph(id,positionId,m,events,width,height) {
                 path.attr("d", function(d) {
                     var factor, linedata, dx, dy, dr;
                     if (d.loop) {
-                        d3.select("#tt" + d.id).attr("dx", 80);
+                        d3.select("#tt" + d.id).attr("dx", 150);
                         factor = 1 + d.lNr * 0.1;
                         linedata = [
-                            {x: d.source.x - 10, y: d.source.y + 10},
-                            {x: d.source.x + 40 * factor, y: d.source.y - 20 * factor},
-                            {x: d.source.x + 50 * factor, y: d.source.y + 10 * factor}
+                            {x: d.source.x + 40, y: d.source.y - 20},
+                            {x: d.source.x - 80 * factor, y: d.source.y + 80 * factor},
+                            {x: d.source.x - 100 * factor, y: d.source.y - 20 * factor}
                         ];
                         return cycleGen(linedata);
                     }

@@ -144,7 +144,8 @@ public class CurrentTraceView extends ViewPart implements
 			if (elem instanceof OpInfo) {
 				return (OpInfo) elem;
 			} else {
-				logger.warn("Selection is not an OpInfo. Class is {}", elem.getClass());
+				logger.warn("Selection is not an OpInfo. Class is {}",
+						elem.getClass());
 			}
 		}
 		return null;

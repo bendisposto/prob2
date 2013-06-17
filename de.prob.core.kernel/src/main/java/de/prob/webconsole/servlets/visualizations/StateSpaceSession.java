@@ -34,6 +34,7 @@ import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.StateSpaceGraph;
 import de.prob.statespace.derived.AbstractDerivedStateSpace;
 import de.prob.statespace.derived.AbstractDottyGraph;
 import de.prob.statespace.derived.DottySignatureMerge;
@@ -309,32 +310,35 @@ public class StateSpaceSession implements ISessionServlet,
 			return d;
 		}
 
-		if (s instanceof StateSpace) {
-			List<IEvalElement> toEval = new ArrayList<IEvalElement>();
-			Set<Machine> machines = ((StateSpace) s).getModel()
-					.getChildrenOfType(Machine.class);
-			for (Machine machine : machines) {
-				for (Variable variable : machine
-						.getChildrenOfType(Variable.class)) {
-					toEval.add(variable.getExpression());
+		if (s instanceof StateSpaceGraph) {
+			StateSpaceGraph graph = (StateSpaceGraph) s;
+			if (s instanceof StateSpace) {
+				List<IEvalElement> toEval = new ArrayList<IEvalElement>();
+				Set<Machine> machines = ((StateSpace) s).getModel()
+						.getChildrenOfType(Machine.class);
+				for (Machine machine : machines) {
+					for (Variable variable : machine
+							.getChildrenOfType(Variable.class)) {
+						toEval.add(variable.getExpression());
+					}
 				}
+				((StateSpace) s).evaluateForEveryState(toEval);
+				((StateSpace) s).getEvaluatedOps();
 			}
-			((StateSpace) s).evaluateForEveryState(toEval);
-			((StateSpace) s).getEvaluatedOps();
-			((StateSpace) s).checkInvariants();
-		}
 
-		Collection<StateId> vertices = s.getSSGraph().getVertices();
-		for (StateId stateId : vertices) {
-			d.addNode(stateId);
-		}
+			Collection<StateId> vertices = graph.getVertices();
+			for (StateId stateId : vertices) {
+				d.addNode(stateId);
+			}
 
-		Collection<OpInfo> edges = s.getSSGraph().getEdges();
-		for (OpInfo opInfo : edges) {
-			d.addLink(opInfo);
-		}
+			Collection<OpInfo> edges = graph.getEdges();
+			for (OpInfo opInfo : edges) {
+				d.addLink(opInfo);
+			}
 
-		d.updateTransformers();
+			d.updateTransformers();
+
+		}
 		return d;
 	}
 
@@ -355,7 +359,9 @@ public class StateSpaceSession implements ISessionServlet,
 			if (space instanceof AbstractDottyGraph) {
 				notifyRefresh();
 			}
-			data.addNewLinks(space.getSSGraph(), newOps);
+			if (space instanceof StateSpaceGraph) {
+				data.addNewLinks((StateSpaceGraph) space, newOps);
+			}
 		} catch (Exception e) {
 			errors.add("Exception thrown at new transition " + e.getMessage());
 			logger.error(e.getClass().getSimpleName() + ": " + e.getMessage());

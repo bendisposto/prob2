@@ -30,15 +30,15 @@ public class WebConsole {
 
 			@Override
 			public void run() {
-				// try {
-				// Desktop.getDesktop().browse(
-				// new URI("http://localhost:" + WebConsole.PORT
-				// + ""));
-				// } catch (IOException e) {
-				// e.printStackTrace();
-				// } catch (URISyntaxException e) {
-				// e.printStackTrace();
-				// }
+				try {
+					Desktop.getDesktop()
+							.browse(new URI("http://localhost:"
+									+ WebConsole.PORT + "/"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}
@@ -57,8 +57,9 @@ public class WebConsole {
 				.toExternalForm();
 		WebConsole.LOGGER.debug("External Form: " + warFile);
 
-		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/")))
+		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/"))) {
 			warFile += "bin/";
+		}
 
 		// Creating a context handler collection
 		/*

@@ -9,7 +9,6 @@ import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateSpace;
-import de.prob.statespace.StateSpaceGraph;
 
 public abstract class AbstractDottyGraph implements IStateSpace,
 		IStatesCalculatedListener {
@@ -79,11 +78,6 @@ public abstract class AbstractDottyGraph implements IStateSpace,
 	}
 
 	public StateSpace getStateSpace() {
-		return space;
-	}
-
-	@Override
-	public StateSpaceGraph getSSGraph() {
 		return space;
 	}
 

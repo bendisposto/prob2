@@ -104,11 +104,6 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 	}
 
 	@Override
-	public StateSpaceGraph getSSGraph() {
-		return this;
-	}
-
-	@Override
 	public void execute(final AbstractCommand command) {
 		stateSpace.execute(command);
 	}

@@ -14,8 +14,10 @@ import org.apache.commons.cli.ParseException;
 
 import com.google.inject.Inject;
 
+import de.prob.exception.ProBAppender;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
+import de.prob.webconsole.servlets.LogServlet;
 
 public class Main {
 
@@ -33,10 +35,11 @@ public class Main {
 
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell) {
+			final Shell shell, final LogServlet log) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
+		ProBAppender.initialize(log);
 	}
 
 	void run(final String[] args) {
@@ -61,11 +64,13 @@ public class Main {
 
 	public static String getProBDirectory() {
 		String homedir = System.getProperty("prob.home");
-		if (homedir != null)
+		if (homedir != null) {
 			return homedir + separator;
+		}
 		String env = System.getenv("PROB_HOME");
-		if (env != null)
+		if (env != null) {
 			return env + separator;
+		}
 		return System.getProperty("user.home") + separator + ".prob"
 				+ separator;
 	}

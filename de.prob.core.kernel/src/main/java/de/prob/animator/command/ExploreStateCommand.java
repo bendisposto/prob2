@@ -7,15 +7,17 @@
 package de.prob.animator.command;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -36,7 +38,7 @@ public final class ExploreStateCommand extends AbstractCommand {
 
 	private final String stateId;
 	private final GetEnabledOperationsCommand getOpsCmd;
-	private final GetStateValuesCommand getValuesCmd;
+	private final EvaluateRegisteredFormulasCommand evalFormulasCmd;
 	private final CheckBooleanPropertyCommand checkInitialisedCmd;
 	private final CheckInvariantStatusCommand checkInvCmd;
 	private final CheckBooleanPropertyCommand checkMaxOpCmd;
@@ -45,17 +47,19 @@ public final class ExploreStateCommand extends AbstractCommand {
 	private final ComposedCommand allCommands;
 	private final GetOperationsWithTimeout checkTimeoutOpsCmd;
 
-	public ExploreStateCommand(final String stateID) {
+	public ExploreStateCommand(final String stateID,
+			final Collection<IEvalElement> formulas) {
 		stateId = stateID;
 		getOpsCmd = new GetEnabledOperationsCommand(stateId);
-		getValuesCmd = new GetStateValuesCommand(stateId);
+		evalFormulasCmd = new EvaluateRegisteredFormulasCommand(stateID,
+				formulas);
 		checkInitialisedCmd = new CheckInitialisationStatusCommand(stateId);
 		checkInvCmd = new CheckInvariantStatusCommand(stateId);
 		checkMaxOpCmd = new CheckMaxOperationReachedStatusCommand(stateId);
 		checkTimeoutCmd = new CheckTimeoutStatusCommand(stateId);
 		checkTimeoutOpsCmd = new GetOperationsWithTimeout(stateId);
 		getStateErrCmd = new GetStateBasedErrorsCommand(stateId);
-		allCommands = new ComposedCommand(getOpsCmd, getValuesCmd,
+		allCommands = new ComposedCommand(getOpsCmd, evalFormulasCmd,
 				checkInitialisedCmd, checkInvCmd, checkMaxOpCmd,
 				checkTimeoutCmd, checkTimeoutOpsCmd, getStateErrCmd);
 
@@ -104,8 +108,8 @@ public final class ExploreStateCommand extends AbstractCommand {
 		return getOpsCmd.getEnabledOperations();
 	}
 
-	public HashMap<String, String> getVariables() {
-		return getValuesCmd.getResult();
+	public Map<IEvalElement, EvaluationResult> getFormulaResults() {
+		return evalFormulasCmd.getResults();
 	}
 
 	public Collection<StateError> getStateErrors() {

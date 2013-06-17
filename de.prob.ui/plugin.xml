@@ -553,6 +553,7 @@
             name="Visualization"
             restorable="true">
       </view>
+
       <view
             allowMultiple="true"
             category="de.hhu.stups.prob"
@@ -562,6 +563,20 @@
             name="Worksheet"
             restorable="true">
       </view>
+
+
+      <view
+            class="de.prob.ui.view.LogView"
+            icon="icons/sample.gif"
+            id="de.prob.ui.log"
+            name="Log View"
+            restorable="true">
+      </view>
+
+
+
+
+
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

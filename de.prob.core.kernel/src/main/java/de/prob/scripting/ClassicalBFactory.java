@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +18,14 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.AbstractCommand;
+import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.representation.Machine;
+import de.prob.model.representation.Variable;
 
 /**
  * Creates new {@link ClassicalBModel} objects.
@@ -78,6 +81,7 @@ public class ClassicalBFactory {
 	 */
 	private void startAnimation(final ClassicalBModel classicalBModel,
 			final RecursiveMachineLoader rml, final Map<String, String> prefs) {
+
 		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
 
 		for (Entry<String, String> pref : prefs.entrySet()) {
@@ -89,6 +93,19 @@ public class ClassicalBFactory {
 		cmds.add(new StartAnimationCommand());
 		classicalBModel.getStatespace().execute(new ComposedCommand(cmds));
 		classicalBModel.getStatespace().setLoadcmd(loadcmd);
+
+		subscribeVariables(classicalBModel);
+	}
+
+	private void subscribeVariables(final ClassicalBModel m) {
+		Set<Machine> machines = m.getChildrenOfType(Machine.class);
+		for (Machine machine : machines) {
+			Set<Variable> childrenOfType = machine
+					.getChildrenOfType(Variable.class);
+			for (Variable variable : childrenOfType) {
+				m.getStatespace().subscribe(this, variable.getExpression());
+			}
+		}
 	}
 
 	/**

@@ -23,7 +23,7 @@ public class RunScriptCommand extends AbstractShellCommand {
 			.getLogger(RunScriptCommand.class);
 
 	@Override
-	public Object perform(List<String> m, GroovyExecution exec)
+	public Object perform(final List<String> m, final GroovyExecution exec)
 			throws IOException {
 
 		if (m.size() != 2 && m.size() != 3) {
@@ -65,8 +65,9 @@ public class RunScriptCommand extends AbstractShellCommand {
 			String result;
 			if (m.size() == 3) {
 				result = exec.runScript(fileData.toString(), m.get(2));
-			} else
+			} else {
 				result = exec.runScript(fileData.toString());
+			}
 
 			return result;
 
@@ -79,14 +80,15 @@ public class RunScriptCommand extends AbstractShellCommand {
 	}
 
 	@Override
-	public List<String> complete(List<String> args, int pos) {
+	public List<String> complete(final List<String> args, final int pos) {
 		ArrayList<String> suggestions = new ArrayList<String>();
 		ArrayList<String> s = new ArrayList<String>();
 		FileNameCompletor completor = new FileNameCompletor();
 		String input = Joiner.on(" ").join(args);
 		completor.complete(input, pos, suggestions);
-		if (suggestions.isEmpty())
+		if (suggestions.isEmpty()) {
 			return suggestions;
+		}
 		int lastSlash = input.lastIndexOf(File.separator);
 		if (lastSlash > -1) {
 			String prefix = input.substring(0, lastSlash);
@@ -96,8 +98,9 @@ public class RunScriptCommand extends AbstractShellCommand {
 				for (String string : suggestions) {
 					s.add(string);
 				}
-			} else
+			} else {
 				s.add(prefix + File.separator + commonPrefix);
+			}
 		}
 		if (s.size() == 1) {
 			return Collections.singletonList("run " + s.get(0));

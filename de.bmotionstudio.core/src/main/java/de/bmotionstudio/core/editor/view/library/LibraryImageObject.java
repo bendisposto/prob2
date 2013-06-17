@@ -19,10 +19,18 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-import de.bmotionstudio.core.BMotionStudio;
+import com.google.inject.Injector;
+
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.Trace;
+import de.prob.webconsole.ServletContextListener;
 
 public class LibraryImageObject extends LibraryObject {
 
+	private Injector injector = ServletContextListener.INJECTOR;
+	private final AnimationSelector selector = injector
+			.getInstance(AnimationSelector.class);
+	
 	public LibraryImageObject(String name, String type, Image typeImage) {
 		super(name, type, typeImage);
 	}
@@ -30,35 +38,44 @@ public class LibraryImageObject extends LibraryObject {
 	@Override
 	public void delete(LibraryPage page) {
 
-		String imagePath = BMotionStudio.getImagePath() + File.separator
-				+ getName();
-		File file = new File(imagePath);
-		if (file.exists())
-			file.delete();
+		Trace currentTrace = selector.getCurrentTrace();
+		if (currentTrace != null) {
+			String imagePath = currentTrace.getModel().getModelFile()
+					.getParent()
+					+ "/images" + File.separator + getName();
 
-		try {
-			IPath path = new Path(file.getPath());
-			IFile targetFile = ResourcesPlugin.getWorkspace().getRoot()
-					.getFileForLocation(path);
-			if(targetFile == null)
-				return;
-			IProject project = targetFile.getProject();
-			project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-		} catch (CoreException e) {
-			e.printStackTrace();
+			File file = new File(imagePath);
+			if (file.exists())
+				file.delete();
+
+			try {
+				IPath path = new Path(file.getPath());
+				IFile targetFile = ResourcesPlugin.getWorkspace().getRoot()
+						.getFileForLocation(path);
+				if (targetFile == null)
+					return;
+				IProject project = targetFile.getProject();
+				project.refreshLocal(IResource.DEPTH_INFINITE,
+						new NullProgressMonitor());
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+
 		}
-		
+
 	}
 
 	@Override
 	public Image getPreview(LibraryPage page) {
-		String imagePath = BMotionStudio.getImagePath() + File.separator
-				+ getName();
-		if (new File(imagePath).exists()) {
-			return new Image(Display.getDefault(), imagePath);
-		} else {
-			return null;
+		Trace currentTrace = selector.getCurrentTrace();
+		if (currentTrace != null) {
+			String imagePath = currentTrace.getModel().getModelFile()
+					.getParent()
+					+ "/images" + File.separator + getName();
+			if (new File(imagePath).exists())
+				return new Image(Display.getDefault(), imagePath);
 		}
+		return null;
 	}
 
 }
