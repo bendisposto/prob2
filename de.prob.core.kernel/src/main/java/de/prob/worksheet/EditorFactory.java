@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.scripting.Api;
+import de.prob.worksheet.evaluators.BEvaluator;
 import de.prob.worksheet.evaluators.GroovyEvaluator;
 import de.prob.worksheet.evaluators.IdentityEvaluator;
 import de.prob.worksheet.renderer.GroovyRenderer;
@@ -25,8 +26,9 @@ public class EditorFactory {
 		case groovy:
 			return new Box(EBoxTypes.groovy, id, content, new GroovyRenderer(),
 					new StackTraceRenderer(), new GroovyEvaluator());
-			// case b:
-			// return new BEditor(id, content);
+		case b:
+			return new Box(EBoxTypes.b, id, content, new MarkdownRenderer(),
+					new StackTraceRenderer(), new BEvaluator());
 		case markdown:
 			return new Box(EBoxTypes.markdown, id, content,
 					new MarkdownRenderer(), new MarkdownRenderer(),
@@ -34,9 +36,10 @@ public class EditorFactory {
 		case load:
 			return new Box(EBoxTypes.load, id, content, new MarkdownRenderer(),
 					new StackTraceRenderer(), new LoadEvaluator(api));
-			// default:
-			// return new DefaultEditor(id, content);
+		default:
+			return new Box(EBoxTypes.markdown, id, content,
+					new MarkdownRenderer(), new MarkdownRenderer(),
+					new IdentityEvaluator());
 		}
-		return null;
 	}
 }
