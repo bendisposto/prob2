@@ -34,7 +34,7 @@ public class WorkSheet {
 	private final Queue<String> q = new LinkedBlockingQueue<String>();
 	private ArrayList<String> order = new ArrayList<String>();
 
-	private final Map<String, DefaultEditor> editors = new HashMap<String, DefaultEditor>();
+	private final Map<String, Box> editors = new HashMap<String, Box>();
 
 	private int active = -1;
 
@@ -136,8 +136,7 @@ public class WorkSheet {
 
 	private void switchLanguage(String box, String newlang) {
 		String content = editors.get(box).getText();
-		DefaultEditor editor = editorFactory
-				.createEditor(newlang, box, content);
+		Box editor = editorFactory.createEditor(newlang, box, content);
 		editors.put(box, editor);
 		unfocus(box, content);
 		// active = Integer.valueOf(box);
@@ -172,8 +171,8 @@ public class WorkSheet {
 	}
 
 	private void activate(int nid, String direction) {
-		DefaultEditor e = editors.get(order.get(nid));
-		enqueue("cmd", "activate", "id", e.id, "lang", e.type.toString(),
+		Box e = editors.get(order.get(nid));
+		enqueue("cmd", "activate", "id", e.id, "lang", e.getType().toString(),
 				"text", e.getText());
 		enqueue("cmd", "focus", "id", e.id, "direction", direction);
 	}
@@ -220,8 +219,8 @@ public class WorkSheet {
 
 		for (int i = 0; i < order.size(); i++) {
 			String id = order.get(i);
-			DefaultEditor e = editors.get(id);
-			System.out.println(i + " " + " " + e.type + " " + e.getText());
+			Box e = editors.get(id);
+			System.out.println(i + " " + " " + e.getType() + " " + e.getText());
 		}
 	}
 
@@ -246,8 +245,7 @@ public class WorkSheet {
 	private void appendNewBox() {
 		String id = String.valueOf(editors.size());
 		active = editors.size();
-		DefaultEditor editor = editorFactory.createEditor(defaultLanguage(),
-				id, "");
+		Box editor = editorFactory.createEditor(defaultLanguage(), id, "");
 		editors.put(id, editor);
 		order.add(id);
 		enqueue("cmd", "append_box", "id", id, "lang", defaultLanguage(),
@@ -280,7 +278,7 @@ public class WorkSheet {
 
 	private void unfocus(final String box, final String content) {
 		active = -1;
-		DefaultEditor editor = editors.get(box);
+		Box editor = editors.get(box);
 		editor.setText(content);
 		reEvalWorksheet(box);
 	}
@@ -301,28 +299,28 @@ public class WorkSheet {
 			return true;
 		boolean r = true;
 		for (int i = order.indexOf(box) + 1; i < order.size(); i++) {
-			DefaultEditor editor = editors.get(order.get(i));
+			Box editor = editors.get(order.get(i));
 			r = r && editor.getText().isEmpty();
 		}
 		return r;
 	}
 
 	private void enqueueUpdate(String id) {
-		DefaultEditor editor = editors.get(id);
+		Box editor = editors.get(id);
 		String box = editor.id;
 
-		String html = editor.evaluate(this);
+		String html = editor.render(this);
 
-		enqueue(toJson("cmd", "render", "id", box, "lang",
-				editor.type.toString(), "html", html));
+		enqueue(toJson("cmd", "render", "id", box, "lang", editor.getType()
+				.toString(), "html", html));
 	}
 
 	public void save() {
 		for (String box : order) {
-			DefaultEditor e = editors.get(box);
-			System.out.println("<" + e.type + ">");
+			Box e = editors.get(box);
+			System.out.println("<" + e.getType() + ">");
 			System.out.println(e.getText());
-			System.out.println("</" + e.type + ">");
+			System.out.println("</" + e.getType() + ">");
 		}
 	}
 

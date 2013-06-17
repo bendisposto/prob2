@@ -4,10 +4,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.scripting.Api;
-import de.prob.worksheet.boxtypes.BEditor;
-import de.prob.worksheet.boxtypes.GroovyEditor;
-import de.prob.worksheet.boxtypes.LoadModelEditor;
-import de.prob.worksheet.boxtypes.MarkdownEditor;
+import de.prob.worksheet.evaluators.GroovyEvaluator;
+import de.prob.worksheet.evaluators.IdentityEvaluator;
+import de.prob.worksheet.renderer.GroovyRenderer;
+import de.prob.worksheet.renderer.MarkdownRenderer;
+import de.prob.worksheet.renderer.StackTraceRenderer;
 
 @Singleton
 public class EditorFactory {
@@ -19,19 +20,23 @@ public class EditorFactory {
 		this.api = api;
 	}
 
-	public DefaultEditor createEditor(String language, String id, String content) {
+	public Box createEditor(String language, String id, String content) {
 		switch (EBoxTypes.valueOf(language)) {
 		case groovy:
-			return new GroovyEditor(id, content);
-		case b:
-			return new BEditor(id, content);
+			return new Box(EBoxTypes.groovy, id, content, new GroovyRenderer(),
+					new StackTraceRenderer(), new GroovyEvaluator());
+			// case b:
+			// return new BEditor(id, content);
 		case markdown:
-			return new MarkdownEditor(id, content);
+			return new Box(EBoxTypes.markdown, id, content,
+					new MarkdownRenderer(), new MarkdownRenderer(),
+					new IdentityEvaluator());
 		case load:
-			return new LoadModelEditor(id, content, api);
-		default:
-			return new DefaultEditor(id, content);
+			return new Box(EBoxTypes.load, id, content, new MarkdownRenderer(),
+					new StackTraceRenderer(), new LoadEvaluator(api));
+			// default:
+			// return new DefaultEditor(id, content);
 		}
+		return null;
 	}
-
 }
