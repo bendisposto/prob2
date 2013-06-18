@@ -2,8 +2,6 @@ import de.prob.statespace.*
 
 s = api.b_load(dir+"/machines/scheduler.mch").getStatespace()
 
-println "The place"
-
 h = new Trace(s)
 h = h.add(0)
 h = h.add(4)
@@ -11,6 +9,8 @@ h = h.add(6)
 a = h.current.getCurrentState()
 assert a == s.states.get("4")
 assert a.getClass() == de.prob.statespace.StateId
+
+
 //assert !s.info.stateHasVariable(a,"waiting\\/ready")
 //s.addUserFormula("waiting\\/ready", "waiting\\/ready")
 //h.current.getCurrentState()."waiting\\/ready"
