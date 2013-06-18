@@ -1,6 +1,7 @@
 import de.prob.statespace.*
 import de.prob.animator.command.*
-m = api.b_load("/home/joy/code/prob2/de.prob.core.kernel/groovyTests/machines/scheduler.mch")
+
+m = api.b_load(dir+"/machines/scheduler.mch")
 s = m as StateSpace
 t = s as Trace
 t = t.add(0)

@@ -1,7 +1,11 @@
 package de.prob;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +24,8 @@ class Shell {
 		this.executor = executor;
 	}
 
-	public void runScript(final String dir, final File script) {
+	public void runScript(final String dir, final File script)
+ throws Throwable {
 		if (script.isDirectory()) {
 			File[] files = script.listFiles(new FilenameFilter() {
 				@Override
@@ -36,16 +41,30 @@ class Shell {
 		}
 	}
 
-	private void runSingleScript(final String dir, final File script) {
+	private void runSingleScript(final String dir, final File script)
+			throws Throwable {
 
 		logger.debug("Runnning script: {}", script.getAbsolutePath());
 
+		StringBuffer fileData = new StringBuffer(1000);
+		BufferedReader reader = new BufferedReader(new FileReader(
+				script.getAbsolutePath()));
+		char[] buf = new char[1024];
+		int numRead = 0;
+		while ((numRead = reader.read(buf)) != -1) {
+			String readData = String.valueOf(buf, 0, numRead);
+			fileData.append(readData);
+			buf = new char[1024];
+		}
+		reader.close();
+
 		executor.getBindings().setVariable("dir", dir);
-		executor.runSilentScript(script.getAbsolutePath(), true);
+
+		executor.runSilentScript(fileData.toString(), true, true);
 
 	}
 
-	public void runScript(final File file) {
+	public void runScript(final File file) throws Throwable {
 		runScript(file.getAbsolutePath(), file);
 	}
 }
