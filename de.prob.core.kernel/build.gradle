@@ -274,7 +274,7 @@ def os_extension() {
 	if (os.indexOf("win") > -1 ) {
 		return "probcli_win32"
 	}
-	else return "probcli_linux" + (bit.equals("64") ? "64": "")
+	else return "probcli_linux" + (bits.equals("64") ? "64": "")
 }
 
 
