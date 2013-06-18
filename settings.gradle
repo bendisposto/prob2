@@ -1,1 +1,1 @@
-include 'de.prob.core.rodin', 'de.prob.ui', 'de.prob.ui.rodin', 'de.prob2.feature', 'de.prob.core.kernel', 'de.bmotionstudio.core', 'de.bmotionstudio.rodin', 'de.prob.ui.worksheet'
+include 'de.prob.core.rodin', 'de.prob.ui', 'de.prob.ui.rodin', 'de.prob2.feature', 'de.prob.core.kernel', 'de.bmotionstudio.core', 'de.bmotionstudio.rodin'
