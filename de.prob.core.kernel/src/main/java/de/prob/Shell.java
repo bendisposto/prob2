@@ -1,31 +1,29 @@
 package de.prob;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
-import java.io.IOException;
+
+import javax.script.ScriptEngine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.webconsole.GroovyExecution;
+import de.prob.worksheet.ScriptEngineProvider;
 
 class Shell {
 
-	private final GroovyExecution executor;
+	private final ScriptEngineProvider sep;
 	private final Logger logger = LoggerFactory.getLogger(Shell.class);
 
 	@Inject
-	public Shell(final GroovyExecution executor) {
-		this.executor = executor;
+	public Shell(final ScriptEngineProvider executor) {
+		this.sep = executor;
 	}
 
-	public void runScript(final String dir, final File script)
- throws Throwable {
+	public void runScript(final String dir, final File script) throws Throwable {
 		if (script.isDirectory()) {
 			File[] files = script.listFiles(new FilenameFilter() {
 				@Override
@@ -43,25 +41,12 @@ class Shell {
 
 	private void runSingleScript(final String dir, final File script)
 			throws Throwable {
-
 		logger.debug("Runnning script: {}", script.getAbsolutePath());
+		ScriptEngine executor = sep.get();
+		executor.put("dir", dir);
 
-		StringBuffer fileData = new StringBuffer(1000);
-		BufferedReader reader = new BufferedReader(new FileReader(
-				script.getAbsolutePath()));
-		char[] buf = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1) {
-			String readData = String.valueOf(buf, 0, numRead);
-			fileData.append(readData);
-			buf = new char[1024];
-		}
-		reader.close();
-
-		executor.getBindings().setVariable("dir", dir);
-
-		executor.runSilentScript(fileData.toString(), true, true);
-
+		FileReader fr = new FileReader(script);
+		executor.eval(fr);
 	}
 
 	public void runScript(final File file) throws Throwable {

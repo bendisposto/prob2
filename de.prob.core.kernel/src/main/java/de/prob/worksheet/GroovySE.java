@@ -1,6 +1,8 @@
 package de.prob.worksheet;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 
 import javax.script.Bindings;
@@ -10,11 +12,17 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.common.io.CharStreams;
 
 public class GroovySE implements ScriptEngine {
 
 	private final ScriptEngine groovy;
+	private final Logger logger = LoggerFactory.getLogger(GroovySE.class);
 
 	private static final String[] IMPORTS = new String[] {
 			"import de.prob.statespace.*;",
@@ -35,7 +43,20 @@ public class GroovySE implements ScriptEngine {
 	public Object eval(String script, ScriptContext context)
 			throws ScriptException {
 
-		Object result = groovy.eval(imports + script, context);
+		ClassLoader classLoader = this.getClass().getClassLoader();
+		InputStream inputStream = classLoader.getResourceAsStream("initscript");
+
+		String initscript = "";
+		try {
+			initscript = CharStreams.toString(new InputStreamReader(
+					inputStream, Charsets.UTF_8));
+		} catch (IOException e) {
+			logger.error("Error reading from initscript.");
+		}
+
+		groovy.eval(imports + "\n" + initscript); // run init script
+
+		Object result = groovy.eval(imports + "\n" + script, context);
 		if (result == null)
 			return "null";
 		return result;
