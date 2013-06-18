@@ -3,6 +3,7 @@ package de.prob;
 import static java.io.File.separator;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -42,7 +43,7 @@ public class Main {
 		ProBAppender.initialize(log);
 	}
 
-	void run(final String[] args) {
+	void run(final String[] args) throws Throwable {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {
@@ -75,7 +76,7 @@ public class Main {
 				+ separator;
 	}
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws Throwable {
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override

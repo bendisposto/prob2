@@ -249,15 +249,12 @@ public  String getProBDirectory() {
 
 
 task downloadCli << {
-		os = System.getProperty("os.name")
-		if (os.indexOf("nix") < 0 && os.indexOf("nux") < 0)
-			System.err.println("\n!!\tError: CLI download for linux only\n")
 		dir = getProBDirectory();
 		delete file(dir)
 	    new File(dir).mkdirs()
 		targetdir = dir
-		targetzip = dir+"probcli_linux.zip"
-		url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_linux.zip"
+		targetzip = dir+os_extension()+".zip"
+		url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/" +os_extension()+ ".zip"
 		download(url,targetzip)
 	    FileTree zip = zipTree(targetzip)
 	    copy {
@@ -266,6 +263,21 @@ task downloadCli << {
 	    }
 		delete file(targetzip)
 }
+
+
+def os_extension() {
+	bits = System.getProperty("sun.arch.data.model");
+	os = System.getProperty("os.name").toLowerCase()
+	if (os.indexOf("mac") > -1) {
+		return "probcli_leopard64"
+	}
+	if (os.indexOf("win") > -1 ) {
+		return "probcli_win32"
+	}
+	else return "probcli_linux" + (bit.equals("64") ? "64": "")
+}
+
+
 
 
 task integrationtests(dependsOn: ['classes','downloadCli'], type:JavaExec){

@@ -99,7 +99,11 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		runSilentScript(script, false);
+		try {
+			runSilentScript(script, false, false);
+		} catch (Throwable e) {
+			e.printStackTrace(); // won't happen in regular mode
+		}
 	}
 
 	public void registerListener(final IGroovyExecutionListener listener) {
@@ -142,24 +146,31 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	public String runSilentScript(final String content,
-			final boolean printExceptions) {
-		return runScript(content, null, true, printExceptions);
+			final boolean printExceptions, boolean testmode) throws Throwable {
+		return runScript(content, null, true, printExceptions, testmode);
 	}
 
 	public String runScript(final String content, final String prefix) {
-		return runScript(content, prefix, false, true);
+		try {
+			return runScript(content, prefix, false, true, false);
+		} catch (Throwable e) {
+			e.printStackTrace(); // won't happen in regular mode
+			return null;
+		}
 	}
 
 	public String runScript(final String content, final String prefix,
-			final boolean silent, final boolean printExceptions) {
-		Object result = runScript2(content, printExceptions);
+			final boolean silent, final boolean printExceptions,
+			boolean testmode) throws Throwable {
+		Object result = runScript2(content, printExceptions, testmode);
 		if (!silent && result != null) {
 			getBindings().setVariable(freshVar(prefix), result);
 		}
 		return result == null ? "null" : result.toString();
 	}
 
-	public Object runScript2(final String content, final boolean printStackTrace) {
+	public Object runScript2(final String content,
+			final boolean printStackTrace, boolean testmode) throws Throwable {
 		try {
 			final ArrayList<String> eval = new ArrayList<String>();
 			eval.addAll(imports);
@@ -168,6 +179,8 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			try {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
+				if (testmode)
+					throw e;
 				if (printStackTrace) {
 					printStackTrace(sideeffects, e);
 				}
