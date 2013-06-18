@@ -1,4 +1,5 @@
 import de.prob.statespace.*
+
 m = api.b_load(dir+"/machines/scheduler.mch")
 s = m.getStatespace()
 h = new Trace(s)
@@ -14,6 +15,5 @@ assert h.current.edge.name == "new" || h.current.edge.name == "del"
 h = h.anyEvent("nr_ready")
 assert h.current.edge.name == "nr_ready"
 
-assert 17 == 4
 
 
