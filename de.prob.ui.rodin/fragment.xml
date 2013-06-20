@@ -43,6 +43,13 @@
                </separator>
             </menu>
             <menu
+                  id="groovy"
+                  label="Groovy">
+               <separator
+                     name="groovy">
+               </separator>
+            </menu>
+            <menu
                   id="analyze"
                   label="Analyze">
                <separator
@@ -55,8 +62,7 @@
                <separator
                      name="debug">
                </separator>
-            </menu>
-         </menu>
+            </menu> </menu>
       </menuContribution>
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar">

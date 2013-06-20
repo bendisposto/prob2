@@ -194,6 +194,15 @@
               </visibleWhen>
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:groovy">
+           <command
+                 commandId="de.prob.ui.groovyconsole"
+                 label="Open new Groovy console"
+                 style="push">
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
@@ -273,6 +282,10 @@
                   description="Takes formula from State View and opens a visualization"
                   id="de.prob.ui.createFormViz"
                   name="Create Formula Visualization">
+            </command>
+            <command
+                  id="de.prob.ui.groovyconsole"
+                  name="Open Groovy Console">
             </command>
    </extension>
    
@@ -472,6 +485,12 @@
                class="de.prob.ui.stateview.CreateFormulaVisualizationHandler">
          </class>
       </handler>
+      <handler
+            commandId="de.prob.ui.groovyconsole">
+         <class
+               class="de.prob.ui.OpenGroovyHandler">
+         </class>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -508,19 +527,12 @@
             name="Current Animations">
       </view>
       <view
+            allowMultiple="true"
             category="de.hhu.stups.prob"
             class="de.prob.ui.console.GroovyConsole"
             icon="icons/groovy.png"
             id="de.prob.ui.groovyconsole"
             name="Groovy Console"
-            restorable="true">
-      </view>
-      <view
-            category="de.hhu.stups.prob"
-            class="de.prob.ui.GroovyBindingView"
-            icon="icons/groovy.png"
-            id="de.prob.ui.groovybinding"
-            name="Global Variables"
             restorable="true">
       </view>
       <view
