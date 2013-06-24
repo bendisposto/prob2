@@ -1,6 +1,8 @@
 project.ext {
 
-	targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
+	targetRepositories = ["http://download.eclipse.org/releases/indigo/",
+                          "http://rodin-b-sharp.sourceforge.net/updates",
+                          "http://rodin-b-sharp.sourceforge.net/core-updates"]	
 
 	groupID = "de.prob2"
 
