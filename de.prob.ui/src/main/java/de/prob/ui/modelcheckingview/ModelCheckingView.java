@@ -29,7 +29,7 @@ import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 public class ModelCheckingView extends ViewPart implements
-IModelChangedListener, IAnimationChangeListener {
+		IModelChangedListener, IAnimationChangeListener {
 
 	private final Set<ConsistencyCheckingSearchOption> options = new HashSet<ConsistencyCheckingSearchOption>();
 
@@ -38,7 +38,6 @@ IModelChangedListener, IAnimationChangeListener {
 	private StateSpace s;
 	private Trace currentTrace;
 	private Job job;
-
 
 	@Override
 	public void createPartControl(final Composite parent) {
@@ -56,7 +55,9 @@ IModelChangedListener, IAnimationChangeListener {
 		textLabel.setText("Add Further Formulas:");
 		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		formulas = new Text(container, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-		formulas.setText("");
+		formulas.setText("not yet supported");
+		formulas.setEnabled(false);
+		formulas.setEditable(false);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.horizontalSpan = 2;
 		formulas.setLayoutData(gd);
@@ -96,16 +97,18 @@ IModelChangedListener, IAnimationChangeListener {
 	}
 
 	private void cancelModelChecking() {
-		if(job != null) {
+		if (job != null) {
 			job.cancel();
 		}
 	}
 
 	private void startModelChecking() {
 		if (s != null) {
-			job = new ModelCheckingJob("Consistency Checking",new ModelChecker(s, optionsToString()));
+			job = new ModelCheckingJob("Consistency Checking",
+					new ModelChecker(s, optionsToString()));
 			job.setUser(true);
-			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(container,currentTrace));
+			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(
+					container, currentTrace));
 			job.schedule();
 		}
 	}
