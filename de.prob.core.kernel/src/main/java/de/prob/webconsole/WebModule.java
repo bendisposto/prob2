@@ -32,6 +32,7 @@ public class WebModule extends ServletModule {
 		serve("/scrollback*").with(ScrollbackServlet.class);
 		serve("/exec*").with(WorksheetServlet.class);
 
+		filter("/sb/*").through(ReflectorFilter.class);
 
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);
