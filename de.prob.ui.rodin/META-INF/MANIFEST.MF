@@ -7,4 +7,7 @@ Fragment-Host: de.prob.ui;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: HHU Düsseldorf STUPS Group
 Bundle-ClassPath: .
+Export-Package: de.prob.ui.eventb.internal
+Require-Bundle: org.eventb.core;bundle-version="2.5.1",
+ org.rodinp;bundle-version="1.6.0"
 

@@ -33,6 +33,9 @@ import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;
 
 public class StartAnimationHandler extends AbstractHandler {
+	
+	
+	
 
 	private ISelection fSelection;
 

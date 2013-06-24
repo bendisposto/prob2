@@ -13,34 +13,7 @@
 
       </menuContribution>
       
-        <menuContribution
-            locationURI="popup:fr.systerel.explorer.navigator.view">
-         <separator
-               name="de.prob.ui.separator2"
-               visible="true">
-         </separator>
-         <command
-               commandId="de.prob.ui.starteventbanimation"
-               icon="icons/prob.png"
-               label="Start Animation / Model Checking"
-               style="push">
-            <visibleWhen>
-      <with
-            variable="selection">
-         <iterate
-               operator="or">
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
-         </iterate>
-      </with>
-            </visibleWhen>
-         </command>
-         <separator
-               name="de.prob.ui.separator1"
-               visible="true">
-         </separator>
-      </menuContribution>
+       
         <menuContribution
               locationURI="toolbar:de.prob.ui.OperationView">
            <command
@@ -208,10 +181,7 @@
    <extension
          point="org.eclipse.ui.commands">
       
-            <command
-            id="de.prob.ui.starteventbanimation"
-            name="Event-B Animate / Model Check">
-      </command>
+
             <command
                   id="de.prob.ui.trace.back"
                   name="Move Back in Trace">
@@ -291,42 +261,7 @@
    
    <extension
          point="org.eclipse.ui.handlers">      
-      <handler
-            commandId="de.prob.ui.starteventbanimation">
-         <class
-               class="de.prob.ui.eventb.StartAnimationHandler">
-         </class>
-                     <enabledWhen>
-      <with
-            variable="selection">
-         <iterate
-               operator="or">
-               <or>
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
-            <and>
-                 <instanceof
-                       value="org.eclipse.core.resources.IResource">
-                 </instanceof>
-                 <or>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.eclipse.core.resources.extension"
-                       value="bum">
-                 </test>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.eclipse.core.resources.extension"
-                       value="buc">
-                 </test>
-                 </or>
-              </and>
-              </or>
-         </iterate>
-      </with>
-            </enabledWhen>
-      </handler>
+     
       <handler
             commandId="de.prob.ui.trace.back">
          <class

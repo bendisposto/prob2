@@ -25,6 +25,36 @@
    
      <extension
          point="org.eclipse.ui.menus">
+         
+          <menuContribution
+            locationURI="popup:fr.systerel.explorer.navigator.view">
+         <separator
+               name="de.prob.ui.separator2"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.rodin.starteventbanimation"
+               icon="icons/prob.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen>
+      <with
+            variable="selection">
+         <iterate
+               operator="or">
+            <instanceof
+                  value="org.eventb.core.IEventBRoot">
+            </instanceof>
+         </iterate>
+      </with>
+            </visibleWhen>
+         </command>
+         <separator
+               name="de.prob.ui.separator1"
+               visible="true">
+         </separator>
+      </menuContribution>
+         
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu">
          <menu
@@ -79,6 +109,54 @@
               id="de.prob.ui.perspective"
               name="ProB">
         </perspective>
+     </extension>
+     <extension
+           point="org.eclipse.ui.handlers">
+
+ <handler
+            commandId="de.prob.ui.rodin.starteventbanimation">
+         <class
+               class="de.prob.ui.eventb.StartAnimationHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <iterate
+                     operator="or">
+                  <or>
+                     <instanceof
+                           value="org.eventb.core.IEventBRoot">
+                     </instanceof>
+                     <and>
+                        <instanceof
+                              value="org.eclipse.core.resources.IResource">
+                        </instanceof>
+                        <or>
+                           <test
+                                 forcePluginActivation="true"
+                                 property="org.eclipse.core.resources.extension"
+                                 value="bum">
+                           </test>
+                           <test
+                                 forcePluginActivation="true"
+                                 property="org.eclipse.core.resources.extension"
+                                 value="buc">
+                           </test>
+                        </or>
+                     </and>
+                  </or>
+               </iterate>
+            </with>
+         </enabledWhen>
+      </handler>
+
+     </extension>
+     <extension
+           point="org.eclipse.ui.commands">
+                       <command
+            id="de.prob.ui.rodin.starteventbanimation"
+            name="Event-B Animate / Model Check">
+      </command>
      </extension>
    
    
