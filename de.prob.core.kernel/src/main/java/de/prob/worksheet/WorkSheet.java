@@ -13,11 +13,12 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.script.ScriptEngine;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pegdown.PegDownProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
@@ -25,8 +26,11 @@ import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public class WorkSheet {
+import de.prob.web.ISession;
 
+public class WorkSheet implements ISession {
+
+	private final Logger logger = LoggerFactory.getLogger(WorkSheet.class);
 	private static final String DIR_FROM_ABOVE = "from_above";
 	private static final String DIR_FROM_BELOW = "from_below";
 	private static final String DIR_FROM_SOMEWHERE_ELSE = "from_somewhere_else";
@@ -63,13 +67,19 @@ public class WorkSheet {
 	}
 
 	public void doGet(String session, HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+			HttpServletResponse response) {
+		String cmds = request.getParameter("cmd");
 		this.session = session;
-		PrintWriter out = response.getWriter();
+
+
+		PrintWriter out = null;
+		try {
+			out = response.getWriter();
+		} catch (IOException e) {
+			logger.error("Error getting output writer.", e);
+		}
 
 		// printParams(request);
-
-		String cmds = request.getParameter("cmd");
 
 		ECmd cmd = ECmd.valueOf(cmds);
 		String box = request.getParameter("box");
