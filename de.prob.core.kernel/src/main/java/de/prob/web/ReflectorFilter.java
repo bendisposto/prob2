@@ -1,6 +1,8 @@
-package de.prob.webconsole;
+package de.prob.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +19,28 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.webconsole.ServletContextListener;
+
 @Singleton
 public class ReflectorFilter implements Filter {
+
+	private class PartList extends ArrayList<String> {
+
+		private static final long serialVersionUID = -5668244262489304794L;
+
+		public PartList(String[] split) {
+			super(Arrays.asList(split));
+		}
+
+		@Override
+		public String get(int index) {
+			if (index >= this.size())
+				return "";
+			else
+				return super.get(index);
+		}
+
+	}
 
 	private final HashMap<String, ISession> sessioncontainer;
 
@@ -65,7 +87,7 @@ public class ReflectorFilter implements Filter {
 			// no session yet
 			String id = fresh();
 			try {
-				ISession o = (ISession) clazz.newInstance();
+				ISession o = ServletContextListener.INJECTOR.getInstance(clazz);
 				sessioncontainer.put(id, o);
 			} catch (Exception e) {
 				response.sendRedirect("nonexisting_class.html");

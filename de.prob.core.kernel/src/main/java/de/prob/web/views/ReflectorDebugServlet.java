@@ -1,4 +1,4 @@
-package de.prob.webconsole;
+package de.prob.web.views;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -6,6 +6,8 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import de.prob.web.ISession;
 
 public class ReflectorDebugServlet implements ISession {
 
