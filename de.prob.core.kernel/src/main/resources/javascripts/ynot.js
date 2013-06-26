@@ -114,7 +114,7 @@ function poller() {
             'session' : session
         };
         $.ajax({
-            url : "/sessions/de.prob.worksheet.WorkSheet/"+session,
+            url : "exec",
             dataType : 'json',
             data : data,
             success : function(data) {
@@ -263,7 +263,7 @@ function activateCodeEditor(options, id, text) {
 function get_session() {
     var s;
     $.ajax({
-        url : "sessions/de.prob.worksheet.WorkSheet?cmd=session",
+        url : "exec?cmd=session",
         success : function(result) {
             if (result.isOk === false) {
                 alert(result.message);
@@ -282,7 +282,7 @@ function async_query(session, msg) {
     if (msg.cmd != "updates")
         console.log(msg)
     $.ajax({
-        url : "sessions/de.prob.worksheet.WorkSheet/"+session,
+        url : "exec",
         data : msg
     })
 }

@@ -105,7 +105,7 @@ public class ReflectorFilter implements Filter {
 			}
 			String rest = sb.substring(0, sb.length() - 1);
 
-			response.sendRedirect("/sessions/" + servletName + "/" + id + rest);
+			response.sendRedirect("/sb/" + servletName + "/" + id + rest);
 			return;
 		}
 
