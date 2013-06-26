@@ -13,11 +13,10 @@ import de.prob.webconsole.servlets.ImportsServlet;
 import de.prob.webconsole.servlets.LogServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
 import de.prob.webconsole.servlets.VersionServlet;
-import de.prob.worksheet.WorksheetServlet;
-
 import de.prob.webconsole.servlets.visualizations.PredicateServlet;
 import de.prob.webconsole.servlets.visualizations.StateSpaceServlet;
 import de.prob.webconsole.servlets.visualizations.ValueOverTimeServlet;
+import de.prob.worksheet.WorksheetServlet;
 
 public class WebModule extends ServletModule {
 
@@ -33,7 +32,7 @@ public class WebModule extends ServletModule {
 		serve("/scrollback*").with(ScrollbackServlet.class);
 		serve("/exec*").with(WorksheetServlet.class);
 
-		filter("/sb/*").through(ReflectorFilter.class);
+		filter("/sessions/*").through(ReflectorFilter.class);
 
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);

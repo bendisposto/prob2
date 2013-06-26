@@ -6,7 +6,12 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -44,12 +49,12 @@ public class ReflectorFilter implements Filter {
 
 	private final HashMap<String, ISession> sessioncontainer;
 
+	private final Executor tpe = Executors.newCachedThreadPool();
+
 	@Inject
 	public ReflectorFilter(HashMap<String, ISession> sessioncontainer) {
 		this.sessioncontainer = sessioncontainer;
 	}
-
-	private int sessioncounter = 0;
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -61,7 +66,7 @@ public class ReflectorFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
 
-		HttpServletRequest request = (HttpServletRequest) req;
+		final HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		String requestURI = request.getRequestURI();
 
@@ -85,10 +90,11 @@ public class ReflectorFilter implements Filter {
 
 		if (session.isEmpty()) {
 			// no session yet
-			String id = fresh();
+			UUID id = freshId();
 			try {
 				ISession o = ServletContextListener.INJECTOR.getInstance(clazz);
-				sessioncontainer.put(id, o);
+				o.setUuid(id);
+				sessioncontainer.put(id.toString(), o);
 			} catch (Exception e) {
 				response.sendRedirect("nonexisting_class.html");
 				return;
@@ -105,22 +111,26 @@ public class ReflectorFilter implements Filter {
 			}
 			String rest = sb.substring(0, sb.length() - 1);
 
-			response.sendRedirect("/sb/" + servletName + "/" + id + rest);
+			response.sendRedirect("/sessions/" + servletName + "/"
+					+ id.toString() + rest);
 			return;
 		}
 
-		ISession obj = sessioncontainer.get(session);
+		final ISession obj = sessioncontainer.get(session);
+		final Map<String, String[]> parameterMap = request.getParameterMap();
 
-		if (request.getParameter("cmds") == null
-				|| request.getParameter("cmds").isEmpty()) {
-			obj.restoreView(session, request, response);
+		if (request.getParameter("ajax") == null
+				|| !request.getParameter("ajax").equals("true")) {
+			String html = obj.requestHtml(parameterMap);
+			response.getWriter().write(html);
 		} else {
-			obj.doGet(session, request, response);
+			final AsyncContext context = request.startAsync();
+			tpe.execute(new SessionRunnable(context, parameterMap, obj));
 		}
 	}
 
-	private String fresh() {
-		return Integer.toString(sessioncounter++);
+	private UUID freshId() {
+		return UUID.randomUUID();
 	}
 
 	@Override
