@@ -33,4 +33,15 @@ public class ReflectorDebugServlet implements ISession {
 
 	}
 
+	@Override
+	public void restoreView(String session, HttpServletRequest request,
+			HttpServletResponse response) {
+		try {
+			PrintWriter writer = response.getWriter();
+			writer.write("Restore View");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

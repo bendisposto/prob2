@@ -25,4 +25,11 @@ public class GroovySession implements ISession {
 
 	}
 
+	@Override
+	public void restoreView(String session, HttpServletRequest request,
+			HttpServletResponse response) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

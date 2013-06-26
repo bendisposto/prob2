@@ -110,7 +110,13 @@ public class ReflectorFilter implements Filter {
 		}
 
 		ISession obj = sessioncontainer.get(session);
-		obj.doGet(session, request, response);
+
+		if (request.getParameter("cmds") == null
+				|| request.getParameter("cmds").isEmpty()) {
+			obj.restoreView(session, request, response);
+		} else {
+			obj.doGet(session, request, response);
+		}
 	}
 
 	private String fresh() {
