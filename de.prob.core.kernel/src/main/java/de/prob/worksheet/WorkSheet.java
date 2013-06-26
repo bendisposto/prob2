@@ -332,11 +332,4 @@ public class WorkSheet {
 		return pegdown;
 	}
 
-	@Override
-	public void restoreView(String session, HttpServletRequest request,
-			HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
