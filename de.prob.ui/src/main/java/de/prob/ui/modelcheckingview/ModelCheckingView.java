@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
-import de.prob.check.ConsistencyCheckingSearchOption;
+import de.prob.check.ModelCheckingSearchOption;
 import de.prob.check.ModelChecker;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
@@ -31,7 +31,7 @@ import de.prob.webconsole.ServletContextListener;
 public class ModelCheckingView extends ViewPart implements
 		IModelChangedListener, IAnimationChangeListener {
 
-	private final Set<ConsistencyCheckingSearchOption> options = new HashSet<ConsistencyCheckingSearchOption>();
+	private final Set<ModelCheckingSearchOption> options = new HashSet<ModelCheckingSearchOption>();
 
 	private Composite container;
 	private Text formulas;
@@ -104,10 +104,10 @@ public class ModelCheckingView extends ViewPart implements
 
 	private void startModelChecking() {
 		if (s != null) {
-			job = new ModelCheckingJob("Consistency Checking",
+			job = new ModelCheckingJob("Model Checking",
 					new ModelChecker(s, optionsToString()));
 			job.setUser(true);
-			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(
+			job.addJobChangeListener(new ModelCheckingFinishedListener(
 					container, currentTrace));
 			job.schedule();
 		}
@@ -123,7 +123,7 @@ public class ModelCheckingView extends ViewPart implements
 
 		for (int i = 0; i < 5; i++) {
 			final Button button = new Button(settings, SWT.CHECK);
-			final ConsistencyCheckingSearchOption option = ConsistencyCheckingSearchOption
+			final ModelCheckingSearchOption option = ModelCheckingSearchOption
 					.get(i);
 			button.setText(option.getDescription());
 			button.setSelection(option.isEnabledByDefault());
@@ -143,7 +143,7 @@ public class ModelCheckingView extends ViewPart implements
 	}
 
 	private void setOptions(final boolean set,
-			final ConsistencyCheckingSearchOption option) {
+			final ModelCheckingSearchOption option) {
 		if (set) {
 			if (!options.contains(option)) {
 				options.add(option);
@@ -157,7 +157,7 @@ public class ModelCheckingView extends ViewPart implements
 
 	private List<String> optionsToString() {
 		List<String> list = new ArrayList<String>();
-		for (ConsistencyCheckingSearchOption option : options) {
+		for (ModelCheckingSearchOption option : options) {
 			list.add(option.name());
 		}
 		return list;
