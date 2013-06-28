@@ -38,6 +38,7 @@ project(':de.prob.core.rodin'){
 		
 	}	
 	
+	
 	task generateMF()<<{
 		String exports = getExportedPackages()
 		//println exports
@@ -53,7 +54,7 @@ project(':de.prob.core.rodin'){
 			if( it ==~ /Bundle-ClassPath: .(\ |\t)*/ ) it = it + ",\n" + lib
 			if( it ==~ /Bundle-ClassPath: .(\ |\t)*,(\ |\t)*/ ) it = it + "\n" + lib + ","
 			//if( !(it ==~ /(\ |\t)*de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional.*/ ) ){				//	 This check is only necessary because the optional identifier cannot be handled anymore 
-			it = it.replaceAll(",(\ |\t)*,", ",")
+			it = it.replaceAll(",( |\t)*,",",")
 			mf << it+"\n"
 			//}																//
 		}
