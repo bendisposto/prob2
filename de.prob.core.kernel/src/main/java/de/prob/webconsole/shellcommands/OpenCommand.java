@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.webconsole.GroovyExecution;
 
+/**
+ * @author joy This provides the user with the command "open" in the groovy
+ *         console, which takes one parameter, either "tutorial" or "javadoc"
+ *         and opens the link to the specified documentation.
+ */
 public class OpenCommand extends AbstractShellCommand {
 
 	private final static Logger LOGGER = LoggerFactory

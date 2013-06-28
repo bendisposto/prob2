@@ -12,6 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.prob.visualization.VisualizationException;
 
+/**
+ * @author joy A basis class available to provide the management of sessions.
+ *         When GET requests come to the {@link SessionBasedServlet}, these are
+ *         forwarded to the specified {@link ISessionServlet}.
+ * 
+ */
 public abstract class SessionBasedServlet extends HttpServlet {
 
 	protected static int count = 0;
