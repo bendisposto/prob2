@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class OpenCommand extends AbstractShellCommand {
 
 		List<String> suggs = getSuggs(search);
 		if (suggs.size() == 1) {
-			return Arrays.asList(new String[] { "open " + suggs.get(0) });
+			return Collections.singletonList("open " + suggs.get(0));
 		} else {
 			return suggs;
 		}

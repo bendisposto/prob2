@@ -35,7 +35,7 @@ import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.Transformer;
 
 public class ValueOverTimeSession implements ISessionServlet,
-		IAnimationChangeListener, IVisualizationServlet {
+		IAnimationChangeListener, IVisualizationEngine {
 
 	Logger logger = LoggerFactory.getLogger(ValueOverTimeSession.class);
 	private final String vizType;
@@ -66,8 +66,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 		formulas.add(formula);
 		vizType = formula.getClass().getSimpleName();
 		datasets = calculate();
-		saveFile = properties.getPropFileFromModelFile(stateSpace.getModel()
-				.getModelFile().getAbsolutePath());
+		saveFile = properties.getPropFileFromModel(stateSpace.getModel());
 		mode = "over";
 		properties.setProperty(saveFile, sessionId, serialize());
 	}
@@ -112,8 +111,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 		}
 		vizType = formulas.get(0).getClass().getSimpleName();
 		datasets = calculate();
-		saveFile = properties.getPropFileFromModelFile(stateSpace.getModel()
-				.getModelFile().getAbsolutePath());
+		saveFile = properties.getPropFileFromModel(stateSpace.getModel());
 		properties.setProperty(saveFile, sessionId, serialize());
 
 	}

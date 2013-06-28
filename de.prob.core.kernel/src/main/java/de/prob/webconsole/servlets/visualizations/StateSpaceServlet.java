@@ -75,8 +75,8 @@ public class StateSpaceServlet extends SessionBasedServlet implements
 			return null;
 		}
 
-		String propFile = properties.getPropFileFromModelFile(currentStateSpace
-				.getModel().getModelFile().getAbsolutePath());
+		String propFile = properties.getPropFileFromModel(currentStateSpace
+				.getModel());
 		Properties props = properties.getProperties(propFile);
 		String json = props.getProperty(id);
 

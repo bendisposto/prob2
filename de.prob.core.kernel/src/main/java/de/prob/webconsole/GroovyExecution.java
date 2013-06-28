@@ -29,7 +29,7 @@ import de.prob.testing.TestRegistry;
 /**
  * This servlet takes a line from the web interface and evaluates it using
  * Groovy. The Groovy interpreter does not remember import statements, i.e., the
- * input 'import foo.Bar; x = new Bar' will work, but spliting it into two
+ * input 'import foo.Bar; x = new Bar' will work, but splitting it into two
  * separate lines won't. We thus collect any import statement and prefix every
  * command with all the imports.
  * 
@@ -146,7 +146,8 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	public String runSilentScript(final String content,
-			final boolean printExceptions, boolean testmode) throws Throwable {
+			final boolean printExceptions, final boolean testmode)
+			throws Throwable {
 		return runScript(content, null, true, printExceptions, testmode);
 	}
 
@@ -161,7 +162,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 
 	public String runScript(final String content, final String prefix,
 			final boolean silent, final boolean printExceptions,
-			boolean testmode) throws Throwable {
+			final boolean testmode) throws Throwable {
 		Object result = runScript2(content, printExceptions, testmode);
 		if (!silent && result != null) {
 			getBindings().setVariable(freshVar(prefix), result);
@@ -170,7 +171,8 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	public Object runScript2(final String content,
-			final boolean printStackTrace, boolean testmode) throws Throwable {
+			final boolean printStackTrace, final boolean testmode)
+			throws Throwable {
 		try {
 			final ArrayList<String> eval = new ArrayList<String>();
 			eval.addAll(imports);
@@ -179,8 +181,9 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			try {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
-				if (testmode)
+				if (testmode) {
 					throw e;
+				}
 				if (printStackTrace) {
 					printStackTrace(sideeffects, e);
 				}

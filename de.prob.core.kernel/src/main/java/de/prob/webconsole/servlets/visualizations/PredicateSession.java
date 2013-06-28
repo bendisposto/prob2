@@ -24,7 +24,7 @@ import de.prob.statespace.StateSpace;
 import de.prob.visualization.Transformer;
 
 public class PredicateSession implements ISessionServlet,
-		IAnimationChangeListener, IVisualizationServlet {
+		IAnimationChangeListener, IVisualizationEngine {
 
 	private final IEvalElement formula;
 	private final StateSpace stateSpace;

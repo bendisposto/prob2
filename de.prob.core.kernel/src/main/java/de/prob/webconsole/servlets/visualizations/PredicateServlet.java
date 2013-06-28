@@ -41,9 +41,8 @@ public class PredicateServlet extends SessionBasedServlet {
 		}
 		try {
 			PredicateSession session = new PredicateSession(animations, formula);
-			String propFile = properties.getPropFileFromModelFile(animations
-					.getCurrentTrace().getModel().getModelFile()
-					.getAbsolutePath());
+			String propFile = properties.getPropFileFromModel(animations
+					.getCurrentTrace().getModel());
 			properties.setProperty(propFile, sessionId, formula.serialized());
 			super.openSession(sessionId, session);
 			visualizations.registerSession(sessionId, session);
@@ -64,12 +63,11 @@ public class PredicateServlet extends SessionBasedServlet {
 	@Override
 	protected String loadSession(final String id) throws VisualizationException {
 		if (animations.getCurrentTrace() != null) {
-			String propFile = properties.getPropFileFromModelFile(animations
-					.getCurrentTrace().getModel().getModelFile()
-					.getAbsolutePath());
+			String propFile = properties.getPropFileFromModel(animations
+					.getCurrentTrace().getModel());
 			Properties props = properties.getProperties(propFile);
 			String formula = props.getProperty(id);
-//			System.out.println(formula);
+			// System.out.println(formula);
 			if (formula != null) {
 				IEvalElement iEvalElement = deserializer.deserialize(formula);
 				try {

@@ -50,7 +50,7 @@ import de.prob.visualization.StateSpaceData;
 import de.prob.visualization.Transformer;
 
 public class StateSpaceSession implements ISessionServlet,
-		IStatesCalculatedListener, IVisualizationServlet {
+		IStatesCalculatedListener, IVisualizationEngine {
 
 	Logger logger = LoggerFactory.getLogger(StateSpaceSession.class);
 	private final String filename;
@@ -80,8 +80,7 @@ public class StateSpaceSession implements ISessionServlet,
 				events.put(bEvent.getName(), e);
 			}
 		}
-		filename = props.getPropFileFromModelFile(space.getModel()
-				.getModelFile().getAbsolutePath());
+		filename = props.getPropFileFromModel(space.getModel());
 		props.setProperty(filename, sessionId, serialize());
 	}
 
@@ -100,8 +99,7 @@ public class StateSpaceSession implements ISessionServlet,
 				events.put(bEvent.getName(), e);
 			}
 		}
-		filename = props.getPropFileFromModelFile(space.getModel()
-				.getModelFile().getAbsolutePath());
+		filename = props.getPropFileFromModel(space.getModel());
 		disabledEvents.addAll(disabledEvents);
 		this.expression = expression;
 		if (mode == 1) {
