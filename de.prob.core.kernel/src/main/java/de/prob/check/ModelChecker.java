@@ -70,8 +70,8 @@ public class ModelChecker {
 
 	/**
 	 * Starts the model checking process. Creates a {@link Future} of type
-	 * {@link ModelCheckingResult} by submitting the {@link Worker} to a single
-	 * threaded {@link ExecutorService}
+	 * {@link ModelCheckingResult} by submitting the {@link ModelChecker#worker}
+	 * to a single threaded {@link ExecutorService}
 	 */
 	public void start() {
 		f = executor.submit(worker);
@@ -145,8 +145,8 @@ public class ModelChecker {
 		}
 
 		private ModelCheckingResult do_model_checking_step() {
-			ModelCheckingCommand cmd = new ModelCheckingCommand(
-					500, options, last);
+			ModelCheckingCommand cmd = new ModelCheckingCommand(500, options,
+					last);
 
 			s.execute(cmd);
 			ModelCheckingResult result = cmd.getResult();

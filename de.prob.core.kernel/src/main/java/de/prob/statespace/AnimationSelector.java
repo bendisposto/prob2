@@ -189,8 +189,9 @@ public class AnimationSelector {
 	}
 
 	/**
-	 * Lets the {@link IAnimationListener} know that it should remove the
-	 * {@link Trace} object from its registry.
+	 * Removes the {@link Trace} from the list of animations. If there are other
+	 * {@link Trace}s available to animate, one of these is selected as the new
+	 * current trace. Otherwise, the current {@link Trace} is set to null.
 	 * 
 	 * @param trace
 	 */
