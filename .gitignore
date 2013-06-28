@@ -10,3 +10,4 @@ de.prob.core.kernel/META-INF/MANIFEST.MF
 mylyn/
 *.probp
 *.viz
+*.class

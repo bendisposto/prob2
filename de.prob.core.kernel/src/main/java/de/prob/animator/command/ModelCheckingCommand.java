@@ -21,18 +21,18 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
 
-public class ConsistencyCheckingCommand extends AbstractCommand {
+public class ModelCheckingCommand extends AbstractCommand {
 	private final int time;
 	private final List<String> options;
 	private ModelCheckingResult result;
 	private final String RESULT = "Result";
 	private final String OPS = "Ops";
 
-	Logger logger = LoggerFactory.getLogger(ConsistencyCheckingCommand.class);
+	Logger logger = LoggerFactory.getLogger(ModelCheckingCommand.class);
 	private final long last;
 	private final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
-	public ConsistencyCheckingCommand(final int time,
+	public ModelCheckingCommand(final int time,
 			final List<String> options, final long last) {
 		this.time = time;
 		this.options = options;

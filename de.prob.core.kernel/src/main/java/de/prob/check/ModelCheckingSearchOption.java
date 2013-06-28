@@ -15,18 +15,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum ConsistencyCheckingSearchOption {
+public enum ModelCheckingSearchOption {
 	breadth_first_search(0, "Breadth First Search", false), find_deadlocks(1,
 			"Find Deadlocks", true), find_invariant_violations(2,
 			"Find Invariant Violations", true), find_assertion_violations(3,
 			"Find Theorem Violations", false), inspect_existing_nodes(4,
-			"Recheck existing states", false);
+			"Recheck Existing States", false),
+			stop_at_full_coverage(5, "Stop when all Events are Covered", false);
 
 	private final String text;
 	private final int pos;
 	private final boolean enabledByDefault;
 
-	private ConsistencyCheckingSearchOption(final int pos, final String text,
+	private ModelCheckingSearchOption(final int pos, final String text,
 			final boolean enabledByDefault) {
 		this.pos = pos;
 		this.text = text;
@@ -37,11 +38,11 @@ public enum ConsistencyCheckingSearchOption {
 		return text;
 	}
 
-	private static final Map<Integer, ConsistencyCheckingSearchOption> lookup = new HashMap<Integer, ConsistencyCheckingSearchOption>();
+	private static final Map<Integer, ModelCheckingSearchOption> lookup = new HashMap<Integer, ModelCheckingSearchOption>();
 
 	static {
-		for (ConsistencyCheckingSearchOption s : EnumSet
-				.allOf(ConsistencyCheckingSearchOption.class)) {
+		for (ModelCheckingSearchOption s : EnumSet
+				.allOf(ModelCheckingSearchOption.class)) {
 			lookup.put(s.getPos(), s);
 		}
 	}
@@ -56,7 +57,7 @@ public enum ConsistencyCheckingSearchOption {
 
 	public final static List<String> getDefaultOptions() {
 		List<String> options = new ArrayList<String>();
-		for (ConsistencyCheckingSearchOption option : lookup.values()) {
+		for (ModelCheckingSearchOption option : lookup.values()) {
 			if (option.isEnabledByDefault()) {
 				options.add(option.name());
 			}
@@ -64,7 +65,7 @@ public enum ConsistencyCheckingSearchOption {
 		return options;
 	}
 
-	public final static ConsistencyCheckingSearchOption get(final int code) {
+	public final static ModelCheckingSearchOption get(final int code) {
 		return lookup.get(code);
 	}
 

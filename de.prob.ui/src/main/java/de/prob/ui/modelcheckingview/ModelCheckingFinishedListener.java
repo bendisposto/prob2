@@ -14,13 +14,13 @@ import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
-public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
+public class ModelCheckingFinishedListener extends JobChangeAdapter {
 
 	private final Composite container;
 	private final Trace currentTrace;
 	private final AnimationSelector animations;
 
-	public ConsistencyCheckingFinishedListener(final Composite container,
+	public ModelCheckingFinishedListener(final Composite container,
 			final Trace currentTrace) {
 		this.container = container;
 		this.currentTrace = currentTrace;

@@ -12,7 +12,7 @@ import de.prob.webconsole.WebConsole;
 
 public class GroovyConsole extends ViewPart {
 
-	public static final String ID = "de.prob.ui.console.GroovyConsole";
+	public static final String ID = "de.prob.ui.groovyconsole";
 
 	private final int port;
 	private Browser consoleBrowser;
