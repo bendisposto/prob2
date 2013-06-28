@@ -7,7 +7,7 @@ project.ext {
 	groupID = "de.prob2"
 
 	excludeFromTychoBuild = ["de.prob.core.kernel"]
-	excludeFromClassPath = [ 'de.prob.core.rodin','de.prob.ui.rodin', 'de.prob2.feature' ]		// Projects defined here will also be exluded from changes of MF File
+	excludeFromClassPath = [ 'de.prob.ui.rodin', 'de.prob2.feature' ]		// Projects defined here will also be exluded from changes of MF File
 	excludeManifestClassPathDelete = ['de.bmotionstudio.core', 'de.bmotionstudio.rodin','de.prob.ui.worksheet']		// Projects defined here will still have classpath changes but no changes in the MF File
 }
 
@@ -53,6 +53,7 @@ project(':de.prob.core.rodin'){
 			if( it ==~ /Bundle-ClassPath: .(\ |\t)*/ ) it = it + ",\n" + lib
 			if( it ==~ /Bundle-ClassPath: .(\ |\t)*,(\ |\t)*/ ) it = it + "\n" + lib + ","
 			//if( !(it ==~ /(\ |\t)*de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional.*/ ) ){				//	 This check is only necessary because the optional identifier cannot be handled anymore 
+			it = it.replaceAll(",(\ |\t)*,", ",")
 			mf << it+"\n"
 			//}																//
 		}
