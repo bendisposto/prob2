@@ -12,23 +12,19 @@ project.group = 'de.prob'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
-    project.version = '2.0.0-milestone-12-SNAPSHOT'
+project.version = '2.0.0-milestone-12-SNAPSHOT'
 
 repositories {
-    maven {
-      name "cobra"
-      url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-    }
+	maven {
+		name "cobra"
+		url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
+	}
 }
 
 
-tasks.withType(FindBugs){
-ignoreFailures = true
-}
+tasks.withType(FindBugs){ ignoreFailures = true }
 
-configurations.all {
-      resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
+configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
 
 
 def  ft = findbugsMain.classes
@@ -40,7 +36,8 @@ ftc.exclude '**/SpockDomWalkerTest*'
 findbugsTest.classes = files(ftc.files) // explicit list of files
 
 
-sourceSets.main.java.srcDirs = ['src/main/generated'] // ie there's no stand-alone java source
+sourceSets.main.java.srcDirs = [
+	'src/main/generated'] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
 
 def parser_version = '2.4.18-SNAPSHOT'
@@ -49,7 +46,7 @@ dependencies {
 
 	groovy 'org.codehaus.groovy:groovy-all:2.0.5'
 
-	compile 'com.google.guava:guava:r09' // Apache Licence 2.0
+	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
 
 	compile 'org.codehaus.groovy:groovy-all:2.0.5' // Apache Licence 2.0
@@ -78,8 +75,8 @@ dependencies {
 	compile 'org.codehaus.woodstox:stax2-api:3.1.1' // The BSD License
 	compile('org.codehaus.jettison:jettison:1.3.1'){ // Apache Licence 2.0
 		transitive=false //Don't want Stax-Api-1.0.1 only Stax-Api-1.0.2
-	} 
-	
+	}
+
 	compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' // Rodin
 
 	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
@@ -91,17 +88,17 @@ dependencies {
 	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3' // EPL
 
-//	compile 'org.mortbay.jetty:jsp-2.1-glassfish:2.1.v20100127' // EPL
+	//	compile 'org.mortbay.jetty:jsp-2.1-glassfish:2.1.v20100127' // EPL
 
-    compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
-    compile group: "de.prob", name: "bparser", version: parser_version , changing: true
-    compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
-    compile group: "de.prob", name: "ltlparser", version: parser_version , changing: true
-    compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
-    compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
-    compile group: "de.prob", name: "unicode", version: parser_version , changing: true
+	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
+	compile group: "de.prob", name: "bparser", version: parser_version , changing: true
+	compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
+	compile group: "de.prob", name: "ltlparser", version: parser_version , changing: true
+	compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
+	compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
+	compile group: "de.prob", name: "unicode", version: parser_version , changing: true
 
-  	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
+	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
 
 	compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
 
@@ -113,6 +110,7 @@ dependencies {
 	compile 'junit:junit:4.8.2'
 	compile 'org.mockito:mockito-core:1.8.5'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
+	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
 
 }
 
@@ -128,9 +126,7 @@ version=${project.version}"""
 
 
 
-compileJava {
-	dependsOn= [createBuildConstants]
-}
+compileJava { dependsOn= [createBuildConstants] }
 
 def listJars() {
 	enumerateClasses()
@@ -148,12 +144,12 @@ jar {
 		attributes 'Main-Class': 'de.prob.Main'
 		attributes 'Class-Path': listJars()
 	}
- }
+}
 
 
 task pack(type: Sync) {
-    from configurations.runtime
-    into "$buildDir/libs/lib"
+	from configurations.runtime
+	into "$buildDir/libs/lib"
 }
 
 def enumerateClasses() {
@@ -185,37 +181,33 @@ def enumerateClasses() {
 		}
 	}
 	def fn = projectDir.getAbsolutePath()+"/src/main/resources/classmap.properties"
-    File f = new File(fn)
+	File f = new File(fn)
 	FileOutputStream fos = new FileOutputStream(f)
 	p.store(fos, "Classes (fqn) mapped to a the package name")
 	fos.close()
 }
 
 
-task deployKernel(dependsOn: [jar, test,javadoc], group: 'Build', type: Zip) {
+task deployKernel(dependsOn: [jar, test, javadoc], group: 'Build', type: Zip) {
 	description = 'Assembles the uberjar, runs all tests and builds the javadoc.'
 	from "$buildDir/libs/"
-	doLast {
-		println "Created install-zip in build/distributions"
-	}
+	doLast { println "Created install-zip in build/distributions" }
 }
 
-test {
-	ignoreFailures=true
-}
+test { ignoreFailures=true }
 
-test.doFirst {
-	systemProperties['integrationtest'] = 'true'
-}
+test.doFirst { systemProperties['integrationtest'] = 'true' }
 
 javadoc {
 	title="ProB Core "+project.version
-	options.tags = ["ordered", "model", "generated"]
+	options.tags = [
+		"ordered",
+		"model",
+		"generated"
+	]
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = gradle_version
-}
+task wrapper(type: Wrapper) { gradleVersion = gradle_version }
 
 def download(address,target) {
 	def file = new FileOutputStream(target)
@@ -225,31 +217,31 @@ def download(address,target) {
 }
 
 public  String getProBDirectory() {
-		String homedir = System.getProperty("prob.home");
-		if (homedir != null)
-			return homedir + java.io.File.separator;
-		String env = System.getenv("PROB_HOME");
-		if (env != null)
-			return env + java.io.File.separator;
-		return System.getProperty("user.home") + java.io.File.separator + ".prob"
-				+ java.io.File.separator;
-	}
+	String homedir = System.getProperty("prob.home");
+	if (homedir != null)
+		return homedir + java.io.File.separator;
+	String env = System.getenv("PROB_HOME");
+	if (env != null)
+		return env + java.io.File.separator;
+	return System.getProperty("user.home") + java.io.File.separator + ".prob"
+	+ java.io.File.separator;
+}
 
 
 task downloadCli << {
-		dir = getProBDirectory();
-		delete file(dir)
-	    new File(dir).mkdirs()
-		targetdir = dir
-		targetzip = dir+os_extension()+".zip"
-		url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/" +os_extension()+ ".zip"
-		download(url,targetzip)
-	    FileTree zip = zipTree(targetzip)
-	    copy {
-		   from zip
-		   into targetdir
-	    }
-		delete file(targetzip)
+	dir = getProBDirectory();
+	delete file(dir)
+	new File(dir).mkdirs()
+	targetdir = dir
+	targetzip = dir+os_extension()+".zip"
+	url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/" +os_extension()+ ".zip"
+	download(url,targetzip)
+	FileTree zip = zipTree(targetzip)
+	copy {
+		from zip
+		into targetdir
+	}
+	delete file(targetzip)
 }
 
 
@@ -268,19 +260,19 @@ def os_extension() {
 
 
 
-task integrationtests(dependsOn: ['classes','downloadCli'], type:JavaExec){
+task integrationtests(dependsOn: ['classes', 'downloadCli'], type:JavaExec){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
-	args = ['-test','groovyTests']
+	args = ['-test', 'groovyTests']
 }
 
 eclipse {
-  project {
- 	 name = 'de.prob.core.kernel'
-     natures   'org.eclipse.pde.PluginNature'
-     buildCommand   'org.eclipse.pde.ManifestBuilder'
-     buildCommand 'org.eclipse.pde.SchemaBuilder'
-  }
+	project {
+		name = 'de.prob.core.kernel'
+		natures   'org.eclipse.pde.PluginNature'
+		buildCommand   'org.eclipse.pde.ManifestBuilder'
+		buildCommand 'org.eclipse.pde.SchemaBuilder'
+	}
 }
 
 
