@@ -61,7 +61,6 @@ public class ReflectorFilter implements Filter {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
@@ -72,50 +71,80 @@ public class ReflectorFilter implements Filter {
 
 		List<String> parts = new PartList(requestURI.split("/"));
 
-		String servletName = parts.get(2);
-		String session = parts.get(3);
+		String arg = parts.get(2);
 
+		if (isUUID(arg)) {
+			delegateToSession(request, response, arg);
+		} else {
+			Class<ISession> clazz = getClass(arg);
+			if (clazz == null) {
+				response.sendRedirect("nonexisting_class.html");
+				return;
+			}
+
+			// We have an implementation
+
+			UUID id = freshId();
+			ISession obj = instantiate(response, clazz);
+			obj.setUuid(id);
+			sessioncontainer.put(id.toString(), obj);
+			String rest = prepareExtraParameters(request);
+			response.sendRedirect("/sessions/" + id.toString() + rest);
+			return;
+		}
+	}
+
+	private boolean isUUID(String arg) {
+		if (arg == null)
+			return false;
+		try {
+			UUID.fromString(arg);
+			return true;
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+
+	}
+
+	private String prepareExtraParameters(final HttpServletRequest request) {
+		StringBuffer sb = new StringBuffer("?");
+		for (Enumeration<String> parameters = request.getParameterNames(); parameters
+				.hasMoreElements();) {
+			String name = parameters.nextElement();
+			String value = request.getParameter(name);
+			sb.append(name);
+			sb.append("=");
+			sb.append(value);
+			sb.append("&");
+		}
+		String rest = sb.substring(0, sb.length() - 1);
+		return rest;
+	}
+
+	private ISession instantiate(HttpServletResponse response,
+			Class<ISession> clazz) throws IOException {
+		ISession obj = null;
+		try {
+			obj = ServletContextListener.INJECTOR.getInstance(clazz);
+		} catch (Exception e) {
+			response.sendRedirect("nonexisting_class.html");
+		}
+		return obj;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<ISession> getClass(String servletName) {
 		Class<ISession> clazz = null;
 		try {
 			clazz = (Class<ISession>) Class.forName(servletName);
 		} catch (ClassNotFoundException e) {
 
 		}
-		if (clazz == null) {
-			response.sendRedirect("nonexisting_class.html");
-			return;
-		}
+		return clazz;
+	}
 
-		// We have an implementation
-
-		if (session.isEmpty()) {
-			// no session yet
-			UUID id = freshId();
-			try {
-				ISession o = ServletContextListener.INJECTOR.getInstance(clazz);
-				o.setUuid(id);
-				sessioncontainer.put(id.toString(), o);
-			} catch (Exception e) {
-				response.sendRedirect("nonexisting_class.html");
-				return;
-			}
-			StringBuffer sb = new StringBuffer("?");
-			for (Enumeration<String> parameters = request.getParameterNames(); parameters
-					.hasMoreElements();) {
-				String name = parameters.nextElement();
-				String value = request.getParameter(name);
-				sb.append(name);
-				sb.append("=");
-				sb.append(value);
-				sb.append("&");
-			}
-			String rest = sb.substring(0, sb.length() - 1);
-
-			response.sendRedirect("/sessions/" + servletName + "/"
-					+ id.toString() + rest);
-			return;
-		}
-
+	private void delegateToSession(final HttpServletRequest request,
+			HttpServletResponse response, String session) throws IOException {
 		final ISession obj = sessioncontainer.get(session);
 		final Map<String, String[]> parameterMap = request.getParameterMap();
 
