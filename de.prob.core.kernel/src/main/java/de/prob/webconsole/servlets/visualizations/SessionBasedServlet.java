@@ -20,6 +20,7 @@ import de.prob.visualization.VisualizationException;
  */
 public abstract class SessionBasedServlet extends HttpServlet {
 
+	private static final long serialVersionUID = 3123401519552610977L;
 	protected static int count = 0;
 	Map<String, ISessionServlet> sessions = new HashMap<String, ISessionServlet>();
 

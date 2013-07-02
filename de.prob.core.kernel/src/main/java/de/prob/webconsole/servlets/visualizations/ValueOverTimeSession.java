@@ -247,7 +247,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 		return result;
 	}
 
-	private class Element {
+	class Element {
 		public final String stateid;
 		public final Integer value;
 		public final Integer t;

@@ -17,6 +17,8 @@ import de.prob.visualization.VisualizationSelector;
 @Singleton
 public class PredicateServlet extends SessionBasedServlet {
 
+	private static final long serialVersionUID = -4017936464055643620L;
+
 	private final AnimationSelector animations;
 	private final VisualizationSelector visualizations;
 	private final AnimationProperties properties;
@@ -35,10 +37,9 @@ public class PredicateServlet extends SessionBasedServlet {
 
 	public String openSession(final String sessionId, final IEvalElement formula)
 			throws AnimationNotLoadedException, VisualizationException {
-		if (animations.getCurrentTrace() == null) {
+		if (animations.getCurrentTrace() == null)
 			throw new AnimationNotLoadedException("Could not visualize "
 					+ formula.getCode() + " because no animation is loaded");
-		}
 		try {
 			PredicateSession session = new PredicateSession(animations, formula);
 			String propFile = properties.getPropFileFromModel(animations

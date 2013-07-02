@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import javax.script.ScriptEngine;
-
 import jline.ConsoleReader;
 
 import org.apache.commons.cli.CommandLineParser;

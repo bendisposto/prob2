@@ -11,7 +11,6 @@ public class ProBAppender extends AppenderBase<ILoggingEvent> {
 
 	@Override
 	protected void append(final ILoggingEvent event) {
-		ILoggingEvent e = event;
 		if (initialized) {
 			log.logEvent(event);
 		}

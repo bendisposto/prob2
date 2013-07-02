@@ -51,11 +51,11 @@ public class LogServlet extends HttpServlet {
 		error, warning, info, debug, trace
 	}
 
-	private class LogElement {
-		private final String type;
-		private final String msg;
-		private final String from;
-		private final String level;
+	class LogElement {
+		public final String type;
+		public final String msg;
+		public final String from;
+		public final String level;
 
 		public LogElement(final String from, final Level level, final String msg) {
 			this.from = from;
