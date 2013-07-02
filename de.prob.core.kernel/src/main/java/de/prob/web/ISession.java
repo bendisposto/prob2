@@ -2,8 +2,7 @@ package de.prob.web;
 
 import java.util.Map;
 import java.util.UUID;
-
-import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Callable;
 
 // FIXME Reference to Javascript 
 /**
@@ -29,7 +28,7 @@ public interface ISession {
 	 * @param parameterMap
 	 * @return
 	 */
-	ListenableFuture<Object> requestJson(Map<String, String[]> parameterMap);
+	Callable<Object> requestJson(Map<String, String[]> parameterMap);
 
 	/**
 	 * This method is used for HTML Requests, e g., for the initial loading of

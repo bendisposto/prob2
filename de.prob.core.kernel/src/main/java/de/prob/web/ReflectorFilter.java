@@ -7,7 +7,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.servlet.AsyncContext;
@@ -49,7 +49,7 @@ public class ReflectorFilter implements Filter {
 
 	private final Map<String, ISession> sessioncontainer;
 
-	private final Executor tpe = Executors.newCachedThreadPool();
+	private final ExecutorService tpe = Executors.newCachedThreadPool();
 
 	@Inject
 	public ReflectorFilter(@Sessions Map<String, ISession> sessioncontainer) {
@@ -172,7 +172,7 @@ public class ReflectorFilter implements Filter {
 			return;
 		}
 		if ("command".equals(mode)) {
-			tpe.execute(new SessionRunnable(parameterMap, obj));
+			tpe.execute(new SessionRunnable(parameterMap, obj, tpe));
 			return;
 		}
 		throw new IllegalArgumentException("Unknown command mode: " + mode);

@@ -1,9 +1,9 @@
 package de.prob.web;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.UUID;
-
-import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.Callable;
 
 public abstract class AbstractSession implements ISession {
 
@@ -11,8 +11,25 @@ public abstract class AbstractSession implements ISession {
 	private SessionQueue queue;
 
 	@Override
-	abstract public ListenableFuture<Object> requestJson(
-			Map<String, String[]> parameterMap);
+	public Callable<Object> requestJson(final Map<String, String[]> parameterMap) {
+		String cmd = get(parameterMap, "cmd");
+		Class<? extends AbstractSession> clazz = this.getClass();
+		try {
+			final Method method = clazz.getMethod(cmd, Map.class);
+			return new Callable<Object>() {
+
+				@Override
+				public Object call() throws Exception {
+					return method.invoke(this, parameterMap);
+				}
+			};
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	@Override
 	public abstract String requestHtml(Map<String, String[]> parameterMap);
@@ -39,6 +56,14 @@ public abstract class AbstractSession implements ISession {
 	@Override
 	public SessionQueue getQueue() {
 		return queue;
+	}
+
+	public String get(Map<String, String[]> parameterMap, String key) {
+		String[] strings = parameterMap.get(key);
+		if (strings.length != 1)
+			throw new IllegalArgumentException(
+					"get Method is only applicable to simple key-Value pairs");
+		return strings[0];
 	}
 
 }

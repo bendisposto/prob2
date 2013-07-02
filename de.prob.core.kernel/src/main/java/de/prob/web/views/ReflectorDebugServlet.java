@@ -8,16 +8,14 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import de.prob.web.AbstractSession;
 
 public class ReflectorDebugServlet extends AbstractSession {
 
-	private static class Result {
+	static class Result {
 
-		private final String cmd;
+		public final String cmd;
 
 		public Result(String string) {
 			this.cmd = string;
@@ -25,18 +23,8 @@ public class ReflectorDebugServlet extends AbstractSession {
 
 	}
 
-	@Override
-	public ListenableFuture<Object> requestJson(
-			Map<String, String[]> parameterMap) {
-
-		String cmd = parameterMap.get("cmd")[0];
-
-		if ("bar".equals(cmd)) {
-			Result result = new Result("Ok");
-			return Futures.immediateFuture((Object) result);
-
-		}
-		return Futures.immediateFuture((Object) new Result("fail"));
+	public Result ok(Map<String, String[]> p) {
+		return new Result("Yiha!");
 	}
 
 	@Override

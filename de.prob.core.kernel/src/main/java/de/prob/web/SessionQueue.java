@@ -11,7 +11,6 @@ public class SessionQueue implements Runnable {
 
 	private final Queue<String> q = new ArrayBlockingQueue<String>(100);
 	private volatile AsyncContext context;
-	int dozer;
 
 	public void submit(String json) {
 		q.offer(json);
@@ -20,7 +19,6 @@ public class SessionQueue implements Runnable {
 	@Override
 	public void run() {
 		while (q.isEmpty() || context == null) {
-			dozer++;
 			doze();
 		}
 		String json = q.poll();

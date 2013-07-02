@@ -1,9 +1,11 @@
 package de.prob.web;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 
 public class SessionRunnable implements Runnable {
@@ -12,16 +14,20 @@ public class SessionRunnable implements Runnable {
 	private final ISession session;
 	private static final Gson GSON = new Gson();
 	private final SessionQueue realizer;
+	private final ExecutorService executor;
 
-	public SessionRunnable(Map<String, String[]> parameterMap, ISession session) {
+	public SessionRunnable(Map<String, String[]> parameterMap,
+			ISession session, ExecutorService executor) {
 		this.parameterMap = parameterMap;
 		this.session = session;
+		this.executor = executor;
 		realizer = session.getQueue();
 	}
 
 	@Override
 	public void run() {
-		ListenableFuture<Object> result = session.requestJson(parameterMap);
+		Callable<Object> task = session.requestJson(parameterMap);
+		Future<Object> result = executor.submit(task);
 		while (!result.isDone()) {
 			doze();
 		}
