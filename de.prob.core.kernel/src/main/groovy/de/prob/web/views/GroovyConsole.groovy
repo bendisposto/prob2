@@ -24,8 +24,10 @@ class GroovyConsole extends AbstractSession{
 	def exec(Map<String,String[]>params) {
 		def line =get(params,"line");
 		try {
-			Object eval = engine.eval(line);
-			return ["cmd": "groovyResult","result": eval.toString()]
+			def console = new StringBuffer()
+			engine.put("__console", console);
+			def eval = engine.eval(line);
+			return ["cmd": "groovyResult","result": eval.toString(), "output": console.toString()]
 		} catch (e) {
 			return ["cmd":"groovyError", "message":e.getMessage()]
 		}
