@@ -4,16 +4,19 @@ function onValidate(line) {
 	return true;
 };
 
-function onHandle() {
+function onHandle(line) {
+	sendCmd("exec", {
+		"line" : line
+	})
 }
+
 function onComplete(line_text, column_nr, perform_fn) {
-	console.log(line_text)
-	console.log(column_nr)
-	console.log(perform_fn)
+	// console.log(line_text)
+	// console.log(column_nr)
+	// console.log(perform_fn)
 }
 
 $(document).ready(function() {
-
 	controller = $("#console").console({
 		welcomeMessage : 'ProB 2.0 console',
 		promptLabel : 'ProB> ',
@@ -26,5 +29,9 @@ $(document).ready(function() {
 		lineWrapping : true,
 		promptHistory : true
 	});
-
 });
+
+function groovyResult(data) {
+	var msg = data.content;
+	controller.commandResult(msg);
+}

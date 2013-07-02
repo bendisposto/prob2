@@ -1,10 +1,16 @@
-package de.prob.webconsole;
+package de.prob.web;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.inject.TypeLiteral;
 import com.google.inject.servlet.ServletModule;
 
+import de.prob.annotations.Sessions;
 import de.prob.testing.ProBTestRunner;
 import de.prob.testing.TestRegistry;
-import de.prob.web.ReflectorFilter;
+import de.prob.webconsole.OutputBuffer;
+import de.prob.webconsole.ShellCommands;
 import de.prob.webconsole.servlets.CompletionServlet;
 import de.prob.webconsole.servlets.GroovyBindingsServlet;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
@@ -23,6 +29,7 @@ public class WebModule extends ServletModule {
 	@Override
 	protected void configureServlets() {
 		super.configureServlets();
+
 		serve("/evaluate*").with(GroovyShellServlet.class);
 		serve("/bindings*").with(GroovyBindingsServlet.class);
 		serve("/complete*").with(CompletionServlet.class);
@@ -38,6 +45,12 @@ public class WebModule extends ServletModule {
 		bind(OutputBuffer.class);
 		bind(ProBTestRunner.class);
 		bind(TestRegistry.class);
+
+		TypeLiteral<Map<String, ISession>> mapType = new TypeLiteral<Map<String, ISession>>() {
+		};
+
+		bind(mapType).annotatedWith(Sessions.class).toInstance(
+				new HashMap<String, ISession>());
 
 		// logging
 		serve("/get_log*").with(LogServlet.class);

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -24,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.annotations.Sessions;
 import de.prob.webconsole.ServletContextListener;
 
 @Singleton
@@ -47,12 +47,12 @@ public class ReflectorFilter implements Filter {
 
 	}
 
-	private final HashMap<String, ISession> sessioncontainer;
+	private final Map<String, ISession> sessioncontainer;
 
 	private final Executor tpe = Executors.newCachedThreadPool();
 
 	@Inject
-	public ReflectorFilter(HashMap<String, ISession> sessioncontainer) {
+	public ReflectorFilter(@Sessions Map<String, ISession> sessioncontainer) {
 		this.sessioncontainer = sessioncontainer;
 	}
 
@@ -68,30 +68,38 @@ public class ReflectorFilter implements Filter {
 		final HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		String requestURI = request.getRequestURI();
-
+		System.out.println("Requested: " + requestURI);
 		List<String> parts = new PartList(requestURI.split("/"));
 
-		String arg = parts.get(2);
+		String className = parts.get(2);
+		String session = parts.get(3);
+		boolean uuid = isUUID(session);
 
-		if (isUUID(arg)) {
-			delegateToSession(request, response, arg);
+		if (uuid && sessioncontainer.containsKey(session)) {
+			delegateToSession(request, response, session);
 		} else {
-			Class<ISession> clazz = getClass(arg);
+			Class<ISession> clazz = getClass(className);
 			if (clazz == null) {
 				response.sendRedirect("nonexisting_class.html");
 				return;
 			}
 
 			// We have an implementation
-
-			UUID id = freshId();
+			UUID id = uuid ? UUID.fromString(session) : freshId();
+			SessionQueue realizer = freshRealizer();
 			ISession obj = instantiate(response, clazz);
 			obj.setUuid(id);
+			obj.setQueue(realizer);
 			sessioncontainer.put(id.toString(), obj);
 			String rest = prepareExtraParameters(request);
-			response.sendRedirect("/sessions/" + id.toString() + rest);
+			response.sendRedirect("/sessions/" + className + "/"
+					+ id.toString() + rest);
 			return;
 		}
+	}
+
+	private SessionQueue freshRealizer() {
+		return new SessionQueue();
 	}
 
 	private boolean isUUID(String arg) {
@@ -148,14 +156,26 @@ public class ReflectorFilter implements Filter {
 		final ISession obj = sessioncontainer.get(session);
 		final Map<String, String[]> parameterMap = request.getParameterMap();
 
-		if (request.getParameter("ajax") == null
-				|| !request.getParameter("ajax").equals("true")) {
+		String mode = request.getParameter("mode");
+		mode = mode == null ? "html" : mode;
+
+		if ("html".equals(mode)) {
 			String html = obj.requestHtml(parameterMap);
 			response.getWriter().write(html);
-		} else {
-			final AsyncContext context = request.startAsync();
-			tpe.execute(new SessionRunnable(context, parameterMap, obj));
+			return;
 		}
+		if ("listen".equals(mode)) {
+			final AsyncContext context = request.startAsync();
+			SessionQueue realizer = obj.getQueue();
+			realizer.setContext(context);
+			tpe.execute(realizer);
+			return;
+		}
+		if ("command".equals(mode)) {
+			tpe.execute(new SessionRunnable(parameterMap, obj));
+			return;
+		}
+		throw new IllegalArgumentException("Unknown command mode: " + mode);
 	}
 
 	private UUID freshId() {

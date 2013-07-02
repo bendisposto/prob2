@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -29,7 +30,24 @@ public class GroovySession extends AbstractSession {
 	@Override
 	public ListenableFuture<Object> requestJson(
 			Map<String, String[]> parameterMap) {
-		return Futures.immediateFuture((Object) "5");
+
+		String cmd = parameterMap.get("cmd")[0];
+		String line = parameterMap.get("line")[0];
+
+		if ("exec".equals(cmd)) {
+			try {
+				Object result = engine.eval(line);
+				// {"cmd":"groovyResult", "content": result.toString()}
+				return Futures.immediateFuture((Object) ImmutableMap.of("cmd",
+						"groovyResult", "content", result.toString()));
+			} catch (ScriptException e) {
+				return Futures.immediateFuture((Object) ImmutableMap.of("cmd",
+						"groovyError", "content", e.getMessage()));
+			}
+		}
+		return Futures.immediateFuture((Object) ImmutableMap.of("cmd",
+				"groovyError", "content", "Unknown Operation"));
+
 	}
 
 	@Override

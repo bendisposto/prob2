@@ -57,4 +57,8 @@ public interface ISession {
 	 */
 	UUID getUuid();
 
+	SessionQueue getQueue();
+
+	void setQueue(SessionQueue queue);
+
 }

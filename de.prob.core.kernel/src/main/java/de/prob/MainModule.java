@@ -35,7 +35,7 @@ import de.prob.cli.ModuleCli;
 import de.prob.scripting.Api;
 import de.prob.scripting.Downloader;
 import de.prob.statespace.ModelModule;
-import de.prob.webconsole.WebModule;
+import de.prob.web.WebModule;
 import de.prob.worksheet.ScriptEngineProvider;
 import de.prob.worksheet.WorkSheet;
 
