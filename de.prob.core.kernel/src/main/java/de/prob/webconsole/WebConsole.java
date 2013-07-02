@@ -1,10 +1,6 @@
 package de.prob.webconsole;
 
-import java.awt.Desktop;
-import java.io.IOException;
 import java.net.BindException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.ProtectionDomain;
 
 import org.eclipse.jetty.server.Connector;
@@ -23,7 +19,8 @@ public class WebConsole {
 
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(WebConsole.class);
-	private static int PORT;
+
+	private static int PORT = 8080;
 
 	public static void run() throws Exception {
 		WebConsole.run(new Runnable() {
@@ -76,11 +73,11 @@ public class WebConsole {
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
 		/*
-		WebAppContext worksheetContext = new WebAppContext(warFile
-				+ "webapps/worksheet.war", "/worksheet");
-		worksheetContext.setExtractWAR(true);
-		worksheetContext.setServer(server);
-		*/
+		 * WebAppContext worksheetContext = new WebAppContext(warFile +
+		 * "webapps/worksheet.war", "/worksheet");
+		 * worksheetContext.setExtractWAR(true);
+		 * worksheetContext.setServer(server);
+		 */
 		server.setStopAtShutdown(true);
 		/*
 		 * MBeanContainer mbContainer = new MBeanContainer(
@@ -95,10 +92,10 @@ public class WebConsole {
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
 		// handlers.addHandler(contexts);
-		//handlers.addHandler(worksheetContext);
+		// handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
-		int port = 8080;
+		int port = WebConsole.PORT;
 		boolean found = false;
 		do {
 			try {
@@ -116,9 +113,8 @@ public class WebConsole {
 			}
 		} while (!found && port < 8180);
 
-		if (!found) {
+		if (!found)
 			throw new BindException("No free port found between 8080 and 8179");
-		}
 
 		WebConsole.PORT = port;
 

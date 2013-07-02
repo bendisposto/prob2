@@ -13,6 +13,7 @@ public abstract class AbstractSession implements ISession {
 	@Override
 	public Callable<Object> requestJson(final Map<String, String[]> parameterMap) {
 		String cmd = get(parameterMap, "cmd");
+		final Object delegate = this;
 		Class<? extends AbstractSession> clazz = this.getClass();
 		try {
 			final Method method = clazz.getMethod(cmd, Map.class);
@@ -20,7 +21,7 @@ public abstract class AbstractSession implements ISession {
 
 				@Override
 				public Object call() throws Exception {
-					return method.invoke(this, parameterMap);
+					return method.invoke(delegate, parameterMap);
 				}
 			};
 		} catch (NoSuchMethodException e) {

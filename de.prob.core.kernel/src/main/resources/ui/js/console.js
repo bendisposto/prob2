@@ -32,6 +32,10 @@ $(document).ready(function() {
 });
 
 function groovyResult(data) {
-	var msg = data.content;
+	var msg = data.result;
+	controller.commandResult(msg);
+}
+function groovyError(data) {
+	var msg = "EXCEPTION: " + data.message;
 	controller.commandResult(msg);
 }
