@@ -80,7 +80,7 @@ public class ReflectorFilter implements Filter {
 		} else {
 			Class<ISession> clazz = getClass(className);
 			if (clazz == null) {
-				response.sendRedirect("nonexisting_class.html");
+				response.sendRedirect("/ui/common/nonexisting_class.html");
 				return;
 			}
 

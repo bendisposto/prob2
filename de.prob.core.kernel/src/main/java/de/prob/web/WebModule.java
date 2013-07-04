@@ -39,8 +39,6 @@ public class WebModule extends ServletModule {
 		serve("/scrollback*").with(ScrollbackServlet.class);
 		serve("/exec*").with(WorksheetServlet.class);
 
-		filter("/sessions/*").through(ReflectorFilter.class);
-
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);
 		bind(ProBTestRunner.class);
@@ -58,5 +56,6 @@ public class WebModule extends ServletModule {
 		serve("/formula*").with(ValueOverTimeServlet.class);
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
 		serve("/predicate*").with(PredicateServlet.class);
+		filter("/sessions/*").through(ReflectorFilter.class);
 	}
 }

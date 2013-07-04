@@ -17,7 +17,7 @@ function get_template(name) {
 	var html = templates[name];
 	if (html == undefined) {
 		$.ajax({
-			url : "/ui/templates/parts/" + name,
+			url : "/ui/common/" + name,
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -46,7 +46,7 @@ function listen() {
 			if (data != "") {
 				dobj = JSON.parse(data);
 				console.log(dobj);
-				window[dobj.cmd](dobj);
+				eval(dobj.cmd)(dobj);
 			}
 			listen();
 		},

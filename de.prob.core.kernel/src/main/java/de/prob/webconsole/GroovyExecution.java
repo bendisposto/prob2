@@ -120,11 +120,10 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		try {
 			assert input != null;
 			final List<String> m = shellCommands.getMagic(input);
-			if (m.isEmpty()) {
+			if (m.isEmpty())
 				return eval(input);
-			} else {
+			else
 				return shellCommands.perform(m, this);
-			}
 		} finally {
 			notifyListerners();
 		}
@@ -181,9 +180,8 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			try {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
-				if (testmode) {
+				if (testmode)
 					throw e;
-				}
 				if (printStackTrace) {
 					printStackTrace(sideeffects, e);
 				}
@@ -242,6 +240,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	private String eval(final String input) {
+
 		Object evaluate = null;
 		ParseCode parseCode;
 		inputs.add(input);
