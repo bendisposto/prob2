@@ -9,6 +9,7 @@ import com.google.inject.servlet.ServletModule;
 import de.prob.annotations.Sessions;
 import de.prob.testing.ProBTestRunner;
 import de.prob.testing.TestRegistry;
+import de.prob.web.views.GroovyConsole;
 import de.prob.webconsole.OutputBuffer;
 import de.prob.webconsole.ShellCommands;
 import de.prob.webconsole.servlets.CompletionServlet;
@@ -57,5 +58,8 @@ public class WebModule extends ServletModule {
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
 		serve("/predicate*").with(PredicateServlet.class);
 		filter("/sessions/*").through(ReflectorFilter.class);
+
+		bind(GroovyConsole.class);
+
 	}
 }

@@ -20,6 +20,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -28,6 +31,8 @@ import de.prob.webconsole.ServletContextListener;
 
 @Singleton
 public class ReflectorFilter implements Filter {
+
+	Logger logger = LoggerFactory.getLogger(ReflectorFilter.class);
 
 	private class PartList extends ArrayList<String> {
 
@@ -49,7 +54,7 @@ public class ReflectorFilter implements Filter {
 
 	private final Map<String, ISession> sessioncontainer;
 
-	private final ExecutorService tpe = Executors.newCachedThreadPool();
+	private final ExecutorService tpe = Executors.newFixedThreadPool(4);
 
 	@Inject
 	public ReflectorFilter(@Sessions Map<String, ISession> sessioncontainer) {
@@ -65,6 +70,8 @@ public class ReflectorFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
 
+		logger.trace("Enter filter");
+
 		final HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		String requestURI = request.getRequestURI();
@@ -76,7 +83,9 @@ public class ReflectorFilter implements Filter {
 		boolean uuid = isUUID(session);
 
 		if (uuid && sessioncontainer.containsKey(session)) {
+			logger.trace("Delegating");
 			delegateToSession(request, response, session);
+			logger.trace("Delegated call completed");
 		} else {
 			Class<ISession> clazz = getClass(className);
 			if (clazz == null) {
@@ -87,7 +96,9 @@ public class ReflectorFilter implements Filter {
 			// We have an implementation
 			UUID id = uuid ? UUID.fromString(session) : freshId();
 			SessionQueue realizer = freshRealizer();
+			logger.trace("Instantiating");
 			ISession obj = instantiate(response, clazz);
+			logger.trace("Got the object");
 			obj.setUuid(id);
 			obj.setQueue(realizer);
 			sessioncontainer.put(id.toString(), obj);

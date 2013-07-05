@@ -28,9 +28,11 @@ public class SessionRunnable implements Runnable {
 	public void run() {
 		Callable<Object> task = session.requestJson(parameterMap);
 		Future<Object> result = executor.submit(task);
+		System.out.println(System.currentTimeMillis());
 		while (!result.isDone()) {
 			doze();
 		}
+		System.out.println(System.currentTimeMillis());
 		String json = "{}";
 		try {
 			json = GSON.toJson(result.get());

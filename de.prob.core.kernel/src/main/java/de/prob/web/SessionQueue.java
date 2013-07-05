@@ -29,7 +29,8 @@ public class SessionQueue implements Runnable {
 			writer.flush();
 			writer.close();
 			context.complete();
-			context = null;
+			// context.complete();
+			// context = null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

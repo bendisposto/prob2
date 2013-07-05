@@ -116,7 +116,7 @@ public class WebConsole {
 		if (!found)
 			throw new BindException("No free port found between 8080 and 8179");
 
-		WebConsole.PORT = port;
+		// WebConsole.PORT = port;
 
 		openBrowser.run();
 		server.join();
