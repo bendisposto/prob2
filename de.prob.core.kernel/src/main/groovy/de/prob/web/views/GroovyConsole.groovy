@@ -18,7 +18,8 @@ class GroovyConsole extends AbstractSession{
 	def ScriptEngine engine;
 
 	@Inject
-	def GroovyConsole(ScriptEngineProvider sep) {
+	def GroovyConsole(ScriptEngineProvider sep, UUID uuid) {
+		super(uuid);
 		engine = sep.get();
 	}
 
@@ -42,7 +43,7 @@ class GroovyConsole extends AbstractSession{
 	}
 
 	@Override
-	public String requestHtml(Map<String, String[]> parameterMap) {
+	public String html(Map<String, String[]> parameterMap) {
 		String uuid = getUuid().toString();
 		def template = "ui/console/index.html"
 		def scope = ["uuid": uuid]

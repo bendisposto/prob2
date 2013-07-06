@@ -1,13 +1,16 @@
 Console = (function() {
 	var extern = {}
 	var controller;
+	var session = Session();
+
+	session.init();
 
 	function onValidate(line) {
 		return true;
 	}
 
 	function onHandle(line) {
-		sendCmd("exec", {
+		session.sendCmd("exec", {
 			"line" : line
 		})
 	}
@@ -34,17 +37,23 @@ Console = (function() {
 	});
 
 	function groovyResult(data) {
-		controller.commandResult([
-		                          {msg: data.output, className: "groovy_output"}, 
-		                          {msg: data.result, className: "groovy_result"}
-		                          ]);
+		controller.commandResult([ {
+			msg : data.output,
+			className : "groovy_output"
+		}, {
+			msg : data.result,
+			className : "groovy_result"
+		} ]);
 	}
 
 	function groovyError(data) {
-		controller.commandResult([
-		                          {msg: data.message, className: "groovy_error"}, 
-		                          {msg: data.trace, className: "groovy_trace"}
-		                          ]);
+		controller.commandResult([ {
+			msg : data.message,
+			className : "groovy_error"
+		}, {
+			msg : data.trace,
+			className : "groovy_trace"
+		} ]);
 
 	}
 

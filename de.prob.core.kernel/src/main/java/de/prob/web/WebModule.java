@@ -2,7 +2,9 @@ package de.prob.web;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.servlet.ServletModule;
 
@@ -57,9 +59,16 @@ public class WebModule extends ServletModule {
 		serve("/formula*").with(ValueOverTimeServlet.class);
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
 		serve("/predicate*").with(PredicateServlet.class);
-		filter("/sessions/*").through(ReflectorFilter.class);
+		// filter("/sessions/*").through(ReflectorFilter.class);
+
+		serve(ReflectionServlet.URL_PATTERN + "*")
+				.with(ReflectionServlet.class);
 
 		bind(GroovyConsole.class);
+	}
 
+	@Provides
+	public UUID createUUID() {
+		return UUID.randomUUID();
 	}
 }

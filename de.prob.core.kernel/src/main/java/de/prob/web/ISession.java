@@ -2,7 +2,6 @@ package de.prob.web;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 // FIXME Reference to Javascript 
 /**
@@ -28,7 +27,7 @@ public interface ISession {
 	 * @param parameterMap
 	 * @return
 	 */
-	Callable<Object> requestJson(Map<String, String[]> parameterMap);
+	void command(Map<String, String[]> parameterMap);
 
 	/**
 	 * This method is used for HTML Requests, e g., for the initial loading of
@@ -38,15 +37,7 @@ public interface ISession {
 	 * @param parameterMap
 	 * @return
 	 */
-	String requestHtml(Map<String, String[]> parameterMap);
-
-	/**
-	 * Will be called when producing the object. AbstractSession offers a
-	 * default implementation for this method.
-	 * 
-	 * @param id
-	 */
-	void setUuid(UUID id);
+	String html(Map<String, String[]> parameterMap);
 
 	/**
 	 * returns the UUID associated with this instance. AbstractSession offers a
@@ -56,8 +47,6 @@ public interface ISession {
 	 */
 	UUID getUuid();
 
-	SessionQueue getQueue();
-
-	void setQueue(SessionQueue queue);
+	Object[] updatesSince(int lastinfo);
 
 }

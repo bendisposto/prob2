@@ -1,0 +1,80 @@
+function Session() {
+	var extern = {}
+
+	var current = -1;
+	var poll_interval = 100;
+
+	// client side template cache
+	var templates = []
+
+	// we need to load the error template in upfront
+	get_template("/ui/common/server_disconnected.html");
+
+	function sendCmd(s, data) {
+		data.mode = 'command'
+		data.cmd = s
+		$.ajax({
+			async : false,
+			data : data
+		});
+	}
+
+	function get_template(name) {
+		var html = templates[name];
+		if (html == undefined) {
+			$.ajax({
+				url : name,
+				success : function(result) {
+					if (result.isOk === false) {
+						alert(result.message);
+					} else {
+						html = result;
+					}
+				},
+				async : false
+			});
+			templates[name] = html;
+		}
+		return html;
+	}
+
+	function disconnect() {
+		current = -1;
+		$("body").replaceWith(
+				get_template("/ui/common/server_disconnected.html"))
+	}
+
+	function listen() {
+		var data = {
+			'mode' : 'update',
+			'lastinfo' : current
+		};
+		$.ajax({
+			data : data,
+			success : function(data) {
+				if (data != "") {
+					dobjs = JSON.parse(data);
+					if (dobjs.length > 0)
+						console.log(dobjs);
+					for (dobj in dobjs) {
+						eval(dobj.cmd)(dobj)
+					}
+					;
+				}
+				setTimeout(listen(), poll_interval);
+			},
+			error : function(e, s, r) {
+				disconnect()
+			}
+		});
+	}
+
+	extern.init = function() {
+		listen();
+		console.log("init")
+	};
+
+	extern.sendCmd = sendCmd;
+
+	return extern;
+}

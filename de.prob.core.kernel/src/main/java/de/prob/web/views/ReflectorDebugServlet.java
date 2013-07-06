@@ -3,15 +3,22 @@ package de.prob.web.views;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
+import java.util.UUID;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
 
 import de.prob.web.AbstractSession;
 
 public class ReflectorDebugServlet extends AbstractSession {
+
+	@Inject
+	public ReflectorDebugServlet(UUID id) {
+		super(id);
+	}
 
 	static class Result {
 
@@ -28,7 +35,7 @@ public class ReflectorDebugServlet extends AbstractSession {
 	}
 
 	@Override
-	public String requestHtml(Map<String, String[]> parameterMap) {
+	public String html(Map<String, String[]> parameterMap) {
 		String uuid = getUuid().toString();
 		MustacheFactory mf = new DefaultMustacheFactory();
 		Mustache mustache = mf.compile("ui/templates/debug.html");

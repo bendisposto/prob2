@@ -38,8 +38,8 @@ public class GroovyConsole extends ViewPart {
 		gridData.grabExcessVerticalSpace = true;
 
 		consoleBrowser = new Browser(shell, SWT.NONE);
-		consoleBrowser.setUrl("http://localhost:" + port
-				+ "/sessions/de.prob.web.views.GroovyConsole");
+		consoleBrowser
+				.setUrl("http://localhost:8080/sessions/de.prob.web.views.GroovyConsoleSession");
 
 		consoleBrowser.setLayoutData(gridData);
 		shell.setLayoutData(gridData);

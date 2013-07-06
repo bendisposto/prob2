@@ -13,7 +13,7 @@ public class SessionRunnable implements Runnable {
 	private final Map<String, String[]> parameterMap;
 	private final ISession session;
 	private static final Gson GSON = new Gson();
-	private final SessionQueue realizer;
+	private final SessionQueue realizer = null;
 	private final ExecutorService executor;
 
 	public SessionRunnable(Map<String, String[]> parameterMap,
@@ -21,12 +21,11 @@ public class SessionRunnable implements Runnable {
 		this.parameterMap = parameterMap;
 		this.session = session;
 		this.executor = executor;
-		realizer = session.getQueue();
 	}
 
 	@Override
 	public void run() {
-		Callable<Object> task = session.requestJson(parameterMap);
+		Callable<Object> task = null;// session.requestJson(parameterMap);
 		Future<Object> result = executor.submit(task);
 		System.out.println(System.currentTimeMillis());
 		while (!result.isDone()) {
