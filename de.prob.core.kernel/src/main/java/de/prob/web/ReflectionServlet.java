@@ -81,8 +81,7 @@ public class ReflectionServlet extends HttpServlet {
 		Map<String, String[]> parameterMap = req.getParameterMap();
 		if ("update".equals(mode)) {
 			int lastinfo = Integer.parseInt(req.getParameter("lastinfo"));
-			Object[] updates = session.updatesSince(lastinfo);
-			send(resp, GSON.toJson(updates));
+			session.updatesSince(lastinfo, req.startAsync());
 		} else if ("command".equals(mode)) {
 			session.command(parameterMap);
 		} else {

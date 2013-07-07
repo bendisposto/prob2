@@ -3,6 +3,8 @@ package de.prob.web;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.AsyncContext;
+
 // FIXME Reference to Javascript 
 /**
  * Interface for views that are session based. Classes that implement this
@@ -47,6 +49,6 @@ public interface ISession {
 	 */
 	UUID getUuid();
 
-	Object[] updatesSince(int lastinfo);
+	void updatesSince(int lastinfo, AsyncContext context);
 
 }

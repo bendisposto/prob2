@@ -2,49 +2,77 @@ package de.prob.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import javax.servlet.AsyncContext;
 
-public class SessionQueue implements Runnable {
+import com.google.gson.Gson;
 
-	private final Queue<String> q = new ArrayBlockingQueue<String>(100);
-	private volatile AsyncContext context;
+public class SessionQueue {
 
-	public void submit(String json) {
-		q.offer(json);
+	private int id = 0;
+
+	private static class DataObject {
+		public final int id;
+		public final Object[] content;
+
+		public DataObject(Object[] content, int id) {
+			this.content = content;
+			this.id = id;
+		}
 	}
 
-	@Override
-	public void run() {
-		while (q.isEmpty() || context == null) {
-			doze();
+	private final List<Message> q = new ArrayList<Message>();
+	private final List<Request> reqs = new Vector<Request>();
+
+	private static final Gson GSON = new Gson();
+
+	public void submit(Object json) {
+		q.add(new Message(id++, json));
+		deliverAll();
+	}
+
+	private void deliverAll() {
+		for (Request r : reqs) {
+			ArrayList<Object> result = new ArrayList<Object>();
+			for (int i = r.index + 1; i < q.size(); i++) {
+				Message m = q.get(i);
+				result.add(m.content);
+			}
+
+			Object[] array = result.toArray(new Object[result.size()]);
+			DataObject dataObject = new DataObject(array, q.size() - 1);
+
+			deliver(r.context, dataObject);
 		}
-		String json = q.poll();
+	}
+
+	private void deliver(AsyncContext context, Object array) {
 		PrintWriter writer;
 		try {
 			writer = context.getResponse().getWriter();
-			writer.write(json);
+			writer.write(GSON.toJson(array));
 			writer.flush();
 			writer.close();
-			context.complete();
-			context.complete();
-			context = null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		context.complete();
 	}
 
-	public void setContext(AsyncContext context) {
-		this.context = context;
+	public void updates(int index, AsyncContext context) {
+		reqs.add(new Request(context, index));
 	}
 
-	private void doze() {
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+	private static class Request {
+		public final int index;
+		public final AsyncContext context;
+
+		public Request(AsyncContext context, int index) {
+			this.context = context;
+			this.index = index;
 		}
 	}
 

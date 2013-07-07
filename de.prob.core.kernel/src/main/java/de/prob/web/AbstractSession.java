@@ -5,12 +5,16 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.AsyncContext;
+
 public abstract class AbstractSession implements ISession {
 
 	private final UUID id;
+	private final SessionQueue q;
 
-	public AbstractSession(UUID id) {
+	public AbstractSession(UUID id, SessionQueue q) {
 		this.id = id;
+		this.q = q;
 	}
 
 	@Override
@@ -20,7 +24,8 @@ public abstract class AbstractSession implements ISession {
 		Class<? extends AbstractSession> clazz = this.getClass();
 		try {
 			final Method method = clazz.getMethod(cmd, Map.class);
-			method.invoke(delegate, parameterMap);
+			Object result = method.invoke(delegate, parameterMap);
+			q.submit(result);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -51,8 +56,7 @@ public abstract class AbstractSession implements ISession {
 	}
 
 	@Override
-	public Object[] updatesSince(int lastinfo) {
-		return new Object[0];
+	public void updatesSince(final int lastinfo, final AsyncContext context) {
+		q.updates(lastinfo, context);
 	}
-
 }

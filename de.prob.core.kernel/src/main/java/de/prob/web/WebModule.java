@@ -11,7 +11,6 @@ import com.google.inject.servlet.ServletModule;
 import de.prob.annotations.Sessions;
 import de.prob.testing.ProBTestRunner;
 import de.prob.testing.TestRegistry;
-import de.prob.web.views.GroovyConsole;
 import de.prob.webconsole.OutputBuffer;
 import de.prob.webconsole.ShellCommands;
 import de.prob.webconsole.servlets.CompletionServlet;
@@ -64,7 +63,6 @@ public class WebModule extends ServletModule {
 		serve(ReflectionServlet.URL_PATTERN + "*")
 				.with(ReflectionServlet.class);
 
-		bind(GroovyConsole.class);
 	}
 
 	@Provides
