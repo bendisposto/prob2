@@ -40,7 +40,8 @@ public abstract class AbstractSession implements ISession {
 	}
 
 	@Override
-	public abstract String html(Map<String, String[]> parameterMap);
+	public abstract String html(String clientid,
+			Map<String, String[]> parameterMap);
 
 	@Override
 	public UUID getUuid() {
@@ -56,7 +57,8 @@ public abstract class AbstractSession implements ISession {
 	}
 
 	@Override
-	public void updatesSince(final int lastinfo, final AsyncContext context) {
-		q.updates(lastinfo, context);
+	public void updatesSince(String client, final int lastinfo,
+			final AsyncContext context) {
+		q.updates(client, lastinfo, context);
 	}
 }

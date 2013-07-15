@@ -3,8 +3,9 @@ package de.prob.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
+import java.util.Map;
 
 import javax.servlet.AsyncContext;
 
@@ -14,6 +15,8 @@ public class SessionQueue {
 
 	private int id = 0;
 
+	@SuppressWarnings("unused")
+	// Data serialization object. Usage of field is on client side
 	private static class DataObject {
 		public final int id;
 		public final Object[] content;
@@ -25,7 +28,7 @@ public class SessionQueue {
 	}
 
 	private final List<Message> q = new ArrayList<Message>();
-	private final List<Request> reqs = new Vector<Request>();
+	private final Map<String, Request> reqs = new HashMap<String, Request>();
 
 	private static final Gson GSON = new Gson();
 
@@ -35,8 +38,10 @@ public class SessionQueue {
 	}
 
 	private void deliverAll() {
-		for (Request r : reqs) {
+		System.out.println(reqs.size());
+		for (Request r : reqs.values()) {
 			ArrayList<Object> result = new ArrayList<Object>();
+			System.out.println("Processiong request " + r.index);
 			for (int i = r.index + 1; i < q.size(); i++) {
 				Message m = q.get(i);
 				result.add(m.content);
@@ -62,8 +67,11 @@ public class SessionQueue {
 		context.complete();
 	}
 
-	public void updates(int index, AsyncContext context) {
-		reqs.add(new Request(context, index));
+	public void updates(String client, int index, AsyncContext context) {
+		if (client == null) {
+
+		}
+		reqs.put(client, new Request(context, index));
 	}
 
 	private static class Request {
@@ -74,6 +82,7 @@ public class SessionQueue {
 			this.context = context;
 			this.index = index;
 		}
+
 	}
 
 }

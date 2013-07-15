@@ -6,7 +6,7 @@ import de.prob.web.WebUtils
 class WorkSheet extends AbstractSession {
 
 	@Override
-	public String html(Map<String, String[]> parameterMap) {
+	public String html(String clientid, Map<String, String[]> parameterMap) {
 		String uuid = getUuid().toString();
 		def template = "ui/templates/worksheet.html"
 		def scope = ["uuid": uuid]

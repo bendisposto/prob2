@@ -44,11 +44,13 @@ function Session() {
 				get_template("/ui/common/server_disconnected.html"))
 	}
 
-	function listen() {
+	function listen(client) {
 		var data = {
 			'mode' : 'update',
-			'lastinfo' : current
+			'lastinfo' : current,
+			'client' : client
 		};
+		console.log("Requesting " + data.lastinfo)
 		$.ajax({
 			data : data,
 			success : function(data) {
@@ -64,7 +66,7 @@ function Session() {
 					}
 					;
 				}
-				setTimeout(listen(), poll_interval);
+				setTimeout(listen(client), poll_interval);
 			},
 			error : function(e, s, r) {
 				disconnect()
@@ -72,8 +74,8 @@ function Session() {
 		});
 	}
 
-	extern.init = function() {
-		listen();
+	extern.init = function(client) {
+		listen(client);
 		console.log("init")
 	};
 

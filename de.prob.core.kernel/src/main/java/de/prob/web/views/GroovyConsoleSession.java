@@ -32,6 +32,7 @@ public class GroovyConsoleSession extends AbstractSession {
 	}
 
 	public Object exec(Map<String, String[]> params) {
+
 		logger.trace("Exec");
 		String line = get(params, "line");
 		try {
@@ -49,13 +50,14 @@ public class GroovyConsoleSession extends AbstractSession {
 			return WebUtils.wrap("cmd", "Console.groovyError", "message",
 					e.getMessage(), "trace", sw.toString());
 		}
+
 	}
 
 	@Override
-	public String html(Map<String, String[]> parameterMap) {
+	public String html(String clientid, Map<String, String[]> parameterMap) {
 		String uuid = getUuid().toString();
 		String template = "ui/console/index.html";
-		Object scope = WebUtils.wrap("uuid", uuid);
+		Object scope = WebUtils.wrap("clientid", clientid);
 		return WebUtils.render(template, scope);
 	}
 

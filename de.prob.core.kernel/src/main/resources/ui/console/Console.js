@@ -3,15 +3,14 @@ Console = (function() {
 	var controller;
 	var session = Session();
 
-	session.init();
-
 	function onValidate(line) {
 		return true;
 	}
 
 	function onHandle(line) {
 		session.sendCmd("exec", {
-			"line" : line
+			"line" : line,
+			"client" : extern.client
 		})
 	}
 
@@ -59,6 +58,8 @@ Console = (function() {
 
 	extern.groovyResult = groovyResult
 	extern.groovyError = groovyError
+	extern.client = ""
+	extern.init = session.init
 
 	return extern;
 }())

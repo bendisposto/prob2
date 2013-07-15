@@ -81,11 +81,13 @@ public class ReflectionServlet extends HttpServlet {
 		Map<String, String[]> parameterMap = req.getParameterMap();
 		if ("update".equals(mode)) {
 			int lastinfo = Integer.parseInt(req.getParameter("lastinfo"));
-			session.updatesSince(lastinfo, req.startAsync());
+			String client = req.getParameter("client");
+			session.updatesSince(client, lastinfo, req.startAsync());
 		} else if ("command".equals(mode)) {
 			session.command(parameterMap);
 		} else {
-			send(resp, session.html(parameterMap));
+			String id = UUID.randomUUID().toString();
+			send(resp, session.html(id, parameterMap));
 		}
 	}
 

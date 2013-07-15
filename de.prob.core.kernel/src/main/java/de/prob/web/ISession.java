@@ -36,10 +36,12 @@ public interface ISession {
 	 * the view or for reloading. The implementation must return a String
 	 * containing valid HTML.
 	 * 
+	 * @param id
+	 * 
 	 * @param parameterMap
 	 * @return
 	 */
-	String html(Map<String, String[]> parameterMap);
+	String html(String id, Map<String, String[]> parameterMap);
 
 	/**
 	 * returns the UUID associated with this instance. AbstractSession offers a
@@ -49,6 +51,6 @@ public interface ISession {
 	 */
 	UUID getUuid();
 
-	void updatesSince(int lastinfo, AsyncContext context);
+	void updatesSince(String client, int lastinfo, AsyncContext context);
 
 }
