@@ -83,6 +83,8 @@ public class GroovyShellServlet extends HttpServlet {
 		}
 		String evaluationResult = executor.evaluate(input);
 
+		// FIXME replace by guava implementation after upgradde to guava 15.
+		// Remove dependency to apache.commons.lang
 		String result = StringEscapeUtils.escapeHtml(evaluationResult);
 
 		ResultObject r = new ResultObject(result, executor.isContinued());
