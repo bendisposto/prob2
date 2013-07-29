@@ -58,7 +58,7 @@ public class ReflectionServlet extends HttpServlet {
 		} else {
 			Class<ISession> clazz = getClass(className);
 			if (clazz == null) {
-				resp.sendRedirect("/ui/common/nonexisting_class.html");
+				resp.sendError(404);
 				return;
 			}
 
