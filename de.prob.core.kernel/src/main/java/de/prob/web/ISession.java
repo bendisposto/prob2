@@ -76,4 +76,6 @@ public interface ISession {
 
 	int getResponseCount();
 
+	void outOfDateCall(String client, int lastinfo, AsyncContext context);
+
 }

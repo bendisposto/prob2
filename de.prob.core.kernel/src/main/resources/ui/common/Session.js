@@ -1,7 +1,7 @@
 function Session() {
 	var extern = {}
 
-	var current = -1;
+	var current = 0;
 	var poll_interval = 100;
 
 	// client side template cache
@@ -39,7 +39,7 @@ function Session() {
 	}
 
 	function disconnect() {
-		current = -1;
+		current = 0;
 		$("body").replaceWith(
 				get_template("/ui/common/server_disconnected.html"))
 	}
@@ -51,21 +51,28 @@ function Session() {
 			'client' : client
 		};
 		console.log("Requesting " + data.lastinfo)
-		$.ajax({
-			data : data,
-			success : function(data) {
-				if (data != "") {
-					dx = JSON.parse(data);
-					dobj = dx.content
-					current = dx.id
-					eval(dobj.cmd)(dobj)
-				}
-				listen(client);
-			},
-			error : function(e, s, r) {
-				disconnect()
-			}
-		});
+		$
+				.ajax({
+					data : data,
+					success : function(data) {
+						if (data != "") {
+							dx = JSON.parse(data);
+							dobjs = dx.content
+							current = dx.id
+							if (!(Object.prototype.toString.call(dobjs) === "[object Array]")) {
+								dobjs = [ dobjs ]
+							}
+							for (i in dobjs) {
+								var dobj = dobjs[i]
+								eval(dobj.cmd)(dobj)
+							}
+						}
+						listen(client);
+					},
+					error : function(e, s, r) {
+						disconnect()
+					}
+				});
 	}
 
 	extern.init = function(client) {

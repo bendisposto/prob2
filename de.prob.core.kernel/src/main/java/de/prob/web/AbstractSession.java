@@ -13,12 +13,18 @@ import java.util.concurrent.Callable;
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class AbstractSession implements ISession {
 
 	private final UUID id;
 	private final List<AsyncContext> clients = Collections
 			.synchronizedList(new ArrayList<AsyncContext>());
 	private final ArrayList<Message> responses = new ArrayList<Message>();
+
+	private final Logger logger = LoggerFactory
+			.getLogger(AbstractSession.class);
 
 	public AbstractSession(UUID id) {
 		this.id = id;
@@ -78,31 +84,34 @@ public abstract class AbstractSession implements ISession {
 		String json = WebUtils.toJson(message);
 		synchronized (clients) {
 			for (AsyncContext context : clients) {
-				ServletResponse response = context.getResponse();
-				try {
-					PrintWriter writer = response.getWriter();
-					writer.print(json);
-					writer.flush();
-					writer.close();
-					context.complete();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (IllegalStateException e) {
-					System.err.println("Late sending not succeeded: " + json);
-				}
+				send(json, context);
 			}
 			clients.clear();
 		}
 	}
 
+	private void send(String json, AsyncContext context) {
+		ServletResponse response = context.getResponse();
+		try {
+			PrintWriter writer = response.getWriter();
+			writer.print(json);
+			writer.flush();
+			writer.close();
+			context.complete();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			System.err.println("Late sending not succeeded: " + json);
+		}
+	}
+
 	@Override
 	public void registerClient(String client, int lastinfo, AsyncContext context) {
-		if (lastinfo == 0) {
-
+		logger.trace("Register {} Lastinfo {}", client, lastinfo);
+		if (lastinfo < responses.size()) {
+			outOfDateCall(client, lastinfo, context);
 		} else {
-			synchronized (clients) {
-				clients.add(context);
-			}
+			registerContext(context);
 		}
 	}
 
@@ -111,4 +120,15 @@ public abstract class AbstractSession implements ISession {
 		return responses.size();
 	}
 
+	@Override
+	public void outOfDateCall(String client, int lastinfo, AsyncContext context) {
+		// Default is to not send old messages
+		registerContext(context);
+	}
+
+	private void registerContext(AsyncContext context) {
+		synchronized (clients) {
+			clients.add(context);
+		}
+	}
 }
