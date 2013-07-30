@@ -8,8 +8,11 @@ import java.util.Map;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+import com.google.gson.Gson;
 
 public class WebUtils {
+
+	private static final Gson GSON = new Gson();
 
 	public static String render(String name, Object... scopes) {
 		MustacheFactory mf = new DefaultMustacheFactory();
@@ -33,6 +36,10 @@ public class WebUtils {
 			m.put(content[i], content[i + 1]);
 		}
 		return m;
+	}
+
+	public static String toJson(Object o) {
+		return GSON.toJson(o);
 	}
 
 }

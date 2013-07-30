@@ -56,17 +56,11 @@ function Session() {
 			success : function(data) {
 				if (data != "") {
 					dx = JSON.parse(data);
-					dobjs = dx.content
+					dobj = dx.content
 					current = dx.id
-					if (dobjs.length > 0)
-						console.log(dobjs);
-					for (i in dobjs) {
-						var dobj = dobjs[i]
-						eval(dobj.cmd)(dobj)
-					}
-					;
+					eval(dobj.cmd)(dobj)
 				}
-				setTimeout(listen(client), poll_interval);
+				listen(client);
 			},
 			error : function(e, s, r) {
 				disconnect()

@@ -8,6 +8,12 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -33,11 +38,29 @@ public class ReflectionServlet extends HttpServlet {
 	Logger logger = LoggerFactory.getLogger(ReflectionServlet.class);
 
 	private final Map<String, ISession> sessions;
-	private static final Gson GSON = new Gson();
+	private final ExecutorService taskExecutor = Executors
+			.newFixedThreadPool(3);
+	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
+			taskExecutor);
 
 	@Inject
 	public ReflectionServlet(@Sessions Map<String, ISession> sessions) {
 		this.sessions = sessions;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						SessionResult res = taskCompletionService.take().get();
+						res.session.submit(res.result);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
 	}
 
 	@Override
@@ -66,7 +89,7 @@ public class ReflectionServlet extends HttpServlet {
 			logger.trace("Instantiating");
 			ISession obj = instantiate(clazz);
 			logger.trace("Got the object");
-			String id = obj.getUuid().toString();
+			String id = obj.getSessionUUID().toString();
 			sessions.put(id, obj);
 			String rest = prepareExtraParameters(req);
 			resp.sendRedirect(URL_PATTERN + className + "/" + id + rest);
@@ -81,12 +104,16 @@ public class ReflectionServlet extends HttpServlet {
 		Map<String, String[]> parameterMap = req.getParameterMap();
 		if ("update".equals(mode)) {
 			int lastinfo = Integer.parseInt(req.getParameter("lastinfo"));
+			logger.trace("Incomming Request: {}. Size of Session-Responses {}",
+					lastinfo, session.getResponseCount());
 			String client = req.getParameter("client");
-			session.updatesSince(client, lastinfo, req.startAsync());
+			session.registerClient(client, lastinfo, req.startAsync());
 		} else if ("command".equals(mode)) {
-			session.command(parameterMap);
+			Callable<SessionResult> command = session.command(parameterMap);
+			send(resp, "submitted");
+			taskCompletionService.submit(command);
 		} else {
-			String id = UUID.randomUUID().toString();
+			String id = UUID.randomUUID().toString(); // client specific id
 			send(resp, session.html(id, parameterMap));
 		}
 	}

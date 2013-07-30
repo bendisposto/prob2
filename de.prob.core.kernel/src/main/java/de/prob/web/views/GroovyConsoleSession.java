@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.prob.web.AbstractSession;
-import de.prob.web.SessionQueue;
 import de.prob.web.WebUtils;
 import de.prob.worksheet.ScriptEngineProvider;
 
@@ -25,9 +24,8 @@ public class GroovyConsoleSession extends AbstractSession {
 	private final ScriptEngine engine;
 
 	@Inject
-	public GroovyConsoleSession(UUID id, ScriptEngineProvider sep,
-			SessionQueue q) {
-		super(id, q);
+	public GroovyConsoleSession(UUID id, ScriptEngineProvider sep) {
+		super(id);
 		engine = sep.get();
 	}
 
@@ -38,9 +36,9 @@ public class GroovyConsoleSession extends AbstractSession {
 		try {
 			StringBuffer console = new StringBuffer();
 			engine.put("__console", console);
-			logger.trace("Eval " + engine.toString());
+			logger.trace("Eval {} on {}", line, engine.toString());
 			Object eval = engine.eval(line);
-			logger.trace("Evaled " + engine.toString());
+			logger.trace("Evaled {} to {}", line, eval.toString());
 			return WebUtils.wrap("cmd", "Console.groovyResult", "result",
 					eval.toString(), "output", console.toString());
 		} catch (Exception e) {
@@ -55,7 +53,7 @@ public class GroovyConsoleSession extends AbstractSession {
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
-		String uuid = getUuid().toString();
+		String uuid = getSessionUUID().toString();
 		String template = "ui/console/index.html";
 		Object scope = WebUtils.wrap("clientid", clientid);
 		return WebUtils.render(template, scope);
