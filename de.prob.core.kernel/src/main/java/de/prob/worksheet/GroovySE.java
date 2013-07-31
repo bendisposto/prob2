@@ -37,12 +37,10 @@ public class GroovySE implements ScriptEngine {
 
 	public GroovySE(ScriptEngine engine) {
 		groovy = engine;
+		initialize();
 	}
 
-	@Override
-	public Object eval(String script, ScriptContext context)
-			throws ScriptException {
-
+	private void initialize() {
 		ClassLoader classLoader = this.getClass().getClassLoader();
 		InputStream inputStream = classLoader.getResourceAsStream("initscript");
 
@@ -53,8 +51,17 @@ public class GroovySE implements ScriptEngine {
 		} catch (IOException e) {
 			logger.error("Error reading from initscript.");
 		}
+		try {
+			groovy.eval(imports + "\n" + initscript);
+		} catch (ScriptException e) {
+			logger.error("Error initializing groovy", e);
+			e.printStackTrace();
+		} // run init script
+	}
 
-		groovy.eval(imports + "\n" + initscript); // run init script
+	@Override
+	public Object eval(String script, ScriptContext context)
+			throws ScriptException {
 
 		Object result = groovy.eval(imports + "\n" + script, context);
 		if (result == null)
@@ -159,10 +166,9 @@ public class GroovySE implements ScriptEngine {
 
 		if (nn != null) {
 			ctxt.setBindings(nn, ScriptContext.ENGINE_SCOPE);
-		} else {
+		} else
 			throw new NullPointerException(
 					"Engine scope Bindings may not be null.");
-		}
 
 		return ctxt;
 
