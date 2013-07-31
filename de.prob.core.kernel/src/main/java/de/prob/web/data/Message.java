@@ -1,6 +1,6 @@
-package de.prob.web;
+package de.prob.web.data;
 
-class Message {
+public class Message {
 	public final int id;
 	public final Object content;
 

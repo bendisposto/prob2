@@ -27,6 +27,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.annotations.Sessions;
+import de.prob.web.data.SessionResult;
 import de.prob.webconsole.ServletContextListener;
 
 @SuppressWarnings("serial")

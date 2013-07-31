@@ -1,4 +1,6 @@
-package de.prob.web;
+package de.prob.web.data;
+
+import de.prob.web.ISession;
 
 public class SessionResult {
 

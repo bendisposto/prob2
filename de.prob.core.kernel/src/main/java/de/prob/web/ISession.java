@@ -7,6 +7,8 @@ import java.util.concurrent.CompletionService;
 
 import javax.servlet.AsyncContext;
 
+import de.prob.web.data.SessionResult;
+
 // FIXME Reference to Javascript 
 /**
  * Interface for views that are session based. Classes that implement this
