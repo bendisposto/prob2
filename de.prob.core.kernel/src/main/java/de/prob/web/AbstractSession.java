@@ -14,6 +14,7 @@ import java.util.concurrent.Callable;
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletResponse;
 
+import org.eclipse.jetty.io.UncheckedIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,9 +109,11 @@ public abstract class AbstractSession implements ISession {
 			writer.close();
 			context.complete();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Could not get the writer for connection.", e);
+		} catch (UncheckedIOException e) {
+			logger.debug("Exception occured while sending data. This happens if timeouts occured. Ignoring and continuing.");
 		} catch (IllegalStateException e) {
-			System.err.println("Late sending not succeeded: " + json);
+			logger.debug("Exception occured while completing asynchronous call. This happens if timeouts occured. Ignoring and continuing.");
 		}
 	}
 

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,14 +51,17 @@ public class ReflectionServlet extends HttpServlet {
 			public void run() {
 				while (true) {
 					try {
+						logger.trace("Grabbing result");
 						SessionResult res = taskCompletionService.take().get();
+						logger.trace("Got Result in Queue: {}", res);
 						res.session.submit(res.result);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} catch (ExecutionException e) {
-						e.printStackTrace();
+					} catch (Throwable e) {
+						logger.error(
+								"Exception in result handling loop. Ignoring",
+								e);
 					}
 				}
+
 			}
 		}).start();
 	}
