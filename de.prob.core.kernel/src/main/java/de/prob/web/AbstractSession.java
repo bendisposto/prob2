@@ -31,6 +31,10 @@ public abstract class AbstractSession implements ISession {
 	private final Logger logger = LoggerFactory
 			.getLogger(AbstractSession.class);
 
+	public AbstractSession() {
+		this.id = UUID.randomUUID();
+	}
+
 	public AbstractSession(UUID id) {
 		this.id = id;
 	}
