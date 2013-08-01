@@ -13,6 +13,7 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -52,9 +53,13 @@ public class ReflectionServlet extends HttpServlet {
 				while (true) {
 					try {
 						logger.trace("Grabbing result");
-						SessionResult res = taskCompletionService.take().get();
-						logger.trace("Got Result in Queue: {}", res);
-						res.session.submit(res.result);
+						Future<SessionResult> message = taskCompletionService
+								.take();
+						if (message != null) { // will filter null values
+							SessionResult res = message.get();
+							logger.trace("Got Result in Queue: {}", res);
+							res.session.submit(res.result);
+						}
 					} catch (Throwable e) {
 						logger.error(
 								"Exception in result handling loop. Ignoring",
