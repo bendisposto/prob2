@@ -6,6 +6,9 @@ import java.util.Map;
 
 import javax.servlet.AsyncContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -22,6 +25,7 @@ public class CurrentTrace extends AbstractSession implements
 		IAnimationChangeListener {
 
 	private final AnimationSelector selector;
+	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);
 
 	@Inject
 	public CurrentTrace(AnimationSelector selector) {
@@ -31,6 +35,7 @@ public class CurrentTrace extends AbstractSession implements
 
 	@Override
 	public void traceChange(Trace trace) {
+		logger.trace("Trace has changed. Submitting");
 		OpInfo[] elements = getElements(trace);
 		String[] ops = new String[elements.length];
 		for (int i = 0; i < elements.length; i++) {
@@ -40,6 +45,20 @@ public class CurrentTrace extends AbstractSession implements
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
 		submit(wrap);
+	}
+
+	public Object gotoPos(Map<String, String[]> params) {
+		logger.trace("Goto Position in Trace");
+		Trace trace = selector.getCurrentTrace();
+		int cpos = getElements(trace).length - 1;
+		int pos = Integer.parseInt(get(params, "pos"));
+		int moves = cpos - pos;
+		for (int i = 0; i < moves; i++) {
+			trace = trace.back();
+
+		}
+		selector.replaceTrace(selector.getCurrentTrace(), trace);
+		return null;
 	}
 
 	@Override
