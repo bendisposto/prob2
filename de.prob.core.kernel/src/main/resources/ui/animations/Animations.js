@@ -7,7 +7,7 @@ Animations = (function() {
 
 	function setContent(data) {
 		ops = JSON.parse(data.animations)
-		$(".op").remove()
+		$(".animation").remove()
 		for (op in ops) {
 			var co = ops[op]
 			$("#content").append(
