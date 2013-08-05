@@ -12,7 +12,6 @@ public class ExpandFormulaCommand extends AbstractCommand {
 
 	private final String stateId;
 	private final String TREE = "TREE";
-	private PrologTerm prologTerm;
 	private final FormulaId id;
 	private ExpandedFormula result;
 

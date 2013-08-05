@@ -3,7 +3,6 @@ package de.prob;
 import static java.io.File.separator;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -64,14 +63,14 @@ public class Main {
 	}
 
 	public static String getProBDirectory() {
-//		String homedir = System.getProperty("prob.home");
-//		if (homedir != null) {
-//			return homedir + separator;
-//		}
-//		String env = System.getenv("PROB_HOME");
-//		if (env != null) {
-//			return env + separator;
-//		}
+		// String homedir = System.getProperty("prob.home");
+		// if (homedir != null) {
+		// return homedir + separator;
+		// }
+		// String env = System.getenv("PROB_HOME");
+		// if (env != null) {
+		// return env + separator;
+		// }
 		return System.getProperty("user.home") + separator + ".prob"
 				+ separator;
 	}

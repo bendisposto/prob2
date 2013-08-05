@@ -1,0 +1,52 @@
+Worksheet = (function() {
+	var extern = {}
+	var session = Session();
+
+	function reorder(evt, ui) {
+		var boxes = $(".box")
+		var p = $.inArray(ui.item.context, boxes)
+		var box = ui.item.context.getAttribute("box")
+		session.sendCmd("reorder", {
+			"box" : box,
+			"newpos" : p,
+			"client" : extern.client
+		})
+	}
+
+	$(document).ready(function() {
+		$(function() {
+			$("#boxes").sortable({
+				placeholder : "ui-sortable-placeholder",
+				update : reorder,
+				// handle : ".box",
+				forcePlaceholderSize : true
+			});
+		});
+
+	});
+
+	// function setTrace(data) {
+	// ops = JSON.parse(data.trace)
+	// $(".op").remove()
+	// for (op in ops) {
+	// $("#content").prepend('<li id="'+op+'" class="op">' + ops[op] + '</li>')
+	// }
+	// $(".op").click(function(e) {
+	// clickTrace(e.target.id)
+	// })
+	// }
+	//
+	// function clickTrace(id) {
+	// session.sendCmd("gotoPos", {
+	// "pos" : id,
+	// "client" : extern.client
+	// })
+	// }
+
+	// extern.setTrace = setTrace
+
+	extern.client = ""
+	extern.init = session.init
+
+	return extern;
+}())

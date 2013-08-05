@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ProB Webshell</title>
+<meta name="description" content="">
+<meta name="author" content="Jens Bendisposto">
+
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/console/console_base.css">
+<link rel="stylesheet" href="/ui/console/console.css">
+
+</head>
+<body>
+	<div id="console" class="console"></div>
+</body>
+<script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/console/jquery.console.prob.js"></script>
+<script type="text/javascript" src="/ui/console/Console.js"></script>
+
+<script>
+Console.client = "{{clientid}}";
+Console.init("{{clientid}}")
+</script>
+</html>

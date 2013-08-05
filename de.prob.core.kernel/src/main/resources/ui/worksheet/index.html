@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Worksheet</title>
+<meta name="description" content="">
+<meta name="author" content="Jens Bendisposto">
+
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/worksheet/worksheet.css">
+
+</head>
+<body>
+
+	<div class="container">
+		<div class="row">
+			<div class="top-bar span12"></div>
+			<div id="boxes" class="span12">
+				<div box="1" class="box">gaa</div>
+				<div box="2" class="box">doo</div>
+				<div box="3" class="box">bar</div>
+				<div box="4" class="box">kaa</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+
+<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror_modes/groovy.js"></script>
+<script type="text/javascript"
+	src="/ui/libs/codemirror_modes/javascript.js"></script>
+<script type="text/javascript"
+	src="/ui/libs/codemirror_modes/markdown.js"></script>
+<script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/worksheet/Worksheet.js"></script>
+<!-- Latex Math Rendering -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript"
+	src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<script>
+Worksheet.client = "{{clientid}}";
+Worksheet.init("{{clientid}}")
+</script>
+</html>

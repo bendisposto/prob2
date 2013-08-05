@@ -17,14 +17,13 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 
 	private final Api api;
 	private final AnimationSelector animations;
-	private ScriptEngineManager manager;
+	private final ScriptEngineManager manager;
 
 	@Inject
-	public ScriptEngineProvider(Api api, AnimationSelector animations,
-			ScriptEngineManager manager) {
+	public ScriptEngineProvider(Api api, AnimationSelector animations) {
 		this.api = api;
 		this.animations = animations;
-		this.manager = manager;
+		this.manager = new ScriptEngineManager(this.getClass().getClassLoader());
 	}
 
 	@Override

@@ -14,7 +14,7 @@ public class ExpandedFormula {
 
 	private String name;
 	private Object value;
-	private String fId;
+	// private String fId;
 	private List<ExpandedFormula> children;
 
 	public ExpandedFormula(final CompoundPrologTerm cpt) {
@@ -27,7 +27,7 @@ public class ExpandedFormula {
 		PrologTerm v = cpt.getArgument(2);
 		value = getValue(v);
 		// Children
-		fId = cpt.getArgument(3).getFunctor();
+		// fId = cpt.getArgument(3).getFunctor();
 
 		ListPrologTerm list = BindingGenerator.getList(cpt.getArgument(4));
 		if (!list.isEmpty()) {
@@ -42,11 +42,10 @@ public class ExpandedFormula {
 	private Object getValue(final PrologTerm v) {
 		if (v.getFunctor().equals("p")) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
-			if (cpt.getArgument(1).getFunctor().equals("true")) {
+			if (cpt.getArgument(1).getFunctor().equals("true"))
 				return Boolean.TRUE;
-			} else {
+			else
 				return Boolean.FALSE;
-			}
 		} else if (v.getFunctor().equals("v")) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
 			return cpt.getArgument(1).getFunctor();

@@ -11,3 +11,4 @@ mylyn/
 *.probp
 *.viz
 *.class
+nullconfig.groovy
