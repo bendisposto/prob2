@@ -53,10 +53,7 @@ public class GroovyConsoleSession extends AbstractSession {
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
-		String uuid = getSessionUUID().toString();
-		String template = "ui/console/index.html";
-		Object scope = WebUtils.wrap("clientid", clientid);
-		return WebUtils.render(template, scope);
+		return simpleRender(clientid, "ui/console/index.html");
 	}
 
 }
