@@ -1,6 +1,7 @@
 package de.prob.statespace;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -82,9 +83,8 @@ public class TraceElement {
 	 *         Otherwise, this is destination.
 	 */
 	public StateId getCurrentState() {
-		if (dest == null) {
+		if (dest == null)
 			return src;
-		}
 		return dest;
 	}
 
@@ -92,16 +92,15 @@ public class TraceElement {
 	 * @return List of all executed operations ({@link OpInfo})
 	 */
 	public List<OpInfo> getOpList() {
-		return opList;
+		return Collections.unmodifiableList(opList);
 	}
 
 	@Override
 	public String toString() {
-		if (dest == null) {
+		if (dest == null)
 			return "State: " + src.toString();
-		} else {
+		else
 			return "From: " + src.toString() + " To: " + dest.toString()
 					+ " With: " + edge.getId();
-		}
 	}
 }
