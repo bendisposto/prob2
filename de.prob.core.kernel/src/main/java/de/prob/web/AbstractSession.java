@@ -147,4 +147,10 @@ public abstract class AbstractSession implements ISession {
 			clients.add(context);
 		}
 	}
+
+	public String simpleRender(String clientid, String template) {
+		Object scope = WebUtils.wrap("clientid", clientid);
+		return WebUtils.render(template, scope);
+	}
+
 }
