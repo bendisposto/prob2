@@ -57,7 +57,7 @@ public abstract class AbstractCommand {
 	 * {@link AbstractCommand}. This is called by {@code AnimatorImpl} when run
 	 * in debug mode. If developers want individual commands to be executed
 	 * separately when an {@link AbstractCommand} is executed, then this method
-	 * MUST be overriden. By default, the {@link Collections.#emptyList()} is
+	 * MUST be overriden. By default, the {@link Collections#emptyList()} is
 	 * returned.
 	 * 
 	 * @return {@code List} of {@link AbstractCommand} subcommands

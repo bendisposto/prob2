@@ -387,7 +387,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * the given state and caches them.
 	 * 
 	 * @param state
-	 * @return
 	 */
 	private void evaluateFormulas(final StateId state) {
 		if (!canBeEvaluated(state))

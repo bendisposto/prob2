@@ -36,7 +36,7 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand {
 	private final IEvalElement formula;
 
 	/**
-	 * @param predicate
+	 * @param formula
 	 *            is a parsed predicate or <code>null</code>
 	 * 
 	 */
