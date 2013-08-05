@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -98,10 +97,6 @@ public abstract class AbstractSession implements ISession {
 			clients.clear();
 		}
 
-		HashSet<String> a = new HashSet<String>();
-
-		a.add("foo");
-		a.size();
 	}
 
 	private void send(String json, AsyncContext context) {
