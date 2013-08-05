@@ -1,6 +1,5 @@
 package de.prob.web.views;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
-import de.prob.statespace.TraceElement;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -36,10 +34,10 @@ public class CurrentTrace extends AbstractSession implements
 	@Override
 	public void traceChange(Trace trace) {
 		logger.trace("Trace has changed. Submitting");
-		OpInfo[] elements = getElements(trace);
-		String[] ops = new String[elements.length];
-		for (int i = 0; i < elements.length; i++) {
-			ops[i] = elements[i].getRep(trace.getModel());
+		List<OpInfo> elements = getElements(trace);
+		String[] ops = new String[elements.size()];
+		for (int i = 0; i < elements.size(); i++) {
+			ops[i] = elements.get(i).getRep(trace.getModel());
 		}
 
 		Map<String, String> wrap = WebUtils.wrap("cmd",
@@ -50,7 +48,7 @@ public class CurrentTrace extends AbstractSession implements
 	public Object gotoPos(Map<String, String[]> params) {
 		logger.trace("Goto Position in Trace");
 		Trace trace = selector.getCurrentTrace();
-		int cpos = getElements(trace).length - 1;
+		int cpos = getElements(trace).size() - 1;
 		int pos = Integer.parseInt(get(params, "pos"));
 		int moves = cpos - pos;
 		for (int i = 0; i < moves; i++) {
@@ -63,16 +61,11 @@ public class CurrentTrace extends AbstractSession implements
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
-		String template = "ui/currenttrace/index.html";
-		Object scope = WebUtils.wrap("clientid", clientid);
-		return WebUtils.render(template, scope);
+		return simpleRender(clientid, "ui/currenttrace/index.html");
 	}
 
-	public OpInfo[] getElements(final Trace trace) {
-		List<OpInfo> ops = new ArrayList<OpInfo>();
-		TraceElement current = trace.getCurrent();
-		ops.addAll(current.getOpList());
-		return ops.toArray(new OpInfo[ops.size()]);
+	public List<OpInfo> getElements(final Trace trace) {
+		return trace.getCurrent().getOpList();
 	}
 
 	@Override
