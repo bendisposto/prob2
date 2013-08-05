@@ -81,6 +81,7 @@ function Session() {
 	};
 
 	extern.sendCmd = sendCmd;
+	extern.get_template = get_template;
 
 	return extern;
 }
