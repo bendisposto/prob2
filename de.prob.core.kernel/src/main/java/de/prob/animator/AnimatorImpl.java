@@ -26,7 +26,7 @@ class AnimatorImpl implements IAnimator {
 	private final Logger logger = LoggerFactory.getLogger(AnimatorImpl.class);
 	private final CommandProcessor processor;
 	private final GetErrorsCommand getErrors;
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 
 	@Inject
 	public AnimatorImpl(@Nullable final ProBInstance cli,
