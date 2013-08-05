@@ -38,6 +38,17 @@ function Session() {
 		return html;
 	}
 
+	function render(template_name, context) {
+		if (typeof (Mustache) === "undefined") {
+			return '<div class="span12 alert alert-error"><strong>Error!</strong>Mustache library is not present. Cannot render view.</div>'
+		} else {
+			var template = get_template(template_name);
+			var text = Mustache.render(template, context);
+			return text;
+		}
+
+	}
+
 	function disconnect() {
 		current = 0;
 		$("body").replaceWith(
@@ -82,6 +93,7 @@ function Session() {
 
 	extern.sendCmd = sendCmd;
 	extern.get_template = get_template;
+	extern.render = render;
 
 	return extern;
 }

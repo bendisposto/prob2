@@ -1,7 +1,6 @@
 Animations = (function() {
 	var extern = {}
 	var session = Session();
-	var template = session.get_template("/ui/animations/animations_table.html");
 
 	$(document).ready(function() {
 	});
@@ -11,25 +10,24 @@ Animations = (function() {
 		$(".op").remove()
 		for (op in ops) {
 			var co = ops[op]
-			var text = Mustache.render(template, co);
-			$("#content").append(text)
+			$("#content").append(
+					session.render("/ui/animations/animations_table.html", co))
 		}
 		$(".op").click(function(e) {
-			//clickTrace(e.target.id)
+			// clickTrace(e.target.id)
 		})
 	}
 
-	
 	function clickTrace(id) {
-			session.sendCmd("gotoPos", {
-				"pos" : id,
-				"client" : extern.client
-			})
+		session.sendCmd("gotoPos", {
+			"pos" : id,
+			"client" : extern.client
+		})
 	}
-	
+
 	extern.client = ""
 	extern.init = session.init
 	extern.setContent = setContent
-	
+
 	return extern;
 }())
