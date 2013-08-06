@@ -174,12 +174,12 @@ public class AnimationSelector {
 	 * @param newTrace
 	 */
 	public void replaceTrace(final Trace oldTrace, final Trace newTrace) {
-		if (oldTrace.equals(currentTrace)) {
-			notifyAnimationChange(newTrace);
-		}
 		int indexOf = traces.indexOf(oldTrace);
 		traces.set(indexOf, newTrace);
-		currentTrace = newTrace;
+		if (oldTrace.equals(currentTrace)) {
+			notifyAnimationChange(newTrace);
+			currentTrace = newTrace;
+		}
 
 		if (currentTrace != null
 				&& currentTrace.getStateSpace() != currentStateSpace) {
@@ -201,9 +201,8 @@ public class AnimationSelector {
 	}
 
 	private void remove(final Trace trace) {
-		if (!traces.contains(trace)) {
+		if (!traces.contains(trace))
 			return;
-		}
 		if (currentTrace == trace) {
 			int indexOf = traces.indexOf(trace);
 			traces.remove(trace);

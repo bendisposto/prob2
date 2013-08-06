@@ -17,3 +17,12 @@ th {
 .selected {
 	font-weight: bold;
 }
+
+.close-button {
+	color: #660000;
+	opacity: 0.5;
+}
+
+.close-button:hover {
+	opacity: 1;
+}

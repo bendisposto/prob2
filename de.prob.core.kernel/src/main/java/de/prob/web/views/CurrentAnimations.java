@@ -3,6 +3,8 @@ package de.prob.web.views;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -48,6 +50,26 @@ public class CurrentAnimations extends AbstractSession implements
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"Animations.setContent", "animations", WebUtils.toJson(result));
 		submit(wrap);
+	}
+
+	@Override
+	public void outOfDateCall(String client, int lastinfo, AsyncContext context) {
+		super.outOfDateCall(client, lastinfo, context);
+		traceChange(animations.getCurrentTrace());
+	}
+
+	public Object selectTrace(Map<String, String[]> params) {
+		int pos = Integer.parseInt(params.get("pos")[0]);
+		Trace trace = animations.getTraces().get(pos);
+		animations.changeCurrentAnimation(trace);
+		return null;
+	}
+
+	public Object removeTrace(Map<String, String[]> params) {
+		int pos = Integer.parseInt(params.get("pos")[0]);
+		Trace trace = animations.getTraces().get(pos);
+		animations.removeTrace(trace);
+		return null;
 	}
 
 }

@@ -10,16 +10,34 @@ Animations = (function() {
 		$(".animation").remove()
 		for (op in ops) {
 			var co = ops[op]
+			co.id = op;
+			if(co.isCurrent === "true") {
+				co.selected = "selected"
+			} else {
+				co.selected = "notSelected"
+			}
 			$("#content").append(
 					session.render("/ui/animations/animations_table.html", co))
 		}
-		$(".op").click(function(e) {
-			// clickTrace(e.target.id)
+		$(".animation-click").click(function(e) {
+			e.preventDefault()
+			selectTrace(e.delegateTarget.id)
+		})
+		$(".close-button").click(function(e) {
+			e.preventDefault()
+			removeTrace(e.target.id)
 		})
 	}
 
-	function clickTrace(id) {
-		session.sendCmd("gotoPos", {
+	function selectTrace(id) {
+		session.sendCmd("selectTrace", {
+			"pos" : id,
+			"client" : extern.client
+		})
+	}
+	
+	function removeTrace(id) {
+		session.sendCmd("removeTrace", {
 			"pos" : id,
 			"client" : extern.client
 		})
