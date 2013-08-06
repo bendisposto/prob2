@@ -12,35 +12,55 @@ Worksheet = (function() {
 			"client" : extern.client
 		})
 	}
-	
-	function toggle_headings() {
+
+	function set_headings(b) {
 		var panels = $(".panel");
 		var headings = $(".panel-heading")
-		
-		if (panels.hasClass("panel-compact")) {
+
+		if (!b) {
 			panels.removeClass("panel-compact")
 			headings.fadeIn();
-		}
-		else {
+		} else {
 			panels.addClass("panel-compact")
 			headings.fadeOut();
 		}
-		
+
 	}
 
-	
+	function render_box(number, type, content) {
+		var co = {
+			"box-number" : number,
+			"box-type" : type,
+			"type-selector" : function() {
+				return function() {
+					return session.render("/ui/worksheet/type-selector.html",
+							{})
+				}
+			},
+			"box-content" : content
+		}
+		return session.render("/ui/worksheet/box.html", co)
+	}
 
-	$(document).ready(function() {
-		$(function() {
-			$("#boxes").sortable({
-				placeholder : "ui-sortable-placeholder",
-				update : reorder,
-				handle : ".panel-heading",
-				forcePlaceholderSize : true
+	$(document).ready(
+			function() {
+				$(function() {
+					$("#boxes").sortable({
+						placeholder : "ui-sortable-placeholder",
+						update : reorder,
+						handle : ".panel-heading",
+						forcePlaceholderSize : true
+					});
+				});
+
+				$("#replace-with-type-selector").replaceWith(
+						session.render("/ui/worksheet/type-selector.html", {}))
+
+				$("#show-header").click(function(e) {
+					set_headings(e.target.checked)
+				})
+
 			});
-		});
-
-	});
 
 	// function setTrace(data) {
 	// ops = JSON.parse(data.trace)
@@ -64,7 +84,7 @@ Worksheet = (function() {
 
 	extern.client = ""
 	extern.init = session.init
-	extern.toggle_headings = toggle_headings
+	extern.render_box = render_box
 
 	return extern;
 }())

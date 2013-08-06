@@ -11,6 +11,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
@@ -33,6 +35,8 @@ public class Main {
 
 	public static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
 
+	Logger logger = LoggerFactory.getLogger(Main.class);
+
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
 			final Shell shell, final LogServlet log) {
@@ -40,6 +44,7 @@ public class Main {
 		this.options = options;
 		this.shell = shell;
 		ProBAppender.initialize(log);
+		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
 	void run(final String[] args) throws Throwable {
@@ -76,7 +81,6 @@ public class Main {
 	}
 
 	public static void main(final String[] args) throws Throwable {
-
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
