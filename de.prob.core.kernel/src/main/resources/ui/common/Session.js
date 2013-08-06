@@ -1,7 +1,7 @@
 function Session() {
 	var extern = {}
 
-	var current = 0;
+	var current = -1;
 	var poll_interval = 100;
 
 	// client side template cache
@@ -50,7 +50,7 @@ function Session() {
 	}
 
 	function disconnect() {
-		current = 0;
+		current = -1;
 		$("body").replaceWith(
 				get_template("/ui/common/server_disconnected.html"))
 	}
