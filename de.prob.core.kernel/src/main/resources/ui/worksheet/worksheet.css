@@ -1,7 +1,3 @@
-.top-bar {
-	margin-top: 40px;
-}
-
 .box-number {
 	padding-left: 10px;
 	padding-right: 5px;
@@ -9,6 +5,18 @@
 	text-align: right;
 	float: left;
 	min-width: 70px;
+}
+
+.top-bar {
+	margin-top: 40px;
+}
+
+.top-bar .bigcaret {
+	margin-top: -4px;
+}
+
+#show-header {
+	margin-left: 18px;
 }
 
 .heading-bar {
@@ -53,7 +61,8 @@
 	float: right;
 	color: #660000;
 	opacity: 0.5;
-	margin-top: 1px;
+	margin-top: 2px;
+	margin-right: 5px;
 	cursor: default;
 }
 

@@ -3,12 +3,16 @@ package de.prob.web.views;
 import java.util.Map;
 
 import de.prob.web.AbstractSession;
+import de.prob.web.WebUtils;
 
 public class Worksheet extends AbstractSession {
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
-		return simpleRender(clientid, "ui/worksheet/index.html");
+		Object scope = WebUtils.wrap("clientid", clientid, "default-box-type",
+				"Groovy");
+		String render = WebUtils.render("ui/worksheet/index.html", scope);
+		return render;
 	}
 
 	public Object reorder(Map<String, String[]> params) {

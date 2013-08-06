@@ -17,65 +17,21 @@
 <body>
 
 	<div class="container">
-		<div class="row">
-			<div class="top-bar span12"></div>
-			<div id="boxes" class="span12">
-
-				<div box="1" class="panel">
-					<div class="panel-heading">
-
-						<span class="box-number">1</span> <span class="heading-bar">
-							<span class="box-type">Groovy</span>
-							<div class="btn-group">
-								<span class="bigcaret dropdown-toggle" data-toggle="dropdown"></span>
-								<ul class="dropdown-menu">
-									<li><a href="#">Groovy</a></li>
-									<li><a href="#">B</a></li>
-									<li><a href="#">Markdown</a></li>
-									<li class="divider"></li>
-									<li><a href="#">Load Model</a></li>
-									<li><a href="#">Copy state from UI</a></li>
-									<li><a href="#">Print worksheet state</a></li>
-								</ul>
-							</div> <!-- /btn-group --> <span
-							class="close-button glyphicon glyphicon-remove "></span>
-						</span>
-					</div>
-					gaa
-				</div>
-
-				<div box="1" class="panel">
-					<div class="panel-heading">
-
-						<span class="box-number">5374851</span> <span class="heading-bar">
-							<span class="box-type">Groovy</span>
-							<div class="btn-group">
-								<span class="bigcaret dropdown-toggle" data-toggle="dropdown"></span>
-								<ul class="dropdown-menu">
-									<li><a href="#">Groovy</a></li>
-									<li><a href="#">B</a></li>
-									<li><a href="#">Markdown</a></li>
-									<li class="divider"></li>
-									<li><a href="#">Load Model</a></li>
-									<li><a href="#">Copy state from UI</a></li>
-									<li><a href="#">Print worksheet state</a></li>
-								</ul>
-							</div> <!-- /btn-group --> <span
-							class="close-button glyphicon glyphicon-remove "></span>
-						</span>
-					</div>
-					gaa
-				</div>
-
-
+		<div class="top-bar">
+			<div class="page-header span12">
+				<span> Default Box-Type: </span> <span> {{default-box-type}}
+				</span> <span id="replace-with-type-selector"></span> <input
+					id="show-header" type="checkbox"> Compact View </span>
 
 			</div>
+		</div>
+		<div class="row">
+			<div id="boxes" class="span12"></div>
 			<!--  boxes -->
 		</div>
 		<!--  row -->
 	</div>
 	<!--  container -->
-
 </body>
 
 <script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
@@ -90,6 +46,7 @@
 <script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
 <script type="text/javascript" src="/ui/common/Session.js"></script>
 <script type="text/javascript" src="/ui/worksheet/Worksheet.js"></script>
+<script type="text/javascript" src="/ui/worksheet/testdata.js"></script>
 <!-- Latex Math Rendering -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
