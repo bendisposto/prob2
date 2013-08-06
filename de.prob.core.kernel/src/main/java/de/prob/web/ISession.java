@@ -74,7 +74,7 @@ public interface ISession {
 	 */
 	void registerClient(String client, int lastinfo, AsyncContext context);
 
-	void submit(Object result);
+	void submit(Object... result);
 
 	int getResponseCount();
 

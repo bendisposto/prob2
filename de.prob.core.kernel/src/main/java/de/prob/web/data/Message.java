@@ -9,7 +9,4 @@ public class Message {
 		this.content = content;
 	}
 
-	public Message(int id, Object content) {
-		this(id, new Object[] { content });
-	}
 }

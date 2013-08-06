@@ -85,8 +85,7 @@ public abstract class AbstractSession implements ISession {
 		return strings[0];
 	}
 
-	@Override
-	public void submit(Object result) {
+	public void submit(Object... result) {
 		Message message = new Message(responses.size() + 1, result);
 		responses.add(message);
 		String json = WebUtils.toJson(message);
@@ -96,7 +95,6 @@ public abstract class AbstractSession implements ISession {
 			}
 			clients.clear();
 		}
-
 	}
 
 	private void send(String json, AsyncContext context) {
