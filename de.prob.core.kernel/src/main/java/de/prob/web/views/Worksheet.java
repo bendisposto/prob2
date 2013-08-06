@@ -2,10 +2,14 @@ package de.prob.web.views;
 
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 public class Worksheet extends AbstractSession {
+
+	private int boxcount = 0;
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
@@ -21,6 +25,15 @@ public class Worksheet extends AbstractSession {
 		System.out.println("Reodered box " + boxId + ". New position: "
 				+ newpos);
 		return null;
+	}
+
+	@Override
+	public void outOfDateCall(String client, int lastinfo, AsyncContext context) {
+		super.outOfDateCall(client, lastinfo, context);
+		Map<String, String> wrap = WebUtils.wrap("cmd", "Worksheet.render_box",
+				"number", String.valueOf(boxcount++), "type", "Groovy",
+				"content", "GFY!");
+		submit(wrap);
 	}
 
 }

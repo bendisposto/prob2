@@ -27,19 +27,20 @@ Worksheet = (function() {
 
 	}
 
-	function render_box(number, type, content) {
+	
+	function render_box(data) {
 		var co = {
-			"box-number" : number,
-			"box-type" : type,
+			"box-number" : data.number,
+			"box-type" : data.type,
 			"type-selector" : function() {
 				return function() {
 					return session.render("/ui/worksheet/type-selector.html",
 							{})
 				}
 			},
-			"box-content" : content
+			"box-content" : data.content
 		}
-		return session.render("/ui/worksheet/box.html", co)
+		$("#boxes").append(session.render("/ui/worksheet/box.html", co))
 	}
 
 	$(document).ready(
