@@ -3,7 +3,7 @@ Worksheet = (function() {
 	var session = Session();
 
 	function reorder(evt, ui) {
-		var boxes = $(".box")
+		var boxes = $(".panel")
 		var p = $.inArray(ui.item.context, boxes)
 		var box = ui.item.context.getAttribute("box")
 		session.sendCmd("reorder", {
@@ -12,13 +12,30 @@ Worksheet = (function() {
 			"client" : extern.client
 		})
 	}
+	
+	function toggle_headings() {
+		var panels = $(".panel");
+		var headings = $(".panel-heading")
+		
+		if (panels.hasClass("panel-compact")) {
+			panels.removeClass("panel-compact")
+			headings.fadeIn();
+		}
+		else {
+			panels.addClass("panel-compact")
+			headings.fadeOut();
+		}
+		
+	}
+
+	
 
 	$(document).ready(function() {
 		$(function() {
 			$("#boxes").sortable({
 				placeholder : "ui-sortable-placeholder",
 				update : reorder,
-				// handle : ".box",
+				handle : ".panel-heading",
 				forcePlaceholderSize : true
 			});
 		});
@@ -47,6 +64,7 @@ Worksheet = (function() {
 
 	extern.client = ""
 	extern.init = session.init
+	extern.toggle_headings = toggle_headings
 
 	return extern;
 }())
