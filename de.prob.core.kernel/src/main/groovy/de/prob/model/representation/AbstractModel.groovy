@@ -1,5 +1,6 @@
 package de.prob.model.representation;
 
+import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.RefType.ERefType
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
@@ -76,6 +77,8 @@ public abstract class AbstractModel extends AbstractElement {
 	public abstract StateSchema getStateSchema();
 
 	public abstract AbstractElement getMainComponent();
+
+	public abstract IEvalElement parseFormula(String formula);
 
 	public File getModelFile() {
 		return modelFile;

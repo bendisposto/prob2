@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 
+import de.prob.animator.domainobjects.CSP;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.StateSchema;
@@ -51,5 +53,10 @@ public class CSPModel extends AbstractModel {
 	public AbstractElement getMainComponent() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public IEvalElement parseFormula(final String formula) {
+		return new CSP(formula, this);
 	}
 }

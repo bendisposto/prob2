@@ -6,6 +6,8 @@ import java.util.Set;
 
 import com.google.inject.Inject;
 
+import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
@@ -92,6 +94,11 @@ public class EventBModel extends AbstractModel {
 						seen.getName());
 			}
 		}
+	}
+
+	@Override
+	public IEvalElement parseFormula(final String formula) {
+		return new EventB(formula);
 	}
 
 }
