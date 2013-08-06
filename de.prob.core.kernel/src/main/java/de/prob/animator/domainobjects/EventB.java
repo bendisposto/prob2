@@ -43,13 +43,6 @@ public class EventB extends AbstractEvalElement {
 	 *            formula
 	 */
 	public EventB(final String code) {
-		for (int i = 0; i < code.length(); i++) {
-			char c = code.charAt(i);
-			String s = String.format("\\u%04x", (int) c);
-			System.out.print(s);
-			System.out.print(" ");
-		}
-		System.out.println(code);
 		this.code = UnicodeTranslator.toAscii(code);
 		ensureParsed();
 	}
