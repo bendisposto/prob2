@@ -1,15 +1,30 @@
-li {
-	list-style-type: none;
+/* CSS styling for the Value vs Time visualization */
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
 }
 
-li:nth-child(odd) {
-	background-color: white;
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
 }
 
-li:nth-child(even) {
-	background-color: #f3f6ff;
+.x.axis path {
+   	display: none;
 }
 
-li:first-child {
-	font-weight: bold;
+.line {
+   	fill: none;
+   	stroke: #4682B4;
+   	stroke-width: 1.5px;
+}
+
+.connection {
+  fill: none;
+}
+
+.connection text {
+  fill: #000;
 }

@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
@@ -53,20 +52,41 @@ public class ValueOverTime extends AbstractSession implements
 	public Object addFormula(final Map<String, String[]> params) {
 		String time = params.get("time")[0];
 		String formula = params.get("formula")[0];
-		try {
-			if (!time.equals("")) {
-				this.time = model.parseFormula(time);
+		String timeId = params.get("timeId")[0];
+		String formulaId = params.get("formulaId")[0];
+		ArrayList<String> problemIds = new ArrayList<String>();
+
+		if (!time.equals("")) {
+			IEvalElement t = validateFormula(time);
+			if (t != null) {
+				this.time = t;
+			} else {
+				problemIds.add(timeId);
 			}
-			if (!formula.equals("")) {
-				IEvalElement f = model.parseFormula(formula);
-				formulas.add(f);
-			}
-		} catch (EvaluationException e) {
-			logger.error("Could not parse formula " + formula
-					+ " for formalism specified by "
-					+ model.getClass().getSimpleName());
 		}
-		return null;
+
+		IEvalElement f = validateFormula(formula);
+		if (f != null && !formulas.contains(f)) {
+			formulas.add(f);
+		} else {
+			problemIds.add(formulaId);
+		}
+
+		if (problemIds.isEmpty()) {
+			return WebUtils.wrap("cmd", "ValueOverTime.formulasAdded");
+		}
+		return WebUtils.wrap("cmd", "ValueOverTime.hasFormulaErrors", "ids",
+				WebUtils.toJson(problemIds));
+	}
+
+	public IEvalElement validateFormula(final String f) {
+		try {
+			IEvalElement e = model.parseFormula(f);
+			currentTrace.eval(e);
+			return e;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public Object parse(final Map<String, String[]> params) {
