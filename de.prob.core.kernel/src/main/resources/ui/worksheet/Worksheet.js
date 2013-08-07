@@ -27,18 +27,21 @@ Worksheet = (function() {
 
 	}
 
-	
-	function render_box(data) {
+	function focus(number) {
+		console.log("Focussing on " + number)
+	}
+
+	function render_box(number, type, content) {
 		var co = {
-			"box-number" : data.number,
-			"box-type" : data.type,
+			"box-number" : number,
+			"box-type" : type,
 			"type-selector" : function() {
 				return function() {
 					return session.render("/ui/worksheet/type-selector.html",
 							{})
 				}
 			},
-			"box-content" : data.content
+			"box-content" : content
 		}
 		$("#boxes").append(session.render("/ui/worksheet/box.html", co))
 	}
@@ -85,7 +88,14 @@ Worksheet = (function() {
 
 	extern.client = ""
 	extern.init = session.init
-	extern.render_box = render_box
+
+	extern.render_box = function(data) {
+		render_box(data.number, data.type, data.content)
+	}
+
+	extern.focus = function(data) {
+		focus(data.number)
+	}
 
 	return extern;
 }())

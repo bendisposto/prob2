@@ -5,13 +5,13 @@ Animations = (function() {
 	$(document).ready(function() {
 	});
 
-	function setContent(data) {
-		ops = JSON.parse(data.animations)
+	function setContent(animations) {
+		ops = JSON.parse(animations)
 		$(".animation").remove()
 		for (op in ops) {
 			var co = ops[op]
 			co.id = op;
-			if(co.isCurrent === "true") {
+			if (co.isCurrent === "true") {
 				co.selected = "selected"
 			} else {
 				co.selected = "notSelected"
@@ -35,7 +35,7 @@ Animations = (function() {
 			"client" : extern.client
 		})
 	}
-	
+
 	function removeTrace(id) {
 		session.sendCmd("removeTrace", {
 			"pos" : id,
@@ -45,7 +45,9 @@ Animations = (function() {
 
 	extern.client = ""
 	extern.init = session.init
-	extern.setContent = setContent
+	extern.setContent = function(data) {
+		setContent(data.animations)
+	}
 
 	return extern;
 }())

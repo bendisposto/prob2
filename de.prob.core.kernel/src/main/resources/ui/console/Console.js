@@ -35,29 +35,33 @@ Console = (function() {
 		});
 	});
 
-	function groovyResult(data) {
+	function groovyResult(output, result) {
 		controller.commandResult([ {
-			msg : data.output,
+			msg : output,
 			className : "groovy_output"
 		}, {
-			msg : data.result,
+			msg : result,
 			className : "groovy_result"
 		} ]);
 	}
 
-	function groovyError(data) {
+	function groovyError(message, trace) {
 		controller.commandResult([ {
-			msg : data.message,
+			msg : message,
 			className : "groovy_error"
 		}, {
-			msg : data.trace,
+			msg : trace,
 			className : "groovy_trace"
 		} ]);
 
 	}
 
-	extern.groovyResult = groovyResult
-	extern.groovyError = groovyError
+	extern.groovyResult = function(data) {
+		groovyResult(data.output, data.result)
+	}
+	extern.groovyError = function(data) {
+		groovyError(data.message, data.trace)
+	}
 	extern.client = ""
 	extern.init = session.init
 

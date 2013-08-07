@@ -5,11 +5,12 @@ CurrentTrace = (function() {
 	$(document).ready(function() {
 	});
 
-	function setTrace(data) {
-		ops = JSON.parse(data.trace)
+	function setTrace(trace) {
+		ops = JSON.parse(trace)
 		$(".op").remove()
 		for (op in ops) {
-			$("#content").prepend('<li id="'+op+'" class="op">' + ops[op] + '</li>')
+			$("#content").prepend(
+					'<li id="' + op + '" class="op">' + ops[op] + '</li>')
 		}
 		$(".op").click(function(e) {
 			clickTrace(e.target.id)
@@ -17,14 +18,15 @@ CurrentTrace = (function() {
 	}
 
 	function clickTrace(id) {
-			session.sendCmd("gotoPos", {
-				"pos" : id,
-				"client" : extern.client
-			})
+		session.sendCmd("gotoPos", {
+			"pos" : id,
+			"client" : extern.client
+		})
 	}
-	
-	
-	extern.setTrace = setTrace
+
+	extern.setTrace = function(data) {
+		setTrace(data.trace)
+	}
 	extern.client = ""
 	extern.init = session.init
 
