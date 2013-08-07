@@ -1,4 +1,4 @@
-VizUtils = (function() {
+function VizUtils(){
     var extern = {};
 
     function calculateHeight() {
@@ -79,7 +79,7 @@ VizUtils = (function() {
     extern.createCanvas = createCanvas;
 
     return extern;
-}())
+}
 
 
 
