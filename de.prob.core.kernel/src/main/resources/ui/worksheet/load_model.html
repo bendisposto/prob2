@@ -1,8 +1,5 @@
 <div box="{{box-number}}" id="box{{box-number}}" class="panel">
-
-	
 	<div class="panel-heading">
-
 		<span class="box-number">{{box-number}}</span> <span
 			class="heading-bar"> <span id="help{{box-number}}"
 			class="help-button micro-space glyphicon glyphicon-info-sign"
@@ -13,7 +10,13 @@
 		</span>
 	</div>
 	<div class="renderbox" id="render{{box-number}}">{{&rendered}}</div>
-	<div class="editorbox" id="editor{{box-number}}">
-		<textarea id="textarea{{box-number}}">{{box-content}}</textarea>
-	</div>
+	<span class="editorbox" style="width: 85%" id="editor{{box-number}}">
+
+		<input type="text" class="form-control" id="openfile{{box-number}}"
+		value="{{box-content}}" placeholder="Path to model file"></input>
+	</span> </span>
+	<button onClick="Worksheet.browse('#openfile{{box-number}}')"
+		type="button" class="load-btn btn btn-primary">Browse ...</button>
+	<button onClick="Worksheet.fb_load_file('#openfile{{box-number}}')"
+		type="button" class="load-btn btn btn-primary">Ok</button>
 </div>

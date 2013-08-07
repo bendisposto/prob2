@@ -1,3 +1,39 @@
+.CodeMirror {
+	border: 1px solid #000;
+	background: #eee;
+	height: auto;
+	font-family: monospace;
+	min-height: 20px;
+}
+
+.CodeMirror-wrap {
+	min-height: 20px;
+}
+
+.CodeMirror-hscrollbar {
+	display: none;
+}
+
+.CodeMirror-scroll {
+	overflow-y: hidden;
+	overflow-x: hidden;
+}
+
+.invisible {
+	display: none;
+}
+
+.editorbox {
+	float: left;
+	min-height: 20px;
+	width: 100%;
+}
+
+.load-btn {
+	float: left;
+	margin-left: 10px;
+}
+
 .box-number {
 	padding-left: 10px;
 	padding-right: 5px;
@@ -31,8 +67,9 @@
 }
 
 .panel {
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
+	float: left;
+	width: 100%;
+	margin-bottom: 10px;
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
 }
@@ -40,10 +77,9 @@
 .panel-compact {
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
 	padding: 5px;
 	margin: 3px;
+	border: 0px dashed #aaa;
 }
 
 .panel-heading {
@@ -61,9 +97,31 @@
 	float: right;
 	color: #660000;
 	opacity: 0.5;
-	margin-top: 2px;
 	margin-right: 5px;
+	margin-top: 2px;
 	cursor: default;
+}
+
+.help-button {
+	color: #000000;
+	opacity: 0.5;
+}
+
+.help-button:hover {
+	opacity: 1;
+}
+
+.micro-space {
+	float: left;
+	margin-left: 5px;
+	margin-top: 2px;
+	cursor: default;
+}
+
+.box-type {
+	float: left;
+	margin-left: 2px;
+	margin-top: 1px;
 }
 
 .bigcaret {
@@ -82,7 +140,7 @@
 
 .bigcaret:hover {
 	opacity: 1;
-	color: #blue;
+	color: darkblue;
 }
 
 .switch-button {
@@ -91,4 +149,18 @@
 
 .close-button:hover {
 	opacity: 1;
+}
+
+.groovy_output {
+	color: darkgrey;
+	font-style: italic;
+}
+
+.groovy_result {
+	color: darkblue;
+}
+
+.exception-message {
+	color: darkred;
+	font-weight: bold;
 }
