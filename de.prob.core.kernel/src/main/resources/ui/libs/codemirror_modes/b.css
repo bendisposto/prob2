@@ -1,0 +1,35 @@
+span.cm-b-nothing {
+	color: #000 !important;
+}
+
+span.cm-b-type {
+	color: #990000 !important;
+}
+
+span.cm-b-logical {
+	color: #FF9966 !important;
+}
+
+span.cm-b-assignment {
+	color: #F00 !important;
+}
+
+span.cm-b-operator {
+	color: #2FC7FA !important;
+}
+
+span.cm-b-keyword {
+	color: #0000AA !important;
+}
+
+span.cm-b-controlkeyword {
+	color: #a0a !important;
+}
+
+span.cm-b-unsupported {
+	color: #FF0000 !important;
+}
+
+span.cm-b-comment {
+	color: #CCCCCC !important;
+}
