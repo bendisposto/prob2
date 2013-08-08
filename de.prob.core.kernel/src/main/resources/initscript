@@ -49,6 +49,8 @@ transform = { a1,a2,a3=null ->
 	x
 }
 
+Script.getMetaClass().upgrade = { downloader.downloadCli(it) }
+
 
 /* Redirect print and println to our own buffered console*/
 Script.getMetaClass().print = { s -> __console.append(s) }
