@@ -57,8 +57,10 @@ public class ReflectionServlet extends HttpServlet {
 								.take();
 						if (message != null) { // will filter null values
 							SessionResult res = message.get();
-							if (res != null && res.result != null) {
-								logger.trace("Got Result in Queue: {}", res);
+							if (res != null && res.result != null
+									&& res.result.length > 0) {
+								logger.trace("Got Result in Queue: {}",
+										res.result);
 								res.session.submit(res.result);
 							}
 						}
