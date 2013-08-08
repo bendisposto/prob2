@@ -8,7 +8,6 @@ ValueOverTime = (function() {
     var mode;
     var w = 600;
     var h = 400;
-    var idGen = 1;
 
     $(document).ready(function() {
         $(window).keydown(function(event){
@@ -25,19 +24,6 @@ ValueOverTime = (function() {
             "id" : e.target.id
         })
     });
-
-    $(".add-formula").click(function(e) {
-        e.preventDefault();
-        var id = e.target.parentNode.parentNode.id;
-        addFormula(id,$("#"+id +" input").val());
-    });
-
-    function addFormula(id,formula) {
-        var parentId = "#input-"+id;
-        var nextId = "f" + (idGen++);
-        $("#formulas").append(session.render("/ui/valueOverTime/input_field.html",{id: nextId}));
-        //$(parentId).replaceWith(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}))
-    }
 
     $(".add_expr").click(function(e) {
         e.preventDefault();
@@ -342,10 +328,22 @@ ValueOverTime = (function() {
     function hasFormulaErrors(ids) {
         $(".alert").remove();
         var errormsg = {alertLevel:"alert-danger",strong:"Whoops!",msg:"One or more of your formulas are invalid!"}
-        $("#right-col").prepend(session.render("/ui/valueOverTime/error_msg.html",errormsg));
+        $("form").prepend(session.render("/ui/valueOverTime/error_msg.html",errormsg));
         for (var i = 0; i < ids.length; i++) {
             $("#" + ids[i]).parent().addClass("has-error");
         };
+    }
+
+    function cannotBeEvaluated() {
+        $(".alert").remove();
+        var errormsg = {alertLevel:"",strong:"Warning!",msg:"Cannot evaluate formulas at the given state in the animation!"}
+        $("form").prepend(session.render("/ui/valueOverTime/error_msg.html",errormsg));
+        $("fieldset").prop("disabled", true);
+    }
+
+    function canBeEvaluated() {
+        $(".alert").remove();
+        $("fieldset").prop("disabled",false);
     }
 
     extern.draw = function(data) {
@@ -364,6 +362,8 @@ ValueOverTime = (function() {
     extern.hasFormulaErrors = function(data) {
         hasFormulaErrors(JSON.parse(data.ids));
     }
+    extern.cannotBeEvaluated = cannotBeEvaluated;
+    extern.canBeEvaluated = canBeEvaluated;
     extern.applyStyling = applyStyling;
 
     extern.session = session;

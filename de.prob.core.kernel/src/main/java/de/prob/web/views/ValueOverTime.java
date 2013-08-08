@@ -31,7 +31,6 @@ public class ValueOverTime extends AbstractSession implements
 	private Trace currentTrace;
 	private final AbstractModel model;
 	private String mode = "over";
-	private boolean disabled;
 
 	@Inject
 	public ValueOverTime(final AnimationSelector animations) {
@@ -40,7 +39,6 @@ public class ValueOverTime extends AbstractSession implements
 			throw new AnimationNotLoadedException(
 					"Please load model before opening Value over Time visualization");
 		}
-		disabled = false;
 		model = currentTrace.getModel();
 		animations.registerAnimationChangeListener(this);
 	}
@@ -63,67 +61,67 @@ public class ValueOverTime extends AbstractSession implements
 		if (trace != null
 				&& trace.getStateSpace().equals(model.getStatespace())) {
 			currentTrace = trace;
-			boolean fieldsEnabled = checkIfFieldsAreEnabled();
 			List<Object> result = new ArrayList<Object>();
-			if (fieldsEnabled) {
-				List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
-				IEvalElement time = null;
-				if (testedFormulas.containsKey("time")) {
-					time = formulas.get("time");
-					if (time != null) {
-						timeRes = currentTrace.eval(time);
-					}
+			List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
+			IEvalElement time = null;
+			if (testedFormulas.containsKey("time")) {
+				time = formulas.get("time");
+				if (time != null) {
+					timeRes = currentTrace.eval(time);
 				}
+			}
 
-				for (IEvalElement formula : testedFormulas.values()) {
-					if (!formula.equals(time)) {
-						List<EvaluationResult> results = currentTrace
-								.eval(formula);
-						List<Object> points = new ArrayList<Object>();
+			for (IEvalElement formula : testedFormulas.values()) {
+				if (!formula.equals(time)) {
+					List<EvaluationResult> results = currentTrace.eval(formula);
+					List<Object> points = new ArrayList<Object>();
 
-						if (timeRes.isEmpty()) {
-							int c = 0;
-							for (EvaluationResult it : results) {
-								points.add(wrapPoints(it.getStateId(),
-										extractValue(it.getValue()), c,
-										extractType(it.getValue())));
-								points.add(wrapPoints(it.getStateId(),
-										extractValue(it.getValue()), c + 1,
-										extractType(it.getValue())));
-								c++;
-							}
-						} else if (timeRes.size() == results.size()) {
-							for (EvaluationResult it : results) {
-								int index = results.indexOf(it);
+					if (timeRes.isEmpty()) {
+						int c = 0;
+						for (EvaluationResult it : results) {
+							points.add(wrapPoints(it.getStateId(),
+									extractValue(it.getValue()), c,
+									extractType(it.getValue())));
+							points.add(wrapPoints(it.getStateId(),
+									extractValue(it.getValue()), c + 1,
+									extractType(it.getValue())));
+							c++;
+						}
+					} else if (timeRes.size() == results.size()) {
+						for (EvaluationResult it : results) {
+							int index = results.indexOf(it);
+							points.add(wrapPoints(
+									it.getStateId(),
+									extractValue(it.getValue()),
+									extractValue(timeRes.get(index).getValue()),
+									extractType(it.getValue())));
+							if (index < results.size() - 1) {
 								points.add(wrapPoints(it.getStateId(),
 										extractValue(it.getValue()),
-										extractValue(timeRes.get(index)
+										extractValue(timeRes.get(index + 1)
 												.getValue()), extractType(it
 												.getValue())));
-								if (index < results.size() - 1) {
-									points.add(wrapPoints(it.getStateId(),
-											extractValue(it.getValue()),
-											extractValue(timeRes.get(index + 1)
-													.getValue()),
-											extractType(it.getValue())));
-								}
-
 							}
+
 						}
-
-						Map<String, Object> datum = new HashMap<String, Object>();
-						datum.put("name", formula.getCode());
-						datum.put("dataset", points);
-						result.add(datum);
 					}
-				}
 
-				Map<String, String> wrap = WebUtils.wrap("cmd",
-						"ValueOverTime.draw", "data", WebUtils.toJson(result),
-						"xLabel", time == null ? "Number of Animation Steps"
-								: time.getCode(), "mode", mode);
-				submit(wrap);
+					Map<String, Object> datum = new HashMap<String, Object>();
+					datum.put("name", formula.getCode());
+					datum.put("dataset", points);
+					result.add(datum);
+				}
 			}
+
+			Map<String, String> wrap = WebUtils
+					.wrap("cmd",
+							"ValueOverTime.draw",
+							"data",
+							WebUtils.toJson(result),
+							"xLabel",
+							time == null ? "Number of Animation Steps" : time
+									.getCode(), "mode", mode);
+			submit(wrap);
 		}
 	}
 
@@ -152,23 +150,6 @@ public class ValueOverTime extends AbstractSession implements
 			return 0;
 		}
 		return Integer.parseInt(value);
-	}
-
-	private boolean checkIfFieldsAreEnabled() {
-		boolean canBeEvaluated = currentTrace == null ? false : currentTrace
-				.getStateSpace().canBeEvaluated(currentTrace.getCurrentState());
-		boolean enabled = !disabled;
-		if (!canBeEvaluated && enabled) {
-			disabled = true;
-			submit(WebUtils.wrap("cmd", "ValueOverTime.cannotBeEvaluated"));
-			return false;
-		}
-		if (canBeEvaluated && !enabled) {
-			disabled = false;
-			submit(WebUtils.wrap("cmd", "ValueOverTime.canBeEvaluated"));
-			return true;
-		}
-		return enabled;
 	}
 
 	public Object changeMode(final Map<String, String[]> params) {

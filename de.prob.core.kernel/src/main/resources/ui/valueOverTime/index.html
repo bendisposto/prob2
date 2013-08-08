@@ -10,6 +10,7 @@
     content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/ui/common/bootstrap-glyphicons.css">
 <link rel="stylesheet" href="/ui/valueOverTime/valueOverTime.css">
 
 </head>
@@ -20,19 +21,36 @@
             <div id="visualization"></div>
         </div>
         <div class="col-lg-4" id="right-col">
-            <form>
-                <fieldset>
-                    <div class="form-group">
-                        <label class="control-label" for="time">Time: </label>
-                        <input type="text" class="form-control" id="time" placeholder="Enter formula for Time">
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label" for="inputFormula1">Input Formula1: </label>
-                        <input type="text" class="form-control" id="inputFormula1" placeholder="Enter Formula">
-                    </div>
-                    <button type="button" class="add_expr btn btn-default">Go!</button>
-                </fieldset>
-              </form>
+            <div class="panel">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <legend>Time</legend>
+                        <div class="form-group entry">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="time" placeholder="Enter formula for Time">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">Set</button>
+                                </span>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="panel">
+                <form class="form-horizontal">
+                    <fieldset id="formulas">
+                        <legend>Formulas</legend>
+                        <div class="form-group entry" id="input-f0">
+                            <div class="input-group" id="f0">
+                                <input type="text" class="form-control" placeholder="Enter Formula">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default add-formula" type="button">Add</button>
+                                </span>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
         </div>
     </div>
     </div>
