@@ -22,7 +22,7 @@ ValueOverTime = (function() {
     $(".form-control").keyup(function(e) {
         session.sendCmd("parse", {
             "formula" : e.target.value,
-            "id" : e.target.id
+            "id" : e.target.parentNode.id
         })
     });
 
@@ -32,11 +32,96 @@ ValueOverTime = (function() {
         addFormula(id,$("#"+id +" input").val());
     });
 
+    $("#btn-time").click(function(e) {
+        e.preventDefault();
+        setTime($("#formula-time").val());
+    });
+
+    function setTime(formula) {
+        $("#input-time").replaceWith(session.render("/ui/valueOverTime/formula_entered.html",{id: "time", formula: formula}));
+        $("#edit-time").click(function(e) {
+            e.preventDefault();
+            changeTime(formula);
+        });
+        $("#remove-time").click(function(e) {
+            e.preventDefault();
+            changeTime("");
+        });
+    }
+
+    function changeTime(formula) {
+        $("#input-time").replaceWith(session.render("/ui/valueOverTime/input_field.html",{id: "time", value: formula, text: "Set"}));
+        $("#btn-time").click(function(e) {
+            e.preventDefault();
+            setTime($("#formula-time").val());
+        });
+        $("#formula-time").keyup(function(e) {
+            session.sendCmd("parse", {
+                "formula" : e.target.value,
+                "id" : e.target.parentNode.id
+            })
+        });
+    }
+
     function addFormula(id,formula) {
         var parentId = "#input-"+id;
         var nextId = "f" + (idGen++);
-        $("#formulas").append(session.render("/ui/valueOverTime/input_field.html",{id: nextId}));
-        //$(parentId).replaceWith(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}))
+
+        $("#formulas").append(session.render("/ui/valueOverTime/input_field.html",{id: nextId, value: "", text:"Add"}));
+        $("#btn-"+nextId).click(function(e) {
+            e.preventDefault();
+            var id = e.target.parentNode.parentNode.id;
+            addFormula(id,$("#"+id +" input").val());
+        });
+        $("#formula-"+nextId).keyup(function(e) {
+            session.sendCmd("parse", {
+                "formula" : e.target.value,
+                "id" : e.target.parentNode.id
+            })
+        });
+        $(parentId).replaceWith(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}))
+        $("#edit-"+id).click(function(e) {
+            e.preventDefault();
+            editFormula(id,formula);
+        });
+        $("#remove-"+id).click(function(e) {
+            e.preventDefault();
+            removeFormula(id);
+        })
+    }
+
+    function editFormula(id,formula) {
+        var parentId = "#input-"+id;
+        $(parentId).replaceWith(session.render("/ui/valueOverTime/input_field.html",{id: id, value: formula, text: "Ok"}));
+        $("#btn-"+id).click(function(e) {
+            e.preventDefault();
+            var id = e.target.parentNode.parentNode.id;
+            restoreFormula(id,$("#"+id +" input").val());
+        });
+        $("#formula-"+id).keyup(function(e) {
+            session.sendCmd("parse", {
+                "formula" : e.target.value,
+                "id" : e.target.parentNode.id
+            })
+        });
+    }
+
+    function restoreFormula(id,formula) {
+        var parentId = "#input-"+id;
+        $(parentId).replaceWith(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
+        $("#edit-"+id).click(function(e) {
+            e.preventDefault();
+            editFormula(id,formula);
+        });
+        $("#remove-"+id).click(function(e) {
+            e.preventDefault();
+            removeFormula(id);
+        })
+    }
+
+    function removeFormula(id) {
+        var parentId = "#input-"+id;
+        $(parentId).remove();
     }
 
     $(".add_expr").click(function(e) {
@@ -327,11 +412,13 @@ ValueOverTime = (function() {
     }
 
     function parseOk(id) {
-        $("#" + id).parent().removeClass("has-error")
+        $("#" + id).removeClass("has-error")
+        $("#btn-" + id).prop("disabled",false);
     }
 
     function parseError(id) {
-        $("#" + id).parent().addClass("has-error")
+        $("#" + id).addClass("has-error")
+        $("#btn-" + id).prop("disabled",true);
     }
 
     function formulasAdded() {
