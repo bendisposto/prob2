@@ -29,7 +29,10 @@ ValueOverTime = (function() {
     $(".add-formula").click(function(e) {
         e.preventDefault();
         var id = e.target.parentNode.parentNode.id;
-        addFormula(id,$("#"+id +" input").val());
+        session.sendCmd("addFormula", {
+            "id" : id,
+            "newFormula" : true
+        });
     });
 
     $("#btn-time").click(function(e) {
@@ -63,7 +66,9 @@ ValueOverTime = (function() {
         });
     }
 
-    function addFormula(id,formula) {
+    function formulaAdded(id,formula) {
+        $(".alert").remove();
+        $("#"+id).removeClass("has-error");
         var parentId = "#input-"+id;
         var nextId = "f" + (idGen++);
 
@@ -71,7 +76,10 @@ ValueOverTime = (function() {
         $("#btn-"+nextId).click(function(e) {
             e.preventDefault();
             var id = e.target.parentNode.parentNode.id;
-            addFormula(id,$("#"+id +" input").val());
+            session.sendCmd("addFormula", {
+                "id" : id,
+                "newFormula" : true
+            });
         });
         $("#formula-"+nextId).keyup(function(e) {
             session.sendCmd("parse", {
@@ -86,8 +94,50 @@ ValueOverTime = (function() {
         });
         $("#remove-"+id).click(function(e) {
             e.preventDefault();
-            removeFormula(id);
+            session.sendCmd("removeFormula", {
+                "id" : id
+            });
         })
+    }
+
+    function restoreFormulas(formulas) {
+        var id, formula, idNum;
+        $(".formula").remove();
+        for (var i = 0; i < formulas.length; i++) {
+            id = formulas[i].id;
+            formula = formulas[i].formula;
+            $("#formulas").append(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
+            $("#edit-"+id).click(function(e) {
+                e.preventDefault();
+                editFormula(id,formula);
+            });
+            $("#remove-"+id).click(function(e) {
+                e.preventDefault();
+                session.sendCmd("removeFormula", {
+                    "id" : id
+                });
+            })
+            idNum = parseInt(id.substring(1,id.length));
+            if(idNum > idGen) {
+                idGen = idNum;
+            }
+        };
+        var nextId = "f" + (++idGen);
+        $("#formulas").append(session.render("/ui/valueOverTime/input_field.html",{id: nextId, value: "", text:"Add"}));
+        $("#btn-"+nextId).click(function(e) {
+            e.preventDefault();
+            var id = e.target.parentNode.parentNode.id;
+            session.sendCmd("addFormula", {
+                "id" : id,
+                "newFormula" : true
+            });
+        });
+        $("#formula-"+nextId).keyup(function(e) {
+            session.sendCmd("parse", {
+                "formula" : e.target.value,
+                "id" : e.target.parentNode.id
+            })
+        });
     }
 
     function editFormula(id,formula) {
@@ -96,7 +146,10 @@ ValueOverTime = (function() {
         $("#btn-"+id).click(function(e) {
             e.preventDefault();
             var id = e.target.parentNode.parentNode.id;
-            restoreFormula(id,$("#"+id +" input").val());
+            session.sendCmd("addFormula", {
+                "id" : id,
+                "newFormula" : false
+            });
         });
         $("#formula-"+id).keyup(function(e) {
             session.sendCmd("parse", {
@@ -106,7 +159,9 @@ ValueOverTime = (function() {
         });
     }
 
-    function restoreFormula(id,formula) {
+    function formulaRestored(id,formula) {
+        $(".alert").remove();
+        $("#"+id).removeClass("has-error");
         var parentId = "#input-"+id;
         $(parentId).replaceWith(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
         $("#edit-"+id).click(function(e) {
@@ -115,11 +170,13 @@ ValueOverTime = (function() {
         });
         $("#remove-"+id).click(function(e) {
             e.preventDefault();
-            removeFormula(id);
+            session.sendCmd("removeFormula", {
+                "id" : id
+            });
         })
     }
 
-    function removeFormula(id) {
+    function formulaRemoved(id) {
         var parentId = "#input-"+id;
         $(parentId).remove();
     }
@@ -197,7 +254,7 @@ ValueOverTime = (function() {
         }
 
         session.sendCmd("changeMode", {
-            "mode" : mode
+            "varMode" : mode
         });
     }
 
@@ -426,6 +483,12 @@ ValueOverTime = (function() {
         $(".form-group").removeClass("has-error");
     }
 
+    function error(id, errormsg) {
+        $(".alert").remove();
+        $("#right-col").prepend(session.render("/ui/valueOverTime/error_msg.html",errormsg));
+        $("#"+id).addClass("has-error");
+    }
+
     function hasFormulaErrors(ids) {
         $(".alert").remove();
         var errormsg = {alertLevel:"alert-danger",strong:"Whoops!",msg:"One or more of your formulas are invalid!"}
@@ -436,7 +499,7 @@ ValueOverTime = (function() {
     }
 
     extern.draw = function(data) {
-        mode = data.mode;
+        mode = data.drawMode;
         draw(JSON.parse(data.data),data.xLabel);
     }
     extern.client = ""
@@ -447,9 +510,31 @@ ValueOverTime = (function() {
     extern.parseOk = function(data) {
         parseOk(data.id);
     }
-    extern.formulasAdded = formulasAdded;
+    extern.error = function(data) {
+        error(data.id,data);
+    }
+    extern.formulaAdded = function(data) {
+        formulaAdded(data.id,data.formula);
+        mode = data.drawMode;
+        draw(JSON.parse(data.data),data.xLabel);
+    }
+    extern.formulaRestored = function(data) {
+        formulaRestored(data.id,data.formula);
+        mode = data.drawMode;
+        draw(JSON.parse(data.data),data.xLabel);
+    }
+    extern.formulaRemoved = function(data) {
+        formulaRemoved(data.id);
+        mode = data.drawMode;
+        draw(JSON.parse(data.data),data.xLabel);
+    }
     extern.hasFormulaErrors = function(data) {
         hasFormulaErrors(JSON.parse(data.ids));
+    }
+    extern.restorePage = function(data) {
+        restoreFormulas(JSON.parse(data.formulas));
+        mode = data.drawMode;
+        draw(JSON.parse(data.data),data.xLabel);
     }
     extern.applyStyling = applyStyling;
 
