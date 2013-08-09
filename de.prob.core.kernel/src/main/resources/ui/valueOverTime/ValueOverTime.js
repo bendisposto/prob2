@@ -37,10 +37,13 @@ ValueOverTime = (function() {
 
     $("#btn-time").click(function(e) {
         e.preventDefault();
-        setTime($("#formula-time").val());
+        session.sendCmd("addFormula", {
+            "id" : "time",
+            "newFormula" : true
+        })
     });
 
-    function setTime(formula) {
+    function timeSet(formula) {
         $("#input-time").replaceWith(session.render("/ui/valueOverTime/formula_entered.html",{id: "time", formula: formula}));
         $("#edit-time").click(function(e) {
             e.preventDefault();
@@ -48,7 +51,9 @@ ValueOverTime = (function() {
         });
         $("#remove-time").click(function(e) {
             e.preventDefault();
-            changeTime("");
+            session.sendCmd("removeFormula",{
+                id : "time"
+            });
         });
     }
 
@@ -56,7 +61,10 @@ ValueOverTime = (function() {
         $("#input-time").replaceWith(session.render("/ui/valueOverTime/input_field.html",{id: "time", value: formula, text: "Set"}));
         $("#btn-time").click(function(e) {
             e.preventDefault();
-            setTime($("#formula-time").val());
+            session.sendCmd("addFormula", {
+                "id" : "time",
+                "newFormula" : true
+            })
         });
         $("#formula-time").keyup(function(e) {
             session.sendCmd("parse", {
@@ -524,7 +532,11 @@ ValueOverTime = (function() {
         draw(JSON.parse(data.data),data.xLabel);
     }
     extern.formulaRemoved = function(data) {
-        formulaRemoved(data.id);
+        if(data.id === "time") {
+            changeTime("");
+        } else {
+            formulaRemoved(data.id);
+        }
         mode = data.drawMode;
         draw(JSON.parse(data.data),data.xLabel);
     }
@@ -534,6 +546,14 @@ ValueOverTime = (function() {
     extern.restorePage = function(data) {
         restoreFormulas(JSON.parse(data.formulas));
         mode = data.drawMode;
+        draw(JSON.parse(data.data),data.xLabel);
+    }
+    extern.timeSet = function(data) {
+        if(data.formula === "") {
+            changeTime(data.formula);
+        } else {
+            timeSet(data.formula);            
+        }
         draw(JSON.parse(data.data),data.xLabel);
     }
     extern.applyStyling = applyStyling;
