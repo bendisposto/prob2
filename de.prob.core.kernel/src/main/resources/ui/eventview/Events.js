@@ -10,10 +10,13 @@ Events = (function() {
 		var e = $("#events")
 		e.children().remove()
 		for (el in ops) {
-			e.append('<li operation="' + el + '">' + ops[el] + '</li>')
+			var v = ops[el]
+			v.params = v.params.join(", ")
+			e.append(session.render("/ui/eventview/operation.html", v))
 		}
 		$("li").click(function(e) {
 			var id = e.target.getAttribute("operation")
+			console.log(id)
 			session.sendCmd("execute", {
 				"id" : id,
 				"client" : extern.client

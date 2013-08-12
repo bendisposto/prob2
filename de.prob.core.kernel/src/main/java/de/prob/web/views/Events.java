@@ -1,11 +1,11 @@
 package de.prob.web.views;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.AsyncContext;
 
-import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -20,23 +20,37 @@ import de.prob.web.WebUtils;
 public class Events extends AbstractSession implements IAnimationChangeListener {
 
 	private final AnimationSelector selector;
-	private ArrayList<OpInfo> ops;
 
 	@Inject
 	public Events(AnimationSelector selector) {
 		this.selector = selector;
 		selector.registerAnimationChangeListener(this);
+
+	}
+
+	// used in JS
+	@SuppressWarnings("unused")
+	private static class Operation {
+		public final String name;
+		public final List<String> params;
+		public final String id;
+
+		public Operation(String id, String name, List<String> params) {
+			this.id = id;
+			this.name = name;
+			this.params = params;
+		}
 	}
 
 	@Override
 	public void traceChange(Trace trace) {
-		ops = new ArrayList<OpInfo>();
-		ops.addAll(trace.getNextTransitions());
-		String[] res = new String[ops.size()];
 		int c = 0;
+		Set<OpInfo> ops = trace.getNextTransitions();
+		Operation[] res = new Operation[ops.size()];
 		for (OpInfo opInfo : ops) {
-			res[c++] = opInfo.name + "("
-					+ Joiner.on(", ").join(opInfo.getParams()) + ")";
+			String name = opInfo.name;
+			Operation o = new Operation(opInfo.id, name, opInfo.params);
+			res[c++] = o;
 		}
 		String json = WebUtils.toJson(res);
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.setContent",
@@ -51,9 +65,8 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 
 	public Object execute(Map<String, String[]> params) {
 		String id = params.get("id")[0];
-		OpInfo info = ops.get(Integer.parseInt(id));
 		Trace currentTrace = selector.getCurrentTrace();
-		final Trace newTrace = currentTrace.add(info.id);
+		final Trace newTrace = currentTrace.add(id);
 		selector.replaceTrace(currentTrace, newTrace);
 		return null;
 	}
@@ -62,5 +75,6 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	public void outOfDateCall(String client, int lastinfo, AsyncContext context) {
 		super.outOfDateCall(client, lastinfo, context);
 		traceChange(selector.getCurrentTrace());
+
 	}
 }
