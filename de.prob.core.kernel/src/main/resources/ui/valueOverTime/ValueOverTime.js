@@ -96,10 +96,13 @@ ValueOverTime = (function() {
         $(parentId).replaceWith(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}))
         $("#edit-"+id).click(function(e) {
             e.preventDefault();
+            var id = e.target.parentElement.id;
+            var formula = $("#formula-"+id)[0].textContent;
             editFormula(id,formula);
         });
         $("#remove-"+id).click(function(e) {
             e.preventDefault();
+            var id = e.target.parentElement.id;
             session.sendCmd("removeFormula", {
                 "id" : id
             });
@@ -116,10 +119,13 @@ ValueOverTime = (function() {
                 $("#formulas").prepend(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
                 $("#edit-"+id).click(function(e) {
                     e.preventDefault();
+                    var id = e.target.parentElement.id;
+                    var formula = $("#formula-"+id)[0].textContent;
                     editFormula(id,formula);
                 });
                 $("#remove-"+id).click(function(e) {
                     e.preventDefault();
+                    var id = e.target.parentElement.id;
                     session.sendCmd("removeFormula", {
                         "id" : id
                     });

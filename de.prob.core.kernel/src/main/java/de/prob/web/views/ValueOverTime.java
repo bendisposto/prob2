@@ -105,8 +105,10 @@ public class ValueOverTime extends AbstractSession implements
 			timeRes = currentTrace.eval(time);
 		}
 
-		for (IEvalElement formula : testedFormulas.values()) {
-			if (!formula.equals(time)) {
+		for (Entry<String, IEvalElement> pair : testedFormulas.entrySet()) {
+			String id = pair.getKey();
+			IEvalElement formula = pair.getValue();
+			if (!id.equals("time")) {
 				List<EvaluationResult> results = currentTrace.eval(formula);
 				List<Object> points = new ArrayList<Object>();
 
