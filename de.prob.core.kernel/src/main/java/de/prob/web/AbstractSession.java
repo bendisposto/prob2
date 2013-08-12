@@ -50,7 +50,10 @@ public abstract class AbstractSession implements ISession {
 				@Override
 				public SessionResult call() throws Exception {
 					Object result = method.invoke(delegate, parameterMap);
-					return new SessionResult(delegate, result);
+					if (result instanceof Object[])
+						return new SessionResult(delegate, (Object[]) result);
+					else
+						return new SessionResult(delegate, result);
 				}
 			};
 		} catch (NoSuchMethodException e) {
@@ -85,16 +88,18 @@ public abstract class AbstractSession implements ISession {
 		return strings[0];
 	}
 
+	@Override
 	public void submit(Object... result) {
 		Message message = new Message(responses.size() + 1, result);
-		responses.add(message);
 		String json = WebUtils.toJson(message);
+		logger.trace("Sending: {}", json);
 		synchronized (clients) {
 			for (AsyncContext context : clients) {
 				send(json, context);
 			}
 			clients.clear();
 		}
+		responses.add(message);
 	}
 
 	private void send(String json, AsyncContext context) {

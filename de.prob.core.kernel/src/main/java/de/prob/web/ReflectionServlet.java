@@ -44,6 +44,8 @@ public class ReflectionServlet extends HttpServlet {
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
 
+	private final static String FQN = "(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)+\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*";
+
 	@Inject
 	public ReflectionServlet(@Sessions Map<String, ISession> sessions) {
 		this.sessions = sessions;
@@ -57,8 +59,10 @@ public class ReflectionServlet extends HttpServlet {
 								.take();
 						if (message != null) { // will filter null values
 							SessionResult res = message.get();
-							if (res != null && res.result != null) {
-								logger.trace("Got Result in Queue: {}", res);
+							if (res != null && res.result != null
+									&& res.result.length > 0) {
+								logger.trace("Got Result in Queue: {}",
+										res.result);
 								res.session.submit(res.result);
 							}
 						}
@@ -170,6 +174,9 @@ public class ReflectionServlet extends HttpServlet {
 
 	@SuppressWarnings("unchecked")
 	private Class<ISession> getClass(String servletName) {
+		if (!servletName.matches(FQN)) {
+			servletName = "de.prob.web.views." + servletName;
+		}
 		Class<ISession> clazz = null;
 		try {
 			clazz = (Class<ISession>) Class.forName(servletName);

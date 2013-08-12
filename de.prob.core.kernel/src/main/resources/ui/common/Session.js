@@ -73,6 +73,7 @@ function Session() {
 							if (!(Object.prototype.toString.call(dobjs) === "[object Array]")) {
 								dobjs = [ dobjs ]
 							}
+							console.log("Messages", dobjs)
 							for (i in dobjs) {
 								var dobj = dobjs[i]
 								eval(dobj.cmd)(dobj)
