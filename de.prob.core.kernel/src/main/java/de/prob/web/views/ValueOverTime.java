@@ -238,9 +238,16 @@ public class ValueOverTime extends AbstractSession implements
 						"Sorry!",
 						"The specified formula cannot be evaluated for this model!",
 						"alert-danger");
-			} else {
-				testedFormulas.put(id, formula);
 			}
+			if (!correctType(id, res)) {
+				return sendError(
+						id,
+						"Sorry!",
+						"The specified formula must be of the correct time (Integer for time expression, Integer or boolean for other formula)",
+						"alert-danger");
+			}
+			testedFormulas.put(id, formula);
+
 		} catch (Exception e) {
 			return sendError(
 					id,
@@ -284,6 +291,20 @@ public class ValueOverTime extends AbstractSession implements
 				"xLabel",
 				time == null ? "Number of Animation Steps" : time.getCode(),
 				"drawMode", mode);
+	}
+
+	private boolean correctType(final String id, final EvaluationResult res) {
+		String value = res.getValue();
+		if ((value.equals("TRUE") || value.equals("FALSE"))
+				&& !"time".equals(id)) {
+			return true;
+		}
+		try {
+			Integer.parseInt(value);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	private Map<String, String> sendError(final String id,
