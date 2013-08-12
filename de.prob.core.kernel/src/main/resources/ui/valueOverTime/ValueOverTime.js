@@ -9,6 +9,7 @@ ValueOverTime = (function() {
     var w = 600;
     var h = 400;
 
+
     $(document).ready(function() {
         $(window).keydown(function(event){
             if(event.keyCode == 13) {
@@ -109,31 +110,30 @@ ValueOverTime = (function() {
         })
     }
 
-    function restoreFormulas(formulas) {
+    function restoreFormulas(formulas,time) {
         var id, formula, idNum;
         $(".rendered").remove();
         for (var i = 0; i < formulas.length; i++) {
             id = formulas[i].id;
             formula = formulas[i].formula;
-            if( id !== "time") {
-                $("#formulas").prepend(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
-                $("#edit-"+id).click(function(e) {
-                    e.preventDefault();
-                    var id = e.target.parentElement.id;
-                    var formula = $("#formula-"+id)[0].textContent;
-                    editFormula(id,formula);
+            $("#formulas").prepend(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
+            $("#edit-"+id).click(function(e) {
+                e.preventDefault();
+                var id = e.target.parentElement.id;
+                var formula = $("#formula-"+id)[0].textContent;
+                editFormula(id,formula);
+            });
+            $("#remove-"+id).click(function(e) {
+                e.preventDefault();
+                var id = e.target.parentElement.id;
+                session.sendCmd("removeFormula", {
+                    "id" : id
                 });
-                $("#remove-"+id).click(function(e) {
-                    e.preventDefault();
-                    var id = e.target.parentElement.id;
-                    session.sendCmd("removeFormula", {
-                        "id" : id
-                    });
-                })         
-            } else {
-                timeSet(formula);
-            }
-        };
+            })         
+        }
+        if(time !== "") {
+            timeSet(time);            
+        }
     }
 
     function editFormula(id,formula) {
@@ -511,7 +511,7 @@ ValueOverTime = (function() {
         hasFormulaErrors(JSON.parse(data.ids));
     }
     extern.restorePage = function(data) {
-        restoreFormulas(JSON.parse(data.formulas));
+        restoreFormulas(JSON.parse(data.formulas),data.time);
         mode = data.drawMode;
         draw(JSON.parse(data.data),data.xLabel);
     }

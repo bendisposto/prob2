@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.AsyncContext;
 
@@ -27,8 +27,19 @@ import de.prob.web.WebUtils;
 public class ValueOverTime extends AbstractSession implements
 		IAnimationChangeListener {
 
+	private class FormulaElement {
+		public final String id;
+		public IEvalElement formula;
+
+		public FormulaElement(final String id, final IEvalElement formula) {
+			this.id = id;
+			this.formula = formula;
+		}
+	}
+
 	Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
-	Map<String, IEvalElement> testedFormulas = new HashMap<String, IEvalElement>();
+	List<FormulaElement> testedFormulas = new CopyOnWriteArrayList<ValueOverTime.FormulaElement>();
+	IEvalElement time = null;
 	Logger logger = LoggerFactory.getLogger(ValueOverTime.class);
 	private Trace currentTrace;
 	private final AbstractModel model;
@@ -58,17 +69,13 @@ public class ValueOverTime extends AbstractSession implements
 			final AsyncContext context) {
 		super.outOfDateCall(client, lastinfo, context);
 
-		List<Object> result = new ArrayList<Object>();
-		for (Entry<String, IEvalElement> formula : testedFormulas.entrySet()) {
-			result.add(WebUtils.wrap("id", formula.getKey(), "formula", formula
-					.getValue().getCode()));
-		}
 		List<Object> data = calculateData();
 		IEvalElement time = formulas.get("time");
 
 		Map<String, String> wrap = WebUtils.wrap("cmd",
-				"ValueOverTime.restorePage", "formulas",
-				WebUtils.toJson(result), "data", WebUtils.toJson(data),
+				"ValueOverTime.restorePage", "formulas", WebUtils
+						.toJson(testedFormulas), "time", time == null ? ""
+						: time.getCode(), "data", WebUtils.toJson(data),
 				"xLabel",
 				time == null ? "Number of Animation Steps" : time.getCode(),
 				"drawMode", mode);
@@ -100,14 +107,13 @@ public class ValueOverTime extends AbstractSession implements
 	private List<Object> calculateData() {
 		List<Object> result = new ArrayList<Object>();
 		List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
-		IEvalElement time = testedFormulas.get("time");
 		if (time != null) {
 			timeRes = currentTrace.eval(time);
 		}
 
-		for (Entry<String, IEvalElement> pair : testedFormulas.entrySet()) {
-			String id = pair.getKey();
-			IEvalElement formula = pair.getValue();
+		for (FormulaElement pair : testedFormulas) {
+			String id = pair.id;
+			IEvalElement formula = pair.formula;
 			if (!id.equals("time")) {
 				List<EvaluationResult> results = currentTrace.eval(formula);
 				List<Object> points = new ArrayList<Object>();
@@ -177,27 +183,6 @@ public class ValueOverTime extends AbstractSession implements
 		return Integer.parseInt(value);
 	}
 
-	public Object loadFormulas(final Map<String, String>[] params) {
-		if (testedFormulas.isEmpty()) {
-			return null;
-		}
-
-		List<Object> result = new ArrayList<Object>();
-		for (Entry<String, IEvalElement> formula : testedFormulas.entrySet()) {
-			result.add(WebUtils.wrap("id", formula.getKey(), "formula", formula
-					.getValue().getCode()));
-		}
-		List<Object> data = calculateData();
-		IEvalElement time = formulas.get("time");
-
-		return WebUtils.wrap("cmd", "ValueOverTime.restorePage", "formulas",
-				WebUtils.toJson(result), "data", WebUtils.toJson(data),
-				"xLabel",
-				time == null ? "Number of Animation Steps" : time.getCode(),
-				"drawMode", mode);
-
-	}
-
 	public Object changeMode(final Map<String, String[]> params) {
 		mode = params.get("varMode")[0];
 		return null;
@@ -209,7 +194,7 @@ public class ValueOverTime extends AbstractSession implements
 		IEvalElement formula = formulas.get(id);
 		if (formula == null) {
 			if ("time".equals(id)) {
-				testedFormulas.remove("time");
+				time = null;
 				List<Object> data = calculateData();
 				return WebUtils.wrap("cmd", "ValueOverTime.timeSet", "formula",
 						"", "data", WebUtils.toJson(data), "xLabel",
@@ -243,10 +228,53 @@ public class ValueOverTime extends AbstractSession implements
 				return sendError(
 						id,
 						"Sorry!",
-						"The specified formula must be of the correct time (Integer for time expression, Integer or boolean for other formula)",
+						"The specified formula must be of the correct type (Integer for time expression, Integer or boolean for other formula)",
 						"alert-danger");
 			}
-			testedFormulas.put(id, formula);
+			if ("time".equals(id)) {
+				time = formula;
+				List<Object> data = calculateData();
+				return WebUtils.wrap("cmd", "ValueOverTime.timeSet", "formula",
+						time.getCode(), "data", WebUtils.toJson(data),
+						"xLabel", time.getCode(), "drawMode", mode);
+			}
+			if (newFormula) {
+				testedFormulas.add(new FormulaElement(id, formula));
+				List<Object> data = calculateData();
+				return WebUtils.wrap(
+						"cmd",
+						"ValueOverTime.formulaAdded",
+						"id",
+						id,
+						"formula",
+						formula.getCode(),
+						"nextId",
+						UUID.randomUUID().toString(),
+						"data",
+						WebUtils.toJson(data),
+						"xLabel",
+						time == null ? "Number of Animation Steps" : time
+								.getCode(), "drawMode", mode);
+			}
+			for (FormulaElement f : testedFormulas) {
+				if (f.id.equals(id)) {
+					f.formula = formula;
+				}
+			}
+			List<Object> data = calculateData();
+
+			return WebUtils
+					.wrap("cmd",
+							"ValueOverTime.formulaRestored",
+							"id",
+							id,
+							"formula",
+							formula.getCode(),
+							"data",
+							WebUtils.toJson(data),
+							"xLabel",
+							time == null ? "Number of Animation Steps" : time
+									.getCode(), "drawMode", mode);
 
 		} catch (Exception e) {
 			return sendError(
@@ -256,41 +284,6 @@ public class ValueOverTime extends AbstractSession implements
 							+ e.getClass().getSimpleName(), "alert-danger");
 		}
 
-		List<Object> data = calculateData();
-		IEvalElement time = testedFormulas.get("time");
-		if ("time".equals(id)) {
-			return WebUtils
-					.wrap("cmd",
-							"ValueOverTime.timeSet",
-							"formula",
-							time.getCode(),
-							"data",
-							WebUtils.toJson(data),
-							"xLabel",
-							time == null ? "Number of Animation Steps" : time
-									.getCode(), "drawMode", mode);
-		}
-		if (newFormula) {
-			return WebUtils
-					.wrap("cmd",
-							"ValueOverTime.formulaAdded",
-							"id",
-							id,
-							"formula",
-							formula.getCode(),
-							"nextId",
-							UUID.randomUUID().toString(),
-							"data",
-							WebUtils.toJson(data),
-							"xLabel",
-							time == null ? "Number of Animation Steps" : time
-									.getCode(), "drawMode", mode);
-		}
-		return WebUtils.wrap("cmd", "ValueOverTime.formulaRestored", "id", id,
-				"formula", formula.getCode(), "data", WebUtils.toJson(data),
-				"xLabel",
-				time == null ? "Number of Animation Steps" : time.getCode(),
-				"drawMode", mode);
 	}
 
 	private boolean correctType(final String id, final EvaluationResult res) {
@@ -334,10 +327,17 @@ public class ValueOverTime extends AbstractSession implements
 
 	public Object removeFormula(final Map<String, String[]> params) {
 		String id = params.get("id")[0];
-		testedFormulas.remove(id);
 		formulas.remove(id);
+		if ("time".equals(id)) {
+			time = null;
+		} else {
+			for (FormulaElement element : testedFormulas) {
+				if (element.id.equals("id")) {
+					testedFormulas.remove(element);
+				}
+			}
+		}
 		List<Object> data = calculateData();
-		IEvalElement time = testedFormulas.get("time");
 		return WebUtils.wrap("cmd", "ValueOverTime.formulaRemoved", "id", id,
 				"data", WebUtils.toJson(data), "xLabel",
 				time == null ? "Number of Animation Steps" : time.getCode(),
