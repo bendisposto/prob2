@@ -53,9 +53,24 @@ public class ValueOverTime extends AbstractSession implements
 	@Override
 	public void outOfDateCall(final String client, final int lastinfo,
 			final AsyncContext context) {
-
 		super.outOfDateCall(client, lastinfo, context);
-		traceChange(currentTrace);
+
+		List<Object> result = new ArrayList<Object>();
+		for (Entry<String, IEvalElement> formula : testedFormulas.entrySet()) {
+			result.add(WebUtils.wrap("id", formula.getKey(), "formula", formula
+					.getValue().getCode()));
+		}
+		List<Object> data = calculateData();
+		IEvalElement time = formulas.get("time");
+
+		Map<String, String> wrap = WebUtils.wrap("cmd",
+				"ValueOverTime.restorePage", "formulas",
+				WebUtils.toJson(result), "data", WebUtils.toJson(data),
+				"xLabel",
+				time == null ? "Number of Animation Steps" : time.getCode(),
+				"drawMode", mode);
+
+		submit(wrap);
 
 	}
 
@@ -298,6 +313,6 @@ public class ValueOverTime extends AbstractSession implements
 		return WebUtils.wrap("cmd", "ValueOverTime.formulaRemoved", "id", id,
 				"data", WebUtils.toJson(data), "xLabel",
 				time == null ? "Number of Animation Steps" : time.getCode(),
-				"mode", mode);
+				"drawMode", mode);
 	}
 }

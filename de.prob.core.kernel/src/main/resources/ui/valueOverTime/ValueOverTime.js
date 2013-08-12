@@ -8,7 +8,7 @@ ValueOverTime = (function() {
     var mode;
     var w = 600;
     var h = 400;
-    var idGen = 1;
+    var idGen = -1;
 
     $(document).ready(function() {
         $(window).keydown(function(event){
@@ -114,23 +114,28 @@ ValueOverTime = (function() {
         for (var i = 0; i < formulas.length; i++) {
             id = formulas[i].id;
             formula = formulas[i].formula;
-            $("#formulas").append(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
-            $("#edit-"+id).click(function(e) {
-                e.preventDefault();
-                editFormula(id,formula);
-            });
-            $("#remove-"+id).click(function(e) {
-                e.preventDefault();
-                session.sendCmd("removeFormula", {
-                    "id" : id
+            if( id !== "time") {
+                $("#formulas").append(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
+                $("#edit-"+id).click(function(e) {
+                    e.preventDefault();
+                    editFormula(id,formula);
                 });
-            })
-            idNum = parseInt(id.substring(1,id.length));
-            if(idNum > idGen) {
-                idGen = idNum;
+                $("#remove-"+id).click(function(e) {
+                    e.preventDefault();
+                    session.sendCmd("removeFormula", {
+                        "id" : id
+                    });
+                })
+                idNum = parseInt(id.substring(1,id.length));
+                if(idNum > idGen) {
+                    idGen = idNum;
+                }           
+            } else {
+                timeSet(formula);
             }
         };
-        var nextId = "f" + (++idGen);
+        idGen++;
+        var nextId = "f" + (idGen++);
         $("#formulas").append(session.render("/ui/valueOverTime/input_field.html",{id: nextId, value: "", text:"Add"}));
         $("#btn-"+nextId).click(function(e) {
             e.preventDefault();
