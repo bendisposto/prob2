@@ -85,7 +85,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private final HashSet<StateId> invariantKo = new HashSet<StateId>();
 	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
 	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
-	private IAnimator animator2;
+	private final IAnimator animator2;
 
 	@Inject
 	public StateSpace(final Provider<IAnimator> panimator,
@@ -93,6 +93,16 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		super(graphProvider.get());
 		this.animator = panimator.get();
 		this.animator2 = panimator.get();
+		lastCalculatedStateId = -1;
+	}
+
+	public StateSpace(final IAnimator animator,
+			final DirectedMultigraphProvider graphProvider) {
+		// FIXME Hack to make the test run again. We should get rid of this
+		// constructor by fixing the test
+		super(graphProvider.get());
+		this.animator = animator;
+		this.animator2 = animator;
 		lastCalculatedStateId = -1;
 	}
 
