@@ -113,7 +113,7 @@ ValueOverTime = (function() {
     function restoreFormulas(formulas,time) {
         var id, formula, idNum;
         $(".rendered").remove();
-        for (var i = 0; i < formulas.length; i++) {
+        for (var i = formulas.length - 1; i >= 0; i--) {
             id = formulas[i].id;
             formula = formulas[i].formula;
             $("#formulas").prepend(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));

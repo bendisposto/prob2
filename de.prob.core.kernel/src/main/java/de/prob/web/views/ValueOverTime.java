@@ -72,14 +72,20 @@ public class ValueOverTime extends AbstractSession implements
 			final AsyncContext context) {
 		super.outOfDateCall(client, lastinfo, context);
 
+		List<Object> result = new ArrayList<Object>();
+		for (FormulaElement formula : testedFormulas) {
+			result.add(WebUtils.wrap("id", formula.id, "formula",
+					formula.formula.getCode()));
+		}
+
 		List<Object> data = calculateData();
 		IEvalElement time = formulas.get("time");
 
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"ValueOverTime.restorePage", "formulas", WebUtils
-						.toJson(testedFormulas), "time", time == null ? ""
-						: time.getCode(), "data", WebUtils.toJson(data),
-				"xLabel",
+						.toJson(result), "time",
+				time == null ? "" : time.getCode(), "data", WebUtils
+						.toJson(data), "xLabel",
 				time == null ? "Number of Animation Steps" : time.getCode(),
 				"drawMode", mode);
 
