@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -47,7 +48,9 @@ public class ValueOverTime extends AbstractSession implements
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
-		return simpleRender(clientid, "ui/valueOverTime/index.html");
+		Object scope = WebUtils.wrap("clientid", clientid, "id", UUID
+				.randomUUID().toString());
+		return WebUtils.render("ui/valueOverTime/index.html", scope);
 	}
 
 	@Override
@@ -266,6 +269,8 @@ public class ValueOverTime extends AbstractSession implements
 							id,
 							"formula",
 							formula.getCode(),
+							"nextId",
+							UUID.randomUUID().toString(),
 							"data",
 							WebUtils.toJson(data),
 							"xLabel",

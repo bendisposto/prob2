@@ -8,7 +8,6 @@ ValueOverTime = (function() {
     var mode;
     var w = 600;
     var h = 400;
-    var idGen = -1;
 
     $(document).ready(function() {
         $(window).keydown(function(event){
@@ -74,11 +73,10 @@ ValueOverTime = (function() {
         });
     }
 
-    function formulaAdded(id,formula) {
+    function formulaAdded(id,formula,nextId) {
         $(".alert").remove();
         $("#"+id).removeClass("has-error");
         var parentId = "#input-"+id;
-        var nextId = "f" + (idGen++);
 
         $("#formulas").append(session.render("/ui/valueOverTime/input_field.html",{id: nextId, value: "", text:"Add"}));
         $("#btn-"+nextId).click(function(e) {
@@ -110,12 +108,12 @@ ValueOverTime = (function() {
 
     function restoreFormulas(formulas) {
         var id, formula, idNum;
-        $(".formula").remove();
+        $(".rendered").remove();
         for (var i = 0; i < formulas.length; i++) {
             id = formulas[i].id;
             formula = formulas[i].formula;
             if( id !== "time") {
-                $("#formulas").append(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
+                $("#formulas").prepend(session.render("/ui/valueOverTime/formula_entered.html",{id: id, formula: formula}));
                 $("#edit-"+id).click(function(e) {
                     e.preventDefault();
                     editFormula(id,formula);
@@ -125,32 +123,11 @@ ValueOverTime = (function() {
                     session.sendCmd("removeFormula", {
                         "id" : id
                     });
-                })
-                idNum = parseInt(id.substring(1,id.length));
-                if(idNum > idGen) {
-                    idGen = idNum;
-                }           
+                })         
             } else {
                 timeSet(formula);
             }
         };
-        idGen++;
-        var nextId = "f" + (idGen++);
-        $("#formulas").append(session.render("/ui/valueOverTime/input_field.html",{id: nextId, value: "", text:"Add"}));
-        $("#btn-"+nextId).click(function(e) {
-            e.preventDefault();
-            var id = e.target.parentNode.parentNode.id;
-            session.sendCmd("addFormula", {
-                "id" : id,
-                "newFormula" : true
-            });
-        });
-        $("#formula-"+nextId).keyup(function(e) {
-            session.sendCmd("parse", {
-                "formula" : e.target.value,
-                "id" : e.target.parentNode.id
-            })
-        });
     }
 
     function editFormula(id,formula) {
@@ -193,13 +170,6 @@ ValueOverTime = (function() {
         var parentId = "#input-"+id;
         $(parentId).remove();
     }
-
-    $(".add_expr").click(function(e) {
-        e.preventDefault();
-        session.sendCmd("addFormula", {
-            "client" : extern.client
-        })
-    })
 
     function draw(dataset,xLabel) {
         clearCanvas();
@@ -491,24 +461,10 @@ ValueOverTime = (function() {
         $("#btn-" + id).prop("disabled",true);
     }
 
-    function formulasAdded() {
-        $(".alert").remove();
-        $(".form-group").removeClass("has-error");
-    }
-
     function error(id, errormsg) {
         $(".alert").remove();
         $("#right-col").prepend(session.render("/ui/valueOverTime/error_msg.html",errormsg));
         $("#"+id).addClass("has-error");
-    }
-
-    function hasFormulaErrors(ids) {
-        $(".alert").remove();
-        var errormsg = {alertLevel:"alert-danger",strong:"Whoops!",msg:"One or more of your formulas are invalid!"}
-        $("#right-col").prepend(session.render("/ui/valueOverTime/error_msg.html",errormsg));
-        for (var i = 0; i < ids.length; i++) {
-            $("#" + ids[i]).parent().addClass("has-error");
-        };
     }
 
     extern.draw = function(data) {
@@ -527,7 +483,7 @@ ValueOverTime = (function() {
         error(data.id,data);
     }
     extern.formulaAdded = function(data) {
-        formulaAdded(data.id,data.formula);
+        formulaAdded(data.id,data.formula,data.nextId);
         mode = data.drawMode;
         draw(JSON.parse(data.data),data.xLabel);
     }
