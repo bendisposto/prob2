@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.AsyncContext;
@@ -37,9 +38,11 @@ public class ValueOverTime extends AbstractSession implements
 		}
 	}
 
-	Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
 	List<FormulaElement> testedFormulas = new CopyOnWriteArrayList<ValueOverTime.FormulaElement>();
 	IEvalElement time = null;
+
+	Map<String, IEvalElement> formulas = new ConcurrentHashMap<String, IEvalElement>();
+
 	Logger logger = LoggerFactory.getLogger(ValueOverTime.class);
 	private Trace currentTrace;
 	private final AbstractModel model;
@@ -231,6 +234,7 @@ public class ValueOverTime extends AbstractSession implements
 						"The specified formula must be of the correct type (Integer for time expression, Integer or boolean for other formula)",
 						"alert-danger");
 			}
+
 			if ("time".equals(id)) {
 				time = formula;
 				List<Object> data = calculateData();
@@ -262,7 +266,6 @@ public class ValueOverTime extends AbstractSession implements
 				}
 			}
 			List<Object> data = calculateData();
-
 			return WebUtils
 					.wrap("cmd",
 							"ValueOverTime.formulaRestored",
