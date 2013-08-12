@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<title>LTL editor</title>
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, maximum-scale=1">
+		
+<!-- CSS -->
+	<link rel="stylesheet" href="/ui/common/codemirror.css">
+	<link rel="stylesheet" href="/ui/common/bootstrap.css">
+	<link rel="stylesheet" href="/ui/ltl/editor.css">
+	
+<!-- JavaScript -->
+	<script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+	<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+	<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
+	<script type="text/javascript" src="/ui/common/Session.js"></script>
+	<script type="text/javascript" src="/ui/ltl/LtlEditor.js"></script>
+</head>
+<body style="height: 100%;">
+	<textarea id="code" name="code">
+def pattern(v, n:num, s:seq): v
+var v: true
+num n: (5)
+seq s: (FG(true), false without true)
+count i: 1 up to n:
+    v: v | seq(s without true)
+end
+var x: pattern({abc}, n, s)
+x: x or v
+
+var e1: not G(F(X(true)))
+var e2: ! H(O(Y(false)))
+var e3: GFXHOY(sink)
+var e4: current U deadlock
+var e5: e(sth) W [sth] and {pred}
+var e6: e1 R e2 & after({q}, true)
+var e7: before({r}, e2 S e3) T between({q}, {r}, e4 => (e5 or e6 | false)) 
+
+after_until({q}, {r}, x)</textarea>
+	<a class="parse-click">Parse formula</a>
+	<script>
+		var settings = {
+			lineNumbers: true,
+			matchBrackets: true,
+			continueComments: "Enter",
+			extraKeys: {"Ctrl-Q": "toggleComment"},
+			gutters: ["CodeMirror-linenumbers", "markers"]
+		};
+		
+		LtlEditor.codeMirror = CodeMirror.fromTextArea(document.getElementById("code"), settings);
+		LtlEditor.client = "{{clientid}}";
+		LtlEditor.init("{{clientid}}");
+		//LtlEditor.registerParseClick(".parse-click");
+		LtlEditor.registerChangeHandlers();
+		LtlEditor.parseInput();
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+.CodeMirror {
+	border: 1px solid #F1F1F1;
+}
+
+.CodeMirror-gutters {
+    padding-bottom: 0;
+	background-color: #F1F1F1;
+	border-right: 1px solid #F1F1F1;
+}
+
+.markers { 
+	width: 16px;
+	background-color: #FCFCFC;
+}
+.warning { 
+	background-image: url(/ui/ltl/icon_warning.gif); 
+	height: 16px; 
+}
+
+.error { 
+	background-image: url(/ui/ltl/icon_error.gif);
+	height: 16px; 
+}
