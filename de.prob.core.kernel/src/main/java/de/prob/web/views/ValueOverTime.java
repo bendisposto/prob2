@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.AsyncContext;
 
@@ -27,8 +28,8 @@ import de.prob.web.WebUtils;
 public class ValueOverTime extends AbstractSession implements
 		IAnimationChangeListener {
 
-	Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
-	Map<String, IEvalElement> testedFormulas = new HashMap<String, IEvalElement>();
+	Map<String, IEvalElement> formulas = new ConcurrentHashMap<String, IEvalElement>();
+	Map<String, IEvalElement> testedFormulas = new ConcurrentHashMap<String, IEvalElement>();
 	Logger logger = LoggerFactory.getLogger(ValueOverTime.class);
 	private Trace currentTrace;
 	private final AbstractModel model;
@@ -37,10 +38,9 @@ public class ValueOverTime extends AbstractSession implements
 	@Inject
 	public ValueOverTime(final AnimationSelector animations) {
 		currentTrace = animations.getCurrentTrace();
-		if (currentTrace == null) {
+		if (currentTrace == null)
 			throw new AnimationNotLoadedException(
 					"Please load model before opening Value over Time visualization");
-		}
 		model = currentTrace.getModel();
 		animations.registerAnimationChangeListener(this);
 	}
@@ -161,26 +161,22 @@ public class ValueOverTime extends AbstractSession implements
 	}
 
 	private String extractType(final String value) {
-		if (value.equals("TRUE") || value.equals("FALSE")) {
+		if (value.equals("TRUE") || value.equals("FALSE"))
 			return "BOOL";
-		}
 		return "INT";
 	}
 
 	private Integer extractValue(final String value) {
-		if (value.equals("TRUE")) {
+		if (value.equals("TRUE"))
 			return 1;
-		}
-		if (value.equals("FALSE")) {
+		if (value.equals("FALSE"))
 			return 0;
-		}
 		return Integer.parseInt(value);
 	}
 
 	public Object loadFormulas(final Map<String, String>[] params) {
-		if (testedFormulas.isEmpty()) {
+		if (testedFormulas.isEmpty())
 			return null;
-		}
 
 		List<Object> result = new ArrayList<Object>();
 		for (Entry<String, IEvalElement> formula : testedFormulas.entrySet()) {
@@ -225,27 +221,24 @@ public class ValueOverTime extends AbstractSession implements
 
 		try {
 			EvaluationResult res = currentTrace.evalCurrent(formula);
-			if (res == null) {
+			if (res == null)
 				return sendError(
 						id,
 						"Warning!",
 						"Could not add formula because it is not possible to assert the validity of the formula at this state in the animation",
 						"");
-			}
-			if (res.hasError()) {
+			if (res.hasError())
 				return sendError(
 						id,
 						"Sorry!",
 						"The specified formula cannot be evaluated for this model!",
 						"alert-danger");
-			}
-			if (!correctType(id, res)) {
+			if (!correctType(id, res))
 				return sendError(
 						id,
 						"Sorry!",
 						"The specified formula must be of the correct time (Integer for time expression, Integer or boolean for other formula)",
 						"alert-danger");
-			}
 			testedFormulas.put(id, formula);
 
 		} catch (Exception e) {
@@ -258,7 +251,7 @@ public class ValueOverTime extends AbstractSession implements
 
 		List<Object> data = calculateData();
 		IEvalElement time = testedFormulas.get("time");
-		if ("time".equals(id)) {
+		if ("time".equals(id))
 			return WebUtils
 					.wrap("cmd",
 							"ValueOverTime.timeSet",
@@ -269,8 +262,7 @@ public class ValueOverTime extends AbstractSession implements
 							"xLabel",
 							time == null ? "Number of Animation Steps" : time
 									.getCode(), "drawMode", mode);
-		}
-		if (newFormula) {
+		if (newFormula)
 			return WebUtils
 					.wrap("cmd",
 							"ValueOverTime.formulaAdded",
@@ -285,7 +277,6 @@ public class ValueOverTime extends AbstractSession implements
 							"xLabel",
 							time == null ? "Number of Animation Steps" : time
 									.getCode(), "drawMode", mode);
-		}
 		return WebUtils.wrap("cmd", "ValueOverTime.formulaRestored", "id", id,
 				"formula", formula.getCode(), "data", WebUtils.toJson(data),
 				"xLabel",
@@ -296,9 +287,8 @@ public class ValueOverTime extends AbstractSession implements
 	private boolean correctType(final String id, final EvaluationResult res) {
 		String value = res.getValue();
 		if ((value.equals("TRUE") || value.equals("FALSE"))
-				&& !"time".equals(id)) {
+				&& !"time".equals(id))
 			return true;
-		}
 		try {
 			Integer.parseInt(value);
 			return true;
