@@ -341,7 +341,7 @@ public class ValueOverTime extends AbstractSession implements
 			time = null;
 		} else {
 			for (FormulaElement element : testedFormulas) {
-				if (element.id.equals("id")) {
+				if (element.id.equals(id)) {
 					testedFormulas.remove(element);
 				}
 			}
