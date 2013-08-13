@@ -122,7 +122,7 @@ public abstract class AbstractSession implements ISession {
 	@Override
 	public void registerClient(String client, int lastinfo, AsyncContext context) {
 		logger.trace("Register {} Lastinfo {}", client, lastinfo);
-		if (lastinfo < responses.size()) {
+		if (lastinfo == -1) {
 			outOfDateCall(client, lastinfo, context);
 		} else {
 			registerContext(context);
