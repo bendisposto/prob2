@@ -523,7 +523,6 @@ ValueOverTime = (function() {
         }
         draw(JSON.parse(data.data),data.xLabel);
     }
-    extern.applyStyling = applyStyling;
 
     extern.session = session;
 
