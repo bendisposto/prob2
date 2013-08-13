@@ -20,7 +20,13 @@ LtlEditor = (function() {
 			var line = marker.line - 1;
 			var lineInfo = extern.codeMirror.lineInfo(line);
 			extern.codeMirror.setGutterMarker(line, "markers", makeMarker(lineInfo, marker.type, marker.msg));
+			setTextMarker(marker);
 		}
+	}
+	
+	function clearMarkers() {
+		extern.codeMirror.clearGutter("markers");	
+		removeTextMarkers();
 	}
 	
 	function makeMarker(lineInfo, type, msg) {
@@ -36,8 +42,33 @@ LtlEditor = (function() {
 		return marker;
 	}
 	
-	function clearMarkers() {
-		extern.codeMirror.clearGutter("markers");	
+	function setTextMarker(marker) {
+		var line = marker.line - 1;
+		
+		var from = {
+			line: line, 
+			ch: marker.pos
+		};
+		
+		var to = {
+			line: line, 
+			ch: marker.pos + marker.length
+		};
+		
+		var options = {
+			className: marker.type + '-underline', 
+			title: marker.msg
+		};
+		
+		extern.codeMirror.markText(from, to, options);
+	}
+	
+	function removeTextMarkers() {
+		var marks = extern.codeMirror.getAllMarks();
+		for (var key in marks) {
+			var mark = marks[key];
+			mark.clear();
+		}
 	}
 	
 	// Extern 	
