@@ -1,6 +1,9 @@
 package de.prob.web.views;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.servlet.AsyncContext;
 
@@ -13,6 +16,7 @@ import de.prob.animator.command.ExpandFormulaCommand;
 import de.prob.animator.command.InsertFormulaForVisualizationCommand;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.ExpandedFormula;
 import de.prob.animator.domainobjects.FormulaId;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.AnimationSelector;
@@ -31,6 +35,7 @@ public class FormulaView extends AbstractSession implements
 	private IEvalElement formula;
 	private FormulaId setFormula;
 	private final StateSpace currentStateSpace;
+	private final Set<String> collapsedNodes = new CopyOnWriteArraySet<String>();
 
 	@Inject
 	public FormulaView(final AnimationSelector animations) {
@@ -53,6 +58,13 @@ public class FormulaView extends AbstractSession implements
 	public void outOfDateCall(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.outOfDateCall(client, lastinfo, context);
+		if (formula != null) {
+			Object data = calculateData();
+			Map<String, String> wrap = WebUtils.wrap("cmd",
+					"FormulaView.formulaSet", "formula", formula.getCode(),
+					"data", WebUtils.toJson(data));
+			submit(wrap);
+		}
 
 	}
 
@@ -61,8 +73,9 @@ public class FormulaView extends AbstractSession implements
 		if (currentTrace != null
 				&& currentTrace.getStateSpace().equals(currentStateSpace)) {
 			Object data = calculateData();
-			WebUtils.wrap("cmd", "FormulaView.draw", "data",
-					WebUtils.toJson(data));
+			Map<String, String> wrap = WebUtils.wrap("cmd", "FormulaView.draw",
+					"data", WebUtils.toJson(data));
+			submit(wrap);
 		}
 	}
 
@@ -71,7 +84,9 @@ public class FormulaView extends AbstractSession implements
 			ExpandFormulaCommand cmd = new ExpandFormulaCommand(setFormula,
 					currentTrace.getCurrentState().getId());
 			currentStateSpace.execute(cmd);
-			return cmd.getResult();
+			ExpandedFormula result = cmd.getResult();
+			result.collapseNodes(new HashSet<String>(collapsedNodes));
+			return result;
 		}
 		return null;
 	}
@@ -135,6 +150,20 @@ public class FormulaView extends AbstractSession implements
 	public Object removeFormula(final Map<String, String[]> params) {
 		formula = null;
 		return WebUtils.wrap("cmd", "FormulaView.formulaRemoved");
+	}
+
+	public Object collapseNode(final Map<String, String[]> params) {
+		String id = params.get("formulaId")[0];
+
+		collapsedNodes.add(id);
+		return null;
+	}
+
+	public Object expandNode(final Map<String, String[]> params) {
+		String id = params.get("formulaId")[0];
+
+		collapsedNodes.remove(id);
+		return null;
 	}
 
 }

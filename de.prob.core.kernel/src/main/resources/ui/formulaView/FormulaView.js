@@ -147,13 +147,13 @@ FormulaView = (function() {
             .attr("class", "node")
             .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
             .on("click", function(d) { toggle(d); update(root, d, i, diagonal); })
-            .attr("id", function(d) { return "node" + d.fId; });
+            .attr("id", function(d) { return "node" + d.id; });
 
         nodeEnter.append("svg:rect")
                     .attr("height",60)
                     .attr("y",-30)
                     .attr("rx",10)
-                    .attr("id",function(d) { return "r"+d.fId})
+                    .attr("id",function(d) { return "r"+d.id})
                     .style("fill", function(d) { return calcColor(d); })
                     .style("stroke", function(d) { return colorMain(d); })
                     .style("stroke-width", 1e-6);
@@ -168,11 +168,11 @@ FormulaView = (function() {
             .attr("id", function(d) {
                 var textW = this.getBBox().width;
                 var newX = hasChildren(d) ? -(textW+20) : 0;
-                d3.select("#r"+d.fId)
+                d3.select("#r"+d.id)
                     .attr("width",textW+20)
                     .attr("x",newX);
                 d["tW"] = textW;
-                return "t"+d.fId;
+                return "t"+d.id;
             });
 
         nodeEnter.append("svg:text")
@@ -186,12 +186,12 @@ FormulaView = (function() {
                 var textW = this.getBBox().width;
                 if(textW > d.tW) {
                   var newX = hasChildren(d) ? -(textW+20) : 0;
-                  d3.select("#r"+d.fId)
+                  d3.select("#r"+d.id)
                     .attr("width",textW+20)
                     .attr("x",newX);
                   d["tW"] = textW;
                 }
-                return "v"+d.fId;
+                return "v"+d.id;
             });
 
         var main = root.name;
@@ -202,9 +202,9 @@ FormulaView = (function() {
             }
             var boxH = 30 + rootName.length * 15;
             var upperLimit = -(boxH / 2);
-            var rootNode = vis.select("#node" + root.fId);
+            var rootNode = vis.select("#node" + root.id);
 
-            var rootRect = rootNode.select("#r"+root.fId)
+            var rootRect = rootNode.select("#r"+root.id)
                 .attr("height", 30 + rootName.length * 15)
                 .attr("y", upperLimit);
 
@@ -227,7 +227,7 @@ FormulaView = (function() {
                         if( tW > textW ) {
                             textW = tW;
                         }
-                        return "t"+ root.fId + rootName.indexOf(d) ;
+                        return "t"+ root.id + rootName.indexOf(d) ;
                     });
             console.log(textW);
 
@@ -243,7 +243,7 @@ FormulaView = (function() {
                     if(tW > textW) {
                       textW = tW;
                     }
-                    return "v" + root.fId;
+                    return "v" + root.id;
                 });
 
             root.tW = textW;
@@ -327,9 +327,15 @@ FormulaView = (function() {
         if (d.children) {
             d._children = d.children;
             d.children = null;
+            session.sendCmd("collapseNode",{
+                "formulaId" : d.id
+            });
         } else {
             d.children = d._children;
             d._children = null;
+            session.sendCmd("expandNode", {
+                "formulaId" : d.id
+            });
         }
     }
     
@@ -344,12 +350,13 @@ FormulaView = (function() {
     }
     extern.formulaSet = function(data) {
         formulaSet(data.formula);
-        draw(data.data);
+        draw(JSON.parse(data.data));
     }
     extern.parseOk = parseOk;
     extern.parseError = parseError;
     extern.formulaRemoved = function() {
         editFormula("");
+        draw(null);
     };
     extern.draw = function(data) {
         draw(JSON.parse(data.data));

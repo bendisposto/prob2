@@ -2,6 +2,7 @@ package de.prob.animator.domainobjects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gson.Gson;
 
@@ -14,8 +15,9 @@ public class ExpandedFormula {
 
 	private String name;
 	private Object value;
-	// private String fId;
+	private String id;
 	private List<ExpandedFormula> children;
+	private List<ExpandedFormula> _children = null;
 
 	public ExpandedFormula(final CompoundPrologTerm cpt) {
 		init(cpt);
@@ -27,7 +29,7 @@ public class ExpandedFormula {
 		PrologTerm v = cpt.getArgument(2);
 		value = getValue(v);
 		// Children
-		// fId = cpt.getArgument(3).getFunctor();
+		id = cpt.getArgument(3).getFunctor();
 
 		ListPrologTerm list = BindingGenerator.getList(cpt.getArgument(4));
 		if (!list.isEmpty()) {
@@ -42,10 +44,11 @@ public class ExpandedFormula {
 	private Object getValue(final PrologTerm v) {
 		if (v.getFunctor().equals("p")) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
-			if (cpt.getArgument(1).getFunctor().equals("true"))
+			if (cpt.getArgument(1).getFunctor().equals("true")) {
 				return Boolean.TRUE;
-			else
+			} else {
 				return Boolean.FALSE;
+			}
 		} else if (v.getFunctor().equals("v")) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
 			return cpt.getArgument(1).getFunctor();
@@ -66,10 +69,41 @@ public class ExpandedFormula {
 		return children;
 	}
 
+	public String getId() {
+		return id;
+	}
+
 	@Override
 	public String toString() {
 		Gson gson = new Gson();
 		return gson.toJson(this);
+	}
+
+	public void toggle() {
+		if (children != null) {
+			_children = children;
+			children = null;
+		} else {
+			children = _children;
+			_children = null;
+		}
+	}
+
+	public void collapseNodes(final Set<String> collapsedNodes) {
+		if (collapsedNodes.contains(id)) {
+			toggle();
+			collapsedNodes.remove(id);
+		}
+		if (children == null && _children == null) {
+			return;
+		}
+		if (collapsedNodes.isEmpty()) {
+			return;
+		}
+		List<ExpandedFormula> kids = children == null ? _children : children;
+		for (ExpandedFormula expandedFormula : kids) {
+			expandedFormula.collapseNodes(collapsedNodes);
+		}
 	}
 
 }
