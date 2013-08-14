@@ -13,6 +13,7 @@
 		
 <!-- CSS -->
 	<link rel="stylesheet" href="/ui/common/codemirror.css">
+	<link rel="stylesheet" href="/ui/common/show-hint.css">
 	<link rel="stylesheet" href="/ui/common/bootstrap.css">
 	<link rel="stylesheet" href="/ui/ltl/editor.css">
 	
@@ -20,8 +21,10 @@
 	<script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
 	<script type="text/javascript" src="/ui/libs/mustache.js"></script>
 	<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+	<script type="text/javascript" src="/ui/libs/show-hint.js"></script>
 	<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
 	<script type="text/javascript" src="/ui/common/Session.js"></script>
+	<script type="text/javascript" src="/ui/ltl/ltl-hint.js"></script>
 	<script type="text/javascript" src="/ui/ltl/LtlEditor.js"></script>
 </head>
 <body style="height: 100%;">
@@ -49,12 +52,12 @@ after_until({q}, {r}, x)</textarea>
 		var settings = {
 			lineNumbers: true,
 			matchBrackets: true,
+			extraKeys: {"Ctrl-Space": "autocomplete"},
 			gutters: ["CodeMirror-linenumbers", "markers"]
 		};
 		
-		LtlEditor.codeMirror = CodeMirror.fromTextArea(document.getElementById("code"), settings);
-		LtlEditor.client = "{{clientid}}";
-		LtlEditor.init("{{clientid}}");
+		var cm = CodeMirror.fromTextArea(document.getElementById("code"), settings);
+		LtlEditor.init("{{clientid}}", cm);
 		LtlEditor.registerChangeHandlers();
 		LtlEditor.enableOperandHighlighting();
     </script>

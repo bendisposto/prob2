@@ -90,7 +90,24 @@ public class LtlEditor extends AbstractSession {
 		return result;
 	}
 
-	private void parse(String input, ParseListener listener) {
+	public Object getAutoCompleteList(Map<String, String[]> params) {
+		logger.trace("Get auto complete list at the passed position");
+
+		String line = get(params, "line");
+		String ch = get(params, "ch");
+		String input = get(params, "input");
+
+		// TODO fill words list
+		List<String> words = new LinkedList<String>();
+		words.add("test");
+		words.add("words");
+		words.add("list");
+
+		return WebUtils.wrap(
+				"cmd", "LtlEditor.showHint",
+				"words", WebUtils.toJson(words));
+	}
+	private void parse(String input, ParseListener listener) {
 		LtlParser parser = new LtlParser(input);
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);

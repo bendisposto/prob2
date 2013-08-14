@@ -1,6 +1,7 @@
 LtlEditor = (function() {
 	var extern = {};
 	var session = Session();
+	
 	var delay;
 	var highlightDelay;
 
@@ -10,13 +11,13 @@ LtlEditor = (function() {
 	
 	function parseInput() {
 		session.sendCmd("parseInput", {
-			"input" : extern.codeMirror.getValue(),
+			"input" : extern.cm.getValue(),
 			"client" : extern.client
 		});
 	}
 	
 	function getExpressionAtCursorPosition() {
-		var cursor = extern.codeMirror.getCursor();
+		var cursor = extern.cm.getCursor();
 		var pos = (cursor.line + 1) + "-" + cursor.ch;
 		session.sendCmd("getExpressionAtPosition", {
 			"pos" : pos,
@@ -30,9 +31,9 @@ LtlEditor = (function() {
 			var mark = marker.mark;
 			
 			var line = mark.line - 1;
-			var lineInfo = extern.codeMirror.lineInfo(line);
+			var lineInfo = extern.cm.lineInfo(line);
 			// Gutter marker
-			extern.codeMirror.setGutterMarker(line, "markers", makeGutterMarker(lineInfo, marker.type, marker.msg));
+			extern.cm.setGutterMarker(line, "markers", makeGutterMarker(lineInfo, marker.type, marker.msg));
 			// Text marker
 			var options = {
 				className: marker.type + '-underline', 
@@ -56,12 +57,12 @@ LtlEditor = (function() {
 	}
 	
 	function clearMarkers() {
-		extern.codeMirror.clearGutter("markers");	
+		extern.cm.clearGutter("markers");	
 		removeTextMarkers(["error-underline", "warning-underline"]);
 	}
 	
 	function removeTextMarkers(classes) {
-		var marks = extern.codeMirror.getAllMarks();
+		var marks = extern.cm.getAllMarks();
 		for (var i = 0; i < marks.length; i++) {
 			var mark = marks[i];
 			if ($.inArray(mark.className, classes) != -1) {
@@ -81,7 +82,7 @@ LtlEditor = (function() {
 			line: line, 
 			ch: mark.pos + mark.length
 		};	
-		extern.codeMirror.markText(from, to, options);
+		extern.cm.markText(from, to, options);
 	}
 	
 	function highlightOperand(expression) {		
@@ -96,17 +97,27 @@ LtlEditor = (function() {
 		clearTimeout(highlightDelay);
 		highlightDelay = setTimeout(getExpressionAtCursorPosition, ms);	
 	}
+	function autocomplete(cm) {
+		var cursor = cm.getCursor();
+		
+		session.sendCmd("getAutoCompleteList", {
+			"line" : cursor.line,
+			"ch" : cursor.ch,
+			"input" : cm.getValue(),
+			"client" : extern.client
+		});
+	}
 	
 	// Extern 	
 	extern.registerChangeHandlers = function() {
-		extern.codeMirror.on("change", function(cm, obj) {
+		extern.cm.on("change", function(cm, obj) {
 			clearTimeout(delay);
 			delay = setTimeout(parseInput, 500);
 		});
 	}
 	
 	extern.enableOperandHighlighting = function() {
-		extern.codeMirror.on("cursorActivity", function(cm) {
+		extern.cm.on("cursorActivity", function(cm) {
 			refreshOperandHighlighting(500);
 		});
 	}
@@ -133,10 +144,20 @@ LtlEditor = (function() {
 		removeTextMarkers(["operator", "operand"]);
 	}
 	
-	extern.client = "";
-	extern.codeMirror = null;
-	extern.init = session.init;
-	extern.parseInput = parseInput	
-
+	extern.showHint = function(data) {
+		var options = {
+			words : JSON.parse(data.words)
+		};
+		CodeMirror.showHint(extern.cm, CodeMirror.hint.ltl, options);		
+	}
+	
+	extern.init = function(client, cm) {
+		extern.client = client;
+		session.init(client);
+		extern.cm = cm;
+		
+		CodeMirror.commands.autocomplete = autocomplete;
+	}
+	
 	return extern;
 }())
