@@ -3,16 +3,12 @@ package de.prob.check.ltl;
 public class Marker {
 
 	private String type;
-	private int line;
-	private int pos;
-	private int length;
+	private Mark mark;
 	private String msg;
 
 	public Marker(String type, int line, int pos, int length, String msg) {
 		this.type = type;
-		this.line = line;
-		this.pos = pos;
-		this.length = length;
+		this.mark = new Mark(line, pos, length);
 		this.msg = msg;
 	}
 
@@ -24,28 +20,12 @@ public class Marker {
 		this.type = type;
 	}
 
-	public int getLine() {
-		return line;
+	public Mark getMark() {
+		return mark;
 	}
 
-	public void setLine(int line) {
-		this.line = line;
-	}
-
-	public int getPos() {
-		return pos;
-	}
-
-	public void setPos(int pos) {
-		this.pos = pos;
-	}
-
-	public int getLength() {
-		return length;
-	}
-
-	public void setLength(int length) {
-		this.length = length;
+	public void setMark(Mark mark) {
+		this.mark = mark;
 	}
 
 	public String getMsg() {

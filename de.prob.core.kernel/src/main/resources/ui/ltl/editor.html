@@ -45,22 +45,18 @@ var e6: e1 R e2 & after({q}, true)
 var e7: before({r}, e2 S e3) T between({q}, {r}, e4 => (e5 or e6 | false)) 
 
 after_until({q}, {r}, x)</textarea>
-	<a class="parse-click">Parse formula</a>
 	<script>
 		var settings = {
 			lineNumbers: true,
 			matchBrackets: true,
-			continueComments: "Enter",
-			extraKeys: {"Ctrl-Q": "toggleComment"},
 			gutters: ["CodeMirror-linenumbers", "markers"]
 		};
 		
 		LtlEditor.codeMirror = CodeMirror.fromTextArea(document.getElementById("code"), settings);
 		LtlEditor.client = "{{clientid}}";
 		LtlEditor.init("{{clientid}}");
-		//LtlEditor.registerParseClick(".parse-click");
 		LtlEditor.registerChangeHandlers();
-		LtlEditor.parseInput();
+		LtlEditor.enableOperandHighlighting();
     </script>
 </body>
 </html>

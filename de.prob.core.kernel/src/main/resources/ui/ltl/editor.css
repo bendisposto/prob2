@@ -29,3 +29,11 @@
 .error-underline {
 	background: url(/ui/ltl/error_underline.gif) bottom repeat-x;
 }
+
+.operator {
+	background-color: #CAEDED;
+}
+
+.operand{
+	background-color: #F0F0F0;
+}
