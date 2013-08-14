@@ -1,12 +1,11 @@
 CodeMirror.defineMode("ltl", function() {
-
-	var symbols = /[!&|=]/;
 	
 	var keywordGroups = { 
-		"def": words("def count up down to end without seq num var"),
-		"builtin": words("before after between after_until"),
+		"keyword": words("def count up down to end without seq num var"),
+		"scope": words("before after between after_until"),
 		"atom": words("true false sink deadlock current"),  
-		"keyword": words("not and or G F N H O Y U W R S T")
+		"ltl": words("G F X N H O Y U W R S T"),  
+		"boolean": words("not and or")
 	};
 	
 	function words(str) {
@@ -45,6 +44,7 @@ CodeMirror.defineMode("ltl", function() {
 		return "comment";
 	}
 
+
 	return {
 		startState: function() {
 			return {
@@ -76,12 +76,15 @@ CodeMirror.defineMode("ltl", function() {
 						return null;
 					}
 					return "number";
-				}  else if (symbols.test(stream.peek())) {
+				}  else if (/[!&|=]/.test(stream.peek())) {
 					// Boolean operator symbols
 					if (stream.next() == '=' && !stream.eat('>')) {
 						return null;
 					}
-					return "keyword";
+					return "boolean";
+				} else if (stream.eatWhile(/[GFXHOY]+/)) {
+					// Combined unary ltl operator
+					return "ltl";
 				} else {
 					// Keywords
 					return keyword(stream, state);

@@ -37,3 +37,28 @@
 .operand{
 	background-color: #F0F0F0;
 }
+
+/* Syntax highlighting */
+.cm-s-default .cm-comment {
+    color: #3F7F5F;
+}
+
+.cm-s-default .cm-keyword {
+	color: #7F0055;
+    font-weight: bold;
+    line-height: 1em;
+}
+
+.cm-s-default .cm-atom , .cm-s-default .cm-number {
+    color: #33AA33;
+}
+
+.cm-s-default .cm-ltl, .cm-s-default .cm-boolean {
+    color: #00AAAA;
+}
+
+.cm-s-default .cm-scope {
+	color: #221199;
+    font-weight: bold;
+    line-height: 1em;
+}
