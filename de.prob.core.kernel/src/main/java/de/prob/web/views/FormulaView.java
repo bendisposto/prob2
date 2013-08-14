@@ -31,7 +31,7 @@ public class FormulaView extends AbstractSession implements
 		IAnimationChangeListener {
 
 	Logger logger = LoggerFactory.getLogger(FormulaView.class);
-	private final Trace currentTrace;
+	private Trace currentTrace;
 	private IEvalElement formula;
 	private FormulaId setFormula;
 	private final StateSpace currentStateSpace;
@@ -70,6 +70,7 @@ public class FormulaView extends AbstractSession implements
 
 	@Override
 	public void traceChange(final Trace trace) {
+		currentTrace = trace;
 		if (currentTrace != null
 				&& currentTrace.getStateSpace().equals(currentStateSpace)) {
 			Object data = calculateData();
