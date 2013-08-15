@@ -21,7 +21,18 @@ public class Query implements IPrologTermOutput {
 
 
     static {
-        System.loadLibrary("query");
+    	String osString = System.getProperty("os.name");
+		String os = osString.toLowerCase();
+		String extension;
+		if (os.indexOf("win") >= 0) {
+			extension = "dll";
+			System.load(Main.PROB_HOME + "bin\\sprt4-2-1.dll");
+		} else if (os.indexOf("mac") >= 0) {
+			extension = "bundle";
+		}  else {
+			extension = "so";
+		}
+        System.load(Main.PROB_HOME + "/libquery." + extension);
         init(Main.PROB_HOME + "/probcli.sav");
     }
 	
