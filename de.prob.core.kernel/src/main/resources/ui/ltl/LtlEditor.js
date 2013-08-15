@@ -97,12 +97,24 @@ LtlEditor = (function() {
 		clearTimeout(highlightDelay);
 		highlightDelay = setTimeout(getExpressionAtCursorPosition, ms);	
 	}
+	
 	function autocomplete(cm) {
+		var WORD = /[\w$]+/;
 		var cursor = cm.getCursor();
+		var lineInfo = cm.getLine(cursor.line);
+		
+		// Find characters before cursor that belong to the current word
+		var start = cursor.ch; 
+		while (start && WORD.test(lineInfo.charAt(start - 1))) --start;	
+		var startsWith = "";
+		if (start != cursor.ch) {
+			startsWith = lineInfo.slice(start, cursor.ch);
+		}
 		
 		session.sendCmd("getAutoCompleteList", {
 			"line" : cursor.line,
 			"ch" : cursor.ch,
+			"startsWith" : startsWith,
 			"input" : cm.getValue(),
 			"client" : extern.client
 		});

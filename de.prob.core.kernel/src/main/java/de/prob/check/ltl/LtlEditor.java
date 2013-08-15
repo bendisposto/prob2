@@ -1,6 +1,9 @@
 package de.prob.check.ltl;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,8 @@ import de.prob.ltl.parser.LtlParser.UnaryCombinedExprContext;
 import de.prob.ltl.parser.LtlParser.UntilExprContext;
 import de.prob.ltl.parser.LtlParser.WeakuntilExprContext;
 import de.prob.ltl.parser.LtlParser.YesterdayExprContext;
+import de.prob.ltl.parser.pattern.PatternManager;
+import de.prob.ltl.parser.semantic.PatternDefinition;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -42,6 +47,18 @@ public class LtlEditor extends AbstractSession {
 	private final Logger logger = LoggerFactory.getLogger(LtlEditor.class);
 	private List<Expression> expressions = new LinkedList<Expression>();
 	private Map<String, Expression> expressionMap = new HashMap<String, Expression>();
+	private PatternManager patternManager = new PatternManager();
+
+	private final List<String> keywords = Arrays.asList(new String []{
+			"true", "false", "sink", "deadlock", "current",
+			"def", "var", "seq", "num",
+			"count", "up", "down", "to", "end",
+			"before", "after", "between", "after_until",
+			"without",
+			"not", "and", "or", "=>",
+			"G", "F", "X", "H", "O", "Y",
+			"U", "R", "W", "S", "T"
+	});
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
@@ -93,25 +110,53 @@ public class LtlEditor extends AbstractSession {
 	public Object getAutoCompleteList(Map<String, String[]> params) {
 		logger.trace("Get auto complete list at the passed position");
 
-		String line = get(params, "line");
-		String ch = get(params, "ch");
+		//String line = get(params, "line");
+		//String ch = get(params, "ch");
+		String startsWith = get(params, "startsWith");
 		String input = get(params, "input");
-
-		// TODO fill words list
-		List<String> words = new LinkedList<String>();
-		words.add("test");
-		words.add("words");
-		words.add("list");
 
 		return WebUtils.wrap(
 				"cmd", "LtlEditor.showHint",
-				"words", WebUtils.toJson(words));
+				"words", WebUtils.toJson(getCompletionList(input, startsWith)));
+	}
+
+	private List<String> getCompletionList(String input, String startsWith) {
+		// Keywords
+		List<String> words = new LinkedList<String>(keywords);
+
+		LtlParser parser = new LtlParser(input);
+		parser.removeErrorListeners();
+		parser.setPatternManager(patternManager);
+		parser.parse();
+
+		// Add patterns
+		List<PatternDefinition> patterns = parser.getSymbolTableManager().getAllPatternDefinitions();
+		for (PatternDefinition pattern : patterns) {
+			String name = pattern.getSimpleName();
+			if (!words.contains(name) && name.startsWith(startsWith)) {
+				words.add(name);
+			}
+		}
+		// TODO add vars
+
+		// Remove words that do not start with 'startsWith'
+		Iterator<String> it = words.iterator();
+		while (it.hasNext()) {
+			if (!it.next().startsWith(startsWith)) {
+				it.remove();
+			}
+		}
+
+		Collections.sort(words);
+
+		return words;
 	}
 	private void parse(String input, ParseListener listener) {
 		LtlParser parser = new LtlParser(input);
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
 		parser.addWarningListener(listener);
+		parser.setPatternManager(patternManager);
 
 		parser.parse();
 
