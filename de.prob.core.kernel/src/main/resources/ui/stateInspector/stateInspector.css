@@ -1,0 +1,24 @@
+li {
+    list-style-type: none;
+}
+
+.component {
+    font-weight: bold;
+}
+
+.heading {
+    font-style: italic;
+}
+
+.inner-list li:nth-child(odd) {
+    background-color: white;
+}
+
+.inner-list li:nth-child(even) {
+    background-color: #f3f6ff;
+}
+
+span {
+    display: inline-block;
+    width: 300px;
+}

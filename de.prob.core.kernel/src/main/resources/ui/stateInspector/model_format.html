@@ -1,0 +1,19 @@
+<ul id="content">
+    {{#components}}
+    <li>
+        <div class="component">{{label}}</div>
+        {{#children}}
+        <ul>
+            <li>
+                <div class="heading">{{label}}</div>
+                <ul>
+                    {{#children}}
+                    <li class="entry" id="{{id}}"><span class="code">{{code}}</span></li>
+                    {{/children}}
+                </ul>
+            </li>
+        </ul>
+        {{/children}}
+    </li>
+    {{/components}}
+</ul>

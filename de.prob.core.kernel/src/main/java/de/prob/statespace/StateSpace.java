@@ -91,8 +91,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public StateSpace(final Provider<IAnimator> panimator,
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
-		this.animator = panimator.get();
-		this.animator2 = panimator.get();
+		animator = panimator.get();
+		animator2 = panimator.get();
 		lastCalculatedStateId = -1;
 	}
 
@@ -102,7 +102,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		// constructor by fixing the test
 		super(graphProvider.get());
 		this.animator = animator;
-		this.animator2 = animator;
+		animator2 = animator;
 		lastCalculatedStateId = -1;
 	}
 
@@ -119,9 +119,10 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @param state
 	 */
 	public String explore(final StateId state) {
-		if (!containsVertex(state))
+		if (!containsVertex(state)) {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
+		}
 
 		final ExploreStateCommand command = new ExploreStateCommand(
 				state.getId(), subscribedFormulas);
@@ -194,8 +195,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	public String explore(final int i) {
-		if (i == -1)
+		if (i == -1) {
 			return explore("root");
+		}
 		final String si = String.valueOf(i);
 		return explore(si);
 	}
@@ -301,10 +303,12 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return true if state has an invariant violation. False otherwise.
 	 */
 	public boolean hasInvariantViolation(final StateId state) {
-		if (invariantKo.contains(state))
+		if (invariantKo.contains(state)) {
 			return true;
-		if (invariantOk.contains(state))
+		}
+		if (invariantOk.contains(state)) {
 			return false;
+		}
 
 		if (!isExplored(state)) {
 			explore(state);
@@ -319,8 +323,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return returns if a specific state is explored
 	 */
 	public boolean isExplored(final StateId state) {
-		if (!containsVertex(state))
+		if (!containsVertex(state)) {
 			throw new IllegalArgumentException("Unknown State id");
+		}
 		return explored.contains(state);
 	}
 
@@ -344,10 +349,12 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 */
 	public List<EvaluationResult> eval(final StateId stateId,
 			final List<IEvalElement> code) {
-		if (!containsVertex(stateId))
+		if (!containsVertex(stateId)) {
 			throw new IllegalArgumentException("state does not exist");
-		if (code.isEmpty())
+		}
+		if (code.isEmpty()) {
 			return new ArrayList<EvaluationResult>();
+		}
 
 		// Check to see if there are any cached results for the given StateId
 		Map<IEvalElement, EvaluationResult> map = values.get(stateId);
@@ -399,8 +406,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @param state
 	 */
 	private void evaluateFormulas(final StateId state) {
-		if (!canBeEvaluated(state))
+		if (!canBeEvaluated(state)) {
 			return;
+		}
 
 		EvaluateRegisteredFormulasCommand cmd = new EvaluateRegisteredFormulasCommand(
 				state.getId(), subscribedFormulas);
@@ -424,19 +432,25 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 *         objects
 	 */
 	public Map<IEvalElement, EvaluationResult> valuesAt(final StateId stateId) {
-		if (values.containsKey(stateId))
+		if (values.containsKey(stateId)
+				&& values.get(stateId).keySet().size() == subscribedFormulas
+						.size()) {
 			return values.get(stateId);
+		}
 		if (canBeEvaluated(stateId)) {
 			evaluateFormulas(stateId);
+			return values.get(stateId);
 		}
 		return new HashMap<IEvalElement, EvaluationResult>();
 	}
 
 	public boolean canBeEvaluated(final StateId stateId) {
-		if (cannotBeEvaluated.contains(stateId))
+		if (cannotBeEvaluated.contains(stateId)) {
 			return false;
-		if (initializedStates.contains(stateId))
+		}
+		if (initializedStates.contains(stateId)) {
 			return true;
+		}
 		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(
 				stateId.getId());
 		execute(cmd);
@@ -712,22 +726,27 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return the Model or Trace corresponding to the StateSpace instance
 	 */
 	public Object asType(final Class<?> className) {
-		if (className.getSimpleName().equals("AbstractModel"))
+		if (className.getSimpleName().equals("AbstractModel")) {
 			return model;
+		}
 		if (className.getSimpleName().equals("EventBModel")) {
-			if (model instanceof EventBModel)
+			if (model instanceof EventBModel) {
 				return model;
+			}
 		}
 		if (className.getSimpleName().equals("ClassicalBModel")) {
-			if (model instanceof ClassicalBModel)
+			if (model instanceof ClassicalBModel) {
 				return model;
+			}
 		}
 		if (className.getSimpleName().equals("CSPModel")) {
-			if (model instanceof CSPModel)
+			if (model instanceof CSPModel) {
 				return model;
+			}
 		}
-		if (className.getSimpleName().equals("Trace"))
+		if (className.getSimpleName().equals("Trace")) {
 			return new Trace(this);
+		}
 		throw new ClassCastException("An element of class " + className
 				+ " was not found");
 	}
@@ -752,8 +771,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		if (that instanceof Integer) {
 			id = getVertex(String.valueOf(that));
 		}
-		if (id != null)
+		if (id != null) {
 			return id;
+		}
 		throw new IllegalArgumentException(
 				"StateSpace does not contain vertex " + that);
 	}
