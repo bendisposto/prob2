@@ -7,7 +7,7 @@ Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional,
- org.rodinp.core;bundle-version="[1.6.1,2.0.0)",
+ org.rodinp;bundle-version="[1.6.1,2.0.0)",
  org.eventb.core;bundle-version="2.5.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
