@@ -45,9 +45,9 @@ public class StateInspector extends AbstractSession implements
 	}
 
 	@Override
-	public void outOfDateCall(final String client, final int lastinfo,
+	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.outOfDateCall(client, lastinfo, context);
+		super.reload(client, lastinfo, context);
 
 		if (currentModel != null && currentTrace != null) {
 			Map<String, Object> extracted = extractModel(currentModel);

@@ -55,9 +55,9 @@ public class FormulaView extends AbstractSession implements
 	}
 
 	@Override
-	public void outOfDateCall(final String client, final int lastinfo,
+	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.outOfDateCall(client, lastinfo, context);
+		super.reload(client, lastinfo, context);
 		if (formula != null) {
 			Object data = calculateData();
 			Map<String, String> wrap = WebUtils.wrap("cmd",

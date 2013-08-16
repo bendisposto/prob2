@@ -121,12 +121,22 @@ public abstract class AbstractSession implements ISession {
 
 	@Override
 	public void registerClient(String client, int lastinfo, AsyncContext context) {
-		logger.trace("Register {} Lastinfo {}", client, lastinfo);
+		logger.trace("Register {} Lastinfo {} size {}", new Object[] { client,
+				lastinfo, responses.size() });
+
 		if (lastinfo == -1) {
-			outOfDateCall(client, lastinfo, context);
+			reload(client, lastinfo, context);
+		} else if (lastinfo < responses.size()) {
+			resend(client, lastinfo, context);
 		} else {
 			registerContext(context);
 		}
+	}
+
+	private void resend(String client, int lastinfo, AsyncContext context) {
+		Message message = responses.get(lastinfo);
+		String json = WebUtils.toJson(message);
+		send(json, context);
 	}
 
 	@Override
@@ -135,7 +145,7 @@ public abstract class AbstractSession implements ISession {
 	}
 
 	@Override
-	public void outOfDateCall(String client, int lastinfo, AsyncContext context) {
+	public void reload(String client, int lastinfo, AsyncContext context) {
 		// Default is to not send old messages
 		registerContext(context);
 	}

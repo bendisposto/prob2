@@ -191,8 +191,8 @@ public class Worksheet extends AbstractSession {
 	}
 
 	@Override
-	public void outOfDateCall(String client, int lastinfo, AsyncContext context) {
-		super.outOfDateCall(client, lastinfo, context);
+	public void reload(String client, int lastinfo, AsyncContext context) {
+		super.reload(client, lastinfo, context);
 		Box box = appendFreshBox();
 		Map<String, String> renderCmd = box.createMessage();
 		Map<String, String> focusCmd = WebUtils.wrap("cmd", "Worksheet.focus",
