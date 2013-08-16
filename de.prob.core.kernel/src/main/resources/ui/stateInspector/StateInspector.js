@@ -44,6 +44,9 @@ StateInspector = (function() {
     function updateValues(values) {
         for (var i = 0; i < values.length; i++) {
             $("#"+values[i].id).replaceWith(session.render("/ui/stateInspector/entry_format.html",values[i]));
+            if(values[i].current !== values[i].previous) {
+                $("#"+values[i].id).addClass("changed");
+            }
         };
     }
 
