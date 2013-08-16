@@ -2,6 +2,19 @@
 	border: 1px solid #F1F1F1;
 }
 
+div.CodeMirror span.CodeMirror-matchingbracket {
+	color: black;
+	background-color: #E0E0E0;
+	font-weight: bold;
+}
+
+div.CodeMirror span.CodeMirror-nonmatchingbracket {
+	color: black;
+	background-color: #e05151;
+	font-weight: bold;
+}
+
+/* Error / warning marks */
 .CodeMirror-gutters {
     padding-bottom: 0;
 	background-color: #F1F1F1;

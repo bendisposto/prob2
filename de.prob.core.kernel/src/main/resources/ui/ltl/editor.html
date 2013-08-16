@@ -22,6 +22,8 @@
 	<script type="text/javascript" src="/ui/libs/mustache.js"></script>
 	<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
 	<script type="text/javascript" src="/ui/libs/show-hint.js"></script>
+	<script type="text/javascript" src="/ui/libs/matchbrackets.js"></script>
+	<script type="text/javascript" src="/ui/libs/closebrackets.js"></script>
 	<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
 	<script type="text/javascript" src="/ui/common/Session.js"></script>
 	<script type="text/javascript" src="/ui/ltl/ltl-hint.js"></script>
@@ -52,6 +54,7 @@ after_until({q}, {r}, x)</textarea>
 		var settings = {
 			lineNumbers: true,
 			matchBrackets: true,
+			autoCloseBrackets: true,
 			extraKeys: {"Ctrl-Space": "autocomplete"},
 			gutters: ["CodeMirror-linenumbers", "markers"]
 		};
