@@ -158,7 +158,7 @@ LtlEditor = (function() {
 	
 	extern.showHint = function(data) {
 		var options = {
-			words : JSON.parse(data.words)
+			hints : JSON.parse(data.hints)
 		};
 		CodeMirror.showHint(extern.cm, CodeMirror.hint.ltl, options);		
 	}

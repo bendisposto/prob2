@@ -1,6 +1,5 @@
 package de.prob.check.ltl;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,16 +48,28 @@ public class LtlEditor extends AbstractSession {
 	private Map<String, Expression> expressionMap = new HashMap<String, Expression>();
 	private PatternManager patternManager = new PatternManager();
 
-	private final List<String> keywords = Arrays.asList(new String []{
-			"true", "false", "sink", "deadlock", "current",
+	private final String[] KEYWORDS = {
 			"def", "var", "seq", "num",
 			"count", "up", "down", "to", "end",
-			"before", "after", "between", "after_until",
 			"without",
-			"not", "and", "or", "=>",
+	};
+
+	private final String[] SCOPES = {
+			"before", "after", "between", "after_until"
+	};
+
+	private final String[] BOOLEAN = {
+			"not", "and", "or", "=>"
+	};
+
+	private final String[] LTL_ATOMS = {
+			"true", "false", "sink", "deadlock", "current"
+	};
+
+	private final String[] LTL_OPERATORS = {
 			"G", "F", "X", "H", "O", "Y",
 			"U", "R", "W", "S", "T"
-	});
+	};
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
@@ -117,12 +128,18 @@ public class LtlEditor extends AbstractSession {
 
 		return WebUtils.wrap(
 				"cmd", "LtlEditor.showHint",
-				"words", WebUtils.toJson(getCompletionList(input, startsWith)));
+				"hints", WebUtils.toJson(getCompletionList(input, startsWith)));
 	}
 
-	private List<String> getCompletionList(String input, String startsWith) {
+	private List<Hint> getCompletionList(String input, String startsWith) {
 		// Keywords
-		List<String> words = new LinkedList<String>(keywords);
+		List<Hint> hints = new LinkedList<Hint>();
+
+		addHint(hints, "keyword", KEYWORDS);
+		addHint(hints, "scope", SCOPES);
+		addHint(hints, "boolean", BOOLEAN);
+		addHint(hints, "atom", LTL_ATOMS);
+		addHint(hints, "operator", LTL_OPERATORS);
 
 		LtlParser parser = new LtlParser(input);
 		parser.removeErrorListeners();
@@ -133,23 +150,33 @@ public class LtlEditor extends AbstractSession {
 		List<PatternDefinition> patterns = parser.getSymbolTableManager().getAllPatternDefinitions();
 		for (PatternDefinition pattern : patterns) {
 			String name = pattern.getSimpleName();
-			if (!words.contains(name) && name.startsWith(startsWith)) {
-				words.add(name);
+			Hint hint = new Hint(name, "pattern");
+			if (!hints.contains(hint)) {
+				hints.add(hint);
 			}
 		}
 		// TODO add vars
 
 		// Remove words that do not start with 'startsWith'
-		Iterator<String> it = words.iterator();
+		Iterator<Hint> it = hints.iterator();
 		while (it.hasNext()) {
-			if (!it.next().startsWith(startsWith)) {
+			if (!it.next().getText().startsWith(startsWith)) {
 				it.remove();
 			}
 		}
 
-		Collections.sort(words);
+		Collections.sort(hints);
 
-		return words;
+		return hints;
+	}
+
+	private void addHint(List<Hint> hints, String type, String[] words) {
+		for (String word : words) {
+			Hint hint = new Hint(word, type);
+			if (!hints.contains(hint)) {
+				hints.add(hint);
+			}
+		}
 	}
 	private void parse(String input, ParseListener listener) {
 		LtlParser parser = new LtlParser(input);

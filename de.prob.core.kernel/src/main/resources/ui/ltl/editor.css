@@ -62,3 +62,23 @@
     font-weight: bold;
     line-height: 1em;
 }
+
+/* Hint */
+.CodeMirror-hint  {
+	white-space: nowrap;
+}
+
+.CodeMirror-hint span {
+	display: block;
+}
+
+.CodeMirror-hint span.text {
+	float: left;
+	margin-right: 10px;
+}
+
+.CodeMirror-hint span.type {
+	float: right;
+	color: silver;
+	text-transform: capitalize;
+}
