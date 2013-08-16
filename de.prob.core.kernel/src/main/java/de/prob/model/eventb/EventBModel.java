@@ -10,6 +10,7 @@ import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.EventBTranslator;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
@@ -41,6 +42,17 @@ public class EventBModel extends AbstractModel {
 
 	public void setModelFile(final File modelFile) {
 		this.modelFile = modelFile;
+	}
+
+	public void initialize(final String file) {
+		EventBTranslator translator = new EventBTranslator(file);
+		graph = translator.getGraph();
+		modelFile = translator.getModelFile();
+		mainComponent = translator.getMainComponent();
+		components = translator.getComponents();
+		put(Machine.class, translator.getMachines());
+		put(Context.class, translator.getContexts());
+		statespace.setModel(this);
 	}
 
 	public void isFinished() {
