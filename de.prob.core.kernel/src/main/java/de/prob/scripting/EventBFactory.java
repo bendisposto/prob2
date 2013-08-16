@@ -28,6 +28,12 @@ public class EventBFactory {
 		this.modelProvider = modelProvider;
 	}
 
+	public EventBModel load(final String file) {
+		EventBModel model = modelProvider.get();
+		model.initialize(file);
+		return model;
+	}
+
 	public EventBModel load(final AbstractElement mainComponent,
 			final Collection<EventBMachine> machines,
 			final Collection<Context> contexts, final File modelFile) {
