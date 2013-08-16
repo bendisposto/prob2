@@ -96,7 +96,7 @@ class Downloader extends AbstractShellCommand {
 		// Use operating system to download the correct zip file
 		def os = osInfo.dirName
 		def targetzip = probhome+"probcli_${os}.zip"
-		def url = versionurl + "probcli_${os}.zip"
+		def url = versionurl + "probquery_${os}.zip"
 		download(url,targetzip)
 
 		// Unzip file to correct directory (probhome)
