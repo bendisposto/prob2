@@ -10,13 +10,15 @@
 		</span>
 	</div>
 	<div class="renderbox" id="render{{box-number}}">{{&rendered}}</div>
-	<span class="editorbox" style="width: 85%" id="editor{{box-number}}">
-
-		<input type="text" class="form-control" id="openfile{{box-number}}"
-		value="{{box-content}}" placeholder="Path to model file"></input>
-	</span> </span>
-	<button onClick="Worksheet.browse('#openfile{{box-number}}')"
-		type="button" class="load-btn btn btn-primary">Browse ...</button>
-	<button onClick="Worksheet.fb_load_file('#openfile{{box-number}}')"
-		type="button" class="load-btn btn btn-primary">Ok</button>
+	<span class="editorbox" id="editor{{box-number}}"> <input
+		type="text" class="form-control loadfile_input"
+		id="openfile{{box-number}}" value="{{box-content}}"
+		placeholder="Path to model file"></input>
+		<button onClick="Worksheet.browse('#openfile{{box-number}}',{{box-number}})"
+			type="button" class="load-btn btn btn-primary">Browse ...</button>
+		<button
+		    id ="fb_okbtn{{box-number}}"
+			onClick="Worksheet.fb_load_file('#openfile{{box-number}}',{{box-number}})"
+			type="button" class="load-btn btn btn-primary">Ok</button>
+	</span>
 </div>

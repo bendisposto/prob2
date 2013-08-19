@@ -1,4 +1,4 @@
-package de.prob.web.worksheet.renderer;
+package de.prob.web.worksheet.boxes;
 
 import groovy.lang.MissingPropertyException;
 
@@ -6,28 +6,40 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 
 import de.prob.web.WebUtils;
-import de.prob.web.views.Worksheet;
+import de.prob.web.views.IBox;
 
-public class Groovy extends AbstractRenderer {
+public class Groovy extends AbstractBox implements IBox {
+
+	private String content = "";
 
 	@Override
-	public List<Object> render(String id, String text, Worksheet worksheet) {
+	public void setContent(Map<String, String[]> data) {
+		this.content = data.get("text")[0];
+	}
+
+	@Override
+	public List<Object> render() {
 		ArrayList<Object> res = new ArrayList<Object>();
 		StringBuffer output = new StringBuffer();
-		Bindings bindings = worksheet.groovy
+		Bindings bindings = owner.groovy
 				.getBindings(ScriptContext.GLOBAL_SCOPE);
 		bindings.put("__console", output);
-		Object result = "null";
+		Object evaluationResult = "null";
 		try {
-			result = worksheet.groovy.eval(text);
+			evaluationResult = owner.groovy.eval(content);
+			String result = StringEscapeUtils.escapeHtml(evaluationResult
+					.toString());
+
 			res.add(makeHtml(
 					id,
 					WebUtils.render("ui/worksheet/groovy_box.html", WebUtils
@@ -58,6 +70,11 @@ public class Groovy extends AbstractRenderer {
 			return r2;
 		}
 		return message.replaceAll(" ", "&nbsp;").replaceAll("\\n", "<br />");
+	}
+
+	@Override
+	protected String getContentAsJson() {
+		return content;
 	}
 
 }

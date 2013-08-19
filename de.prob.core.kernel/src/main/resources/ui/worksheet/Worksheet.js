@@ -3,6 +3,7 @@ Worksheet = (function() {
 	var session = Session();
 
 	var editors = {};
+	var contentGetters = {}
 
 	var focused = null;
 
@@ -72,17 +73,27 @@ Worksheet = (function() {
 		var renderer = $("#render" + number)
 		renderer.addClass("invisible");
 		var currentEditor = editors[number];
+
 		if (currentEditor != null) {
-			if (direction === "up") {
-				var ll_pos = currentEditor.lineCount() - 1
-				var ll_length = currentEditor.getLine(ll_pos).length
-				currentEditor.setCursor(ll_pos, ll_length);
-			} else {
-				currentEditor.setCursor(0, 0);
+			if (currentEditor.codemirror != null) {
+				var cm = currentEditor.codemirror
+				if (direction === "up") {
+					var ll_pos = cm.lineCount() - 1
+					var ll_length = cm.getLine(ll_pos).length
+					cm.setCursor(ll_pos, ll_length);
+				} else {
+					cm.setCursor(0, 0);
+				}
+				cm.focus()
 			}
-			currentEditor.focus()
+			if (currentEditor.focusFkt != null) {
+				currentEditor.focusFkt();
+			}
+			focused = number;
+		} else {
+			focused = null;
 		}
-		focused = number;
+
 	}
 
 	function unfocus(number) {
@@ -110,7 +121,7 @@ Worksheet = (function() {
 
 	function gen_codemirror(number, type) {
 		var edi = CodeMirror.fromTextArea($('#textarea' + number)[0],
-				eval("Languages." + type));
+				eval("Languages." + type + ".codemirror"));
 
 		edi.addKeyMap(editorkeys(number));
 
@@ -120,29 +131,60 @@ Worksheet = (function() {
 			if (e.keyCode === 13)
 				console.log("enter")
 		};
-		editors[number] = edi;
+
 		$(".CodeMirror-hscrollbar").remove(); // Hack! no horizontal scrolling
 		$(".CodeMirror-vscrollbar").remove(); // Hack! no vertical scrolling
 		$(".CodeMirror-scrollbar-filler").remove(); // Hack! no funny white
 		// square in bottom right
 		// corner
+		return edi;
 	}
 
-	function replace_box(number, type, content, renderedhtml, template, cm) {
+	function gen_editor_data(number, type) {
+		var lang_data = eval("Languages." + type)
+		var editor_data = {
+			id : number,
+			type : type,
+			getValue : lang_data.getter,
+		}
+		if (lang_data.codemirror != null) {
+			var edi = gen_codemirror(number, type);
+			editor_data.codemirror = edi
+			editor_data.getValue = function() {
+				return this.codemirror.getValue()
+			}
+		}
+		var focusFkt = lang_data.focusFkt;
+		if (focusFkt != null) {
+			editor_data.focusFkt = lang_data.focusFkt(number)
+		}
+
+		var konstrukt = lang_data.construct
+		if (konstrukt != null) {
+			konstrukt(number, editor_data)
+		}
+		editors[number] = editor_data;
+	}
+
+	function replace_box(number, type, content, renderedhtml, template) {
 		var box_html = gen_box_html(number, type, content, renderedhtml,
 				template)
 		$("#box" + number).replaceWith(box_html)
-		configure_box(number, type, cm)
+		configure_box(number, type)
 	}
 
-	function configure_box(number, type, cm) {
+	function configure_box(number, type) {
 		$(".localselector" + number).click(function(e) {
-			noFocus();
-			session.sendCmd("switchType", {
+
+			var data = {
 				"box" : number,
 				"client" : extern.client,
-				"type" : e.target.id
-			})
+				"type" : e.target.id,
+
+			}
+			data.text = editors[number].getValue();
+
+			session.sendCmd("switchType", data)
 		})
 		$("#remove" + number).click(function(e) {
 			console.log("Remove " + number)
@@ -156,17 +198,15 @@ Worksheet = (function() {
 				focus(number, "none")
 			}
 		})
-		if (cm === "true") {
-			gen_codemirror(number, type)
-		}
+		gen_editor_data(number, type)
 		focus(number, "down")
 	}
 
-	function render_box(number, type, content, renderedhtml, template, cm) {
+	function render_box(number, type, content, renderedhtml, template) {
 		var box_html = gen_box_html(number, type, content, renderedhtml,
 				template)
 		$("#boxes").append(box_html)
-		configure_box(number, type, cm)
+		configure_box(number, type)
 	}
 
 	function save() {
@@ -205,9 +245,10 @@ Worksheet = (function() {
 			function() {
 				$(function() {
 					$("#boxes").sortable({
-						placeholder : "ui-sortable-placeholder",
+						placeholder : "col-lg-12 ui-sortable-placeholder",
 						update : reorder,
 						handle : ".panel-heading",
+						refreshPositions : true,
 						forcePlaceholderSize : true
 					});
 				});
@@ -229,11 +270,13 @@ Worksheet = (function() {
 					})
 				})
 
-				$("body").click(function(e) {
-					if (e.target.nodeName === "BODY") {
-						noFocus();
-					}
-				})
+				$("body").click(
+						function(e) {
+							if (e.target.nodeName === "BODY"
+									|| e.target.nodeName === "HTML") {
+								noFocus();
+							}
+						})
 
 			});
 
@@ -245,11 +288,22 @@ Worksheet = (function() {
 				if (result.isOk === false) {
 					alert(result.message);
 				} else {
-					if (result === "file") {
-						s = []
-					} else {
-						s = JSON.parse(result);
-					}
+					s = JSON.parse(result);
+				}
+			},
+			async : false
+		});
+		return s;
+	}
+	function check_file(d) {
+		var s;
+		$.ajax({
+			url : "/files?check=true&path=" + d,
+			success : function(result) {
+				if (result.isOk === false) {
+					alert(result.message);
+				} else {
+					s = JSON.parse(result);
 				}
 			},
 			async : false
@@ -315,7 +369,22 @@ Worksheet = (function() {
 		filldialog(data.dirs, data.files, dir_dom)
 	}
 
-	function browse(dir_dom) {
+	function set_ok_button_state(dir_dom, box) {
+		return function() {
+			var file = $(dir_dom)[0].value
+			var valid = check_file(file);
+			if (valid) {
+				$("#fb_okbtn" + box).removeAttr("disabled")
+			} else {
+				$("#fb_okbtn" + box).attr("disabled", "disabled")
+			}
+		}
+	}
+
+	function browse(dir_dom, box) {
+		$('#filedialog').off('hidden.bs.modal')
+		$('#filedialog').on('hidden.bs.modal',
+				set_ok_button_state(dir_dom, box))
 		$("#filedialog").modal('show')
 		browse2(dir_dom)
 	}
@@ -347,11 +416,11 @@ Worksheet = (function() {
 
 	extern.render_box = function(data) {
 		render_box(data.number, data.type, data.content, data.renderedhtml,
-				data.template, data.codemirror)
+				data.template)
 	}
 	extern.replace_box = function(data) {
 		replace_box(data.number, data.type, data.content, data.renderedhtml,
-				data.template, data.codemirror)
+				data.template)
 	}
 
 	extern.focus = function(data) {
@@ -380,6 +449,11 @@ Worksheet = (function() {
 	extern.deleteBox = function(data) {
 		delete_box(data.id)
 	}
+	extern.set_ok_button_state = set_ok_button_state
+
+	// Debugging
+	extern.editors = editors
+	extern.focused = focused
 
 	return extern;
 }())

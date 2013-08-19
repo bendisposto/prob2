@@ -1,5 +1,7 @@
 package de.prob.web;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
@@ -25,7 +27,7 @@ public abstract class AbstractSession implements ISession {
 	private final UUID id;
 	private final List<AsyncContext> clients = Collections
 			.synchronizedList(new ArrayList<AsyncContext>());
-	private final ArrayList<Message> responses = new ArrayList<Message>();
+	protected final ArrayList<Message> responses = new ArrayList<Message>();
 
 	private final Logger logger = LoggerFactory
 			.getLogger(AbstractSession.class);
@@ -102,7 +104,7 @@ public abstract class AbstractSession implements ISession {
 		responses.add(message);
 	}
 
-	private void send(String json, AsyncContext context) {
+	protected void send(String json, AsyncContext context) {
 		ServletResponse response = context.getResponse();
 		try {
 			PrintWriter writer = response.getWriter();
@@ -133,9 +135,27 @@ public abstract class AbstractSession implements ISession {
 		}
 	}
 
-	private void resend(String client, int lastinfo, AsyncContext context) {
+	protected void resend(String client, int lastinfo, AsyncContext context) {
 		Message message = responses.get(lastinfo);
 		String json = WebUtils.toJson(message);
+		send(json, context);
+	}
+
+	protected void resendAll(String client, int lastinfo, AsyncContext context) {
+		checkState(!responses.isEmpty(),
+				"Resending is only possible if something has been sent before.");
+
+		Message lm = responses.get(responses.size() - 1);
+		ArrayList<Object> cp = new ArrayList<Object>();
+		for (Message message : responses) {
+			Object[] content = message.content;
+			for (int i = 0; i < content.length; i++) {
+				cp.add(content[i]);
+			}
+		}
+		Object[] everything = cp.toArray();
+		Message m = new Message(lm.id, everything);
+		String json = WebUtils.toJson(m);
 		send(json, context);
 	}
 

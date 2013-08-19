@@ -1,27 +1,38 @@
-package de.prob.web.worksheet.renderer;
+package de.prob.web.worksheet.boxes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.pegdown.PegDownProcessor;
 
 import de.prob.web.WebUtils;
-import de.prob.web.views.Worksheet;
 
-public class Markdown extends AbstractRenderer {
+public class Markdown extends AbstractBox {
 
 	private final PegDownProcessor pegdown = new PegDownProcessor();
+	private String content = "";
 
 	@Override
-	public List<Object> render(String id, String text, Worksheet ws) {
+	public List<Object> render() {
 		ArrayList<Object> res = new ArrayList<Object>();
-		String rendered = pegdown.markdownToHtml(text);
+		String rendered = pegdown.markdownToHtml(content);
 		if (rendered.isEmpty()) {
 			rendered = "&nbsp;";
 		}
 		res.add(makeHtml(id, rendered));
 		res.add(WebUtils.wrap("cmd", "Worksheet.renderMath", "box", id));
 		return res;
+	}
+
+	@Override
+	public void setContent(Map<String, String[]> data) {
+		this.content = data.get("text")[0];
+	}
+
+	@Override
+	protected String getContentAsJson() {
+		return content;
 	}
 
 }

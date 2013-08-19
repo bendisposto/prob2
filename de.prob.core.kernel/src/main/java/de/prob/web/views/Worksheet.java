@@ -16,21 +16,23 @@ import com.google.inject.Inject;
 
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
-import de.prob.web.worksheet.renderer.IRender;
-import de.prob.webconsole.ServletContextListener;
+import de.prob.web.data.Message;
 import de.prob.worksheet.ScriptEngineProvider;
 
 public class Worksheet extends AbstractSession {
 
+	private final BoxFactory boxfactory;
+
 	@Inject
-	public Worksheet(ScriptEngineProvider sep) {
+	public Worksheet(ScriptEngineProvider sep, BoxFactory boxfactory) {
+		this.boxfactory = boxfactory;
 		groovy = sep.get();
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(Worksheet.class);
 	private int boxcount = 0;
-	private final Map<String, Box> boxes = Collections
-			.synchronizedMap(new HashMap<String, Box>());
+	private final Map<String, IBox> boxes = Collections
+			.synchronizedMap(new HashMap<String, IBox>());
 	private final List<String> order = Collections
 			.synchronizedList(new ArrayList<String>());
 
@@ -42,8 +44,8 @@ public class Worksheet extends AbstractSession {
 		ArrayList<Object> scopes = new ArrayList<Object>();
 		scopes.add(WebUtils.wrap("clientid", clientid, "default-box-type",
 				defaultboxtype));
-		scopes.add(WebUtils.wrap("help-markdown",
-				WebUtils.render("ui/worksheet/help_markdown.html", null)));
+		scopes.add(WebUtils.wrap("help-markdown", WebUtils.render(
+				"ui/worksheet/help_markdown.html", new Object[] {})));
 		String render = WebUtils.render("ui/worksheet/index.html",
 				scopes.toArray());
 		return render;
@@ -52,6 +54,10 @@ public class Worksheet extends AbstractSession {
 	public Object reorder(Map<String, String[]> params) {
 		String boxId = params.get("box")[0];
 		int newpos = Integer.parseInt(params.get("newpos")[0]);
+
+		order.remove(boxId);
+		order.add(newpos, boxId);
+
 		System.out.println("Reodered box " + boxId + ". New position: "
 				+ newpos);
 		return null;
@@ -67,11 +73,8 @@ public class Worksheet extends AbstractSession {
 		String type = params.get("type")[0];
 		String id = params.get("box")[0];
 		logger.trace("Switch type of {} to {}", id, type);
-		IRender typeRenderer = getTypeRenderer(type);
-		Box box = new Box(id, type, typeRenderer.getTemplate(),
-				typeRenderer.useCodemirror(), typeRenderer.getExtraInfo());
-		Box oldBox = boxes.get(id);
-		box.setContent(oldBox.getContent());
+		IBox box = boxfactory.create(this, id, type);
+		box.setContent(params);
 		boxes.put(id, box);
 		return box.replaceMessage();
 	}
@@ -87,7 +90,7 @@ public class Worksheet extends AbstractSession {
 		if (order.size() > 0)
 			return deleteCmd;
 		else {
-			Box freshbox = appendFreshBox();
+			IBox freshbox = appendFreshBox();
 			Map<String, String> renderCmd = freshbox.createMessage();
 			return new Object[] { deleteCmd, renderCmd };
 		}
@@ -107,6 +110,9 @@ public class Worksheet extends AbstractSession {
 			messages.addAll(leaveEditorDown(boxId, text));
 		}
 
+		if ("up".equals(direction) && boxId.equals(firstBox()))
+			return null;// ignore
+
 		if ("up".equals(direction) && !boxId.equals(firstBox())) {
 			messages.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number",
 					boxId));
@@ -114,38 +120,10 @@ public class Worksheet extends AbstractSession {
 			messages.add(WebUtils.wrap("cmd", "Worksheet.focus", "number",
 					focused, "direction", "up"));
 		}
-		boxes.get(boxId).setContent(text);
-		messages.addAll(renderBox(boxId, text));
+		IBox box = boxes.get(boxId);
+		box.setContent(params);
+		messages.addAll(box.render());
 		return messages.toArray(new Object[messages.size()]);
-	}
-
-	private List<Object> renderBox(String boxId, String text) {
-		ArrayList<Object> res = new ArrayList<Object>();
-		Box box = boxes.get(boxId);
-		String type = box.type;
-		IRender renderer = getTypeRenderer(type);
-		if (renderer == null) {
-			res.add(WebUtils.wrap("cmd", "Worksheet.render", "box", boxId,
-					"html", "No renderer found"));
-		} else {
-			res.addAll(renderer.render(boxId, text, this));
-		}
-		return res;
-	}
-
-	@SuppressWarnings("unchecked")
-	private IRender getTypeRenderer(String type) {
-		String className = "de.prob.web.worksheet.renderer." + type;
-
-		Class<IRender> clazz = null;
-		IRender renderer = null;
-		try {
-			clazz = (Class<IRender>) Class.forName(className);
-			renderer = ServletContextListener.INJECTOR.getInstance(clazz);
-		} catch (Exception e) {
-			return null;
-		}
-		return renderer;
 	}
 
 	private List<Object> leaveEditorDown(String boxId, String text) {
@@ -181,29 +159,44 @@ public class Worksheet extends AbstractSession {
 		return index >= 0 ? order.get(index) : null;
 	}
 
-	public Box makeBox(String type) {
-		IRender typeRenderer = getTypeRenderer(type);
-		Box box = new Box(boxcount++, type, typeRenderer.getTemplate(),
-				typeRenderer.useCodemirror(), typeRenderer.getExtraInfo());
-		box.setContent(typeRenderer.initialContent());
-		boxes.put(box.id, box);
+	public IBox makeBox(String type) {
+		IBox box = boxfactory.create(this, boxcount++, type);
+		boxes.put(box.getId(), box);
 		return box;
 	}
 
 	@Override
 	public void reload(String client, int lastinfo, AsyncContext context) {
-		super.reload(client, lastinfo, context);
-		Box box = appendFreshBox();
-		Map<String, String> renderCmd = box.createMessage();
-		Map<String, String> focusCmd = WebUtils.wrap("cmd", "Worksheet.focus",
-				"number", box.id);
+		if (responses.isEmpty()) {
+			IBox box = appendFreshBox();
+			Map<String, String> renderCmd = box.createMessage();
+			Map<String, String> focusCmd = WebUtils.wrap("cmd",
+					"Worksheet.focus", "number", box.getId());
+			submit(renderCmd, focusCmd);
+			resend(client, 0, context);
+		} else {
+			Message lm = responses.get(responses.size() - 1);
+			ArrayList<Object> cp = new ArrayList<Object>();
 
-		submit(renderCmd, focusCmd);
+			for (String id : order) {
+				IBox b = boxes.get(id);
+				cp.add(b.createMessage());
+				cp.addAll(b.render());
+				cp.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number", id));
+			}
+
+			// cp.add(WebUtils.wrap("cmd", "reloaded"));
+
+			Object[] everything = cp.toArray();
+			Message m = new Message(lm.id, everything);
+			String json = WebUtils.toJson(m);
+			send(json, context);
+		}
 	}
 
-	private Box appendFreshBox() {
-		Box box = makeBox(defaultboxtype);
-		order.add(box.id);
+	private IBox appendFreshBox() {
+		IBox box = makeBox(defaultboxtype);
+		order.add(box.getId());
 		return box;
 	}
 }

@@ -1,3 +1,13 @@
+.loadfile_input {
+	width: 85%;
+	float: left;
+}
+
+.illegal_file {
+	font-weight: bold;
+	color: darkred;
+}
+
 .CodeMirror {
 	border: 1px solid #000;
 	background: #eee;
@@ -63,6 +73,7 @@
 	border: 3px dashed #aaa;
 	background: #ccc;
 	min-height: 45px;
+	height: 45px;
 	margin-bottom: 10px;
 }
 

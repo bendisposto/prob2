@@ -1,31 +1,48 @@
 Languages = (function() {
 	var extern = {
 		"Groovy" : {
-			mode : 'groovy',
-			lineNumbers : true,
-			lineWrapping : true,
-			theme : "default",
-			viewportMargin : Infinity,
+			codemirror : {
+				mode : 'groovy',
+				lineNumbers : true,
+				lineWrapping : true,
+				theme : "default",
+				viewportMargin : Infinity,
+			},
 		},
 		"B" : {
-			mode : 'b',
-			lineNumbers : false,
-			lineWrapping : true,
-			theme : "default",
-			viewportMargin : Infinity,
+			codemirror : {
+				mode : 'b',
+				lineNumbers : false,
+				lineWrapping : true,
+				theme : "default",
+				viewportMargin : Infinity,
+			},
 		},
 		"Markdown" : {
-			mode : 'markdown',
-			lineNumbers : false,
-			lineWrapping : true,
-			theme : "default",
-			viewportMargin : Infinity,
+			codemirror : {
+				mode : 'markdown',
+				lineNumbers : false,
+				lineWrapping : true,
+				theme : "default",
+				viewportMargin : Infinity,
+			},
 		},
 		"LoadModel" : {
-			lineNumbers : false,
-			lineWrapping : true,
-			theme : "default",
-			viewportMargin : Infinity,
+			getter : function() {
+				return $("#openfile" + this.id)[0].value
+			},
+			construct : function(id, editor_data) {
+				var dom_dir = "#openfile" + id;
+				$(dom_dir).keyup(Worksheet.set_ok_button_state(dom_dir, id))
+				Worksheet.set_ok_button_state(dom_dir, id)();
+			},
+			focusFkt : function(id) {
+				return function() {
+					var dom_dir = "#openfile" + id;
+					$(dom_dir).focus()
+				}
+			}
+
 		}
 	}
 	return extern;
