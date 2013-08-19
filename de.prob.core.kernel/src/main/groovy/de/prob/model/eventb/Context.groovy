@@ -1,5 +1,6 @@
 package de.prob.model.eventb;
 
+import de.prob.model.eventb.proof.IProof
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
@@ -9,6 +10,8 @@ import de.prob.model.representation.ModelElementList
 public class Context extends AbstractElement {
 
 	private final String name;
+	private List<IProof> discharged;
+	private List<IProof> unproven;
 
 	public Context(final String name) {
 		this.name = name;
@@ -76,5 +79,21 @@ public class Context extends AbstractElement {
 			return getAxioms()
 		}
 		Context.getMetaClass().getProperty(this, prop)
+	}
+
+	public List<IProof> getDischarged() {
+		return discharged;
+	}
+
+	public void setDischarged(List<IProof> discharged) {
+		this.discharged = discharged;
+	}
+
+	public List<IProof> getUnproven() {
+		return unproven;
+	}
+
+	public void setUnproven(List<IProof> unproven) {
+		this.unproven = unproven;
 	}
 }
