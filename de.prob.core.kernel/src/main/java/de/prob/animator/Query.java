@@ -42,8 +42,8 @@ public class Query implements IPrologTermOutput {
 
 
     // save query
-    private long predicate;
-    private int[] queryArgs;
+    private long predicate = 0;
+    private int[] queryArgs = null;
 
     private native static void init(String savLocation);
     private native static long put_predicate(String functor, int arity);
@@ -214,6 +214,9 @@ public class Query implements IPrologTermOutput {
     }
 
     public void execute() {
+    	if (predicate == 0 || queryArgs == null) {
+    		throw new IllegalArgumentException("Tried to execute a query that was not initialized.");
+    	}
         execute(predicate, queryArgs);
         for (String varName : variables.keySet()) {
 			int ref = variables.get(varName);
