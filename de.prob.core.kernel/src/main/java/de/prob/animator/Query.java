@@ -56,6 +56,8 @@ public class Query implements IPrologTermOutput {
     private native static void execute(long predicate, int[] args);
     private native static void close();
     private native static PrologTerm toPrologTerm(int ref);
+    
+    private native static int read_string(String goal, int[] varRefs); 
 
 
     private final Map<String, Integer> variables = new HashMap<String, Integer>();
@@ -224,5 +226,29 @@ public class Query implements IPrologTermOutput {
     public Map<String, PrologTerm> getBinding() {
     	return binding;
     }
+    
+	public int printRaw(String command, String[] my_variables) {
+		predicate = put_predicate("call", 1);
+		int varRefs[] = new int[my_variables.length + 1];
+		
+		varRefs[my_variables.length] = 0;
+		
+		
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < my_variables.length; i++) {
+			varRefs[i] = put_variable();
+	        variables.put(my_variables[i], varRefs[i]);
+			sb.append(my_variables[i] + "=" + my_variables[i] + ", ");
+		}
+		
+		
+		sb.append(command);
+		sb.append(".");
+		
+		int goal = read_string(sb.toString(), varRefs);
+		queryArgs = new int[] {goal};
+		
+		return 1;
+	}
 
 }

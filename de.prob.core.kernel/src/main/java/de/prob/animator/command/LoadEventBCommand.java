@@ -29,4 +29,9 @@ public class LoadEventBCommand extends AbstractCommand implements IRawCommand {
 		return loadcommand;
 	}
 
+	@Override
+	public String[] getVariables() {
+		return new String[] {};
+	}
+
 }

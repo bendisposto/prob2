@@ -12,7 +12,8 @@ class CommandProcessor {
 
 		Query qry = new Query();
 		if (command instanceof IRawCommand) {
-			throw new RuntimeException("not supported yet");
+			IRawCommand rawrCommand = (IRawCommand) command;
+			qry.printRaw(rawrCommand.getCommand(), rawrCommand.getVariables());
 		} else {
 			command.writeCommand(qry);
 		}
