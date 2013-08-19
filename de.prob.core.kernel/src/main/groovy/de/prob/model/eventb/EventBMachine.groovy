@@ -1,5 +1,6 @@
 package de.prob.model.eventb;
 
+import de.prob.model.eventb.proof.IProof
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
@@ -7,6 +8,9 @@ import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Variable
 
 public class EventBMachine extends Machine {
+
+	private List<IProof> discharged;
+	private List<IProof> unproven;
 
 	public EventBMachine(final String name) {
 		super(name);
@@ -93,5 +97,21 @@ public class EventBMachine extends Machine {
 			return getEvents()
 		}
 		Machine.getMetaClass().getProperty(this, prop)
+	}
+
+	public List<IProof> getDischarged() {
+		return discharged;
+	}
+
+	public void setDischarged(List<IProof> discharged) {
+		this.discharged = discharged;
+	}
+
+	public List<IProof> getUnproven() {
+		return unproven;
+	}
+
+	public void setUnproven(List<IProof> unproven) {
+		this.unproven = unproven;
 	}
 }

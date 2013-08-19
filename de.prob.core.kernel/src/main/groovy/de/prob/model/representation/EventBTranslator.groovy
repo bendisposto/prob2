@@ -36,35 +36,39 @@ public class EventBTranslator {
 		directoryPath = modelFile.getAbsolutePath().lastIndexOf('/').with {
 			it != -1 ? modelFile.getAbsolutePath()[0..<it] : modelFile.getAbsolutePath()
 		}
-		mainComponent = extractComponent(name, getXML(modelFile))
+		def proofFile = new File("${directoryPath}/${name}.bps")
+
+		mainComponent = extractComponent(name, getXML(modelFile), getXML(proofFile))
 	}
 
 	def getXML(file) {
 		def text = file.text.replaceAll("org.eventb.core.","")
-		text = text.replaceAll("name=\".*?\"", "")
 		return new XmlParser().parseText(text)
 	}
 
-	def extractComponent(name, xml) {
+	def extractComponent(name, xml, proofs) {
 		if(xml.name() == "contextFile") {
-			return extractContext(name, xml);
+			return extractContext(name, xml, proofs);
 		}
 		if(xml.name() == "machineFile") {
-			return extractMachine(name, xml);
+			return extractMachine(name, xml, proofs);
 		}
 	}
 
-	def extractContext(name, xml) {
+	def extractContext(name, xml, proofs) {
 		if(components.containsKey(name)) {
 			return components[name]
 		}
 		graph.addVertex(name)
 
+		def proofFactory = new ProofFactory(proofs)
+
 		def context = new Context(name)
 		def extendedContexts = []
 		xml.extendsContext.'@target'.each {
 			def f = new File("${directoryPath}/${it}.buc")
-			extendedContexts << extractContext(it,getXML(f))
+			def p = new File("${directoryPath}/${it}.bps")
+			extendedContexts << extractContext(it,getXML(f),getXML(p))
 			graph.addEdge(new RefType(ERefType.EXTENDS), name, it)
 		}
 		context.addExtends(extendedContexts)
@@ -80,7 +84,9 @@ public class EventBTranslator {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
 			def theorem = it.'@theorem' == "true"
-			axioms << new EventBAxiom(label, predicate, theorem)
+			def axiom = new EventBAxiom(label, predicate, theorem)
+			axioms << axiom
+			proofFactory.addProof(label, axiom)
 		}
 		context.addAxioms(axioms)
 
@@ -90,22 +96,27 @@ public class EventBTranslator {
 		}
 		context.addConstants(constants)
 
+		context.setDischarged(proofFactory.getDischarged())
+		context.setUnproven(proofFactory.getUnproven())
 		components[name] = context
 		contexts << context
 		return context
 	}
 
-	def extractMachine(name, xml) {
+	def extractMachine(name, xml, proofs) {
 		if(components.containsKey(name)) {
 			return components[name]
 		}
 		graph.addVertex(name)
 
+		def proofFactory = new ProofFactory(proofs)
+
 		def machine = new EventBMachine(name)
 		def sees = []
 		xml.seesContext.'@target'.each {
 			def f = new File("${directoryPath}/${it}.buc")
-			sees << extractContext(it,getXML(f))
+			def p = new File("${directoryPath}/${it}.bps")
+			sees << extractContext(it,getXML(f),getXML(p))
 			graph.addEdge(new RefType(ERefType.SEES), name, it)
 		}
 		machine.addSees(sees)
@@ -113,7 +124,8 @@ public class EventBTranslator {
 		def refines = []
 		xml.refinesMachine.'@target'.each {
 			def f = new File("${directoryPath}/${it}.bum")
-			refines << extractMachine(it,getXML(f))
+			def p = new File("${directoryPath}/${it}.bps")
+			refines << extractMachine(it,getXML(f),getXML(p))
 			graph.addEdge(new RefType(ERefType.REFINES), name, it)
 		}
 		machine.addRefines(refines)
@@ -129,7 +141,9 @@ public class EventBTranslator {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
 			def theorem = it.'@theorem' == "true"
-			invariants << new EventBInvariant(label, predicate, theorem)
+			def invariant = new EventBInvariant(label, predicate, theorem)
+			invariants << invariant
+			proofFactory.addProof(label, invariant)
 		}
 		machine.addInvariants(invariants)
 
@@ -140,15 +154,19 @@ public class EventBTranslator {
 		machine.addVariant(variant)
 
 		def events = []
-		xml.event.each { events << extractEvent(it) }
+		xml.event.each { events << extractEvent(it, proofFactory) }
 		machine.addEvents(events)
 
+		proofFactory.addInvariantProofs(invariants, events)
+
+		machine.setDischarged(proofFactory.getDischarged())
+		machine.setUnproven(proofFactory.getUnproven())
 		components[name] = machine
 		machines << machine
 		return machine
 	}
 
-	def extractEvent(xml) {
+	def extractEvent(xml, ProofFactory proofFactory) {
 		def name = xml.'@label'
 		def convergence = xml.'@convergence'
 		def eventType = convergence == "0" ? EventType.ORDINARY : (convergence == "1" ? EventType.CONVERGENT : EventType.ANTICIPATED);
@@ -163,7 +181,9 @@ public class EventBTranslator {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
 			def theorem = it.'@theorem' == "true"
-			guards << new EventBGuard(label, predicate, theorem)
+			def guard = new EventBGuard(label, predicate, theorem)
+			guards << guard
+			proofFactory.addProof(name,label,guard)
 		}
 		event.addGuards(guards)
 
@@ -171,7 +191,9 @@ public class EventBTranslator {
 		xml.action.each {
 			def label = it.'@label'
 			def assignment = it.'@assignment'
-			actions << new EventBAction(label, assignment)
+			def action = new EventBAction(label, assignment)
+			actions << action
+			proofFactory.addProof(name,label,action)
 		}
 		event.addActions(actions)
 
@@ -179,7 +201,9 @@ public class EventBTranslator {
 		xml.witness.each {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
-			witnesses << new Witness(label, predicate)
+			def witness = new Witness(label, predicate)
+			witnesses << witness
+			proofFactory.addProof(name, label, witness)
 		}
 		event.addWitness(witnesses)
 
