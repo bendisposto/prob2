@@ -19,8 +19,10 @@ We assume, you have a fresh copy of Eclipse 4.2 and an empty workspace at hand. 
    This will take a while ...
 8. Select "Run as Eclipse application" from the context menu of de.prob.ui. This will open a new Eclipse Window and create a fresh run configuration.
 9. Close the new Eclipse window and edit the run configuration. Change "Run a product" to org.rodinp.platform.product.
-10. Start the configuration again. This time it will start Rodin.
-11. Open the Groovy Console view (in the view category "Others") and type 'upgrade latest'. This will download a fresh copy of the Prolog binaries.
+10. Change to the Arguments tab. Change your working directory from default to other with value /path/to/.prob
+11. Open the Environment tab. Add a new variable with name 'LD_LIBRARY_PATH' and value /path/to/.prob
+12. Start the configuration again. This time it will start Rodin.
+13. Open the Groovy Console view (in the view category "Others") and type 'upgrade latest'. This will download a fresh copy of the Prolog binaries.
     (In more recent versions you have to use 'upgrade "latest"')
 
 IMPORTANT:
