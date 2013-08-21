@@ -30,15 +30,17 @@ public class Groovy extends AbstractBox implements IBox {
 	@Override
 	public List<Object> render() {
 		ArrayList<Object> res = new ArrayList<Object>();
-		StringBuffer output = new StringBuffer();
+		StringBuffer outputsb = new StringBuffer();
 		Bindings bindings = owner.groovy
 				.getBindings(ScriptContext.GLOBAL_SCOPE);
-		bindings.put("__console", output);
+		bindings.put("__console", outputsb);
 		Object evaluationResult = "null";
 		try {
 			evaluationResult = owner.groovy.eval(content);
 			String result = StringEscapeUtils.escapeHtml(evaluationResult
 					.toString());
+			String output = StringEscapeUtils.escapeHtml(outputsb.toString())
+					.replaceAll("\n", "<br />");
 
 			res.add(makeHtml(
 					id,
