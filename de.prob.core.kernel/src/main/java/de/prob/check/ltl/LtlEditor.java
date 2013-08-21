@@ -81,20 +81,23 @@ public class LtlEditor extends AbstractSession {
 		String input = get(params, "input");
 
 		ParseListener listener = new ParseListener();
-		parse(input, listener);
+		LtlParser parser = parse(input, listener);
 
 		Map<String, String> result = null;
+		List<Marker> markers = getPatternList(parser.getSymbolTableManager().getPatternDefinitions());
 		if (listener.getErrorMarkers().size() == 0) {
 			logger.trace("Parse ok (errors: 0, warnings: {}). Submitting parse results", listener.getWarningMarkers().size());
 			result = WebUtils.wrap(
 					"cmd", "LtlEditor.parseOk",
-					"warnings", WebUtils.toJson(listener.getWarningMarkers()));
+					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
+					"markers", WebUtils.toJson(markers));
 		} else {
 			logger.trace("Parse failed (errors: {}, warnings: {}). Submitting parse results", listener.getErrorMarkers().size(), listener.getWarningMarkers().size());
 			result = WebUtils.wrap(
 					"cmd", "LtlEditor.parseFailed",
 					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
-					"errors", WebUtils.toJson(listener.getErrorMarkers()));
+					"errors", WebUtils.toJson(listener.getErrorMarkers()),
+					"markers", WebUtils.toJson(markers));
 		}
 
 		return result;
@@ -129,6 +132,15 @@ public class LtlEditor extends AbstractSession {
 		return WebUtils.wrap(
 				"cmd", "LtlEditor.showHint",
 				"hints", WebUtils.toJson(getCompletionList(input, startsWith)));
+	}
+
+	public List<Marker> getPatternList(List<PatternDefinition> patterns) {
+		List<Marker> markers = new LinkedList<Marker>();
+		for (PatternDefinition pattern : patterns) {
+			String msg = String.format("Move pattern '%s' to pattern manager.", pattern.getName());
+			markers.add(new Marker("pattern", pattern.getToken(), pattern.getSimpleName().length(), msg));
+		}
+		return markers;
 	}
 
 	private List<Hint> getCompletionList(String input, String startsWith) {
@@ -178,7 +190,7 @@ public class LtlEditor extends AbstractSession {
 			}
 		}
 	}
-	private void parse(String input, ParseListener listener) {
+	private LtlParser parse(String input, ParseListener listener) {
 		LtlParser parser = new LtlParser(input);
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
@@ -188,6 +200,7 @@ public class LtlEditor extends AbstractSession {
 		parser.parse();
 
 		astChanged(parser.getAst());
+		return parser;
 	}
 
 	private void astChanged(ParseTree ast) {

@@ -1,5 +1,7 @@
 package de.prob.check.ltl;
 
+import org.antlr.v4.runtime.Token;
+
 public class Mark {
 
 	private int line;
@@ -10,6 +12,10 @@ public class Mark {
 		this.line = line;
 		this.pos = pos;
 		this.length = length;
+	}
+
+	public Mark(Token token, int length) {
+		this(token.getLine(), token.getCharPositionInLine(), length);
 	}
 
 	public int getLine() {

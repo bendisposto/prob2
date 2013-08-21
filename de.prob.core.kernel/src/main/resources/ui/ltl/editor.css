@@ -35,6 +35,12 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	height: 16px; 
 }
 
+.pattern {
+	background-image: url(/ui/ltl/icon_move_pattern.gif);
+	height: 16px; 
+	cursor: pointer;
+}
+
 .warning-underline {
 	background: url(/ui/ltl/warning_underline.gif) bottom repeat-x;
 }
@@ -47,7 +53,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	background-color: #CAEDED;
 }
 
-.operand{
+.operand {
 	background-color: #F0F0F0;
 }
 

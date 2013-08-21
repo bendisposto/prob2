@@ -25,7 +25,7 @@ LtlEditor = (function() {
 		});
 	}
 	
-	function addMarkers(markers) {
+	function addMarkers(markers, textmarker = true) {
 		for (var i = 0; i < markers.length; i++) {
 			var marker = markers[i];
 			var mark = marker.mark;
@@ -34,12 +34,14 @@ LtlEditor = (function() {
 			var lineInfo = extern.cm.lineInfo(line);
 			// Gutter marker
 			extern.cm.setGutterMarker(line, "markers", makeGutterMarker(lineInfo, marker.type, marker.msg));
-			// Text marker
-			var options = {
-				className: marker.type + '-underline', 
-				title: marker.msg
-			};
-			setTextMarker(mark, options);
+			if (textmarker) {
+				// Text marker
+				var options = {
+					className: marker.type + '-underline', 
+					title: marker.msg
+				};
+				setTextMarker(mark, options);
+			}
 		}
 	}
 	
@@ -136,6 +138,7 @@ LtlEditor = (function() {
 	
 	extern.parseOk = function(data) {
 		clearMarkers();
+		addMarkers(JSON.parse(data.markers), false);
 		addMarkers(JSON.parse(data.warnings));
 		refreshOperandHighlighting(250);
 	}
@@ -143,6 +146,7 @@ LtlEditor = (function() {
 	extern.parseFailed = function(data) {
 		clearMarkers();
 		addMarkers(JSON.parse(data.errors));
+		addMarkers(JSON.parse(data.markers), false);
 		addMarkers(JSON.parse(data.warnings));
 		refreshOperandHighlighting(250);
 	}
