@@ -35,4 +35,10 @@ public class Markdown extends AbstractBox {
 		return content;
 	}
 
+	// Markdown boxes can be moved arbitrarily
+	@Override
+	public EReorderEffect reorderEffect() {
+		return EReorderEffect.DONT_CARE;
+	}
+
 }

@@ -84,4 +84,9 @@ public class LoadModel extends AbstractBox {
 		return false;
 	}
 
+	@Override
+	public EReorderEffect reorderEffect() {
+		return EReorderEffect.EVERYTHING_BELOW;
+	}
+
 }

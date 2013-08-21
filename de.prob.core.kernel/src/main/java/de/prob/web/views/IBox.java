@@ -3,6 +3,8 @@ package de.prob.web.views;
 import java.util.List;
 import java.util.Map;
 
+import de.prob.web.worksheet.boxes.EReorderEffect;
+
 public interface IBox {
 
 	void setId(String id);
@@ -18,5 +20,7 @@ public interface IBox {
 	Map<String, String> replaceMessage();
 
 	String getId();
+
+	EReorderEffect reorderEffect();
 
 }

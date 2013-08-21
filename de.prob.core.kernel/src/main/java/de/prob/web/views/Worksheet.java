@@ -17,6 +17,7 @@ import com.google.inject.Inject;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 import de.prob.web.data.Message;
+import de.prob.web.worksheet.boxes.EReorderEffect;
 import de.prob.worksheet.ScriptEngineProvider;
 
 public class Worksheet extends AbstractSession {
@@ -53,13 +54,30 @@ public class Worksheet extends AbstractSession {
 
 	public Object reorder(Map<String, String[]> params) {
 		String boxId = params.get("box")[0];
+		int oldPos = order.indexOf(boxId);
 		int newpos = Integer.parseInt(params.get("newpos")[0]);
 
 		order.remove(boxId);
 		order.add(newpos, boxId);
 
-		System.out.println("Reodered box " + boxId + ". New position: "
-				+ newpos);
+		int reorderposition = Math.min(oldPos, newpos);
+		EReorderEffect effect = boxes.get(boxId).reorderEffect();
+		logger.trace(
+				"Reordered box {}. From {} to {}. Boxtype demands effect: {}",
+				new Object[] { boxId, oldPos, newpos, effect });
+		switch (effect) {
+		case DONT_CARE:
+			return null;
+		case EVERYTHING_BELOW:
+			return reEvaluateBoxes(reorderposition);
+		default: // FULL_REEVALUATION
+			return reEvaluateBoxes(0);
+		}
+
+	}
+
+	private Object reEvaluateBoxes(int reorderposition) {
+		logger.trace("Re-Evaluating boxes, starting at box {}", reorderposition);
 		return null;
 	}
 
