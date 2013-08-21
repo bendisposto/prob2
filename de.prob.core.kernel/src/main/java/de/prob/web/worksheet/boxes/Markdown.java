@@ -41,4 +41,10 @@ public class Markdown extends AbstractBox {
 		return EReorderEffect.DONT_CARE;
 	}
 
+	// Even when re-evaluating, we don't have to mess with Markdown boxes
+	@Override
+	public boolean requiresReEvaluation() {
+		return false;
+	}
+
 }

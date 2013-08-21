@@ -23,4 +23,6 @@ public interface IBox {
 
 	EReorderEffect reorderEffect();
 
+	boolean requiresReEvaluation();
+
 }

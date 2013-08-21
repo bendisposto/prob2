@@ -31,12 +31,12 @@ public class Groovy extends AbstractBox implements IBox {
 	public List<Object> render() {
 		ArrayList<Object> res = new ArrayList<Object>();
 		StringBuffer outputsb = new StringBuffer();
-		Bindings bindings = owner.groovy
-				.getBindings(ScriptContext.GLOBAL_SCOPE);
+		Bindings bindings = owner.getGroovy().getBindings(
+				ScriptContext.GLOBAL_SCOPE);
 		bindings.put("__console", outputsb);
 		Object evaluationResult = "null";
 		try {
-			evaluationResult = owner.groovy.eval(content);
+			evaluationResult = owner.getGroovy().eval(content);
 			String result = StringEscapeUtils.escapeHtml(evaluationResult
 					.toString());
 			String output = StringEscapeUtils.escapeHtml(outputsb.toString())

@@ -22,79 +22,31 @@ import de.prob.worksheet.ScriptEngineProvider;
 
 public class Worksheet extends AbstractSession {
 
+	private int boxcount = 0;
+	private final Map<String, IBox> boxes = Collections
+			.synchronizedMap(new HashMap<String, IBox>());
+
 	private final BoxFactory boxfactory;
+
+	private String defaultboxtype = "Markdown";
+	private volatile ScriptEngine groovy;
+	private final Logger logger = LoggerFactory.getLogger(Worksheet.class);
+	private final List<String> order = Collections
+			.synchronizedList(new ArrayList<String>());
+
+	private final ScriptEngineProvider sep;
 
 	@Inject
 	public Worksheet(ScriptEngineProvider sep, BoxFactory boxfactory) {
+		this.sep = sep;
 		this.boxfactory = boxfactory;
 		groovy = sep.get();
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(Worksheet.class);
-	private int boxcount = 0;
-	private final Map<String, IBox> boxes = Collections
-			.synchronizedMap(new HashMap<String, IBox>());
-	private final List<String> order = Collections
-			.synchronizedList(new ArrayList<String>());
-
-	private String defaultboxtype = "Markdown";
-	public final ScriptEngine groovy;
-
-	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
-		ArrayList<Object> scopes = new ArrayList<Object>();
-		scopes.add(WebUtils.wrap("clientid", clientid, "default-box-type",
-				defaultboxtype));
-		scopes.add(WebUtils.wrap("help-markdown", WebUtils.render(
-				"ui/worksheet/help_markdown.html", new Object[] {})));
-		String render = WebUtils.render("ui/worksheet/index.html",
-				scopes.toArray());
-		return render;
-	}
-
-	public Object reorder(Map<String, String[]> params) {
-		String boxId = params.get("box")[0];
-		int oldPos = order.indexOf(boxId);
-		int newpos = Integer.parseInt(params.get("newpos")[0]);
-
-		order.remove(boxId);
-		order.add(newpos, boxId);
-
-		int reorderposition = Math.min(oldPos, newpos);
-		EReorderEffect effect = boxes.get(boxId).reorderEffect();
-		logger.trace(
-				"Reordered box {}. From {} to {}. Boxtype demands effect: {}",
-				new Object[] { boxId, oldPos, newpos, effect });
-		switch (effect) {
-		case DONT_CARE:
-			return null;
-		case EVERYTHING_BELOW:
-			return reEvaluateBoxes(reorderposition);
-		default: // FULL_REEVALUATION
-			return reEvaluateBoxes(0);
-		}
-
-	}
-
-	private Object reEvaluateBoxes(int reorderposition) {
-		logger.trace("Re-Evaluating boxes, starting at box {}", reorderposition);
-		return null;
-	}
-
-	public Object setDefaultType(Map<String, String[]> params) {
-		String type = params.get("type")[0];
-		defaultboxtype = type;
-		return WebUtils.wrap("cmd", "Worksheet.setDefaultType", "type", type);
-	}
-
-	public Object switchType(Map<String, String[]> params) {
-		String type = params.get("type")[0];
-		String id = params.get("box")[0];
-		logger.trace("Switch type of {} to {}", id, type);
-		IBox box = boxfactory.create(this, id, type);
-		box.setContent(params);
-		boxes.put(id, box);
-		return box.replaceMessage();
+	private IBox appendFreshBox() {
+		IBox box = makeBox(defaultboxtype);
+		order.add(box.getId());
+		return box;
 	}
 
 	public Object deleteBox(Map<String, String[]> params) {
@@ -112,6 +64,41 @@ public class Worksheet extends AbstractSession {
 			Map<String, String> renderCmd = freshbox.createMessage();
 			return new Object[] { deleteCmd, renderCmd };
 		}
+	}
+
+	private String firstBox() {
+		return order.isEmpty() ? null : order.get(0);
+	}
+
+	public ScriptEngine getGroovy() {
+		return groovy;
+	}
+
+	private String getPredecessor(String boxId) {
+		int index = order.indexOf(boxId) - 1;
+		return order.get(index);
+	}
+
+	private String getSuccessor(String boxId) {
+		int index = order.indexOf(boxId) + 1;
+		return order.get(index);
+	}
+
+	@Override
+	public String html(String clientid, Map<String, String[]> parameterMap) {
+		ArrayList<Object> scopes = new ArrayList<Object>();
+		scopes.add(WebUtils.wrap("clientid", clientid, "default-box-type",
+				defaultboxtype));
+		scopes.add(WebUtils.wrap("help-markdown", WebUtils.render(
+				"ui/worksheet/help_markdown.html", new Object[] {})));
+		String render = WebUtils.render("ui/worksheet/index.html",
+				scopes.toArray());
+		return render;
+	}
+
+	private String lastBox() {
+		int index = order.size() - 1;
+		return index >= 0 ? order.get(index) : null;
 	}
 
 	public Object leaveEditor(Map<String, String[]> params) {
@@ -158,29 +145,26 @@ public class Worksheet extends AbstractSession {
 
 	}
 
-	private String getSuccessor(String boxId) {
-		int index = order.indexOf(boxId) + 1;
-		return order.get(index);
-	}
-
-	private String getPredecessor(String boxId) {
-		int index = order.indexOf(boxId) - 1;
-		return order.get(index);
-	}
-
-	private String firstBox() {
-		return order.isEmpty() ? null : order.get(0);
-	}
-
-	private String lastBox() {
-		int index = order.size() - 1;
-		return index >= 0 ? order.get(index) : null;
-	}
-
 	public IBox makeBox(String type) {
 		IBox box = boxfactory.create(this, boxcount++, type);
 		boxes.put(box.getId(), box);
 		return box;
+	}
+
+	private Object reEvaluateBoxes(int reorderposition) {
+		ArrayList<Object> messages = new ArrayList<Object>();
+		if (reorderposition == 0) {
+			groovy = sep.get();
+		}
+		logger.trace("Re-Evaluating boxes, starting at box {}", reorderposition);
+		for (int i = reorderposition; i < order.size(); i++) {
+			String id = order.get(i);
+			IBox box = boxes.get(id);
+			if (box.requiresReEvaluation()) {
+				messages.addAll(box.render());
+			}
+		}
+		return messages.toArray();
 	}
 
 	@Override
@@ -212,9 +196,43 @@ public class Worksheet extends AbstractSession {
 		}
 	}
 
-	private IBox appendFreshBox() {
-		IBox box = makeBox(defaultboxtype);
-		order.add(box.getId());
-		return box;
+	public Object reorder(Map<String, String[]> params) {
+		String boxId = params.get("box")[0];
+		int oldPos = order.indexOf(boxId);
+		int newpos = Integer.parseInt(params.get("newpos")[0]);
+
+		order.remove(boxId);
+		order.add(newpos, boxId);
+
+		int reorderposition = Math.min(oldPos, newpos);
+		EReorderEffect effect = boxes.get(boxId).reorderEffect();
+		logger.trace(
+				"Reordered box {}. From {} to {}. Boxtype demands effect: {}",
+				new Object[] { boxId, oldPos, newpos, effect });
+		switch (effect) {
+		case DONT_CARE:
+			return null;
+		case EVERYTHING_BELOW:
+			return reEvaluateBoxes(reorderposition);
+		default: // FULL_REEVALUATION
+			return reEvaluateBoxes(0);
+		}
+
+	}
+
+	public Object setDefaultType(Map<String, String[]> params) {
+		String type = params.get("type")[0];
+		defaultboxtype = type;
+		return WebUtils.wrap("cmd", "Worksheet.setDefaultType", "type", type);
+	}
+
+	public Object switchType(Map<String, String[]> params) {
+		String type = params.get("type")[0];
+		String id = params.get("box")[0];
+		logger.trace("Switch type of {} to {}", id, type);
+		IBox box = boxfactory.create(this, id, type);
+		box.setContent(params);
+		boxes.put(id, box);
+		return box.replaceMessage();
 	}
 }

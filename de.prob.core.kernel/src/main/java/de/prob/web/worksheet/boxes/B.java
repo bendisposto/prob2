@@ -23,4 +23,8 @@ public class B extends AbstractBox {
 		return content;
 	}
 
+	@Override
+	public EReorderEffect reorderEffect() {
+		return EReorderEffect.EVERYTHING_BELOW;
+	}
 }

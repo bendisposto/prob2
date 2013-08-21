@@ -87,4 +87,9 @@ public abstract class AbstractBox implements IBox {
 		return EReorderEffect.FULL_REEVALUATION; // this is always safe
 	}
 
+	@Override
+	public boolean requiresReEvaluation() {
+		return true;
+	}
+
 }

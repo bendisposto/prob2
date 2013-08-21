@@ -41,7 +41,7 @@ public class LoadModel extends AbstractBox {
 	}
 
 	private String load_file(String filename) {
-		ScriptEngine groovy = owner.groovy;
+		ScriptEngine groovy = owner.getGroovy();
 		String command = "";
 		String name = "model_" + GroovySE.nextVar();
 		String extension = Files.getFileExtension(filename);
