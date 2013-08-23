@@ -53,6 +53,6 @@ Script.getMetaClass().upgrade = { downloader.downloadCli(it) }
 
 
 /* Redirect print and println to our own buffered console*/
-Script.getMetaClass().print = { s -> __console.append(s) }
-Script.getMetaClass().println = { s -> __console.append(s+"\n") }
+Script.getMetaClass().print = { s -> __console.append(s.toString()) }
+Script.getMetaClass().println = { s -> __console.append(s.toString()+"\n") }
 		 

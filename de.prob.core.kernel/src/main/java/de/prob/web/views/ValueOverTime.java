@@ -68,9 +68,9 @@ public class ValueOverTime extends AbstractSession implements
 	}
 
 	@Override
-	public void outOfDateCall(final String client, final int lastinfo,
+	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.outOfDateCall(client, lastinfo, context);
+		super.reload(client, lastinfo, context);
 
 		List<Object> result = new ArrayList<Object>();
 		for (FormulaElement formula : testedFormulas) {

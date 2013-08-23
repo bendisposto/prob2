@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -81,6 +84,8 @@ public class ReflectionServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
+		logger.trace("Received {}", asString(req.getParameterMap()));
+
 		String uri = req.getRequestURI();
 		List<String> parts = new PartList(uri.split("/"));
 
@@ -110,6 +115,18 @@ public class ReflectionServlet extends HttpServlet {
 			return;
 		}
 
+	}
+
+	private String asString(Map<String, String[]> m) {
+		StringBuffer res = new StringBuffer();
+		Set<Entry<String, String[]>> entrySet = m.entrySet();
+		for (Entry<String, String[]> e : entrySet) {
+			res.append(e.getKey());
+			res.append("=[");
+			res.append(Joiner.on(", ").join(e.getValue()));
+			res.append("] ");
+		}
+		return res.toString();
 	}
 
 	private void delegateToSession(HttpServletRequest req,

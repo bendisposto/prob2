@@ -63,6 +63,8 @@ public class WebModule extends ServletModule {
 		serve(ReflectionServlet.URL_PATTERN + "*")
 				.with(ReflectionServlet.class);
 
+		serve("/files*").with(FileBrowserServlet.class);
+
 	}
 
 	@Provides

@@ -24,6 +24,12 @@ public class GroovySE implements ScriptEngine {
 	private final ScriptEngine groovy;
 	private final Logger logger = LoggerFactory.getLogger(GroovySE.class);
 
+	private static volatile int varcount = 0;
+
+	public static int nextVar() {
+		return varcount++;
+	}
+
 	private static final String[] IMPORTS = new String[] {
 			"import de.prob.statespace.*;",
 			"import de.prob.model.representation.*;",

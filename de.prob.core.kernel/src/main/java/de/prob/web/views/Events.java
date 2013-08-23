@@ -72,8 +72,8 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	}
 
 	@Override
-	public void outOfDateCall(String client, int lastinfo, AsyncContext context) {
-		super.outOfDateCall(client, lastinfo, context);
+	public void reload(String client, int lastinfo, AsyncContext context) {
+		super.reload(client, lastinfo, context);
 		traceChange(selector.getCurrentTrace());
 
 	}
