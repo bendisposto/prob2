@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<head>
+	<title>LTL Pattern manager</title>
+		
+<!-- CSS -->
+	<link rel="stylesheet" href="/ui/ltl/bootstrap.css">
+	<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+	<link rel="stylesheet" href="/ui/common/codemirror.css">
+	<link rel="stylesheet" href="/ui/ltl/splitter.css">
+
+	<style>		
+		.left-bar {		
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 200px;
+		}
+		
+		.left-bar-heading {
+			background-color: #FAFAFA;
+			background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+			background-repeat: repeat-x;
+			border-bottom: 1px solid #D4D4D4;
+			
+			height: 33px;	
+			padding: 5px;
+			
+			font-weight: bold;
+		}
+		
+		.left-bar-heading .icon {
+			width: 16px;
+			height: 16px;
+			
+			margin-right: 5px;
+			margin-top: 3px;
+			
+			background-image: url('/ui/ltl/icon_pattern.gif');
+			
+			float: left;
+		}
+		
+		.pattern-list {
+			position: absolute;
+			top: 33px;
+			bottom: 0;
+			width: 200px;
+		
+			overflow-x: hidden;
+			margin: 0;
+		}
+		
+		.pattern-list ul {
+			padding: 0;
+		}
+		
+		.pattern-list .ui-selecting {
+			background: #ecf3f7;
+		}
+		
+		.pattern-list .ui-selected {
+			background: #D9EDF7;
+		}
+		
+		.pattern-list-item {
+			overflow: hidden;
+			
+			padding: 0 5px;
+			border-bottom: 1px solid #FAFAFA;
+		}
+		
+		.pattern-list-group {
+			overflow: hidden;
+			
+			background-color: #FAFAFA;
+			background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+			background-repeat: repeat-x;
+			
+			border-top: 1px solid #D4D4D4;
+			border-bottom: 1px solid #D4D4D4;
+			border-radius: 0 0 4px 4px;
+			box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+			
+			padding: 0 5px;
+			font-weight: bold;
+		}
+		
+		.content {
+			position: absolute;
+			left: 205px;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			
+			min-width: 200px;
+			
+			overflow-x: hidden;
+			
+			padding: 25px;
+			padding-top: 0;
+			background-color: #FAFAFA;
+		}
+		
+		.page-header {
+			margin: 20px 0 10px 0;
+			padding: 0;
+		}
+		
+		.page-header .input-group {
+			margin-bottom: 10px;
+			margin-top: 25px;
+			border-bottom: 1px solid #EEEEEE;
+		}
+		
+		.panel {
+			border: 1px solid #D4D4D4;
+		}
+		
+		.panel-heading {
+			background-color: #FAFAFA;
+			background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+			background-repeat: repeat-x;
+			
+			border-bottom: 1px solid #D4D4D4;
+						
+			padding: 5px;
+			
+			font-weight: bold;
+		}
+		
+		#description-panel .input-group {
+			width: 100%; 
+			height: 70px;
+		}
+		
+		.description {			
+			width: 100%;
+	
+			padding: 5px;	
+			
+			resize: none;
+			
+			border: 0;
+			border-radius: 0 0 4px 4px;
+		}
+		
+		.CodeMirror {
+			border-radius: 0 0 4px 4px;
+		}
+		
+		.CodeMirror * { 
+			-moz-box-sizing: content-box; 
+			-webkit-box-sizing: content-box; 
+			box-sizing: content-box; 
+		}
+		
+		.add-pattern {
+			color: #468847;
+			//color: #DFF0D8;
+			float: right;
+		}
+		
+		.actions {	
+			width: 100%;
+			text-align: right;
+			margin-bottom: 10px;
+		}
+		
+		.edit-pattern {
+			color: #3A87AD;
+			//color: #D9EDF7;
+		}
+		
+		.remove-pattern {
+			color: #B94A48;
+			//color: #F2DEDE;
+		}			
+	</style>
+	
+<!-- JavaScript -->
+	<script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
+	<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
+	<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+	<script type="text/javascript" src="/ui/ltl/splitter.js"></script>
+	<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+	<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
+	<script type="text/javascript" src="/ui/common/Session.js"></script>
+	<script type="text/javascript" src="/ui/ltl/LtlPatternManager.js"></script>
+</head>
+<body>
+	<div class="left-bar">
+		<div class="left-bar-heading">
+			<div class="icon"></div>
+			Patterns
+			<button class="btn btn-default btn-xs add-pattern" type="button" title="Create new pattern">
+				<span class="glyphicon glyphicon-plus"></span>
+			</button>	
+		</div>
+		<div class="pattern-list">
+			<ul id="selectable">
+				<li class="pattern-list-group">Builtin patterns</li>
+				<div id="builtin-patterns">
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+				</div>
+				<li class="pattern-list-group">User defined patterns</li>
+				<div id="user-patterns">
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+					<li class="pattern-list-item">Element</li>
+				</div>
+			</ul>
+		</div>
+	</div>
+	<div class="splitter_horizontal" style="left: 200px;"></div>
+	<div class="content">
+		<div class="page-header">
+			<h1>
+				absence
+			</h1>
+		</div>
+		
+		<div class="actions">
+			<button class="btn btn-default btn-xs edit-pattern" type="button" title="Edit pattern">
+				<span class="glyphicon glyphicon-pencil"></span>
+			</button>
+			<button class="btn btn-default btn-xs remove-pattern" type="button" title="Remove pattern">
+				<span class="glyphicon glyphicon-remove"></span>
+			</button>
+		</div>
+		<div class="panel" id="description-panel">
+			<div class="panel-heading">
+				Description
+			</div>
+			<div class="input-group">
+			<textarea class="form-control description" style="height: 70px; border-radius: 0 0 4px 4px;"></textarea>
+			</div>
+		</div>
+		<div class="panel" id="code-panel">
+			<div class="panel-heading">
+				Code
+			</div>
+			<textarea id="code">var v: true</textarea>
+		</div>	
+	</div>
+	<script>
+		var settings = {
+			lineNumbers: true
+		};		
+		var cm = CodeMirror.fromTextArea(document.getElementById("code"), settings);
+
+		var options = { 
+			splitter: $('.splitter_horizontal'), 
+			min1: 200,
+			min2: 200,
+			enable: true,
+			resize: function(extern, diff, size1, start2) {								
+				$('.left-bar').css({ width: size1 });
+				$('.pattern-list').css({ width: size1 });
+				extern.splitter.css({ left: size1 });
+				$('.content').css({ left: start2 });
+			}
+		};
+		
+		var splitter = splitter(options);
+		
+		$(window).resize(function() {
+			var height = $('.content').height();
+			var offset = $('#code-panel').offset();
+			height -= (offset.top + 31);
+			
+			cm.setSize(null, Math.max(200, height));	
+		});
+		
+		$(window).trigger('resize');
+		$( "#selectable" ).selectable({
+			filter: ".pattern-list-item"   
+		});
+		LtlPatternManager.client = "{{clientid}}";
+		LtlPatternManager.init();
+	</script>
+</body>
+</html>
