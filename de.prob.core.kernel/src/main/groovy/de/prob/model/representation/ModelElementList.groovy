@@ -2,13 +2,20 @@ package de.prob.model.representation;
 
 import de.prob.animator.domainobjects.IEvalElement
 
-
-
-
 public class ModelElementList<E> implements List<E> {
 
-	def List<E> list = new ArrayList<E>()
-	def Map<String,E> keys = new HashMap<String,E>();
+	def List<E> list
+	def Map<String,E> keys
+
+	def ModelElementList() {
+		list = new ArrayList<E>()
+		keys = new HashMap<String,E>()
+	}
+
+	def ModelElementList(elements) {
+		this()
+		addAll(elements)
+	}
 
 	def getProperty(String prop) {
 		return keys[prop];
