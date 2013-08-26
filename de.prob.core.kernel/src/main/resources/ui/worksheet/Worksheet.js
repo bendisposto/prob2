@@ -116,6 +116,10 @@ Worksheet = (function() {
 			"rendered" : renderedhtml,
 			"box-content" : content
 		}
+		if (eval("Languages." + type + ".no_vars") == null) {
+			co.small = "col-lg-10"
+		}
+
 		co.editor = session.render(template, co)
 		return session.render("/ui/worksheet/box.html", co)
 	}

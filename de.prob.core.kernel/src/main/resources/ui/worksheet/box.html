@@ -13,7 +13,9 @@
 			class="close-button glyphicon glyphicon-remove"></span>
 		</span>
 	</div>
-	<div class="renderbox col-lg-10" id="render{{box-number}}">{{&rendered}}</div>
-	<div class="editorbox col-lg-10" id="editor{{box-number}}">{{&editor}}</div>
+	<div class="{{small}}">
+		<div class="renderbox" id="render{{box-number}}">{{&rendered}}</div>
+		<div class="editorbox" id="editor{{box-number}}">{{&editor}}</div>
+	</div>
 	<div id="aside{{box-number}}" class="vars col-lg-2"></div>
 </span>
