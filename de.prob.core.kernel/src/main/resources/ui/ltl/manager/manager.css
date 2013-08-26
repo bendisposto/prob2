@@ -1,6 +1,9 @@
 .left-bar-heading,
 .pattern-list-group,
-.panel-heading {
+.panel-heading,
+.panel-footer,
+.modal-header,
+.modal-footer {
 	background-color: #FAFAFA;
 	background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
 	background-repeat: repeat-x;
@@ -107,7 +110,7 @@
 
 .pattern-name .input-group {
 	margin-bottom: 10px;
-	margin-top: 25px;
+	margin-top: 5px;
 	border-bottom: 1px solid #EEEEEE;
 }
 
@@ -122,10 +125,30 @@
 	font-weight: bold;
 }
 
+.panel-footer {					
+	padding: 5px;
+	
+	border-top: 0;
+	
+	text-align: right;
+}
+
 /* Description panel */
-#description-panel .input-group {
+.panel .input-group {
 	width: 100%; 
+}
+
+.panel .form-control {
+	border: 0; 
+}
+
+#description-panel .input-group {
 	height: 70px;
+}
+
+.form-control[readonly] {
+    background-color: white;
+    cursor: text;
 }
 
 .description {			
@@ -150,25 +173,46 @@
 	box-sizing: content-box; 
 }
 
-/* Buttons */
-.add-pattern {
-	color: #468847;
-	//color: #DFF0D8;
-	float: right;
+/* Remove list */
+#remove-list-panel ul {	
+	padding: 0;
+	margin: 0;
+	
+	overflow-x: hidden;
 }
 
+#remove-list-panel li {	
+	padding: 10px 15px;
+	
+	border-bottom: 1px solid #D4D4D4;
+}
+
+/* Buttons */
 .actions {	
 	width: 100%;
 	text-align: right;
 	margin: 10px 0;
+}	
+
+/* Modal */
+.modal-header {
+	padding: 10px;
+	
+	border-radius: 6px 6px 0 0;
 }
 
-.edit-pattern {
-	color: #3A87AD;
-	//color: #D9EDF7;
+.modal-footer {
+	padding: 10px;
+	
+	border-top: 1px solid #D4D4D4;
+	border-bottom: 0;	
+	border-radius: 0 0 6px 6px;
 }
 
-.remove-pattern {
-	color: #B94A48;
-	//color: #F2DEDE;
-}			
+/* Alert */
+.alert {
+	padding: 1px 5px;
+	text-align: left;
+	float: left;
+	margin-bottom: 0;
+}

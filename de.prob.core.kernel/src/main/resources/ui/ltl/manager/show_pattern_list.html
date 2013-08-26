@@ -1,0 +1,45 @@
+<div class="pattern-name">
+	<h1 id="name">
+		Remove selected patterns
+	</h1>
+</div>
+<div class="actions">
+	<button class="btn btn-danger btn-xs" id="remove-pattern" type="button" title="Remove patterns" data-toggle="modal" href="#removeModal">
+		<span class="glyphicon glyphicon-remove"></span>
+		Remove patterns
+	</button>
+</div>
+<div class="panel" id="remove-list-panel">
+	<div class="panel-heading">
+		Selected patterns
+	</div>
+	<ul class=".remove-list">
+	{{#patterns}}
+		<li>
+			<h4 class="list-group-item-heading">{{name}}</h4>
+			<!--<div class="list-group-item-text">{{description}}</div>-->
+		</li>
+	{{/patterns}}
+	</ul>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Remove selected patterns</h4>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to remove these patterns?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger btn-xs">
+			<span class="glyphicon glyphicon-remove"></span>
+			Remove
+		</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

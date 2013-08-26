@@ -37,8 +37,9 @@
 		<div class="left-bar-heading">
 			<div class="icon"></div>
 			Patterns
-			<button class="btn btn-default btn-xs add-pattern" type="button" title="Create new pattern">
+			<button class="btn btn-success btn-xs" id="add-pattern" style="float: right" type="button" title="Create new pattern">
 				<span class="glyphicon glyphicon-plus"></span>
+				New
 			</button>	
 		</div>
 		<div class="pattern-list">
@@ -54,52 +55,7 @@
 	</div>
 	<div class="splitter_horizontal" style="left: 200px;"></div>
 	<div class="content">
-		<div class="pattern-name">
-			<h1 id="name">
-				absence
-			</h1>
-		</div>
 		
-		<div class="actions">
-			<button class="btn btn-default btn-xs edit-pattern" type="button" title="Edit pattern">
-				<span class="glyphicon glyphicon-pencil"></span>
-			</button>
-			<button class="btn btn-default btn-xs remove-pattern" type="button" title="Remove pattern">
-				<span class="glyphicon glyphicon-remove"></span>
-			</button>
-		</div>
-		<div class="panel" id="description-panel">
-			<div class="panel-heading">
-				Description
-			</div>
-			<div class="input-group">
-			<textarea class="form-control description" style="height: 70px; border-radius: 0 0 4px 4px;"></textarea>
-			</div>
-		</div>
-		<div class="panel" id="code-panel">
-			<div class="panel-heading">
-				Code
-			</div>
-			<textarea id="code">def pattern(v, n:num, s:seq): v
-var v: true
-num n: (5)
-seq s: (FG(true), false without true)
-count i: 1 up to n:
-    v: v | seq(s without true)
-end
-var x: pattern({abc}, n, s)
-x: x or v
-
-var e1: not G(F(X(true)))
-var e2: ! H(O(Y(false)))
-var e3: GFXHOY(sink)
-var e4: current U deadlock
-var e5: e(sth) W [sth] and {pred}
-var e6: e1 R e2 & after({q}, true)
-var e7: before({r}, e2 S e3) T between({q}, {r}, e4 => (e5 or e6 | false)) 
-
-after_until({q}, {r}, x)</textarea>
-		</div>	
 	</div>
 	<script>
 		var options = { 
@@ -116,9 +72,7 @@ after_until({q}, {r}, x)</textarea>
 		};
 		
 		var splitter = splitter(options);
-		LtlPatternManager.init("{{clientid}}", document.getElementById("code"));
-		
-		$(window).trigger('resize');
+		LtlPatternManager.init("{{clientid}}");
 	</script>
 </body>
 </html>

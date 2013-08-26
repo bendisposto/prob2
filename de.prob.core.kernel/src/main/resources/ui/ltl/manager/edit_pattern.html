@@ -1,0 +1,70 @@
+<div class="pattern-name">
+	<h1 id="name">
+		{{#name}}
+		Edit pattern '{{name}}'
+		{{/name}}
+		{{^name}}
+		Create new pattern
+		{{/name}}
+	</h1>
+</div>
+
+<div class="actions">
+	<div class="alert alert-success" id="success-alert" style="display: none">Pattern saved!</div>
+	<button class="btn btn-success btn-xs" id="save-pattern" type="button" title="Save pattern">
+		<span class="glyphicon glyphicon-ok"></span>
+		Save pattern
+	</button>
+	{{#name}}
+	<button class="btn btn-danger btn-xs" id="remove-pattern" type="button" title="Remove pattern" data-toggle="modal" href="#removeModal">
+		<span class="glyphicon glyphicon-remove"></span>
+		Remove
+	</button>
+	{{/name}}
+</div>
+<div class="panel">
+	<div class="panel-heading">
+		Name
+	</div>
+	<div class="input-group">
+		<input class="form-control" type="text" placeholder="Enter a pattern name" value="{{name}}" style="border-radius: 0 0 4px 4px;">
+	</div>
+</div>
+<div class="panel" id="description-panel">
+	<div class="panel-heading">
+		Description
+	</div>
+	<div class="input-group">
+		<textarea class="form-control description" style="height: 70px; border-radius: 0 0 4px 4px;">{{description}}</textarea>
+	</div>
+</div>
+<div class="panel" id="code-panel">
+	<div class="panel-heading">
+		Code
+	</div>
+	<textarea id="code">{{code}}</textarea>
+</div>	
+<!-- Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Remove pattern</h4>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to remove the pattern '{{name}}'?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger btn-xs">
+			<span class="glyphicon glyphicon-remove"></span>
+			Remove
+		</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+	LtlPatternManager.changeCodeElement(document.getElementById("code"));
+</script>

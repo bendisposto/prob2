@@ -175,10 +175,19 @@ LtlEditor = (function() {
 	}
 	
 	/* Init */
-	extern.init = function(client, codeElement, options = {}) {
+	extern.init = function(client, options = {}) {
 		extern.client = client;
 		session.init(client);
 		
+		extern.parseOnChange 		= options.parseOnChange;
+		extern.showPatternMarkers 	= options.showPatternMarkers;
+		extern.highlightOperands 	= options.highlightOperands;
+		extern.showHints		 	= options.showHints;
+	}
+	
+	extern.changeCM = function(codeElement) {
+		//TODO remove old cm
+	
 		var cmSettings = {
 			lineNumbers: true,
 			matchBrackets: true,
@@ -188,11 +197,6 @@ LtlEditor = (function() {
 		};		
 		extern.cm = CodeMirror.fromTextArea(codeElement, cmSettings);
 		
-		extern.parseOnChange 		= options.parseOnChange;
-		extern.showPatternMarkers 	= options.showPatternMarkers;
-		extern.highlightOperands 	= options.highlightOperands;
-		extern.showHints		 	= options.showHints;
-		
 		if (extern.parseOnChange) {
 			enableParseOnChange();
 		}
@@ -201,7 +205,7 @@ LtlEditor = (function() {
 		}
 		if (extern.showHints) {
 			CodeMirror.commands.autocomplete = autocomplete;
-		}
+		}		
 	}
 	
 	return extern;

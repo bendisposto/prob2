@@ -9,35 +9,68 @@ LtlPatternManager = (function() {
 		// Register selection listener to pattern list
 		$("#selectable").selectable({
 			filter: ".pattern-list-item",
-			selected: function( event, ui ) {
-				var count = countSelection();
-				if (count == 1) {
-					var index = $( "#selectable .pattern-list-item" ).index( ui.selected );
-					extern.showPattern(index);
-				} else {
-					// TODO
-				}
-			}	,
-			stop: function( event, ui ) {
-				var count = countSelection();
-				if (count > 1) {
-					alert("remove");
-					// TODO
-				}
-			}			
+			unselected: selected,
+			selected: selected			
+		});
+		
+		// Register create button
+		$('#add-pattern').click(function() {
+			showEditView({});
 		});
 	});	
 	
 	/* Pattern selection */
+	function selected(event, ui) {
+		var count = $('.ui-selected').size();
+		if (count == 1) {
+			var index = $("#selectable .pattern-list-item").index($('.ui-selected'));
+			extern.showPattern(index);
+		} else if (count == 0) {
+			extern.showDefaultPage();
+		} else {
+			extern.showPatternList();
+		}
+	}
+	
 	extern.showPattern = function(index) {
 		var pattern = extern.patterns[index];
-		$('#name').text(pattern.name);
-		$('.description').val(pattern.description);
-	}
+		var content = session.render("/ui/ltl/manager/show_pattern.html", pattern);
+		$(".content").empty().append(content);	
 		
-	function countSelection() {
-		var count = $('.ui-selected').size();
-		return count + $('.ui-selecting').size();
+		// Register edit button
+		$('#edit-pattern').click(function() {
+			showEditView(pattern);
+		});
+	}
+	
+	extern.showDefaultPage = function(index) {
+		$(".content").empty();	
+	}
+	
+	extern.showPatternList = function() {
+		var patterns = [];
+		
+		$('.ui-selected').each(function(i, element) {
+			var index = $("#selectable .pattern-list-item").index(element);
+			patterns.push(extern.patterns[index]);
+		});
+		
+		var content = session.render("/ui/ltl/manager/show_pattern_list.html", { patterns: patterns });
+		$(".content").empty().append(content);	
+	}
+	
+	/* Show create and edit*/	
+	function showEditView(pattern) {
+		var content = session.render("/ui/ltl/manager/edit_pattern.html", pattern);
+		$(".content").empty().append(content);
+		
+		// Register save button
+		$('#save-pattern').click(function() {
+			// TODO save
+			$("#success-alert").fadeIn("fast", function() {
+				$("#success-alert").delay(2000).fadeOut("slow");
+			});
+		});
 	}
 	
 	/* Pattern list */
@@ -67,33 +100,41 @@ LtlPatternManager = (function() {
 		}
 	}
 	
-	/* Init */
-	extern.init = function(client, codeElement) {
-		extern.client = client;
-		session.init(client);
-		
-		// ltl editor
-		var settings = {
-			lineNumbers: true,
-			matchBrackets: true,
-			autoCloseBrackets: true,
-			extraKeys: {"Ctrl-Space": "autocomplete"},
-			gutters: ["CodeMirror-linenumbers", "markers"]
-		};
-		extern.cm = CodeMirror.fromTextArea(codeElement, settings);
-		LtlEditor.init(client, extern.cm);
-		
+	/* Code mirror */
+	extern.changeCodeElement = function(codeElement) {
+		LtlEditor.changeCM(codeElement);		
+		extern.registerResize(LtlEditor.cm);
+	}
+	
+	extern.registerResize = function(cm) {
 		// Register resize callback
-		$(window).resize(function() {
+		$(window).unbind('resize').resize(function() {
 			var height = $('.content').height();
 			var offset = $('#code-panel').offset();
 			height -= (offset.top + 35);
 			
-			extern.cm.setSize(null, Math.max(200, height));	
+			cm.setSize(null, Math.max(200, height));	
+			cm.refresh();
 		});		
+		
+		// Call resize function
+		$(window).trigger('resize');
+	}
+	
+	/* Init */
+	extern.init = function(client) {
+		extern.client = client;
+		session.init(client);	
+		
+		var options = {
+			parseOnChange : true,
+			showPatternMarkers : true,
+			highlightOperands : true,
+			showHints : true
+		};
+		LtlEditor.init(client, options);		
 	}
 	extern.client = null;
-	extern.cm = null;
 	extern.patterns = [];
 	extern.builtins = [];
 	
