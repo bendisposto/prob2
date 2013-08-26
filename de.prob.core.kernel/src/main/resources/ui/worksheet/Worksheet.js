@@ -116,7 +116,8 @@ Worksheet = (function() {
 			"rendered" : renderedhtml,
 			"box-content" : content
 		}
-		return session.render(template, co)
+		co.editor = session.render(template, co)
+		return session.render("/ui/worksheet/box.html", co)
 	}
 
 	function gen_codemirror(number, type) {

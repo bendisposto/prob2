@@ -64,7 +64,7 @@ public abstract class AbstractBox implements IBox {
 	}
 
 	protected String getTemplate() {
-		return "/ui/worksheet/box.html";
+		return "/ui/worksheet/boxes/codemirror.html";
 	}
 
 	@Override

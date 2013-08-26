@@ -76,7 +76,7 @@ public class LoadModel extends AbstractBox {
 
 	@Override
 	protected String getTemplate() {
-		return "/ui/worksheet/load_model.html";
+		return "/ui/worksheet/boxes/load_model.html";
 	}
 
 	@Override

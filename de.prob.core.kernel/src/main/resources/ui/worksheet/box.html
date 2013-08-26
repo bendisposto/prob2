@@ -1,6 +1,6 @@
-<div box="{{box-number}}" id="box{{box-number}}" class="panel">
+<span box="{{box-number}}" id="box{{box-number}}"
+	class="panel col-lg-10">
 
-	
 	<div class="panel-heading">
 
 		<span class="box-number">{{box-number}}</span> <span
@@ -13,7 +13,6 @@
 		</span>
 	</div>
 	<div class="renderbox" id="render{{box-number}}">{{&rendered}}</div>
-	<div class="editorbox" id="editor{{box-number}}">
-		<textarea id="textarea{{box-number}}">{{box-content}}</textarea>
-	</div>
-</div>
+	<div class="editorbox" id="editor{{box-number}}">{{&editor}}</div>
+</span>
+<span id="aside{{box-number}}" class="vars col-lg-2"></span>
