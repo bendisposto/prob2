@@ -16,6 +16,8 @@ Animations = (function() {
 			} else {
 				co.selected = "notSelected"
 			}
+			// co = {id: 5, model:"scheduler", steps: 17, lastOp: "5=[2,7]", selected: notselected}
+			
 			$("#content").append(
 					session.render("/ui/animations/animations_table.html", co))
 		}
