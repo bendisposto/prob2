@@ -10,12 +10,14 @@ import java.util.Map;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 
 import de.prob.web.WebUtils;
+import de.prob.web.views.BindingsSnapshot;
 import de.prob.web.views.IBox;
 
 public class Groovy extends AbstractBox implements IBox {
@@ -28,15 +30,16 @@ public class Groovy extends AbstractBox implements IBox {
 	}
 
 	@Override
-	public List<Object> render() {
+	public List<Object> render(BindingsSnapshot snapshot) {
+		ScriptEngine groovy = owner.getGroovy();
+		snapshot.restoreBindings(groovy);
 		ArrayList<Object> res = new ArrayList<Object>();
 		StringBuffer outputsb = new StringBuffer();
-		Bindings bindings = owner.getGroovy().getBindings(
-				ScriptContext.GLOBAL_SCOPE);
+		Bindings bindings = groovy.getBindings(ScriptContext.GLOBAL_SCOPE);
 		bindings.put("__console", outputsb);
 		Object evaluationResult = "null";
 		try {
-			evaluationResult = owner.getGroovy().eval(content);
+			evaluationResult = groovy.eval(content);
 			String result = StringEscapeUtils.escapeHtml(evaluationResult
 					.toString());
 			String output = StringEscapeUtils.escapeHtml(outputsb.toString())
@@ -77,6 +80,11 @@ public class Groovy extends AbstractBox implements IBox {
 	@Override
 	protected String getContentAsJson() {
 		return content;
+	}
+
+	@Override
+	public EChangeEffect changeEffect() {
+		return EChangeEffect.EVERYTHING_BELOW;
 	}
 
 }

@@ -31,8 +31,11 @@ import de.prob.worksheet.ScriptEngineProvider;
 public class Worksheet extends AbstractSession {
 
 	private int boxcount = 0;
+
 	private final Map<String, IBox> boxes = Collections
 			.synchronizedMap(new HashMap<String, IBox>());
+	private final Map<String, BindingsSnapshot> snapshots = Collections
+			.synchronizedMap(new HashMap<String, BindingsSnapshot>());
 
 	private final BoxFactory boxfactory;
 
@@ -48,7 +51,15 @@ public class Worksheet extends AbstractSession {
 	public Worksheet(ScriptEngineProvider sep, BoxFactory boxfactory) {
 		this.sep = sep;
 		this.boxfactory = boxfactory;
-		groovy = sep.get();
+		groovy = createGroovy();
+	}
+
+	private ScriptEngine createGroovy() {
+		synchronized (sep) {
+			snapshots.clear();
+			ScriptEngine g = sep.get();
+			return g;
+		}
 	}
 
 	private IBox appendFreshBox() {
@@ -143,56 +154,6 @@ public class Worksheet extends AbstractSession {
 		return messages.toArray(new Object[messages.size()]);
 	}
 
-	private List<Object> render(IBox box) {
-
-		Predicate<Entry<String, Object>> p = new Predicate<Entry<String, Object>>() {
-			@Override
-			public boolean apply(@Nullable Entry<String, Object> input) {
-				return !input.getKey().startsWith("__");
-			}
-		};
-		Comparator<Entry<String, Object>> comperator = new Comparator<Entry<String, Object>>() {
-			@Override
-			public int compare(Entry<String, Object> o1,
-					Entry<String, Object> o2) {
-				return o1.getKey().compareTo(o2.getKey());
-			}
-		};
-
-		List<Object> box_rendering = box.render();
-
-		Collection<Entry<String, Object>> bindings_global = Collections2
-				.filter(groovy.getBindings(ScriptContext.GLOBAL_SCOPE)
-						.entrySet(), p);
-		Collection<Entry<String, Object>> bindings_local = Collections2.filter(
-				groovy.getBindings(ScriptContext.ENGINE_SCOPE).entrySet(), p);
-
-		List<Entry<String, Object>> vars = new ArrayList<Entry<String, Object>>();
-		vars.addAll(bindings_local);
-		vars.addAll(bindings_global);
-		Collections.sort(vars, comperator);
-
-		Function<Entry<String, Object>, Map<String, String>> toJson = new Function<Map.Entry<String, Object>, Map<String, String>>() {
-
-			@Override
-			@Nullable
-			public Map<String, String> apply(
-					@Nullable Entry<String, Object> input) {
-				HashMap<String, String> result = new HashMap<String, String>();
-				result.put("name", input.getKey());
-				result.put("value", input.getValue().toString());
-				return result;
-			}
-		};
-		Collection<Map<String, String>> vars2 = Collections2.transform(vars,
-				toJson);
-
-		box_rendering.add(WebUtils.wrap("cmd", "Worksheet.aside", "number",
-				box.getId(), "aside", WebUtils.toJson(vars2)));
-
-		return box_rendering;
-	}
-
 	private List<Object> leaveEditorDown(String boxId, String text) {
 		ArrayList<Object> res = new ArrayList<Object>();
 		res.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number", boxId));
@@ -213,10 +174,26 @@ public class Worksheet extends AbstractSession {
 		return box;
 	}
 
+	private List<Object> reEvaluate(EChangeEffect effect, int position) {
+		switch (effect) {
+		case DONT_CARE:
+			return Collections.emptyList();
+		case EVERYTHING_BELOW:
+			return reEvaluateBoxes(position);
+		default: // FULL_REEVALUATION
+			return reEvaluateBoxes(0);
+		}
+	}
+
+	private List<Object> reEvaluate(String boxId, int position) {
+		EChangeEffect effect = boxes.get(boxId).changeEffect();
+		return reEvaluate(effect, position);
+	}
+
 	private List<Object> reEvaluateBoxes(int reorderposition) {
 		ArrayList<Object> messages = new ArrayList<Object>();
 		if (reorderposition == 0) {
-			groovy = sep.get();
+			groovy = createGroovy();
 		}
 		logger.trace("Re-Evaluating boxes, starting at box {}", reorderposition);
 		for (int i = reorderposition; i < order.size(); i++) {
@@ -258,6 +235,63 @@ public class Worksheet extends AbstractSession {
 		}
 	}
 
+	private List<Object> render(IBox box) {
+
+		Predicate<Entry<String, Object>> p = new Predicate<Entry<String, Object>>() {
+			@Override
+			public boolean apply(@Nullable Entry<String, Object> input) {
+				return !input.getKey().startsWith("__");
+			}
+		};
+		Comparator<Entry<String, Object>> comperator = new Comparator<Entry<String, Object>>() {
+			@Override
+			public int compare(Entry<String, Object> o1,
+					Entry<String, Object> o2) {
+				return o1.getKey().compareTo(o2.getKey());
+			}
+		};
+
+		final BindingsSnapshot previous_snapshot = box.getId().equals(
+				order.get(0)) ? BindingsSnapshot.FRESH : snapshots
+				.get(getPredecessor(box.getId()));
+		List<Object> box_rendering = box.render(previous_snapshot);
+		final BindingsSnapshot current_snapshot = new BindingsSnapshot(groovy);
+		snapshots.put(box.getId(), current_snapshot);
+
+		Collection<Entry<String, Object>> bindings_global = Collections2
+				.filter(groovy.getBindings(ScriptContext.GLOBAL_SCOPE)
+						.entrySet(), p);
+		Collection<Entry<String, Object>> bindings_local = Collections2.filter(
+				groovy.getBindings(ScriptContext.ENGINE_SCOPE).entrySet(), p);
+
+		List<Entry<String, Object>> vars = new ArrayList<Entry<String, Object>>();
+		vars.addAll(bindings_local);
+		vars.addAll(bindings_global);
+		Collections.sort(vars, comperator);
+
+		Function<Entry<String, Object>, Map<String, String>> toJson = new Function<Map.Entry<String, Object>, Map<String, String>>() {
+
+			@Override
+			@Nullable
+			public Map<String, String> apply(
+					@Nullable Entry<String, Object> input) {
+				HashMap<String, String> result = new HashMap<String, String>();
+				result.put("name", input.getKey());
+				result.put("value", input.getValue().toString());
+				result.put("fresh", String.valueOf(current_snapshot.delta(
+						previous_snapshot).contains(input.getKey())));
+				return result;
+			}
+		};
+		Collection<Map<String, String>> vars2 = Collections2.transform(vars,
+				toJson);
+
+		box_rendering.add(WebUtils.wrap("cmd", "Worksheet.aside", "number",
+				box.getId(), "aside", WebUtils.toJson(vars2)));
+
+		return box_rendering;
+	}
+
 	public Object reorder(Map<String, String[]> params) {
 		String boxId = params.get("box")[0];
 		int oldPos = order.indexOf(boxId);
@@ -270,22 +304,6 @@ public class Worksheet extends AbstractSession {
 		logger.trace("Reordered box {}. From {} to {}.", new Object[] { boxId,
 				oldPos, newpos });
 		return reEvaluate(boxId, position).toArray();
-	}
-
-	private List<Object> reEvaluate(String boxId, int position) {
-		EChangeEffect effect = boxes.get(boxId).changeEffect();
-		return reEvaluate(effect, position);
-	}
-
-	private List<Object> reEvaluate(EChangeEffect effect, int position) {
-		switch (effect) {
-		case DONT_CARE:
-			return Collections.emptyList();
-		case EVERYTHING_BELOW:
-			return reEvaluateBoxes(position);
-		default: // FULL_REEVALUATION
-			return reEvaluateBoxes(0);
-		}
 	}
 
 	public Object setDefaultType(Map<String, String[]> params) {

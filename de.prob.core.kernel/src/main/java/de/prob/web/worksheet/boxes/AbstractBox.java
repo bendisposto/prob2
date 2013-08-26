@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+
 import de.prob.web.WebUtils;
 import de.prob.web.views.IBox;
 import de.prob.web.views.Worksheet;
@@ -16,6 +19,7 @@ public abstract class AbstractBox implements IBox {
 
 	protected String id;
 	protected Worksheet owner;
+	protected Bindings bindings = null;
 
 	protected Map<String, String> makeHtml(String id, String html) {
 		return WebUtils
@@ -28,6 +32,10 @@ public abstract class AbstractBox implements IBox {
 			res.add(map);
 		}
 		return res;
+	}
+
+	protected void freezeBindings() {
+		owner.getGroovy().getBindings(ScriptContext.ENGINE_SCOPE);
 	}
 
 	@Override

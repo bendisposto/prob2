@@ -7,6 +7,7 @@ import java.util.Map;
 import org.pegdown.PegDownProcessor;
 
 import de.prob.web.WebUtils;
+import de.prob.web.views.BindingsSnapshot;
 
 public class Markdown extends AbstractBox {
 
@@ -14,7 +15,7 @@ public class Markdown extends AbstractBox {
 	private String content = "";
 
 	@Override
-	public List<Object> render() {
+	public List<Object> render(BindingsSnapshot snapshot) {
 		ArrayList<Object> res = new ArrayList<Object>();
 		String rendered = pegdown.markdownToHtml(content);
 		if (rendered.isEmpty()) {

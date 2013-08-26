@@ -13,7 +13,7 @@ public interface IBox {
 
 	void setOwner(Worksheet owner);
 
-	List<Object> render();
+	List<Object> render(BindingsSnapshot bindings);
 
 	Map<String, String> createMessage();
 

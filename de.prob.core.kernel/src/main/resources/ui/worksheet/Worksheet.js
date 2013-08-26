@@ -404,8 +404,9 @@ Worksheet = (function() {
 
 		$("#aside" + boxnr).children().remove()
 		for (e in aside) {
-			var el = $("<div class='aside-label label label-default' >"
-					+ aside[e].name + "</div>")
+			var el = $("<div class='aside-label label "
+					+ (aside[e].fresh ==="true" ? "label-primary" : "label-default")
+					+ "' >" + aside[e].name + "</div>")
 			el = el.appendTo("#aside" + boxnr)
 			$("#value_" + aside[e].name + "_" + boxnr).remove();
 			var co = {

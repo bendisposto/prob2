@@ -10,6 +10,7 @@ import de.prob.animator.command.EvalstoreEvalCommand;
 import de.prob.animator.command.EvalstoreEvalCommand.EvalstoreResult;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.model.representation.AbstractModel;
+import de.prob.web.views.BindingsSnapshot;
 
 public class B extends AbstractBox {
 
@@ -17,7 +18,7 @@ public class B extends AbstractBox {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object> render() {
+	public List<Object> render(BindingsSnapshot snapshot) {
 		ScriptEngine groovy = owner.getGroovy();
 		AbstractModel model = (AbstractModel) groovy.getBindings(
 				ScriptContext.GLOBAL_SCOPE).get("model");

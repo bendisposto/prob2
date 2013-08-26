@@ -15,6 +15,7 @@ import de.prob.animator.command.EvalstoreCreateByStateCommand;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.StateSpace;
 import de.prob.web.FileBrowserServlet;
+import de.prob.web.views.BindingsSnapshot;
 
 public class LoadModel extends AbstractBox {
 
@@ -30,7 +31,7 @@ public class LoadModel extends AbstractBox {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object> render() {
+	public List<Object> render(BindingsSnapshot snapshot) {
 		File file = new File(content);
 		if (!FileBrowserServlet.validProBFile(file))
 			return pack(makeHtml(id,
