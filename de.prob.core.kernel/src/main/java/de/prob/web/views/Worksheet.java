@@ -1,17 +1,22 @@
 package de.prob.web.views;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.servlet.AsyncContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.inject.Inject;
 
 import de.prob.web.AbstractSession;
@@ -127,8 +132,34 @@ public class Worksheet extends AbstractSession {
 		}
 		IBox box = boxes.get(boxId);
 		box.setContent(params);
-		messages.addAll(box.render());
+		messages.addAll(render(box));
 		return messages.toArray(new Object[messages.size()]);
+	}
+
+	private List<Object> render(IBox box) {
+
+		Predicate<String> p = new Predicate<String>() {
+			@Override
+			public boolean apply(@Nullable String input) {
+				return !input.startsWith("__");
+			}
+		};
+
+		List<Object> box_rendering = box.render();
+		Collection<String> bindings_global = Collections2.filter(groovy
+				.getBindings(ScriptContext.GLOBAL_SCOPE).keySet(), p);
+		Collection<String> bindings_local = Collections2.filter(groovy
+				.getBindings(ScriptContext.ENGINE_SCOPE).keySet(), p);
+
+		List<String> vars = new ArrayList<String>();
+		vars.addAll(bindings_local);
+		vars.addAll(bindings_global);
+		Collections.sort(vars);
+
+		box_rendering.add(WebUtils.wrap("cmd", "Worksheet.aside", "number",
+				box.getId(), "aside", WebUtils.toJson(vars)));
+
+		return box_rendering;
 	}
 
 	private List<Object> leaveEditorDown(String boxId, String text) {
@@ -161,7 +192,7 @@ public class Worksheet extends AbstractSession {
 			String id = order.get(i);
 			IBox box = boxes.get(id);
 			if (box.requiresReEvaluation()) {
-				messages.addAll(box.render());
+				messages.addAll(render(box));
 			}
 		}
 		return messages.toArray();
@@ -183,7 +214,7 @@ public class Worksheet extends AbstractSession {
 			for (String id : order) {
 				IBox b = boxes.get(id);
 				cp.add(b.createMessage());
-				cp.addAll(b.render());
+				cp.addAll(render(b));
 				cp.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number", id));
 			}
 

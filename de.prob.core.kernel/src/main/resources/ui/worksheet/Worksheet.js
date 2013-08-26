@@ -224,6 +224,7 @@ Worksheet = (function() {
 	}
 	function delete_box(id) {
 		$("#box" + id).remove()
+		$("#aside" + id).remove()
 	}
 
 	function key_handler(evt) {
@@ -382,6 +383,17 @@ Worksheet = (function() {
 		}
 	}
 
+	function aside(boxnr, asidestr) {
+		var aside = JSON.parse(asidestr)
+		var ab = $("#aside" + boxnr)
+		ab.children().remove()
+		for (e in aside) {
+			ab
+					.append("<div class='aside-label label label-default'>" + aside[e]
+							+ "</div>")
+		}
+	}
+
 	function browse(dir_dom, box) {
 		$('#filedialog').off('hidden.bs.modal')
 		$('#filedialog').on('hidden.bs.modal',
@@ -451,6 +463,10 @@ Worksheet = (function() {
 		delete_box(data.id)
 	}
 	extern.set_ok_button_state = set_ok_button_state
+
+	extern.aside = function(data) {
+		aside(data.number, data.aside)
+	}
 
 	// Debugging
 	extern.editors = editors

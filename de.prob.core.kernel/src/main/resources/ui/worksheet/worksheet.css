@@ -20,6 +20,12 @@
 	min-height: 20px;
 }
 
+.aside-label {
+	float: left;
+	margin-right: 2px;
+	margin-bottom: 2px;
+}
+
 .CodeMirror-hscrollbar {
 	display: none;
 }
@@ -79,7 +85,6 @@
 
 .panel {
 	float: left;
-	width: 100%;
 	margin-bottom: 10px;
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
