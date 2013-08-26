@@ -20,6 +20,10 @@
 	min-height: 20px;
 }
 
+.vars {
+	float: right;
+}
+
 .aside-label {
 	float: left;
 	margin-right: 2px;

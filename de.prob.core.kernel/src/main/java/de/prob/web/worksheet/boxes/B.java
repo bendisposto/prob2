@@ -47,7 +47,7 @@ public class B extends AbstractBox {
 	}
 
 	@Override
-	public EReorderEffect reorderEffect() {
-		return EReorderEffect.EVERYTHING_BELOW;
+	public EChangeEffect changeEffect() {
+		return EChangeEffect.EVERYTHING_BELOW;
 	}
 }

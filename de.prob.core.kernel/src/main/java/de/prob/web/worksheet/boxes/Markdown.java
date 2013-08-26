@@ -37,8 +37,8 @@ public class Markdown extends AbstractBox {
 
 	// Markdown boxes can be moved arbitrarily
 	@Override
-	public EReorderEffect reorderEffect() {
-		return EReorderEffect.DONT_CARE;
+	public EChangeEffect changeEffect() {
+		return EChangeEffect.DONT_CARE;
 	}
 
 	// Even when re-evaluating, we don't have to mess with Markdown boxes

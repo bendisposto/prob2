@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 import de.prob.web.data.Message;
-import de.prob.web.worksheet.boxes.EReorderEffect;
+import de.prob.web.worksheet.boxes.EChangeEffect;
 import de.prob.worksheet.ScriptEngineProvider;
 
 public class Worksheet extends AbstractSession {
@@ -136,6 +136,7 @@ public class Worksheet extends AbstractSession {
 		IBox box = boxes.get(boxId);
 		box.setContent(params);
 		messages.addAll(render(box));
+		messages.addAll(reEvaluate(boxId, order.indexOf(boxId)));
 		return messages.toArray(new Object[messages.size()]);
 	}
 
@@ -209,7 +210,7 @@ public class Worksheet extends AbstractSession {
 		return box;
 	}
 
-	private Object reEvaluateBoxes(int reorderposition) {
+	private List<Object> reEvaluateBoxes(int reorderposition) {
 		ArrayList<Object> messages = new ArrayList<Object>();
 		if (reorderposition == 0) {
 			groovy = sep.get();
@@ -222,7 +223,7 @@ public class Worksheet extends AbstractSession {
 				messages.addAll(render(box));
 			}
 		}
-		return messages.toArray();
+		return messages;
 	}
 
 	@Override
@@ -262,20 +263,22 @@ public class Worksheet extends AbstractSession {
 		order.remove(boxId);
 		order.add(newpos, boxId);
 
-		int reorderposition = Math.min(oldPos, newpos);
-		EReorderEffect effect = boxes.get(boxId).reorderEffect();
-		logger.trace(
-				"Reordered box {}. From {} to {}. Boxtype demands effect: {}",
-				new Object[] { boxId, oldPos, newpos, effect });
+		int position = Math.min(oldPos, newpos);
+		logger.trace("Reordered box {}. From {} to {}.", new Object[] { boxId,
+				oldPos, newpos });
+		return reEvaluate(boxId, position).toArray();
+	}
+
+	private List<Object> reEvaluate(String boxId, int position) {
+		EChangeEffect effect = boxes.get(boxId).changeEffect();
 		switch (effect) {
 		case DONT_CARE:
 			return null;
 		case EVERYTHING_BELOW:
-			return reEvaluateBoxes(reorderposition);
+			return reEvaluateBoxes(position);
 		default: // FULL_REEVALUATION
 			return reEvaluateBoxes(0);
 		}
-
 	}
 
 	public Object setDefaultType(Map<String, String[]> params) {

@@ -83,8 +83,8 @@ public abstract class AbstractBox implements IBox {
 	}
 
 	@Override
-	public EReorderEffect reorderEffect() {
-		return EReorderEffect.FULL_REEVALUATION; // this is always safe
+	public EChangeEffect changeEffect() {
+		return EChangeEffect.FULL_REEVALUATION; // this is always safe
 	}
 
 	@Override
