@@ -11,8 +11,10 @@ import javax.script.ScriptException;
 
 import com.google.common.io.Files;
 
+import de.prob.animator.command.EvalstoreCreateByStateCommand;
+import de.prob.model.representation.AbstractModel;
+import de.prob.statespace.StateSpace;
 import de.prob.web.FileBrowserServlet;
-import de.prob.worksheet.GroovySE;
 
 public class LoadModel extends AbstractBox {
 
@@ -43,7 +45,7 @@ public class LoadModel extends AbstractBox {
 	private String load_file(String filename) {
 		ScriptEngine groovy = owner.getGroovy();
 		String command = "";
-		String name = "model_" + GroovySE.nextVar();
+		String name = "model";
 		String extension = Files.getFileExtension(filename);
 		if (extension.equals("mch") || extension.equals("ref")
 				|| extension.equals("imp")) {
@@ -57,10 +59,17 @@ public class LoadModel extends AbstractBox {
 		}
 		if (command != "") {
 			try {
-				Object result = groovy.eval(command);
+				AbstractModel result = (AbstractModel) groovy.eval(command);
+				StateSpace statespace = result.getStatespace();
+				EvalstoreCreateByStateCommand c = new EvalstoreCreateByStateCommand(
+						"root");
+				statespace.execute(c);
+				long store = c.getEvalstoreId();
+
 				Bindings bindings = groovy
 						.getBindings(ScriptContext.GLOBAL_SCOPE);
 				bindings.put(name, result);
+				bindings.put("store", store);
 				return name;
 			} catch (ScriptException e) {
 				e.printStackTrace();

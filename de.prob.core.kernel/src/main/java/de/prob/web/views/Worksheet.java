@@ -3,9 +3,11 @@ package de.prob.web.views;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 import javax.script.ScriptContext;
@@ -15,6 +17,7 @@ import javax.servlet.AsyncContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.inject.Inject;
@@ -138,26 +141,50 @@ public class Worksheet extends AbstractSession {
 
 	private List<Object> render(IBox box) {
 
-		Predicate<String> p = new Predicate<String>() {
+		Predicate<Entry<String, Object>> p = new Predicate<Entry<String, Object>>() {
 			@Override
-			public boolean apply(@Nullable String input) {
-				return !input.startsWith("__");
+			public boolean apply(@Nullable Entry<String, Object> input) {
+				return !input.getKey().startsWith("__");
+			}
+		};
+		Comparator<Entry<String, Object>> comperator = new Comparator<Entry<String, Object>>() {
+			@Override
+			public int compare(Entry<String, Object> o1,
+					Entry<String, Object> o2) {
+				return o1.getKey().compareTo(o2.getKey());
 			}
 		};
 
 		List<Object> box_rendering = box.render();
-		Collection<String> bindings_global = Collections2.filter(groovy
-				.getBindings(ScriptContext.GLOBAL_SCOPE).keySet(), p);
-		Collection<String> bindings_local = Collections2.filter(groovy
-				.getBindings(ScriptContext.ENGINE_SCOPE).keySet(), p);
 
-		List<String> vars = new ArrayList<String>();
+		Collection<Entry<String, Object>> bindings_global = Collections2
+				.filter(groovy.getBindings(ScriptContext.GLOBAL_SCOPE)
+						.entrySet(), p);
+		Collection<Entry<String, Object>> bindings_local = Collections2.filter(
+				groovy.getBindings(ScriptContext.ENGINE_SCOPE).entrySet(), p);
+
+		List<Entry<String, Object>> vars = new ArrayList<Entry<String, Object>>();
 		vars.addAll(bindings_local);
 		vars.addAll(bindings_global);
-		Collections.sort(vars);
+		Collections.sort(vars, comperator);
+
+		Function<Entry<String, Object>, Map<String, String>> toJson = new Function<Map.Entry<String, Object>, Map<String, String>>() {
+
+			@Override
+			@Nullable
+			public Map<String, String> apply(
+					@Nullable Entry<String, Object> input) {
+				HashMap<String, String> result = new HashMap<String, String>();
+				result.put("name", input.getKey());
+				result.put("value", input.getValue().toString());
+				return result;
+			}
+		};
+		Collection<Map<String, String>> vars2 = Collections2.transform(vars,
+				toJson);
 
 		box_rendering.add(WebUtils.wrap("cmd", "Worksheet.aside", "number",
-				box.getId(), "aside", WebUtils.toJson(vars)));
+				box.getId(), "aside", WebUtils.toJson(vars2)));
 
 		return box_rendering;
 	}

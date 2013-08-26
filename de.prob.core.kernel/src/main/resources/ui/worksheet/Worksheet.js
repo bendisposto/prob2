@@ -155,6 +155,10 @@ Worksheet = (function() {
 				return this.codemirror.getValue()
 			}
 		}
+		if (lang_data.no_vars != null) {
+			editor_data.no_vars = true
+		}
+
 		var focusFkt = lang_data.focusFkt;
 		if (focusFkt != null) {
 			editor_data.focusFkt = lang_data.focusFkt(number)
@@ -383,14 +387,31 @@ Worksheet = (function() {
 		}
 	}
 
+	function make_listener(box, name) {
+		return function() {
+			$("#value_" + name + "_" + box).modal("show")
+		}
+	}
+
 	function aside(boxnr, asidestr) {
+		if (editors[boxnr].no_vars == true)
+			return;
 		var aside = JSON.parse(asidestr)
-		var ab = $("#aside" + boxnr)
-		ab.children().remove()
+
+		$("#aside" + boxnr).children().remove()
 		for (e in aside) {
-			ab
-					.append("<div class='aside-label label label-default'>" + aside[e]
-							+ "</div>")
+			var el = $("<div class='aside-label label label-default' >"
+					+ aside[e].name + "</div>")
+			el = el.appendTo("#aside" + boxnr)
+			$("#value_" + aside[e].name + "_" + boxnr).remove();
+			var co = {
+				'box_number' : boxnr,
+				'variable_name' : aside[e].name,
+				'variable_value' : aside[e].value
+			}
+			$("body").append(
+					session.render("/ui/worksheet/variable_info.html", co))
+			el.click(make_listener(boxnr, aside[e].name))
 		}
 	}
 
