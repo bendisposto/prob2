@@ -5,15 +5,17 @@ public class PatternInfo {
 	private String name;
 	private String description;
 	private String code;
+	private boolean builtin;
 
 	public PatternInfo() {
 
 	}
 
-	public PatternInfo(String name, String description, String code) {
+	public PatternInfo(String name, String description, String code, boolean builtin) {
 		this.name = name;
 		this.description = description;
 		this.code = code;
+		this.builtin = builtin;
 	}
 
 	public String getName() {
@@ -38,6 +40,14 @@ public class PatternInfo {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public boolean isBuiltin() {
+		return builtin;
+	}
+
+	public void setBuiltin(boolean builtin) {
+		this.builtin = builtin;
 	}
 
 }

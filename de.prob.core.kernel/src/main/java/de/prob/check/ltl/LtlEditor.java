@@ -73,7 +73,7 @@ public class LtlEditor extends AbstractSession {
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
-		return simpleRender(clientid, "ui/ltl/editor.html");
+		return simpleRender(clientid, "ui/ltl/editor/editor.html");
 	}
 
 	public Object parseInput(Map<String, String[]> params) {

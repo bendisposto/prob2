@@ -158,9 +158,9 @@
       var className = "CodeMirror-hint" + (i ? "" : " CodeMirror-hint-active");
       if (cur.className != null) className = cur.className + " " + className;
       elt.className = className;
+      elt.hintId = i;
       if (cur.render) cur.render(elt, data, cur);
       else elt.appendChild(document.createTextNode(cur.displayText || getText(cur)));
-      elt.hintId = i;
     }
 
     var pos = cm.cursorCoords(options.alignWithWord !== false ? data.from : null);

@@ -5,10 +5,12 @@
 		var text = document.createElement("span");
 		text.className = "text";
 		text.appendChild(document.createTextNode(data.text));
+		text.hintId = element.hintId;
 		
 		var type = document.createElement("span");
 		type.className = "type";
 		type.appendChild(document.createTextNode(data.type));
+		type.hintId = element.hintId;
 		
 		element.className = "CodeMirror-hint hint-" + data.type;
 		if (data.active) {

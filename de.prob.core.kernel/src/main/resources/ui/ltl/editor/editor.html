@@ -15,7 +15,7 @@
 	<link rel="stylesheet" href="/ui/common/codemirror.css">
 	<link rel="stylesheet" href="/ui/common/show-hint.css">
 	<link rel="stylesheet" href="/ui/common/bootstrap.css">
-	<link rel="stylesheet" href="/ui/ltl/editor.css">
+	<link rel="stylesheet" href="/ui/ltl/editor/editor.css">
 	
 <!-- JavaScript -->
 	<script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
@@ -26,8 +26,8 @@
 	<script type="text/javascript" src="/ui/libs/closebrackets.js"></script>
 	<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
 	<script type="text/javascript" src="/ui/common/Session.js"></script>
-	<script type="text/javascript" src="/ui/ltl/ltl-hint.js"></script>
-	<script type="text/javascript" src="/ui/ltl/LtlEditor.js"></script>
+	<script type="text/javascript" src="/ui/ltl/editor/ltl-hint.js"></script>
+	<script type="text/javascript" src="/ui/ltl/editor/LtlEditor.js"></script>
 </head>
 <body style="height: 100%;">
 	<textarea id="code" name="code">
@@ -51,18 +51,13 @@ var e7: before({r}, e2 S e3) T between({q}, {r}, e4 => (e5 or e6 | false))
 
 after_until({q}, {r}, x)</textarea>
 	<script>
-		var settings = {
-			lineNumbers: true,
-			matchBrackets: true,
-			autoCloseBrackets: true,
-			extraKeys: {"Ctrl-Space": "autocomplete"},
-			gutters: ["CodeMirror-linenumbers", "markers"]
+		var options = {
+			parseOnChange : true,
+			showPatternMarkers : true,
+			highlightOperands : true,
+			showHints : true
 		};
-		
-		var cm = CodeMirror.fromTextArea(document.getElementById("code"), settings);
-		LtlEditor.init("{{clientid}}", cm);
-		LtlEditor.registerChangeHandlers();
-		LtlEditor.enableOperandHighlighting();
+		LtlEditor.init("{{clientid}}", document.getElementById("code"), options);
     </script>
 </body>
 </html>

@@ -6,14 +6,53 @@ LtlEditor = (function() {
 	var highlightDelay;
 
 	$(document).ready(function() {
-		parseInput();
 	});
+	
+	/* Parsing */
+	function enableParseOnChange() {
+		extern.cm.on("change", function(cm, obj) {
+			clearTimeout(delay);
+			delay = setTimeout(parseInput, 500);
+		});
+		parseInput();
+	}
 	
 	function parseInput() {
 		session.sendCmd("parseInput", {
 			"input" : extern.cm.getValue(),
 			"client" : extern.client
 		});
+	}
+	
+	extern.parseOk = function(data) {
+		clearMarkers();
+		if (extern.showPatternMarkers) {
+			addMarkers(JSON.parse(data.markers), false);
+		}
+		addMarkers(JSON.parse(data.warnings));
+		refreshOperandHighlighting(250);
+	}
+	
+	extern.parseFailed = function(data) {
+		clearMarkers();
+		addMarkers(JSON.parse(data.errors));
+		if (extern.showPatternMarkers) {
+			addMarkers(JSON.parse(data.markers), false);
+		}
+		addMarkers(JSON.parse(data.warnings));
+		refreshOperandHighlighting(250);
+	}
+	
+	/* Operand highlighting */
+	function enableOperandHighlighting() {
+		extern.cm.on("cursorActivity", function(cm) {
+			refreshOperandHighlighting(500);
+		});
+	}
+	
+	function refreshOperandHighlighting(ms) {
+		clearTimeout(highlightDelay);
+		highlightDelay = setTimeout(getExpressionAtCursorPosition, ms);	
 	}
 	
 	function getExpressionAtCursorPosition() {
@@ -25,6 +64,24 @@ LtlEditor = (function() {
 		});
 	}
 	
+	extern.expressionFound = function(data) {
+		removeTextMarkers(["operator", "operand"]);
+		highlightOperand(JSON.parse(data.expression));
+	}
+	
+	extern.noExpressionFound = function(data) {
+		removeTextMarkers(["operator", "operand"]);
+	}
+	
+	function highlightOperand(expression) {		
+		setTextMarker(expression.operator, { className: "operator" });	
+		var operands = expression.operands;
+		for (var i = 0; i < operands.length; i++) {
+			setTextMarker(operands[i], { className: "operand" });
+		}
+	}
+	
+	/* Gutter- and text-markers */
 	function addMarkers(markers, textmarker = true) {
 		for (var i = 0; i < markers.length; i++) {
 			var marker = markers[i];
@@ -87,19 +144,7 @@ LtlEditor = (function() {
 		extern.cm.markText(from, to, options);
 	}
 	
-	function highlightOperand(expression) {		
-		setTextMarker(expression.operator, { className: "operator" });	
-		var operands = expression.operands;
-		for (var i = 0; i < operands.length; i++) {
-			setTextMarker(operands[i], { className: "operand" });
-		}
-	}
-	
-	function refreshOperandHighlighting(ms) {
-		clearTimeout(highlightDelay);
-		highlightDelay = setTimeout(getExpressionAtCursorPosition, ms);	
-	}
-	
+	/* Code completion */
 	function autocomplete(cm) {
 		var WORD = /[\w$]+/;
 		var cursor = cm.getCursor();
@@ -120,45 +165,7 @@ LtlEditor = (function() {
 			"input" : cm.getValue(),
 			"client" : extern.client
 		});
-	}
-	
-	// Extern 	
-	extern.registerChangeHandlers = function() {
-		extern.cm.on("change", function(cm, obj) {
-			clearTimeout(delay);
-			delay = setTimeout(parseInput, 500);
-		});
-	}
-	
-	extern.enableOperandHighlighting = function() {
-		extern.cm.on("cursorActivity", function(cm) {
-			refreshOperandHighlighting(500);
-		});
-	}
-	
-	extern.parseOk = function(data) {
-		clearMarkers();
-		addMarkers(JSON.parse(data.markers), false);
-		addMarkers(JSON.parse(data.warnings));
-		refreshOperandHighlighting(250);
-	}
-	
-	extern.parseFailed = function(data) {
-		clearMarkers();
-		addMarkers(JSON.parse(data.errors));
-		addMarkers(JSON.parse(data.markers), false);
-		addMarkers(JSON.parse(data.warnings));
-		refreshOperandHighlighting(250);
-	}
-	
-	extern.expressionFound = function(data) {
-		removeTextMarkers(["operator", "operand"]);
-		highlightOperand(JSON.parse(data.expression));
-	}
-	
-	extern.noExpressionFound = function(data) {
-		removeTextMarkers(["operator", "operand"]);
-	}
+	}	
 	
 	extern.showHint = function(data) {
 		var options = {
@@ -167,12 +174,34 @@ LtlEditor = (function() {
 		CodeMirror.showHint(extern.cm, CodeMirror.hint.ltl, options);		
 	}
 	
-	extern.init = function(client, cm) {
+	/* Init */
+	extern.init = function(client, codeElement, options = {}) {
 		extern.client = client;
 		session.init(client);
-		extern.cm = cm;
 		
-		CodeMirror.commands.autocomplete = autocomplete;
+		var cmSettings = {
+			lineNumbers: true,
+			matchBrackets: true,
+			autoCloseBrackets: true,
+			extraKeys: {"Ctrl-Space": "autocomplete"},
+			gutters: ["CodeMirror-linenumbers", "markers"]
+		};		
+		extern.cm = CodeMirror.fromTextArea(codeElement, cmSettings);
+		
+		extern.parseOnChange 		= options.parseOnChange;
+		extern.showPatternMarkers 	= options.showPatternMarkers;
+		extern.highlightOperands 	= options.highlightOperands;
+		extern.showHints		 	= options.showHints;
+		
+		if (extern.parseOnChange) {
+			enableParseOnChange();
+		}
+		if (extern.highlightOperands) {
+			enableOperandHighlighting();
+		}
+		if (extern.showHints) {
+			CodeMirror.commands.autocomplete = autocomplete;
+		}
 	}
 	
 	return extern;

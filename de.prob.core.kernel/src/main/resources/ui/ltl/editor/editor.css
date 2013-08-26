@@ -26,27 +26,27 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	background-color: #FCFCFC;
 }
 .warning { 
-	background-image: url(/ui/ltl/icon_warning.gif); 
+	background-image: url('./icon_warning.gif'); 
 	height: 16px; 
 }
 
 .error { 
-	background-image: url(/ui/ltl/icon_error.gif);
+	background-image: url('./icon_error.gif');
 	height: 16px; 
 }
 
 .pattern {
-	background-image: url(/ui/ltl/icon_move_pattern.gif);
+	background-image: url('./icon_move_pattern.gif');
 	height: 16px; 
 	cursor: pointer;
 }
 
 .warning-underline {
-	background: url(/ui/ltl/warning_underline.gif) bottom repeat-x;
+	background: url('./warning_underline.gif') bottom repeat-x;
 }
 
 .error-underline {
-	background: url(/ui/ltl/error_underline.gif) bottom repeat-x;
+	background: url('./error_underline.gif') bottom repeat-x;
 }
 
 .operator {
