@@ -58,20 +58,23 @@ public class Worksheet extends AbstractSession {
 	}
 
 	public Object deleteBox(Map<String, String[]> params) {
+		List<Object> messages = new ArrayList<Object>();
 		String box = params.get("number")[0];
 		logger.trace("Delete box {}", box);
 		int index = order.indexOf(box);
 		order.remove(index);
+		IBox deleted = boxes.get(box);
 		boxes.remove(box);
 		Map<String, String> deleteCmd = WebUtils.wrap("cmd",
 				"Worksheet.deleteBox", "id", box);
-		if (order.size() > 0)
-			return deleteCmd;
-		else {
-			IBox freshbox = appendFreshBox();
-			Map<String, String> renderCmd = freshbox.createMessage();
-			return new Object[] { deleteCmd, renderCmd };
+		messages.add(deleteCmd);
+		if (order.size() == 0) {
+			Map<String, String> renderCmd = appendFreshBox().createMessage();
+			messages.add(renderCmd);
+		} else if (index != order.size()) {
+			messages.addAll(reEvaluate(deleted.changeEffect(), index));
 		}
+		return messages.toArray();
 	}
 
 	private String firstBox() {
@@ -271,9 +274,13 @@ public class Worksheet extends AbstractSession {
 
 	private List<Object> reEvaluate(String boxId, int position) {
 		EChangeEffect effect = boxes.get(boxId).changeEffect();
+		return reEvaluate(effect, position);
+	}
+
+	private List<Object> reEvaluate(EChangeEffect effect, int position) {
 		switch (effect) {
 		case DONT_CARE:
-			return null;
+			return Collections.emptyList();
 		case EVERYTHING_BELOW:
 			return reEvaluateBoxes(position);
 		default: // FULL_REEVALUATION
