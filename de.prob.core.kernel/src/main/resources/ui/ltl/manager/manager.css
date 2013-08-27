@@ -212,7 +212,8 @@
 /* Alert */
 .alert {
 	padding: 1px 5px;
-	text-align: left;
-	float: left;
 	margin-bottom: 0;
+	
+    font-size: 12px;
+	text-align: left;
 }

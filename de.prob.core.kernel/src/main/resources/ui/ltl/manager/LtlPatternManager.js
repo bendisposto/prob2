@@ -41,6 +41,8 @@ LtlPatternManager = (function() {
 		$('#edit-pattern').click(function() {
 			showEditView(pattern);
 		});
+		// Register remove button
+		registerRemoveButton([pattern]);
 	}
 	
 	extern.showDefaultPage = function(index) {
@@ -49,14 +51,22 @@ LtlPatternManager = (function() {
 	
 	extern.showPatternList = function() {
 		var patterns = [];
-		
-		$('.ui-selected').each(function(i, element) {
+		$('#user-patterns .ui-selected').each(function(i, element) {
 			var index = $("#selectable .pattern-list-item").index(element);
 			patterns.push(extern.patterns[index]);
 		});
 		
-		var content = session.render("/ui/ltl/manager/show_pattern_list.html", { patterns: patterns });
+		var builtins = [];
+		$('#builtin-patterns .ui-selected').each(function(i, element) {
+			var index = $("#selectable .pattern-list-item").index(element);
+			builtins.push(extern.patterns[index]);
+		});
+		
+		var content = session.render("/ui/ltl/manager/show_pattern_list.html", { patterns: patterns, builtins: builtins });
 		$(".content").empty().append(content);	
+		
+		// Register remove button
+		registerRemoveButton(patterns);
 	}
 	
 	/* Show create and edit*/	
@@ -66,10 +76,29 @@ LtlPatternManager = (function() {
 		
 		// Register save button
 		$('#save-pattern').click(function() {
-			// TODO save
-			$("#success-alert").fadeIn("fast", function() {
-				$("#success-alert").delay(2000).fadeOut("slow");
-			});
+			if (pattern.name) {
+				// Edit
+				extern.updatePattern(pattern.name, collectInputData());
+			} else {
+				// Create
+				extern.savePattern(collectInputData());
+			}
+		});
+		
+		if (pattern.name) {
+			// Register remove button for edit page
+			registerRemoveButton([pattern]);
+		}
+	}
+	
+	function registerRemoveButton(patterns) {
+		// Register remove button
+		$('#remove-pattern').click(function() {
+			var names = [];
+			for (var i = 0; i < patterns.length; i++) {
+				names.push(patterns[i].name);
+			}
+			extern.removePatterns(names);
 		});
 	}
 	
@@ -101,8 +130,8 @@ LtlPatternManager = (function() {
 	}
 	
 	/* Code mirror */
-	extern.changeCodeElement = function(codeElement) {
-		LtlEditor.changeCM(codeElement);		
+	extern.changeCodeElement = function(codeElement, mode, ignorePattern) {
+		LtlEditor.changeCM(codeElement, mode, ignorePattern);		
 		extern.registerResize(LtlEditor.cm);
 	}
 	
@@ -121,6 +150,115 @@ LtlPatternManager = (function() {
 		$(window).trigger('resize');
 	}
 	
+	/* Saving */
+	function collectInputData() {
+		var pattern = {
+			name: $('#name-input').val(),
+			description: $('#description-input').val(),
+			code: LtlEditor.cm.getValue()
+		};		
+		
+		return pattern;
+	}
+	
+	function findPattern(name) {
+		for (var i = 0; i < extern.patterns.length; i++) {
+			if (extern.patterns[i].name == name) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	extern.savePattern = function(pattern) {
+		session.sendCmd("savePattern", {
+			"name": pattern.name,
+			"description": pattern.description,
+			"code": pattern.code,
+			"client" : extern.client
+		});
+	}
+	
+	extern.updatePattern = function(oldName, pattern) {
+		session.sendCmd("updatePattern", {
+			"oldName": oldName,
+			"name": pattern.name,
+			"description": pattern.description,
+			"code": pattern.code,
+			"client" : extern.client
+		});
+	}
+	
+	extern.removePatterns = function(names) {
+		session.sendCmd("removePatterns", {
+			"names": JSON.stringify(names),
+			"client" : extern.client
+		});
+	}
+	
+	extern.saveSuccess = function(data) {
+		var pattern = JSON.parse(data.pattern);
+		extern.patterns.push(pattern);
+		
+		showEditView(pattern);
+		$('.ui-selected').each(function(i, element) {
+			$(element).removeClass('ui-selected');
+		});
+		
+		var element = document.createElement("li");
+		element.className = "pattern-list-item ui-selected";
+		element.appendChild(document.createTextNode(pattern.name));
+		
+		var user = $('#user-patterns');
+		user.append(element);
+		
+	
+		$("#success-alert").fadeIn("fast", function() {
+			$("#success-alert").delay(2000).fadeOut("slow");
+		});
+	}
+	
+	extern.updateSuccess = function(data) {
+		var pattern = JSON.parse(data.pattern);
+		
+		var oldPatternName = data.oldPatternName;
+		var index = findPattern(oldPatternName);
+		extern.patterns[index] = pattern;
+		
+		var element = $("#selectable .pattern-list-item")[index];
+		element.innerHTML = pattern.name;
+	
+		$("#success-alert").fadeIn("fast", function() {
+			$("#success-alert").delay(2000).fadeOut("slow");
+		});
+	}
+	
+	extern.removeSuccess = function(data) {
+		var names = JSON.parse(data.names);
+		
+		$('#removeModal').on('hidden.bs.modal', function () {
+			var content = session.render("/ui/ltl/manager/default.html", { multiple: (names.length > 1) });
+			$(".content").empty().append(content);	
+		
+			$("#success-alert").fadeIn("fast", function() {
+				$("#success-alert").delay(2000).fadeOut("slow");
+			});
+		});
+
+		$('#removeModal').modal('hide');
+		
+		for (var i = 0; i < names.length; i++) {
+			var index = findPattern(names[i]);
+			extern.patterns.splice(index, 1);
+		
+			var element = $("#selectable .pattern-list-item")[index];
+			element.remove();
+		}
+		$('.ui-selected').each(function(i, element) {
+			$(element).removeClass('ui-selected');
+		});
+	}
+	
 	/* Init */
 	extern.init = function(client) {
 		extern.client = client;
@@ -132,7 +270,7 @@ LtlPatternManager = (function() {
 			highlightOperands : true,
 			showHints : true
 		};
-		LtlEditor.init(client, options);		
+		LtlEditor.init(client, session, options);		
 	}
 	extern.client = null;
 	extern.patterns = [];

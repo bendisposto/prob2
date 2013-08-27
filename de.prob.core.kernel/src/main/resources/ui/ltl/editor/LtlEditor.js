@@ -1,6 +1,6 @@
 LtlEditor = (function() {
 	var extern = {};
-	var session = Session();
+	var session = null;
 	
 	var delay;
 	var highlightDelay;
@@ -20,6 +20,7 @@ LtlEditor = (function() {
 	function parseInput() {
 		session.sendCmd("parseInput", {
 			"input" : extern.cm.getValue(),
+			"ignorePattern": extern.ignorePattern,
 			"client" : extern.client
 		});
 	}
@@ -175,19 +176,23 @@ LtlEditor = (function() {
 	}
 	
 	/* Init */
-	extern.init = function(client, options = {}) {
+	extern.init = function(client, s, options = {}) {
 		extern.client = client;
-		session.init(client);
+		session = s;
 		
 		extern.parseOnChange 		= options.parseOnChange;
 		extern.showPatternMarkers 	= options.showPatternMarkers;
 		extern.highlightOperands 	= options.highlightOperands;
 		extern.showHints		 	= options.showHints;
+		
+		extern.ignorePattern = null;
+		extern.mode = "parse";
 	}
 	
-	extern.changeCM = function(codeElement) {
+	extern.changeCM = function(codeElement, mode, ignorePattern) {
 		//TODO remove old cm
-	
+		extern.mode = mode;
+		extern.ignorePattern = ignorePattern;
 		var cmSettings = {
 			lineNumbers: true,
 			matchBrackets: true,

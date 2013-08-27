@@ -46,7 +46,7 @@ public class LtlEditor extends AbstractSession {
 	private final Logger logger = LoggerFactory.getLogger(LtlEditor.class);
 	private List<Expression> expressions = new LinkedList<Expression>();
 	private Map<String, Expression> expressionMap = new HashMap<String, Expression>();
-	private PatternManager patternManager = new PatternManager();
+	protected PatternManager patternManager = new PatternManager();
 
 	private final String[] KEYWORDS = {
 			"def", "var", "seq", "num",
@@ -79,25 +79,34 @@ public class LtlEditor extends AbstractSession {
 	public Object parseInput(Map<String, String[]> params) {
 		logger.trace("Parse ltl formula");
 		String input = get(params, "input");
+		String mode = get(params, "mode");
+		String ignorePattern = get(params, "ignorePattern");
 
 		ParseListener listener = new ParseListener();
-		LtlParser parser = parse(input, listener);
+		List<Marker> markers = null;
+		if (mode.equals("parse")) {
+			LtlParser parser = parse(input, listener);
+			markers = getPatternMarkers(parser.getSymbolTableManager().getPatternDefinitions());
+		} else {
+			patternManager.addIgnorePattern(ignorePattern);
+			parsePatternDefinition(input, listener);
+			patternManager.clearIgnorePatterns();
+		}
 
 		Map<String, String> result = null;
-		List<Marker> markers = getPatternList(parser.getSymbolTableManager().getPatternDefinitions());
 		if (listener.getErrorMarkers().size() == 0) {
 			logger.trace("Parse ok (errors: 0, warnings: {}). Submitting parse results", listener.getWarningMarkers().size());
 			result = WebUtils.wrap(
 					"cmd", "LtlEditor.parseOk",
 					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
-					"markers", WebUtils.toJson(markers));
+					"markers", WebUtils.toJson(markers != null ? markers : ""));
 		} else {
 			logger.trace("Parse failed (errors: {}, warnings: {}). Submitting parse results", listener.getErrorMarkers().size(), listener.getWarningMarkers().size());
 			result = WebUtils.wrap(
 					"cmd", "LtlEditor.parseFailed",
 					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
 					"errors", WebUtils.toJson(listener.getErrorMarkers()),
-					"markers", WebUtils.toJson(markers));
+					"markers", WebUtils.toJson(markers != null ? markers : ""));
 		}
 
 		return result;
@@ -134,7 +143,7 @@ public class LtlEditor extends AbstractSession {
 				"hints", WebUtils.toJson(getCompletionList(input, startsWith)));
 	}
 
-	public List<Marker> getPatternList(List<PatternDefinition> patterns) {
+	public List<Marker> getPatternMarkers(List<PatternDefinition> patterns) {
 		List<Marker> markers = new LinkedList<Marker>();
 		for (PatternDefinition pattern : patterns) {
 			String msg = String.format("Move pattern '%s' to pattern manager.", pattern.getName());
@@ -190,7 +199,8 @@ public class LtlEditor extends AbstractSession {
 			}
 		}
 	}
-	private LtlParser parse(String input, ParseListener listener) {
+
+	private LtlParser parse(String input, ParseListener listener) {
 		LtlParser parser = new LtlParser(input);
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
@@ -198,6 +208,19 @@ public class LtlEditor extends AbstractSession {
 		parser.setPatternManager(patternManager);
 
 		parser.parse();
+
+		astChanged(parser.getAst());
+		return parser;
+	}
+
+	private LtlParser parsePatternDefinition(String input, ParseListener listener) {
+		LtlParser parser = new LtlParser(input);
+		parser.removeErrorListeners();
+		parser.addErrorListener(listener);
+		parser.addWarningListener(listener);
+		parser.setPatternManager(patternManager);
+
+		parser.parsePatternDefinition();
 
 		astChanged(parser.getAst());
 		return parser;
