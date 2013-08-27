@@ -9,6 +9,8 @@ Worksheet = (function() {
 
 	var focused = null;
 
+	var compacted = false;
+
 	var editorkeys = function(number) {
 		return {
 			'Shift-Enter' : function(cm) {
@@ -55,20 +57,24 @@ Worksheet = (function() {
 		})
 	}
 
-	function set_headings(b) {
+	function set_headings() {
 		var panels = $(".panel");
 		var headings = $(".panel-heading")
 		var variables = $(".vars")
 
-		if (!b) {
+		b = $("#compactbtn")
+		if (compacted) {
 			panels.removeClass("panel-compact")
 			headings.fadeIn();
 			variables.fadeIn();
+			b.removeClass("btn-selected")
 		} else {
 			panels.addClass("panel-compact")
 			headings.fadeOut();
 			variables.fadeOut();
+			b.addClass("btn-selected")
 		}
+		compacted = !compacted
 
 	}
 
@@ -272,10 +278,6 @@ Worksheet = (function() {
 						session.render("/ui/worksheet/type-selector.html", {
 							"id" : "default"
 						}))
-
-				$("#show-header").click(function(e) {
-					set_headings(e.target.checked)
-				})
 
 				jQuery(document).keydown(key_handler);
 
@@ -520,6 +522,8 @@ Worksheet = (function() {
 	extern.aside = function(data) {
 		aside(data.number, data.aside)
 	}
+
+	extern.compact = set_headings;
 
 	extern.refreshAll = function() {
 		session.sendCmd("refreshAll", {

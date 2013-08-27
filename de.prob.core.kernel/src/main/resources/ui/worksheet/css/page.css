@@ -6,7 +6,6 @@
 	margin-top: -4px;
 }
 
-
 .ui-sortable-placeholder {
 	border: 3px dashed #aaa;
 	background: #ccc;
@@ -17,4 +16,12 @@
 
 .invisible {
 	display: none;
+}
+
+.right-group {
+	margin-right: 2px;
+}
+
+.btn-selected {
+	background-color: #dddddd;
 }
