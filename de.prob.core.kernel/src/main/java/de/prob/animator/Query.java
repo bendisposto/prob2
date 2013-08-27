@@ -16,6 +16,11 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 
+/*
+ * TODO:
+ * multiple instances
+ * composed commands
+ */
 
 public class Query implements IPrologTermOutput {
 
@@ -33,10 +38,15 @@ public class Query implements IPrologTermOutput {
 			extension = "so";
 		}
         System.load(Main.PROB_HOME + "/libquery." + extension);
-        init(Main.PROB_HOME + "/probcli.sav");
+        init();
     }
-	
-	
+    
+    private final int instance;
+    
+    public Query() {
+    	instance = init_instance(Main.PROB_HOME + "/probcli.sav");
+    }
+    
     private final Stack<List<Integer>> terms = new Stack<List<Integer>>();
     private final Stack<String> functors = new Stack<String>();
 
@@ -45,20 +55,21 @@ public class Query implements IPrologTermOutput {
     private long predicate = 0;
     private int[] queryArgs = null;
 
-    private native static void init(String savLocation);
-    private native static long put_predicate(String functor, int arity);
-    private native static int put_inti(byte[] bytes, int length);
-    private native static int put_variable();
-    private native static int build_compound(String functor, int arity, int[] args);
-    private native static int build_list(int length, int[] args);
-    private native static int put_atom(String name);
-    private native static int put_string(String name);
-    private native static void execute(long predicate, int[] args);
-    private native static void close();
-    private native static PrologTerm toPrologTerm(int ref);
-    
-    private native static int read_string(String goal, int[] varRefs); 
+    private native static void init();
+    private native static int init_instance(String savLocation);
+    private native static long put_predicate(int instance, String functor, int arity);
+    private native static int put_inti(int instance, byte[] bytes, int length);
+    private native static int put_variable(int instance);
+    private native static int build_compound(int instance, String functor, int arity, int[] args);
+    private native static int build_list(int instance, int length, int[] args);
+    private native static int put_atom(int instance, String name);
+    private native static int put_string(int instance, String name);
+    private native static void execute(int instance, long predicate, int[] args);
+    private native static void close(int instance);
+    private native static PrologTerm toPrologTerm(int instance, int ref);
+    private native static int read_string(int instance, String goal, int[] varRefs);
 
+    private StringBuffer sb = new StringBuffer();
 
     private final Map<String, Integer> variables = new HashMap<String, Integer>();
     private final Map<String, PrologTerm> binding = new HashMap<String, PrologTerm>();
@@ -67,6 +78,8 @@ public class Query implements IPrologTermOutput {
         final List<Integer> l = new ArrayList<Integer>();
         terms.push(l);
         functors.push(functor);
+        
+        sb.append(functor + "(");
         
         return this;
 	}
@@ -82,25 +95,28 @@ public class Query implements IPrologTermOutput {
 
         if (functors.isEmpty()) {
         	queryArgs = arr;
-            predicate = put_predicate(functor, queryArgs.length);
+            predicate = put_predicate(instance, functor, queryArgs.length);
         } else {
-            int compRef = build_compound(functor, arr.length, arr);
+            int compRef = build_compound(instance, functor, arr.length, arr);
             terms.peek().add(compRef);
         }
+        sb.append("), ");
         
 		return this;
 	}
 
 	public IPrologTermOutput printAtom(String content) {
 		if (terms.isEmpty()) {
-			predicate = put_predicate(content, 0);
+			sb.append(content + ".");
+			predicate = put_predicate(instance, content, 0);
 			queryArgs = new int[] {};
 			
 			return this;
 		}
 		
-        int atomRef = put_atom(content);
+        int atomRef = put_atom(instance, content);
         terms.peek().add(atomRef);
+        sb.append(content + ", ");
 		return this;
 	}
 
@@ -115,9 +131,11 @@ public class Query implements IPrologTermOutput {
 	}
 
 	public IPrologTermOutput printString(String content) {
-        int stringRef = put_string(content);
+        int stringRef = put_string(instance, content);
 
         terms.peek().add(stringRef);
+        
+        sb.append(content + ", ");
 		return this;
 	}
 
@@ -131,15 +149,17 @@ public class Query implements IPrologTermOutput {
         
         ArrayUtils.reverse(arr);
         
-        int intRef = put_inti(arr, arr.length);
+        int intRef = put_inti(instance, arr, arr.length);
 
         terms.peek().add(intRef);
+        sb.append(number.toString() + ", ");
 		return this;
 	}
 
 	public IPrologTermOutput openList() {
         ArrayList<Integer> l = new ArrayList<Integer>();
         terms.push(l);
+        sb.append("[");
 
 		return this;
 	}
@@ -147,24 +167,28 @@ public class Query implements IPrologTermOutput {
 	public IPrologTermOutput closeList() {
         List<Integer> l = terms.pop();
         int[] list = toIntArray(l);
-        int listRef = build_list(list.length, list);
+        int listRef = build_list(instance, list.length, list);
 
         terms.peek().add(listRef);
+        sb.append("], ");
 		return this;
 	}
 
 	public IPrologTermOutput emptyList() {
-        int emptyRef = build_list(0, (int[]) null);
+        int emptyRef = build_list(instance, 0, (int[]) null);
 
         terms.peek().add(emptyRef);
+        sb.append("[], ");
 		return this;
 	}
 
 	public IPrologTermOutput printVariable(String var) {
-        int varRef = put_variable();
+		//System.out.println(var);
+        int varRef = put_variable(instance);
         variables.put(var, varRef);
 
         terms.peek().add(varRef);
+        sb.append(var + ", ");
 		return this;
 	}
 
@@ -192,7 +216,7 @@ public class Query implements IPrologTermOutput {
             }
             closeList();
         } else {
-            throw new RuntimeException("mimimi");
+            throw new RuntimeException("Unknown prolog term");
         }
 		return this;
 	}
@@ -202,6 +226,7 @@ public class Query implements IPrologTermOutput {
 	}
 
 	public IPrologTermOutput fullstop() {
+		sb.append(".");
 		return this;
 	}
 
@@ -217,13 +242,16 @@ public class Query implements IPrologTermOutput {
     	if (predicate == 0 || queryArgs == null) {
     		throw new IllegalArgumentException("Tried to execute a query that was not initialized.");
     	}
-        execute(predicate, queryArgs);
+    	System.out.println(sb.toString());
+        execute(instance, predicate, queryArgs);
         for (String varName : variables.keySet()) {
+        	System.out.println(varName);
 			int ref = variables.get(varName);
-			PrologTerm pt = toPrologTerm(ref);
+			PrologTerm pt = toPrologTerm(instance, ref);
+			System.out.println(pt.toString());
 			binding.put(varName, pt);
 		}
-        close();
+        close(instance);
     }
     
     public Map<String, PrologTerm> getBinding() {
@@ -231,7 +259,8 @@ public class Query implements IPrologTermOutput {
     }
     
 	public int printRaw(String command, String[] my_variables) {
-		predicate = put_predicate("call", 1);
+		sb.append(command);
+		predicate = put_predicate(instance, "call", 1);
 		int varRefs[] = new int[my_variables.length + 1];
 		
 		varRefs[my_variables.length] = 0;
@@ -239,7 +268,7 @@ public class Query implements IPrologTermOutput {
 		
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < my_variables.length; i++) {
-			varRefs[i] = put_variable();
+			varRefs[i] = put_variable(instance);
 	        variables.put(my_variables[i], varRefs[i]);
 			sb.append(my_variables[i] + "=" + my_variables[i] + ", ");
 		}
@@ -248,10 +277,10 @@ public class Query implements IPrologTermOutput {
 		sb.append(command);
 		sb.append(".");
 		
-		int goal = read_string(sb.toString(), varRefs);
+		int goal = read_string(instance, sb.toString(), varRefs);
 		queryArgs = new int[] {goal};
 		
-		return 1;
+		return 1; // for testing in groovy shell
 	}
 
 }
