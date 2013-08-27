@@ -1,4 +1,4 @@
-package de.prob.web.worksheet.boxes;
+package de.prob.web.worksheet;
 
 import groovy.lang.MissingPropertyException;
 
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -30,9 +31,10 @@ public class Groovy extends AbstractBox implements IBox {
 	}
 
 	@Override
-	public List<Object> render(BindingsSnapshot snapshot) {
+	public List<Object> render(@Nullable BindingsSnapshot snapshot) {
 		ScriptEngine groovy = owner.getGroovy();
-		snapshot.restoreBindings(groovy);
+		if (snapshot != null)
+			snapshot.restoreBindings(groovy);
 		ArrayList<Object> res = new ArrayList<Object>();
 		StringBuffer outputsb = new StringBuffer();
 		Bindings bindings = groovy.getBindings(ScriptContext.GLOBAL_SCOPE);

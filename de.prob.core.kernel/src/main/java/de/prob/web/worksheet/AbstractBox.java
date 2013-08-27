@@ -1,4 +1,4 @@
-package de.prob.web.worksheet.boxes;
+package de.prob.web.worksheet;
 
 import static com.google.common.base.Preconditions.*;
 

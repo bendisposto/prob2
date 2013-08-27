@@ -16,7 +16,7 @@ public class BoxFactory {
 
 	@SuppressWarnings("unchecked")
 	public IBox create(Worksheet owner, String id, String type) {
-		String className = "de.prob.web.worksheet.boxes." + type;
+		String className = "de.prob.web.worksheet." + type;
 
 		Class<IBox> clazz = null;
 		IBox box = null;

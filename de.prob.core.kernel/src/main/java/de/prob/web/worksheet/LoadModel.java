@@ -1,4 +1,4 @@
-package de.prob.web.worksheet.boxes;
+package de.prob.web.worksheet;
 
 import java.io.File;
 import java.util.List;

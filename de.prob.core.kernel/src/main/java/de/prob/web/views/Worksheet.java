@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 import de.prob.web.data.Message;
-import de.prob.web.worksheet.boxes.EChangeEffect;
+import de.prob.web.worksheet.EChangeEffect;
 import de.prob.worksheet.ScriptEngineProvider;
 
 public class Worksheet extends AbstractSession {
