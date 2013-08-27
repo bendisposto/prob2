@@ -3,7 +3,7 @@ package de.prob.web.views;
 import java.util.List;
 import java.util.Map;
 
-import de.prob.web.worksheet.boxes.EChangeEffect;
+import de.prob.web.worksheet.EChangeEffect;
 
 public interface IBox {
 

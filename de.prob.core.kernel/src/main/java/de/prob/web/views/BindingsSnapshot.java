@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -48,9 +49,10 @@ public class BindingsSnapshot {
 		return keys;
 	}
 
-	public Set<String> delta(BindingsSnapshot old) {
+	public Set<String> delta(@Nullable BindingsSnapshot old) {
 		Set<String> delta = new HashSet<String>(this.keys);
-		delta.removeAll(old.keys);
+		if (old != null)
+			delta.removeAll(old.keys);
 		return delta;
 	}
 

@@ -124,6 +124,10 @@ public class Worksheet extends AbstractSession {
 	}
 
 	public Object leaveEditor(Map<String, String[]> params) {
+		return leaveEditorMessages(params).toArray();
+	}
+
+	public List<Object> leaveEditorMessages(Map<String, String[]> params) {
 		String boxId = params.get("box")[0];
 		String direction = params.get("direction")[0];
 		String text = params.get("text")[0];
@@ -151,7 +155,7 @@ public class Worksheet extends AbstractSession {
 		box.setContent(params);
 		messages.addAll(render(box));
 		messages.addAll(reEvaluate(boxId, order.indexOf(boxId)));
-		return messages.toArray(new Object[messages.size()]);
+		return messages;
 	}
 
 	private List<Object> leaveEditorDown(String boxId, String text) {
@@ -208,6 +212,7 @@ public class Worksheet extends AbstractSession {
 
 	@Override
 	public void reload(String client, int lastinfo, AsyncContext context) {
+		VariableDetailTransformer.clear();
 		if (responses.isEmpty()) {
 			IBox box = appendFreshBox();
 			Map<String, String> renderCmd = box.createMessage();
@@ -252,7 +257,7 @@ public class Worksheet extends AbstractSession {
 		};
 
 		final BindingsSnapshot previous_snapshot = box.getId().equals(
-				order.get(0)) ? BindingsSnapshot.FRESH : snapshots
+				order.get(0)) ? null : snapshots
 				.get(getPredecessor(box.getId()));
 		List<Object> box_rendering = box.render(previous_snapshot);
 		final BindingsSnapshot current_snapshot = new BindingsSnapshot(groovy);
@@ -269,27 +274,32 @@ public class Worksheet extends AbstractSession {
 		vars.addAll(bindings_global);
 		Collections.sort(vars, comperator);
 
-		Function<Entry<String, Object>, Map<String, String>> toJson = new Function<Map.Entry<String, Object>, Map<String, String>>() {
+		Function<Entry<String, Object>, Map<String, String>> toJson = new VariableDetailTransformer(
+				previous_snapshot, current_snapshot);
 
-			@Override
-			@Nullable
-			public Map<String, String> apply(
-					@Nullable Entry<String, Object> input) {
-				HashMap<String, String> result = new HashMap<String, String>();
-				result.put("name", input.getKey());
-				result.put("value", input.getValue().toString());
-				result.put("fresh", String.valueOf(current_snapshot.delta(
-						previous_snapshot).contains(input.getKey())));
-				return result;
-			}
-		};
 		Collection<Map<String, String>> vars2 = Collections2.transform(vars,
 				toJson);
 
+		Collection<Map<String, String>> vars3 = Collections2.filter(vars2,
+				new Predicate<Map<String, String>>() {
+
+					@Override
+					public boolean apply(@Nullable Map<String, String> input) {
+						return input != null;
+					}
+				});
+
 		box_rendering.add(WebUtils.wrap("cmd", "Worksheet.aside", "number",
-				box.getId(), "aside", WebUtils.toJson(vars2)));
+				box.getId(), "aside", WebUtils.toJson(vars3)));
 
 		return box_rendering;
+	}
+
+	public Object refreshAll(Map<String, String[]> params) {
+		List<Object> messages = new ArrayList<Object>(
+				leaveEditorMessages(params));
+		messages.addAll(reEvaluateBoxes(0));
+		return messages.toArray();
 	}
 
 	public Object reorder(Map<String, String[]> params) {

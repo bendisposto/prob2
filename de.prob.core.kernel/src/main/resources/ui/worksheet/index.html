@@ -12,7 +12,12 @@
 <link rel="stylesheet" href="/ui/common/bootstrap.css">
 <link rel="stylesheet" href="/ui/common/codemirror.css">
 <link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
-<link rel="stylesheet" href="/ui/worksheet/worksheet.css">
+<link rel="stylesheet" href="/ui/worksheet/css/codemirror.css">
+<link rel="stylesheet" href="/ui/worksheet/css/page.css">
+<link rel="stylesheet" href="/ui/worksheet/css/panel.css">
+<link rel="stylesheet" href="/ui/worksheet/css/editor.css">
+<link rel="stylesheet" href="/ui/worksheet/css/variables.css">
+<link rel="stylesheet" href="/ui/worksheet/css/rendering.css">
 <link rel="stylesheet" href="/ui/libs/codemirror_modes/b.css">
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
@@ -26,12 +31,16 @@
 				<span> Default Box-Type: </span> <span id="defaultBoxType">
 					{{default-box-type}} </span> <span id="replace-with-type-selector"></span>
 				<input id="show-header" type="checkbox"> Compact View </span>
+				<button id="refreshbtn" type="button"
+					class="btn btn-success btn-sm pull-right"
+					onclick="Worksheet.refreshAll()">
+					<span class="glyphicon glyphicon-refresh"></span>
+				</button>
+
+
 			</div>
 		</div>
 	</div>
-
-
-
 
 
 	<div class="row col-lg-12">

@@ -5,6 +5,8 @@ Worksheet = (function() {
 	var editors = {};
 	var contentGetters = {}
 
+	var aside_classes = {}
+
 	var focused = null;
 
 	var editorkeys = function(number) {
@@ -56,13 +58,16 @@ Worksheet = (function() {
 	function set_headings(b) {
 		var panels = $(".panel");
 		var headings = $(".panel-heading")
+		var variables = $(".vars")
 
 		if (!b) {
 			panels.removeClass("panel-compact")
 			headings.fadeIn();
+			variables.fadeIn();
 		} else {
 			panels.addClass("panel-compact")
 			headings.fadeOut();
+			variables.fadeOut();
 		}
 
 	}
@@ -397,6 +402,15 @@ Worksheet = (function() {
 		}
 	}
 
+	function make_class_info(v) {
+		var clz = {}
+		clz.name = v.clazz
+		clz.supertype = v.supertype
+		clz.attributes = JSON.parse(v.attributes)
+		clz.methods = JSON.parse(v.methods)
+		return clz;
+	}
+
 	function aside(boxnr, asidestr) {
 		if (editors[boxnr].no_vars == true)
 			return;
@@ -404,19 +418,32 @@ Worksheet = (function() {
 
 		$("#aside" + boxnr).children().remove()
 		for (e in aside) {
+			var v = aside[e]
+			var clz = null;
+			if (aside_classes[v.clazz] == null) {
+				clz = make_class_info(v);
+				console.log("Classinfo: ", clz)
+				aside_classes[v.clazz] = clz
+			} else {
+				clz = aside_classes[v.clazz]
+			}
 			var el = $("<div class='aside-label label "
-					+ (aside[e].fresh ==="true" ? "label-primary" : "label-default")
-					+ "' >" + aside[e].name + "</div>")
+					+ (v.fresh === "true" ? "label-primary" : "label-default")
+					+ "' >" + v.name + "</div>")
 			el = el.appendTo("#aside" + boxnr)
-			$("#value_" + aside[e].name + "_" + boxnr).remove();
+			$("#value_" + v.name + "_" + boxnr).remove();
 			var co = {
 				'box_number' : boxnr,
-				'variable_name' : aside[e].name,
-				'variable_value' : aside[e].value
+				'variable_name' : v.name,
+				'variable_value' : v.value,
+				'class_name' : clz.name,
+				'class_super' : clz.supertype,
+				'class_attributes' : clz.attributes,
+				'class_methods' : clz.methods
 			}
 			$("body").append(
 					session.render("/ui/worksheet/variable_info.html", co))
-			el.click(make_listener(boxnr, aside[e].name))
+			el.click(make_listener(boxnr, v.name))
 		}
 	}
 
@@ -492,6 +519,16 @@ Worksheet = (function() {
 
 	extern.aside = function(data) {
 		aside(data.number, data.aside)
+	}
+
+	extern.refreshAll = function() {
+		session.sendCmd("refreshAll", {
+			"box" : focused,
+			"direction" : "none",
+			"client" : extern.client,
+			"text" : editors[focused].getValue()
+		})
+		unfocus(focused)
 	}
 
 	// Debugging

@@ -1,21 +1,25 @@
 
-<span box="{{box-number}}" id="box{{box-number}}"
-	class="panel col-lg-12">
 
-	<div class="panel-heading">
+<div box="{{box-number}}" id="box{{box-number}}"
+	class="panel panel-default">
 
-		<span class="box-number">{{box-number}}</span> <span
+	<div class="panel-heading drag-area">
+		<span class="box-number pull-left">{{box-number}}</span> <span
 			class="heading-bar"> <span id="help{{box-number}}"
-			class="help-button micro-space glyphicon glyphicon-info-sign"
-			role="button" data-toggle="modal" data-target="#Help{{box-type}}"></span><span
-			class="box-type">{{box-type}}</span> {{&type-selector}} <span
-			id="remove{{box-number}}"
-			class="close-button glyphicon glyphicon-remove"></span>
+			class="help-button micro-space glyphicon glyphicon-info-sign no-drag"
+			role="button" data-toggle="modal" data-target="#Help{{box-type}}"></span>
+			<span class="box-type">{{box-type}}</span><span class="no-drag">
+				{{&type-selector}}</span> <span id="remove{{box-number}}"
+			class="remove-button glyphicon glyphicon-remove pull-right no-drag"></span>
 		</span>
 	</div>
-	<div class="{{small}}">
-		<div class="renderbox" id="render{{box-number}}">{{&rendered}}</div>
-		<div class="editorbox" id="editor{{box-number}}">{{&editor}}</div>
+	<div class="row">
+		<div class="none {{small}}">
+			<div class="renderbox" id="render{{box-number}}">{{&rendered}}</div>
+			<div class="editorbox" id="editor{{box-number}}">{{&editor}}</div>
+		</div>
+		<div id="aside{{box-number}}" class="col-lg-2 vars"></div>
 	</div>
-	<div id="aside{{box-number}}" class="vars col-lg-2"></div>
-</span>
+
+
+</div>
