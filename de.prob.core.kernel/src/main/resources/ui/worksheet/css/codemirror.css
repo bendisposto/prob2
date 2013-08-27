@@ -1,0 +1,20 @@
+.CodeMirror {
+	border: 1px solid #000;
+	background: #eee;
+	height: auto;
+	font-family: monospace;
+	min-height: 20px;
+}
+
+.CodeMirror-wrap {
+	min-height: 20px;
+}
+
+.CodeMirror-hscrollbar {
+	display: none;
+}
+
+.CodeMirror-scroll {
+	overflow-y: hidden;
+	overflow-x: hidden;
+}

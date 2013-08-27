@@ -1,46 +1,7 @@
-.loadfile_input {
-	width: 85%;
-	float: left;
-}
-
-.illegal_file {
-	font-weight: bold;
-	color: darkred;
-}
-
-.CodeMirror {
-	border: 1px solid #000;
-	background: #eee;
-	height: auto;
-	font-family: monospace;
-	min-height: 20px;
-}
-
-.CodeMirror-wrap {
-	min-height: 20px;
-}
-
-.vars {
-	float: right;
-}
-
 .aside-label {
 	float: left;
 	margin-right: 2px;
 	margin-bottom: 2px;
-}
-
-.CodeMirror-hscrollbar {
-	display: none;
-}
-
-.CodeMirror-scroll {
-	overflow-y: hidden;
-	overflow-x: hidden;
-}
-
-.invisible {
-	display: none;
 }
 
 .editorbox {
@@ -49,10 +10,7 @@
 	width: 100%;
 }
 
-.load-btn {
-	float: left;
-	margin-left: 10px;
-}
+
 
 .box-number {
 	padding-left: 10px;
@@ -63,13 +21,6 @@
 	min-width: 70px;
 }
 
-.top-bar {
-	margin-top: 40px;
-}
-
-.top-bar .bigcaret {
-	margin-top: -4px;
-}
 
 #show-header {
 	margin-left: 18px;
@@ -79,16 +30,10 @@
 	padding-left: 10px;
 }
 
-.ui-sortable-placeholder {
-	border: 3px dashed #aaa;
-	background: #ccc;
-	min-height: 45px;
-	height: 45px;
-	margin-bottom: 10px;
-}
+
 
 .panel {
-	float: left;
+	/* 	float: left; */
 	margin-bottom: 10px;
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
@@ -122,14 +67,7 @@
 	cursor: default;
 }
 
-.help-button {
-	color: #000000;
-	opacity: 0.5;
-}
 
-.help-button:hover {
-	opacity: 1;
-}
 
 .micro-space {
 	float: left;
@@ -144,24 +82,6 @@
 	margin-top: 1px;
 }
 
-.bigcaret {
-	display: inline-block;
-	width: 0;
-	height: 0;
-	margin-left: 3px;
-	vertical-align: middle;
-	border-top: 6px solid #000000;
-	border-right: 6px solid transparent;
-	border-left: 6px solid transparent;
-	content: "";
-	opacity: 0.5;
-	cursor: default;
-}
-
-.bigcaret:hover {
-	opacity: 1;
-	color: darkblue;
-}
 
 .switch-button {
 	margin-top: 2px;
