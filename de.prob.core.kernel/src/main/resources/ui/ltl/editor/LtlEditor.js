@@ -26,15 +26,18 @@ LtlEditor = (function() {
 	}
 	
 	extern.parseOk = function(data) {
+		extern.lastParseOk = true;
 		clearMarkers();
 		if (extern.showPatternMarkers) {
 			addMarkers(JSON.parse(data.markers), false);
 		}
 		addMarkers(JSON.parse(data.warnings));
 		refreshOperandHighlighting(250);
+		notifyParseListeners();
 	}
 	
 	extern.parseFailed = function(data) {
+		extern.lastParseOk = false;
 		clearMarkers();
 		addMarkers(JSON.parse(data.errors));
 		if (extern.showPatternMarkers) {
@@ -42,6 +45,13 @@ LtlEditor = (function() {
 		}
 		addMarkers(JSON.parse(data.warnings));
 		refreshOperandHighlighting(250);
+		notifyParseListeners();
+	}
+	
+	function notifyParseListeners() {
+		for (var i = 0; i < extern.parseListeners.length; i++) {
+			extern.parseListeners[i]();
+		}
 	}
 	
 	/* Operand highlighting */
@@ -187,6 +197,8 @@ LtlEditor = (function() {
 		
 		extern.ignorePattern = null;
 		extern.mode = "parse";
+		extern.lastParseOk = true;
+		extern.parseListeners = [];
 	}
 	
 	extern.changeCM = function(codeElement, mode, ignorePattern) {

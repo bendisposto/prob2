@@ -10,8 +10,9 @@
 </div>
 
 <div class="actions">
-	<div style="display: inline-block; width: 150px">
-		<div class="alert alert-success" id="success-alert" style="display: none">Pattern saved!</div>
+	<div style="display: inline-block;">
+		<div class="alert alert-success" id="success-alert" style="display: none">Pattern saved</div>
+		<div class="alert alert-danger" id="error-alert" style="display: none">Saving failed. Fix the problems first</div>
 	</div>
 	<button class="btn btn-success btn-xs" id="save-pattern" type="button" title="Save pattern">
 		<span class="glyphicon glyphicon-ok"></span>
@@ -27,6 +28,8 @@
 <div class="panel">
 	<div class="panel-heading">
 		Name
+		<div class="badge" id="name-unique-error">The name already exists. Choose another one</div>
+		<div class="badge" id="name-empty-error">The name cannot be empty. Enter a name</div>
 	</div>
 	<div class="input-group">
 		<input class="form-control" id="name-input" type="text" placeholder="Enter a pattern name" value="{{name}}" style="border-radius: 0 0 4px 4px;">
@@ -43,6 +46,7 @@
 <div class="panel" id="code-panel">
 	<div class="panel-heading">
 		Code
+		<div class="badge" id="code-error">Fix the errors in the code</div>
 	</div>
 	<textarea id="code">{{code}}</textarea>
 </div>	

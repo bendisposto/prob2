@@ -217,3 +217,12 @@
     font-size: 12px;
 	text-align: left;
 }
+
+/* Badge */
+.badge {
+	display: none;
+	margin-left: 10px;
+	
+	background-color: #D9534F;
+    border-color: #D43F3A;
+}

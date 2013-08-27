@@ -85,6 +85,14 @@ LtlPatternManager = (function() {
 			}
 		});
 		
+		// Register input checks
+		$('#name-input').keyup(function() {
+			checkInput(pattern.name || null, collectInputData());
+		});
+		LtlEditor.parseListeners = [function() {
+			checkInput(pattern.name || null, collectInputData());
+		}];
+		
 		if (pattern.name) {
 			// Register remove button for edit page
 			registerRemoveButton([pattern]);
@@ -153,12 +161,35 @@ LtlPatternManager = (function() {
 	/* Saving */
 	function collectInputData() {
 		var pattern = {
-			name: $('#name-input').val(),
-			description: $('#description-input').val(),
-			code: LtlEditor.cm.getValue()
+			name: $('#name-input').val().trim(),
+			description: $('#description-input').val().trim(),
+			code: $.trim(LtlEditor.cm.getValue())
 		};		
 		
 		return pattern;
+	}
+	
+	function checkInput(oldName, pattern) {
+		// Check empty name
+		var emptyName = !pattern.name;
+		// Check unique name
+		var uniqueName = true;
+		if (pattern.name != oldName) {
+			for (var i = 0; i < extern.patterns.length && uniqueName; i++) {
+				if (pattern.name == extern.patterns[i].name) {
+					uniqueName = false;
+				}
+			}		
+		}
+		// Check errors in code
+		var codeErrors = !LtlEditor.lastParseOk;
+		
+		// Show/hide badges
+		$('#name-empty-error').css({display: (emptyName ? "inline" : "none")});
+		$('#name-unique-error').css({display: (uniqueName ? "none" : "inline")});
+		$('#code-error').css({display: (codeErrors ? "inline" : "none")});
+		
+		return !emptyName && uniqueName && !codeErrors;
 	}
 	
 	function findPattern(name) {
@@ -171,22 +202,34 @@ LtlPatternManager = (function() {
 	}
 	
 	extern.savePattern = function(pattern) {
-		session.sendCmd("savePattern", {
-			"name": pattern.name,
-			"description": pattern.description,
-			"code": pattern.code,
-			"client" : extern.client
-		});
+		if (checkInput(null, pattern)) {
+			session.sendCmd("savePattern", {
+				"name": pattern.name,
+				"description": pattern.description,
+				"code": pattern.code,
+				"client" : extern.client
+			});
+		} else {
+			$("#error-alert").fadeIn("fast", function() {
+				$("#error-alert").delay(2000).fadeOut("slow");
+			});
+		}
 	}
 	
 	extern.updatePattern = function(oldName, pattern) {
-		session.sendCmd("updatePattern", {
-			"oldName": oldName,
-			"name": pattern.name,
-			"description": pattern.description,
-			"code": pattern.code,
-			"client" : extern.client
-		});
+		if (checkInput(oldName, pattern)) {
+			session.sendCmd("updatePattern", {
+				"oldName": oldName,
+				"name": pattern.name,
+				"description": pattern.description,
+				"code": pattern.code,
+				"client" : extern.client
+			});
+		} else {
+			$("#error-alert").fadeIn("fast", function() {
+				$("#error-alert").delay(2000).fadeOut("slow");
+			});
+		}
 	}
 	
 	extern.removePatterns = function(names) {
@@ -227,6 +270,8 @@ LtlPatternManager = (function() {
 		
 		var element = $("#selectable .pattern-list-item")[index];
 		element.innerHTML = pattern.name;
+		
+		showEditView(pattern);
 	
 		$("#success-alert").fadeIn("fast", function() {
 			$("#success-alert").delay(2000).fadeOut("slow");
