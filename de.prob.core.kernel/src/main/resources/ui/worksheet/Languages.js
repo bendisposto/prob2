@@ -25,7 +25,8 @@ Languages = (function() {
 				lineWrapping : true,
 				theme : "default",
 				viewportMargin : Infinity,
-			}
+			},
+			no_vars : true
 		},
 		"LoadModel" : {
 			getter : function() {
