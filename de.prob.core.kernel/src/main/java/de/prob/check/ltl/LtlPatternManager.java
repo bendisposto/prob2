@@ -1,5 +1,6 @@
 package de.prob.check.ltl;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,11 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 		pattern.setCode(code);
 		patternManager.addPattern(pattern);
 
+		try {
+			patternManager.savePatternsToFile(USER_PATTERNS_FILE);
+		} catch (IOException e) {
+		}
+
 		return WebUtils.wrap(
 				"cmd", "LtlPatternManager.saveSuccess",
 				"pattern", WebUtils.toJson(new PatternInfo(name, description, code, false)));
@@ -85,6 +91,11 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 			pattern.setDescription(description);
 			pattern.setCode(code);
 			pattern.notifyUpdateListeners();
+
+			try {
+				patternManager.savePatternsToFile(USER_PATTERNS_FILE);
+			} catch (IOException e) {
+			}
 		}
 		return WebUtils.wrap(
 				"cmd", "LtlPatternManager.updateSuccess",
@@ -100,6 +111,11 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 		for (String name : names) {
 			Pattern pattern = patternManager.getUserPattern(name);
 			patternManager.removePattern(pattern);
+		}
+
+		try {
+			patternManager.savePatternsToFile(USER_PATTERNS_FILE);
+		} catch (IOException e) {
 		}
 
 		return WebUtils.wrap(

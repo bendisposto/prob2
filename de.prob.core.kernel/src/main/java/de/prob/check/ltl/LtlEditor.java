@@ -1,11 +1,13 @@
 package de.prob.check.ltl;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -43,10 +45,12 @@ import de.prob.web.WebUtils;
 @Singleton
 public class LtlEditor extends AbstractSession {
 
+	public final String USER_PATTERNS_FILE = "modelcheck/user_patterns.ltlp";
+
 	private final Logger logger = LoggerFactory.getLogger(LtlEditor.class);
 	private List<Expression> expressions = new LinkedList<Expression>();
 	private Map<String, Expression> expressionMap = new HashMap<String, Expression>();
-	protected PatternManager patternManager = new PatternManager();
+	protected final PatternManager patternManager;
 
 	private final String[] KEYWORDS = {
 			"def", "var", "seq", "num",
@@ -70,6 +74,20 @@ public class LtlEditor extends AbstractSession {
 			"G", "F", "X", "H", "O", "Y",
 			"U", "R", "W", "S", "T"
 	};
+
+	public LtlEditor() {
+		this(UUID.randomUUID());
+	}
+
+	public LtlEditor(UUID id) {
+		super(id);
+
+		patternManager = new PatternManager();
+		try {
+			patternManager.loadPatternsFromFile(USER_PATTERNS_FILE);
+		} catch (IOException e) {
+		}
+	}
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
