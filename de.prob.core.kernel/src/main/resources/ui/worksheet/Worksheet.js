@@ -536,12 +536,17 @@ Worksheet = (function() {
 	extern.compact = set_headings;
 
 	extern.refreshAll = function() {
-		session.sendCmd("refreshAll", {
+
+		var data = {
 			"box" : focused,
 			"direction" : "none",
 			"client" : extern.client,
-			"text" : editors[focused].getValue()
-		})
+		}
+
+		if (focused != null) {
+			data.text = editors[focused].getValue()
+		}
+		session.sendCmd("refreshAll", data)
 		unfocus(focused)
 	}
 

@@ -296,8 +296,11 @@ public class Worksheet extends AbstractSession {
 	}
 
 	public Object refreshAll(Map<String, String[]> params) {
-		List<Object> messages = new ArrayList<Object>(
-				leaveEditorMessages(params));
+		List<Object> messages = new ArrayList<Object>();
+		if (params.get("text") != null) {
+			List<Object> leaveEditorMessages = leaveEditorMessages(params);
+			messages.addAll(leaveEditorMessages);
+		}
 		messages.addAll(reEvaluateBoxes(0));
 		return messages.toArray();
 	}
