@@ -1,40 +1,68 @@
 package de.prob.model.eventb.theory;
 
 import java.util.List;
+import java.util.Set;
 
+import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.extension.ExtensionFactory;
+import org.eventb.core.ast.extension.ICompatibilityMediator;
+import org.eventb.core.ast.extension.IExtendedFormula;
+import org.eventb.core.ast.extension.IExtensionKind;
+import org.eventb.core.ast.extension.IFormulaExtension;
+import org.eventb.core.ast.extension.IOperatorProperties;
+import org.eventb.core.ast.extension.IOperatorProperties.FormulaType;
+import org.eventb.core.ast.extension.IOperatorProperties.Notation;
+import org.eventb.core.ast.extension.IPriorityMediator;
+import org.eventb.core.ast.extension.IWDMediator;
+import org.eventb.core.ast.extension.StandardGroup;
+import org.eventb.internal.core.ast.extension.ExtensionKind;
+
+import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
+import de.prob.unicode.UnicodeTranslator;
 
 public class Operator extends AbstractElement {
 
-	private final String name;
+	private final EventB syntax;
 	private final boolean associative;
-	private final boolean formulaType;
-	private final String notationType;
+	private final IOperatorProperties.FormulaType formulaType;
+	private final IOperatorProperties.Notation notation;
 	private final boolean commutative;
 	private final IOperatorDefinition definition;
+	private final String theoryName;
+	private final List<OperatorArgument> operatorArguments = new ModelElementList<OperatorArgument>();
+	private final List<OperatorWDCondition> wdConditions = new ModelElementList<OperatorWDCondition>();
 
-	public Operator(final String name, final boolean associative,
-			final boolean commutative, final boolean formulaType,
-			final String notationType, final IOperatorDefinition definition) {
-		this.name = name;
+	public Operator(final String theoryName, final String operator,
+			final boolean associative, final boolean commutative,
+			final boolean formulaType, final String notationType,
+			final IOperatorDefinition definition,
+			final Set<IFormulaExtension> typeEnv) {
+		this.theoryName = theoryName;
+		syntax = new EventB(operator, typeEnv);
 		this.associative = associative;
 		this.commutative = commutative;
-		this.formulaType = formulaType;
-		this.notationType = notationType;
+		this.formulaType = formulaType ? IOperatorProperties.FormulaType.EXPRESSION
+				: IOperatorProperties.FormulaType.PREDICATE;
+		notation = notationType.equals("PREFIX") ? IOperatorProperties.Notation.PREFIX
+				: (notationType.equals("INFIX") ? IOperatorProperties.Notation.INFIX
+						: IOperatorProperties.Notation.POSTFIX);
 		this.definition = definition;
 	}
 
 	public void addArguments(final List<OperatorArgument> arguments) {
 		put(OperatorArgument.class, arguments);
+		operatorArguments.addAll(arguments);
 	}
 
 	public void addWDConditions(final List<OperatorWDCondition> conditions) {
 		put(OperatorWDCondition.class, conditions);
+		wdConditions.addAll(conditions);
 	}
 
-	public String getName() {
-		return name;
+	public EventB getSyntax() {
+		return syntax;
 	}
 
 	public boolean isAssociative() {
@@ -45,12 +73,12 @@ public class Operator extends AbstractElement {
 		return commutative;
 	}
 
-	public boolean isFormulaType() {
+	public IOperatorProperties.FormulaType getFormulaType() {
 		return formulaType;
 	}
 
-	public String getNotationType() {
-		return notationType;
+	public IOperatorProperties.Notation getNotation() {
+		return notation;
 	}
 
 	public IOperatorDefinition getDefinition() {
@@ -58,18 +86,173 @@ public class Operator extends AbstractElement {
 	}
 
 	public List<OperatorArgument> getArguments() {
-		return new ModelElementList<OperatorArgument>(
-				getChildrenOfType(OperatorArgument.class));
+		return operatorArguments;
 	}
 
 	public List<OperatorWDCondition> getWDConditions() {
-		return new ModelElementList<OperatorWDCondition>(
-				getChildrenOfType(OperatorWDCondition.class));
+		return wdConditions;
+	}
+
+	public String getParentTheory() {
+		return theoryName;
 	}
 
 	@Override
 	public String toString() {
-		return name;
+		return syntax.getCode();
+	}
+
+	public OperatorExtension getFormulaExtension() {
+		return new OperatorExtension(syntax);
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof Operator) {
+			return theoryName.equals(((Operator) obj).getParentTheory())
+					&& syntax.equals(((Operator) obj).getSyntax());
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return 13 * theoryName.hashCode() + 17 * syntax.hashCode();
+	}
+
+	private class OperatorExtension implements IFormulaExtension {
+
+		String unicode;
+
+		public OperatorExtension(final EventB syntax) {
+			unicode = UnicodeTranslator.toUnicode(syntax.getCode());
+		}
+
+		@Override
+		public String getSyntaxSymbol() {
+			return unicode;
+		}
+
+		@Override
+		public Predicate getWDPredicate(final IExtendedFormula formula,
+				final IWDMediator wdMediator) {
+			return wdMediator.makeTrueWD();
+		}
+
+		@Override
+		public boolean conjoinChildrenWD() {
+			return true;
+		}
+
+		@Override
+		public String getId() {
+			return theoryName + "." + unicode;
+		}
+
+		@Override
+		public String getGroupId() {
+			return getGroupFor(formulaType, notation, getArguments().size());
+		}
+
+		@Override
+		public IExtensionKind getKind() {
+			if (formulaType.equals(FormulaType.EXPRESSION)
+					&& notation.equals(Notation.INFIX) && associative) {
+				return new ExtensionKind(notation, formulaType,
+						ExtensionFactory.TWO_OR_MORE_EXPRS, true);
+			}
+			return new ExtensionKind(notation, formulaType,
+					ExtensionFactory.makeAllExpr(ExtensionFactory.makeArity(
+							getArguments().size(), getArguments().size())),
+					false);
+		}
+
+		@Override
+		public Object getOrigin() {
+			return null;
+		}
+
+		@Override
+		public void addCompatibilities(final ICompatibilityMediator mediator) {
+			// Nothing to add
+		}
+
+		@Override
+		public void addPriorities(final IPriorityMediator mediator) {
+			// Nothing to add
+		}
+
+		private String getGroupFor(final FormulaType formulaType,
+				final Notation notation, final int arity) {
+			String group = "NEW THEORY GROUP";
+			switch (formulaType) {
+			case EXPRESSION: {
+				switch (notation) {
+				case INFIX: {
+					break;
+				}
+				case PREFIX: {
+					if (arity > 0) {
+						group = StandardGroup.CLOSED.getId();
+					} else {
+						group = StandardGroup.ATOMIC_EXPR.getId();
+					}
+					break;
+				}
+				case POSTFIX: {
+					// leave as part of the dummy group TODO check this
+				}
+				}
+				break;
+			}
+			case PREDICATE: {
+				switch (notation) {
+				case INFIX: {
+					if (arity == 0) {
+						group = StandardGroup.ATOMIC_PRED.getId();
+					}
+					// infix makes sense for ops with more than two args
+					if (arity > 1) {
+						group = StandardGroup.INFIX_PRED.getId();
+					}
+					break;
+				}
+				case PREFIX: {
+					if (arity > 0) {
+						group = StandardGroup.CLOSED.getId();
+					} else {
+						group = StandardGroup.ATOMIC_PRED.getId();
+					}
+					break;
+				}
+				case POSTFIX: {
+					// leave as part of the dummy group TODO check this
+				}
+				}
+			}
+			}
+			return group;
+		}
+
+		@Override
+		public boolean equals(final Object obj) {
+			if (obj == this) {
+				return true;
+			}
+			if (obj instanceof OperatorExtension) {
+				return ((OperatorExtension) obj).getId().equals(getId());
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return getId().hashCode();
+		}
+
 	}
 
 }

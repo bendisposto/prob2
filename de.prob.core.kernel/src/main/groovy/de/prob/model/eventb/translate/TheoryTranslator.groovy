@@ -1,4 +1,8 @@
-package de.prob.model.representation
+package de.prob.model.eventb.translate
+
+import org.eventb.core.ast.FormulaFactory
+import org.eventb.core.ast.ITypeEnvironment
+import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.EventBAxiom
@@ -21,12 +25,17 @@ import de.prob.model.eventb.theory.RewriteRuleRHS
 import de.prob.model.eventb.theory.Theorem
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.eventb.theory.Type
+import de.prob.model.representation.AbstractElement
+import de.prob.model.representation.ModelElementList
 
 class TheoryTranslator {
 
 	def theories = new ModelElementList<AbstractElement>()
 	def theoryMap = [:]
 	def workspacePath
+	def Set<IFormulaExtension> extensions = new LinkedHashSet<IFormulaExtension>()
+	def FormulaFactory formulaFactory = FormulaFactory.getDefault()
+	def ITypeEnvironment typeEnvironment = formulaFactory.makeTypeEnvironment()
 
 	def getTheories(String directory) {
 		def f = new File("${directory}/TheoryPath.tul")
@@ -70,59 +79,25 @@ class TheoryTranslator {
 		}
 		theory.addImported(imported)
 
+		def params = []
+		xml.typeParameter.@identifier.each {
+			params << new Type(it)
+			typeEnvironment.addGivenSet(it)
+		}
+		theory.addTypeParameters(params)
+
+		def dataTypes = []
+		xml.dataTypeDefinition.each { dataTypes << addDataType(it) }
+		theory.addDataTypes(dataTypes)
+
 		def theorems = []
 		xml.theorem.each {
 			theorems << new Theorem(it.@label, it.@predicate)
 		}
 		theory.addTheorems(theorems)
 
-		def params = []
-		xml.typeParameter.@identifier.each {
-			params << new Type(it)
-		}
-		theory.addTypeParameters(params)
-
-		def extractOperator = { container ->
-			{ rep ->
-				def label = rep.@label
-				def associative = rep.@associative == "true"
-				def commutative = rep.@commutative == "true"
-				def formulaType = rep.@formulaType == "true"
-				def notationType = rep.@notationType
-				def definition
-				if(rep.@type != null) {
-					definition = new AxiomaticOperatorDefinition(rep.@type)
-				} else if(rep.directOperatorDefinition != []) {
-					definition = new DirectDefinition(rep.directOperatorDefinition[0].@formula)
-				} else if(rep.recursiveOperatorDefinition != []) {
-					def recDef = rep.recursiveOperatorDefinition[0]
-					definition = new RecursiveOperatorDefinition(recDef.@inductiveArgument);
-					def cases = []
-					recDef.recursiveDefinitionCase.each {
-						cases << new RecursiveDefinitionCase(it.@expression, it.@formula)
-					}
-					definition.addCases(cases)
-				}
-				def operator = new Operator(label, associative, commutative, formulaType, notationType, definition)
-
-				def args = []
-				rep.operatorArgument.each {
-					args << new OperatorArgument(it.@identifier, it.@expression)
-				}
-				operator.addArguments(args)
-
-				def wds = []
-				rep.operatorWDcondition.each {
-					wds << new OperatorWDCondition(it.@predicate)
-				}
-				operator.addWDConditions(wds)
-
-				container << operator
-			}
-		}
-
 		def operators = []
-		xml.newOperatorDefinition.each extractOperator(operators)
+		xml.newOperatorDefinition.each { operators << addOperator(it) }
 		theory.addOperators(operators)
 
 		def axDefs = []
@@ -142,7 +117,7 @@ class TheoryTranslator {
 			defBlock.addDefinitionAxioms(axioms)
 
 			def ops = []
-			block.axiomaticOperatorDefinition.each extractOperator(ops)
+			block.axiomaticOperatorDefinition.each { ops << addOperator(it)	 }
 			defBlock.addOperatorDefinitions(ops)
 			axDefs << defBlock
 		}
@@ -168,7 +143,9 @@ class TheoryTranslator {
 				def rule = new RewriteRule(label, applicability, complete, desc, formula)
 
 				def rHSs = []
-				rwR.rewriteRuleRHS.each { rHSs << new RewriteRuleRHS(it.@label, it.@predicate, it.@formula) }
+				rwR.rewriteRuleRHS.each {
+					rHSs << new RewriteRuleRHS(it.@label, it.@predicate, it.@formula)
+				}
 				rule.addRightHandSide(rHSs)
 				rewrites << rule
 			}
@@ -190,32 +167,7 @@ class TheoryTranslator {
 		}
 		theory.addProofRules(proofBlocks)
 
-		def dataTypes = []
-		xml.dataTypeDefinition.each {datum ->
-			def data = new DataType(datum.@identifier)
 
-			def types = []
-			datum.typeArgument.each {
-				types << new Type(it.@givenType)
-			}
-			data.addTypeArguments(types)
-
-			def constructors = []
-			datum.dataTypeConstructor.each { cons ->
-				def struct = new DataTypeConstructor(cons.@identifier)
-
-				def destrs = []
-				cons.constructorArgument.each {
-					destrs << new DataTypeDestructor(it.@identifier, it.@type)
-				}
-				struct.addDestructors(destrs)
-				constructors << struct
-			}
-			data.addConstructors(constructors)
-
-			dataTypes << data
-		}
-		theory.addDataTypes(dataTypes)
 
 		theoryMap[name] = theory;
 		return theory
@@ -225,5 +177,75 @@ class TheoryTranslator {
 		def text = file.text.replaceAll("org.eventb.core.","")
 		text = text.replaceAll("org.eventb.theory.core.", "")
 		return new XmlParser().parseText(text)
+	}
+
+	def addDataType(datum) {
+		def data = new DataType(datum.@identifier,extensions)
+
+		def types = []
+		datum.typeArgument.each {
+			types << new Type(it.@givenType)
+		}
+		data.addTypeArguments(types)
+
+		def constructors = []
+		datum.dataTypeConstructor.each { cons ->
+			def struct = new DataTypeConstructor(cons.@identifier)
+
+			def destrs = []
+			cons.constructorArgument.each {
+				destrs << new DataTypeDestructor(it.@identifier, it.@type)
+			}
+			struct.addDestructors(destrs)
+			constructors << struct
+		}
+		data.addConstructors(constructors)
+
+		updateExtensions(data.getFormulaExtension())
+
+		return data
+	}
+
+	def addOperator(rep) {
+		def label = rep.@label
+		def associative = rep.@associative == "true"
+		def commutative = rep.@commutative == "true"
+		def formulaType = rep.@formulaType == "true"
+		def notationType = rep.@notationType
+		def definition
+		if(rep.@type != null) {
+			definition = new AxiomaticOperatorDefinition(rep.@type)
+		} else if(rep.directOperatorDefinition != []) {
+			definition = new DirectDefinition(rep.directOperatorDefinition[0].@formula)
+		} else if(rep.recursiveOperatorDefinition != []) {
+			def recDef = rep.recursiveOperatorDefinition[0]
+			definition = new RecursiveOperatorDefinition(recDef.@inductiveArgument);
+			def cases = []
+			recDef.recursiveDefinitionCase.each {
+				cases << new RecursiveDefinitionCase(it.@expression, it.@formula)
+			}
+			definition.addCases(cases)
+		}
+		def operator = new Operator(label, associative, commutative, formulaType, notationType, definition)
+
+		def args = []
+		rep.operatorArgument.each {
+			args << new OperatorArgument(it.@identifier, it.@expression)
+		}
+		operator.addArguments(args)
+
+		def wds = []
+		rep.operatorWDcondition.each {
+			wds << new OperatorWDCondition(it.@predicate)
+		}
+		operator.addWDConditions(wds)
+		return operator;
+	}
+
+	def updateExtensions(newExtensions) {
+		extensions << newExtensions
+		formulaFactory = formulaFactory.withExtensions(extensions)
+		ITypeEnvironment newTypeEnvironment = formulaFactory.makeTypeEnvironment()
+		typeEnvironment = newTypeEnvironment.addAll(typeEnvironment)
 	}
 }

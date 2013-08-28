@@ -1,5 +1,9 @@
 package de.prob.model.eventb.theory;
 
+import java.util.Set;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.representation.AbstractElement;
@@ -10,8 +14,9 @@ public class DirectDefinition extends AbstractElement implements
 
 	EventB formula;
 
-	public DirectDefinition(final String formula) {
-		this.formula = new EventB(formula);
+	public DirectDefinition(final String formula,
+			final Set<IFormulaExtension> typeEnv) {
+		this.formula = new EventB(formula, typeEnv);
 	}
 
 	public EventB getFormula() {
@@ -26,6 +31,17 @@ public class DirectDefinition extends AbstractElement implements
 	@Override
 	public String toString() {
 		return formula.toString();
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof DirectDefinition) {
+			return getFormula().equals(((DirectDefinition) obj).getFormula());
+		}
+		return false;
 	}
 
 	@Override
