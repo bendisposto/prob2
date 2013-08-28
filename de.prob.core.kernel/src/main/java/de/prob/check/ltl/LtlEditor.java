@@ -94,55 +94,78 @@ public class LtlEditor extends AbstractSession {
 		return simpleRender(clientid, "ui/ltl/editor/editor.html");
 	}
 
-	public Object parseInput(Map<String, String[]> params) {
+	public Object parseFormula(Map<String, String[]> params) {
 		logger.trace("Parse ltl formula");
 		String input = get(params, "input");
-		String mode = get(params, "mode");
-		String ignorePattern = get(params, "ignorePattern");
+		String callback = get(params, "callbackObj");
 
 		ParseListener listener = new ParseListener();
-		List<Marker> markers = null;
-		if (mode.equals("parse")) {
-			LtlParser parser = parse(input, listener);
-			markers = getPatternMarkers(parser.getSymbolTableManager().getPatternDefinitions());
-		} else {
-			patternManager.addIgnorePattern(ignorePattern);
-			parsePatternDefinition(input, listener);
-			patternManager.clearIgnorePatterns();
-		}
+		LtlParser parser = parse(input, listener);
+		List<Marker> markers = getPatternMarkers(parser.getSymbolTableManager().getPatternDefinitions());
 
 		Map<String, String> result = null;
 		if (listener.getErrorMarkers().size() == 0) {
 			logger.trace("Parse ok (errors: 0, warnings: {}). Submitting parse results", listener.getWarningMarkers().size());
 			result = WebUtils.wrap(
-					"cmd", "LtlEditor.parseOk",
+					"cmd", callback + ".parseOk",
 					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
-					"markers", WebUtils.toJson(markers != null ? markers : ""));
+					"markers", WebUtils.toJson(markers));
 		} else {
 			logger.trace("Parse failed (errors: {}, warnings: {}). Submitting parse results", listener.getErrorMarkers().size(), listener.getWarningMarkers().size());
 			result = WebUtils.wrap(
-					"cmd", "LtlEditor.parseFailed",
+					"cmd", callback + ".parseFailed",
 					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
 					"errors", WebUtils.toJson(listener.getErrorMarkers()),
-					"markers", WebUtils.toJson(markers != null ? markers : ""));
+					"markers", WebUtils.toJson(markers));
 		}
 
 		return result;
 	}
 
-	public Object getExpressionAtPosition(Map<String, String[]> params) {
-		logger.trace("Get expression at the passed position");
+	public Object parsePattern(Map<String, String[]> params) {
+		logger.trace("Parse ltl pattern");
+		String input = get(params, "input");
+		String ignorePatternName = get(params, "ignorePatternName");
+		String callback = get(params, "callbackObj");
+
+		ParseListener listener = new ParseListener();
+		patternManager.addIgnorePattern(ignorePatternName);
+		parsePatternDefinition(input, listener);
+		patternManager.clearIgnorePatterns();
+
+		Map<String, String> result = null;
+		if (listener.getErrorMarkers().size() == 0) {
+			logger.trace("Parse ok (errors: 0, warnings: {}). Submitting parse results", listener.getWarningMarkers().size());
+			result = WebUtils.wrap(
+					"cmd", callback + ".parseOk",
+					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
+					"markers", "");
+		} else {
+			logger.trace("Parse failed (errors: {}, warnings: {}). Submitting parse results", listener.getErrorMarkers().size(), listener.getWarningMarkers().size());
+			result = WebUtils.wrap(
+					"cmd", callback + ".parseFailed",
+					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
+					"errors", WebUtils.toJson(listener.getErrorMarkers()),
+					"markers", "");
+		}
+
+		return result;
+	}
+
+	public Object getOperatorAtPosition(Map<String, String[]> params) {
+		logger.trace("Get operator at the passed position");
 
 		String key = get(params, "pos");
+		String callback = get(params, "callbackObj");
 		Expression ex = expressionMap.get(key);
 
 		Map<String, String> result = null;
 		if (ex == null) {
 			result = WebUtils.wrap(
-					"cmd", "LtlEditor.noExpressionFound");
+					"cmd", callback + ".noExpressionFound");
 		}else {
 			result = WebUtils.wrap(
-					"cmd", "LtlEditor.expressionFound",
+					"cmd", callback + ".expressionFound",
 					"expression", WebUtils.toJson(ex));
 		}
 		return result;
@@ -155,9 +178,10 @@ public class LtlEditor extends AbstractSession {
 		//String ch = get(params, "ch");
 		String startsWith = get(params, "startsWith");
 		String input = get(params, "input");
+		String callback = get(params, "callbackObj");
 
 		return WebUtils.wrap(
-				"cmd", "LtlEditor.showHint",
+				"cmd", callback + ".showHint",
 				"hints", WebUtils.toJson(getCompletionList(input, startsWith)));
 	}
 

@@ -1,0 +1,73 @@
+<!-- CSS -->
+<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+<link rel="stylesheet" href="/ui/common/codemirror.css">
+<link rel="stylesheet" href="/ui/common/show-hint.css">
+<link rel="stylesheet" href="/ui/ltl/editor/editor.css">
+<link rel="stylesheet" href="/ui/ltl/modelcheck/modelcheck.css">
+
+<!-- JavaScript -->
+<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
+<script type="text/javascript" src="/ui/libs/show-hint.js"></script>
+<script type="text/javascript" src="/ui/libs/matchbrackets.js"></script>
+<script type="text/javascript" src="/ui/libs/closebrackets.js"></script>
+<script type="text/javascript" src="/ui/ltl/editor/ltl-hint.js"></script>
+<script type="text/javascript" src="/ui/ltl/editor/LtlEditor.js"></script>
+<script type="text/javascript" src="/ui/ltl/modelcheck/LtlModelCheck.js"></script>
+
+<div class="modelcheck-content">
+	<div class="actions">
+		<div style="display: inline-block;">
+			<div class="alert alert-success" id="success-alert" style="display: none">Pattern saved</div>
+			<div class="alert alert-danger" id="error-alert" style="display: none">Saving failed. Fix the problems first</div>
+		</div>
+		<button class="btn btn-success btn-xs" id="start-current" type="button" title="Start model checking for the current formula">
+			<span class="glyphicon glyphicon-play"></span>
+			Check current formula
+		</button>
+		<button class="btn btn-success btn-xs" id="start-all" type="button" title="Start model checking for all formulas">
+			<span class="glyphicon glyphicon-play"></span>
+			Check all formulas
+		</button>
+		<button class="btn btn-danger btn-xs" id="settings" type="button" title="Settings">
+			<span class="glyphicon glyphicon-cog"></span>
+			Settings
+		</button>
+	</div>
+	<div class="panel" id="code-panel">
+		<div class="panel-heading">
+			<span class="glyphicon glyphicon-chevron-right"></span>
+			Last formulas
+			<div class="badge" style="display:inline">7</div>
+		</div>
+		<div>	
+			<!-- Formulas -->
+		</div>
+		<div class="panel-heading">
+			Current formula
+			<div class="badge" id="code-error">Fix the errors in the code</div>
+			<button class="btn btn-success btn-xs" id="add-formula" type="button" title="Add formula" style="float:right">
+				<span class="glyphicon glyphicon-plus"></span>
+				Add formula
+			</button>
+		</div>
+		<textarea id="formula-code">{{code}}</textarea>
+	</div>	
+</div>
+<script>
+	LtlModelCheck.init();
+	var options = {
+		parseOnChange : true,
+		showPatternMarkers : true,
+		highlightOperands : true,
+		showHints : true
+	};
+	LtlEditor.setCodeMirror(document.getElementById("formula-code"), options);
+	
+	$('#start-current').click(function() {
+		LtlEditor.setCodeMirror(document.getElementById("formula-code"), options);
+	});
+	$('#settings').click(function() {
+		LtlEditor.setCodeMirror(null);
+	});
+</script>
