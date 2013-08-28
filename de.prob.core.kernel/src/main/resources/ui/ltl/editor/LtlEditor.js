@@ -21,6 +21,7 @@ LtlEditor = (function() {
 		session.sendCmd("parseInput", {
 			"input" : extern.cm.getValue(),
 			"ignorePattern": extern.ignorePattern,
+			"mode": extern.mode,
 			"client" : extern.client
 		});
 	}

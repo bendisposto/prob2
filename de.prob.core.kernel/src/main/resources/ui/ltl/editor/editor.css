@@ -4,20 +4,18 @@
 
 div.CodeMirror span.CodeMirror-matchingbracket {
 	color: black;
-	background-color: #E0E0E0;
+	background-color: #DFF0D8;
 	font-weight: bold;
 }
 
 div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	color: black;
-	background-color: #e05151;
+	background-color: #F2DEDE;
 	font-weight: bold;
 }
 
-/* Error / warning marks */
+/* Gutter: warning, error, pattern-move */
 .CodeMirror-gutters {
-    padding-bottom: 0;
-	background-color: #F1F1F1;
 	border-right: 1px solid #F1F1F1;
 }
 
@@ -25,6 +23,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	width: 16px;
 	background-color: #FCFCFC;
 }
+
 .warning { 
 	background-image: url('../img/icon_warning.gif'); 
 	height: 16px; 
@@ -41,6 +40,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	cursor: pointer;
 }
 
+/* Text underline */
 .warning-underline {
 	background: url('../img/warning_underline.gif') bottom repeat-x;
 }
@@ -50,11 +50,11 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 }
 
 .operator {
-	background-color: #CAEDED;
+	background-color: #D9EDF7;
 }
 
 .operand {
-	background-color: #F0F0F0;
+	background-color: #DFF0D8;
 }
 
 /* Syntax highlighting */
