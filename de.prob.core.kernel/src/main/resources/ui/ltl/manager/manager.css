@@ -9,7 +9,7 @@
 /* Left bar */
 .left-bar {		
 	position: absolute;
-	top: 0;
+	top: 50px;
 	bottom: 0;
 	width: 200px;
 }
@@ -43,6 +43,8 @@
 	width: 200px;
 
 	overflow-x: hidden;
+	
+	background: white;
 }
 
 .pattern-list ul {
@@ -58,7 +60,7 @@
 }
 
 .pattern-list .ui-selecting {
-	background: #ecf3f7;
+	background: #ECF3F7;
 }
 
 .pattern-list .ui-selected {
@@ -78,9 +80,9 @@
 }
 
 /* Content on the right */
-.content {
+.manager-content {
 	position: absolute;
-	top: 0;
+	top: 50px;
 	bottom: 0;
 	left: 205px;
 	right: 0;
@@ -109,8 +111,6 @@
 	margin-top: 5px;
 	border-bottom: 1px solid #EEEEEE;
 }
-
-
 
 /* Description panel */
 .panel .input-group {
@@ -155,10 +155,8 @@
 	border-bottom: 1px solid #D4D4D4;
 }
 
-
-
 /* Badge */
-.badge {
+.badge-error{
 	display: none;
 	margin-left: 10px;
 	

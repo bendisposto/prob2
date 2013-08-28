@@ -1,42 +1,75 @@
 LtlPatternManager = (function() {
 	var extern = {};
-	var session = Session();
-
-	$(document).ready(function() {
-		extern.start();
-	});	
 	
-	/* Pattern selection */
-	function selected(event, ui) {
-		var count = $('.ui-selected').size();
-		if (count == 1) {
-			var index = $("#selectable .pattern-list-item").index($('.ui-selected'));
-			extern.showPattern(index);
-		} else if (count == 0) {
-			extern.showDefaultPage();
+	extern.patterns = [];
+	
+	/* Create and destroy pattern manager */
+	extern.create = function() {
+		// Get pattern list 
+		Util.getPatternList();
+		
+		// Register selection listener to pattern list
+		$("#selectable").selectable({
+			filter: ".pattern-list-item",
+			unselected: selected,
+			selected: selected			
+		});
+		
+		registerCreateButton($('#add-pattern'));
+	}
+	
+	extern.destroy = function() {
+		$(window).unbind('resize');
+	
+	}
+	
+	/* Register buttons */
+	function registerCreateButton(element) {
+		element.click(function() {
+			showEditView();
+		});
+	}
+	
+	function registerEditButton(element, pattern) {
+		element.click(function() {
+			showEditView(pattern);
+		});
+	}
+	
+	function registerRemoveButton(element, patterns) {
+		element.click(function() {
+			var names = [];
+			for (var i = 0; i < patterns.length; i++) {
+				names.push(patterns[i].name);
+			}
+			Util.removePatterns(names);
+		});
+	}
+	
+	function registerSaveButton(element, oldPatternName) {
+		if (oldPatternName) {
+			element.click(function() {
+				updatePattern(oldPatternName, collectInputData());
+			});
 		} else {
-			extern.showPatternList();
+			element.click(function() {
+				savePattern(collectInputData());
+			});
 		}
 	}
 	
-	extern.showPattern = function(index) {
+	/* Show content pages */	
+	function showPattern(index) {
 		var pattern = extern.patterns[index];
-		var content = session.render("/ui/ltl/manager/show_pattern.html", pattern);
-		$(".content").empty().append(content);	
 		
-		// Register edit button
-		$('#edit-pattern').click(function() {
-			showEditView(pattern);
-		});
-		// Register remove button
-		registerRemoveButton([pattern]);
+		$(window).unbind('resize');
+		Util.replaceContent(".manager-content", "/ui/ltl/manager/show_pattern.html", pattern);
+		
+		registerEditButton($('#edit-pattern'), pattern);
+		registerRemoveButton($('#remove-pattern'), [pattern]);
 	}
 	
-	extern.showDefaultPage = function(index) {
-		$(".content").empty();	
-	}
-	
-	extern.showPatternList = function() {
+	function showPatternList() {
 		var patterns = [];
 		$('#user-patterns .ui-selected').each(function(i, element) {
 			var index = $("#selectable .pattern-list-item").index(element);
@@ -49,28 +82,18 @@ LtlPatternManager = (function() {
 			builtins.push(extern.patterns[index]);
 		});
 		
-		var content = session.render("/ui/ltl/manager/show_pattern_list.html", { patterns: patterns, builtins: builtins });
-		$(".content").empty().append(content);	
+		$(window).unbind('resize');
+		Util.replaceContent(".manager-content", "/ui/ltl/manager/show_pattern_list.html", { patterns: patterns, builtins: builtins });
 		
-		// Register remove button
-		registerRemoveButton(patterns);
+		registerRemoveButton($('#remove-pattern'), patterns);
 	}
-	
-	/* Show create and edit*/	
-	function showEditView(pattern) {
-		var content = session.render("/ui/ltl/manager/edit_pattern.html", pattern);
-		$(".content").empty().append(content);
 		
-		// Register save button
-		$('#save-pattern').click(function() {
-			if (pattern.name) {
-				// Edit
-				extern.updatePattern(pattern.name, collectInputData());
-			} else {
-				// Create
-				extern.savePattern(collectInputData());
-			}
-		});
+	function showEditView(pattern = {}) {
+		$(window).unbind('resize');		
+		Util.replaceContent(".manager-content", "/ui/ltl/manager/edit_pattern.html", pattern);
+		
+		registerSaveButton($('#save-pattern'), pattern.name);
+		registerRemoveButton($('#remove-pattern'), [pattern]);
 		
 		// Register input checks
 		$('#name-input').keyup(function() {
@@ -79,38 +102,20 @@ LtlPatternManager = (function() {
 		LtlEditor.parseListeners = [function() {
 			checkInput(pattern.name || null, collectInputData());
 		}];
-		
-		if (pattern.name) {
-			// Register remove button for edit page
-			registerRemoveButton([pattern]);
-		}
+	}	
+	
+	/* Pattern list */	
+	extern.setPatternList = function(data) {		
+		setPatternList(JSON.parse(data.patterns));
 	}
 	
-	function registerRemoveButton(patterns) {
-		// Register remove button
-		$('#remove-pattern').click(function() {
-			var names = [];
-			for (var i = 0; i < patterns.length; i++) {
-				names.push(patterns[i].name);
-			}
-			extern.removePatterns(names);
-		});
-	}
-	
-	/* Pattern list */
-	extern.getPatternList = function() {
-		session.sendCmd("getPatternList", {
-			"client" : extern.client
-		});
-	}
-	
-	extern.setPatternList = function(data) {
-		extern.patterns = JSON.parse(data.patterns);
-		
+	function setPatternList(patterns) {
 		var user = $('#user-patterns');
 		var builtins = $('#builtin-patterns');
 		user.empty();
 		builtins.empty();
+		
+		extern.patterns = patterns;
 		for (var i = 0; i < extern.patterns.length; i++) {
 			var pattern = extern.patterns[i];
 			var element = document.createElement("li");
@@ -124,28 +129,22 @@ LtlPatternManager = (function() {
 		}
 	}
 	
-	/* Code mirror */
-	extern.changeCodeElement = function(codeElement, mode, ignorePattern) {
-		LtlEditor.changeCM(codeElement, mode, ignorePattern);		
-		extern.registerResize(LtlEditor.cm);
+	function selected(event, ui) {
+		var count = $('.ui-selected').size();
+		if (count == 1) {
+			var index = $("#selectable .pattern-list-item").index($('.ui-selected'));
+			showPattern(index);
+		} else if (count == 0) {
+			if ($('.ui-selecting').size() == 0) {
+				$(window).unbind('resize');
+				$(".manager-content").empty();
+			}
+		} else {
+			showPatternList();
+		}
 	}
 	
-	extern.registerResize = function(cm) {
-		// Register resize callback
-		$(window).unbind('resize').resize(function() {
-			var height = $('.content').height();
-			var offset = $('#code-panel').offset();
-			height -= (offset.top + 35);
-			
-			cm.setSize(null, Math.max(200, height));	
-			cm.refresh();
-		});		
-		
-		// Call resize function
-		$(window).trigger('resize');
-	}
-	
-	/* Saving */
+	/* Input validation */
 	function collectInputData() {
 		var pattern = {
 			name: $('#name-input').val().trim(),
@@ -160,14 +159,7 @@ LtlPatternManager = (function() {
 		// Check empty name
 		var emptyName = !pattern.name;
 		// Check unique name
-		var uniqueName = true;
-		if (pattern.name != oldName) {
-			for (var i = 0; i < extern.patterns.length && uniqueName; i++) {
-				if (pattern.name == extern.patterns[i].name) {
-					uniqueName = false;
-				}
-			}		
-		}
+		var uniqueName = (pattern.name == oldName || findPattern(pattern.name) == -1);
 		// Check errors in code
 		var codeErrors = !LtlEditor.lastParseOk;
 		
@@ -188,14 +180,10 @@ LtlPatternManager = (function() {
 		return -1;
 	}
 	
-	extern.savePattern = function(pattern) {
+	/* Saving, updating and removing */
+	function savePattern(pattern) {
 		if (checkInput(null, pattern)) {
-			session.sendCmd("savePattern", {
-				"name": pattern.name,
-				"description": pattern.description,
-				"code": pattern.code,
-				"client" : extern.client
-			});
+			Util.savePattern(pattern);
 		} else {
 			$("#error-alert").fadeIn("fast", function() {
 				$("#error-alert").delay(2000).fadeOut("slow");
@@ -203,27 +191,14 @@ LtlPatternManager = (function() {
 		}
 	}
 	
-	extern.updatePattern = function(oldName, pattern) {
+	function updatePattern(oldName, pattern) {
 		if (checkInput(oldName, pattern)) {
-			session.sendCmd("updatePattern", {
-				"oldName": oldName,
-				"name": pattern.name,
-				"description": pattern.description,
-				"code": pattern.code,
-				"client" : extern.client
-			});
+			Util.updatePattern(oldName, pattern);
 		} else {
 			$("#error-alert").fadeIn("fast", function() {
 				$("#error-alert").delay(2000).fadeOut("slow");
 			});
 		}
-	}
-	
-	extern.removePatterns = function(names) {
-		session.sendCmd("removePatterns", {
-			"names": JSON.stringify(names),
-			"client" : extern.client
-		});
 	}
 	
 	extern.saveSuccess = function(data) {
@@ -242,7 +217,6 @@ LtlPatternManager = (function() {
 		var user = $('#user-patterns');
 		user.append(element);
 		
-	
 		$("#success-alert").fadeIn("fast", function() {
 			$("#success-alert").delay(2000).fadeOut("slow");
 		});
@@ -269,8 +243,8 @@ LtlPatternManager = (function() {
 		var names = JSON.parse(data.names);
 		
 		$('#removeModal').on('hidden.bs.modal', function () {
-			var content = session.render("/ui/ltl/manager/default.html", { multiple: (names.length > 1) });
-			$(".content").empty().append(content);	
+			$(window).unbind('resize');
+			Util.replaceContent(".manager-content", "/ui/ltl/manager/default.html", { multiple: (names.length > 1) });	
 		
 			$("#success-alert").fadeIn("fast", function() {
 				$("#success-alert").delay(2000).fadeOut("slow");
@@ -291,41 +265,36 @@ LtlPatternManager = (function() {
 		});
 	}
 	
-	extern.start = function() {
-		// Get pattern list 
-		extern.getPatternList();
-		
-		// Register selection listener to pattern list
-		$("#selectable").selectable({
-			filter: ".pattern-list-item",
-			unselected: selected,
-			selected: selected			
-		});
-		
-		// Register create button
-		$('#add-pattern').click(function() {
-			showEditView({});
-		});
-	}
-	
-	/* Init */
-	extern.init = function(client) {
-		extern.client = client;
-		session.init(client);	
-		extern.session = session;
-		
+	/* Code mirror */
+	extern.setCodeMirror = function(codeElement, ignorePatternName) {
 		var options = {
 			parseOnChange : true,
-			showPatternMarkers : true,
+			showPatternMarkers : false,
 			highlightOperands : true,
-			showHints : true
+			showHints : true,
+			mode : "parsePattern",
+			ignorePatternName : ignorePatternName
 		};
-		LtlEditor.init(client, session, options);
+		LtlEditor.setCodeMirror(codeElement, options);	
+		extern.registerResize(LtlEditor.cm);
 	}
-	extern.session = null;
-	extern.client = null;
-	extern.patterns = [];
-	extern.builtins = [];
+	
+	extern.registerResize = function(cm) {
+		// Register resize callback
+		$(window).unbind('resize').resize(function() {
+			var height = $('.manager-content').height();
+			var offset = $('#code-panel').offset();
+			if (offset) {
+				height -= (offset.top - 15);
+				
+				cm.setSize(null, Math.max(200, height));	
+				cm.refresh();
+			}
+		});		
+		
+		// Call resize function
+		$(window).trigger('resize');
+	}
 	
 	return extern;
 }())

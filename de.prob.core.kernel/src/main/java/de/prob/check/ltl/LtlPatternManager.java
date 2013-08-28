@@ -39,6 +39,8 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 	public Object getPatternList(Map<String, String[]> params) {
 		logger.trace("Get current pattern list");
 
+		String callback = get(params, "callbackObj");
+
 		List<PatternInfo> patterns = new LinkedList<PatternInfo>();
 		for (Pattern pattern: patternManager.getBuiltins()) {
 			patterns.add(new PatternInfo(pattern.getName(), pattern.getDescription(), pattern.getCode(), pattern.isBuiltin()));
@@ -48,7 +50,7 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 		}
 
 		return WebUtils.wrap(
-				"cmd", "LtlPatternManager.setPatternList",
+				"cmd", callback + ".setPatternList",
 				"patterns", WebUtils.toJson(patterns));
 	}
 
@@ -58,6 +60,7 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 		String name = get(params, "name");
 		String description = get(params, "description");
 		String code = get(params, "code");
+		String callback = get(params, "callbackObj");
 
 		Pattern pattern = new Pattern();
 		pattern.setBuiltin(false);
@@ -72,17 +75,18 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 		}
 
 		return WebUtils.wrap(
-				"cmd", "LtlPatternManager.saveSuccess",
+				"cmd", callback + ".saveSuccess",
 				"pattern", WebUtils.toJson(new PatternInfo(name, description, code, false)));
 	}
 
 	public Object updatePattern(Map<String, String[]> params) {
 		logger.trace("Update pattern");
 
-		String oldName = get(params, "oldName");
+		String oldName = get(params, "oldPatternName");
 		String name = get(params, "name");
 		String description = get(params, "description");
 		String code = get(params, "code");
+		String callback = get(params, "callbackObj");
 
 		Pattern pattern = patternManager.getUserPattern(oldName);
 		if (pattern != null) {
@@ -98,7 +102,7 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 			}
 		}
 		return WebUtils.wrap(
-				"cmd", "LtlPatternManager.updateSuccess",
+				"cmd", callback + ".updateSuccess",
 				"oldPatternName", oldName,
 				"pattern", WebUtils.toJson(new PatternInfo(name, description, code, false)));
 	}
@@ -107,6 +111,7 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 		logger.trace("Remove patterns");
 
 		String names[] = getArray(params, "names");
+		String callback = get(params, "callbackObj");
 
 		for (String name : names) {
 			Pattern pattern = patternManager.getUserPattern(name);
@@ -119,7 +124,7 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 		}
 
 		return WebUtils.wrap(
-				"cmd", "LtlPatternManager.removeSuccess",
+				"cmd", callback + ".removeSuccess",
 				"names", WebUtils.toJson(names));
 	}
 

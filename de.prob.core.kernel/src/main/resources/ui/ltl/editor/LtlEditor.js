@@ -2,6 +2,7 @@ LtlEditor = (function() {
 	var extern = {};
 	extern.cm = null;
 	extern.ignorePatternName = null;
+	extern.lastParseOk = true;
 	extern.parseListeners = [];
 	
 	/* Create and destroy CodeMirror */		
@@ -21,6 +22,7 @@ LtlEditor = (function() {
 			extern.cm = CodeMirror.fromTextArea(codeElement, cmSettings);
 			extern.showPatternMarkers = options.showPatternMarkers;
 			extern.mode = options.mode || "parseFormula";
+			extern.ignorePatternName = options.ignorePatternName || null;
 			
 			if (options.parseOnChange) {
 				// Enable parse on change
@@ -51,6 +53,7 @@ LtlEditor = (function() {
 			extern.cm.off("cursorActivity");
 			CodeMirror.commands.autocomplete = null;
 			extern.showPatternMarkers = false;
+			extern.lastParseOk = true;
 			
 			extern.cm.toTextArea();
 		}		
@@ -78,7 +81,8 @@ LtlEditor = (function() {
 		
 		refreshOperandHighlighting(250);
 		
-		notifyParseListeners(true);
+		extern.lastParseOk = true;
+		notifyParseListeners();
 	}
 	
 	extern.parseFailed = function(data) {
@@ -91,12 +95,13 @@ LtlEditor = (function() {
 		
 		refreshOperandHighlighting(250);
 		
-		notifyParseListeners(false);
+		extern.lastParseOk = false;
+		notifyParseListeners();
 	}
 	
-	function notifyParseListeners(parseOk) {
+	function notifyParseListeners() {
 		for (var i = 0; i < extern.parseListeners.length; i++) {
-			extern.parseListeners[i](parseOk);
+			extern.parseListeners[i](extern.lastParseOk);
 		}
 	}
 	

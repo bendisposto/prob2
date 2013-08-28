@@ -1,78 +1,61 @@
-<!DOCTYPE html>
-<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
-<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
-<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!-->
-<html lang="en">
-<head>
-	<title>LTL Pattern manager</title>
-		
 <!-- CSS -->
-	<link rel="stylesheet" href="/ui/ltl/bootstrap.css">
-	<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
-	<link rel="stylesheet" href="/ui/common/codemirror.css">
-	<link rel="stylesheet" href="/ui/common/show-hint.css">
-	<link rel="stylesheet" href="/ui/ltl/splitter/splitter.css">
-	<link rel="stylesheet" href="/ui/ltl/manager/manager.css">
-	<link rel="stylesheet" href="/ui/ltl/editor/editor.css">
-	
+<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+<link rel="stylesheet" href="/ui/common/codemirror.css">
+<link rel="stylesheet" href="/ui/common/show-hint.css">
+<link rel="stylesheet" href="/ui/ltl/splitter/splitter.css">
+<link rel="stylesheet" href="/ui/ltl/editor/editor.css">
+<link rel="stylesheet" href="/ui/ltl/manager/manager.css">
+
 <!-- JavaScript -->
-	<script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
-	<script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
-	<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
-	<script type="text/javascript" src="/ui/libs/mustache.js"></script>
-	<script type="text/javascript" src="/ui/ltl/splitter/splitter.js"></script>
-	<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
-	<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
-	<script type="text/javascript" src="/ui/common/Session.js"></script>
-	<script type="text/javascript" src="/ui/ltl/manager/LtlPatternManager.js"></script>
-	<script type="text/javascript" src="/ui/libs/show-hint.js"></script>
-	<script type="text/javascript" src="/ui/libs/matchbrackets.js"></script>
-	<script type="text/javascript" src="/ui/libs/closebrackets.js"></script>
-	<script type="text/javascript" src="/ui/ltl/editor/ltl-hint.js"></script>
-	<script type="text/javascript" src="/ui/ltl/editor/LtlEditor.js"></script>
-</head>
-<body>
-	<div class="left-bar">
-		<div class="left-bar-heading">
-			<div class="icon"></div>
-			Patterns
-			<button class="btn btn-success btn-xs" id="add-pattern" style="float: right" type="button" title="Create new pattern">
-				<span class="glyphicon glyphicon-plus"></span>
-				New
-			</button>	
-		</div>
-		<div class="pattern-list">
-			<ul id="selectable">
-				<li class="pattern-list-group">Builtin patterns</li>
-				<div id="builtin-patterns">
-				</div>
-				<li class="pattern-list-group">User defined patterns</li>
-				<div id="user-patterns">
-				</div>
-			</ul>
-		</div>
+<script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
+<script type="text/javascript" src="/ui/ltl/splitter/splitter.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
+<script type="text/javascript" src="/ui/libs/show-hint.js"></script>
+<script type="text/javascript" src="/ui/libs/matchbrackets.js"></script>
+<script type="text/javascript" src="/ui/libs/closebrackets.js"></script>
+<script type="text/javascript" src="/ui/ltl/editor/ltl-hint.js"></script>
+<script type="text/javascript" src="/ui/ltl/editor/LtlEditor.js"></script>
+<script type="text/javascript" src="/ui/ltl/manager/LtlPatternManager.js"></script>
+
+<div class="left-bar">
+	<div class="left-bar-heading">
+		<div class="icon"></div>
+		Patterns
+		<button class="btn btn-success btn-xs" id="add-pattern" style="float: right" type="button" title="Create new pattern">
+			<span class="glyphicon glyphicon-plus"></span>
+			New
+		</button>	
 	</div>
-	<div class="splitter_horizontal" style="left: 200px;"></div>
-	<div class="content">
-		
+	<div class="pattern-list">
+		<ul id="selectable">
+			<li class="pattern-list-group">Builtin patterns</li>
+			<div id="builtin-patterns">
+			</div>
+			<li class="pattern-list-group">User defined patterns</li>
+			<div id="user-patterns">
+			</div>
+		</ul>
 	</div>
-	<script>
-		var options = { 
-			splitter: $('.splitter_horizontal'), 
-			min1: 200,
-			min2: 200,
-			enable: true,
-			resize: function(extern, diff, size1, start2) {								
-				$('.left-bar').css({ width: size1 });
-				$('.pattern-list').css({ width: size1 });
-				extern.splitter.css({ left: size1 });
-				$('.content').css({ left: start2 });
-			}
-		};
-		
-		var splitter = splitter(options);
-		LtlPatternManager.init("{{clientid}}");
-	</script>
-</body>
-</html>
+</div>
+<div class="splitter_horizontal" style="left: 200px;"></div>
+<div class="manager-content">
+	
+</div>
+<script>
+	var options = { 
+		splitter: $('.splitter_horizontal'), 
+		min1: 200,
+		min2: 200,
+		enable: true,
+		resize: function(extern, diff, size1, start2) {								
+			$('.left-bar').css({ width: size1 });
+			$('.pattern-list').css({ width: size1 });
+			extern.splitter.css({ left: size1 });
+			$('.manager-content').css({ left: start2 });
+		}
+	};
+	
+	var splitter = splitter(options);
+	LtlPatternManager.create();
+</script>
