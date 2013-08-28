@@ -1,4 +1,4 @@
-package de.prob.model.representation;
+package de.prob.model.eventb.translate;
 
 import de.prob.model.eventb.Context
 import de.prob.model.eventb.Event
@@ -13,6 +13,10 @@ import de.prob.model.eventb.EventParameter
 import de.prob.model.eventb.Variant
 import de.prob.model.eventb.Witness
 import de.prob.model.eventb.Event.EventType
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.BSet;
+import de.prob.model.representation.Machine;
+import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 

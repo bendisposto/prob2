@@ -4,8 +4,10 @@ import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
 import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.eventb.core.ast.ASTProblem;
 import org.eventb.core.ast.Expression;
@@ -13,6 +15,7 @@ import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.LanguageVersion;
 import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.extension.IFormulaExtension;
 
 import com.google.common.base.Joiner;
 
@@ -37,6 +40,8 @@ public class EventB extends AbstractEvalElement {
 	private String kind;
 	private Node ast = null;
 
+	private final Set<IFormulaExtension> types;
+
 	/**
 	 * @param code
 	 *            - The String which is a representation of the desired Event-B
@@ -44,14 +49,21 @@ public class EventB extends AbstractEvalElement {
 	 */
 	public EventB(final String code) {
 		this.code = UnicodeTranslator.toAscii(code);
+		types = Collections.emptySet();
+		ensureParsed();
+	}
+
+	public EventB(final String code, final Set<IFormulaExtension> types) {
+		this.code = UnicodeTranslator.toAscii(code);
+		this.types = types;
 		ensureParsed();
 	}
 
 	private void ensureParsed() {
 		final String unicode = UnicodeTranslator.toUnicode(code);
 		kind = PREDICATE.toString();
-		IParseResult parseResult = FormulaFactory.getDefault().parsePredicate(
-				unicode, LanguageVersion.LATEST, null);
+		IParseResult parseResult = FormulaFactory.getInstance(types)
+				.parsePredicate(unicode, LanguageVersion.LATEST, null);
 
 		if (!parseResult.hasProblem()) {
 			ast = preparePredicateAst(parseResult);

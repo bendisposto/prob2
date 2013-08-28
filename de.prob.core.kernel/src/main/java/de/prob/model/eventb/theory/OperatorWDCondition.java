@@ -1,21 +1,19 @@
 package de.prob.model.eventb.theory;
 
-import de.prob.animator.domainobjects.EventB;
-import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.IEval;
+import java.util.Set;
 
-public class OperatorWDCondition extends AbstractElement implements IEval {
+import org.eventb.core.ast.extension.IFormulaExtension;
+
+import de.prob.animator.domainobjects.EventB;
+import de.prob.model.representation.AbstractElement;
+
+public class OperatorWDCondition extends AbstractElement {
 
 	private final EventB predicate;
 
-	public OperatorWDCondition(final String predicate) {
-		this.predicate = new EventB(predicate);
-	}
-
-	@Override
-	public IEvalElement getEvaluate() {
-		return predicate;
+	public OperatorWDCondition(final String predicate,
+			final Set<IFormulaExtension> typeEnv) {
+		this.predicate = new EventB(predicate, typeEnv);
 	}
 
 	public EventB getPredicate() {
@@ -25,5 +23,21 @@ public class OperatorWDCondition extends AbstractElement implements IEval {
 	@Override
 	public String toString() {
 		return predicate.toString();
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof OperatorWDCondition) {
+			return predicate.equals(((OperatorWDCondition) obj).getPredicate());
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return predicate.hashCode();
 	}
 }

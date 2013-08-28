@@ -1,4 +1,4 @@
-package de.prob.model.representation
+package de.prob.model.eventb.translate
 
 import de.prob.model.eventb.proof.INV
 import de.prob.model.eventb.proof.IProof

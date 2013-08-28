@@ -8,9 +8,9 @@ import com.google.inject.Inject;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.model.eventb.translate.EventBTranslator;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.EventBTranslator;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;

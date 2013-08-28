@@ -1,22 +1,28 @@
 package de.prob.model.eventb.theory;
 
+import java.util.Set;
+
+import org.eventb.core.ast.extension.IFormulaExtension;
+
+import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 
 public class Theorem extends AbstractElement {
 
 	private final String name;
-	private final String predicate;
+	private final EventB predicate;
 
-	public Theorem(final String name, final String predicate) {
+	public Theorem(final String name, final String predicate,
+			final Set<IFormulaExtension> extensions) {
 		this.name = name;
-		this.predicate = predicate;
+		this.predicate = new EventB(predicate, extensions);
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public String getPredicate() {
+	public EventB getPredicate() {
 		return predicate;
 	}
 

@@ -9,6 +9,9 @@ import de.prob.model.representation.Variable;
 public class ProofRulesBlock extends AbstractElement {
 
 	private final String name;
+	private final List<RewriteRule> rewriteRules = new ModelElementList<RewriteRule>();
+	private final List<MetaVariable> metaVariables = new ModelElementList<MetaVariable>();
+	private final List<InferenceRule> inferenceRules = new ModelElementList<InferenceRule>();
 
 	public ProofRulesBlock(final String name) {
 		this.name = name;
@@ -16,29 +19,29 @@ public class ProofRulesBlock extends AbstractElement {
 
 	public void addRewriteRules(final List<RewriteRule> rewriteRules) {
 		put(RewriteRule.class, rewriteRules);
+		this.rewriteRules.addAll(rewriteRules);
 	}
 
 	public void addMetaVariables(final List<MetaVariable> metaVariables) {
 		put(Variable.class, metaVariables);
+		this.metaVariables.addAll(metaVariables);
 	}
 
 	public void addInferenceRules(final List<InferenceRule> inferenceRules) {
 		put(InferenceRule.class, inferenceRules);
+		this.inferenceRules.addAll(inferenceRules);
 	}
 
 	public List<RewriteRule> getRewriteRules() {
-		return new ModelElementList<RewriteRule>(
-				getChildrenOfType(RewriteRule.class));
-	}
-
-	public List<MetaVariable> getMetaVariables() {
-		return new ModelElementList<MetaVariable>(
-				getChildrenOfType(Variable.class));
+		return rewriteRules;
 	}
 
 	public List<InferenceRule> getInferenceRules() {
-		return new ModelElementList<InferenceRule>(
-				getChildrenOfType(InferenceRule.class));
+		return inferenceRules;
+	}
+
+	public List<MetaVariable> getMetaVariables() {
+		return metaVariables;
 	}
 
 	public String getName() {
@@ -48,6 +51,23 @@ public class ProofRulesBlock extends AbstractElement {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof ProofRulesBlock) {
+			return name.equals(((ProofRulesBlock) obj).getName())
+					&& getInferenceRules().size() == ((ProofRulesBlock) obj)
+							.getInferenceRules().size()
+					&& getMetaVariables().size() == ((ProofRulesBlock) obj)
+							.getMetaVariables().size()
+					&& getRewriteRules().size() == ((ProofRulesBlock) obj)
+							.getRewriteRules().size();
+		}
+		return super.equals(obj);
 	}
 
 	@Override
