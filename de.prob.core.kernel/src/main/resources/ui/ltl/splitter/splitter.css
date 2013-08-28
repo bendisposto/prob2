@@ -8,7 +8,7 @@
 	border-bottom: 1px solid #D4D4D4;
 	
 	background: #FAFAFA;
-	background-image: url('/ui/ltl/icon_vertical_splitter.gif');
+	background-image: url('../img/icon_vertical_splitter.gif');
 	background-repeat: no-repeat;
 	background-position: center;
 	cursor: n-resize;
@@ -24,7 +24,7 @@
 	border-right: 1px solid #D4D4D4;
 	
 	background: #FAFAFA;
-	background-image: url('/ui/ltl/icon_horizontal_splitter.gif');
+	background-image: url('../img/icon_horizontal_splitter.gif');
 	background-repeat: no-repeat;
 	background-position: center;
 	cursor: e-resize;
