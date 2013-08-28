@@ -25,3 +25,12 @@
 .btn-selected {
 	background-color: #dddddd;
 }
+
+#typeselectbtn {
+	min-width: 100px;
+}
+
+#typeselectbtn .bigcaret {
+	float: right;
+	margin-top: 8px;
+}

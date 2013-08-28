@@ -28,21 +28,29 @@
 	<div class="container">
 		<div class="top-bar">
 			<div class="page-header col-lg-12">
-				<span> Default Box-Type: </span> <span id="defaultBoxType">
-					{{default-box-type}} </span> <span id="replace-with-type-selector"></span>
 
+
+				<div class="btn-group">
+					<button type="button" id="typeselectbtn"
+						class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						<span id="defaultBoxType" class="pull-left">
+							{{default-box-type}} </span><span class="bigcaret"></span>
+					</button>
+					<span id="replace-with-type-selector">
+				</div>
 
 				<span class="btn-group pull-right">
 					<button id="compactbtn" type="button"
-						class="btn btn-default btn-sm right-group" onclick="Worksheet.compact()">
+						class="btn btn-default btn-sm right-group"
+						onclick="Worksheet.compact()">
 						<span class="glyphicon glyphicon-print"></span>
 					</button>
 					<button id="refreshbtn" type="button"
-						class="btn btn-success btn-sm right-group" onclick="Worksheet.refreshAll()">
+						class="btn btn-success btn-sm right-group"
+						onclick="Worksheet.refreshAll()">
 						<span class="glyphicon glyphicon-refresh"></span>
 					</button>
 				</span>
-
 
 
 			</div>

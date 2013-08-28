@@ -277,9 +277,10 @@ Worksheet = (function() {
 				});
 
 				$("#replace-with-type-selector").replaceWith(
-						session.render("/ui/worksheet/type-selector.html", {
-							"id" : "default"
-						}))
+						session.render("/ui/worksheet/main-type-selector.html",
+								{
+									"id" : "default"
+								}))
 
 				jQuery(document).keydown(key_handler);
 
