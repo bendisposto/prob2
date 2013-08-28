@@ -128,7 +128,9 @@ Worksheet = (function() {
 			"box-content" : content
 		}
 		if (eval("Languages." + type + ".no_vars") == null) {
-			co.small = "col-lg-10"
+			co.size = "col-lg-10"
+		} else {
+			co.size = "col-lg-12"
 		}
 
 		co.editor = session.render(template, co)
@@ -237,9 +239,9 @@ Worksheet = (function() {
 	}
 
 	function render(id, html) {
-		$("#render" + id).replaceWith(
-				'<div class="renderbox" id="render' + id + '">' + html
-						+ '</div>')
+		$("#render" + id + " *").remove()
+		$("#render" + id).append(html)
+
 	}
 	function delete_box(id) {
 		$("#box" + id).remove()
@@ -408,8 +410,16 @@ Worksheet = (function() {
 		var clz = {}
 		clz.name = v.clazz
 		clz.supertype = v.supertype
-		clz.attributes = JSON.parse(v.attributes)
-		clz.methods = JSON.parse(v.methods)
+		try {
+			clz.attributes = JSON.parse(v.attributes)
+		} catch (e) {
+			clz.attributes = []
+		}
+		try {
+			clz.methods = JSON.parse(v.methods)
+		} catch (e) {
+			clz.methods = []
+		}
 		return clz;
 	}
 
