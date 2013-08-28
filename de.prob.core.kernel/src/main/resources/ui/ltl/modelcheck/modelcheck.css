@@ -1,0 +1,14 @@
+#main {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	padding-top: 50px;
+	
+	background-color: #FAFAFA;
+}
+
+#checking-content {
+	padding: 15px 25px;
+	padding-top: 0;
+}

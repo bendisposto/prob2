@@ -3,20 +3,7 @@ LtlPatternManager = (function() {
 	var session = Session();
 
 	$(document).ready(function() {
-		// Get pattern list 
-		extern.getPatternList();
-		
-		// Register selection listener to pattern list
-		$("#selectable").selectable({
-			filter: ".pattern-list-item",
-			unselected: selected,
-			selected: selected			
-		});
-		
-		// Register create button
-		$('#add-pattern').click(function() {
-			showEditView({});
-		});
+		extern.start();
 	});	
 	
 	/* Pattern selection */
@@ -304,10 +291,28 @@ LtlPatternManager = (function() {
 		});
 	}
 	
+	extern.start = function() {
+		// Get pattern list 
+		extern.getPatternList();
+		
+		// Register selection listener to pattern list
+		$("#selectable").selectable({
+			filter: ".pattern-list-item",
+			unselected: selected,
+			selected: selected			
+		});
+		
+		// Register create button
+		$('#add-pattern').click(function() {
+			showEditView({});
+		});
+	}
+	
 	/* Init */
 	extern.init = function(client) {
 		extern.client = client;
 		session.init(client);	
+		extern.session = session;
 		
 		var options = {
 			parseOnChange : true,
@@ -315,8 +320,9 @@ LtlPatternManager = (function() {
 			highlightOperands : true,
 			showHints : true
 		};
-		LtlEditor.init(client, session, options);		
+		LtlEditor.init(client, session, options);
 	}
+	extern.session = null;
 	extern.client = null;
 	extern.patterns = [];
 	extern.builtins = [];

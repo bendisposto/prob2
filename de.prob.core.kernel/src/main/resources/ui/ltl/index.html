@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<head>
+	<title>LTL modelchecking</title>
+		
+<!-- CSS -->
+	<link rel="stylesheet" href="/ui/ltl/bootstrap.css">
+	<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+	<link rel="stylesheet" href="/ui/common/codemirror.css">
+	<link rel="stylesheet" href="/ui/common/show-hint.css">
+	<link rel="stylesheet" href="/ui/ltl/splitter.css">
+	<link rel="stylesheet" href="/ui/ltl/manager/manager.css">
+	<link rel="stylesheet" href="/ui/ltl/editor/editor.css">
+	<link rel="stylesheet" href="/ui/ltl/modelcheck/modelcheck.css">
+	
+	<style>	
+	.nav li span {
+		position: relative;
+		display: block;
+		
+		padding: 10px 15px;
+		padding-bottom: 15px;
+		padding-top: 15px;
+		
+		color: #777777;
+	    line-height: 20px;    
+		text-decoration: none;
+		
+		cursor: pointer;
+	}	
+	
+	.active {
+		background-color: #E7E7E7;
+		color: #555555;
+	}
+	</style>
+	
+<!-- JavaScript -->
+	<script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
+	<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
+	<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+	<script type="text/javascript" src="/ui/ltl/splitter.js"></script>
+	<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+	<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
+	<script type="text/javascript" src="/ui/common/Session.js"></script>
+	<script type="text/javascript" src="/ui/ltl/manager/LtlPatternManager.js"></script>
+	<script type="text/javascript" src="/ui/libs/show-hint.js"></script>
+	<script type="text/javascript" src="/ui/libs/matchbrackets.js"></script>
+	<script type="text/javascript" src="/ui/libs/closebrackets.js"></script>
+	<script type="text/javascript" src="/ui/ltl/editor/ltl-hint.js"></script>
+	<script type="text/javascript" src="/ui/ltl/editor/LtlEditor.js"></script>
+	<script type="text/javascript" src="/ui/ltl/modelcheck/LtlModelCheck.js"></script>
+</head>
+<body>
+	<nav class="navbar navbar-default" role="navigation">
+		<div class="collapse navbar-collapse navbar-ex1-collapse">
+			<ul class="nav navbar-nav">
+				<li class="active" id="modelcheck"><span>Model checking</span></li>
+				<li id="patternmanager"><span>Pattern manager</span></li>
+			</ul>
+		</div>
+	</nav>
+	<div id="main">
+	
+	</div>
+	<script>
+		LtlModelCheck.init("{{clientid}}");
+		
+		function showPage(page) {
+			var content = LtlModelCheck.session.render(page, {});
+			$("#main").empty().append(content);	
+		}
+		
+		showPage("/ui/ltl/modelcheck/simple.html");
+		
+		$('#modelcheck').click(function() {
+			if (!$('#modelcheck').hasClass('active')) {
+				showPage("/ui/ltl/modelcheck/simple.html");
+				$('#modelcheck').addClass('active');
+				$('#patternmanager').removeClass('active');
+			}
+		});
+		
+		$('#patternmanager').click(function() {
+			if (!$('#patternmanager').hasClass('active')) {
+				showPage("/ui/ltl/manager/simple.html");
+				$('#modelcheck').removeClass('active');
+				$('#patternmanager').addClass('active');
+			}
+		});
+	</script>
+</body>
+</html>
