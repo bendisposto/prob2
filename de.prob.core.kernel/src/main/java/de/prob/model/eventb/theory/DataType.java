@@ -114,9 +114,11 @@ public class DataType extends AbstractElement {
 		@Override
 		public void addConstructors(final IConstructorMediator mediator) {
 			FormulaFactory factory = mediator.getFactory();
-			factory = factory.withExtensions(Collections
+
+			Set<IFormulaExtension> exts = Collections
 					.singleton((IFormulaExtension) mediator
-							.getTypeConstructor()));
+							.getTypeConstructor());
+			factory = factory.withExtensions(exts);
 			for (DataTypeConstructor constructor : constructors) {
 				List<DataTypeDestructor> destructors = constructor
 						.getDestructors();
@@ -132,9 +134,11 @@ public class DataType extends AbstractElement {
 								.toUnicode(dest.getType().getCode());
 						String unicodeDestId = UnicodeTranslator.toUnicode(dest
 								.getIdentifier().getCode());
+
 						org.eventb.core.ast.Type argumentType = factory
 								.parseType(unicodeDestType, LanguageVersion.V2)
 								.getParsedType();
+
 						arguments.add(mediator.newArgument(unicodeDestId,
 								mediator.newArgumentType(argumentType)));
 					}

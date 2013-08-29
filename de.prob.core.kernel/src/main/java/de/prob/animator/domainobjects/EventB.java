@@ -70,8 +70,8 @@ public class EventB extends AbstractEvalElement {
 
 		} else {
 			kind = EXPRESSION.toString();
-			parseResult = FormulaFactory.getDefault().parseExpression(unicode,
-					LanguageVersion.LATEST, null);
+			parseResult = FormulaFactory.getInstance(types).parseExpression(
+					unicode, LanguageVersion.LATEST, null);
 			ast = prepareExpressionAst(parseResult);
 		}
 		if (parseResult.hasProblem()) {

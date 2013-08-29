@@ -21,7 +21,7 @@ public class DataTypeConstructor extends AbstractElement {
 
 	public void addDestructors(final List<DataTypeDestructor> destructors) {
 		put(DataTypeDestructor.class, destructors);
-		destructors.addAll(destructors);
+		this.destructors.addAll(destructors);
 	}
 
 	public EventB getIdentifier() {

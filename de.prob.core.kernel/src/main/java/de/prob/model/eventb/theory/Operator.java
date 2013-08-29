@@ -3,16 +3,24 @@ package de.prob.model.eventb.theory;
 import java.util.List;
 import java.util.Set;
 
+import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.ExtendedExpression;
+import org.eventb.core.ast.ExtendedPredicate;
 import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.Type;
 import org.eventb.core.ast.extension.ExtensionFactory;
 import org.eventb.core.ast.extension.ICompatibilityMediator;
+import org.eventb.core.ast.extension.IExpressionExtension;
 import org.eventb.core.ast.extension.IExtendedFormula;
 import org.eventb.core.ast.extension.IExtensionKind;
 import org.eventb.core.ast.extension.IFormulaExtension;
 import org.eventb.core.ast.extension.IOperatorProperties;
 import org.eventb.core.ast.extension.IOperatorProperties.FormulaType;
 import org.eventb.core.ast.extension.IOperatorProperties.Notation;
+import org.eventb.core.ast.extension.IPredicateExtension;
 import org.eventb.core.ast.extension.IPriorityMediator;
+import org.eventb.core.ast.extension.ITypeCheckMediator;
+import org.eventb.core.ast.extension.ITypeMediator;
 import org.eventb.core.ast.extension.IWDMediator;
 import org.eventb.core.ast.extension.StandardGroup;
 import org.eventb.internal.core.ast.extension.ExtensionKind;
@@ -31,6 +39,7 @@ public class Operator extends AbstractElement {
 	private final boolean commutative;
 	private final IOperatorDefinition definition;
 	private final String theoryName;
+	private IFormulaExtension extension;
 	private final List<OperatorArgument> operatorArguments = new ModelElementList<OperatorArgument>();
 	private final List<OperatorWDCondition> wdConditions = new ModelElementList<OperatorWDCondition>();
 
@@ -102,8 +111,16 @@ public class Operator extends AbstractElement {
 		return syntax.getCode();
 	}
 
-	public OperatorExtension getFormulaExtension() {
-		return new OperatorExtension(syntax);
+	public IFormulaExtension getFormulaExtension() {
+		if (extension == null) {
+			if (formulaType.equals(IOperatorProperties.FormulaType.PREDICATE)) {
+				extension = new PredicateOperatorExtension(syntax);
+			} else {
+				extension = new ExpressionOperatorExtension(syntax);
+			}
+
+		}
+		return extension;
 	}
 
 	@Override
@@ -251,6 +268,53 @@ public class Operator extends AbstractElement {
 		@Override
 		public int hashCode() {
 			return getId().hashCode();
+		}
+	}
+
+	private class PredicateOperatorExtension extends OperatorExtension
+			implements IPredicateExtension {
+
+		public PredicateOperatorExtension(final EventB syntax) {
+			super(syntax);
+		}
+
+		@Override
+		public void typeCheck(final ExtendedPredicate predicate,
+				final ITypeCheckMediator tcMediator) {
+		}
+	}
+
+	private class ExpressionOperatorExtension extends OperatorExtension
+			implements IExpressionExtension {
+
+		public ExpressionOperatorExtension(final EventB syntax) {
+			super(syntax);
+		}
+
+		@Override
+		public Type synthesizeType(final Expression[] childExprs,
+				final Predicate[] childPreds, final ITypeMediator mediator) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean verifyType(final Type proposedType,
+				final Expression[] childExprs, final Predicate[] childPreds) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public Type typeCheck(final ExtendedExpression expression,
+				final ITypeCheckMediator tcMediator) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean isATypeConstructor() {
+			return false;
 		}
 
 	}
