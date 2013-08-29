@@ -80,10 +80,7 @@ class TheoryTranslator {
 		theory.addImported(imported)
 
 		def params = []
-		xml.typeParameter.@identifier.each {
-			params << new Type(it)
-			typeEnvironment.addGivenSet(it)
-		}
+		xml.typeParameter.@identifier.each { params << addTypeParameter(it) }
 		theory.addTypeParameters(params)
 
 		def dataTypes = []
@@ -97,7 +94,7 @@ class TheoryTranslator {
 		theory.addTheorems(theorems)
 
 		def operators = []
-		xml.newOperatorDefinition.each { operators << addOperator(it) }
+		xml.newOperatorDefinition.each { operators << addOperator(name, it) }
 		theory.addOperators(operators)
 
 		def axDefs = []
@@ -117,7 +114,7 @@ class TheoryTranslator {
 			defBlock.addDefinitionAxioms(axioms)
 
 			def ops = []
-			block.axiomaticOperatorDefinition.each { ops << addOperator(it)	 }
+			block.axiomaticOperatorDefinition.each { ops << addOperator(name, it)	 }
 			defBlock.addOperatorDefinitions(ops)
 			axDefs << defBlock
 		}
@@ -179,34 +176,43 @@ class TheoryTranslator {
 		return new XmlParser().parseText(text)
 	}
 
+
+	def addTypeParameter(type) {
+		def p =  new Type(type,extensions)
+		typeEnvironment.addGivenSet(type)
+		formulaFactory = typeEnvironment.getFormulaFactory()
+		extensions.addAll(formulaFactory.getExtensions())
+		return p
+	}
+
 	def addDataType(datum) {
 		def data = new DataType(datum.@identifier,extensions)
 
 		def types = []
 		datum.typeArgument.each {
-			types << new Type(it.@givenType)
+			types << new Type(it.@givenType,extensions)
 		}
 		data.addTypeArguments(types)
 
 		def constructors = []
-		datum.dataTypeConstructor.each { cons ->
-			def struct = new DataTypeConstructor(cons.@identifier)
+		datum.datatypeConstructor.each { cons ->
+			def struct = new DataTypeConstructor(cons.@identifier,extensions)
 
 			def destrs = []
 			cons.constructorArgument.each {
-				destrs << new DataTypeDestructor(it.@identifier, it.@type)
+				destrs << new DataTypeDestructor(it.@identifier, it.@type,extensions)
 			}
 			struct.addDestructors(destrs)
 			constructors << struct
 		}
 		data.addConstructors(constructors)
 
-		updateExtensions(data.getFormulaExtension())
+		updateExtensions(data.getFormulaExtensions(formulaFactory))
 
 		return data
 	}
 
-	def addOperator(rep) {
+	def addOperator(theoryName, rep) {
 		def label = rep.@label
 		def associative = rep.@associative == "true"
 		def commutative = rep.@commutative == "true"
@@ -214,36 +220,40 @@ class TheoryTranslator {
 		def notationType = rep.@notationType
 		def definition
 		if(rep.@type != null) {
-			definition = new AxiomaticOperatorDefinition(rep.@type)
+			definition = new AxiomaticOperatorDefinition(rep.@type,extensions)
 		} else if(rep.directOperatorDefinition != []) {
-			definition = new DirectDefinition(rep.directOperatorDefinition[0].@formula)
+			definition = new DirectDefinition(rep.directOperatorDefinition[0].@formula, extensions)
 		} else if(rep.recursiveOperatorDefinition != []) {
 			def recDef = rep.recursiveOperatorDefinition[0]
-			definition = new RecursiveOperatorDefinition(recDef.@inductiveArgument);
+			definition = new RecursiveOperatorDefinition(recDef.@inductiveArgument, extensions);
 			def cases = []
 			recDef.recursiveDefinitionCase.each {
-				cases << new RecursiveDefinitionCase(it.@expression, it.@formula)
+				cases << new RecursiveDefinitionCase(it.@expression, it.@formula, extensions)
 			}
 			definition.addCases(cases)
 		}
-		def operator = new Operator(label, associative, commutative, formulaType, notationType, definition)
+		Operator operator = new Operator(theoryName, label, associative, commutative, formulaType, notationType, definition, extensions)
 
 		def args = []
 		rep.operatorArgument.each {
-			args << new OperatorArgument(it.@identifier, it.@expression)
+			args << new OperatorArgument(it.@identifier, it.@expression, extensions)
 		}
 		operator.addArguments(args)
 
 		def wds = []
 		rep.operatorWDcondition.each {
-			wds << new OperatorWDCondition(it.@predicate)
+			wds << new OperatorWDCondition(it.@predicate, extensions)
 		}
 		operator.addWDConditions(wds)
+
+		def newExts = []
+		newExts << operator.getFormulaExtension()
+		updateExtensions(newExts)
 		return operator;
 	}
 
 	def updateExtensions(newExtensions) {
-		extensions << newExtensions
+		extensions.addAll(newExtensions)
 		formulaFactory = formulaFactory.withExtensions(extensions)
 		ITypeEnvironment newTypeEnvironment = formulaFactory.makeTypeEnvironment()
 		typeEnvironment = newTypeEnvironment.addAll(typeEnvironment)

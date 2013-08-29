@@ -14,7 +14,7 @@ public class DataTypeDestructor extends AbstractElement {
 
 	public DataTypeDestructor(final String identifier, final String type,
 			final Set<IFormulaExtension> typeEnv) {
-		this.identifier = new EventB(type, typeEnv);
+		this.identifier = new EventB(identifier, typeEnv);
 		this.type = new EventB(type, typeEnv);
 
 	}
