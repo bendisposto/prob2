@@ -22,17 +22,51 @@
 	<nav class="navbar navbar-default" role="navigation">
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 			<ul class="nav navbar-nav">
-				<li id="nav-modelcheck" class="active"><span>Model checking</span></li>
-				<li id="nav-patternmanager"><span>Pattern manager</span></li>
+				<li id="nav-modelcheck"><span>Model checking</span></li>
+				<li id="nav-manager"><span>Pattern manager</span></li>
 			</ul>
 		</div>
 	</nav>
-	<div class="content">
+	<div class="content" id="modelcheck-container" style="display: none">
+	
+	</div>
+	<div class="content" id="manager-container" style="display: none">
 	
 	</div>
 	<script>
 		Util.init("{{clientid}}");
-		Util.replaceContent(".content", "/ui/ltl/modelcheck/modelcheck.html");
+		Util.replaceContent("#modelcheck-container", "/ui/ltl/modelcheck/modelcheck.html");
+		Util.replaceContent("#manager-container", "/ui/ltl/manager/manager.html");
+		
+		$("#nav-modelcheck").click(showModelCheck);		
+		$("#nav-manager").click(showPatternManager);
+		
+		showModelCheck();
+		
+		function showModelCheck() {
+			if (!$("#nav-modelcheck").hasClass("active")) {
+				$("#nav-modelcheck").addClass("active");
+				$("#nav-manager").removeClass("active");
+					
+				LtlPatternManager.saveState();
+				$("#modelcheck-container").show();
+				$("#manager-container").hide();
+				LtlModelCheck.restore();
+			}
+		}
+		
+		function showPatternManager() {
+			if (!$("#nav-manager").hasClass("active")) {
+				$("#nav-manager").addClass("active");
+				$("#nav-modelcheck").removeClass("active");
+				
+				LtlModelCheck.saveState();
+				$("#manager-container").show();
+				$("#modelcheck-container").hide();
+				LtlPatternManager.restore();
+			}
+		}
+		
 	</script>
 </body>
 </html>

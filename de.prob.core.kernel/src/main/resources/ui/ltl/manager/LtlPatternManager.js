@@ -1,7 +1,16 @@
 LtlPatternManager = (function() {
 	var extern = {};
-	
+	var pages = {
+		"default": 		"/ui/ltl/manager/default.html",
+		"show": 		"/ui/ltl/manager/show_pattern.html",
+		"show_list": 	"/ui/ltl/manager/show_pattern_list.html",
+		"create": 		"/ui/ltl/manager/edit_pattern.html",
+		"edit": 		"/ui/ltl/manager/edit_pattern.html"
+	};
 	extern.patterns = [];
+	extern.ignorePatternName = null;
+	extern.page = "default";
+	extern.parseListeners = null;
 	
 	/* Create and destroy pattern manager */
 	extern.create = function() {
@@ -20,7 +29,19 @@ LtlPatternManager = (function() {
 	
 	extern.destroy = function() {
 		$(window).unbind('resize');
+	}
 	
+	/* Restore state */	
+	extern.saveState = function() {
+		extern.parseListeners = LtlEditor.parseListeners;
+	}
+	
+	extern.restore = function() {		
+		if (extern.page == "create" || extern.page == "edit") {
+			extern.setCodeMirror(document.getElementById("code"), extern.ignorePatternName);
+			
+			LtlEditor.parseListeners = extern.parseListeners;
+		}
 	}
 	
 	/* Register buttons */
@@ -59,11 +80,16 @@ LtlPatternManager = (function() {
 	}
 	
 	/* Show content pages */	
+	function showPage(page, context = {}) {
+		extern.page = page;
+		Util.replaceContent(".manager-content", pages[page], context);
+	}
+	
 	function showPattern(index) {
 		var pattern = extern.patterns[index];
 		
 		$(window).unbind('resize');
-		Util.replaceContent(".manager-content", "/ui/ltl/manager/show_pattern.html", pattern);
+		showPage("show", pattern);
 		
 		registerEditButton($('#edit-pattern'), pattern);
 		registerRemoveButton($('#remove-pattern'), [pattern]);
@@ -83,14 +109,14 @@ LtlPatternManager = (function() {
 		});
 		
 		$(window).unbind('resize');
-		Util.replaceContent(".manager-content", "/ui/ltl/manager/show_pattern_list.html", { patterns: patterns, builtins: builtins });
+		showPage("show_list", { patterns: patterns, builtins: builtins });
 		
 		registerRemoveButton($('#remove-pattern'), patterns);
 	}
 		
 	function showEditView(pattern = {}) {
 		$(window).unbind('resize');		
-		Util.replaceContent(".manager-content", "/ui/ltl/manager/edit_pattern.html", pattern);
+		showPage((pattern.name ? "edit" : "create"), pattern);
 		
 		registerSaveButton($('#save-pattern'), pattern.name);
 		registerRemoveButton($('#remove-pattern'), [pattern]);
@@ -244,7 +270,7 @@ LtlPatternManager = (function() {
 		
 		$('#removeModal').on('hidden.bs.modal', function () {
 			$(window).unbind('resize');
-			Util.replaceContent(".manager-content", "/ui/ltl/manager/default.html", { multiple: (names.length > 1) });	
+			showPage("default", { multiple: (names.length > 1) });	
 		
 			$("#success-alert").fadeIn("fast", function() {
 				$("#success-alert").delay(2000).fadeOut("slow");
@@ -267,6 +293,7 @@ LtlPatternManager = (function() {
 	
 	/* Code mirror */
 	extern.setCodeMirror = function(codeElement, ignorePatternName) {
+		extern.ignorePatternName = ignorePatternName;
 		var options = {
 			parseOnChange : true,
 			showPatternMarkers : false,

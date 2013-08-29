@@ -15,26 +15,22 @@
 <script type="text/javascript" src="/ui/ltl/editor/LtlEditor.js"></script>
 <script type="text/javascript" src="/ui/ltl/modelcheck/LtlModelCheck.js"></script>
 
-<div class="modelcheck-content">
+<div class="mc-content">
 	<div class="actions">
-		<div style="display: inline-block;">
-			<div class="alert alert-success" id="success-alert" style="display: none">Pattern saved</div>
-			<div class="alert alert-danger" id="error-alert" style="display: none">Saving failed. Fix the problems first</div>
-		</div>
-		<button class="btn btn-success btn-xs" id="start-current" type="button" title="Start model checking for the current formula">
+		<button class="btn btn-success btn-xs" id="mc-start-current" type="button" title="Start model checking for the current formula">
 			<span class="glyphicon glyphicon-play"></span>
 			Check current formula
 		</button>
-		<button class="btn btn-success btn-xs" id="start-all" type="button" title="Start model checking for all formulas">
+		<button class="btn btn-success btn-xs" id="mc-start-all" type="button" title="Start model checking for all formulas">
 			<span class="glyphicon glyphicon-play"></span>
 			Check all formulas
 		</button>
-		<button class="btn btn-danger btn-xs" id="settings" type="button" title="Settings">
+		<button class="btn btn-danger btn-xs" id="mc-settings" type="button" title="Settings">
 			<span class="glyphicon glyphicon-cog"></span>
 			Settings
 		</button>
 	</div>
-	<div class="panel" id="code-panel">
+	<div class="panel" id="mc-code-panel">
 		<div class="panel-heading">
 			<span class="glyphicon glyphicon-chevron-right"></span>
 			Last formulas
@@ -45,22 +41,14 @@
 		</div>
 		<div class="panel-heading">
 			Current formula
-			<div class="badge" id="code-error">Fix the errors in the code</div>
-			<button class="btn btn-success btn-xs" id="add-formula" type="button" title="Add formula" style="float:right">
+			<div class="badge" id="mc-code-error">Fix the errors in the code</div>
+			<button class="btn btn-success btn-xs" id="mc-add-formula" type="button" title="Add formula" style="float:right">
 				<span class="glyphicon glyphicon-plus"></span>
 				Add formula
 			</button>
 		</div>
-		<textarea id="formula-code">{{code}}</textarea>
+		<textarea id="mc-formula-code">{{code}}</textarea>
 	</div>	
 </div>
 <script>
-	LtlModelCheck.init();
-	var options = {
-		parseOnChange : true,
-		showPatternMarkers : true,
-		highlightOperands : true,
-		showHints : true
-	};
-	LtlEditor.setCodeMirror(document.getElementById("formula-code"), options);
 </script>

@@ -1,9 +1,19 @@
 LtlModelCheck = (function() {
 	var extern = {};
 	
-	/* Init */
-	extern.init = function() {
-		
+	/* Restore state */
+	extern.saveState = function() {
+	
+	}
+	
+	extern.restore = function() {
+		var options = {
+			parseOnChange : true,
+			showPatternMarkers : true,
+			highlightOperands : true,
+			showHints : true
+		};
+		LtlEditor.setCodeMirror(document.getElementById("mc-formula-code"), options);
 	}
 	
 	return extern;
