@@ -16,6 +16,7 @@ import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Axiom;
 import de.prob.model.representation.ModelElementList;
+import de.prob.unicode.UnicodeTranslator;
 
 public class AxiomaticDefinitionsBlock extends AbstractElement {
 
@@ -90,15 +91,16 @@ public class AxiomaticDefinitionsBlock extends AbstractElement {
 
 	private class AxiomaticTypeExtension implements IFormulaExtension {
 
-		private final Type type;
+		private final String unicodeType;
 
 		public AxiomaticTypeExtension(final Type type) {
-			this.type = type;
+			unicodeType = UnicodeTranslator.toUnicode(type.getIdentifier()
+					.getCode());
 		}
 
 		@Override
 		public String getSyntaxSymbol() {
-			return type.getName();
+			return unicodeType;
 		}
 
 		@Override
@@ -114,7 +116,7 @@ public class AxiomaticDefinitionsBlock extends AbstractElement {
 
 		@Override
 		public String getId() {
-			return type.getName() + " Axiomatic Type";
+			return unicodeType + " Axiomatic Type";
 		}
 
 		@Override

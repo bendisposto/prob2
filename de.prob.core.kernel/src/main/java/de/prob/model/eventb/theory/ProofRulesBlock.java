@@ -59,13 +59,7 @@ public class ProofRulesBlock extends AbstractElement {
 			return true;
 		}
 		if (obj instanceof ProofRulesBlock) {
-			return name.equals(((ProofRulesBlock) obj).getName())
-					&& getInferenceRules().size() == ((ProofRulesBlock) obj)
-							.getInferenceRules().size()
-					&& getMetaVariables().size() == ((ProofRulesBlock) obj)
-							.getMetaVariables().size()
-					&& getRewriteRules().size() == ((ProofRulesBlock) obj)
-							.getRewriteRules().size();
+			return name.equals(((ProofRulesBlock) obj).getName());
 		}
 		return super.equals(obj);
 	}
