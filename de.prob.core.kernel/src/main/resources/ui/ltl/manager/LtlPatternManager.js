@@ -156,12 +156,12 @@ LtlPatternManager = (function() {
 	}
 	
 	function selected(event, ui) {
-		var count = $('.ui-selected').size();
+		var count = $('#selectable .ui-selected').size();
 		if (count == 1) {
-			var index = $("#selectable .pattern-list-item").index($('.ui-selected'));
+			var index = $("#selectable .pattern-list-item").index($('#selectable .ui-selected'));
 			showPattern(index);
 		} else if (count == 0) {
-			if ($('.ui-selecting').size() == 0) {
+			if ($('#selectable .ui-selecting').size() == 0) {
 				$(window).unbind('resize');
 				$(".manager-content").empty();
 			}
@@ -232,7 +232,7 @@ LtlPatternManager = (function() {
 		extern.patterns.push(pattern);
 		
 		showEditView(pattern);
-		$('.ui-selected').each(function(i, element) {
+		$('#selectable .ui-selected').each(function(i, element) {
 			$(element).removeClass('ui-selected');
 		});
 		
@@ -286,7 +286,7 @@ LtlPatternManager = (function() {
 			var element = $("#selectable .pattern-list-item")[index];
 			element.remove();
 		}
-		$('.ui-selected').each(function(i, element) {
+		$('#selectable .ui-selected').each(function(i, element) {
 			$(element).removeClass('ui-selected');
 		});
 	}

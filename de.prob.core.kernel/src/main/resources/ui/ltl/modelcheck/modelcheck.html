@@ -13,7 +13,6 @@
 <script type="text/javascript" src="/ui/libs/closebrackets.js"></script>
 <script type="text/javascript" src="/ui/ltl/editor/ltl-hint.js"></script>
 <script type="text/javascript" src="/ui/ltl/editor/LtlEditor.js"></script>
-<script type="text/javascript" src="/ui/ltl/modelcheck/LtlModelCheck.js"></script>
 
 <div class="mc-content">
 	<div class="actions">
@@ -21,34 +20,46 @@
 			<span class="glyphicon glyphicon-play"></span>
 			Check current formula
 		</button>
-		<button class="btn btn-success btn-xs" id="mc-start-all" type="button" title="Start model checking for all formulas">
+		<button class="btn btn-info btn-xs" id="mc-start-all" type="button" title="Start model checking for all formulas">
 			<span class="glyphicon glyphicon-play"></span>
-			Check all formulas
+			Check selected formulas
 		</button>
-		<button class="btn btn-danger btn-xs" id="mc-settings" type="button" title="Settings">
+		<button class="btn btn-warning btn-xs" id="mc-settings" type="button" title="Settings">
 			<span class="glyphicon glyphicon-cog"></span>
 			Settings
 		</button>
 	</div>
 	<div class="panel" id="mc-code-panel">
-		<div class="panel-heading">
-			<span class="glyphicon glyphicon-chevron-right"></span>
-			Last formulas
+		<div class="panel-heading" id="last-formulas-panel">
+			<span class="glyphicon glyphicon-chevron-down" id="last-formulas-icon"></span>
+			Saved formulas
 			<div class="badge" style="display:inline">7</div>
+			
+			<button class="btn btn-danger btn-xs" id="mc-remove-selected" type="button" title="Remove the selected formulas" style="float:right">
+				<span class="glyphicon glyphicon-remove"></span>
+				Remove selected
+			</button>
 		</div>
-		<div>	
-			<!-- Formulas -->
+		<div class="last-formulas">	
+			<ul class="last-formulas-list">
+			</ul>
 		</div>
-		<div class="panel-heading">
+		<div class="panel-heading" id="current-formulas-panel">
 			Current formula
 			<div class="badge" id="mc-code-error">Fix the errors in the code</div>
-			<button class="btn btn-success btn-xs" id="mc-add-formula" type="button" title="Add formula" style="float:right">
-				<span class="glyphicon glyphicon-plus"></span>
-				Add formula
-			</button>
+			<div style="float:right">
+				<button class="btn btn-success btn-xs" id="mc-add-formula" type="button" title="Add formula">
+					<span class="glyphicon glyphicon-plus"></span>
+					New formula
+				</button>
+				<button class="btn btn-danger btn-xs" id="mc-remove-current" type="button" title="Remove the current formula">
+					<span class="glyphicon glyphicon-remove"></span>
+					Remove
+				</button>
+			</div>
 		</div>
 		<textarea id="mc-formula-code">{{code}}</textarea>
 	</div>	
 </div>
-<script>
+<script>	
 </script>

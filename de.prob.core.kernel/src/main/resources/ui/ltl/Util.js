@@ -85,6 +85,11 @@ Util = (function() {
 		});
 	}
 	
+	/* Get formula list*/
+	extern.getFormulaList = function(callbackObj = "LtlModelCheck") {
+		// TODO
+	}
+	
 	/* Rendering */
 	extern.replaceContent = function(container, template_name, context = {}) {
 		var content = extern.session.render(template_name, context);

@@ -1,4 +1,42 @@
 .mc-content {
+	position: absolute;
+	top: 50px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
 	padding: 15px 25px;
 	padding-top: 0;
+}
+
+#last-formulas-panel {
+	cursor: pointer;
+}
+
+.last-formulas-list {
+	max-height: 92px;
+	padding: 0;
+	
+	margin: 0;
+		
+	overflow-x: hidden;
+	cursor: default;
+	
+	border-bottom: 1px solid #D4D4D4;
+}
+
+.last-formulas-list li {
+	padding: 0 5px;
+	
+	border-bottom: 1px solid #FAFAFA;
+	
+	overflow: hidden;
+}
+
+.last-formulas-list input {
+	margin-right: 5px;
+}
+
+.last-formulas-list .ui-selected {
+	background: #D9EDF7;
 }
