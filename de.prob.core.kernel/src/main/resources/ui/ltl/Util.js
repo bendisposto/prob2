@@ -87,7 +87,18 @@ Util = (function() {
 	
 	/* Get formula list*/
 	extern.getFormulaList = function(callbackObj = "LtlModelCheck") {
-		// TODO
+		extern.session.sendCmd("getFormulaList", {
+			"callbackObj" : callbackObj,
+			"client" : extern.client
+		});
+	}
+	
+	extern.saveFormulaList = function(formulas, callbackObj = "LtlModelCheck") {
+		extern.session.sendCmd("saveFormulaList", {
+			"formulas" : JSON.stringify(formulas),
+			"callbackObj" : callbackObj,
+			"client" : extern.client
+		});
 	}
 	
 	/* Rendering */

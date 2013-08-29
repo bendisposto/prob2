@@ -128,7 +128,7 @@ public class LtlPatternManager extends LtlEditor implements PatternUpdateListene
 				"names", WebUtils.toJson(names));
 	}
 
-	private String[] getArray(Map<String, String[]> params, String key) {
+	protected String[] getArray(Map<String, String[]> params, String key) {
 		String[] temp = params.get(key);
 		Gson GSON = new Gson();
 

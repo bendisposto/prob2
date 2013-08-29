@@ -1,6 +1,6 @@
 LtlModelCheck = (function() {
 	var extern = {};
-	extern.formulas = [];
+	extern.formulas = null;
 	
 	/* Create and destroy */
 	extern.destroy = function() {
@@ -62,6 +62,9 @@ LtlModelCheck = (function() {
 		list.empty();
 		
 		extern.formulas = formulas;
+		if (extern.formulas == null) {
+			extern.formulas = [];
+		}
 		if (extern.formulas.length == 0) {
 			extern.formulas.push("// Enter a formula");
 		}
@@ -75,6 +78,16 @@ LtlModelCheck = (function() {
 		var index = extern.formulas.length - 1;
 		var element = $(".last-formulas-list li")[index];
 		selectionChanged($(element), index);
+	}
+	
+	function saveFormulaList() {
+		if (extern.formulas != null) {
+			Util.saveFormulaList(extern.formulas);
+		}
+	}
+	
+	extern.saveFormulaListSuccess = function(data) {
+	
 	}
 	
 	function selectionChanged(element, index) {
@@ -105,6 +118,7 @@ LtlModelCheck = (function() {
 		var index = extern.formulas.length - 1;
 		var element = $(".last-formulas-list li")[index];
 		selectionChanged($(element), index);
+		saveFormulaList();
 	}
 	
 	function removeFormula() {
