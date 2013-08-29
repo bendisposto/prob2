@@ -45,6 +45,11 @@ public class Query implements IPrologTermOutput {
     
     public Query() {
     	instance = init_instance(Main.PROB_HOME + "/probcli.sav");
+    	init_prob(); // calls set_search_pathes, init_eclipse_preferences and set_prefs
+    }
+    
+    public Query(String pathToSav) {
+    	instance = init_instance(pathToSav);
     }
     
     private final Stack<List<Integer>> terms = new Stack<List<Integer>>();
@@ -57,6 +62,7 @@ public class Query implements IPrologTermOutput {
 
     private native static void init();
     private native static int init_instance(String savLocation);
+    private native static void init_prob();
     private native static long put_predicate(int instance, String functor, int arity);
     private native static int put_inti(int instance, byte[] bytes, int length);
     private native static int put_variable(int instance);
