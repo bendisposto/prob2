@@ -105,7 +105,8 @@ public class DataType extends AbstractElement {
 		@Override
 		public void addTypeParameters(final ITypeConstructorMediator mediator) {
 			for (Type type : getTypeArguments()) {
-				mediator.addTypeParam(type.getName());
+				mediator.addTypeParam(UnicodeTranslator.toUnicode(type
+						.getIdentifier().getCode()));
 			}
 
 		}

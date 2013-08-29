@@ -13,9 +13,9 @@ public class Theorem extends AbstractElement {
 	private final EventB predicate;
 
 	public Theorem(final String name, final String predicate,
-			final Set<IFormulaExtension> extensions) {
+			final Set<IFormulaExtension> typeEnv) {
 		this.name = name;
-		this.predicate = new EventB(predicate, extensions);
+		this.predicate = new EventB(predicate, typeEnv);
 	}
 
 	public String getName() {
@@ -29,6 +29,23 @@ public class Theorem extends AbstractElement {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof Theorem) {
+			return name.equals(((Theorem) obj).getName())
+					&& predicate.equals(((Theorem) obj).getPredicate());
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return 13 * name.hashCode() + 17 * predicate.hashCode();
 	}
 
 }
