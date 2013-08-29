@@ -504,7 +504,7 @@
       <view
             allowMultiple="true"
             category="de.hhu.stups.prob"
-            class="de.prob.ui.console.Worksheet"
+            class="de.prob.ui.console.WorksheetView"
             icon="icons/star.png"
             id="de.prob.ui.worksheet"
             name="Worksheet"

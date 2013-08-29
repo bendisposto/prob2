@@ -10,27 +10,27 @@ import org.eclipse.ui.part.ViewPart;
 
 import de.prob.webconsole.WebConsole;
 
-public class Worksheet extends ViewPart {
+public class WorksheetView extends ViewPart {
 
 	public static final String ID = "de.prob.ui.console.GroovyConsole";
 
 	private final int port;
 	private Browser browser;
 
-	private static Worksheet instance;
+	private static WorksheetView instance;
 
 	// FIXME GroovyConsole Viewpart should open url after complete
 	// initialization of Jetty Server. Sometimes the server is to slow
-	public Worksheet() {
+	public WorksheetView() {
 		port = WebConsole.getPort();
-		Worksheet.instance = this;
+		WorksheetView.instance = this;
 	}
 
 	@Override
 	public void createPartControl(Composite shell) {
 
 		browser = new Browser(shell, SWT.NONE);
-		browser.setUrl("http://localhost:" + port);
+		browser.setUrl("http://localhost:" + port+"/sessions/Worksheet");
 
 	}
 
@@ -38,10 +38,10 @@ public class Worksheet extends ViewPart {
 	public void setFocus() {
 	}
 
-	public static Worksheet getInstance() {
-		if (Worksheet.instance == null)
-			Worksheet.instance = new Worksheet();
-		return Worksheet.instance;
+	public static WorksheetView getInstance() {
+		if (WorksheetView.instance == null)
+			WorksheetView.instance = new WorksheetView();
+		return WorksheetView.instance;
 	}
 
 }
