@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.worksheet.ScriptEngineProvider;
+import de.prob.scripting.ScriptEngineProvider;
 
 class Shell {
 

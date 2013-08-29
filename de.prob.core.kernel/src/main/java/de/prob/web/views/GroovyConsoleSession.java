@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.prob.scripting.ScriptEngineProvider;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
-import de.prob.worksheet.ScriptEngineProvider;
 
 public class GroovyConsoleSession extends AbstractSession {
 

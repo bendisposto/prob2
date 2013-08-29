@@ -22,11 +22,11 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.inject.Inject;
 
+import de.prob.scripting.ScriptEngineProvider;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 import de.prob.web.data.Message;
 import de.prob.web.worksheet.EChangeEffect;
-import de.prob.worksheet.ScriptEngineProvider;
 
 public class Worksheet extends AbstractSession {
 

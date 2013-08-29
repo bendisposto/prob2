@@ -32,10 +32,9 @@ import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
 import de.prob.scripting.Api;
 import de.prob.scripting.Downloader;
+import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.ModelModule;
 import de.prob.web.WebModule;
-import de.prob.worksheet.ScriptEngineProvider;
-import de.prob.worksheet.WorkSheet;
 
 public class MainModule extends AbstractModule {
 
@@ -65,7 +64,6 @@ public class MainModule extends AbstractModule {
 		bind(Downloader.class);
 		bind(PegDownProcessor.class);
 		bind(ScriptEngineProvider.class);
-		bind(WorkSheet.class);
 	}
 
 	@Provides

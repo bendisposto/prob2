@@ -1,4 +1,4 @@
-package de.prob.worksheet;
+package de.prob.scripting;
 
 import java.io.IOException;
 import java.io.InputStream;
