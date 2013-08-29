@@ -55,7 +55,7 @@ dependencies {
  	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
 	compile 'jline:jline:0.9.94' // BSD
 
-	compile 'org.pegdown:pegdown:1.2.0' // Apache Licence 2.0
+	compile 'org.pegdown:pegdown:1.1.0' // Apache Licence 2.0
 
 	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
 	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
