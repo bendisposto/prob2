@@ -9,7 +9,11 @@ Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: .,
  com.google.inject,
- de.prob.statespace
+ de.prob,
+ de.prob.animator,
+ de.prob.animator.command,
+ de.prob.statespace,
+ de.prob.webconsole
 Bundle-ClassPath: .,
  lib/dependencies/answerparser-2.4.20-SNAPSHOT.jar,
  lib/dependencies/aopalliance-1.0.jar,
