@@ -184,7 +184,7 @@ public class EventBTranslator {
 			}
 			machine.addEvents(events);
 		} catch (RodinDBException e) {
-			//FIXME Proper Error Message 
+			// FIXME Proper Error Message
 			e.printStackTrace();
 		}
 		machines.put(machine.getName(), machine);

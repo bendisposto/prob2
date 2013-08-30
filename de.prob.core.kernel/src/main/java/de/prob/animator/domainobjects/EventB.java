@@ -72,7 +72,9 @@ public class EventB extends AbstractEvalElement {
 			kind = EXPRESSION.toString();
 			parseResult = FormulaFactory.getInstance(types).parseExpression(
 					unicode, LanguageVersion.LATEST, null);
-			ast = prepareExpressionAst(parseResult);
+			if (!parseResult.hasProblem()) {
+				ast = prepareExpressionAst(parseResult);
+			}
 		}
 		if (parseResult.hasProblem()) {
 			throwException(code, parseResult);
@@ -83,7 +85,11 @@ public class EventB extends AbstractEvalElement {
 		final Expression expr = parseResult.getParsedExpression();
 		final ExpressionVisitor visitor = new ExpressionVisitor(
 				new LinkedList<String>());
-		expr.accept(visitor);
+		try {
+			expr.accept(visitor);
+		} catch (Exception e) {
+			return null;
+		}
 		final Node expression = visitor.getExpression();
 		return expression;
 	}
@@ -91,7 +97,11 @@ public class EventB extends AbstractEvalElement {
 	private Node preparePredicateAst(final IParseResult parseResult) {
 		final Predicate parsedPredicate = parseResult.getParsedPredicate();
 		final PredicateVisitor visitor = new PredicateVisitor();
-		parsedPredicate.accept(visitor);
+		try {
+			parsedPredicate.accept(visitor);
+		} catch (Exception e) {
+			return null;
+		}
 		return visitor.getPredicate();
 	}
 
