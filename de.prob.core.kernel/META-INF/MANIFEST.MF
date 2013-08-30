@@ -7,7 +7,9 @@ Bundle-Vendor: STUPS Group
 Bundle-Localization: plugin
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: .
+Export-Package: .,
+ com.google.inject,
+ de.prob.statespace
 Bundle-ClassPath: .,
  lib/dependencies/answerparser-2.4.20-SNAPSHOT.jar,
  lib/dependencies/aopalliance-1.0.jar,
