@@ -15,7 +15,7 @@ public class OperatorArgument extends AbstractElement {
 	public OperatorArgument(final String identifier, final String type,
 			final Set<IFormulaExtension> typeEnv) {
 		this.identifier = new EventB(identifier, typeEnv);
-		this.type = new EventB(identifier, typeEnv);
+		this.type = new EventB(type, typeEnv);
 	}
 
 	public EventB getIdentifier() {

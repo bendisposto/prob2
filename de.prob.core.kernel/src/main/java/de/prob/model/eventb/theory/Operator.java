@@ -269,6 +269,11 @@ public class Operator extends AbstractElement {
 		public int hashCode() {
 			return getId().hashCode();
 		}
+
+		@Override
+		public String toString() {
+			return "operator " + getSyntaxSymbol();
+		}
 	}
 
 	private class PredicateOperatorExtension extends OperatorExtension
@@ -281,6 +286,8 @@ public class Operator extends AbstractElement {
 		@Override
 		public void typeCheck(final ExtendedPredicate predicate,
 				final ITypeCheckMediator tcMediator) {
+			// This extension is intended to adapt the parser but not the
+			// typechecker
 		}
 	}
 
@@ -294,21 +301,24 @@ public class Operator extends AbstractElement {
 		@Override
 		public Type synthesizeType(final Expression[] childExprs,
 				final Predicate[] childPreds, final ITypeMediator mediator) {
-			// TODO Auto-generated method stub
+			// This extension is intended to adapt the parser but not the
+			// typechecker
 			return null;
 		}
 
 		@Override
 		public boolean verifyType(final Type proposedType,
 				final Expression[] childExprs, final Predicate[] childPreds) {
-			// TODO Auto-generated method stub
+			// This extension is intended to adapt the parser but not the
+			// typechecker
 			return false;
 		}
 
 		@Override
 		public Type typeCheck(final ExtendedExpression expression,
 				final ITypeCheckMediator tcMediator) {
-			// TODO Auto-generated method stub
+			// This extension is intended to adapt the parser but not the
+			// typechecker
 			return null;
 		}
 
