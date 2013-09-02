@@ -90,7 +90,7 @@ public class LtlModelCheck extends LtlPatternManager {
 						formulaBuilder.append(line);
 					}
 				}
-				if (formulaBuilder.length() > 0) {
+				if (formulaBuilder != null && formulaBuilder.length() > 0) {
 					formulas.add(formulaBuilder.toString());
 				}
 			}

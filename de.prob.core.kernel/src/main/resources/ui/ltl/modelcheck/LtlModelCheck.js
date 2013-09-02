@@ -5,11 +5,18 @@ LtlModelCheck = (function() {
 	/* Create and destroy */
 	extern.destroy = function() {
 		$(window).unbind('resize');
+		
+		$("#mc-add-formula").unbind('click');
+		$("#mc-remove-current").unbind('click');
+		$("#mc-remove-selected").unbind('click');
+		$("#last-formulas-panel").unbind('click');
 	}
 	
 	/* Restore state */
 	extern.saveState = function() {
 		saveFormulaList();
+		
+		extern.destroy();
 	}
 	
 	extern.restore = function() {		
@@ -61,12 +68,14 @@ LtlModelCheck = (function() {
 				if (icon.hasClass('glyphicon-chevron-right')) {
 					icon.removeClass('glyphicon-chevron-right');
 					icon.addClass('glyphicon-chevron-down');
+					
+					$(".last-formulas").show();
 				} else {
 					icon.addClass('glyphicon-chevron-right');
 					icon.removeClass('glyphicon-chevron-down');
+					
+					$(".last-formulas").hide();
 				}
-				
-				$(".last-formulas").toggle();
 				resizeCodeMirror();
 			}
 		});
@@ -130,6 +139,7 @@ LtlModelCheck = (function() {
 		var element = elt || $(".last-formulas-list li")[index];
 		$(element).addClass("ui-selected").siblings().removeClass("ui-selected");
 		
+		$('#mc-code-error').hide();
 		LtlEditor.cm.setValue(extern.formulas[index]);
 	}
 	
@@ -203,6 +213,7 @@ LtlModelCheck = (function() {
 		
 		// Save new item
 		saveFormulaList();
+		checkboxSelectionChanged();
 	}
 	
 	function removeCurrent() {
@@ -223,6 +234,7 @@ LtlModelCheck = (function() {
 			// Select new item at removed index or the last index
 			selectItem(Math.min(index, extern.formulas.length -1));
 		}
+		checkboxSelectionChanged();
 	}
 	
 	function removeSelected() {
@@ -230,7 +242,7 @@ LtlModelCheck = (function() {
 		if (selectedItems.length > 0) {
 			var index = selectedItems[0].index;
 		
-			for (var i = 0; i < selectedItems.length; i++) {
+			for (var i = selectedItems.length - 1; i >= 0; i--) {
 				var item = selectedItems[i];
 				
 				// Remove from formula list
@@ -251,7 +263,7 @@ LtlModelCheck = (function() {
 				}
 			}	
 		}
-		$("#mc-remove-selected-button").hide();
+		checkboxSelectionChanged();
 	}
 	
 	/* Resize */
