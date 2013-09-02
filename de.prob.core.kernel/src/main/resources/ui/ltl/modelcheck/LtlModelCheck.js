@@ -9,7 +9,7 @@ LtlModelCheck = (function() {
 	
 	/* Restore state */
 	extern.saveState = function() {
-	
+		saveFormulaList();
 	}
 	
 	extern.restore = function() {		
@@ -27,6 +27,7 @@ LtlModelCheck = (function() {
 		// Get or restore formula list
 		if (extern.formulas == null) {
 			Util.getFormulaList();
+			setFormulaList(["// The saved formula list was not loaded properly.\n// Please reload the page."]);
 		} else {
 			setFormulaList(extern.formulas);
 		}
@@ -106,7 +107,12 @@ LtlModelCheck = (function() {
 	}
 	
 	function addFormulaListItem(formula) {
-		$('.last-formulas-list').append($("<li><input type=\"checkbox\"><span>" + formula + "</span></li>"));
+		$('.last-formulas-list').append($("<li><input type=\"checkbox\">"
+		+ "<div id=\"mc-check-failed\" class=\"glyphicon glyphicon-minus-sign\"></div>"
+		+ "<div id=\"mc-check-passed\" class=\"glyphicon glyphicon-ok-sign\"></div>"
+		//+ "<div id=\"mc-check-unchecked\" class=\"glyphicon glyphicon-question-sign\"></div>"
+		+ "<div class=\"badge mc-badge-error\" id=\"mc-formula-error\">Code-Error</div>"
+		+ "<span>" + formula + "</span></li>"));
 	}
 	
 	function saveFormulaList() {
@@ -168,12 +174,13 @@ LtlModelCheck = (function() {
 		return selectedItems;
 	}
 	
-	function updateItem(formula) {
+	function updateItem(formula, parseOk) {
 		var element = $(".last-formulas-list .ui-selected");
 		var index = element.index();
 		if (index >= 0) {
 			extern.formulas[index] = formula;
 			$(".last-formulas-list .ui-selected > span").text(formula);
+			$(".last-formulas-list .ui-selected > #mc-formula-error").css({display: (parseOk ? "none" : "inline")});
 		}
 	}
 	
@@ -271,7 +278,7 @@ LtlModelCheck = (function() {
 	function parseListener() {
 		$('#mc-code-error').css({display: (LtlEditor.lastParseOk ? "none" : "inline")});
 		var value = LtlEditor.cm.getValue();
-		updateItem(value);
+		updateItem(value, LtlEditor.lastParseOk);
 	}
 	
 	function resizeCodeMirror() {
