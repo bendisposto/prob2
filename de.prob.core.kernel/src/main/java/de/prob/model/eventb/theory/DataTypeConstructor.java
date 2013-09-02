@@ -11,12 +11,13 @@ import de.prob.model.representation.ModelElementList;
 
 public class DataTypeConstructor extends AbstractElement {
 
+	private final String identifierString;
 	private final EventB identifier;
 	private final List<DataTypeDestructor> destructors = new ModelElementList<DataTypeDestructor>();
 
-	DataTypeConstructor(final String identifier,
-			final Set<IFormulaExtension> typeEnv) {
-		this.identifier = new EventB(identifier, typeEnv);
+	DataTypeConstructor(final String identifier) {
+		identifierString = identifier;
+		this.identifier = new EventB(identifier);
 	}
 
 	public void addDestructors(final List<DataTypeDestructor> destructors) {
@@ -34,12 +35,16 @@ public class DataTypeConstructor extends AbstractElement {
 
 	@Override
 	public String toString() {
-		return identifier.getCode();
+		return identifierString;
+	}
+
+	public String getUnicode() {
+		return identifierString;
 	}
 
 	@Override
 	public int hashCode() {
-		return identifier.hashCode() + getDestructors().hashCode();
+		return identifierString.hashCode() + getDestructors().hashCode();
 	}
 
 	@Override
@@ -48,11 +53,17 @@ public class DataTypeConstructor extends AbstractElement {
 			return true;
 		}
 		if (obj instanceof DataTypeConstructor) {
-			return identifier.equals(((DataTypeConstructor) obj)
-					.getIdentifier())
+			return identifierString.equals(((DataTypeConstructor) obj)
+					.toString())
 					&& getDestructors().equals(
 							((DataTypeConstructor) obj).getDestructors());
 		}
 		return false;
+	}
+
+	public void parseElements(final Set<IFormulaExtension> typeEnv) {
+		for (DataTypeDestructor dest : destructors) {
+			dest.parseElements(typeEnv);
+		}
 	}
 }

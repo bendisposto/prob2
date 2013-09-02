@@ -119,7 +119,7 @@ class TheoryTranslator {
 	}
 
 	def addDataType(datum) {
-		def data = new DataType(datum.@identifier,extensions)
+		def data = new DataType(datum.@identifier)
 
 		def types = []
 		datum.typeArgument.each {
@@ -129,11 +129,11 @@ class TheoryTranslator {
 
 		def constructors = []
 		datum.datatypeConstructor.each { cons ->
-			def struct = new DataTypeConstructor(cons.@identifier,extensions)
+			def struct = new DataTypeConstructor(cons.@identifier)
 
 			def destrs = []
 			cons.constructorArgument.each {
-				destrs << new DataTypeDestructor(it.@identifier, it.@type,extensions)
+				destrs << new DataTypeDestructor(it.@identifier, it.@type)
 			}
 			struct.addDestructors(destrs)
 			constructors << struct
@@ -143,6 +143,7 @@ class TheoryTranslator {
 		def exts = data.getFormulaExtensions(FormulaFactory.getInstance(extensions))
 		extensions.addAll(exts)
 
+		data.parseElements(extensions)
 		return data
 	}
 
