@@ -49,6 +49,14 @@ Script.getMetaClass().transform = { a1,a2,a3=null ->
 	x
 }
 
+Script.getMetaClass().appendToTrace= { t,c ->
+  def proxy = new TraceDecorator(t)
+  c.resolveStrategy = Closure.DELEGATE_FIRST
+  c.delegate = proxy
+  c()
+}
+
+
 Script.getMetaClass().upgrade = { downloader.downloadCli(it) }
 
 
