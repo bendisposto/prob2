@@ -5,7 +5,6 @@ import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,8 +22,7 @@ import com.google.common.base.Joiner;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
-import de.prob.formula.eventb.ExpressionVisitor;
-import de.prob.formula.eventb.PredicateVisitor;
+import de.prob.formula.TranslationVisitor;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.unicode.UnicodeTranslator;
@@ -86,13 +84,13 @@ public class EventB extends AbstractEvalElement {
 
 	private Node prepareExpressionAst(final IParseResult parseResult) {
 		final Expression expr = parseResult.getParsedExpression();
-		final ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>());
+		final TranslationVisitor visitor = new TranslationVisitor();
 		try {
 			expr.accept(visitor);
 		} catch (Exception e) {
 			logger.error("Creation of ast failed for predicate " + code, e);
-			return null;
+			throw new EvaluationException(
+					"Could not create AST for expression " + expr.toString());
 		}
 		final Node expression = visitor.getExpression();
 		return expression;
@@ -100,12 +98,13 @@ public class EventB extends AbstractEvalElement {
 
 	private Node preparePredicateAst(final IParseResult parseResult) {
 		final Predicate parsedPredicate = parseResult.getParsedPredicate();
-		final PredicateVisitor visitor = new PredicateVisitor();
+		final TranslationVisitor visitor = new TranslationVisitor();
 		try {
 			parsedPredicate.accept(visitor);
 		} catch (Exception e) {
 			logger.error("Creation of ast failed for expression " + code, e);
-			return null;
+			throw new EvaluationException("Could not create AST for predicate "
+					+ parsedPredicate.toString());
 		}
 		return visitor.getPredicate();
 	}
