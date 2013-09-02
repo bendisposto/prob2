@@ -85,7 +85,7 @@ Util = (function() {
 		});
 	}
 	
-	/* Get formula list*/
+	/* Get and save formula list*/
 	extern.getFormulaList = function(callbackObj = "LtlModelCheck") {
 		extern.session.sendCmd("getFormulaList", {
 			"callbackObj" : callbackObj,

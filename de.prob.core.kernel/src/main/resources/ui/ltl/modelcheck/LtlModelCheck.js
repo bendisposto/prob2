@@ -12,13 +12,50 @@ LtlModelCheck = (function() {
 	
 	}
 	
-	extern.restore = function() {
-		registerCodeMirror();
-		registerResize();
+	extern.restore = function() {		
+		// Register buttons
+		registerAddFormula();
+		registerRemoveFormula();
+		registerRemoveSelectedFormulas();
 		
 		// Register toggle of formula list
+		registerFormulaListToggle();	
+
+		// Register CodeMirror
+		registerCodeMirror();
+		
+		// Get or restore formula list
+		if (extern.formulas == null) {
+			Util.getFormulaList();
+		} else {
+			setFormulaList(extern.formulas);
+		}
+		
+		registerResize();
+	}
+	
+	/* Register buttons */
+	function registerAddFormula() {
+		$("#mc-add-formula").click(function() {
+			addFormula();
+		});
+	}
+	
+	function registerRemoveFormula() {
+		$("#mc-remove-current").click(function() {
+			removeCurrent();
+		});
+	}
+	
+	function registerRemoveSelectedFormulas() {
+		$("#mc-remove-selected").click(function() {
+			removeSelected();
+		});
+	}
+	
+	function registerFormulaListToggle() {
 		$("#last-formulas-panel").click(function(event) {
-			if ($(event.target).is("div")) {
+			if ($(event.target).is("div") || $(event.target).is("#last-formulas-icon")) {
 				var icon = $('#last-formulas-icon');
 				if (icon.hasClass('glyphicon-chevron-right')) {
 					icon.removeClass('glyphicon-chevron-right');
@@ -27,28 +64,11 @@ LtlModelCheck = (function() {
 					icon.addClass('glyphicon-chevron-right');
 					icon.removeClass('glyphicon-chevron-down');
 				}
-				$("#mc-remove-selected").toggle();
-				LtlModelCheck.toggleSavedFormulasList();
+				
+				$(".last-formulas").toggle();
+				resizeCodeMirror();
 			}
 		});
-		
-		// Register add formula
-		$("#mc-add-formula").click(function() {
-			addFormula();
-		});
-		
-		// Register remove formula
-		$("#mc-remove-current").click(function() {
-			removeFormula();
-		});
-		$("#mc-remove-selected").click(function() {
-			removeSelected();
-		});
-		
-		if (extern.formulas == null) {
-			Util.getFormulaList();
-		}
-		setFormulaList(extern.formulas);
 	}
 	
 	/* Formula list */
@@ -62,22 +82,31 @@ LtlModelCheck = (function() {
 		list.empty();
 		
 		extern.formulas = formulas;
+		// Fill if empty list
 		if (extern.formulas == null) {
 			extern.formulas = [];
 		}
 		if (extern.formulas.length == 0) {
 			extern.formulas.push("// Enter a formula");
 		}
+		
+		// Add list items
 		for (var i = 0; i < extern.formulas.length; i++) {
-			var formula = extern.formulas[i];
-			list.append($("<li><input type=\"checkbox\">" + formula + "</li>"));
+			addFormulaListItem(extern.formulas[i])
 		}
 		
-		registerSelection();
+		// Register selection listener
+		registerSelectionListener();
+		
 		// Select last element
 		var index = extern.formulas.length - 1;
-		var element = $(".last-formulas-list li")[index];
-		selectionChanged($(element), index);
+		selectItem(index);
+		
+		checkboxSelectionChanged();
+	}
+	
+	function addFormulaListItem(formula) {
+		$('.last-formulas-list').append($("<li><input type=\"checkbox\"><span>" + formula + "</span></li>"));
 	}
 	
 	function saveFormulaList() {
@@ -90,46 +119,132 @@ LtlModelCheck = (function() {
 	
 	}
 	
-	function selectionChanged(element, index) {
+	/* List selection */
+	function selectItem(index, elt = null) {
+		var element = elt || $(".last-formulas-list li")[index];
 		$(element).addClass("ui-selected").siblings().removeClass("ui-selected");
-		var formula = extern.formulas[index];
 		
-		LtlEditor.cm.setValue(formula);
+		LtlEditor.cm.setValue(extern.formulas[index]);
 	}
 	
-	function registerSelection() {
+	function registerSelectionListener() {
 		// Register selection listener to pattern list
 		$(".last-formulas-list li").click(function(event) {
-			if ($(event.target).is("li") && !$(this).hasClass("ui-selected")) {
+			if (!$(event.target).is("input") && !$(this).hasClass("ui-selected")) {
 				var index = $(".last-formulas-list li").index($(this));
-				selectionChanged($(this), index);
+				selectItem(index, $(this));
 			}
 		});
+		
+		// Register selection listener for checkboxes
+		$(".last-formulas-list input:checkbox").change(function(event) {
+			checkboxSelectionChanged();
+		});
+	}
+	
+	function checkboxSelectionChanged() {
+		var selectedCount = $(".last-formulas-list input:checked").size();
+		var count = 0;
+		if (extern.formulas != null) {
+			count = extern.formulas.length;
+		}
+		$("#mc-selected-badge").text(selectedCount + "/" + count);
+		if (selectedCount == 0) {
+			$("#mc-remove-selected-button").hide();
+		} else {
+			$("#mc-remove-selected-button").show();		
+		}
+	}
+	
+	function getSelectedItems() {
+		var selectedItems = [];
+		var list = $(".last-formulas-list li");
+		$(".last-formulas-list input:checked").each(function(i, element) {
+			selectedItems.push({
+				element: element.parentNode,
+				index: list.index(element.parentNode)
+			});
+		});
+		return selectedItems;
+	}
+	
+	function updateItem(formula) {
+		var element = $(".last-formulas-list .ui-selected");
+		var index = element.index();
+		if (index >= 0) {
+			extern.formulas[index] = formula;
+			$(".last-formulas-list .ui-selected > span").text(formula);
+		}
 	}
 	
 	/* Add and remove formula */
 	function addFormula() {
+		// Add new formula
 		var formula = "// Enter a formula";
+		if (extern.formulas == null) {
+			extern.formulas = [];
+		}
 		extern.formulas.push(formula);
-		$('.last-formulas-list').append($("<li><input type=\"checkbox\">" + formula + "</li>"));
+		addFormulaListItem(formula);
 		
-		registerSelection();
+		// Register selection listener
+		registerSelectionListener();
+		
 		// Select last element
 		var index = extern.formulas.length - 1;
-		var element = $(".last-formulas-list li")[index];
-		selectionChanged($(element), index);
+		selectItem(index);
+		
+		// Save new item
 		saveFormulaList();
 	}
 	
-	function removeFormula() {
-		var element = $(".last-formulas-list li ui-selected");
-		var index = element.index()
+	function removeCurrent() {
+		var element = $(".last-formulas-list .ui-selected");
+		var index = element.index();
+		
+		// Remove from formula list
 		extern.formulas.splice(index, 1); 
 		element.remove();
+		
+		// Save list
+		if (extern.formulas.length == 0) {
+			// Empty list, so add default formula
+			addFormula();
+		} else {
+			saveFormulaList();
+			
+			// Select new item at removed index or the last index
+			selectItem(Math.min(index, extern.formulas.length -1));
+		}
 	}
 	
 	function removeSelected() {
+		var selectedItems = getSelectedItems();
+		if (selectedItems.length > 0) {
+			var index = selectedItems[0].index;
 		
+			for (var i = 0; i < selectedItems.length; i++) {
+				var item = selectedItems[i];
+				
+				// Remove from formula list
+				extern.formulas.splice(item.index, 1); 
+				$(item.element).remove();	
+			}
+				
+			// Save list
+			if (extern.formulas.length == 0) {
+				// Empty list, so add default formula
+				addFormula();
+			} else {
+				saveFormulaList();
+				
+				if ($(".last-formulas-list .ui-selected").size() == 0) {
+					// Select new item at removed index or the last index
+					selectItem(Math.min(index, extern.formulas.length -1));
+				}
+			}	
+		}
+		$("#mc-remove-selected-button").hide();
 	}
 	
 	/* Resize */
@@ -138,18 +253,7 @@ LtlModelCheck = (function() {
 		$(window).unbind('resize').resize(resizeCodeMirror);		
 		
 		// Call resize function
-		$(window).trigger('resize');
-	}
-	
-	function resizeCodeMirror() {
-		var height = $('.mc-content').height() - $("#current-formulas-panel").height();
-		var offset = $("#current-formulas-panel").offset();
-		if (offset) {
-			height -= (offset.top - 15);
-			
-			LtlEditor.cm.setSize(null, Math.max(150, height));	
-			LtlEditor.cm.refresh();
-		}
+		resizeCodeMirror();
 	}
 	
 	/* CodeMirror */
@@ -161,11 +265,24 @@ LtlModelCheck = (function() {
 			showHints : true
 		};
 		LtlEditor.setCodeMirror(document.getElementById("mc-formula-code"), options);
+		LtlEditor.parseListeners = [parseListener];
 	}
 	
-	extern.toggleSavedFormulasList = function() {
-		$(".last-formulas").toggle();
-		resizeCodeMirror();
+	function parseListener() {
+		$('#mc-code-error').css({display: (LtlEditor.lastParseOk ? "none" : "inline")});
+		var value = LtlEditor.cm.getValue();
+		updateItem(value);
+	}
+	
+	function resizeCodeMirror() {
+		var height = $('.mc-content').height() - $("#current-formulas-panel").height();
+		var offset = $("#current-formulas-panel").offset();
+		if (offset) {
+			height -= (offset.top - 15);
+			
+			LtlEditor.cm.setSize(null, Math.max(150, height));	
+			LtlEditor.cm.refresh();
+		}
 	}
 	
 	return extern;
