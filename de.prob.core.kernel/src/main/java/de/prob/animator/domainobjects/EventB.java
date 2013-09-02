@@ -16,6 +16,8 @@ import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.LanguageVersion;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.extension.IFormulaExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
@@ -35,6 +37,7 @@ import de.prob.unicode.UnicodeTranslator;
  */
 public class EventB extends AbstractEvalElement {
 
+	Logger logger = LoggerFactory.getLogger(EventB.class);
 	public FormulaUUID uuid = new FormulaUUID();
 
 	private String kind;
@@ -88,6 +91,7 @@ public class EventB extends AbstractEvalElement {
 		try {
 			expr.accept(visitor);
 		} catch (Exception e) {
+			logger.error("Creation of ast failed for predicate " + code, e);
 			return null;
 		}
 		final Node expression = visitor.getExpression();
@@ -100,6 +104,7 @@ public class EventB extends AbstractEvalElement {
 		try {
 			parsedPredicate.accept(visitor);
 		} catch (Exception e) {
+			logger.error("Creation of ast failed for expression " + code, e);
 			return null;
 		}
 		return visitor.getPredicate();

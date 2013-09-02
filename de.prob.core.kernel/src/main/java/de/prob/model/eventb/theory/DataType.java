@@ -20,14 +20,15 @@ import de.prob.unicode.UnicodeTranslator;
 
 public class DataType extends AbstractElement {
 
+	private final String identifierString;
 	private final EventB identifier;
 	private IDatatypeExtension typeDef = null;
 	private final List<Type> typeArguments = new ModelElementList<Type>();
 	private final List<DataTypeConstructor> dataTypeConstructors = new ModelElementList<DataTypeConstructor>();
 
-	public DataType(final String identifier,
-			final Set<IFormulaExtension> typeEnv) {
-		this.identifier = new EventB(identifier, typeEnv);
+	public DataType(final String identifier) {
+		identifierString = identifier;
+		this.identifier = new EventB(identifier);
 	}
 
 	public void addTypeArguments(final List<Type> arguments) {
@@ -54,7 +55,7 @@ public class DataType extends AbstractElement {
 
 	@Override
 	public String toString() {
-		return identifier.getCode();
+		return identifierString;
 	}
 
 	@Override
@@ -63,20 +64,26 @@ public class DataType extends AbstractElement {
 			return true;
 		}
 		if (obj instanceof DataType) {
-			return identifier.equals(((DataTypeConstructor) obj)
-					.getIdentifier());
+			return identifierString.equals(((DataTypeConstructor) obj)
+					.toString());
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return identifier.hashCode();
+		return identifierString.hashCode();
+	}
+
+	public void parseElements(final Set<IFormulaExtension> typeEnv) {
+		for (DataTypeConstructor cons : dataTypeConstructors) {
+			cons.parseElements(typeEnv);
+		}
 	}
 
 	public Set<IFormulaExtension> getFormulaExtensions(final FormulaFactory ff) {
 		if (typeDef == null) {
-			typeDef = new DataTypeExtension(identifier, dataTypeConstructors);
+			typeDef = new DataTypeExtension(dataTypeConstructors);
 		}
 		return ff.makeDatatype(typeDef).getExtensions();
 	}
@@ -86,10 +93,9 @@ public class DataType extends AbstractElement {
 		private final String unicodeDef;
 		private final List<DataTypeConstructor> constructors;
 
-		public DataTypeExtension(final EventB definition,
-				final List<DataTypeConstructor> constructors) {
+		public DataTypeExtension(final List<DataTypeConstructor> constructors) {
 			this.constructors = constructors;
-			unicodeDef = UnicodeTranslator.toUnicode(definition.getCode());
+			unicodeDef = identifierString;
 		}
 
 		@Override
@@ -122,18 +128,15 @@ public class DataType extends AbstractElement {
 			for (DataTypeConstructor constructor : constructors) {
 				List<DataTypeDestructor> destructors = constructor
 						.getDestructors();
-				String unicodeConstructorIdentifier = UnicodeTranslator
-						.toUnicode(constructor.getIdentifier().getCode());
+				String unicodeConstructorIdentifier = constructor.getUnicode();
 				if (destructors.size() == 0) {
 					mediator.addConstructor(unicodeConstructorIdentifier,
 							unicodeConstructorIdentifier + " Constructor");
 				} else {
 					List<IArgument> arguments = new ArrayList<IArgument>();
 					for (DataTypeDestructor dest : destructors) {
-						String unicodeDestType = UnicodeTranslator
-								.toUnicode(dest.getType().getCode());
-						String unicodeDestId = UnicodeTranslator.toUnicode(dest
-								.getIdentifier().getCode());
+						String unicodeDestType = dest.getUnicodeType();
+						String unicodeDestId = dest.getUnicodeIdentifier();
 
 						org.eventb.core.ast.Type argumentType = factory
 								.parseType(unicodeDestType, LanguageVersion.V2)
@@ -149,6 +152,10 @@ public class DataType extends AbstractElement {
 			}
 		}
 
+		public List<DataTypeConstructor> getConstructors() {
+			return constructors;
+		}
+
 		@Override
 		public boolean equals(final Object o) {
 			if (o == this) {
@@ -156,7 +163,7 @@ public class DataType extends AbstractElement {
 			}
 			if (o instanceof DataTypeExtension) {
 				DataTypeExtension other = (DataTypeExtension) o;
-				return constructors.equals(other.constructors)
+				return constructors.equals(other.getConstructors())
 						&& getId().equals(other.getId());
 			}
 			return false;
@@ -164,8 +171,7 @@ public class DataType extends AbstractElement {
 
 		@Override
 		public int hashCode() {
-			return identifier.hashCode() * 13 + getTypeArguments().hashCode()
-					* 17 + 23 * constructors.hashCode();
+			return getId().hashCode() * 13 + 23 * constructors.hashCode();
 		}
 	}
 }
