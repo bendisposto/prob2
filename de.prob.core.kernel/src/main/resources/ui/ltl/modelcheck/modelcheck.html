@@ -16,14 +16,8 @@
 
 <div class="mc-content">
 	<div class="actions">
-		<button class="btn btn-success btn-xs" id="mc-start-current" type="button" title="Start model checking for the current formula">
-			<span class="glyphicon glyphicon-play"></span>
-			Check current formula
-		</button>
-		<button class="btn btn-info btn-xs" id="mc-start-all" type="button" title="Start model checking for all formulas">
-			<span class="glyphicon glyphicon-play"></span>
-			Check selected formulas
-		</button>
+		
+		
 		<button class="btn btn-warning btn-xs" id="mc-settings" type="button" title="Settings">
 			<span class="glyphicon glyphicon-cog"></span>
 			Settings
@@ -34,11 +28,17 @@
 			<span class="glyphicon glyphicon-chevron-down" id="last-formulas-icon"></span>
 			Saved formulas
 			<div class="badge" id="mc-selected-badge" style="display:inline">0/0</div>
-			
-			<button class="btn btn-danger btn-xs" id="mc-remove-selected-button" data-toggle="modal" href="#removeSelected" type="button" title="Remove the selected formulas" style="float:right; display: none">
-				<span class="glyphicon glyphicon-remove"></span>
-				Remove selected
-			</button>
+			<div style="float:right" id="mc-selected">
+				Selected formulas: 
+				<button class="btn btn-info btn-xs" id="mc-start-all" type="button" title="Start model checking for all formulas">
+					<span class="glyphicon glyphicon-play"></span>
+					Check
+				</button>
+				<button class="btn btn-danger btn-xs" id="mc-remove-selected-button" data-toggle="modal" href="#removeSelected" type="button" title="Remove the selected formulas">
+					<span class="glyphicon glyphicon-remove"></span>
+					Remove
+				</button>
+			</div>
 		</div>
 		<div class="last-formulas">	
 			<ul class="last-formulas-list">
@@ -48,9 +48,13 @@
 			Current formula
 			<div class="badge badge-error" id="mc-code-error">Fix the errors in the code</div>
 			<div style="float:right">
+				<button class="btn btn-info btn-xs" id="mc-start-current" type="button" title="Start model checking for the current formula">
+					<span class="glyphicon glyphicon-play"></span>
+					Check
+				</button>
 				<button class="btn btn-success btn-xs" id="mc-add-formula" type="button" title="Add formula">
 					<span class="glyphicon glyphicon-plus"></span>
-					New formula
+					New
 				</button>
 				<button class="btn btn-danger btn-xs" type="button" title="Remove the current formula" data-toggle="modal" href="#removeCurrent">
 					<span class="glyphicon glyphicon-remove"></span>

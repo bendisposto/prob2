@@ -120,7 +120,7 @@ LtlModelCheck = (function() {
 		+ "<div id=\"mc-check-failed\" class=\"glyphicon glyphicon-minus-sign\"></div>"
 		+ "<div id=\"mc-check-passed\" class=\"glyphicon glyphicon-ok-sign\"></div>"
 		//+ "<div id=\"mc-check-unchecked\" class=\"glyphicon glyphicon-question-sign\"></div>"
-		+ "<div class=\"badge mc-badge-error\" id=\"mc-formula-error\">Code-Error</div>"
+		//+ "<div class=\"badge mc-badge-error mc-formula-error\">Code-Error</div>"
 		+ "<span>" + formula + "</span></li>"));
 	}
 	
@@ -149,6 +149,7 @@ LtlModelCheck = (function() {
 			if (!$(event.target).is("input") && !$(this).hasClass("ui-selected")) {
 				var index = $(".last-formulas-list li").index($(this));
 				selectItem(index, $(this));
+				saveFormulaList();
 			}
 		});
 		
@@ -166,9 +167,9 @@ LtlModelCheck = (function() {
 		}
 		$("#mc-selected-badge").text(selectedCount + "/" + count);
 		if (selectedCount == 0) {
-			$("#mc-remove-selected-button").hide();
+			$("#mc-selected").hide();
 		} else {
-			$("#mc-remove-selected-button").show();		
+			$("#mc-selected").show();		
 		}
 	}
 	
@@ -190,7 +191,7 @@ LtlModelCheck = (function() {
 		if (index >= 0) {
 			extern.formulas[index] = formula;
 			$(".last-formulas-list .ui-selected > span").text(formula);
-			$(".last-formulas-list .ui-selected > #mc-formula-error").css({display: (parseOk ? "none" : "inline")});
+			//$(".last-formulas-list .ui-selected > #mc-formula-error").css({display: (parseOk ? "none" : "inline")});
 		}
 	}
 	
