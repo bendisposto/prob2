@@ -13,10 +13,11 @@ import de.prob.model.eventb.EventParameter
 import de.prob.model.eventb.Variant
 import de.prob.model.eventb.Witness
 import de.prob.model.eventb.Event.EventType
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.BSet;
-import de.prob.model.representation.Machine;
-import de.prob.model.representation.RefType;
+import de.prob.model.eventb.theory.Theory
+import de.prob.model.representation.AbstractElement
+import de.prob.model.representation.BSet
+import de.prob.model.representation.Machine
+import de.prob.model.representation.RefType
 import de.prob.model.representation.RefType.ERefType
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
@@ -29,6 +30,8 @@ public class EventBTranslator {
 	def Map<String,AbstractElement> components = [:]
 	def List<Machine> machines = []
 	def List<Context> contexts = []
+	def List<Theory> theories = []
+	def typeEnv
 	def private events = [:]
 	def DirectedSparseMultigraph<String,RefType> graph = new DirectedSparseMultigraph<String, RefType>()
 
@@ -40,6 +43,10 @@ public class EventBTranslator {
 		directoryPath = modelFile.getAbsolutePath().lastIndexOf('/').with {
 			it != -1 ? modelFile.getAbsolutePath()[0..<it] : modelFile.getAbsolutePath()
 		}
+		def theoryTranslator = new TheoryTranslator()
+		theories = theoryTranslator.getTheories(directoryPath)
+		typeEnv = theoryTranslator.getExtensions()
+
 		def proofFile = new File("${directoryPath}/${name}.bps")
 
 		mainComponent = extractComponent(name, getXML(modelFile), getXML(proofFile))
@@ -88,7 +95,7 @@ public class EventBTranslator {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
 			def theorem = it.'@theorem' == "true"
-			def axiom = new EventBAxiom(label, predicate, theorem)
+			def axiom = new EventBAxiom(label, predicate, theorem, typeEnv)
 			axioms << axiom
 			proofFactory.addProof(label, axiom)
 		}
@@ -145,7 +152,7 @@ public class EventBTranslator {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
 			def theorem = it.'@theorem' == "true"
-			def invariant = new EventBInvariant(label, predicate, theorem)
+			def invariant = new EventBInvariant(label, predicate, theorem, typeEnv)
 			invariants << invariant
 			proofFactory.addProof(label, invariant)
 		}
@@ -153,7 +160,7 @@ public class EventBTranslator {
 
 		def variant = []
 		xml.variant.'@expression'.each {
-			variant << new Variant(it)
+			variant << new Variant(it, typeEnv)
 		}
 		machine.addVariant(variant)
 
@@ -185,7 +192,7 @@ public class EventBTranslator {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
 			def theorem = it.'@theorem' == "true"
-			def guard = new EventBGuard(label, predicate, theorem)
+			def guard = new EventBGuard(label, predicate, theorem, typeEnv)
 			guards << guard
 			proofFactory.addProof(name,label,guard)
 		}
@@ -195,7 +202,7 @@ public class EventBTranslator {
 		xml.action.each {
 			def label = it.'@label'
 			def assignment = it.'@assignment'
-			def action = new EventBAction(label, assignment)
+			def action = new EventBAction(label, assignment, typeEnv)
 			actions << action
 			proofFactory.addProof(name,label,action)
 		}
@@ -205,14 +212,14 @@ public class EventBTranslator {
 		xml.witness.each {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
-			def witness = new Witness(label, predicate)
+			def witness = new Witness(label, predicate, typeEnv)
 			witnesses << witness
 			proofFactory.addProof(name, label, witness)
 		}
 		event.addWitness(witnesses)
 
 		def parameters = []
-		xml.parameter.'@identifier'.each { parameters << new EventParameter() }
+		xml.parameter.'@identifier'.each { parameters << new EventParameter(it) }
 		event.addParameters(parameters)
 
 		events[name] = event

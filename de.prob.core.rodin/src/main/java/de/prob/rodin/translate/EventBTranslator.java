@@ -3,6 +3,7 @@ package de.prob.rodin.translate;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.eventb.core.ISCRefinesMachine;
 import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
+import org.eventb.core.ast.extension.IFormulaExtension;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IInternalElementType;
 import org.rodinp.core.IRodinFile;
@@ -110,7 +112,7 @@ public class EventBTranslator {
 				String predicateString = iscAxiom.getPredicateString();
 				boolean theorem = iscAxiom.isTheorem();
 				axioms.add(new EventBAxiom(elementName, predicateString,
-						theorem));
+						theorem, Collections.<IFormulaExtension> emptySet()));
 			}
 			c.addAxioms(axioms);
 
@@ -167,13 +169,14 @@ public class EventBTranslator {
 				String predicateString = iscInvariant.getPredicateString();
 				boolean theorem = iscInvariant.isTheorem();
 				invariants.add(new EventBInvariant(label, predicateString,
-						theorem));
+						theorem, Collections.<IFormulaExtension> emptySet()));
 			}
 			machine.addInvariants(invariants);
 
 			List<Variant> variant = new ArrayList<Variant>();
 			for (ISCVariant iscVariant : root.getSCVariants()) {
-				variant.add(new Variant(iscVariant.getExpressionString()));
+				variant.add(new Variant(iscVariant.getExpressionString(),
+						Collections.<IFormulaExtension> emptySet()));
 			}
 			machine.addVariant(variant);
 
@@ -209,7 +212,8 @@ public class EventBTranslator {
 			String elementName = iscGuard.getElementName();
 			String predicateString = iscGuard.getPredicateString();
 			boolean theorem = iscGuard.isTheorem();
-			guards.add(new EventBGuard(elementName, predicateString, theorem));
+			guards.add(new EventBGuard(elementName, predicateString, theorem,
+					Collections.<IFormulaExtension> emptySet()));
 		}
 		e.addGuards(guards);
 
@@ -217,7 +221,8 @@ public class EventBTranslator {
 		for (ISCAction iscAction : iscEvent.getSCActions()) {
 			String elementName = iscAction.getElementName();
 			String assignmentString = iscAction.getAssignmentString();
-			actions.add(new EventBAction(elementName, assignmentString));
+			actions.add(new EventBAction(elementName, assignmentString,
+					Collections.<IFormulaExtension> emptySet()));
 		}
 		e.addActions(actions);
 
@@ -225,7 +230,8 @@ public class EventBTranslator {
 		for (ISCWitness iscWitness : iscEvent.getSCWitnesses()) {
 			String elementName = iscWitness.getElementName();
 			String predicateString = iscWitness.getPredicateString();
-			witnesses.add(new Witness(elementName, predicateString));
+			witnesses.add(new Witness(elementName, predicateString, Collections
+					.<IFormulaExtension> emptySet()));
 		}
 		e.addWitness(witnesses);
 
