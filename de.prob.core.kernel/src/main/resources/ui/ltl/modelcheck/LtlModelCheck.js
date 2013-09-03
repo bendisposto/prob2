@@ -21,6 +21,8 @@ LtlModelCheck = (function() {
 	
 	extern.restore = function() {		
 		// Register buttons
+		registerCheckCurrent();
+		registerCheckSelected();
 		registerAddFormula();
 		registerRemoveFormula();
 		registerRemoveSelectedFormulas();
@@ -43,6 +45,18 @@ LtlModelCheck = (function() {
 	}
 	
 	/* Register buttons */
+	function registerCheckCurrent() {
+		$("#mc-start-current").click(function() {
+			checkFormula(getSelectedIndex());
+		});
+	}
+	
+	function registerCheckSelected() {
+		$("#mc-start-all").click(function() {
+			checkFormulaList();
+		});
+	}
+	
 	function registerAddFormula() {
 		$("#mc-add-formula").click(function() {
 			addFormula();
@@ -206,6 +220,11 @@ LtlModelCheck = (function() {
 		return selectedItems;
 	}
 	
+	function getSelectedIndex() {
+		var element = $(".last-formulas-list .ui-selected");
+		return element.index();
+	}
+	
 	function updateItem(formula, parseOk) {
 		var element = $(".last-formulas-list .ui-selected");
 		var index = element.index();
@@ -342,6 +361,54 @@ LtlModelCheck = (function() {
 			LtlEditor.cm.setSize(null, Math.max(150, height));	
 			LtlEditor.cm.refresh();
 		}
+	}
+	
+	/* Model checking */
+	function checkFormula(index) {
+		var element = $(".last-formulas-list li")[index];
+		$(element).children("#mc-check-failed").hide();
+		$(element).children("#mc-check-passed").hide();
+		Util.checkFormula(index, extern.formulas[index]);
+	}
+	
+	function checkFormulaList() {
+		var list = $(".last-formulas-list li");
+		$(list).each(function(index, element) {
+			$(element).children("#mc-check-failed").hide();
+			$(element).children("#mc-check-passed").hide();
+		});
+		
+		var indizes = [];
+		var formulas = [];
+		var items = getSelectedItems();
+		for (var i = 0; i < items.length; i++) {
+			var index = items[i].index;
+			indizes.push(index);
+			formulas.push(extern.formulas[i]);
+		}
+		
+		Util.checkFormulaList(indizes, formulas);
+	}
+	
+	extern.checkFormulaFailed = function(data) {
+		var index = data.index;
+		var error = data.error;
+		
+		var element = $(".last-formulas-list li")[index];
+		$(element).children("#mc-check-failed").css({display: "inline"});
+		$(element).children("#mc-check-passed").hide();
+	}
+	
+	extern.checkFormulaPassed = function(data) {
+		var index = data.index;	
+		
+		var element = $(".last-formulas-list li")[index];
+		$(element).children("#mc-check-failed").hide();
+		$(element).children("#mc-check-passed").css({display: "inline"});	
+	}
+	
+	extern.checkFormulaListFinished = function(data) {
+			
 	}
 	
 	return extern;

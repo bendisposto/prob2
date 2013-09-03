@@ -242,7 +242,7 @@ public class LtlEditor extends AbstractSession {
 		}
 	}
 
-	private LtlParser parse(String input, ParseListener listener) {
+	protected LtlParser parse(String input, ParseListener listener) {
 		LtlParser parser = new LtlParser(input);
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
@@ -255,7 +255,7 @@ public class LtlEditor extends AbstractSession {
 		return parser;
 	}
 
-	private LtlParser parsePatternDefinition(String input, ParseListener listener) {
+	protected LtlParser parsePatternDefinition(String input, ParseListener listener) {
 		LtlParser parser = new LtlParser(input);
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);

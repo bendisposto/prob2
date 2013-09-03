@@ -101,6 +101,25 @@ Util = (function() {
 		});
 	}
 	
+	/* Model checking */
+	extern.checkFormula = function(index, formula, callbackObj = "LtlModelCheck") {
+		extern.session.sendCmd("checkFormula", {
+			"formula" : formula,
+			"index" : index,
+			"callbackObj" : callbackObj,
+			"client" : extern.client
+		});
+	}
+	
+	extern.checkFormulaList = function(indizes, formulas, callbackObj = "LtlModelCheck") {
+		extern.session.sendCmd("checkFormulaList", {
+			"formulas" : JSON.stringify(formulas),
+			"indizes" : JSON.stringify(indizes),
+			"callbackObj" : callbackObj,
+			"client" : extern.client
+		});
+	}
+	
 	/* Rendering */
 	extern.replaceContent = function(container, template_name, context = {}) {
 		var content = extern.session.render(template_name, context);
