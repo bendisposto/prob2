@@ -189,7 +189,7 @@ public class LtlEditor extends AbstractSession {
 		List<Marker> markers = new LinkedList<Marker>();
 		for (PatternDefinition pattern : patterns) {
 			String msg = String.format("Move pattern '%s' to pattern manager.", pattern.getName());
-			markers.add(new Marker("pattern", pattern.getToken(), pattern.getSimpleName().length(), msg));
+			markers.add(new Marker("pattern", pattern.getContext().start, pattern.getContext().stop, pattern.getSimpleName(), msg));
 		}
 		return markers;
 	}

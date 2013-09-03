@@ -11,6 +11,7 @@ LtlPatternManager = (function() {
 	extern.ignorePatternName = null;
 	extern.page = "default";
 	extern.parseListeners = null;
+	extern.movePattern = null;
 	
 	/* Create and destroy pattern manager */
 	extern.create = function() {
@@ -37,7 +38,15 @@ LtlPatternManager = (function() {
 	}
 	
 	extern.restore = function() {		
-		if (extern.page == "create" || extern.page == "edit") {
+		if (extern.movePattern != null) {
+			showEditView();
+			
+			$('#name-input').val(extern.movePattern.name);
+			$('#description-input').val(extern.movePattern.description);
+			LtlEditor.cm.setValue(extern.movePattern.code);
+			
+			extern.movePattern = null;
+		} else if (extern.page == "create" || extern.page == "edit") {
 			extern.setCodeMirror(document.getElementById("code"), extern.ignorePatternName);
 			
 			LtlEditor.parseListeners = extern.parseListeners;

@@ -39,6 +39,11 @@
 		Util.replaceContent("#modelcheck-container", "/ui/ltl/modelcheck/modelcheck.html");
 		Util.replaceContent("#manager-container", "/ui/ltl/manager/manager.html");
 		
+		LtlModelCheck.movePattern = function(pattern) {
+			LtlPatternManager.movePattern = pattern;
+			showPatternManager();
+		}
+		
 		$("#nav-modelcheck").click(showModelCheck);		
 		$("#nav-manager").click(showPatternManager);
 		

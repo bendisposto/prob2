@@ -52,7 +52,7 @@ LtlEditor = (function() {
 			extern.cm.off("change");
 			extern.cm.off("cursorActivity");
 			CodeMirror.commands.autocomplete = null;
-			extern.showPatternMarkers = false;
+			extern.showPatternMarkers = null;
 			extern.lastParseOk = true;
 			
 			extern.cm.toTextArea();
@@ -144,7 +144,13 @@ LtlEditor = (function() {
 			var line = mark.line - 1;
 			var lineInfo = extern.cm.lineInfo(line);
 			// Gutter marker
-			extern.cm.setGutterMarker(line, "markers", makeGutterMarker(lineInfo, marker.type, marker.msg));
+			var markerElement = makeGutterMarker(lineInfo, marker.type, marker.msg);
+			extern.cm.setGutterMarker(line, "markers", markerElement);
+			if (marker.type == "pattern" && extern.showPatternMarkers) {
+				$(markerElement).click(function() {
+					extern.showPatternMarkers(marker.name, mark, marker.stop);
+				});
+			}			
 			if (textmarker) {
 				// Text marker
 				var options = {

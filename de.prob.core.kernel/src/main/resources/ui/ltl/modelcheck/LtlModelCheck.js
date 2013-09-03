@@ -280,12 +280,30 @@ LtlModelCheck = (function() {
 	function registerCodeMirror() {
 		var options = {
 			parseOnChange : true,
-			showPatternMarkers : true,
+			showPatternMarkers : moveToPatternManager,
 			highlightOperands : true,
 			showHints : true
 		};
 		LtlEditor.setCodeMirror(document.getElementById("mc-formula-code"), options);
 		LtlEditor.parseListeners = [parseListener];
+	}
+	
+	function moveToPatternManager(name, start, stop) {
+		var from = {
+			line: start.line - 1, 
+			ch: start.pos
+		};
+		var to = {
+			line: stop.line - 1, 
+			ch: stop.pos + stop.length
+		};	
+		
+		var code = LtlEditor.cm.getRange(from, to);
+		LtlEditor.cm.replaceRange("", from, to);
+		updateItem(LtlEditor.cm.getValue(), true);
+		
+		extern.movePattern({name: name, description: "", code: code});
+		
 	}
 	
 	function parseListener() {
