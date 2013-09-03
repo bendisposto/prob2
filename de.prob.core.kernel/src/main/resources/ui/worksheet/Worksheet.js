@@ -240,9 +240,15 @@ Worksheet = (function() {
 
 	function render(id, html) {
 		$("#render" + id + " *").remove()
+		$("#render" + id).removeClass("invalidated")
 		$("#render" + id).append(html)
 
 	}
+
+	function invalidate(id) {
+		$("#render" + id).addClass("invalidated")
+	}
+
 	function delete_box(id) {
 		$("#box" + id).remove()
 		$("#aside" + id).remove()
@@ -549,6 +555,10 @@ Worksheet = (function() {
 		}
 		session.sendCmd("refreshAll", data)
 		unfocus(focused)
+	}
+
+	extern.invalidate = function(data) {
+		invalidate(data.number)
 	}
 
 	// Debugging

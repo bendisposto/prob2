@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
 
 import javax.annotation.Nullable;
 import javax.script.ScriptContext;
@@ -24,9 +25,16 @@ import com.google.inject.Inject;
 
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.web.AbstractSession;
+import de.prob.web.ISession;
+import de.prob.web.ReflectionServlet;
 import de.prob.web.WebUtils;
 import de.prob.web.data.Message;
+import de.prob.web.data.SessionResult;
+import de.prob.web.worksheet.BindingsSnapshot;
+import de.prob.web.worksheet.BoxFactory;
 import de.prob.web.worksheet.EChangeEffect;
+import de.prob.web.worksheet.IBox;
+import de.prob.web.worksheet.VariableDetailTransformer;
 
 public class Worksheet extends AbstractSession {
 
@@ -47,10 +55,14 @@ public class Worksheet extends AbstractSession {
 
 	private final ScriptEngineProvider sep;
 
+	private ReflectionServlet servlet;
+
 	@Inject
-	public Worksheet(ScriptEngineProvider sep, BoxFactory boxfactory) {
+	public Worksheet(ScriptEngineProvider sep, BoxFactory boxfactory,
+			ReflectionServlet servlet) {
 		this.sep = sep;
 		this.boxfactory = boxfactory;
+		this.servlet = servlet;
 		groovy = createGroovy();
 	}
 
@@ -194,20 +206,47 @@ public class Worksheet extends AbstractSession {
 		return reEvaluate(effect, position);
 	}
 
-	private List<Object> reEvaluateBoxes(int reorderposition) {
-		ArrayList<Object> messages = new ArrayList<Object>();
+	private List<Object> reEvaluateBoxes(final int reorderposition) {
 		if (reorderposition == 0) {
 			groovy = createGroovy();
 		}
 		logger.trace("Re-Evaluating boxes, starting at box {}", reorderposition);
-		for (int i = reorderposition; i < order.size(); i++) {
-			String id = order.get(i);
-			IBox box = boxes.get(id);
-			if (box.requiresReEvaluation()) {
-				messages.addAll(render(box));
+
+		final ISession delegate = this;
+
+		Callable<SessionResult> invalidateCommand = new Callable<SessionResult>() {
+			@Override
+			public SessionResult call() throws Exception {
+				ArrayList<Object> messages = new ArrayList<Object>();
+				for (int i = reorderposition; i < order.size(); i++) {
+					String id = order.get(i);
+					IBox box = boxes.get(id);
+					if (box.requiresReEvaluation()) {
+						messages.add(WebUtils.wrap("cmd",
+								"Worksheet.invalidate", "number", box.getId()));
+					}
+				}
+				return new SessionResult(delegate, messages.toArray());
 			}
-		}
-		return messages;
+		};
+		Callable<SessionResult> reEvalCommand = new Callable<SessionResult>() {
+			@Override
+			public SessionResult call() throws Exception {
+				ArrayList<Object> messages = new ArrayList<Object>();
+				for (int i = reorderposition; i < order.size(); i++) {
+					String id = order.get(i);
+					IBox box = boxes.get(id);
+					if (box.requiresReEvaluation()) {
+						messages.addAll(render(box));
+					}
+				}
+				return new SessionResult(delegate, messages.toArray());
+			}
+		};
+		servlet.submit(invalidateCommand);
+		servlet.submit(reEvalCommand);
+
+		return Collections.emptyList();
 	}
 
 	@Override

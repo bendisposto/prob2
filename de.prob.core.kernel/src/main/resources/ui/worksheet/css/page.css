@@ -34,3 +34,7 @@
 	float: right;
 	margin-top: 8px;
 }
+
+.invalidated {
+	opacity: 0.2;
+}
