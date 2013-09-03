@@ -142,11 +142,15 @@ public class ReflectionServlet extends HttpServlet {
 		} else if ("command".equals(mode)) {
 			Callable<SessionResult> command = session.command(parameterMap);
 			send(resp, "submitted");
-			taskCompletionService.submit(command);
+			submit(command);
 		} else {
 			String id = UUID.randomUUID().toString(); // client specific id
 			send(resp, session.html(id, parameterMap));
 		}
+	}
+
+	public void submit(Callable<SessionResult> command) {
+		taskCompletionService.submit(command);
 	}
 
 	private void send(HttpServletResponse resp, String html) throws IOException {
