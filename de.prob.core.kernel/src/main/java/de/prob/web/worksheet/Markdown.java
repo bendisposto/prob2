@@ -7,7 +7,6 @@ import java.util.Map;
 import org.pegdown.PegDownProcessor;
 
 import de.prob.web.WebUtils;
-import de.prob.web.views.BindingsSnapshot;
 
 public class Markdown extends AbstractBox {
 

@@ -10,7 +10,6 @@ import de.prob.animator.command.EvalstoreEvalCommand;
 import de.prob.animator.command.EvalstoreEvalCommand.EvalstoreResult;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.model.representation.AbstractModel;
-import de.prob.web.views.BindingsSnapshot;
 
 public class B extends AbstractBox {
 

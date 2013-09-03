@@ -1,7 +1,8 @@
-package de.prob.web.views;
+package de.prob.web.worksheet;
 
 import com.google.inject.Singleton;
 
+import de.prob.web.views.Worksheet;
 import de.prob.webconsole.ServletContextListener;
 
 @Singleton

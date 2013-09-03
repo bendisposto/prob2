@@ -15,7 +15,6 @@ import de.prob.animator.command.EvalstoreCreateByStateCommand;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.StateSpace;
 import de.prob.web.FileBrowserServlet;
-import de.prob.web.views.BindingsSnapshot;
 
 public class LoadModel extends AbstractBox {
 

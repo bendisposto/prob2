@@ -12,7 +12,6 @@ import javax.script.Bindings;
 import javax.script.ScriptContext;
 
 import de.prob.web.WebUtils;
-import de.prob.web.views.IBox;
 import de.prob.web.views.Worksheet;
 
 public abstract class AbstractBox implements IBox {

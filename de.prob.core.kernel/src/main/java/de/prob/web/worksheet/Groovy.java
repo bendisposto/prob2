@@ -18,8 +18,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 
 import de.prob.web.WebUtils;
-import de.prob.web.views.BindingsSnapshot;
-import de.prob.web.views.IBox;
 
 public class Groovy extends AbstractBox implements IBox {
 

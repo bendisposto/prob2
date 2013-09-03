@@ -1,4 +1,4 @@
-package de.prob.web.views;
+package de.prob.web.worksheet;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -17,7 +17,7 @@ import com.google.common.collect.Collections2;
 
 import de.prob.web.WebUtils;
 
-final class VariableDetailTransformer implements
+public final class VariableDetailTransformer implements
 		Function<Map.Entry<String, Object>, Map<String, String>> {
 
 	private static final Set<String> processed = new HashSet<String>();
@@ -80,7 +80,7 @@ final class VariableDetailTransformer implements
 		}
 	}
 
-	VariableDetailTransformer(BindingsSnapshot previous_snapshot,
+	public VariableDetailTransformer(BindingsSnapshot previous_snapshot,
 			BindingsSnapshot current_snapshot) {
 		this.previous_snapshot = previous_snapshot;
 		this.current_snapshot = current_snapshot;

@@ -1,4 +1,4 @@
-package de.prob.web.views;
+package de.prob.web.worksheet;
 
 import java.util.HashSet;
 import java.util.Map;

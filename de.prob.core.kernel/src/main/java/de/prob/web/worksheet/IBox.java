@@ -1,9 +1,9 @@
-package de.prob.web.views;
+package de.prob.web.worksheet;
 
 import java.util.List;
 import java.util.Map;
 
-import de.prob.web.worksheet.EChangeEffect;
+import de.prob.web.views.Worksheet;
 
 public interface IBox {
 
