@@ -141,6 +141,27 @@ LtlModelCheck = (function() {
 		
 		$('#mc-code-error').hide();
 		LtlEditor.cm.setValue(extern.formulas[index]);
+		
+		// Scroll to let the element be visible
+		scrollVisible(index, element);
+	}
+	
+	function scrollVisible(index, element) {
+		var list = $(".last-formulas-list");
+		var visibleFrom = list.scrollTop();
+		var visibleTo = visibleFrom + list.height();
+		
+		var itemHeight = $(element).height() + 1;
+		var heightToBeVisible = index * itemHeight;
+		if (visibleFrom > heightToBeVisible) {
+			// scroll up
+			var diff = heightToBeVisible - visibleFrom;
+			list.scrollTop(visibleFrom + diff);
+		} else if (visibleTo < heightToBeVisible + itemHeight) {
+			// scroll down
+			var diff = (heightToBeVisible + itemHeight) - visibleTo;
+			list.scrollTop(visibleFrom + diff);
+		}
 	}
 	
 	function registerSelectionListener() {
