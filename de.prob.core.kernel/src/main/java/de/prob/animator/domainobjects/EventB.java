@@ -1,5 +1,6 @@
 package de.prob.animator.domainobjects;
 
+import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
 import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
 import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eventb.core.ast.ASTProblem;
+import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
@@ -75,11 +77,31 @@ public class EventB extends AbstractEvalElement {
 					unicode, LanguageVersion.LATEST, null);
 			if (!parseResult.hasProblem()) {
 				ast = prepareExpressionAst(parseResult);
+			} else {
+				kind = ASSIGNMENT.toString();
+				parseResult = FormulaFactory.getInstance(types)
+						.parseAssignment(unicode, LanguageVersion.LATEST, null);
+				if (!parseResult.hasProblem()) {
+					ast = prepareAssignmentAst(parseResult);
+				}
 			}
 		}
 		if (parseResult.hasProblem()) {
 			throwException(code, parseResult);
 		}
+	}
+
+	private Node prepareAssignmentAst(final IParseResult parseResult) {
+		final Assignment assign = parseResult.getParsedAssignment();
+		final TranslationVisitor visitor = new TranslationVisitor();
+		try {
+			assign.accept(visitor);
+		} catch (Exception e) {
+			logger.error("Creation of ast failed for assignment " + code, e);
+			throw new EvaluationException(
+					"Could not create AST for assignment " + assign.toString());
+		}
+		return visitor.getSubstitution();
 	}
 
 	private Node prepareExpressionAst(final IParseResult parseResult) {
@@ -88,7 +110,7 @@ public class EventB extends AbstractEvalElement {
 		try {
 			expr.accept(visitor);
 		} catch (Exception e) {
-			logger.error("Creation of ast failed for predicate " + code, e);
+			logger.error("Creation of ast failed for expression " + code, e);
 			throw new EvaluationException(
 					"Could not create AST for expression " + expr.toString());
 		}
@@ -124,6 +146,10 @@ public class EventB extends AbstractEvalElement {
 	public void printProlog(final IPrologTermOutput pout) {
 		if (ast == null) {
 			ensureParsed();
+		}
+		if (getKind().equals(ASSIGNMENT.toString())) {
+			throw new EvaluationException(
+					"Assignments are currently unsupported for evaluation");
 		}
 
 		assert ast != null;
