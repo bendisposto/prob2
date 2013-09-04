@@ -8,6 +8,7 @@ Languages = (function() {
 				theme : "default",
 				viewportMargin : Infinity,
 			},
+			has_source : true
 		},
 		"B" : {
 			codemirror : {
@@ -17,6 +18,7 @@ Languages = (function() {
 				theme : "default",
 				viewportMargin : Infinity,
 			},
+			has_source : true
 		},
 		"Markdown" : {
 			codemirror : {
@@ -26,7 +28,8 @@ Languages = (function() {
 				theme : "default",
 				viewportMargin : Infinity,
 			},
-			no_vars : true
+			no_vars : true,
+			has_source : true
 		},
 		"LoadModel" : {
 			getter : function() {
@@ -42,8 +45,8 @@ Languages = (function() {
 					var dom_dir = "#openfile" + id;
 					$(dom_dir).focus()
 				}
-			}
-
+			},
+			has_source : false
 		}
 	}
 	return extern;

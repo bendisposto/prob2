@@ -10,6 +10,7 @@ Worksheet = (function() {
 	var focused = null;
 
 	var compacted = false;
+	var sourceview = false;
 
 	var editorkeys = function(number) {
 		return {
@@ -164,6 +165,7 @@ Worksheet = (function() {
 			id : number,
 			type : type,
 			getValue : lang_data.getter,
+			has_source : lang_data.has_source,
 		}
 		if (lang_data.codemirror != null) {
 			var edi = gen_codemirror(number, type);
@@ -474,6 +476,42 @@ Worksheet = (function() {
 		browse2(dir_dom)
 	}
 
+	function source() {
+		b = $("#sourcebtn")
+		if (sourceview) {
+			$(".renderbox").removeClass("col-lg-5").removeClass("pull-right")
+
+			for (e in editors) {
+				var edi = editors[e]
+				if (edi.has_source) {
+					$("#render" + edi.id).removeClass("col-lg-5").removeClass(
+							"pull-right")
+					$("#edit" + edi.id).removeClass("col-lg-6").removeClass(
+							"pull-left")
+					$("#editor" + edi.id).addClass("invisible")
+
+				}
+			}
+
+			b.removeClass("btn-selected")
+		} else {
+			for (e in editors) {
+				var edi = editors[e]
+				if (edi.has_source) {
+					$("#render" + edi.id).addClass("col-lg-5").addClass(
+							"pull-right")
+					$("#edit" + edi.id).addClass("col-lg-6").addClass(
+							"pull-left")
+					$("#editor" + edi.id).removeClass("invisible")
+
+				}
+			}
+			b.addClass("btn-selected")
+		}
+		sourceview = !sourceview
+		console.log("Source")
+	}
+
 	function noFocus() {
 		if (focused === null) {
 			return;
@@ -560,6 +598,8 @@ Worksheet = (function() {
 	extern.invalidate = function(data) {
 		invalidate(data.number)
 	}
+
+	extern.source = source
 
 	// Debugging
 	extern.editors = editors
