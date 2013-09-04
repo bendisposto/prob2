@@ -47,9 +47,9 @@ public class EventBTranslator {
 		theories = theoryTranslator.getTheories(directoryPath)
 		typeEnv = theoryTranslator.getExtensions()
 
-		def proofFile = new File("${directoryPath}/${name}.bps")
+		def baseFile = "${directoryPath}/${name}"
 
-		mainComponent = extractComponent(name, getXML(modelFile), getXML(proofFile))
+		mainComponent = extractComponent(name, getXML(modelFile), baseFile)
 	}
 
 	def getXML(file) {
@@ -57,29 +57,29 @@ public class EventBTranslator {
 		return new XmlParser().parseText(text)
 	}
 
-	def extractComponent(name, xml, proofs) {
+	def extractComponent(name, xml, baseFile) {
 		if(xml.name() == "contextFile") {
-			return extractContext(name, xml, proofs);
+			return extractContext(name, xml, baseFile);
 		}
 		if(xml.name() == "machineFile") {
-			return extractMachine(name, xml, proofs);
+			return extractMachine(name, xml, baseFile);
 		}
 	}
 
-	def extractContext(name, xml, proofs) {
+	def extractContext(name, xml, baseFile) {
 		if(components.containsKey(name)) {
 			return components[name]
 		}
 		graph.addVertex(name)
 
-		def proofFactory = new ProofFactory(proofs)
+		def proofFactory = new ProofFactory(baseFile, typeEnv)
 
 		def context = new Context(name)
 		def extendedContexts = []
 		xml.extendsContext.'@target'.each {
 			def f = new File("${directoryPath}/${it}.buc")
-			def p = new File("${directoryPath}/${it}.bps")
-			extendedContexts << extractContext(it,getXML(f),getXML(p))
+			def newBaseFile = "${directoryPath}/${it}"
+			extendedContexts << extractContext(it,getXML(f),newBaseFile)
 			graph.addEdge(new RefType(ERefType.EXTENDS), name, it)
 		}
 		context.addExtends(extendedContexts)
@@ -114,20 +114,20 @@ public class EventBTranslator {
 		return context
 	}
 
-	def extractMachine(name, xml, proofs) {
+	def extractMachine(name, xml, baseFile) {
 		if(components.containsKey(name)) {
 			return components[name]
 		}
 		graph.addVertex(name)
 
-		def proofFactory = new ProofFactory(proofs)
+		def proofFactory = new ProofFactory(baseFile, typeEnv)
 
 		def machine = new EventBMachine(name)
 		def sees = []
 		xml.seesContext.'@target'.each {
 			def f = new File("${directoryPath}/${it}.buc")
-			def p = new File("${directoryPath}/${it}.bps")
-			sees << extractContext(it,getXML(f),getXML(p))
+			def newBaseFile = "${directoryPath}/${it}"
+			sees << extractContext(it,getXML(f),newBaseFile)
 			graph.addEdge(new RefType(ERefType.SEES), name, it)
 		}
 		machine.addSees(sees)
@@ -135,8 +135,8 @@ public class EventBTranslator {
 		def refines = []
 		xml.refinesMachine.'@target'.each {
 			def f = new File("${directoryPath}/${it}.bum")
-			def p = new File("${directoryPath}/${it}.bps")
-			refines << extractMachine(it,getXML(f),getXML(p))
+			def newBaseFile = "${directoryPath}/${it}"
+			refines << extractMachine(it,getXML(f),newBaseFile)
 			graph.addEdge(new RefType(ERefType.REFINES), name, it)
 		}
 		machine.addRefines(refines)
