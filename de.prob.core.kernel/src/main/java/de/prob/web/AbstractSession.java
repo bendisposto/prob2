@@ -94,7 +94,9 @@ public abstract class AbstractSession implements ISession {
 	public void submit(Object... result) {
 		Message message = new Message(responses.size() + 1, result);
 		String json = WebUtils.toJson(message);
-		logger.trace("Sending: {}", json);
+		for (Object object : result) {
+			logger.trace("Sending: {}", object);
+		}
 		synchronized (clients) {
 			for (AsyncContext context : clients) {
 				send(json, context);
