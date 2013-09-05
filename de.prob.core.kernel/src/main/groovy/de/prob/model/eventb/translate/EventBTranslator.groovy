@@ -107,8 +107,7 @@ public class EventBTranslator {
 		}
 		context.addConstants(constants)
 
-		context.setDischarged(proofFactory.getDischarged())
-		context.setUnproven(proofFactory.getUnproven())
+		context.addProofs(proofFactory.getProofs())
 		components[name] = context
 		contexts << context
 		return context
@@ -170,8 +169,7 @@ public class EventBTranslator {
 
 		proofFactory.addInvariantProofs(invariants, events)
 
-		machine.setDischarged(proofFactory.getDischarged())
-		machine.setUnproven(proofFactory.getUnproven())
+		machine.addProofs(proofFactory.getProofs())
 		components[name] = machine
 		machines << machine
 		return machine

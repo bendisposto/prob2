@@ -4,15 +4,14 @@ import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.proof.INV
-import de.prob.model.eventb.proof.IProof
+import de.prob.model.eventb.proof.SimpleProofNode
 import de.prob.model.eventb.proof.THM
 import de.prob.model.eventb.proof.WD
 
 class ProofFactory {
 
 	def elements = [:]
-	def List<IProof> discharged = []
-	def List<IProof> unproven = []
+	def List<? extends SimpleProofNode> proofs = []
 	def Set<IFormulaExtension> typeEnv
 	def predicateSets = [:]
 	def sequentsXML = [:]
@@ -93,17 +92,8 @@ class ProofFactory {
 			return
 		}
 		def proof = elements[label]
-		if(proof.discharged) {
-			def p = createProof(proof.type, proof.name, element, proof.discharged)
-			if(p) {
-				discharged << p
-			}
-		} else {
-			def p = createProof(proof.type, proof.name, element, proof.discharged)
-			if(p) {
-				unproven << p
-			}
-		}
+		def p = createProof(proof.type, proof.name, element, proof.discharged)
+		proofs << p
 	}
 
 	def addProof(eventName, label, element) {
@@ -138,11 +128,7 @@ class ProofFactory {
 					def invName = inv.getName()
 					if(eventInfo.containsKey(invName)) {
 						def proof = eventInfo[invName]
-						if(proof.discharged) {
-							discharged << new INV(proof.name, event, inv, proof.discharged)
-						} else {
-							unproven << new INV(proof.name, event, inv, proof.discharged)
-						}
+						proofs << new INV(proof.name, event, inv, proof.discharged)
 					}
 				}
 			}
@@ -151,14 +137,56 @@ class ProofFactory {
 
 	def createProof(type, name, element, discharged) {
 		def proofState = extractProofState(name)
-		def desc = extractDescription(name)
+		def seq = sequentsXML[name]
+		def goal = new EventB(seq.poPredicate.@predicate[0], typeEnv)
+		def desc = seq.@poDesc
+		def predSetName = seq.poPredicateSet.@parentSet[0]
+		predSetName = predSetName.substring(predSetName.lastIndexOf('#')+1, predSetName.size());
+		def hyps = predicateSets[predSetName]
+
+		def SimpleProofNode proof = new SimpleProofNode(goal, hyps, discharged, desc)
+		def cachedPreds = extractCachedPreds(proof)
+
 		if(type == "THM") {
-			return new THM(name, element, discharged, proofState, desc)
+			proof = new THM(name, element, discharged, proofState, desc)
 		}
 		if(type == "WD") {
-			return new WD(name, element, discharged, proofState, desc)
+			proof = new WD(name, element, discharged, proofState, desc)
 		}
-		return null
+		if(proof != null) {
+			extractChildren(sequentsXML[name], proofsXML[name])
+		}
+		return proof
+	}
+
+	def extractProof(hyps, goal, cachedPreds, xml) {
+		def discharged = xml.@confidence == "1000"
+		def desc = xml.@prDisplay
+
+		def SimpleProofNode proof = new SimpleProofNode(goal, hyps, discharged, desc)
+
+		def kids = []
+		xml.prAnte.each {
+			def g = it.@prGoal == null ? goal : cachedPreds[it.@prGoal]
+			def h = new HashSet<EventB>()
+			it.prHypAction.each {
+				if(it.@prInfHyps != null) {
+					def ids = it.@prInfHyps.split(",")
+					ids.each { h << cachedPreds[it] }
+				}
+			}
+			if(it.@prHyps != null) {
+				def ids = it.@prHyps.split(",")
+				ids.each { h << cachedPreds[it] }
+			}
+			h.addAll(hyps)
+
+			if(!it.prRule.isEmpty()) {
+				kids << extractProofs(h,g,cachedPreds,it.prRule[0])
+			}
+		}
+		proof.addChildrenNodes(kids)
+		return proof
 	}
 
 	def extractDescription(name) {
@@ -176,8 +204,6 @@ class ProofFactory {
 		def hypos = predicateSets[predSetName]
 
 		def status = proof.prProof.confidence == "1000"
-
-		def cachedPreds = extractCachedPreds(proof)
 	}
 
 	def extractCachedPreds(proof) {

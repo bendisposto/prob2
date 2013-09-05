@@ -1,6 +1,6 @@
 package de.prob.model.eventb;
 
-import de.prob.model.eventb.proof.IProof
+import de.prob.model.eventb.proof.SimpleProofNode
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
@@ -10,8 +10,7 @@ import de.prob.model.representation.ModelElementList
 public class Context extends AbstractElement {
 
 	private final String name;
-	private List<IProof> discharged;
-	private List<IProof> unproven;
+	private List<? extends SimpleProofNode> proofs = new ModelElementList<? extends SimpleProofNode>();
 
 	public Context(final String name) {
 		this.name = name;
@@ -35,6 +34,11 @@ public class Context extends AbstractElement {
 
 	public void addAxioms(final List<EventBAxiom> axioms) {
 		put(Axiom.class, axioms);
+	}
+
+	public void addProofs(final List<? extends SimpleProofNode> proofs) {
+		put(SimpleProofNode.class, proofs);
+		proofs.addAll(proofs);
 	}
 
 	public List<BSet> getSets() {
@@ -65,6 +69,10 @@ public class Context extends AbstractElement {
 		return elements;
 	}
 
+	def List<? extends SimpleProofNode> getProofs() {
+		return proofs;
+	}
+
 	@Override
 	public String toString() {
 		return name;
@@ -79,21 +87,5 @@ public class Context extends AbstractElement {
 			return getAxioms()
 		}
 		Context.getMetaClass().getProperty(this, prop)
-	}
-
-	public List<IProof> getDischarged() {
-		return discharged;
-	}
-
-	public void setDischarged(List<IProof> discharged) {
-		this.discharged = discharged;
-	}
-
-	public List<IProof> getUnproven() {
-		return unproven;
-	}
-
-	public void setUnproven(List<IProof> unproven) {
-		this.unproven = unproven;
 	}
 }
