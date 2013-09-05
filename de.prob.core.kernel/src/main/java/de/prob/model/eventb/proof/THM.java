@@ -1,40 +1,28 @@
 package de.prob.model.eventb.proof;
 
+import java.util.Set;
+
+import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 
-public class THM implements IProof {
+public class THM extends SimpleProofNode {
 
-	public final AbstractElement target;
+	private final AbstractElement target;
 	private final String proofName;
-	private final ProofState proofState;
-	private final boolean discharged;
 
 	public THM(final String proofName, final AbstractElement target,
-			final boolean discharged, final ProofState proofState) {
+			final EventB goal, final Set<EventB> hypotheses,
+			final boolean discharged, final String description) {
+		super(goal, hypotheses, discharged, description);
 		this.proofName = proofName;
 		this.target = target;
-		this.discharged = discharged;
-		this.proofState = proofState;
 	}
 
-	@Override
-	public String getProofName() {
+	public String getName() {
 		return proofName;
 	}
 
-	@Override
-	public boolean isDischarged() {
-		return discharged;
-	}
-
-	@Override
-	public ProofState getProofState() {
-		return proofState;
-	}
-
-	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+	public AbstractElement getTarget() {
+		return target;
 	}
 }

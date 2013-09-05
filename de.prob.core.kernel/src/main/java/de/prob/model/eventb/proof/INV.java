@@ -1,44 +1,36 @@
 package de.prob.model.eventb.proof;
 
+import java.util.Set;
+
+import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBInvariant;
 
-public class INV implements IProof {
+public class INV extends SimpleProofNode {
 
-	public final Event event;
-	public final EventBInvariant invariant;
+	private final Event event;
+	private final EventBInvariant invariant;
 	private final String proofName;
-	private final ProofState proofState;
-	private final boolean discharged;
 
 	public INV(final String proofName, final Event event,
-			final EventBInvariant invariant, final boolean discharged,
-			final ProofState proofState) {
+			final EventBInvariant invariant, final EventB goal,
+			final Set<EventB> hypotheses, final boolean discharged,
+			final String description) {
+		super(goal, hypotheses, discharged, description);
 		this.proofName = proofName;
 		this.event = event;
 		this.invariant = invariant;
-		this.discharged = discharged;
-		this.proofState = proofState;
 	}
 
-	@Override
-	public String getProofName() {
+	public EventBInvariant getInvariant() {
+		return invariant;
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public String getName() {
 		return proofName;
-	}
-
-	@Override
-	public boolean isDischarged() {
-		return discharged;
-	}
-
-	@Override
-	public ProofState getProofState() {
-		return proofState;
-	}
-
-	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

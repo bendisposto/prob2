@@ -1,6 +1,6 @@
 package de.prob.model.eventb;
 
-import de.prob.model.eventb.proof.IProof
+import de.prob.model.eventb.proof.SimpleProofNode
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
@@ -9,8 +9,7 @@ import de.prob.model.representation.Variable
 
 public class EventBMachine extends Machine {
 
-	private List<IProof> discharged;
-	private List<IProof> unproven;
+	private List<? extends SimpleProofNode> proofs = new ModelElementList<? extends SimpleProofNode>();
 
 	public EventBMachine(final String name) {
 		super(name);
@@ -38,6 +37,11 @@ public class EventBMachine extends Machine {
 
 	public void addEvents(final List<Event> events) {
 		put(BEvent.class, events);
+	}
+
+	public void addProofs(final List<? extends SimpleProofNode> proofs) {
+		put(SimpleProofNode.class, discharged);
+		this.proofs.addAll(proofs);
 	}
 
 	public List<EventBVariable> getVariables() {
@@ -79,6 +83,10 @@ public class EventBMachine extends Machine {
 		return events;
 	}
 
+	def List<SimpleProofNode> getProofs() {
+		return proofs;
+	}
+
 	def Event getEvent(String name) {
 		for (Event e : getEvents()) {
 			if (e.getName().equals(name)) return e;
@@ -97,21 +105,5 @@ public class EventBMachine extends Machine {
 			return getEvents()
 		}
 		Machine.getMetaClass().getProperty(this, prop)
-	}
-
-	public List<IProof> getDischarged() {
-		return discharged;
-	}
-
-	public void setDischarged(List<IProof> discharged) {
-		this.discharged = discharged;
-	}
-
-	public List<IProof> getUnproven() {
-		return unproven;
-	}
-
-	public void setUnproven(List<IProof> unproven) {
-		this.unproven = unproven;
 	}
 }
