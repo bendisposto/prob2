@@ -1,0 +1,73 @@
+.box-number {
+	min-width: 50px;
+	border-right: 1px dashed;
+	text-align: right;
+	padding-right: 3px;
+}
+
+.help-button {
+	color: #000000;
+	opacity: 0.5;
+}
+
+.help-button:hover {
+	opacity: 1;
+}
+
+.panel-heading {
+	font-size: 0.8em;
+	padding: 2px;
+}
+
+.panel-compact {
+	border: 0px white;
+}
+
+.micro-space {
+	margin-left: 5px;
+	margin-top: 2px;
+	cursor: default;
+}
+
+.drag-area {
+	cursor: move;
+}
+
+.no-drag {
+	cursor: default;
+}
+
+.remove-button {
+	color: darkred;
+	opacity: 0.5;
+}
+
+.remove-button:HOVER {
+	opacity: 1;
+}
+
+.bigcaret {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-left: 3px;
+	vertical-align: middle;
+	border-top: 6px solid #000000;
+	border-right: 6px solid transparent;
+	border-left: 6px solid transparent;
+	content: "";
+	opacity: 0.5;
+	cursor: default;
+}
+
+.bigcaret:hover {
+	opacity: 1;
+	color: darkblue;
+}
+
+.boxarea {
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}

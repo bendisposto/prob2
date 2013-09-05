@@ -24,7 +24,6 @@ import de.prob.webconsole.servlets.VersionServlet;
 import de.prob.webconsole.servlets.visualizations.PredicateServlet;
 import de.prob.webconsole.servlets.visualizations.StateSpaceServlet;
 import de.prob.webconsole.servlets.visualizations.ValueOverTimeServlet;
-import de.prob.worksheet.WorksheetServlet;
 
 public class WebModule extends ServletModule {
 
@@ -39,7 +38,6 @@ public class WebModule extends ServletModule {
 		serve("/outputs*").with(GroovyOutputServlet.class);
 		serve("/versions*").with(VersionServlet.class);
 		serve("/scrollback*").with(ScrollbackServlet.class);
-		serve("/exec*").with(WorksheetServlet.class);
 
 		bind(ShellCommands.class);
 		bind(OutputBuffer.class);
@@ -62,6 +60,8 @@ public class WebModule extends ServletModule {
 
 		serve(ReflectionServlet.URL_PATTERN + "*")
 				.with(ReflectionServlet.class);
+
+		serve("/files*").with(FileBrowserServlet.class);
 
 	}
 

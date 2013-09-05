@@ -25,11 +25,11 @@
                 <form class="form-horizontal">
                     <fieldset>
                         <legend>Time</legend>
-                        <div class="form-group entry">
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="time" placeholder="Enter formula for Time">
+                        <div class="form-group entry" id="input-time">
+                            <div class="input-group" id="time">
+                                <input type="text" class="form-control" id="formula-time" placeholder="Enter formula for Time">
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button">Set</button>
+                                    <button class="btn btn-default" id="btn-time" type="button">Set</button>
                                 </span>
                             </div>
                         </div>
@@ -40,11 +40,11 @@
                 <form class="form-horizontal">
                     <fieldset id="formulas">
                         <legend>Formulas</legend>
-                        <div class="form-group entry" id="input-f0">
-                            <div class="input-group" id="f0">
-                                <input type="text" class="form-control" placeholder="Enter Formula">
+                        <div class="form-group entry formula" id="input-{{id}}">
+                            <div class="input-group" id="{{id}}">
+                                <input type="text" class="form-control" placeholder="Enter Formula" id="formula-{{id}}" value="{{value}}">
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default add-formula" type="button">Add</button>
+                                    <button class="btn btn-default add-formula" type="button" id="btn-{{id}}">Add</button>
                                 </span>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
     </div>
     </div>
 </body>
-<script type="text/javascript" src="/ui/libs/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
 <script type="text/javascript" src="/ui/libs/d3.v2.min.js"></script>
 <script type="text/javascript" src="/ui/libs/mustache.js"></script>
 <script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
@@ -65,6 +65,6 @@
 
 <script>
 ValueOverTime.client = "{{clientid}}";
-ValueOverTime.init("{{clientid}}")
+ValueOverTime.init("{{clientid}}");
 </script>
 </html>

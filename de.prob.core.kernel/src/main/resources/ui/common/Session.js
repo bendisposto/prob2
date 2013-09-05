@@ -5,7 +5,7 @@ function Session() {
 	var poll_interval = 100;
 
 	// client side template cache
-	var templates = []
+	var templates = {}
 
 	// we need to load the error template in upfront
 	get_template("/ui/common/server_disconnected.html");
@@ -13,6 +13,7 @@ function Session() {
 	function sendCmd(s, data) {
 		data.mode = 'command'
 		data.cmd = s
+		console.log("Send:", data)
 		$.ajax({
 			async : false,
 			data : data
@@ -66,8 +67,10 @@ function Session() {
 				.ajax({
 					data : data,
 					success : function(data) {
+
 						if (data != "") {
 							dx = JSON.parse(data);
+							console.log("DATA:", dx)
 							dobjs = dx.content
 							current = dx.id
 							if (!(Object.prototype.toString.call(dobjs) === "[object Array]")) {
@@ -75,6 +78,7 @@ function Session() {
 							}
 							for (i in dobjs) {
 								var dobj = dobjs[i]
+								console.log("Eval:", dobj)
 								eval(dobj.cmd)(dobj)
 							}
 						}

@@ -1,0 +1,106 @@
+.aside-label {
+	float: left;
+	margin-right: 2px;
+	margin-bottom: 2px;
+}
+
+.editorbox {
+	float: left;
+	min-height: 20px;
+	width: 100%;
+}
+
+
+
+.box-number {
+	padding-left: 10px;
+	padding-right: 5px;
+	border-right: 1px dotted black;
+	text-align: right;
+	float: left;
+	min-width: 70px;
+}
+
+
+#show-header {
+	margin-left: 18px;
+}
+
+.heading-bar {
+	padding-left: 10px;
+}
+
+
+
+.panel {
+	/* 	float: left; */
+	margin-bottom: 10px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+.panel-compact {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	padding: 5px;
+	margin: 3px;
+	border: 0px dashed #aaa;
+}
+
+.panel-heading {
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	font-size: 0.8em;
+	padding: 3px;
+}
+
+.panel-heading:hover {
+	cursor: move;
+}
+
+.close-button {
+	float: right;
+	color: #660000;
+	opacity: 0.5;
+	margin-right: 5px;
+	margin-top: 2px;
+	cursor: default;
+}
+
+
+
+.micro-space {
+	float: left;
+	margin-left: 5px;
+	margin-top: 2px;
+	cursor: default;
+}
+
+.box-type {
+	float: left;
+	margin-left: 2px;
+	margin-top: 1px;
+}
+
+
+.switch-button {
+	margin-top: 2px;
+}
+
+.close-button:hover {
+	opacity: 1;
+}
+
+.groovy_output {
+	color: darkgrey;
+	font-style: italic;
+}
+
+.groovy_result {
+	color: darkblue;
+}
+
+.exception-message {
+	color: darkred;
+	font-weight: bold;
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ProB Current Trace</title>
+<meta name="description" content="">
+<meta name="author" content="Jens Bendisposto">
+
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+<link rel="stylesheet" href="/ui/eventview/events.css">
+
+</head>
+<body>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<ul id="events">
+
+				</ul>
+			</div>
+		</div>
+	</div>
+</body>
+
+</body>
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/eventview/Events.js"></script>
+
+<script>
+Events.client = "{{clientid}}";
+Events.init("{{clientid}}")
+</script>
+</html>

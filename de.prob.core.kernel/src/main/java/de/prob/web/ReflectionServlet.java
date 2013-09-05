@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -44,6 +47,8 @@ public class ReflectionServlet extends HttpServlet {
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
 
+	private final static String FQN = "(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)+\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*";
+
 	@Inject
 	public ReflectionServlet(@Sessions Map<String, ISession> sessions) {
 		this.sessions = sessions;
@@ -57,8 +62,10 @@ public class ReflectionServlet extends HttpServlet {
 								.take();
 						if (message != null) { // will filter null values
 							SessionResult res = message.get();
-							if (res != null && res.result != null) {
-								logger.trace("Got Result in Queue: {}", res);
+							if (res != null && res.result != null
+									&& res.result.length > 0) {
+								logger.trace("Got Result in Queue: {}",
+										res.result);
 								res.session.submit(res.result);
 							}
 						}
@@ -76,6 +83,8 @@ public class ReflectionServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+
+		logger.trace("Received {}", asString(req.getParameterMap()));
 
 		String uri = req.getRequestURI();
 		List<String> parts = new PartList(uri.split("/"));
@@ -108,6 +117,18 @@ public class ReflectionServlet extends HttpServlet {
 
 	}
 
+	private String asString(Map<String, String[]> m) {
+		StringBuffer res = new StringBuffer();
+		Set<Entry<String, String[]>> entrySet = m.entrySet();
+		for (Entry<String, String[]> e : entrySet) {
+			res.append(e.getKey());
+			res.append("=[");
+			res.append(Joiner.on(", ").join(e.getValue()));
+			res.append("] ");
+		}
+		return res.toString();
+	}
+
 	private void delegateToSession(HttpServletRequest req,
 			HttpServletResponse resp, ISession session) throws IOException {
 		String mode = req.getParameter("mode");
@@ -121,11 +142,15 @@ public class ReflectionServlet extends HttpServlet {
 		} else if ("command".equals(mode)) {
 			Callable<SessionResult> command = session.command(parameterMap);
 			send(resp, "submitted");
-			taskCompletionService.submit(command);
+			submit(command);
 		} else {
 			String id = UUID.randomUUID().toString(); // client specific id
 			send(resp, session.html(id, parameterMap));
 		}
+	}
+
+	public void submit(Callable<SessionResult> command) {
+		taskCompletionService.submit(command);
 	}
 
 	private void send(HttpServletResponse resp, String html) throws IOException {
@@ -170,6 +195,9 @@ public class ReflectionServlet extends HttpServlet {
 
 	@SuppressWarnings("unchecked")
 	private Class<ISession> getClass(String servletName) {
+		if (!servletName.matches(FQN)) {
+			servletName = "de.prob.web.views." + servletName;
+		}
 		Class<ISession> clazz = null;
 		try {
 			clazz = (Class<ISession>) Class.forName(servletName);

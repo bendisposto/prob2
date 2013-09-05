@@ -69,8 +69,8 @@ public class CurrentTrace extends AbstractSession implements
 	}
 
 	@Override
-	public void outOfDateCall(String client, int lastinfo, AsyncContext context) {
-		super.outOfDateCall(client, lastinfo, context);
+	public void reload(String client, int lastinfo, AsyncContext context) {
+		super.reload(client, lastinfo, context);
 		Trace currentTrace = selector.getCurrentTrace();
 		if (currentTrace != null) {
 			traceChange(currentTrace);

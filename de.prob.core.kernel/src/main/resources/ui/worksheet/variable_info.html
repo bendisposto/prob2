@@ -1,0 +1,48 @@
+
+<!-- Modal -->
+<div class="modal fade" id="value_{{variable_name}}_{{box_number}}">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title">{{variable_name}} ({{class_name}})</h4>
+			</div>
+			<table>
+				<tr>
+					<td>Value</td>
+					<td>{{variable_value}}</td>
+				<tr>
+				<tr>
+					<td>Class</td>
+					<td>{{class_name}}</td>
+				<tr>
+				<tr>
+					<td>Superclass</td>
+					<td>{{class_super}}</td>
+				<tr>
+				<tr>
+					<td>Attributes</td>
+					<td><ul>
+							{{#class_attributes}}
+							<li>{{name}} ({{type}})</li> {{/class_attributes}}
+						</ul></td>
+				<tr>
+				<tr>
+					<td>Methods</td>
+					<td><ul>
+							{{#class_methods}}
+							<li>{{returntype}} {{name}}({{#parameterTypes}}{{.}} {{/parameterTypes}})</li> {{/class_methods}}
+						</ul></td>
+				<tr>
+			</table>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

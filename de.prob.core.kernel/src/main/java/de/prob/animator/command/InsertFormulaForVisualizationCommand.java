@@ -30,7 +30,7 @@ public class InsertFormulaForVisualizationCommand extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		PrologTerm prologTerm = bindings.get(ID);
 
-		formulaId = new FormulaId(prologTerm.getFunctor());
+		formulaId = new FormulaId(prologTerm.getFunctor(), formula);
 	}
 
 	public FormulaId getFormulaId() {

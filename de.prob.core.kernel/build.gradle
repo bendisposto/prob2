@@ -55,7 +55,7 @@ dependencies {
  	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
 	compile 'jline:jline:0.9.94' // BSD
 
-	compile 'org.pegdown:pegdown:1.2.0' // Apache Licence 2.0
+	compile 'org.pegdown:pegdown:1.1.0' // Apache Licence 2.0
 
 	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
 	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
@@ -81,6 +81,8 @@ dependencies {
 	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3' // EPL
 
+    compile 'org.antlr:antlr4-runtime:4.0'
+    compile 'de.prob:ltl-dsl:1.0.0'
 
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "bparser", version: parser_version , changing: true
@@ -95,10 +97,13 @@ dependencies {
 	compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
 
 	compile 'junit:junit:4.8.2'
-	testCompile 'org.mockito:mockito-core:1.8.5'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
 	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
 
+	testCompile 'org.mockito:mockito-core:1.8.5'
+	testCompile "org.gebish:geb-spock:0.9.1"
+	testCompile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.26.0'
+	
 }
 
 task createBuildConstants  {

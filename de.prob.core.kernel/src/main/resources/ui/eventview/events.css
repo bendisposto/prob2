@@ -1,0 +1,28 @@
+li {
+	list-style-type: none;
+}
+
+tr:nth-child(odd) {
+	background-color: white;
+}
+
+tr:nth-child(even) {
+	background-color: #f3f6ff;
+}
+
+th {
+	background-color: #cccccc;
+}
+
+.selected {
+	font-weight: bold;
+}
+
+.close-button {
+	color: #660000;
+	opacity: 0.5;
+}
+
+.close-button:hover {
+	opacity: 1;
+}

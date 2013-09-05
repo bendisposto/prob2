@@ -1,0 +1,40 @@
+.top-bar {
+	margin-top: 40px;
+}
+
+.top-bar .bigcaret {
+	margin-top: -4px;
+}
+
+.ui-sortable-placeholder {
+	border: 3px dashed #aaa;
+	background: #ccc;
+	min-height: 45px;
+	height: 45px;
+	margin-bottom: 10px;
+}
+
+.invisible {
+	display: none;
+}
+
+.right-group {
+	margin-right: 2px;
+}
+
+.btn-selected {
+	background-color: #dddddd;
+}
+
+#typeselectbtn {
+	min-width: 100px;
+}
+
+#typeselectbtn .bigcaret {
+	float: right;
+	margin-top: 8px;
+}
+
+.invalidated {
+	opacity: 0.2;
+}
