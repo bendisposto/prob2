@@ -32,7 +32,7 @@ public class LoadModel extends AbstractBox {
 	@Override
 	public List<Object> render(BindingsSnapshot snapshot) {
 		File file = new File(content);
-		if (!FileBrowserServlet.validProBFile(file))
+		if (!FileBrowserServlet.validFile(file, "prob"))
 			return pack(makeHtml(id,
 					"<span class='illegal_file'> Not a valid ProB file. </span>"));
 		else {

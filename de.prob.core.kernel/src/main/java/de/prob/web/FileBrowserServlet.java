@@ -6,14 +6,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 import com.google.inject.Inject;
@@ -24,6 +29,18 @@ import com.google.inject.Singleton;
 public class FileBrowserServlet extends HttpServlet {
 
 	private final String userdir;
+	private final Logger logger = LoggerFactory
+			.getLogger(FileBrowserServlet.class);
+
+	private final static Set<String> PROB_FILES = new HashSet<String>(
+			Arrays.asList((new String[] { "mch", "ref", "imp", "bum", "buc",
+					"eventb" })));
+
+	private final static Map<String, Set<String>> EXTENSIONS = new HashMap<String, Set<String>>();
+
+	static {
+		EXTENSIONS.put("prob", PROB_FILES);
+	}
 
 	@SuppressWarnings("unused")
 	// Is used on JS side
@@ -63,26 +80,20 @@ public class FileBrowserServlet extends HttpServlet {
 		this.userdir = System.getProperty("user.home");
 	}
 
-	private final static Set<String> EXTENSIONS = new HashSet<String>(
-			Arrays.asList((new String[] { "mch", "ref", "imp", "bum", "buc",
-					"eventb" })));
-
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		String remoteAddr = req.getRemoteAddr();
-		if (!"127.0.0.1".equals(remoteAddr)) {
-			resp.sendError(403);
-		}
 		String path = req.getParameter("path");
 		String check = req.getParameter("check");
-
+		String extensionSet = req.getParameter("extensions");
+		logger.trace("File Browser Request. Path {} Check {} Extensions {} ",
+				new Object[] { path, check, extensionSet });
 		if (path != null && !path.isEmpty()) {
 			File f = new File(path);
 			if (check != null) {
 				PrintWriter writer = resp.getWriter();
-				writer.println(validProBFile(f));
+				writer.println(validFile(f, extensionSet));
 				writer.close();
 				return;
 			}
@@ -93,7 +104,7 @@ public class FileBrowserServlet extends HttpServlet {
 				f = f.getParentFile();
 			}
 
-			FileFilter filter = makeFilter();
+			FileFilter filter = makeFilter(extensionSet);
 			File[] listFiles = f.listFiles(filter);
 			if (f.getParentFile() != null) {
 				dirs.add(new FileEntry(f.getParentFile(), ".."));
@@ -121,27 +132,30 @@ public class FileBrowserServlet extends HttpServlet {
 				writer.println(false);
 				writer.close();
 			} else {
-				resp.sendRedirect("/files/?path=" + userdir);
+				resp.sendRedirect("/files/?path=" + userdir + "&extensions="
+						+ extensionSet);
 			}
 		}
 	}
 
-	public static boolean validProBFile(File f) {
+	public static boolean validFile(File f, String extensionset) {
 		return f.exists()
 				&& f.isFile()
 				&& f.canRead()
-				&& EXTENSIONS.contains(Files.getFileExtension(f
-						.getAbsolutePath()));
+				&& EXTENSIONS.get(extensionset) != null
+				&& EXTENSIONS.get(extensionset).contains(
+						Files.getFileExtension(f.getAbsolutePath()));
 	}
 
-	private FileFilter makeFilter() {
+	private FileFilter makeFilter(final String extensions) {
 		return new FileFilter() {
 
 			@Override
 			public boolean accept(File f) {
 				return f.isDirectory()
-						|| EXTENSIONS.contains(Files.getFileExtension(f
-								.getName()));
+						|| (EXTENSIONS.containsKey(extensions) && EXTENSIONS
+								.get(extensions).contains(
+										Files.getFileExtension(f.getName())));
 			}
 		};
 	}

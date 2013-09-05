@@ -311,7 +311,7 @@ Worksheet = (function() {
 	function request_files(d) {
 		var s;
 		$.ajax({
-			url : "/files?path=" + d,
+			url : "/files?path=" + d + "&extensions=prob",
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -326,7 +326,7 @@ Worksheet = (function() {
 	function check_file(d) {
 		var s;
 		$.ajax({
-			url : "/files?check=true&path=" + d,
+			url : "/files?check=true&extensions=prob&path=" + d,
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
