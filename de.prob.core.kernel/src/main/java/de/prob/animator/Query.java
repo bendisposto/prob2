@@ -45,7 +45,8 @@ public class Query implements IPrologTermOutput {
     
     public Query() {
     	instance = init_instance(Main.PROB_HOME + "/probcli.sav");
-    	init_prob(); // calls set_search_pathes, init_eclipse_preferences and set_prefs
+    	System.out.println(instance);
+    	init_prob(instance); // calls set_search_pathes, init_eclipse_preferences and set_prefs
     }
     
     public Query(String pathToSav) {
@@ -62,7 +63,7 @@ public class Query implements IPrologTermOutput {
 
     private native static void init();
     private native static int init_instance(String savLocation);
-    private native static void init_prob();
+    private native static void init_prob(int instance);
     private native static long put_predicate(int instance, String functor, int arity);
     private native static int put_inti(int instance, byte[] bytes, int length);
     private native static int put_variable(int instance);
@@ -70,10 +71,11 @@ public class Query implements IPrologTermOutput {
     private native static int build_list(int instance, int length, int[] args);
     private native static int put_atom(int instance, String name);
     private native static int put_string(int instance, String name);
-    private native static void execute(int instance, long predicate, int[] args);
-    private native static void close(int instance);
+    private native static long execute(int instance, long predicate, int[] args);
+    private native static void close(int instance, long qid);
     private native static PrologTerm toPrologTerm(int instance, int ref);
     private native static int read_string(int instance, String goal, int[] varRefs);
+    private native static void interrupt(int instance);
 
     private StringBuffer sb = new StringBuffer();
 
@@ -249,7 +251,7 @@ public class Query implements IPrologTermOutput {
     		throw new IllegalArgumentException("Tried to execute a query that was not initialized.");
     	}
     	System.out.println(sb.toString());
-        execute(instance, predicate, queryArgs);
+        long qid = execute(instance, predicate, queryArgs);
         for (String varName : variables.keySet()) {
         	System.out.println(varName);
 			int ref = variables.get(varName);
@@ -257,7 +259,7 @@ public class Query implements IPrologTermOutput {
 			System.out.println(pt.toString());
 			binding.put(varName, pt);
 		}
-        close(instance);
+        close(instance, qid);
     }
     
     public Map<String, PrologTerm> getBinding() {
@@ -287,6 +289,10 @@ public class Query implements IPrologTermOutput {
 		queryArgs = new int[] {goal};
 		
 		return 1; // for testing in groovy shell
+	}
+	
+	public void sendInterrupt() {
+		interrupt(instance);
 	}
 
 }
