@@ -45,6 +45,7 @@ import de.prob.web.WebUtils;
 @Singleton
 public class LtlEditor extends AbstractSession {
 
+	public final String BUILTIN_PATTERNS_FILE = "modelcheck/builtin_patterns.ltlp";
 	public final String USER_PATTERNS_FILE = "modelcheck/user_patterns.ltlp";
 
 	private final Logger logger = LoggerFactory.getLogger(LtlEditor.class);
@@ -83,6 +84,10 @@ public class LtlEditor extends AbstractSession {
 		super(id);
 
 		patternManager = new PatternManager();
+		try {
+			patternManager.loadBuiltinPatternsFromFile(BUILTIN_PATTERNS_FILE);
+		} catch (IOException e) {
+		}
 		try {
 			patternManager.loadPatternsFromFile(USER_PATTERNS_FILE);
 		} catch (IOException e) {

@@ -1,0 +1,6 @@
+%% PATTERN
+absence
+%% DESCRIPTION
+%% CODE
+def absence(p):
+	G!p
