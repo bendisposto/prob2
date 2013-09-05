@@ -81,6 +81,8 @@ dependencies {
 	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3' // EPL
 
+    compile 'org.antlr:antlr4-runtime:4.0'
+    compile 'de.prob:ltl-dsl:1.0.0'
 
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "bparser", version: parser_version , changing: true
