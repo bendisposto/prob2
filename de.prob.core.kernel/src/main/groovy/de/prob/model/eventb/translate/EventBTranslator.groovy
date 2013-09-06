@@ -72,7 +72,8 @@ public class EventBTranslator {
 		}
 		graph.addVertex(name)
 
-		def proofFactory = new ProofFactory(baseFile, typeEnv)
+		def proofFactory = new ProofFactory()
+		proofFactory.addProofs(baseFile, typeEnv)
 
 		def context = new Context(name)
 		def extendedContexts = []
@@ -119,7 +120,8 @@ public class EventBTranslator {
 		}
 		graph.addVertex(name)
 
-		def proofFactory = new ProofFactory(baseFile, typeEnv)
+		def proofFactory = new ProofFactory()
+		proofFactory.addProofs(baseFile, typeEnv)
 
 		def machine = new EventBMachine(name)
 		def sees = []

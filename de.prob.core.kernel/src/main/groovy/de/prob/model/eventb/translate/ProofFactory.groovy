@@ -17,7 +17,7 @@ class ProofFactory {
 	def sequentsXML = [:]
 	def proofsXML = [:]
 
-	def ProofFactory(String baseFileName, typeEnv) {
+	def addProofs(String baseFileName, typeEnv) {
 		this.typeEnv = typeEnv
 		extractBPSFile(getXML(new File("${baseFileName}.bps")))
 		extractBPOFile(getXML(new File("${baseFileName}.bpo")))
@@ -51,9 +51,10 @@ class ProofFactory {
 		Set<EventB> preds = new HashSet<EventB>()
 		xml.poPredicate.@predicate.each { preds << new EventB(it,typeEnv)}
 		if(xml.@parentSet == null) {
+			predicateSets[name] = preds
 			return preds
 		}
-		def parentSet = xml.@parentSet[0]
+		def parentSet = xml.@parentSet
 		parentSet = parentSet.substring(parentSet.lastIndexOf('#')+1, parentSet.size())
 		preds.addAll(extractPredicateSet(cache,cache[parentSet]))
 		predicateSets[name] = preds
@@ -128,15 +129,14 @@ class ProofFactory {
 					def invName = inv.getName()
 					if(eventInfo.containsKey(invName)) {
 						def proof = eventInfo[invName]
-						proofs << new INV(proof.name, event, inv, proof.discharged)
+						proofs << createInvariantProof(proof.name, event, inv, proof.discharged)
 					}
 				}
 			}
 		}
 	}
 
-	def createProof(type, name, element, discharged) {
-		def proofState = extractProofState(name)
+	def createInvariantProof(name, event, inv, discharged) {
 		def seq = sequentsXML[name]
 		def goal = new EventB(seq.poPredicate.@predicate[0], typeEnv)
 		def desc = seq.@poDesc
@@ -144,19 +144,48 @@ class ProofFactory {
 		predSetName = predSetName.substring(predSetName.lastIndexOf('#')+1, predSetName.size());
 		def hyps = predicateSets[predSetName]
 
-		def SimpleProofNode proof = new SimpleProofNode(goal, hyps, discharged, desc)
-		def cachedPreds = extractCachedPreds(proof)
-
-		if(type == "THM") {
-			proof = new THM(name, element, discharged, proofState, desc)
-		}
-		if(type == "WD") {
-			proof = new WD(name, element, discharged, proofState, desc)
-		}
-		if(proof != null) {
-			extractChildren(sequentsXML[name], proofsXML[name])
+		def proof = new INV(name, event, inv, goal, hyps, discharged, desc)
+		def kid = extractTopChild(name, proof.discharged, hyps, goal)
+		if(kid != null) {
+			proof.addChildrenNodes([kid])
 		}
 		return proof
+	}
+
+	def createProof(type, name, element, discharged) {
+		def SimpleProofNode proof
+		def seq = sequentsXML[name]
+		def goal = new EventB(seq.poPredicate.@predicate[0], typeEnv)
+		def desc = seq.@poDesc
+		def predSetName = seq.poPredicateSet.@parentSet[0]
+		predSetName = predSetName.substring(predSetName.lastIndexOf('#')+1, predSetName.size());
+		def hyps = predicateSets[predSetName]
+
+		if(type == "THM") {
+			proof = new THM(name, element, goal, hyps, discharged, desc)
+		}
+		if(type == "WD") {
+			proof = new WD(name, element, goal, hyps, discharged, desc)
+		}
+		if(proof != null) {
+			def kid = extractTopChild(name, discharged, hyps, goal)
+			if(kid != null) {
+				def children  = [kid]
+				proof.addChildrenNodes(children)
+			}
+		}
+		return proof
+	}
+
+	def extractTopChild(name, discharged, hyps, goal) {
+
+		def proofXML = proofsXML[name]
+		def cachedPreds = extractCachedPreds(proofXML)
+
+		if(proofXML != null && !proofXML.prRule.isEmpty()) {
+			return extractProof(hyps, goal, cachedPreds, proofXML.prRule[0])
+		}
+		return null
 	}
 
 	def extractProof(hyps, goal, cachedPreds, xml) {
@@ -166,6 +195,9 @@ class ProofFactory {
 		def SimpleProofNode proof = new SimpleProofNode(goal, hyps, discharged, desc)
 
 		def kids = []
+		if(xml.prAnte.isEmpty()) {
+			return proof
+		}
 		xml.prAnte.each {
 			def g = it.@prGoal == null ? goal : cachedPreds[it.@prGoal]
 			def h = new HashSet<EventB>()
@@ -182,28 +214,15 @@ class ProofFactory {
 			h.addAll(hyps)
 
 			if(!it.prRule.isEmpty()) {
-				kids << extractProofs(h,g,cachedPreds,it.prRule[0])
+				kids << extractProof(h,g,cachedPreds,it.prRule[0])
+			} else {
+				// if the Ante has no children, is is not discharged and it doesn't have a description.
+				// But hypotheses and goal may have changed
+				kids << new SimpleProofNode(g, h, false, "")
 			}
 		}
 		proof.addChildrenNodes(kids)
 		return proof
-	}
-
-	def extractDescription(name) {
-		return sequentsXML[name].@poDesc
-	}
-
-	def extractProofState(name) {
-		def seq = sequentsXML[name]
-		def proof = proofsXML[name]
-
-		def goal = new EventB(seq.poPredicate.@predicate[0], typeEnv)
-		def desc = seq.@poDesc
-		def predSetName = seq.poPredicateSet.@parentSet[0]
-		predSetName = predSetName.substring(predSetName.lastIndexOf('#')+1, predSetName.size());
-		def hypos = predicateSets[predSetName]
-
-		def status = proof.prProof.confidence == "1000"
 	}
 
 	def extractCachedPreds(proof) {
@@ -211,5 +230,6 @@ class ProofFactory {
 		proof.prPred.each {
 			cache[it.@name] = new EventB(it.@predicate,typeEnv)
 		}
+		return cache
 	}
 }
