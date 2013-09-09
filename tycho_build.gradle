@@ -37,6 +37,14 @@ try{
 }
 
 
+// defines a List with libraries which will not be written into the runtime section of a manifest file
+try{
+	excludeLibFromMF = excludeLibFromMF
+}catch(MissingPropertyException e){
+	project.ext.excludeLibFromMF = []
+}
+
+
 try{
 	workspacePath = workspacePath
 }catch(MissingPropertyException e){
@@ -380,9 +388,10 @@ subprojects {
 				}
 				for(int icp = 0; icp < dependencyList.size; icp++){
 	 				addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
-						
-					if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
-						addRunTimeLib( dependencyList[icp], project.name)
+					
+					if(excludeLibFromMF.every{ !dependencyList[icp].startsWith(it) })		// unwanted Libary excluded	
+						if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
+							addRunTimeLib( dependencyList[icp], project.name)
 					}	
 				}	
 							
