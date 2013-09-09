@@ -10,14 +10,14 @@ public class INV extends SimpleProofNode {
 
 	private final Event event;
 	private final EventBInvariant invariant;
-	private final String proofName;
+	private final String name;
 
 	public INV(final String proofName, final Event event,
 			final EventBInvariant invariant, final EventB goal,
 			final Set<EventB> hypotheses, final boolean discharged,
 			final String description) {
 		super(goal, hypotheses, discharged, description);
-		this.proofName = proofName;
+		name = proofName;
 		this.event = event;
 		this.invariant = invariant;
 	}
@@ -31,6 +31,11 @@ public class INV extends SimpleProofNode {
 	}
 
 	public String getName() {
-		return proofName;
+		return name;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

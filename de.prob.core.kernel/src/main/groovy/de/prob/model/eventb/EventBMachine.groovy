@@ -9,8 +9,6 @@ import de.prob.model.representation.Variable
 
 public class EventBMachine extends Machine {
 
-	private List<? extends SimpleProofNode> proofs = new ModelElementList<? extends SimpleProofNode>();
-
 	public EventBMachine(final String name) {
 		super(name);
 	}
@@ -40,8 +38,7 @@ public class EventBMachine extends Machine {
 	}
 
 	public void addProofs(final List<? extends SimpleProofNode> proofs) {
-		put(SimpleProofNode.class, discharged);
-		this.proofs.addAll(proofs);
+		put(SimpleProofNode.class, proofs);
 	}
 
 	public List<EventBVariable> getVariables() {
@@ -84,7 +81,7 @@ public class EventBMachine extends Machine {
 	}
 
 	def List<SimpleProofNode> getProofs() {
-		return proofs;
+		return new ModelElementList<SimpleProofNode>(getChildrenOfType(SimpleProofNode.class));
 	}
 
 	def Event getEvent(String name) {
