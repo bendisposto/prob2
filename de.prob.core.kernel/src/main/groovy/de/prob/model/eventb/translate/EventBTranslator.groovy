@@ -192,7 +192,7 @@ public class EventBTranslator {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
 			def theorem = it.'@theorem' == "true"
-			def guard = new EventBGuard(label, predicate, theorem, typeEnv)
+			def guard = new EventBGuard(event, label, predicate, theorem, typeEnv)
 			guards << guard
 			proofFactory.addProof(name,label,guard)
 		}
@@ -202,7 +202,7 @@ public class EventBTranslator {
 		xml.action.each {
 			def label = it.'@label'
 			def assignment = it.'@assignment'
-			def action = new EventBAction(label, assignment, typeEnv)
+			def action = new EventBAction(event, label, assignment, typeEnv)
 			actions << action
 			proofFactory.addProof(name,label,action)
 		}
@@ -212,14 +212,14 @@ public class EventBTranslator {
 		xml.witness.each {
 			def label = it.'@label'
 			def predicate = it.'@predicate'
-			def witness = new Witness(label, predicate, typeEnv)
+			def witness = new Witness(event, label, predicate, typeEnv)
 			witnesses << witness
 			proofFactory.addProof(name, label, witness)
 		}
 		event.addWitness(witnesses)
 
 		def parameters = []
-		xml.parameter.'@identifier'.each { parameters << new EventParameter(it) }
+		xml.parameter.'@identifier'.each { parameters << new EventParameter(event,it) }
 		event.addParameters(parameters)
 
 		events[name] = event

@@ -11,10 +11,13 @@ public class EventBGuard extends Guard {
 
 	private final String name;
 	private final boolean theorem;
+	private final Event parentEvent;
 
-	public EventBGuard(final String name, final String code,
-			final boolean theorem, final Set<IFormulaExtension> typeEnv) {
+	public EventBGuard(final Event parentEvent, final String name,
+			final String code, final boolean theorem,
+			final Set<IFormulaExtension> typeEnv) {
 		super(new EventB(code, typeEnv));
+		this.parentEvent = parentEvent;
 		this.name = name;
 		this.theorem = theorem;
 	}
@@ -25,5 +28,9 @@ public class EventBGuard extends Guard {
 
 	public boolean isTheorem() {
 		return theorem;
+	}
+
+	public Event getParentEvent() {
+		return parentEvent;
 	}
 }

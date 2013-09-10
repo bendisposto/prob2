@@ -13,11 +13,17 @@ public class Witness extends AbstractElement implements IEval {
 
 	private final String name;
 	private final EventB predicate;
+	private final Event parentEvent;
 
-	public Witness(final String name, final String code,
-			final Set<IFormulaExtension> typeEnv) {
+	public Witness(final Event parentEvent, final String name,
+			final String code, final Set<IFormulaExtension> typeEnv) {
+		this.parentEvent = parentEvent;
 		this.name = name;
 		predicate = new EventB(code, typeEnv);
+	}
+
+	public Event getParentEvent() {
+		return parentEvent;
 	}
 
 	public String getName() {
