@@ -9,10 +9,16 @@ public class EventParameter extends AbstractElement implements IEval {
 
 	private final String name;
 	private final EventB expression;
+	private final Event parentEvent;
 
-	public EventParameter(final String name) {
+	public EventParameter(final Event parentEvent, final String name) {
+		this.parentEvent = parentEvent;
 		this.name = name;
 		expression = new EventB(name);
+	}
+
+	public Event getParentEvent() {
+		return parentEvent;
 	}
 
 	public String getName() {

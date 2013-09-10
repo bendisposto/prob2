@@ -212,8 +212,8 @@ public class EventBTranslator {
 			String elementName = iscGuard.getElementName();
 			String predicateString = iscGuard.getPredicateString();
 			boolean theorem = iscGuard.isTheorem();
-			guards.add(new EventBGuard(elementName, predicateString, theorem,
-					Collections.<IFormulaExtension> emptySet()));
+			guards.add(new EventBGuard(e, elementName, predicateString,
+					theorem, Collections.<IFormulaExtension> emptySet()));
 		}
 		e.addGuards(guards);
 
@@ -221,7 +221,7 @@ public class EventBTranslator {
 		for (ISCAction iscAction : iscEvent.getSCActions()) {
 			String elementName = iscAction.getElementName();
 			String assignmentString = iscAction.getAssignmentString();
-			actions.add(new EventBAction(elementName, assignmentString,
+			actions.add(new EventBAction(e, elementName, assignmentString,
 					Collections.<IFormulaExtension> emptySet()));
 		}
 		e.addActions(actions);
@@ -230,14 +230,14 @@ public class EventBTranslator {
 		for (ISCWitness iscWitness : iscEvent.getSCWitnesses()) {
 			String elementName = iscWitness.getElementName();
 			String predicateString = iscWitness.getPredicateString();
-			witnesses.add(new Witness(elementName, predicateString, Collections
-					.<IFormulaExtension> emptySet()));
+			witnesses.add(new Witness(e, elementName, predicateString,
+					Collections.<IFormulaExtension> emptySet()));
 		}
 		e.addWitness(witnesses);
 
 		List<EventParameter> parameters = new ArrayList<EventParameter>();
 		for (ISCParameter iscParameter : iscEvent.getSCParameters()) {
-			parameters.add(new EventParameter(iscParameter
+			parameters.add(new EventParameter(e, iscParameter
 					.getIdentifierString()));
 		}
 		e.addParameters(parameters);
