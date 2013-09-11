@@ -3,6 +3,7 @@ package de.prob.model.eventb.translate
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.proof.FIS
 import de.prob.model.eventb.proof.INV
 import de.prob.model.eventb.proof.SimpleProofNode
 import de.prob.model.eventb.proof.THM
@@ -10,18 +11,22 @@ import de.prob.model.eventb.proof.WD
 
 class ProofFactory {
 
-	def elements = [:]
+
 	def List<? extends SimpleProofNode> proofs = []
 	def Set<IFormulaExtension> typeEnv
-	def predicateSets = [:]
-	def sequentsXML = [:]
-	def proofsXML = [:]
+
+
 
 	def addProofs(String baseFileName, typeEnv) {
 		this.typeEnv = typeEnv
-		extractBPSFile(getXML(new File("${baseFileName}.bps")))
-		extractBPOFile(getXML(new File("${baseFileName}.bpo")))
-		extractBPRFile(getXML(new File("${baseFileName}.bpr")))
+		def bpoXML = getXML(new File("${baseFileName}.bpo"))
+		def predSetsXML = cachePredSetXML(bpoXML)
+		def sequentsXML = cacheSequentXML(bpoXML)
+
+		def bprXML = getXML(new File("${baseFileName}.bpr"))
+		def proofXML = cacheProofXML(bprXML)
+
+		createProofClosures(predSets, sequentsXML, proofXML)
 	}
 
 	def extractBPRFile(xml) {
@@ -29,6 +34,55 @@ class ProofFactory {
 			proofsXML[it.@name] = it
 		}
 	}
+
+	def createProofClosures(predSetsXML, sequentsXML, proofXML) {
+		assert sequentsXML.size() == proofXML.size()
+		sequentsXML.each {
+			def name = it.getKey()
+			def seq = it.getValue()
+			def pr = proofXML[name]
+
+			// extract proof goal
+			def goal = new EventB(seq.poPredicate.@predicate[0], typeEnv)
+
+			// extract hypotheses. At the beginning of a proof, this is the predicate set specified in the sequent
+			def predSetName = seq.poPredicateSet.@parentSet[0]
+			predSetName = predSetName.substring(predSetName.lastIndexOf('#')+1, predSetName.size());
+			def hyps = extractPredicateSet(predSetName, predSetsXML)
+
+			// extract discharged
+			def discharged = pr.@confidence == "1000"
+
+			// extract proof description
+			def desc = seq.@poDesc
+		}
+	}
+
+
+	def cachePredSetXML(xml) {
+		def cache = [:]
+		xml.poPredicateSet.each {
+			cache[it.@name] = it
+		}
+		return cache
+	}
+
+	def cacheSequentXML(xml) {
+		def cache = [:]
+		xml.poSequent.each {
+			cache[it.@name] = it
+		}
+		return cache
+	}
+
+	def cacheProofXML(xml) {
+		def cache = [:]
+		xml.prProof.each {
+			cache[it.@name] = it
+		}
+		return cache
+	}
+
 
 	def extractBPOFile(xml) {
 		def cache = [:]
@@ -43,21 +97,47 @@ class ProofFactory {
 		}
 	}
 
-	def extractPredicateSet(cache, xml) {
+	def extractPredicateSets(xml) {
+		def cache = [:]
+		xml.poPredicateSet.each {
+			cache[it.@name] = name
+		}
+		def sets = [:]
+		xml.poPredicateSet.each  {
+			addPredicateSet(cache, xml, sets)
+		}
+	}
+
+	def extractPredicateSet(cache, xml, sets) {
 		def name = xml.@name
-		if(predicateSets.containsKey(name)) {
-			return predicateSets[name]
+		if(sets.containsKey(name)) {
+			return sets[name]
 		}
 		Set<EventB> preds = new HashSet<EventB>()
 		xml.poPredicate.@predicate.each { preds << new EventB(it,typeEnv)}
 		if(xml.@parentSet == null) {
-			predicateSets[name] = preds
+			sets[name] = preds
 			return preds
 		}
 		def parentSet = xml.@parentSet
 		parentSet = parentSet.substring(parentSet.lastIndexOf('#')+1, parentSet.size())
 		preds.addAll(extractPredicateSet(cache,cache[parentSet]))
 		predicateSets[name] = preds
+		return preds
+	}
+
+	def extractPredicateSet(name, cachedSetXML) {
+		def xml = cachedSetXML[name]
+		Set<EventB> preds = new HashSet<EventB>()
+		xml.poPredicate.@predicate.each {
+			preds << new EventB(it,typeEnv)
+		}
+		if(xml.@parentSet == null) {
+			return preds
+		}
+		def parentSet = xml.@parentSet
+		parentSet = parentSet.substring(parentSet.lastIndexOf('#')+1, parentSet.size())
+		preds.addAll(extractPredicateSet(parentSet, cachedSetXML))
 		return preds
 	}
 
@@ -136,6 +216,14 @@ class ProofFactory {
 		}
 	}
 
+	def addEventProof(concreteEvent, abstractEvent) {
+		def eventInfo = elements[concreteEvent.getName()]
+		if(eventInfo != null) {
+			if(eventInfo.type == "GRD") {
+			}
+		}
+	}
+
 	def createInvariantProof(name, event, inv, discharged) {
 		def seq = sequentsXML[name]
 		def goal = new EventB(seq.poPredicate.@predicate[0], typeEnv)
@@ -166,6 +254,9 @@ class ProofFactory {
 		}
 		if(type == "WD") {
 			proof = new WD(name, element, goal, hyps, discharged, desc)
+		}
+		if(type == "FIS") {
+			proof = new FIS(name, element, goal, hyps, discharged, desc)
 		}
 		if(proof != null) {
 			def kid = extractTopChild(name, discharged, hyps, goal)

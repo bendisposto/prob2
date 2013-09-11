@@ -39,4 +39,22 @@ public class EventParameter extends AbstractElement implements IEval {
 		return expression;
 	}
 
+	@Override
+	public boolean equals(final Object that) {
+		if (that == this) {
+			return true;
+		}
+		if (that instanceof EventParameter
+				&& this.getExpression().equals(
+						((EventParameter) that).getExpression())) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return getExpression().hashCode();
+	}
+
 }
