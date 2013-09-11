@@ -3,10 +3,12 @@ package de.prob.model.eventb.translate
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.proof.FIN
 import de.prob.model.eventb.proof.FIS
 import de.prob.model.eventb.proof.INV
 import de.prob.model.eventb.proof.SimpleProofNode
 import de.prob.model.eventb.proof.THM
+import de.prob.model.eventb.proof.VWD
 import de.prob.model.eventb.proof.WD
 
 class ProofFactory {
@@ -14,7 +16,8 @@ class ProofFactory {
 
 	def List<? extends SimpleProofNode> proofs = []
 	def Set<IFormulaExtension> typeEnv
-
+	def global = [:]
+	def eventBased = [:]
 
 
 	def addProofs(String baseFileName, typeEnv) {
@@ -55,7 +58,78 @@ class ProofFactory {
 
 			// extract proof description
 			def desc = seq.@poDesc
+
+			// extract first proof child
+			def cachedPreds = [:]
+			pr.prPred.each {
+				cachedPreds[it.@name] = new EventB(it.@predicate,typeEnv)
+			}
+			def kids = pr.prRule.isEmpty() ? []: [
+				extractProof(hyps, goal, cachedPreds, proofXML.prRule[0])
+			]
+
+			def split = name.split("/")
+			if(split.size() == 1 || (split.size() == 2 && (split[1] == "THM" || split[1] == "WD"))) {
+				def label = split.size() == 1 ? 'variant' : split[0]
+				def type = split.size() == 1 ? split[0] : split[1]
+				createGlobalProof(label, type, name, goal, hyps, discharged, desc, kids)
+			}
 		}
+	}
+
+	def createGlobalProof(label, type, name, goal, hyps, discharged, desc, kids) {
+		if(!global.containsKey(label)) {
+			global[label] = []
+		}
+		if(type == "VWD") {
+			global['variant'] << createVWD(name, goal, hyps, discharged, desc, kids)
+		}
+		if(type == "FIN") {
+			global['variant'] << createFIN(name, goal, hyps, discharged, desc, kids)
+		}
+		if(type == "WD") {
+			global[label] << createWD(name, goal, hyps, discharged, desc, kids)
+		}
+		if(type == "THM") {
+			global[label] << createTHM(name, goal, hyps, discharged, desc, kids)
+		}
+	}
+
+	def extractProof(hyps, goal, cachedPreds, xml) {
+		def discharged = xml.@confidence == "1000"
+		def desc = xml.@prDisplay
+
+		def SimpleProofNode proof = new SimpleProofNode(goal, hyps, discharged, desc)
+
+		def kids = []
+		if(xml.prAnte.isEmpty()) {
+			return proof
+		}
+		xml.prAnte.each {
+			def g = it.@prGoal == null ? goal : cachedPreds[it.@prGoal]
+			def h = new HashSet<EventB>()
+			it.prHypAction.each {
+				if(it.@prInfHyps != null) {
+					def ids = it.@prInfHyps.split(",")
+					ids.each { h << cachedPreds[it] }
+				}
+			}
+			if(it.@prHyps != null) {
+				def ids = it.@prHyps.split(",")
+				ids.each { h << cachedPreds[it] }
+			}
+			h.addAll(hyps)
+
+			if(!it.prRule.isEmpty()) {
+				kids << extractProof(h,g,cachedPreds,it.prRule[0])
+			} else {
+				// if the Ante has no children, is is not discharged and it doesn't have a description.
+				// But hypotheses and goal may have changed
+				kids << new SimpleProofNode(g, h, false, "")
+			}
+		}
+		proof.addChildrenNodes(kids)
+		return proof
 	}
 
 
@@ -81,6 +155,38 @@ class ProofFactory {
 			cache[it.@name] = it
 		}
 		return cache
+	}
+
+	private createVWD(proofName, goal, hyps, discharged, desc, tree) {
+		return { variant ->
+			VWD v = new VWD(proofName, variant, goal, hyps, discharged, desc)
+			v.addChildrenNodes(tree)
+			return v
+		}
+	}
+
+	private createFIN(proofName, goal, hyps, discharged, desc, tree) {
+		return { variant ->
+			FIN fin = new FIN(proofName, variant, goal, hyps, discharged, desc)
+			fin.addChildrenNodes(tree)
+			return fin
+		}
+	}
+
+	private createWD(proofName, goal, hyps, discharged, desc, tree) {
+		return { e ->
+			WD wd = new WD(proofName, e, goal, hyps, discharged, desc)
+			wd.addChildrenNodes(tree)
+			return wd
+		}
+	}
+
+	private createTHM(proofName, goal, hyps, discharged, desc, tree) {
+		return { e ->
+			THM thm = new THM(proofName, e, goal, hyps, discharged, desc)
+			thm.addChildrenNodes(tree)
+			return thm
+		}
 	}
 
 
@@ -279,42 +385,7 @@ class ProofFactory {
 		return null
 	}
 
-	def extractProof(hyps, goal, cachedPreds, xml) {
-		def discharged = xml.@confidence == "1000"
-		def desc = xml.@prDisplay
 
-		def SimpleProofNode proof = new SimpleProofNode(goal, hyps, discharged, desc)
-
-		def kids = []
-		if(xml.prAnte.isEmpty()) {
-			return proof
-		}
-		xml.prAnte.each {
-			def g = it.@prGoal == null ? goal : cachedPreds[it.@prGoal]
-			def h = new HashSet<EventB>()
-			it.prHypAction.each {
-				if(it.@prInfHyps != null) {
-					def ids = it.@prInfHyps.split(",")
-					ids.each { h << cachedPreds[it] }
-				}
-			}
-			if(it.@prHyps != null) {
-				def ids = it.@prHyps.split(",")
-				ids.each { h << cachedPreds[it] }
-			}
-			h.addAll(hyps)
-
-			if(!it.prRule.isEmpty()) {
-				kids << extractProof(h,g,cachedPreds,it.prRule[0])
-			} else {
-				// if the Ante has no children, is is not discharged and it doesn't have a description.
-				// But hypotheses and goal may have changed
-				kids << new SimpleProofNode(g, h, false, "")
-			}
-		}
-		proof.addChildrenNodes(kids)
-		return proof
-	}
 
 	def extractCachedPreds(proof) {
 		def cache = [:]
