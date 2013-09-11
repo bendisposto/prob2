@@ -2,6 +2,7 @@ package de.prob.model.eventb.translate
 
 import org.eventb.core.ast.extension.IFormulaExtension
 
+import spock.lang.Ignore
 import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event
@@ -10,6 +11,7 @@ import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.proof.INV
 import de.prob.model.eventb.proof.SimpleProofNode
 
+@Ignore
 class ProofFactoryTest extends Specification {
 
 	def ProofFactory proofFactory

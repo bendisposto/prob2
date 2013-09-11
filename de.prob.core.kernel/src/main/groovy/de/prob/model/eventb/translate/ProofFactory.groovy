@@ -4,7 +4,6 @@ import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.proof.FIN
-import de.prob.model.eventb.proof.FIS
 import de.prob.model.eventb.proof.INV
 import de.prob.model.eventb.proof.SimpleProofNode
 import de.prob.model.eventb.proof.THM
@@ -12,7 +11,6 @@ import de.prob.model.eventb.proof.VWD
 import de.prob.model.eventb.proof.WD
 
 class ProofFactory {
-
 
 	def List<? extends SimpleProofNode> proofs = []
 	def Set<IFormulaExtension> typeEnv
@@ -189,7 +187,6 @@ class ProofFactory {
 		}
 	}
 
-
 	def extractBPOFile(xml) {
 		def cache = [:]
 		xml.poPredicateSet.each {
@@ -203,6 +200,7 @@ class ProofFactory {
 		}
 	}
 
+
 	def extractPredicateSets(xml) {
 		def cache = [:]
 		xml.poPredicateSet.each {
@@ -214,23 +212,6 @@ class ProofFactory {
 		}
 	}
 
-	def extractPredicateSet(cache, xml, sets) {
-		def name = xml.@name
-		if(sets.containsKey(name)) {
-			return sets[name]
-		}
-		Set<EventB> preds = new HashSet<EventB>()
-		xml.poPredicate.@predicate.each { preds << new EventB(it,typeEnv)}
-		if(xml.@parentSet == null) {
-			sets[name] = preds
-			return preds
-		}
-		def parentSet = xml.@parentSet
-		parentSet = parentSet.substring(parentSet.lastIndexOf('#')+1, parentSet.size())
-		preds.addAll(extractPredicateSet(cache,cache[parentSet]))
-		predicateSets[name] = preds
-		return preds
-	}
 
 	def extractPredicateSet(name, cachedSetXML) {
 		def xml = cachedSetXML[name]
@@ -246,6 +227,7 @@ class ProofFactory {
 		preds.addAll(extractPredicateSet(parentSet, cachedSetXML))
 		return preds
 	}
+
 
 	def getXML(file) {
 		def text = file.text.replaceAll("org.eventb.core.","")
@@ -322,14 +304,6 @@ class ProofFactory {
 		}
 	}
 
-	def addEventProof(concreteEvent, abstractEvent) {
-		def eventInfo = elements[concreteEvent.getName()]
-		if(eventInfo != null) {
-			if(eventInfo.type == "GRD") {
-			}
-		}
-	}
-
 	def createInvariantProof(name, event, inv, discharged) {
 		def seq = sequentsXML[name]
 		def goal = new EventB(seq.poPredicate.@predicate[0], typeEnv)
@@ -361,9 +335,6 @@ class ProofFactory {
 		if(type == "WD") {
 			proof = new WD(name, element, goal, hyps, discharged, desc)
 		}
-		if(type == "FIS") {
-			proof = new FIS(name, element, goal, hyps, discharged, desc)
-		}
 		if(proof != null) {
 			def kid = extractTopChild(name, discharged, hyps, goal)
 			if(kid != null) {
@@ -384,8 +355,6 @@ class ProofFactory {
 		}
 		return null
 	}
-
-
 
 	def extractCachedPreds(proof) {
 		def cache = [:]
