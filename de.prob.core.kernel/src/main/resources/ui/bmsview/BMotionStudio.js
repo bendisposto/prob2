@@ -198,11 +198,11 @@ bms = (function() {
 		$("#render").html("");
 		var template_text = editorHtml.getValue();
 		
-		var observer = JSON.parse(data.observer)
-		
-		jQuery.each(observer, function(i, o) {
-			template_text = template_text + session.render(o.template, JSON.parse(o.data));
-		});
+//		var observer = JSON.parse(data.observer)
+//		
+//		jQuery.each(observer, function(i, o) {
+//			template_text = template_text + session.render(o.template, JSON.parse(o.data));
+//		});
 
 		try {
 			var output = Mustache.render(template_text + "<script>"
