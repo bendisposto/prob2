@@ -91,33 +91,33 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 		dataWrap.put("b", bvarmap);	
 		
-		Map<String, String> observerData = WebUtils.wrap("predicate", "{{o0}}",
-				"id", "door", "attribute", "y", "value", "275");
-
-		Map<String, String> predicateObserver = WebUtils.wrap("template",
-				"/ui/bmsview/observer/predicateObserver.html", "data",
-				WebUtils.toJson(observerData));
-
-		Map<String, String> observerData2 = WebUtils.wrap("predicate", "{{o1}}",
-				"id", "door", "attribute", "y", "value", "170");
-
-		Map<String, String> predicateObserver2 = WebUtils.wrap("template",
-				"/ui/bmsview/observer/predicateObserver.html", "data",
-				WebUtils.toJson(observerData2));
-		
-		Map<String, String> observerData3 = WebUtils.wrap("predicate", "{{o2}}",
-				"id", "door", "attribute", "y", "value", "55");
-
-		Map<String, String> predicateObserver3 = WebUtils.wrap("template",
-				"/ui/bmsview/observer/predicateObserver.html", "data",
-				WebUtils.toJson(observerData3));
-		
-		List<Object> result = new ArrayList<Object>();
-		result.add(predicateObserver);
-		result.add(predicateObserver2);
-		result.add(predicateObserver3);
-
-		dataWrap.put("observer", WebUtils.toJson(result));
+//		Map<String, String> observerData = WebUtils.wrap("predicate", "{{o0}}",
+//				"id", "door", "attribute", "y", "value", "275");
+//
+//		Map<String, String> predicateObserver = WebUtils.wrap("template",
+//				"/ui/bmsview/observer/predicateObserver.html", "data",
+//				WebUtils.toJson(observerData));
+//
+//		Map<String, String> observerData2 = WebUtils.wrap("predicate", "{{o1}}",
+//				"id", "door", "attribute", "y", "value", "170");
+//
+//		Map<String, String> predicateObserver2 = WebUtils.wrap("template",
+//				"/ui/bmsview/observer/predicateObserver.html", "data",
+//				WebUtils.toJson(observerData2));
+//		
+//		Map<String, String> observerData3 = WebUtils.wrap("predicate", "{{o2}}",
+//				"id", "door", "attribute", "y", "value", "55");
+//
+//		Map<String, String> predicateObserver3 = WebUtils.wrap("template",
+//				"/ui/bmsview/observer/predicateObserver.html", "data",
+//				WebUtils.toJson(observerData3));
+//		
+//		List<Object> result = new ArrayList<Object>();
+//		result.add(predicateObserver);
+//		result.add(predicateObserver2);
+//		result.add(predicateObserver3);
+//
+//		dataWrap.put("observer", WebUtils.toJson(result));
 		
 		return dataWrap;
 	}
