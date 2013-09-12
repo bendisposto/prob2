@@ -12,7 +12,7 @@ public class NAT extends SimpleProofNode {
 	private final Variant variant;
 	private final Event event;
 
-	public NAT(final String name, final Variant variant, final Event event,
+	public NAT(final String name, final Event event, final Variant variant,
 			final EventB goal, final Set<EventB> hypotheses,
 			final boolean discharged, final String description) {
 		super(goal, hypotheses, discharged, description);

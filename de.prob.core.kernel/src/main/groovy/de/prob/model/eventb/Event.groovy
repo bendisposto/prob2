@@ -71,50 +71,24 @@ public class Event extends BEvent {
 		}
 	}
 
-	public Event getRefines() {
-		Iterator<Event> iterator = getChildrenOfType(Event.class).iterator();
-		if (iterator.hasNext()) {
-			return iterator.next();
-		}
-		return null;
+	public List<Event> getRefines() {
+		return new ModelElementList<Event>(getChildrenOfType(BEvent.class));
 	}
 
 	public List<EventBGuard> getGuards() {
-		List<EventBGuard> guards = new ModelElementList<EventBGuard>();
-		Set<Guard> kids = getChildrenOfType(Guard.class);
-		for (Guard guard : kids) {
-			if (guard instanceof EventBGuard) {
-				guards.add((EventBGuard) guard);
-			}
-		}
-		return guards;
+		return new ModelElementList<EventBGuard>(getChildrenOfType(Guard.class))
 	}
 
 	public List<EventBAction> getActions() {
-		List<EventBAction> actions = new ModelElementList<EventBAction>();
-		Set<Action> kids = getChildrenOfType(Action.class);
-		for (Action action : kids) {
-			if (action instanceof EventBAction) {
-				actions.add((EventBAction) action);
-			}
-		}
-		return actions;
+		return new ModelElementList<EventBAction>(getChildrenOfType(Action.class))
 	}
 
-	public Witness getWitness() {
-		Iterator<Witness> iterator = getChildrenOfType(Witness.class)
-				.iterator();
-		if (iterator.hasNext()) {
-			return iterator.next();
-		}
-		return null;
+	public List<Witness> getWitnesses() {
+		return new ModelElementList<Witness>(getChildrenOfType(Witness.class))
 	}
 
 	public List<EventParameter> getParameters() {
-		List<EventParameter> params = new ModelElementList<EventParameter>();
-		Set<EventParameter> kids = getChildrenOfType(EventParameter.class);
-		params.addAll(kids);
-		return params;
+		return new ModelElementList<EventParameter>(getChildrenOfType(EventParameter.class))
 	}
 
 	def getProperty(String prop) {

@@ -2,7 +2,6 @@ package de.prob.model.eventb.translate
 
 import org.eventb.core.ast.extension.IFormulaExtension
 
-import spock.lang.Ignore
 import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event
@@ -11,7 +10,6 @@ import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.proof.INV
 import de.prob.model.eventb.proof.SimpleProofNode
 
-@Ignore
 class ProofFactoryTest extends Specification {
 
 	def ProofFactory proofFactory
@@ -61,7 +59,10 @@ class ProofFactoryTest extends Specification {
 							<prPred name="p1" predicate="partition(ProcID,{P1},{P2},{P3})"></prPred>
 						</prProof>'''
 		def xml = new XmlParser().parseText(s)
-		def preds = proofFactory.extractCachedPreds(xml)
+		def preds = [:]
+		xml.prPred.each {
+			preds[it.@name] = new EventB(it.@predicate,new HashSet<IFormulaExtension>())
+		}
 
 		then:
 		preds != null
@@ -103,7 +104,10 @@ class ProofFactoryTest extends Specification {
 							<prPred name="p1" predicate="partition(ProcID,{P1},{P2},{P3})"></prPred>
 						</prProof>'''
 		def xml = new XmlParser().parseText(s)
-		def cachedPreds = proofFactory.extractCachedPreds(xml)
+		def cachedPreds = [:]
+		xml.prPred.each {
+			cachedPreds[it.@name] = new EventB(it.@predicate,new HashSet<IFormulaExtension>())
+		}
 		def SimpleProofNode proof = proofFactory.extractProof(new HashSet<EventB>(), new EventB("card(∅ ⦂ ℙ(ProcID))≤1"), cachedPreds, xml.prRule[0])
 
 		then:
@@ -156,21 +160,19 @@ class ProofFactoryTest extends Specification {
 									<poPredicate name="ProcIE" predicate="partition(ProcID,{P1},{P2},{P3})" source="/Scheduler/Processes.buc|contextFile#Processes|axiom#+"/>
 								  </poPredicateSet></poFile>'''
 		def xml = new XmlParser().parseText(importantFromBPO)
-		proofFactory.extractBPOFile(xml)
+		def predSetsXML = proofFactory.cachePredSetXML(xml)
+		def sequentsXML = proofFactory.cacheSequentXML(xml)
 
 		then:
-		proofFactory.sequentsXML != null
-		proofFactory.sequentsXML.size() == 1
-		proofFactory.predicateSets.size() == 4
-		proofFactory.predicateSets["EVTALLHYPProcessf'"].size() == 11
+		sequentsXML != null
+		sequentsXML.size() == 1
+		predSetsXML.size() == 4
+		proofFactory.extractPredicateSet("EVTALLHYPProcessf'",predSetsXML).size() == 11
 	}
 
 	def "extracting simple proof works"() {
 		when:
 		//All text is simplified from the Scheduler0 examples to include only the elements that are actually considered by the proof factory.
-		def bpsFile = '''<psFile>
-							<psStatus name="new/inv7/INV" confidence="0" poStamp="0" psManual="false"/>
-						</psFile>'''
 		def bpoFile = '''<poFile poStamp="0">
 							  <poSequent name="del/inv7/INV" accurate="true" poDesc="Invariant  preservation" poStamp="0">
 								<poPredicateSet name="SEQHYP" parentSet="/Scheduler/Scheduler0.bpo|poFile#Scheduler0|poPredicateSet#EVTALLHYPProcessf'"/>
@@ -230,13 +232,18 @@ class ProofFactoryTest extends Specification {
 							<prPred name="p5" predicate="¬P1=P2"></prPred>
 							<prPred name="p1" predicate="partition(ProcID,{P1},{P2},{P3})"></prPred>
 						</prProof></prFile>'''
-		def xml = new XmlParser().parseText(bpsFile)
-		proofFactory.extractBPSFile(xml)
-		xml = new XmlParser().parseText(bpoFile)
-		proofFactory.extractBPOFile(xml)
-		xml = new XmlParser().parseText(bprFile)
-		proofFactory.extractBPRFile(xml)
-		def inv = proofFactory.createInvariantProof("del/inv7/INV", new Event("del", EventType.ORDINARY), new EventBInvariant("inv7", "active ∩ waiting = ∅", false, new HashSet<IFormulaExtension>()), false)
+		def bpoXML = new XmlParser().parseText(bpoFile)
+		def predSetsXML = proofFactory.cachePredSetXML(bpoXML)
+		def sequentsXML = proofFactory.cacheSequentXML(bpoXML)
+
+		def bprXML = new XmlParser().parseText(bprFile)
+		def proofXML = proofFactory.cacheProofXML(bprXML)
+
+		proofFactory.createProofClosures(predSetsXML, sequentsXML, proofXML)
+		def invariant = new EventBInvariant("inv7", "active ∩ waiting = ∅", false, new HashSet<IFormulaExtension>())
+		def event = new Event("del", EventType.ORDINARY)
+
+		def inv = proofFactory.getEventBased()['del']['inv7'][0](event, invariant)
 
 		then:
 		inv != null

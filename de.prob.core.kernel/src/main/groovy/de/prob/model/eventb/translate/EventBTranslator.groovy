@@ -98,7 +98,6 @@ public class EventBTranslator {
 			def theorem = it.'@theorem' == "true"
 			def axiom = new EventBAxiom(label, predicate, theorem, typeEnv)
 			axioms << axiom
-			proofFactory.addProof(label, axiom)
 		}
 		context.addAxioms(axioms)
 
@@ -108,6 +107,7 @@ public class EventBTranslator {
 		}
 		context.addConstants(constants)
 
+		proofFactory.addProofsFromContext(context)
 		context.addProofs(proofFactory.getProofs())
 		components[name] = context
 		contexts << context
@@ -155,7 +155,6 @@ public class EventBTranslator {
 			def theorem = it.'@theorem' == "true"
 			def invariant = new EventBInvariant(label, predicate, theorem, typeEnv)
 			invariants << invariant
-			proofFactory.addProof(label, invariant)
 		}
 		machine.addInvariants(invariants)
 
@@ -166,10 +165,10 @@ public class EventBTranslator {
 		machine.addVariant(variant)
 
 		def events = []
-		xml.event.each { events << extractEvent(it, proofFactory) }
+		xml.event.each { events << extractEvent(it) }
 		machine.addEvents(events)
 
-		proofFactory.addInvariantProofs(invariants, events)
+		proofFactory.addProofsFromMachine(machine)
 
 		machine.addProofs(proofFactory.getProofs())
 		components[name] = machine
@@ -177,7 +176,7 @@ public class EventBTranslator {
 		return machine
 	}
 
-	def extractEvent(xml, ProofFactory proofFactory) {
+	def extractEvent(xml) {
 		def name = xml.'@label'
 		def convergence = xml.'@convergence'
 		def eventType = convergence == "0" ? EventType.ORDINARY : (convergence == "1" ? EventType.CONVERGENT : EventType.ANTICIPATED);
@@ -194,7 +193,6 @@ public class EventBTranslator {
 			def theorem = it.'@theorem' == "true"
 			def guard = new EventBGuard(event, label, predicate, theorem, typeEnv)
 			guards << guard
-			proofFactory.addProof(name,label,guard)
 		}
 		event.addGuards(guards)
 
@@ -204,7 +202,6 @@ public class EventBTranslator {
 			def assignment = it.'@assignment'
 			def action = new EventBAction(event, label, assignment, typeEnv)
 			actions << action
-			proofFactory.addProof(name,label,action)
 		}
 		event.addActions(actions)
 
@@ -214,7 +211,6 @@ public class EventBTranslator {
 			def predicate = it.'@predicate'
 			def witness = new Witness(event, label, predicate, typeEnv)
 			witnesses << witness
-			proofFactory.addProof(name, label, witness)
 		}
 		event.addWitness(witnesses)
 

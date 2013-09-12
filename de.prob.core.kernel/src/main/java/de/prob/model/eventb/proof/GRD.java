@@ -12,9 +12,10 @@ public class GRD extends SimpleProofNode {
 	private final EventBGuard guard;
 	private final Event event;
 
-	public GRD(final String proofName, final EventBGuard guard,
-			final Event event, final EventB goal, final Set<EventB> hypotheses,
-			final boolean discharged, final String description) {
+	public GRD(final String proofName, final Event event,
+			final EventBGuard guard, final EventB goal,
+			final Set<EventB> hypotheses, final boolean discharged,
+			final String description) {
 		super(goal, hypotheses, discharged, description);
 		name = proofName;
 		this.guard = guard;

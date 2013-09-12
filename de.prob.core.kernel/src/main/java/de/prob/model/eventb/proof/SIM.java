@@ -12,9 +12,10 @@ public class SIM extends SimpleProofNode {
 	private final EventBAction action;
 	private final Event event;
 
-	public SIM(final String proofName, final EventBAction action,
-			final Event event, final EventB goal, final Set<EventB> hypotheses,
-			final boolean discharged, final String description) {
+	public SIM(final String proofName, final Event event,
+			final EventBAction action, final EventB goal,
+			final Set<EventB> hypotheses, final boolean discharged,
+			final String description) {
 		super(goal, hypotheses, discharged, description);
 		name = proofName;
 		this.action = action;

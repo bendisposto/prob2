@@ -12,9 +12,10 @@ public class EQL extends SimpleProofNode {
 	private final EventBVariable variable;
 	private final Event event;
 
-	public EQL(final String proofName, final EventBVariable variable,
-			final Event event, final EventB goal, final Set<EventB> hypotheses,
-			final boolean discharged, final String description) {
+	public EQL(final String proofName, final Event event,
+			final EventBVariable variable, final EventB goal,
+			final Set<EventB> hypotheses, final boolean discharged,
+			final String description) {
 		super(goal, hypotheses, discharged, description);
 		name = proofName;
 		this.variable = variable;
