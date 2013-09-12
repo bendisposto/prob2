@@ -26,16 +26,13 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.rodin.translate.EventBTranslator;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.ui.eventb.internal.TranslatorFactory;
 import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;
 
 public class StartAnimationHandler extends AbstractHandler {
-	
-	
-	
 
 	private ISelection fSelection;
 
