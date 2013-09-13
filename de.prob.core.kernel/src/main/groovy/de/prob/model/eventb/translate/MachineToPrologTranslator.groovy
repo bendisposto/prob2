@@ -10,8 +10,9 @@ import de.be4.classicalb.core.parser.node.AOrdinaryEventstatus
 import de.be4.classicalb.core.parser.node.ARefinesModelClause
 import de.be4.classicalb.core.parser.node.ASeesModelClause
 import de.be4.classicalb.core.parser.node.ATheoremsModelClause
-import de.be4.classicalb.core.parser.node.AVariablesMachineClause
+import de.be4.classicalb.core.parser.node.AVariablesModelClause
 import de.be4.classicalb.core.parser.node.AVariantModelClause
+import de.be4.classicalb.core.parser.node.AWitness
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral
 import de.prob.model.eventb.Context
 import de.prob.model.eventb.Event
@@ -28,7 +29,7 @@ class MachineToPrologTranslator {
 	}
 
 	def translateMachine() {
-		model.setName(machine.getName())
+		model.setName(new TIdentifierLiteral(machine.getName()))
 		def clauses = []
 
 		clauses << processContexts()
@@ -47,6 +48,8 @@ class MachineToPrologTranslator {
 			clauses << variant
 		}
 		clauses << processEvents()
+
+		model.setModelClauses(clauses)
 	}
 
 	def processVariables() {
@@ -54,7 +57,7 @@ class MachineToPrologTranslator {
 		machine.getVariables().each {
 			ids << it.getExpression().ast
 		}
-		return new AVariablesMachineClause(ids)
+		return new AVariablesModelClause(ids)
 	}
 
 	def processInvariants() {
@@ -133,8 +136,17 @@ class MachineToPrologTranslator {
 			event.setTheorems(theorems)
 
 			def witnesses = []
-			it.getWitness().each {
+			it.getWitnesses().each {
+				witnesses << new AWitness(new TIdentifierLiteral(it.getName()), it.getPredicate().ast)
 			}
+			event.setWitness(witnesses)
+
+			def actions = []
+			it.getActions().each {
+				actions << it.getCode().ast
+			}
+			event.setAssignments(actions)
+			events << event
 		}
 		return new AEventsModelClause(events)
 	}
