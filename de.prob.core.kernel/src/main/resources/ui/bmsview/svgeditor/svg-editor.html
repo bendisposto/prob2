@@ -10,8 +10,16 @@
 <link rel="stylesheet" href="jgraduate/css/jgraduate.css" type="text/css"/>
 <link rel="stylesheet" href="svg-editor.css" type="text/css"/>
 <link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
+<link rel="stylesheet" href="/ui/bmsview/jqueryui/redmond/jquery-ui-1.10.3.custom.min.css">
 
-<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
+
+<script>
+jQuery.browser={};(function(){jQuery.browser.msie=false;
+jQuery.browser.version=0;if(navigator.userAgent.match(/MSIE ([0-9]+)\./)){
+jQuery.browser.msie=true;jQuery.browser.version=RegExp.$1;}})();
+</script>
 
 <script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
 <script type="text/javascript" src="jquerybbq/jquery.bbq.min.js"></script>
@@ -20,28 +28,29 @@
 <script type="text/javascript" src="spinbtn/JQuerySpinBtn.min.js"></script>
 <script type="text/javascript" src="touch.js"></script>
 
-  <script type="text/javascript" src="contextmenu/jquery.contextMenu.js"></script>
-  <script type="text/javascript" src="browser.js"></script>
-  <script type="text/javascript" src="svgtransformlist.js"></script>
-  <script type="text/javascript" src="math.js"></script>
-  <script type="text/javascript" src="units.js"></script>
-  <script type="text/javascript" src="svgutils.js"></script>
-  <script type="text/javascript" src="sanitize.js"></script>
-  <script type="text/javascript" src="history.js"></script>
-  <script type="text/javascript" src="select.js"></script>
-  <script type="text/javascript" src="draw.js"></script>
-  <script type="text/javascript" src="path.js"></script>
-  <script type="text/javascript" src="svgcanvas.js"></script>
-  <script type="text/javascript" src="svg-editor.js"></script>
-  <script type="text/javascript" src="locale/locale.js"></script>
-  <script type="text/javascript" src="contextmenu.js"></script>
+<script type="text/javascript" src="contextmenu/jquery.contextMenu.js"></script>
+<script type="text/javascript" src="browser.js"></script>
+<script type="text/javascript" src="svgtransformlist.js"></script>
+<script type="text/javascript" src="math.js"></script>
+<script type="text/javascript" src="units.js"></script>
+<script type="text/javascript" src="svgutils.js"></script>
+<script type="text/javascript" src="sanitize.js"></script>
+<script type="text/javascript" src="history.js"></script>
+<script type="text/javascript" src="select.js"></script>
+<script type="text/javascript" src="draw.js"></script>
+<script type="text/javascript" src="path.js"></script>
+<script type="text/javascript" src="svgcanvas.js"></script>
+<script type="text/javascript" src="svg-editor.js"></script>
+<script type="text/javascript" src="locale/locale.js"></script>
+<script type="text/javascript" src="contextmenu.js"></script>
+
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
 
 <!-- you can load extensions here -->
 <script type="text/javascript" src="/ui/bmsview/svgeditor/extensions/ext-bms.js"></script>
-<!-- script type="text/javascript" src="/ui/bmsview/svgeditor/extensions/ext-mathjax.js"></script-->
 
 <!-- always minified scripts -->
-<script type="text/javascript" src="jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
 <script type="text/javascript" src="jgraduate/jpicker.js"></script>
 
 <!-- feeds -->
@@ -93,12 +102,12 @@
 				<td class="layername">Layer 1</td>
 			</tr>
 		</table>
+
 		<span id="selLayerLabel">Move elements to:</span>
 		<select id="selLayerNames" title="Move selected elements to a different layer" disabled="disabled">
 			<option selected="selected" value="layer1">Layer 1</option>
 		</select>
-		<h3 id="layersLabel">Observer</h3>
-		<h3 id="layersLabel">Events</h3>
+		
 	</div>
 	<div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">L a y e r s</div>
 	
@@ -777,6 +786,93 @@
 	<li><a href="#merge_down">Merge Down</a></li>
 	<li><a href="#merge_all">Merge All</a></li>
 </ul>
+
+	<div id="dialog_observer" title="Observer" style="display: none">
+	    <div id="selectedElement"></div>
+		<div id="observer_list">
+		</div>
+		<div>
+			<button id="addObserver">Add Observer</button>
+			<button id="finishObserver">OK</button>
+		</div>
+	</div>
+
+	<script>
+
+		$(function() {
+			
+			$.fn.serializeObject = function()
+			{
+			   var o = {};
+			   var a = this.serializeArray();
+			   $.each(a, function() {
+			       if (o[this.name]) {
+			           if (!o[this.name].push) {
+			               o[this.name] = [o[this.name]];
+			           }
+			           o[this.name].push(this.value || '');
+			       } else {
+			           o[this.name] = this.value || '';
+			       }
+			   });
+			   return o;
+			};
+			
+			$("#dialog_observer").dialog({
+				bgiframe : true,
+				autoOpen : false,
+				height : 450,
+				width : 600,
+				modal : true
+			});
+
+			$('#observer_list').accordion({
+				header : "h3",
+				collapsible : true,
+				active : false,
+				autoHeight : false,
+				autoActivate : true,
+				heightStyle: "fill"
+			});
+						
+			$("button").button();
+			
+			$('#finishObserver').click(function() {
+				$('#dialog_observer').dialog('close');
+			});
+			
+			/*
+			 * Button click (Add new observer)
+			 */
+			$('#addObserver').click(function() {
+				var idSelectedElement = $('#selectedElement').html()
+				var observerList = $('#observer_list')
+				observerList.append(
+					"<h3>New Observer</h3><div>" + 
+					parent.bms.session.render("/ui/bmsview/observer/predicateObserverForm.html", { id : idSelectedElement } ) +
+					"</div>").accordion('destroy').accordion();
+				observerList.accordion({ active: "h3:last" })
+			});
+			
+			/*
+			 * Button click (Finish observer editing)
+			 */
+			$('#finishObserver').click(function() {
+				parent.bms.session.sendCmd("clearObserver",{});	
+				$('#observer_list').children("div").each(function() {
+					var form = $(this).find("form");
+					var observerPath = $(form).attr("observer-path")
+					var jsonObj = JSON.stringify(form.serializeObject());
+					parent.bms.session.sendCmd("addObserver", {
+						"observerPath" : observerPath,
+						"json" : jsonObj
+					});
+				});
+			});
+		
+		});		
+		
+	</script>
 
 </body>
 </html>

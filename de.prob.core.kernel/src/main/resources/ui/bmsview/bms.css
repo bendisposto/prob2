@@ -54,6 +54,11 @@
 	line-height: 1.25;
 }
 
+#dialog_svgeditor .modal-dialog {
+	
+	width:1075px;
+	
+}
 
 /*
 textarea#template_content,textarea#template_scripting {
