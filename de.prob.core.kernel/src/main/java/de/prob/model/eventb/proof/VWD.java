@@ -4,8 +4,9 @@ import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Variant;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class VWD extends SimpleProofNode {
+public class VWD extends SimpleProofNode implements IProofObligation {
 
 	private final String name;
 	private final Variant variant;
@@ -29,6 +30,12 @@ public class VWD extends SimpleProofNode {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public void toProlog(final IPrologTermOutput pto) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

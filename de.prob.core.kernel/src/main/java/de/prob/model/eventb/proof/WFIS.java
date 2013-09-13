@@ -4,8 +4,9 @@ import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Witness;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class WFIS extends SimpleProofNode {
+public class WFIS extends SimpleProofNode implements IProofObligation {
 
 	private final String name;
 	private final EventB paramOrVariable;
@@ -36,6 +37,12 @@ public class WFIS extends SimpleProofNode {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public void toProlog(final IPrologTermOutput pto) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

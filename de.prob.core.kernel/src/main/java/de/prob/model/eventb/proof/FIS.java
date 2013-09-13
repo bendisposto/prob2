@@ -4,8 +4,9 @@ import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.EventBAction;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class FIS extends SimpleProofNode {
+public class FIS extends SimpleProofNode implements IProofObligation {
 
 	private final String name;
 	private final EventBAction action;
@@ -29,6 +30,12 @@ public class FIS extends SimpleProofNode {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public void toProlog(final IPrologTermOutput pto) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

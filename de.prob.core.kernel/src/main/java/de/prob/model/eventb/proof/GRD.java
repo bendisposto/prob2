@@ -5,8 +5,9 @@ import java.util.Set;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBGuard;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class GRD extends SimpleProofNode {
+public class GRD extends SimpleProofNode implements IProofObligation {
 
 	private final String name;
 	private final EventBGuard guard;
@@ -37,5 +38,11 @@ public class GRD extends SimpleProofNode {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public void toProlog(final IPrologTermOutput pto) {
+		// TODO Auto-generated method stub
+
 	}
 }

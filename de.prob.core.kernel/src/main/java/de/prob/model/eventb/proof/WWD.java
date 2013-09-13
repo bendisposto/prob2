@@ -4,8 +4,9 @@ import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Witness;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class WWD extends SimpleProofNode {
+public class WWD extends SimpleProofNode implements IProofObligation {
 
 	private final String name;
 	private final Witness witness;
@@ -36,5 +37,11 @@ public class WWD extends SimpleProofNode {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public void toProlog(final IPrologTermOutput pto) {
+		// TODO Auto-generated method stub
+
 	}
 }

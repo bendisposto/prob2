@@ -5,8 +5,9 @@ import java.util.Set;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBInvariant;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class INV extends SimpleProofNode {
+public class INV extends SimpleProofNode implements IProofObligation {
 
 	private final Event event;
 	private final EventBInvariant invariant;
@@ -37,5 +38,11 @@ public class INV extends SimpleProofNode {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public void toProlog(final IPrologTermOutput pto) {
+		// TODO Auto-generated method stub
+
 	}
 }

@@ -5,8 +5,9 @@ import java.util.Set;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBVariable;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class EQL extends SimpleProofNode {
+public class EQL extends SimpleProofNode implements IProofObligation {
 
 	private final String name;
 	private final EventBVariable variable;
@@ -37,6 +38,12 @@ public class EQL extends SimpleProofNode {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public void toProlog(final IPrologTermOutput pto) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

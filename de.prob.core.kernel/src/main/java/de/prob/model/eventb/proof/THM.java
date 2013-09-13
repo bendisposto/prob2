@@ -4,8 +4,9 @@ import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class THM extends SimpleProofNode {
+public class THM extends SimpleProofNode implements IProofObligation {
 
 	private final AbstractElement originalFormula;
 	private final String name;
@@ -29,5 +30,11 @@ public class THM extends SimpleProofNode {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public void toProlog(final IPrologTermOutput pto) {
+		// TODO Auto-generated method stub
+
 	}
 }
