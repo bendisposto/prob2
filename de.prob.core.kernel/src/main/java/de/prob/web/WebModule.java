@@ -18,7 +18,6 @@ import de.prob.webconsole.servlets.GroovyBindingsServlet;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.GroovyShellServlet;
 import de.prob.webconsole.servlets.ImportsServlet;
-import de.prob.webconsole.servlets.LogServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
 import de.prob.webconsole.servlets.VersionServlet;
 import de.prob.webconsole.servlets.visualizations.PredicateServlet;
@@ -49,9 +48,6 @@ public class WebModule extends ServletModule {
 
 		bind(mapType).annotatedWith(Sessions.class).toInstance(
 				new HashMap<String, ISession>());
-
-		// logging
-		serve("/get_log*").with(LogServlet.class);
 
 		serve("/formula*").with(ValueOverTimeServlet.class);
 		serve("/statespace_servlet*").with(StateSpaceServlet.class);
