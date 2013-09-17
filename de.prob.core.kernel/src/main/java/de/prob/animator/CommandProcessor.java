@@ -6,11 +6,17 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
 
 class CommandProcessor {
-
+	
+	private final Query qry;
+	
+	public CommandProcessor() {
+		qry = new Query();
+	}
+	
 	public ISimplifiedROMap<String, PrologTerm> sendCommand(
 			final AbstractCommand command) {
 
-		Query qry = new Query();
+		qry.clear();
 		if (command instanceof IRawCommand) {
 			IRawCommand rawrCommand = (IRawCommand) command;
 			qry.printRaw(rawrCommand.getCommand(), rawrCommand.getVariables());

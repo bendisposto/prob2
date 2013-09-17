@@ -18,7 +18,6 @@ import de.prob.prolog.term.PrologTerm;
 
 /*
  * TODO:
- * multiple instances
  * composed commands
  */
 
@@ -45,7 +44,6 @@ public class Query implements IPrologTermOutput {
     
     public Query() {
     	instance = init_instance(Main.PROB_HOME + "/probcli.sav");
-    	System.out.println(instance);
     	init_prob(instance); // calls set_search_pathes, init_eclipse_preferences and set_prefs
     }
     
@@ -79,9 +77,15 @@ public class Query implements IPrologTermOutput {
 
     private StringBuffer sb = new StringBuffer();
 
-    private final Map<String, Integer> variables = new HashMap<String, Integer>();
-    private final Map<String, PrologTerm> binding = new HashMap<String, PrologTerm>();
+    private Map<String, Integer> variables = new HashMap<String, Integer>();
+    private Map<String, PrologTerm> binding = new HashMap<String, PrologTerm>();
 
+    public void clear() {
+    	variables = new HashMap<String, Integer>();
+    	binding = new HashMap<String, PrologTerm>();
+    	sb = new StringBuffer();
+    }
+    
 	public IPrologTermOutput openTerm(String functor) {
         final List<Integer> l = new ArrayList<Integer>();
         terms.push(l);
@@ -251,7 +255,9 @@ public class Query implements IPrologTermOutput {
     		throw new IllegalArgumentException("Tried to execute a query that was not initialized.");
     	}
     	System.out.println(sb.toString());
-        long qid = execute(instance, predicate, queryArgs);
+        
+    	long qid = execute(instance, predicate, queryArgs);
+        
         for (String varName : variables.keySet()) {
         	System.out.println(varName);
 			int ref = variables.get(varName);
