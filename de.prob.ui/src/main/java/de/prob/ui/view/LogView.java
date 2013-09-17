@@ -12,7 +12,7 @@ import de.prob.webconsole.WebConsole;
 
 public class LogView extends ViewPart {
 
-	public static final String ID = "de.prob.ui.console.GroovyConsole";
+	public static final String ID = "de.prob.ui.log.LogView";
 
 	private final int port;
 	private Browser browser;
@@ -39,7 +39,7 @@ public class LogView extends ViewPart {
 		gridData.grabExcessVerticalSpace = true;
 
 		browser = new Browser(sashForm, SWT.NONE);
-		browser.setUrl("http://localhost:" + port + "/logger.html");
+		browser.setUrl("http://localhost:" + port + "/sessions/Log");
 
 		browser.setLayoutData(gridData);
 		sashForm.setLayoutData(gridData);

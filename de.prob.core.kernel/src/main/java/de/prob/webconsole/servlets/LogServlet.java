@@ -47,10 +47,6 @@ public class LogServlet extends HttpServlet {
 		out.close();
 	}
 
-	public enum LogType {
-		error, warning, info, debug, trace
-	}
-
 	class LogElement {
 		public final String type;
 		public final String msg;
