@@ -2,6 +2,8 @@ package de.prob.animator;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,30 +14,36 @@ import com.google.inject.Inject;
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.GetErrorsCommand;
+import de.prob.cli.ProBInstance;
+import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
 
 class AnimatorImpl implements IAnimator {
 
+	private final ProBInstance cli;
 	private final Logger logger = LoggerFactory.getLogger(AnimatorImpl.class);
 	private final CommandProcessor processor;
 	private final GetErrorsCommand getErrors;
 	public static boolean DEBUG = true;
 
 	@Inject
-	public AnimatorImpl(final CommandProcessor processor, final GetErrorsCommand getErrors) {
+	public AnimatorImpl(@Nullable final ProBInstance cli,
+			final CommandProcessor processor, final GetErrorsCommand getErrors) {
+		this.cli = cli;
 		this.processor = processor;
 		this.getErrors = getErrors;
+		processor.configure(cli);
 	}
 
 	@Override
 	public synchronized void execute(final AbstractCommand command) {
-//		if (cli == null) {
-//			// System.out.println("Probcli is missing. Try \"upgrade\".");
-//			logger.error("Probcli is missing. Try \"upgrade\".");
-//			throw new CliError("no cli found");
-//		}
+		if (cli == null) {
+			// System.out.println("Probcli is missing. Try \"upgrade\".");
+			logger.error("Probcli is missing. Try \"upgrade\".");
+			throw new CliError("no cli found");
+		}
 		ISimplifiedROMap<String, PrologTerm> bindings = null;
 		try {
 			if (DEBUG && !command.getSubcommands().isEmpty()) {
@@ -78,7 +86,7 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public void sendInterrupt() {
-//		cli.sendInterrupt();
+		cli.sendInterrupt();
 	}
 
 	public static void setDebug(final boolean debug) {

@@ -2,16 +2,13 @@ package de.prob.animator;
 
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.IRawCommand;
+import de.prob.cli.ProBInstance;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
 
 class CommandProcessor {
 	
-	private final Query qry;
-	
-	public CommandProcessor() {
-		qry = new Query();
-	}
+	private ProBInstance qry;
 	
 	public ISimplifiedROMap<String, PrologTerm> sendCommand(
 			final AbstractCommand command) {
@@ -28,6 +25,9 @@ class CommandProcessor {
 
 		return new SimplifiedROMap<String, PrologTerm>(qry.getBinding());
 	}
-
 	
+	public void configure(final ProBInstance cli) {
+		this.qry = cli;
+	}
+
 }

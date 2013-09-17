@@ -55,31 +55,8 @@ public final class ProBInstanceProvider implements Provider<ProBInstance> {
 	}
 
 	private ProBInstance startProlog() {
-		ProcessHandle processTuple = processProvider.get();
-		Process process = processTuple.getProcess();
-		String key = processTuple.getKey();
-		final BufferedReader stream = new BufferedReader(new InputStreamReader(
-				process.getInputStream(), Charset.defaultCharset()));
-
-		Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> cliInformation = extractCliInformation(stream);
-
-		Integer port = ((PortPattern) cliInformation.get(PortPattern.class))
-				.getValue();
-		Long userInterruptReference = ((InterruptRefPattern) cliInformation
-				.get(InterruptRefPattern.class)).getValue();
-
-		ProBConnection connection = new ProBConnection(key, port);
-
-		try {
-			connection.connect();
-			ProBInstance cli = new ProBInstance(process, stream,
-					userInterruptReference, connection, home, osInfo);
-			return cli;
-		} catch (IOException e) {
-			logger.error("Error connecting to Prolog binary.", e);
-			return null;
-		}
-
+		ProBInstance cli = new ProBInstance();
+		return cli;
 	}
 
 	Map<Class<? extends AbstractCliPattern<?>>, AbstractCliPattern<?>> extractCliInformation(
