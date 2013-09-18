@@ -1469,6 +1469,12 @@ span.zoom_tool {
 	margin-top: 5px;
 }
 
+/* 
+	Observer
+*/
+
+#observer_list { font-size:12px; }
+
 /*
 	Adding Icons
 	

@@ -76,16 +76,6 @@
         </menuContribution>
         <menuContribution
               allPopups="false"
-              locationURI="popup:de.prob.ui.AnimationsView">
-           <command
-                 commandId="de.prob.ui.remove_trace"
-                 icon="icons/rem_co.gif"
-                 label="Remove Trace"
-                 style="push">
-           </command>
-        </menuContribution>
-        <menuContribution
-              allPopups="false"
               locationURI="popup:de.prob.ui.groovybinding">
            <command
                  commandId="de.prob.ui.remove_variable"
@@ -192,11 +182,6 @@
                </commandParameter>
             </command>
             <command
-                  description="Removes a trace from the animations object"
-                  id="de.prob.ui.remove_trace"
-                  name="Remove Trace">
-            </command>
-            <command
                   description="Removes a variable from the groovy shell"
                   id="de.prob.ui.remove_variable"
                   name="Remove Variable">
@@ -300,12 +285,6 @@
          </enabledWhen>
          <class
                class="de.prob.ui.operationview.ExecuteRandomHandler">
-         </class>
-      </handler>
-      <handler
-            commandId="de.prob.ui.remove_trace">
-         <class
-               class="de.prob.ui.animationsview.RemoveTraceHandler">
          </class>
       </handler>
       <handler

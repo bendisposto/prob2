@@ -132,10 +132,6 @@ bms = (function() {
 		svgCanvas.setSvgString(svgstring);
 	}
 
-	function addId(e) {
-		console.log($(e));	
-	}
-
 	function saveSvg() {
 		svgCanvas.getSvgString()(handleSvgData);
 	}
@@ -163,7 +159,8 @@ bms = (function() {
 
 	$('#dialog').bind('dialogclose', function(event) {
 		saveSvg();
-	});
+	});	
+	
 	// --------------------------------------------
 
 	// --------------------------------------------
@@ -198,16 +195,15 @@ bms = (function() {
 		$("#render").html("");
 		var template_text = editorHtml.getValue();
 		
-//		var observer = JSON.parse(data.observer)
-//		
-//		jQuery.each(observer, function(i, o) {
-//			template_text = template_text + session.render(o.template, JSON.parse(o.data));
-//		});
+		var observer = JSON.parse(data.observer)
+
+		jQuery.each(observer, function(i, o) {
+			template_text = template_text + session.render(o.template, JSON.parse(o.data));
+		});
 
 		try {
 			var output = Mustache.render(template_text + "<script>"
 					+ editorJavascript.getValue() + "</script>", data);
-			console.log(output)
 		} catch (e) {
 			template_error(e)
 		}
@@ -245,16 +241,28 @@ bms = (function() {
 		}
 		hookEnteredFieldListener()
 	}
+	
+	function restoreObserver(observer) {
+		var observerList = $('#svgedit').contents().find('#observer_list')
+		for ( var i = observer.length - 1; i >= 0; i--) {
+			var o = observer[i];
+			observerList.append(
+			"<h3>New Observer</h3><div>" + 
+			session.render("/ui/bmsview/observer/predicateObserverForm.html", { id : "bla" } ) +
+			"</div>")
+		}
+	}
 
 	extern.client = ""
 	extern.init = session.init
+	extern.session = session
 
 	extern.renderVisualization = function(data) {
 		renderVisualization(JSON.parse(data.data))
 	}
 
 	extern.restorePage = function(data) {
-		restoreFormulas(JSON.parse(data.formulas));
+		restoreFormulas(JSON.parse(data.formulas))
 		restoreTemplate(data.template_content, data.template_scripting)
 		renderEdit()
 	}
@@ -398,9 +406,15 @@ bms = (function() {
 	extern.formulaAdded = function(data) {
 		formulaAdded(data.id, data.formula, data.nextId);
 	}
+	
 	extern.formulaRestored = function(data) {
 		formulaRestored(data.id, data.formula);
 	}
+	
+	extern.restoreObserver = function(observer) {
+		restoreObserver(JSON.parse(observer.data))
+	}	
+	
 	// --------------------------------------------
 	
 	// --------------------------------------------
@@ -428,7 +442,11 @@ bms = (function() {
 		})
 	}
 	// --------------------------------------------
-
+	
+	$("#svgedit").load(function (){
+		session.sendCmd("iframeLoaded", {})
+	});
+	
 	return extern;
 
 }())

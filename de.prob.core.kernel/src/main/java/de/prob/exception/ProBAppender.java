@@ -2,11 +2,11 @@ package de.prob.exception;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-import de.prob.webconsole.servlets.LogServlet;
+import de.prob.web.views.Log;
 
 public class ProBAppender extends AppenderBase<ILoggingEvent> {
 
-	private static LogServlet log;
+	private static Log log;
 	public static boolean initialized = false;
 
 	@Override
@@ -16,8 +16,8 @@ public class ProBAppender extends AppenderBase<ILoggingEvent> {
 		}
 	}
 
-	public static void initialize(final LogServlet ls) {
-		log = ls;
+	public static void initialize(final Log log2) {
+		log = log2;
 		initialized = true;
 	}
 

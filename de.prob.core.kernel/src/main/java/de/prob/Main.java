@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.prob.exception.ProBAppender;
+import de.prob.web.views.Log;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
-import de.prob.webconsole.servlets.LogServlet;
 
 public class Main {
 
@@ -39,7 +39,7 @@ public class Main {
 
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell, final LogServlet log) {
+			final Shell shell, final Log log) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;

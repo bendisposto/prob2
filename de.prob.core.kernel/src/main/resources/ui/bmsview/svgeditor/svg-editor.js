@@ -16,8 +16,8 @@
 // 3) svgcanvas.js
 
 (function() {
-
-	document.addEventListener("touchstart", touchHandler, true);
+	
+  document.addEventListener("touchstart", touchHandler, true);
   document.addEventListener("touchmove", touchHandler, true);
   document.addEventListener("touchend", touchHandler, true);
   document.addEventListener("touchcancel", touchHandler, true);
@@ -2539,24 +2539,34 @@
 				}
 			};
 			
-			var addObserver = function() {
+			var openObserverDialog = function() {
 				if (selectedElement != null || multiselected) {
 					
-					$(selectedElement).each(function() {
-						  $.each(this.attributes, function() {
-						    // this.attributes is not a plain object, but an array
-						    // of attribute nodes, which contain both the name and value
-						    if(this.specified) {
-						      console.log(this.name, this.value);
-						    }
-						  });
-						});
+					console.log("ATTEMPT TO OPEN DIALOG")
+					
+					$("#dialog_observer").dialog("open");
+					$("#observer_list").accordion('destroy').accordion();
+					
+					var idSelectedElement = $(selectedElement).attr("id");
+					
+					$("#selectedElement").html(idSelectedElement);
+					
+//					$(selectedElement).each(function() {
+//						  $.each(this.attributes, function() {
+//						    // this.attributes is not a plain object, but an array
+//						    // of attribute nodes, which contain both the name and value
+//						    if(this.specified) {
+//						      console.log(this.name, this.value);
+//						    }
+//						  });
+//						});
 					
 //					for (var i=0, attrs=selectedElement.attributes, l=attrs.length; i<l; i++){
 //					    console.log(attrs.item(i).nodeName);
 //					}
 //					
 //					console.log(selectedElement)
+					
 				}
 			};
 
@@ -3350,7 +3360,7 @@
 				var cur_class = 'tool_button_current';
 
 				$.each(toolnames, function(i,item) {
-					all_tools += '#tool_' + item + (i==toolnames.length-1?',':'');
+					all_tools += '#tool_' + item + (i==toolnames.length-1?'':',');
 				});
 
 				$(all_tools).mousedown(function() {
@@ -4340,7 +4350,7 @@
 							moveToBottomSelected();
 							break;
 						case 'observer':
-							addObserver();
+							openObserverDialog();
 							break;
 						default:
  							if(svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)){
@@ -4968,7 +4978,7 @@
 
 		return Editor;
 	}(jQuery);
-
+	
 	// Run init once DOM is loaded
 	$(svgEditor.init);
 

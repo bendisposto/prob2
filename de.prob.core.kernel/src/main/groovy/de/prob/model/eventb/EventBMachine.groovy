@@ -80,6 +80,10 @@ public class EventBMachine extends Machine {
 		return events;
 	}
 
+	public List<Event> getOperations() {
+		return getEvents()
+	}
+
 	def List<SimpleProofNode> getProofs() {
 		return new ModelElementList<SimpleProofNode>(getChildrenOfType(SimpleProofNode.class));
 	}

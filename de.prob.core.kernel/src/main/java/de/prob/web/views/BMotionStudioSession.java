@@ -45,6 +45,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private Map<String, Object> bvarmap = new HashMap<String, Object>();
 	
+	private List<ObserverElement> observerElements = new ArrayList<ObserverElement>();
+	
 	private String contentString, scriptingString;
 	
 	private final AbstractModel model;
@@ -75,6 +77,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	// ----------------------------------------------------------------
 	
 	private Map<String, Object> getDataMapForRendering() {
+		
 		Map<String, Object> dataWrap = new HashMap<String, Object>();
 		for (FormulaElement f : finalFormulas) {
 			EvaluationResult result = f.getResult();
@@ -89,37 +92,21 @@ public class BMotionStudioSession extends AbstractSession implements
 				dataWrap.put(f.getName(), value);
 			}
 		}
-		dataWrap.put("b", bvarmap);	
+		dataWrap.put("b", bvarmap);
 		
-//		Map<String, String> observerData = WebUtils.wrap("predicate", "{{o0}}",
-//				"id", "door", "attribute", "y", "value", "275");
-//
-//		Map<String, String> predicateObserver = WebUtils.wrap("template",
-//				"/ui/bmsview/observer/predicateObserver.html", "data",
-//				WebUtils.toJson(observerData));
-//
-//		Map<String, String> observerData2 = WebUtils.wrap("predicate", "{{o1}}",
-//				"id", "door", "attribute", "y", "value", "170");
-//
-//		Map<String, String> predicateObserver2 = WebUtils.wrap("template",
-//				"/ui/bmsview/observer/predicateObserver.html", "data",
-//				WebUtils.toJson(observerData2));
-//		
-//		Map<String, String> observerData3 = WebUtils.wrap("predicate", "{{o2}}",
-//				"id", "door", "attribute", "y", "value", "55");
-//
-//		Map<String, String> predicateObserver3 = WebUtils.wrap("template",
-//				"/ui/bmsview/observer/predicateObserver.html", "data",
-//				WebUtils.toJson(observerData3));
-//		
-//		List<Object> result = new ArrayList<Object>();
-//		result.add(predicateObserver);
-//		result.add(predicateObserver2);
-//		result.add(predicateObserver3);
-//
-//		dataWrap.put("observer", WebUtils.toJson(result));
+		// Collect observer
+		List<Object> result = new ArrayList<Object>();
+		for (ObserverElement o : observerElements) {
+			Map<String, String> predicateObserver = WebUtils.wrap("template",
+					o.getObserverPath(), "data", o.getData());
+			result.add(predicateObserver);
+		}
+		
+		String json = WebUtils.toJson(result);
+		dataWrap.put("observer", json);
 		
 		return dataWrap;
+		
 	}
 	
 	private String getJsonDataForRendering() {
@@ -159,7 +146,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	// ----------------------------------------------------------------
 	
 	// ----------------------------------------------------------------
-	// Managing Observer
+	// Managing Formulas
 	// ----------------------------------------------------------------
 
 	public Object removeFormula(final Map<String, String[]> params) {
@@ -171,6 +158,18 @@ public class BMotionStudioSession extends AbstractSession implements
 			}
 		}
 		return WebUtils.wrap("cmd", "bms.formulaRemoved", "id", id);
+	}
+	
+	public Object clearObserver(Map<String, String[]> params) {
+		observerElements.clear();
+		return null;
+	}
+	
+	public Object addObserver(Map<String, String[]> params) {
+		ObserverElement observerElement = new ObserverElement(
+				params.get("observerPath")[0], params.get("json")[0]);
+		observerElements.add(observerElement);
+		return null;
 	}
 	
 	public Object addFormula(Map<String, String[]> params) {
@@ -305,6 +304,16 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		submit(wrap);
 		
+	}	
+	
+	public Object iframeLoaded(Map<String, String[]> params) {
+		List<Object> resultObserver = new ArrayList<Object>();
+		for(ObserverElement o : observerElements) {			
+			resultObserver.add(WebUtils.wrap("observerPath",
+					o.getObserverPath(), "data", o.getData()));
+		}
+		return WebUtils.wrap("cmd", "bms.restoreObserver",
+				"data", WebUtils.toJson(resultObserver));
 	}
 	
 	@Override
@@ -403,4 +412,42 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 	
+	private class ObserverElement {
+		
+		private String name;
+		private String id;		
+		private String observerPath;
+		private String data;
+				
+		public ObserverElement(String observerPath, String data) {
+			this.observerPath = observerPath;
+			this.data = data;
+		}
+
+		public String getObserverPath() {
+			return observerPath;
+		}
+
+		public String getData() {
+			return data;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+		
+	}
+
 }

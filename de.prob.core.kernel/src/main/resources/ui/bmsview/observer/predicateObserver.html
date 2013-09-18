@@ -1,5 +1,8 @@
 <script>
-if({{predicate}}) {
-	 $("#{{id}}").attr("{{attribute}}","{{value}}")
-	}
+{{=<% %>=}}
+if({{<%predicate%>}}) {
+<%={{ }}=%>
+{{#css}}$("#{{id}}").css("{{attribute}}","{{value}}"){{/css}}
+{{^css}}$("#{{id}}").attr("{{attribute}}","{{value}}"){{/css}}
+}
 </script>
