@@ -1,6 +1,12 @@
 package de.prob.visualization;
 
-public class AnimationNotLoadedException extends Exception {
+import de.prob.statespace.AnimationSelector;
+
+/**
+ * @author joy This {@link Exception} is thrown when a visualization is opened
+ *         but there is no animation loaded in the {@link AnimationSelector}.
+ */
+public class AnimationNotLoadedException extends RuntimeException {
 
 	/**
 	 * 

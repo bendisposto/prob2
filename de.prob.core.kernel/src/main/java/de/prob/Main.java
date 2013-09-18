@@ -11,13 +11,15 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
 import de.prob.exception.ProBAppender;
+import de.prob.web.views.Log;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
-import de.prob.webconsole.servlets.LogServlet;
 
 public class Main {
 
@@ -33,16 +35,19 @@ public class Main {
 
 	public static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
 
+	Logger logger = LoggerFactory.getLogger(Main.class);
+
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell, final LogServlet log) {
+			final Shell shell, final Log log) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
 		ProBAppender.initialize(log);
+		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
-	void run(final String[] args) {
+	void run(final String[] args) throws Throwable {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {
@@ -63,20 +68,19 @@ public class Main {
 	}
 
 	public static String getProBDirectory() {
-		String homedir = System.getProperty("prob.home");
-		if (homedir != null) {
-			return homedir + separator;
-		}
-		String env = System.getenv("PROB_HOME");
-		if (env != null) {
-			return env + separator;
-		}
+		// String homedir = System.getProperty("prob.home");
+		// if (homedir != null) {
+		// return homedir + separator;
+		// }
+		// String env = System.getenv("PROB_HOME");
+		// if (env != null) {
+		// return env + separator;
+		// }
 		return System.getProperty("user.home") + separator + ".prob"
 				+ separator;
 	}
 
-	public static void main(final String[] args) {
-
+	public static void main(final String[] args) throws Throwable {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {

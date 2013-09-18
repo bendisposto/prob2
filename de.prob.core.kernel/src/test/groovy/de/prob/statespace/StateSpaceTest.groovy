@@ -30,18 +30,18 @@ class StateSpaceTest extends Specification {
 			new StateId("6", s)
 		]
 
-		def ops = [ new OpInfo("b","b","root","2",[],"2"),
+		def ops = [
+			new OpInfo("b","b","root","2",[],"2"),
 			new OpInfo("c","c","2","3",[],"3"),
 			new OpInfo("d","d","3","4",[],"4"),
 			new OpInfo("e","e","3","5",[],"5"),
-			new OpInfo("f","f","4","6",[],"6") ]
+			new OpInfo("f","f","4","6",[],"6")
+		]
 
-		states.each {
-			it ->
+		states.each { it ->
 			s.addVertex(it)
 		}
-		states.each {
-			it ->
+		states.each { it ->
 			s.states.put(it.getId(),it)
 		}
 		s.explored.add(s.states.get("1"))

@@ -56,7 +56,12 @@ public class ProBTestRunner {
 	}
 
 	public Object getTestClass(final String test) {
-		Object runScript2 = executor.runScript2(test, true);
+		Object runScript2 = "";
+		try {
+			runScript2 = executor.runScript2(test, true, false);
+		} catch (Throwable e) {
+			e.printStackTrace(); // won't happen in regular mode
+		}
 		return runScript2;
 	}
 

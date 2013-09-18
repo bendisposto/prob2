@@ -3,7 +3,9 @@ package de.prob.cosimulation;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.ptolemy.fmi.FMICallbackFunctions;
 import org.ptolemy.fmi.FMILibrary;
@@ -32,6 +34,16 @@ public class FMU {
 	private final FMIModelDescription modelDescription;
 
 	private final Map<String, FMIScalarVariable> variables = new HashMap<String, FMIScalarVariable>();
+
+	private final Set<IFMUListener> listeners = new HashSet<IFMUListener>();
+
+	public void registerListener(IFMUListener listener) {
+		listeners.add(listener);
+	}
+
+	public void unregisterListener(IFMUListener listener) {
+		listeners.remove(listener);
+	}
 
 	public FMU(final String fmuFileName) throws IOException {
 		modelDescription = FMUFile.parseFMUFile(fmuFileName);
@@ -130,6 +142,10 @@ public class FMU {
 		Function doStep = getFunction("_fmiDoStep");
 		invoke(doStep, new Object[] { component, time, delta_t, (byte) 1 },
 				"Could not simulate, time was " + time + ": ");
+
+		for (IFMUListener l : listeners) {
+			l.trigger(variables);
+		}
 		return time + delta_t;
 	}
 

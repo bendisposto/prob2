@@ -6,6 +6,10 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * @author joy This command corresponds to prolog call
+ *         get_transition_diagram(+Expression,-StateSpace)
+ */
 public class CalculateTransitionDiagramCommand extends
 		AbstractReduceStateSpaceCmd {
 

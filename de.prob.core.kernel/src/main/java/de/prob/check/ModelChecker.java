@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.prob.animator.command.ConsistencyCheckingCommand;
+import de.prob.animator.command.ModelCheckingCommand;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
@@ -30,7 +30,7 @@ public class ModelChecker {
 	private Future<ModelCheckingResult> f;
 
 	public ModelChecker(final StateSpace s) {
-		this(s, ConsistencyCheckingSearchOption.getDefaultOptions());
+		this(s, ModelCheckingSearchOption.getDefaultOptions());
 	}
 
 	public ModelChecker(final StateSpace s, final List<String> options) {
@@ -70,8 +70,8 @@ public class ModelChecker {
 
 	/**
 	 * Starts the model checking process. Creates a {@link Future} of type
-	 * {@link ModelCheckingResult} by submitting the {@link Worker} to a single
-	 * threaded {@link ExecutorService}
+	 * {@link ModelCheckingResult} by submitting the {@link ModelChecker#worker}
+	 * to a single threaded {@link ExecutorService}
 	 */
 	public void start() {
 		f = executor.submit(worker);
@@ -133,7 +133,7 @@ public class ModelChecker {
 					break;
 				}
 				res = do_model_checking_step();
-				options.remove(ConsistencyCheckingSearchOption.inspect_existing_nodes
+				options.remove(ModelCheckingSearchOption.inspect_existing_nodes
 						.name());
 				abort = res.isAbort();
 			}
@@ -145,8 +145,8 @@ public class ModelChecker {
 		}
 
 		private ModelCheckingResult do_model_checking_step() {
-			ConsistencyCheckingCommand cmd = new ConsistencyCheckingCommand(
-					500, options, last);
+			ModelCheckingCommand cmd = new ModelCheckingCommand(500, options,
+					last);
 
 			s.execute(cmd);
 			ModelCheckingResult result = cmd.getResult();

@@ -1,0 +1,13 @@
+.vars {
+	padding: 5px;
+}
+
+.aside-label {
+	opacity: 0.7;
+	margin: 1px;
+	float: left;
+}
+
+.aside-label:HOVER {
+	opacity: 1;
+}

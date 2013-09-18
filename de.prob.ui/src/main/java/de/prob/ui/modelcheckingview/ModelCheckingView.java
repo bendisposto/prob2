@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
-import de.prob.check.ConsistencyCheckingSearchOption;
+import de.prob.check.ModelCheckingSearchOption;
 import de.prob.check.ModelChecker;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
@@ -29,16 +29,15 @@ import de.prob.statespace.StateSpace;
 import de.prob.webconsole.ServletContextListener;
 
 public class ModelCheckingView extends ViewPart implements
-IModelChangedListener, IAnimationChangeListener {
+		IModelChangedListener, IAnimationChangeListener {
 
-	private final Set<ConsistencyCheckingSearchOption> options = new HashSet<ConsistencyCheckingSearchOption>();
+	private final Set<ModelCheckingSearchOption> options = new HashSet<ModelCheckingSearchOption>();
 
 	private Composite container;
 	private Text formulas;
 	private StateSpace s;
 	private Trace currentTrace;
 	private Job job;
-
 
 	@Override
 	public void createPartControl(final Composite parent) {
@@ -56,7 +55,9 @@ IModelChangedListener, IAnimationChangeListener {
 		textLabel.setText("Add Further Formulas:");
 		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		formulas = new Text(container, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-		formulas.setText("");
+		formulas.setText("not yet supported");
+		formulas.setEnabled(false);
+		formulas.setEditable(false);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.horizontalSpan = 2;
 		formulas.setLayoutData(gd);
@@ -96,16 +97,18 @@ IModelChangedListener, IAnimationChangeListener {
 	}
 
 	private void cancelModelChecking() {
-		if(job != null) {
+		if (job != null) {
 			job.cancel();
 		}
 	}
 
 	private void startModelChecking() {
 		if (s != null) {
-			job = new ModelCheckingJob("Consistency Checking",new ModelChecker(s, optionsToString()));
+			job = new ModelCheckingJob("Model Checking",
+					new ModelChecker(s, optionsToString()));
 			job.setUser(true);
-			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(container,currentTrace));
+			job.addJobChangeListener(new ModelCheckingFinishedListener(
+					container, currentTrace));
 			job.schedule();
 		}
 	}
@@ -120,7 +123,7 @@ IModelChangedListener, IAnimationChangeListener {
 
 		for (int i = 0; i < 5; i++) {
 			final Button button = new Button(settings, SWT.CHECK);
-			final ConsistencyCheckingSearchOption option = ConsistencyCheckingSearchOption
+			final ModelCheckingSearchOption option = ModelCheckingSearchOption
 					.get(i);
 			button.setText(option.getDescription());
 			button.setSelection(option.isEnabledByDefault());
@@ -140,7 +143,7 @@ IModelChangedListener, IAnimationChangeListener {
 	}
 
 	private void setOptions(final boolean set,
-			final ConsistencyCheckingSearchOption option) {
+			final ModelCheckingSearchOption option) {
 		if (set) {
 			if (!options.contains(option)) {
 				options.add(option);
@@ -154,7 +157,7 @@ IModelChangedListener, IAnimationChangeListener {
 
 	private List<String> optionsToString() {
 		List<String> list = new ArrayList<String>();
-		for (ConsistencyCheckingSearchOption option : options) {
+		for (ModelCheckingSearchOption option : options) {
 			list.add(option.name());
 		}
 		return list;

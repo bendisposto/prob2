@@ -1,0 +1,25 @@
+
+
+<div box="{{box-number}}" id="box{{box-number}}"
+	class="panel panel-default">
+
+	<div class="panel-heading drag-area">
+		<span class="box-number pull-left">{{box-number}}</span> <span
+			class="heading-bar"> <span id="help{{box-number}}"
+			class="help-button micro-space glyphicon glyphicon-info-sign no-drag"
+			role="button" data-toggle="modal" data-target="#Help{{box-type}}"></span>
+			<span class="box-type">{{box-type}}</span><span class="no-drag">
+				{{&type-selector}}</span> <span id="remove{{box-number}}"
+			class="remove-button glyphicon glyphicon-remove pull-right no-drag"></span>
+		</span>
+	</div>
+	<div class="row">
+		<div class="{{size}}">
+			<div class="boxarea renderbox" id="render{{box-number}}">{{&rendered}}</div>
+			<div class="boxarea editorbox" id="editor{{box-number}}">{{&editor}}</div>
+		</div>
+		<div id="aside{{box-number}}" class="col-lg-2 vars pull-right"></div>
+	</div>
+
+
+</div>

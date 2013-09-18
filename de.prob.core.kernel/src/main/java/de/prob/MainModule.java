@@ -16,6 +16,7 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.codehaus.groovy.tools.shell.Interpreter;
+import org.pegdown.PegDownProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +32,9 @@ import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
 import de.prob.scripting.Api;
 import de.prob.scripting.Downloader;
+import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.ModelModule;
-import de.prob.webconsole.WebModule;
-import de.prob.worksheet.WorksheetModule;
+import de.prob.web.WebModule;
 
 public class MainModule extends AbstractModule {
 
@@ -51,7 +52,6 @@ public class MainModule extends AbstractModule {
 		install(new AnimatorModule());
 		install(new ModelModule());
 		install(new WebModule());
-		install(new WorksheetModule());
 
 		bind(Api.class);
 		bind(CommandLineParser.class).to(PosixParser.class);
@@ -62,6 +62,8 @@ public class MainModule extends AbstractModule {
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
 				.toInstance(Main.class.getClassLoader());
 		bind(Downloader.class);
+		bind(PegDownProcessor.class);
+		bind(ScriptEngineProvider.class);
 	}
 
 	@Provides

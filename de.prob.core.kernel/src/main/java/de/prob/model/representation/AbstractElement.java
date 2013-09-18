@@ -15,6 +15,10 @@ import java.util.Set;
  * 
  */
 public abstract class AbstractElement {
+	/**
+	 * Maps from a subclass of {@link AbstractElement} to a set containing all
+	 * elements for that subclass
+	 */
 	protected Map<Class<? extends AbstractElement>, java.util.Set<? extends AbstractElement>> children = new HashMap<Class<? extends AbstractElement>, Set<? extends AbstractElement>>();
 
 	/**

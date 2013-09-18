@@ -29,7 +29,7 @@ import de.prob.testing.TestRegistry;
 /**
  * This servlet takes a line from the web interface and evaluates it using
  * Groovy. The Groovy interpreter does not remember import statements, i.e., the
- * input 'import foo.Bar; x = new Bar' will work, but spliting it into two
+ * input 'import foo.Bar; x = new Bar' will work, but splitting it into two
  * separate lines won't. We thus collect any import statement and prefix every
  * command with all the imports.
  * 
@@ -99,7 +99,11 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		runSilentScript(script, false);
+		try {
+			runSilentScript(script, false, false);
+		} catch (Throwable e) {
+			e.printStackTrace(); // won't happen in regular mode
+		}
 	}
 
 	public void registerListener(final IGroovyExecutionListener listener) {
@@ -116,11 +120,10 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		try {
 			assert input != null;
 			final List<String> m = shellCommands.getMagic(input);
-			if (m.isEmpty()) {
+			if (m.isEmpty())
 				return eval(input);
-			} else {
+			else
 				return shellCommands.perform(m, this);
-			}
 		} finally {
 			notifyListerners();
 		}
@@ -142,24 +145,33 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	public String runSilentScript(final String content,
-			final boolean printExceptions) {
-		return runScript(content, null, true, printExceptions);
+			final boolean printExceptions, final boolean testmode)
+			throws Throwable {
+		return runScript(content, null, true, printExceptions, testmode);
 	}
 
 	public String runScript(final String content, final String prefix) {
-		return runScript(content, prefix, false, true);
+		try {
+			return runScript(content, prefix, false, true, false);
+		} catch (Throwable e) {
+			e.printStackTrace(); // won't happen in regular mode
+			return null;
+		}
 	}
 
 	public String runScript(final String content, final String prefix,
-			final boolean silent, final boolean printExceptions) {
-		Object result = runScript2(content, printExceptions);
+			final boolean silent, final boolean printExceptions,
+			final boolean testmode) throws Throwable {
+		Object result = runScript2(content, printExceptions, testmode);
 		if (!silent && result != null) {
 			getBindings().setVariable(freshVar(prefix), result);
 		}
 		return result == null ? "null" : result.toString();
 	}
 
-	public Object runScript2(final String content, final boolean printStackTrace) {
+	public Object runScript2(final String content,
+			final boolean printStackTrace, final boolean testmode)
+			throws Throwable {
 		try {
 			final ArrayList<String> eval = new ArrayList<String>();
 			eval.addAll(imports);
@@ -168,6 +180,8 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			try {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
+				if (testmode)
+					throw e;
 				if (printStackTrace) {
 					printStackTrace(sideeffects, e);
 				}
@@ -226,6 +240,7 @@ public class GroovyExecution implements IStatesCalculatedListener {
 	}
 
 	private String eval(final String input) {
+
 		Object evaluate = null;
 		ParseCode parseCode;
 		inputs.add(input);

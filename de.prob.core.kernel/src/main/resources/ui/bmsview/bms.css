@@ -1,0 +1,91 @@
+.draggable {
+	display: inline-block;
+	position:absolute;
+}
+
+.draggable:hover {
+	/*background-color:lightgray !important;*/
+	border:1px dotted lightgray !important;
+}
+
+.draggable-vis {
+	display: inline-block;
+	position:absolute;
+}
+
+#result_container, #render_container {
+	height:500px;
+}
+
+#result {
+}
+
+#template_container {
+	margin-top: 25px;
+	display: inline-block;
+}
+
+#observer-code-block {
+	max-width: 400px;
+}
+
+.code-block {
+	margin: 10px;
+	float: left;
+}
+
+.entry {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+
+.CodeMirror {
+	border: 1px solid #ddd;
+	width: 500px;
+}
+
+.CodeMirror-scroll {
+	padding-bottom:0;
+}
+
+.CodeMirror pre {
+	padding-left: 7px;
+	line-height: 1.25;
+}
+
+#dialog_svgeditor .modal-dialog {
+	
+	width:1075px;
+	
+}
+
+/*
+textarea#template_content,textarea#template_scripting {
+	color: #666;
+	font-size: 13px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	margin: 5px 0px 10px 0px;
+	padding: 10px;
+	height: 200px;
+	width: 500px;
+	border: #999 1px solid;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	/*transition: all 0.25s ease-in-out;
+	-webkit-transition: all 0.25s ease-in-out;
+	-moz-transition: all 0.25s ease-in-out;
+	box-shadow: 0 0 5px rgba(81, 203, 238, 0);
+	-webkit-box-shadow: 0 0 5px rgba(81, 203, 238, 0);
+	-moz-box-shadow: 0 0 5px rgba(81, 203, 238, 0);*/
+}
+
+textarea#template_content:focus,textarea#template_scripting:focus {
+	color: #000;
+	outline: none;
+	border: #35a5e5 1px solid;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+	-webkit-box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+	-moz-box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+}*/

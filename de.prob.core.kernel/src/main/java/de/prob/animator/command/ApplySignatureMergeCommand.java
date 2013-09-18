@@ -8,6 +8,15 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
+/**
+ * @author joy
+ * 
+ *         Corresponds to prolog call
+ *         get_signature_merge_state_space(+IgnoredEvents,-StateSpace) where
+ *         StateSpace is a {@link ListPrologTerm} with two elements
+ *         [States,Transitions] and States and Transitions correspond also to a
+ *         {@link ListPrologTerm}.
+ */
 public class ApplySignatureMergeCommand extends AbstractReduceStateSpaceCmd {
 
 	private final List<String> ignored;

@@ -1,0 +1,20 @@
+li {
+    list-style-type: none;
+}
+
+.component {
+    font-weight: bold;
+}
+
+.heading {
+    font-style: italic;
+}
+
+span {
+    display: inline-block;
+    width: 300px;
+}
+
+.changed {
+    font-weight: bold;
+}

@@ -54,6 +54,15 @@ public class ShellCommands {
 		return result == null ? "null" : result.toString();
 	}
 
+	/**
+	 * Performs completion for an {@link AbstractShellCommand}
+	 * 
+	 * @param m
+	 *            list containing command and parameters
+	 * @param pos
+	 *            position of the cursor
+	 * @return {@link List} of possible completions for given command
+	 */
 	public List<String> complete(final List<String> m, final int pos) {
 		List<String> args = m.subList(1, m.size());
 		return magic.get(m.get(0)).complete(args, pos);

@@ -13,8 +13,22 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
+import de.prob.model.representation.AbstractModel;
+import de.prob.scripting.Api;
 import de.prob.webconsole.GroovyExecution;
 
+/**
+ * @author joy
+ * 
+ *         In the groovy console, provides the user with the command "load".
+ *         This takes one parameter, which is the path to a valid B, Event-B, or
+ *         CSP specification. This loads the specification using the
+ *         {@link Api#b_load(String)}, {@link Api#csp_load(String)} or
+ *         {@link Api#eb_load(String)} methods, and saves the resulting
+ *         {@link AbstractModel} in a variable model_N, where N is a variable
+ *         number generated from the {@link GroovyExecution} engine.
+ * 
+ */
 public class LoadCommand extends AbstractShellCommand {
 
 	private final static Logger LOGGER = LoggerFactory
@@ -65,9 +79,6 @@ public class LoadCommand extends AbstractShellCommand {
 		}
 		if (extension.equals(".csp")) {
 			command = name + " = api.csp_load('" + filename + "')";
-		}
-		if (extension.equals(".eventb")) {
-			command = name = " = api.eb_load('" + filename + "')";
 		}
 		if (command != "") {
 			exec.evaluate(command);

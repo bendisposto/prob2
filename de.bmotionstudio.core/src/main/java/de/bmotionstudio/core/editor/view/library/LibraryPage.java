@@ -42,8 +42,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 
+import com.google.inject.Injector;
+
 import de.bmotionstudio.core.BMotionImage;
-import de.bmotionstudio.core.BMotionStudio;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.Trace;
+import de.prob.webconsole.ServletContextListener;
 
 public class LibraryPage extends Page {
 
@@ -56,6 +60,8 @@ public class LibraryPage extends Page {
 	private Composite libMainContainer;
 
 	private Action importImagesAction, deleteItemAction;
+	
+	private Injector injector = ServletContextListener.INJECTOR;
 
 	@Override
 	public void createControl(final Composite parent) {
@@ -101,12 +107,11 @@ public class LibraryPage extends Page {
 				if (previewImage != null) {
 					previewImage.dispose();
 				}
-
-				if (obj != null) {
+				
+				previewImage = null;
+				
+				if (obj != null)
 					previewImage = obj.getPreview(LibraryPage.this);
-				} else {
-					previewImage = null;
-				}
 
 				previewCanvas.redraw();
 
@@ -213,8 +218,15 @@ public class LibraryPage extends Page {
 
 		List<LibraryObject> tmpList = new ArrayList<LibraryObject>();
 
-		String basePath = BMotionStudio.getImagePath();
-		if (basePath != null) {
+		final AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
+
+		Trace currentTrace = selector.getCurrentTrace();
+		if (currentTrace != null) {
+			String basePath = currentTrace.getModel().getModelFile()
+					.getParent()
+					+ "/images";
+
 			File dir = new File(basePath);
 
 			File[] fileList = dir.listFiles(new FilenameFilter() {

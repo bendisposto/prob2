@@ -1,0 +1,9 @@
+<input type="text" class="form-control loadfile_input"
+	id="openfile{{box-number}}" value="{{box-content}}"
+	placeholder="Path to model file"></input>
+<button
+	onClick="Worksheet.browse('#openfile{{box-number}}',{{box-number}})"
+	type="button" class="load-btn btn btn-primary">Browse ...</button>
+<button id="fb_okbtn{{box-number}}"
+	onClick="Worksheet.fb_load_file('#openfile{{box-number}}',{{box-number}})"
+	type="button" class="load-btn btn btn-primary">Ok</button>

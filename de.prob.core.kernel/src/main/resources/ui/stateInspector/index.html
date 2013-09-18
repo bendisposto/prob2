@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ProB Current Trace</title>
+<meta name="description" content="">
+<meta name="author" content="Jens Bendisposto">
+
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/stateInspector/stateInspector.css">
+
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<ul id="content"></ul>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/stateInspector/StateInspector.js"></script>
+
+<script>
+StateInspector.client = "{{clientid}}";
+StateInspector.init("{{clientid}}")
+</script>
+</html>

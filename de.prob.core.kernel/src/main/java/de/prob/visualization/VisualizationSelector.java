@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.webconsole.GroovyExecution;
-import de.prob.webconsole.servlets.visualizations.IVisualizationServlet;
+import de.prob.webconsole.servlets.visualizations.IVisualizationEngine;
 
 @Singleton
 public class VisualizationSelector {
@@ -19,7 +19,7 @@ public class VisualizationSelector {
 	}
 
 	public void registerSession(final String sessionId,
-			final IVisualizationServlet servlet) {
+			final IVisualizationEngine servlet) {
 		e.getBindings().setVariable("viz" + ctr++, servlet);
 	}
 

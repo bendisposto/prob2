@@ -31,9 +31,8 @@ public class Transformer {
 	}
 
 	public Transformer set(final String name, final String value) {
-		if (Transformer.STYLES.contains(name)) {
+		if (Transformer.STYLES.contains(name))
 			return style(name, value);
-		}
 		return attr(name, value);
 	}
 
@@ -44,8 +43,8 @@ public class Transformer {
 	}
 
 	class Attribute {
-		private final String name;
-		private final String value;
+		public final String name;
+		public final String value;
 
 		public Attribute(final String name, final String value) {
 			this.name = name;
@@ -54,8 +53,8 @@ public class Transformer {
 	}
 
 	class Style {
-		private final String name;
-		private final String value;
+		public final String name;
+		public final String value;
 
 		public Style(final String name, final String value) {
 			this.name = name;

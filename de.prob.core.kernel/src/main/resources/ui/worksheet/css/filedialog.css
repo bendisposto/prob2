@@ -1,0 +1,14 @@
+.loadfile_input {
+	width: 85%;
+	float: left;
+}
+
+.illegal_file {
+	font-weight: bold;
+	color: darkred;
+}
+
+.load-btn {
+	float: left;
+	margin-left: 10px;
+}

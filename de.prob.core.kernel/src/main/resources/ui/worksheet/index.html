@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Worksheet</title>
+<meta name="description" content="">
+<meta name="author" content="Jens Bendisposto">
+
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/common/codemirror.css">
+<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+<link rel="stylesheet" href="/ui/worksheet/css/codemirror.css">
+<link rel="stylesheet" href="/ui/worksheet/css/page.css">
+<link rel="stylesheet" href="/ui/worksheet/css/panel.css">
+<link rel="stylesheet" href="/ui/worksheet/css/editor.css">
+<link rel="stylesheet" href="/ui/worksheet/css/variables.css">
+<link rel="stylesheet" href="/ui/worksheet/css/rendering.css">
+<link rel="stylesheet" href="/ui/libs/codemirror_modes/b.css">
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+</head>
+<body>
+
+	<div class="container">
+		<div class="top-bar">
+			<div class="page-header col-lg-12">
+
+
+				<div class="btn-group">
+					<button type="button" id="typeselectbtn"
+						class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						<span id="defaultBoxType" class="pull-left">
+							{{default-box-type}} </span><span class="bigcaret"></span>
+					</button>
+					<span id="replace-with-type-selector">
+				</div>
+
+				<span class="btn-group">
+					<button id="sourcebtn" type="button"
+						class="btn btn-default btn-sm right-group"
+						onclick="Worksheet.source()">
+						<span class="glyphicon glyphicon-align-justify"></span>
+					</button>
+				</span>
+				
+				<span class="btn-group pull-right">
+					<button id="compactbtn" type="button"
+						class="btn btn-default btn-sm right-group"
+						onclick="Worksheet.compact()">
+						<span class="glyphicon glyphicon-print"></span>
+					</button>
+					<button id="refreshbtn" type="button"
+						class="btn btn-success btn-sm right-group"
+						onclick="Worksheet.refreshAll()">
+						<span class="glyphicon glyphicon-refresh"></span>
+					</button>
+				</span>
+
+
+			</div>
+		</div>
+	</div>
+
+
+	<div class="row col-lg-12">
+		<div id="boxes" class="col-lg-12"></div>
+		<!--  boxes -->
+	</div>
+	<!--  row -->
+
+	<!-- Modal -->
+	<div class="modal fade" id="filedialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title">SVG Editor</h4>
+				</div>
+				<div id="filedialog_content" class="modal-body"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+
+
+	{{&help-markdown}}
+
+
+	<!--  container -->
+
+</body>
+
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror_modes/groovy.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror_modes/b.js"></script>
+<script type="text/javascript"
+	src="/ui/libs/codemirror_modes/javascript.js"></script>
+<script type="text/javascript"
+	src="/ui/libs/codemirror_modes/markdown.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/worksheet/Languages.js"></script>
+<script type="text/javascript" src="/ui/worksheet/Worksheet.js"></script>
+<script type="text/javascript" src="/ui/worksheet/testdata.js"></script>
+<!-- Latex Math Rendering -->
+
+<script type="text/javascript"
+	src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<script>
+Worksheet.client = "{{clientid}}";
+Worksheet.init("{{clientid}}")
+</script>
+
+
+
+
+</html>

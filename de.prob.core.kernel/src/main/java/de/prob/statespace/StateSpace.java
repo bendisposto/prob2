@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
@@ -84,12 +85,24 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private final HashSet<StateId> invariantKo = new HashSet<StateId>();
 	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
 	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
+	private final IAnimator animator2;
 
 	@Inject
-	public StateSpace(final IAnimator animator,
+	public StateSpace(final Provider<IAnimator> panimator,
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
+		animator = panimator.get();
+		animator2 = panimator.get();
+		lastCalculatedStateId = -1;
+	}
+
+	public StateSpace(final IAnimator animator,
+			final DirectedMultigraphProvider graphProvider) {
+		// FIXME Hack to make the test run again. We should get rid of this
+		// constructor by fixing the test
+		super(graphProvider.get());
 		this.animator = animator;
+		animator2 = animator;
 		lastCalculatedStateId = -1;
 	}
 
@@ -391,7 +404,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * the given state and caches them.
 	 * 
 	 * @param state
-	 * @return
 	 */
 	private void evaluateFormulas(final StateId state) {
 		if (!canBeEvaluated(state)) {
@@ -420,11 +432,14 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 *         objects
 	 */
 	public Map<IEvalElement, EvaluationResult> valuesAt(final StateId stateId) {
-		if (values.containsKey(stateId)) {
+		if (values.containsKey(stateId)
+				&& values.get(stateId).keySet().size() == subscribedFormulas
+						.size()) {
 			return values.get(stateId);
 		}
 		if (canBeEvaluated(stateId)) {
 			evaluateFormulas(stateId);
+			return values.get(stateId);
 		}
 		return new HashMap<IEvalElement, EvaluationResult>();
 	}
@@ -807,7 +822,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return invariantOk;
 	}
 
-	public Set<StateId> checkInitialized() {
+	private Set<StateId> checkInitialized() {
 		Collection<StateId> vertices = getVertices();
 		List<CheckInitialisationStatusCommand> cmds = new ArrayList<CheckInitialisationStatusCommand>();
 		for (StateId stateId : vertices) {

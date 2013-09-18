@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.webconsole.GroovyExecution;
 
+/**
+ * @author joy This provides the user with the command "open" in the groovy
+ *         console, which takes one parameter, either "tutorial" or "javadoc"
+ *         and opens the link to the specified documentation.
+ */
 public class OpenCommand extends AbstractShellCommand {
 
 	private final static Logger LOGGER = LoggerFactory
@@ -24,7 +29,7 @@ public class OpenCommand extends AbstractShellCommand {
 
 		List<String> suggs = getSuggs(search);
 		if (suggs.size() == 1) {
-			return Arrays.asList(new String[] { "open " + suggs.get(0) });
+			return Collections.singletonList("open " + suggs.get(0));
 		} else {
 			return suggs;
 		}

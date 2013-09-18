@@ -64,9 +64,8 @@ public class DynamicTransformer extends Transformer implements
 	}
 
 	private String recalculateSelector(final List<String> f) {
-		if (f.isEmpty()) {
+		if (f.isEmpty())
 			return selector;
-		}
 
 		List<String> toConvert = new ArrayList<String>();
 		for (String string : f) {
@@ -74,9 +73,8 @@ public class DynamicTransformer extends Transformer implements
 			toConvert.add("#s" + string);
 		}
 		String newSelector = Joiner.on(",").join(toConvert);
-		if (selector.equals("")) {
+		if (selector.equals(""))
 			return newSelector;
-		}
 		return selector + "," + newSelector;
 	}
 
@@ -122,9 +120,9 @@ public class DynamicTransformer extends Transformer implements
 
 	class ToSerialize {
 
-		private final String predicate;
-		private final List<Attribute> attrs;
-		private final List<Style> styles;
+		public final String predicate;
+		public final List<Attribute> attrs;
+		public final List<Style> styles;
 
 		public ToSerialize(final String predicate, final List<Attribute> attrs,
 				final List<Style> styles) {

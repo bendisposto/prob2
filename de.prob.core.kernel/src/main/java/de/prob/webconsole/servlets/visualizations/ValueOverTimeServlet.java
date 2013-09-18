@@ -63,13 +63,12 @@ public class ValueOverTimeServlet extends SessionBasedServlet {
 	@Override
 	protected String loadSession(final String id) throws VisualizationException {
 		if (animations.getCurrentTrace() != null) {
-			String propFile = properties.getPropFileFromModelFile(animations
-					.getCurrentTrace().getModel().getModelFile()
-					.getAbsolutePath());
+			String propFile = properties.getPropFileFromModel(animations
+					.getCurrentTrace().getModel());
 			Properties props = properties.getProperties(propFile);
 			String json = props.getProperty(id);
 			if (json != null) {
-//				System.out.println(json);
+				// System.out.println(json);
 				if (animations.getCurrentTrace() == null) {
 					return null;
 				}

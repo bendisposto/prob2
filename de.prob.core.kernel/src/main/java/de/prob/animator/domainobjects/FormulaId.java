@@ -3,9 +3,11 @@ package de.prob.animator.domainobjects;
 public class FormulaId {
 
 	private final String id;
+	private final IEvalElement formula;
 
-	public FormulaId(final String id) {
+	public FormulaId(final String id, final IEvalElement formula) {
 		this.id = id;
+		this.formula = formula;
 	}
 
 	public String getId() {
@@ -23,6 +25,10 @@ public class FormulaId {
 	@Override
 	public int hashCode() {
 		return id.hashCode();
+	}
+
+	public IEvalElement getFormula() {
+		return formula;
 	}
 
 }

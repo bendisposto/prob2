@@ -13,34 +13,7 @@
 
       </menuContribution>
       
-        <menuContribution
-            locationURI="popup:fr.systerel.explorer.navigator.view">
-         <separator
-               name="de.prob.ui.separator2"
-               visible="true">
-         </separator>
-         <command
-               commandId="de.prob.ui.starteventbanimation"
-               icon="icons/prob.png"
-               label="Start Animation / Model Checking"
-               style="push">
-            <visibleWhen>
-      <with
-            variable="selection">
-         <iterate
-               operator="or">
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
-         </iterate>
-      </with>
-            </visibleWhen>
-         </command>
-         <separator
-               name="de.prob.ui.separator1"
-               visible="true">
-         </separator>
-      </menuContribution>
+       
         <menuContribution
               locationURI="toolbar:de.prob.ui.OperationView">
            <command
@@ -103,16 +76,6 @@
         </menuContribution>
         <menuContribution
               allPopups="false"
-              locationURI="popup:de.prob.ui.AnimationsView">
-           <command
-                 commandId="de.prob.ui.remove_trace"
-                 icon="icons/rem_co.gif"
-                 label="Remove Trace"
-                 style="push">
-           </command>
-        </menuContribution>
-        <menuContribution
-              allPopups="false"
               locationURI="popup:de.prob.ui.groovybinding">
            <command
                  commandId="de.prob.ui.remove_variable"
@@ -137,19 +100,11 @@
                  commandId="de.prob.ui.viz.pred"
                  label="Open Predicate Visualization"
                  style="push">
-              <parameter
-                    name="de.prob.ui.viz.eval"
-                    value="enter">
-              </parameter>
            </command>
            <command
                  commandId="de.prob.ui.viz.formula"
                  label="Open Time vs Value Visualization"
                  style="push">
-              <parameter
-                    name="de.prob.ui.viz.eval"
-                    value="enter">
-              </parameter>
            </command>
            <command
                  commandId="de.prob.ui.viz.statespace"
@@ -194,15 +149,21 @@
               </visibleWhen>
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:groovy">
+           <command
+                 commandId="de.prob.ui.groovyconsole"
+                 label="Open new Groovy console"
+                 style="push">
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
          point="org.eclipse.ui.commands">
       
-            <command
-            id="de.prob.ui.starteventbanimation"
-            name="Event-B Animate / Model Check">
-      </command>
+
             <command
                   id="de.prob.ui.trace.back"
                   name="Move Back in Trace">
@@ -219,11 +180,6 @@
                      name="Number of Steps"
                      optional="false">
                </commandParameter>
-            </command>
-            <command
-                  description="Removes a trace from the animations object"
-                  id="de.prob.ui.remove_trace"
-                  name="Remove Trace">
             </command>
             <command
                   description="Removes a variable from the groovy shell"
@@ -250,20 +206,10 @@
             <command
                   id="de.prob.ui.viz.pred"
                   name="Open Predicate Visualization">
-               <commandParameter
-                     id="de.prob.ui.viz.eval"
-                     name="eval"
-                     optional="true">
-               </commandParameter>
             </command>
             <command
                   id="de.prob.ui.viz.formula"
                   name="Open Value vs Time Visualization">
-               <commandParameter
-                     id="de.prob.ui.viz.eval"
-                     name="eval"
-                     optional="true">
-               </commandParameter>
             </command>
             <command
                   id="de.prob.ui.viz.statespace"
@@ -274,46 +220,15 @@
                   id="de.prob.ui.createFormViz"
                   name="Create Formula Visualization">
             </command>
+            <command
+                  id="de.prob.ui.groovyconsole"
+                  name="Open Groovy Console">
+            </command>
    </extension>
    
    <extension
          point="org.eclipse.ui.handlers">      
-      <handler
-            commandId="de.prob.ui.starteventbanimation">
-         <class
-               class="de.prob.ui.eventb.StartAnimationHandler">
-         </class>
-                     <enabledWhen>
-      <with
-            variable="selection">
-         <iterate
-               operator="or">
-               <or>
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
-            <and>
-                 <instanceof
-                       value="org.eclipse.core.resources.IResource">
-                 </instanceof>
-                 <or>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.eclipse.core.resources.extension"
-                       value="bum">
-                 </test>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.eclipse.core.resources.extension"
-                       value="buc">
-                 </test>
-                 </or>
-              </and>
-              </or>
-         </iterate>
-      </with>
-            </enabledWhen>
-      </handler>
+     
       <handler
             commandId="de.prob.ui.trace.back">
          <class
@@ -370,12 +285,6 @@
          </enabledWhen>
          <class
                class="de.prob.ui.operationview.ExecuteRandomHandler">
-         </class>
-      </handler>
-      <handler
-            commandId="de.prob.ui.remove_trace">
-         <class
-               class="de.prob.ui.animationsview.RemoveTraceHandler">
          </class>
       </handler>
       <handler
@@ -472,6 +381,12 @@
                class="de.prob.ui.stateview.CreateFormulaVisualizationHandler">
          </class>
       </handler>
+      <handler
+            commandId="de.prob.ui.groovyconsole">
+         <class
+               class="de.prob.ui.OpenGroovyHandler">
+         </class>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -508,19 +423,12 @@
             name="Current Animations">
       </view>
       <view
+            allowMultiple="true"
             category="de.hhu.stups.prob"
             class="de.prob.ui.console.GroovyConsole"
             icon="icons/groovy.png"
             id="de.prob.ui.groovyconsole"
             name="Groovy Console"
-            restorable="true">
-      </view>
-      <view
-            category="de.hhu.stups.prob"
-            class="de.prob.ui.GroovyBindingView"
-            icon="icons/groovy.png"
-            id="de.prob.ui.groovybinding"
-            name="Global Variables"
             restorable="true">
       </view>
       <view
@@ -553,6 +461,18 @@
             name="Visualization"
             restorable="true">
       </view>
+
+      <view
+            allowMultiple="true"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.console.WorksheetView"
+            icon="icons/star.png"
+            id="de.prob.ui.worksheet"
+            name="Worksheet"
+            restorable="true">
+      </view>
+
+
       <view
             class="de.prob.ui.view.LogView"
             icon="icons/sample.gif"
@@ -560,6 +480,11 @@
             name="Log View"
             restorable="true">
       </view>
+
+
+
+
+
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
