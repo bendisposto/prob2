@@ -75,6 +75,10 @@ public class EventBMachine extends Machine {
 		return events;
 	}
 
+	public List<Event> getOperations() {
+		return getEvents()
+	}
+
 	def Event getEvent(String name) {
 		for (Event e : getEvents()) {
 			if (e.getName().equals(name)) return e;

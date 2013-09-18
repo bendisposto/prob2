@@ -124,6 +124,10 @@ public class ClassicalBMachine extends Machine {
 		return list;
 	}
 
+	public List<Operation> getEvents() {
+		return getOperations()
+	}
+
 	def getProperty(String prop) {
 		if(prop == "sets") {
 			return getSets()
