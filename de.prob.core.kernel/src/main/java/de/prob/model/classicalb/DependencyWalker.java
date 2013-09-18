@@ -40,12 +40,12 @@ public class DependencyWalker extends DepthFirstAdapter {
 
 	@Override
 	public void caseASeesMachineClause(final ASeesMachineClause node) {
-		registerMachineNames(node.getMachineNames(), new RefType(ERefType.SEES));
+		registerMachineNames(node.getMachineNames(), ERefType.SEES);
 	}
 
 	@Override
 	public void caseAUsesMachineClause(final AUsesMachineClause node) {
-		registerMachineNames(node.getMachineNames(), new RefType(ERefType.USES));
+		registerMachineNames(node.getMachineNames(), ERefType.USES);
 	}
 
 	@Override
@@ -83,13 +83,13 @@ public class DependencyWalker extends DepthFirstAdapter {
 	}
 
 	private void registerMachineNames(final List<PExpression> machineNames,
-			final RefType depType) {
+			final ERefType depType) {
 		for (final PExpression machineName : machineNames) {
 			if (machineName instanceof AIdentifierExpression) {
 				final AIdentifierExpression identifier = (AIdentifierExpression) machineName;
 				final String dest = extractMachineName(identifier
 						.getIdentifier());
-				addMachine(dest, depType);
+				addMachine(dest, new RefType(depType));
 			}
 		}
 	}
