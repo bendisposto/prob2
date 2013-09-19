@@ -23,7 +23,7 @@ import com.google.inject.Injector;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.EventBModel;
-import de.prob.rodin.translate.EventBTranslator;
+import de.prob.model.eventb.translate.EventBTranslator;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateSpace;
@@ -42,8 +42,10 @@ public class StartAnimationHandler extends AbstractHandler {
 		fSelection = HandlerUtil.getCurrentSelection(event);
 
 		final IEventBRoot rootElement = getRootElement();
+		String fileName = "/home/joy/apps/workspaces/runtime-EclipseApplication"
+				+ rootElement.getPath().toString();
 
-		EventBTranslator eventBTranslator = new EventBTranslator(rootElement);
+		EventBTranslator eventBTranslator = new EventBTranslator(fileName);
 
 		Injector injector = ServletContextListener.INJECTOR;
 
