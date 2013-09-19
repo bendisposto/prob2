@@ -9,87 +9,59 @@ import de.prob.model.representation.Variable
 
 public class EventBMachine extends Machine {
 
+	def List<Context> sees
+	def List<EventBVariable> variables
+	def List<EventBMachine> refines
+	def List<Event> events
+	def List<EventBInvariant> invariants
+	def List<SimpleProofNode> proofs
+	def Variant variant
+
 	public EventBMachine(final String name) {
 		super(name);
 	}
 
 	public void addRefines(final List<EventBMachine> refines) {
 		put(Machine.class, refines);
+		this.refines = new ModelElementList<EventBMachine>(refines)
 	}
 
 	public void addSees(final List<Context> sees) {
 		put(Context.class, sees);
+		this.sees = new ModelElementList<Context>(sees)
 	}
 
 	public void addVariables(final List<EventBVariable> variables) {
 		put(Variable.class, variables);
+		this.variables = new ModelElementList<EventBVariable>(variables)
 	}
 
 	public void addInvariants(final List<EventBInvariant> invariants) {
 		put(Invariant.class, invariants);
+		this.invariants = new ModelElementList<EventBInvariant>(invariants)
 	}
 
 	public void addVariant(final List<Variant> variant) {
 		put(Variant.class, variant);
+		this.variant = variant
 	}
 
 	public void addEvents(final List<Event> events) {
 		put(BEvent.class, events);
+		this.events = new ModelElementList<Event>(events)
 	}
 
 	public void addProofs(final List<? extends SimpleProofNode> proofs) {
 		put(SimpleProofNode.class, proofs);
-	}
-
-	public List<EventBVariable> getVariables() {
-		List<EventBVariable> vars = new ModelElementList<EventBVariable>();
-		Set<Variable> c = getChildrenOfType(Variable.class);
-		for (Variable variable : c) {
-			vars.add((EventBVariable) variable);
-		}
-		return vars;
-	}
-
-	public List<EventBInvariant> getInvariants() {
-		List<EventBInvariant> invs = new ModelElementList<EventBInvariant>();
-		Collection<Invariant> kids = getChildrenOfType(Invariant.class);
-		for (Invariant invariant : kids) {
-			if (invariant instanceof EventBInvariant) {
-				invs.add((EventBInvariant) invariant);
-			}
-		}
-		return invs;
-	}
-
-	public Variant getVariant() {
-		Set<Variant> kids = getChildrenOfType(Variant.class);
-		if (!kids.isEmpty()) {
-			return kids.iterator().next();
-		}
-		return null;
-	}
-
-	public List<Event> getEvents() {
-		List<Event> events = new ModelElementList<Event>();
-		Set<BEvent> kids = getChildrenOfType(BEvent.class);
-		for (BEvent bEvent : kids) {
-			if (bEvent instanceof Event) {
-				events.add((Event) bEvent);
-			}
-		}
-		return events;
+		this.proofs = new ModelElementList<SimpleProofNode>(proofs)
 	}
 
 	public List<Event> getOperations() {
-		return getEvents()
-	}
-
-	def List<SimpleProofNode> getProofs() {
-		return new ModelElementList<SimpleProofNode>(getChildrenOfType(SimpleProofNode.class));
+		return events
 	}
 
 	def Event getEvent(String name) {
-		for (Event e : getEvents()) {
+		for (Event e : events) {
 			if (e.getName().equals(name)) return e;
 		}
 		return null;
