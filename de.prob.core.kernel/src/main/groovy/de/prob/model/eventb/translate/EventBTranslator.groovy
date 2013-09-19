@@ -71,8 +71,7 @@ public class EventBTranslator {
 		}
 		graph.addVertex(name)
 
-		def proofFactory = new ProofFactory()
-		proofFactory.addProofs(baseFile, typeEnv)
+
 
 		def context = new Context(name)
 		def extendedContexts = []
@@ -106,8 +105,8 @@ public class EventBTranslator {
 		}
 		context.addConstants(constants)
 
-		proofFactory.addProofsFromContext(context)
-		context.addProofs(proofFactory.getProofs())
+		def proofs = new ProofFactory().addProofsForContext(context, baseFile, typeEnv)
+		context.addProofs(proofs)
 		components[name] = context
 		contexts << context
 		return context
@@ -118,9 +117,6 @@ public class EventBTranslator {
 			return components[name]
 		}
 		graph.addVertex(name)
-
-		def proofFactory = new ProofFactory()
-		proofFactory.addProofs(baseFile, typeEnv)
 
 		def machine = new EventBMachine(name)
 		def sees = []
@@ -167,9 +163,8 @@ public class EventBTranslator {
 		xml.event.each { events << extractEvent(it) }
 		machine.addEvents(events)
 
-		proofFactory.addProofsFromMachine(machine)
-
-		machine.addProofs(proofFactory.getProofs())
+		def proofs = new ProofFactory().addProofsForMachine(machine, baseFile, typeEnv)
+		machine.addProofs(proofs)
 		components[name] = machine
 		machines << machine
 		return machine

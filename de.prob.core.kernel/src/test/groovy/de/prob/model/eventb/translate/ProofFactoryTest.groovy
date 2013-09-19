@@ -6,6 +6,7 @@ import spock.lang.Specification
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBInvariant
+import de.prob.model.eventb.EventBMachine
 import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.proof.INV
 import de.prob.model.eventb.proof.SimpleProofNode
@@ -239,13 +240,16 @@ class ProofFactoryTest extends Specification {
 		def bprXML = new XmlParser().parseText(bprFile)
 		def proofXML = proofFactory.cacheProofXML(bprXML)
 
-		proofFactory.createProofClosures(predSetsXML, sequentsXML, proofXML)
 		def invariant = new EventBInvariant("inv7", "active ∩ waiting = ∅", false, new HashSet<IFormulaExtension>())
 		def event = new Event("del", EventType.ORDINARY)
-
-		def inv = proofFactory.getEventBased()['del']['inv7'][0](event, invariant)
+		def EventBMachine machine = new EventBMachine("testMachine")
+		machine.addInvariants([invariant])
+		machine.addEvents([event])
+		def proofs = proofFactory.addMachineProofs(machine, predSetsXML, sequentsXML, proofXML)
 
 		then:
+		!proofs.isEmpty()
+		def inv = proofs[0]
 		inv != null
 		inv instanceof INV
 		inv.getName() == "del/inv7/INV"
