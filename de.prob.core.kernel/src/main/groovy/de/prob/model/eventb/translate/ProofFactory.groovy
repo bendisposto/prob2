@@ -50,6 +50,8 @@ class ProofFactory {
 	def cachePredSetXML(xml) {
 		def cache = [:]
 		xml.poPredicateSet.each {
+			def name = it.@name
+			name = name.replace("\\","")
 			cache[it.@name] = it
 		}
 		return cache
@@ -83,6 +85,7 @@ class ProofFactory {
 			// extract hypotheses. At the beginning of a proof, this is the predicate set specified in the sequent
 			def predSetName = seq.poPredicateSet.@parentSet[0]
 			predSetName = predSetName.substring(predSetName.lastIndexOf('#')+1, predSetName.size());
+			predSetName = predSetName.replace("\\","")
 			def hyps = extractPredicateSet(predSetName, predSetsXML)
 
 			// extract discharged
@@ -125,6 +128,7 @@ class ProofFactory {
 		}
 		def parentSet = xml.@parentSet
 		parentSet = parentSet.substring(parentSet.lastIndexOf('#')+1, parentSet.size())
+		parentSet = parentSet.replace("\\", "")
 		preds.addAll(extractPredicateSet(parentSet, cachedSetXML))
 		return preds
 	}
@@ -435,7 +439,7 @@ class ProofFactory {
 				}
 			}
 
-			// ADD FIS
+			// ADD FIS AND WD
 			event.getActions().getKeys().each {
 				def actL = it.getKey()
 				def action = it.getValue()
