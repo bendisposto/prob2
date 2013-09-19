@@ -61,22 +61,22 @@ public class EventBMachine extends Machine {
 	}
 
 	def Event getEvent(String name) {
-		for (Event e : events) {
-			if (e.getName().equals(name)) return e;
-		}
-		return null;
+		return events[name]
 	}
 
-	def getProperty(String prop) {
-		if(prop == "variables") {
-			return getVariables()
-		} else if(prop == "invariants") {
-			return getInvariants()
-		} else if(prop == "variant") {
-			return getVariant()
-		} else if(prop == "events") {
-			return getEvents()
-		}
-		Machine.getMetaClass().getProperty(this, prop)
+	def EventBInvariant getInvariant(String name) {
+		return invariants[name]
+	}
+
+	def EventBVariable getVariable(String name) {
+		return invariants[name]
+	}
+
+	def EventBMachine getRefinedMachine(String name) {
+		return refines[name]
+	}
+
+	def Context getSeenContext(String name) {
+		return sees[name]
 	}
 }

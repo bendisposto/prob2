@@ -8,7 +8,12 @@ import de.prob.model.representation.ModelElementList
 
 public class Event extends BEvent {
 
-	private final EventType type;
+	def EventType type
+	def List<Event> refines
+	def List<EventBAction> actions
+	def List<EventBGuard> guards
+	def List<EventParameter> parameters
+	def List<Witness> witnesses
 
 	public enum EventType {
 		ORDINARY, CONVERGENT, ANTICIPATED
@@ -21,22 +26,27 @@ public class Event extends BEvent {
 
 	public void addRefines(final List<Event> refines) {
 		put(Event.class, refines);
+		this.refines = new ModelElementList<Event>(refines)
 	}
 
 	public void addGuards(final List<EventBGuard> guards) {
 		put(Guard.class, guards);
+		this.guards = new ModelElementList<Guard>(guards)
 	}
 
 	public void addActions(final List<EventBAction> actions) {
 		put(Action.class, actions);
+		this.actions = new ModelElementList<EventBAction>(actions)
 	}
 
 	public void addWitness(final List<Witness> witness) {
 		put(Witness.class, witness);
+		this.witnesses = new ModelElementList<Witness>(witness)
 	}
 
 	public void addParameters(final List<EventParameter> parameters) {
 		put(EventParameter.class, parameters);
+		this.parameters = new ModelElementList<EventParameter>(parameters)
 	}
 
 	public EventType getType() {
@@ -71,38 +81,23 @@ public class Event extends BEvent {
 		}
 	}
 
-	public List<Event> getRefines() {
-		return new ModelElementList<Event>(getChildrenOfType(BEvent.class));
+	def EventBAction getAction(String name) {
+		return actions[name]
 	}
 
-	public List<EventBGuard> getGuards() {
-		return new ModelElementList<EventBGuard>(getChildrenOfType(Guard.class))
+	def EventBGuard getGuard(String name) {
+		return guards[name]
 	}
 
-	public List<EventBAction> getActions() {
-		return new ModelElementList<EventBAction>(getChildrenOfType(Action.class))
+	def EventParameter getParameter(String name) {
+		return parameters[name]
 	}
 
-	public List<Witness> getWitnesses() {
-		return new ModelElementList<Witness>(getChildrenOfType(Witness.class))
+	def Event getRefinedEvent(String name) {
+		return refines[name]
 	}
 
-	public List<EventParameter> getParameters() {
-		return new ModelElementList<EventParameter>(getChildrenOfType(EventParameter.class))
-	}
-
-	def getProperty(String prop) {
-		if(prop == "refines") {
-			return getRefines()
-		} else if(prop == "guards") {
-			return getGuards()
-		} else if(prop == "actions") {
-			return getActions()
-		} else if(prop == "witness") {
-			return getWitness()
-		} else if(prop == "parameters") {
-			return getParameters()
-		}
-		Event.getMetaClass().getProperty(this, prop)
+	def Witness getWitness(String name) {
+		return witnesses[name]
 	}
 }
