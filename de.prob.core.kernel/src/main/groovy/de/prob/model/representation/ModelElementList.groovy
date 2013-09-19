@@ -176,4 +176,12 @@ public class ModelElementList<E> implements List<E> {
 	public String toString() {
 		return list.toString();
 	}
+
+	def getAt(int index) {
+		return get(index)
+	}
+
+	def getAt(String property) {
+		return keys[property]
+	}
 }

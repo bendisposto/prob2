@@ -12,7 +12,7 @@ public class EventBMachine extends Machine {
 	def List<Context> sees
 	def List<EventBVariable> variables
 	def List<EventBMachine> refines
-	def List<Event> events
+	def ModelElementList<Event> events
 	def List<EventBInvariant> invariants
 	def List<SimpleProofNode> proofs
 	def Variant variant
@@ -43,7 +43,7 @@ public class EventBMachine extends Machine {
 
 	public void addVariant(final List<Variant> variant) {
 		put(Variant.class, variant);
-		this.variant = variant
+		this.variant = variant.isEmpty() ? null : variant[0]
 	}
 
 	public void addEvents(final List<Event> events) {
