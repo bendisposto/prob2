@@ -9,16 +9,29 @@ import de.prob.exception.ProBError
 
 class StateSpaceTest extends Specification {
 
+	private class MyProvider<E> implements com.google.inject.Provider<E> {
+
+		def animator
+
+		def MyProvider(animator) {
+			this.animator = animator
+		}
+
+		@Override
+		public E get() {
+			return animator
+		}
+	}
+
 
 	def StateSpace s
 
 	def setup() {
 
 		def mock = mock(IAnimator.class)
-
 		doThrow(new ProBError("XXX")).when(mock).execute(any(Object.class));
 
-		s = new StateSpace(mock, new DirectedMultigraphProvider())
+		s = new StateSpace(new MyProvider<IAnimator>(mock), new DirectedMultigraphProvider())
 
 		def states = [
 			new StateId("1",s),
