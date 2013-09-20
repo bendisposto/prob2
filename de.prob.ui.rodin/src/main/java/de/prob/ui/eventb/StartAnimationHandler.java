@@ -2,6 +2,7 @@ package de.prob.ui.eventb;
 
 import groovy.lang.Binding;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.regex.Matcher;
@@ -11,6 +12,8 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -23,19 +26,16 @@ import com.google.inject.Injector;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.EventBModel;
-import de.prob.rodin.translate.EventBTranslator;
+import de.prob.model.eventb.translate.EventBTranslator;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.ui.eventb.internal.TranslatorFactory;
 import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;
 
 public class StartAnimationHandler extends AbstractHandler {
-	
-	
-	
 
 	private ISelection fSelection;
 
@@ -46,7 +46,13 @@ public class StartAnimationHandler extends AbstractHandler {
 
 		final IEventBRoot rootElement = getRootElement();
 
-		EventBTranslator eventBTranslator = new EventBTranslator(rootElement);
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		File workspaceDirectory = workspace.getRoot().getLocation().toFile();
+
+		String fileName = workspaceDirectory.getAbsolutePath()
+				+ rootElement.getResource().getFullPath().toOSString();
+
+		EventBTranslator eventBTranslator = new EventBTranslator(fileName);
 
 		Injector injector = ServletContextListener.INJECTOR;
 

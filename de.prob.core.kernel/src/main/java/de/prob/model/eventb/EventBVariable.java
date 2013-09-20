@@ -12,7 +12,26 @@ public class EventBVariable extends Variable {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public boolean equals(final Object that) {
+		if (this == that) {
+			return true;
+		}
+		if (this instanceof EventBVariable
+				&& this.getExpression().equals(
+						((EventBVariable) that).getExpression())) {
+			return true;
+		}
+		return super.equals(that);
+	}
+
+	@Override
+	public int hashCode() {
+		return getExpression().hashCode();
 	}
 }
