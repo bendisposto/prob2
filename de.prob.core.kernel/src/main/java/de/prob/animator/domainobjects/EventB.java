@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.eventb.core.ast.ASTProblem;
 import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.FormulaFactory;
@@ -19,8 +18,6 @@ import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.extension.IFormulaExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
@@ -67,27 +64,40 @@ public class EventB extends AbstractEvalElement {
 		kind = PREDICATE.toString();
 		IParseResult parseResult = FormulaFactory.getInstance(types)
 				.parsePredicate(unicode, LanguageVersion.LATEST, null);
+		List<String> errors = new ArrayList<String>();
 
 		if (!parseResult.hasProblem()) {
 			ast = preparePredicateAst(parseResult);
-
 		} else {
+			errors.add("Parsing predicate failed because: "
+					+ parseResult.toString());
 			kind = EXPRESSION.toString();
 			parseResult = FormulaFactory.getInstance(types).parseExpression(
 					unicode, LanguageVersion.LATEST, null);
 			if (!parseResult.hasProblem()) {
 				ast = prepareExpressionAst(parseResult);
 			} else {
+				errors.add("Parsing expression failed because: "
+						+ parseResult.toString());
 				kind = ASSIGNMENT.toString();
 				parseResult = FormulaFactory.getInstance(types)
 						.parseAssignment(unicode, LanguageVersion.LATEST, null);
 				if (!parseResult.hasProblem()) {
 					ast = prepareAssignmentAst(parseResult);
+				} else {
+					errors.add("Parsing assignment failed because: "
+							+ parseResult.toString());
 				}
 			}
 		}
 		if (parseResult.hasProblem()) {
-			throwException(code, parseResult);
+			for (String string : errors) {
+				logger.error(string);
+			}
+			logger.error("Parsing of code failed. Ascii is: " + code);
+			logger.error("Parsing of code failed. Unicode is: " + unicode);
+			throw new EvaluationException("Was not able to parse code: " + code
+					+ " See log for details.");
 		}
 	}
 
@@ -129,17 +139,6 @@ public class EventB extends AbstractEvalElement {
 					+ parsedPredicate.toString());
 		}
 		return visitor.getPredicate();
-	}
-
-	private void throwException(final String code,
-			final IParseResult parseResult) {
-		final List<ASTProblem> problems = parseResult.getProblems();
-		final ArrayList<String> msgs = new ArrayList<String>();
-		for (final ASTProblem astProblem : problems) {
-			msgs.add(astProblem.getMessage().toString());
-		}
-		final String error = Joiner.on(", \n").join(msgs);
-		throw new EvaluationException("Cannot parse " + code + ":\n " + error);
 	}
 
 	@Override
