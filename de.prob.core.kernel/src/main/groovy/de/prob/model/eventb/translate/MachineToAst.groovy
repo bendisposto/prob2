@@ -1,5 +1,8 @@
 package de.prob.model.eventb.translate
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus
 import de.be4.classicalb.core.parser.node.AConvergentEventstatus
 import de.be4.classicalb.core.parser.node.AEvent
@@ -13,23 +16,26 @@ import de.be4.classicalb.core.parser.node.ATheoremsModelClause
 import de.be4.classicalb.core.parser.node.AVariablesModelClause
 import de.be4.classicalb.core.parser.node.AVariantModelClause
 import de.be4.classicalb.core.parser.node.AWitness
+import de.be4.classicalb.core.parser.node.Node
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral
 import de.prob.model.eventb.Context
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBMachine
 import de.prob.model.representation.Machine
+import de.prob.prolog.output.IPrologTermOutput
 
-class MachineToPrologTranslator {
+class MachineToAst {
 
-	def AEventBModelParseUnit model = new AEventBModelParseUnit();
 	def EventBMachine machine
+	Logger logger = LoggerFactory.getLogger(MachineToAst.class)
 
-	def MachineToPrologTranslator(EventBMachine m) {
+	def MachineToAst(EventBMachine m) {
 		machine = m
 	}
 
-	def translateMachine() {
-		model.setName(new TIdentifierLiteral(machine.getName()))
+	def Node translateMachine() {
+		def AEventBModelParseUnit ast = new AEventBModelParseUnit();
+		ast.setName(new TIdentifierLiteral(machine.getName()))
 		def clauses = []
 
 		clauses << processContexts()
@@ -49,7 +55,8 @@ class MachineToPrologTranslator {
 		}
 		clauses << processEvents()
 
-		model.setModelClauses(clauses)
+		ast.setModelClauses(clauses)
+		return ast
 	}
 
 	def processVariables() {
@@ -165,5 +172,18 @@ class MachineToPrologTranslator {
 				break
 		}
 		return res
+	}
+
+	def printProofsToProlog(IPrologTermOutput pto) {
+		machine.getProofs().each {
+			pto.openTerm("po")
+			pto.printAtom(machine.getName())
+			pto.printAtom(it.getDescription())
+			pto.openList()
+			it.toProlog(pto)
+			pto.closeList()
+			pto.printAtom(String.valueOf(it.isDischarged()))
+			pto.closeTerm()
+		}
 	}
 }

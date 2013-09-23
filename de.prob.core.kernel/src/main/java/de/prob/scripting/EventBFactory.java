@@ -8,10 +8,12 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.animator.command.LoadEventBCommand;
+import de.prob.animator.command.LoadEventBProjectCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.eventb.translate.EventBToPrologTranslator;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
@@ -31,6 +33,14 @@ public class EventBFactory {
 	public EventBModel load(final String file) {
 		EventBModel model = modelProvider.get();
 		model.initialize(file);
+
+		StateSpace s = model.getStatespace();
+		s.execute(new LoadEventBProjectCommand(new EventBToPrologTranslator(
+				model)));
+		s.execute(new StartAnimationCommand());
+
+		subscribeVariables(model);
+
 		return model;
 	}
 

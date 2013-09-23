@@ -100,8 +100,9 @@ public class EventBTranslator {
 		context.addAxioms(axioms)
 
 		def constants = []
-		xml.constant.'@identifier'.each {
-			constants << new EventBConstant(it)
+		xml.constant.each {
+			def isAbstract = it.'@de.prob.symbolic.symbolicAttribute' == "true"
+			constants << new EventBConstant(it.@identifier, isAbstract)
 		}
 		context.addConstants(constants)
 
