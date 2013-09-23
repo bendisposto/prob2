@@ -7,18 +7,16 @@ import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBInvariant;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class INV extends SimpleProofNode implements IProofObligation {
+public class INV extends ProofObligation {
 
 	private final Event event;
 	private final EventBInvariant invariant;
-	private final String name;
 
 	public INV(final String proofName, final Event event,
 			final EventBInvariant invariant, final EventB goal,
 			final Set<EventB> hypotheses, final boolean discharged,
 			final String description) {
-		super(goal, hypotheses, discharged, description);
-		name = proofName;
+		super(proofName, goal, hypotheses, discharged, description);
 		this.event = event;
 		this.invariant = invariant;
 	}
@@ -31,10 +29,6 @@ public class INV extends SimpleProofNode implements IProofObligation {
 		return event;
 	}
 
-	public String getName() {
-		return name;
-	}
-
 	@Override
 	public String toString() {
 		return name;
@@ -42,7 +36,12 @@ public class INV extends SimpleProofNode implements IProofObligation {
 
 	@Override
 	public void toProlog(final IPrologTermOutput pto) {
-		// TODO Auto-generated method stub
+		pto.openTerm("event");
+		pto.printAtom(event.getName());
+		pto.closeTerm();
 
+		pto.openTerm("invariant");
+		pto.printAtom(invariant.getName());
+		pto.closeTerm();
 	}
 }

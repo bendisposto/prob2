@@ -1,6 +1,6 @@
 package de.prob.model.eventb;
 
-import de.prob.model.eventb.proof.SimpleProofNode
+import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
@@ -10,11 +10,11 @@ import de.prob.model.representation.ModelElementList
 public class Context extends AbstractElement {
 
 	private final String name;
-	def List<? extends SimpleProofNode> proofs
+	def List<ProofObligation> proofs
 	def List<Context> Extends
 	def List<BSet> sets
-	def List<Axiom> axioms
-	def List<Constant> constants
+	def List<EventBAxiom> axioms
+	def List<EventBConstant> constants
 
 	public Context(final String name) {
 		this.name = name;
@@ -44,9 +44,9 @@ public class Context extends AbstractElement {
 		this.axioms = new ModelElementList<EventBAxiom>(axioms)
 	}
 
-	public void addProofs(final List<? extends SimpleProofNode> proofs) {
-		put(SimpleProofNode.class, proofs);
-		this.proofs = new ModelElementList<? extends SimpleProofNode>(proofs);
+	public void addProofs(final List<ProofObligation> proofs) {
+		put(ProofObligation.class, proofs);
+		this.proofs = new ModelElementList<ProofObligation>(proofs);
 	}
 
 	@Override

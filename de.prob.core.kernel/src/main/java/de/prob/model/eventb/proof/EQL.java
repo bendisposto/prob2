@@ -5,11 +5,9 @@ import java.util.Set;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBVariable;
-import de.prob.prolog.output.IPrologTermOutput;
 
-public class EQL extends SimpleProofNode implements IProofObligation {
+public class EQL extends ProofObligation {
 
-	private final String name;
 	private final EventBVariable variable;
 	private final Event event;
 
@@ -17,14 +15,9 @@ public class EQL extends SimpleProofNode implements IProofObligation {
 			final EventBVariable variable, final EventB goal,
 			final Set<EventB> hypotheses, final boolean discharged,
 			final String description) {
-		super(goal, hypotheses, discharged, description);
-		name = proofName;
+		super(proofName, goal, hypotheses, discharged, description);
 		this.variable = variable;
 		this.event = event;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public EventBVariable getVariable() {
@@ -38,12 +31,6 @@ public class EQL extends SimpleProofNode implements IProofObligation {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	@Override
-	public void toProlog(final IPrologTermOutput pto) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

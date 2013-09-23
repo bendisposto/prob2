@@ -1,6 +1,6 @@
 package de.prob.model.eventb;
 
-import de.prob.model.eventb.proof.SimpleProofNode
+import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
@@ -12,9 +12,9 @@ public class EventBMachine extends Machine {
 	def List<Context> sees
 	def List<EventBVariable> variables
 	def List<EventBMachine> refines
-	def ModelElementList<Event> events
+	def List<Event> events
 	def List<EventBInvariant> invariants
-	def List<SimpleProofNode> proofs
+	def List<ProofObligation> proofs
 	def Variant variant
 
 	public EventBMachine(final String name) {
@@ -51,9 +51,9 @@ public class EventBMachine extends Machine {
 		this.events = new ModelElementList<Event>(events)
 	}
 
-	public void addProofs(final List<? extends SimpleProofNode> proofs) {
-		put(SimpleProofNode.class, proofs);
-		this.proofs = new ModelElementList<SimpleProofNode>(proofs)
+	public void addProofs(final List<ProofObligation> proofs) {
+		put(ProofObligation.class, proofs);
+		this.proofs = new ModelElementList<ProofObligation>(proofs)
 	}
 
 	public List<Event> getOperations() {

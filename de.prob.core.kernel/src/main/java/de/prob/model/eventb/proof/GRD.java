@@ -7,9 +7,8 @@ import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBGuard;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class GRD extends SimpleProofNode implements IProofObligation {
+public class GRD extends ProofObligation {
 
-	private final String name;
 	private final EventBGuard guard;
 	private final Event event;
 
@@ -17,14 +16,9 @@ public class GRD extends SimpleProofNode implements IProofObligation {
 			final EventBGuard guard, final EventB goal,
 			final Set<EventB> hypotheses, final boolean discharged,
 			final String description) {
-		super(goal, hypotheses, discharged, description);
-		name = proofName;
+		super(proofName, goal, hypotheses, discharged, description);
 		this.guard = guard;
 		this.event = event;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public EventBGuard getGuard() {
@@ -42,7 +36,15 @@ public class GRD extends SimpleProofNode implements IProofObligation {
 
 	@Override
 	public void toProlog(final IPrologTermOutput pto) {
-		// TODO Auto-generated method stub
+		pto.openTerm("event");
+		pto.printAtom(event.getName());
+		pto.closeTerm();
+		pto.openTerm("guard");
+		pto.printAtom(guard.getName());
+		pto.closeTerm();
+		pto.openTerm("event");
+		pto.printAtom(guard.getParentEvent().getName());
+		pto.closeTerm();
 
 	}
 }

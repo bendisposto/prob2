@@ -15,6 +15,7 @@ import de.prob.model.eventb.proof.GRD
 import de.prob.model.eventb.proof.INV
 import de.prob.model.eventb.proof.MRG
 import de.prob.model.eventb.proof.NAT
+import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.eventb.proof.SIM
 import de.prob.model.eventb.proof.SimpleProofNode
 import de.prob.model.eventb.proof.THM
@@ -29,10 +30,7 @@ class ProofFactory {
 
 	private Logger logger = LoggerFactory.getLogger(ProofFactory.class)
 
-	def List<? extends SimpleProofNode> proofs = []
 	def Set<IFormulaExtension> typeEnv
-	def global = [:]
-	def eventBased = [:]
 
 	def getXML(file) {
 		def text = file.text.replaceAll("org.eventb.core.","")
@@ -90,7 +88,7 @@ class ProofFactory {
 	}
 
 	def addMachineProofs(EventBMachine m, predSetsXML, sequentsXML, proofXML) {
-		List<? extends SimpleProofNode> proofs = []
+		List<ProofObligation> proofs = []
 		sequentsXML.each {
 			def name = it.getKey()
 			def seq = it.getValue()
@@ -240,7 +238,7 @@ class ProofFactory {
 	}
 
 	def addContextProofs(Context c, predSetsXML, sequentsXML, proofXML) {
-		List<? extends SimpleProofNode> proofs = []
+		List<ProofObligation> proofs = []
 		sequentsXML.each {
 			def name = it.getKey()
 			def seq = it.getValue()

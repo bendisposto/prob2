@@ -4,22 +4,15 @@ import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
-import de.prob.prolog.output.IPrologTermOutput;
 
-public class MRG extends SimpleProofNode implements IProofObligation {
+public class MRG extends ProofObligation {
 	private final Event event;
-	private final String name;
 
 	public MRG(final String proofName, final Event event, final EventB goal,
 			final Set<EventB> hypotheses, final boolean discharged,
 			final String description) {
-		super(goal, hypotheses, discharged, description);
-		name = proofName;
+		super(proofName, goal, hypotheses, discharged, description);
 		this.event = event;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public Event getEvent() {
@@ -29,12 +22,6 @@ public class MRG extends SimpleProofNode implements IProofObligation {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	@Override
-	public void toProlog(final IPrologTermOutput pto) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
