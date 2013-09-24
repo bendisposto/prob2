@@ -39,11 +39,8 @@ public class StartAnimationHandler extends AbstractHandler {
 
 		final IEventBRoot rootElement = getRootElement();
 
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		File workspaceDirectory = workspace.getRoot().getLocation().toFile();
-
-		String fileName = workspaceDirectory.getAbsolutePath()
-				+ rootElement.getResource().getFullPath().toOSString();
+		String fileName = rootElement.getResource().getRawLocation()
+				.makeAbsolute().toOSString();
 
 		EventBTranslator eventBTranslator = new EventBTranslator(fileName);
 
