@@ -3,10 +3,6 @@ package de.prob.ui.eventb;
 import groovy.lang.Binding;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -23,15 +19,12 @@ import org.rodinp.core.RodinCore;
 
 import com.google.inject.Injector;
 
-import de.prob.animator.command.LoadEventBCommand;
-import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.translate.EventBTranslator;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
-import de.prob.ui.eventb.internal.TranslatorFactory;
 import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;
 
@@ -59,27 +52,9 @@ public class StartAnimationHandler extends AbstractHandler {
 		final EventBFactory instance = injector
 				.getInstance(EventBFactory.class);
 
-		EventBModel model = instance.load(eventBTranslator.getMainComponent(),
-				eventBTranslator.getMachines(), eventBTranslator.getContexts(),
-				eventBTranslator.getModelFile());
-
-		StringWriter writer = new StringWriter();
-		PrintWriter pto = new PrintWriter(writer);
-		try {
-			TranslatorFactory.translate(rootElement, pto);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
+		EventBModel model = instance.load(fileName);
 
 		StateSpace s = model.getStatespace();
-
-		Pattern p2 = Pattern.compile("^package\\((.*?)\\)\\.");
-		Matcher m2 = p2.matcher(writer.toString());
-		m2.find();
-		String cmd = m2.group(1);
-
-		s.execute(new LoadEventBCommand(cmd));
-		s.execute(new StartAnimationCommand());
 
 		Trace h = new Trace(s);
 		AnimationSelector selector = injector
