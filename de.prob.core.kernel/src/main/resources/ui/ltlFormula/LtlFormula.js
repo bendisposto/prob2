@@ -5,27 +5,41 @@ LtlFormula = (function() {
 	$(document).ready(function() {
 	});
 
-	function setFormulas(formulargs, stati) {
+	function setContent(formulargs) {
 		formulas = JSON.parse(formulargs)
 		$(".formula").remove()
 		for (formula in formulas) {
-			$("#content").prepend(
-					'<li id="' + formula + '" class="formula">' + formulas[formula] + '</li>')
+			var co = formulas[formula]
+			console.log("foo")
+			console.log(co)
+						
+			$("#content").append(
+					session.render("/ui/ltlFormula/formula_table.html", co))
 		}
-		$(".formula").click(function(e) {
+		$(".formula-click").click(function(e) {
 			clickFormula(e.target.id)
+		})
+		$(".close-button").click(function(e) {
+			removeFormula(e.target.id)
 		})
 	}
 
 	function clickFormula(id) {
-		session.sendCmd("gotoPos", {
+		session.sendCmd("checkNthFormula", {
+			"pos" : id,
+			"client" : extern.client
+		})
+	}
+	
+	function removeFormula(id) {
+		session.sendCmd("removeFormula", {
 			"pos" : id,
 			"client" : extern.client
 		})
 	}
 
 	extern.setFormulas = function(data) {
-		setFormulas(data.formulas, data.stati)
+		setContent(data.formulas)
 	}
 	extern.client = ""
 	extern.init = session.init

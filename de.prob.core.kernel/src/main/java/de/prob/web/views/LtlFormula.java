@@ -17,7 +17,7 @@ import de.prob.web.WebUtils;
 public class LtlFormula extends AbstractSession {
 
 	enum status {
-		unchecked, f, t;
+		unchecked, FALSE, TRUE;
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);
@@ -47,26 +47,39 @@ public class LtlFormula extends AbstractSession {
 	}
 
 	public void submit_formulas() {
-		String[] stringRepresentation = new String[formulas.size()];
-		for (int i = 0; i < formulas.size(); i++) {
-			stringRepresentation[i] = formulas.get(i).toString();
+		final int len = formulas.size();
+		Object[] res = new Object[len];
+		for (int i = 0; i < len; i++) {
+			res[i] = WebUtils.wrap("id", String.valueOf(i), "formulaText",
+					formulas.get(i).toString(), "status", stati.get(i)
+							.toString());
 		}
-		// Object[] formulaArray = formulas.toArray();
-		// Object[] formulaArray = stringRepresentation.toArray();
-		Object[] statiArray = stati.toArray();
 		Map<String, String> wrap = WebUtils.wrap("cmd",
-				"LtlFormula.setFormulas",
-				"formulas",
-				WebUtils.toJson(stringRepresentation), "stati",
-				WebUtils.toJson(statiArray));
+				"LtlFormula.setFormulas", "formulas", WebUtils.toJson(res));
+
 		submit(wrap);
 	}
 
-	public Object gotoPos(Map<String, String[]> params) {
-		logger.trace("Goto Position in LtlFormula");
+	public Object checkNthFormula(Map<String, String[]> params) {
 		int pos = Integer.parseInt(get(params, "pos"));
+		if (stati.get(pos) != status.unchecked) {
+			return null;
+		}
+
 		stati.remove(pos);
-		stati.add(pos, status.t);
+		if (formulas.get(pos).toString().length() % 3 == 0) {
+			stati.add(pos, status.TRUE);
+		} else {
+			stati.add(pos, status.FALSE);
+		}
+		submit_formulas();
+		return null;
+	}
+
+	public Object removeFormula(Map<String, String[]> params) {
+		int pos = Integer.parseInt(get(params, "pos"));
+		formulas.remove(pos);
+		stati.remove(pos);
 		submit_formulas();
 		return null;
 	}
