@@ -31,11 +31,16 @@ LtlFormula = (function() {
 			$("#content").append(
 					session.render("/ui/ltlFormula/formula_table.html", co))
 		}
-		$(".formula-click").click(function(e) {
+
+		$(".status-click").click(function(e) {
 			clickFormula(e.target.id)
 		})
 		$(".close-button").click(function(e) {
 			removeFormula(e.target.id)
+		})
+		$(".edit-button").click(function(e) {
+			removeFormula(e.target.id)
+			$("input")[0].value = e.target.parentNode.parentNode.childNodes[1].firstChild.wholeText
 		})
 	}
 
