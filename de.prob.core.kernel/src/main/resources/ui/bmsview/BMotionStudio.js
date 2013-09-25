@@ -4,6 +4,7 @@ bms = (function() {
 	var session = Session();
 	var svgCanvas = null;
 	var svgElement = null;
+	var isInit = false;	
 	
 	$(document).ready(function() {
 		
@@ -23,11 +24,7 @@ bms = (function() {
 			}
 
 		});
-
-		// Init Embedded SVG Editor
-		var frame = document.getElementById('svgedit');
-		svgCanvas = new embedded_svg_edit(frame);
-		
+			
 	});
 	
 	// --------------------------------------------
@@ -129,7 +126,7 @@ bms = (function() {
 		svgElement = $(e);
 		var svgstring = $(e).toHtmlString()
 		$("#dialog").dialog("open");
-		svgCanvas.setSvgString(svgstring);
+   		svgCanvas.setSvgString(svgstring);
 	}
 
 	function saveSvg() {
@@ -151,12 +148,18 @@ bms = (function() {
 
 	$("#dialog").dialog({
 		bgiframe : true,
-		autoOpen : false,
+		autoOpen : true,
 		height : 775,
 		width : 1055,
 		modal : true
 	});
 
+	$("#svgedit").load(function() {
+		var frame = document.getElementById('svgedit');
+		svgCanvas = new embedded_svg_edit(frame);
+		$("#dialog").dialog("close");
+	});
+	
 	$('#dialog').bind('dialogclose', function(event) {
 		saveSvg();
 	});	
@@ -244,11 +247,12 @@ bms = (function() {
 	
 	function restoreObserver(observer) {
 		var observerList = $('#svgedit').contents().find('#observer_list')
-		for ( var i = observer.length - 1; i >= 0; i--) {
+		for ( var i = 0; i <= observer.length - 1; i++) {
 			var o = observer[i];
+			var odata = JSON.parse(o.data)
 			observerList.append(
 			"<h3>New Observer</h3><div>" + 
-			session.render("/ui/bmsview/observer/predicateObserverForm.html", { id : "bla" } ) +
+			session.render("/ui/bmsview/observer/predicateObserverForm.html", odata) +
 			"</div>")
 		}
 	}
@@ -442,11 +446,7 @@ bms = (function() {
 		})
 	}
 	// --------------------------------------------
-	
-	$("#svgedit").load(function (){
-		session.sendCmd("iframeLoaded", {})
-	});
-	
+		
 	return extern;
 
 }())

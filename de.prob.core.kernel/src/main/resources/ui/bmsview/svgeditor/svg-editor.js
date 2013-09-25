@@ -2542,13 +2542,9 @@
 			var openObserverDialog = function() {
 				if (selectedElement != null || multiselected) {
 					
-					console.log("ATTEMPT TO OPEN DIALOG")
-					
 					$("#dialog_observer").dialog("open");
 					$("#observer_list").accordion('destroy').accordion();
-					
 					var idSelectedElement = $(selectedElement).attr("id");
-					
 					$("#selectedElement").html(idSelectedElement);
 					
 //					$(selectedElement).each(function() {
