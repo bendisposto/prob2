@@ -1,10 +1,9 @@
 package de.prob.model.eventb.proof;
 
-import java.util.Set;
-
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBVariable;
+import de.prob.model.eventb.translate.ProofTreeCreator;
 
 public class EQL extends ProofObligation {
 
@@ -13,9 +12,9 @@ public class EQL extends ProofObligation {
 
 	public EQL(final String proofName, final Event event,
 			final EventBVariable variable, final EventB goal,
-			final Set<EventB> hypotheses, final boolean discharged,
-			final String description) {
-		super(proofName, goal, hypotheses, discharged, description);
+			final boolean discharged, final String description,
+			final ProofTreeCreator creator) {
+		super(proofName, goal, discharged, description, creator);
 		this.variable = variable;
 		this.event = event;
 	}

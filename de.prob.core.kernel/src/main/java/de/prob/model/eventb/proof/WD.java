@@ -1,12 +1,11 @@
 package de.prob.model.eventb.proof;
 
-import java.util.Set;
-
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.EventBAction;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBGuard;
 import de.prob.model.eventb.EventBInvariant;
+import de.prob.model.eventb.translate.ProofTreeCreator;
 import de.prob.model.representation.AbstractElement;
 import de.prob.prolog.output.IPrologTermOutput;
 
@@ -15,9 +14,9 @@ public class WD extends ProofObligation {
 	private final AbstractElement originalFormula;
 
 	public WD(final String proofName, final AbstractElement originalFormula,
-			final EventB goal, final Set<EventB> hypotheses,
-			final boolean discharged, final String description) {
-		super(proofName, goal, hypotheses, discharged, description);
+			final EventB goal, final boolean discharged,
+			final String description, final ProofTreeCreator creator) {
+		super(proofName, goal, discharged, description, creator);
 		this.originalFormula = originalFormula;
 	}
 

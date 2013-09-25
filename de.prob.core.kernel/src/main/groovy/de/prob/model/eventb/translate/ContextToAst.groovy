@@ -54,9 +54,9 @@ class ContextToAst {
 
 		context.getConstants().each {
 			if(it.isAbstract()) {
-				abstractConstants << it.getExpression().ast
+				abstractConstants << it.getExpression().getAst()
 			} else {
-				concreteConstants << it.getExpression().ast
+				concreteConstants << it.getExpression().getAst()
 			}
 		}
 
@@ -72,9 +72,9 @@ class ContextToAst {
 
 		context.getAxioms().each {
 			if(it.isTheorem()) {
-				theorems << it.getPredicate().ast
+				theorems << it.getPredicate().getAst()
 			} else {
-				axioms << it.getPredicate().ast
+				axioms << it.getPredicate().getAst()
 			}
 		}
 		return [

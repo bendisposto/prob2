@@ -18,10 +18,8 @@ import de.be4.classicalb.core.parser.node.AVariantModelClause
 import de.be4.classicalb.core.parser.node.AWitness
 import de.be4.classicalb.core.parser.node.Node
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral
-import de.prob.model.eventb.Context
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBMachine
-import de.prob.model.representation.Machine
 import de.prob.prolog.output.IPrologTermOutput
 
 class MachineToAst {
@@ -62,7 +60,7 @@ class MachineToAst {
 	def processVariables() {
 		def ids = []
 		machine.getVariables().each {
-			ids << it.getExpression().ast
+			ids << it.getExpression().getAst()
 		}
 		return new AVariablesModelClause(ids)
 	}
@@ -71,7 +69,7 @@ class MachineToAst {
 		def invs = []
 		machine.getInvariants().each {
 			if(!it.isTheorem()) {
-				invs << it.getPredicate().ast
+				invs << it.getPredicate().getAst()
 			}
 		}
 		return new AInvariantModelClause(invs)
@@ -81,7 +79,7 @@ class MachineToAst {
 		def thms = []
 		machine.getInvariants().each {
 			if(it.isTheorem()) {
-				thms << it.getPredicate().ast
+				thms << it.getPredicate().getAst()
 			}
 		}
 		return new ATheoremsModelClause(thms)
@@ -89,13 +87,13 @@ class MachineToAst {
 
 	def processVariant() {
 		if(machine.getVariant() != null) {
-			return new AVariantModelClause(machine.getVariant().getExpression().ast)
+			return new AVariantModelClause(machine.getVariant().getExpression().getAst())
 		}
 		return null
 	}
 
 	def processContexts() {
-		def contexts = machine.getChildrenOfType(Context.class);
+		def contexts = machine.getSees()
 		def contextNames = []
 		contexts.each {
 			contextNames << new TIdentifierLiteral(it.getName())
@@ -104,9 +102,9 @@ class MachineToAst {
 	}
 
 	def processRefines() {
-		def refines = machine.getChildrenOfType(Machine.class)
+		def refines = machine.getRefines()
 		if(!refines.isEmpty()) {
-			return new ARefinesModelClause(refines[0].getName())
+			return new ARefinesModelClause(new TIdentifierLiteral(refines[0].getName()))
 		}
 		return null
 	}
@@ -126,7 +124,7 @@ class MachineToAst {
 
 			def params = []
 			it.getParameters().each {
-				params << it.getExpression().ast
+				params << it.getExpression().getAst()
 			}
 			event.setVariables(params)
 
@@ -134,9 +132,9 @@ class MachineToAst {
 			def theorems = []
 			it.getGuards().each {
 				if(it.isTheorem()) {
-					theorems << it.getPredicate().ast
+					theorems << it.getPredicate().getAst()
 				} else {
-					guards << it.getPredicate().ast
+					guards << it.getPredicate().getAst()
 				}
 			}
 			event.setGuards(guards)
@@ -144,13 +142,13 @@ class MachineToAst {
 
 			def witnesses = []
 			it.getWitnesses().each {
-				witnesses << new AWitness(new TIdentifierLiteral(it.getName()), it.getPredicate().ast)
+				witnesses << new AWitness(new TIdentifierLiteral(it.getName()), it.getPredicate().getAst())
 			}
 			event.setWitness(witnesses)
 
 			def actions = []
 			it.getActions().each {
-				actions << it.getCode().ast
+				actions << it.getCode().getAst()
 			}
 			event.setAssignments(actions)
 			events << event

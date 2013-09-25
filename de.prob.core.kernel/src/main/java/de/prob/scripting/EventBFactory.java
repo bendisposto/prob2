@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.animator.command.LoadEventBCommand;
-import de.prob.animator.command.LoadEventBProjectCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
@@ -19,6 +18,7 @@ import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
 import de.prob.model.serialize.ModelObject;
 import de.prob.model.serialize.Serializer;
+import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.statespace.StateSpace;
 
 public class EventBFactory {
@@ -32,14 +32,25 @@ public class EventBFactory {
 
 	public EventBModel load(final String file) {
 		EventBModel model = modelProvider.get();
+		long time = System.currentTimeMillis();
 		model.initialize(file);
+		System.out.println("Translating: "
+				+ (System.currentTimeMillis() - time));
 
 		StateSpace s = model.getStatespace();
-		s.execute(new LoadEventBProjectCommand(new EventBToPrologTranslator(
-				model)));
-		s.execute(new StartAnimationCommand());
+		time = System.currentTimeMillis();
+		// AbstractCommand cmd = new LoadEventBProjectCommand(
+		// new EventBToPrologTranslator(model));
+		PrologTermStringOutput pto = new PrologTermStringOutput();
+		EventBToPrologTranslator eventBToPrologTranslator = new EventBToPrologTranslator(
+				model);
+		eventBToPrologTranslator.printProlog(pto);
 
-		subscribeVariables(model);
+		System.out.println("To Prolog: " + (System.currentTimeMillis() - time));
+		// s.execute(cmd);
+		// s.execute(new StartAnimationCommand());
+
+		// subscribeVariables(model);
 
 		return model;
 	}

@@ -1,10 +1,9 @@
 package de.prob.model.eventb.proof;
 
-import java.util.Set;
-
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBAction;
+import de.prob.model.eventb.translate.ProofTreeCreator;
 
 public class SIM extends ProofObligation {
 
@@ -13,9 +12,9 @@ public class SIM extends ProofObligation {
 
 	public SIM(final String proofName, final Event event,
 			final EventBAction action, final EventB goal,
-			final Set<EventB> hypotheses, final boolean discharged,
-			final String description) {
-		super(proofName, goal, hypotheses, discharged, description);
+			final boolean discharged, final String description,
+			final ProofTreeCreator creator) {
+		super(proofName, goal, discharged, description, creator);
 		this.action = action;
 		this.event = event;
 	}
