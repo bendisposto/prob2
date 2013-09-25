@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.PrologTerm;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -24,7 +23,7 @@ public class LtlFormula extends AbstractSession {
 
 	// private final Map<PrologTerm, status> formulas = new HashMap<PrologTerm,
 	// status>();
-	private final List<PrologTerm> formulas = new ArrayList<PrologTerm>();
+	private final List<String> formulas = new ArrayList<String>();
 	private final List<status> stati = new ArrayList<status>();
 
 	public LtlFormula() {
@@ -38,9 +37,9 @@ public class LtlFormula extends AbstractSession {
 						"btrans", new CompoundPrologTerm("event",
 								new CompoundPrologTerm("new")))));
 		CompoundPrologTerm cpt3 = new CompoundPrologTerm("true");
-		formulas.add(cpt1);
-		formulas.add(cpt2);
-		formulas.add(cpt3);
+		formulas.add(cpt1.toString());
+		formulas.add(cpt2.toString());
+		formulas.add(cpt3.toString());
 		stati.add(status.unchecked);
 		stati.add(status.unchecked);
 		stati.add(status.unchecked);
@@ -51,7 +50,7 @@ public class LtlFormula extends AbstractSession {
 		Object[] res = new Object[len];
 		for (int i = 0; i < len; i++) {
 			res[i] = WebUtils.wrap("id", String.valueOf(i), "formulaText",
-					formulas.get(i).toString(), "status", stati.get(i)
+					formulas.get(i), "status", stati.get(i)
 							.toString());
 		}
 		Map<String, String> wrap = WebUtils.wrap("cmd",
@@ -67,7 +66,7 @@ public class LtlFormula extends AbstractSession {
 		}
 
 		stati.remove(pos);
-		if (formulas.get(pos).toString().length() % 3 == 0) {
+		if (formulas.get(pos).length() % 3 == 0) {
 			stati.add(pos, status.TRUE);
 		} else {
 			stati.add(pos, status.FALSE);
@@ -80,6 +79,19 @@ public class LtlFormula extends AbstractSession {
 		int pos = Integer.parseInt(get(params, "pos"));
 		formulas.remove(pos);
 		stati.remove(pos);
+		submit_formulas();
+		return null;
+	}
+
+	public Object addFormula(Map<String, String[]> params) {
+		String formula = get(params, "val");
+		if (formula == null || formula.isEmpty()) {
+			return null;
+		}
+
+		formulas.add(formula);
+		stati.add(status.unchecked);
+		logger.trace(params.toString());
 		submit_formulas();
 		return null;
 	}
