@@ -45,7 +45,10 @@ public class EventBModel extends AbstractModel {
 	}
 
 	public void initialize(final String file) {
+		long time = System.currentTimeMillis();
 		EventBTranslator translator = new EventBTranslator(file);
+		System.out.println("Creation of EventBTranslator: "
+				+ (System.currentTimeMillis() - time));
 		graph = translator.getGraph();
 		modelFile = translator.getModelFile();
 		mainComponent = translator.getMainComponent();

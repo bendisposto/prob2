@@ -1,5 +1,7 @@
 package de.prob.model.eventb.translate;
 
+import org.eventb.core.ast.extension.IFormulaExtension
+
 import de.prob.model.eventb.Context
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBAction
@@ -13,6 +15,7 @@ import de.prob.model.eventb.EventParameter
 import de.prob.model.eventb.Variant
 import de.prob.model.eventb.Witness
 import de.prob.model.eventb.Event.EventType
+import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.BSet
@@ -24,193 +27,172 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 public class EventBTranslator {
 
 	def File modelFile
-	def private directoryPath
+	def private String directoryPath
 	def AbstractElement mainComponent
 	def Map<String,AbstractElement> components = [:]
 	def List<EventBMachine> machines = []
 	def List<Context> contexts = []
 	def List<Theory> theories = []
-	def typeEnv
-	def private events = [:]
+	def Set<IFormulaExtension> typeEnv
+	def private Map<String, Event> events = [:]
 	def DirectedSparseMultigraph<String,RefType> graph = new DirectedSparseMultigraph<String, RefType>()
 
-	def EventBTranslator(fileName) {
+	def EventBTranslator(String fileName) {
+		long time = System.currentTimeMillis()
 		modelFile = new File(fileName)
-		def name = modelFile.getName().lastIndexOf('.').with {
-			it != -1 ? modelFile.getName()[0..<it] : modelFile.getName()
-		}
-		directoryPath = modelFile.getAbsolutePath().lastIndexOf('/').with {
-			it != -1 ? modelFile.getAbsolutePath()[0..<it] : modelFile.getAbsolutePath()
-		}
-		def theoryTranslator = new TheoryTranslator()
+		long time1 = System.currentTimeMillis()
+
+		int index = modelFile.getName().lastIndexOf('.')
+		String name = index != -1 ? modelFile.getName().substring(0,index) : modelFile.getName()
+
+		index = modelFile.getAbsolutePath().lastIndexOf('/')
+		directoryPath = index != -1 ? modelFile.getAbsolutePath().substring(0, index) : modelFile.getAbsolutePath()
+		println "Groovy String manipulation: "+ (System.currentTimeMillis() - time1)
+
+		TheoryTranslator theoryTranslator = new TheoryTranslator()
 		theories = theoryTranslator.getTheories(directoryPath)
 		typeEnv = theoryTranslator.getExtensions()
 
-		def baseFile = "${directoryPath}/${name}"
+		String baseFile = "${directoryPath}/${name}"
+		println "Init Translator: "+(System.currentTimeMillis()-time)
 
+		time = System.currentTimeMillis()
 		mainComponent = extractComponent(name, getXML(modelFile), baseFile)
+		println "Extracting Component: "+(System.currentTimeMillis()-time)
 	}
 
-	def getXML(file) {
-		def text = file.text.replaceAll("org.eventb.core.","")
-		return new XmlParser().parseText(text)
+	def Node getXML(file) {
+		long time = System.currentTimeMillis()
+		String text = file.text.replaceAll("org.eventb.core.","")
+		Node parser = new XmlParser().parseText(text)
+		println "Extracted "+file.absolutePath+" in: "+(System.currentTimeMillis() - time)
+		return parser
 	}
 
-	def extractComponent(name, xml, baseFile) {
-		if(xml.name() == "contextFile") {
+	def AbstractElement extractComponent(name, xml, baseFile) {
+		String xmlName = xml.name()
+		if(xmlName == "contextFile") {
 			return extractContext(name, xml, baseFile);
-		}
-		if(xml.name() == "machineFile") {
+		} else if(xmlName == "machineFile") {
 			return extractMachine(name, xml, baseFile);
 		}
 	}
 
-	def extractContext(name, xml, baseFile) {
-		if(components.containsKey(name)) {
-			return components[name]
-		}
+	def Context extractContext(name, xml, baseFile) {
+		long time = System.currentTimeMillis()
 		graph.addVertex(name)
 
-
-
-		def context = new Context(name)
-		def extendedContexts = []
+		Context context = new Context(name)
+		List<Context> extendedContexts = []
 		xml.extendsContext.'@target'.each {
-			def f = new File("${directoryPath}/${it}.buc")
-			def newBaseFile = "${directoryPath}/${it}"
-			extendedContexts << extractContext(it,getXML(f),newBaseFile)
+			if(components.containsKey(it)) {
+				extendedContexts.add(components[it])
+			} else {
+				File f = new File("${directoryPath}/${it}.buc")
+				String newBaseFile = "${directoryPath}/${it}"
+				extendedContexts.add(extractContext(it,getXML(f),newBaseFile))
+			}
 			graph.addEdge(new RefType(ERefType.EXTENDS), name, it)
 		}
 		context.addExtends(extendedContexts)
 
-		def sets = []
-		xml.carrierSet.'@identifier'.each {
-			sets << new BSet(it)
-		}
+		List<BSet> sets = xml.carrierSet.'@identifier'.collect { new BSet(it) }
 		context.addSets(sets)
 
-		def axioms = []
-		xml.axiom.each {
-			def label = it.'@label'
-			def predicate = it.'@predicate'
-			def theorem = it.'@theorem' == "true"
-			def axiom = new EventBAxiom(label, predicate, theorem, typeEnv)
-			axioms << axiom
+		List<EventBAxiom> axioms = xml.axiom.collect {
+			new EventBAxiom(it.@label, it.@predicate, it.@theorem == "true", typeEnv)
 		}
 		context.addAxioms(axioms)
 
-		def constants = []
-		xml.constant.each {
-			def isAbstract = it.'@de.prob.symbolic.symbolicAttribute' == "true"
-			constants << new EventBConstant(it.@identifier, isAbstract)
+		List<EventBConstant> constants = xml.constant.collect {
+			new EventBConstant(it.@identifier, it.'@de.prob.symbolic.symbolicAttribute' == "true")
 		}
 		context.addConstants(constants)
 
-		def proofs = new ProofFactory().addProofsForContext(context, baseFile, typeEnv)
+		List<ProofObligation> proofs = new ProofFactory().addProofsForContext(context, baseFile)
 		context.addProofs(proofs)
 		components[name] = context
-		contexts << context
+		contexts.add(context)
+		println "Extracted Context "+context.getName()+" in: "+(System.currentTimeMillis() - time)
 		return context
 	}
 
-	def extractMachine(name, xml, baseFile) {
-		if(components.containsKey(name)) {
-			return components[name]
-		}
+	def EventBMachine extractMachine(name, xml, baseFile) {
+		long time = System.currentTimeMillis()
 		graph.addVertex(name)
 
-		def machine = new EventBMachine(name)
-		def sees = []
+		EventBMachine machine = new EventBMachine(name)
+		List<Context> sees = []
 		xml.seesContext.'@target'.each {
-			def f = new File("${directoryPath}/${it}.buc")
-			def newBaseFile = "${directoryPath}/${it}"
-			sees << extractContext(it,getXML(f),newBaseFile)
+			if(components.containsKey(it)) {
+				sees.add(components[it])
+			} else {
+				File f = new File("${directoryPath}/${it}.buc")
+				String newBaseFile = "${directoryPath}/${it}"
+				sees.add(extractContext(it,getXML(f),newBaseFile))
+			}
 			graph.addEdge(new RefType(ERefType.SEES), name, it)
 		}
 		machine.addSees(sees)
 
-		def refines = []
+		List<EventBMachine> refines = []
 		xml.refinesMachine.'@target'.each {
-			def f = new File("${directoryPath}/${it}.bum")
-			def newBaseFile = "${directoryPath}/${it}"
-			refines << extractMachine(it,getXML(f),newBaseFile)
+			if(components.containsKey(it)) {
+				refines.add(components[it])
+			} else {
+				File f = new File("${directoryPath}/${it}.bum")
+				String newBaseFile = "${directoryPath}/${it}"
+				refines.add(extractMachine(it,getXML(f),newBaseFile))
+			}
 			graph.addEdge(new RefType(ERefType.REFINES), name, it)
 		}
 		machine.addRefines(refines)
 
-		def variables = []
-		xml.variable.'@identifier'.each {
-			variables << new EventBVariable(it)
-		}
+		List<EventBVariable> variables = xml.variable.'@identifier'.collect { new EventBVariable(it) }
 		machine.addVariables(variables)
 
-		def invariants = []
-		xml.invariant.each {
-			def label = it.'@label'
-			def predicate = it.'@predicate'
-			def theorem = it.'@theorem' == "true"
-			def invariant = new EventBInvariant(label, predicate, theorem, typeEnv)
-			invariants << invariant
-		}
+		List<EventBInvariant> invariants = xml.invariant.collect { new EventBInvariant(it.@label, it.@predicate, it.@theorem == "true", typeEnv) }
 		machine.addInvariants(invariants)
 
-		def variant = []
-		xml.variant.'@expression'.each {
-			variant << new Variant(it, typeEnv)
-		}
+		List<Variant> variant = xml.variant.'@expression'.collect { new Variant(it, typeEnv) }
 		machine.addVariant(variant)
 
-		def events = []
-		xml.event.each { events << extractEvent(it) }
+		List<Event> events = xml.event.collect { extractEvent(it) }
 		machine.addEvents(events)
 
-		def proofs = new ProofFactory().addProofsForMachine(machine, baseFile, typeEnv)
+		List<ProofObligation> proofs = new ProofFactory().addProofsForMachine(machine, baseFile)
 		machine.addProofs(proofs)
 		components[name] = machine
-		machines << machine
+		machines.add(machine)
+		println "Extracted Machine "+machine.getName()+" in: "+(System.currentTimeMillis() - time)
 		return machine
 	}
 
 	def extractEvent(xml) {
-		def name = xml.'@label'
-		def convergence = xml.'@convergence'
-		def eventType = convergence == "0" ? EventType.ORDINARY : (convergence == "1" ? EventType.CONVERGENT : EventType.ANTICIPATED);
-		def event = new Event(name, eventType)
+		String name = xml.'@label'
+		String convergence = xml.'@convergence'
+		EventType eventType = convergence == "0" ? EventType.ORDINARY : (convergence == "1" ? EventType.CONVERGENT : EventType.ANTICIPATED);
+		Event event = new Event(name, eventType)
 
-		def refines = []
-		xml.refinesEvent.'@target'.each { refines << events[it] }
+		List<Event> refines = xml.refinesEvent.'@target'.collect { events[it] }
 		event.addRefines(refines)
 
-		def guards = []
-		xml.guard.each {
-			def label = it.'@label'
-			def predicate = it.'@predicate'
-			def theorem = it.'@theorem' == "true"
-			def guard = new EventBGuard(event, label, predicate, theorem, typeEnv)
-			guards << guard
+		List<EventBGuard> guards = xml.guard.collect {
+			new EventBGuard(event, it.@label, it.@predicate, it.@theorem == "true", typeEnv)
 		}
 		event.addGuards(guards)
 
-		def actions = []
-		xml.action.each {
-			def label = it.'@label'
-			def assignment = it.'@assignment'
-			def action = new EventBAction(event, label, assignment, typeEnv)
-			actions << action
+		List<EventBAction> actions = xml.action.collect {
+			new EventBAction(event, it.@label, it.@assignment, typeEnv)
 		}
 		event.addActions(actions)
 
-		def witnesses = []
-		xml.witness.each {
-			def label = it.'@label'
-			def predicate = it.'@predicate'
-			def witness = new Witness(event, label, predicate, typeEnv)
-			witnesses << witness
+		List<Witness> witnesses = xml.witness.collect {
+			Witness witness = new Witness(event, it.@label, it.@predicate, typeEnv)
 		}
 		event.addWitness(witnesses)
 
-		def parameters = []
-		xml.parameter.'@identifier'.each { parameters << new EventParameter(event,it) }
+		List<EventParameter> parameters = xml.parameter.'@identifier'.collect { new EventParameter(event,it) }
 		event.addParameters(parameters)
 
 		events[name] = event

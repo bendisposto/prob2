@@ -24,6 +24,7 @@ class EventBToPrologTranslator {
 	def printProlog(IPrologTermOutput pto) {
 		ASTProlog astPrinter = new ASTProlog(pto, null)
 
+		def time = System.currentTimeMillis()
 		pto.openTerm("load_event_b_project")
 
 		pto.openList()
@@ -42,9 +43,12 @@ class EventBToPrologTranslator {
 		pto.openTerm("exporter_version")
 		pto.printNumber(3)
 		pto.closeTerm()
+		println "Print machines and contexts: "+(System.currentTimeMillis() - time)
 
+		time = System.currentTimeMillis()
 		machineTranslators.each { it.printProofsToProlog(pto) }
 		contextTranslators.each { it.printProofsToProlog(pto) }
+		println "Print proofs: "+(System.currentTimeMillis() - time)
 
 		// ADD THEORIES AND PRAGMA INFORMATION
 		pto.closeList()

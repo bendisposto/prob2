@@ -44,8 +44,7 @@ class MachineToAst {
 		}
 
 		clauses << processVariables()
-		clauses << processInvariants()
-		clauses << processTheorems()
+		clauses.addAll(processInvariantsAndTheorems())
 
 		def variant = processVariant()
 		if(variant != null) {
@@ -58,31 +57,26 @@ class MachineToAst {
 	}
 
 	def processVariables() {
-		def ids = []
-		machine.getVariables().each {
-			ids << it.getExpression().getAst()
+		def ids = machine.getVariables().collect {
+			it.getExpression().getAst()
 		}
 		return new AVariablesModelClause(ids)
 	}
 
-	def processInvariants() {
+	def processInvariantsAndTheorems() {
 		def invs = []
+		def thms = []
 		machine.getInvariants().each {
 			if(!it.isTheorem()) {
 				invs << it.getPredicate().getAst()
-			}
-		}
-		return new AInvariantModelClause(invs)
-	}
-
-	def processTheorems() {
-		def thms = []
-		machine.getInvariants().each {
-			if(it.isTheorem()) {
+			} else {
 				thms << it.getPredicate().getAst()
 			}
 		}
-		return new ATheoremsModelClause(thms)
+		return [
+			new AInvariantModelClause(invs),
+			new ATheoremsModelClause(thms)
+		]
 	}
 
 	def processVariant() {
