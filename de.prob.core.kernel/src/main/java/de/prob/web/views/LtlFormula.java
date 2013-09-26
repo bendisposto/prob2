@@ -25,14 +25,10 @@ import de.prob.web.WebUtils;
 
 public class LtlFormula extends AbstractSession {
 
-	enum status {
-		unchecked, FALSE, TRUE;
-	}
-
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);
 
 	private final List<PrologTerm> formulas = new ArrayList<PrologTerm>();
-	private final List<status> stati = new ArrayList<status>();
+	private final List<Status> stati = new ArrayList<Status>();
 
 	private final AnimationSelector animations;
 	private final LtlParser ltlParser;
@@ -56,18 +52,19 @@ public class LtlFormula extends AbstractSession {
 		formulas.add(cpt1);
 		formulas.add(cpt2);
 		formulas.add(cpt3);
-		stati.add(status.unchecked);
-		stati.add(status.unchecked);
-		stati.add(status.unchecked);
+		stati.add(null);
+		stati.add(null);
+		stati.add(null);
 	}
 
 	public void submit_formulas() {
 		final int len = formulas.size();
 		Object[] res = new Object[len];
 		for (int i = 0; i < len; i++) {
+			final Status x = stati.get(i);
+			final String statusString = x == null ? "unchecked" : x.toString();
 			res[i] = WebUtils.wrap("id", String.valueOf(i), "formulaText",
-					formulas.get(i), "status", stati.get(i)
-							.toString());
+					formulas.get(i), "status", statusString);
 		}
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"LtlFormula.setFormulas", "formulas", WebUtils.toJson(res));
@@ -77,7 +74,7 @@ public class LtlFormula extends AbstractSession {
 
 	public Object checkNthFormula(Map<String, String[]> params) {
 		int pos = Integer.parseInt(get(params, "pos"));
-		if (stati.get(pos) != status.unchecked) {
+		if (stati.get(pos) != null) {
 			return null;
 		}
 
@@ -87,11 +84,7 @@ public class LtlFormula extends AbstractSession {
 		animations.getCurrentTrace().getStateSpace().execute(lcc);
 
 		stati.remove(pos);
-		if (lcc.getResult().getStatus() == Status.counterexample) {
-			stati.add(pos, status.FALSE);
-		} else {
-			stati.add(pos, status.TRUE);
-		}
+		stati.add(pos, lcc.getResult().getStatus());
 
 		submit_formulas();
 		return null;
@@ -116,7 +109,7 @@ public class LtlFormula extends AbstractSession {
 		PrologTerm compoundPrologTerm = ltlParser.generatePrologTerm(
 				formula, "root");
 		formulas.add(compoundPrologTerm);
-		stati.add(status.unchecked);
+		stati.add(null);
 		logger.trace(params.toString());
 		submit_formulas();
 		return null;
