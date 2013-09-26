@@ -2,10 +2,11 @@ package de.prob.statespace
 
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.command.ComposedCommand
-import de.prob.animator.command.EvaluateFormulasCommand
+import de.prob.animator.command.EvaluationCommand
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EvaluationResult
 import de.prob.animator.domainobjects.IEvalElement
+import de.prob.animator.domainobjects.IEvaluationResult
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
@@ -27,18 +28,18 @@ class Trace {
 		stateSpace.eval(getCurrentState(),[f]).get(0);
 	}
 
-	def List<EvaluationResult> eval(formula) {
+	def List<IEvaluationResult> eval(formula) {
 		def f = formula;
 		if(!(formula instanceof IEvalElement)) {
 			f = formula as ClassicalB;
 		}
 
-		def List<EvaluateFormulasCommand> cmds = []
+		def List<EvaluationCommand> cmds = []
 
 		def ops = head.getOpList()
 		ops.each {
-			if(stateSpace.canBeEvaluated(stateSpace.getVertex(it.dest))) {
-				cmds << new EvaluateFormulasCommand([f], it.dest)
+			if (stateSpace.canBeEvaluated(stateSpace.getVertex(it.dest))) {
+				cmds << f.getCommand(it.dest)
 			}
 		}
 

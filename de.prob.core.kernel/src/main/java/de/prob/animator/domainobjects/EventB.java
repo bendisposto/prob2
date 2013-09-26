@@ -21,9 +21,12 @@ import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
+import de.prob.animator.command.EvaluateFormulasCommand;
+import de.prob.animator.command.EvaluationCommand;
 import de.prob.formula.TranslationVisitor;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.statespace.StateId;
 import de.prob.unicode.UnicodeTranslator;
 
 /**
@@ -184,5 +187,13 @@ public class EventB extends AbstractEvalElement {
 	@Override
 	public FormulaUUID getFormulaId() {
 		return uuid;
+	}
+
+	@Override
+	public EvaluationCommand getCommand(StateId stateId) {
+		/* TODO: we could do a more efficient implementation here */
+		ArrayList<IEvalElement> arrayList = new ArrayList<IEvalElement>();
+		arrayList.add(this);
+		return new EvaluateFormulasCommand(arrayList, stateId.getId());
 	}
 }

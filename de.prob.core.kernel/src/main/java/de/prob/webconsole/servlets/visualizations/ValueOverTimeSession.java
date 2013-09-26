@@ -23,9 +23,9 @@ import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalElementFactory;
 import de.prob.animator.domainobjects.EvaluationException;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvaluationResult;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -205,19 +205,19 @@ public class ValueOverTimeSession implements ISessionServlet,
 	public List<Object> calculate() {
 		List<Object> result = new ArrayList<Object>();
 		if (currentTrace != null && currentTrace.getStateSpace() == stateSpace) {
-			List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
+			List<IEvaluationResult> timeRes = new ArrayList<IEvaluationResult>();
 			if (time != null) {
 				timeRes = currentTrace.eval(time);
 			}
 
 			for (IEvalElement formula : formulas) {
 
-				List<EvaluationResult> results = currentTrace.eval(formula);
+				List<IEvaluationResult> results = currentTrace.eval(formula);
 				List<Object> points = new ArrayList<Object>();
 
 				if (timeRes.isEmpty()) {
 					int c = 0;
-					for (EvaluationResult it : results) {
+					for (IEvaluationResult it : results) {
 						points.add(new Element(it.getStateId(), c + "", it
 								.getValue()));
 						points.add(new Element(it.getStateId(), (c + 1) + "",
@@ -225,7 +225,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 						c++;
 					}
 				} else if (timeRes.size() == results.size()) {
-					for (EvaluationResult it : results) {
+					for (IEvaluationResult it : results) {
 						int index = results.indexOf(it);
 						points.add(new Element(it.getStateId(), timeRes.get(
 								index).getValue(), it.getValue()));

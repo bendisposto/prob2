@@ -13,8 +13,8 @@ import java.util.List;
 import org.junit.Test;
 
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvaluationResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -68,14 +68,14 @@ public class EvaluateFormulasCommandTest {
 				evalElements, "root");
 		command.processResult(map);
 
-		List<EvaluationResult> vals = command.getValues();
+		List<IEvaluationResult> vals = command.getValues();
 
 		assertEquals(vals.size(), 4);
 
-		assertEquals(vals.get(0).value, "true");
-		assertEquals(vals.get(1).value, "false");
-		assertEquals(vals.get(2).value, "true");
-		assertEquals(vals.get(3).value, "false");
+		assertEquals(vals.get(0).getValue(), "true");
+		assertEquals(vals.get(1).getValue(), "false");
+		assertEquals(vals.get(2).getValue(), "true");
+		assertEquals(vals.get(3).getValue(), "false");
 	}
 
 	private CompoundPrologTerm mk_result(final String r) {

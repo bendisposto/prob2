@@ -17,6 +17,7 @@ import com.google.inject.Inject;
 
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvaluationResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -114,17 +115,33 @@ public class ValueOverTime extends AbstractSession implements
 	}
 
 	private List<Object> calculateData() {
+		/* TODO: review changes */
 		List<Object> result = new ArrayList<Object>();
 		List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
 		if (time != null) {
-			timeRes = currentTrace.eval(time);
+			List<IEvaluationResult> timeResIEvals = currentTrace.eval(time);
+			for (IEvaluationResult iEvaluationResult : timeResIEvals) {
+				if (!(iEvaluationResult instanceof EvaluationResult)) {
+					throw new IllegalArgumentException(
+							"ValueOverTime.calculateData() requires instances of EvaluationResults");
+				}
+				timeRes.add((EvaluationResult) iEvaluationResult);
+			}
 		}
 
 		for (FormulaElement pair : testedFormulas) {
 			String id = pair.id;
 			IEvalElement formula = pair.formula;
 			if (!id.equals("time")) {
-				List<EvaluationResult> results = currentTrace.eval(formula);
+				List<IEvaluationResult> iresults = currentTrace.eval(formula);
+				List<EvaluationResult> results = new ArrayList<EvaluationResult>();
+				for (IEvaluationResult iEvaluationResult : iresults) {
+					if (!(iEvaluationResult instanceof EvaluationResult)) {
+						throw new IllegalArgumentException(
+								"ValueOverTime.calculateData() requires instances of EvaluationResults");
+					}
+					results.add((EvaluationResult) iEvaluationResult);
+				}
 				List<Object> points = new ArrayList<Object>();
 
 				if (timeRes.isEmpty()) {

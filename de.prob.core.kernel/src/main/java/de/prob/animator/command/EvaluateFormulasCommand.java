@@ -22,27 +22,15 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class EvaluateFormulasCommand extends AbstractCommand {
+public class EvaluateFormulasCommand extends EvaluationCommand {
 
 	Logger logger = LoggerFactory.getLogger(EvaluateFormulasCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
-	private final List<IEvalElement> evalElements;
-	private final String stateId;
-	private final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
 
 	public EvaluateFormulasCommand(final List<IEvalElement> evalElements,
 			final String id) {
-		this.evalElements = evalElements;
-		stateId = id;
-	}
-
-	public List<IEvalElement> getFormulas() {
-		return evalElements;
-	}
-
-	public List<EvaluationResult> getValues() {
-		return values;
+		super(evalElements, id);
 	}
 
 	@Override
@@ -96,7 +84,4 @@ public class EvaluateFormulasCommand extends AbstractCommand {
 		pout.closeTerm();
 	}
 
-	public String getStateId() {
-		return stateId;
-	}
 }

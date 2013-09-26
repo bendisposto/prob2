@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvaluationResult;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -108,7 +108,7 @@ public final class ExploreStateCommand extends AbstractCommand {
 		return getOpsCmd.getEnabledOperations();
 	}
 
-	public Map<IEvalElement, EvaluationResult> getFormulaResults() {
+	public Map<IEvalElement, IEvaluationResult> getFormulaResults() {
 		return evalFormulasCmd.getResults();
 	}
 

@@ -12,8 +12,8 @@ import javax.servlet.AsyncContext;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvaluationResult;
 import de.prob.model.eventb.Context;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
@@ -98,9 +98,9 @@ public class StateInspector extends AbstractSession implements
 	public Object calculateFormulas(final Trace t) {
 		List<Object> extracted = new ArrayList<Object>();
 		StateSpace s = t.getStateSpace();
-		Map<IEvalElement, EvaluationResult> current = s.valuesAt(t
+		Map<IEvalElement, IEvaluationResult> current = s.valuesAt(t
 				.getCurrentState());
-		Map<IEvalElement, EvaluationResult> previous = s.valuesAt(t
+		Map<IEvalElement, IEvaluationResult> previous = s.valuesAt(t
 				.getCurrent().getSrc());
 
 		for (IEvalElement e : formulasForEvaluating) {

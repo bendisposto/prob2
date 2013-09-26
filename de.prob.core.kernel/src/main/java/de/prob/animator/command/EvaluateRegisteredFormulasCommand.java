@@ -10,6 +10,7 @@ import com.google.common.base.Joiner;
 
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvaluationResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -19,7 +20,7 @@ import de.prob.prolog.term.PrologTerm;
 public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 	private final String RESULTS = "Results";
 	private final String stateId;
-	private final Map<IEvalElement, EvaluationResult> results = new HashMap<IEvalElement, EvaluationResult>();
+	private final Map<IEvalElement, IEvaluationResult> results = new HashMap<IEvalElement, IEvaluationResult>();
 	private final List<IEvalElement> formulas;
 
 	public EvaluateRegisteredFormulasCommand(final String stateId,
@@ -76,7 +77,7 @@ public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 		}
 	}
 
-	public Map<IEvalElement, EvaluationResult> getResults() {
+	public Map<IEvalElement, IEvaluationResult> getResults() {
 		return results;
 	}
 
