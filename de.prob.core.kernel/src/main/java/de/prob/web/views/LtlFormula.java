@@ -9,7 +9,14 @@ import javax.servlet.AsyncContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
+
+import de.prob.animator.command.LtlCheckingCommand;
+import de.prob.animator.command.LtlCheckingCommand.StartMode;
+import de.prob.animator.command.LtlCheckingCommand.Status;
 import de.prob.prolog.term.CompoundPrologTerm;
+import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.AnimationSelector;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -21,12 +28,16 @@ public class LtlFormula extends AbstractSession {
 
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);
 
-	// private final Map<PrologTerm, status> formulas = new HashMap<PrologTerm,
-	// status>();
-	private final List<String> formulas = new ArrayList<String>();
+	private final List<PrologTerm> formulas = new ArrayList<PrologTerm>();
+	// private final List<String> formulas = new ArrayList<String>();
 	private final List<status> stati = new ArrayList<status>();
 
-	public LtlFormula() {
+	private final AnimationSelector animations;
+
+	@Inject
+	public LtlFormula(final AnimationSelector animations) {
+		this.animations = animations;
+
 		CompoundPrologTerm cpt1 = new CompoundPrologTerm("globally",
 				new CompoundPrologTerm("finally", new CompoundPrologTerm(
 						"action", new CompoundPrologTerm("btrans",
@@ -37,9 +48,9 @@ public class LtlFormula extends AbstractSession {
 						"btrans", new CompoundPrologTerm("event",
 								new CompoundPrologTerm("new")))));
 		CompoundPrologTerm cpt3 = new CompoundPrologTerm("true");
-		formulas.add(cpt1.toString());
-		formulas.add(cpt2.toString());
-		formulas.add(cpt3.toString());
+		formulas.add(cpt1);
+		formulas.add(cpt2);
+		formulas.add(cpt3);
 		stati.add(status.unchecked);
 		stati.add(status.unchecked);
 		stati.add(status.unchecked);
@@ -65,12 +76,18 @@ public class LtlFormula extends AbstractSession {
 			return null;
 		}
 
+		PrologTerm formula = formulas.get(pos);
+		LtlCheckingCommand lcc = new LtlCheckingCommand(formula, 500,
+				StartMode.init);
+		animations.getCurrentTrace().getStateSpace().execute(lcc);
+
 		stati.remove(pos);
-		if (formulas.get(pos).length() % 3 == 0) {
-			stati.add(pos, status.TRUE);
-		} else {
+		if (lcc.getResult().getStatus() == Status.counterexample) {
 			stati.add(pos, status.FALSE);
+		} else {
+			stati.add(pos, status.TRUE);
 		}
+
 		submit_formulas();
 		return null;
 	}
@@ -89,7 +106,7 @@ public class LtlFormula extends AbstractSession {
 			return null;
 		}
 
-		formulas.add(formula);
+		formulas.add(new CompoundPrologTerm(formula));
 		stati.add(status.unchecked);
 		logger.trace(params.toString());
 		submit_formulas();

@@ -182,7 +182,7 @@ public final class LtlCheckingCommand extends AbstractCommand {
 		return command.getResult();
 	}
 
-	private Result getResult() {
+	public Result getResult() {
 		return result;
 	}
 
