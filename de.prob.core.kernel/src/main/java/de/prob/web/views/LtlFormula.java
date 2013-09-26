@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.be4.classicalb.core.parser.ClassicalBParser;
+import de.be4.ltl.core.parser.LtlParseException;
+import de.be4.ltl.core.parser.LtlParser;
 import de.prob.animator.command.LtlCheckingCommand;
 import de.prob.animator.command.LtlCheckingCommand.StartMode;
 import de.prob.animator.command.LtlCheckingCommand.Status;
@@ -29,14 +32,16 @@ public class LtlFormula extends AbstractSession {
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);
 
 	private final List<PrologTerm> formulas = new ArrayList<PrologTerm>();
-	// private final List<String> formulas = new ArrayList<String>();
 	private final List<status> stati = new ArrayList<status>();
 
 	private final AnimationSelector animations;
+	private final LtlParser ltlParser;
 
 	@Inject
 	public LtlFormula(final AnimationSelector animations) {
 		this.animations = animations;
+		/* TODO: worry about the language specific parser */
+		ltlParser = new LtlParser(new ClassicalBParser());
 
 		CompoundPrologTerm cpt1 = new CompoundPrologTerm("globally",
 				new CompoundPrologTerm("finally", new CompoundPrologTerm(
@@ -100,13 +105,17 @@ public class LtlFormula extends AbstractSession {
 		return null;
 	}
 
-	public Object addFormula(Map<String, String[]> params) {
+	public Object addFormula(Map<String, String[]> params)
+			throws LtlParseException {
 		String formula = get(params, "val");
 		if (formula == null || formula.isEmpty()) {
 			return null;
 		}
 
-		formulas.add(new CompoundPrologTerm(formula));
+
+		PrologTerm compoundPrologTerm = ltlParser.generatePrologTerm(
+				formula, "root");
+		formulas.add(compoundPrologTerm);
 		stati.add(status.unchecked);
 		logger.trace(params.toString());
 		submit_formulas();
