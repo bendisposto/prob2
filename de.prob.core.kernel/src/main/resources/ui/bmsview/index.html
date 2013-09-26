@@ -7,23 +7,40 @@
 <meta name="author" content="Lukas Ladenberger">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link rel="stylesheet" href="/ui/common/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="/ui/common/bootstrap-glyphicons.css">
 <link rel="stylesheet" href="/ui/common/codemirror.css">
 <link rel="stylesheet" href="/ui/bmsview/contextMenu/jquery.contextMenu.css">
-<link rel="stylesheet" href="/ui/bmsview/jqueryui/redmond/jquery-ui-1.10.3.custom.min.css">
 <link rel="stylesheet" href="/ui/bmsview/bms.css">
 </head>
 
 <body>
 
-	<div id="tabs">
-		<ul>
-			<li><a href="#tabs-1">Edit</a></li>
-			<li><a href="#tabs-2">Visualization</a></li>
-		</ul>
-		<div id="tabs-1">
-
-			<div id="result_container">
+<ul class="nav nav-tabs" id="bmsTab">
+  <li class="active"><a href="#visualization">Visualization</a></li>
+  <li><a href="#template">Template</a></li>
+</ul>
+ 
+<div class="tab-content">
+  <div class="tab-pane active" id="visualization">
+  
+  			<div id="result_container">
+				<div id='render'>
+					<svg id="svg_main" width="73" height="73"
+						xmlns="http://www.w3.org/2000/svg" class="draggable">
+<!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <g>
+  <title>Layer 1</title>
+  <ellipse ry="34" rx="34" id="svg_1" cy="36.5" cx="36.5"
+							stroke-width="5" stroke="#000000" fill="#FF0000" />
+ </g>
+</svg>
+				</div>
+			</div>
+  
+  </div>
+  <div class="tab-pane" id="template">
+  	<button type="button" id="btShowSourceModal">Edit Template</button>
+  	
+  	  			<div id="result_container">
 				<div id='result'>
 					<svg id="svg_main" width="73" height="73"
 						xmlns="http://www.w3.org/2000/svg" class="draggable">
@@ -36,39 +53,13 @@
 </svg>
 				</div>
 			</div>
+  	
+  </div>
+</div>
 
-			<div id="template_container">
+			<!--div id="template_container">
 
-				<div>
-					<input id="show-codeblock" type="checkbox" checked>Show
-					Code-Block
-				</div>
-
-				<div class="code-block" id="template-code-block">
-					<form>
-						<textarea id="template_content" name="template_content"
-							spellcheck="false">
-<svg id="svg_main" width="73" height="73"
-								xmlns="http://www.w3.org/2000/svg" class="draggable">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
- <g>
-  <title>Layer 1</title>
-  <ellipse ry="34" rx="34" id="svg_1" cy="36.5" cx="36.5"
-									stroke-width="5" stroke="#000000" fill="#FF0000" />
- </g>
-</svg>
-            </textarea>
-					</form>
-				</div>
-
-				<div class="code-block" id="scripting-code-block">
-					<form>
-						<textarea id="template_scripting" spellcheck="false"></textarea>
-					</form>
-				</div>
-				<!--div id='template_caption' style="clear: both;">Type here</div-->
-
-				<div class="code-block" id="observer-code-block">
+				<!--div class="code-block" id="observer-code-block">
 					<form class="form-horizontal">
 						<fieldset id="formulas">
 							<legend>Formulas</legend>
@@ -85,27 +76,84 @@
 						</fieldset>
 					</form>
 				</div>
+			</div-->
+			
+	<!-- Modal -->
+	<div class="modal fade" id="sourceModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Template</h4>
+				</div>
+				<div class="modal-body">
+				<div class="code-block" id="template-code-block">
+					<form>
+						<textarea id="template_content" name="template_content"
+							spellcheck="false">
+<svg id="svg_main" width="73" height="73"
+								xmlns="http://www.w3.org/2000/svg" class="draggable">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <g>
+  <title>Layer 1</title>
+  <ellipse ry="34" rx="34" id="svg_1" cy="36.5" cx="36.5"
+									stroke-width="5" stroke="#000000" fill="#FF0000" />
+ </g>
+</svg>
+            			</textarea>
+					</form>
+					</div>
+				
+				<div class="code-block" id="scripting-code-block">
+					<form>
+						<textarea id="template_scripting" spellcheck="false"></textarea>
+					</form>
+				</div>
+				
+				<div style="clear:both;"></div>
+				
+				</div>
+				
+				<!--div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+				</div-->
 			</div>
-
-			<div id="dialog" title="svg editor" style="display: none">
-				<iframe src="/ui/bmsview/svgeditor/svg-editor.html" width="1000px"
-					height="700px" name="svgedit" id="svgedit"></iframe>
-			</div>
-
+			<!-- /.modal-content -->
 		</div>
-
-		<div id="tabs-2">
-			<div id="render_container">
-				<div id='render'></div>
-			</div>
-		</div>
-
+		<!-- /.modal-dialog -->
 	</div>
+	<!-- /.modal -->
+	
+	<!-- Modal -->
+	<div class="modal fade" id="svgModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title">SVG Editor</h4>
+				</div>
+				<div class="modal-body">
+										<iframe src="/ui/bmsview/svgeditor/svg-editor.html" width="100%"
+					height="700px" name="svgedit" id="svgedit"></iframe>
+				</div>
+				
+				<!--div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+				</div-->
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
 
 </body>
 
 <script type="text/javascript" src="/ui/libs/jquery.js"></script>
 <script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
+<script type="text/javascript" src="/ui/libs/bootstrap.min.js"></script>
 <script type="text/javascript" src="/ui/libs/mustache.js"></script>
 
 <script type="text/javascript" src="/ui/libs/codemirror.js"></script>

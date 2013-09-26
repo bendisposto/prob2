@@ -3,30 +3,47 @@ bms = (function() {
 	var extern = {}
 	var session = Session();
 	var svgCanvas = null;
-	var svgElement = null;
 	var isInit = false;	
-	
 	$(document).ready(function() {
 		
 		hookInputFieldListener(true)
 
-		$("#tabs").tabs({
+		$('#bmsTab a:first').tab('show');
 
-			activate : function(event, ui) {
-				// Visualization
-				if ($(ui.oldPanel).attr("id") == "tabs-1") {
-					$("#result").html("")
-					forceRendering()
-				} else {
-					$("#render").html("")
-					renderEdit()
-				}
+		$('#bmsTab a').click(function(e) {
+			e.preventDefault();
+			$(this).tab('show');
+		})
+
+		$('#bmsTab a').on('shown', function(e) {
+			if ($(e.target).attr("href") == "#visualization") {
+				$("#result").html("")
+				forceRendering()
+				disableContextMenu()
+			} else {
+				$("#render").html("")
+				renderEdit()
+				initContextMenu()
 			}
-
-		});
-			
+			// e.relatedTarget // previous tab
+		})
+		
 	});
 	
+	$('#btShowSourceModal').click(function(){
+		
+	    $("#sourceModal").on('shown', function() {
+        	editorHtml.refresh()
+        	editorJavascript.refresh()
+        }).on('hidden', function() {
+        	renderEdit()
+        });
+        //Show Modal
+        $("#sourceModal").modal('show');
+        		
+	})
+	
+
 	// --------------------------------------------
 	// Helper functions
 	// --------------------------------------------
@@ -84,14 +101,14 @@ bms = (function() {
 		}
 	});
 
-	$("#show-codeblock").click(function(e) {
-		var template1 = $(".code-block");
-		if (!e.target.checked) {
-			template1.fadeOut();
-		} else {
-			template1.fadeIn();
-		}
-	})
+//	$("#show-codeblock").click(function(e) {
+//		var template1 = $(".code-block");
+//		if (!e.target.checked) {
+//			template1.fadeOut();
+//		} else {
+//			template1.fadeIn();
+//		}
+//	})
 
 	// $('#template-code-block').find('.CodeMirror').resizable({
 	// resize : function() {
@@ -109,60 +126,55 @@ bms = (function() {
 	// --------------------------------------------
 	// Context Menu Configuration
 	// --------------------------------------------
-	$.contextMenu({
-		selector : 'svg',
-		items : {
-			"edit" : {
-				name : "Edit SVG",
-				icon: "edit",
-				callback : function(key, options) {
-					openSvgEditor(this)
+	
+	function initContextMenu() {
+		$.contextMenu({
+			selector : 'svg',
+			items : {
+				"edit" : {
+					name : "Edit SVG",
+					icon: "edit",
+					callback : function(key, options) {
+						openSvgEditor(this)
+					}
 				}
 			}
-		}
-	});
+		});
+	}
+	
+	function disableContextMenu() {
+		$.contextMenu( 'destroy' );
+	}
 	
 	function openSvgEditor(e) {
-		svgElement = $(e);
+		var svgElement = $(e);
 		var svgstring = $(e).toHtmlString()
-		$("#dialog").dialog("open");
+	    $("#svgModal").on('hidden', function() {
+        	saveSvg(svgElement)
+        });
+		$("#svgModal").modal('show');
    		svgCanvas.setSvgString(svgstring);
 	}
 
-	function saveSvg() {
-		svgCanvas.getSvgString()(handleSvgData);
-	}
-
-	function handleSvgData(data, error) {
-		if (error) {
-			alert(error);
-		} else {
-			if (svgElement) {
-				svgElement.replaceWith($(data))
-				editorHtml.setValue($("#result").children().toHtmlString())
-				forceSaveTemplate()
-				renderEdit()
+	function saveSvg(svgElement) {
+		svgCanvas.getSvgString()(function(data, error) {
+			if (error) {
+				alert(error);
+			} else {
+				if (svgElement) {
+					svgElement.replaceWith($(data))
+					editorHtml.setValue($("#result").children().toHtmlString())
+					forceSaveTemplate()
+					renderEdit()
+				}
 			}
-		}
+		});
 	}
-
-	$("#dialog").dialog({
-		bgiframe : true,
-		autoOpen : true,
-		height : 775,
-		width : 1055,
-		modal : true
-	});
 
 	$("#svgedit").load(function() {
 		var frame = document.getElementById('svgedit');
 		svgCanvas = new embedded_svg_edit(frame);
-		$("#dialog").dialog("close");
 	});
-	
-	$('#dialog').bind('dialogclose', function(event) {
-		saveSvg();
-	});	
 	
 	// --------------------------------------------
 
@@ -210,8 +222,24 @@ bms = (function() {
 		} catch (e) {
 			template_error(e)
 		}
-		$("#render").html(output);
-		$("*.draggable").removeClass('draggable').addClass('draggable-vis');
+//		console.log($("#render").html(output).toHtmlString());
+//		$("#render > .draggable").each(function( index ) {
+//			 console.log($(this).attr("class",""))
+//			 $(this).removeClass('fu')
+//		});
+		
+		var bla = $("#render").html(output)
+		
+		var gna = bla.find("#svg_main")
+		gna.toggleClass("gnoi")
+		console.log(gna.toHtmlString())
+		
+		bla.find("#svg_main").removeClass("draggable")
+		
+		
+//		console.log($(".draggable").toHtmlString())
+//		$(".draggable").addClass('fu');
+//		console.log($(".draggable").toHtmlString())
 		
 	}
 
@@ -222,6 +250,7 @@ bms = (function() {
 			}
 		});
 	}
+		
 	// --------------------------------------------
 
 	function restoreTemplate(template_content, template_scripting) {
@@ -268,7 +297,7 @@ bms = (function() {
 	extern.restorePage = function(data) {
 		restoreFormulas(JSON.parse(data.formulas))
 		restoreTemplate(data.template_content, data.template_scripting)
-		renderEdit()
+		forceRendering()
 	}
 
 	extern.register = function(observer, expression) {

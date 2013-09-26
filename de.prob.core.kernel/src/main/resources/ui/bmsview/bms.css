@@ -3,23 +3,6 @@
 	position:absolute;
 }
 
-.draggable:hover {
-	/*background-color:lightgray !important;*/
-	border:1px dotted lightgray !important;
-}
-
-.draggable-vis {
-	display: inline-block;
-	position:absolute;
-}
-
-#result_container, #render_container {
-	height:500px;
-}
-
-#result {
-}
-
 #template_container {
 	margin-top: 25px;
 	display: inline-block;
@@ -39,10 +22,10 @@
 	padding-right: 15px;
 }
 
-
 .CodeMirror {
 	border: 1px solid #ddd;
-	width: 500px;
+	max-width: 400px;
+	height: 150px;
 }
 
 .CodeMirror-scroll {
@@ -54,10 +37,8 @@
 	line-height: 1.25;
 }
 
-#dialog_svgeditor .modal-dialog {
-	
-	width:1075px;
-	
+.modal-dialog {
+	width:100%;
 }
 
 /*
