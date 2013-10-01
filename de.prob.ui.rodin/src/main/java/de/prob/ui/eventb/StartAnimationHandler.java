@@ -2,7 +2,6 @@ package de.prob.ui.eventb;
 
 import groovy.lang.Binding;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.regex.Matcher;
@@ -12,8 +11,6 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -45,12 +42,8 @@ public class StartAnimationHandler extends AbstractHandler {
 		fSelection = HandlerUtil.getCurrentSelection(event);
 
 		final IEventBRoot rootElement = getRootElement();
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		File workspaceDirectory = workspace.getRoot().getLocation().toFile();
-
-		String fileName = workspaceDirectory.getAbsolutePath()
-				+ rootElement.getResource().getFullPath().toOSString();
+		String fileName = "/home/joy/apps/workspaces/runtime-EclipseApplication"
+				+ rootElement.getPath().toString();
 
 		EventBTranslator eventBTranslator = new EventBTranslator(fileName);
 
