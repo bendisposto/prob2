@@ -16,6 +16,7 @@ import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.BSet
+import de.prob.model.representation.Machine
 import de.prob.model.representation.RefType
 import de.prob.model.representation.RefType.ERefType
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
@@ -27,7 +28,7 @@ public class EventBTranslator {
 	def private directoryPath
 	def AbstractElement mainComponent
 	def Map<String,AbstractElement> components = [:]
-	def List<EventBMachine> machines = []
+	def List<Machine> machines = []
 	def List<Context> contexts = []
 	def List<Theory> theories = []
 	def typeEnv
