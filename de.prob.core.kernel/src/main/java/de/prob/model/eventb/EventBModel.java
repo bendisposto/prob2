@@ -2,13 +2,14 @@ package de.prob.model.eventb;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.inject.Inject;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.eventb.translate.EventBTranslator;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
@@ -16,6 +17,7 @@ import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.model.representation.StateSchema;
 import de.prob.statespace.StateSpace;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 public class EventBModel extends AbstractModel {
 
@@ -44,17 +46,18 @@ public class EventBModel extends AbstractModel {
 		this.modelFile = modelFile;
 	}
 
-	public void initialize(final String file) {
-		long time = System.currentTimeMillis();
-		EventBTranslator translator = new EventBTranslator(file);
-		System.out.println("Creation of EventBTranslator: "
-				+ (System.currentTimeMillis() - time));
-		graph = translator.getGraph();
-		modelFile = translator.getModelFile();
-		mainComponent = translator.getMainComponent();
-		components = translator.getComponents();
-		put(Machine.class, translator.getMachines());
-		put(Context.class, translator.getContexts());
+	public void initialize(
+			final DirectedSparseMultigraph<String, RefType> graph,
+			final File modelFile, final AbstractElement mainComponent,
+			final Map<String, AbstractElement> components,
+			final List<EventBMachine> machines, final List<Context> contexts) {
+		this.graph = graph;
+		this.modelFile = modelFile;
+		this.mainComponent = mainComponent;
+		this.components = components;
+		addMachines(machines);
+		addContexts(contexts);
+
 		statespace.setModel(this);
 	}
 

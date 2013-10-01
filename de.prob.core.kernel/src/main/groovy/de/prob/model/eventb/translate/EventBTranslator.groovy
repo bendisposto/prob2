@@ -15,7 +15,6 @@ import de.prob.model.eventb.EventParameter
 import de.prob.model.eventb.Variant
 import de.prob.model.eventb.Witness
 import de.prob.model.eventb.Event.EventType
-import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.BSet
@@ -33,8 +32,10 @@ public class EventBTranslator {
 	def List<EventBMachine> machines = []
 	def List<Context> contexts = []
 	def List<Theory> theories = []
+	def List<PO> proofInformation = []
 	def Set<IFormulaExtension> typeEnv
 	def private Map<String, Event> events = [:]
+	def private ProofTranslator proofTranslator = new ProofTranslator()
 	def DirectedSparseMultigraph<String,RefType> graph = new DirectedSparseMultigraph<String, RefType>()
 
 	def EventBTranslator(String fileName) {
@@ -78,7 +79,7 @@ public class EventBTranslator {
 		}
 	}
 
-	def Context extractContext(name, xml, baseFile) {
+	def extractContext(name, xml, baseFile) {
 		long time = System.currentTimeMillis()
 		graph.addVertex(name)
 
@@ -109,15 +110,16 @@ public class EventBTranslator {
 		}
 		context.addConstants(constants)
 
-		List<ProofObligation> proofs = new ProofFactory().addProofsForContext(context, baseFile)
-		context.addProofs(proofs)
+		proofInformation.addAll(proofTranslator.translateProofsForContext(context, baseFile))
+
 		components[name] = context
 		contexts.add(context)
 		println "Extracted Context "+context.getName()+" in: "+(System.currentTimeMillis() - time)
 		return context
 	}
 
-	def EventBMachine extractMachine(name, xml, baseFile) {
+	def extractMachine(name, xml, baseFile) {
+
 		long time = System.currentTimeMillis()
 		graph.addVertex(name)
 
@@ -160,8 +162,8 @@ public class EventBTranslator {
 		List<Event> events = xml.event.collect { extractEvent(it) }
 		machine.addEvents(events)
 
-		List<ProofObligation> proofs = new ProofFactory().addProofsForMachine(machine, baseFile)
-		machine.addProofs(proofs)
+		proofInformation.addAll(new ProofTranslator().translateProofsForMachine(machine, baseFile))
+
 		components[name] = machine
 		machines.add(machine)
 		println "Extracted Machine "+machine.getName()+" in: "+(System.currentTimeMillis() - time)

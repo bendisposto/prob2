@@ -10,19 +10,17 @@ class EventBToPrologTranslator {
 	EventBModel model
 	List<MachineToAst> machineTranslators = []
 	List<ContextToAst> contextTranslators = []
+	List<PO> proofInformation
 
-	def EventBToPrologTranslator(EventBModel model) {
+	def EventBToPrologTranslator(EventBModel model, List<PO> proofInformation) {
 		this.model = model
-		model.getChildrenOfType(Context.class).each {
-			contextTranslators << new ContextToAst(it)
-		}
-		model.getChildrenOfType(Machine.class).each {
-			machineTranslators << new MachineToAst(it)
-		}
+		this.proofInformation = proofInformation
+		contextTranslators = model.getChildrenOfType(Context.class).collect { new ContextToAst(it) }
+		machineTranslators = model.getChildrenOfType(Machine.class).collect { new MachineToAst(it) }
 	}
 
-	def printProlog(IPrologTermOutput pto) {
-		ASTProlog astPrinter = new ASTProlog(pto, null)
+	def printProlog(ASTProlog astPrinter, IPrologTermOutput pto) {
+		def timeTotal = System.currentTimeMillis()
 
 		def time = System.currentTimeMillis()
 		pto.openTerm("load_event_b_project")
@@ -46,13 +44,14 @@ class EventBToPrologTranslator {
 		println "Print machines and contexts: "+(System.currentTimeMillis() - time)
 
 		time = System.currentTimeMillis()
-		machineTranslators.each { it.printProofsToProlog(pto) }
-		contextTranslators.each { it.printProofsToProlog(pto) }
+		proofInformation.each { it.toProlog(pto) }
 		println "Print proofs: "+(System.currentTimeMillis() - time)
 
 		// ADD THEORIES AND PRAGMA INFORMATION
+
 		pto.closeList()
 		pto.printVariable("_Error")
 		pto.closeTerm()
+		println "Total printing: "+(System.currentTimeMillis() - timeTotal)
 	}
 }

@@ -7,18 +7,20 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.LoadEventBCommand;
+import de.prob.animator.command.LoadEventBProjectCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.translate.EventBToPrologTranslator;
+import de.prob.model.eventb.translate.EventBTranslator;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
 import de.prob.model.serialize.ModelObject;
 import de.prob.model.serialize.Serializer;
-import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.statespace.StateSpace;
 
 public class EventBFactory {
@@ -33,21 +35,28 @@ public class EventBFactory {
 	public EventBModel load(final String file) {
 		EventBModel model = modelProvider.get();
 		long time = System.currentTimeMillis();
-		model.initialize(file);
+
+		EventBTranslator translator = new EventBTranslator(file);
+
+		System.out.println("Creation of EventBTranslator: "
+				+ (System.currentTimeMillis() - time));
+		model.initialize(translator.getGraph(), translator.getModelFile(),
+				translator.getMainComponent(), translator.getComponents(),
+				translator.getMachines(), translator.getContexts());
+
 		System.out.println("Translating: "
 				+ (System.currentTimeMillis() - time));
 
 		StateSpace s = model.getStatespace();
 		time = System.currentTimeMillis();
-		// AbstractCommand cmd = new LoadEventBProjectCommand(
-		// new EventBToPrologTranslator(model));
-		PrologTermStringOutput pto = new PrologTermStringOutput();
 		EventBToPrologTranslator eventBToPrologTranslator = new EventBToPrologTranslator(
-				model);
-		eventBToPrologTranslator.printProlog(pto);
+				model, translator.getProofInformation());
 
-		System.out.println("To Prolog: " + (System.currentTimeMillis() - time));
-		// s.execute(cmd);
+		AbstractCommand cmd = new LoadEventBProjectCommand(
+				eventBToPrologTranslator);
+
+		s.execute(cmd);
+		System.out.println("Loaded: " + (System.currentTimeMillis() - time));
 		// s.execute(new StartAnimationCommand());
 
 		// subscribeVariables(model);
