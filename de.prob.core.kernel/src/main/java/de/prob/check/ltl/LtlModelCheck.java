@@ -16,6 +16,7 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.animator.command.LtlCheckingCommand;
@@ -23,16 +24,20 @@ import de.prob.animator.command.LtlCheckingCommand.StartMode;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.parserbase.UnparsedParserBase;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
+import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.web.WebUtils;
 
 @Singleton
 public class LtlModelCheck extends LtlPatternManager {
 
-	public final String FORMULAS_FILE = "modelcheck/formulas.ltlf";
+	public final String FORMULAS_FILE = "D://modelcheck/formulas.ltlf";
 	private final String FORMULA_ID = "%% FORMULA";
 	private final Logger logger = LoggerFactory.getLogger(LtlModelCheck.class);
 
-	/*private final StateSpace currentStateSpace;
+	private final StateSpace currentStateSpace;
 
 	@Inject
 	public LtlModelCheck(final AnimationSelector animations) {
@@ -42,7 +47,7 @@ public class LtlModelCheck extends LtlPatternManager {
 					"Please load model before opening Value over Time visualization");
 		}
 		currentStateSpace = currentTrace.getStateSpace();
-	}*/
+	}
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
@@ -66,7 +71,7 @@ public class LtlModelCheck extends LtlPatternManager {
 			PrologTerm term = parser.generatePrologTerm("root", new UnparsedParserBase("", "", ""));
 
 			LtlCheckingCommand command = new LtlCheckingCommand(term, 500, StartMode.init);
-			//currentStateSpace.execute(command);
+			currentStateSpace.execute(command);
 
 			//command.getResult();
 			// TODO remove random

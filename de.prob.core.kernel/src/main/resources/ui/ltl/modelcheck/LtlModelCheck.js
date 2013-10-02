@@ -35,8 +35,8 @@ LtlModelCheck = (function() {
 		
 		// Get or restore formula list
 		if (extern.formulas == null) {
+			setFormulaList(["// The saved formula list was not loaded properly.\n"]);
 			Util.getFormulaList();
-			setFormulaList(["// The saved formula list was not loaded properly.\n// Please reload the page."]);
 		} else {
 			setFormulaList(extern.formulas);
 		}
@@ -97,7 +97,11 @@ LtlModelCheck = (function() {
 	
 	/* Formula list */
 	extern.setFormulaList = function(data) {
-		setFormulaList(JSON.parse(data.formulas));
+		var formulas = null;
+		if (data.formulas != "") {
+			JSON.parse(data.formulas);
+		}
+		setFormulaList(formulas);
 		resizeCodeMirror();
 	}
 	
