@@ -21,45 +21,64 @@
  
 <div class="tab-content">
   <div class="tab-pane active" id="visualization">
-  
+  <!--  VISUALIZATION -->
   			<div id="result_container">
-				<div id='render'>
-					<svg id="svg_main" width="73" height="73"
-						xmlns="http://www.w3.org/2000/svg" class="draggable">
-<!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
- <g>
-  <title>Layer 1</title>
-  <ellipse ry="34" rx="34" id="svg_1" cy="36.5" cx="36.5"
-							stroke-width="5" stroke="#000000" fill="#FF0000" />
- </g>
-</svg>
-				</div>
+
+			<iframe src="/ui/bmsview/vis.html" width="100%" frameborder="0" scrolling="no" name="iframeVisualization" id="iframeVisualization"></iframe>
+
 			</div>
+	<!--  VISUALIZATION END -->			
   
   </div>
   <div class="tab-pane" id="template">
+  <!--  TEMPLATE -->
   	<button type="button" id="btShowSourceModal">Edit Template</button>
-  	
-  	  			<div id="result_container">
-				<div id='result'>
-					<svg id="svg_main" width="73" height="73"
-						xmlns="http://www.w3.org/2000/svg" class="draggable">
-<!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
- <g>
-  <title>Layer 1</title>
-  <ellipse ry="34" rx="34" id="svg_1" cy="36.5" cx="36.5"
-							stroke-width="5" stroke="#000000" fill="#FF0000" />
- </g>
-</svg>
-				</div>
-			</div>
-  	
+  	<div id="result_container">
+		<iframe src="/ui/bmsview/vis.html" width="100%" frameborder="0" scrolling="no" name="iframeTemplate" id="iframeTemplate"></iframe>
+	</div>
+  	<!--  TEMPLATE END -->
   </div>
 </div>
-
-			<!--div id="template_container">
-
-				<!--div class="code-block" id="observer-code-block">
+			
+	<!-- Modal -->
+	<div class="modal fade" id="sourceModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Template</h4>
+				</div>
+				<div class="modal-body">
+				
+				<input type="text" class="form-control loadfile_input"
+					id="openfile" value=""
+					placeholder="Path to model file"></input>
+				<button
+					onClick="bms.browse('#openfile')"
+					type="button" class="load-btn btn btn-primary">Browse ...</button>
+					<button id="fb_okbtn" onClick="bms.fb_load_file('#openfile')"
+						type="button" class="load-btn btn btn-primary">Ok</button>
+					<!-- div class="code-block" id="template-code-block">
+					<form>
+						<textarea id="template_content" name="template_content"
+							spellcheck="false">
+<svg id="svg_main" width="73" height="73"
+								xmlns="http://www.w3.org/2000/svg" class="draggable">
+             			</textarea>
+					</form>
+					</div-->
+				
+				<!-- div class="code-block" id="scripting-code-block">
+					<form>
+						<textarea id="template_scripting" spellcheck="false"></textarea>
+					</form>
+				</div-->
+				
+				<div style="clear:both;"></div>
+				
+				<div id="template_container">
+				<div class="code-block" id="observer-code-block">
 					<form class="form-horizontal">
 						<fieldset id="formulas">
 							<legend>Formulas</legend>
@@ -76,42 +95,7 @@
 						</fieldset>
 					</form>
 				</div>
-			</div-->
-			
-	<!-- Modal -->
-	<div class="modal fade" id="sourceModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Template</h4>
-				</div>
-				<div class="modal-body">
-				<div class="code-block" id="template-code-block">
-					<form>
-						<textarea id="template_content" name="template_content"
-							spellcheck="false">
-<svg id="svg_main" width="73" height="73"
-								xmlns="http://www.w3.org/2000/svg" class="draggable">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
- <g>
-  <title>Layer 1</title>
-  <ellipse ry="34" rx="34" id="svg_1" cy="36.5" cx="36.5"
-									stroke-width="5" stroke="#000000" fill="#FF0000" />
- </g>
-</svg>
-            			</textarea>
-					</form>
-					</div>
-				
-				<div class="code-block" id="scripting-code-block">
-					<form>
-						<textarea id="template_scripting" spellcheck="false"></textarea>
-					</form>
-				</div>
-				
-				<div style="clear:both;"></div>
+			</div>
 				
 				</div>
 				
@@ -142,6 +126,26 @@
 				<!--div class="modal-footer">
 					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
 				</div-->
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+	
+		<!-- Modal -->
+	<div class="modal fade" id="filedialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title">SVG Editor</h4>
+				</div>
+				<div id="filedialog_content" class="modal-body"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+				</div>
 			</div>
 			<!-- /.modal-content -->
 		</div>

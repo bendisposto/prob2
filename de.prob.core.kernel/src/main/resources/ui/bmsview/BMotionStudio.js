@@ -3,7 +3,9 @@ bms = (function() {
 	var extern = {}
 	var session = Session();
 	var svgCanvas = null;
-	var isInit = false;	
+	var isInit = false;
+	var template = null;
+	
 	$(document).ready(function() {
 		
 		hookInputFieldListener(true)
@@ -17,11 +19,11 @@ bms = (function() {
 
 		$('#bmsTab a').on('shown', function(e) {
 			if ($(e.target).attr("href") == "#visualization") {
-				$("#result").html("")
+//				$("#result").html("")
 				forceRendering()
 				disableContextMenu()
 			} else {
-				$("#render").html("")
+//				$("#render").html("")
 				renderEdit()
 				initContextMenu()
 			}
@@ -33,8 +35,8 @@ bms = (function() {
 	$('#btShowSourceModal').click(function(){
 		
 	    $("#sourceModal").on('shown', function() {
-        	editorHtml.refresh()
-        	editorJavascript.refresh()
+//        	editorHtml.refresh()
+//        	editorJavascript.refresh()
         }).on('hidden', function() {
         	renderEdit()
         });
@@ -72,34 +74,34 @@ bms = (function() {
 		name : "javascript"
 	};
 
-	var editorHtml = CodeMirror.fromTextArea(document
-			.getElementById("template_content"), {
-		mode : mixedMode,
-		tabMode : "indent",
-		lineWrapping : true,
-		lineNumbers : true,
-		onKeyEvent : function(e, s) {
-			if (s.type == "keyup") {
-				forceSaveTemplate()
-				renderEdit()
-			}
-		}
-	});
+//	var editorHtml = CodeMirror.fromTextArea(document
+//			.getElementById("template_content"), {
+//		mode : mixedMode,
+//		tabMode : "indent",
+//		lineWrapping : true,
+//		lineNumbers : true,
+//		onKeyEvent : function(e, s) {
+//			if (s.type == "keyup") {
+//				forceSaveTemplate()
+//				renderEdit()
+//			}
+//		}
+//	});
 
-	var editorJavascript = CodeMirror.fromTextArea(document
-			.getElementById("template_scripting"), {
-		mode : javascriptMode,
-		tabMode : "indent",
-		lineWrapping : true,
-		lineNumbers : true,
-		matchBrackets : true,
-		onKeyEvent : function(e, s) {
-			if (s.type == "keyup") {
-				forceSaveTemplate()
-				renderEdit()
-			}
-		}
-	});
+//	var editorJavascript = CodeMirror.fromTextArea(document
+//			.getElementById("template_scripting"), {
+//		mode : javascriptMode,
+//		tabMode : "indent",
+//		lineWrapping : true,
+//		lineNumbers : true,
+//		matchBrackets : true,
+//		onKeyEvent : function(e, s) {
+//			if (s.type == "keyup") {
+//				forceSaveTemplate()
+//				renderEdit()
+//			}
+//		}
+//	});
 
 //	$("#show-codeblock").click(function(e) {
 //		var template1 = $(".code-block");
@@ -200,41 +202,74 @@ bms = (function() {
 	// Rendering
 	// --------------------------------------------
 	function renderEdit() {
-		$("#result").html("");
-		$("#result").html(editorHtml.getValue());
+		
+		if (template != null) {
+			try {
+				$('#iframeTemplate').contents().find('html').html(
+						template)
+				var newIframeHeight = $("#iframeTemplate").contents()
+						.find("html").height()
+						+ 'px';
+				$('#iframeTemplate').css("height", newIframeHeight);
+			} catch (e) {
+				template_error(e)
+			}
+		}		
 		initDnd()
+		
 	}
-
+	
+	$('#iframeVisualization').load(function() {
+		var height = this.contentWindow.document.body.offsetHeight + 'px';
+		console.log("=========> " + height)
+		this.style.height = this.contentWindow.document.body.offsetHeight + 'px';
+	});
+	
 	function renderVisualization(data) {
 		
-		$("#render").html("");
-		var template_text = editorHtml.getValue();
+//		$("#render").html("");
+//		var template_text = editorHtml.getValue();
 		
-		var observer = JSON.parse(data.observer)
+//		var observer = JSON.parse(data.observer)
 
-		jQuery.each(observer, function(i, o) {
-			template_text = template_text + session.render(o.template, JSON.parse(o.data));
-		});
-
-		try {
-			var output = Mustache.render(template_text + "<script>"
-					+ editorJavascript.getValue() + "</script>", data);
-		} catch (e) {
-			template_error(e)
+//		jQuery.each(observer, function(i, o) {
+//			template_text = template_text + session.render(o.template, JSON.parse(o.data));
+//		});
+		
+//		console.log(template)
+		
+//		var htmlSrc = $("#iframeVisualization").attr("src");
+//		var template = session.render(htmlSrc, data);
+		
+		if (template != null) {
+			try {
+				var renderedTemplate = Mustache.render(template, data);
+				$('#iframeVisualization').contents().find('html').html(
+						renderedTemplate)
+				var newIframeHeight = $("#iframeVisualization").contents()
+						.find("html").height()
+						+ 'px';
+				$('#iframeVisualization').css("height", newIframeHeight);
+			} catch (e) {
+				template_error(e)
+			}
 		}
+		
+//		console.log(template)
+		
 //		console.log($("#render").html(output).toHtmlString());
 //		$("#render > .draggable").each(function( index ) {
 //			 console.log($(this).attr("class",""))
 //			 $(this).removeClass('fu')
 //		});
 		
-		var bla = $("#render").html(output)
+//		var bla = $("#render").html(output)
 		
-		var gna = bla.find("#svg_main")
-		gna.toggleClass("gnoi")
-		console.log(gna.toHtmlString())
+//		var gna = bla.find("#svg_main")
+//		gna.toggleClass("gnoi")
+//		console.log(gna.toHtmlString())
 		
-		bla.find("#svg_main").removeClass("draggable")
+//		bla.find("#svg_main").removeClass("draggable")
 		
 		
 //		console.log($(".draggable").toHtmlString())
@@ -427,6 +462,118 @@ bms = (function() {
 	function parseError(id) {
 		$("#" + id).addClass("has-error")
 		$("#btn-" + id).prop("disabled", true);
+	}
+	
+	function browse(dir_dom) {
+		console.log("browse :)")
+		$('#filedialog').off('hidden.bs.modal')
+		$('#filedialog').on('hidden.bs.modal',
+				set_ok_button_state(dir_dom))
+		$("#filedialog").modal('show')
+		browse2(dir_dom)
+	}
+	
+	function set_ok_button_state(dir_dom) {
+		return function() {
+			var file = $(dir_dom)[0].value
+			var valid = check_file(file);
+			if (valid) {
+				$("#fb_okbtn").removeAttr("disabled")
+			} else {
+				$("#fb_okbtn").attr("disabled", "disabled")
+			}
+		}
+	}
+	
+	function browse2(dir_dom) {
+		var dir = $(dir_dom)[0].value
+		// prepare dialog
+		var data = request_files(dir)
+		$(dir_dom).val(data.path)
+		filldialog(data.dirs, data.files, dir_dom)
+	}
+	
+	function request_files(d) {
+		var s;
+		$.ajax({
+			url : "/files?path=" + d + "&extensions=bms",
+			success : function(result) {
+				if (result.isOk === false) {
+					alert(result.message);
+				} else {
+					s = JSON.parse(result);
+				}
+			},
+			async : false
+		});
+		return s;
+	}
+	
+	function check_file(d) {
+		var s;
+		$.ajax({
+			url : "/files?check=true&extensions=bms&path=" + d,
+			success : function(result) {
+				if (result.isOk === false) {
+					alert(result.message);
+				} else {
+					s = JSON.parse(result);
+				}
+			},
+			async : false
+		});
+		return s;
+	}
+
+	function filldialog(dirs, files, dir_dom) {
+		$(".filedialog_item").remove()
+		$(".filedialog_br").remove()
+		var hook = $("#filedialog_content")
+		var s
+		for (s in dirs) {
+			var file = dirs[s]
+			if (!file.hidden) {
+				hook.append(session.render("/ui/bmsview/fb_dir_entry.html", {
+					"name" : file.name,
+					"path" : file.path,
+					"dom" : dir_dom
+				}))
+			}
+		}
+		for (s in files) {
+			var file = files[s]
+			if (!file.hidden) {
+				hook.append(session.render("/ui/bmsview/fb_file_entry.html",
+						{
+							"name" : file.name,
+							"path" : file.path,
+							"dom" : dir_dom
+						}))
+			}
+		}
+	}
+	
+	function fb_select_dir(dir_dom, path) {
+		$(dir_dom).val(path)
+		browse2(dir_dom)
+	}
+	function fb_select_file(dir_dom, path) {
+		$(dir_dom).val(path)
+		$("#filedialog").modal('hide')
+	}
+	
+	extern.browse = browse
+	extern.fb_select_dir = fb_select_dir
+	extern.fb_select_file = fb_select_file
+	extern.fb_load_file = function(dom_dir) {
+		session.sendCmd("setTemplate", {
+			"path" : $(dom_dir)[0].value
+		})
+		focused = null; // prevent blur event
+	}
+	
+	extern.setTemplate = function(data) {
+		template = data.template
 	}
 	
 	extern.parseError = function(data) {

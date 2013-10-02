@@ -1,5 +1,7 @@
 package de.prob.web.views;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,8 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
@@ -172,6 +176,26 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 	
+	public Object setTemplate(Map<String, String[]> params) {
+
+		System.out.println("TESt");
+		
+		String templatePath = params.get("path")[0];
+		try {
+			File ff = new File(templatePath);
+			String content = Files.toString(ff, Charsets.UTF_8);
+			
+			System.out.println(content);
+			
+			return WebUtils.wrap("cmd", "bms.setTemplate", "template", content);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+
+	}
+
 	public Object addFormula(Map<String, String[]> params) {
 
 		String id = params.get("id")[0];
@@ -318,6 +342,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	@Override
 	public void traceChange(Trace trace) {
+
 		if (trace != null
 				&& trace.getStateSpace().equals(model.getStatespace())) {
 			currentTrace = trace;

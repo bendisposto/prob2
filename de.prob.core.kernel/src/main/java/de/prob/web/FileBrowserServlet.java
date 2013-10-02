@@ -36,10 +36,14 @@ public class FileBrowserServlet extends HttpServlet {
 			Arrays.asList((new String[] { "mch", "ref", "imp", "bum", "buc",
 					"eventb" })));
 
+	private final static Set<String> BMS_FILES = new HashSet<String>(
+			Arrays.asList((new String[] { "htm", "html", "svg" })));
+	
 	private final static Map<String, Set<String>> EXTENSIONS = new HashMap<String, Set<String>>();
 
 	static {
 		EXTENSIONS.put("prob", PROB_FILES);
+		EXTENSIONS.put("bms", BMS_FILES);
 	}
 
 	@SuppressWarnings("unused")
