@@ -177,16 +177,11 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 	
 	public Object setTemplate(Map<String, String[]> params) {
-
-		System.out.println("TESt");
 		
 		String templatePath = params.get("path")[0];
 		try {
 			File ff = new File(templatePath);
 			String content = Files.toString(ff, Charsets.UTF_8);
-			
-			System.out.println(content);
-			
 			return WebUtils.wrap("cmd", "bms.setTemplate", "template", content);
 		} catch (IOException e) {
 			e.printStackTrace();

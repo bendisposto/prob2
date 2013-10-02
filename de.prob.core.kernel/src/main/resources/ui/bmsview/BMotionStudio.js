@@ -219,12 +219,6 @@ bms = (function() {
 		
 	}
 	
-	$('#iframeVisualization').load(function() {
-		var height = this.contentWindow.document.body.offsetHeight + 'px';
-		console.log("=========> " + height)
-		this.style.height = this.contentWindow.document.body.offsetHeight + 'px';
-	});
-	
 	function renderVisualization(data) {
 		
 //		$("#render").html("");
@@ -465,7 +459,6 @@ bms = (function() {
 	}
 	
 	function browse(dir_dom) {
-		console.log("browse :)")
 		$('#filedialog').off('hidden.bs.modal')
 		$('#filedialog').on('hidden.bs.modal',
 				set_ok_button_state(dir_dom))
