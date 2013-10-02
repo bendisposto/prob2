@@ -36,45 +36,38 @@ public class EventBTranslator {
 	def Set<IFormulaExtension> typeEnv
 	def private Map<String, Event> events = [:]
 	def private ProofTranslator proofTranslator = new ProofTranslator()
+	def private XmlParser parser = new XmlParser()
 	def DirectedSparseMultigraph<String,RefType> graph = new DirectedSparseMultigraph<String, RefType>()
 
 	def EventBTranslator(String fileName) {
-		long time = System.currentTimeMillis()
 		modelFile = new File(fileName)
-		long time1 = System.currentTimeMillis()
 
 		int index = modelFile.getName().lastIndexOf('.')
 		String name = index != -1 ? modelFile.getName().substring(0,index) : modelFile.getName()
 
 		index = modelFile.getAbsolutePath().lastIndexOf('/')
 		directoryPath = index != -1 ? modelFile.getAbsolutePath().substring(0, index) : modelFile.getAbsolutePath()
-		println "Groovy String manipulation: "+ (System.currentTimeMillis() - time1)
 
 		TheoryTranslator theoryTranslator = new TheoryTranslator()
 		theories = theoryTranslator.getTheories(directoryPath)
 		typeEnv = theoryTranslator.getExtensions()
 
 		String baseFile = "${directoryPath}/${name}"
-		println "Init Translator: "+(System.currentTimeMillis()-time)
 
-		time = System.currentTimeMillis()
 		mainComponent = extractComponent(name, getXML(modelFile), baseFile)
-		println "Extracting Component: "+(System.currentTimeMillis()-time)
 	}
 
 	def Node getXML(file) {
-		long time = System.currentTimeMillis()
 		String text = file.text.replaceAll("org.eventb.core.","")
-		Node parser = new XmlParser().parseText(text)
-		println "Extracted "+file.absolutePath+" in: "+(System.currentTimeMillis() - time)
+		Node parser = parser.parseText(text)
 		return parser
 	}
 
 	def AbstractElement extractComponent(name, xml, baseFile) {
 		String xmlName = xml.name()
-		if(xmlName == "contextFile") {
+		if(xmlName == "scContextFile") {
 			return extractContext(name, xml, baseFile);
-		} else if(xmlName == "machineFile") {
+		} else if(xmlName == "scMachineFile") {
 			return extractMachine(name, xml, baseFile);
 		}
 	}
@@ -83,30 +76,39 @@ public class EventBTranslator {
 		long time = System.currentTimeMillis()
 		graph.addVertex(name)
 
+		xml.scInternalContext.each {
+			def ctx = it.@name
+			if(!components.containsKey(ctx)) {
+				def newBaseFile = directoryPath + "/" + ctx
+				extractContext(ctx, it, newBaseFile)
+			}
+		}
+
 		Context context = new Context(name)
 		List<Context> extendedContexts = []
-		xml.extendsContext.'@target'.each {
-			if(components.containsKey(it)) {
-				extendedContexts.add(components[it])
+		xml.scExtendsContext.'@scTarget'.each {
+			def ctx = it.substring(it.lastIndexOf('#')+1,it.size())
+			if(components.containsKey(ctx)) {
+				extendedContexts.add(components[ctx])
 			} else {
-				File f = new File("${directoryPath}/${it}.buc")
-				String newBaseFile = "${directoryPath}/${it}"
-				extendedContexts.add(extractContext(it,getXML(f),newBaseFile))
+				File f = new File(directoryPath+"/"+ctx+".bcc")
+				String newBaseFile = directoryPath+"/"+ctx
+				extendedContexts.add(extractContext(ctx,getXML(f),newBaseFile))
 			}
-			graph.addEdge(new RefType(ERefType.EXTENDS), name, it)
+			graph.addEdge(new RefType(ERefType.EXTENDS), name, ctx)
 		}
 		context.addExtends(extendedContexts)
 
-		List<BSet> sets = xml.carrierSet.'@identifier'.collect { new BSet(it) }
+		List<BSet> sets = xml.scCarrierSet.@name.collect { new BSet(it) }
 		context.addSets(sets)
 
-		List<EventBAxiom> axioms = xml.axiom.collect {
+		List<EventBAxiom> axioms = xml.scAxiom.findAll { it.@source.contains("contextFile#"+name) }.collect {
 			new EventBAxiom(it.@label, it.@predicate, it.@theorem == "true", typeEnv)
 		}
 		context.addAxioms(axioms)
 
-		List<EventBConstant> constants = xml.constant.collect {
-			new EventBConstant(it.@identifier, it.'@de.prob.symbolic.symbolicAttribute' == "true")
+		List<EventBConstant> constants = xml.scConstant.collect {
+			new EventBConstant(it.@name, it.'@de.prob.symbolic.symbolicAttribute' == "true")
 		}
 		context.addConstants(constants)
 
@@ -119,47 +121,59 @@ public class EventBTranslator {
 	}
 
 	def extractMachine(name, xml, baseFile) {
-
 		long time = System.currentTimeMillis()
 		graph.addVertex(name)
 
+		xml.scInternalContext.each {
+			def ctx = it.@name
+			if(!components.containsKey(ctx)) {
+				def newBaseFile = directoryPath + "/" + ctx
+				extractContext(ctx, it, newBaseFile)
+			}
+		}
+
 		EventBMachine machine = new EventBMachine(name)
 		List<Context> sees = []
-		xml.seesContext.'@target'.each {
-			if(components.containsKey(it)) {
-				sees.add(components[it])
+		xml.scSeesContext.@scTarget.each {
+			def ctx = it.substring(it.lastIndexOf('/')+1,it.indexOf(".bcc"))
+			if(components.containsKey(ctx)) {
+				sees.add(components[ctx])
 			} else {
-				File f = new File("${directoryPath}/${it}.buc")
-				String newBaseFile = "${directoryPath}/${it}"
-				sees.add(extractContext(it,getXML(f),newBaseFile))
+				File f = new File(directoryPath+"/"+ctx+".bcc")
+				String newBaseFile = directoryPath+"/"+ctx
+				sees.add(extractContext(ctx,getXML(f),newBaseFile))
 			}
-			graph.addEdge(new RefType(ERefType.SEES), name, it)
+			graph.addEdge(new RefType(ERefType.SEES), name, ctx)
 		}
 		machine.addSees(sees)
 
 		List<EventBMachine> refines = []
-		xml.refinesMachine.'@target'.each {
-			if(components.containsKey(it)) {
-				refines.add(components[it])
+		xml.scRefinesMachine.@scTarget.each {
+			def mch = it.substring(it.lastIndexOf('/')+1,it.indexOf(".bcm"))
+			if(components.containsKey(mch)) {
+				refines.add(components[mch])
 			} else {
-				File f = new File("${directoryPath}/${it}.bum")
-				String newBaseFile = "${directoryPath}/${it}"
-				refines.add(extractMachine(it,getXML(f),newBaseFile))
+				File f = new File(directoryPath+"/"+mch+".bcm")
+				String newBaseFile = directoryPath+"/"+mch
+				refines.add(extractMachine(mch,getXML(f),newBaseFile))
 			}
-			graph.addEdge(new RefType(ERefType.REFINES), name, it)
+			graph.addEdge(new RefType(ERefType.REFINES), name, mch)
 		}
 		machine.addRefines(refines)
 
-		List<EventBVariable> variables = xml.variable.'@identifier'.collect { new EventBVariable(it) }
+		List<EventBVariable> variables = xml.scVariable.@name.collect { new EventBVariable(it) }
 		machine.addVariables(variables)
 
-		List<EventBInvariant> invariants = xml.invariant.collect { new EventBInvariant(it.@label, it.@predicate, it.@theorem == "true", typeEnv) }
+		List<EventBInvariant> invariants = []
+		xml.scInvariant.findAll { it.@source.contains("machineFile#"+name) }.collect { new EventBInvariant(it.@label, it.@predicate, it.@theorem == "true", typeEnv)}
 		machine.addInvariants(invariants)
 
-		List<Variant> variant = xml.variant.'@expression'.collect { new Variant(it, typeEnv) }
+		List<Variant> variant = xml.scVariant.'@expression'.collect {
+			new Variant(it, typeEnv)
+		}
 		machine.addVariant(variant)
 
-		List<Event> events = xml.event.collect { extractEvent(it) }
+		List<Event> events = xml.scEvent.collect { extractEvent(it) }
 		machine.addEvents(events)
 
 		proofInformation.addAll(new ProofTranslator().translateProofsForMachine(machine, baseFile))
@@ -171,33 +185,39 @@ public class EventBTranslator {
 	}
 
 	def extractEvent(xml) {
-		String name = xml.'@label'
-		String convergence = xml.'@convergence'
+		String rodinCrazyInternalName = xml.@name
+		String name = xml.@label
+		String convergence = xml.@convergence
 		EventType eventType = convergence == "0" ? EventType.ORDINARY : (convergence == "1" ? EventType.CONVERGENT : EventType.ANTICIPATED);
 		Event event = new Event(name, eventType)
 
-		List<Event> refines = xml.refinesEvent.'@target'.collect { events[it] }
+		List<Event> refines = xml.scRefinesEvent.@scTarget.collect {
+			def internalName = it.substring(it.lastIndexOf('#')+1,it.size())
+			events[internalName]
+		}
 		event.addRefines(refines)
 
-		List<EventBGuard> guards = xml.guard.collect {
+		List<EventBGuard> guards = xml.scGuard.collect {
 			new EventBGuard(event, it.@label, it.@predicate, it.@theorem == "true", typeEnv)
 		}
 		event.addGuards(guards)
 
-		List<EventBAction> actions = xml.action.collect {
+		List<EventBAction> actions = xml.scAction.collect {
 			new EventBAction(event, it.@label, it.@assignment, typeEnv)
 		}
 		event.addActions(actions)
 
-		List<Witness> witnesses = xml.witness.collect {
+		List<Witness> witnesses = xml.scWitness.collect {
 			Witness witness = new Witness(event, it.@label, it.@predicate, typeEnv)
 		}
 		event.addWitness(witnesses)
 
-		List<EventParameter> parameters = xml.parameter.'@identifier'.collect { new EventParameter(event,it) }
+		List<EventParameter> parameters = xml.scParameter.@name.collect {
+			new EventParameter(event,it)
+		}
 		event.addParameters(parameters)
 
-		events[name] = event
+		events[rodinCrazyInternalName] = event
 		return event
 	}
 }

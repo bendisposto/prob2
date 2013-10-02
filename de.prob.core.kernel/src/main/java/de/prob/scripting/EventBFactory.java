@@ -55,8 +55,8 @@ public class EventBFactory {
 		AbstractCommand cmd = new LoadEventBProjectCommand(
 				eventBToPrologTranslator);
 
-		s.execute(cmd);
-		System.out.println("Loaded: " + (System.currentTimeMillis() - time));
+		// s.execute(cmd);
+		// System.out.println("Loaded: " + (System.currentTimeMillis() - time));
 		// s.execute(new StartAnimationCommand());
 
 		// subscribeVariables(model);

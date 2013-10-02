@@ -36,6 +36,11 @@ public class StartAnimationHandler extends AbstractHandler {
 
 		String fileName = rootElement.getResource().getRawLocation()
 				.makeAbsolute().toOSString();
+		if (fileName.endsWith(".buc")) {
+			fileName = fileName.replace(".buc", ".bcc");
+		} else {
+			fileName = fileName.replace(".bum", ".bcm");
+		}
 
 		Injector injector = ServletContextListener.INJECTOR;
 
