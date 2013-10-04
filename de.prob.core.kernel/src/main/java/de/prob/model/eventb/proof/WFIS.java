@@ -1,17 +1,20 @@
 package de.prob.model.eventb.proof;
 
+import java.util.Set;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Witness;
-import de.prob.model.eventb.translate.ProofTreeCreator;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class WFIS extends ProofObligation {
+public class WFIS extends CalculatedPO {
 
 	private final Witness witness;
 
-	public WFIS(final String name, final Witness witness, final EventB goal,
-			final boolean discharged, final String description,
-			final ProofTreeCreator creator) {
-		super(name, goal, discharged, description, creator);
+	public WFIS(final String sourceName, final String name,
+			final Witness witness, final EventB goal,
+			final Set<EventB> hypotheses, final boolean discharged,
+			final String description) {
+		super(sourceName, name, discharged, description, goal, hypotheses);
 		this.witness = witness;
 	}
 
@@ -20,8 +23,7 @@ public class WFIS extends ProofObligation {
 	}
 
 	@Override
-	public String toString() {
-		return name;
+	protected void printElements(final IPrologTermOutput pto) {
 	}
 
 }

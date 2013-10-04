@@ -1,17 +1,20 @@
 package de.prob.model.eventb.proof;
 
+import java.util.Set;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.EventBAction;
-import de.prob.model.eventb.translate.ProofTreeCreator;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class FIS extends ProofObligation {
+public class FIS extends CalculatedPO {
 
 	private final EventBAction action;
 
-	public FIS(final String proofName, final EventBAction action,
-			final EventB goal, final boolean discharged,
-			final String description, final ProofTreeCreator creator) {
-		super(proofName, goal, discharged, description, creator);
+	public FIS(final String sourceName, final String proofName,
+			final EventBAction action, final EventB goal,
+			final Set<EventB> hypotheses, final boolean discharged,
+			final String description) {
+		super(sourceName, proofName, discharged, description, goal, hypotheses);
 		this.action = action;
 	}
 
@@ -20,8 +23,7 @@ public class FIS extends ProofObligation {
 	}
 
 	@Override
-	public String toString() {
-		return name;
+	protected void printElements(final IPrologTermOutput pto) {
 	}
 
 }

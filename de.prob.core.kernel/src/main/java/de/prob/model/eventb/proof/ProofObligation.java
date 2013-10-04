@@ -1,35 +1,25 @@
 package de.prob.model.eventb.proof;
 
-import java.util.List;
-import java.util.Set;
-
-import de.prob.animator.domainobjects.EventB;
-import de.prob.model.eventb.translate.ProofTreeCreator;
+import de.prob.model.representation.AbstractElement;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public abstract class ProofObligation extends SimpleProofNode {
+public abstract class ProofObligation extends AbstractElement {
 
-	String name;
-	private final ProofTreeCreator creator;
+	private final String name;
+	private final boolean discharged;
+	private final String description;
+	private final String sourceName;
 
-	public ProofObligation(final String name, final EventB goal,
-			final boolean discharged, final String description,
-			final ProofTreeCreator creator) {
-		super(goal, null, discharged, description);
+	public ProofObligation(final String sourceName, final String name,
+			final boolean discharged, final String description) {
+		this.sourceName = sourceName;
 		this.name = name;
-		this.creator = creator;
+		this.discharged = discharged;
+		this.description = description;
 	}
 
 	public String getName() {
 		return name;
-	}
-
-	@Override
-	public Set<EventB> getHypotheses() {
-		if (hypotheses == null) {
-			hypotheses = creator.getHyps();
-		}
-		return super.getHypotheses();
 	}
 
 	/**
@@ -41,15 +31,16 @@ public abstract class ProofObligation extends SimpleProofNode {
 	 * @param pto
 	 */
 	public void toProlog(final IPrologTermOutput pto) {
+		pto.openTerm("po");
+		pto.printAtom(sourceName);
+		pto.printAtom(description);
+		pto.openList();
+		printElements(pto);
+		pto.closeList();
+		pto.printAtom(String.valueOf(discharged));
+		pto.closeTerm();
 	}
 
-	@Override
-	public Set<SimpleProofNode> getChildrenNodes() {
-		if (!creator.isCreated()) {
-			List<SimpleProofNode> kids = creator.create();
-			addChildrenNodes(kids);
-		}
-		return childrenStates;
-	}
+	protected abstract void printElements(IPrologTermOutput pto);
 
 }

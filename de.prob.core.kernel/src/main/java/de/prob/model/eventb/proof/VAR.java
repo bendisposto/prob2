@@ -5,18 +5,18 @@ import java.util.Set;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Variant;
-import de.prob.model.eventb.translate.ProofTreeCreator;
+import de.prob.prolog.output.IPrologTermOutput;
 
-public class VAR extends ProofObligation {
+public class VAR extends CalculatedPO {
 
 	private final Variant variant;
 	private final Event event;
 
-	public VAR(final String name, final Event event, final Variant variant,
-			final EventB goal, final Set<EventB> hypotheses,
-			final boolean discharged, final String description,
-			final ProofTreeCreator creator) {
-		super(name, goal, discharged, description, creator);
+	public VAR(final String sourceName, final String name, final Event event,
+			final Variant variant, final EventB goal,
+			final Set<EventB> hypotheses, final boolean discharged,
+			final String description) {
+		super(sourceName, name, discharged, description, goal, hypotheses);
 		this.variant = variant;
 		this.event = event;
 	}
@@ -30,8 +30,7 @@ public class VAR extends ProofObligation {
 	}
 
 	@Override
-	public String toString() {
-		return name;
+	protected void printElements(final IPrologTermOutput pto) {
 	}
 
 }

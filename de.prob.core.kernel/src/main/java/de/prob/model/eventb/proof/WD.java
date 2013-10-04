@@ -1,22 +1,24 @@
 package de.prob.model.eventb.proof;
 
+import java.util.Set;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.EventBAction;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBGuard;
 import de.prob.model.eventb.EventBInvariant;
-import de.prob.model.eventb.translate.ProofTreeCreator;
 import de.prob.model.representation.AbstractElement;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class WD extends ProofObligation {
+public class WD extends CalculatedPO {
 
 	private final AbstractElement originalFormula;
 
-	public WD(final String proofName, final AbstractElement originalFormula,
-			final EventB goal, final boolean discharged,
-			final String description, final ProofTreeCreator creator) {
-		super(proofName, goal, discharged, description, creator);
+	public WD(final String sourceName, final String proofName,
+			final AbstractElement originalFormula, final EventB goal,
+			final Set<EventB> hypotheses, final boolean discharged,
+			final String description) {
+		super(sourceName, proofName, discharged, description, goal, hypotheses);
 		this.originalFormula = originalFormula;
 	}
 
@@ -25,12 +27,7 @@ public class WD extends ProofObligation {
 	}
 
 	@Override
-	public String toString() {
-		return name;
-	}
-
-	@Override
-	public void toProlog(final IPrologTermOutput pto) {
+	public void printElements(final IPrologTermOutput pto) {
 		if (originalFormula instanceof EventBInvariant) {
 			pto.openTerm("invariant");
 			pto.printAtom(((EventBInvariant) originalFormula).getName());

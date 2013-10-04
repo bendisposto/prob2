@@ -1,21 +1,22 @@
 package de.prob.model.eventb.proof;
 
+import java.util.Set;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBInvariant;
-import de.prob.model.eventb.translate.ProofTreeCreator;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class INV extends ProofObligation {
+public class INV extends CalculatedPO {
 
 	private final Event event;
 	private final EventBInvariant invariant;
 
-	public INV(final String proofName, final Event event,
-			final EventBInvariant invariant, final EventB goal,
-			final boolean discharged, final String description,
-			final ProofTreeCreator creator) {
-		super(proofName, goal, discharged, description, creator);
+	public INV(final String sourceName, final String proofName,
+			final Event event, final EventBInvariant invariant,
+			final EventB goal, final Set<EventB> hypotheses,
+			final boolean discharged, final String description) {
+		super(sourceName, proofName, discharged, description, goal, hypotheses);
 		this.event = event;
 		this.invariant = invariant;
 	}
@@ -29,12 +30,7 @@ public class INV extends ProofObligation {
 	}
 
 	@Override
-	public String toString() {
-		return name;
-	}
-
-	@Override
-	public void toProlog(final IPrologTermOutput pto) {
+	public void printElements(final IPrologTermOutput pto) {
 		pto.openTerm("event");
 		pto.printAtom(event.getName());
 		pto.closeTerm();
