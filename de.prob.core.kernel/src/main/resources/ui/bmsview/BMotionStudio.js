@@ -205,8 +205,6 @@ bms = (function() {
 		
 		if (template != null) {
 			try {
-				$('#iframeTemplate').contents().find('html').html(
-						template)
 				var newIframeHeight = $("#iframeTemplate").contents()
 						.find("html").height()
 						+ 'px';
@@ -237,15 +235,17 @@ bms = (function() {
 		
 		if (template != null) {
 			try {
-				var renderedTemplate = Mustache.render(template, data);
-				$('#iframeVisualization').contents().find('html').html(
-						renderedTemplate)
+				var orgTemplate = $('#iframeTemplate').contents().find('body').html();
+				var renderedTemplate = Mustache.render(orgTemplate, data);
+				$('#iframeVisualization').contents().find('body').html(renderedTemplate)
 				var newIframeHeight = $("#iframeVisualization").contents()
 						.find("html").height()
 						+ 'px';
 				$('#iframeVisualization').css("height", newIframeHeight);
+				var after = $('#iframeVisualization').contents().find('html').html();
 			} catch (e) {
-				template_error(e)
+				console.log(e)
+//				template_error(e)
 			}
 		}
 		
@@ -316,6 +316,7 @@ bms = (function() {
 	}
 
 	extern.client = ""
+	extern.workspace = "";
 	extern.init = session.init
 	extern.session = session
 
@@ -489,7 +490,7 @@ bms = (function() {
 	function request_files(d) {
 		var s;
 		$.ajax({
-			url : "/files?path=" + d + "&extensions=bms",
+			url : "/files?path=" + d + "&extensions=bms&workspace="+extern.workspace,
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -505,7 +506,7 @@ bms = (function() {
 	function check_file(d) {
 		var s;
 		$.ajax({
-			url : "/files?check=true&extensions=bms&path=" + d,
+			url : "/files?check=true&path=" + d + "&extensions=bms&workspace="+extern.workspace,
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -563,10 +564,14 @@ bms = (function() {
 			"path" : $(dom_dir)[0].value
 		})
 		focused = null; // prevent blur event
+		$("#sourceModal").modal('hide')
 	}
 	
 	extern.setTemplate = function(data) {
 		template = data.template
+		console.log("SET TEMPLATE: http://localhost:8080/bms/"+template)
+		$('#iframeVisualization').attr("src","http://localhost:8080/bms/"+template)
+		$('#iframeTemplate').attr("src","http://localhost:8080/bms/"+template)
 	}
 	
 	extern.parseError = function(data) {
