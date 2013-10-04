@@ -18,6 +18,7 @@ import de.prob.model.eventb.Event.EventType
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.BSet
+import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.RefType
 import de.prob.model.representation.RefType.ERefType
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
@@ -29,15 +30,16 @@ public class EventBTranslator {
 	def private String directoryPath
 	def AbstractElement mainComponent
 	def Map<String,AbstractElement> components = [:]
-	def List<EventBMachine> machines = []
-	def List<Context> contexts = []
+	def List<EventBMachine> machines = new ModelElementList<EventBMachine>()
+	def List<Context> contexts = new ModelElementList<Context>()
 	def List<Theory> theories = []
-	def List<PO> proofInformation = []
 	def Set<IFormulaExtension> typeEnv
 	def private Map<String, Event> events = [:]
 	def private ProofTranslator proofTranslator = new ProofTranslator()
 	def private XmlParser parser = new XmlParser()
 	def DirectedSparseMultigraph<String,RefType> graph = new DirectedSparseMultigraph<String, RefType>()
+	def private Map<String, EventBInvariant> invCache = [:]
+	def private Map<String, EventBAxiom> axmCache = [:]
 
 	def EventBTranslator(String fileName) {
 		modelFile = new File(fileName)
@@ -84,8 +86,8 @@ public class EventBTranslator {
 			}
 		}
 
-		Context context = new Context(name)
-		List<Context> extendedContexts = []
+		Context context = new Context(name, directoryPath)
+		List<Context> extendedContexts = new ModelElementList<Context>()
 		xml.scExtendsContext.'@scTarget'.each {
 			def ctx = it.substring(it.lastIndexOf('#')+1,it.size())
 			if(components.containsKey(ctx)) {
@@ -100,19 +102,29 @@ public class EventBTranslator {
 		context.addExtends(extendedContexts)
 
 		List<BSet> sets = xml.scCarrierSet.@name.collect { new BSet(it) }
-		context.addSets(sets)
+		context.addSets(new ModelElementList<BSet>(sets))
 
-		List<EventBAxiom> axioms = xml.scAxiom.findAll { it.@source.contains("contextFile#"+name) }.collect {
-			new EventBAxiom(it.@label, it.@predicate, it.@theorem == "true", typeEnv)
+		List<EventBAxiom> axioms = new ModelElementList<EventBAxiom>()
+		List<EventBAxiom> inherited	 = []
+		xml.scAxiom.each {
+			def source = it.@source
+			def internalName = source.substring(source.lastIndexOf('#')+1,source.size())
+			if(source.contains("contextFile#"+name)) {
+				def axm = new EventBAxiom(it.@label, it.@predicate, it.@theorem == "true", typeEnv)
+				axioms.add(axm)
+				axmCache[internalName] = axm
+			} else {
+				inherited.add(axmCache[internalName])
+			}
 		}
-		context.addAxioms(axioms)
+		context.addAxioms(axioms, inherited)
 
 		List<EventBConstant> constants = xml.scConstant.collect {
 			new EventBConstant(it.@name, it.'@de.prob.symbolic.symbolicAttribute' == "true")
 		}
-		context.addConstants(constants)
+		context.addConstants(new ModelElementList<EventBConstant>(constants))
 
-		proofInformation.addAll(proofTranslator.translateProofsForContext(context, baseFile))
+		context.addProofs(proofTranslator.translateProofsForContext(context, baseFile))
 
 		components[name] = context
 		contexts.add(context)
@@ -132,8 +144,8 @@ public class EventBTranslator {
 			}
 		}
 
-		EventBMachine machine = new EventBMachine(name)
-		List<Context> sees = []
+		EventBMachine machine = new EventBMachine(name, directoryPath)
+		List<Context> sees = new ModelElementList<Context>()
 		xml.scSeesContext.@scTarget.each {
 			def ctx = it.substring(it.lastIndexOf('/')+1,it.indexOf(".bcc"))
 			if(components.containsKey(ctx)) {
@@ -147,7 +159,7 @@ public class EventBTranslator {
 		}
 		machine.addSees(sees)
 
-		List<EventBMachine> refines = []
+		List<EventBMachine> refines = new ModelElementList<EventBMachine>()
 		xml.scRefinesMachine.@scTarget.each {
 			def mch = it.substring(it.lastIndexOf('/')+1,it.indexOf(".bcm"))
 			if(components.containsKey(mch)) {
@@ -162,11 +174,22 @@ public class EventBTranslator {
 		machine.addRefines(refines)
 
 		List<EventBVariable> variables = xml.scVariable.@name.collect { new EventBVariable(it) }
-		machine.addVariables(variables)
+		machine.addVariables(new ModelElementList<EventBVariable>(variables))
 
-		List<EventBInvariant> invariants = []
-		xml.scInvariant.findAll { it.@source.contains("machineFile#"+name) }.collect { new EventBInvariant(it.@label, it.@predicate, it.@theorem == "true", typeEnv)}
-		machine.addInvariants(invariants)
+		List<EventBInvariant> invariants = new ModelElementList<EventBInvariant>()
+		List<EventBInvariant> inherited = []
+		xml.scInvariant.each {
+			def source = it.@source
+			def internalName = source.substring(source.lastIndexOf('#')+1,source.size())
+			if(source.contains("machineFile#"+name)) {
+				def inv = new EventBInvariant(it.@label, it.@predicate, it.@theorem == "true", typeEnv)
+				invariants.add(inv)
+				invCache[internalName] = inv
+			} else {
+				inherited.add(invCache[internalName])
+			}
+		}
+		machine.addInvariants(invariants, inherited)
 
 		List<Variant> variant = xml.scVariant.'@expression'.collect {
 			new Variant(it, typeEnv)
@@ -174,9 +197,9 @@ public class EventBTranslator {
 		machine.addVariant(variant)
 
 		List<Event> events = xml.scEvent.collect { extractEvent(it) }
-		machine.addEvents(events)
+		machine.addEvents(new ModelElementList<Event>(events))
 
-		proofInformation.addAll(new ProofTranslator().translateProofsForMachine(machine, baseFile))
+		machine.addProofs(new ProofTranslator().translateProofsForMachine(machine, baseFile))
 
 		components[name] = machine
 		machines.add(machine)
@@ -195,27 +218,27 @@ public class EventBTranslator {
 			def internalName = it.substring(it.lastIndexOf('#')+1,it.size())
 			events[internalName]
 		}
-		event.addRefines(refines)
+		event.addRefines(new ModelElementList<Event>(refines))
 
 		List<EventBGuard> guards = xml.scGuard.collect {
 			new EventBGuard(event, it.@label, it.@predicate, it.@theorem == "true", typeEnv)
 		}
-		event.addGuards(guards)
+		event.addGuards(new ModelElementList<EventBGuard>(guards))
 
 		List<EventBAction> actions = xml.scAction.collect {
 			new EventBAction(event, it.@label, it.@assignment, typeEnv)
 		}
-		event.addActions(actions)
+		event.addActions(new ModelElementList<EventBAction>(actions))
 
 		List<Witness> witnesses = xml.scWitness.collect {
-			Witness witness = new Witness(event, it.@label, it.@predicate, typeEnv)
+			new Witness(event, it.@label, it.@predicate, typeEnv)
 		}
-		event.addWitness(witnesses)
+		event.addWitness(new ModelElementList<Witness>(witnesses))
 
 		List<EventParameter> parameters = xml.scParameter.@name.collect {
 			new EventParameter(event,it)
 		}
-		event.addParameters(parameters)
+		event.addParameters(new ModelElementList<EventParameter>())
 
 		events[rodinCrazyInternalName] = event
 		return event

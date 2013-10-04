@@ -3,6 +3,7 @@ package de.prob.model.eventb.translate
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog
 import de.prob.model.eventb.Context
 import de.prob.model.eventb.EventBModel
+import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.representation.Machine
 import de.prob.prolog.output.IPrologTermOutput
 
@@ -10,13 +11,13 @@ class EventBToPrologTranslator {
 	EventBModel model
 	List<MachineToAst> machineTranslators = []
 	List<ContextToAst> contextTranslators = []
-	List<PO> proofInformation
+	List<ProofObligation> proofs = []
 
-	def EventBToPrologTranslator(EventBModel model, List<PO> proofInformation) {
+	def EventBToPrologTranslator(EventBModel model) {
 		this.model = model
-		this.proofInformation = proofInformation
-		contextTranslators = model.getChildrenOfType(Context.class).collect { new ContextToAst(it) }
-		machineTranslators = model.getChildrenOfType(Machine.class).collect { new MachineToAst(it) }
+
+		contextTranslators = model.getChildrenOfType(Context.class).collect { proofs.addAll(it.getRawProofs()); new ContextToAst(it) }.reverse()
+		machineTranslators = model.getChildrenOfType(Machine.class).collect { proofs.addAll(it.getRawProofs()); new MachineToAst(it) }.reverse()
 	}
 
 	def printProlog(ASTProlog astPrinter, IPrologTermOutput pto) {
@@ -44,7 +45,7 @@ class EventBToPrologTranslator {
 		println "Print machines and contexts: "+(System.currentTimeMillis() - time)
 
 		time = System.currentTimeMillis()
-		proofInformation.each { it.toProlog(pto) }
+		proofs.each { it.toProlog(pto) }
 		println "Print proofs: "+(System.currentTimeMillis() - time)
 
 		// ADD THEORIES AND PRAGMA INFORMATION

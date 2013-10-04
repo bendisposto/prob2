@@ -20,6 +20,7 @@ import de.be4.classicalb.core.parser.node.Node
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral
 import de.prob.model.eventb.Event
 import de.prob.model.eventb.EventBMachine
+import de.prob.model.representation.Invariant
 import de.prob.prolog.output.IPrologTermOutput
 
 class MachineToAst {
@@ -66,7 +67,7 @@ class MachineToAst {
 	def processInvariantsAndTheorems() {
 		def invs = []
 		def thms = []
-		machine.getInvariants().each {
+		machine.getChildrenOfType(Invariant.class).each {
 			if(!it.isTheorem()) {
 				invs << it.getPredicate().getAst()
 			} else {

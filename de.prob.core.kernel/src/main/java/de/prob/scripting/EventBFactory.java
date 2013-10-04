@@ -50,13 +50,13 @@ public class EventBFactory {
 		StateSpace s = model.getStatespace();
 		time = System.currentTimeMillis();
 		EventBToPrologTranslator eventBToPrologTranslator = new EventBToPrologTranslator(
-				model, translator.getProofInformation());
+				model);
 
 		AbstractCommand cmd = new LoadEventBProjectCommand(
 				eventBToPrologTranslator);
 
-		// s.execute(cmd);
-		// System.out.println("Loaded: " + (System.currentTimeMillis() - time));
+		s.execute(cmd);
+		System.out.println("Loaded: " + (System.currentTimeMillis() - time));
 		// s.execute(new StartAnimationCommand());
 
 		// subscribeVariables(model);

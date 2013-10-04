@@ -15,6 +15,7 @@ import de.be4.classicalb.core.parser.node.Node
 import de.be4.classicalb.core.parser.node.PContextClause
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral
 import de.prob.model.eventb.Context
+import de.prob.model.representation.Axiom
 import de.prob.prolog.output.IPrologTermOutput
 
 class ContextToAst {
@@ -70,7 +71,7 @@ class ContextToAst {
 		def axioms = []
 		def theorems = []
 
-		context.getAxioms().each {
+		context.getChildrenOfType(Axiom.class).each {
 			if(it.isTheorem()) {
 				theorems << it.getPredicate().getAst()
 			} else {

@@ -4,7 +4,6 @@ import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
-import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.Variable
 
 public class EventBMachine extends Machine {
@@ -16,29 +15,32 @@ public class EventBMachine extends Machine {
 	def List<EventBInvariant> invariants
 	def List<ProofObligation> proofs
 	def Variant variant
+	private final String directoryPath
 
-	public EventBMachine(final String name) {
-		super(name);
+	public EventBMachine(final String name, final String directoryPath) {
+		super(name)
+		this.directoryPath = directoryPath;
 	}
 
 	public void addRefines(final List<EventBMachine> refines) {
 		put(Machine.class, refines);
-		this.refines = new ModelElementList<EventBMachine>(refines)
+		this.refines = refines
 	}
 
 	public void addSees(final List<Context> sees) {
 		put(Context.class, sees);
-		this.sees = new ModelElementList<Context>(sees)
+		this.sees = sees
 	}
 
 	public void addVariables(final List<EventBVariable> variables) {
 		put(Variable.class, variables);
-		this.variables = new ModelElementList<EventBVariable>(variables)
+		this.variables = variables
 	}
 
-	public void addInvariants(final List<EventBInvariant> invariants) {
-		put(Invariant.class, invariants);
-		this.invariants = new ModelElementList<EventBInvariant>(invariants)
+	public void addInvariants(final List<EventBInvariant> invariants, final List<EventBInvariant> inherited) {
+		inherited.addAll(invariants)
+		put(Invariant.class, inherited);
+		this.invariants = invariants
 	}
 
 	public void addVariant(final List<Variant> variant) {
@@ -48,16 +50,25 @@ public class EventBMachine extends Machine {
 
 	public void addEvents(final List<Event> events) {
 		put(BEvent.class, events);
-		this.events = new ModelElementList<Event>(events)
+		this.events = events
 	}
 
 	public void addProofs(final List<ProofObligation> proofs) {
 		put(ProofObligation.class, proofs);
-		this.proofs = new ModelElementList<ProofObligation>(proofs)
+		this.proofs = proofs
 	}
 
 	public List<Event> getOperations() {
 		return events
+	}
+
+	def List<ProofObligation> getProofs() {
+		//TODO: Implement way to translate from UncalculatedPO to CalculatedPO
+		return proofs
+	}
+
+	def List<ProofObligation> getRawProofs() {
+		return proofs
 	}
 
 	def Event getEvent(String name) {

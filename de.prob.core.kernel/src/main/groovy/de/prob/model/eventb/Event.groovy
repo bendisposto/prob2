@@ -4,7 +4,6 @@ import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Action
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Guard
-import de.prob.model.representation.ModelElementList
 
 public class Event extends BEvent {
 
@@ -26,27 +25,27 @@ public class Event extends BEvent {
 
 	public void addRefines(final List<Event> refines) {
 		put(Event.class, refines);
-		this.refines = new ModelElementList<Event>(refines)
+		this.refines = refines
 	}
 
 	public void addGuards(final List<EventBGuard> guards) {
 		put(Guard.class, guards);
-		this.guards = new ModelElementList<Guard>(guards)
+		this.guards = guards
 	}
 
 	public void addActions(final List<EventBAction> actions) {
 		put(Action.class, actions);
-		this.actions = new ModelElementList<EventBAction>(actions)
+		this.actions = actions
 	}
 
 	public void addWitness(final List<Witness> witness) {
 		put(Witness.class, witness);
-		this.witnesses = new ModelElementList<Witness>(witness)
+		this.witnesses = witness
 	}
 
 	public void addParameters(final List<EventParameter> parameters) {
 		put(EventParameter.class, parameters);
-		this.parameters = new ModelElementList<EventParameter>(parameters)
+		this.parameters = parameters
 	}
 
 	public EventType getType() {

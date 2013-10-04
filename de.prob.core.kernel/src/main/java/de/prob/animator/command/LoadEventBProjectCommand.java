@@ -21,6 +21,9 @@ public class LoadEventBProjectCommand extends AbstractCommand {
 		System.out
 				.println("Create AST: " + (System.currentTimeMillis() - time));
 		translator.printProlog(astPrinter, pto);
+		System.out.println("Print Prolog: "
+				+ (System.currentTimeMillis() - time));
+		System.out.println();
 	}
 
 	@Override
