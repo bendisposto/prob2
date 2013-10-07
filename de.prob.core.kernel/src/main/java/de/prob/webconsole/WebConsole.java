@@ -22,6 +22,8 @@ public class WebConsole {
 
 	private static int PORT = 8080;
 
+	public static String BMS_WORKSPACE_PATH = "/home/lukas/WORK/bms_vis/";
+	
 	public static void run() throws Exception {
 		WebConsole.run(new Runnable() {
 
@@ -58,6 +60,9 @@ public class WebConsole {
 			warFile += "bin/";
 		}
 
+		// TODO: The workspace is fixed. However, this needs to be more generic
+		BMS_WORKSPACE_PATH = (warFile + "bmsexamples").replace("file:", "");
+		
 		// Creating a context handler collection
 		/*
 		 * ContextHandlerCollection contexts=new ContextHandlerCollection();
@@ -69,9 +74,14 @@ public class WebConsole {
 		 * wprv.setScanInterval(10); prvs.add(wprv); dmgr.setContexts(contexts);
 		 * dmgr.setAppProviders(prvs); server.addBean(dmgr);
 		 */
-
+		
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
+
+		// TODO: SET correct file path to bms workspace folder!
+		WebAppContext context2 = new WebAppContext("file:/"+BMS_WORKSPACE_PATH, "/bms");
+		context2.setServer(server);
+		
 		/*
 		 * WebAppContext worksheetContext = new WebAppContext(warFile +
 		 * "webapps/worksheet.war", "/worksheet");
@@ -90,6 +100,7 @@ public class WebConsole {
 		// mbContainer.addBean(Log.getLog());
 		// Add the handlers
 		HandlerList handlers = new HandlerList();
+		handlers.addHandler(context2);
 		handlers.addHandler(context);
 		// handlers.addHandler(contexts);
 		// handlers.addHandler(worksheetContext);

@@ -1,0 +1,75 @@
+<html>
+<head>
+<link rel="stylesheet" href="lift.css">
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+</head>
+<body>
+ 
+<div style="float:left">
+<svg width="325" height="400" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <g>
+  <title>Layer 1</title>
+  <rect fill="#ffffff" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="39" y="37" width="192" height="331" id="svg_1" stroke="#000000"></rect>
+  <line fill="none" stroke="#000000" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="0" y1="267" x2="270" y2="267" id="svg_2"></line>
+  <line fill="none" stroke="#000000" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="0" y1="157" x2="270" y2="157" id="svg_4"></line>
+  <rect fill="{{#b.door_open}}white{{/b.door_open}}{{^b.door_open}}lightgray{{/b.door_open}}" stroke="#000000" stroke-width="null" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="104" y="{{#doorpos}}{{b.cur_floor}}{{/doorpos}}" width="70" height="80" id="door"></rect>
+  <text fill="#000000" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="290" y="327" id="floor0" font-size="14" font-family="Arial" text-anchor="middle" xml:space="preserve" font-weight="normal">Floor -1</text>
+  <text fill="#000000" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="290" y="217" font-size="14" font-family="Arial" text-anchor="middle" xml:space="preserve" font-weight="normal" id="floor1">Floor 0</text>
+  <text fill="#000000" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="290" y="107" font-size="14" font-family="Arial" text-anchor="middle" xml:space="preserve" font-weight="normal" id="floor2">Floor 1</text>
+ </g>
+</svg>
+</div><div style="float:left;margin:40px;">
+<table cellspacing="0" cellpadding="10">
+ <tbody><tr style="background-color:lightgray;"><th colspan="2">Buttons</th></tr>
+   <tr><td>Pressed buttons outside:</td><td>{{b.call_buttons}}</td></tr>
+   <tr><td>Pressed buttons inside:</td><td>{{b.inside_buttons}}</td></tr>
+</tbody></table>
+<br>
+<table cellspacing="0" cellpadding="10">
+ <tbody><tr style="background-color:lightgray;"><th colspan="2">Lift</th></tr>
+ <tr><td>Lift position</td><td>{{b.cur_floor}}</td></tr>
+ <tr>
+  <td>Lift direction</td>
+  <td>
+  <strong>
+  {{#b.direction_up}}<span style="color:green">UP</span>{{/b.direction_up}}
+  {{^b.direction_up}}<span style="color:red">DOWN</span>{{/b.direction_up}}
+  </strong>
+  </td>
+</tr>
+ <tr>
+  <td>Door position</td>
+  <td>
+  <strong>
+  {{#b.door_open}}<span style="color:green">OPEN</span>{{/b.door_open}}
+  {{^b.door_open}}<span style="color:red">CLOSED</span>{{/b.door_open}}
+  </strong>
+  </td>
+</tr>
+</tbody></table>
+</div>
+
+<script>
+
+parent.bms.jsondata = {
+	doorpos: function () {
+		return function(curfloor,render) {
+			var pos = render(curfloor);
+			var newpos;
+			if(pos == -1)
+				newpos = 100;
+			else if(pos == 0)
+				newpos = 200;
+			else
+				newpos = 300;
+			console.log("####### " + newpos)
+			return newpos;
+		}
+	  }
+}
+	
+</script>
+
+</body>
+</html>

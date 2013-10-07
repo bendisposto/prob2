@@ -16,28 +16,29 @@
 
 <ul class="nav nav-tabs" id="bmsTab">
   <li class="active"><a href="#visualization">Visualization</a></li>
-  <li><a href="#template">Template</a></li>
+  <!--li><a href="#template">Template</a></li-->
 </ul>
  
 <div class="tab-content">
   <div class="tab-pane active" id="visualization">
   <!--  VISUALIZATION -->
   			<div id="result_container">
-
-			<iframe src="/ui/bmsview/vis.html" width="100%" frameborder="0" scrolling="no" name="iframeVisualization" id="iframeVisualization"></iframe>
+			<button type="button" id="btShowSourceModal">Edit Template</button>
+			<iframe src="" width="100%" frameborder="0" scrolling="no" name="iframeVisualization" id="iframeVisualization"></iframe>
 
 			</div>
+			
 	<!--  VISUALIZATION END -->			
-  
   </div>
+  <!-- 
   <div class="tab-pane" id="template">
-  <!--  TEMPLATE -->
+  
   	<button type="button" id="btShowSourceModal">Edit Template</button>
   	<div id="result_container">
-		<iframe src="/ui/bmsview/vis.html" width="100%" frameborder="0" scrolling="no" name="iframeTemplate" id="iframeTemplate"></iframe>
+		<iframe src="" width="100%" frameborder="0" scrolling="no" name="iframeTemplate" id="iframeTemplate"></iframe>
 	</div>
-  	<!--  TEMPLATE END -->
-  </div>
+   </div>
+   --->
 </div>
 			
 	<!-- Modal -->
@@ -176,6 +177,7 @@
 <script>
 bms.client = "{{clientid}}";
 bms.init("{{clientid}}");
+bms.workspace = "{{workspace}}"
 </script>
 
 </html>

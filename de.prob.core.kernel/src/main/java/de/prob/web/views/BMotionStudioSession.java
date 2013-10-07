@@ -1,6 +1,7 @@
 package de.prob.web.views;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,8 +17,6 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
@@ -35,6 +34,7 @@ import de.prob.statespace.Trace;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
+import de.prob.webconsole.WebConsole;
 
 public class BMotionStudioSession extends AbstractSession implements
 		IAnimationChangeListener {
@@ -50,8 +50,6 @@ public class BMotionStudioSession extends AbstractSession implements
 	private Map<String, Object> bvarmap = new HashMap<String, Object>();
 	
 	private List<ObserverElement> observerElements = new ArrayList<ObserverElement>();
-	
-	private String contentString, scriptingString;
 	
 	private final AbstractModel model;
 	
@@ -72,7 +70,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
 		Object scope = WebUtils.wrap("clientid", clientid, "id", UUID
-				.randomUUID().toString());
+				.randomUUID().toString(), "workspace",
+				WebConsole.BMS_WORKSPACE_PATH);
 		return WebUtils.render("/ui/bmsview/index.html", scope);
 	}
 
@@ -180,17 +179,26 @@ public class BMotionStudioSession extends AbstractSession implements
 		
 		String templatePath = params.get("path")[0];
 		try {
+			
 			File ff = new File(templatePath);
-			String content = Files.toString(ff, Charsets.UTF_8);
-			return WebUtils.wrap("cmd", "bms.setTemplate", "template", content);
+			String fileName = ff.getName();
+			String fftempname = "bmsvis.html";
+			File fftemp = new File(templatePath.replace(fileName, fftempname));
+			FileWriter fileWriter = new FileWriter(fftemp);
+			fileWriter.write("<html><body>test</body></html>");
+			fftemp.createNewFile();
+			fileWriter.close();
+			return WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
+					fileName, "tempfile", fftempname);
+
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		// String content = Files.toString(ff, Charsets.UTF_8);
 		return null;
-
 	}
-
+	
 	public Object addFormula(Map<String, String[]> params) {
 
 		String id = params.get("id")[0];
@@ -310,18 +318,18 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		super.reload(client, lastinfo, context);
 
-		List<Object> result = new ArrayList<Object>();
-		for (FormulaElement formula : finalFormulas) {
-			result.add(WebUtils.wrap("id", formula.id, "formula",
-					formula.formula.getCode()));
-		}
-		
-		Map<String, String> wrap = WebUtils.wrap("cmd", "bms.restorePage",
-				"formulas", WebUtils.toJson(result), "data",
-				getJsonDataForRendering(), "template_content",
-				this.contentString, "template_scripting", this.scriptingString);
-
-		submit(wrap);
+//		List<Object> result = new ArrayList<Object>();
+//		for (FormulaElement formula : finalFormulas) {
+//			result.add(WebUtils.wrap("id", formula.id, "formula",
+//					formula.formula.getCode()));
+//		}
+//		
+//		Map<String, String> wrap = WebUtils.wrap("cmd", "bms.restorePage",
+//				"formulas", WebUtils.toJson(result), "data",
+//				getJsonDataForRendering(), "template_content",
+//				this.contentString, "template_scripting", this.scriptingString);
+//
+//		submit(wrap);
 		
 	}	
 	
@@ -349,7 +357,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		// ... and force rendering
 		submit(WebUtils.wrap("cmd", "bms.renderVisualization", "data",
 				getJsonDataForRendering()));
-
+		
 	}
 
 	private void evalFormula(FormulaElement f, Trace trace) {
@@ -359,13 +367,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		EvaluationResult evalCurrent = trace.evalCurrent(f.formula);
 		f.setResult(evalCurrent);
 
-	}
-
-	public Object saveTemplate(Map<String, String[]> params) {
-		this.contentString = params.get("template_content")[0];
-		this.scriptingString = params.get("template_scripting")[0];
-		System.out.println("save template ...");
-		return null;
 	}
 
 	private Map<String, String> sendError(final String id,
@@ -434,8 +435,6 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private class ObserverElement {
 		
-		private String name;
-		private String id;		
 		private String observerPath;
 		private String data;
 				
@@ -450,22 +449,6 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		public String getData() {
 			return data;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getId() {
-			return id;
-		}
-
-		public void setId(String id) {
-			this.id = id;
 		}
 		
 	}

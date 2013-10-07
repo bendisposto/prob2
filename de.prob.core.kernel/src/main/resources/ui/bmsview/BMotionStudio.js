@@ -4,7 +4,8 @@ bms = (function() {
 	var session = Session();
 	var svgCanvas = null;
 	var isInit = false;
-	var template = null;
+	var templateContent = null;
+	var templateFile = null;
 	
 	$(document).ready(function() {
 		
@@ -24,7 +25,7 @@ bms = (function() {
 				disableContextMenu()
 			} else {
 //				$("#render").html("")
-				renderEdit()
+//				renderEdit()
 				initContextMenu()
 			}
 			// e.relatedTarget // previous tab
@@ -38,7 +39,7 @@ bms = (function() {
 //        	editorHtml.refresh()
 //        	editorJavascript.refresh()
         }).on('hidden', function() {
-        	renderEdit()
+//        	renderEdit()
         });
         //Show Modal
         $("#sourceModal").modal('show');
@@ -56,6 +57,17 @@ bms = (function() {
 	jQuery.expr[':'].parents = function(a,i,m){
 	    return jQuery(a).parents(m[3]).length < 1;
 	};
+	
+	  var readHTMLFile = function(url){
+          var toReturn;
+          $.ajax({
+              url: url,
+              async: false
+          }).done(function(data){
+              toReturn = data;
+          });
+          return toReturn;
+      };
 	// --------------------------------------------
 
 	// --------------------------------------------
@@ -167,7 +179,7 @@ bms = (function() {
 					svgElement.replaceWith($(data))
 					editorHtml.setValue($("#result").children().toHtmlString())
 					forceSaveTemplate()
-					renderEdit()
+//					renderEdit()
 				}
 			}
 		});
@@ -205,8 +217,6 @@ bms = (function() {
 		
 		if (template != null) {
 			try {
-				$('#iframeTemplate').contents().find('html').html(
-						template)
 				var newIframeHeight = $("#iframeTemplate").contents()
 						.find("html").height()
 						+ 'px';
@@ -220,56 +230,49 @@ bms = (function() {
 	}
 	
 	function renderVisualization(data) {
+				
+//		try {
 		
-//		$("#render").html("");
-//		var template_text = editorHtml.getValue();
-		
-//		var observer = JSON.parse(data.observer)
 
-//		jQuery.each(observer, function(i, o) {
-//			template_text = template_text + session.render(o.template, JSON.parse(o.data));
-//		});
-		
-//		console.log(template)
-		
-//		var htmlSrc = $("#iframeVisualization").attr("src");
-//		var template = session.render(htmlSrc, data);
-		
-		if (template != null) {
-			try {
-				var renderedTemplate = Mustache.render(template, data);
-				$('#iframeVisualization').contents().find('html').html(
-						renderedTemplate)
-				var newIframeHeight = $("#iframeVisualization").contents()
-						.find("html").height()
-						+ 'px';
-				$('#iframeVisualization').css("height", newIframeHeight);
-			} catch (e) {
-				template_error(e)
-			}
+		if (templateContent != null) {
+
+			var concatjson = jQuery.extend({}, data, extern.observer);
+
+			var renderedTemplate = Mustache.render(templateContent, concatjson);
+
+			// var iframe = document.getElementById('iframeVisualization');
+			// var doc = iframe.document;
+			// if (iframe.contentDocument)
+			// doc = iframe.contentDocument; // For NS6
+			// else if (iframe.contentWindow)
+			// doc = iframe.contentWindow.document; // For IE5.5 and IE6
+			// // Put the content in the iframe
+			// doc.open();
+			// doc.writeln(renderedTemplate);
+			// doc.close();
+
+			var body = renderedTemplate.replace(/^[\S\s]*<body[^>]*?>/i, "")
+					.replace(/<\/body[\S\s]*$/i, "");
+			body = $(body);
+
+			var head = renderedTemplate.replace(/^[\S\s]*<head[^>]*?>/i, "")
+					.replace(/<\/head[\S\s]*$/i, "");
+			head = $(head);
+
+			$('#iframeVisualization').contents().find('head').html(head)
+			$('#iframeVisualization').contents().find('body').html(body)
+
+			var newIframeHeight = $("#iframeVisualization").contents().find(
+					"html").height()
+					+ 'px';
+			$('#iframeVisualization').css("height", newIframeHeight);
+
 		}
-		
-//		console.log(template)
-		
-//		console.log($("#render").html(output).toHtmlString());
-//		$("#render > .draggable").each(function( index ) {
-//			 console.log($(this).attr("class",""))
-//			 $(this).removeClass('fu')
-//		});
-		
-//		var bla = $("#render").html(output)
-		
-//		var gna = bla.find("#svg_main")
-//		gna.toggleClass("gnoi")
-//		console.log(gna.toHtmlString())
-		
-//		bla.find("#svg_main").removeClass("draggable")
-		
-		
-//		console.log($(".draggable").toHtmlString())
-//		$(".draggable").addClass('fu');
-//		console.log($(".draggable").toHtmlString())
-		
+			
+// } catch(error) {
+//			console.log(error)
+//		}
+				
 	}
 
 	function initDnd() {
@@ -316,6 +319,8 @@ bms = (function() {
 	}
 
 	extern.client = ""
+	extern.observer = null;
+	extern.workspace = "";
 	extern.init = session.init
 	extern.session = session
 
@@ -445,7 +450,7 @@ bms = (function() {
 	function formulaRestored(id, formula) {
 		replaceWithEnteredField(id, formula);
 		hookEnteredFieldListener();
-		renderEdit()
+//		renderEdit()
 	}
 	
 	function parseOk(id) {
@@ -489,7 +494,7 @@ bms = (function() {
 	function request_files(d) {
 		var s;
 		$.ajax({
-			url : "/files?path=" + d + "&extensions=bms",
+			url : "/files?path=" + d + "&extensions=bms&workspace="+extern.workspace,
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -505,7 +510,7 @@ bms = (function() {
 	function check_file(d) {
 		var s;
 		$.ajax({
-			url : "/files?check=true&extensions=bms&path=" + d,
+			url : "/files?check=true&path=" + d + "&extensions=bms&workspace="+extern.workspace,
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -563,10 +568,18 @@ bms = (function() {
 			"path" : $(dom_dir)[0].value
 		})
 		focused = null; // prevent blur event
+		$("#sourceModal").modal('hide')
 	}
 	
 	extern.setTemplate = function(data) {
-		template = data.template
+		templateFile = data.templatefile
+		var temporaryFile = data.tempfile
+		$('#iframeVisualization').attr("src","http://localhost:8080/bms/"+temporaryFile)
+		templateContent = readHTMLFile("http://localhost:8080/bms/"+templateFile);
+		$('#iframeVisualization').load(function() {
+			forceRendering()
+			forceRendering()
+		});
 	}
 	
 	extern.parseError = function(data) {
