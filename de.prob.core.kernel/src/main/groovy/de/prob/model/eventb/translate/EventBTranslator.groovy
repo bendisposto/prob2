@@ -238,7 +238,7 @@ public class EventBTranslator {
 		List<EventParameter> parameters = xml.scParameter.@name.collect {
 			new EventParameter(event,it)
 		}
-		event.addParameters(new ModelElementList<EventParameter>())
+		event.addParameters(new ModelElementList<EventParameter>(parameters))
 
 		events[rodinCrazyInternalName] = event
 		return event

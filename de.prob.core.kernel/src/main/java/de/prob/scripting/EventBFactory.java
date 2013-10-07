@@ -57,9 +57,9 @@ public class EventBFactory {
 
 		s.execute(cmd);
 		System.out.println("Loaded: " + (System.currentTimeMillis() - time));
-		// s.execute(new StartAnimationCommand());
+		s.execute(new StartAnimationCommand());
 
-		// subscribeVariables(model);
+		subscribeVariables(model);
 
 		return model;
 	}
