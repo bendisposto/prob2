@@ -233,7 +233,6 @@ bms = (function() {
 				
 //		try {
 		
-
 		if (templateContent != null) {
 
 			var concatjson = jQuery.extend({}, data, extern.observer);
@@ -266,12 +265,11 @@ bms = (function() {
 					"html").height()
 					+ 'px';
 			$('#iframeVisualization').css("height", newIframeHeight);
-
-		}
 			
 // } catch(error) {
 //			console.log(error)
 //		}
+		}
 				
 	}
 

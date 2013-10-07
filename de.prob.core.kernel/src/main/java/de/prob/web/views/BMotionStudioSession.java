@@ -176,26 +176,21 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 	
 	public Object setTemplate(Map<String, String[]> params) {
-		
 		String templatePath = params.get("path")[0];
 		try {
-			
 			File ff = new File(templatePath);
 			String fileName = ff.getName();
 			String fftempname = "bmsvis.html";
 			File fftemp = new File(templatePath.replace(fileName, fftempname));
 			FileWriter fileWriter = new FileWriter(fftemp);
-			fileWriter.write("<html><body>test</body></html>");
+			fileWriter.write("<html><body></body></html>");
 			fftemp.createNewFile();
 			fileWriter.close();
 			return WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
 					fileName, "tempfile", fftempname);
-
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// String content = Files.toString(ff, Charsets.UTF_8);
 		return null;
 	}
 	

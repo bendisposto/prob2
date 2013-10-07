@@ -19,7 +19,8 @@
   <text fill="#000000" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="290" y="107" font-size="14" font-family="Arial" text-anchor="middle" xml:space="preserve" font-weight="normal" id="floor2">Floor 1</text>
  </g>
 </svg>
-</div><div style="float:left;margin:40px;">
+</div>
+<div style="float:left;margin:40px;">
 <table cellspacing="0" cellpadding="10">
  <tbody><tr style="background-color:lightgray;"><th colspan="2">Buttons</th></tr>
    <tr><td>Pressed buttons outside:</td><td>{{b.call_buttons}}</td></tr>
@@ -49,27 +50,27 @@
 </tr>
 </tbody></table>
 </div>
-
 <script>
-
-parent.bms.jsondata = {
+parent.bms.observer = {
 	doorpos: function () {
 		return function(curfloor,render) {
-			var pos = render(curfloor);
-			var newpos;
-			if(pos == -1)
-				newpos = 100;
-			else if(pos == 0)
-				newpos = 200;
-			else
-				newpos = 300;
-			console.log("####### " + newpos)
-			return newpos;
+			switch (render(curfloor)) {
+			  case "1":
+			    return 60;
+			    break;
+			  case "0":
+			    return 175;
+			    break;
+			  case "-1":
+			    return 275;
+			    break;
+			  default:
+			    return 0;
+			    break;
+			}
 		}
 	  }
 }
-	
 </script>
-
 </body>
 </html>
