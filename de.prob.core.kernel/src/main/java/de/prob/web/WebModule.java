@@ -58,6 +58,7 @@ public class WebModule extends ServletModule {
 				.with(ReflectionServlet.class);
 
 		serve("/files*").with(FileBrowserServlet.class);
+		serve("/ws/*").with(WorkspaceServlet.class);
 
 	}
 
