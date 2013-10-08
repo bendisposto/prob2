@@ -24,7 +24,7 @@ import de.prob.model.representation.RefType.ERefType
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
 
-public class EventBTranslator {
+public class EventBTranslator2 {
 
 	def File modelFile
 	def private String directoryPath
@@ -41,7 +41,7 @@ public class EventBTranslator {
 	def private Map<String, EventBInvariant> invCache = [:]
 	def private Map<String, EventBAxiom> axmCache = [:]
 
-	def EventBTranslator(String fileName) {
+	def EventBTranslator2(String fileName) {
 		modelFile = new File(fileName)
 
 		int index = modelFile.getName().lastIndexOf('.')

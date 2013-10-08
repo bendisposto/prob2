@@ -2,8 +2,6 @@ package de.prob.model.eventb;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.google.inject.Inject;
@@ -17,7 +15,6 @@ import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.model.representation.StateSchema;
 import de.prob.statespace.StateSpace;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 public class EventBModel extends AbstractModel {
 
@@ -44,21 +41,6 @@ public class EventBModel extends AbstractModel {
 
 	public void setModelFile(final File modelFile) {
 		this.modelFile = modelFile;
-	}
-
-	public void initialize(
-			final DirectedSparseMultigraph<String, RefType> graph,
-			final File modelFile, final AbstractElement mainComponent,
-			final Map<String, AbstractElement> components,
-			final List<EventBMachine> machines, final List<Context> contexts) {
-		this.graph = graph;
-		this.modelFile = modelFile;
-		this.mainComponent = mainComponent;
-		this.components = components;
-		addMachines(machines);
-		addContexts(contexts);
-
-		statespace.setModel(this);
 	}
 
 	public void isFinished() {
@@ -117,6 +99,21 @@ public class EventBModel extends AbstractModel {
 	@Override
 	public IEvalElement parseFormula(final String formula) {
 		return new EventB(formula);
+	}
+
+	public void addMachine(final EventBMachine machine) {
+		components.put(machine.getName(), machine);
+	}
+
+	public void addContext(final Context context) {
+		components.put(context.getName(), context);
+	}
+
+	public void addRelationship(final String element1, final String element2,
+			final RefType relationship) {
+		graph.addVertex(element1);
+		graph.addVertex(element2);
+		graph.addEdge(relationship, element1, element2);
 	}
 
 }

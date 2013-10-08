@@ -7,14 +7,11 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.LoadEventBCommand;
-import de.prob.animator.command.LoadEventBProjectCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.eventb.translate.EventBToPrologTranslator;
 import de.prob.model.eventb.translate.EventBTranslator;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Machine;
@@ -34,32 +31,21 @@ public class EventBFactory {
 
 	public EventBModel load(final String file) {
 		EventBModel model = modelProvider.get();
-		long time = System.currentTimeMillis();
 
-		EventBTranslator translator = new EventBTranslator(file);
+		EventBTranslator translator = new EventBTranslator(model, file);
 
-		System.out.println("Creation of EventBTranslator: "
-				+ (System.currentTimeMillis() - time));
-		model.initialize(translator.getGraph(), translator.getModelFile(),
-				translator.getMainComponent(), translator.getComponents(),
-				translator.getMachines(), translator.getContexts());
+		// StateSpace s = model.getStatespace();
+		// EventBToPrologTranslator eventBToPrologTranslator = new
+		// EventBToPrologTranslator(
+		// model);
 
-		System.out.println("Translating: "
-				+ (System.currentTimeMillis() - time));
+		// AbstractCommand cmd = new LoadEventBProjectCommand(
+		// eventBToPrologTranslator);
 
-		StateSpace s = model.getStatespace();
-		time = System.currentTimeMillis();
-		EventBToPrologTranslator eventBToPrologTranslator = new EventBToPrologTranslator(
-				model);
+		// s.execute(cmd);
+		// s.execute(new StartAnimationCommand());
 
-		AbstractCommand cmd = new LoadEventBProjectCommand(
-				eventBToPrologTranslator);
-
-		s.execute(cmd);
-		System.out.println("Loaded: " + (System.currentTimeMillis() - time));
-		s.execute(new StartAnimationCommand());
-
-		subscribeVariables(model);
+		// subscribeVariables(model);
 
 		return model;
 	}
