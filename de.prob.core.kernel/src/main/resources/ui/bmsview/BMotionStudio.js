@@ -229,48 +229,46 @@ bms = (function() {
 		
 	}
 	
+//	function bmsrender(d) {
+//		var s;
+//		$.ajax({
+//			url : "/bms/lift.html?json="+JSON.stringify(d),
+//			type: 'GET',
+//	        dataType: 'json',
+//	        data: JSON.stringify(d),
+//	        contentType: 'application/json',
+//	        mimeType: 'application/text',
+//			success : function(result) {
+//				if (result.isOk === false) {
+//					alert(result.message);
+//				} else {
+//					console.log(result)
+//					s = result;
+//					console.log(s)
+//				}
+//			},
+//			async : false
+//		});
+//		return s;
+//	}
+	
+
 	function renderVisualization(data) {
-				
-//		try {
-		
-		if (templateContent != null) {
 
-			var concatjson = jQuery.extend({}, data, extern.observer);
-
-			var renderedTemplate = Mustache.render(templateContent, concatjson);
-
-			// var iframe = document.getElementById('iframeVisualization');
-			// var doc = iframe.document;
-			// if (iframe.contentDocument)
-			// doc = iframe.contentDocument; // For NS6
-			// else if (iframe.contentWindow)
-			// doc = iframe.contentWindow.document; // For IE5.5 and IE6
-			// // Put the content in the iframe
-			// doc.open();
-			// doc.writeln(renderedTemplate);
-			// doc.close();
-
+		if(templateFile) {
+			var renderedTemplate = readHTMLFile("http://localhost:8080/bms/"
+					+ templateFile)
+			var jsonp = JSON.parse(data)
+			var concatjson = jQuery.extend({}, jsonp, extern.observer);
+			renderedTemplate = Mustache.render(renderedTemplate, concatjson)
 			var body = renderedTemplate.replace(/^[\S\s]*<body[^>]*?>/i, "")
 					.replace(/<\/body[\S\s]*$/i, "");
-			body = $(body);
-
-			var head = renderedTemplate.replace(/^[\S\s]*<head[^>]*?>/i, "")
-					.replace(/<\/head[\S\s]*$/i, "");
-			head = $(head);
-
-			$('#iframeVisualization').contents().find('head').html(head)
-			$('#iframeVisualization').contents().find('body').html(body)
-
-			var newIframeHeight = $("#iframeVisualization").contents().find(
-					"html").height()
-					+ 'px';
-			$('#iframeVisualization').css("height", newIframeHeight);
-			
-// } catch(error) {
-//			console.log(error)
-//		}
+	//		var head = renderedTemplate.replace(/^[\S\s]*<head[^>]*?>/i, "")
+	//				.replace(/<\/head[\S\s]*$/i, "");
+	//		$('#iframeVisualization').contents().find('head').html(head)
+			$('#iframeVisualization').contents().find('body').html(body)			
 		}
-				
+		
 	}
 
 	function initDnd() {
@@ -323,7 +321,7 @@ bms = (function() {
 	extern.session = session
 
 	extern.renderVisualization = function(data) {
-		renderVisualization(JSON.parse(data.data))
+		renderVisualization(data.data)
 	}
 
 	extern.restorePage = function(data) {
@@ -558,6 +556,14 @@ bms = (function() {
 		$("#filedialog").modal('hide')
 	}
 	
+
+	function resizeIframe() {
+		var newIframeHeight = $("#iframeVisualization").contents().find("html")
+				.height()
+				+ 'px';
+		$('#iframeVisualization').css("height", newIframeHeight);
+	}
+	
 	extern.browse = browse
 	extern.fb_select_dir = fb_select_dir
 	extern.fb_select_file = fb_select_file
@@ -571,13 +577,17 @@ bms = (function() {
 	
 	extern.setTemplate = function(data) {
 		templateFile = data.templatefile
-		var temporaryFile = data.tempfile
-		$('#iframeVisualization').attr("src","http://localhost:8080/bms/"+temporaryFile)
-		templateContent = readHTMLFile("http://localhost:8080/bms/"+templateFile);
-		$('#iframeVisualization').load(function() {
-			forceRendering()
-			forceRendering()
-		});
+		if(templateFile) {
+			$('#iframeVisualization').attr(
+					"src",
+					"http://localhost:8080/bms/" + templateFile + "?json="
+							+ data.data)
+			$('#iframeVisualization').load(function(){
+				resizeIframe();
+				forceRendering();
+			});
+			
+		}
 	}
 	
 	extern.parseError = function(data) {

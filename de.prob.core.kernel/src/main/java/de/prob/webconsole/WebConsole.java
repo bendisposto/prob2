@@ -22,8 +22,6 @@ public class WebConsole {
 
 	private static int PORT = 8080;
 
-	public static String BMS_WORKSPACE_PATH = "/home/lukas/WORK/bms_vis/";
-
 	public static void run() throws Exception {
 		WebConsole.run(new Runnable() {
 

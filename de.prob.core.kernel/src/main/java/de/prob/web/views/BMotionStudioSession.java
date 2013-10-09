@@ -1,8 +1,6 @@
 package de.prob.web.views;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +32,6 @@ import de.prob.statespace.Trace;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
-import de.prob.webconsole.WebConsole;
 
 public class BMotionStudioSession extends AbstractSession implements
 		IAnimationChangeListener {
@@ -55,6 +52,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private AnimationSelector selector;
 	
+	private String templateFileName;
+	
 	@Inject
 	public BMotionStudioSession(AnimationSelector selector) {
 		this.selector = selector;
@@ -69,9 +68,9 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {
-		Object scope = WebUtils.wrap("clientid", clientid, "id", UUID
-				.randomUUID().toString(), "workspace",
-				WebConsole.BMS_WORKSPACE_PATH);
+		Object scope = WebUtils
+				.wrap("clientid", clientid, "id", UUID.randomUUID().toString(),
+						"workspace", "/home/lukas/.prob/bms/");
 		return WebUtils.render("/ui/bmsview/index.html", scope);
 	}
 
@@ -117,8 +116,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 	
 	public Object forcerendering(Map<String, String[]> params) {
-		return WebUtils.wrap("cmd", "bms.renderVisualization", "data",
-				getJsonDataForRendering());
+		return WebUtils.wrap("cmd", "bms.renderVisualization", "templatefile",
+				templateFileName, "data", getJsonDataForRendering());
 	}
 	
 	public Object executeOperation(Map<String, String[]> params) {
@@ -177,21 +176,10 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	public Object setTemplate(Map<String, String[]> params) {
 		String templatePath = params.get("path")[0];
-		try {
-			File ff = new File(templatePath);
-			String fileName = ff.getName();
-			String fftempname = "bmsvis.html";
-			File fftemp = new File(templatePath.replace(fileName, fftempname));
-			FileWriter fileWriter = new FileWriter(fftemp);
-			fileWriter.write("<html><body></body></html>");
-			fftemp.createNewFile();
-			fileWriter.close();
-			return WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
-					fileName, "tempfile", fftempname);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		File ff = new File(templatePath);
+		templateFileName = ff.getName();
+		return WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
+				templateFileName, "data", getJsonDataForRendering());
 	}
 	
 	public Object addFormula(Map<String, String[]> params) {
@@ -310,8 +298,12 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-
+		
 		super.reload(client, lastinfo, context);
+		
+		submit(WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
+				templateFileName, "data", getJsonDataForRendering()));
+		
 
 //		List<Object> result = new ArrayList<Object>();
 //		for (FormulaElement formula : finalFormulas) {
