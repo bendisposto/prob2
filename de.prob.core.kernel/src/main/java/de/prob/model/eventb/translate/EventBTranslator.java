@@ -3,6 +3,7 @@ package de.prob.model.eventb.translate;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -24,12 +25,28 @@ public class EventBTranslator {
 			File modelFile = new File(fileName);
 			model.setModelFile(modelFile);
 
+			String directory = fileName.substring(0, fileName.lastIndexOf('/'));
+			String workspacePath = directory.substring(0,
+					directory.lastIndexOf('/'));
+
+			File theoryFile = new File(directory + "/TheoryPath.tul");
+			Set<IFormulaExtension> typeEnv;
+			if (!theoryFile.exists()) {
+				typeEnv = new HashSet<IFormulaExtension>();
+			} else {
+				TheoryXmlHandler theoryHandler = new TheoryXmlHandler(model,
+						workspacePath);
+				saxParser.parse(modelFile, theoryHandler);
+				typeEnv = theoryHandler.getTypeEnv();
+			}
+
 			DefaultHandler xmlHandler = null;
 			if (fileName.endsWith(".bcc")) {
-				xmlHandler = new ContextXmlHandler(model, true);
+				xmlHandler = new ContextXmlHandler(model, fileName, true,
+						typeEnv);
 			} else {
 				xmlHandler = new MachineXmlHandler(model, fileName, true,
-						new HashSet<IFormulaExtension>());
+						typeEnv);
 			}
 
 			saxParser.parse(modelFile, xmlHandler);
@@ -44,5 +61,4 @@ public class EventBTranslator {
 			e.printStackTrace();
 		}
 	}
-
 }

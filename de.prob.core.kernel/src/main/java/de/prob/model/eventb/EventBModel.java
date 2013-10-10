@@ -2,12 +2,14 @@ package de.prob.model.eventb;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import com.google.inject.Inject;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
@@ -114,6 +116,10 @@ public class EventBModel extends AbstractModel {
 		graph.addVertex(element1);
 		graph.addVertex(element2);
 		graph.addEdge(relationship, element1, element2);
+	}
+
+	public void addTheories(final List<Theory> theories) {
+		put(Theory.class, theories);
 	}
 
 }
