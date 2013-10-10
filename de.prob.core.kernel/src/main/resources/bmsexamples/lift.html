@@ -1,6 +1,7 @@
 <html>
 <head>
 <link rel="stylesheet" href="lift.css">
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
 </head>
 <body>
  
@@ -12,7 +13,8 @@
   <rect fill="#ffffff" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="39" y="37" width="192" height="331" id="svg_1" stroke="#000000"></rect>
   <line fill="none" stroke="#000000" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="0" y1="267" x2="270" y2="267" id="svg_2"></line>
   <line fill="none" stroke="#000000" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x1="0" y1="157" x2="270" y2="157" id="svg_4"></line>
-  <rect fill="{{#b.door_open}}white{{/b.door_open}}{{^b.door_open}}lightgray{{/b.door_open}}" stroke="#000000" stroke-width="null" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="104" y="{{#doorpos}}{{b.cur_floor}}{{/doorpos}}" width="70" height="80" id="door"></rect>
+  <!--rect fill="{{#b.door_open}}white{{/b.door_open}}{{^b.door_open}}lightgray{{/b.door_open}}" stroke="#000000" stroke-width="null" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="104" y="{{#doorpos}}{{b.cur_floor}}{{/doorpos}}" width="70" height="80" id="door"></rect-->
+  <rect fill="{{#b.door_open}}white{{/b.door_open}}{{^b.door_open}}lightgray{{/b.door_open}}" stroke="#000000" stroke-width="null" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="104" y="0" width="70" height="80" id="door"></rect>
   <text fill="#000000" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="290" y="327" id="floor0" font-size="14" font-family="Arial" text-anchor="middle" xml:space="preserve" font-weight="normal">Floor -1</text>
   <text fill="#000000" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="290" y="217" font-size="14" font-family="Arial" text-anchor="middle" xml:space="preserve" font-weight="normal" id="floor1">Floor 0</text>
   <text fill="#000000" stroke="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" x="290" y="107" font-size="14" font-family="Arial" text-anchor="middle" xml:space="preserve" font-weight="normal" id="floor2">Floor 1</text>
@@ -51,30 +53,27 @@
 
 </div>
 
+</body>
+
+<script type="text/javascript" src="lift.js"></script>
+
 <script>
 
-parent.bms.observer = {
-	doorpos: function () {
-		return function(curfloor,render) {
-			switch (render(curfloor)) {
-			  case "1":
-			    return 60;
-			    break;
-			  case "0":
-			    return 175;
-			    break;
-			  case "-1":
-			    return 275;
-			    break;
-			  default:
-			    return 0;
-			    break;
-			}
-		}
-	  }
-}
+switch ({{b.cur_floor}}) {
+	  case 1:
+	    $("#door").attr("y","60");
+	    break;
+	  case 0:
+	    $("#door").attr("y","175");
+	    break;
+	  case -1:
+	    $("#door").attr("y","275");
+	    break;
+	  default:
+	    $("#door").attr("y","0");
+	    break;
+	}
 
 </script>
 
-</body>
 </html>
