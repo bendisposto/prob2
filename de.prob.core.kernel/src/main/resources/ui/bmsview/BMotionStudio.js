@@ -256,17 +256,32 @@ bms = (function() {
 	function renderVisualization(data) {
 
 		if(templateFile) {
-			var renderedTemplate = readHTMLFile("http://localhost:8080/bms/"
-					+ templateFile)
-			var jsonp = JSON.parse(data)
-			var concatjson = jQuery.extend({}, jsonp, extern.observer);
-			renderedTemplate = Mustache.render(renderedTemplate, concatjson)
-			var body = renderedTemplate.replace(/^[\S\s]*<body[^>]*?>/i, "")
-					.replace(/<\/body[\S\s]*$/i, "");
+//			var renderedTemplate = readHTMLFile("http://localhost:8080/bms/"
+//					+ templateFile + "?json=" + data)
+//			console.log(renderedTemplate)
+//			var jsonp = JSON.parse(data)
+//			var concatjson = jQuery.extend({}, jsonp, extern.observer);
+//			renderedTemplate = Mustache.render(renderedTemplate, concatjson)
+//			var body = renderedTemplate.replace(/^[\S\s]*<body[^>]*?>/i, "")
+//					.replace(/<\/body[\S\s]*$/i, "");
+			
+			var src = "http://localhost:8080/bms/" + templateFile + "?json=" + data;
+			
+			$("#result_container").append('<iframe src="" width="100%" frameborder="0" scrolling="no" name="tempiframe" id="tempiframe" style="visibility:hidden"></iframe>')
+						
+			$('#tempiframe').attr("src", src)
+							
+			$('#tempiframe').on('load', function() {
+				$('#tempiframe').css("visibility","visible")
+				$('#iframeVisualization').remove()
+				$('#tempiframe').attr("id","iframeVisualization")
+				resizeIframe()
+			});	
+			
 	//		var head = renderedTemplate.replace(/^[\S\s]*<head[^>]*?>/i, "")
 	//				.replace(/<\/head[\S\s]*$/i, "");
 	//		$('#iframeVisualization').contents().find('head').html(head)
-			$('#iframeVisualization').contents().find('body').html(body)			
+//			$('#iframeVisualization').contents().find('body').html(body)	
 		}
 		
 	}
@@ -584,7 +599,7 @@ bms = (function() {
 							+ data.data)
 			$('#iframeVisualization').load(function(){
 				resizeIframe();
-				forceRendering();
+//				forceRendering();
 			});
 			
 		}
