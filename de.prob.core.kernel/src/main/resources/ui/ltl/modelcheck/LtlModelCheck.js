@@ -99,7 +99,7 @@ LtlModelCheck = (function() {
 	extern.setFormulaList = function(data) {
 		var formulas = null;
 		if (data.formulas != "") {
-			JSON.parse(data.formulas);
+			formulas = JSON.parse(data.formulas);
 		}
 		setFormulaList(formulas);
 		resizeCodeMirror();
