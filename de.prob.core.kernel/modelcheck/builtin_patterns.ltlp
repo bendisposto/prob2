@@ -1,6 +1,57 @@
 %% PATTERN
 absence
 %% DESCRIPTION
+To describe a portion of a system's execution that is free of certain events or states. Also known as Never.
 %% CODE
 def absence(p):
-	G!p
+  G!p
+%% PATTERN
+universality
+%% DESCRIPTION
+To describe a portion of a system's execution which contains only states that have a desired property. Also known as Henceforth and Always.
+%% CODE
+def universality(p):
+  G(p)
+%% PATTERN
+existence
+%% DESCRIPTION
+To describe a portion of a system's execution that contains an instance of certain events or states. Also known as Eventually.
+With a given n, you can describe, that a certain state can occur at most n-times.
+%% CODE
+def existence(p):
+  F(p)
+
+def existence(p, n : num):
+  var result: G(!p)
+  count 0 up to n:
+	result: !p W (p W result)
+  end
+  result
+%% PATTERN
+response
+%% DESCRIPTION
+To describe cause-effect relationships between a pair of events/states. An occurrence of the first, the cause, must be followed by an occurrence of the second, the effect. Also known as Follows and Leads-to.
+With a given sequence of states, you can describe, that e.g. the sequence of states follows a certain state.
+%% CODE
+def response(s, p):
+  G(p => F(s))
+	
+def response(s : seq, p):
+  G(p => F(seq(s)))
+	
+def response(s, p : seq):
+  G(seq(p) => F(s))
+%% PATTERN
+precedence
+%% DESCRIPTION
+To describe relationships between a pair of events/states where the occurrence of the first is a necessary pre-condition for an occurrence of the second. We say that an occurrence of the second is enabled by an occurrence of the first.
+With a given sequence of states, you can describe, that e.g. the sequence of states occurs before a certain state.
+%% CODE
+def precedence(s, p):
+  !p W s
+
+def precedence(p, s : seq):
+  F(seq(s)) => (!seq(s) U p)
+
+def precedence(p : seq, s):
+  F(s) => (!s U seq(p))	
