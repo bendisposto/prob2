@@ -45,8 +45,8 @@ import de.prob.web.WebUtils;
 @Singleton
 public class LtlEditor extends AbstractSession {
 
-	public final String BUILTIN_PATTERNS_FILE = "modelcheck/builtin_patterns.ltlp";
-	public final String USER_PATTERNS_FILE = "modelcheck/user_patterns.ltlp";
+	public final String BUILTIN_PATTERNS_FILE = "D:/modelcheck/builtin_patterns.ltlp";
+	public final String USER_PATTERNS_FILE = "D:/modelcheck/user_patterns.ltlp";
 
 	private final Logger logger = LoggerFactory.getLogger(LtlEditor.class);
 	private List<Expression> expressions = new LinkedList<Expression>();

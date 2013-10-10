@@ -19,6 +19,14 @@
 	color: #555555;
 }
 
+.navbar-brand{
+	width: 147px;
+	height: 50px;
+	margin: 0 5px;
+	
+	background-image: url('img/logo.png');
+}
+
 /* Content area */
 .content {
 	position: absolute;
