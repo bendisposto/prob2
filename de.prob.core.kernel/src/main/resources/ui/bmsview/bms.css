@@ -1,0 +1,22 @@
+#template_container {
+	margin-top: 25px;
+	display: inline-block;
+}
+
+#observer-code-block {
+	max-width: 400px;
+}
+
+.code-block {
+	margin: 10px;
+	float: left;
+}
+
+.entry {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.modal-dialog {
+	width:100%;
+}

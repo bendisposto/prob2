@@ -7,7 +7,7 @@ package de.prob.animator.domainobjects;
  * 
  */
 public enum EvalElementType {
-	PREDICATE, EXPRESSION;
+	PREDICATE, EXPRESSION, ASSIGNMENT;
 
 	@Override
 	public String toString() {

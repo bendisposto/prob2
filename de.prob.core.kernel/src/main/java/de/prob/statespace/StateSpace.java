@@ -96,16 +96,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		lastCalculatedStateId = -1;
 	}
 
-	public StateSpace(final IAnimator animator,
-			final DirectedMultigraphProvider graphProvider) {
-		// FIXME Hack to make the test run again. We should get rid of this
-		// constructor by fixing the test
-		super(graphProvider.get());
-		this.animator = animator;
-		animator2 = animator;
-		lastCalculatedStateId = -1;
-	}
-
 	public StateId getRoot() {
 		return getState(__root);
 	}

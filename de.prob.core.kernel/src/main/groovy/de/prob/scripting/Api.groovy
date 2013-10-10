@@ -16,6 +16,7 @@ import de.prob.cli.ProBInstance
 import de.prob.cli.ProBInstanceProvider
 import de.prob.exception.ProBError
 import de.prob.model.classicalb.ClassicalBModel
+import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
 import de.prob.webconsole.ServletContextListener
 
@@ -79,6 +80,11 @@ public class Api {
 
 		def ebFactory = modelFactoryProvider.getEventBFactory();
 		return ebFactory.load(cmd,coded);
+	}
+
+	public EventBModel eventb_load(String file) {
+		EventBFactory factory = modelFactoryProvider.getEventBFactory();
+		return factory.load(file);
 	}
 
 	/**

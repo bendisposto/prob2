@@ -1,0 +1,8 @@
+body {
+	font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+}
+
+table, th, td {
+	font-size:13px;
+	border:1px solid lightgray;
+}

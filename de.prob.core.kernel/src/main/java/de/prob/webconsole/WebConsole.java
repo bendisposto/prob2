@@ -72,6 +72,7 @@ public class WebConsole {
 
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
+
 		/*
 		 * WebAppContext worksheetContext = new WebAppContext(warFile +
 		 * "webapps/worksheet.war", "/worksheet");
@@ -113,10 +114,11 @@ public class WebConsole {
 			}
 		} while (!found && port < 8180);
 
-		if (!found)
+		if (!found) {
 			throw new BindException("No free port found between 8080 and 8179");
+		}
 
-		// WebConsole.PORT = port;
+		WebConsole.PORT = port;
 
 		openBrowser.run();
 		server.join();

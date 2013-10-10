@@ -89,7 +89,6 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		imports.addAll(Arrays.asList(GroovyExecution.IMPORTS));
 		parser = new Parser();
 		runInitScript(Resources.getResource("initscript"));
-		runInitScript(Resources.getResource("loadrodin"));
 	}
 
 	public void runInitScript(final URL url) {
@@ -120,10 +119,11 @@ public class GroovyExecution implements IStatesCalculatedListener {
 		try {
 			assert input != null;
 			final List<String> m = shellCommands.getMagic(input);
-			if (m.isEmpty())
+			if (m.isEmpty()) {
 				return eval(input);
-			else
+			} else {
 				return shellCommands.perform(m, this);
+			}
 		} finally {
 			notifyListerners();
 		}
@@ -180,8 +180,9 @@ public class GroovyExecution implements IStatesCalculatedListener {
 			try {
 				evaluate = interpreter.evaluate(eval);
 			} catch (final Throwable e) {
-				if (testmode)
+				if (testmode) {
 					throw e;
+				}
 				if (printStackTrace) {
 					printStackTrace(sideeffects, e);
 				}
