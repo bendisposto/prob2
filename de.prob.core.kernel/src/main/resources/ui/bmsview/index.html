@@ -14,31 +14,21 @@
 
 <body>
 
-<ul class="nav nav-tabs" id="bmsTab">
-  <li class="active"><a href="#visualization">Visualization</a></li>
-  <!--li><a href="#template">Template</a></li-->
-</ul>
- 
-<div class="tab-content">
-  <div class="tab-pane active" id="visualization">
-  <!--  VISUALIZATION -->
-  			<div id="result_container">
-			<button type="button" id="btShowSourceModal">Edit Template</button>
-			<iframe src="" width="100%" frameborder="0" scrolling="no" name="iframeVisualization" id="iframeVisualization"></iframe>
+	<ul class="nav nav-tabs" id="bmsTab">
+		<li class="active"><a href="#visualization">Visualization</a></li>
+		<!--li><a href="#template">Template</a></li-->
+	</ul>
+
+	<div class="tab-content">
+		<div class="tab-pane active" id="visualization">
+			<div id="result_container">
+				<button type="button" id="btShowSourceModal">Edit Template</button>
+				<iframe src="" width="100%" frameborder="0" scrolling="no"
+					name="iframeVisualization" id="iframeVisualization"></iframe>
 			</div>
-	<!--  VISUALIZATION END -->			
-  </div>
-  <!-- 
-  <div class="tab-pane" id="template">
-  
-  	<button type="button" id="btShowSourceModal">Edit Template</button>
-  	<div id="result_container">
-		<iframe src="" width="100%" frameborder="0" scrolling="no" name="iframeTemplate" id="iframeTemplate"></iframe>
+		</div>
 	</div>
-   </div>
-   --->
-</div>
-			
+
 	<!-- Modal -->
 	<div class="modal fade" id="sourceModal">
 		<div class="modal-dialog">
@@ -46,100 +36,56 @@
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"
 						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Template</h4>
+					<h4 class="modal-title">Edit BMotion Studio Template</h4>
 				</div>
 				<div class="modal-body">
-				
-				<input type="text" class="form-control loadfile_input"
-					id="openfile" value=""
-					placeholder="Path to model file"></input>
-				<button
-					onClick="bms.browse('#openfile')"
-					type="button" class="load-btn btn btn-primary">Browse ...</button>
+
+					<input type="text" class="form-control loadfile_input"
+						id="openfile" value="" placeholder="Path to model file"></input>
+					<button onClick="bms.browse('#openfile')" type="button"
+						class="load-btn btn btn-primary">Browse ...</button>
 					<button id="fb_okbtn" onClick="bms.fb_load_file('#openfile')"
 						type="button" class="load-btn btn btn-primary">Ok</button>
-					<!-- div class="code-block" id="template-code-block">
-					<form>
-						<textarea id="template_content" name="template_content"
-							spellcheck="false">
-<svg id="svg_main" width="73" height="73"
-								xmlns="http://www.w3.org/2000/svg" class="draggable">
-             			</textarea>
-					</form>
-					</div-->
-				
-				<!-- div class="code-block" id="scripting-code-block">
-					<form>
-						<textarea id="template_scripting" spellcheck="false"></textarea>
-					</form>
-				</div-->
-				
-				<div style="clear:both;"></div>
-				
-				<div id="template_container">
-				<div class="code-block" id="observer-code-block">
-					<form class="form-horizontal">
-						<fieldset id="formulas">
-							<legend>Formulas</legend>
-							<div class="form-group entry formula" id="input-{{id}}">
-								<div class="input-group" id="{{id}}">
-									<input type="text" class="form-control"
-										placeholder="Enter Formula" id="formula-{{id}}"
-										value="{{value}}"> <span class="input-group-btn">
-										<button class="btn btn-default add-formula" type="button"
-											id="btn-{{id}}">Add</button>
-									</span>
-								</div>
-							</div>
-						</fieldset>
-					</form>
+
+					<div style="clear: both;"></div>
+
+					<div id="template_container">
+						<div class="code-block" id="observer-code-block">
+							<form class="form-horizontal">
+								<fieldset id="formulas">
+									<legend>Formulas</legend>
+									<div class="form-group entry formula" id="input-{{id}}">
+										<div class="input-group" id="{{id}}">
+											<input type="text" class="form-control"
+												placeholder="Enter Formula" id="formula-{{id}}"
+												value="{{value}}"> <span class="input-group-btn">
+												<button class="btn btn-default add-formula" type="button"
+													id="btn-{{id}}">Add</button>
+											</span>
+										</div>
+									</div>
+								</fieldset>
+							</form>
+						</div>
+					</div>
+
 				</div>
-			</div>
-				
-				</div>
-				
-				<!--div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-				</div-->
+
 			</div>
 			<!-- /.modal-content -->
 		</div>
 		<!-- /.modal-dialog -->
 	</div>
 	<!-- /.modal -->
-	
+
 	<!-- Modal -->
-	<div class="modal fade" id="svgModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">SVG Editor</h4>
-				</div>
-				<div class="modal-body">
-										<iframe src="/ui/bmsview/svgeditor/svg-editor.html" width="100%"
-					height="700px" name="svgedit" id="svgedit"></iframe>
-				</div>
-				
-				<!--div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-				</div-->
-			</div>
-			<!-- /.modal-content -->
-		</div>
-		<!-- /.modal-dialog -->
-	</div>
-	<!-- /.modal -->
-	
-		<!-- Modal -->
 	<div class="modal fade" id="filedialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"
 						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">SVG Editor</h4>
+					<h4 class="modal-title">Select BMotion Studio Template</h4>
 				</div>
 				<div id="filedialog_content" class="modal-body"></div>
 				<div class="modal-footer">
@@ -161,13 +107,17 @@
 
 <script type="text/javascript" src="/ui/libs/codemirror.js"></script>
 <script type="text/javascript" src="/ui/libs/codemirror_modes/xml.js"></script>
-<script type="text/javascript" src="/ui/libs/codemirror_modes/javascript.js"></script>
+<script type="text/javascript"
+	src="/ui/libs/codemirror_modes/javascript.js"></script>
 <script type="text/javascript" src="/ui/libs/codemirror_modes/css.js"></script>
-<script type="text/javascript" src="/ui/libs/codemirror_modes/htmlmixed.js"></script>
+<script type="text/javascript"
+	src="/ui/libs/codemirror_modes/htmlmixed.js"></script>
 
 <script type="text/javascript" src="/ui/common/Session.js"></script>
-<script type="text/javascript" src="/ui/bmsview/contextMenu/jquery.ui.position.js"></script>
-<script type="text/javascript" src="/ui/bmsview/contextMenu/jquery.contextMenu.js"></script>
+<script type="text/javascript"
+	src="/ui/bmsview/contextMenu/jquery.ui.position.js"></script>
+<script type="text/javascript"
+	src="/ui/bmsview/contextMenu/jquery.contextMenu.js"></script>
 <script type="text/javascript" src="/ui/bmsview/svgeditor/embedapi.js"></script>
 
 <script type="text/javascript" src="/ui/bmsview/BMotionStudio.js"></script>
