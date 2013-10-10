@@ -1,6 +1,7 @@
 LtlModelCheck = (function() {
 	var extern = {};
 	extern.formulas = null;
+	extern.mode = "init";
 	
 	/* Create and destroy */
 	extern.destroy = function() {
@@ -9,6 +10,7 @@ LtlModelCheck = (function() {
 		$("#mc-add-formula").unbind('click');
 		$("#mc-remove-current").unbind('click');
 		$("#mc-remove-selected").unbind('click');
+		$("#settings-selected").unbind('click');
 		$("#last-formulas-panel").unbind('click');
 	}
 	
@@ -26,6 +28,7 @@ LtlModelCheck = (function() {
 		registerAddFormula();
 		registerRemoveFormula();
 		registerRemoveSelectedFormulas();
+		registerSettingSelected();
 		
 		// Register toggle of formula list
 		registerFormulaListToggle();	
@@ -95,6 +98,12 @@ LtlModelCheck = (function() {
 		});
 	}
 	
+	function registerSettingSelected() {
+		$("#settings-selected").click(function() {
+			extern.mode = $("#startingPoint").val();
+		});
+	}
+	
 	/* Formula list */
 	extern.setFormulaList = function(data) {
 		var formulas = null;
@@ -137,8 +146,8 @@ LtlModelCheck = (function() {
 		$('.last-formulas-list').append($("<li><input type=\"checkbox\">"
 		+ "<div id=\"mc-check-failed\" class=\"glyphicon glyphicon-minus-sign\"></div>"
 		+ "<div id=\"mc-check-passed\" class=\"glyphicon glyphicon-ok-sign\"></div>"
-		//+ "<div id=\"mc-check-unchecked\" class=\"glyphicon glyphicon-question-sign\"></div>"
-		//+ "<div class=\"badge mc-badge-error mc-formula-error\">Code-Error</div>"
+		+ "<div id=\"mc-check-unchecked\" class=\"glyphicon glyphicon-question-sign\"></div>"
+		+ "<div id=\"mc-check-parse-failed\" class=\"badge mc-badge-error\">Code-Error</div>"
 		+ "<span>" + formula + "</span></li>"));
 	}
 	
@@ -372,7 +381,9 @@ LtlModelCheck = (function() {
 		var element = $(".last-formulas-list li")[index];
 		$(element).children("#mc-check-failed").hide();
 		$(element).children("#mc-check-passed").hide();
-		Util.checkFormula(index, extern.formulas[index]);
+		$(element).children("#mc-check-parse-failed").hide();
+		$(element).children("#mc-check-unchecked").css({display: "inline"});
+		Util.checkFormula(index, extern.mode, extern.formulas[index]);
 	}
 	
 	function checkFormulaList() {
@@ -380,6 +391,8 @@ LtlModelCheck = (function() {
 		$(list).each(function(index, element) {
 			$(element).children("#mc-check-failed").hide();
 			$(element).children("#mc-check-passed").hide();
+			$(element).children("#mc-check-parse-failed").hide();
+			$(element).children("#mc-check-unchecked").css({display: "inline"});
 		});
 		
 		var indizes = [];
@@ -391,16 +404,20 @@ LtlModelCheck = (function() {
 			formulas.push(extern.formulas[i]);
 		}
 		
-		Util.checkFormulaList(indizes, formulas);
+		Util.checkFormulaList(indizes, extern.mode, formulas);
 	}
 	
 	extern.checkFormulaFailed = function(data) {
 		var index = data.index;
-		var error = data.error;
+		var error = parseInt(data.error);
 		
 		var element = $(".last-formulas-list li")[index];
 		$(element).children("#mc-check-failed").css({display: "inline"});
 		$(element).children("#mc-check-passed").hide();
+		$(element).children("#mc-check-unchecked").hide();
+		if (error == 1 || error == 3) {
+			$(element).children("#mc-check-parse-failed").css({display: "inline"});
+		}
 	}
 	
 	extern.checkFormulaPassed = function(data) {
@@ -408,11 +425,21 @@ LtlModelCheck = (function() {
 		
 		var element = $(".last-formulas-list li")[index];
 		$(element).children("#mc-check-failed").hide();
+		$(element).children("#mc-check-parse-failed").hide();
 		$(element).children("#mc-check-passed").css({display: "inline"});	
+		$(element).children("#mc-check-unchecked").hide();
 	}
 	
 	extern.checkFormulaListFinished = function(data) {
-			
+		$("#selected-check-ready").css('display', 'inline').hide().fadeIn("fast", function() {
+			$("#selected-check-ready").delay(2000).fadeOut("slow");
+		});
+	}
+	
+	extern.checkFormulaFinished = function(data) {
+		$("#current-check-ready").css('display', 'inline').hide().fadeIn("fast", function() {
+			$("#current-check-ready").delay(2000).fadeOut("slow");
+		});
 	}
 	
 	return extern;

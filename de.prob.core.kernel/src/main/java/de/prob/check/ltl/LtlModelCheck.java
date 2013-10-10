@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +18,17 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.be4.classicalb.core.parser.ClassicalBParser;
 import de.prob.animator.command.LtlCheckingCommand;
 import de.prob.animator.command.LtlCheckingCommand.StartMode;
+import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.LtlCheckingResult;
+import de.prob.animator.domainobjects.LtlFormula;
 import de.prob.ltl.parser.LtlParser;
-import de.prob.parserbase.UnparsedParserBase;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.visualization.AnimationNotLoadedException;
@@ -58,6 +62,7 @@ public class LtlModelCheck extends LtlPatternManager {
 		logger.trace("Check formula");
 
 		String formula = get(params, "formula");
+		String mode = get(params, "startMode");
 		String index = get(params, "index");
 		String callback = get(params, "callbackObj");
 
@@ -66,29 +71,30 @@ public class LtlModelCheck extends LtlPatternManager {
 
 		if (listener.getErrorMarkers().size() > 0) {
 			// Parse error
-			return checkFormulaError(1, index, callback);
+			submit(checkFormulaError(1, index, callback));
 		} else {
-			PrologTerm term = parser.generatePrologTerm("root", new UnparsedParserBase("", "", ""));
-
-			LtlCheckingCommand command = new LtlCheckingCommand(term, 500, StartMode.init);
-			currentStateSpace.execute(command);
-
-			//command.getResult();
-			// TODO remove random
-			if (new Random().nextBoolean()) {
-				return WebUtils.wrap(
-						"cmd", callback + ".checkFormulaPassed",
-						"index", index);
-			} else {
-				return checkFormulaError(2, index, callback);
+			try {
+				if (checkFormula(formula, parser, mode)) {
+					submit(WebUtils.wrap(
+							"cmd", callback + ".checkFormulaPassed",
+							"index", index));
+				} else {
+					submit(checkFormulaError(2, index, callback));
+				}
+			} catch (ResultParserException ex) {
+				submit(checkFormulaError(3, index, callback));
 			}
 		}
+
+		return WebUtils.wrap(
+				"cmd", callback + ".checkFormulaFinished");
 	}
 
 	public Object checkFormulaList(Map<String, String[]> params) {
 		logger.trace("Check formula list");
 
 		String[] formulas = getArray(params, "formulas");
+		String mode = get(params, "startMode");
 		String[] indizes = getArray(params, "indizes");
 		String callback = get(params, "callbackObj");
 
@@ -102,25 +108,43 @@ public class LtlModelCheck extends LtlPatternManager {
 				// Parse error
 				submit(checkFormulaError(1, index, callback));
 			} else {
-				PrologTerm term = parser.generatePrologTerm("root", new UnparsedParserBase("", "", ""));
-
-				LtlCheckingCommand command = new LtlCheckingCommand(term, 500, StartMode.init);
-				//currentStateSpace.execute(command);
-
-				//command.getResult();
-				// TODO remove random
-				if (new Random().nextBoolean()) {
-					submit(WebUtils.wrap(
-							"cmd", callback + ".checkFormulaPassed",
-							"index", index));
-				} else {
-					submit(checkFormulaError(2, index, callback));
+				try {
+					if (checkFormula(formula, parser, mode)) {
+						submit(WebUtils.wrap(
+								"cmd", callback + ".checkFormulaPassed",
+								"index", index));
+					} else {
+						submit(checkFormulaError(2, index, callback));
+					}
+				} catch (ResultParserException ex) {
+					submit(checkFormulaError(3, index, callback));
 				}
 			}
 		}
 
 		return WebUtils.wrap(
 				"cmd", callback + ".checkFormulaListFinished");
+	}
+
+	private boolean checkFormula(String formula, LtlParser parser, String mode) {
+		PrologTerm term = parser.generatePrologTerm("root", new ClassicalBParser());
+
+		LtlFormula f = new LtlFormula(term);
+		List<IEvalElement> formulaList = new LinkedList<IEvalElement>();
+		formulaList.add(f);
+
+		StartMode startMode = StartMode.init;
+		if (mode.equals("starthere")) {
+			startMode = StartMode.starthere;
+		} else if (mode.equals("checkhere")) {
+			startMode = StartMode.checkhere;
+		}
+
+		LtlCheckingResult result =  LtlCheckingCommand.modelCheck(currentStateSpace,
+				formulaList,
+				500, startMode,
+				new StateId("root", currentStateSpace));
+		return (result.getCounterexample() == null);
 	}
 
 	private Object checkFormulaError(int error, String index, String callback) {

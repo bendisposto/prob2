@@ -102,19 +102,21 @@ Util = (function() {
 	}
 	
 	/* Model checking */
-	extern.checkFormula = function(index, formula, callbackObj = "LtlModelCheck") {
+	extern.checkFormula = function(index, mode, formula, callbackObj = "LtlModelCheck") {
 		extern.session.sendCmd("checkFormula", {
 			"formula" : formula,
+			"startMode" : mode,
 			"index" : index,
 			"callbackObj" : callbackObj,
 			"client" : extern.client
 		});
 	}
 	
-	extern.checkFormulaList = function(indizes, formulas, callbackObj = "LtlModelCheck") {
+	extern.checkFormulaList = function(indizes, mode, formulas, callbackObj = "LtlModelCheck") {
 		extern.session.sendCmd("checkFormulaList", {
 			"formulas" : JSON.stringify(formulas),
 			"indizes" : JSON.stringify(indizes),
+			"startMode" : mode,
 			"callbackObj" : callbackObj,
 			"client" : extern.client
 		});

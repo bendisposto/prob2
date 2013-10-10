@@ -29,6 +29,7 @@
 			Saved formulas
 			<div class="badge" id="mc-selected-badge" style="display:inline">0/0</div>
 			<div style="float:right" id="mc-selected">
+				<div class="alert alert-success" id="selected-check-ready" style="display: none; margin: 0 10px">Checking finished</div>
 				Selected formulas: 
 				<button class="btn btn-info btn-xs" id="mc-start-all" type="button" title="Start model checking for all formulas">
 					<span class="glyphicon glyphicon-play"></span>
@@ -48,6 +49,7 @@
 			Current formula
 			<div class="badge badge-error" id="mc-code-error">Fix the errors in the code</div>
 			<div style="float:right">
+				<div class="alert alert-success" id="current-check-ready" style="display: none; margin: 0 10px">Checking finished</div>
 				<button class="btn btn-info btn-xs" id="mc-start-current" type="button" title="Start model checking for the current formula">
 					<span class="glyphicon glyphicon-play"></span>
 					Check
@@ -119,9 +121,9 @@
 			<div class="form-group">
 				<label for="startingPoint">Starting point</label>
 				<select id="startingPoint" class="form-control">
-				  <option>Initial state(s)</option>
-				  <option>Current state</option>
-				  <option>Initial state(s), but check the formula F in the current state (current => F)</option>
+				  <option value="init">Initial state(s)</option>
+				  <option value="starthere">Current state</option>
+				  <option value="checkhere">Initial state(s), but check the formula F in the current state (current => F)</option>
 				</select>
 			</div>
 			<div class="form-group">

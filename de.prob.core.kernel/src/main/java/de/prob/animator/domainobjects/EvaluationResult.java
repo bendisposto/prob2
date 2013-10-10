@@ -10,7 +10,7 @@ import java.util.List;
  * @author joy
  * 
  */
-public class EvaluationResult {
+public class EvaluationResult implements IEvaluationResult {
 
 	public final String value;
 	public final String solution;
@@ -92,10 +92,6 @@ public class EvaluationResult {
 	}
 	
 	public String getStateId() {
-		return stateid;
-	}
-
-	public String getStateid() {
 		return stateid;
 	}
 
