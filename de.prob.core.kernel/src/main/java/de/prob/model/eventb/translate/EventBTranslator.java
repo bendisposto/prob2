@@ -29,7 +29,7 @@ public class EventBTranslator {
 			String workspacePath = directory.substring(0,
 					directory.lastIndexOf('/'));
 
-			File theoryFile = new File(directory + "/TheoryPath.tul");
+			File theoryFile = new File(directory + "/TheoryPath.tcl");
 			Set<IFormulaExtension> typeEnv;
 			if (!theoryFile.exists()) {
 				typeEnv = new HashSet<IFormulaExtension>();

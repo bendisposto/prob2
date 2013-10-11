@@ -5,8 +5,6 @@ import org.eventb.core.ast.FormulaFactory
 import org.eventb.core.ast.extension.IFormulaExtension
 
 import de.prob.animator.domainobjects.EventB
-import de.prob.model.eventb.EventBAxiom
-import de.prob.model.eventb.theory.AxiomaticDefinitionsBlock
 import de.prob.model.eventb.theory.AxiomaticOperatorDefinition
 import de.prob.model.eventb.theory.DataType
 import de.prob.model.eventb.theory.DataTypeConstructor
@@ -16,13 +14,11 @@ import de.prob.model.eventb.theory.InferenceRule
 import de.prob.model.eventb.theory.MetaVariable
 import de.prob.model.eventb.theory.Operator
 import de.prob.model.eventb.theory.OperatorArgument
-import de.prob.model.eventb.theory.OperatorWDCondition
 import de.prob.model.eventb.theory.ProofRulesBlock
 import de.prob.model.eventb.theory.RecursiveDefinitionCase
 import de.prob.model.eventb.theory.RecursiveOperatorDefinition
 import de.prob.model.eventb.theory.RewriteRule
 import de.prob.model.eventb.theory.RewriteRuleRHS
-import de.prob.model.eventb.theory.Theorem
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.eventb.theory.Type
 import de.prob.model.representation.AbstractElement
@@ -172,7 +168,7 @@ class TheoryTranslator {
 
 		def wds = []
 		rep.operatorWDcondition.each {
-			wds << new OperatorWDCondition(it.@predicate, extensions)
+			//wds << new OperatorWDCondition(it.@predicate, extensions)
 		}
 		operator.addWDConditions(wds)
 
@@ -192,27 +188,23 @@ class TheoryTranslator {
 	}
 
 	def addAxiomaticDefinition(theoryName, block) {
-		def defBlock = new AxiomaticDefinitionsBlock(block.@label)
-
-		def typeDefs = []
-		block.axiomaticTypeDefinition.each {
-			Type type = new Type(it.@identifier, extensions)
-			typeDefs << type
-			extensions << type.getFormulaExtension()
-		}
-		defBlock.addTypeDefinitions(typeDefs)
-
-		def ops = []
-		block.axiomaticOperatorDefinition.each { ops << addOperator(theoryName, it)	 }
-		defBlock.addOperatorDefinitions(ops)
-
-		def axioms = []
-		block.axiomaticDefinitionAxiom.each {
-			axioms << new EventBAxiom(it.@label, it.@predicate, false, extensions)
-		}
-		defBlock.addDefinitionAxioms(axioms)
-
-		return defBlock
+		/*def defBlock = new AxiomaticDefinitionsBlock(block.@label)
+		 def typeDefs = []
+		 block.axiomaticTypeDefinition.each {
+		 Type type = new Type(it.@identifier, extensions)
+		 typeDefs << type
+		 extensions << type.getFormulaExtension()
+		 }
+		 defBlock.addTypeDefinitions(typeDefs)
+		 def ops = []
+		 block.axiomaticOperatorDefinition.each { ops << addOperator(theoryName, it)	 }
+		 defBlock.addOperatorDefinitions(ops)
+		 def axioms = []
+		 block.axiomaticDefinitionAxiom.each {
+		 axioms << new EventBAxiom(it.@label, it.@predicate, false, extensions)
+		 }
+		 defBlock.addDefinitionAxioms(axioms)
+		 return defBlock*/
 	}
 
 	def addProofRuleBlock(pRB) {
@@ -257,6 +249,6 @@ class TheoryTranslator {
 	}
 
 	def addTheorem(xml) {
-		return new Theorem(xml.@label, xml.@predicate, extensions)
+		//return new Theorem(xml.@label, xml.@predicate, extensions)
 	}
 }
