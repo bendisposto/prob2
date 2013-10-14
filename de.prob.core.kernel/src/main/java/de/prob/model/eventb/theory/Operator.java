@@ -59,7 +59,7 @@ public class Operator extends AbstractElement {
 		notation = notationType.equals("PREFIX") ? IOperatorProperties.Notation.PREFIX
 				: (notationType.equals("INFIX") ? IOperatorProperties.Notation.INFIX
 						: IOperatorProperties.Notation.POSTFIX);
-		this.type = new EventB(type, typeEnv);
+		this.type = type == null ? null : new EventB(type, typeEnv);
 		this.wd = new EventB(wd, typeEnv);
 		this.predicate = new EventB(predicate, typeEnv);
 	}

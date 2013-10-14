@@ -36,7 +36,7 @@ public class EventBTranslator {
 			} else {
 				TheoryXmlHandler theoryHandler = new TheoryXmlHandler(model,
 						workspacePath);
-				saxParser.parse(modelFile, theoryHandler);
+				saxParser.parse(theoryFile, theoryHandler);
 				typeEnv = theoryHandler.getTypeEnv();
 			}
 

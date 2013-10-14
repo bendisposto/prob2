@@ -50,6 +50,6 @@ public class RecursiveDefinitionCase extends AbstractElement {
 
 	@Override
 	public int hashCode() {
-		return 17 * expression.hashCode() + 23 * formula.hashCode();
+		return 17 * expressionString.hashCode() + 23 * formulaString.hashCode();
 	}
 }

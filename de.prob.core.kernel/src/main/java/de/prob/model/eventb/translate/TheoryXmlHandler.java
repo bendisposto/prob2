@@ -259,6 +259,9 @@ public class TheoryXmlHandler extends DefaultHandler {
 
 		private void beginProofRulesBlock(final Attributes attributes) {
 			String name = attributes.getValue("org.eventb.core.label");
+			if (name == null) {
+				name = attributes.getValue("name");
+			}
 			block = new ProofRulesBlock(name);
 
 			metaVars = new ModelElementList<MetaVariable>();
@@ -419,7 +422,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 					.equals("org.eventb.theory.core.scRecursiveDefinitionCase")) {
 				finishRecursiveDefinition();
 			} else if (qName
-					.equals("org.eventb.theory.core.scAxiomaticTypeDefinition")) {
+					.equals("org.eventb.theory.core.scAxiomaticOperatorDefinition")) {
 				finishAxiomaticOperator();
 			} else if (qName.equals("org.eventb.theory.core.scProofRulesBlock")) {
 				finishProofRulesBlock();
