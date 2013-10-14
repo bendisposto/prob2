@@ -46,7 +46,7 @@ public class Context extends AbstractElement {
 		this.axioms = axioms
 	}
 
-	public void addProofs(final List<ProofObligation> proofs) {
+	public void addProofs(final List<? extends ProofObligation> proofs) {
 		put(ProofObligation.class, proofs);
 		this.proofs = proofs
 	}

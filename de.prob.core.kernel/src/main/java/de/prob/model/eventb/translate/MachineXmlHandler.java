@@ -391,6 +391,10 @@ public class MachineXmlHandler extends DefaultHandler {
 		machine.addSees(sees);
 		machine.addVariables(variables);
 		machine.addVariant(variant);
+
+		ProofExtractor proofExtractor = new ProofExtractor(machine,
+				directoryPath + "/" + machine.getName());
+		machine.addProofs(proofExtractor.getProofs());
 	}
 
 	public Map<String, Map<String, EventBAxiom>> getAxiomCache() {

@@ -53,7 +53,7 @@ public class EventBMachine extends Machine {
 		this.events = events
 	}
 
-	public void addProofs(final List<ProofObligation> proofs) {
+	public void addProofs(final List<? extends ProofObligation> proofs) {
 		put(ProofObligation.class, proofs);
 		this.proofs = proofs
 	}

@@ -204,6 +204,10 @@ public class ContextXmlHandler extends DefaultHandler {
 		context.addExtends(Extends);
 		context.addSets(sets);
 		context.addConstants(constants);
+
+		ProofExtractor extractor = new ProofExtractor(context, directoryPath
+				+ "/" + context.getName());
+		context.addProofs(extractor.getProofs());
 	}
 
 }
