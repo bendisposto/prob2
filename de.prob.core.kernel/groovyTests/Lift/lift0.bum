@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" version="5">
+<org.eventb.core.event name="'" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+<org.eventb.core.action name="'" org.eventb.core.assignment="level ≔ L0" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.variable name="(" org.eventb.core.identifier="level"/>
+<org.eventb.core.invariant name=")" org.eventb.core.label="inv1" org.eventb.core.predicate="level ∈ levels"/>
+<org.eventb.core.event name="," org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="up">
+<org.eventb.core.guard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="level ∈ {L0,L1,L2}"/>
+<org.eventb.core.action name="(" org.eventb.core.assignment="level ≔ up(level)" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="-" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="down">
+<org.eventb.core.guard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="level ∈ {L1,L2,L3}"/>
+<org.eventb.core.action name="(" org.eventb.core.assignment="level ≔ down(level)" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+<org.eventb.core.seesContext name="." org.eventb.core.target="levels"/>
+<org.eventb.core.event name="/" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="randomCrazyJump">
+<org.eventb.core.parameter name="'" org.eventb.core.identifier="prm1"/>
+<org.eventb.core.guard name="(" org.eventb.core.label="grd1" org.eventb.core.predicate="prm1 ∈ levels"/>
+<org.eventb.core.action name=")" org.eventb.core.assignment="level ≔ prm1" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>
