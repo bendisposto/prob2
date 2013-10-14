@@ -50,9 +50,11 @@ public class EventBTranslator2 {
 		index = modelFile.getAbsolutePath().lastIndexOf('/')
 		directoryPath = index != -1 ? modelFile.getAbsolutePath().substring(0, index) : modelFile.getAbsolutePath()
 
-		TheoryTranslator theoryTranslator = new TheoryTranslator()
-		theories = theoryTranslator.getTheories(directoryPath)
-		typeEnv = theoryTranslator.getExtensions()
+		//TheoryTranslator theoryTranslator = new TheoryTranslator()
+		//theories = theoryTranslator.getTheories(directoryPath)
+		//typeEnv = theoryTranslator.getExtensions()
+		typeEnv = new HashSet<IFormulaExtension>()
+
 
 		String baseFile = "${directoryPath}/${name}"
 
