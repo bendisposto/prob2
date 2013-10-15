@@ -254,6 +254,7 @@ public class MachineXmlHandler extends DefaultHandler {
 				invariantCache.putAll(handler.getInvariantCache());
 				eventCache.putAll(handler.getEventCache());
 
+				refines.add(handler.getMachine());
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -374,12 +375,17 @@ public class MachineXmlHandler extends DefaultHandler {
 		constants = new ModelElementList<EventBConstant>();
 	}
 
-	private void endContextExtraction() {
+	private void endContextExtraction() throws SAXException {
 		internalContext.addAxioms(axioms, inheritedAxioms);
 		internalContext.addConstants(constants);
 		internalContext.addExtends(Extends);
 		internalContext.addSets(sets);
 		internalContext.addConstants(constants);
+
+		ProofExtractor extractor = new ProofExtractor(internalContext,
+				directoryPath + "/" + internalContext.getName());
+		internalContext.addProofs(extractor.getProofs());
+
 		extractingContext = false;
 	}
 
@@ -407,5 +413,9 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	public Map<String, Map<String, Event>> getEventCache() {
 		return eventCache;
+	}
+
+	public EventBMachine getMachine() {
+		return machine;
 	}
 }

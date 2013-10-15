@@ -3,19 +3,19 @@ package de.prob.model.eventb.proof;
 public class Tuple {
 
 	private final String type;
-	private final String value;
+	private final String second;
 
 	public Tuple(final String type, final String value) {
 		this.type = type;
-		this.value = value;
+		second = value;
 	}
 
-	public String getType() {
+	public String getFirst() {
 		return type;
 	}
 
-	public String getValue() {
-		return value;
+	public String getSecond() {
+		return second;
 	}
 
 }

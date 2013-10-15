@@ -15,9 +15,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import de.prob.model.eventb.EventBModel;
 
-public class EventBTranslator {
+public class EventBDatabaseTranslator {
 
-	public EventBTranslator(final EventBModel model, final String fileName) {
+	public EventBDatabaseTranslator(final EventBModel model,
+			final String fileName) {
 		try {
 			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 			SAXParser saxParser = parserFactory.newSAXParser();
@@ -50,6 +51,8 @@ public class EventBTranslator {
 			}
 
 			saxParser.parse(modelFile, xmlHandler);
+
+			model.isFinished();
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

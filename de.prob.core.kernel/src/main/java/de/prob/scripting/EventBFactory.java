@@ -7,17 +7,18 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.LoadEventBCommand;
+import de.prob.animator.command.LoadEventBProjectCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.eventb.translate.EventBTranslator;
+import de.prob.model.eventb.translate.EventBDatabaseTranslator;
+import de.prob.model.eventb.translate.EventBModelTranslator;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
-import de.prob.model.serialize.ModelObject;
-import de.prob.model.serialize.Serializer;
 import de.prob.statespace.StateSpace;
 
 public class EventBFactory {
@@ -32,20 +33,16 @@ public class EventBFactory {
 	public EventBModel load(final String file) {
 		EventBModel model = modelProvider.get();
 
-		EventBTranslator translator = new EventBTranslator(model, file);
+		new EventBDatabaseTranslator(model, file);
 
-		// StateSpace s = model.getStatespace();
-		// EventBToPrologTranslator eventBToPrologTranslator = new
-		// EventBToPrologTranslator(
-		// model);
+		AbstractCommand cmd = new LoadEventBProjectCommand(
+				new EventBModelTranslator(model));
 
-		// AbstractCommand cmd = new LoadEventBProjectCommand(
-		// eventBToPrologTranslator);
+		StateSpace s = model.getStatespace();
+		s.execute(cmd);
+		s.execute(new StartAnimationCommand());
 
-		// s.execute(cmd);
-		// s.execute(new StartAnimationCommand());
-
-		// subscribeVariables(model);
+		subscribeVariables(model);
 
 		return model;
 	}
@@ -75,10 +72,10 @@ public class EventBFactory {
 	public EventBModel load(final String cmd, final String coded) {
 		EventBModel model = modelProvider.get();
 
-		ModelObject mo = Serializer.deserialize(coded);
+		// ModelObject mo = Serializer.deserialize(coded);
 
-		setModelInformation(mo.getMainComponent(), mo.getMachines(),
-				mo.getContexts(), mo.getModelFile(), model);
+		// setModelInformation(mo.getMainComponent(), mo.getMachines(),
+		// mo.getContexts(), mo.getModelFile(), model);
 
 		StateSpace s = model.getStatespace();
 		s.execute(new LoadEventBCommand(cmd));

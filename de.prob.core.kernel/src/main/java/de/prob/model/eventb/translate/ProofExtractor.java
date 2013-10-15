@@ -142,7 +142,7 @@ public class ProofExtractor {
 						elements.add(new Tuple("action", split[1]));
 					} else {
 						elements.add(new Tuple("event", event.getName()));
-						elements.add(new Tuple("event", split[1]));
+						elements.add(new Tuple("guard", split[1]));
 					}
 					proofs.add(new UncalculatedPO(source, name, desc, elements,
 							isDischarged));

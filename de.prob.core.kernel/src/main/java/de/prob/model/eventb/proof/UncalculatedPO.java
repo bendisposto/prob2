@@ -17,8 +17,8 @@ public class UncalculatedPO extends ProofObligation {
 	@Override
 	protected void printElements(final IPrologTermOutput pto) {
 		for (Tuple element : elements) {
-			pto.openTerm(element.getType());
-			pto.printAtom(element.getValue());
+			pto.openTerm(element.getFirst());
+			pto.printAtom(element.getSecond());
 			pto.closeTerm();
 		}
 	}

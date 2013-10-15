@@ -13,6 +13,7 @@ import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.model.representation.StateSchema;
@@ -21,7 +22,9 @@ import de.prob.statespace.StateSpace;
 public class EventBModel extends AbstractModel {
 
 	private AbstractElement mainComponent;
-	private final BStateSchema schema = new BStateSchema();;
+	private final BStateSchema schema = new BStateSchema();
+	private final List<EventBMachine> machines = new ModelElementList<EventBMachine>();
+	private final List<Context> contexts = new ModelElementList<Context>();
 
 	@Inject
 	public EventBModel(final StateSpace statespace) {
@@ -46,7 +49,8 @@ public class EventBModel extends AbstractModel {
 	}
 
 	public void isFinished() {
-		calculateGraph();
+		addMachines(machines);
+		addContexts(contexts);
 		statespace.setModel(this);
 	}
 
@@ -105,10 +109,12 @@ public class EventBModel extends AbstractModel {
 
 	public void addMachine(final EventBMachine machine) {
 		components.put(machine.getName(), machine);
+		machines.add(machine);
 	}
 
 	public void addContext(final Context context) {
 		components.put(context.getName(), context);
+		contexts.add(context);
 	}
 
 	public void addRelationship(final String element1, final String element2,
