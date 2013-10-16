@@ -225,7 +225,11 @@ public class MachineXmlHandler extends DefaultHandler {
 
 	private void addVariable(final Attributes attributes) {
 		String name = attributes.getValue("name");
-		variables.add(new EventBVariable(name));
+		boolean concrete = "true".equals(attributes
+				.getValue("org.eventb.core.concrete"));
+		if (concrete) {
+			variables.add(new EventBVariable(name));
+		}
 	}
 
 	private void addRefinedMachine(final Attributes attributes) {
