@@ -7,23 +7,19 @@ import de.prob.model.eventb.Event;
 import de.prob.model.eventb.Variant;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class NAT extends SimpleProofNode implements IProofObligation {
+public class NAT extends CalculatedPO {
 
-	private final String name;
 	private final Variant variant;
 	private final Event event;
 
-	public NAT(final String name, final Event event, final Variant variant,
-			final EventB goal, final Set<EventB> hypotheses,
-			final boolean discharged, final String description) {
-		super(goal, hypotheses, discharged, description);
-		this.name = name;
+	public NAT(final String sourceName, final String name, final Event event,
+			final Variant variant, final EventB goal,
+			final Set<EventB> hypotheses, final boolean discharged,
+			final String description) {
+		super(sourceName, name, discharged, description, goal, hypotheses);
+
 		this.variant = variant;
 		this.event = event;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public Variant getVariant() {
@@ -35,13 +31,7 @@ public class NAT extends SimpleProofNode implements IProofObligation {
 	}
 
 	@Override
-	public String toString() {
-		return name;
+	protected void printElements(final IPrologTermOutput pto) {
 	}
 
-	@Override
-	public void toProlog(final IPrologTermOutput pto) {
-		// TODO Auto-generated method stub
-
-	}
 }

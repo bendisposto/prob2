@@ -1,22 +1,23 @@
 package de.prob.model.eventb;
 
-import de.prob.model.eventb.proof.SimpleProofNode
+import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
 import de.prob.model.representation.Constant
-import de.prob.model.representation.ModelElementList
 
 public class Context extends AbstractElement {
 
 	private final String name;
-	def List<? extends SimpleProofNode> proofs
+	def List<ProofObligation> proofs
 	def List<Context> Extends
 	def List<BSet> sets
-	def List<Axiom> axioms
-	def List<Constant> constants
+	def List<EventBAxiom> axioms
+	def List<EventBConstant> constants
+	private final String directoryPath;
 
-	public Context(final String name) {
+	public Context(final String name, final String directoryPath) {
+		this.directoryPath = directoryPath;
 		this.name = name;
 	}
 
@@ -26,27 +27,37 @@ public class Context extends AbstractElement {
 
 	public void addExtends(final List<Context> contexts) {
 		put(Context.class, contexts);
-		Extends = new ModelElementList<Context>(contexts)
+		Extends = contexts
 	}
 
 	public void addSets(final List<BSet> sets) {
 		put(BSet.class, sets);
-		this.sets = new ModelElementList<BSet>(sets)
+		this.sets = sets
 	}
 
 	public void addConstants(final List<EventBConstant> constants) {
 		put(Constant.class, constants);
-		this.constants = new ModelElementList<EventBConstant>(constants)
+		this.constants = constants
 	}
 
-	public void addAxioms(final List<EventBAxiom> axioms) {
-		put(Axiom.class, axioms);
-		this.axioms = new ModelElementList<EventBAxiom>(axioms)
+	public void addAxioms(final List<EventBAxiom> axioms, List<EventBAxiom> inherited) {
+		inherited.addAll(axioms)
+		put(Axiom.class, inherited);
+		this.axioms = axioms
 	}
 
-	public void addProofs(final List<? extends SimpleProofNode> proofs) {
-		put(SimpleProofNode.class, proofs);
-		this.proofs = new ModelElementList<? extends SimpleProofNode>(proofs);
+	public void addProofs(final List<? extends ProofObligation> proofs) {
+		put(ProofObligation.class, proofs);
+		this.proofs = proofs
+	}
+
+	def List<ProofObligation> getProofs() {
+		//TODO: Implement way to translate from UncalculatedPO to CalculatedPO
+		return proofs
+	}
+
+	def List<ProofObligation> getRawProofs() {
+		return proofs
 	}
 
 	@Override

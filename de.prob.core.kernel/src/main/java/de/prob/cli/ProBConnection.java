@@ -60,7 +60,7 @@ public class ProBConnection {
 	}
 
 	public String send(final String term) throws IOException {
-		logger.trace(term);
+		logger.info(term);
 		if (shutingDown) {
 			final String message = "probcli is currently shutting down";
 			logger.error(message);
@@ -73,7 +73,7 @@ public class ProBConnection {
 			outputStream.flush();
 		}
 		String answer = getAnswer();
-		logger.trace(answer);
+		logger.info(answer);
 		return answer;
 	}
 

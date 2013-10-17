@@ -451,6 +451,30 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return result;
 	}
 
+	public void subscribe(final Object subscriber,
+			final List<IEvalElement> formulasOfInterest) {
+		List<AbstractCommand> subscribeCmds = new ArrayList<AbstractCommand>();
+		for (IEvalElement formulaOfInterest : formulasOfInterest) {
+			if (formulaOfInterest instanceof CSP) {
+				logger.info(
+						"CSP formula {} not subscribed because CSP evaluation is not state based. Use eval method instead",
+						formulaOfInterest.getCode());
+			} else {
+				if (formulaRegistry.containsKey(formulaOfInterest)) {
+					formulaRegistry.get(formulaOfInterest).add(subscriber);
+				} else {
+					HashSet<Object> subscribers = new HashSet<Object>();
+					subscribers.add(subscriber);
+					formulaRegistry.put(formulaOfInterest, subscribers);
+					subscribeCmds.add(new RegisterFormulaCommand(
+							formulaOfInterest));
+					subscribedFormulas.add(formulaOfInterest);
+				}
+			}
+		}
+		execute(new ComposedCommand(subscribeCmds));
+	}
+
 	/**
 	 * If a class is interested in having a particular formula calculated and
 	 * cached whenever a new state is explored, then they "subscribe" to that
