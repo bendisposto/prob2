@@ -22,12 +22,10 @@ import org.eventb.core.ast.extension.IPriorityMediator;
 import org.eventb.core.ast.extension.ITypeCheckMediator;
 import org.eventb.core.ast.extension.ITypeMediator;
 import org.eventb.core.ast.extension.IWDMediator;
-import org.eventb.core.ast.extension.StandardGroup;
 import org.eventb.internal.core.ast.extension.ExtensionKind;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.ModelElementList;
 import de.prob.unicode.UnicodeTranslator;
 
 public class Operator extends AbstractElement {
@@ -37,18 +35,22 @@ public class Operator extends AbstractElement {
 	private final IOperatorProperties.FormulaType formulaType;
 	private final IOperatorProperties.Notation notation;
 	private final boolean commutative;
-	private final IOperatorDefinition definition;
+	private IOperatorDefinition definition;
 	private final String theoryName;
 	private IFormulaExtension extension;
-	private final List<OperatorArgument> operatorArguments = new ModelElementList<OperatorArgument>();
-	private final List<OperatorWDCondition> wdConditions = new ModelElementList<OperatorWDCondition>();
+	private List<OperatorArgument> operatorArguments;
+	private final String groupId;
+	private final EventB wd;
+	private final EventB type;
+	private final EventB predicate;
 
 	public Operator(final String theoryName, final String operator,
 			final boolean associative, final boolean commutative,
 			final boolean formulaType, final String notationType,
-			final IOperatorDefinition definition,
-			final Set<IFormulaExtension> typeEnv) {
+			final String groupId, final String type, final String wd,
+			final String predicate, final Set<IFormulaExtension> typeEnv) {
 		this.theoryName = theoryName;
+		this.groupId = groupId;
 		syntax = new EventB(operator, typeEnv);
 		this.associative = associative;
 		this.commutative = commutative;
@@ -57,17 +59,14 @@ public class Operator extends AbstractElement {
 		notation = notationType.equals("PREFIX") ? IOperatorProperties.Notation.PREFIX
 				: (notationType.equals("INFIX") ? IOperatorProperties.Notation.INFIX
 						: IOperatorProperties.Notation.POSTFIX);
-		this.definition = definition;
+		this.type = type == null ? null : new EventB(type, typeEnv);
+		this.wd = new EventB(wd, typeEnv);
+		this.predicate = new EventB(predicate, typeEnv);
 	}
 
 	public void addArguments(final List<OperatorArgument> arguments) {
 		put(OperatorArgument.class, arguments);
-		operatorArguments.addAll(arguments);
-	}
-
-	public void addWDConditions(final List<OperatorWDCondition> conditions) {
-		put(OperatorWDCondition.class, conditions);
-		wdConditions.addAll(conditions);
+		operatorArguments = arguments;
 	}
 
 	public EventB getSyntax() {
@@ -94,16 +93,28 @@ public class Operator extends AbstractElement {
 		return definition;
 	}
 
+	public void setDefinition(final IOperatorDefinition definition) {
+		this.definition = definition;
+	}
+
 	public List<OperatorArgument> getArguments() {
 		return operatorArguments;
 	}
 
-	public List<OperatorWDCondition> getWDConditions() {
-		return wdConditions;
-	}
-
 	public String getParentTheory() {
 		return theoryName;
+	}
+
+	public EventB getWD() {
+		return wd;
+	}
+
+	public EventB getPredicate() {
+		return predicate;
+	}
+
+	public EventB getType() {
+		return type;
 	}
 
 	@Override
@@ -171,7 +182,7 @@ public class Operator extends AbstractElement {
 
 		@Override
 		public String getGroupId() {
-			return getGroupFor(formulaType, notation, getArguments().size());
+			return groupId;
 		}
 
 		@Override
@@ -200,58 +211,6 @@ public class Operator extends AbstractElement {
 		@Override
 		public void addPriorities(final IPriorityMediator mediator) {
 			// Nothing to add
-		}
-
-		private String getGroupFor(final FormulaType formulaType,
-				final Notation notation, final int arity) {
-			String group = "NEW THEORY GROUP";
-			switch (formulaType) {
-			case EXPRESSION: {
-				switch (notation) {
-				case INFIX: {
-					break;
-				}
-				case PREFIX: {
-					if (arity > 0) {
-						group = StandardGroup.CLOSED.getId();
-					} else {
-						group = StandardGroup.ATOMIC_EXPR.getId();
-					}
-					break;
-				}
-				case POSTFIX: {
-					// leave as part of the dummy group TODO check this
-				}
-				}
-				break;
-			}
-			case PREDICATE: {
-				switch (notation) {
-				case INFIX: {
-					if (arity == 0) {
-						group = StandardGroup.ATOMIC_PRED.getId();
-					}
-					// infix makes sense for ops with more than two args
-					if (arity > 1) {
-						group = StandardGroup.INFIX_PRED.getId();
-					}
-					break;
-				}
-				case PREFIX: {
-					if (arity > 0) {
-						group = StandardGroup.CLOSED.getId();
-					} else {
-						group = StandardGroup.ATOMIC_PRED.getId();
-					}
-					break;
-				}
-				case POSTFIX: {
-					// leave as part of the dummy group TODO check this
-				}
-				}
-			}
-			}
-			return group;
 		}
 
 		@Override

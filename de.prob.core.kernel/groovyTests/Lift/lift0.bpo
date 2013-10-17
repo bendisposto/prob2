@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="8">
+<org.eventb.core.poPredicateSet name="CTXHYP" org.eventb.core.poStamp="5">
+<org.eventb.core.poIdentifier name="levels" org.eventb.core.type="ℙ(levels)"/>
+<org.eventb.core.poIdentifier name="L0" org.eventb.core.type="levels"/>
+<org.eventb.core.poIdentifier name="L1" org.eventb.core.type="levels"/>
+<org.eventb.core.poIdentifier name="L2" org.eventb.core.type="levels"/>
+<org.eventb.core.poIdentifier name="L3" org.eventb.core.type="levels"/>
+<org.eventb.core.poIdentifier name="down" org.eventb.core.type="ℙ(levels×levels)"/>
+<org.eventb.core.poIdentifier name="up" org.eventb.core.type="ℙ(levels×levels)"/>
+<org.eventb.core.poPredicate name="levelt" org.eventb.core.predicate="partition(levels,{L0},{L1},{L2},{L3})" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.axiom#,"/>
+<org.eventb.core.poPredicate name="levelu" org.eventb.core.predicate="up={L0 ↦ L1,L1 ↦ L2,L2 ↦ L3}" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.axiom#."/>
+<org.eventb.core.poPredicate name="levelv" org.eventb.core.predicate="down={L1 ↦ L0,L2 ↦ L1,L3 ↦ L2}" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.axiom#0"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="5">
+<org.eventb.core.poIdentifier name="level" org.eventb.core.type="levels"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTlevelu" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="5">
+<org.eventb.core.poIdentifier name="level'" org.eventb.core.type="levels"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPlevelu" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#EVTIDENTlevelu" org.eventb.core.poStamp="5"/>
+<org.eventb.core.poSequent name="up/act1/WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-definedness of action" org.eventb.core.poStamp="6">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#EVTALLHYPlevelv"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="level∈dom(up)∧up∈levels ⇸ levels" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#,|org.eventb.core.action#("/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#,|org.eventb.core.action#("/>
+<org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#EVTALLHYPlevelv"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTlevelv" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="level'" org.eventb.core.type="levels"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPlevelv" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#EVTIDENTlevelv" org.eventb.core.poStamp="6">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="level∈{L0,L1,L2}" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#,|org.eventb.core.guard#'"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="down/act1/WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-definedness of action" org.eventb.core.poStamp="8">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#EVTALLHYPlevelw"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="level∈dom(down)∧down∈levels ⇸ levels" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#-|org.eventb.core.action#("/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#-|org.eventb.core.action#("/>
+<org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#EVTALLHYPlevelw"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTlevelw" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="level'" org.eventb.core.type="levels"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPlevelw" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#EVTIDENTlevelw" org.eventb.core.poStamp="7">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="level∈{L1,L2,L3}" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#-|org.eventb.core.guard#'"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTlevelx" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="level'" org.eventb.core.type="levels"/>
+<org.eventb.core.poIdentifier name="prm1" org.eventb.core.type="levels"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPlevelx" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#EVTIDENTlevelx" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="prm1∈levels" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#\/|org.eventb.core.guard#("/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="ALLHYP" org.eventb.core.parentSet="/Lift/lift0.bpo|org.eventb.core.poFile#lift0|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poStamp="5">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="level∈levels" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.invariant#)"/>
+</org.eventb.core.poPredicateSet>
+</org.eventb.core.poFile>

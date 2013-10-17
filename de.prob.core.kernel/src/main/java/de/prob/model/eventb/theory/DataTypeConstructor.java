@@ -15,7 +15,7 @@ public class DataTypeConstructor extends AbstractElement {
 	private final EventB identifier;
 	private final List<DataTypeDestructor> destructors = new ModelElementList<DataTypeDestructor>();
 
-	DataTypeConstructor(final String identifier) {
+	public DataTypeConstructor(final String identifier) {
 		identifierString = identifier;
 		this.identifier = new EventB(identifier);
 	}

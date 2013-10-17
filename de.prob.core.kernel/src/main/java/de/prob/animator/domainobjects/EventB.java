@@ -50,13 +50,11 @@ public class EventB extends AbstractEvalElement {
 	public EventB(final String code) {
 		this.code = UnicodeTranslator.toAscii(code);
 		types = Collections.emptySet();
-		ensureParsed();
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types) {
 		this.code = UnicodeTranslator.toAscii(code);
 		this.types = types;
-		ensureParsed();
 	}
 
 	private void ensureParsed() {

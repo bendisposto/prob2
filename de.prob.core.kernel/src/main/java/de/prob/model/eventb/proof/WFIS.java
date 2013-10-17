@@ -6,21 +6,16 @@ import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Witness;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class WFIS extends SimpleProofNode implements IProofObligation {
+public class WFIS extends CalculatedPO {
 
-	private final String name;
 	private final Witness witness;
 
-	public WFIS(final String name, final Witness witness, final EventB goal,
+	public WFIS(final String sourceName, final String name,
+			final Witness witness, final EventB goal,
 			final Set<EventB> hypotheses, final boolean discharged,
 			final String description) {
-		super(goal, hypotheses, discharged, description);
-		this.name = name;
+		super(sourceName, name, discharged, description, goal, hypotheses);
 		this.witness = witness;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public Witness getWitness() {
@@ -28,14 +23,7 @@ public class WFIS extends SimpleProofNode implements IProofObligation {
 	}
 
 	@Override
-	public String toString() {
-		return name;
-	}
-
-	@Override
-	public void toProlog(final IPrologTermOutput pto) {
-		// TODO Auto-generated method stub
-
+	protected void printElements(final IPrologTermOutput pto) {
 	}
 
 }
