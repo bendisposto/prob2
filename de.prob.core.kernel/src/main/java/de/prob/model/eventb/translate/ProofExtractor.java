@@ -3,6 +3,8 @@ package de.prob.model.eventb.translate;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +14,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import de.prob.model.eventb.Context;
@@ -23,6 +27,8 @@ import de.prob.model.eventb.proof.UncalculatedPO;
 import de.prob.model.representation.ModelElementList;
 
 public class ProofExtractor {
+
+	Logger logger = LoggerFactory.getLogger(ProofExtractor.class);
 
 	Map<String, String> descriptions;
 	Set<String> discharged;
@@ -46,16 +52,29 @@ public class ProofExtractor {
 			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 			SAXParser saxParser = parserFactory.newSAXParser();
 
-			File bpoFile = new File(baseFileName + ".bpo");
-			ProofDescriptionExtractor ext1 = new ProofDescriptionExtractor();
-			saxParser.parse(bpoFile, ext1);
+			String bpoFileName = baseFileName + ".bpo";
+			File bpoFile = new File(bpoFileName);
+			if (bpoFile.exists()) {
+				ProofDescriptionExtractor ext1 = new ProofDescriptionExtractor();
+				saxParser.parse(bpoFile, ext1);
+				descriptions = ext1.getProofDescriptions();
+			} else {
+				descriptions = new HashMap<String, String>();
+				logger.info("Could not find file "
+						+ bpoFileName
+						+ ". Assuming that no proofs have been generated for model element.");
+			}
 
-			File bpsFile = new File(baseFileName + ".bps");
-			ProofStatusExtractor ext2 = new ProofStatusExtractor();
-			saxParser.parse(bpsFile, ext2);
-
-			descriptions = ext1.getProofDescriptions();
-			discharged = ext2.getDischargedProofs();
+			String bpsFileName = baseFileName + ".bps";
+			File bpsFile = new File(bpsFileName);
+			if(bpsFile.exists()) {
+				ProofStatusExtractor ext2 = new ProofStatusExtractor();
+				saxParser.parse(bpsFile, ext2);
+				discharged = ext2.getDischargedProofs();				
+			} else {
+				discharged = new HashSet<String>();
+				logger.info("Could not find file "+bpsFileName+". Assuming that no proofs are discharged for model element.");
+			}
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
