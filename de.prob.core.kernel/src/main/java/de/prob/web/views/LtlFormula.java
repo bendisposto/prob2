@@ -1,6 +1,7 @@
 package de.prob.web.views;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ public class LtlFormula extends AbstractSession implements
 
 	private final AnimationSelector animations;
 
+	private final Map<LTL, Map<StateId, String>> cache = new HashMap<LTL, Map<StateId, String>>();
 
 	@Inject
 	public LtlFormula(final AnimationSelector animations)
@@ -44,6 +46,9 @@ public class LtlFormula extends AbstractSession implements
 		formulas.add(new LTLFormulaTuple(ltl1));
 		formulas.add(new LTLFormulaTuple(ltl2));
 		formulas.add(new LTLFormulaTuple(ltl3));
+		cache.put(ltl1, new HashMap<StateId, String>());
+		cache.put(ltl2, new HashMap<StateId, String>());
+		cache.put(ltl3, new HashMap<StateId, String>());
 	}
 
 	public void submitFormulas() {
@@ -67,12 +72,13 @@ public class LtlFormula extends AbstractSession implements
 
 		LTL formula = tuple.getFormula();
 
-		// TODO: check formula in current state, show if outdated, etc.
 		StateId stateid = animations.getCurrentTrace().getCurrentState();
 		EvaluationCommand lcc = formula.getCommand(stateid);
 		animations.getCurrentTrace().getStateSpace().execute(lcc);
 
-		tuple.setStatus(lcc.getValues().get(0).getValue());
+		String result = lcc.getValues().get(0).getValue();
+		tuple.setStatus(result);
+		cache.get(formula).put(stateid, result);
 
 		submitFormulas();
 		return null;
@@ -95,6 +101,7 @@ public class LtlFormula extends AbstractSession implements
 		LTL ltl = new LTL(formula);
 
 		formulas.add(new LTLFormulaTuple(ltl));
+		cache.put(ltl, new HashMap<StateId, String>());
 		logger.trace(params.toString());
 		submitFormulas();
 		return null;
@@ -113,8 +120,15 @@ public class LtlFormula extends AbstractSession implements
 
 	@Override
 	public void traceChange(Trace trace) {
+		StateId current = trace.getCurrentState();
 		for (LTLFormulaTuple tuple : formulas) {
-			tuple.resetStatus();
+			String cached = cache.get(tuple.formula).get(current);
+			if (cached != null) {
+				tuple.setStatus(cached);
+			} else {
+				tuple.resetStatus();
+			}
+
 		}
 		submitFormulas();
 	}
@@ -127,11 +141,6 @@ public class LtlFormula extends AbstractSession implements
 		public LTLFormulaTuple(LTL f) {
 			formula = f;
 			this.setStatus("unchecked");
-		}
-
-		public LTLFormulaTuple(LTL f, String status) {
-			formula = f;
-			this.setStatus(status);
 		}
 
 		public LTL getFormula() {
