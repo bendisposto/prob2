@@ -3,6 +3,7 @@ Events = (function() {
 	var session = Session();
 
 	$(document).ready(function() {
+		$('.dropdown-toggle').dropdown()
 	});
 
 	function setContent(ops_string) {
