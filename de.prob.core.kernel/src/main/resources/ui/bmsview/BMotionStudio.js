@@ -11,29 +11,29 @@ bms = (function() {
 		
 		hookInputFieldListener(true)
 
-		$('#bmsTab a:first').tab('show');
+//		$('#bmsTab a:first').tab('show');
 
-		$('#bmsTab a').click(function(e) {
-			e.preventDefault();
-			$(this).tab('show');
-		})
+//		$('#bmsTab a').click(function(e) {
+//			e.preventDefault();
+//			$(this).tab('show');
+//		})
 
-		$('#bmsTab a').on('shown', function(e) {
-			if ($(e.target).attr("href") == "#visualization") {
+//		$('#bmsTab a').on('shown', function(e) {
+//			if ($(e.target).attr("href") == "#visualization") {
 //				$("#result").html("")
-				forceRendering()
-				disableContextMenu()
-			} else {
+//				forceRendering()
+//				disableContextMenu()
+//			} else {
 //				$("#render").html("")
 //				renderEdit()
-				initContextMenu()
-			}
+//				initContextMenu()
+//			}
 			// e.relatedTarget // previous tab
-		})
+//		})
 		
 	});
 	
-	$('#btShowSourceModal').click(function(){
+	$('#chooseTemplateBox').click(function(){
 		
 	    $("#sourceModal").on('shown', function() {
 //        	editorHtml.refresh()
@@ -588,6 +588,7 @@ bms = (function() {
 		})
 		focused = null; // prevent blur event
 		$("#sourceModal").modal('hide')
+		$("#chooseTemplateBox").css("display","none");
 	}
 	
 	extern.setTemplate = function(data) {
