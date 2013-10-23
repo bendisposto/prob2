@@ -1,25 +1,26 @@
 CurrentTrace = (function() {
 	var extern = {}
-	var session = Session();
+	var session = Session()
+	var pattern = '<li id="{{id}}" class="{{group}}">{{rep}}</li>'
 
 	$(document).ready(function() {
 	});
 
 	function setTrace(trace) {
 		ops = JSON.parse(trace)
-		$(".op").remove()
-		for (op in ops) {
-			$("#content").prepend(
-					'<li id="' + op + '" class="op">' + ops[op] + '</li>')
+		$("li").remove()
+		for (var i = 0; i < ops.length; i++) {
+			$("#content").prepend(Mustache.render(pattern,ops[i]));
 		}
-		$(".op").click(function(e) {
+		$("li").click(function(e) {
 			clickTrace(e.target.id)
 		})
 	}
 
 	function clickTrace(id) {
 		session.sendCmd("gotoPos", {
-			"pos" : id,
+			"id" : id,
+			"group" : $('#'+id).attr('class'),
 			"client" : extern.client
 		})
 	}

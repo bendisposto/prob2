@@ -3,6 +3,10 @@ Console = (function() {
 	var controller;
 	var session = Session();
 
+	function scrollDown(){
+  		window.scrollTo(0,document.body.scrollHeight);
+	}
+
 	function onValidate(line) {
 		return true;
 	}
@@ -58,9 +62,11 @@ Console = (function() {
 
 	extern.groovyResult = function(data) {
 		groovyResult(data.output, data.result)
+		scrollDown()
 	}
 	extern.groovyError = function(data) {
 		groovyError(data.message, data.trace)
+		scrollDown()
 	}
 	extern.client = ""
 	extern.init = session.init

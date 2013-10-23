@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import javax.script.ScriptEngine;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +39,10 @@ public class GroovyConsoleSession extends AbstractSession {
 			engine.put("__console", console);
 			logger.trace("Eval {} on {}", line, engine.toString());
 			Object eval = engine.eval(line);
-			logger.trace("Evaled {} to {}", line, eval.toString());
+			String resultString = eval.toString();
+			logger.trace("Evaled {} to {}", line, resultString);
 			return WebUtils.wrap("cmd", "Console.groovyResult", "result",
-					eval.toString(), "output", console.toString());
+					StringEscapeUtils.escapeHtml(resultString), "output", console.toString());
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));

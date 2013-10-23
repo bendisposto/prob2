@@ -1,28 +1,32 @@
 li {
-	list-style-type: none;
+    list-style-type: none;
 }
 
-tr:nth-child(odd) {
-	background-color: white;
+#events li {
+    padding-left: 10px;
 }
 
-tr:nth-child(even) {
-	background-color: #f3f6ff;
+#events li:nth-child(odd) {
+    background-color: white;
 }
 
-th {
-	background-color: #cccccc;
+#events li:nth-child(even) {
+    background-color: #f3f6ff;
 }
 
-.selected {
-	font-weight: bold;
+.btn {
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
-.close-button {
-	color: #660000;
-	opacity: 0.5;
+ul {
+    padding-left: 0px;
 }
 
-.close-button:hover {
-	opacity: 1;
+.toolbar {
+    margin-bottom: 15px;
+    background-color: #eee;
+    border-bottom-color: #ddd;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
 }
