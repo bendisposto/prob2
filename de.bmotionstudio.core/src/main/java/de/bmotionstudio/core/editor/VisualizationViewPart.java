@@ -57,6 +57,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.ISaveablePart2;
@@ -734,9 +735,15 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	@Override
-	public void traceChange(Trace history) {
-		if (visualizationView != null)
-			checkObserver(history);
+	public void traceChange(final Trace history) {
+		if (visualizationView != null) {
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					checkObserver(history);
+				}
+			});
+		}
 	}
 
 	public void checkObserver(Trace history) {
