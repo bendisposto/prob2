@@ -165,10 +165,14 @@ public class VisualizationViewPart extends ViewPart implements
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class type) {
 
-		// // Adapter for zoom manager
-		if (type == ZoomManager.class)
-			return ((ScalableRootEditPart) getGraphicalViewer()
-					.getRootEditPart()).getZoomManager();
+		GraphicalViewer gViewer = getGraphicalViewer();
+		
+		// Adapter for zoom manager
+		if (type == ZoomManager.class && gViewer != null) {
+			ScalableRootEditPart scalableRootEditPart = (ScalableRootEditPart) gViewer
+					.getRootEditPart();
+			return scalableRootEditPart.getZoomManager();
+		}
 
 		// Adapter for content outline page
 		if (type == IContentOutlinePage.class) {

@@ -32,7 +32,6 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
-import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -51,7 +50,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private List<ObserverElement> observerElements = new ArrayList<ObserverElement>();
 	
-	private final AbstractModel model;
+	private AbstractModel model;
 	
 	private AnimationSelector selector;
 	
@@ -62,16 +61,17 @@ public class BMotionStudioSession extends AbstractSession implements
 		this.selector = selector;
 		currentTrace = selector.getCurrentTrace();
 		if (currentTrace == null) {
-			throw new AnimationNotLoadedException(
-					"Please load model before opening Value over Time visualization");
+			// throw new AnimationNotLoadedException(
+			// "Please load model before opening Value over Time visualization");
+		} else {
+			model = currentTrace.getModel();
+			// if(model instanceof EventBModel) {
+			// EventBModel eventbModel = (EventBModel) model;
+			// bmachinemap.put("name", eventbModel.getMainComponentName());
+			// bmachinemap.put("constants", getBConstantsAsJson(eventbModel));
+			// }
+			selector.registerAnimationChangeListener(this);
 		}
-		model = currentTrace.getModel();
-		// if(model instanceof EventBModel) {
-		// EventBModel eventbModel = (EventBModel) model;
-		// bmachinemap.put("name", eventbModel.getMainComponentName());
-		// bmachinemap.put("constants", getBConstantsAsJson(eventbModel));
-		// }
-		selector.registerAnimationChangeListener(this);
 	}
 	
 	@Override
@@ -289,7 +289,9 @@ public class BMotionStudioSession extends AbstractSession implements
 			for (Context context : sees) {
 				List<EventBConstant> constants = context.getConstants();
 				for (EventBConstant c : constants) {
-					map.put(c.getName(), c.getValue(currentTrace).getValue());
+					EvaluationResult value = c.getValue(currentTrace);
+					if (value != null)
+						map.put(c.getName(), value.getValue());
 				}
 			}
 		}
@@ -305,16 +307,18 @@ public class BMotionStudioSession extends AbstractSession implements
 			List<EventBVariable> variables = eventbMachine.getVariables();
 			for (EventBVariable var : variables) {
 				EvaluationResult eval = trace.evalCurrent(var.getExpression());
-				String value = eval.getValue();
-				boolean bvalue = false;
-				if (value.equalsIgnoreCase("TRUE")) {
-					bvalue = true;
-					map.put(var.getName(), bvalue);
-				} else if (value.equalsIgnoreCase("FALSE")) {
-					bvalue = false;
-					map.put(var.getName(), bvalue);
-				} else {
-					map.put(var.getName(), value);
+				if (eval != null) {
+					String value = eval.getValue();
+					boolean bvalue = false;
+					if (value.equalsIgnoreCase("TRUE")) {
+						bvalue = true;
+						map.put(var.getName(), bvalue);
+					} else if (value.equalsIgnoreCase("FALSE")) {
+						bvalue = false;
+						map.put(var.getName(), bvalue);
+					} else {
+						map.put(var.getName(), value);
+					}
 				}
 			}
 		} else if (mainComponent instanceof ClassicalBMachine) {
