@@ -26,9 +26,10 @@ public class EventBDatabaseTranslator {
 			File modelFile = new File(fileName);
 			model.setModelFile(modelFile);
 
-			String directory = fileName.substring(0, fileName.lastIndexOf('/'));
+			String directory = fileName.substring(0,
+					fileName.lastIndexOf(File.separatorChar));
 			String workspacePath = directory.substring(0,
-					directory.lastIndexOf('/'));
+					directory.lastIndexOf(File.separatorChar));
 
 			File theoryFile = new File(directory + "/TheoryPath.tcl");
 			Set<IFormulaExtension> typeEnv;

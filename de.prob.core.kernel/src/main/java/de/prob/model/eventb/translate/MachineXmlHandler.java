@@ -80,9 +80,11 @@ public class MachineXmlHandler extends DefaultHandler {
 		this.model = model;
 		this.typeEnv = typeEnv;
 
-		String name = fileName.substring(fileName.lastIndexOf("/") + 1,
+		String name = fileName.substring(
+				fileName.lastIndexOf(File.separatorChar) + 1,
 				fileName.lastIndexOf("."));
-		directoryPath = fileName.substring(0, fileName.lastIndexOf("/"));
+		directoryPath = fileName.substring(0,
+				fileName.lastIndexOf(File.separatorChar));
 		machine = new EventBMachine(name, directoryPath);
 		model.addMachine(machine);
 		if (isMainComponent) {
@@ -249,7 +251,8 @@ public class MachineXmlHandler extends DefaultHandler {
 				SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 				SAXParser saxParser = parserFactory.newSAXParser();
 
-				String fileName = directoryPath + "/" + machineName + ".bcm";
+				String fileName = directoryPath + File.separatorChar
+						+ machineName + ".bcm";
 				MachineXmlHandler handler = new MachineXmlHandler(model,
 						fileName, false, typeEnv);
 				saxParser.parse(new File(fileName), handler);
@@ -387,7 +390,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		internalContext.addConstants(constants);
 
 		ProofExtractor extractor = new ProofExtractor(internalContext,
-				directoryPath + "/" + internalContext.getName());
+				directoryPath + File.separatorChar + internalContext.getName());
 		internalContext.addProofs(extractor.getProofs());
 
 		extractingContext = false;
@@ -403,7 +406,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		machine.addVariant(variant);
 
 		ProofExtractor proofExtractor = new ProofExtractor(machine,
-				directoryPath + "/" + machine.getName());
+				directoryPath + File.separatorChar + machine.getName());
 		machine.addProofs(proofExtractor.getProofs());
 	}
 

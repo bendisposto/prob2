@@ -1,5 +1,6 @@
 package de.prob.model.eventb.translate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,9 +52,11 @@ public class ContextXmlHandler extends DefaultHandler {
 		this.model = model;
 		this.typeEnv = typeEnv;
 
-		String name = fileName.substring(fileName.lastIndexOf("/") + 1,
+		String name = fileName.substring(
+				fileName.lastIndexOf(File.separatorChar) + 1,
 				fileName.lastIndexOf("."));
-		directoryPath = fileName.substring(0, fileName.lastIndexOf("/"));
+		directoryPath = fileName.substring(0,
+				fileName.lastIndexOf(File.separatorChar));
 		context = new Context(name, directoryPath);
 		model.addContext(context);
 		if (isMainComponent) {
@@ -206,7 +209,7 @@ public class ContextXmlHandler extends DefaultHandler {
 		context.addConstants(constants);
 
 		ProofExtractor extractor = new ProofExtractor(context, directoryPath
-				+ "/" + context.getName());
+				+ File.separatorChar + context.getName());
 		context.addProofs(extractor.getProofs());
 	}
 
