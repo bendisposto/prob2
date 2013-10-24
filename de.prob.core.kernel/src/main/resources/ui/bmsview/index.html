@@ -8,26 +8,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link rel="stylesheet" href="/ui/common/bootstrap.css">
 <link rel="stylesheet" href="/ui/common/codemirror.css">
-<link rel="stylesheet" href="/ui/bmsview/contextMenu/jquery.contextMenu.css">
 <link rel="stylesheet" href="/ui/bmsview/bms.css">
 </head>
 
 <body>
 
-	<ul class="nav nav-tabs" id="bmsTab">
-		<li class="active"><a href="#visualization">Visualization</a></li>
-		<!--li><a href="#template">Template</a></li-->
-	</ul>
+	<div id="chooseTemplateBox">Click here to choose a template</div>
 
-	<div class="tab-content">
-		<div class="tab-pane active" id="visualization">
+	<!-- ul class="nav nav-tabs" id="bmsTab">
+		<li class="active"><a href="#visualization">Visualization</a></li>
+	</ul-->
+
+	<!-- div class="tab-content"-->
+		<!-- div class="tab-pane active" id="visualization"-->
 			<div id="result_container">
-				<button type="button" id="btShowSourceModal">Edit Template</button>
+				<!-- button type="button" id="btShowSourceModal">Edit Template</button-->
 				<iframe src="" width="100%" frameborder="0" scrolling="no"
 					name="iframeVisualization" id="iframeVisualization"></iframe>
 			</div>
-		</div>
-	</div>
+		<!-- /div-->
+	<!-- /div-->
 
 	<!-- Modal -->
 	<div class="modal fade" id="sourceModal">
@@ -114,11 +114,6 @@
 	src="/ui/libs/codemirror_modes/htmlmixed.js"></script>
 
 <script type="text/javascript" src="/ui/common/Session.js"></script>
-<script type="text/javascript"
-	src="/ui/bmsview/contextMenu/jquery.ui.position.js"></script>
-<script type="text/javascript"
-	src="/ui/bmsview/contextMenu/jquery.contextMenu.js"></script>
-<script type="text/javascript" src="/ui/bmsview/svgeditor/embedapi.js"></script>
 
 <script type="text/javascript" src="/ui/bmsview/BMotionStudio.js"></script>
 

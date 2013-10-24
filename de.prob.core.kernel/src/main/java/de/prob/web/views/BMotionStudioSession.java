@@ -22,14 +22,16 @@ import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.ClassicalBVariable;
+import de.prob.model.eventb.Context;
+import de.prob.model.eventb.EventBConstant;
 import de.prob.model.eventb.EventBMachine;
+import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.EventBVariable;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
-import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -44,11 +46,11 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private List<FormulaElement> finalFormulas = new CopyOnWriteArrayList<BMotionStudioSession.FormulaElement>();
 	
-	private Map<String, Object> bvarmap = new HashMap<String, Object>();
+//	private Map<String, Object> bmachinemap = new HashMap<String, Object>();
 	
 	private List<ObserverElement> observerElements = new ArrayList<ObserverElement>();
 	
-	private final AbstractModel model;
+	private AbstractModel model;
 	
 	private AnimationSelector selector;
 	
@@ -59,11 +61,17 @@ public class BMotionStudioSession extends AbstractSession implements
 		this.selector = selector;
 		currentTrace = selector.getCurrentTrace();
 		if (currentTrace == null) {
-			throw new AnimationNotLoadedException(
-					"Please load model before opening Value over Time visualization");
+			// throw new AnimationNotLoadedException(
+			// "Please load model before opening Value over Time visualization");
+		} else {
+			model = currentTrace.getModel();
+			// if(model instanceof EventBModel) {
+			// EventBModel eventbModel = (EventBModel) model;
+			// bmachinemap.put("name", eventbModel.getMainComponentName());
+			// bmachinemap.put("constants", getBConstantsAsJson(eventbModel));
+			// }
+			selector.registerAnimationChangeListener(this);
 		}
-		model = currentTrace.getModel();
-		selector.registerAnimationChangeListener(this);
 	}
 	
 	@Override
@@ -78,46 +86,52 @@ public class BMotionStudioSession extends AbstractSession implements
 	// Rendering
 	// ----------------------------------------------------------------
 	
-	private Map<String, Object> getDataMapForRendering() {
+	private Map<String, Object> getJsonDataForRendering() {
 		
-		Map<String, Object> dataWrap = new HashMap<String, Object>();
-		for (FormulaElement f : finalFormulas) {
-			EvaluationResult result = f.getResult();
-			IEvalElement formula = f.getFormula();
-			String value = result.getValue();
-			if (formula.getKind().equals("#PREDICATE")) {
-				boolean bvalue = false;
-				if (value.equalsIgnoreCase("TRUE"))
-					bvalue = true;
-				dataWrap.put(f.getName(), bvalue);
-			} else {
-				dataWrap.put(f.getName(), value);
-			}
+		Map<String,Object> modelMap = new HashMap<String, Object>();	
+		Map<String,Object> fMap = new HashMap<String, Object>();
+		modelMap.put("model", fMap);
+		
+		if (model instanceof EventBModel) {
+
+			EventBModel eventbModel = (EventBModel) model;
+			fMap.put("name", ((EventBModel) model).getMainComponentName());
+			Map<String, Object> bVariablesAsJson = getBVariablesAsJson(
+					currentTrace, eventbModel);
+			fMap.put("variables", bVariablesAsJson);
+			Map<String, Object> bConstantsAsJson = getBConstantsAsJson(
+					currentTrace, eventbModel);
+			
+//			List<Object> constantList = new ArrayList<Object>();
+//			bConstantsAsJson.put("list", constantList);
+			fMap.put("constants", bConstantsAsJson);
+			
+			// Collect observer
+			// List<Object> result = new ArrayList<Object>();
+			// for (ObserverElement o : observerElements) {
+			// Map<String, String> predicateObserver = WebUtils.wrap("template",
+			// o.getObserverPath(), "data", o.getData());
+			// result.add(predicateObserver);
+			// }
+
+			// String json = WebUtils.toJson(result);
+			// dataWrap.put("observer", json);
+			// bmachinemap.put("var", dataWrap);
+			// dataWrap.put("model", bmachinemap);
+
 		}
-		dataWrap.put("b", bvarmap);
 		
-		// Collect observer
-		List<Object> result = new ArrayList<Object>();
-		for (ObserverElement o : observerElements) {
-			Map<String, String> predicateObserver = WebUtils.wrap("template",
-					o.getObserverPath(), "data", o.getData());
-			result.add(predicateObserver);
-		}
-		
-		String json = WebUtils.toJson(result);
-		dataWrap.put("observer", json);
-		
-		return dataWrap;
+		return modelMap;
 		
 	}
 	
-	private String getJsonDataForRendering() {
-		return WebUtils.toJson(getDataMapForRendering());
-	}
+//	private String getJsonDataForRendering() {
+		//return WebUtils.toJson(getDataMapForRendering());
+//	}
 	
 	public Object forcerendering(Map<String, String[]> params) {
 		return WebUtils.wrap("cmd", "bms.renderVisualization", "templatefile",
-				templateFileName, "data", getJsonDataForRendering());
+				templateFileName, "data", WebUtils.toJson(getJsonDataForRendering()));
 	}
 	
 	public Object executeOperation(Map<String, String[]> params) {
@@ -179,7 +193,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		File ff = new File(templatePath);
 		templateFileName = ff.getName();
 		return WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
-				templateFileName, "data", getJsonDataForRendering());
+				templateFileName, "data", WebUtils.toJson(getJsonDataForRendering()));
 	}
 	
 	public Object addFormula(Map<String, String[]> params) {
@@ -240,6 +254,7 @@ public class BMotionStudioSession extends AbstractSession implements
 					id, "formula", formula.getCode());
 		
 		} catch (Exception e) {
+			e.printStackTrace();
 			return sendError(
 					id,
 					"Whoops!",
@@ -264,23 +279,46 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	// ----------------------------------------------------------------
 	
-	private void collectBVariables(Trace trace) {
+	private Map<String, Object> getBConstantsAsJson(Trace trace,
+			EventBModel model) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		AbstractElement mainComponent = model.getMainComponent();
+		if (mainComponent instanceof EventBMachine) {
+			EventBMachine machine = (EventBMachine) mainComponent;
+			List<Context> sees = machine.getSees();
+			for (Context context : sees) {
+				List<EventBConstant> constants = context.getConstants();
+				for (EventBConstant c : constants) {
+					EvaluationResult value = c.getValue(currentTrace);
+					if (value != null)
+						map.put(c.getName(), value.getValue());
+				}
+			}
+		}
+		return map;
+	}
+	
+	private Map<String, Object> getBVariablesAsJson(Trace trace,
+			EventBModel model) {
+		Map<String, Object> map = new HashMap<String, Object>();
 		AbstractElement mainComponent = model.getMainComponent();
 		if (mainComponent instanceof EventBMachine) {
 			EventBMachine eventbMachine = (EventBMachine) mainComponent;
 			List<EventBVariable> variables = eventbMachine.getVariables();
 			for (EventBVariable var : variables) {
 				EvaluationResult eval = trace.evalCurrent(var.getExpression());
-				String value = eval.getValue();
-				boolean bvalue = false;
-				if (value.equalsIgnoreCase("TRUE")) {
-					bvalue = true;
-					bvarmap.put(var.getName(), bvalue);
-				} else if (value.equalsIgnoreCase("FALSE")) {
-					bvalue = false;
-					bvarmap.put(var.getName(), bvalue);
-				} else {
-					bvarmap.put(var.getName(), value);
+				if (eval != null) {
+					String value = eval.getValue();
+					boolean bvalue = false;
+					if (value.equalsIgnoreCase("TRUE")) {
+						bvalue = true;
+						map.put(var.getName(), bvalue);
+					} else if (value.equalsIgnoreCase("FALSE")) {
+						bvalue = false;
+						map.put(var.getName(), bvalue);
+					} else {
+						map.put(var.getName(), value);
+					}
 				}
 			}
 		} else if (mainComponent instanceof ClassicalBMachine) {
@@ -290,9 +328,10 @@ public class BMotionStudioSession extends AbstractSession implements
 			for (ClassicalBVariable var : variables) {
 				EvaluationResult eval = trace.evalCurrent(var.getExpression());
 				String value = eval.getValue();
-				bvarmap.put(var.getName(), value);
+				map.put(var.getName(), value);
 			}
 		}
+		return map;
 	}
 	
 	@Override
@@ -302,7 +341,8 @@ public class BMotionStudioSession extends AbstractSession implements
 		super.reload(client, lastinfo, context);
 		
 		submit(WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
-				templateFileName, "data", getJsonDataForRendering()));
+				templateFileName, "data",
+				WebUtils.toJson(getJsonDataForRendering())));
 		
 
 //		List<Object> result = new ArrayList<Object>();
@@ -339,12 +379,11 @@ public class BMotionStudioSession extends AbstractSession implements
 			// Evaluate formulas ...
 			for (FormulaElement f : finalFormulas)
 				evalFormula(f, trace);
-			collectBVariables(trace);
 		}
 		// ... and force rendering
 		submit(WebUtils.wrap("cmd", "bms.renderVisualization", "data",
-				getJsonDataForRendering()));
-		
+				WebUtils.toJson(getJsonDataForRendering())));
+
 	}
 
 	private void evalFormula(FormulaElement f, Trace trace) {

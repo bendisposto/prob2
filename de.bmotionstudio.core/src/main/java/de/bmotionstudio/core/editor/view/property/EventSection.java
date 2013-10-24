@@ -72,8 +72,7 @@ public class EventSection extends AbstractPropertySection implements
 	
 	private Event selectedEvent;
 	
-	private MenuManager contextMenuManager, menuManager,
-			subMenuManager;
+	private MenuManager menuManager, subMenuManager;
 
 	@Override
 	public void setInput(IWorkbenchPart part, ISelection selection) {
@@ -260,6 +259,8 @@ public class EventSection extends AbstractPropertySection implements
 				container.layout();
 			}
 		});
+		
+		createContextMenu(listViewer);
 
 	}
 
@@ -300,62 +301,63 @@ public class EventSection extends AbstractPropertySection implements
 			// Add observer action
 			this.propertySheetPage.getSite().getActionBars()
 					.getToolBarManager().add(action);
-			
-			// Create context menu
-			if (contextMenuManager == null) {
-				contextMenuManager = new MenuManager();
-				contextMenuManager.createContextMenu(listViewer.getControl());
-				contextMenuManager.setRemoveAllWhenShown(true);
-				contextMenuManager.addMenuListener(new IMenuListener() {
-					@SuppressWarnings("unchecked")
-					@Override
-					public void menuAboutToShow(IMenuManager manager) {
-						
-						updateMenuManager((MenuManager) manager,
-								selectedControl, true);
-
-						ISelection selection = listViewer.getSelection();
-						ActionRegistry actionRegistry = (ActionRegistry) getPart()
-								.getAdapter(ActionRegistry.class);
-						
-						if (!selection.isEmpty()) {
-
-							RemoveEventAction removeAction = (RemoveEventAction) actionRegistry
-									.getAction(ActionConstants.ACTION_REMOVE_EVENT);
-							removeAction.setText("Remove Event");
-							removeAction.setControl(selectedControl);
-							removeAction.setEvent(selectedEvent);
-							manager.add(removeAction);
-
-							CopyEventAction copyAction = (CopyEventAction) actionRegistry
-									.getAction(ActionConstants.ACTION_COPY_EVENT);
-							copyAction.setText("Copy Event");
 							
-							IStructuredSelection ss = (IStructuredSelection) selection;
-							List<?> list = ss.toList();
-							copyAction.setList((List<Event>) list);
-							manager.add(copyAction);
-							
-						}
-						
-						PasteEventAction pasteEventAction = (PasteEventAction) actionRegistry
-								.getAction(ActionConstants.ACTION_PASTE_EVENT);
-						pasteEventAction.setText("Paste Event");
-						pasteEventAction.setControl(selectedControl);
-						pasteEventAction.update();
-						manager.add(pasteEventAction);
-
-					}
-				});
-				listViewer.getControl().setMenu(contextMenuManager.getMenu());
-			}
-					
 		}
 
 		this.propertySheetPage.getSite().getActionBars().getToolBarManager()
 				.update(true);
 		this.propertySheetPage.getSite().getActionBars().getMenuManager()
 				.update(true);
+
+	}
+	
+	private void createContextMenu(ListViewer viewer) {
+
+		MenuManager contextMenuManager = new MenuManager();
+
+		contextMenuManager.createContextMenu(listViewer.getControl());
+		contextMenuManager.setRemoveAllWhenShown(true);
+		contextMenuManager.addMenuListener(new IMenuListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void menuAboutToShow(IMenuManager manager) {
+
+				updateMenuManager((MenuManager) manager, selectedControl, true);
+
+				ISelection selection = listViewer.getSelection();
+				ActionRegistry actionRegistry = (ActionRegistry) getPart()
+						.getAdapter(ActionRegistry.class);
+
+				if (!selection.isEmpty()) {
+
+					RemoveEventAction removeAction = (RemoveEventAction) actionRegistry
+							.getAction(ActionConstants.ACTION_REMOVE_EVENT);
+					removeAction.setText("Remove Event");
+					removeAction.setControl(selectedControl);
+					removeAction.setEvent(selectedEvent);
+					manager.add(removeAction);
+
+					CopyEventAction copyAction = (CopyEventAction) actionRegistry
+							.getAction(ActionConstants.ACTION_COPY_EVENT);
+					copyAction.setText("Copy Event");
+
+					IStructuredSelection ss = (IStructuredSelection) selection;
+					List<?> list = ss.toList();
+					copyAction.setList((List<Event>) list);
+					manager.add(copyAction);
+
+				}
+
+				PasteEventAction pasteEventAction = (PasteEventAction) actionRegistry
+						.getAction(ActionConstants.ACTION_PASTE_EVENT);
+				pasteEventAction.setText("Paste Event");
+				pasteEventAction.setControl(selectedControl);
+				pasteEventAction.update();
+				manager.add(pasteEventAction);
+
+			}
+		});
+		viewer.getControl().setMenu(contextMenuManager.getMenu());
 
 	}
 		

@@ -75,8 +75,7 @@ public class ObserverSection extends AbstractPropertySection implements
 	
 	private Observer selectedObserver;
 	
-	private MenuManager contextMenuManager, observerMenuManager,
-			observerSubMenuManager;
+	private MenuManager observerMenuManager, observerSubMenuManager;
 
 	@Override
 	public void setInput(IWorkbenchPart part, ISelection selection) {
@@ -263,6 +262,8 @@ public class ObserverSection extends AbstractPropertySection implements
 				container.layout();
 			}
 		});
+		
+		createContextMenu(listViewer);
 
 	}
 
@@ -303,55 +304,6 @@ public class ObserverSection extends AbstractPropertySection implements
 			// Add observer action
 			this.propertySheetPage.getSite().getActionBars()
 					.getToolBarManager().add(observerAction);
-
-			// Create context menu
-			if (contextMenuManager == null) {
-				contextMenuManager = new MenuManager();
-				contextMenuManager.createContextMenu(listViewer.getControl());
-				contextMenuManager.setRemoveAllWhenShown(true);
-				contextMenuManager.addMenuListener(new IMenuListener() {
-					@SuppressWarnings("unchecked")
-					@Override
-					public void menuAboutToShow(IMenuManager manager) {
-						
-						updateMenuManager((MenuManager) manager,
-								selectedControl, true);
-
-						ISelection selection = listViewer.getSelection();
-						ActionRegistry actionRegistry = (ActionRegistry) getPart()
-								.getAdapter(ActionRegistry.class);
-						
-						if (!selection.isEmpty()) {
-
-							RemoveObserverAction removeObserverAction = (RemoveObserverAction) actionRegistry
-									.getAction(ActionConstants.ACTION_REMOVE_OBSERVER);
-							removeObserverAction.setText("Remove Observer");
-							removeObserverAction.setControl(selectedControl);
-							removeObserverAction.setObserver(selectedObserver);
-							manager.add(removeObserverAction);
-
-							CopyObserverAction copyObserverAction = (CopyObserverAction) actionRegistry
-									.getAction(ActionConstants.ACTION_COPY_OBSERVER);
-							copyObserverAction.setText("Copy Observer");
-							
-							IStructuredSelection ss = (IStructuredSelection) selection;
-							List<?> list = ss.toList();
-							copyObserverAction.setList((List<Observer>) list);
-							manager.add(copyObserverAction);
-							
-						}
-						
-						PasteObserverAction pasteObserverAction = (PasteObserverAction) actionRegistry
-								.getAction(ActionConstants.ACTION_PASTE_OBSERVER);
-						pasteObserverAction.setText("Paste Observer");
-						pasteObserverAction.setControl(selectedControl);
-						pasteObserverAction.update();
-						manager.add(pasteObserverAction);
-						
-					}
-				});
-				listViewer.getControl().setMenu(contextMenuManager.getMenu());
-			}
 					
 		}
 
@@ -359,6 +311,55 @@ public class ObserverSection extends AbstractPropertySection implements
 				.update(true);
 		this.propertySheetPage.getSite().getActionBars().getMenuManager()
 				.update(true);
+
+	}
+	
+	private void createContextMenu(ListViewer viewer) {
+
+		MenuManager contextMenuManager = new MenuManager();
+		contextMenuManager.createContextMenu(listViewer.getControl());
+		contextMenuManager.setRemoveAllWhenShown(true);
+		contextMenuManager.addMenuListener(new IMenuListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void menuAboutToShow(IMenuManager manager) {
+
+				updateMenuManager((MenuManager) manager, selectedControl, true);
+
+				ISelection selection = listViewer.getSelection();
+				ActionRegistry actionRegistry = (ActionRegistry) getPart()
+						.getAdapter(ActionRegistry.class);
+
+				if (!selection.isEmpty()) {
+
+					RemoveObserverAction removeObserverAction = (RemoveObserverAction) actionRegistry
+							.getAction(ActionConstants.ACTION_REMOVE_OBSERVER);
+					removeObserverAction.setText("Remove Observer");
+					removeObserverAction.setControl(selectedControl);
+					removeObserverAction.setObserver(selectedObserver);
+					manager.add(removeObserverAction);
+
+					CopyObserverAction copyObserverAction = (CopyObserverAction) actionRegistry
+							.getAction(ActionConstants.ACTION_COPY_OBSERVER);
+					copyObserverAction.setText("Copy Observer");
+
+					IStructuredSelection ss = (IStructuredSelection) selection;
+					List<?> list = ss.toList();
+					copyObserverAction.setList((List<Observer>) list);
+					manager.add(copyObserverAction);
+
+				}
+
+				PasteObserverAction pasteObserverAction = (PasteObserverAction) actionRegistry
+						.getAction(ActionConstants.ACTION_PASTE_OBSERVER);
+				pasteObserverAction.setText("Paste Observer");
+				pasteObserverAction.setControl(selectedControl);
+				pasteObserverAction.update();
+				manager.add(pasteObserverAction);
+
+			}
+		});
+		viewer.getControl().setMenu(contextMenuManager.getMenu());
 
 	}
 		
