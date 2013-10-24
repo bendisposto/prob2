@@ -4,6 +4,10 @@ Events = (function() {
 
 	$(document).ready(function() {
 		$('.dropdown-toggle').dropdown()
+
+		$('.dropdown-menu input').click(function(e) {
+			e.stopPropagation()
+		})
 	});
 
 	function setContent(ops_string) {
