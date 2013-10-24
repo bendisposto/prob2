@@ -199,7 +199,6 @@ class Trace {
 			OpInfo op = ops.get(0)
 
 			StateId newState = stateSpace.getState(op)
-			stateSpace.explore(ops.get(0))
 
 			current = new TraceElement(currentState,newState,op,previous)
 			currentState = newState

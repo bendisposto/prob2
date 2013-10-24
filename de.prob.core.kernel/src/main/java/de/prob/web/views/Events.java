@@ -19,10 +19,11 @@ import de.prob.web.WebUtils;
 @Singleton
 public class Events extends AbstractSession implements IAnimationChangeListener {
 
+	Trace currentTrace;
 	private final AnimationSelector selector;
 
 	@Inject
-	public Events(AnimationSelector selector) {
+	public Events(final AnimationSelector selector) {
 		this.selector = selector;
 		selector.registerAnimationChangeListener(this);
 
@@ -35,7 +36,8 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		public final List<String> params;
 		public final String id;
 
-		public Operation(String id, String name, List<String> params) {
+		public Operation(final String id, final String name,
+				final List<String> params) {
 			this.id = id;
 			this.name = name;
 			this.params = params;
@@ -43,7 +45,8 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	}
 
 	@Override
-	public void traceChange(Trace trace) {
+	public void traceChange(final Trace trace) {
+		currentTrace = trace;
 		int c = 0;
 		Set<OpInfo> ops = trace.getNextTransitions();
 		Operation[] res = new Operation[ops.size()];
@@ -54,27 +57,47 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		}
 		String json = WebUtils.toJson(res);
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.setContent",
-				"ops", json);
+				"ops", json, "canGoBack", currentTrace.canGoBack(),
+				"canGoForward", currentTrace.canGoForward());
 		submit(wrap);
 	}
 
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "/ui/eventview/index.html");
 	}
 
-	public Object execute(Map<String, String[]> params) {
+	public Object execute(final Map<String, String[]> params) {
 		String id = params.get("id")[0];
-		Trace currentTrace = selector.getCurrentTrace();
 		final Trace newTrace = currentTrace.add(id);
 		selector.replaceTrace(currentTrace, newTrace);
 		return null;
 	}
 
 	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
 		traceChange(selector.getCurrentTrace());
+	}
 
+	public Object random(final Map<String, String[]> params) {
+		int num = Integer.parseInt(params.get("num")[0]);
+		Trace newTrace = currentTrace.randomAnimation(num);
+		selector.replaceTrace(currentTrace, newTrace);
+		return null;
+	}
+
+	public Object back(final Map<String, String[]> params) {
+		Trace back = currentTrace.back();
+		selector.replaceTrace(currentTrace, back);
+		return null;
+	}
+
+	public Object forward(final Map<String, String[]> params) {
+		Trace forward = currentTrace.forward();
+		selector.replaceTrace(currentTrace, forward);
+		return null;
 	}
 }
