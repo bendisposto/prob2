@@ -155,6 +155,9 @@ public class B extends AbstractBox {
 		if (evalResultList.size() > 1) {
 			return pack(makeHtml(id, "*ProB returned multiple Results.*"));
 		}
+		if (evalResultList.size() == 0) {
+			return pack(makeHtml(id, "*ProB returned no Results.*"));
+		}
 
 		EvaluationResult evalResult = evalResultList.get(0);
 		if (evalResult.hasError()) {
@@ -162,10 +165,8 @@ public class B extends AbstractBox {
 					"*Evaluation Error: " + evalResult.getErrors() + "*"));
 		}
 		res.add(makeHtml(id, WebUtils.render("ui/worksheet/groovy_box.html",
-				WebUtils.wrap("id", id, "result", evalResult.getValue(),
-						"output", ""))));
+				WebUtils.wrap("id", id, "result", evalResult, "output", ""))));
 		return res;
-
 	}
 
 	@Override
