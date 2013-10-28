@@ -1,6 +1,19 @@
 package de.prob.web.worksheet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+
+import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.StateId;
+import de.prob.statespace.StateSpace;
+import de.prob.web.WebUtils;
 
 public class B extends AbstractBox {
 
@@ -114,6 +127,46 @@ public class B extends AbstractBox {
 			}
 		}
 	*/
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object> render(BindingsSnapshot snapshot) {
+		ScriptEngine groovy = owner.getGroovy();
+
+		AnimationSelector animations = (AnimationSelector) groovy.getBindings(
+				ScriptContext.GLOBAL_SCOPE).get("animations");
+		if (animations.getTraces().size() == 0) {
+			return pack(makeHtml(id, "*There is no animation started.*"));
+		}
+
+		ArrayList<Object> res = new ArrayList<Object>();
+
+		StateSpace space = animations.getCurrentTrace().getStateSpace();
+		StateId curStateId = animations.getCurrentTrace().getCurrentState();
+		//
+		if (!space.canBeEvaluated(curStateId)) {
+			return pack(makeHtml(id, "*Current State can not be evaluated*"));
+		}
+		ArrayList<IEvalElement> evalElementList = new ArrayList<IEvalElement>();
+
+		evalElementList.add(new EventB(content));
+		List<EvaluationResult> evalResultList = space.eval(curStateId,
+				evalElementList);
+		if (evalResultList.size() > 1) {
+			return pack(makeHtml(id, "*ProB returned multiple Results.*"));
+		}
+
+		EvaluationResult evalResult = evalResultList.get(0);
+		if (evalResult.hasError()) {
+			return pack(makeHtml(id,
+					"*Evaluation Error: " + evalResult.getErrors() + "*"));
+		}
+		res.add(makeHtml(id, WebUtils.render("ui/worksheet/groovy_box.html",
+				WebUtils.wrap("id", id, "result", evalResult.getValue(),
+						"output", ""))));
+		return res;
+
+	}
 
 	@Override
 	public void setContent(final Map<String, String[]> data) {
