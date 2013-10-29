@@ -30,3 +30,8 @@ ul {
     border-bottom-style: solid;
     border-bottom-width: 1px;
 }
+
+.notEnabled {
+    font-style: italic;
+    color: #888;
+}

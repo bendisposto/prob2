@@ -75,7 +75,7 @@ Events = (function() {
             v.params = v.params.join(", ")
             e.append(session.render("/ui/eventview/operation.html", v))
         }
-        $(".operation").click(function(e) {
+        $(".enabled").click(function(e) {
             var id = e.currentTarget.id
             id = id.substring(2,id.length)
             console.log(id)

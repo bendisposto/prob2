@@ -3,6 +3,8 @@ package de.prob.web.views;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +14,8 @@ import javax.servlet.AsyncContext;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.model.eventb.Event;
+import de.prob.model.eventb.EventParameter;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.BEvent;
@@ -31,6 +35,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	private final AnimationSelector selector;
 	AbstractModel currentModel;
 	List<String> opNames = new ArrayList<String>();
+	Map<String, List<String>> opToParams = new HashMap<String, List<String>>();
 	Comparator<Operation> sorter = new ModelOrder(new ArrayList<String>());
 
 	@Inject
@@ -79,10 +84,17 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		currentTrace = trace;
 		Set<OpInfo> ops = trace.getNextTransitions();
 		List<Operation> res = new ArrayList<Operation>(ops.size());
+		Set<String> notEnabled = new HashSet<String>(opNames);
 		for (OpInfo opInfo : ops) {
 			String name = opInfo.name;
+			notEnabled.remove(name);
 			Operation o = new Operation(opInfo.id, name, opInfo.params, true);
 			res.add(o);
+		}
+		for (String s : notEnabled) {
+			if (!s.equals("INITIALISATION")) {
+				res.add(new Operation(s, s, opToParams.get(s), false));
+			}
 		}
 		Collections.sort(res, sorter);
 		String json = WebUtils.toJson(res);
@@ -97,11 +109,23 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		currentModel = trace.getModel();
 		AbstractElement mainComponent = currentModel.getMainComponent();
 		opNames = new ArrayList<String>();
+		opToParams = new HashMap<String, List<String>>();
 		if (mainComponent instanceof Machine) {
 			ModelElementList<BEvent> events = mainComponent
 					.getChildrenOfType(BEvent.class);
 			for (BEvent e : events) {
 				opNames.add(e.getName());
+
+				List<String> pList = new ArrayList<String>();
+				if (e instanceof Event) {
+					for (EventParameter eP : ((Event) e).getParameters()) {
+						pList.add(eP.getName());
+					}
+				} else if (e instanceof de.prob.model.classicalb.Operation) {
+					pList.addAll(((de.prob.model.classicalb.Operation) e)
+							.getParameters());
+				}
+				opToParams.put(e.getName(), pList);
 			}
 		}
 		if (sorter instanceof ModelOrder) {
