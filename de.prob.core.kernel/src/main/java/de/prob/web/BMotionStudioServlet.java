@@ -3,7 +3,6 @@ package de.prob.web;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -125,13 +124,11 @@ public class BMotionStudioServlet extends HttpServlet {
 		return map;
 	}
 	
-	private Map<String, Object> getJsonDataForRendering() {
+	private Map<String, Object> getJsonDataForRendering(Trace currentTrace) {
 
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		Map<String, Object> fMap = new HashMap<String, Object>();
 		modelMap.put("model", fMap);
-
-		Trace currentTrace = selector.getCurrentTrace();
 		AbstractModel model = currentTrace.getModel();
 		
 		if (model instanceof EventBModel) {
@@ -231,8 +228,6 @@ public class BMotionStudioServlet extends HttpServlet {
 		// jsonFromFile = JSON.parse(readFile(jsonfile.getPath()));
 		// }
 		
-		Map<String, Object> jsonDataForRendering = getJsonDataForRendering();
-
 		// Set correct mimeType
 		String mimeType = getServletContext().getMimeType(filepath);
 		resp.setContentType(mimeType);
@@ -240,17 +235,17 @@ public class BMotionStudioServlet extends HttpServlet {
 		// Prepare streams.
 		BufferedInputStream input = null;
 		BufferedOutputStream output = null;
-		InputStream stream = null;
+		InputStream stream = new FileInputStream(filepath);
 		
 		// TODO: This is ugly ... we need a better method to check the file
 		// type
-		if (filename.endsWith(".html") && jsonDataForRendering != null) {
+		Trace currentTrace = selector.getCurrentTrace();
+		if (filename.endsWith(".html") && currentTrace != null) {
+			Map<String, Object> jsonDataForRendering = getJsonDataForRendering(currentTrace);
 			String render = WebUtils.render(filepath, jsonDataForRendering);
 			stream = new ByteArrayInputStream(render.getBytes());
-		} else {
-			stream = new FileInputStream(filepath);
 		}
-
+		
 		try {
 			// Open streams.
 			input = new BufferedInputStream(stream, DEFAULT_BUFFER_SIZE);
@@ -262,25 +257,26 @@ public class BMotionStudioServlet extends HttpServlet {
 			while ((length = input.read(buffer)) > 0) {
 				output.write(buffer, 0, length);
 			}
+			output.flush();
 		} finally {
 			// Gently close streams.
-			close(output);
-			close(input);
+			// close(output);
+			// close(input);
 		}
 
 	}
 
-	private void close(Closeable resource) {
-		if (resource != null) {
-			try {
-				resource.close();
-			} catch (IOException e) {
-				// Do your thing with the exception. Print it, log it or mail
-				// it.
-				e.printStackTrace();
-			}
-		}
-	}
+	// private void close(Closeable resource) {
+	// if (resource != null) {
+	// try {
+	// resource.close();
+	// } catch (IOException e) {
+	// // Do your thing with the exception. Print it, log it or mail
+	// // it.
+	// e.printStackTrace();
+	// }
+	// }
+	// }
 	
 	private class EvalExpression implements Function<String, Object> {
 
