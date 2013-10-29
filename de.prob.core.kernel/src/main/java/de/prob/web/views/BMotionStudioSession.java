@@ -15,6 +15,7 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
+import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -36,8 +37,8 @@ public class BMotionStudioSession extends AbstractSession implements
 		this.selector = selector;
 		currentTrace = selector.getCurrentTrace();
 		if (currentTrace == null) {
-			// throw new AnimationNotLoadedException(
-			// "Please load model before opening Value over Time visualization");
+			throw new AnimationNotLoadedException(
+					"Please load model before opening a BMotion Studio visualization and than reload page.");
 		} else {
 			model = currentTrace.getModel();
 			selector.registerAnimationChangeListener(this);
