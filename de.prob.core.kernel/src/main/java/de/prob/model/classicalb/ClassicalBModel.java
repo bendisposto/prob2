@@ -2,7 +2,6 @@ package de.prob.model.classicalb;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.google.inject.Inject;
@@ -15,6 +14,7 @@ import de.prob.model.eventb.BStateSchema;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.StateSchema;
 import de.prob.statespace.StateSpace;
@@ -43,7 +43,7 @@ public class ClassicalBModel extends AbstractModel {
 		mainMachine = d.build(mainast);
 
 		graph.addVertex(mainMachine.getName());
-		Set<ClassicalBMachine> machines = new LinkedHashSet<ClassicalBMachine>();
+		ModelElementList<ClassicalBMachine> machines = new ModelElementList<ClassicalBMachine>();
 		machines.add(mainMachine);
 
 		boolean fpReached;

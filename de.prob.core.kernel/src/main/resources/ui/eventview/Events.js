@@ -1,6 +1,7 @@
 Events = (function() {
     var extern = {}
-    var session = Session();
+    var session = Session()
+    var sortMode = "normal"
 
     $(document).ready(function() {
         $('.dropdown-toggle').dropdown()
@@ -45,7 +46,25 @@ Events = (function() {
             })
         })
 
+        $("#sort").click(function(e) {
+            changeSortMode()
+            session.sendCmd("sort", {
+                "sortMode" : sortMode,
+                "client" : extern.client
+            })
+        })
+
     })
+
+    function changeSortMode() {
+        if( sortMode === "normal" ) {
+            sortMode = "aToZ"
+        } else if( sortMode === "aToZ" ) {
+            sortMode = "zToA"
+        } else if( sortMode === "zToA" ) {
+            sortMode = "normal"
+        }
+    }
 
     function setContent(ops_string) {
         var ops = JSON.parse(ops_string);
@@ -57,7 +76,8 @@ Events = (function() {
             e.append(session.render("/ui/eventview/operation.html", v))
         }
         $(".operation").click(function(e) {
-            var id = e.target.getAttribute("operation")
+            var id = e.currentTarget.id
+            id = id.substring(2,id.length)
             console.log(id)
             session.sendCmd("execute", {
                 "id" : id,
@@ -82,12 +102,17 @@ Events = (function() {
         })
     }
 
+    function setSortMode(mode) {
+        this.sortMode = mode
+    }
+
     extern.client = ""
     extern.init = session.init
     extern.setContent = function(data) {
         setContent(data.ops)
         setBackEnabled(data.canGoBack)
         setForwardEnabled(data.canGoForward)
+        setSortMode(data.sortMode)
     }
 
     return extern;

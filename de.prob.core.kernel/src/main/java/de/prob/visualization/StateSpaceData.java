@@ -45,9 +45,9 @@ public class StateSpaceData extends AbstractData {
 
 	private List<IEvalElement> extractVariables(final StateSpace s) {
 		List<IEvalElement> vars = new ArrayList<IEvalElement>();
-		Set<Machine> ms = s.getModel().getChildrenOfType(Machine.class);
+		List<Machine> ms = s.getModel().getChildrenOfType(Machine.class);
 		for (Machine machine : ms) {
-			Set<Variable> vs = machine.getChildrenOfType(Variable.class);
+			List<Variable> vs = machine.getChildrenOfType(Variable.class);
 			for (Variable variable : vs) {
 				vars.add(variable.getEvaluate());
 			}

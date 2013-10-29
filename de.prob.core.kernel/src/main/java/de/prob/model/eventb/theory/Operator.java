@@ -26,6 +26,7 @@ import org.eventb.internal.core.ast.extension.ExtensionKind;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.ModelElementList;
 import de.prob.unicode.UnicodeTranslator;
 
 public class Operator extends AbstractElement {
@@ -38,7 +39,7 @@ public class Operator extends AbstractElement {
 	private IOperatorDefinition definition;
 	private final String theoryName;
 	private IFormulaExtension extension;
-	private List<OperatorArgument> operatorArguments;
+	private ModelElementList<OperatorArgument> operatorArguments;
 	private final String groupId;
 	private final EventB wd;
 	private final EventB type;
@@ -64,7 +65,7 @@ public class Operator extends AbstractElement {
 		this.predicate = new EventB(predicate, typeEnv);
 	}
 
-	public void addArguments(final List<OperatorArgument> arguments) {
+	public void addArguments(final ModelElementList<OperatorArgument> arguments) {
 		put(OperatorArgument.class, arguments);
 		operatorArguments = arguments;
 	}

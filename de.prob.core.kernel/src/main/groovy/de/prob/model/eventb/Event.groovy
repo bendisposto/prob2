@@ -4,15 +4,16 @@ import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Action
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Guard
+import de.prob.model.representation.ModelElementList
 
 public class Event extends BEvent {
 
 	def EventType type
-	def List<Event> refines
-	def List<EventBAction> actions
-	def List<EventBGuard> guards
-	def List<EventParameter> parameters
-	def List<Witness> witnesses
+	def ModelElementList<Event> refines
+	def ModelElementList<EventBAction> actions
+	def ModelElementList<EventBGuard> guards
+	def ModelElementList<EventParameter> parameters
+	def ModelElementList<Witness> witnesses
 
 	public enum EventType {
 		ORDINARY, CONVERGENT, ANTICIPATED
@@ -23,27 +24,27 @@ public class Event extends BEvent {
 		this.type = type;
 	}
 
-	public void addRefines(final List<Event> refines) {
+	public void addRefines(final ModelElementList<Event> refines) {
 		put(Event.class, refines);
 		this.refines = refines
 	}
 
-	public void addGuards(final List<EventBGuard> guards) {
+	public void addGuards(final ModelElementList<EventBGuard> guards) {
 		put(Guard.class, guards);
 		this.guards = guards
 	}
 
-	public void addActions(final List<EventBAction> actions) {
+	public void addActions(final ModelElementList<EventBAction> actions) {
 		put(Action.class, actions);
 		this.actions = actions
 	}
 
-	public void addWitness(final List<Witness> witness) {
+	public void addWitness(final ModelElementList<Witness> witness) {
 		put(Witness.class, witness);
 		this.witnesses = witness
 	}
 
-	public void addParameters(final List<EventParameter> parameters) {
+	public void addParameters(final ModelElementList<EventParameter> parameters) {
 		put(EventParameter.class, parameters);
 		this.parameters = parameters
 	}

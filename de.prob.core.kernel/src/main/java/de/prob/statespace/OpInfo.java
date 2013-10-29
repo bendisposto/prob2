@@ -123,8 +123,9 @@ public class OpInfo {
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
-		if (destTerm instanceof IntegerPrologTerm)
+		if (destTerm instanceof IntegerPrologTerm) {
 			return BindingGenerator.getInteger(destTerm).getValue().toString();
+		}
 		return destTerm.getFunctor();
 	}
 
@@ -170,8 +171,9 @@ public class OpInfo {
 		}
 
 		if (m instanceof CSPModel) {
-			if (params.isEmpty())
+			if (params.isEmpty()) {
 				return name;
+			}
 			return name + "." + Joiner.on(".").join(getParams());
 		}
 		return name + "(" + Joiner.on(",").join(getParams()) + ")";
@@ -183,8 +185,9 @@ public class OpInfo {
 			OpInfo that = (OpInfo) obj;
 			boolean b = that.getId().equals(id);
 			return b;
-		} else
+		} else {
 			return false;
+		}
 	}
 
 	@Override
@@ -193,14 +196,16 @@ public class OpInfo {
 	}
 
 	public boolean isSame(final OpInfo that) {
-		if (!that.isEvaluated())
+		if (!that.isEvaluated()) {
 			return false;
+		}
 		return that.getName().equals(name) && that.getParams().equals(params);
 	}
 
 	public OpInfo ensureEvaluated(final StateSpace s) {
-		if (evaluated)
+		if (evaluated) {
 			return this;
+		}
 		GetOpFromId command = new GetOpFromId(getId());
 		s.execute(command);
 		name = command.getName();

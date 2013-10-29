@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,9 +97,9 @@ public class ClassicalBFactory {
 	}
 
 	private void subscribeVariables(final ClassicalBModel m) {
-		Set<Machine> machines = m.getChildrenOfType(Machine.class);
+		List<Machine> machines = m.getChildrenOfType(Machine.class);
 		for (Machine machine : machines) {
-			Set<Variable> childrenOfType = machine
+			List<Variable> childrenOfType = machine
 					.getChildrenOfType(Variable.class);
 			for (Variable variable : childrenOfType) {
 				m.getStatespace().subscribe(this, variable.getExpression());

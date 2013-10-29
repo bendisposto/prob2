@@ -37,27 +37,27 @@ import de.prob.web.WebUtils;
 
 public class BMotionStudioSession extends AbstractSession implements
 		IAnimationChangeListener {
-	
-	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
-	
-	private Trace currentTrace;
-	
-	private Map<String, IEvalElement> formulas = new ConcurrentHashMap<String, IEvalElement>();
 
-	private List<FormulaElement> finalFormulas = new CopyOnWriteArrayList<BMotionStudioSession.FormulaElement>();
-	
-//	private Map<String, Object> bmachinemap = new HashMap<String, Object>();
-	
-	private List<ObserverElement> observerElements = new ArrayList<ObserverElement>();
-	
+	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
+
+	private Trace currentTrace;
+
+	private final Map<String, IEvalElement> formulas = new ConcurrentHashMap<String, IEvalElement>();
+
+	private final List<FormulaElement> finalFormulas = new CopyOnWriteArrayList<BMotionStudioSession.FormulaElement>();
+
+	// private Map<String, Object> bmachinemap = new HashMap<String, Object>();
+
+	private final List<ObserverElement> observerElements = new ArrayList<ObserverElement>();
+
 	private AbstractModel model;
-	
-	private AnimationSelector selector;
-	
+
+	private final AnimationSelector selector;
+
 	private String templateFileName;
-	
+
 	@Inject
-	public BMotionStudioSession(AnimationSelector selector) {
+	public BMotionStudioSession(final AnimationSelector selector) {
 		this.selector = selector;
 		currentTrace = selector.getCurrentTrace();
 		if (currentTrace == null) {
@@ -73,9 +73,10 @@ public class BMotionStudioSession extends AbstractSession implements
 			selector.registerAnimationChangeListener(this);
 		}
 	}
-	
+
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		Object scope = WebUtils
 				.wrap("clientid", clientid, "id", UUID.randomUUID().toString(),
 						"workspace", "/home/lukas/.prob/bms/");
@@ -85,13 +86,13 @@ public class BMotionStudioSession extends AbstractSession implements
 	// ----------------------------------------------------------------
 	// Rendering
 	// ----------------------------------------------------------------
-	
+
 	private Map<String, Object> getJsonDataForRendering() {
-		
-		Map<String,Object> modelMap = new HashMap<String, Object>();	
-		Map<String,Object> fMap = new HashMap<String, Object>();
+
+		Map<String, Object> modelMap = new HashMap<String, Object>();
+		Map<String, Object> fMap = new HashMap<String, Object>();
 		modelMap.put("model", fMap);
-		
+
 		if (model instanceof EventBModel) {
 
 			EventBModel eventbModel = (EventBModel) model;
@@ -101,11 +102,11 @@ public class BMotionStudioSession extends AbstractSession implements
 			fMap.put("variables", bVariablesAsJson);
 			Map<String, Object> bConstantsAsJson = getBConstantsAsJson(
 					currentTrace, eventbModel);
-			
-//			List<Object> constantList = new ArrayList<Object>();
-//			bConstantsAsJson.put("list", constantList);
+
+			// List<Object> constantList = new ArrayList<Object>();
+			// bConstantsAsJson.put("list", constantList);
 			fMap.put("constants", bConstantsAsJson);
-			
+
 			// Collect observer
 			// List<Object> result = new ArrayList<Object>();
 			// for (ObserverElement o : observerElements) {
@@ -120,47 +121,50 @@ public class BMotionStudioSession extends AbstractSession implements
 			// dataWrap.put("model", bmachinemap);
 
 		}
-		
+
 		return modelMap;
-		
+
 	}
-	
-//	private String getJsonDataForRendering() {
-		//return WebUtils.toJson(getDataMapForRendering());
-//	}
-	
-	public Object forcerendering(Map<String, String[]> params) {
+
+	// private String getJsonDataForRendering() {
+	// return WebUtils.toJson(getDataMapForRendering());
+	// }
+
+	public Object forcerendering(final Map<String, String[]> params) {
 		return WebUtils.wrap("cmd", "bms.renderVisualization", "templatefile",
-				templateFileName, "data", WebUtils.toJson(getJsonDataForRendering()));
+				templateFileName, "data",
+				WebUtils.toJson(getJsonDataForRendering()));
 	}
-	
-	public Object executeOperation(Map<String, String[]> params) {
+
+	public Object executeOperation(final Map<String, String[]> params) {
 		String op = params.get("op")[0];
 		String predicate = "1=1";
-		if(params.get("predicate") != null)
+		if (params.get("predicate") != null) {
 			predicate = params.get("predicate")[0];
+		}
 		Trace currentTrace = selector.getCurrentTrace();
 		try {
-			if(predicate == null)
+			if (predicate == null) {
 				predicate = "1=1";
-			Trace newTrace = currentTrace.add(op,predicate);
+			}
+			Trace newTrace = currentTrace.add(op, predicate);
 			selector.replaceTrace(currentTrace, newTrace);
 		} catch (BException e) {
 			e.printStackTrace();
 		}
-//		Set<OpInfo> ops = currentTrace.getNextTransitions();
-//		for (OpInfo opInfo : ops) {
-//			String name = opInfo.name;
-//			if (name.equals(op)) {
-//				Trace newTrace = currentTrace.add(opInfo.id);
-//				selector.replaceTrace(currentTrace, newTrace);
-//			}
-//		}
+		// Set<OpInfo> ops = currentTrace.getNextTransitions();
+		// for (OpInfo opInfo : ops) {
+		// String name = opInfo.name;
+		// if (name.equals(op)) {
+		// Trace newTrace = currentTrace.add(opInfo.id);
+		// selector.replaceTrace(currentTrace, newTrace);
+		// }
+		// }
 		return null;
 	}
-	
+
 	// ----------------------------------------------------------------
-	
+
 	// ----------------------------------------------------------------
 	// Managing Formulas
 	// ----------------------------------------------------------------
@@ -175,28 +179,29 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 		return WebUtils.wrap("cmd", "bms.formulaRemoved", "id", id);
 	}
-	
-	public Object clearObserver(Map<String, String[]> params) {
+
+	public Object clearObserver(final Map<String, String[]> params) {
 		observerElements.clear();
 		return null;
 	}
-	
-	public Object addObserver(Map<String, String[]> params) {
+
+	public Object addObserver(final Map<String, String[]> params) {
 		ObserverElement observerElement = new ObserverElement(
 				params.get("observerPath")[0], params.get("json")[0]);
 		observerElements.add(observerElement);
 		return null;
 	}
-	
-	public Object setTemplate(Map<String, String[]> params) {
+
+	public Object setTemplate(final Map<String, String[]> params) {
 		String templatePath = params.get("path")[0];
 		File ff = new File(templatePath);
 		templateFileName = ff.getName();
 		return WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
-				templateFileName, "data", WebUtils.toJson(getJsonDataForRendering()));
+				templateFileName, "data",
+				WebUtils.toJson(getJsonDataForRendering()));
 	}
-	
-	public Object addFormula(Map<String, String[]> params) {
+
+	public Object addFormula(final Map<String, String[]> params) {
 
 		String id = params.get("id")[0];
 		Boolean newFormula = Boolean.valueOf(params.get("newFormula")[0]);
@@ -242,17 +247,17 @@ public class BMotionStudioSession extends AbstractSession implements
 						"formula", formula.getCode(), "nextId", UUID
 								.randomUUID().toString());
 			}
-			
+
 			for (FormulaElement f : finalFormulas) {
 				if (f.id.equals(id)) {
-					f.formula = formula;					
+					f.formula = formula;
 					evalFormula(f, currentTrace);
 				}
 			}
-			
-			return WebUtils.wrap("cmd", "bms.formulaRestored", "id",
-					id, "formula", formula.getCode());
-		
+
+			return WebUtils.wrap("cmd", "bms.formulaRestored", "id", id,
+					"formula", formula.getCode());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return sendError(
@@ -260,10 +265,10 @@ public class BMotionStudioSession extends AbstractSession implements
 					"Whoops!",
 					"Could not add formula because evaluation of the formula threw an exception of type "
 							+ e.getClass().getSimpleName(), "alert-danger");
-		}		
-			
+		}
+
 	}
-	
+
 	public Object parse(final Map<String, String[]> params) {
 		String f = params.get("formula")[0];
 		String id = params.get("id")[0];
@@ -276,11 +281,11 @@ public class BMotionStudioSession extends AbstractSession implements
 			return WebUtils.wrap("cmd", "bms.parseError", "id", id);
 		}
 	}
-	
+
 	// ----------------------------------------------------------------
-	
-	private Map<String, Object> getBConstantsAsJson(Trace trace,
-			EventBModel model) {
+
+	private Map<String, Object> getBConstantsAsJson(final Trace trace,
+			final EventBModel model) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		AbstractElement mainComponent = model.getMainComponent();
 		if (mainComponent instanceof EventBMachine) {
@@ -290,16 +295,17 @@ public class BMotionStudioSession extends AbstractSession implements
 				List<EventBConstant> constants = context.getConstants();
 				for (EventBConstant c : constants) {
 					EvaluationResult value = c.getValue(currentTrace);
-					if (value != null)
+					if (value != null) {
 						map.put(c.getName(), value.getValue());
+					}
 				}
 			}
 		}
 		return map;
 	}
-	
-	private Map<String, Object> getBVariablesAsJson(Trace trace,
-			EventBModel model) {
+
+	private Map<String, Object> getBVariablesAsJson(final Trace trace,
+			final EventBModel model) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		AbstractElement mainComponent = model.getMainComponent();
 		if (mainComponent instanceof EventBMachine) {
@@ -333,52 +339,52 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 		return map;
 	}
-	
+
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		
+
 		super.reload(client, lastinfo, context);
-		
+
 		submit(WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
 				templateFileName, "data",
 				WebUtils.toJson(getJsonDataForRendering())));
-		
 
-//		List<Object> result = new ArrayList<Object>();
-//		for (FormulaElement formula : finalFormulas) {
-//			result.add(WebUtils.wrap("id", formula.id, "formula",
-//					formula.formula.getCode()));
-//		}
-//		
-//		Map<String, String> wrap = WebUtils.wrap("cmd", "bms.restorePage",
-//				"formulas", WebUtils.toJson(result), "data",
-//				getJsonDataForRendering(), "template_content",
-//				this.contentString, "template_scripting", this.scriptingString);
-//
-//		submit(wrap);
-		
-	}	
-	
-	public Object iframeLoaded(Map<String, String[]> params) {
+		// List<Object> result = new ArrayList<Object>();
+		// for (FormulaElement formula : finalFormulas) {
+		// result.add(WebUtils.wrap("id", formula.id, "formula",
+		// formula.formula.getCode()));
+		// }
+		//
+		// Map<String, String> wrap = WebUtils.wrap("cmd", "bms.restorePage",
+		// "formulas", WebUtils.toJson(result), "data",
+		// getJsonDataForRendering(), "template_content",
+		// this.contentString, "template_scripting", this.scriptingString);
+		//
+		// submit(wrap);
+
+	}
+
+	public Object iframeLoaded(final Map<String, String[]> params) {
 		List<Object> resultObserver = new ArrayList<Object>();
-		for(ObserverElement o : observerElements) {			
+		for (ObserverElement o : observerElements) {
 			resultObserver.add(WebUtils.wrap("observerPath",
 					o.getObserverPath(), "data", o.getData()));
 		}
-		return WebUtils.wrap("cmd", "bms.restoreObserver",
-				"data", WebUtils.toJson(resultObserver));
+		return WebUtils.wrap("cmd", "bms.restoreObserver", "data",
+				WebUtils.toJson(resultObserver));
 	}
-	
+
 	@Override
-	public void traceChange(Trace trace) {
+	public void traceChange(final Trace trace) {
 
 		if (trace != null
 				&& trace.getStateSpace().equals(model.getStatespace())) {
 			currentTrace = trace;
 			// Evaluate formulas ...
-			for (FormulaElement f : finalFormulas)
+			for (FormulaElement f : finalFormulas) {
 				evalFormula(f, trace);
+			}
 		}
 		// ... and force rendering
 		submit(WebUtils.wrap("cmd", "bms.renderVisualization", "data",
@@ -386,7 +392,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 
-	private void evalFormula(FormulaElement f, Trace trace) {
+	private void evalFormula(final FormulaElement f, final Trace trace) {
 
 		Assert.assertNotNull(f);
 		Assert.assertNotNull(trace);
@@ -414,28 +420,30 @@ public class BMotionStudioSession extends AbstractSession implements
 			return false;
 		}
 	}
-	
+
 	private String getUniqueName() {
 		return getUniqueNameRecursive("o", finalFormulas.size());
 	}
 
-	private String getUniqueNameRecursive(String name, int counter) {
+	private String getUniqueNameRecursive(final String name, int counter) {
 		String fname = name + counter;
 		for (FormulaElement f : finalFormulas) {
-			if (f.getName().equals(fname))
+			if (f.getName().equals(fname)) {
 				return getUniqueNameRecursive(name, counter++);
+			}
 		}
 		return fname;
 	}
-	
+
 	private class FormulaElement {
 
 		public final String id;
 		public IEvalElement formula;
 		private EvaluationResult result;
-		private String name;
+		private final String name;
 
-		public FormulaElement(String id, String name, IEvalElement formula) {
+		public FormulaElement(final String id, final String name,
+				final IEvalElement formula) {
 			this.id = id;
 			this.name = name;
 			this.formula = formula;
@@ -445,7 +453,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			return result;
 		}
 
-		public void setResult(EvaluationResult result) {
+		public void setResult(final EvaluationResult result) {
 			this.result = result;
 		}
 
@@ -458,13 +466,13 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 
 	}
-	
+
 	private class ObserverElement {
-		
-		private String observerPath;
-		private String data;
-				
-		public ObserverElement(String observerPath, String data) {
+
+		private final String observerPath;
+		private final String data;
+
+		public ObserverElement(final String observerPath, final String data) {
 			this.observerPath = observerPath;
 			this.data = data;
 		}
@@ -476,7 +484,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		public String getData() {
 			return data;
 		}
-		
+
 	}
 
 }

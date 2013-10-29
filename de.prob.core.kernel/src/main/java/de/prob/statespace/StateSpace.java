@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -798,7 +799,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		for (OpInfo opInfo : outgoingEdgesOf) {
 			opInfo.ensureEvaluated(this);
 		}
-		return new HashSet<OpInfo>(outgoingEdgesOf);
+		return new LinkedHashSet<OpInfo>(outgoingEdgesOf);
 	}
 
 	public long getLastCalculatedStateId() {

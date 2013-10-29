@@ -1,18 +1,17 @@
 package de.prob.model.eventb.proof;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.ModelElementList;
 
 public class SimpleProofNode extends AbstractElement {
 	protected final EventB goal;
 	protected Set<EventB> hypotheses;
 	protected final boolean discharged;
 	protected final String description;
-	protected final Set<SimpleProofNode> childrenStates = new HashSet<SimpleProofNode>();
+	protected ModelElementList<SimpleProofNode> childrenStates = new ModelElementList<SimpleProofNode>();
 
 	public SimpleProofNode(final EventB goal, final Set<EventB> hypotheses,
 			final boolean discharged, final String description) {
@@ -22,9 +21,10 @@ public class SimpleProofNode extends AbstractElement {
 		this.description = description;
 	}
 
-	public void addChildrenNodes(final Collection<SimpleProofNode> children) {
+	public void addChildrenNodes(
+			final ModelElementList<SimpleProofNode> children) {
 		put(SimpleProofNode.class, children);
-		childrenStates.addAll(children);
+		childrenStates = children;
 	}
 
 	public EventB getGoal() {
@@ -43,7 +43,7 @@ public class SimpleProofNode extends AbstractElement {
 		return description;
 	}
 
-	public Set<SimpleProofNode> getChildrenNodes() {
+	public ModelElementList<SimpleProofNode> getChildrenNodes() {
 		return childrenStates;
 	}
 }

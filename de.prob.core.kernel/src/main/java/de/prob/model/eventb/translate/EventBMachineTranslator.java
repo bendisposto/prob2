@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
 import de.be4.classicalb.core.parser.node.AConvergentEventstatus;
@@ -113,7 +112,7 @@ public class EventBMachineTranslator {
 		List<PPredicate> invs = new ArrayList<PPredicate>();
 		List<PPredicate> thms = new ArrayList<PPredicate>();
 
-		Set<Invariant> allInvs = machine.getChildrenOfType(Invariant.class);
+		List<Invariant> allInvs = machine.getChildrenOfType(Invariant.class);
 		for (Invariant invariant : allInvs) {
 			EventBInvariant ebInv = (EventBInvariant) invariant;
 			PPredicate ppred = (PPredicate) ((EventB) ebInv.getPredicate())
