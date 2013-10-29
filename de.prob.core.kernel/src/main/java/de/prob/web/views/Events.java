@@ -14,6 +14,9 @@ import com.google.inject.Singleton;
 
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.BEvent;
+import de.prob.model.representation.Machine;
+import de.prob.model.representation.ModelElementList;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
@@ -26,89 +29,84 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 
 	Trace currentTrace;
 	private final AnimationSelector selector;
-	private boolean sorted = false;
-	private boolean reverse = false;
+	AbstractModel currentModel;
+	List<String> opNames = new ArrayList<String>();
+	Comparator<Operation> sorter = new ModelOrder(new ArrayList<String>());
 
 	@Inject
 	public Events(final AnimationSelector selector) {
 		this.selector = selector;
 		selector.registerAnimationChangeListener(this);
-
 	}
 
 	// used in JS
 	@SuppressWarnings("unused")
-	private static class Operation implements Comparable<Operation> {
+	private static class Operation {
 		public final String name;
 		public final List<String> params;
 		public final String id;
+		public final String enablement;
 
 		public Operation(final String id, final String name,
-				final List<String> params) {
+				final List<String> params, final boolean isEnabled) {
 			this.id = id;
 			this.name = name;
 			this.params = params;
-		}
-
-		@Override
-		public int compareTo(final Operation arg0) {
-			if (name.compareTo(arg0.name) == 0) {
-				if (params.size() != arg0.params.size()) {
-					throw new IllegalStateException(
-							"Events with the same name must have the same number of parameters");
-				}
-				for (int i = 0; i < params.size(); i++) {
-					String p1 = stripString(params.get(i));
-					String p2 = stripString(arg0.params.get(i));
-					if (p1.compareTo(p2) != 0) {
-						return p1.compareTo(p2);
-					}
-				}
-				return 0;
-			} else {
-				return name.compareTo(arg0.name);
-			}
-		}
-
-		private String stripString(final String param) {
-			return param.replaceAll("\\{", "").replaceAll("\\}", "");
+			enablement = isEnabled ? "enabled" : "notEnabled";
 		}
 	}
 
 	@Override
 	public void traceChange(final Trace trace) {
+		if (trace == null) {
+			currentTrace = null;
+			currentModel = null;
+			opNames = new ArrayList<String>();
+			if (sorter instanceof ModelOrder) {
+				sorter = new ModelOrder(opNames);
+			}
+			Map<String, String> wrap = WebUtils.wrap("cmd",
+					"Events.setContent", "ops", WebUtils.toJson(opNames),
+					"canGoBack", false, "canGoForward", false, "sortMode",
+					getSortMode());
+			submit(wrap);
+			return;
+		}
+
+		if (trace.getModel() != currentModel) {
+			updateModel(trace);
+		}
 		currentTrace = trace;
 		Set<OpInfo> ops = trace.getNextTransitions();
 		List<Operation> res = new ArrayList<Operation>(ops.size());
 		for (OpInfo opInfo : ops) {
 			String name = opInfo.name;
-			Operation o = new Operation(opInfo.id, name, opInfo.params);
+			Operation o = new Operation(opInfo.id, name, opInfo.params, true);
 			res.add(o);
 		}
-		if (sorted) {
-			Collections.sort(res);
-			if (reverse) {
-				Collections.reverse(res);
-			}
-		} else {
-			AbstractModel m = currentTrace.getModel();
-			AbstractElement mainComponent = m.getMainComponent();
-			Collections.sort(res, new Comparator<Operation>() {
-
-				@Override
-				public int compare(final Operation o1, final Operation o2) {
-					// TODO Auto-generated method stub
-					return 0;
-				}
-			});
-			// Order list according to order that appears in model
-		}
+		Collections.sort(res, sorter);
 		String json = WebUtils.toJson(res);
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.setContent",
 				"ops", json, "canGoBack", currentTrace.canGoBack(),
 				"canGoForward", currentTrace.canGoForward(), "sortMode",
 				getSortMode());
 		submit(wrap);
+	}
+
+	private void updateModel(final Trace trace) {
+		currentModel = trace.getModel();
+		AbstractElement mainComponent = currentModel.getMainComponent();
+		opNames = new ArrayList<String>();
+		if (mainComponent instanceof Machine) {
+			ModelElementList<BEvent> events = mainComponent
+					.getChildrenOfType(BEvent.class);
+			for (BEvent e : events) {
+				opNames.add(e.getName());
+			}
+		}
+		if (sorter instanceof ModelOrder) {
+			sorter = new ModelOrder(opNames);
+		}
 	}
 
 	@Override
@@ -153,40 +151,87 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	public Object sort(final Map<String, String[]> params) {
 		String mode = params.get("sortMode")[0];
 		if ("normal".equals(mode)) {
-			sorted = false;
-			reverse = false;
+			sorter = new ModelOrder(opNames);
 		} else if ("aToZ".equals(mode)) {
-			sorted = true;
-			reverse = false;
+			sorter = new AtoZ();
 		} else if ("zToA".equals(mode)) {
-			sorted = true;
-			reverse = true;
+			sorter = new ZtoA();
 		}
 		traceChange(currentTrace);
 		return null;
 	}
 
 	public String getSortMode() {
-		if (sorted && reverse) {
-			return "zToA";
+		if (sorter instanceof ModelOrder) {
+			return "normal";
 		}
-		if (sorted) {
+		if (sorter instanceof AtoZ) {
 			return "aToZ";
 		}
-		return "normal";
+		if (sorter instanceof ZtoA) {
+			return "zToA";
+		}
+		return "other";
 	}
 
-	private class EventComparator implements Comparator<Operation> {
+	private class EventComparator {
 
-		public EventComparator(final AbstractModel m) {
-			AbstractElement main = m.getMainComponent();
-			List<String> eventNames = new ArrayList<String>();
+		private String stripString(final String param) {
+			return param.replaceAll("\\{", "").replaceAll("\\}", "");
+		}
+
+		public int compareParams(final List<String> params1,
+				final List<String> params2) {
+			for (int i = 0; i < params1.size(); i++) {
+				String p1 = stripString(params1.get(i));
+				String p2 = stripString(params2.get(i));
+				if (p1.compareTo(p2) != 0) {
+					return p1.compareTo(p2);
+				}
+
+			}
+			return 0;
+		}
+	}
+
+	private class ModelOrder extends EventComparator implements
+			Comparator<Operation> {
+
+		private final List<String> ops;
+
+		public ModelOrder(final List<String> ops) {
+			this.ops = ops;
 		}
 
 		@Override
 		public int compare(final Operation o1, final Operation o2) {
-			// TODO Auto-generated method stub
-			return 0;
+			if (ops.indexOf(o1.name) == ops.indexOf(o2.name)) {
+				return compareParams(o1.params, o2.params);
+			}
+			return ops.indexOf(o1.name) - ops.indexOf(o2.name);
+		}
+	}
+
+	private class AtoZ extends EventComparator implements Comparator<Operation> {
+
+		@Override
+		public int compare(final Operation o1, final Operation o2) {
+			if (o1.name.compareTo(o2.name) == 0) {
+				return compareParams(o1.params, o2.params);
+			}
+			return o1.name.compareTo(o2.name);
+		}
+
+	}
+
+	private class ZtoA extends EventComparator implements Comparator<Operation> {
+
+		@Override
+		public int compare(final Operation o1, final Operation o2) {
+			if (o1.name.compareTo(o2.name) == 0) {
+				return compareParams(o1.params, o2.params);
+			}
+			return -1 * o1.name.compareTo(o2.name);
 		}
 
 	}
