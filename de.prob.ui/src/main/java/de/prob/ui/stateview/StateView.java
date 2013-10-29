@@ -1,6 +1,6 @@
 package de.prob.ui.stateview;
 
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -23,9 +23,9 @@ import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 /**
@@ -181,7 +181,7 @@ public class StateView extends ViewPart implements IAnimationChangeListener {
 		currentModel = model;
 		StateSpace s = currentTrace.getStateSpace();
 
-		Set<Machine> machines = model.getChildrenOfType(Machine.class);
+		List<Machine> machines = model.getChildrenOfType(Machine.class);
 		for (Machine machine : machines) {
 			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
 				s.subscribe(this, variable.getExpression());

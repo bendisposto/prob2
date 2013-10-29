@@ -3,7 +3,7 @@ package de.prob.model.serialize;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
@@ -18,7 +18,7 @@ public class ModelObject {
 	final AbstractElement mainComponent;
 
 	public ModelObject(final EventBModel m) {
-		Set<Machine> ms = m.getChildrenOfType(Machine.class);
+		List<Machine> ms = m.getChildrenOfType(Machine.class);
 		for (Machine machine : ms) {
 			if (machine instanceof EventBMachine) {
 				machines.add((EventBMachine) machine);

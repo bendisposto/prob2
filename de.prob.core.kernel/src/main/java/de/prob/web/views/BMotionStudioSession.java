@@ -21,19 +21,19 @@ import de.prob.web.WebUtils;
 
 public class BMotionStudioSession extends AbstractSession implements
 		IAnimationChangeListener {
-	
+
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
-	
-	private Trace currentTrace;
-	
+
+	private final Trace currentTrace;
+
 	private AbstractModel model;
-	
-	private AnimationSelector selector;
-	
+
+	private final AnimationSelector selector;
+
 	private String templatePath;
-	
+
 	@Inject
-	public BMotionStudioSession(AnimationSelector selector) {
+	public BMotionStudioSession(final AnimationSelector selector) {
 		this.selector = selector;
 		currentTrace = selector.getCurrentTrace();
 		if (currentTrace == null) {
@@ -44,38 +44,42 @@ public class BMotionStudioSession extends AbstractSession implements
 			selector.registerAnimationChangeListener(this);
 		}
 	}
-	
+
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		Object scope = WebUtils.wrap("clientid", clientid, "id", UUID
 				.randomUUID().toString(), "workspace", model.getModelFile()
 				.getParent() + "/");
 		return WebUtils.render("/ui/bmsview/index.html", scope);
 	}
-	
-	public Object forcerendering(Map<String, String[]> params) {
+
+	public Object forcerendering(final Map<String, String[]> params) {
 		return WebUtils.wrap("cmd", "bms.renderVisualization");
 	}
-	
-	public Object executeOperation(Map<String, String[]> params) {
+
+	public Object executeOperation(final Map<String, String[]> params) {
 		String op = params.get("op")[0];
 		String predicate = "1=1";
-		if(params.get("predicate") != null)
+		if (params.get("predicate") != null) {
 			predicate = params.get("predicate")[0];
+		}
 		Trace currentTrace = selector.getCurrentTrace();
 		try {
-			if(predicate == null)
+			if (predicate == null) {
 				predicate = "1=1";
-			Trace newTrace = currentTrace.add(op,predicate);
+			}
+			Trace newTrace = currentTrace.add(op, predicate);
 			selector.replaceTrace(currentTrace, newTrace);
 		} catch (BException e) {
 			e.printStackTrace();
 		}
+
 		return null;
 	}
-	
-	public Object setTemplate(Map<String, String[]> params) {
-		this.templatePath = params.get("path")[0];
+
+	public Object setTemplate(final Map<String, String[]> params) {
+		templatePath = params.get("path")[0];
 		return WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
 				templatePath);
 	}
@@ -87,9 +91,9 @@ public class BMotionStudioSession extends AbstractSession implements
 		submit(WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
 				templatePath));
 	}
-	
+
 	@Override
-	public void traceChange(Trace trace) {
+	public void traceChange(final Trace trace) {
 		submit(WebUtils.wrap("cmd", "bms.renderVisualization"));
 	}
 

@@ -45,7 +45,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 	private final String workspacePath;
 	private final Set<IFormulaExtension> typeEnv = new HashSet<IFormulaExtension>();
 	private final EventBModel model;
-	private final List<Theory> theories = new ModelElementList<Theory>();
+	private final ModelElementList<Theory> theories = new ModelElementList<Theory>();
 	private final HashMap<String, Theory> theoryMap = new HashMap<String, Theory>();
 
 	public TheoryXmlHandler(final EventBModel model, final String workspacePath) {
@@ -96,44 +96,44 @@ public class TheoryXmlHandler extends DefaultHandler {
 	class TheoryExtractor extends DefaultHandler {
 
 		private final Theory theory;
-		private final List<Theory> imported = new ModelElementList<Theory>();
-		private final List<Type> typeParameters = new ModelElementList<Type>();
-		private final List<DataType> dataTypes = new ModelElementList<DataType>();
-		private final List<Operator> operators = new ModelElementList<Operator>();
-		private final List<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
-		private final List<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
+		private final ModelElementList<Theory> imported = new ModelElementList<Theory>();
+		private final ModelElementList<Type> typeParameters = new ModelElementList<Type>();
+		private final ModelElementList<DataType> dataTypes = new ModelElementList<DataType>();
+		private final ModelElementList<Operator> operators = new ModelElementList<Operator>();
+		private final ModelElementList<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
+		private final ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
 
 		// For adding DataType
 		private DataType dataType;
-		private List<DataTypeConstructor> constructors;
-		private List<Type> typeArguments;
+		private ModelElementList<DataTypeConstructor> constructors;
+		private ModelElementList<Type> typeArguments;
 
 		// For adding DataType constructors
 		private DataTypeConstructor constructor;
-		private List<DataTypeDestructor> destructors;
+		private ModelElementList<DataTypeDestructor> destructors;
 
 		// For adding Operator
 		private Operator operator;
-		private List<OperatorArgument> opArgs;
+		private ModelElementList<OperatorArgument> opArgs;
 
 		// For adding definition
 		private IOperatorDefinition definition;
 
 		// If recursive definition cases arise
-		private List<RecursiveDefinitionCase> recursiveDefinitions;
+		private ModelElementList<RecursiveDefinitionCase> recursiveDefinitions;
 
 		// If axiomatic definitions are present
-		private List<EventBAxiom> definitionAxioms;
+		private ModelElementList<EventBAxiom> definitionAxioms;
 
 		// For adding proof rules block
 		private ProofRulesBlock block;
-		private List<MetaVariable> metaVars;
-		private List<RewriteRule> rewriteRules;
-		private List<InferenceRule> inferenceRules;
+		private ModelElementList<MetaVariable> metaVars;
+		private ModelElementList<RewriteRule> rewriteRules;
+		private ModelElementList<InferenceRule> inferenceRules;
 
 		// For rewrite rules
 		private RewriteRule rewriteRule;
-		private List<RewriteRuleRHS> rightHandSides;
+		private ModelElementList<RewriteRuleRHS> rightHandSides;
 
 		// For inference rules
 		private List<EventB> given;

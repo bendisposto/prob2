@@ -1,9 +1,7 @@
 package de.prob.model.eventb;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import com.google.inject.Inject;
 
@@ -23,8 +21,8 @@ public class EventBModel extends AbstractModel {
 
 	private AbstractElement mainComponent;
 	private final BStateSchema schema = new BStateSchema();
-	private final List<EventBMachine> machines = new ModelElementList<EventBMachine>();
-	private final List<Context> contexts = new ModelElementList<Context>();
+	private final ModelElementList<EventBMachine> machines = new ModelElementList<EventBMachine>();
+	private final ModelElementList<Context> contexts = new ModelElementList<Context>();
 
 	@Inject
 	public EventBModel(final StateSpace statespace) {
@@ -36,11 +34,11 @@ public class EventBModel extends AbstractModel {
 		return schema;
 	}
 
-	public void addMachines(final Collection<EventBMachine> collection) {
+	public void addMachines(final ModelElementList<EventBMachine> collection) {
 		put(Machine.class, collection);
 	}
 
-	public void addContexts(final Collection<Context> contexts) {
+	public void addContexts(final ModelElementList<Context> contexts) {
 		put(Context.class, contexts);
 	}
 
@@ -93,7 +91,7 @@ public class EventBModel extends AbstractModel {
 						seen.getName());
 			}
 		}
-		Set<Context> contexts = getChildrenOfType(Context.class);
+		List<Context> contexts = getChildrenOfType(Context.class);
 		for (Context context : contexts) {
 			for (Context seen : context.getChildrenOfType(Context.class)) {
 				graph.addEdge(new RefType(ERefType.EXTENDS), context.getName(),
@@ -124,7 +122,7 @@ public class EventBModel extends AbstractModel {
 		graph.addEdge(relationship, element1, element2);
 	}
 
-	public void addTheories(final List<Theory> theories) {
+	public void addTheories(final ModelElementList<Theory> theories) {
 		put(Theory.class, theories);
 	}
 

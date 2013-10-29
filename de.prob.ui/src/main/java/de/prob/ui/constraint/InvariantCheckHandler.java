@@ -6,7 +6,6 @@ package de.prob.ui.constraint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -22,8 +21,8 @@ import com.google.inject.Injector;
 import de.prob.animator.command.ConstraintBasedInvariantCheckCommand;
 import de.prob.model.representation.BEvent;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.ui.ProBCommandJob;
 import de.prob.webconsole.ServletContextListener;
 
@@ -36,21 +35,24 @@ public class InvariantCheckHandler extends AbstractHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final Shell shell = HandlerUtil.getActiveShell(event);
 		Injector injector = ServletContextListener.INJECTOR;
-		AnimationSelector selector = injector.getInstance(AnimationSelector.class);
+		AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
 		Trace currentTrace = selector.getCurrentTrace();
-		Set<BEvent> events = currentTrace.getModel().getMainComponent().getChildrenOfType(BEvent.class);
+		List<BEvent> events = currentTrace.getModel().getMainComponent()
+				.getChildrenOfType(BEvent.class);
 
 		List<String> names = new ArrayList<String>();
 		for (BEvent bEvent : events) {
 			names.add(bEvent.getName());
 		}
 
-		performInvariantCheck(currentTrace.getStateSpace(), names,  shell);
+		performInvariantCheck(currentTrace.getStateSpace(), names, shell);
 		return null;
 	}
 
-	private void performInvariantCheck(final StateSpace s, final List<String> names,
-			final Shell shell) throws ExecutionException {
+	private void performInvariantCheck(final StateSpace s,
+			final List<String> names, final Shell shell)
+			throws ExecutionException {
 		if (names.isEmpty()) {
 			MessageDialog.openError(shell, "Invariant Check: No Events",
 					"The model does not contain any events to check!");
@@ -67,10 +69,11 @@ public class InvariantCheckHandler extends AbstractHandler {
 
 	private void startCheck(final StateSpace s,
 			final Collection<String> events, final Shell shell)
-					throws ExecutionException {
+			throws ExecutionException {
 		final ConstraintBasedInvariantCheckCommand command = new ConstraintBasedInvariantCheckCommand(
 				events);
-		final Job job = new ProBCommandJob("Checking for Invariant Preservation", s, command);
+		final Job job = new ProBCommandJob(
+				"Checking for Invariant Preservation", s, command);
 		job.setUser(true);
 		job.addJobChangeListener(new InvariantCheckFinishedListener(shell));
 		job.schedule();

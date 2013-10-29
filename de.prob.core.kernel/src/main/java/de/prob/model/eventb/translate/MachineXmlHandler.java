@@ -45,30 +45,30 @@ public class MachineXmlHandler extends DefaultHandler {
 	private final List<String> seesNames = new ArrayList<String>();
 	private final String directoryPath;
 
-	private final List<Context> sees = new ModelElementList<Context>();
-	private final List<EventBMachine> refines = new ModelElementList<EventBMachine>();
-	private final List<EventBInvariant> invariants = new ModelElementList<EventBInvariant>();
-	private final List<EventBInvariant> inheritedInvariants = new ArrayList<EventBInvariant>();
-	private final List<EventBVariable> variables = new ModelElementList<EventBVariable>();
-	private final List<Event> events = new ModelElementList<Event>();
-	private final List<Variant> variant = new ModelElementList<Variant>();
+	private final ModelElementList<Context> sees = new ModelElementList<Context>();
+	private final ModelElementList<EventBMachine> refines = new ModelElementList<EventBMachine>();
+	private final ModelElementList<EventBInvariant> invariants = new ModelElementList<EventBInvariant>();
+	private final ModelElementList<EventBInvariant> inheritedInvariants = new ModelElementList<EventBInvariant>();
+	private final ModelElementList<EventBVariable> variables = new ModelElementList<EventBVariable>();
+	private final ModelElementList<Event> events = new ModelElementList<Event>();
+	private final ModelElementList<Variant> variant = new ModelElementList<Variant>();
 
 	// For extracting internal contexts
 	private Context internalContext;
-	private List<Context> Extends;
-	private List<BSet> sets;
-	private List<EventBAxiom> axioms;
-	private List<EventBAxiom> inheritedAxioms;
-	private List<EventBConstant> constants;
+	private ModelElementList<Context> Extends;
+	private ModelElementList<BSet> sets;
+	private ModelElementList<EventBAxiom> axioms;
+	private ModelElementList<EventBAxiom> inheritedAxioms;
+	private ModelElementList<EventBConstant> constants;
 	private boolean extractingContext = false;
 
 	// For extracting events
 	private Event event;
-	private List<Event> refinesForEvent;
-	private List<EventBAction> actions;
-	private List<EventBGuard> guards;
-	private List<EventParameter> parameters;
-	private List<Witness> witnesses;
+	private ModelElementList<Event> refinesForEvent;
+	private ModelElementList<EventBAction> actions;
+	private ModelElementList<EventBGuard> guards;
+	private ModelElementList<EventParameter> parameters;
+	private ModelElementList<Witness> witnesses;
 	private boolean extractingEvent = false;
 
 	private final Map<String, Map<String, EventBAxiom>> axiomCache = new HashMap<String, Map<String, EventBAxiom>>();

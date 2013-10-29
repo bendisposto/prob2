@@ -1,6 +1,5 @@
 package de.prob.model.eventb.theory;
 
-import java.util.List;
 import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
@@ -14,7 +13,7 @@ public class RewriteRule extends AbstractElement {
 	private final String applicability;
 	private final boolean complete;
 	private final String desc;
-	private final List<RewriteRuleRHS> rightHandSideRules = new ModelElementList<RewriteRuleRHS>();
+	private ModelElementList<RewriteRuleRHS> rightHandSideRules = new ModelElementList<RewriteRuleRHS>();
 	private final EventB formula;
 
 	public RewriteRule(final String name, final String applicability,
@@ -27,12 +26,13 @@ public class RewriteRule extends AbstractElement {
 		this.formula = new EventB(formula, typeEnv);
 	}
 
-	public void addRightHandSide(final List<RewriteRuleRHS> rightHandSides) {
+	public void addRightHandSide(
+			final ModelElementList<RewriteRuleRHS> rightHandSides) {
 		put(RewriteRuleRHS.class, rightHandSides);
-		rightHandSideRules.addAll(rightHandSides);
+		rightHandSideRules = rightHandSides;
 	}
 
-	public List<RewriteRuleRHS> getRightHandSideRules() {
+	public ModelElementList<RewriteRuleRHS> getRightHandSideRules() {
 		return rightHandSideRules;
 	}
 

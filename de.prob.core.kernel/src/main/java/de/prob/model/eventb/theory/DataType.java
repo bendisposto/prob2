@@ -23,33 +23,34 @@ public class DataType extends AbstractElement {
 	private final String identifierString;
 	private final EventB identifier;
 	private IDatatypeExtension typeDef = null;
-	private final List<Type> typeArguments = new ModelElementList<Type>();
-	private final List<DataTypeConstructor> dataTypeConstructors = new ModelElementList<DataTypeConstructor>();
+	private ModelElementList<Type> typeArguments = new ModelElementList<Type>();
+	private ModelElementList<DataTypeConstructor> dataTypeConstructors = new ModelElementList<DataTypeConstructor>();
 
 	public DataType(final String identifier) {
 		identifierString = identifier;
 		this.identifier = new EventB(identifier);
 	}
 
-	public void addTypeArguments(final List<Type> arguments) {
+	public void addTypeArguments(final ModelElementList<Type> arguments) {
 		put(Type.class, arguments);
-		typeArguments.addAll(arguments);
+		typeArguments = arguments;
 	}
 
-	public void addConstructors(final List<DataTypeConstructor> constructors) {
+	public void addConstructors(
+			final ModelElementList<DataTypeConstructor> constructors) {
 		put(DataTypeConstructor.class, constructors);
-		dataTypeConstructors.addAll(constructors);
+		dataTypeConstructors = constructors;
 	}
 
 	public EventB getTypeIdentifier() {
 		return identifier;
 	}
 
-	public List<DataTypeConstructor> getDataTypeConstructors() {
+	public ModelElementList<DataTypeConstructor> getDataTypeConstructors() {
 		return dataTypeConstructors;
 	}
 
-	public List<Type> getTypeArguments() {
+	public ModelElementList<Type> getTypeArguments() {
 		return typeArguments;
 	}
 

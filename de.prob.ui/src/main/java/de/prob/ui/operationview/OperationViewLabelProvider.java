@@ -2,7 +2,6 @@ package de.prob.ui.operationview;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -56,7 +55,7 @@ class OperationViewLabelProvider extends LabelProvider implements
 				return Joiner.on(",").join(op.params);
 			} else if (obj instanceof Event) {
 				final Event event = (Event) obj;
-				Set<EventParameter> params = event
+				List<EventParameter> params = event
 						.getChildrenOfType(EventParameter.class);
 				List<String> paramNames = new ArrayList<String>();
 				for (EventParameter param : params) {

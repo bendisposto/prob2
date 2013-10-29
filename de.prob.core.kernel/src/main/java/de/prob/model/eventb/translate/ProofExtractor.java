@@ -33,7 +33,7 @@ public class ProofExtractor {
 	Map<String, String> descriptions;
 	Set<String> discharged;
 
-	List<UncalculatedPO> proofs = new ModelElementList<UncalculatedPO>();
+	ModelElementList<UncalculatedPO> proofs = new ModelElementList<UncalculatedPO>();
 
 	public ProofExtractor(final Context c, final String baseFileName)
 			throws SAXException {
@@ -67,13 +67,15 @@ public class ProofExtractor {
 
 			String bpsFileName = baseFileName + ".bps";
 			File bpsFile = new File(bpsFileName);
-			if(bpsFile.exists()) {
+			if (bpsFile.exists()) {
 				ProofStatusExtractor ext2 = new ProofStatusExtractor();
 				saxParser.parse(bpsFile, ext2);
-				discharged = ext2.getDischargedProofs();				
+				discharged = ext2.getDischargedProofs();
 			} else {
 				discharged = new HashSet<String>();
-				logger.info("Could not find file "+bpsFileName+". Assuming that no proofs are discharged for model element.");
+				logger.info("Could not find file "
+						+ bpsFileName
+						+ ". Assuming that no proofs are discharged for model element.");
 			}
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
@@ -174,7 +176,7 @@ public class ProofExtractor {
 
 	}
 
-	public List<UncalculatedPO> getProofs() {
+	public ModelElementList<UncalculatedPO> getProofs() {
 		return proofs;
 	}
 }

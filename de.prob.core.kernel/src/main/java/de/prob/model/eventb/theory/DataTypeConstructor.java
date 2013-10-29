@@ -1,6 +1,5 @@
 package de.prob.model.eventb.theory;
 
-import java.util.List;
 import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
@@ -13,23 +12,24 @@ public class DataTypeConstructor extends AbstractElement {
 
 	private final String identifierString;
 	private final EventB identifier;
-	private final List<DataTypeDestructor> destructors = new ModelElementList<DataTypeDestructor>();
+	private ModelElementList<DataTypeDestructor> destructors = new ModelElementList<DataTypeDestructor>();
 
 	public DataTypeConstructor(final String identifier) {
 		identifierString = identifier;
 		this.identifier = new EventB(identifier);
 	}
 
-	public void addDestructors(final List<DataTypeDestructor> destructors) {
+	public void addDestructors(
+			final ModelElementList<DataTypeDestructor> destructors) {
 		put(DataTypeDestructor.class, destructors);
-		this.destructors.addAll(destructors);
+		this.destructors = destructors;
 	}
 
 	public EventB getIdentifier() {
 		return identifier;
 	}
 
-	public List<DataTypeDestructor> getDestructors() {
+	public ModelElementList<DataTypeDestructor> getDestructors() {
 		return destructors;
 	}
 

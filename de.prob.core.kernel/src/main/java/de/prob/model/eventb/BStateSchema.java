@@ -11,6 +11,7 @@ import de.prob.model.representation.BSet;
 import de.prob.model.representation.Constant;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.StateSchema;
 import de.prob.model.representation.Variable;
 
@@ -25,7 +26,7 @@ public class BStateSchema implements StateSchema {
 
 	public Object[] getElements(final Context context) {
 		ArrayList<Object> result = new ArrayList<Object>();
-		for (Entry<Class<? extends AbstractElement>, Set<? extends AbstractElement>> entry : context
+		for (Entry<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> entry : context
 				.getChildren().entrySet()) {
 			Class<? extends AbstractElement> key = entry.getKey();
 			if (key.equals(BSet.class) || key.equals(Constant.class)
@@ -40,7 +41,7 @@ public class BStateSchema implements StateSchema {
 
 	public Object[] getElements(final Machine machine) {
 		ArrayList<Object> result = new ArrayList<Object>();
-		for (Entry<Class<? extends AbstractElement>, Set<? extends AbstractElement>> entry : machine
+		for (Entry<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> entry : machine
 				.getChildren().entrySet()) {
 			Class<? extends AbstractElement> key = entry.getKey();
 			if (key.equals(Invariant.class) || key.equals(Variable.class)) {

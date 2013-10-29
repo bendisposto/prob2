@@ -85,7 +85,11 @@ public abstract class AbstractModel extends AbstractElement {
 	}
 
 	def getProperty(final String name) {
-		return components.get(name);
+		return components.get(name)
+	}
+
+	def getAt(final String name) {
+		return components.get(name)
 	}
 
 	def setDirty() {

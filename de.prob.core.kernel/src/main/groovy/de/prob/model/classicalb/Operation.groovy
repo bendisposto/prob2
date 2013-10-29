@@ -8,6 +8,7 @@ public class Operation extends BEvent {
 
 	private final List<String> parameters;
 	private final List<String> output;
+	private ModelElementList<Guard> guards = new ModelElementList<Guard>()
 
 	public Operation(final String name, final List<String> parameters,
 	final List<String> output) {
@@ -16,8 +17,9 @@ public class Operation extends BEvent {
 		this.output = output;
 	}
 
-	public void addGuards(final List<Guard> guards) {
+	public void addGuards(final ModelElementList<Guard> guards) {
 		put(Guard.class, guards);
+		this.guards = guards
 	}
 
 	public List<String> getParameters() {
@@ -26,12 +28,6 @@ public class Operation extends BEvent {
 
 	public List<String> getOutput() {
 		return output;
-	}
-
-	public List<Guard> getGuards() {
-		List<Guard> guards = new ModelElementList<Guard>();
-		guards.addAll(getChildrenOfType(Guard.class));
-		return guards;
 	}
 
 	@Override
@@ -50,20 +46,12 @@ public class Operation extends BEvent {
 				sb.append(string + "\n");
 			}
 		}
-		Set<Guard> childrenOfType = getChildrenOfType(Guard.class);
-		if (!childrenOfType.isEmpty()) {
+		if (!guards.isEmpty()) {
 			sb.append("Guards \n");
-			for (Guard guard : childrenOfType) {
+			for (Guard guard : guards) {
 				sb.append(guard.toString() + '\n');
 			}
 		}
 		return sb.toString();
-	}
-
-	def getProperty(String prop) {
-		if(prop == "guards") {
-			return getGuards()
-		}
-		Operation.getMetaClass().getProperty(this, prop)
 	}
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -274,7 +273,7 @@ public class OperationView extends ViewPart implements IAnimationChangeListener 
 		final AbstractElement component = model.getMainComponent();
 		if (component instanceof Machine) {
 			final Machine machine = (Machine) component;
-			Set<BEvent> childrenOfType = machine
+			List<BEvent> childrenOfType = machine
 					.getChildrenOfType(BEvent.class);
 			for (BEvent event : childrenOfType) {
 				names.put(event.getName(), event);

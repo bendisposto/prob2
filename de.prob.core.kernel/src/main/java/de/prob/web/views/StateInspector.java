@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.AsyncContext;
 
@@ -161,7 +160,7 @@ public class StateInspector extends AbstractSession implements
 			final Class<? extends AbstractElement> c) {
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> kids = new ArrayList<Object>();
-		Set<? extends AbstractElement> children = parent.getChildrenOfType(c);
+		List<? extends AbstractElement> children = parent.getChildrenOfType(c);
 		for (AbstractElement abstractElement : children) {
 			if (abstractElement instanceof IEval) {
 				IEvalElement formula = ((IEval) abstractElement).getEvaluate();

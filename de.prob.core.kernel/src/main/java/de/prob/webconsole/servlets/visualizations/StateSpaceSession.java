@@ -74,7 +74,7 @@ public class StateSpaceSession implements ISessionServlet,
 		}
 		AbstractElement mainComponent = space.getModel().getMainComponent();
 		if (mainComponent instanceof Machine) {
-			Set<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
+			List<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
 			for (BEvent bEvent : ops) {
 				EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
 				events.put(bEvent.getName(), e);
@@ -93,7 +93,7 @@ public class StateSpaceSession implements ISessionServlet,
 		this.props = props;
 		AbstractElement mainComponent = space.getModel().getMainComponent();
 		if (mainComponent instanceof Machine) {
-			Set<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
+			List<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
 			for (BEvent bEvent : ops) {
 				EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
 				events.put(bEvent.getName(), e);
@@ -312,7 +312,7 @@ public class StateSpaceSession implements ISessionServlet,
 			StateSpaceGraph graph = (StateSpaceGraph) s;
 			if (s instanceof StateSpace) {
 				List<IEvalElement> toEval = new ArrayList<IEvalElement>();
-				Set<Machine> machines = ((StateSpace) s).getModel()
+				List<Machine> machines = ((StateSpace) s).getModel()
 						.getChildrenOfType(Machine.class);
 				for (Machine machine : machines) {
 					for (Variable variable : machine

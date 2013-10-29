@@ -1,7 +1,5 @@
 package de.prob.model.eventb.theory;
 
-import java.util.List;
-
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
@@ -9,12 +7,12 @@ import de.prob.model.representation.ModelElementList;
 public class Theory extends AbstractElement {
 
 	private final String name;
-	private final List<DataType> dataTypes = new ModelElementList<DataType>();
-	private final List<Theory> imported = new ModelElementList<Theory>();
-	private final List<Operator> operators = new ModelElementList<Operator>();
-	private final List<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
-	private final List<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
-	private final List<Type> typeParameters = new ModelElementList<Type>();
+	private ModelElementList<DataType> dataTypes = new ModelElementList<DataType>();
+	private ModelElementList<Theory> imported = new ModelElementList<Theory>();
+	private ModelElementList<Operator> operators = new ModelElementList<Operator>();
+	private ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
+	private ModelElementList<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
+	private ModelElementList<Type> typeParameters = new ModelElementList<Type>();
 	private final String parentDirectory;
 
 	public Theory(final String name, final String parentDirectory) {
@@ -22,58 +20,58 @@ public class Theory extends AbstractElement {
 		this.parentDirectory = parentDirectory;
 	}
 
-	public void addOperators(final List<Operator> operators) {
+	public void addOperators(final ModelElementList<Operator> operators) {
 		put(Operator.class, operators);
-		this.operators.addAll(operators);
+		this.operators = operators;
 	}
 
-	public void addDataTypes(final List<DataType> dataTypes) {
+	public void addDataTypes(final ModelElementList<DataType> dataTypes) {
 		put(DataType.class, dataTypes);
-		this.dataTypes.addAll(dataTypes);
+		this.dataTypes = dataTypes;
 	}
 
-	public void addTheorems(final List<EventBAxiom> theorems) {
+	public void addTheorems(final ModelElementList<EventBAxiom> theorems) {
 		put(EventBAxiom.class, theorems);
-		this.theorems.addAll(theorems);
+		this.theorems = theorems;
 	}
 
-	public void addProofRules(final List<ProofRulesBlock> proofRules) {
+	public void addProofRules(final ModelElementList<ProofRulesBlock> proofRules) {
 		put(ProofRulesBlock.class, proofRules);
-		this.proofRules.addAll(proofRules);
+		this.proofRules = proofRules;
 	}
 
-	public void addTypeParameters(final List<Type> parameters) {
+	public void addTypeParameters(final ModelElementList<Type> parameters) {
 		put(Type.class, parameters);
-		typeParameters.addAll(parameters);
+		typeParameters = parameters;
 	}
 
-	public void addImported(final List<Theory> theories) {
+	public void addImported(final ModelElementList<Theory> theories) {
 		put(Theory.class, theories);
-		imported.addAll(theories);
+		imported = theories;
 	}
 
-	public List<EventBAxiom> getTheorems() {
-		return theorems;
-	}
-
-	public List<Type> getTypeParameters() {
-		return typeParameters;
-	}
-
-	public List<DataType> getDataTypes() {
+	public ModelElementList<DataType> getDataTypes() {
 		return dataTypes;
 	}
 
-	public List<Operator> getOperators() {
+	public ModelElementList<Theory> getImported() {
+		return imported;
+	}
+
+	public ModelElementList<Operator> getOperators() {
 		return operators;
 	}
 
-	public List<ProofRulesBlock> getProofRules() {
+	public ModelElementList<ProofRulesBlock> getProofRules() {
 		return proofRules;
 	}
 
-	public List<Theory> getImported() {
-		return imported;
+	public ModelElementList<EventBAxiom> getTheorems() {
+		return theorems;
+	}
+
+	public ModelElementList<Type> getTypeParameters() {
+		return typeParameters;
 	}
 
 	public String getName() {

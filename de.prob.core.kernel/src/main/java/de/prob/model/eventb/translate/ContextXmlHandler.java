@@ -30,18 +30,18 @@ public class ContextXmlHandler extends DefaultHandler {
 	private final List<String> extendsNames = new ArrayList<String>();
 
 	private final Context context;
-	private final List<Context> Extends = new ModelElementList<Context>();
-	private final List<BSet> sets = new ModelElementList<BSet>();
-	private final List<EventBAxiom> axioms = new ModelElementList<EventBAxiom>();
-	private final List<EventBAxiom> inheritedAxioms = new ModelElementList<EventBAxiom>();
-	private final List<EventBConstant> constants = new ModelElementList<EventBConstant>();
+	private final ModelElementList<Context> Extends = new ModelElementList<Context>();
+	private final ModelElementList<BSet> sets = new ModelElementList<BSet>();
+	private final ModelElementList<EventBAxiom> axioms = new ModelElementList<EventBAxiom>();
+	private final ModelElementList<EventBAxiom> inheritedAxioms = new ModelElementList<EventBAxiom>();
+	private final ModelElementList<EventBConstant> constants = new ModelElementList<EventBConstant>();
 
 	private Context internalContext;
-	private List<Context> internalExtends;
-	private List<BSet> internalSets;
-	private List<EventBAxiom> internalAxioms;
-	private List<EventBAxiom> internalInheritedAxioms;
-	private List<EventBConstant> internalConstants;
+	private ModelElementList<Context> internalExtends;
+	private ModelElementList<BSet> internalSets;
+	private ModelElementList<EventBAxiom> internalAxioms;
+	private ModelElementList<EventBAxiom> internalInheritedAxioms;
+	private ModelElementList<EventBConstant> internalConstants;
 
 	private boolean inInternalContext;
 

@@ -1,9 +1,7 @@
 package de.prob.model.representation;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,7 +17,7 @@ public abstract class AbstractElement {
 	 * Maps from a subclass of {@link AbstractElement} to a set containing all
 	 * elements for that subclass
 	 */
-	protected Map<Class<? extends AbstractElement>, java.util.Set<? extends AbstractElement>> children = new HashMap<Class<? extends AbstractElement>, Set<? extends AbstractElement>>();
+	protected Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children = new HashMap<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>>();
 
 	/**
 	 * Each {@link AbstractElement} can have children of a subclass that extends
@@ -32,12 +30,13 @@ public abstract class AbstractElement {
 	 * @return {@link Set} containing all the children of type T
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractElement> Set<T> getChildrenOfType(final Class<T> c) {
-		Set<? extends AbstractElement> set = children.get(c);
-		if (set == null) {
-			return Collections.emptySet();
+	public <T extends AbstractElement> ModelElementList<T> getChildrenOfType(
+			final Class<T> c) {
+		ModelElementList<? extends AbstractElement> list = children.get(c);
+		if (list == null) {
+			return new ModelElementList<T>();
 		}
-		return (Set<T>) set;
+		return (ModelElementList<T>) list;
 	}
 
 	/**
@@ -49,14 +48,14 @@ public abstract class AbstractElement {
 	 *            {@link Collection} of elements with which c will be mapped
 	 */
 	public <T extends AbstractElement> void put(final Class<T> c,
-			final Collection<? extends T> elements) {
-		children.put(c, new LinkedHashSet<T>(elements));
+			final ModelElementList<? extends T> elements) {
+		children.put(c, elements);
 	}
 
 	/**
 	 * @return the {@link Map} of {@link Class} to {@link Set} of children
 	 */
-	public Map<Class<? extends AbstractElement>, java.util.Set<? extends AbstractElement>> getChildren() {
+	public Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> getChildren() {
 		return children;
 	}
 }
