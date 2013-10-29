@@ -30,6 +30,7 @@ public class EventBFactory {
 		EventBModel model = modelProvider.get();
 
 		new EventBDatabaseTranslator(model, file);
+		model.isFinished();
 
 		AbstractCommand cmd = new LoadEventBProjectCommand(
 				new EventBModelTranslator(model));
