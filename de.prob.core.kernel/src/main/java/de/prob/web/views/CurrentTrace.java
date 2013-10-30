@@ -16,6 +16,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
+import de.prob.statespace.TraceElement;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -35,23 +36,34 @@ public class CurrentTrace extends AbstractSession implements
 	@Override
 	public void traceChange(final Trace trace) {
 		logger.trace("Trace has changed. Submitting");
-		List<OpInfo> elements = getElements(trace);
-		OpInfo currentOp = trace.getCurrent().getOp();
-		boolean pastCurrentOp = false;
 		List<Map<String, String>> ops = new ArrayList<Map<String, String>>();
-		for (OpInfo opInfo : elements) {
-			String group = "past";
-			if (opInfo.equals(currentOp)) {
+		if (trace == null) {
+			Map<String, String> wrap = WebUtils.wrap("cmd",
+					"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
+			submit(wrap);
+			return;
+		}
+
+		TraceElement element = trace.getHead();
+		TraceElement current = trace.getCurrent();
+		String group = "future";
+		while (element.getPrevious() != null) {
+			if (element == current) {
 				group = "current";
-				pastCurrentOp = true;
+				OpInfo op = element.getOp();
+				String rep = op.getRep(trace.getModel());
+				ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
+						"group", group));
+
+				// After this point, all elements are in the past
+				group = "past";
 			} else {
-				if (pastCurrentOp) {
-					group = "future";
-				}
+				OpInfo op = element.getOp();
+				String rep = op.getRep(trace.getModel());
+				ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
+						"group", group));
 			}
-			String id = opInfo.getId();
-			String rep = opInfo.getRep(trace.getModel());
-			ops.add(WebUtils.wrap("id", id, "rep", rep, "group", group));
+			element = element.getPrevious();
 		}
 
 		Map<String, String> wrap = WebUtils.wrap("cmd",
@@ -62,23 +74,17 @@ public class CurrentTrace extends AbstractSession implements
 	public Object gotoPos(final Map<String, String[]> params) {
 		logger.trace("Goto Position in Trace");
 		Trace trace = selector.getCurrentTrace();
-		String id = get(params, "id");
-		String group = get(params, "group");
-		if ("current".equals(group)) {
+		int id = Integer.parseInt(params.get("id")[0]);
+		int currentIndex = trace.getCurrent().getIndex();
+		if (id == currentIndex) {
 			return null;
-		}
-		if ("future".equals(group)) {
-			OpInfo op = trace.getCurrent().getOp();
-			while (!op.getId().equals(id)) {
+		} else if (id > currentIndex) {
+			while (!(id == trace.getCurrent().getIndex())) {
 				trace = trace.forward();
-				op = trace.getCurrent().getOp();
 			}
-		}
-		if ("past".equals(group)) {
-			OpInfo op = trace.getCurrent().getOp();
-			while (!op.getId().equals(id)) {
+		} else if (id < currentIndex) {
+			while (!(id == trace.getCurrent().getIndex())) {
 				trace = trace.back();
-				op = trace.getCurrent().getOp();
 			}
 		}
 		selector.replaceTrace(selector.getCurrentTrace(), trace);
