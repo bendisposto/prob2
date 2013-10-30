@@ -39,6 +39,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	Comparator<Operation> sorter = new ModelOrder(new ArrayList<String>());
 	List<Operation> events = new ArrayList<Operation>();
 	private String filter = "";
+	boolean hide = false;
 
 	@Inject
 	public Events(final AnimationSelector selector) {
@@ -72,10 +73,9 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 			if (sorter instanceof ModelOrder) {
 				sorter = new ModelOrder(opNames);
 			}
-			Map<String, String> wrap = WebUtils.wrap("cmd",
-					"Events.setContent", "ops", WebUtils.toJson(opNames),
-					"canGoBack", false, "canGoForward", false, "sortMode",
-					getSortMode());
+			Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
+					"ops", WebUtils.toJson(opNames), "canGoBack", false,
+					"canGoForward", false);
 			submit(wrap);
 			return;
 		}
@@ -156,7 +156,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 				currentTrace == null ? false : currentTrace.canGoBack(),
 				"canGoForward",
 				currentTrace == null ? false : currentTrace.canGoForward(),
-				"sortMode", getSortMode());
+				"sortMode", getSortMode(), "hide", hide);
 		submit(wrap);
 	}
 
@@ -211,6 +211,11 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		List<Operation> filteredEvents = applyFilter(filter);
 		return WebUtils.wrap("cmd", "Events.setContent", "ops",
 				WebUtils.toJson(filteredEvents));
+	}
+
+	public Object hide(final Map<String, String[]> params) {
+		hide = Boolean.valueOf(params.get("hidden")[0]);
+		return null;
 	}
 
 	private List<Operation> applyFilter(final String filter) {

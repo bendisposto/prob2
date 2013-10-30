@@ -2,6 +2,7 @@ Events = (function() {
     var extern = {}
     var session = Session()
     var sortMode = "normal"
+    var hidden = false
 
     function debounce(fn, delay) {
         var timer = null;
@@ -72,6 +73,19 @@ Events = (function() {
             })
         })
 
+        $("#hide").click(function(e) {
+            hidden = !hidden
+            if(hidden) {
+                $(".notEnabled").css("display","none")
+            } else {
+                $(".notEnabled").css("display","list-item")
+            }
+            session.sendCmd("hide", {
+                "hidden" : hidden,
+                "client" : extern.client
+            })
+        })
+
         $("#search").keyup(debounce(function(e) {
             session.sendCmd("filter", {
                 "filter" : e.target.value,
@@ -109,6 +123,11 @@ Events = (function() {
                 "client" : extern.client
             })
         })
+        if(hidden) {
+            $(".notEnabled").css("display","none")
+        } else {
+            $(".notEnabled").css("display","list-item")
+        }
     }
 
     function setBackEnabled(enabled) {
@@ -131,12 +150,17 @@ Events = (function() {
         this.sortMode = mode
     }
 
+    function setHide(isHidden) {
+        hidden = isHidden === "true"
+    }
+
     extern.client = ""
     extern.init = session.init
     extern.setContent = function(data) {
         setContent(data.ops)
     }
     extern.setView = function(data) {
+        setHide(data.hide)
         setContent(data.ops)
         setBackEnabled(data.canGoBack)
         setForwardEnabled(data.canGoForward)
