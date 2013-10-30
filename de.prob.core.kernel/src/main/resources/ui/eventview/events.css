@@ -25,10 +25,27 @@ ul {
 
 .toolbar {
     margin-bottom: 15px;
-    background-color: #eee;
     border-bottom-color: #ddd;
     border-bottom-style: solid;
     border-bottom-width: 1px;
+
+    /* fallback */
+    background-color: #e4e4e4;
+
+    /* Safari 4-5, Chrome 1-9 */
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#e4e4e4));
+
+    /* Safari 5.1, Chrome 10+ */
+    background: -webkit-linear-gradient(top, #ffffff, #e4e4e4);
+
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(top, #ffffff, #e4e4e4);
+
+    /* IE 10 */
+    background: -ms-linear-gradient(top, #ffffff, #e4e4e4);
+
+    /* Opera 11.10+ */
+    background: -o-linear-gradient(top, #ffffff, #e4e4e4);
 }
 
 .notEnabled {
