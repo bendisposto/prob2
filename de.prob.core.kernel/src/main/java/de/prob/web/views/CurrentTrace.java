@@ -48,18 +48,16 @@ public class CurrentTrace extends AbstractSession implements
 		TraceElement current = trace.getCurrent();
 		String group = "future";
 		while (element.getPrevious() != null) {
+			OpInfo op = element.getOp();
+			String rep = op.getRep(trace.getModel());
 			if (element == current) {
 				group = "current";
-				OpInfo op = element.getOp();
-				String rep = op.getRep(trace.getModel());
 				ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
 						"group", group));
 
 				// After this point, all elements are in the past
 				group = "past";
 			} else {
-				OpInfo op = element.getOp();
-				String rep = op.getRep(trace.getModel());
 				ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
 						"group", group));
 			}
