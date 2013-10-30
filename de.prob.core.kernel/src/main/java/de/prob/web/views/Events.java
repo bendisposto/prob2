@@ -37,6 +37,8 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	List<String> opNames = new ArrayList<String>();
 	Map<String, List<String>> opToParams = new HashMap<String, List<String>>();
 	Comparator<Operation> sorter = new ModelOrder(new ArrayList<String>());
+	List<Operation> events = new ArrayList<Operation>();
+	private String filter = "";
 
 	@Inject
 	public Events(final AnimationSelector selector) {
@@ -83,25 +85,24 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		}
 		currentTrace = trace;
 		Set<OpInfo> ops = trace.getNextTransitions();
-		List<Operation> res = new ArrayList<Operation>(ops.size());
+		events = new ArrayList<Operation>(ops.size());
 		Set<String> notEnabled = new HashSet<String>(opNames);
 		for (OpInfo opInfo : ops) {
 			String name = opInfo.name;
 			notEnabled.remove(name);
 			Operation o = new Operation(opInfo.id, name, opInfo.params, true);
-			res.add(o);
+			events.add(o);
 		}
 		for (String s : notEnabled) {
 			if (!s.equals("INITIALISATION")) {
-				res.add(new Operation(s, s, opToParams.get(s), false));
+				events.add(new Operation(s, s, opToParams.get(s), false));
 			}
 		}
-		Collections.sort(res, sorter);
-		String json = WebUtils.toJson(res);
-		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.setContent",
+		Collections.sort(events, sorter);
+		String json = WebUtils.toJson(applyFilter(filter));
+		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
 				"ops", json, "canGoBack", currentTrace.canGoBack(),
-				"canGoForward", currentTrace.canGoForward(), "sortMode",
-				getSortMode());
+				"canGoForward", currentTrace.canGoForward());
 		submit(wrap);
 	}
 
@@ -150,7 +151,13 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		traceChange(selector.getCurrentTrace());
+		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.setView",
+				"ops", WebUtils.toJson(events), "canGoBack",
+				currentTrace == null ? false : currentTrace.canGoBack(),
+				"canGoForward",
+				currentTrace == null ? false : currentTrace.canGoForward(),
+				"sortMode", getSortMode());
+		submit(wrap);
 	}
 
 	public Object random(final Map<String, String[]> params) {
@@ -181,8 +188,9 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		} else if ("zToA".equals(mode)) {
 			sorter = new ZtoA();
 		}
-		traceChange(currentTrace);
-		return null;
+		Collections.sort(events, sorter);
+		return WebUtils.wrap("cmd", "Events.setContent", "ops",
+				WebUtils.toJson(applyFilter(filter)));
 	}
 
 	public String getSortMode() {
@@ -196,6 +204,23 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 			return "zToA";
 		}
 		return "other";
+	}
+
+	public Object filter(final Map<String, String[]> params) {
+		filter = params.get("filter")[0];
+		List<Operation> filteredEvents = applyFilter(filter);
+		return WebUtils.wrap("cmd", "Events.setContent", "ops",
+				WebUtils.toJson(filteredEvents));
+	}
+
+	private List<Operation> applyFilter(final String filter) {
+		List<Operation> newOps = new ArrayList<Operation>();
+		for (Operation op : events) {
+			if (op.name.startsWith(filter)) {
+				newOps.add(op);
+			}
+		}
+		return newOps;
 	}
 
 	private class EventComparator {

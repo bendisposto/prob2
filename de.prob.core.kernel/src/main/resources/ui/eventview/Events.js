@@ -3,14 +3,32 @@ Events = (function() {
     var session = Session()
     var sortMode = "normal"
 
+    function debounce(fn, delay) {
+        var timer = null;
+        return function () {
+            var context = this, args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                fn.apply(context, args);
+            }, delay);
+        };
+    }
+
     $(document).ready(function() {
+        $(window).keydown(function(event){
+            if(event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        })
+
         $('.dropdown-toggle').dropdown()
 
         $('.dropdown-menu input').click(function(e) {
             e.stopPropagation()
         })
 
-        $("#numRand").keyup(function(e) {
+        $("#numRand").keyup(debounce(function(e) {
             var isInt = /^([0-9]+)$/.exec(e.target.value)!=null
 
             if(!isInt && !$("#randomInput").hasClass('has-error')) {
@@ -20,7 +38,7 @@ Events = (function() {
                 $("#randomInput").removeClass('has-error')
                 $("#randomX").prop("disabled",false)
             }
-        });
+        }, 250));
 
         $("#random1").click(function(e) {random(1)})
         $("#random5").click(function(e) {random(5)})
@@ -53,6 +71,13 @@ Events = (function() {
                 "client" : extern.client
             })
         })
+
+        $("#search").keyup(debounce(function(e) {
+            session.sendCmd("filter", {
+                "filter" : e.target.value,
+                "client" : extern.client
+            })
+        },250))
 
     })
 
@@ -110,9 +135,17 @@ Events = (function() {
     extern.init = session.init
     extern.setContent = function(data) {
         setContent(data.ops)
+    }
+    extern.setView = function(data) {
+        setContent(data.ops)
         setBackEnabled(data.canGoBack)
         setForwardEnabled(data.canGoForward)
         setSortMode(data.sortMode)
+    }
+    extern.newTrace = function(data) {
+        setContent(data.ops)
+        setBackEnabled(data.canGoBack)
+        setForwardEnabled(data.canGoForward)
     }
 
     return extern;
