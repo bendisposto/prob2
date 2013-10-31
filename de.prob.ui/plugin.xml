@@ -15,66 +15,6 @@
       
        
         <menuContribution
-              locationURI="toolbar:de.prob.ui.OperationView">
-           <command
-                 commandId="de.prob.ui.randomoperation"
-                 icon="icons/resume.gif"
-                 label="Execute Random Operations"
-                 style="pulldown">
-           </command>
-           <command
-                 commandId="de.prob.ui.trace.back"
-                 icon="icons/back.gif"
-                 label="Move Back in Trace"
-                 style="push">
-           </command>
-           <command
-                 commandId="de.prob.ui.trace.forward"
-                 icon="icons/forward.gif"
-                 label="Move Forward in Trace"
-                 style="push">
-           </command>
-        </menuContribution>
-        <menuContribution
-              locationURI="menu:de.prob.ui.randomoperation">
-           <command
-                 commandId="de.prob.ui.randomoperation"
-                 label="Execute 1 Step"
-                 style="push">
-              <parameter
-                    name="de.prob.ui.randomoperation.steps"
-                    value="1">
-              </parameter>
-           </command>
-           <command
-                 commandId="de.prob.ui.randomoperation"
-                 label="Execute 5 Steps"
-                 style="push">
-              <parameter
-                    name="de.prob.ui.randomoperation.steps"
-                    value="5">
-              </parameter>
-           </command>
-           <command
-                 commandId="de.prob.ui.randomoperation"
-                 label="Execute 10 Steps"
-                 style="push">
-              <parameter
-                    name="de.prob.ui.randomoperation.steps"
-                    value="10">
-              </parameter>
-           </command>
-           <command
-                 commandId="de.prob.ui.randomoperation"
-                 label="Enter Number of Steps"
-                 style="push">
-              <parameter
-                    name="de.prob.ui.randomoperation.steps"
-                    value="-1">
-              </parameter>
-           </command>
-        </menuContribution>
-        <menuContribution
               allPopups="false"
               locationURI="popup:de.prob.ui.groovybinding">
            <command
@@ -170,23 +110,6 @@
       
 
             <command
-                  id="de.prob.ui.trace.back"
-                  name="Move Back in Trace">
-            </command>
-            <command
-                  id="de.prob.ui.trace.forward"
-                  name="Move Forward in Trace">
-            </command>
-            <command
-                  id="de.prob.ui.randomoperation"
-                  name="Execute Random Events">
-               <commandParameter
-                     id="de.prob.ui.randomoperation.steps"
-                     name="Number of Steps"
-                     optional="false">
-               </commandParameter>
-            </command>
-            <command
                   description="Removes a variable from the groovy shell"
                   id="de.prob.ui.remove_variable"
                   name="Remove Variable">
@@ -238,64 +161,6 @@
    <extension
          point="org.eclipse.ui.handlers">      
      
-      <handler
-            commandId="de.prob.ui.trace.back">
-         <class
-               class="de.prob.ui.operationview.TraceBackHandler">
-         </class>
-         <enabledWhen>
-            <and>
-               <with
-                     variable="de.prob.ui.model_loaded">
-                  <equals
-                        value="enabled">
-                  </equals>
-               </with>
-               <with
-                     variable="de.prob.ui.trace.backward_service">
-                  <equals
-                        value="enabled">
-                  </equals>
-               </with>
-            </and>
-         </enabledWhen>
-      </handler>
-      <handler
-            commandId="de.prob.ui.trace.forward">
-         <class
-               class="de.prob.ui.operationview.TraceForwardHandler">
-         </class>
-         <enabledWhen>
-            <and>
-               <with
-                     variable="de.prob.ui.model_loaded">
-                  <equals
-                        value="enabled">
-                  </equals>
-               </with>
-               <with
-                     variable="de.prob.ui.trace.forward_service">
-                  <equals
-                        value="enabled">
-                  </equals>
-               </with>
-            </and>
-         </enabledWhen>
-      </handler>
-      <handler
-            commandId="de.prob.ui.randomoperation">
-         <enabledWhen>
-            <with
-                  variable="de.prob.ui.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
-         </enabledWhen>
-         <class
-               class="de.prob.ui.operationview.ExecuteRandomHandler">
-         </class>
-      </handler>
       <handler
             commandId="de.prob.ui.remove_variable">
          <class

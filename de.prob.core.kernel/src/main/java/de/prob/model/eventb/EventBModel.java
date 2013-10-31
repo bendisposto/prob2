@@ -106,11 +106,13 @@ public class EventBModel extends AbstractModel {
 	}
 
 	public void addMachine(final EventBMachine machine) {
+		graph.addVertex(machine.getName());
 		components.put(machine.getName(), machine);
 		machines.add(machine);
 	}
 
 	public void addContext(final Context context) {
+		graph.addVertex(context.getName());
 		components.put(context.getName(), context);
 		contexts.add(context);
 	}
