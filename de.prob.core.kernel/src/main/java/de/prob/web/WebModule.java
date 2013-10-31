@@ -9,6 +9,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.servlet.ServletModule;
 
 import de.prob.annotations.Sessions;
+import de.prob.bmotion.BMotionStudioServlet;
 import de.prob.testing.ProBTestRunner;
 import de.prob.testing.TestRegistry;
 import de.prob.webconsole.OutputBuffer;

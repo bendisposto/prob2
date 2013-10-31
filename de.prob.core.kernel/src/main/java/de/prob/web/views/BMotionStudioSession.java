@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
+import de.prob.bmotion.BMotionStudioUtil;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -24,13 +25,13 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
 
-	private final Trace currentTrace;
+	private Trace currentTrace;
 
 	private AbstractModel model;
 
 	private final AnimationSelector selector;
 
-	private String templatePath;
+	private String template;
 
 	@Inject
 	public BMotionStudioSession(final AnimationSelector selector) {
@@ -54,10 +55,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		return WebUtils.render("/ui/bmsview/index.html", scope);
 	}
 
-	public Object forcerendering(final Map<String, String[]> params) {
-		return WebUtils.wrap("cmd", "bms.renderVisualization");
-	}
-
 	public Object executeOperation(final Map<String, String[]> params) {
 		String op = params.get("op")[0];
 		String predicate = "1=1";
@@ -74,27 +71,32 @@ public class BMotionStudioSession extends AbstractSession implements
 		} catch (BException e) {
 			e.printStackTrace();
 		}
-
 		return null;
 	}
 
 	public Object setTemplate(final Map<String, String[]> params) {
-		templatePath = params.get("path")[0];
-		return WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
-				templatePath);
+		this.template = params.get("path")[0];
+		return WebUtils.wrap("cmd", "bms.reloadTemplate", "template",
+				this.template, "lang", BMotionStudioUtil
+						.getJsonDataForLanguage(this.currentTrace,
+								this.template));
 	}
 
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		submit(WebUtils.wrap("cmd", "bms.setTemplate", "templatefile",
-				templatePath));
+		submit(WebUtils.wrap("cmd", "bms.reloadTemplate", "template",
+				this.template, "lang", BMotionStudioUtil
+						.getJsonDataForLanguage(this.currentTrace,
+								this.template)));
 	}
 
 	@Override
 	public void traceChange(final Trace trace) {
-		submit(WebUtils.wrap("cmd", "bms.renderVisualization"));
+		this.currentTrace = trace;
+		submit(WebUtils.wrap("cmd", "bms.renderVisualization", "lang",
+				BMotionStudioUtil.getJsonDataForLanguage(trace, this.template)));
 	}
 
 }

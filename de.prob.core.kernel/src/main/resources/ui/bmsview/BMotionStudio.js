@@ -1,11 +1,8 @@
 bms = (function() {
 
+	
 	var extern = {}
 	var session = Session();
-	var svgCanvas = null;
-	var isInit = false;
-	var templateContent = null;
-	var templateFile = null;
 
 	$(document).ready(function() {
 		
@@ -66,7 +63,7 @@ bms = (function() {
 	// Rendering
 	// --------------------------------------------
 
-	function renderVisualization() {
+	function renderVisualization(observer,events) {
 		if (templateFile) {
 			var src = "http://localhost:8080/bms/" + templateFile;
 			// Prevents flickering ...
@@ -79,10 +76,34 @@ bms = (function() {
 				$('#iframeVisualization').remove()
 				$('#tempiframe').attr("id", "iframeVisualization")
 				resizeIframe()
+				checkObserver(observer)
+				setupEvents(events)
 			});
 		}
 	}
-
+	
+	function checkObserver(observer) {
+//		console.log("Start checking observer")
+//		console.log(observer)
+		for (var i = 0; i < observer.length; i++) {
+			var o = observer[i];
+//			console.log("Calling Observer")
+//			console.log(o.config[0])
+			B[o.cmd](o.config[0]);
+		}
+	}
+	
+	function setupEvents(events) {
+//		console.log("Start setting up events")
+//		console.log(events)
+		for (var i = 0; i < events.length; i++) {
+			var e = events[i];
+//			console.log("Setup up event")
+//			console.log(e.config[0])
+			B[e.cmd](e.config[0]);
+		}		
+	}
+	
 	// --------------------------------------------
 
 	extern.client = ""
@@ -91,14 +112,9 @@ bms = (function() {
 	extern.init = session.init
 	extern.session = session
 
-	extern.renderVisualization = function() {
-		renderVisualization()
-	}
-
-	extern.restorePage = function(data) {
-		restoreFormulas(JSON.parse(data.formulas))
-		restoreTemplate(data.template_content, data.template_scripting)
-		forceRendering()
+	extern.renderVisualization = function(data) {
+		renderVisualization(JSON.parse(data.lang).observer, JSON
+				.parse(data.lang).events)
 	}
 
 	function browse(dir_dom) {
@@ -209,24 +225,20 @@ bms = (function() {
 	extern.fb_select_dir = fb_select_dir
 	extern.fb_select_file = fb_select_file
 	extern.fb_load_file = function(dom_dir) {
+		templateFile = $(dom_dir)[0].value
 		session.sendCmd("setTemplate", {
-			"path" : $(dom_dir)[0].value
+			"path" : templateFile
 		})
 		$("#sourceModal").modal('hide')
 		$("#chooseTemplateBox").css("display", "none");
 	}
 
-	extern.setTemplate = function(data) {
-		templateFile = data.templatefile
-		if (templateFile) {
-			$('#iframeVisualization').attr("src",
-					"http://localhost:8080/bms/" + templateFile)
-			$('#iframeVisualization').load(function() {
-				resizeIframe();
-			});
-		}
+	extern.reloadTemplate = function(data) {
+		templateFile = data.template
+		renderVisualization(JSON.parse(data.lang).observer, JSON
+				.parse(data.lang).events)
 	}
-
+	
 	// --------------------------------------------
 	// External API Calls
 	// --------------------------------------------
