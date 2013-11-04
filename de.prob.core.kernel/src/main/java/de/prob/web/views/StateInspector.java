@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.AsyncContext;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -27,6 +29,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.unicode.UnicodeTranslator;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -103,13 +106,19 @@ public class StateInspector extends AbstractSession implements
 				.getCurrent().getSrc());
 
 		for (IEvalElement e : formulasForEvaluating) {
-			extracted.add(WebUtils.wrap("id", e.getFormulaId().uuid, "code", e
-					.getCode(), "current", current.get(e) == null ? ""
-					: current.get(e).getValue(), "previous",
-					previous.get(e) == null ? "" : previous.get(e).getValue()));
+			extracted.add(WebUtils.wrap("id", e.getFormulaId().uuid, "code",
+					unicode(e.getCode()), "current",
+					current.get(e) == null ? "" : unicode(current.get(e)
+							.getValue()), "previous",
+					previous.get(e) == null ? "" : unicode(previous.get(e)
+							.getValue())));
 		}
 
 		return extracted;
+	}
+
+	private String unicode(String code) {
+		return StringEscapeUtils.escapeHtml(UnicodeTranslator.toUnicode(code));
 	}
 
 	private void registerFormulas(final AbstractModel model) {
@@ -165,7 +174,8 @@ public class StateInspector extends AbstractSession implements
 			if (abstractElement instanceof IEval) {
 				IEvalElement formula = ((IEval) abstractElement).getEvaluate();
 				Map<String, String> wrap = WebUtils.wrap("code",
-						formula.getCode(), "id", formula.getFormulaId().uuid);
+						unicode(formula.getCode()), "id",
+						formula.getFormulaId().uuid);
 				kids.add(wrap);
 				formulasForEvaluating.add(formula);
 			}
