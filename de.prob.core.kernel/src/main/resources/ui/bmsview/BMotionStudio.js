@@ -1,6 +1,5 @@
 bms = (function() {
 
-	
 	var extern = {}
 	var session = Session();
 
@@ -63,7 +62,7 @@ bms = (function() {
 	// Rendering
 	// --------------------------------------------
 
-	function renderVisualization(observer,events) {
+	function renderVisualization(data) {
 		if (templateFile) {
 			var src = "http://localhost:8080/bms/" + templateFile;
 			// Prevents flickering ...
@@ -76,32 +75,21 @@ bms = (function() {
 				$('#iframeVisualization').remove()
 				$('#tempiframe').attr("id", "iframeVisualization")
 				resizeIframe()
-				checkObserver(observer)
-				setupEvents(events)
+				checkObserver(data)
 			});
 		}
 	}
 	
-	function checkObserver(observer) {
+	function checkObserver(data) {
 //		console.log("Start checking observer")
 //		console.log(observer)
+		var observer = data.observer;
 		for (var i = 0; i < observer.length; i++) {
 			var o = observer[i];
 //			console.log("Calling Observer")
 //			console.log(o.config[0])
-			B[o.cmd](o.config[0]);
+			bms[o.cmd](o.config[0]);
 		}
-	}
-	
-	function setupEvents(events) {
-//		console.log("Start setting up events")
-//		console.log(events)
-		for (var i = 0; i < events.length; i++) {
-			var e = events[i];
-//			console.log("Setup up event")
-//			console.log(e.config[0])
-			B[e.cmd](e.config[0]);
-		}		
 	}
 	
 	// --------------------------------------------
@@ -113,8 +101,7 @@ bms = (function() {
 	extern.session = session
 
 	extern.renderVisualization = function(data) {
-		renderVisualization(JSON.parse(data.lang).observer, JSON
-				.parse(data.lang).events)
+		renderVisualization(JSON.parse(data.lang))
 	}
 
 	function browse(dir_dom) {
@@ -235,22 +222,50 @@ bms = (function() {
 
 	extern.reloadTemplate = function(data) {
 		templateFile = data.template
-		renderVisualization(JSON.parse(data.lang).observer, JSON
-				.parse(data.lang).events)
+		renderVisualization(JSON.parse(data.lang))
+	}
+
+	// --------------------------------------------
+	// B Observer/Events
+	// --------------------------------------------
+	extern.predicateObserver = function(config) {
+		var selector = config.selector
+		var attr = config.attribute
+		var val = config.value
+		var predicate = config.predicate
+		var obj = $("#iframeVisualization").contents().find(selector)
+		if (predicate == "true") {
+			if(val == "true") {
+				val = true;
+			} else if(val == "false") {
+				val = false;
+			}
+			if(!(typeof obj.prop(attr) === 'undefined')) {
+				obj.prop(attr, val)
+			} else if(!(typeof obj.attr(attr) === 'undefined')) {
+				obj.attr(attr, val)				
+			} else if(!(typeof obj.css(attr) === 'undefined')) {
+				obj.css(attr, val)
+			}
+		}
 	}
 	
-	// --------------------------------------------
-	// External API Calls
-	// --------------------------------------------
-	extern.executeOperation = function(op, predicate) {
-		session.sendCmd("executeOperation", {
-			"op" : op,
-			"predicate" : predicate,
-			"client" : extern.client
-		})
-	}
-	// --------------------------------------------
+	extern.executeOperation = function(config) {
+		var selector = config.selector
+		var operation = config.operation
+		var predicate = config.predicate
+		var obj = $("#iframeVisualization").contents().find(selector)
+		obj.click(function() {
+			session.sendCmd("executeOperation", {
+				"op" : operation,
+				"predicate" : predicate,
+				"client" : extern.client
+			})
+		});
+	}	
 
+	// --------------------------------------------
+	
 	return extern;
 
 }())
