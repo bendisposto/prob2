@@ -20,7 +20,6 @@ import de.prob.scripting.EventBFactory;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
-import de.prob.webconsole.GroovyExecution;
 import de.prob.webconsole.ServletContextListener;
 
 public class StartAnimationHandler extends AbstractHandler {
@@ -55,16 +54,6 @@ public class StartAnimationHandler extends AbstractHandler {
 		AnimationSelector selector = injector
 				.getInstance(AnimationSelector.class);
 		selector.addNewAnimation(h);
-		final GroovyExecution ge = injector.getInstance(GroovyExecution.class);
-		Binding bindings = ge.getBindings();
-		try {
-			bindings.setVariable(ge.freshVar("space_"), s);
-			s.registerStateSpaceListener(ge);
-		} catch (Error t) {
-			t.printStackTrace();
-		} finally {
-			ge.notifyListerners();
-		}
 
 		System.gc();
 
