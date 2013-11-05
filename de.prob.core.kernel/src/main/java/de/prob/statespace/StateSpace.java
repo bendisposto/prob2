@@ -86,14 +86,12 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private final HashSet<StateId> invariantKo = new HashSet<StateId>();
 	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
 	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
-	private final IAnimator animator2;
 
 	@Inject
 	public StateSpace(final Provider<IAnimator> panimator,
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		animator = panimator.get();
-		animator2 = panimator.get();
 		lastCalculatedStateId = -1;
 	}
 
