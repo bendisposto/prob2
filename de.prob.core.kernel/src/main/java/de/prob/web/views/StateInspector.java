@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.Context;
@@ -58,6 +59,13 @@ public class StateInspector extends AbstractSession implements
 					"components", WebUtils.toJson(extracted), "values",
 					WebUtils.toJson(values)));
 		}
+	}
+
+	public Object evaluate(Map<String, String[]> params) {
+		String code = params.get("code")[0];
+		Object eval = currentTrace.getCurrentState().eval(new ClassicalB(code));
+		return WebUtils.wrap("cmd", "StateInspector.result", "code", code,
+				"result", eval.toString());
 	}
 
 	@Override
