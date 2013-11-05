@@ -26,7 +26,6 @@ public class AnimationSelector {
 	List<WeakReference<IAnimationChangeListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<IAnimationChangeListener>>();
 	List<WeakReference<IModelChangedListener>> modelListeners = new CopyOnWriteArrayList<WeakReference<IModelChangedListener>>();
 
-	List<StateSpace> statespaces = new ArrayList<StateSpace>();
 	List<Trace> traces = new ArrayList<Trace>();
 
 	Trace currentTrace = null;
@@ -91,9 +90,6 @@ public class AnimationSelector {
 		notifyAnimationChange(trace);
 
 		StateSpace s = trace.getStateSpace();
-		if (!statespaces.contains(s)) {
-			statespaces.add(s);
-		}
 		if (s != null && !s.equals(currentStateSpace)) {
 			currentStateSpace = s;
 			notifyModelChanged(s);
@@ -136,10 +132,6 @@ public class AnimationSelector {
 	 */
 	public List<Trace> getTraces() {
 		return traces;
-	}
-
-	public List<StateSpace> getStatespaces() {
-		return statespaces;
 	}
 
 	/**
@@ -208,6 +200,7 @@ public class AnimationSelector {
 			traces.remove(trace);
 			if (traces.isEmpty()) {
 				currentTrace = null;
+				currentStateSpace = null;
 				return;
 			}
 			if (indexOf == traces.size()) {
@@ -215,6 +208,7 @@ public class AnimationSelector {
 				return;
 			}
 			currentTrace = traces.get(indexOf);
+			currentStateSpace = currentTrace.getStateSpace();
 			return;
 		}
 		traces.remove(trace);

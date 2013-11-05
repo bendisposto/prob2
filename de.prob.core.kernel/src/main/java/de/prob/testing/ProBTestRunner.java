@@ -3,6 +3,8 @@ package de.prob.testing;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.script.ScriptEngine;
+
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
@@ -10,11 +12,12 @@ import org.junit.runner.notification.RunListener;
 
 import com.google.inject.Inject;
 
-import de.prob.webconsole.GroovyExecution;
+import de.prob.scripting.GroovySE;
+import de.prob.scripting.ScriptEngineProvider;
 
 public class ProBTestRunner {
 
-	private final GroovyExecution executor;
+	private final ScriptEngine executor;
 	private final List<ProBTestListener> testListeners = new ArrayList<ProBTestListener>();
 	private Class<?>[] tests = {};
 
@@ -27,8 +30,8 @@ public class ProBTestRunner {
 			"import org.junit.Assert.*;" };
 
 	@Inject
-	public ProBTestRunner(final GroovyExecution executor) {
-		this.executor = executor;
+	public ProBTestRunner(final ScriptEngineProvider executorP) {
+		this.executor = executorP.get();
 	}
 
 	public void runTests(final List<String> tests) {
@@ -58,7 +61,8 @@ public class ProBTestRunner {
 	public Object getTestClass(final String test) {
 		Object runScript2 = "";
 		try {
-			runScript2 = executor.runScript2(test, true, false);
+
+			runScript2 = executor.eval(test);
 		} catch (Throwable e) {
 			e.printStackTrace(); // won't happen in regular mode
 		}

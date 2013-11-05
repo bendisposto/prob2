@@ -1,66 +1,136 @@
 StateInspector = (function() {
-    var extern = {}
-    var session = Session();
-    var testFormula = {
-        components : [
-            {
-                label: "Scheduler",
-                children: [
-                    {
-                        label: "Variables",
-                        children: [
-                            { code: "active", id: 1 },
-                            { code: "waiting", id: 2 },
-                            { code: "ready", id: 3 }
-                        ]
-                    },{
-                        label: "Invariants",
-                        children: [
-                            { code: "active <: PID", id: 4 },
-                            { code: "ready <: PID", id: 5 },
-                            { code: "waiting <: PID", id: 6 },
-                            { code: "(ready /\\ waiting) = {}", id: 7 },
-                            { code: "active /\\ (ready \\/ waiting) = {}", id: 8 },
-                            { code: "card(active) <= 1", id: 9 },
-                            { code: "((active = {}) => (ready = {}))", id: 10 }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
+	var extern = {}
+	var session = Session();
+	var cm = null;
+	;
+	var history = [];
+	var hp = null;
 
-    $(document).ready(function() {
-    });
+	var editorkeys = function() {
+		return {
+			'Shift-Enter' : function(cm) {
+				cm.replaceSelection("\n", "end", "+input");
+				cm.indentLine(cm.getCursor().line, null, true);
+				return true;
+			},
+			'Enter' : function(cm) {
+				hp = null;
+				var code = cm.getValue();
+				console.log("submit: '" + code + "'")
+				session.sendCmd("evaluate", {
+					"code" : code
+				})
+				history.push(code);
+				cm.setValue("")
+				return false;
+			},
+			'Up' : function(cm) {
+				if (cm.getCursor().line == 0) {
+					console.log("History up")
+					if (hp == null) {
+						hp = history.length;
+					}
+					if (hp >= 0) {
+						if (hp > 0) {
+							hp--
+						}
+						cm.setValue(history[hp])
+						cm.se
+					}
 
-    function clearInput() {
-        $("#content").replaceWith("<ul id='content'></ul>");
-    }
+				} else
+					hp = null;
+				return CodeMirror.Pass;
+				;
+			},
+			'Down' : function(cm) {
+				var cnt = cm.doc.lineCount();
+				if (cm.getCursor().line == cnt - 1) {
+					console.log("History down")
+					if (hp != null) {
+						if (hp < history.length - 1) {
+							hp++
+							cm.setValue(history[hp])
+						} else {
+							cm.setValue("")
+						}
 
-    function setModel(model) {
-    	$("#content").replaceWith(session.render("/ui/stateInspector/model_format.html",model))
-    }
+					}
+				} else
+					return CodeMirror.Pass;
+				;
+			}
+		}
+	};
 
-    function updateValues(values) {
-        for (var i = 0; i < values.length; i++) {
-            $("#"+values[i].id).replaceWith(session.render("/ui/stateInspector/entry_format.html",values[i]));
-            if(values[i].current !== values[i].previous) {
-                $("#"+values[i].id).addClass("changed");
-            }
-        };
-    }
+	$(document).ready(function() {
+	});
 
-    extern.setModel = function(data) {
-        setModel(JSON.parse(data.components));
-        updateValues(JSON.parse(data.values));
-    }
-    extern.updateValues = function(data) {
-        updateValues(JSON.parse(data.values));
-    }
-    extern.clearInput = clearInput;
+	function clearInput() {
+		$("#content").replaceWith("<ul class='no-indent' id='content'></ul>");
+	}
 
-    extern.client = ""
-    extern.init = session.init
+	function setModel(model) {
+		$("#content").replaceWith(
+				session.render("/ui/stateInspector/model_format.html", model))
+	}
 
-    return extern;
+	function updateValues(values) {
+		for ( var i = 0; i < values.length; i++) {
+			$("#" + values[i].id).replaceWith(
+					session.render("/ui/stateInspector/entry_format.html",
+							values[i]));
+			if (values[i].current !== values[i].previous) {
+				$("#" + values[i].id).addClass("changed");
+			}
+		}
+	}
+
+	function showresult(code, result) {
+		console.log(code + "->" + result)
+		$("#output").html(result)
+	}
+
+	function init() {
+		cm = CodeMirror.fromTextArea($('#input')[0], {
+			mode : 'b',
+			lineNumbers : false,
+			lineWrapping : true,
+			theme : "default",
+			viewportMargin : Infinity
+		});
+
+		cm.addKeyMap(editorkeys());
+
+		$(".CodeMirror-hscrollbar").remove(); // Hack! no horizontal scrolling
+		$(".CodeMirror-vscrollbar").remove(); // Hack! no vertical scrolling
+		$(".CodeMirror-scrollbar-filler").remove(); // Hack! no funny white
+		// square in bottom right
+		// corner
+	}
+
+	extern.setModel = function(data) {
+		setModel(JSON.parse(data.components));
+		updateValues(JSON.parse(data.values));
+	}
+	extern.updateValues = function(data) {
+		updateValues(JSON.parse(data.values));
+	}
+	extern.clearInput = clearInput;
+
+	extern.client = ""
+	extern.init = function() {
+		session.init()
+		init()
+	}
+
+	extern.result = function(data) {
+		showresult(data.code, data.result);
+	}
+
+	extern.cm = function() {
+		return cm;
+	}
+
+	return extern;
 }())
