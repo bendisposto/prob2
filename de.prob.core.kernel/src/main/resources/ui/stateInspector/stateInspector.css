@@ -10,13 +10,16 @@ li {
 	font-style: italic;
 }
 
-.xspan {
-	display: inline-block;
-	width: 300px;
-}
-
 .changed {
 	font-weight: bold;
+}
+
+.no-indent {
+	padding-left: 0px;
+}
+
+.small-indent {
+	padding-left: 20px;
 }
 
 .CodeMirror {

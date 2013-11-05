@@ -1,12 +1,12 @@
-<ul id="content">
+<ul class="no-indent" id="content">
     {{#components}}
     <li>
         <div class="component">{{label}}</div>
         {{#children}}
-        <ul>
+        <ul class="small-indent">
             <li>
                 <div class="heading">{{label}}</div>
-                <ul>
+                <ul class="small-indent">
                     {{#children}}
                     <li class="entry" id="{{id}}"><span class="code">{{code}}</span></li>
                     {{/children}}

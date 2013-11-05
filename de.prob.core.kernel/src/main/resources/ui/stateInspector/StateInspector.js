@@ -67,7 +67,7 @@ StateInspector = (function() {
 	});
 
 	function clearInput() {
-		$("#content").replaceWith("<ul id='content'></ul>");
+		$("#content").replaceWith("<ul class='no-indent' id='content'></ul>");
 	}
 
 	function setModel(model) {
@@ -84,7 +84,6 @@ StateInspector = (function() {
 				$("#" + values[i].id).addClass("changed");
 			}
 		}
-		;
 	}
 
 	function showresult(code, result) {
