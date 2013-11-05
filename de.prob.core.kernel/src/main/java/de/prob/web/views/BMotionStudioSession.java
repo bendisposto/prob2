@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
-import de.prob.bmotion.BMotionStudioUtil;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -57,15 +56,11 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	public Object executeOperation(final Map<String, String[]> params) {
 		String op = params.get("op")[0];
-		String predicate = "1=1";
-		if (params.get("predicate") != null) {
-			predicate = params.get("predicate")[0];
-		}
+		String predicate = params.get("predicate")[0];
+		if (predicate.isEmpty())
+			predicate = "1=1";
 		Trace currentTrace = selector.getCurrentTrace();
 		try {
-			if (predicate == null) {
-				predicate = "1=1";
-			}
 			Trace newTrace = currentTrace.add(op, predicate);
 			selector.replaceTrace(currentTrace, newTrace);
 		} catch (BException e) {
@@ -77,26 +72,23 @@ public class BMotionStudioSession extends AbstractSession implements
 	public Object setTemplate(final Map<String, String[]> params) {
 		this.template = params.get("path")[0];
 		return WebUtils.wrap("cmd", "bms.reloadTemplate", "template",
-				this.template, "lang", BMotionStudioUtil
-						.getJsonDataForLanguage(this.currentTrace,
-								this.template));
+				this.template);
 	}
 
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		submit(WebUtils.wrap("cmd", "bms.reloadTemplate", "template",
-				this.template, "lang", BMotionStudioUtil
-						.getJsonDataForLanguage(this.currentTrace,
-								this.template)));
+		if (this.template != null) {
+			submit(WebUtils.wrap("cmd", "bms.reloadTemplate", "template",
+					this.template));
+		}
 	}
 
 	@Override
 	public void traceChange(final Trace trace) {
 		this.currentTrace = trace;
-		submit(WebUtils.wrap("cmd", "bms.renderVisualization", "lang",
-				BMotionStudioUtil.getJsonDataForLanguage(trace, this.template)));
+		submit(WebUtils.wrap("cmd", "bms.renderVisualization"));
 	}
 
 }
