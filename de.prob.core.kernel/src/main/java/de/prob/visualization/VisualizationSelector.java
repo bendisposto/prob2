@@ -11,16 +11,13 @@ public class VisualizationSelector {
 
 	private static int ctr = 0;
 
-	private final GroovySE e;
-
 	@Inject
-	public VisualizationSelector(final GroovySE e) {
-		this.e = e;
+	public VisualizationSelector() {
 	}
 
 	public void registerSession(final String sessionId,
 			final IVisualizationEngine servlet) {
-// FIXME REFACTOR
+		// FIXME REFACTOR
 	}
 
 }
