@@ -8,11 +8,10 @@ import com.google.inject.Inject
 
 import de.prob.annotations.Home
 import de.prob.cli.OsSpecificInfo
-import de.prob.webconsole.GroovyExecution
-import de.prob.webconsole.shellcommands.AbstractShellCommand
 
 
-class Downloader extends AbstractShellCommand {
+
+class Downloader {
 
 	def OsSpecificInfo osInfo
 	def String probhome
@@ -182,22 +181,22 @@ class Downloader extends AbstractShellCommand {
 		}
 	}
 
-	@Override
-	public Object perform(List<String> m, GroovyExecution exec)
-	throws IOException {
-		if (config.isEmpty()) {
-			config = downloadConfig()
-		}
-		if (m.size() < 2) {
-			return listVersions()
-		}
-		def version = m[1]
-		if(version == "cspm") {
-			return installCSPM();
-		}
-		if (!((List) availableVersions()).contains(version)) {
-			return "unknown version"
-		}
-		return downloadCli(version);
-	}
+	//	@Override
+	//	public Object perform(List<String> m, GroovyExecution exec)
+	//	throws IOException {
+	//		if (config.isEmpty()) {
+	//			config = downloadConfig()
+	//		}
+	//		if (m.size() < 2) {
+	//			return listVersions()
+	//		}
+	//		def version = m[1]
+	//		if(version == "cspm") {
+	//			return installCSPM();
+	//		}
+	//		if (!((List) availableVersions()).contains(version)) {
+	//			return "unknown version"
+	//		}
+	//		return downloadCli(version);
+	//	}
 }
