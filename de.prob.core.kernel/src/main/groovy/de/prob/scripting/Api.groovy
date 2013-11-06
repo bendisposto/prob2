@@ -29,6 +29,8 @@ public class Api {
 	private final Downloader downloader;
 	private final ProBInstanceProvider instanceProvider;
 
+	def globals = [:]
+
 	@Override
 	public String toString() {
 		return "ProB Connector";
