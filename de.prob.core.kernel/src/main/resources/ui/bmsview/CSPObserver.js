@@ -5,8 +5,9 @@ $(document).ready(function() {
   {{#model.trace}}
     {{#data.observer}}
       {{#cspEventObserver}}
-	  console.log("{{full}} {{events}}")
-	  triggerCspEventObserver("{{full}}","{{events}}","{{selector}}","{{attribute}}","{{value}}")
+	  {{#trigger}}
+	    triggerCspEventObserver("{{full}}","{{events}}","{{selector}}","{{attribute}}","{{value}}")
+	  {{/trigger}}
       {{/cspEventObserver}}
     {{/data.observer}}
   {{/model.trace}}

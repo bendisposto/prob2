@@ -4,7 +4,11 @@ $(document).ready(function() {
 		
   {{#data.observer}}
     {{#predicateObserver}}
-      triggerPredicateObserver("{{predicate}}","{{selector}}","{{attribute}}","{{value}}")
+      
+      {{#trigger}}
+	triggerPredicateObserver("{{predicate}}","{{selector}}","{{attribute}}","{{value}}")
+      {{/trigger}}
+      
     {{/predicateObserver}}
     {{#executeOperation}}
       setupExecuteOperation("{{selector}}","{{operation}}","{{predicate}}")
