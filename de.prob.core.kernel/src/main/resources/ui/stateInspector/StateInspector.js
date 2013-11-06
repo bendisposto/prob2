@@ -86,9 +86,9 @@ StateInspector = (function() {
 		}
 	}
 
-	function showresult(code, result) {
-		console.log(code + "->" + result)
-		$("#output").html(result)
+	function showresult(data) {
+		var output = session.render("/ui/stateInspector/shell_answer.html", data)
+		$(".outbox").append(output)
 	}
 
 	function init() {
@@ -124,9 +124,7 @@ StateInspector = (function() {
 		init()
 	}
 
-	extern.result = function(data) {
-		showresult(data.code, data.result);
-	}
+	extern.result = showresult
 
 	extern.cm = function() {
 		return cm;
