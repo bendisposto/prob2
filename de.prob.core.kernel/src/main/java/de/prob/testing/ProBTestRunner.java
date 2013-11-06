@@ -12,7 +12,6 @@ import org.junit.runner.notification.RunListener;
 
 import com.google.inject.Inject;
 
-import de.prob.scripting.GroovySE;
 import de.prob.scripting.ScriptEngineProvider;
 
 public class ProBTestRunner {

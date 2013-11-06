@@ -63,6 +63,7 @@ public class CurrentTrace extends AbstractSession implements
 			}
 			element = element.getPrevious();
 		}
+		ops.add(WebUtils.wrap("id", 0, "rep", "-- root --", "group", "start"));
 
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
