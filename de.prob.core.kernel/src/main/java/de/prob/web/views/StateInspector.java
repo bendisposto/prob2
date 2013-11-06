@@ -147,11 +147,12 @@ public class StateInspector extends AbstractSession implements
 		formulasForEvaluating = new ArrayList<IEvalElement>();
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> components = new ArrayList<Object>();
-
-		for (Entry<String, AbstractElement> e : m.getComponents().entrySet()) {
-			components.add(extractComponent(e.getKey(), e.getValue()));
+		Map<String, AbstractElement> modelComponents = m.getComponents();
+		if (modelComponents != null) {
+			for (Entry<String, AbstractElement> e : modelComponents.entrySet()) {
+				components.add(extractComponent(e.getKey(), e.getValue()));
+			}
 		}
-
 		extracted.put("components", components);
 		return extracted;
 	}

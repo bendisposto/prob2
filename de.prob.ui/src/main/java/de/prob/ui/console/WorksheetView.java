@@ -2,9 +2,6 @@ package de.prob.ui.console;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
@@ -30,7 +27,7 @@ public class WorksheetView extends ViewPart {
 	public void createPartControl(Composite shell) {
 
 		browser = new Browser(shell, SWT.NONE);
-		browser.setUrl("http://localhost:" + port+"/sessions/Worksheet");
+		browser.setUrl("http://localhost:" + port + "/sessions/Worksheet");
 
 	}
 

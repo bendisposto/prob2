@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -13,12 +14,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
-import de.prob.web.WebUtils;
 
 @SuppressWarnings("serial")
 @Singleton
@@ -44,23 +47,34 @@ public class BMotionStudioServlet extends HttpServlet {
 		String[] split = furl.split("/");
 		String filename = split[split.length - 1];
 		String filepath = furl;
-
-		// Set correct mimeType
-		String mimeType = getServletContext().getMimeType(filepath);
-		resp.setContentType(mimeType);
-
+		
+	
 		// Prepare streams.
 		BufferedInputStream input = null;
 		BufferedOutputStream output = null;
 		InputStream stream = new FileInputStream(filepath);
-
+		
+		// Set correct mimeType
+		String mimeType = getServletContext().getMimeType(filepath);
+		resp.setContentType(mimeType);
+		
 		// TODO: This is ugly ... we need a better method to check the file
 		// type
 		Trace currentTrace = selector.getCurrentTrace();
-		if (filename.endsWith(".html") && currentTrace != null) {
+		if ((filename.endsWith(".html") || filename.endsWith(".js")) && currentTrace != null) {
+			
 			Map<String, Object> jsonDataForRendering = BMotionStudioUtil
-					.getJsonDataForRendering(currentTrace);
-			String render = WebUtils.render(filepath, jsonDataForRendering);
+					.getJsonDataForRendering(currentTrace, furl);
+			MustacheFactory mf = new DefaultMustacheFactory();
+			Mustache mustache = mf.compile(filepath);
+			StringWriter sw = new StringWriter();
+			try {
+				mustache.execute(sw, jsonDataForRendering).flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			String render = sw.toString();
+			render = render.replaceAll("&quot;", "\"");
 			stream = new ByteArrayInputStream(render.getBytes());
 		}
 

@@ -3,11 +3,18 @@ package de.prob.ui.operationview;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.services.ISourceProviderService;
 
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IModelChangedListener;
+import de.prob.statespace.StateSpace;
+import de.prob.ui.services.ModelLoadedProvider;
+import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 
-public class OperationView extends ViewPart {
+public class OperationView extends ViewPart implements IModelChangedListener {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -17,8 +24,14 @@ public class OperationView extends ViewPart {
 	private final int port;
 	private Browser browser;
 
+	private AnimationSelector selector;
+
 	public OperationView() {
+		this.selector = ServletContextListener.INJECTOR
+				.getInstance(AnimationSelector.class);
+		selector.registerModelChangedListener(this);
 		port = WebConsole.getPort();
+
 	}
 
 	/**
@@ -37,6 +50,17 @@ public class OperationView extends ViewPart {
 	@Override
 	public void setFocus() {
 		browser.setFocus();
+	}
+
+	@Override
+	public void modelChanged(StateSpace s) {
+		IWorkbenchPartSite site = getSite();
+		final ISourceProviderService service = (ISourceProviderService) site
+				.getService(ISourceProviderService.class);
+		final ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
+				.getSourceProvider(ModelLoadedProvider.SERVICE);
+		sourceProvider.setEnabled(s != null);
+
 	}
 
 }

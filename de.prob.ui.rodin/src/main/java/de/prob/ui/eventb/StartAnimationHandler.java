@@ -1,7 +1,5 @@
 package de.prob.ui.eventb;
 
-import groovy.lang.Binding;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

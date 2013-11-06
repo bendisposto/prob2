@@ -43,9 +43,19 @@ li {
 	overflow-x: hidden;
 }
 
+.question {
+	font-style: italic;
+	color: gray;
+}
+
+.response {
+	font-weight: bold;
+}
+
+
 .outbox {
-	border: 1px solid #000;
 	margin-bottom: 6px;
 	background-color: #f3f6ff;
 	padding-left: 5px;
+	font-family: monospace;
 }
