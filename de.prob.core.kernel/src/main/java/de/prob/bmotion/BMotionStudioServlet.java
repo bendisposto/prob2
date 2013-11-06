@@ -65,6 +65,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			
 			Map<String, Object> jsonDataForRendering = BMotionStudioUtil
 					.getJsonDataForRendering(currentTrace, furl);
+			
 			MustacheFactory mf = new DefaultMustacheFactory();
 			Mustache mustache = mf.compile(filepath);
 			StringWriter sw = new StringWriter();

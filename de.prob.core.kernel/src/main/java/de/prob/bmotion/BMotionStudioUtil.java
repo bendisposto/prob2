@@ -124,31 +124,47 @@ public class BMotionStudioUtil {
 					currentTrace, eventbModel);
 			fMap.put("variables", bVariablesAsJson);
 
+			List<Map<String, String>> elements = new ArrayList<Map<String, String>>();
+			for (Map.Entry<String, Object> entry : bVariablesAsJson.entrySet()) {
+				elements.add(WebUtils.wrap("key",entry.getKey(),"value",entry.getValue()));
+			}
+			fMap.put("variablesAsList", elements);
+
 			// Add constants
 			Map<String, Object> bConstantsAsJson = getBConstantsAsJson(
 					currentTrace, eventbModel);
 			fMap.put("constants", bConstantsAsJson);
 
+			elements = new ArrayList<Map<String, String>>();
+			for (Map.Entry<String, Object> entry : bConstantsAsJson.entrySet()) {
+				elements.add(WebUtils.wrap("key",entry.getKey(),"value",entry.getValue()));
+			}
+			fMap.put("constantsAsList", elements);
+			
 			// Add invariants
 			Map<String, Object> bInvariantsAsJson = getBInvariantsAsJson(
 					currentTrace, eventbModel);
 			fMap.put("invariants", bInvariantsAsJson);
-
+			
+			elements = new ArrayList<Map<String, String>>();
+			for (Map.Entry<String, Object> entry : bInvariantsAsJson.entrySet()) {
+				elements.add(WebUtils.wrap("key",entry.getKey(),"value",entry.getValue()));
+			}
+			fMap.put("invariantsAsList", elements);
+			
 		}
 
 		// Add trace
 		List<Map<String, Object>> trace = new ArrayList<Map<String, Object>>();
 		List<OpInfo> opList = currentTrace.getCurrent().getOpList();
-		List<String> opStrList = new ArrayList<String>();
 		for (OpInfo op : opList) {
 			Map<String, Object> opm = new HashMap<String, Object>();
 			opm.put("name", op.getName());
 			opm.put("parameter", op.getParams());
+			opm.put("full", getOpString(op));
 			trace.add(opm);
-			opStrList.add(getOpString(op));
 		}
 		fMap.put("trace", trace);
-		fMap.put("traceAsList", opStrList);
 
 		if (currentTrace.getHead().getOp() != null)
 			fMap.put("lastOperation", getOpString(currentTrace.getHead().getOp()));
@@ -159,36 +175,18 @@ public class BMotionStudioUtil {
 		
 		String jsonRendered = "{}";
 		if (template != null) {
-			
 			String[] split = template.split("/");
 			String filename = split[split.length - 1];
-			
 			String folderPath = template.replace(filename, "");
 			File folder = new File(folderPath);
-			for(File f : folder.listFiles()) {
-				if(f.getName().endsWith(".json")) {
-					// String fjsonRendered = readFile(jsonfilepath);
+			for (File f : folder.listFiles()) {
+				if (f.getName().endsWith(".json")) {
 					String fjsonRendered = WebUtils.render(f.getPath(),
 							modelMap);
 					if (!fjsonRendered.isEmpty())
 						jsonRendered = fjsonRendered;
 				}
 			}
-			
-//			int i = filename.lastIndexOf('.');
-//			if (i > 0) {
-//				String extension = filename.substring(i + 1);
-//				String jsonfilename = filename.replace(extension, "json");
-//				String jsonfilepath = template.replace(filename, jsonfilename);
-//				File jsonfile = new File(jsonfilepath);
-//				if (jsonfile.exists()) {
-//					// String fjsonRendered = readFile(jsonfilepath);
-//					String fjsonRendered = WebUtils.render(jsonfilepath,
-//							modelMap);
-//					if (!fjsonRendered.isEmpty())
-//						jsonRendered = fjsonRendered;
-//				}
-//			}
 		}
 		
 		modelMap.put("data", JSON.parse(jsonRendered));
@@ -196,22 +194,6 @@ public class BMotionStudioUtil {
 		return modelMap;
 
 	}
-	
-//	private static String readFile(String filename)
-//	{
-//	   String content = null;
-//	   File file = new File(filename); //for ex foo.txt
-//	   try {
-//	       FileReader reader = new FileReader(file);
-//	       char[] chars = new char[(int) file.length()];
-//	       reader.read(chars);
-//	       content = new String(chars);
-//	       reader.close();
-//	   } catch (IOException e) {
-//	       e.printStackTrace();
-//	   }
-//	   return content;
-//	}
 	
 	private static class EvalExpression implements Function<String, Object> {
 
@@ -224,34 +206,34 @@ public class BMotionStudioUtil {
 		public Object apply(String input) {
 
 			Object output = "???";
-
 				
 			try {
 
+				EvaluationResult evaluationResult = null;
 				IEvalElement evalElement = null;
+				
 				AbstractModel model = currentTrace.getModel();
 				if (model instanceof EventBModel
 						|| model instanceof ClassicalBModel) {
 					evalElement = new ClassicalB(input);
+					StateSpace stateSpace = currentTrace.getStateSpace();
+					Map<IEvalElement, EvaluationResult> valuesAt = stateSpace
+							.valuesAt(currentTrace.getCurrentState());
+					evaluationResult = valuesAt.get(evalElement);
+					if (evaluationResult == null)
+						stateSpace.subscribe(this, evalElement);
+					// TODO: unscribe!!!
 				} else if (model instanceof CSPModel) {
 					Object object = cspcache.get(input);
-					if(object != null) {
+					if (object != null) {
 						return object;
 					} else {
 						evalElement = new CSP(input,
 								(CSPModel) currentTrace.getModel());
+						evaluationResult = currentTrace
+								.evalCurrent(evalElement);
 					}
-				}
-				
-				StateSpace stateSpace = currentTrace.getStateSpace();
-				Map<IEvalElement, EvaluationResult> valuesAt = stateSpace.valuesAt(currentTrace.getCurrentState());
-				EvaluationResult evaluationResult = valuesAt.get(evalElement);
-				
-				
-				if (evaluationResult == null)
-					stateSpace.subscribe(this, evalElement);
-				
-				// TODO: unscribe!!!
+				}		
 				
 				if (evaluationResult != null) {
 					if (evaluationResult.hasError()) {
@@ -270,7 +252,6 @@ public class BMotionStudioUtil {
 				// + e.getMessage() + "</span>";
 			}
 		
-			
 			return output;
 
 		}
