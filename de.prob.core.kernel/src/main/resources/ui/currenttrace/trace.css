@@ -15,6 +15,12 @@ li:nth-child(odd) {
     font-weight: bold;
 }
 
+.start {
+    color: #bbb;
+    letter-spacing: 2px;
+    font-family: "Courier New", Courier, monospace;
+}
+
 li:nth-child(even) {
 	background-color: #f3f6ff;
 }
