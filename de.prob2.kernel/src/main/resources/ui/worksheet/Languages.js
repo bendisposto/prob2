@@ -31,6 +31,17 @@ Languages = (function() {
 			no_vars : true,
 			has_source : true
 		},
+		"Trace" : {
+			codemirror : {
+				mode : 'b',
+				lineNumbers : false,
+				lineWrapping : true,
+				theme : "default",
+				viewportMargin : Infinity,
+			},
+			no_vars : true,
+			has_source : true
+		},
 		"LoadModel" : {
 			getter : function() {
 				return $("#openfile" + this.id)[0].value
