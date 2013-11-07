@@ -1,6 +1,7 @@
 package de.prob.web.views;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,8 @@ public class CurrentTrace extends AbstractSession implements
 
 	private final AnimationSelector selector;
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);
+	List<Map<String,String>> ops = new ArrayList<Map<String,String>>();
+	private boolean sortDown = true;
 
 	@Inject
 	public CurrentTrace(final AnimationSelector selector) {
@@ -36,7 +39,7 @@ public class CurrentTrace extends AbstractSession implements
 	@Override
 	public void traceChange(final Trace trace) {
 		logger.trace("Trace has changed. Submitting");
-		List<Map<String, String>> ops = new ArrayList<Map<String, String>>();
+		ops = new ArrayList<Map<String, String>>();
 		if (trace == null) {
 			Map<String, String> wrap = WebUtils.wrap("cmd",
 					"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
@@ -64,7 +67,10 @@ public class CurrentTrace extends AbstractSession implements
 			element = element.getPrevious();
 		}
 		ops.add(WebUtils.wrap("id", 0, "rep", "-- root --", "group", "start"));
-
+		if(!sortDown) {
+			Collections.reverse(ops);
+		}
+		
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
 		submit(wrap);
@@ -89,6 +95,13 @@ public class CurrentTrace extends AbstractSession implements
 		selector.replaceTrace(selector.getCurrentTrace(), trace);
 		return null;
 	}
+	
+	public Object changeSort(final Map<String, String[]> params) {
+		sortDown = Boolean.valueOf(params.get("sortDown")[0]);
+		Collections.reverse(ops);
+		return WebUtils.wrap("cmd",
+				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
+	}
 
 	@Override
 	public String html(final String clientid,
@@ -104,10 +117,10 @@ public class CurrentTrace extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		Trace currentTrace = selector.getCurrentTrace();
-		if (currentTrace != null) {
-			traceChange(currentTrace);
-		}
+
+		Map<String, String> wrap = WebUtils.wrap("cmd",
+				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
+		submit(wrap);
 	}
 
 }

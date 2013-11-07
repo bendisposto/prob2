@@ -2,8 +2,15 @@ CurrentTrace = (function() {
 	var extern = {}
 	var session = Session()
 	var pattern = '<li id="{{id}}" class="{{group}}">{{rep}}</li>'
+	var sortDown = true
 
 	$(document).ready(function() {
+		$("#sort").click(function(e) {
+			sortDown = !sortDown
+			session.sendCmd("changeSort", {
+				"sortDown" : sortDown
+			})
+		})
 	});
 
 	function setTrace(trace) {
