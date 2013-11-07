@@ -14,7 +14,7 @@ import de.prob.ui.services.ModelLoadedProvider;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 
-public class OperationView extends ViewPart implements IModelChangedListener {
+public class OperationView extends ViewPart {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -24,14 +24,8 @@ public class OperationView extends ViewPart implements IModelChangedListener {
 	private final int port;
 	private Browser browser;
 
-	private AnimationSelector selector;
-
 	public OperationView() {
-		this.selector = ServletContextListener.INJECTOR
-				.getInstance(AnimationSelector.class);
-		selector.registerModelChangedListener(this);
 		port = WebConsole.getPort();
-
 	}
 
 	/**
@@ -50,17 +44,6 @@ public class OperationView extends ViewPart implements IModelChangedListener {
 	@Override
 	public void setFocus() {
 		browser.setFocus();
-	}
-
-	@Override
-	public void modelChanged(StateSpace s) {
-		IWorkbenchPartSite site = getSite();
-		final ISourceProviderService service = (ISourceProviderService) site
-				.getService(ISourceProviderService.class);
-		final ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
-				.getSourceProvider(ModelLoadedProvider.SERVICE);
-		sourceProvider.setEnabled(s != null);
-
 	}
 
 }
