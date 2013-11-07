@@ -44,3 +44,33 @@
 	color: #888;
 	font-style: italic;
 }
+
+.CodeMirror {
+	border: 1px solid #000;
+	background: #eee;
+	height: auto;
+	font-family: monospace;
+	min-height: 20px;
+}
+
+.CodeMirror-wrap {
+	min-height: 20px;
+}
+
+.input-wrap {
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+.hide-input {
+	display: none;
+}
+
+.CodeMirror-hscrollbar {
+	display: none;
+}
+
+.CodeMirror-scroll {
+	overflow-y: hidden;
+	overflow-x: hidden;
+}
