@@ -138,7 +138,7 @@ public class ReflectionServlet extends HttpServlet {
 			logger.trace("Incomming Request: {}. Size of Session-Responses {}",
 					lastinfo, session.getResponseCount());
 			String client = req.getParameter("client");
-			session.registerClient(client, lastinfo, req.startAsync());
+			session.sendPendingUpdates(client, lastinfo, req.startAsync());
 		} else if ("command".equals(mode)) {
 			Callable<SessionResult> command = session.command(parameterMap);
 			send(resp, "submitted");

@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -25,8 +23,6 @@ import de.prob.web.data.SessionResult;
 public abstract class AbstractSession implements ISession {
 
 	private final UUID id;
-	private final List<AsyncContext> clients = Collections
-			.synchronizedList(new ArrayList<AsyncContext>());
 	protected final ArrayList<Message> responses = new ArrayList<Message>();
 
 	private final Logger logger = LoggerFactory
@@ -95,15 +91,8 @@ public abstract class AbstractSession implements ISession {
 	@Override
 	public void submit(final Object... result) {
 		Message message = new Message(responses.size() + 1, result);
-		String json = WebUtils.toJson(message);
 		for (Object object : result) {
 			logger.trace("Sending: {}", object);
-		}
-		synchronized (clients) {
-			for (AsyncContext context : clients) {
-				send(json, context);
-			}
-			clients.clear();
 		}
 		responses.add(message);
 	}
@@ -126,7 +115,7 @@ public abstract class AbstractSession implements ISession {
 	}
 
 	@Override
-	public void registerClient(final String client, final int lastinfo,
+	public void sendPendingUpdates(final String client, final int lastinfo,
 			final AsyncContext context) {
 		logger.trace("Register {} Lastinfo {} size {}", new Object[] { client,
 				lastinfo, responses.size() });
@@ -136,8 +125,9 @@ public abstract class AbstractSession implements ISession {
 		} else if (lastinfo < responses.size()) {
 			resend(client, lastinfo, context);
 		} else {
-			registerContext(context);
+			send("", context);
 		}
+
 	}
 
 	protected void resend(final String client, final int lastinfo,
@@ -175,13 +165,6 @@ public abstract class AbstractSession implements ISession {
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		// Default is to not send old messages
-		registerContext(context);
-	}
-
-	private void registerContext(final AsyncContext context) {
-		synchronized (clients) {
-			clients.add(context);
-		}
 	}
 
 	public String simpleRender(final String clientid, final String template) {

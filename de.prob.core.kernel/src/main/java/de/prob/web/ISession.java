@@ -72,7 +72,7 @@ public interface ISession {
 	 * @param lastinfo
 	 * @param context
 	 */
-	void registerClient(String client, int lastinfo, AsyncContext context);
+	void sendPendingUpdates(String client, int lastinfo, AsyncContext context);
 
 	void submit(Object... result);
 
