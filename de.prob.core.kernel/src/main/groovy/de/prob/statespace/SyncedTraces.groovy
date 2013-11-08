@@ -1,8 +1,5 @@
 package de.prob.statespace
 
-
-
-
 class SyncedTraces {
 	def List<Trace> traces
 	def List<String> syncedOps
@@ -143,7 +140,7 @@ class SyncedTraces {
 			def list = []
 			o.each {
 				if(!syncedOps.contains(it.getName())) {
-					list << "${it.getId()}: ${it.getRep(s.getModel())}"
+					list << "${it.getId()}: ${it.getRep(trace.getModel())}"
 				}
 			}
 			sb.append(list)
