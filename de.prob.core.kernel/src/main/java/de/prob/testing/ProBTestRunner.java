@@ -5,11 +5,13 @@ import java.util.List;
 
 import javax.script.ScriptEngine;
 
+import org.abego.treelayout.internal.util.java.lang.string.StringUtil;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 
 import de.prob.scripting.ScriptEngineProvider;
@@ -60,8 +62,7 @@ public class ProBTestRunner {
 	public Object getTestClass(final String test) {
 		Object runScript2 = "";
 		try {
-
-			runScript2 = executor.eval(test);
+			runScript2 = executor.eval(Joiner.on("\n").join(IMPORTS) + "\n" + test);
 		} catch (Throwable e) {
 			e.printStackTrace(); // won't happen in regular mode
 		}
