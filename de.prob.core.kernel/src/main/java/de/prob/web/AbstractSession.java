@@ -162,7 +162,8 @@ public abstract class AbstractSession implements ISession {
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		// Default is to not send old messages
-		send("", context);
+		Message message = new Message(0, WebUtils.wrap("cmd", "extern.skip"));
+		send(WebUtils.toJson(message), context);
 	}
 
 	public String simpleRender(final String clientid, final String template) {

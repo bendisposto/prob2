@@ -72,7 +72,6 @@ function Session() {
 					data : data,
 					async : false,
 					success : function(data) {
-
 						if (data != "") {
 							dx = JSON.parse(data);
 							console.log("DATA:", dx)
@@ -136,6 +135,9 @@ function Session() {
 	extern.sendCmd = sendCmd;
 	extern.get_template = get_template;
 	extern.render = render;
+
+	extern.skip = function() {
+	};
 
 	return extern;
 }
