@@ -57,7 +57,6 @@ public class ReflectionServlet extends HttpServlet {
 			public void run() {
 				while (true) {
 					try {
-						logger.trace("Grabbing result");
 						Future<SessionResult> message = taskCompletionService
 								.take();
 						if (message != null) { // will filter null values
@@ -83,8 +82,6 @@ public class ReflectionServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-
-		logger.trace("Received {}", asString(req.getParameterMap()));
 
 		String uri = req.getRequestURI();
 		List<String> parts = new PartList(uri.split("/"));
@@ -135,8 +132,7 @@ public class ReflectionServlet extends HttpServlet {
 		Map<String, String[]> parameterMap = req.getParameterMap();
 		if ("update".equals(mode)) {
 			int lastinfo = Integer.parseInt(req.getParameter("lastinfo"));
-			logger.trace("Incomming Request: {}. Size of Session-Responses {}",
-					lastinfo, session.getResponseCount());
+
 			String client = req.getParameter("client");
 			session.sendPendingUpdates(client, lastinfo, req.startAsync());
 		} else if ("command".equals(mode)) {

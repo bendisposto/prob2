@@ -91,9 +91,6 @@ public abstract class AbstractSession implements ISession {
 	@Override
 	public void submit(final Object... result) {
 		Message message = new Message(responses.size() + 1, result);
-		for (Object object : result) {
-			logger.trace("Sending: {}", object);
-		}
 		responses.add(message);
 	}
 
@@ -165,6 +162,7 @@ public abstract class AbstractSession implements ISession {
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		// Default is to not send old messages
+		send("", context);
 	}
 
 	public String simpleRender(final String clientid, final String template) {
