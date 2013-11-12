@@ -91,7 +91,7 @@ public class BMotionStudioServlet extends HttpServlet {
 				.get(session);
 		
 		if (bmsSession == null) {
-			
+
 			BMotionStudioSession obj = ServletContextListener.INJECTOR
 					.getInstance(BMotionStudioSession.class);
 			String id = obj.getSessionUUID().toString();
@@ -100,18 +100,16 @@ public class BMotionStudioServlet extends HttpServlet {
 			return;
 
 		} else if (isUUID(session)) {
-			
+
 			requestPath = uri.replace("/bms/" + session + "/", "");
-			
+
 			String mode = req.getParameter("mode");
 			Map<String, String[]> parameterMap = req.getParameterMap();
 			if ("update".equals(mode)) {
 				int lastinfo = Integer.parseInt(req.getParameter("lastinfo"));
-				logger.trace(
-						"Incomming Request: {}. Size of Session-Responses {}",
-						lastinfo, bmsSession.getResponseCount());
 				String client = req.getParameter("client");
-				bmsSession.registerClient(client, lastinfo, req.startAsync());
+				bmsSession.sendPendingUpdates(client, lastinfo,
+						req.startAsync());
 			} else if ("command".equals(mode)) {
 				Callable<SessionResult> command = bmsSession
 						.command(parameterMap);
@@ -120,19 +118,20 @@ public class BMotionStudioServlet extends HttpServlet {
 			} else {
 
 				InputStream stream = null;
-				
+
 				// No request, show base HTML page
 				if (requestPath.isEmpty()) {
-					
+
 					String baseHtml = getBaseHtml(modelFolderPath);
 					stream = new ByteArrayInputStream(baseHtml.getBytes());
 					toOutput(resp, stream);
 					return;
-					
+
 				} else {
-					
-					String fullRequestPath = modelFolderPath + "/" + requestPath;
-					
+
+					String fullRequestPath = modelFolderPath + "/"
+							+ requestPath;
+
 					stream = new FileInputStream(fullRequestPath);
 
 					// Set correct mimeType
@@ -144,37 +143,40 @@ public class BMotionStudioServlet extends HttpServlet {
 					if (fullRequestPath.endsWith(".html")) {
 
 						bmsSession.setTemplate(fullRequestPath);
-						
+
 						String templateHtml = WebUtils.render(fullRequestPath);
 						String baseHtml = getBaseHtml(modelFolderPath);
 
 						Document templateDocument = Jsoup.parse(templateHtml);
-						Elements headTag = templateDocument.getElementsByTag("head");
-						
+						Elements headTag = templateDocument
+								.getElementsByTag("head");
+
 						String head = headTag.html();
-						Elements bodyTag = templateDocument.getElementsByTag("body");
+						Elements bodyTag = templateDocument
+								.getElementsByTag("body");
 						String body = bodyTag.html();
 						Document baseDocument = Jsoup.parse(baseHtml);
-						
-						Elements headTag2 = baseDocument.getElementsByTag("head");
+
+						Elements headTag2 = baseDocument
+								.getElementsByTag("head");
 						Element bodyTag2 = baseDocument
 								.getElementById("vis_container");
 						bodyTag2.append(body);
-						
+
 						headTag2.append(head);
 
-						stream = new ByteArrayInputStream(baseDocument.toString()
-								.getBytes());
+						stream = new ByteArrayInputStream(baseDocument
+								.toString().getBytes());
 
 					}
-					
+
 				}
-				
+
 				toOutput(resp, stream);
 
 			}
-			
-		}	
+
+		}
 
 	}
 	
