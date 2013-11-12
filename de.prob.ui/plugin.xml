@@ -374,7 +374,7 @@
             class="de.prob.ui.visualization.VizView"
             icon="icons/bms.png"
             id="de.prob.ui.BMotionView"
-            name="BMotion Studio"
+            name="BMotion HTML Visualization"
             restorable="true">
       </view>
 

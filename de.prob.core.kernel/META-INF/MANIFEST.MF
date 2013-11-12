@@ -320,4 +320,5 @@ Bundle-ClassPath: .,
  lib/dependencies/asm-3.3.1.jar,
  lib/dependencies/aopalliance-1.0.jar,
  lib/dependencies/antlr4-runtime-4.0.jar,
- lib/dependencies/answerparser-2.4.20-SNAPSHOT.jar
+ lib/dependencies/answerparser-2.4.20-SNAPSHOT.jar,
+ lib/dependencies/jsoup-1.7.2.jar

@@ -1,7 +1,6 @@
-package de.prob.web.views;
+package de.prob.bmotion;
 
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
-import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
@@ -26,12 +24,10 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private Trace currentTrace;
 
-	private AbstractModel model;
-
 	private final AnimationSelector selector;
 
 	private String template;
-
+	
 	@Inject
 	public BMotionStudioSession(final AnimationSelector selector) {
 		this.selector = selector;
@@ -40,7 +36,6 @@ public class BMotionStudioSession extends AbstractSession implements
 			throw new AnimationNotLoadedException(
 					"Please load model before opening a BMotion Studio visualization and than reload page.");
 		} else {
-			model = currentTrace.getModel();
 			selector.registerAnimationChangeListener(this);
 		}
 	}
@@ -48,10 +43,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
-		Object scope = WebUtils.wrap("clientid", clientid, "id", UUID
-				.randomUUID().toString(), "workspace", model.getModelFile()
-				.getParent() + "/");
-		return WebUtils.render("/ui/bmsview/index.html", scope);
+		return null;
 	}
 
 	public Object executeOperation(final Map<String, String[]> params) {
@@ -70,25 +62,43 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	public Object setTemplate(final Map<String, String[]> params) {
-		this.template = params.get("path")[0];
-		return WebUtils.wrap("cmd", "bms.reloadTemplate", "template",
-				this.template);
+		String fullTemplatePath = params.get("path")[0];
+		String modelFolderPath = this.selector.getCurrentTrace().getModel()
+				.getModelFile().getParent();
+		String requestPath = fullTemplatePath.replace(modelFolderPath, "");
+		submit(WebUtils.wrap("cmd", "bms.setTemplate", "request", requestPath));
+		return null;
 	}
 
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		if (this.template != null) {
-			submit(WebUtils.wrap("cmd", "bms.reloadTemplate", "template",
-					this.template));
-		}
+		String jsonDataFromFile = WebUtils.toJson(BMotionStudioUtil
+				.getJsoFromFileForRendering(currentTrace, template));
+		String jsonDataForRendering = WebUtils.toJson(BMotionStudioUtil
+				.getJsonDataForRendering(currentTrace));
+		submit(WebUtils.wrap("cmd", "bms.reloadTemplate", "observer",
+				jsonDataFromFile, "data", jsonDataForRendering));
 	}
 
 	@Override
 	public void traceChange(final Trace trace) {
 		this.currentTrace = trace;
-		submit(WebUtils.wrap("cmd", "bms.renderVisualization"));
+		String jsonDataFromFile = WebUtils.toJson(BMotionStudioUtil
+				.getJsoFromFileForRendering(currentTrace, template));
+		String jsonDataForRendering = WebUtils.toJson(BMotionStudioUtil
+				.getJsonDataForRendering(currentTrace));
+		submit(WebUtils.wrap("cmd", "bms.renderVisualization", "observer",
+				jsonDataFromFile, "data", jsonDataForRendering));
+	}
+
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+	
+	public String getTemplate() {
+		return this.template;
 	}
 
 }

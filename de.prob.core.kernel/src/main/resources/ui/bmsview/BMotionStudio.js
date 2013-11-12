@@ -15,25 +15,27 @@ bms = (function() {
 	            $('a',$(this)).stop().animate({'marginLeft':'-85px'},200);
 	        }
 	    );
-		
+
+		$('.template').click(function() {
+
+			$("#sourceModal").on('shown', function() {
+				// editorHtml.refresh()
+				// editorJavascript.refresh()
+			}).on('hidden', function() {
+				// renderEdit()
+			});
+			// Show Modal
+			$("#sourceModal").modal('show');
+
+			$(".template").find("a").stop().animate({
+				'marginLeft' : '-85px'
+			}, 200);
+
+		})
+	    
 	});
 
-	$('.template').click(function() {
 
-		$("#sourceModal").on('shown', function() {
-			// editorHtml.refresh()
-			// editorJavascript.refresh()
-		}).on('hidden', function() {
-			// renderEdit()
-		});
-		// Show Modal
-		$("#sourceModal").modal('show');
-
-		$(".template").find("a").stop().animate({
-			'marginLeft' : '-85px'
-		}, 200);
-
-	})
 
 	// --------------------------------------------
 	// Helper functions
@@ -62,36 +64,20 @@ bms = (function() {
 	// Rendering
 	// --------------------------------------------
 
-	function renderVisualization() {
-		if (templateFile) {
-			var src = "http://localhost:8080/bms/" + templateFile;
-			// Prevents flickering ...
-			$("#vis_container")
-					.append(
-							'<iframe src="" width="100%" frameborder="0" scrolling="no" name="tempiframe" id="tempiframe" style="visibility:hidden"></iframe>')
-			$('#tempiframe').attr("src", src)
-			$('#tempiframe').on('load', function() {
-				$('#tempiframe').css("visibility", "visible")
-				$('#iframeVisualization').remove()
-				$('#tempiframe').attr("id", "iframeVisualization")
-				resizeIframe()
-//				checkObserver(data)
-			});
-		}
+	function renderVisualization(observer,data) {
+		checkObserver(JSON.parse(observer))
+		extern.doStep(JSON.parse(data))
 	}
 	
-//	function checkObserver(data) {
-////		console.log("Start checking observer")
-////		console.log(observer)
-//		var observer = data;
-//		console.log(data)
-//		for (var i = 0; i < observer.length; i++) {
-//			var o = observer[i];
-////			console.log("Calling Observer")
-////			console.log(o.config[0])
-//			bms[o.cmd](o.config[0], data.data);
-//		}
-//	}
+	function checkObserver(data) {
+		var observerList = data.data.observer;
+		if (observerList !== undefined) {
+			for ( var i = 0; i < observerList.length; i++) {
+				var observer = observerList[i];
+				bms[observer.cmd](observer);
+			}
+		}
+	}
 	
 	// --------------------------------------------
 
@@ -100,10 +86,6 @@ bms = (function() {
 	extern.workspace = "";
 	extern.init = session.init
 	extern.session = session
-
-	extern.renderVisualization = function() {
-		renderVisualization()
-	}
 
 	function browse(dir_dom) {
 		$('#filedialog').off('hidden.bs.modal')
@@ -221,10 +203,108 @@ bms = (function() {
 		$("#chooseTemplateBox").css("display", "none");
 	}
 
-	extern.reloadTemplate = function(data) {
-		templateFile = data.template
-		renderVisualization()
+	extern.setTemplate = function(data) {
+		window.location = "/bms" + data.request;
 	}
+	
+	extern.reloadTemplate = function(data) {
+		extern.initTemplate(JSON.parse(data.data))
+		renderVisualization(data.observer,data.data)
+	}
+	
+	extern.renderVisualization = function(data) {
+		renderVisualization(data.observer,data.data)
+	}
+	
+	extern.doStep = function(data) {
+	}
+	
+	extern.initTemplate = function(data) {
+	}
+	
+	extern.translateValue = function(val) {
+		if (val === "true") {
+			return true;
+		} else if (val === "false") {
+			return false;
+		} else if(!isNaN(val)) {
+			val = parseInt(val)
+		}
+		return val;
+	}
+	
+	extern.evalObserver = function(data) {
+
+		var objects = data.objects
+
+		for ( var i = 0; i < objects.length; i++) {
+
+			var o = objects[i];
+			var predicate = o.predicate;
+			var triggerList = o.trigger;
+
+			if(predicate === undefined) {
+				predicate = true;
+			} else {
+				predicate = extern.translateValue(predicate);
+			}
+			
+			if(predicate) {
+				
+				for ( var t = 0; t < triggerList.length; t++) {
+					
+					var trigger = triggerList[t]			
+					var parameters = trigger.parameters
+					var caller = trigger.call
+					
+					if((parameters !== undefined) && (caller !== undefined)) {
+						var parsedArray = [];
+						$(parameters).each(function(k,v) {
+							parsedArray.push(extern.translateValue(v))		
+						});
+						var obj = $(trigger.selector)
+						var fn = obj[caller];
+						if (typeof fn === "function") {
+							fn.apply(obj, parsedArray);
+						}
+					}
+					
+				}
+				
+			}
+
+		}
+
+	}	  
+	
+	extern.executeOperation = function(data) {
+		
+		  var objects = data.objects
+
+		  
+		  $.each(objects, function(i,v)
+		  {
+			  var o = v;
+			  var predicate = o.predicate;
+			  if(predicate === undefined)
+				  predicate = "1=1"
+			  var operation = o.operation
+			  var selector = $(o.selector);
+			  
+			  var events = $._data( selector[0], 'events' )
+			  if (events === undefined || (events !== undefined && events.click === undefined)) {
+				    selector.click(function() {
+					 	session.sendCmd("executeOperation", {
+							"op" : o.operation,
+							"predicate" : predicate,
+							"client" : parent.bms.client
+						})	
+				  });
+			  }
+			  
+		  });
+		  
+		}
 
 	return extern;
 

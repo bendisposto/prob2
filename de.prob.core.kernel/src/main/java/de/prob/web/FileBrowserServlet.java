@@ -113,12 +113,12 @@ public class FileBrowserServlet extends HttpServlet {
 
 			FileFilter filter = makeFilter(extensionSet);
 			File[] listFiles = f.listFiles(filter);
-	
 			if (f.getParentFile() != null
-					&& !(isWorkspaceMode && !f.toString().startsWith(workspace))) {
+					&& !(isWorkspaceMode && !f.getParent().toString()
+							.startsWith(workspace))) {
 				dirs.add(new FileEntry(f.getParentFile(), ".."));
 			}
-		for (File file : listFiles) {
+			for (File file : listFiles) {
 				if (file.isFile() && file.canRead()) {
 					files.add(new FileEntry(file));
 				}
