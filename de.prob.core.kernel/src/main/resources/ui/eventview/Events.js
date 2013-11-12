@@ -3,6 +3,82 @@ Events = (function() {
     var session = Session()
     var sortMode = "normal"
     var hidden = false
+    var cm = null
+    var history = [];
+
+    var editorkeys = function() {
+        return {
+            'Enter' : function(cm) {
+                hp = null;
+                var code = cm.getValue();
+                console.log("submit: '" + code + "'")
+                session.sendCmd("executeEvent", {
+                    "event" : code
+                })
+                history.push(code);
+                cm.setValue("")
+                return false;
+            },
+            'Up' : function(cm) {
+                if (cm.getCursor().line == 0) {
+                    console.log("History up")
+                    if (hp == null) {
+                        hp = history.length;
+                    }
+                    if (hp >= 0) {
+                        if (hp > 0) {
+                            hp--
+                        }
+                        cm.setValue(history[hp])
+                        cm.se
+                    }
+
+                } else
+                    hp = null;
+                return CodeMirror.Pass;
+                ;
+            },
+            'Down' : function(cm) {
+                var cnt = cm.doc.lineCount();
+                if (cm.getCursor().line == cnt - 1) {
+                    console.log("History down")
+                    if (hp != null) {
+                        if (hp < history.length - 1) {
+                            hp++
+                            cm.setValue(history[hp])
+                        } else {
+                            cm.setValue("")
+                        }
+
+                    }
+                } else
+                    return CodeMirror.Pass;
+                ;
+            },'Shift-Enter' : function(cm) {
+                cm.replaceSelection("\n", "end", "+input");
+                cm.indentLine(cm.getCursor().line, null, true);
+                return true;
+            }
+        }
+    };
+
+    function init() {
+        cm = CodeMirror.fromTextArea($('#input')[0], {
+            mode : 'b',
+            lineNumbers : false,
+            lineWrapping : true,
+            theme : "default",
+            viewportMargin : Infinity
+        });
+
+        cm.addKeyMap(editorkeys());
+
+        $(".CodeMirror-hscrollbar").remove(); // Hack! no horizontal scrolling
+        $(".CodeMirror-vscrollbar").remove(); // Hack! no vertical scrolling
+        $(".CodeMirror-scrollbar-filler").remove(); // Hack! no funny white
+        // square in bottom right
+        // corner
+    }
 
     function debounce(fn, delay) {
         var timer = null;
@@ -107,6 +183,11 @@ Events = (function() {
 
     function setContent(ops_string) {
         var ops = JSON.parse(ops_string);
+        if (ops.length === 0) {
+            $(".input-wrap").addClass("hide-input")
+        } else {
+            $(".input-wrap").removeClass("hide-input")
+        }
         var e = $("#events")
         e.children().remove()
         for (el in ops) {
@@ -155,7 +236,10 @@ Events = (function() {
     }
 
     extern.client = ""
-    extern.init = session.init
+    extern.init = function() {
+        session.init()
+        init()
+    }
     extern.setContent = function(data) {
         setContent(data.ops)
     }

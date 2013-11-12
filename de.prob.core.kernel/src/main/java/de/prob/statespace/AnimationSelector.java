@@ -205,6 +205,7 @@ public class AnimationSelector {
 			}
 			if (indexOf == traces.size()) {
 				currentTrace = traces.get(indexOf - 1);
+				currentStateSpace = currentTrace.getStateSpace();
 				return;
 			}
 			currentTrace = traces.get(indexOf);

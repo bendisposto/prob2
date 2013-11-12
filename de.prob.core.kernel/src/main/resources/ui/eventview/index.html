@@ -11,6 +11,8 @@
 
 <link rel="stylesheet" href="/ui/common/bootstrap.css">
 <link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+<link rel="stylesheet" href="/ui/common/codemirror.css">
+<link rel="stylesheet" href="/ui/libs/codemirror_modes/b.css">
 <link rel="stylesheet" href="/ui/eventview/events.css">
 
 </head>
@@ -47,12 +49,20 @@
         </div>
     </div>
     <ul id="events"></ul>
+    <div class="input-wrap hide-input">
+        <hr>
+        <textarea id="input"></textarea>
+    <div>
 </body>
 
 </body>
 <script type="text/javascript" src="/ui/libs/jquery.js"></script>
-<script type="text/javascript" src="/ui/libs/mustache.js"></script>
 <script type="text/javascript" src="/ui/libs/bootstrap.min.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror_modes/b.js"></script>
+
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+
 <script type="text/javascript" src="/ui/common/Session.js"></script>
 <script type="text/javascript" src="/ui/eventview/Events.js"></script>
 
