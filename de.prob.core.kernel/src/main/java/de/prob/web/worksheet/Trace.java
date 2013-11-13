@@ -1,6 +1,8 @@
 package de.prob.web.worksheet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,9 +10,6 @@ import java.util.Set;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Sets;
 
 import de.prob.web.WebUtils;
 
@@ -49,15 +48,15 @@ public class Trace extends AbstractBox {
 		ScriptEngine groovy = owner.getGroovy();
 		Set<Entry<String, Object>> engineBindings = groovy.getBindings(
 				ScriptContext.ENGINE_SCOPE).entrySet();
-		Set<Entry<String, Object>> traces = Sets.filter(engineBindings,
-				new Predicate<Entry<String, Object>>() {
-					@Override
-					public boolean apply(Entry<String, Object> input) {
-						return input.getValue() instanceof Trace;
-					}
-				});
 		Map<String, Object> editorArgs = new HashMap<String, Object>();
-		editorArgs.put("traces", traces);
+		ArrayList<String> traceKeys = new ArrayList<String>();
+		Iterator<Entry<String, Object>> it = engineBindings.iterator();
+		while (it.hasNext()) {
+			Entry<String, Object> next = it.next();
+			if (next.getValue() instanceof de.prob.statespace.Trace)
+				traceKeys.add(next.getKey());
+		}
+		editorArgs.put("traces", traceKeys);
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("editorArgs", WebUtils.toJson(editorArgs));
 		return map;
