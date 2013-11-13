@@ -120,6 +120,12 @@ public class Worksheet extends AbstractSession {
 		return order.get(index);
 	}
 
+	public BindingsSnapshot getSnapshot(String boxId) {
+		if (boxId.equals(order.get(0)))
+			return null;
+		return snapshots.get(boxId);
+	}
+
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
