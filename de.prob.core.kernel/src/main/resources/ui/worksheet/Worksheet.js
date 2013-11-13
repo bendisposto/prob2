@@ -133,7 +133,7 @@ Worksheet = (function() {
 		} else {
 			co.size = "col-lg-12"
 		}
-
+		
 		co.editor = session.render(template, co)
 		return session.render("/ui/worksheet/box.html", co)
 	}
@@ -159,13 +159,16 @@ Worksheet = (function() {
 		return edi;
 	}
 
-	function gen_editor_data(number, type) {
+	function gen_editor_data(number, type, editorArgs) {
 		var lang_data = eval("Languages." + type)
 		var editor_data = {
 			id : number,
 			type : type,
 			getValue : lang_data.getter,
 			has_source : lang_data.has_source,
+		}
+		if(editorArgs != null){
+			editor_data.args=editorArgs;
 		}
 		if (lang_data.codemirror != null) {
 			var edi = gen_codemirror(number, type);
@@ -187,17 +190,18 @@ Worksheet = (function() {
 		if (konstrukt != null) {
 			konstrukt(number, editor_data)
 		}
+		
 		editors[number] = editor_data;
 	}
 
-	function replace_box(number, type, content, renderedhtml, template) {
+	function replace_box(number, type, content, renderedhtml, template, editorArgs) {
 		var box_html = gen_box_html(number, type, content, renderedhtml,
 				template)
 		$("#box" + number).replaceWith(box_html)
-		configure_box(number, type)
+		configure_box(number, type, editorArgs)
 	}
 
-	function configure_box(number, type) {
+	function configure_box(number, type, editorArgs) {
 		$(".localselector" + number).click(function(e) {
 
 			var data = {
@@ -222,15 +226,15 @@ Worksheet = (function() {
 				focus(number, "none")
 			}
 		})
-		gen_editor_data(number, type)
+		gen_editor_data(number, type, editorArgs)
 		focus(number, "down")
 	}
 
-	function render_box(number, type, content, renderedhtml, template) {
+	function render_box(number, type, content, renderedhtml, template, editorArgs) {
 		var box_html = gen_box_html(number, type, content, renderedhtml,
 				template)
 		$("#boxes").append(box_html)
-		configure_box(number, type)
+		configure_box(number, type, editorArgs)
 	}
 
 	function save() {
@@ -525,10 +529,12 @@ Worksheet = (function() {
 			unfocus(focused)
 		}
 	}
-
+ 	
+ 	
+	
 	extern.client = ""
 	extern.init = session.init
-
+		
 	extern.setDefaultType = function(data) {
 		$("#defaultBoxType").text(data.type)
 	}
@@ -538,12 +544,18 @@ Worksheet = (function() {
 	}
 
 	extern.render_box = function(data) {
+		var editorArgs=null;
+		if(data.editorArgs!=null)
+			editorArgs=JSON.parse(data.editorArgs);
 		render_box(data.number, data.type, data.content, data.renderedhtml,
-				data.template)
+				data.template,editorArgs);
 	}
 	extern.replace_box = function(data) {
+		var editorArgs=null;
+		if(data.editorArgs!=null)
+			editorArgs=JSON.parse(data.editorArgs);
 		replace_box(data.number, data.type, data.content, data.renderedhtml,
-				data.template)
+				data.template,editorArgs);
 	}
 
 	extern.focus = function(data) {
