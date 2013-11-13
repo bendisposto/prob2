@@ -534,7 +534,11 @@ Worksheet = (function() {
 	
 	extern.client = ""
 	extern.init = session.init
-		
+	
+	extern.getSession=function(){
+		return session;
+	}
+	
 	extern.setDefaultType = function(data) {
 		$("#defaultBoxType").text(data.type)
 	}
