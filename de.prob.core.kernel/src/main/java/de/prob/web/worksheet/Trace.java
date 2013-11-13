@@ -1,6 +1,7 @@
 package de.prob.web.worksheet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -56,7 +57,9 @@ public class Trace extends AbstractBox {
 			if (next.getValue() instanceof de.prob.statespace.Trace)
 				traceKeys.add(next.getKey());
 		}
+		Collections.sort(traceKeys);
 		editorArgs.put("traces", traceKeys);
+
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("editorArgs", WebUtils.toJson(editorArgs));
 		return map;
