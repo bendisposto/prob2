@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.parboiled.common.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -205,33 +206,34 @@ public class ValueOverTimeSession implements ISessionServlet,
 	public List<Object> calculate() {
 		List<Object> result = new ArrayList<Object>();
 		if (currentTrace != null && currentTrace.getStateSpace() == stateSpace) {
-			List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
+			List<Tuple2<String, EvaluationResult>> timeRes = new ArrayList<Tuple2<String, EvaluationResult>>();
 			if (time != null) {
 				timeRes = currentTrace.eval(time);
 			}
 
 			for (IEvalElement formula : formulas) {
 
-				List<EvaluationResult> results = currentTrace.eval(formula);
+				List<Tuple2<String, EvaluationResult>> results = currentTrace
+						.eval(formula);
 				List<Object> points = new ArrayList<Object>();
 
 				if (timeRes.isEmpty()) {
 					int c = 0;
-					for (EvaluationResult it : results) {
-						points.add(new Element(it.getStateId(), c + "", it
+					for (Tuple2<String, EvaluationResult> it : results) {
+						points.add(new Element(it.a, c + "", it.b.getValue()));
+						points.add(new Element(it.a, (c + 1) + "", it.b
 								.getValue()));
-						points.add(new Element(it.getStateId(), (c + 1) + "",
-								it.getValue()));
 						c++;
 					}
 				} else if (timeRes.size() == results.size()) {
-					for (EvaluationResult it : results) {
+					for (Tuple2<String, EvaluationResult> it : results) {
 						int index = results.indexOf(it);
-						points.add(new Element(it.getStateId(), timeRes.get(
-								index).getValue(), it.getValue()));
+						points.add(new Element(it.a, timeRes.get(index).b
+								.getValue(), it.b.getValue()));
 						if (index < results.size() - 1) {
-							points.add(new Element(it.getStateId(), timeRes
-									.get(index + 1).getValue(), it.getValue()));
+							points.add(new Element(it.a,
+									timeRes.get(index + 1).b.getValue(), it.b
+											.getValue()));
 						}
 
 					}
@@ -253,7 +255,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 		public final Integer t;
 		public final String type;
 
-		public Element(final String string, final String t, final Object value) {
+		public Element(final String string, final String t, final String value) {
 			stateid = string;
 			this.t = Integer.parseInt(t);
 			if (value.equals("TRUE")) {
@@ -263,7 +265,7 @@ public class ValueOverTimeSession implements ISessionServlet,
 				this.value = 0;
 				type = "BOOL";
 			} else {
-				this.value = Integer.parseInt((String) value);
+				this.value = Integer.parseInt(value);
 				type = "INT";
 			}
 

@@ -78,8 +78,8 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			final String error = errors.isEmpty() ? "unspecified error"
 					: errors.get(0);
 			final List<String> empty = Collections.emptyList();
-			final EvaluationResult er = new EvaluationResult("", null, null,
-					null, error, null, empty, false);
+			final EvaluationResult er = new EvaluationResult(null, null, null,
+					error, null, empty, false);
 			result = new EvalstoreResult(false, false, evalstoreId, er);
 		} else if (term.hasFunctor("ok", 4)) {
 			// first argument ignored
@@ -89,8 +89,8 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			final List<String> newIdentifiers = PrologTerm.atomicStrings(ids);
 			final long storeId = ((IntegerPrologTerm) term.getArgument(4))
 					.getValue().longValue();
-			final EvaluationResult er = new EvaluationResult("", null,
-					valueStr, null, null, null, newIdentifiers, false);
+			final EvaluationResult er = new EvaluationResult(null, valueStr,
+					null, null, null, newIdentifiers, false);
 			result = new EvalstoreResult(false, false, storeId, er);
 		} else {
 			// TODO[DP,23.01.2013] This should be some sensible exception - but
