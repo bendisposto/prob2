@@ -44,6 +44,7 @@ public class Worksheet extends AbstractSession {
 
 	private final Map<String, IBox> boxes = Collections
 			.synchronizedMap(new HashMap<String, IBox>());
+	private final BindingsSnapshot initialSnapshot;
 	private final Map<String, BindingsSnapshot> snapshots = Collections
 			.synchronizedMap(new HashMap<String, BindingsSnapshot>());
 
@@ -66,6 +67,7 @@ public class Worksheet extends AbstractSession {
 		this.boxfactory = boxfactory;
 		this.servlet = servlet;
 		groovy = createGroovy();
+		this.initialSnapshot = new BindingsSnapshot(groovy);
 	}
 
 	private ScriptEngine createGroovy() {
@@ -94,12 +96,22 @@ public class Worksheet extends AbstractSession {
 				"Worksheet.deleteBox", "id", box);
 		messages.add(deleteCmd);
 		if (order.size() == 0) {
-			Map<String, String> renderCmd = appendFreshBox().createMessage();
+			IBox freshBox = appendFreshBox();
+			initialSnapshot.restoreBindings(groovy);
+			Map<String, String> renderCmd = freshBox.createMessage();
 			messages.add(renderCmd);
 		} else if (index != order.size()) {
 			messages.addAll(reEvaluate(deleted.changeEffect(), index));
 		}
 		return messages.toArray();
+	}
+
+	private BindingsSnapshot restorePreviousBoxBindings(String boxId) {
+		final BindingsSnapshot previous_snapshot = boxId.equals(order.get(0)) ? initialSnapshot
+				: snapshots.get(getPredecessor(boxId));
+		previous_snapshot.restoreBindings(groovy);
+		return previous_snapshot;
+
 	}
 
 	private String firstBox() {
@@ -157,6 +169,10 @@ public class Worksheet extends AbstractSession {
 				boxId, direction, text });
 
 		List<Object> messages = new ArrayList<Object>();
+		//needs to be evaluated prior creation of new box in order to get the correct snapshot while creation time
+		IBox box = boxes.get(boxId);
+		box.setContent(params);
+		List<Object> renderBox = render(box);
 
 		if ("down".equals(direction)) {
 			messages.addAll(leaveEditorDown(boxId, text));
@@ -173,8 +189,7 @@ public class Worksheet extends AbstractSession {
 			messages.add(WebUtils.wrap("cmd", "Worksheet.focus", "number",
 					focused, "direction", "up"));
 		}
-		IBox box = boxes.get(boxId);
-		box.setContent(params);
+		messages.addAll(renderBox);
 		messages.addAll(reEvaluate(boxId, order.indexOf(boxId)));
 		return messages;
 	}
@@ -183,7 +198,9 @@ public class Worksheet extends AbstractSession {
 		ArrayList<Object> res = new ArrayList<Object>();
 		res.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number", boxId));
 		if (boxId.equals(lastBox())) {
-			res.add(appendFreshBox().createMessage());
+			IBox freshBox = appendFreshBox();
+			restorePreviousBoxBindings(freshBox.getId());
+			res.add(freshBox.createMessage());
 		} else {
 			String focused = getSuccessor(boxId);
 			res.add(WebUtils.wrap("cmd", "Worksheet.focus", "number", focused,
@@ -274,6 +291,7 @@ public class Worksheet extends AbstractSession {
 		VariableDetailTransformer.clear();
 		if (responses.isEmpty()) {
 			IBox box = appendFreshBox();
+			this.initialSnapshot.restoreBindings(groovy);
 			Map<String, String> renderCmd = box.createMessage();
 			Map<String, String> focusCmd = WebUtils.wrap("cmd",
 					"Worksheet.focus", "number", box.getId());
@@ -285,6 +303,7 @@ public class Worksheet extends AbstractSession {
 
 			for (String id : order) {
 				IBox b = boxes.get(id);
+				restorePreviousBoxBindings(b.getId());
 				cp.add(b.createMessage());
 				cp.addAll(render(b));
 				cp.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number", id));
@@ -315,10 +334,11 @@ public class Worksheet extends AbstractSession {
 			}
 		};
 
-		final BindingsSnapshot previous_snapshot = box.getId().equals(
-				order.get(0)) ? null : snapshots
-				.get(getPredecessor(box.getId()));
+		BindingsSnapshot previous_snapshot = restorePreviousBoxBindings(box
+				.getId());
+
 		List<Object> box_rendering = box.render(previous_snapshot);
+
 		final BindingsSnapshot current_snapshot = new BindingsSnapshot(groovy);
 		snapshots.put(box.getId(), current_snapshot);
 
@@ -392,6 +412,7 @@ public class Worksheet extends AbstractSession {
 		IBox box = boxfactory.create(this, id, type);
 		box.setContent(params);
 		boxes.put(id, box);
+		restorePreviousBoxBindings(box.getId());
 		return box.replaceMessage();
 	}
 }
