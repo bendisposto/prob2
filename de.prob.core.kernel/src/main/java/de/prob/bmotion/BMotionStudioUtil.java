@@ -107,7 +107,7 @@ public class BMotionStudioUtil {
 		return map;
 	}
 	
-	public static Map<String, Object> getJsonDataForRendering(Trace currentTrace, String template) {
+	public static Map<String, Object> getJsonDataForRendering(Trace currentTrace) {
 
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		Map<String, Object> fMap = new HashMap<String, Object>();
@@ -167,31 +167,47 @@ public class BMotionStudioUtil {
 		fMap.put("trace", trace);
 
 		if (currentTrace.getHead().getOp() != null)
-			fMap.put("lastOperation", getOpString(currentTrace.getHead().getOp()));
+			fMap.put("lastOperation", getOpString(currentTrace.getHead()
+					.getOp()));
+		
+		return modelMap;
 
-		modelMap.put("eval", new EvalExpression(currentTrace));
-		
-		// -------------------------------------------------------
-		
+	}
+	
+	public static Map<String, Object> getJsoFromFileForRendering(
+			Trace currentTrace, String template) {
+
+		HashMap<String, Object> m = new HashMap<String, Object>();
+
+		Map<String, Object> jsonDataForRendering = BMotionStudioUtil
+				.getJsonDataForRendering(currentTrace);
+
+		Map<String, Object> scope = new HashMap<String, Object>();
+		scope.put("eval", new EvalExpression(currentTrace));
+		scope.putAll(jsonDataForRendering);
+
 		String jsonRendered = "{}";
 		if (template != null) {
+
 			String[] split = template.split("/");
 			String filename = split[split.length - 1];
 			String folderPath = template.replace(filename, "");
 			File folder = new File(folderPath);
-			for (File f : folder.listFiles()) {
-				if (f.getName().endsWith(".json")) {
-					String fjsonRendered = WebUtils.render(f.getPath(),
-							modelMap);
-					if (!fjsonRendered.isEmpty())
-						jsonRendered = fjsonRendered;
+			if (folder.exists()) {
+				for (File f : folder.listFiles()) {
+					if (f.getName().endsWith(".json")) {
+						String fjsonRendered = WebUtils.render(f.getPath(),
+								scope);
+						if (!fjsonRendered.isEmpty())
+							jsonRendered = fjsonRendered;
+					}
 				}
 			}
 		}
-		
-		modelMap.put("data", JSON.parse(jsonRendered));
-		
-		return modelMap;
+
+		m.put("wrapper", JSON.parse(jsonRendered));
+
+		return m;
 
 	}
 	
