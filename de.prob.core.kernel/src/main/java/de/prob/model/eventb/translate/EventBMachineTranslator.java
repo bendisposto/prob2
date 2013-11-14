@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.parboiled.common.Tuple2;
+
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
 import de.be4.classicalb.core.parser.node.AConvergentEventstatus;
 import de.be4.classicalb.core.parser.node.AEvent;
@@ -37,19 +39,18 @@ import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBVariable;
 import de.prob.model.eventb.EventParameter;
 import de.prob.model.eventb.Witness;
-import de.prob.model.eventb.proof.Tuple;
 import de.prob.model.representation.Invariant;
 
 public class EventBMachineTranslator {
 
 	private final EventBMachine machine;
-	private final Map<Node, Tuple> nodeInfos = new HashMap<Node, Tuple>();
+	private final Map<Node, Tuple2<String, String>> nodeInfos = new HashMap<Node, Tuple2<String, String>>();
 
 	public EventBMachineTranslator(final EventBMachine machine) {
 		this.machine = machine;
 	}
 
-	public Map<Node, Tuple> getNodeInfos() {
+	public Map<Node, Tuple2<String, String>> getNodeInfos() {
 		return nodeInfos;
 	}
 
@@ -117,7 +118,8 @@ public class EventBMachineTranslator {
 			EventBInvariant ebInv = (EventBInvariant) invariant;
 			PPredicate ppred = (PPredicate) ((EventB) ebInv.getPredicate())
 					.getAst();
-			nodeInfos.put(ppred, new Tuple(machine.getName(), ebInv.getName()));
+			nodeInfos.put(ppred, new Tuple2<String, String>(machine.getName(),
+					ebInv.getName()));
 			if (ebInv.isTheorem()) {
 				thms.add(ppred);
 			} else {
@@ -144,7 +146,8 @@ public class EventBMachineTranslator {
 			AEvent event = new AEvent();
 			event.setEventName(new TIdentifierLiteral(e.getName()));
 			event.setStatus(extractEventStatus(e));
-			nodeInfos.put(event, new Tuple(machine.getName(), e.getName()));
+			nodeInfos.put(event, new Tuple2<String, String>(machine.getName(),
+					e.getName()));
 
 			List<TIdentifierLiteral> refined = new ArrayList<TIdentifierLiteral>();
 			for (Event ref : e.getRefines()) {
@@ -156,8 +159,9 @@ public class EventBMachineTranslator {
 			for (EventParameter eventParameter : e.getParameters()) {
 				PExpression pExpression = (PExpression) eventParameter
 						.getExpression().getAst();
-				nodeInfos.put(pExpression, new Tuple(machine.getName(),
-						eventParameter.getName()));
+				nodeInfos.put(pExpression,
+						new Tuple2<String, String>(machine.getName(),
+								eventParameter.getName()));
 				params.add(pExpression);
 			}
 			event.setVariables(params);
@@ -168,7 +172,8 @@ public class EventBMachineTranslator {
 				PPredicate ppred = (PPredicate) ((EventB) eventBGuard
 						.getPredicate()).getAst();
 				nodeInfos.put(ppred,
-						new Tuple(machine.getName(), eventBGuard.getName()));
+						new Tuple2<String, String>(machine.getName(),
+								eventBGuard.getName()));
 				if (eventBGuard.isTheorem()) {
 					thms.add(ppred);
 				} else {
@@ -182,8 +187,10 @@ public class EventBMachineTranslator {
 			for (Witness witness : e.getWitnesses()) {
 				PPredicate ppred = (PPredicate) (witness.getPredicate()
 						.getAst());
-				nodeInfos.put(ppred,
-						new Tuple(machine.getName(), witness.getName()));
+				nodeInfos.put(
+						ppred,
+						new Tuple2<String, String>(machine.getName(), witness
+								.getName()));
 				witnesses.add(new AWitness(new TIdentifierLiteral(witness
 						.getName()), ppred));
 			}
@@ -194,7 +201,8 @@ public class EventBMachineTranslator {
 				PSubstitution psub = (PSubstitution) ((EventB) eventBAction
 						.getCode()).getAst();
 				nodeInfos.put(psub,
-						new Tuple(machine.getName(), eventBAction.getName()));
+						new Tuple2<String, String>(machine.getName(),
+								eventBAction.getName()));
 				actions.add(psub);
 			}
 			event.setAssignments(actions);

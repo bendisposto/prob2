@@ -20,13 +20,11 @@ public class EvaluationResult {
 	private final String resultType;
 	private final List<String> quantifiedVars;
 	private final boolean enumerationWarnings;
-	private final String stateid;
 
-	public EvaluationResult(final String stateid, final String code,
-			final String value, final String solution, final String errors,
+	public EvaluationResult(final String code, final String value,
+			final String solution, final String errors,
 			final String resultType, final List<String> quantifiedVars,
 			final boolean enumerationWarnings) {
-		this.stateid = stateid;
 		this.code = code;
 		this.value = value;
 		this.solution = solution;
@@ -35,19 +33,19 @@ public class EvaluationResult {
 		this.quantifiedVars = quantifiedVars;
 		this.enumerationWarnings = enumerationWarnings;
 		if (!solutionMode(resultType) && "TRUE".equals(value)) {
-			this.explanation = "Solution";
+			explanation = "Solution";
 		} else {
-			this.explanation = solutionMode(resultType) ? " Solution: "
+			explanation = solutionMode(resultType) ? " Solution: "
 					: " Counterexample: ";
 		}
 	}
 
-	public EvaluationResult(final String stateid, final String code,
-			final String value, final String solution, final String errors,
+	public EvaluationResult(final String code, final String value,
+			final String solution, final String errors,
 			final String resultType, final String[] strings,
 			final boolean enumerationWarnings) {
-		this(stateid, code, value, solution, errors, resultType, Arrays
-				.asList(strings), enumerationWarnings);
+		this(code, value, solution, errors, resultType, Arrays.asList(strings),
+				enumerationWarnings);
 	}
 
 	private boolean solutionMode(final String arg0) {
@@ -90,13 +88,4 @@ public class EvaluationResult {
 		}
 		return result;
 	}
-	
-	public String getStateId() {
-		return stateid;
-	}
-
-	public String getStateid() {
-		return stateid;
-	}
-
 }

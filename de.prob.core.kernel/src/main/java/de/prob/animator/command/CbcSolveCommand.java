@@ -75,7 +75,7 @@ public class CbcSolveCommand extends AbstractCommand {
 			result = Joiner.on(", ").join(comps);
 		}
 		if ("no_solution_found".equals(functor)) {
-			result = "no solution found (but there might exist one)";
+			result = "no solution found (but one might exist)";
 		}
 
 	}

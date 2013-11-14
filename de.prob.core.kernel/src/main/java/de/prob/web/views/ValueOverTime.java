@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.AsyncContext;
 
+import org.parboiled.common.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +116,7 @@ public class ValueOverTime extends AbstractSession implements
 
 	private List<Object> calculateData() {
 		List<Object> result = new ArrayList<Object>();
-		List<EvaluationResult> timeRes = new ArrayList<EvaluationResult>();
+		List<Tuple2<String, EvaluationResult>> timeRes = new ArrayList<Tuple2<String, EvaluationResult>>();
 		if (time != null) {
 			timeRes = currentTrace.eval(time);
 		}
@@ -124,33 +125,33 @@ public class ValueOverTime extends AbstractSession implements
 			String id = pair.id;
 			IEvalElement formula = pair.formula;
 			if (!id.equals("time")) {
-				List<EvaluationResult> results = currentTrace.eval(formula);
+				List<Tuple2<String, EvaluationResult>> results = currentTrace
+						.eval(formula);
 				List<Object> points = new ArrayList<Object>();
 
 				if (timeRes.isEmpty()) {
 					int c = 0;
-					for (EvaluationResult it : results) {
-						points.add(wrapPoints(it.getStateId(),
-								extractValue(it.getValue()), c,
-								extractType(it.getValue())));
-						points.add(wrapPoints(it.getStateId(),
-								extractValue(it.getValue()), c + 1,
-								extractType(it.getValue())));
+					for (Tuple2<String, EvaluationResult> it : results) {
+						points.add(wrapPoints(it.a,
+								extractValue(it.b.getValue()), c,
+								extractType(it.b.getValue())));
+						points.add(wrapPoints(it.a,
+								extractValue(it.b.getValue()), c + 1,
+								extractType(it.b.getValue())));
 						c++;
 					}
 				} else if (timeRes.size() == results.size()) {
-					for (EvaluationResult it : results) {
+					for (Tuple2<String, EvaluationResult> it : results) {
 						int index = results.indexOf(it);
-						points.add(wrapPoints(it.getStateId(),
-								extractValue(it.getValue()),
-								extractValue(timeRes.get(index).getValue()),
-								extractType(it.getValue())));
+						points.add(wrapPoints(it.a,
+								extractValue(it.b.getValue()),
+								extractValue(timeRes.get(index).b.getValue()),
+								extractType(it.b.getValue())));
 						if (index < results.size() - 1) {
-							points.add(wrapPoints(it.getStateId(),
-									extractValue(it.getValue()),
-									extractValue(timeRes.get(index + 1)
-											.getValue()), extractType(it
-											.getValue())));
+							points.add(wrapPoints(it.a, extractValue(it.b
+									.getValue()), extractValue(timeRes
+									.get(index + 1).b.getValue()),
+									extractType(it.b.getValue())));
 						}
 
 					}

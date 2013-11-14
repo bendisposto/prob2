@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.parboiled.common.Tuple2;
+
 import de.be4.classicalb.core.parser.node.AAbstractConstantsContextClause;
 import de.be4.classicalb.core.parser.node.AAxiomsContextClause;
 import de.be4.classicalb.core.parser.node.AConstantsContextClause;
@@ -23,20 +25,19 @@ import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBConstant;
-import de.prob.model.eventb.proof.Tuple;
 import de.prob.model.representation.Axiom;
 import de.prob.model.representation.BSet;
 
 public class ContextTranslator {
 
 	private final Context context;
-	private final Map<Node, Tuple> nodeInfos = new HashMap<Node, Tuple>();
+	private final Map<Node, Tuple2<String, String>> nodeInfos = new HashMap<Node, Tuple2<String, String>>();
 
 	public ContextTranslator(final Context context) {
 		this.context = context;
 	}
 
-	public Map<Node, Tuple> getNodeInfos() {
+	public Map<Node, Tuple2<String, String>> getNodeInfos() {
 		return nodeInfos;
 	}
 
@@ -91,7 +92,8 @@ public class ContextTranslator {
 			EventBAxiom ebAx = (EventBAxiom) axiom;
 			PPredicate ppred = (PPredicate) ((EventB) ebAx.getPredicate())
 					.getAst();
-			nodeInfos.put(ppred, new Tuple(context.getName(), ebAx.getName()));
+			nodeInfos.put(ppred, new Tuple2<String, String>(context.getName(),
+					ebAx.getName()));
 			if (ebAx.isTheorem()) {
 				thms.add(ppred);
 			} else {

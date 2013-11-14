@@ -63,15 +63,14 @@ public class EvaluateFormulasCommand extends AbstractCommand {
 					list.add(lpt.get(i).getArgument(1).getFunctor());
 				}
 
-				values.add(new EvaluationResult(stateId, code, "", "", Joiner
-						.on(", ").join(list), "exists",
-						new ArrayList<String>(), false));
+				values.add(new EvaluationResult(code, "", "", Joiner.on(", ")
+						.join(list), "exists", new ArrayList<String>(), false));
 			} else {
 				String value = term.getArgument(1).getFunctor();
 				String solution = term.getArgument(2).getFunctor();
 				String code = term.getArgument(3).getFunctor();
-				values.add(new EvaluationResult(stateId, code, value, solution,
-						"", "exists", new ArrayList<String>(), false));
+				values.add(new EvaluationResult(code, value, solution, "",
+						"exists", new ArrayList<String>(), false));
 			}
 		}
 

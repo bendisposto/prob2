@@ -59,17 +59,16 @@ public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 					}
 
 					results.put(formulas.get(lpt.indexOf(term)),
-							new EvaluationResult(stateId, code, "", "", Joiner
-									.on(", ").join(list), "exists",
+							new EvaluationResult(code, "", "", Joiner.on(", ")
+									.join(list), "exists",
 									new ArrayList<String>(), false));
 				} else {
 					String value = term.getArgument(1).getFunctor();
 					String solution = term.getArgument(2).getFunctor();
 					String code = term.getArgument(3).getFunctor();
 					results.put(formulas.get(lpt.indexOf(term)),
-							new EvaluationResult(stateId, code, value,
-									solution, "", "exists",
-									new ArrayList<String>(), false));
+							new EvaluationResult(code, value, solution, "",
+									"exists", new ArrayList<String>(), false));
 				}
 
 			}

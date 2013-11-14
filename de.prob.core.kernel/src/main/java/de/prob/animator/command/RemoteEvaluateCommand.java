@@ -74,8 +74,8 @@ public class RemoteEvaluateCommand extends AbstractCommand {
 				list.add(lpt.get(i).getArgument(1).getFunctor());
 			}
 
-			value = new EvaluationResult("", code, "", "", Joiner.on(", ")
-					.join(list), "error", new ArrayList<String>(), false);
+			value = new EvaluationResult(code, "", "", Joiner.on(", ").join(
+					list), "error", new ArrayList<String>(), false);
 		} else {
 			String v = term.getArgument(1).getFunctor();
 			String solution = term.getArgument(2).getFunctor();
@@ -84,8 +84,8 @@ public class RemoteEvaluateCommand extends AbstractCommand {
 					.atomicStrings((ListPrologTerm) term.getArgument(4));
 			boolean enumerationWarnings = "true".equals(term.getArgument(5)
 					.getFunctor());
-			value = new EvaluationResult("", formula, v, solution, "",
-					resultType, atomicStrings, enumerationWarnings);
+			value = new EvaluationResult(formula, v, solution, "", resultType,
+					atomicStrings, enumerationWarnings);
 		}
 
 	}

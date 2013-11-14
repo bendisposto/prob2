@@ -1,5 +1,7 @@
 package de.prob.statespace
 
+import org.parboiled.common.Tuple2
+
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.EvaluateFormulasCommand
@@ -27,7 +29,8 @@ class Trace {
 		stateSpace.eval(getCurrentState(),[f]).get(0);
 	}
 
-	def List<EvaluationResult> eval(formula) {
+
+	def List<Tuple2<String,EvaluationResult>> eval(formula) {
 		def f = formula;
 		if(!(formula instanceof IEvalElement)) {
 			f = formula as ClassicalB;
@@ -48,7 +51,7 @@ class Trace {
 		def res = []
 
 		cmds.each {
-			res << it.getValues().get(0)
+			res << new Tuple2<String,EvaluationResult>(it.getStateId(),it.getValues().get(0))
 		}
 		res
 	}
