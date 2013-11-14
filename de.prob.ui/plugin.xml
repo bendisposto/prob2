@@ -124,11 +124,6 @@
                   name="Open BMotion Studio Visualization">
             </command>
             <command
-                  description="Takes formula from State View and opens a visualization"
-                  id="de.prob.ui.createFormViz"
-                  name="Create Formula Visualization">
-            </command>
-            <command
                   id="de.prob.ui.groovyconsole"
                   name="Open Groovy Console">
             </command>
