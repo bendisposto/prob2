@@ -205,7 +205,7 @@ public class BMotionStudioUtil {
 			}
 		}
 
-		m.put("data", JSON.parse(jsonRendered));
+		m.put("wrapper", JSON.parse(jsonRendered));
 
 		return m;
 

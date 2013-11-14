@@ -78,9 +78,9 @@ public class BMotionStudioServlet extends HttpServlet {
 		
 		String modelFolderPath = currentTrace.getModel().getModelFile()
 				.getParent();
-
-		String uri = req.getRequestURI();
 		
+		String uri = req.getRequestURI();
+				
 		String requestPath = uri.replace("/bms/", "");
 
 		logger.trace("Request URI " + uri);		
@@ -116,7 +116,7 @@ public class BMotionStudioServlet extends HttpServlet {
 				send(resp, "submitted");
 				submit(command);
 			} else {
-
+				
 				InputStream stream = null;
 
 				// No request, show base HTML page
@@ -131,7 +131,7 @@ public class BMotionStudioServlet extends HttpServlet {
 
 					String fullRequestPath = modelFolderPath + "/"
 							+ requestPath;
-
+					
 					stream = new FileInputStream(fullRequestPath);
 
 					// Set correct mimeType
@@ -165,8 +165,16 @@ public class BMotionStudioServlet extends HttpServlet {
 
 						headTag2.append(head);
 
-						stream = new ByteArrayInputStream(baseDocument
-								.toString().getBytes());
+						// Workaround, since jsoup renames svg image tags to img
+						// tags ...
+						Elements svgElements = baseDocument
+								.getElementsByTag("svg");
+						for (Element e : svgElements) {
+							Elements imgTags = e.getElementsByTag("img");
+							imgTags.tagName("image");
+						}
+						stream = new ByteArrayInputStream(baseDocument.html()
+								.getBytes());
 
 					}
 
