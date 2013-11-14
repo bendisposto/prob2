@@ -5,10 +5,13 @@ package de.prob.animator.command;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.ComputationNotCompletedResult;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -65,9 +68,11 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 		// most fields are about
 		final EvalstoreResult result;
 		if (term.hasFunctor("interrupted", 0)) {
-			result = new EvalstoreResult(false, true, evalstoreId, null);
+			result = new EvalstoreResult(false, true, evalstoreId, null,
+					Collections.<String> emptyList());
 		} else if (term.hasFunctor("timeout", 0)) {
-			result = new EvalstoreResult(true, false, evalstoreId, null);
+			result = new EvalstoreResult(true, false, evalstoreId, null,
+					Collections.<String> emptyList());
 		} else if (term.hasFunctor("errors", 1)) {
 			final ListPrologTerm args = (ListPrologTerm) term.getArgument(1);
 			final List<String> errors = new ArrayList<String>(args.size());
@@ -78,9 +83,10 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			final String error = errors.isEmpty() ? "unspecified error"
 					: errors.get(0);
 			final List<String> empty = Collections.emptyList();
-			final EvaluationResult er = new EvaluationResult(null, null, null,
-					error, null, empty, false);
-			result = new EvalstoreResult(false, false, evalstoreId, er);
+			final IEvalResult er = new ComputationNotCompletedResult(
+					evalElement.getCode(), error);
+			result = new EvalstoreResult(false, false, evalstoreId, er,
+					Collections.<String> emptyList());
 		} else if (term.hasFunctor("ok", 4)) {
 			// first argument ignored
 			final String valueStr = PrologTerm
@@ -89,9 +95,11 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			final List<String> newIdentifiers = PrologTerm.atomicStrings(ids);
 			final long storeId = ((IntegerPrologTerm) term.getArgument(4))
 					.getValue().longValue();
-			final EvaluationResult er = new EvaluationResult(null, valueStr,
-					null, null, null, newIdentifiers, false);
-			result = new EvalstoreResult(false, false, storeId, er);
+			final EvalResult er = new EvalResult(evalElement.getCode(),
+					valueStr, new HashMap<String, String>(),
+					new HashMap<String, PrologTerm>());
+			result = new EvalstoreResult(false, false, storeId, er,
+					newIdentifiers);
 		} else {
 			// TODO[DP,23.01.2013] This should be some sensible exception - but
 			// I don't now which
@@ -109,16 +117,19 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 		private final boolean hasTimeoutOccurred;
 		private final boolean hasInterruptedOccurred;
 		private final long resultingStoreId;
-		private final EvaluationResult result;
+		private final IEvalResult result;
+		private final List<String> newIdentifiers;
 
 		public EvalstoreResult(final boolean hasTimeoutOccurred,
 				final boolean hasInterruptedOccurred,
-				final long resultingStoreId, final EvaluationResult result) {
+				final long resultingStoreId, final IEvalResult result,
+				final List<String> newIdentifiers) {
 			super();
 			this.hasTimeoutOccurred = hasTimeoutOccurred;
 			this.hasInterruptedOccurred = hasInterruptedOccurred;
 			this.resultingStoreId = resultingStoreId;
 			this.result = result;
+			this.newIdentifiers = newIdentifiers;
 		}
 
 		public boolean hasTimeoutOccurred() {
@@ -131,15 +142,19 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 
 		public boolean isSuccess() {
 			return !hasTimeoutOccurred && !hasInterruptedOccurred
-					&& !result.hasError();
+					&& result instanceof EvalResult;
 		}
 
 		public long getResultingStoreId() {
 			return resultingStoreId;
 		}
 
-		public EvaluationResult getResult() {
+		public IEvalResult getResult() {
 			return result;
+		}
+
+		public List<String> getNewIdentifiers() {
+			return newIdentifiers;
 		}
 
 		@Override

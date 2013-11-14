@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.ComputationNotCompletedResult;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -116,7 +118,7 @@ public class ValueOverTime extends AbstractSession implements
 
 	private List<Object> calculateData() {
 		List<Object> result = new ArrayList<Object>();
-		List<Tuple2<String, EvaluationResult>> timeRes = new ArrayList<Tuple2<String, EvaluationResult>>();
+		List<Tuple2<String, IEvalResult>> timeRes = new ArrayList<Tuple2<String, IEvalResult>>();
 		if (time != null) {
 			timeRes = currentTrace.eval(time);
 		}
@@ -125,33 +127,38 @@ public class ValueOverTime extends AbstractSession implements
 			String id = pair.id;
 			IEvalElement formula = pair.formula;
 			if (!id.equals("time")) {
-				List<Tuple2<String, EvaluationResult>> results = currentTrace
+				List<Tuple2<String, IEvalResult>> results = currentTrace
 						.eval(formula);
 				List<Object> points = new ArrayList<Object>();
 
 				if (timeRes.isEmpty()) {
 					int c = 0;
-					for (Tuple2<String, EvaluationResult> it : results) {
-						points.add(wrapPoints(it.a,
-								extractValue(it.b.getValue()), c,
-								extractType(it.b.getValue())));
-						points.add(wrapPoints(it.a,
-								extractValue(it.b.getValue()), c + 1,
-								extractType(it.b.getValue())));
+					for (Tuple2<String, IEvalResult> it : results) {
+						if (it.b instanceof EvalResult) {
+							String val = ((EvalResult) it.b).getValue();
+							points.add(wrapPoints(it.a, extractValue(val), c,
+									extractType(val)));
+							points.add(wrapPoints(it.a, extractValue(val),
+									c + 1, extractType(val)));
+						}
 						c++;
 					}
 				} else if (timeRes.size() == results.size()) {
-					for (Tuple2<String, EvaluationResult> it : results) {
+					for (Tuple2<String, IEvalResult> it : results) {
 						int index = results.indexOf(it);
-						points.add(wrapPoints(it.a,
-								extractValue(it.b.getValue()),
-								extractValue(timeRes.get(index).b.getValue()),
-								extractType(it.b.getValue())));
-						if (index < results.size() - 1) {
-							points.add(wrapPoints(it.a, extractValue(it.b
-									.getValue()), extractValue(timeRes
-									.get(index + 1).b.getValue()),
-									extractType(it.b.getValue())));
+						if (it.b instanceof EvalResult) {
+							String val = ((EvalResult) it.b).getValue();
+							String time = ((EvalResult) timeRes.get(index).b)
+									.getValue();
+							String timePlus = ((EvalResult) timeRes.get(index).b)
+									.getValue();
+							points.add(wrapPoints(it.a, extractValue(val),
+									extractValue(time), extractType(val)));
+							if (index < results.size() - 1) {
+								points.add(wrapPoints(it.a, extractValue(val),
+										extractValue(timePlus),
+										extractType(val)));
+							}
 						}
 
 					}
@@ -219,7 +226,7 @@ public class ValueOverTime extends AbstractSession implements
 		}
 
 		try {
-			EvaluationResult res = currentTrace.evalCurrent(formula);
+			IEvalResult res = currentTrace.evalCurrent(formula);
 			if (res == null) {
 				return sendError(
 						id,
@@ -227,7 +234,7 @@ public class ValueOverTime extends AbstractSession implements
 						"Could not add formula because it is not possible to assert the validity of the formula at this state in the animation",
 						"");
 			}
-			if (res.hasError()) {
+			if (res instanceof ComputationNotCompletedResult) {
 				return sendError(
 						id,
 						"Sorry!",
@@ -296,8 +303,8 @@ public class ValueOverTime extends AbstractSession implements
 
 	}
 
-	private boolean correctType(final String id, final EvaluationResult res) {
-		String value = res.getValue();
+	private boolean correctType(final String id, final IEvalResult res) {
+		String value = ((EvalResult) res).getValue();
 		if ((value.equals("TRUE") || value.equals("FALSE"))
 				&& !"time".equals(id)) {
 			return true;

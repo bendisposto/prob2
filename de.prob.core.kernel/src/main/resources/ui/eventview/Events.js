@@ -95,6 +95,11 @@ Events = (function() {
         $(window).keydown(function(event){
             if(event.keyCode == 13) {
                 event.preventDefault();
+                if(event.target.id === "numRand") {
+                	if(!$("#randomX").prop("disabled")) {
+                		random($("#numRand").val())
+            		}
+                }
                 return false;
             }
         })

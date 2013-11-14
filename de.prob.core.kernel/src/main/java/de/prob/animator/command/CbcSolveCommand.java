@@ -1,15 +1,15 @@
 package de.prob.animator.command;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Joiner;
-
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.ComputationNotCompletedResult;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -28,20 +28,14 @@ public class CbcSolveCommand extends AbstractCommand {
 	Logger logger = LoggerFactory.getLogger(CbcSolveCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
-	private final IEvalElement evalElements;
-	private final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
-
-	private String result;
+	private final IEvalElement evalElement;
+	private IEvalResult result;
 
 	public CbcSolveCommand(final IEvalElement evalElement) {
-		evalElements = evalElement;
+		this.evalElement = evalElement;
 	}
 
-	public List<EvaluationResult> getValues() {
-		return values;
-	}
-
-	public String getResult() {
+	public IEvalResult getValue() {
 		return result;
 	}
 
@@ -56,39 +50,43 @@ public class CbcSolveCommand extends AbstractCommand {
 		String functor = prologTerm.getFunctor();
 
 		if ("time_out".equals(functor)) {
-			result = "time out";
+			result = new ComputationNotCompletedResult(evalElement.getCode(),
+					"time out");
 		}
 		if ("contradiction_found".equals(functor)) {
-			result = "cannot be solved";
+			result = new ComputationNotCompletedResult(evalElement.getCode(),
+					"cannot be solved");
 		}
 		if ("solution".equals(functor)) {
 			ListPrologTerm solutionBindings = BindingGenerator
 					.getList(prologTerm.getArgument(1));
 
-			ArrayList<String> comps = new ArrayList<String>();
+			Map<String, String> solutions = new HashMap<String, String>();
+			Map<String, PrologTerm> solutionsSource = new HashMap<String, PrologTerm>();
 
 			for (PrologTerm b : solutionBindings) {
 				CompoundPrologTerm t = (CompoundPrologTerm) b;
-				comps.add(translate(t));
+				solutions.put(t.getArgument(1).getFunctor(), t.getArgument(3)
+						.getFunctor());
+				solutionsSource.put(t.getArgument(1).getFunctor(),
+						t.getArgument(2));
 			}
 
-			result = Joiner.on(", ").join(comps);
+			result = new EvalResult(evalElement.getCode(), "TRUE", solutions,
+					solutionsSource);
 		}
 		if ("no_solution_found".equals(functor)) {
-			result = "no solution found (but one might exist)";
+			result = new ComputationNotCompletedResult(evalElement.getCode(),
+					"no solution found (but one might exist)");
 		}
 
-	}
-
-	private String translate(final CompoundPrologTerm t) {
-		return t.getArgument(1) + "=" + t.getArgument(3).getFunctor();
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
 		pout.openTerm("cbc_solve");
 		pout.openList();
-		evalElements.printProlog(pout);
+		evalElement.printProlog(pout);
 		pout.closeList();
 		pout.printVariable(EVALUATE_TERM_VARIABLE);
 		pout.closeTerm();
