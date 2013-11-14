@@ -11,25 +11,27 @@ import de.bmotionstudio.core.editor.wizard.observer.CSPInitObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.CSP;
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.scripting.CSPModel;
+import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
 import de.prob.statespace.TraceElement;
-import de.prob.statespace.OpInfo;
 
 public class CSPInitObserver extends Observer {
 
 	private String attribute;
-	
+
 	private Object value;
-	
+
 	private Boolean isCustom;
-	
-	private transient static final Pattern PATTERN = Pattern.compile("\\$(.+?)\\$");
+
+	private transient static final Pattern PATTERN = Pattern
+			.compile("\\$(.+?)\\$");
 
 	@Override
-	public void check(Trace history, BControl control,
-			Map<String, EvaluationResult> results) {
+	public void check(final Trace history, final BControl control,
+			final Map<String, IEvalResult> results) {
 		TraceElement current = history.getCurrent();
 		OpInfo op = current.getOp();
 		if (op == null
@@ -39,11 +41,12 @@ public class CSPInitObserver extends Observer {
 						control, history);
 				CSP cspE = new CSP(parseExpression,
 						(CSPModel) history.getModel());
-				EvaluationResult subEval = history.evalCurrent(cspE);
-				if (subEval != null && !subEval.hasError()) {
-					control.setAttributeValue(attribute, subEval.value, true,
-							false);
-					control.getAttribute(attribute).setValue(subEval.value);
+				IEvalResult subEval = history.evalCurrent(cspE);
+				if (subEval != null && subEval instanceof EvalResult) {
+					control.setAttributeValue(attribute,
+							((EvalResult) subEval).getValue(), true, false);
+					control.getAttribute(attribute).setValue(
+							((EvalResult) subEval).getValue());
 				}
 			} else {
 				control.getAttribute(attribute).setValue(value);
@@ -51,59 +54,61 @@ public class CSPInitObserver extends Observer {
 		}
 	}
 
-	private String parseExpression(String expressionString,
-			BControl control, Trace history) {
+	private String parseExpression(final String expressionString,
+			final BControl control, final Trace history) {
 
 		String finalExpression = expressionString;
-		
+
 		OpInfo op = history.getCurrent().getOp();
 		List<String> params = op.getParams();
-		
+
 		// Find expressions and collect ExpressionEvalElements
 		final Matcher matcher = PATTERN.matcher(expressionString);
 		while (matcher.find()) {
 			int subExpr = Integer.valueOf(matcher.group(1));
 			String para = params.get(subExpr);
-			if (para != null)
+			if (para != null) {
 				finalExpression = finalExpression.replace("$" + subExpr + "$",
 						para);
+			}
 		}
-		
+
 		return finalExpression;
 
-	}	
-	
+	}
+
 	public String getAttribute() {
 		return attribute;
 	}
 
-	public void setAttribute(String attribute) {
+	public void setAttribute(final String attribute) {
 		String oldVal = this.attribute;
 		this.attribute = attribute;
 		firePropertyChange("attribute", oldVal, attribute);
 	}
-	
+
 	public Boolean getIsCustom() {
 		return isCustom;
 	}
-	
+
 	public Boolean isCustom() {
-		if (isCustom == null)
+		if (isCustom == null) {
 			isCustom = false;
+		}
 		return isCustom;
 	}
 
-	public void setIsCustom(Boolean isCustom) {
+	public void setIsCustom(final Boolean isCustom) {
 		Object oldVal = this.isCustom;
 		this.isCustom = isCustom;
 		firePropertyChange("isCustom", oldVal, isCustom);
 	}
-	
+
 	public Object getValue() {
 		return value;
 	}
 
-	public void setValue(Object value) {
+	public void setValue(final Object value) {
 		Object oldVal = this.value;
 		this.value = value;
 		firePropertyChange("value", oldVal, value);
@@ -115,7 +120,7 @@ public class CSPInitObserver extends Observer {
 	}
 
 	@Override
-	public ObserverWizard getWizard(Shell shell, BControl control) {
+	public ObserverWizard getWizard(final Shell shell, final BControl control) {
 		return new CSPInitObserverWizard(shell, control, this);
 	}
 

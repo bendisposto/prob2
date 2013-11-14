@@ -14,6 +14,7 @@ import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.ValueTranslator;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -78,9 +79,10 @@ public class EvaluateFormulasCommand extends AbstractCommand {
 						.getArgument(2));
 				for (PrologTerm t : list) {
 					CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
-							t, 3);
-					solutions.put(cpt.getArgument(1).getFunctor(), cpt
-							.getArgument(3).getFunctor());
+							t, 2);
+					solutions.put(cpt.getArgument(1).getFunctor(),
+							new ValueTranslator().toGroovy(cpt.getArgument(2))
+									.toString());
 					solutionsSource.put(cpt.getArgument(1).getFunctor(),
 							cpt.getArgument(2));
 				}

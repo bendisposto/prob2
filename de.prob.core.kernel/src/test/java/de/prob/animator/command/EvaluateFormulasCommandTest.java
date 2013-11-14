@@ -84,9 +84,8 @@ public class EvaluateFormulasCommandTest {
 		return new CompoundPrologTerm("result", new CompoundPrologTerm(r),
 				new ListPrologTerm(new CompoundPrologTerm("bind",
 						new CompoundPrologTerm("a"), new CompoundPrologTerm(
-								"int", new IntegerPrologTerm(3)),
-						new CompoundPrologTerm("3"))), new CompoundPrologTerm(
-						"foo"));
+								"int", new IntegerPrologTerm(3)))),
+				new CompoundPrologTerm("foo"));
 	}
 
 }

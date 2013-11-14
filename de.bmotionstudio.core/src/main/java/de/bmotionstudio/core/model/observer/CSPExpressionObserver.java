@@ -11,7 +11,8 @@ import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.CSP;
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.exception.ProBError;
 import de.prob.scripting.CSPModel;
 import de.prob.statespace.Trace;
@@ -26,21 +27,22 @@ public class CSPExpressionObserver extends Observer {
 			.getLogger(CSPExpressionObserver.class);
 
 	@Override
-	public void check(Trace history, BControl control,
-			Map<String, EvaluationResult> results) {
+	public void check(final Trace history, final BControl control,
+			final Map<String, IEvalResult> results) {
 
-		if (attribute == null || expression == null)
+		if (attribute == null || expression == null) {
 			return;
+		}
 
 		CSP cspEval = new CSP(expression, (CSPModel) history.getModel());
 
 		try {
 
-			EvaluationResult evalResult = history.evalCurrent(cspEval);
+			IEvalResult evalResult = history.evalCurrent(cspEval);
 
-			if (evalResult != null && !evalResult.hasError()) {
+			if (evalResult != null && evalResult instanceof EvalResult) {
 
-				String result = evalResult.value;
+				String result = ((EvalResult) evalResult).getValue();
 				AbstractAttribute atr = control.getAttribute(attribute);
 				Object unmarshalResult = atr.unmarshal(result);
 				control.setAttributeValue(attribute, unmarshalResult);
@@ -54,7 +56,7 @@ public class CSPExpressionObserver extends Observer {
 	}
 
 	@Override
-	public ObserverWizard getWizard(Shell shell, BControl control) {
+	public ObserverWizard getWizard(final Shell shell, final BControl control) {
 		return new CSPExpressionObserverWizard(shell, control, this);
 	}
 
@@ -62,7 +64,7 @@ public class CSPExpressionObserver extends Observer {
 		return attribute;
 	}
 
-	public void setAttribute(String attribute) {
+	public void setAttribute(final String attribute) {
 		String oldVal = this.attribute;
 		this.attribute = attribute;
 		firePropertyChange("attribute", oldVal, attribute);
@@ -72,7 +74,7 @@ public class CSPExpressionObserver extends Observer {
 		return expression;
 	}
 
-	public void setExpression(String expression) {
+	public void setExpression(final String expression) {
 		Object oldVal = this.expression;
 		this.expression = expression;
 		firePropertyChange("expression", oldVal, expression);
