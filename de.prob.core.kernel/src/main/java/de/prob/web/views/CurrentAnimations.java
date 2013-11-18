@@ -60,7 +60,7 @@ public class CurrentAnimations extends AbstractSession implements
 	@Override
 	public void reload(String client, int lastinfo, AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		traceChange(animations.getCurrentTrace());
+		// traceChange(animations.getCurrentTrace());
 	}
 
 	public Object selectTrace(Map<String, String[]> params) {
