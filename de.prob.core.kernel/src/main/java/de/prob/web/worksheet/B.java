@@ -9,6 +9,7 @@ import javax.script.ScriptEngine;
 import de.prob.animator.command.EvalstoreEvalCommand;
 import de.prob.animator.command.EvalstoreEvalCommand.EvalstoreResult;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.model.representation.AbstractModel;
 
 public class B extends AbstractBox {
@@ -17,7 +18,7 @@ public class B extends AbstractBox {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object> render(BindingsSnapshot snapshot) {
+	public List<Object> render(final BindingsSnapshot snapshot) {
 		ScriptEngine groovy = owner.getGroovy();
 		AbstractModel model = (AbstractModel) groovy.getBindings(
 				ScriptContext.GLOBAL_SCOPE).get("model");
@@ -29,16 +30,18 @@ public class B extends AbstractBox {
 					new ClassicalB(content));
 			model.getStatespace().execute(c);
 			EvalstoreResult r = c.getResult();
-			String value = r.getResult().value;
+			String value = r.getResult() instanceof EvalResult ? ((EvalResult) r
+					.getResult()).getValue() : "error";
 			return pack(makeHtml(id, value));
-		} else
+		} else {
 			return pack(makeHtml(id,
 					"*Could not find evaluation context. Maybe you need to load a model*"));
+		}
 	}
 
 	@Override
-	public void setContent(Map<String, String[]> data) {
-		this.content = data.get("text")[0];
+	public void setContent(final Map<String, String[]> data) {
+		content = data.get("text")[0];
 	}
 
 	@Override

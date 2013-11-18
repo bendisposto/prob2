@@ -45,28 +45,30 @@ import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.core.editor.edit.AttributeExpressionEdittingSupport;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.observer.Observer;
 import de.bmotionstudio.core.model.observer.BPredicateObserver;
+import de.bmotionstudio.core.model.observer.Observer;
 import de.bmotionstudio.core.util.BMotionUtil;
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.ComputationNotCompletedResult;
+import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class BPredicateObserverWizard extends ObserverWizard {
-	
+
 	private TableViewer tableViewer;
-	
+
 	private final DataBindingContext dbc = new DataBindingContext();
-	
-	private Injector injector = ServletContextListener.INJECTOR;
-	
+
+	private final Injector injector = ServletContextListener.INJECTOR;
+
 	private Text predicateText, nameText, messageText;
-	
+
 	private ComboViewer attributeCombo;
-	
-	public BPredicateObserverWizard(Shell shell, BControl control,
-			Observer observer) {
+
+	public BPredicateObserverWizard(final Shell shell, final BControl control,
+			final Observer observer) {
 		super(shell, control, observer);
 	}
 
@@ -74,69 +76,71 @@ public class BPredicateObserverWizard extends ObserverWizard {
 	public Point getSize() {
 		return new Point(375, 325);
 	}
-	
+
 	@Override
-	public Control createDialogArea(Composite parent) {
-		
-		parent.setLayout(new GridLayout(1,true));
-		
-		GridLayout layout = new GridLayout(2,false);
-		
+	public Control createDialogArea(final Composite parent) {
+
+		parent.setLayout(new GridLayout(1, true));
+
+		GridLayout layout = new GridLayout(2, false);
+
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 		container.setLayout(layout);
-		
+
 		GridData gridDataFill = new GridData(GridData.FILL_HORIZONTAL);
-		
+
 		GridData gridDataLabel = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 		gridDataLabel.widthHint = 75;
 		gridDataLabel.heightHint = 25;
 
-		Label label = new Label(container,SWT.NONE);
+		Label label = new Label(container, SWT.NONE);
 		label.setText("Name:");
 		label.setLayoutData(gridDataLabel);
-		
+
 		nameText = new Text(container, SWT.BORDER);
 		nameText.setLayoutData(gridDataFill);
-		
-		label = new Label(container,SWT.NONE);
+
+		label = new Label(container, SWT.NONE);
 		label.setText("Predicate:");
 		label.setLayoutData(gridDataLabel);
-		
+
 		predicateText = new Text(container, SWT.BORDER);
 		predicateText.setLayoutData(gridDataFill);
 		predicateText.addModifyListener(new ModifyListener() {
-			
+
 			@Override
-			public void modifyText(ModifyEvent e) {
+			public void modifyText(final ModifyEvent e) {
 
 				try {
-					
+
 					messageText.setText("");
-					
+
 					BParser.parse(BParser.PREDICATE_PREFIX
 							+ predicateText.getText());
-					
+
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					Trace currentTrace = selector.getCurrentTrace();
-					
-					if(currentTrace != null) {
-					
-						EvaluationResult eval = currentTrace
+
+					if (currentTrace != null) {
+
+						IEvalResult eval = currentTrace
 								.evalCurrent(predicateText.getText());
 
 						if (eval != null) {
 
-							if (!eval.hasError()) {
+							if (eval instanceof EvalResult) {
 								messageText.setText("Result: "
-										+ eval.getValue());
+										+ ((EvalResult) eval).getValue());
 								messageText
 										.setForeground(ColorConstants.darkGreen);
 							} else {
 								messageText.setForeground(ColorConstants.red);
-								messageText.setText("Error: "
-										+ eval.getErrors());
+								messageText
+										.setText("Error: "
+												+ ((ComputationNotCompletedResult) eval)
+														.getReason());
 							}
 
 							messageText.redraw();
@@ -144,7 +148,7 @@ public class BPredicateObserverWizard extends ObserverWizard {
 						}
 
 					}
-					
+
 				} catch (BException e1) {
 					messageText.setForeground(ColorConstants.red);
 					messageText.setText("Error: " + e1.getMessage());
@@ -153,34 +157,35 @@ public class BPredicateObserverWizard extends ObserverWizard {
 				}
 
 			}
-			
+
 		});
-		
-		label = new Label(container,SWT.NONE);
+
+		label = new Label(container, SWT.NONE);
 		label.setText("Attribute:");
 		label.setLayoutData(gridDataLabel);
-		
+
 		attributeCombo = new ComboViewer(container);
 		attributeCombo.setContentProvider(new ArrayContentProvider());
 		attributeCombo.setLabelProvider(new LabelProvider() {
-			
+
 			@Override
-			public String getText(Object element) {
+			public String getText(final Object element) {
 				AbstractAttribute atr = (AbstractAttribute) element;
 				return atr.getName();
 			}
-			
+
 		});
 		attributeCombo.setInput(getControl().getAttributes().values());
 		attributeCombo.getCombo().setLayoutData(gridDataFill);
 		attributeCombo
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
-						
+					public void selectionChanged(
+							final SelectionChangedEvent event) {
+
 						ISelection selection = event.getSelection();
 						if (selection instanceof StructuredSelection) {
-							
+
 							StructuredSelection sel = (StructuredSelection) selection;
 							AbstractAttribute atr = (AbstractAttribute) sel
 									.getFirstElement();
@@ -196,17 +201,17 @@ public class BPredicateObserverWizard extends ObserverWizard {
 
 							tableViewer.setInput(atr);
 							tableViewer.refresh();
-							
+
 						}
 
 					}
 				});
-		
-		label = new Label(container,SWT.NONE);
+
+		label = new Label(container, SWT.NONE);
 		label.setText("Value:");
 		label.setLayoutData(gridDataLabel);
-			
-		tableViewer = new TableViewer(container, SWT.NONE);		
+
+		tableViewer = new TableViewer(container, SWT.NONE);
 		tableViewer.getTable().setHeaderVisible(false);
 		tableViewer.getTable().setLinesVisible(false);
 		tableViewer.setContentProvider(new IStructuredContentProvider() {
@@ -216,26 +221,26 @@ public class BPredicateObserverWizard extends ObserverWizard {
 			}
 
 			@Override
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
+			public void inputChanged(final Viewer viewer,
+					final Object oldInput, final Object newInput) {
 			}
 
 			@Override
-			public Object[] getElements(Object inputElement) {
-				return new Object[] {inputElement};
+			public Object[] getElements(final Object inputElement) {
+				return new Object[] { inputElement };
 			}
-			
+
 		});
 
 		tableViewer.getTable().setLayoutData(gridDataFill);
 		tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
 			@Override
-			public void handleEvent(Event event) {
+			public void handleEvent(final Event event) {
 				event.gc.setBackground(ColorConstants.white);
 				event.gc.fillRectangle(event.getBounds());
 			}
 		});
-		
+
 		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
 		column.getColumn().setResizable(false);
 		column.getColumn().setWidth(215);
@@ -243,46 +248,47 @@ public class BPredicateObserverWizard extends ObserverWizard {
 				tableViewer, getControl()) {
 
 			@Override
-			protected void setValue(Object element, Object value) {
+			protected void setValue(final Object element, final Object value) {
 				((BPredicateObserver) getObserver()).setValue(value);
 				tableViewer.refresh();
 			}
 
 			@Override
-			protected Object getValue(Object element) {
+			protected Object getValue(final Object element) {
 				return ((BPredicateObserver) getObserver()).getValue();
 			}
 
 		});
 		column.setLabelProvider(new CellLabelProvider() {
 			@Override
-			public void update(ViewerCell cell) {
+			public void update(final ViewerCell cell) {
 				Object value = ((BPredicateObserver) getObserver()).getValue();
-				if (value != null)
+				if (value != null) {
 					cell.setText(value.toString());
+				}
 			}
 		});
 
-		label = new Label(container,SWT.NONE);
+		label = new Label(container, SWT.NONE);
 		label.setText("");
 		label.setLayoutData(gridDataLabel);
 
-		messageText = new Text(container,SWT.MULTI | SWT.WRAP);
+		messageText = new Text(container, SWT.MULTI | SWT.WRAP);
 		messageText.setText("");
 		messageText.setForeground(ColorConstants.red);
 		messageText.setBackground(ColorConstants.menuBackground);
 		messageText.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
+
 		getObserver().addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				
-				if(evt.getPropertyName().equals("predicate")) {
+			public void propertyChange(final PropertyChangeEvent evt) {
+
+				if (evt.getPropertyName().equals("predicate")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					Trace currentTrace = selector.getCurrentTrace();
-					Map<String, EvaluationResult> evaluationResults = BMotionUtil
+					Map<String, IEvalResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
 									currentTrace,
 									getControl().prepareObserver(getObserver(),
@@ -290,44 +296,42 @@ public class BPredicateObserverWizard extends ObserverWizard {
 					getObserver().check(currentTrace, getControl(),
 							evaluationResults);
 				}
-				
+
 			}
-			
+
 		});
-		
+
 		initBindings(dbc);
-		
+
 		return container;
-		
+
 	}
 
-	private void initBindings(DataBindingContext dbc) {
+	private void initBindings(final DataBindingContext dbc) {
 
 		dbc.bindValue(SWTObservables.observeText(nameText, SWT.Modify),
-				BeansObservables.observeValue(
-						(BPredicateObserver) getObserver(), "name"));
+				BeansObservables.observeValue(getObserver(), "name"));
 
 		dbc.bindValue(SWTObservables.observeText(predicateText, SWT.Modify),
-				BeansObservables.observeValue(
-						(BPredicateObserver) getObserver(), "predicate"));
-		
+				BeansObservables.observeValue(getObserver(), "predicate"));
+
 		IObservableValue typeSelection = ViewersObservables
 				.observeSingleSelection(attributeCombo);
 		IObservableValue myModelTypeObserveValue = BeansObservables
-				.observeValue((BPredicateObserver) getObserver(), "attribute");
-		
+				.observeValue(getObserver(), "attribute");
+
 		dbc.bindValue(typeSelection, myModelTypeObserveValue,
 				new UpdateValueStrategy() {
 
 					@Override
-					public Object convert(Object value) {
+					public Object convert(final Object value) {
 						return ((AbstractAttribute) value).getID();
 					}
 
 				}, new UpdateValueStrategy() {
 
 					@Override
-					public Object convert(Object value) {
+					public Object convert(final Object value) {
 						BControl control = getControl();
 						return control.getAttribute(value.toString());
 					}

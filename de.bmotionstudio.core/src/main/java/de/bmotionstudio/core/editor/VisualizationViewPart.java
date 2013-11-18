@@ -62,7 +62,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.ISaveablePart2;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -95,11 +94,11 @@ import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.bmotionstudio.core.util.BMotionUtil;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class VisualizationViewPart extends ViewPart implements
@@ -107,9 +106,9 @@ public class VisualizationViewPart extends ViewPart implements
 		ITabbedPropertySheetPageContributor, ISaveablePart2 {
 
 	public static String ID = "de.bmotionstudio.core.view.VisualizationView";
-	
-	private Injector injector = ServletContextListener.INJECTOR;
-	
+
+	private final Injector injector = ServletContextListener.INJECTOR;
+
 	private EditDomain editDomain;
 
 	private VisualizationView visualizationView;
@@ -127,46 +126,46 @@ public class VisualizationViewPart extends ViewPart implements
 	private boolean isInitialized = false;
 
 	private Composite parent;
-	
+
 	private KeyHandler sharedKeyHandler;
-	
+
 	private File visualizationFile;
-	
+
 	private boolean dirty;
-	
+
 	private File modelFile;
-	
-	private List<String> selectionActions = new ArrayList<String>();
-	private List<String> stackActions = new ArrayList<String>();
-	private List<String> propertyActions = new ArrayList<String>();
-	
-	private String[] viewerProperties = new String[] {
+
+	private final List<String> selectionActions = new ArrayList<String>();
+	private final List<String> stackActions = new ArrayList<String>();
+	private final List<String> propertyActions = new ArrayList<String>();
+
+	private final String[] viewerProperties = new String[] {
 			SnapToGrid.PROPERTY_GRID_VISIBLE, SnapToGrid.PROPERTY_GRID_ENABLED,
 			RulerProvider.PROPERTY_RULER_VISIBILITY,
 			SnapToGeometry.PROPERTY_SNAP_ENABLED };
 
-	private PropertyChangeListener viewerListener = new PropertyChangeListener() {
+	private final PropertyChangeListener viewerListener = new PropertyChangeListener() {
 		@Override
-		public void propertyChange(PropertyChangeEvent event) {
+		public void propertyChange(final PropertyChangeEvent event) {
 			String propertyName = event.getPropertyName();
 			if (Arrays.asList(viewerProperties).contains(propertyName)) {
 				setDirty(true);
 			}
 		}
 	};
-	
-	private ZoomListener zoomListener = new ZoomListener() {
+
+	private final ZoomListener zoomListener = new ZoomListener() {
 		@Override
-		public void zoomChanged(double zoom) {
+		public void zoomChanged(final double zoom) {
 			setDirty(true);
 		}
 	};
 
 	@Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class type) {
+	public Object getAdapter(@SuppressWarnings("rawtypes") final Class type) {
 
 		GraphicalViewer gViewer = getGraphicalViewer();
-		
+
 		// Adapter for zoom manager
 		if (type == ZoomManager.class && gViewer != null) {
 			ScalableRootEditPart scalableRootEditPart = (ScalableRootEditPart) gViewer
@@ -179,11 +178,13 @@ public class VisualizationViewPart extends ViewPart implements
 			return new BMotionOutlinePage(this);
 		}
 
-		if (type == ActionRegistry.class)
+		if (type == ActionRegistry.class) {
 			return getActionRegistry();
+		}
 
-		if (type == CommandStack.class)
+		if (type == CommandStack.class) {
 			return getCommandStack();
+		}
 
 		// Adapter for property page
 		if (type == IPropertySheetPage.class) {
@@ -195,11 +196,11 @@ public class VisualizationViewPart extends ViewPart implements
 			// getCommandStack()));
 			return new BMotionPropertySheetPage(this);
 		}
-		
+
 		if (type == IPropertySheetEntry.class) {
 			return new CustomSortPropertySheetEntry(getCommandStack());
 		}
-		
+
 		if (type == ActionRegistry.class) {
 			return getActionRegistry();
 		}
@@ -209,23 +210,25 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	public SelectionSynchronizer getSelectionSynchronizer() {
-		if (selectionSynchronizer == null)
+		if (selectionSynchronizer == null) {
 			selectionSynchronizer = new BMotionSelectionSynchronizer();
+		}
 		return selectionSynchronizer;
 	}
 
 	public GraphicalViewer getGraphicalViewer() {
 		return graphicalViewer;
 	}
-	
+
 	/**
 	 * Lazily creates and returns the action registry.
 	 * 
 	 * @return the action registry
 	 */
 	public ActionRegistry getActionRegistry() {
-		if (actionRegistry == null)
+		if (actionRegistry == null) {
 			actionRegistry = new ActionRegistry();
+		}
 		return actionRegistry;
 	}
 
@@ -234,8 +237,9 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	protected CommandStack getCommandStack() {
-		if (getEditDomain() != null)
+		if (getEditDomain() != null) {
 			return getEditDomain().getCommandStack();
+		}
 		return null;
 	}
 
@@ -264,10 +268,10 @@ public class VisualizationViewPart extends ViewPart implements
 		registry.registerAction(action);
 		getSelectionActions().add(action.getId());
 
-		action = new DeleteAction((IWorkbenchPart) this);
+		action = new DeleteAction(this);
 		registry.registerAction(action);
 		getSelectionActions().add(action.getId());
-		
+
 		action = new SelectAllAction(this);
 		registry.registerAction(action);
 
@@ -283,7 +287,7 @@ public class VisualizationViewPart extends ViewPart implements
 		zoomContributions.add(ZoomManager.FIT_HEIGHT);
 		zoomContributions.add(ZoomManager.FIT_WIDTH);
 		manager.setZoomLevelContributions(zoomContributions);
-		
+
 		getActionRegistry().registerAction(
 				new ToggleRulerVisibilityAction(getGraphicalViewer()) {
 					@Override
@@ -309,13 +313,13 @@ public class VisualizationViewPart extends ViewPart implements
 					}
 				});
 
-		action = new LockVisualizationAction((IWorkbenchPart) this);
+		action = new LockVisualizationAction(this);
 		getActionRegistry().registerAction(action);
 		getStackActions().add(action.getId());
-		
+
 		installObserverActions();
 		installEventActions();
-		
+
 	}
 
 	private void installObserverActions() {
@@ -346,7 +350,7 @@ public class VisualizationViewPart extends ViewPart implements
 			}
 
 		}
-		
+
 		// Register Remove Observer Action
 		RemoveObserverAction removeObserverAction = new RemoveObserverAction(
 				this);
@@ -360,7 +364,7 @@ public class VisualizationViewPart extends ViewPart implements
 		PasteObserverAction pasteObserverAction = new PasteObserverAction(this);
 		pasteObserverAction.setId(ActionConstants.ACTION_PASTE_OBSERVER);
 		registry.registerAction(pasteObserverAction);
-		
+
 	}
 
 	private void installEventActions() {
@@ -405,7 +409,7 @@ public class VisualizationViewPart extends ViewPart implements
 		registry.registerAction(pasteAction);
 
 	}
-	
+
 	@Override
 	public void dispose() {
 		unregister();
@@ -413,21 +417,26 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	private void unregister() {
-		if (getCommandStack() != null)
+		if (getCommandStack() != null) {
 			getCommandStack().removeCommandStackListener(this);
-		if (getActionRegistry() != null)
+		}
+		if (getActionRegistry() != null) {
 			getActionRegistry().dispose();
-		if (getVisualizationView() != null)
+		}
+		if (getVisualizationView() != null) {
 			getVisualizationView().removePropertyChangeListener(this);
-		if (getGraphicalViewer() != null)
+		}
+		if (getGraphicalViewer() != null) {
 			getGraphicalViewer().removePropertyChangeListener(viewerListener);
-		if (rootEditPart != null)
+		}
+		if (rootEditPart != null) {
 			rootEditPart.getZoomManager().removeZoomListener(zoomListener);
+		}
 		setInitialized(false);
 	}
 
 	@Override
-	public void commandStackChanged(EventObject event) {
+	public void commandStackChanged(final EventObject event) {
 		updateActions(stackActions);
 		setDirty(getCommandStack().isDirty());
 	}
@@ -442,7 +451,7 @@ public class VisualizationViewPart extends ViewPart implements
 	 * @param actionIds
 	 *            the list of IDs to update
 	 */
-	protected void updateActions(List<String> actionIds) {
+	protected void updateActions(final List<String> actionIds) {
 		ActionRegistry registry = getActionRegistry();
 		Iterator<String> iter = actionIds.iterator();
 		while (iter.hasNext()) {
@@ -466,28 +475,28 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	@Override
-	public void createPartControl(Composite parent) {
+	public void createPartControl(final Composite parent) {
 		this.parent = parent;
-		this.container = new RulerComposite(parent, SWT.NONE);
-		this.editDomain = new EditDomain();	
-	}
-	
-	@Override
-	public void setFocus() {
-		this.container.setFocus();
+		container = new RulerComposite(parent, SWT.NONE);
+		editDomain = new EditDomain();
 	}
 
-	public void init(File visualizationFile) {
+	@Override
+	public void setFocus() {
+		container.setFocus();
+	}
+
+	public void init(final File visualizationFile) {
 		this.visualizationFile = visualizationFile;
 		init(BMotionUtil.getVisualizationViewFromFile(visualizationFile));
 	}
 
-	public void init(VisualizationView visualizationView) {
+	public void init(final VisualizationView visualizationView) {
 		this.visualizationView = visualizationView;
 		this.visualizationView.addPropertyChangeListener(this);
-		this.graphicalViewer = new ScrollingGraphicalViewer();
-		this.graphicalViewer.createControl(this.container);
-		this.editDomain.getCommandStack().addCommandStackListener(this);
+		graphicalViewer = new ScrollingGraphicalViewer();
+		graphicalViewer.createControl(container);
+		editDomain.getCommandStack().addCommandStackListener(this);
 		Visualization visualization = visualizationView.getVisualization();
 		configureGraphicalViewer();
 		hookGraphicalViewer();
@@ -507,7 +516,7 @@ public class VisualizationViewPart extends ViewPart implements
 		}
 		setPartName(partName);
 	}
-	
+
 	protected void hookGraphicalViewer() {
 		getSelectionSynchronizer().addViewer(getGraphicalViewer());
 		getSite().setSelectionProvider(getGraphicalViewer());
@@ -534,7 +543,8 @@ public class VisualizationViewPart extends ViewPart implements
 		graphicalViewer
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
+					public void selectionChanged(
+							final SelectionChangedEvent event) {
 						updateActions(selectionActions);
 					}
 				});
@@ -542,19 +552,19 @@ public class VisualizationViewPart extends ViewPart implements
 				graphicalViewer, getActionRegistry(),
 				visualizationView.getLanguage());
 		graphicalViewer.setContextMenu(provider);
-		
+
 		loadProperties(visualizationView);
-		
+
 		graphicalViewer.addPropertyChangeListener(viewerListener);
 		rootEditPart.getZoomManager().addZoomListener(zoomListener);
-		
+
 	}
 
 	private void buildActions() {
-				
+
 		IActionBars bars = getViewSite().getActionBars();
 		ActionRegistry ar = getActionRegistry();
-		
+
 		bars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
 				ar.getAction(ActionFactory.UNDO.getId()));
 		bars.setGlobalActionHandler(ActionFactory.REDO.getId(),
@@ -580,12 +590,10 @@ public class VisualizationViewPart extends ViewPart implements
 				.add(getActionRegistry().getAction(ActionFactory.REDO.getId()));
 		viewSite.getActionBars().getToolBarManager()
 				.add(getActionRegistry().getAction(ActionFactory.COPY.getId()));
-		viewSite
-				.getActionBars()
+		viewSite.getActionBars()
 				.getToolBarManager()
 				.add(getActionRegistry().getAction(ActionFactory.PASTE.getId()));
-		viewSite
-				.getActionBars()
+		viewSite.getActionBars()
 				.getToolBarManager()
 				.add(getActionRegistry()
 						.getAction(ActionFactory.DELETE.getId()));
@@ -599,7 +607,8 @@ public class VisualizationViewPart extends ViewPart implements
 
 		ZoomComboContributionItem zoomCombo = new ZoomComboContributionItem(
 				getSite().getPage()) {
-			protected int computeWidth(Control control) {
+			@Override
+			protected int computeWidth(final Control control) {
 				return 75;
 			}
 		};
@@ -629,19 +638,21 @@ public class VisualizationViewPart extends ViewPart implements
 
 	}
 
-	protected void loadProperties(VisualizationView visualizationView) {
+	protected void loadProperties(final VisualizationView visualizationView) {
 
 		// Ruler properties
 		BMotionRuler ruler = visualizationView.getRuler(PositionConstants.WEST);
 		RulerProvider provider = null;
-		if (ruler != null)
+		if (ruler != null) {
 			provider = new BMotionRulerProvider(ruler);
+		}
 		getGraphicalViewer().setProperty(RulerProvider.PROPERTY_VERTICAL_RULER,
 				provider);
 		ruler = visualizationView.getRuler(PositionConstants.NORTH);
 		provider = null;
-		if (ruler != null)
+		if (ruler != null) {
 			provider = new BMotionRulerProvider(ruler);
+		}
 		getGraphicalViewer().setProperty(
 				RulerProvider.PROPERTY_HORIZONTAL_RULER, provider);
 		getGraphicalViewer().setProperty(
@@ -662,7 +673,7 @@ public class VisualizationViewPart extends ViewPart implements
 		rootEditPart.getZoomManager().setZoom(visualizationView.getZoom());
 
 	}
-	
+
 	protected void saveProperties() {
 		getVisualizationView().setRulerVisible(
 				((Boolean) getGraphicalViewer().getProperty(
@@ -676,7 +687,7 @@ public class VisualizationViewPart extends ViewPart implements
 						SnapToGeometry.PROPERTY_SNAP_ENABLED)).booleanValue());
 		getVisualizationView().setZoom(rootEditPart.getZoomManager().getZoom());
 	}
-	
+
 	/**
 	 * Returns the KeyHandler with common bindings for both the Outline and
 	 * Graphical Views. For example, delete is a common action.
@@ -703,7 +714,7 @@ public class VisualizationViewPart extends ViewPart implements
 			sharedKeyHandler.put(
 					KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
 					getActionRegistry().getAction(GEFActionConstants.ZOOM_OUT));
-			
+
 		}
 
 		return sharedKeyHandler;
@@ -714,7 +725,7 @@ public class VisualizationViewPart extends ViewPart implements
 		return isInitialized;
 	}
 
-	public void setInitialized(boolean isInitialized) {
+	public void setInitialized(final boolean isInitialized) {
 		this.isInitialized = isInitialized;
 	}
 
@@ -723,10 +734,10 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		
+	public void propertyChange(final PropertyChangeEvent evt) {
+
 		String propertyName = evt.getPropertyName();
-		
+
 		if (propertyName.equals("name")) {
 			String name = evt.getNewValue().toString();
 			final AnimationSelector selector = injector
@@ -750,24 +761,26 @@ public class VisualizationViewPart extends ViewPart implements
 		}
 	}
 
-	public void checkObserver(Trace history) {
-				
-		if(history == null)
+	public void checkObserver(final Trace history) {
+
+		if (history == null) {
 			return;
-		
+		}
+
 		// Proceed only if the state can be evaluated and the visualization
 		// corresponds to the active animation
 		if (!history.getStateSpace().canBeEvaluated(history.getCurrentState())
 				|| !(history.getModel().getModelFile().getName()
-						.equals(modelFile.getName())))
+						.equals(modelFile.getName()))) {
 			return;
+		}
 
-		// Collect all controls		
+		// Collect all controls
 		Visualization visualization = visualizationView.getVisualization();
 		List<BControl> allBControls = new ArrayList<BControl>();
 		allBControls.add(visualization);
 		collectAllBControls(allBControls, visualization);
-		
+
 		// Collect all evaluation elements from observer
 		List<IEvalElement> l = new ArrayList<IEvalElement>();
 		for (BControl c : allBControls) {
@@ -779,24 +792,27 @@ public class VisualizationViewPart extends ViewPart implements
 				}
 			}
 		}
-		
+
 		// Get all evaluation results at once
-		Map<String, EvaluationResult> results = BMotionUtil
-				.getEvaluationResults(history, l);
+		Map<String, IEvalResult> results = BMotionUtil.getEvaluationResults(
+				history, l);
 
 		// Check observer with evaluation results
-		for (BControl c : allBControls)
+		for (BControl c : allBControls) {
 			c.checkObserver(history, results);
-		for (BControl c : allBControls)
+		}
+		for (BControl c : allBControls) {
 			c.afterCheckObserver(history);
+		}
 
 	}
 
-	private void collectAllBControls(List<BControl> allBControls,
-			BControl control) {
+	private void collectAllBControls(final List<BControl> allBControls,
+			final BControl control) {
 
-		if (control.getChildren().isEmpty())
+		if (control.getChildren().isEmpty()) {
 			return;
+		}
 
 		for (BControl bcontrol : control.getChildren()) {
 			allBControls.add(bcontrol);
@@ -811,7 +827,7 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	@Override
-	public void doSave(IProgressMonitor monitor) {
+	public void doSave(final IProgressMonitor monitor) {
 		saveProperties();
 		SaveAction saveAction = new SaveAction(visualizationView,
 				visualizationFile);
@@ -826,16 +842,16 @@ public class VisualizationViewPart extends ViewPart implements
 		throw new IllegalAccessError("No way to enter this method.");
 	}
 
-	public void setDirty(boolean dirty) {
+	public void setDirty(final boolean dirty) {
 		if (isDirty() != dirty) {
 			this.dirty = dirty;
 			firePropertyChange(ISaveablePart.PROP_DIRTY);
 		}
 	}
-	
+
 	@Override
 	public boolean isDirty() {
-		return this.dirty;
+		return dirty;
 	}
 
 	@Override

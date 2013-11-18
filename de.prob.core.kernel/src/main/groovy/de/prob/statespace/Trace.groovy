@@ -1,11 +1,13 @@
 package de.prob.statespace
 
+import org.parboiled.common.Tuple2
+
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.EvaluateFormulasCommand
 import de.prob.animator.domainobjects.ClassicalB
-import de.prob.animator.domainobjects.EvaluationResult
 import de.prob.animator.domainobjects.IEvalElement
+import de.prob.animator.domainobjects.IEvalResult
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
@@ -16,7 +18,7 @@ class Trace {
 	def final TraceElement head
 	def final StateSpace stateSpace
 
-	def EvaluationResult evalCurrent(formula) {
+	def IEvalResult evalCurrent(formula) {
 		if(!stateSpace.canBeEvaluated(getCurrentState())) {
 			return null
 		}
@@ -27,7 +29,8 @@ class Trace {
 		stateSpace.eval(getCurrentState(),[f]).get(0);
 	}
 
-	def List<EvaluationResult> eval(formula) {
+
+	def List<Tuple2<String,IEvalResult>> eval(formula) {
 		def f = formula;
 		if(!(formula instanceof IEvalElement)) {
 			f = formula as ClassicalB;
@@ -48,7 +51,7 @@ class Trace {
 		def res = []
 
 		cmds.each {
-			res << it.getValues().get(0)
+			res << new Tuple2<String,IEvalResult>(it.getStateId(),it.getValues().get(0))
 		}
 		res
 	}

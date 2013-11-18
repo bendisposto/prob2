@@ -65,16 +65,16 @@ bms = (function() {
 	// --------------------------------------------
 
 	function renderVisualization(observer,data) {
-		checkObserver(JSON.parse(observer))
-		extern.doStep(JSON.parse(data))
+		checkObserver(observer,data)
+		extern.doStep(data)
 	}
 	
-	function checkObserver(data) {
-		var observerList = data.data.observer;
+	function checkObserver(observer,data) {
+		var observerList = observer.observer;
 		if (observerList !== undefined) {
 			for ( var i = 0; i < observerList.length; i++) {
 				var observer = observerList[i];
-				bms[observer.cmd](observer);
+				bms[observer.cmd](observer,data);
 			}
 		}
 	}
@@ -209,11 +209,11 @@ bms = (function() {
 	
 	extern.reloadTemplate = function(data) {
 		extern.initTemplate(JSON.parse(data.data))
-		renderVisualization(data.observer,data.data)
+		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
 	}
-	
+
 	extern.renderVisualization = function(data) {
-		renderVisualization(data.observer,data.data)
+		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
 	}
 	
 	extern.doStep = function(data) {
@@ -233,9 +233,9 @@ bms = (function() {
 		return val;
 	}
 	
-	extern.evalObserver = function(data) {
+	extern.evalObserver = function(observer,data) {
 
-		var objects = data.objects
+		var objects = observer.objects
 
 		for ( var i = 0; i < objects.length; i++) {
 
@@ -277,10 +277,83 @@ bms = (function() {
 
 	}	  
 	
-	extern.executeOperation = function(data) {
-		
-		  var objects = data.objects
+	var firstCall = true;
+	
+	extern.cspEventObserver = function(observer,data) {
 
+		var objects = observer.objects
+		
+		// Get default values ...
+		if(firstCall) {
+			$.each(objects, function(i,o) {
+				$.each(o.trigger, function(i,t) {
+					var caller = t.call
+					var obj = $(t.selector)
+					var val = null
+					var fn = obj[caller];
+					if (typeof fn === "function") {
+						val = fn.apply(obj,[t.parameters[0]]);
+					}
+					obj.attr("default_value_" + t.parameters[0], val)
+				});
+			});
+			firstCall = false;
+		} else {
+			// Reset default values ...
+			$.each(objects, function(i,o) {
+				$.each(o.trigger, function(i,t) {
+					var caller = t.call
+					var obj = $(t.selector)
+					var val = obj.attr("default_value_" + t.parameters[0])
+					var fn = obj[caller];
+					if (typeof fn === "function") {
+						fn.apply(obj,[t.parameters[0],val]);
+					}
+				});
+			});
+		}
+		
+		// Replay trace ...
+		$.each(data.model.trace, function(i,l) {
+			
+			var lastop = l.full
+			
+			$.each(observer.objects, function(i,o) {
+
+				var events = o.events
+				
+				  if(events.indexOf(lastop) !== -1) {
+					  	
+					  	$.each(o.trigger, function(i,t) {
+						
+							var parameters = t.parameters
+							var caller = t.call
+							
+							if((parameters !== undefined) && (caller !== undefined)) {
+								var parsedArray = [];
+								$(parameters).each(function(k,v) {
+									parsedArray.push(extern.translateValue(v))		
+								});
+								var obj = $(t.selector)
+								var fn = obj[caller];
+								if (typeof fn === "function") {
+									fn.apply(obj, parsedArray);
+								}
+							}
+									
+						});
+					  
+				  }
+			
+			});
+			
+		});
+
+	}
+	
+	extern.executeOperation = function(observer,data) {
+		
+		  var objects = observer.objects
 		  
 		  $.each(objects, function(i,v)
 		  {

@@ -14,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.parboiled.common.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -22,7 +23,6 @@ import de.prob.model.eventb.Context;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBGuard;
 import de.prob.model.eventb.EventBMachine;
-import de.prob.model.eventb.proof.Tuple;
 import de.prob.model.eventb.proof.UncalculatedPO;
 import de.prob.model.representation.ModelElementList;
 
@@ -98,13 +98,13 @@ public class ProofExtractor {
 					: (split.length == 2 ? split[1] : split[2]);
 			String source = c.getName();
 
-			List<Tuple> elements = new ArrayList<Tuple>();
+			List<Tuple2<String, String>> elements = new ArrayList<Tuple2<String, String>>();
 			if ("THM".equals(type)) {
-				elements.add(new Tuple("axiom", split[0]));
+				elements.add(new Tuple2<String, String>("axiom", split[0]));
 				proofs.add(new UncalculatedPO(source, name, desc, elements,
 						isDischarged));
 			} else if ("WD".equals(type)) {
-				elements.add(new Tuple("axiom", split[0]));
+				elements.add(new Tuple2<String, String>("axiom", split[0]));
 				proofs.add(new UncalculatedPO(source, name, desc, elements,
 						isDischarged));
 			} else {
@@ -126,44 +126,52 @@ public class ProofExtractor {
 					: (split.length == 2 ? split[1] : split[2]);
 			String source = m.getName();
 
-			List<Tuple> elements = new ArrayList<Tuple>();
+			List<Tuple2<String, String>> elements = new ArrayList<Tuple2<String, String>>();
 			if ("GRD".equals(type)) {
 				Event concreteEvent = m.getEvent(split[0]);
 				for (Event event : concreteEvent.getRefines()) {
 					if (event.getGuard(split[1]) != null) {
 						EventBGuard guard = event.getGuard(split[1]);
-						elements.add(new Tuple("event", guard.getParentEvent()
+						elements.add(new Tuple2<String, String>("event", guard
+								.getParentEvent().getName()));
+						elements.add(new Tuple2<String, String>("guard", guard
 								.getName()));
-						elements.add(new Tuple("guard", guard.getName()));
 					}
 				}
-				elements.add(new Tuple("event", concreteEvent.getName()));
+				elements.add(new Tuple2<String, String>("event", concreteEvent
+						.getName()));
 				proofs.add(new UncalculatedPO(source, name, desc, elements,
 						isDischarged));
 			} else if ("INV".equals(type)) {
-				elements.add(new Tuple("event", "invariant"));
+				elements.add(new Tuple2<String, String>("event", "invariant"));
 				proofs.add(new UncalculatedPO(source, name, desc, elements,
 						isDischarged));
 			} else if ("THM".equals(type)) {
 				if (split.length == 2) {
-					elements.add(new Tuple("invariant", split[0]));
+					elements.add(new Tuple2<String, String>("invariant",
+							split[0]));
 				} else {
-					elements.add(new Tuple("guard", split[1]));
-					elements.add(new Tuple("event", split[0]));
+					elements.add(new Tuple2<String, String>("guard", split[1]));
+					elements.add(new Tuple2<String, String>("event", split[0]));
 				}
 				proofs.add(new UncalculatedPO(source, name, desc, elements,
 						isDischarged));
 			} else if ("WD".equals(type)) {
 				if (split.length == 2) {
-					elements.add(new Tuple("invariant", split[0]));
+					elements.add(new Tuple2<String, String>("invariant",
+							split[0]));
 				} else {
 					Event event = m.getEvent(split[0]);
 					if (event.getAction(split[1]) != null) {
-						elements.add(new Tuple("event", event.getName()));
-						elements.add(new Tuple("action", split[1]));
+						elements.add(new Tuple2<String, String>("event", event
+								.getName()));
+						elements.add(new Tuple2<String, String>("action",
+								split[1]));
 					} else {
-						elements.add(new Tuple("event", event.getName()));
-						elements.add(new Tuple("guard", split[1]));
+						elements.add(new Tuple2<String, String>("event", event
+								.getName()));
+						elements.add(new Tuple2<String, String>("guard",
+								split[1]));
 					}
 					proofs.add(new UncalculatedPO(source, name, desc, elements,
 							isDischarged));
