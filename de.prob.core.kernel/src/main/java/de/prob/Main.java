@@ -68,10 +68,10 @@ public class Main {
 	}
 
 	public static String getProBDirectory() {
-		// String homedir = System.getProperty("prob.home");
-		// if (homedir != null) {
-		// return homedir + separator;
-		// }
+		String homedir = System.getProperty("prob.home");
+		if (homedir != null) {
+			return homedir + separator;
+		}
 		// String env = System.getenv("PROB_HOME");
 		// if (env != null) {
 		// return env + separator;
