@@ -1,7 +1,5 @@
 package de.prob.web;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
@@ -24,6 +22,8 @@ public abstract class AbstractSession implements ISession {
 
 	private final UUID id;
 	protected final Responses responses;
+
+	protected boolean incrementalUpdate = true;
 
 	private final Logger logger = LoggerFactory
 			.getLogger(AbstractSession.class);
@@ -131,19 +131,24 @@ public abstract class AbstractSession implements ISession {
 
 	protected void resend(final String client, final int lastinfo,
 			final AsyncContext context) {
-
-		Message lm = responses.get(responses.size() - 1);
-		ArrayList<Object> cp = new ArrayList<Object>();
-		for (int i = lastinfo; i < responses.size(); i++) {
-			Message message = responses.get(i);
-			Object[] content = message.content;
-			for (int j = 0; j < content.length; j++) {
-				cp.add(content[j]);
+		Message m = null;
+		if (incrementalUpdate) {
+			Message lm = responses.get(responses.size() - 1);
+			ArrayList<Object> cp = new ArrayList<Object>();
+			for (int i = lastinfo; i < responses.size(); i++) {
+				Message message = responses.get(i);
+				Object[] content = message.content;
+				for (int j = 0; j < content.length; j++) {
+					cp.add(content[j]);
+				}
 			}
+
+			Object[] everything = cp.toArray();
+			m = new Message(lm.id, everything);
+		} else {
+			m = responses.get(responses.size() - 1);
 		}
 
-		Object[] everything = cp.toArray();
-		Message m = new Message(lm.id, everything);
 		String json = WebUtils.toJson(m);
 		send(json, context);
 	}
