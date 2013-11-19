@@ -24,6 +24,8 @@ public class FMU {
 
 	private static final Logger logger = LoggerFactory.getLogger(FMU.class);
 
+	private static final double TIMEOUT = 1000;
+
 	/** The modelIdentifier from modelDescription.xml. */
 	String _modelIdentifier;
 
@@ -37,11 +39,11 @@ public class FMU {
 
 	private final Set<IFMUListener> listeners = new HashSet<IFMUListener>();
 
-	public void registerListener(IFMUListener listener) {
+	public void registerListener(final IFMUListener listener) {
 		listeners.add(listener);
 	}
 
-	public void unregisterListener(IFMUListener listener) {
+	public void unregisterListener(final IFMUListener listener) {
 		listeners.remove(listener);
 	}
 
@@ -65,7 +67,7 @@ public class FMU {
 		String mimeType = "application/x-fmu-sharedlibrary";
 
 		// Timeout in ms., 0 means wait forever.
-		double timeout = 1000;
+		double timeout = TIMEOUT;
 
 		// There is no simulator UI.
 		byte visible = 0;

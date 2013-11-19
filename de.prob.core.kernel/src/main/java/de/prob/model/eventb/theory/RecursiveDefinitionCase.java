@@ -4,6 +4,8 @@ import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
+import com.google.common.base.Objects;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 
@@ -33,23 +35,31 @@ public class RecursiveDefinitionCase extends AbstractElement {
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		if (obj instanceof RecursiveDefinitionCase) {
-			if (expression != null && formula != null) {
-				return expression.equals(((RecursiveDefinitionCase) obj)
-						.getExpression())
-						&& formula.equals(((RecursiveDefinitionCase) obj)
-								.getFormula());
-			}
-		}
-		return false;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((expressionString == null) ? 0 : expressionString.hashCode());
+		result = prime * result
+				+ ((formulaString == null) ? 0 : formulaString.hashCode());
+		return result;
 	}
 
 	@Override
-	public int hashCode() {
-		return 17 * expressionString.hashCode() + 23 * formulaString.hashCode();
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		RecursiveDefinitionCase other = (RecursiveDefinitionCase) obj;
+		return Objects.equal(expressionString, other.expressionString)
+				&& Objects.equal(formulaString, other.formulaString);
 	}
+
 }

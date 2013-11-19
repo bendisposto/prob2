@@ -25,6 +25,12 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class CbcSolveCommand extends AbstractCommand {
 
+	private static final int BINDINGS = 1;
+
+	private static final int VAR_NAME = 1;
+	private static final int PROLOG_REP = 2;
+	private static final int PRETTY_PRINT = 3;
+
 	Logger logger = LoggerFactory.getLogger(CbcSolveCommand.class);
 
 	private static final String EVALUATE_TERM_VARIABLE = "Val";
@@ -59,17 +65,17 @@ public class CbcSolveCommand extends AbstractCommand {
 		}
 		if ("solution".equals(functor)) {
 			ListPrologTerm solutionBindings = BindingGenerator
-					.getList(prologTerm.getArgument(1));
+					.getList(prologTerm.getArgument(BINDINGS));
 
 			Map<String, String> solutions = new HashMap<String, String>();
 			Map<String, PrologTerm> solutionsSource = new HashMap<String, PrologTerm>();
 
 			for (PrologTerm b : solutionBindings) {
 				CompoundPrologTerm t = (CompoundPrologTerm) b;
-				solutions.put(t.getArgument(1).getFunctor(), t.getArgument(3)
-						.getFunctor());
-				solutionsSource.put(t.getArgument(1).getFunctor(),
-						t.getArgument(2));
+				solutions.put(t.getArgument(VAR_NAME).getFunctor(), t
+						.getArgument(PRETTY_PRINT).getFunctor());
+				solutionsSource.put(t.getArgument(VAR_NAME).getFunctor(),
+						t.getArgument(PROLOG_REP));
 			}
 
 			result = new EvalResult(evalElement.getCode(), "TRUE", solutions,

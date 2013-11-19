@@ -47,12 +47,13 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	List<Operation> events = new ArrayList<Operation>();
 	private String filter = "";
 	boolean hide = false;
-	private ScriptEngine groovy;
+	private final ScriptEngine groovy;
 
 	@Inject
-	public Events(final AnimationSelector selector, ScriptEngineProvider sep) {
+	public Events(final AnimationSelector selector,
+			final ScriptEngineProvider sep) {
 		this.selector = selector;
-		this.groovy = sep.get();
+		groovy = sep.get();
 		selector.registerAnimationChangeListener(this);
 	}
 
@@ -155,16 +156,17 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		selector.replaceTrace(currentTrace, newTrace);
 		return null;
 	}
-	
+
 	public Object executeEvent(final Map<String, String[]> params) {
 		String event = params.get("event")[0];
-		String code = "t = animations.getCurrentTrace();" +
-		"t1 = execTrace(t) { "+event+"};" +
-				"animations.replaceTrace(t,t1)";
+		String code = "t = animations.getCurrentTrace();"
+				+ "t1 = execTrace(t) { " + event + "};"
+				+ "animations.replaceTrace(t,t1)";
 		try {
 			groovy.eval(code);
 		} catch (ScriptException e) {
-			logger.error("Not able to execute event "+event+" for current trace. "+e.getMessage());
+			logger.error("Not able to execute event " + event
+					+ " for current trace. " + e.getMessage());
 		}
 		return null;
 	}

@@ -15,6 +15,8 @@ import com.google.common.base.Objects;
 
 public class ProBConnection {
 
+	private final int BUFFER_SIZE = 1024;
+
 	private Socket socket;
 	private BufferedInputStream inputStream;
 	private PrintStream outputStream;
@@ -89,7 +91,7 @@ public class ProBConnection {
 
 	protected String readAnswer() throws IOException {
 		final StringBuilder result = new StringBuilder();
-		final byte[] buffer = new byte[1024];
+		final byte[] buffer = new byte[BUFFER_SIZE];
 		boolean done = false;
 
 		while (!done) {

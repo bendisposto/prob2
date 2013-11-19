@@ -36,7 +36,7 @@ public class OpInfo {
 	public final String dest;
 	public List<String> params = new ArrayList<String>();
 	public String targetState;
-	public String rep = null;
+	protected String rep = null;
 	public boolean evaluated;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
@@ -226,7 +226,7 @@ public class OpInfo {
 	public String sha() throws NoSuchAlgorithmException {
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		md.update(targetState.getBytes());
-		return new BigInteger(1, md.digest()).toString(16);
+		return new BigInteger(1, md.digest()).toString(Character.MAX_RADIX);
 	}
 
 	/**

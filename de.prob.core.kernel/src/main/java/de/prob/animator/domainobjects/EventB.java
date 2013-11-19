@@ -35,7 +35,7 @@ import de.prob.unicode.UnicodeTranslator;
 public class EventB extends AbstractEvalElement {
 
 	Logger logger = LoggerFactory.getLogger(EventB.class);
-	public FormulaUUID uuid = new FormulaUUID();
+	private final FormulaUUID uuid = new FormulaUUID();
 
 	private String kind;
 	private Node ast = null;

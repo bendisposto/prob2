@@ -13,6 +13,8 @@ import org.eventb.core.ast.extension.datatype.IConstructorMediator;
 import org.eventb.core.ast.extension.datatype.IDatatypeExtension;
 import org.eventb.core.ast.extension.datatype.ITypeConstructorMediator;
 
+import com.google.common.base.Objects;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
@@ -157,21 +159,29 @@ public class DataType extends AbstractElement {
 		}
 
 		@Override
-		public boolean equals(final Object o) {
-			if (o == this) {
-				return true;
-			}
-			if (o instanceof DataTypeExtension) {
-				DataTypeExtension other = (DataTypeExtension) o;
-				return constructors.equals(other.getConstructors())
-						&& getId().equals(other.getId());
-			}
-			return false;
+		public int hashCode() {
+			return Objects.hashCode(getId(), constructors);
 		}
 
 		@Override
-		public int hashCode() {
-			return getId().hashCode() * 13 + 23 * constructors.hashCode();
+		public boolean equals(final Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			DataTypeExtension other = (DataTypeExtension) obj;
+			return Objects.equal(constructors, other.getConstructors())
+					&& Objects.equal(getId(), other.getId());
 		}
+
+		private DataType getOuterType() {
+			return DataType.this;
+		}
+
 	}
 }

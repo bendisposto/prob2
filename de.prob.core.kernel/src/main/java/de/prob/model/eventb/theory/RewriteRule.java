@@ -4,6 +4,8 @@ import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
+import com.google.common.base.Objects;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
@@ -63,22 +65,24 @@ public class RewriteRule extends AbstractElement {
 
 	@Override
 	public int hashCode() {
-		return 13 * name.hashCode() + 17 * applicability.hashCode()
-				+ (complete ? 23 : 0) + 27 * formula.hashCode();
+		return Objects.hashCode(applicability, complete, formula, name);
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == this) {
+		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof RewriteRule) {
-			return name.equals(((RewriteRule) obj).getName())
-					&& applicability.equals(((RewriteRule) obj)
-							.getApplicability())
-					&& complete == ((RewriteRule) obj).isComplete()
-					&& formula.equals(((RewriteRule) obj).getFormula());
+		if (obj == null) {
+			return false;
 		}
-		return false;
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		RewriteRule other = (RewriteRule) obj;
+		return Objects.equal(applicability, other.applicability)
+				&& Objects.equal(complete, other.complete)
+				&& Objects.equal(formula, other.formula)
+				&& Objects.equal(name, other.name);
 	}
 }

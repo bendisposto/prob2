@@ -50,7 +50,7 @@ public class ReflectionServlet extends HttpServlet {
 	private final static String FQN = "(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)+\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*";
 
 	@Inject
-	public ReflectionServlet(@Sessions Map<String, ISession> sessions) {
+	public ReflectionServlet(@Sessions final Map<String, ISession> sessions) {
 		this.sessions = sessions;
 		new Thread(new Runnable() {
 			@Override
@@ -80,8 +80,9 @@ public class ReflectionServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doGet(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 
 		String uri = req.getRequestURI();
 		List<String> parts = new PartList(uri.split("/"));
@@ -97,7 +98,7 @@ public class ReflectionServlet extends HttpServlet {
 		} else {
 			Class<ISession> clazz = getClass(className);
 			if (clazz == null) {
-				resp.sendError(404);
+				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
 
@@ -114,7 +115,7 @@ public class ReflectionServlet extends HttpServlet {
 
 	}
 
-	private String asString(Map<String, String[]> m) {
+	private String asString(final Map<String, String[]> m) {
 		StringBuffer res = new StringBuffer();
 		Set<Entry<String, String[]>> entrySet = m.entrySet();
 		for (Entry<String, String[]> e : entrySet) {
@@ -126,8 +127,9 @@ public class ReflectionServlet extends HttpServlet {
 		return res.toString();
 	}
 
-	private void delegateToSession(HttpServletRequest req,
-			HttpServletResponse resp, ISession session) throws IOException {
+	private void delegateToSession(final HttpServletRequest req,
+			final HttpServletResponse resp, final ISession session)
+			throws IOException {
 		String mode = req.getParameter("mode");
 		Map<String, String[]> parameterMap = req.getParameterMap();
 		if ("update".equals(mode)) {
@@ -145,20 +147,22 @@ public class ReflectionServlet extends HttpServlet {
 		}
 	}
 
-	public void submit(Callable<SessionResult> command) {
+	public void submit(final Callable<SessionResult> command) {
 		taskCompletionService.submit(command);
 	}
 
-	private void send(HttpServletResponse resp, String html) throws IOException {
+	private void send(final HttpServletResponse resp, final String html)
+			throws IOException {
 		PrintWriter writer = resp.getWriter();
 		writer.write(html);
 		writer.flush();
 		writer.close();
 	}
 
-	private boolean isUUID(String arg) {
-		if (arg == null)
+	private boolean isUUID(final String arg) {
+		if (arg == null) {
 			return false;
+		}
 		try {
 			UUID.fromString(arg);
 			return true;
@@ -183,7 +187,8 @@ public class ReflectionServlet extends HttpServlet {
 		return rest;
 	}
 
-	private ISession instantiate(Class<ISession> clazz) throws IOException {
+	private ISession instantiate(final Class<ISession> clazz)
+			throws IOException {
 		ISession obj = null;
 		obj = ServletContextListener.INJECTOR.getInstance(clazz);
 		return obj;
@@ -207,16 +212,17 @@ public class ReflectionServlet extends HttpServlet {
 
 		private static final long serialVersionUID = -5668244262489304794L;
 
-		public PartList(String[] split) {
+		public PartList(final String[] split) {
 			super(Arrays.asList(split));
 		}
 
 		@Override
-		public String get(int index) {
-			if (index >= this.size())
+		public String get(final int index) {
+			if (index >= this.size()) {
 				return "";
-			else
+			} else {
 				return super.get(index);
+			}
 		}
 
 	}
