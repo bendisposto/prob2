@@ -45,10 +45,10 @@ public class LoadBProjectCommandTest {
 			assertNotNull(next);
 			assertTrue(next instanceof CompoundPrologTerm);
 			CompoundPrologTerm t = (CompoundPrologTerm) next;
-			assertEquals("load_classical_b", t.getFunctor());
-			assertEquals(1, t.getArity());
+			assertEquals("load_classical_b_from_list_of_facts", t.getFunctor());
+			assertEquals(2, t.getArity());
 
-			PrologTerm argument = t.getArgument(1);
+			PrologTerm argument = t.getArgument(2);
 			assertTrue(argument.isList());
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
