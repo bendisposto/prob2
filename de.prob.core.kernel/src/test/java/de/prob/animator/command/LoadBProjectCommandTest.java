@@ -1,8 +1,8 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,10 +16,8 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.scripting.ClassicalBFactory;
 
@@ -42,7 +40,7 @@ public class LoadBProjectCommandTest {
 		Start ast = factory.parseFile(f, bparser);
 		RecursiveMachineLoader rml = factory.parseAllMachines(ast, f, bparser);
 
-		LoadBProjectCommand command = new LoadBProjectCommand(rml);
+		LoadBProjectCommand command = new LoadBProjectCommand(rml, f);
 		command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();
 		Collection<PrologTerm> sentences = prologTermOutput.getSentences();
@@ -58,15 +56,4 @@ public class LoadBProjectCommandTest {
 
 	}
 
-	@Test
-	public void testProcessResult2() {
-		@SuppressWarnings("unchecked")
-		ISimplifiedROMap<String, PrologTerm> map = mock(ISimplifiedROMap.class);
-
-		ListPrologTerm l = new ListPrologTerm();
-		when(map.get(anyString())).thenReturn(l);
-
-		LoadBProjectCommand command = new LoadBProjectCommand(null);
-		command.processResult(map);
-	}
 }
