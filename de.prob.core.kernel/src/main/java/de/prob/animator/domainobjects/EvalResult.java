@@ -34,8 +34,7 @@ public class EvalResult implements IEvalResult {
 
 	@Override
 	public String getCode() {
-		// TODO Auto-generated method stub
-		return null;
+		return code;
 	}
 
 	@Override
