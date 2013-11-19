@@ -165,7 +165,6 @@ public class Worksheet extends AbstractSession {
 		}
 		IBox box = boxes.get(boxId);
 		box.setContent(params);
-		messages.addAll(render(box));
 		messages.addAll(reEvaluate(boxId, order.indexOf(boxId)));
 		return messages;
 	}
@@ -190,10 +189,10 @@ public class Worksheet extends AbstractSession {
 		return box;
 	}
 
-	private List<Object> reEvaluate(EChangeEffect effect, int position) {
+	private List<Object> reEvaluate(IBox box, EChangeEffect effect, int position) {
 		switch (effect) {
 		case DONT_CARE:
-			return Collections.emptyList();
+			return render(box);
 		case EVERYTHING_BELOW:
 			return reEvaluateBoxes(position);
 		default: // FULL_REEVALUATION
@@ -202,8 +201,16 @@ public class Worksheet extends AbstractSession {
 	}
 
 	private List<Object> reEvaluate(String boxId, int position) {
-		EChangeEffect effect = boxes.get(boxId).changeEffect();
-		return reEvaluate(effect, position);
+		IBox box = boxes.get(boxId);
+		EChangeEffect effect = box.changeEffect();
+		return reEvaluate(box, effect, position);
+	}
+
+	private Collection<? extends Object> reEvaluate(EChangeEffect changeEffect,
+			int index) {
+		if (changeEffect == EChangeEffect.DONT_CARE)
+			return Collections.emptyList();
+		return reEvaluate(null, changeEffect, index);
 	}
 
 	private List<Object> reEvaluateBoxes(final int reorderposition) {
