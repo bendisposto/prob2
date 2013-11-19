@@ -82,7 +82,6 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			}
 			final String error = errors.isEmpty() ? "unspecified error"
 					: errors.get(0);
-			final List<String> empty = Collections.emptyList();
 			final IEvalResult er = new ComputationNotCompletedResult(
 					evalElement.getCode(), error);
 			result = new EvalstoreResult(false, false, evalstoreId, er,
