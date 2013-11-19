@@ -17,6 +17,8 @@ public class DerivedOp extends OpInfo {
 
 	@Override
 	public boolean equals(final Object that) {
+		// FIXME refactor so that this does not override OpInfo (and therefore
+		// is symmetric)
 		if (that instanceof DerivedOp) {
 			boolean s = this.getSrc().equals(((DerivedOp) that).getSrc());
 			boolean d = this.getDest().equals(((DerivedOp) that).getDest());

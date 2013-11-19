@@ -5,6 +5,19 @@ import spock.lang.Specification
 
 class AnimationSelectorTest extends Specification {
 
+	class MyListener implements IAnimationChangeListener {
+		def int count;
+
+		def MyListener() {
+			count = 0;
+		}
+
+		@Override
+		public void traceChange(Trace trace) {
+			count++;
+		}
+	}
+
 	def trace
 	def AnimationSelector selector
 	def listener
@@ -12,12 +25,7 @@ class AnimationSelectorTest extends Specification {
 	def setup() {
 		trace = mock(Trace.class);
 		selector = new AnimationSelector();
-		listener = new IAnimationChangeListener() {
-					def count = 0;
-					void traceChange(Trace arg0) {
-						count++;
-					};
-				}
+		listener = new MyListener()
 		selector.registerAnimationChangeListener(listener)
 	}
 
@@ -32,7 +40,7 @@ class AnimationSelectorTest extends Specification {
 		selector.notifyAnimationChange(null)
 
 		then:
-		listener.count == 1
+		listener.getCount() == 1
 	}
 
 	def "It is possible to add a new History"() {

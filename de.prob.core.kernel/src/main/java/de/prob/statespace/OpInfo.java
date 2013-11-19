@@ -19,6 +19,7 @@ import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.scripting.CSPModel;
+import de.prob.statespace.derived.DerivedOp;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -181,6 +182,9 @@ public class OpInfo {
 
 	@Override
 	public boolean equals(final Object obj) {
+		if (obj instanceof DerivedOp) {
+			return false;
+		}
 		if (obj instanceof OpInfo) {
 			OpInfo that = (OpInfo) obj;
 			boolean b = that.getId().equals(id);

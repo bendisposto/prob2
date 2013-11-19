@@ -30,29 +30,29 @@ public class LoadBProjectCommandTest {
 		File f = null;
 		try {
 			f = new File(resource.toURI());
+			StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
+			ClassicalBFactory factory = new ClassicalBFactory(null);
+			BParser bparser = new BParser();
+			Start ast = factory.parseFile(f, bparser);
+			RecursiveMachineLoader rml = factory.parseAllMachines(ast, f,
+					bparser);
+
+			LoadBProjectCommand command = new LoadBProjectCommand(rml, f);
+			command.writeCommand(prologTermOutput);
+			prologTermOutput.fullstop().flush();
+			Collection<PrologTerm> sentences = prologTermOutput.getSentences();
+			PrologTerm next = sentences.iterator().next();
+			assertNotNull(next);
+			assertTrue(next instanceof CompoundPrologTerm);
+			CompoundPrologTerm t = (CompoundPrologTerm) next;
+			assertEquals("load_classical_b", t.getFunctor());
+			assertEquals(1, t.getArity());
+
+			PrologTerm argument = t.getArgument(1);
+			assertTrue(argument.isList());
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-
-		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
-		ClassicalBFactory factory = new ClassicalBFactory(null);
-		BParser bparser = new BParser();
-		Start ast = factory.parseFile(f, bparser);
-		RecursiveMachineLoader rml = factory.parseAllMachines(ast, f, bparser);
-
-		LoadBProjectCommand command = new LoadBProjectCommand(rml, f);
-		command.writeCommand(prologTermOutput);
-		prologTermOutput.fullstop().flush();
-		Collection<PrologTerm> sentences = prologTermOutput.getSentences();
-		PrologTerm next = sentences.iterator().next();
-		assertNotNull(next);
-		assertTrue(next instanceof CompoundPrologTerm);
-		CompoundPrologTerm t = (CompoundPrologTerm) next;
-		assertEquals("load_classical_b", t.getFunctor());
-		assertEquals(1, t.getArity());
-
-		PrologTerm argument = t.getArgument(1);
-		assertTrue(argument.isList());
 
 	}
 

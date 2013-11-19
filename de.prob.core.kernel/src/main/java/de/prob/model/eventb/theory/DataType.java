@@ -65,8 +65,7 @@ public class DataType extends AbstractElement {
 			return true;
 		}
 		if (obj instanceof DataType) {
-			return identifierString.equals(((DataTypeConstructor) obj)
-					.toString());
+			return identifierString.equals(((DataType) obj).toString());
 		}
 		return false;
 	}

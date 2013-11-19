@@ -32,10 +32,12 @@ public class BConnection extends BControl {
 		if (isConnected) {
 			BControl sourceControl = getVisualization().getBControl(source);
 			BControl targetControl = getVisualization().getBControl(target);
-			if(sourceControl != null)
+			if (sourceControl != null) {
 				sourceControl.removeConnection(this);
-			if(targetControl != null)
+			}
+			if (targetControl != null) {
 				targetControl.removeConnection(this);
+			}
 			isConnected = false;
 		}
 	}
@@ -48,12 +50,12 @@ public class BConnection extends BControl {
 		return target;
 	}
 
-	public void setTarget(String c) {
-		this.target = c;
+	public void setTarget(final String c) {
+		target = c;
 	}
 
-	public void setSource(String c) {
-		this.source = c;
+	public void setSource(final String c) {
+		source = c;
 	}
 
 	/**
@@ -82,13 +84,14 @@ public class BConnection extends BControl {
 	 * @throws IllegalArgumentException
 	 *             if any of the paramers are null or newSource == newTarget
 	 */
-	public void reconnect(String newSource, String newTarget) {
-		if (newSource == null || newTarget == null || newSource == newTarget) {
+	public void reconnect(final String newSource, final String newTarget) {
+		if (newSource == null || newTarget == null
+				|| newSource.equals(newTarget)) {
 			throw new IllegalArgumentException();
 		}
 		disconnect();
-		this.source = newSource;
-		this.target = newTarget;
+		source = newSource;
+		target = newTarget;
 		reconnect();
 	}
 
