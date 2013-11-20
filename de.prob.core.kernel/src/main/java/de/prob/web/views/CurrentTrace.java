@@ -34,6 +34,7 @@ public class CurrentTrace extends AbstractSession implements
 	public CurrentTrace(final AnimationSelector selector) {
 		this.selector = selector;
 		selector.registerAnimationChangeListener(this);
+		incrementalUpdate = false;
 	}
 
 	@Override
