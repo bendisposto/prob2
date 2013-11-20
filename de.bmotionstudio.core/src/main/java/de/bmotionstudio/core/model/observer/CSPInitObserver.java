@@ -13,7 +13,7 @@ import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalResult;
-import de.prob.scripting.CSPModel;
+import de.prob.model.representation.CSPModel;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
 import de.prob.statespace.TraceElement;

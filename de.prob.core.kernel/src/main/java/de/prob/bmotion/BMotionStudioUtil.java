@@ -27,7 +27,7 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.EventBVariable;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.scripting.CSPModel;
+import de.prob.model.representation.CSPModel;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
