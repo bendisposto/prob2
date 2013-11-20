@@ -64,7 +64,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 			return null;
 		}
 		setShutdownHook(prologProcess);
-		Main.processes.put(prologProcess, Boolean.TRUE);
+		Main.registerPrologProcess(prologProcess);
 		return new ProcessHandle(prologProcess, debuggingKey);
 	}
 
