@@ -59,7 +59,7 @@ public class FileBrowserServlet extends HttpServlet {
 
 		public FileEntry(File f, String name) {
 			this.name = name;
-			path = f.getAbsolutePath();
+			path = f.getAbsolutePath().replace("\\", "\\\\");
 			hidden = f.isHidden();
 		}
 
