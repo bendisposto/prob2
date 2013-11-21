@@ -18,6 +18,7 @@ function Session() {
 		console.log("Send:", data)
 		$.ajax({
 			async : false,
+			cache: false,
 			data : data
 		});
 	}
@@ -27,6 +28,7 @@ function Session() {
 		if (html == undefined) {
 			$.ajax({
 				url : name,
+				cache: false,
 				success : function(result) {
 					if (result.isOk === false) {
 						alert(result.message);
@@ -67,10 +69,10 @@ function Session() {
 			'lastinfo' : current,
 			'client' : client
 		};
-		$
-				.ajax({
+		$.ajax({
 					data : data,
 					async : false,
+					cache: false,
 					success : function(data) {
 						if (data != "") {
 							dx = JSON.parse(data);
@@ -100,9 +102,9 @@ function Session() {
 			'client' : client
 		};
 		console.log("Requesting " + data.lastinfo)
-		$
-				.ajax({
+		$.ajax({
 					data : data,
+					cache: false,
 					success : function(data) {
 
 						if (data != "") {
