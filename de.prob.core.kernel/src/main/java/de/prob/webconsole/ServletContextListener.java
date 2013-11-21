@@ -1,7 +1,5 @@
 package de.prob.webconsole;
 
-import java.util.Set;
-
 import javax.servlet.ServletContextEvent;
 
 import com.google.inject.Guice;
@@ -32,10 +30,7 @@ public class ServletContextListener extends GuiceServletContextListener {
 
 	@Override
 	public void contextDestroyed(final ServletContextEvent event) {
-		Set<Process> keySet = Main.processes.keySet();
-		for (Process process : keySet) {
-			process.destroy();
-		}
+		Main.destroyPrologProcesses();
 	}
 
 }

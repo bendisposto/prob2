@@ -1,4 +1,4 @@
-package de.prob.scripting;
+package de.prob.model.representation;
 
 import java.io.File;
 import java.util.Map;
@@ -7,9 +7,7 @@ import com.google.inject.Inject;
 
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.StateSchema;
 import de.prob.statespace.StateSpace;
 
 public class CSPModel extends AbstractModel {

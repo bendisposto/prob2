@@ -51,7 +51,7 @@ import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
-import de.prob.scripting.CSPModel;
+import de.prob.model.representation.CSPModel;
 import de.prob.statespace.Trace;
 
 public class BMotionUtil {

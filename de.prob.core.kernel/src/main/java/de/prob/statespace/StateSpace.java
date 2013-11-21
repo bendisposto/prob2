@@ -38,7 +38,7 @@ import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
-import de.prob.scripting.CSPModel;
+import de.prob.model.representation.CSPModel;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 
 /**

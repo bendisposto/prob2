@@ -30,9 +30,7 @@ import de.prob.annotations.Home;
 import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
-import de.prob.scripting.Api;
-import de.prob.scripting.Downloader;
-import de.prob.scripting.ScriptEngineProvider;
+import de.prob.scripting.ScriptingModule;
 import de.prob.statespace.ModelModule;
 import de.prob.web.WebModule;
 
@@ -52,18 +50,15 @@ public class MainModule extends AbstractModule {
 		install(new AnimatorModule());
 		install(new ModelModule());
 		install(new WebModule());
+		install(new ScriptingModule());
 
-		bind(Api.class);
 		bind(CommandLineParser.class).to(PosixParser.class);
-
 		bind(String.class).annotatedWith(Version.class).toInstance(
 				buildConstants.getProperty("version", "0.0.0"));
 		bind(ConsoleReader.class);
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
 				.toInstance(Main.class.getClassLoader());
-		bind(Downloader.class);
 		bind(PegDownProcessor.class);
-		bind(ScriptEngineProvider.class);
 	}
 
 	@Provides

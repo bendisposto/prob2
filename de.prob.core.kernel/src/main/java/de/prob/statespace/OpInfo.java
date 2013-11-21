@@ -13,12 +13,12 @@ import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpFromId;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.CSPModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.scripting.CSPModel;
 import de.prob.statespace.derived.DerivedOp;
 
 /**

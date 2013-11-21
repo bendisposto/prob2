@@ -17,7 +17,7 @@ import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.exception.ProBError;
-import de.prob.scripting.CSPModel;
+import de.prob.model.representation.CSPModel;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
 

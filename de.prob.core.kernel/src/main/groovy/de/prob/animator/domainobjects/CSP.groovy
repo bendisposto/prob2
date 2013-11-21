@@ -5,9 +5,9 @@ package de.prob.animator.domainobjects
 import com.google.gson.Gson
 
 import de.prob.Main
+import de.prob.model.representation.CSPModel;
 import de.prob.model.representation.FormulaUUID
 import de.prob.prolog.output.IPrologTermOutput
-import de.prob.scripting.CSPModel
 
 /**
  * A Formula representation for CSP

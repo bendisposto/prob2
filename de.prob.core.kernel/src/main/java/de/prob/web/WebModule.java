@@ -10,8 +10,6 @@ import com.google.inject.servlet.ServletModule;
 
 import de.prob.annotations.Sessions;
 import de.prob.bmotion.BMotionStudioServlet;
-import de.prob.testing.ProBTestRunner;
-import de.prob.testing.TestRegistry;
 import de.prob.webconsole.OutputBuffer;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
@@ -28,8 +26,6 @@ public class WebModule extends ServletModule {
 		serve("/scrollback*").with(ScrollbackServlet.class);
 
 		bind(OutputBuffer.class);
-		bind(ProBTestRunner.class);
-		bind(TestRegistry.class);
 
 		TypeLiteral<Map<String, ISession>> mapType = new TypeLiteral<Map<String, ISession>>() {
 		};
