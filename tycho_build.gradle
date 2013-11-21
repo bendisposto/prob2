@@ -237,7 +237,7 @@ def deleteLibFromCP(def project){
 def addRunTimeLib( String libPar, String projectPar){
 	
 	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
-	def newMf = new File(projectPar+"/MF.tmp")
+	def newMf = new File(projectPar+"/MF.temp")
 	newMf.delete()
 	mf.eachLine{ line ->
 		if(line ==~ /.*Bundle-ClassPath:.*\.jar.*/){
@@ -282,7 +282,7 @@ def boolean checkForRunTimeLibs(String projectPar){
 
 def boolean checkRunTimeLib(String libPar, String projectPar){								// checks if lib is in RunTimeLibrary present and 
 	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")									// changes reference if necessary
-	def newMf = new File(projectPar+"/MF.tmp")
+	def newMf = new File(projectPar+"/MF.temp")
 	newMf.delete()
 	boolean returnBool = false
 	boolean changed = false
@@ -314,7 +314,7 @@ def boolean checkRunTimeLib(String libPar, String projectPar){								// checks 
 def deleteManifestClassPath(String projectPar){
 	
 	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
-	def newMf = new File(projectPar+"/MF.tmp")
+	def newMf = new File(projectPar+"/MF.temp")
 	boolean startDelete = false
 	newMf.delete()
 	mf.eachLine{ line ->
