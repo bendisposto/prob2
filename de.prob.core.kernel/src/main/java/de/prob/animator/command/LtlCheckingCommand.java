@@ -150,12 +150,8 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		// set the state first
-		// TODO: refactor prolog code, we want to use the stateID as a parameter
-		pto.openTerm("setCurrentState").printAtomOrNumber(stateid.getId())
-				.closeTerm();
-		// then call the ltl modelcheck predicate
 		pto.openTerm("do_ltl_modelcheck");
+		pto.printAtomOrNumber(stateid.getId());
 		evalElements.get(0).printProlog(pto);
 		pto.printNumber(max);
 		pto.printAtom(mode.toString());
