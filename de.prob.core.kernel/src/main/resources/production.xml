@@ -1,21 +1,13 @@
 <included>
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
-			by default -->
-		<filter class="ch.qos.logback.classic.filter.LevelFilter">
-			<level>ERROR</level>
-			<onMatch>ACCEPT</onMatch>
-			<onMismatch>DENY</onMismatch>
-		</filter>		
-		<encoder>
-			<pattern>%msg%n%nopex</pattern>
-		</encoder>
-	</appender>
+	<!-- <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"> 
+		<filter class="ch.qos.logback.classic.filter.LevelFilter"> <level>ERROR</level> 
+		<onMatch>ACCEPT</onMatch> <onMismatch>DENY</onMismatch> </filter> <encoder> 
+		<pattern>%msg%n%nopex</pattern> </encoder> </appender> -->
 
 
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${PROB_LOGFILE}</file>
+		<file>./prob_log.txt</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
 			<fileNamePattern>ProB.log.%d{yyyy-MM-dd}.log</fileNamePattern>
@@ -30,7 +22,6 @@
 	</appender>
 
 	<root level="debug">
-		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>
 </included>
