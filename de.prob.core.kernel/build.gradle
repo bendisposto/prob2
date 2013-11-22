@@ -83,6 +83,8 @@ dependencies {
 
 	compile 'org.antlr:antlr4-runtime:4.0'
 	compile 'de.prob:ltl-dsl:1.0.0'
+	
+	compile 'org.jsoup:jsoup:1.7.2' // MIT
 
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "bparser", version: parser_version , changing: true
