@@ -17,6 +17,17 @@ import de.prob.statespace.derived.DerivedStateId;
 
 public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 
+	private static final int STATE_LABELS_INDEX = 4;
+	private static final int STATE_COUNT_INDEX = 2;
+	private static final int STATE_COLOR_INDEX = 3;
+	private static final int STATE_ID_INDEX = 1;
+	private static final int OP_ID_INDEX = 1;
+	private static final int OP_SRC_INDEX = 2;
+	private static final int OP_DEST_INDEX = 3;
+	private static final int OP_LABEL_INDEX = 4;
+	private static final int OP_STYLE_INDEX = 5;
+	private static final int OP_COLOR_INDEX = 6;
+
 	public final String SPACE = "StateSpace";
 	public final List<DerivedStateId> states = new ArrayList<DerivedStateId>();
 	public final List<DerivedOp> ops = new ArrayList<DerivedOp>();
@@ -29,14 +40,17 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 		for (PrologTerm pt : trans) {
 			if (pt instanceof CompoundPrologTerm) {
 				CompoundPrologTerm cpt = (CompoundPrologTerm) pt;
-				String id = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
-				String src = OpInfo.getIdFromPrologTerm(cpt.getArgument(2));
-				String dest = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
-				String label = cpt.getArgument(4).toString();
+				String id = OpInfo.getIdFromPrologTerm(cpt
+						.getArgument(OP_ID_INDEX));
+				String src = OpInfo.getIdFromPrologTerm(cpt
+						.getArgument(OP_SRC_INDEX));
+				String dest = OpInfo.getIdFromPrologTerm(cpt
+						.getArgument(OP_DEST_INDEX));
+				String label = cpt.getArgument(OP_LABEL_INDEX).toString();
 				DerivedOp op = new DerivedOp(id, src, dest, label);
 
-				String style = cpt.getArgument(5).getFunctor();
-				String color = cpt.getArgument(6).getFunctor();
+				String style = cpt.getArgument(OP_STYLE_INDEX).getFunctor();
+				String color = cpt.getArgument(OP_COLOR_INDEX).getFunctor();
 
 				ops.add(op);
 				if (transStyle.containsKey(style)) {
@@ -65,20 +79,23 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 			if (prologTerm instanceof CompoundPrologTerm) {
 				CompoundPrologTerm cpt = (CompoundPrologTerm) prologTerm;
 
-				String id = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
+				String id = OpInfo.getIdFromPrologTerm(cpt
+						.getArgument(STATE_ID_INDEX));
 
 				List<String> labels = new ArrayList<String>();
-				ListPrologTerm ls = BindingGenerator
-						.getList(cpt.getArgument(4));
+				ListPrologTerm ls = BindingGenerator.getList(cpt
+						.getArgument(STATE_LABELS_INDEX));
 				for (PrologTerm pt : ls) {
 					labels.add(pt.getFunctor());
 				}
-				int count = BindingGenerator.getInteger(cpt.getArgument(2))
+				int count = BindingGenerator
+						.getInteger(cpt.getArgument(STATE_COUNT_INDEX))
 						.getValue().intValue();
 
 				DerivedStateId stateId = new DerivedStateId(id, labels, count);
 
-				String color = cpt.getArgument(3).getFunctor().toString();
+				String color = cpt.getArgument(STATE_COLOR_INDEX).getFunctor()
+						.toString();
 
 				states.add(stateId);
 				if (nodeColors.containsKey(color)) {

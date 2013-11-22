@@ -8,12 +8,12 @@ package de.prob.cli;
  * 
  */
 public class OsSpecificInfo {
-	final String cliName;
-	final String helperCmd;
-	final String userInterruptCmd;
-	final String name;
-	final String fullname;
-	final String dirName;
+	private final String cliName;
+	private final String helperCmd;
+	private final String userInterruptCmd;
+	private final String name;
+	private final String fullname;
+	private final String dirName;
 
 	public OsSpecificInfo(final String cliName, final String helperCmd,
 			final String userInterruptCmd, final String name,

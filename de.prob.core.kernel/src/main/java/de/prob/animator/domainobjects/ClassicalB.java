@@ -34,7 +34,7 @@ import de.prob.statespace.StateId;
  */
 public class ClassicalB extends AbstractEvalElement {
 
-	public FormulaUUID uuid = new FormulaUUID();
+	private final FormulaUUID uuid = new FormulaUUID();
 
 	private final Start ast;
 

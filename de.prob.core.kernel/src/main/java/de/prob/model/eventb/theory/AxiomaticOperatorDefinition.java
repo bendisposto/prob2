@@ -1,40 +1,22 @@
 package de.prob.model.eventb.theory;
 
-import java.util.Set;
-
-import org.eventb.core.ast.extension.IFormulaExtension;
-
-import de.prob.animator.domainobjects.EventB;
+import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.Axiom;
+import de.prob.model.representation.ModelElementList;
 
 public class AxiomaticOperatorDefinition extends AbstractElement implements
 		IOperatorDefinition {
 
-	private final EventB type;
+	private ModelElementList<EventBAxiom> definitionAxioms;
 
-	public AxiomaticOperatorDefinition(final String type,
-			final Set<IFormulaExtension> typeEnv) {
-		this.type = new EventB(type, typeEnv);
+	public void addDefinitionAxioms(final ModelElementList<EventBAxiom> axioms) {
+		put(Axiom.class, axioms);
+		definitionAxioms = axioms;
 	}
 
-	public EventB getType() {
-		return type;
+	public ModelElementList<EventBAxiom> getDefinitionAxioms() {
+		return definitionAxioms;
 	}
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		if (obj instanceof AxiomaticOperatorDefinition) {
-			return getType().equals(
-					((AxiomaticOperatorDefinition) obj).getType());
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return type.hashCode();
-	}
 }

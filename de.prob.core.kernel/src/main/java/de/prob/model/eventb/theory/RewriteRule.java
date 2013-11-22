@@ -1,9 +1,10 @@
 package de.prob.model.eventb.theory;
 
-import java.util.List;
 import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
+
+import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
@@ -14,7 +15,7 @@ public class RewriteRule extends AbstractElement {
 	private final String applicability;
 	private final boolean complete;
 	private final String desc;
-	private final List<RewriteRuleRHS> rightHandSideRules = new ModelElementList<RewriteRuleRHS>();
+	private ModelElementList<RewriteRuleRHS> rightHandSideRules = new ModelElementList<RewriteRuleRHS>();
 	private final EventB formula;
 
 	public RewriteRule(final String name, final String applicability,
@@ -27,12 +28,13 @@ public class RewriteRule extends AbstractElement {
 		this.formula = new EventB(formula, typeEnv);
 	}
 
-	public void addRightHandSide(final List<RewriteRuleRHS> rightHandSides) {
+	public void addRightHandSide(
+			final ModelElementList<RewriteRuleRHS> rightHandSides) {
 		put(RewriteRuleRHS.class, rightHandSides);
-		rightHandSideRules.addAll(rightHandSides);
+		rightHandSideRules = rightHandSides;
 	}
 
-	public List<RewriteRuleRHS> getRightHandSideRules() {
+	public ModelElementList<RewriteRuleRHS> getRightHandSideRules() {
 		return rightHandSideRules;
 	}
 
@@ -63,22 +65,24 @@ public class RewriteRule extends AbstractElement {
 
 	@Override
 	public int hashCode() {
-		return 13 * name.hashCode() + 17 * applicability.hashCode()
-				+ (complete ? 23 : 0) + 27 * formula.hashCode();
+		return Objects.hashCode(applicability, complete, formula, name);
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == this) {
+		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof RewriteRule) {
-			return name.equals(((RewriteRule) obj).getName())
-					&& applicability.equals(((RewriteRule) obj)
-							.getApplicability())
-					&& complete == ((RewriteRule) obj).isComplete()
-					&& formula.equals(((RewriteRule) obj).getFormula());
+		if (obj == null) {
+			return false;
 		}
-		return false;
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		RewriteRule other = (RewriteRule) obj;
+		return Objects.equal(applicability, other.applicability)
+				&& Objects.equal(complete, other.complete)
+				&& Objects.equal(formula, other.formula)
+				&& Objects.equal(name, other.name);
 	}
 }

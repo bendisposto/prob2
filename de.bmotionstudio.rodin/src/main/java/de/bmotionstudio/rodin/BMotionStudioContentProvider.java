@@ -29,8 +29,9 @@ public class BMotionStudioContentProvider implements ITreeContentProvider {
 
 				try {
 					for (IResource rs : project.members()) {
-						if (rs.getFileExtension() != null
-								&& rs.getFileExtension().equals("bmso")) {
+						String fileExtension = rs.getFileExtension();
+						if (fileExtension != null
+								&& fileExtension.equals("bmso")) {
 							res.add(new BMotionStudioFile(rs));
 						}
 

@@ -1,7 +1,5 @@
 package de.prob.model.eventb.theory;
 
-import java.util.List;
-
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.Variable;
@@ -9,38 +7,40 @@ import de.prob.model.representation.Variable;
 public class ProofRulesBlock extends AbstractElement {
 
 	private final String name;
-	private final List<RewriteRule> rewriteRules = new ModelElementList<RewriteRule>();
-	private final List<MetaVariable> metaVariables = new ModelElementList<MetaVariable>();
-	private final List<InferenceRule> inferenceRules = new ModelElementList<InferenceRule>();
+	private ModelElementList<RewriteRule> rewriteRules = new ModelElementList<RewriteRule>();
+	private ModelElementList<MetaVariable> metaVariables = new ModelElementList<MetaVariable>();
+	private ModelElementList<InferenceRule> inferenceRules = new ModelElementList<InferenceRule>();
 
 	public ProofRulesBlock(final String name) {
 		this.name = name;
 	}
 
-	public void addRewriteRules(final List<RewriteRule> rewriteRules) {
+	public void addRewriteRules(final ModelElementList<RewriteRule> rewriteRules) {
 		put(RewriteRule.class, rewriteRules);
-		this.rewriteRules.addAll(rewriteRules);
+		this.rewriteRules = rewriteRules;
 	}
 
-	public void addMetaVariables(final List<MetaVariable> metaVariables) {
+	public void addMetaVariables(
+			final ModelElementList<MetaVariable> metaVariables) {
 		put(Variable.class, metaVariables);
-		this.metaVariables.addAll(metaVariables);
+		this.metaVariables = metaVariables;
 	}
 
-	public void addInferenceRules(final List<InferenceRule> inferenceRules) {
+	public void addInferenceRules(
+			final ModelElementList<InferenceRule> inferenceRules) {
 		put(InferenceRule.class, inferenceRules);
-		this.inferenceRules.addAll(inferenceRules);
+		this.inferenceRules = inferenceRules;
 	}
 
-	public List<RewriteRule> getRewriteRules() {
+	public ModelElementList<RewriteRule> getRewriteRules() {
 		return rewriteRules;
 	}
 
-	public List<InferenceRule> getInferenceRules() {
+	public ModelElementList<InferenceRule> getInferenceRules() {
 		return inferenceRules;
 	}
 
-	public List<MetaVariable> getMetaVariables() {
+	public ModelElementList<MetaVariable> getMetaVariables() {
 		return metaVariables;
 	}
 

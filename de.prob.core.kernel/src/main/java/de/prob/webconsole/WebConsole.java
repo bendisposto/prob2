@@ -72,6 +72,7 @@ public class WebConsole {
 
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
+
 		/*
 		 * WebAppContext worksheetContext = new WebAppContext(warFile +
 		 * "webapps/worksheet.war", "/worksheet");

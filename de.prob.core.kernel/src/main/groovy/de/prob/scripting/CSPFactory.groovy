@@ -10,6 +10,7 @@ import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.LoadCSPCommand
 import de.prob.animator.command.SetPreferenceCommand
 import de.prob.animator.command.StartAnimationCommand
+import de.prob.model.representation.CSPModel;
 
 class CSPFactory {
 

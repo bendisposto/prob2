@@ -1,6 +1,6 @@
 package de.prob.animator.command;
 
-import java.util.List;
+import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,6 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
@@ -24,15 +23,20 @@ public class LoadBProjectCommand extends AbstractCommand {
 	Logger logger = LoggerFactory.getLogger(LoadBProjectCommand.class);
 	private NodeIdAssignment nodeIdMapping;
 	private final RecursiveMachineLoader rml;
+	private File mainMachine;
 
-	public LoadBProjectCommand(final RecursiveMachineLoader rml) {
+	public LoadBProjectCommand(final RecursiveMachineLoader rml, File f) {
 		this.rml = rml;
+		this.mainMachine = f;
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("load_classical_b");
-		pto.printTerm(getLoadTerm(rml));
+		pto.openTerm("load_classical_b_from_list_of_facts");
+		pto.printAtom(mainMachine.getAbsolutePath());
+		pto.openList();
+		printLoadTerm(rml, pto);
+		pto.closeList();
 		pto.closeTerm();
 	}
 
@@ -41,28 +45,14 @@ public class LoadBProjectCommand extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 	}
 
-	private PrologTerm getLoadTerm(final RecursiveMachineLoader rml) {
+	private void printLoadTerm(final RecursiveMachineLoader rml,
+			IPrologTermOutput pto) {
 		StructuredPrologOutput parserOutput = new StructuredPrologOutput();
 		rml.printAsProlog(parserOutput);
 		nodeIdMapping = rml.getNodeIdMapping();
-		return collectSentencesInList(parserOutput);
-	}
-
-	private PrologTerm collectSentencesInList(final StructuredPrologOutput po) {
-		List<PrologTerm> parserOutput = po.getSentences();
-		StructuredPrologOutput loadCommandTerm = new StructuredPrologOutput();
-		loadCommandTerm.openList();
-		// skip the first two sentences (parser version + filepath)
-		for (int i = 2; i < parserOutput.size(); i++) {
-			CompoundPrologTerm prologTerm = (CompoundPrologTerm) parserOutput
-					.get(i);
-			loadCommandTerm.printTerm(prologTerm.getArgument(1));
+		for (PrologTerm term : parserOutput.getSentences()) {
+			pto.printTerm(term);
 		}
-		loadCommandTerm.closeList();
-		loadCommandTerm.fullstop();
-
-		PrologTerm result = loadCommandTerm.getSentences().get(0);
-		return result;
 	}
 
 	public NodeIdAssignment getNodeIdMapping() {

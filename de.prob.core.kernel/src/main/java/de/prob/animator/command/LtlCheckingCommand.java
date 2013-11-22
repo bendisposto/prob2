@@ -71,9 +71,8 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 	}
 
 	public static LtlCheckingResult modelCheck(final IAnimator a,
-			final List<IEvalElement> fomula,
- final int max, final StartMode mode,
-			final StateId stateid) {
+			final List<IEvalElement> fomula, final int max,
+			final StartMode mode, final StateId stateid) {
 		LtlCheckingCommand command = new LtlCheckingCommand(fomula, max, mode,
 				stateid);
 		a.execute(command);
@@ -141,7 +140,9 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 		final boolean noStructure = (structure instanceof ListPrologTerm)
 				&& ((ListPrologTerm) structure).isEmpty();
 
-		result = new LtlCheckingResult(status, atomics, noStructure ? null : structure,
+		result = new LtlCheckingResult(evalElements.get(0), status, atomics,
+				noStructure ? null
+				: structure,
  counterexample, pathType, loopEntry, initPath,
 				stateid);
 		values.add(result);

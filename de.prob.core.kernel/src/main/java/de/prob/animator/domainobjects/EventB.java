@@ -38,7 +38,7 @@ import de.prob.unicode.UnicodeTranslator;
 public class EventB extends AbstractEvalElement {
 
 	Logger logger = LoggerFactory.getLogger(EventB.class);
-	public FormulaUUID uuid = new FormulaUUID();
+	private final FormulaUUID uuid = new FormulaUUID();
 
 	private String kind;
 	private Node ast = null;
@@ -53,13 +53,11 @@ public class EventB extends AbstractEvalElement {
 	public EventB(final String code) {
 		this.code = UnicodeTranslator.toAscii(code);
 		types = Collections.emptySet();
-		ensureParsed();
 	}
 
 	public EventB(final String code, final Set<IFormulaExtension> types) {
 		this.code = UnicodeTranslator.toAscii(code);
 		this.types = types;
-		ensureParsed();
 	}
 
 	private void ensureParsed() {

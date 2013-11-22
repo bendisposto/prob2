@@ -38,7 +38,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 	}
 
 	private ProcessHandle makeProcess() {
-		final String executable = dir + osInfo.cliName;
+		final String executable = dir + osInfo.getCliName();
 		List<String> command = makeCommand(executable);
 		Process prologProcess = null;
 		final ProcessBuilder pb = new ProcessBuilder();
@@ -64,7 +64,7 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 			return null;
 		}
 		setShutdownHook(prologProcess);
-		Main.processes.put(prologProcess, Boolean.TRUE);
+		Main.registerPrologProcess(prologProcess);
 		return new ProcessHandle(prologProcess, debuggingKey);
 	}
 
@@ -79,8 +79,8 @@ class PrologProcessProvider implements Provider<ProcessHandle> {
 
 	private List<String> makeCommand(final String executable) {
 		List<String> command = new ArrayList<String>();
-		if (osInfo.helperCmd != null) {
-			command.add(osInfo.helperCmd);
+		if (osInfo.getHelperCmd() != null) {
+			command.add(osInfo.getHelperCmd());
 		}
 		command.add(executable);
 		command.add("-sf");

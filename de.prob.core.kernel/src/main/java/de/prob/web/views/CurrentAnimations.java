@@ -8,6 +8,8 @@ import javax.servlet.AsyncContext;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
@@ -22,8 +24,11 @@ public class CurrentAnimations extends AbstractSession implements
 
 	@Inject
 	public CurrentAnimations(AnimationSelector animations) {
+
+		incrementalUpdate = false;
 		this.animations = animations;
 		animations.registerAnimationChangeListener(this);
+
 	}
 
 	@Override
@@ -37,13 +42,16 @@ public class CurrentAnimations extends AbstractSession implements
 		Object[] result = new Object[traces.size()];
 		int ctr = 0;
 		for (Trace t : traces) {
-			String model = t.getModel().getMainComponent().toString();
+			AbstractModel model = t.getModel();
+			AbstractElement mainComponent = model.getMainComponent();
+			String modelName = mainComponent != null ? mainComponent.toString()
+					: model.getModelFile().getName();
 			String lastOp = !t.getCurrent().getSrc().getId().equals("root") ? t
 					.getCurrent().getOp().toString() : "";
 
 			String steps = t.getCurrent().getOpList().size() + "";
 			String isCurrent = t.equals(trace) + "";
-			Map<String, String> wrapped = WebUtils.wrap("model", model,
+			Map<String, String> wrapped = WebUtils.wrap("model", modelName,
 					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent);
 			result[ctr++] = wrapped;
 		}
@@ -55,7 +63,7 @@ public class CurrentAnimations extends AbstractSession implements
 	@Override
 	public void reload(String client, int lastinfo, AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		traceChange(animations.getCurrentTrace());
+		// traceChange(animations.getCurrentTrace());
 	}
 
 	public Object selectTrace(Map<String, String[]> params) {

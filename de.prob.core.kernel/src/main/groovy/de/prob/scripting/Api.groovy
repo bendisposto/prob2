@@ -18,6 +18,7 @@ import de.prob.exception.ProBError
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
+import de.prob.model.representation.CSPModel;
 import de.prob.webconsole.ServletContextListener
 
 
@@ -28,6 +29,8 @@ public class Api {
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;
 	private final ProBInstanceProvider instanceProvider;
+
+	def globals = [:]
 
 	@Override
 	public String toString() {
@@ -62,24 +65,6 @@ public class Api {
 	public ClassicalBModel b_load(final String file) throws IOException,
 	BException {
 		return b_load(file, new HashMap<String, String>());
-	}
-
-	public ClassicalBModel eb_load(String file) {
-		def f = new File(file)
-		def content = f.getText()
-
-		def p1 = java.util.regex.Pattern.compile("^package\\((.*?)\\)\\.");
-		def m1 = p1.matcher(content);
-		m1.find();
-		def cmd = m1.group(1);
-
-		def p2 = java.util.regex.Pattern.compile("^model\\((.*?)\\)\\.");
-		def m2 = p2.matcher(content);
-		m2.find();
-		def coded = m2.group(1);
-
-		def ebFactory = modelFactoryProvider.getEventBFactory();
-		return ebFactory.load(cmd,coded);
 	}
 
 	public EventBModel eventb_load(String file) {

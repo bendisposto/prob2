@@ -15,7 +15,12 @@ import java.util.List;
  * @author joy
  * 
  */
+/**
+ * @author joy
+ * 
+ */
 public class TraceElement {
+	private final int index;
 	private final StateId src;
 	private final StateId dest;
 	private final OpInfo edge;
@@ -33,6 +38,7 @@ public class TraceElement {
 		previous = null;
 
 		opList = new ArrayList<OpInfo>();
+		index = 0;
 	}
 
 	public TraceElement(final StateId src, final StateId dest,
@@ -42,6 +48,7 @@ public class TraceElement {
 		this.edge = edge;
 
 		this.previous = previous;
+		index = previous.getIndex() + 1;
 
 		List<OpInfo> previousOpList = new ArrayList<OpInfo>(
 				previous.getOpList());
@@ -83,8 +90,9 @@ public class TraceElement {
 	 *         Otherwise, this is destination.
 	 */
 	public StateId getCurrentState() {
-		if (dest == null)
+		if (dest == null) {
 			return src;
+		}
 		return dest;
 	}
 
@@ -95,12 +103,20 @@ public class TraceElement {
 		return Collections.unmodifiableList(opList);
 	}
 
+	/**
+	 * @return int index in list of TraceElements
+	 */
+	public int getIndex() {
+		return index;
+	}
+
 	@Override
 	public String toString() {
-		if (dest == null)
+		if (dest == null) {
 			return "State: " + src.toString();
-		else
+		} else {
 			return "From: " + src.toString() + " To: " + dest.toString()
 					+ " With: " + edge.getId();
+		}
 	}
 }

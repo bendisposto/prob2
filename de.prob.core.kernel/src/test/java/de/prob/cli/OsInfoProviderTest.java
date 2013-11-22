@@ -1,6 +1,6 @@
 package de.prob.cli;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -37,7 +37,7 @@ public class OsInfoProviderTest extends AbstractUnitTest {
 	public void testSupportedOS() {
 		for (Entry<String, String> entry : supported.entrySet()) {
 			assertEquals(entry.getValue(), new OsInfoProvider(entry.getKey(),
-					"i386").get().name);
+					"i386").get().getName());
 		}
 	}
 

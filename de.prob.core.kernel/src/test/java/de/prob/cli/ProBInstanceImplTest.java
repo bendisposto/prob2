@@ -1,7 +1,10 @@
 package de.prob.cli;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.io.BufferedReader;
 
@@ -22,8 +25,10 @@ public class ProBInstanceImplTest extends AbstractUnitTest {
 		process = mock(Process.class);
 		reader = mock(BufferedReader.class);
 		connection = mock(ProBConnection.class);
+		Long userInterruptRef = 1234L;
 		try {
-			cli = new ProBInstance(process, reader, 12345L, connection, "", null);
+			cli = new ProBInstance(process, reader, userInterruptRef,
+					connection, "", null);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

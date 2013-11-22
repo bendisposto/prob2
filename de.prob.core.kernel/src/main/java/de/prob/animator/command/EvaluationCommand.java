@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvaluationResult;
+import de.prob.animator.domainobjects.IEvalResult;
 
 
 public abstract class EvaluationCommand extends AbstractCommand {
@@ -13,7 +13,7 @@ public abstract class EvaluationCommand extends AbstractCommand {
 	 * TODO: we shouldn't need a list here as we only hold one element, worry
 	 * about this later
 	 */
-	protected final List<IEvaluationResult> values = new ArrayList<IEvaluationResult>();
+	protected final List<IEvalResult> values = new ArrayList<IEvalResult>();
 	protected final List<IEvalElement> evalElements;
 	protected final String stateId;
 
@@ -22,7 +22,7 @@ public abstract class EvaluationCommand extends AbstractCommand {
 		this.stateId = id;
 	}
 
-	public List<IEvaluationResult> getValues() {
+	public List<IEvalResult> getValues() {
 		return values;
 	}
 

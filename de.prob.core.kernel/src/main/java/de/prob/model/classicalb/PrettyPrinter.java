@@ -11,36 +11,97 @@ import de.be4.classicalb.core.parser.node.*;
 
 public class PrettyPrinter extends DepthFirstAdapter {
 
+	HashMap<Class<? extends Node>, Integer> prio = new HashMap<Class<? extends Node>, Integer>();
+	private static final int PRIORITY20 = 20;
+	private static final int PRIORITY30 = 30;
+	private static final int PRIORITY40 = 40;
+	private static final int PRIORITY60 = 60;
+	private static final int PRIORITY125 = 125;
+	private static final int PRIORITY160 = 160;
+	private static final int PRIORITY170 = 170;
+	private static final int PRIORITY180 = 180;
+	private static final int PRIORITY190 = 190;
+	private static final int PRIORITY200 = 200;
+	private static final int PRIORITY210 = 210;
+	private static final int PRIORITY230 = 230;
+	private static final int PRIORITY231 = 231;
+
+	public void setup() {
+		prio.put(AParallelProductExpression.class, PRIORITY20);
+		prio.put(ARelationsExpression.class, PRIORITY125);
+		prio.put(ATotalFunctionExpression.class, PRIORITY125);
+		prio.put(APartialInjectionExpression.class, PRIORITY125);
+		prio.put(ATotalInjectionExpression.class, PRIORITY125);
+		prio.put(APartialSurjectionExpression.class, PRIORITY125);
+		prio.put(ATotalSurjectionExpression.class, PRIORITY125);
+		prio.put(APartialBijectionExpression.class, PRIORITY125);
+		prio.put(ATotalBijectionExpression.class, PRIORITY125);
+		prio.put(ATotalRelationExpression.class, PRIORITY125);
+		prio.put(ATotalSurjectionRelationExpression.class, PRIORITY125);
+		prio.put(AOverwriteExpression.class, PRIORITY160);
+		prio.put(ADirectProductExpression.class, PRIORITY160);
+		prio.put(AConcatExpression.class, PRIORITY160);
+		prio.put(ADomainRestrictionExpression.class, PRIORITY160);
+		prio.put(ADomainSubtractionExpression.class, PRIORITY160);
+		prio.put(ARangeRestrictionExpression.class, PRIORITY160);
+		prio.put(ARangeSubtractionExpression.class, PRIORITY160);
+		prio.put(AInsertFrontExpression.class, PRIORITY160);
+		prio.put(AInsertTailExpression.class, PRIORITY160);
+		prio.put(AUnionExpression.class, PRIORITY160);
+		prio.put(AIntersectionExpression.class, PRIORITY160);
+		prio.put(ARestrictFrontExpression.class, PRIORITY160);
+		prio.put(ARestrictTailExpression.class, PRIORITY160);
+		prio.put(ACoupleExpression.class, PRIORITY160);
+		prio.put(AIntervalExpression.class, PRIORITY170);
+		prio.put(AMinusOrSetSubtractExpression.class, PRIORITY180);
+		prio.put(AAddExpression.class, PRIORITY180);
+		prio.put(ASetSubtractionExpression.class, PRIORITY180);
+		prio.put(AMultiplicationExpression.class, PRIORITY190);
+		prio.put(ADivExpression.class, PRIORITY190);
+		prio.put(AModuloExpression.class, PRIORITY190);
+		prio.put(APowerOfExpression.class, PRIORITY200); // right associative
+		prio.put(AUnaryMinusExpression.class, PRIORITY210);
+		prio.put(AReverseExpression.class, PRIORITY230);
+		prio.put(AImageExpression.class, PRIORITY231);
+		prio.put(AImplicationPredicate.class, PRIORITY30);
+		prio.put(ADisjunctPredicate.class, PRIORITY40);
+		prio.put(AConjunctPredicate.class, PRIORITY40);
+		prio.put(AEquivalencePredicate.class, PRIORITY60);
+	}
+
 	public PrettyPrinter() {
 		setup();
 	}
 
-	StringBuffer sb = new StringBuffer();
+	private final StringBuffer sb = new StringBuffer();
 
 	public String getPrettyPrint() {
 		return sb.toString();
 	}
 
-	public void leftPar(Node node, Node right) {
+	public void leftPar(final Node node, final Node right) {
 		Integer priorityNode = prio.get(node.getClass());
 		Integer priorityRight = prio.get(right.getClass());
 		if (priorityNode != null && priorityRight != null
-				&& priorityRight <= priorityNode)
+				&& priorityRight <= priorityNode) {
 			sb.append("(");
+		}
 	}
 
-	public void rightPar(Node node, Node right) {
+	public void rightPar(final Node node, final Node right) {
 		Integer priorityNode = prio.get(node.getClass());
 		Integer priorityRight = prio.get(right.getClass());
 		if (priorityNode != null && priorityRight != null
-				&& priorityRight <= priorityNode)
+				&& priorityRight <= priorityNode) {
 			sb.append(")");
+		}
 	}
 
-	public void applyLeftAssociative(Node left, Node node, Node right,
-			String append) {
-		if (left != null)
+	public void applyLeftAssociative(final Node left, final Node node,
+			final Node right, final String append) {
+		if (left != null) {
 			left.apply(this);
+		}
 
 		sb.append(append);
 
@@ -51,8 +112,8 @@ public class PrettyPrinter extends DepthFirstAdapter {
 		}
 	}
 
-	public void applyRightAssociative(Node left, Node node, Node right,
-			String append) {
+	public void applyRightAssociative(final Node left, final Node node,
+			final Node right, final String append) {
 		if (left != null) {
 			leftPar(node, left);
 			left.apply(this);
@@ -61,183 +122,193 @@ public class PrettyPrinter extends DepthFirstAdapter {
 
 		sb.append(append);
 
-		if (right != null)
+		if (right != null) {
 			right.apply(this);
+		}
 	}
 
 	@Override
-	public void caseAPowerOfExpression(APowerOfExpression node) {
+	public void caseAPowerOfExpression(final APowerOfExpression node) {
 		applyRightAssociative(node.getLeft(), node, node.getRight(), "**");
 	}
 
 	@Override
-	public void caseAIntegerExpression(AIntegerExpression node) {
+	public void caseAIntegerExpression(final AIntegerExpression node) {
 		sb.append(node.getLiteral().getText());
 	}
 
 	@Override
-	public void caseAAddExpression(AAddExpression node) {
+	public void caseAAddExpression(final AAddExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "+");
 	}
 
 	@Override
 	public void caseAMinusOrSetSubtractExpression(
-			AMinusOrSetSubtractExpression node) {
+			final AMinusOrSetSubtractExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "-");
 	}
 
 	@Override
-	public void caseASetSubtractionExpression(ASetSubtractionExpression node) {
+	public void caseASetSubtractionExpression(
+			final ASetSubtractionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "\\");
 	}
 
 	@Override
-	public void caseAMultOrCartExpression(AMultOrCartExpression node) {
+	public void caseAMultOrCartExpression(final AMultOrCartExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "*");
 	}
 
 	@Override
-	public void caseADivExpression(ADivExpression node) {
+	public void caseADivExpression(final ADivExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "/");
 	}
 
 	@Override
-	public void caseAModuloExpression(AModuloExpression node) {
+	public void caseAModuloExpression(final AModuloExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), " mod ");
 	}
 
 	@Override
-	public void caseARelationsExpression(ARelationsExpression node) {
+	public void caseARelationsExpression(final ARelationsExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<->");
 	}
 
 	@Override
-	public void caseAPartialFunctionExpression(APartialFunctionExpression node) {
+	public void caseAPartialFunctionExpression(
+			final APartialFunctionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "+->");
 	}
 
 	@Override
-	public void caseATotalFunctionExpression(ATotalFunctionExpression node) {
+	public void caseATotalFunctionExpression(final ATotalFunctionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "-->");
 	}
 
 	@Override
-	public void caseAPartialInjectionExpression(APartialInjectionExpression node) {
+	public void caseAPartialInjectionExpression(
+			final APartialInjectionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), ">+>");
 	}
 
 	@Override
-	public void caseATotalInjectionExpression(ATotalInjectionExpression node) {
+	public void caseATotalInjectionExpression(
+			final ATotalInjectionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), ">->");
 	}
 
 	@Override
 	public void caseAPartialSurjectionExpression(
-			APartialSurjectionExpression node) {
+			final APartialSurjectionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "+->>");
 	}
 
 	@Override
-	public void caseATotalSurjectionExpression(ATotalSurjectionExpression node) {
+	public void caseATotalSurjectionExpression(
+			final ATotalSurjectionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "-->>");
 	}
 
 	@Override
-	public void caseAPartialBijectionExpression(APartialBijectionExpression node) {
+	public void caseAPartialBijectionExpression(
+			final APartialBijectionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), ">+>>");
 	}
 
 	@Override
-	public void caseATotalBijectionExpression(ATotalBijectionExpression node) {
+	public void caseATotalBijectionExpression(
+			final ATotalBijectionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), ">->>");
 	}
 
 	@Override
-	public void caseATotalRelationExpression(ATotalRelationExpression node) {
+	public void caseATotalRelationExpression(final ATotalRelationExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<<->");
 	}
 
 	@Override
 	public void caseASurjectionRelationExpression(
-			ASurjectionRelationExpression node) {
+			final ASurjectionRelationExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<->>");
 	}
 
 	@Override
 	public void caseATotalSurjectionRelationExpression(
-			ATotalSurjectionRelationExpression node) {
+			final ATotalSurjectionRelationExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<<->>");
 	}
 
 	@Override
-	public void caseAOverwriteExpression(AOverwriteExpression node) {
+	public void caseAOverwriteExpression(final AOverwriteExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<+");
 	}
 
 	@Override
-	public void caseADirectProductExpression(ADirectProductExpression node) {
+	public void caseADirectProductExpression(final ADirectProductExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "><");
 	}
 
 	@Override
-	public void caseAConcatExpression(AConcatExpression node) {
+	public void caseAConcatExpression(final AConcatExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "^");
 	}
 
 	@Override
 	public void caseADomainRestrictionExpression(
-			ADomainRestrictionExpression node) {
+			final ADomainRestrictionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<|");
 	}
 
 	@Override
 	public void caseADomainSubtractionExpression(
-			ADomainSubtractionExpression node) {
+			final ADomainSubtractionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<<|");
 	}
 
 	@Override
-	public void caseARangeRestrictionExpression(ARangeRestrictionExpression node) {
+	public void caseARangeRestrictionExpression(
+			final ARangeRestrictionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "|>");
 	}
 
 	@Override
-	public void caseARangeSubtractionExpression(ARangeSubtractionExpression node) {
+	public void caseARangeSubtractionExpression(
+			final ARangeSubtractionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "|>>");
 	}
 
 	@Override
-	public void caseAInsertFrontExpression(AInsertFrontExpression node) {
+	public void caseAInsertFrontExpression(final AInsertFrontExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "->");
 	}
 
 	@Override
-	public void caseAInsertTailExpression(AInsertTailExpression node) {
+	public void caseAInsertTailExpression(final AInsertTailExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<-");
 	}
 
 	@Override
-	public void caseAUnionExpression(AUnionExpression node) {
+	public void caseAUnionExpression(final AUnionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "\\/");
 	}
 
 	@Override
-	public void caseAIntersectionExpression(AIntersectionExpression node) {
+	public void caseAIntersectionExpression(final AIntersectionExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "/\\");
 	}
 
 	@Override
-	public void caseARestrictFrontExpression(ARestrictFrontExpression node) {
+	public void caseARestrictFrontExpression(final ARestrictFrontExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "/|\\");
 	}
 
 	@Override
-	public void caseARestrictTailExpression(ARestrictTailExpression node) {
+	public void caseARestrictTailExpression(final ARestrictTailExpression node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "\\|/");
 	}
 
 	@Override
-	public void caseACoupleExpression(ACoupleExpression node) {
+	public void caseACoupleExpression(final ACoupleExpression node) {
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getList());
 		sb.append("(");
@@ -248,7 +319,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAIdentifierExpression(AIdentifierExpression node) {
+	public void caseAIdentifierExpression(final AIdentifierExpression node) {
 		final List<TIdentifierLiteral> copy = new ArrayList<TIdentifierLiteral>(
 				node.getIdentifier());
 		for (final Iterator<TIdentifierLiteral> iterator = copy.iterator(); iterator
@@ -259,90 +330,101 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAIntervalExpression(AIntervalExpression node) {
+	public void caseAIntervalExpression(final AIntervalExpression node) {
 		applyLeftAssociative(node.getLeftBorder(), node, node.getRightBorder(),
 				"..");
 	}
 
 	@Override
-	public void caseAUnaryMinusExpression(AUnaryMinusExpression node) {
+	public void caseAUnaryMinusExpression(final AUnaryMinusExpression node) {
 		sb.append("-");
 
-		if (node.getExpression() != null)
+		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
+		}
 	}
 
 	@Override
-	public void caseAReverseExpression(AReverseExpression node) {
-		if (node.getExpression() != null)
+	public void caseAReverseExpression(final AReverseExpression node) {
+		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
+		}
 		sb.append("~");
 	}
 
 	@Override
-	public void caseAImageExpression(AImageExpression node) {
-		if (node.getLeft() != null)
+	public void caseAImageExpression(final AImageExpression node) {
+		if (node.getLeft() != null) {
 			node.getLeft().apply(this);
+		}
 
 		sb.append("[");
 
-		if (node.getRight() != null)
+		if (node.getRight() != null) {
 			node.getRight().apply(this);
+		}
 		sb.append("]");
 
 	}
 
 	@Override
-	public void caseAParallelProductExpression(AParallelProductExpression node) {
+	public void caseAParallelProductExpression(
+			final AParallelProductExpression node) {
 		sb.append("(");
 
-		if (node.getLeft() != null)
+		if (node.getLeft() != null) {
 			node.getLeft().apply(this);
+		}
 
 		sb.append("||");
 
-		if (node.getRight() != null)
+		if (node.getRight() != null) {
 			node.getRight().apply(this);
+		}
 
 		sb.append(")");
 	}
 
 	@Override
-	public void caseACompositionExpression(ACompositionExpression node) {
+	public void caseACompositionExpression(final ACompositionExpression node) {
 		sb.append("(");
-		if (node.getLeft() != null)
+		if (node.getLeft() != null) {
 			node.getLeft().apply(this);
+		}
 
 		sb.append(";");
 
-		if (node.getRight() != null)
+		if (node.getRight() != null) {
 			node.getRight().apply(this);
+		}
 		sb.append(")");
 	}
 
 	@Override
-	public void caseAConvertBoolExpression(AConvertBoolExpression node) {
+	public void caseAConvertBoolExpression(final AConvertBoolExpression node) {
 		sb.append("bool(");
-		if (node.getPredicate() != null)
+		if (node.getPredicate() != null) {
 			node.getPredicate().apply(this);
+		}
 		sb.append(")");
 	}
 
 	@Override
-	public void caseALessPredicate(ALessPredicate node) {
+	public void caseALessPredicate(final ALessPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<");
 	}
 
 	@Override
-	public void caseAMaxExpression(AMaxExpression node) {
+	public void caseAMaxExpression(final AMaxExpression node) {
 		sb.append("max(");
-		if (node.getExpression() != null)
+		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
+		}
 		sb.append(")");
 	}
 
 	@Override
-	public void caseASetExtensionExpression(ASetExtensionExpression node) {
+	public void caseASetExtensionExpression(final ASetExtensionExpression node) {
 		sb.append("{");
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getExpressions());
@@ -359,23 +441,25 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAMinExpression(AMinExpression node) {
+	public void caseAMinExpression(final AMinExpression node) {
 		sb.append("min(");
-		if (node.getExpression() != null)
+		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
+		}
 		sb.append(")");
 	}
 
 	@Override
-	public void caseACardExpression(ACardExpression node) {
+	public void caseACardExpression(final ACardExpression node) {
 		sb.append("card(");
-		if (node.getExpression() != null)
+		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
+		}
 		sb.append(")");
 	}
 
 	@Override
-	public void caseAGeneralSumExpression(AGeneralSumExpression node) {
+	public void caseAGeneralSumExpression(final AGeneralSumExpression node) {
 		sb.append("SIGMA");
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getIdentifiers());
@@ -401,7 +485,8 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAGeneralProductExpression(AGeneralProductExpression node) {
+	public void caseAGeneralProductExpression(
+			final AGeneralProductExpression node) {
 		sb.append("PI");
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getIdentifiers());
@@ -427,12 +512,12 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAConjunctPredicate(AConjunctPredicate node) {
+	public void caseAConjunctPredicate(final AConjunctPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "&");
 	}
 
 	@Override
-	public void caseAPowSubsetExpression(APowSubsetExpression node) {
+	public void caseAPowSubsetExpression(final APowSubsetExpression node) {
 		sb.append("POW(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -441,7 +526,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAPow1SubsetExpression(APow1SubsetExpression node) {
+	public void caseAPow1SubsetExpression(final APow1SubsetExpression node) {
 		sb.append("POW1(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -450,7 +535,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAFinSubsetExpression(AFinSubsetExpression node) {
+	public void caseAFinSubsetExpression(final AFinSubsetExpression node) {
 		sb.append("FIN(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -459,7 +544,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAFin1SubsetExpression(AFin1SubsetExpression node) {
+	public void caseAFin1SubsetExpression(final AFin1SubsetExpression node) {
 		sb.append("FIN1(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -468,7 +553,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAGeneralUnionExpression(AGeneralUnionExpression node) {
+	public void caseAGeneralUnionExpression(final AGeneralUnionExpression node) {
 		sb.append("union(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -478,7 +563,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 
 	@Override
 	public void caseAGeneralIntersectionExpression(
-			AGeneralIntersectionExpression node) {
+			final AGeneralIntersectionExpression node) {
 		sb.append("inter(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -487,7 +572,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAIdentityExpression(AIdentityExpression node) {
+	public void caseAIdentityExpression(final AIdentityExpression node) {
 		sb.append("id(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -496,7 +581,8 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAReflexiveClosureExpression(AReflexiveClosureExpression node) {
+	public void caseAReflexiveClosureExpression(
+			final AReflexiveClosureExpression node) {
 		sb.append("closure(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -505,7 +591,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAClosureExpression(AClosureExpression node) {
+	public void caseAClosureExpression(final AClosureExpression node) {
 		sb.append("closure1(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -514,7 +600,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseADomainExpression(ADomainExpression node) {
+	public void caseADomainExpression(final ADomainExpression node) {
 		sb.append("dom(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -523,7 +609,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseARangeExpression(ARangeExpression node) {
+	public void caseARangeExpression(final ARangeExpression node) {
 		sb.append("ran(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -532,7 +618,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseALambdaExpression(ALambdaExpression node) {
+	public void caseALambdaExpression(final ALambdaExpression node) {
 		sb.append("%");
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getIdentifiers());
@@ -558,7 +644,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseATransFunctionExpression(ATransFunctionExpression node) {
+	public void caseATransFunctionExpression(final ATransFunctionExpression node) {
 		sb.append("fnc(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -567,7 +653,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseATransRelationExpression(ATransRelationExpression node) {
+	public void caseATransRelationExpression(final ATransRelationExpression node) {
 		sb.append("rel(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -576,7 +662,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseASeqExpression(ASeqExpression node) {
+	public void caseASeqExpression(final ASeqExpression node) {
 		sb.append("seq(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -585,7 +671,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseASeq1Expression(ASeq1Expression node) {
+	public void caseASeq1Expression(final ASeq1Expression node) {
 		sb.append("seq1(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -594,7 +680,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAIseqExpression(AIseqExpression node) {
+	public void caseAIseqExpression(final AIseqExpression node) {
 		sb.append("iseq(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -603,7 +689,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAIseq1Expression(AIseq1Expression node) {
+	public void caseAIseq1Expression(final AIseq1Expression node) {
 		sb.append("iseq1(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -612,7 +698,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAPermExpression(APermExpression node) {
+	public void caseAPermExpression(final APermExpression node) {
 		sb.append("perm(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -621,12 +707,12 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAEmptySequenceExpression(AEmptySequenceExpression arg0) {
+	public void caseAEmptySequenceExpression(final AEmptySequenceExpression arg0) {
 		sb.append("[]");
 	}
 
 	@Override
-	public void caseASizeExpression(ASizeExpression node) {
+	public void caseASizeExpression(final ASizeExpression node) {
 		sb.append("size(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -635,7 +721,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAFirstExpression(AFirstExpression node) {
+	public void caseAFirstExpression(final AFirstExpression node) {
 		sb.append("first(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -644,7 +730,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseALastExpression(ALastExpression node) {
+	public void caseALastExpression(final ALastExpression node) {
 		sb.append("last(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -653,7 +739,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAFrontExpression(AFrontExpression node) {
+	public void caseAFrontExpression(final AFrontExpression node) {
 		sb.append("front(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -662,7 +748,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseATailExpression(ATailExpression node) {
+	public void caseATailExpression(final ATailExpression node) {
 		sb.append("tail(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -671,7 +757,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseARevExpression(ARevExpression node) {
+	public void caseARevExpression(final ARevExpression node) {
 		sb.append("rev(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -680,44 +766,53 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAFirstProjectionExpression(AFirstProjectionExpression node) {
+	public void caseAFirstProjectionExpression(
+			final AFirstProjectionExpression node) {
 		sb.append("prj1(");
-		if (node.getExp1() != null)
+		if (node.getExp1() != null) {
 			node.getExp1().apply(this);
+		}
 
 		sb.append(",");
 
-		if (node.getExp2() != null)
+		if (node.getExp2() != null) {
 			node.getExp2().apply(this);
+		}
 		sb.append(")");
 	}
 
 	@Override
-	public void caseASecondProjectionExpression(ASecondProjectionExpression node) {
+	public void caseASecondProjectionExpression(
+			final ASecondProjectionExpression node) {
 		sb.append("prj2(");
-		if (node.getExp1() != null)
+		if (node.getExp1() != null) {
 			node.getExp1().apply(this);
+		}
 
 		sb.append(",");
 
-		if (node.getExp2() != null)
+		if (node.getExp2() != null) {
 			node.getExp2().apply(this);
+		}
 		sb.append(")");
 	}
 
 	@Override
-	public void caseAIterationExpression(AIterationExpression node) {
+	public void caseAIterationExpression(final AIterationExpression node) {
 		sb.append("iterate(");
-		if (node.getLeft() != null)
+		if (node.getLeft() != null) {
 			node.getLeft().apply(this);
+		}
 		sb.append(",");
-		if (node.getRight() != null)
+		if (node.getRight() != null) {
 			node.getRight().apply(this);
+		}
 		sb.append(")");
 	}
 
 	@Override
-	public void caseAComprehensionSetExpression(AComprehensionSetExpression node) {
+	public void caseAComprehensionSetExpression(
+			final AComprehensionSetExpression node) {
 		sb.append("{");
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getIdentifiers());
@@ -739,14 +834,15 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseTIdentifierLiteral(TIdentifierLiteral node) {
+	public void caseTIdentifierLiteral(final TIdentifierLiteral node) {
 		if (node.getText() != null) {
 			sb.append(node.getText());
 		}
 	}
 
 	@Override
-	public void caseAQuantifiedUnionExpression(AQuantifiedUnionExpression node) {
+	public void caseAQuantifiedUnionExpression(
+			final AQuantifiedUnionExpression node) {
 		sb.append("UNION(");
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getIdentifiers());
@@ -772,7 +868,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 
 	@Override
 	public void caseAQuantifiedIntersectionExpression(
-			AQuantifiedIntersectionExpression node) {
+			final AQuantifiedIntersectionExpression node) {
 		sb.append("INTER(");
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getIdentifiers());
@@ -798,7 +894,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 
 	@Override
 	public void caseASequenceExtensionExpression(
-			ASequenceExtensionExpression node) {
+			final ASequenceExtensionExpression node) {
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getExpression());
 		sb.append("[");
@@ -815,7 +911,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAGeneralConcatExpression(AGeneralConcatExpression node) {
+	public void caseAGeneralConcatExpression(final AGeneralConcatExpression node) {
 		sb.append("conc(");
 		if (node.getExpression() != null) {
 			node.getExpression().apply(this);
@@ -824,148 +920,149 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseABooleanTrueExpression(ABooleanTrueExpression arg0) {
+	public void caseABooleanTrueExpression(final ABooleanTrueExpression arg0) {
 		sb.append("TRUE");
 	}
 
 	@Override
-	public void caseABooleanFalseExpression(ABooleanFalseExpression arg0) {
+	public void caseABooleanFalseExpression(final ABooleanFalseExpression arg0) {
 		sb.append("FALSE");
 	}
 
 	@Override
-	public void caseAMaxIntExpression(AMaxIntExpression arg0) {
+	public void caseAMaxIntExpression(final AMaxIntExpression arg0) {
 		sb.append("MAXINT");
 	}
 
 	@Override
-	public void caseAMinIntExpression(AMinIntExpression arg0) {
+	public void caseAMinIntExpression(final AMinIntExpression arg0) {
 		sb.append("MININT");
 	}
 
 	@Override
-	public void caseAEmptySetExpression(AEmptySetExpression node) {
+	public void caseAEmptySetExpression(final AEmptySetExpression node) {
 		sb.append("{}");
 	}
 
 	@Override
-	public void caseAIntegerSetExpression(AIntegerSetExpression arg0) {
+	public void caseAIntegerSetExpression(final AIntegerSetExpression arg0) {
 		sb.append("INTEGER");
 	}
 
 	@Override
-	public void caseANaturalSetExpression(ANaturalSetExpression arg0) {
+	public void caseANaturalSetExpression(final ANaturalSetExpression arg0) {
 		sb.append("NATURAL");
 	}
 
 	@Override
-	public void caseANatural1SetExpression(ANatural1SetExpression arg0) {
+	public void caseANatural1SetExpression(final ANatural1SetExpression arg0) {
 		sb.append("NATURAL1");
 	}
 
 	@Override
-	public void caseANatSetExpression(ANatSetExpression arg0) {
+	public void caseANatSetExpression(final ANatSetExpression arg0) {
 		sb.append("NAT");
 	}
 
 	@Override
-	public void caseANat1SetExpression(ANat1SetExpression arg0) {
+	public void caseANat1SetExpression(final ANat1SetExpression arg0) {
 		sb.append("NAT1");
 	}
 
 	@Override
-	public void caseAIntSetExpression(AIntSetExpression arg0) {
+	public void caseAIntSetExpression(final AIntSetExpression arg0) {
 		sb.append("INT");
 	}
 
 	@Override
-	public void caseABoolSetExpression(ABoolSetExpression arg0) {
+	public void caseABoolSetExpression(final ABoolSetExpression arg0) {
 		sb.append("BOOL");
 	}
 
 	@Override
-	public void caseAStringSetExpression(AStringSetExpression arg0) {
+	public void caseAStringSetExpression(final AStringSetExpression arg0) {
 		sb.append("STRING");
 	}
 
 	@Override
-	public void caseAImplicationPredicate(AImplicationPredicate node) {
+	public void caseAImplicationPredicate(final AImplicationPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), " => ");
 	}
 
 	@Override
-	public void caseADisjunctPredicate(ADisjunctPredicate node) {
+	public void caseADisjunctPredicate(final ADisjunctPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), " or ");
 	}
 
 	@Override
-	public void caseAEquivalencePredicate(AEquivalencePredicate node) {
+	public void caseAEquivalencePredicate(final AEquivalencePredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), " <=> ");
 
 	}
 
 	@Override
-	public void caseAEqualPredicate(AEqualPredicate node) {
+	public void caseAEqualPredicate(final AEqualPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "=");
 	}
 
 	@Override
-	public void caseAMemberPredicate(AMemberPredicate node) {
+	public void caseAMemberPredicate(final AMemberPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), ":");
 	}
 
 	@Override
-	public void caseASubsetPredicate(ASubsetPredicate node) {
+	public void caseASubsetPredicate(final ASubsetPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<:");
 
 	}
 
 	@Override
-	public void caseASubsetStrictPredicate(ASubsetStrictPredicate node) {
+	public void caseASubsetStrictPredicate(final ASubsetStrictPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<<:");
 	}
 
 	@Override
-	public void caseANotSubsetPredicate(ANotSubsetPredicate node) {
+	public void caseANotSubsetPredicate(final ANotSubsetPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "/<:");
 
 	}
 
 	@Override
-	public void caseANotSubsetStrictPredicate(ANotSubsetStrictPredicate node) {
+	public void caseANotSubsetStrictPredicate(
+			final ANotSubsetStrictPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "/<<:");
 
 	}
 
 	@Override
-	public void caseANotEqualPredicate(ANotEqualPredicate node) {
+	public void caseANotEqualPredicate(final ANotEqualPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "/=");
 	}
 
 	@Override
-	public void caseANotMemberPredicate(ANotMemberPredicate node) {
+	public void caseANotMemberPredicate(final ANotMemberPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "/:");
 
 	}
 
 	@Override
-	public void caseALessEqualPredicate(ALessEqualPredicate node) {
+	public void caseALessEqualPredicate(final ALessEqualPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), "<=");
 
 	}
 
 	@Override
-	public void caseAGreaterEqualPredicate(AGreaterEqualPredicate node) {
+	public void caseAGreaterEqualPredicate(final AGreaterEqualPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), ">=");
 	}
 
 	@Override
-	public void caseAGreaterPredicate(AGreaterPredicate node) {
+	public void caseAGreaterPredicate(final AGreaterPredicate node) {
 		applyLeftAssociative(node.getLeft(), node, node.getRight(), ">");
 	}
 
 	@Override
-	public void caseAForallPredicate(AForallPredicate node) {
+	public void caseAForallPredicate(final AForallPredicate node) {
 		sb.append("!");
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getIdentifiers());
@@ -988,7 +1085,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAExistsPredicate(AExistsPredicate node) {
+	public void caseAExistsPredicate(final AExistsPredicate node) {
 		sb.append("#");
 		final List<PExpression> copy = new ArrayList<PExpression>(
 				node.getIdentifiers());
@@ -1011,7 +1108,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseANegationPredicate(ANegationPredicate node) {
+	public void caseANegationPredicate(final ANegationPredicate node) {
 		sb.append("not(");
 		if (node.getPredicate() != null) {
 			node.getPredicate().apply(this);
@@ -1020,7 +1117,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAStringExpression(AStringExpression node) {
+	public void caseAStringExpression(final AStringExpression node) {
 		sb.append("\"");
 		if (node.getContent() != null) {
 			sb.append(node.getContent().getText());
@@ -1030,24 +1127,24 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseASuccessorExpression(ASuccessorExpression node) {
+	public void caseASuccessorExpression(final ASuccessorExpression node) {
 		sb.append("succ");
 	}
 
 	@Override
-	public void caseAPredecessorExpression(APredecessorExpression node) {
+	public void caseAPredecessorExpression(final APredecessorExpression node) {
 		sb.append("pred");
 	}
 
 	@Override
-	public void caseADefinitionExpression(ADefinitionExpression node) {
+	public void caseADefinitionExpression(final ADefinitionExpression node) {
 		String defLiteral = node.getDefLiteral().getText();
 		sb.append(defLiteral + "(");
 		printExprList(node.getParameters());
 		sb.append(")");
 	}
 
-	private void printExprList(LinkedList<PExpression> parameters) {
+	private void printExprList(final LinkedList<PExpression> parameters) {
 		for (final Iterator<PExpression> iterator = parameters.iterator(); iterator
 				.hasNext();) {
 			final PExpression e = iterator.next();
@@ -1059,7 +1156,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseADefinitionPredicate(ADefinitionPredicate node) {
+	public void caseADefinitionPredicate(final ADefinitionPredicate node) {
 		String defLiteral = node.getDefLiteral().getText();
 		sb.append(defLiteral + "(");
 		printExprList(node.getParameters());
@@ -1067,7 +1164,7 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAFunctionExpression(AFunctionExpression node) {
+	public void caseAFunctionExpression(final AFunctionExpression node) {
 		node.getIdentifier().apply(this);
 		sb.append("(");
 		printExprList(node.getParameters());
@@ -1075,20 +1172,20 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseAStructExpression(AStructExpression node) {
+	public void caseAStructExpression(final AStructExpression node) {
 		sb.append("struct(");
 		processEntries(node.getEntries());
 		sb.append(")");
 	}
 
 	@Override
-	public void caseARecExpression(ARecExpression node) {
+	public void caseARecExpression(final ARecExpression node) {
 		sb.append("rec(");
 		processEntries(node.getEntries());
 		sb.append(")");
 	}
 
-	private void processEntries(List<PRecEntry> list) {
+	private void processEntries(final List<PRecEntry> list) {
 		for (final Iterator<PRecEntry> iterator = list.iterator(); iterator
 				.hasNext();) {
 			final PRecEntry e = iterator.next();
@@ -1100,21 +1197,21 @@ public class PrettyPrinter extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void caseARecEntry(ARecEntry node) {
+	public void caseARecEntry(final ARecEntry node) {
 		node.getIdentifier().apply(this);
 		sb.append(":");
 		node.getValue().apply(this);
 	}
 
 	@Override
-	public void caseARecordFieldExpression(ARecordFieldExpression node) {
+	public void caseARecordFieldExpression(final ARecordFieldExpression node) {
 		node.getRecord().apply(this);
 		sb.append("'");
 		node.getIdentifier().apply(this);
 	}
 
 	@Override
-	public void caseAEnumeratedSetSet(AEnumeratedSetSet node) {
+	public void caseAEnumeratedSetSet(final AEnumeratedSetSet node) {
 		final List<TIdentifierLiteral> copy = new ArrayList<TIdentifierLiteral>(
 				node.getIdentifier());
 
@@ -1145,48 +1242,4 @@ public class PrettyPrinter extends DepthFirstAdapter {
 
 	}
 
-	HashMap<Class<? extends Node>, Integer> prio = new HashMap<Class<? extends Node>, Integer>();
-
-	public void setup() {
-		prio.put(AParallelProductExpression.class, 20);
-		prio.put(ARelationsExpression.class, 125);
-		prio.put(ATotalFunctionExpression.class, 125);
-		prio.put(APartialInjectionExpression.class, 125);
-		prio.put(ATotalInjectionExpression.class, 125);
-		prio.put(APartialSurjectionExpression.class, 125);
-		prio.put(ATotalSurjectionExpression.class, 125);
-		prio.put(APartialBijectionExpression.class, 125);
-		prio.put(ATotalBijectionExpression.class, 125);
-		prio.put(ATotalRelationExpression.class, 125);
-		prio.put(ATotalSurjectionRelationExpression.class, 125);
-		prio.put(AOverwriteExpression.class, 160);
-		prio.put(ADirectProductExpression.class, 160);
-		prio.put(AConcatExpression.class, 160);
-		prio.put(ADomainRestrictionExpression.class, 160);
-		prio.put(ADomainSubtractionExpression.class, 160);
-		prio.put(ARangeRestrictionExpression.class, 160);
-		prio.put(ARangeSubtractionExpression.class, 160);
-		prio.put(AInsertFrontExpression.class, 160);
-		prio.put(AInsertTailExpression.class, 160);
-		prio.put(AUnionExpression.class, 160);
-		prio.put(AIntersectionExpression.class, 160);
-		prio.put(ARestrictFrontExpression.class, 160);
-		prio.put(ARestrictTailExpression.class, 160);
-		prio.put(ACoupleExpression.class, 160);
-		prio.put(AIntervalExpression.class, 170);
-		prio.put(AMinusOrSetSubtractExpression.class, 180);
-		prio.put(AAddExpression.class, 180);
-		prio.put(ASetSubtractionExpression.class, 180);
-		prio.put(AMultiplicationExpression.class, 190);
-		prio.put(ADivExpression.class, 190);
-		prio.put(AModuloExpression.class, 190);
-		prio.put(APowerOfExpression.class, 200); // right associative
-		prio.put(AUnaryMinusExpression.class, 210);
-		prio.put(AReverseExpression.class, 230);
-		prio.put(AImageExpression.class, 231);
-		prio.put(AImplicationPredicate.class, 30);
-		prio.put(ADisjunctPredicate.class, 40);
-		prio.put(AConjunctPredicate.class, 40);
-		prio.put(AEquivalencePredicate.class, 60);
-	}
 }

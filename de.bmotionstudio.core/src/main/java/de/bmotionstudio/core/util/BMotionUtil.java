@@ -46,16 +46,16 @@ import de.bmotionstudio.core.model.control.BConnection;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.control.Visualization;
 import de.prob.animator.command.EvaluateFormulasCommand;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
-import de.prob.scripting.CSPModel;
+import de.prob.model.representation.CSPModel;
 import de.prob.statespace.Trace;
 
 public class BMotionUtil {
-	
+
 	public static int openSaveDialog() {
 		MessageDialog dg = new MessageDialog(
 				Display.getDefault().getActiveShell(),
@@ -68,11 +68,12 @@ public class BMotionUtil {
 		return dg.open();
 	}
 
-	public static boolean openVisualization(File visualizationFile) {
+	public static boolean openVisualization(final File visualizationFile) {
 
 		// If the visualization file does not exist, stop ...
-		if (visualizationFile == null || !visualizationFile.exists())
+		if (visualizationFile == null || !visualizationFile.exists()) {
 			return false;
+		}
 
 		try {
 			BMotionUtil.createVisualizationViewPart(visualizationFile);
@@ -83,9 +84,9 @@ public class BMotionUtil {
 		return true;
 
 	}
-	
+
 	public static VisualizationViewPart initVisualizationViewPart(
-			File visualizationFile) {
+			final File visualizationFile) {
 
 		VisualizationViewPart visualizationViewPart = null;
 
@@ -112,8 +113,9 @@ public class BMotionUtil {
 				}
 
 				if (visualizationViewPart != null
-						&& !visualizationViewPart.isInitialized())
+						&& !visualizationViewPart.isInitialized()) {
 					visualizationViewPart.init(visualizationFile);
+				}
 
 			}
 
@@ -122,9 +124,9 @@ public class BMotionUtil {
 		return visualizationViewPart;
 
 	}
-	
-	public static File createNewVisualizationViewFile(File modelFile,
-			String language) {
+
+	public static File createNewVisualizationViewFile(final File modelFile,
+			final String language) {
 
 		Assert.isNotNull(modelFile);
 
@@ -148,19 +150,22 @@ public class BMotionUtil {
 				IPath location = Path.fromOSString(visualizationFile
 						.getAbsolutePath());
 				IFile ifile = workspace.getRoot().getFileForLocation(location);
-				if (ifile != null)
+				if (ifile != null) {
 					ifile.refreshLocal(IResource.DEPTH_ZERO,
 							new NullProgressMonitor());
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (CoreException e) {
 				e.printStackTrace();
 			} finally {
 				try {
-					if (writer != null)
+					if (writer != null) {
 						writer.close();
-					if (output != null)
+					}
+					if (output != null) {
 						output.close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -170,9 +175,9 @@ public class BMotionUtil {
 		return visualizationFile;
 
 	}
-	
+
 	public static VisualizationViewPart createVisualizationViewPart(
-			File visualizationFile) throws PartInitException {
+			final File visualizationFile) throws PartInitException {
 
 		String secId = visualizationFile.getName().replace(
 				"." + PerspectiveUtil.getExtension(visualizationFile), "");
@@ -186,15 +191,16 @@ public class BMotionUtil {
 						IWorkbenchPage.VIEW_VISIBLE);
 
 		if (visualizationViewPart != null
-				&& !visualizationViewPart.isInitialized())
+				&& !visualizationViewPart.isInitialized()) {
 			visualizationViewPart.init(visualizationFile);
+		}
 
 		return visualizationViewPart;
 
 	}
-	
+
 	public static VisualizationView getVisualizationViewFromFile(
-			File visualizationFile) {
+			final File visualizationFile) {
 
 		InputStream inputStream = null;
 
@@ -210,8 +216,9 @@ public class BMotionUtil {
 						public boolean shouldSerializeMember(
 								@SuppressWarnings("rawtypes") final Class definedIn,
 								final String fieldName) {
-							if (definedIn == Object.class)
+							if (definedIn == Object.class) {
 								return false;
+							}
 							return super.shouldSerializeMember(definedIn,
 									fieldName);
 						}
@@ -233,8 +240,9 @@ public class BMotionUtil {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (inputStream != null)
+				if (inputStream != null) {
 					inputStream.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -244,7 +252,7 @@ public class BMotionUtil {
 
 	}
 
-	public static String getInitialContent(String language)
+	public static String getInitialContent(final String language)
 			throws UnsupportedEncodingException {
 		Visualization visualization = new Visualization();
 		// TODO Make language more generic!!!!
@@ -253,15 +261,16 @@ public class BMotionUtil {
 		return getInitialContent(visualizationView);
 	}
 
-	public static String getInitialContent(VisualizationView visualizationView)
+	public static String getInitialContent(
+			final VisualizationView visualizationView)
 			throws UnsupportedEncodingException {
 		XStream xstream = new XStream();
 		BMotionUtil.setAliases(xstream);
 		return xstream.toXML(visualizationView);
 	}
 
-	public static File[] getVisualizationViewFiles(File modelFile,
-			String language) {
+	public static File[] getVisualizationViewFiles(final File modelFile,
+			final String language) {
 
 		Assert.isNotNull(modelFile);
 
@@ -277,8 +286,9 @@ public class BMotionUtil {
 					VisualizationView visualizationView = BMotionUtil
 							.getVisualizationViewFromFile(f);
 					if (visualizationView != null) {
-						if (visualizationView.getLanguage().equals(language))
+						if (visualizationView.getLanguage().equals(language)) {
 							filteredFiles.add(f);
+						}
 					}
 				}
 			}
@@ -288,9 +298,9 @@ public class BMotionUtil {
 		return viewFiles;
 
 	}
-	
-	private static String getUniqueVisualizationFileName(String fileName,
-			File modelFile, int counter) {
+
+	private static String getUniqueVisualizationFileName(final String fileName,
+			final File modelFile, int counter) {
 		String newFileName = fileName + counter;
 		File visFile = new File(modelFile.getParentFile().getPath() + "/"
 				+ newFileName + ".bmso");
@@ -302,35 +312,37 @@ public class BMotionUtil {
 		}
 	}
 
-	public static String getUniqueVisualizationFileName(File modelFile) {
+	public static String getUniqueVisualizationFileName(final File modelFile) {
 		String fileName = modelFile.getName().replace(
 				"." + PerspectiveUtil.getExtension(modelFile), "");
 		File visFile = new File(modelFile.getParentFile().getPath() + "/"
 				+ fileName + ".bmso");
-		if (visFile.exists())
+		if (visFile.exists()) {
 			return getUniqueVisualizationFileName(fileName, modelFile, 1);
+		}
 		return fileName;
 	}
 
-	public static void unregisterVisualizationViews(File modelFile,
-			String language) {
+	public static void unregisterVisualizationViews(final File modelFile,
+			final String language) {
 		File[] visualizationViewFiles = BMotionUtil.getVisualizationViewFiles(
 				modelFile, language);
 		for (File f : visualizationViewFiles) {
 			BMotionUtil.initVisualizationViewPart(f);
 		}
 	}
-	
-	public static void initVisualizationViews(File modelFile, String language) {
+
+	public static void initVisualizationViews(final File modelFile,
+			final String language) {
 		File[] visualizationViewFiles = BMotionUtil.getVisualizationViewFiles(
 				modelFile, language);
 		for (File f : visualizationViewFiles) {
 			BMotionUtil.initVisualizationViewPart(f);
 		}
 	}
-	
+
 	public static VisualizationViewPart[] getVisualizationViewParts(
-			File modelFile, String language) {
+			final File modelFile, final String language) {
 
 		List<VisualizationViewPart> list = new ArrayList<VisualizationViewPart>();
 
@@ -357,8 +369,9 @@ public class BMotionUtil {
 					if (viewReference != null) {
 						VisualizationViewPart visualizationViewPart = (VisualizationViewPart) viewReference
 								.getPart(true);
-						if (visualizationViewPart != null)
+						if (visualizationViewPart != null) {
 							list.add(visualizationViewPart);
+						}
 					}
 
 				}
@@ -371,28 +384,31 @@ public class BMotionUtil {
 
 	}
 
-	public static String getLanguageFromModel(AbstractModel model) {
-		if (model instanceof EventBModel)
+	public static String getLanguageFromModel(final AbstractModel model) {
+		if (model instanceof EventBModel) {
 			return "EventB";
-		else if (model instanceof ClassicalBModel)
+		} else if (model instanceof ClassicalBModel) {
 			return "ClassicalB";
-		else if (model instanceof CSPModel)
+		} else if (model instanceof CSPModel) {
 			return "CSP";
+		}
 		return null;
 	}
-	
-	public static void setAliases(XStream xstream) {
+
+	public static void setAliases(final XStream xstream) {
 		xstream.alias("view", VisualizationView.class);
 		xstream.alias("control", BControl.class);
 		xstream.alias("visualization", Visualization.class);
 		xstream.alias("guide", BMotionGuide.class);
 		xstream.alias("connection", BConnection.class);
 	}
-	
-	public static String parseFormula(String expressionString, BControl control) {
 
-		if (expressionString == null)
+	public static String parseFormula(String expressionString,
+			final BControl control) {
+
+		if (expressionString == null) {
 			return null;
+		}
 
 		// Search for control ids
 		Pattern cPattern = Pattern.compile("(\\w+)");
@@ -416,17 +432,18 @@ public class BMotionUtil {
 		return expressionString;
 
 	}
-	
-	public static Map<String, EvaluationResult> getEvaluationResults(
-			Trace history, List<IEvalElement> evals) {
+
+	public static Map<String, IEvalResult> getEvaluationResults(
+			final Trace history, final List<IEvalElement> evals) {
 		EvaluateFormulasCommand cmd = new EvaluateFormulasCommand(evals,
 				history.getCurrentState().getId());
 		history.getStateSpace().execute(cmd);
-		Map<String, EvaluationResult> results = new HashMap<String, EvaluationResult>();
-		List<EvaluationResult> values = cmd.getValues();
-		for (EvaluationResult e : values)
-			results.put(e.code, e);
+		Map<String, IEvalResult> results = new HashMap<String, IEvalResult>();
+		List<IEvalResult> values = cmd.getValues();
+		for (IEvalResult e : values) {
+			results.put(e.getCode(), e);
+		}
 		return results;
 	}
-	
+
 }

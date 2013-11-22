@@ -59,7 +59,7 @@ public class ProBInstance {
 	@Inject
 	public void sendInterrupt() {
 		try {
-			final String command = home + osInfo.userInterruptCmd;
+			final String command = home + osInfo.getUserInterruptCmd();
 			String[] cmd = new String[] { command,
 					Long.toString(userInterruptReference) };
 			Runtime.getRuntime().exec(cmd);

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>ProB Current Trace</title>
 <meta name="description" content="">
 <meta name="author" content="Jens Bendisposto">
@@ -14,15 +15,11 @@
 
 </head>
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col-lg-12">
-				<ul id="content"></ul>
-			</div>
-		</div>
-	</div>
+    <span id="sort" class="glyphicon glyphicon-sort pull-right"></span>
+	<ul id="content"></ul>
 </body>
 <script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
 <script type="text/javascript" src="/ui/common/Session.js"></script>
 <script type="text/javascript" src="/ui/currenttrace/CurrentTrace.js"></script>
 

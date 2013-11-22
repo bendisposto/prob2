@@ -3,7 +3,6 @@ package de.prob.model.classicalb;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
@@ -26,15 +25,15 @@ public class DependencyWalker extends DepthFirstAdapter {
 	private final DirectedSparseMultigraph<String, RefType> graph;
 	private final String src;
 	private final Map<String, Start> map;
-	private final Set<ClassicalBMachine> machines;
+	private final List<ClassicalBMachine> machines;
 
 	public DependencyWalker(final String machine,
-			final Set<ClassicalBMachine> machines,
+			final List<ClassicalBMachine> machines,
 			final DirectedSparseMultigraph<String, RefType> graph2,
 			final Map<String, Start> map) {
 		src = machine;
 		this.machines = machines;
-		this.graph = graph2;
+		graph = graph2;
 		this.map = map;
 	}
 
@@ -115,7 +114,7 @@ public class DependencyWalker extends DepthFirstAdapter {
 		graph.addEdge(refType, src, name);
 	}
 
-	public Set<ClassicalBMachine> getMachines() {
+	public List<ClassicalBMachine> getMachines() {
 		return machines;
 	}
 

@@ -1,6 +1,6 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -11,7 +11,7 @@ import de.prob.prolog.term.PrologTerm;
 public class SpecializedBooleanCheckersCommandTest {
 
 	@Test
-	public void testCheckInitialisationStatusCommandTrue()  {
+	public void testCheckInitialisationStatusCommandTrue() {
 		boolean b = true;
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "" + b);
@@ -22,8 +22,7 @@ public class SpecializedBooleanCheckersCommandTest {
 	}
 
 	@Test
-	public void testCheckInitialisationStatusCommandFalse()
-			 {
+	public void testCheckInitialisationStatusCommandFalse() {
 		boolean b = false;
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "" + b);
@@ -34,7 +33,7 @@ public class SpecializedBooleanCheckersCommandTest {
 	}
 
 	@Test
-	public void testCheckInvariantStatusCommandTrue()  {
+	public void testCheckInvariantStatusCommandTrue() {
 		boolean b = true;
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "" + b);
@@ -45,7 +44,7 @@ public class SpecializedBooleanCheckersCommandTest {
 	}
 
 	@Test
-	public void testCheckInvariantStatusCommandFalse()  {
+	public void testCheckInvariantStatusCommandFalse() {
 		boolean b = false;
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "" + b);
@@ -56,8 +55,7 @@ public class SpecializedBooleanCheckersCommandTest {
 	}
 
 	@Test
-	public void testCheckMaxOperationReachedStatusCommandTrue()
-			 {
+	public void testCheckMaxOperationReachedStatusCommandTrue() {
 		boolean b = true;
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "" + b);
@@ -68,8 +66,7 @@ public class SpecializedBooleanCheckersCommandTest {
 	}
 
 	@Test
-	public void testCheckMaxOperationReachedStatusCommandFalse()
-			 {
+	public void testCheckMaxOperationReachedStatusCommandFalse() {
 		boolean b = false;
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "" + b);
@@ -80,7 +77,7 @@ public class SpecializedBooleanCheckersCommandTest {
 	}
 
 	@Test
-	public void testCheckTimeoutStatusCommandTrue()  {
+	public void testCheckTimeoutStatusCommandTrue() {
 		boolean b = true;
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "" + b);
@@ -91,7 +88,7 @@ public class SpecializedBooleanCheckersCommandTest {
 	}
 
 	@Test
-	public void testCheckTimeoutStatusCommandFalse()  {
+	public void testCheckTimeoutStatusCommandFalse() {
 		boolean b = false;
 		ISimplifiedROMap<String, PrologTerm> map = TestHelper.mkAtomMock(
 				"PropResult", "" + b);

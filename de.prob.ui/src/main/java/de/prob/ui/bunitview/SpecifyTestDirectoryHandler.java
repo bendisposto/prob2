@@ -24,7 +24,7 @@ public class SpecifyTestDirectoryHandler extends AbstractHandler implements
 		dialog.open();
 		final String answer = dialog.getFilterPath();
 
-		if (answer != null && answer != "") {
+		if (answer != null && !answer.isEmpty()) {
 			Runnable runTestLoader = new Runnable() {
 				@Override
 				public void run() {

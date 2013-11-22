@@ -2,451 +2,383 @@ bms = (function() {
 
 	var extern = {}
 	var session = Session();
-	var svgCanvas = null;
-	var svgElement = null;
-	var isInit = false;	
-	
+
 	$(document).ready(function() {
 		
-		hookInputFieldListener(true)
+	    $('#navigation a').stop().animate({'marginLeft':'-85px'},1000);
 
-		$("#tabs").tabs({
+	    $('#navigation > li').hover(
+	        function () {
+	            $('a',$(this)).stop().animate({'marginLeft':'-2px'},200);
+	        },
+	        function () {
+	            $('a',$(this)).stop().animate({'marginLeft':'-85px'},200);
+	        }
+	    );
 
-			activate : function(event, ui) {
-				// Visualization
-				if ($(ui.oldPanel).attr("id") == "tabs-1") {
-					$("#result").html("")
-					forceRendering()
-				} else {
-					$("#render").html("")
-					renderEdit()
-				}
-			}
+		$('.template').click(function() {
 
-		});
-			
+			$("#sourceModal").on('shown', function() {
+				// editorHtml.refresh()
+				// editorJavascript.refresh()
+			}).on('hidden', function() {
+				// renderEdit()
+			});
+			// Show Modal
+			$("#sourceModal").modal('show');
+
+			$(".template").find("a").stop().animate({
+				'marginLeft' : '-85px'
+			}, 200);
+
+		})
+	    
 	});
-	
+
+
+
 	// --------------------------------------------
 	// Helper functions
 	// --------------------------------------------
 	jQuery.fn.toHtmlString = function() {
 		return $('<div></div>').html($(this).clone()).html();
 	};
-	
-	jQuery.expr[':'].parents = function(a,i,m){
-	    return jQuery(a).parents(m[3]).length < 1;
-	};
-	// --------------------------------------------
 
-	// --------------------------------------------
-	// Code Mirror Editor
-	// Define an extended mixed-mode that understands vbscript and
-	// leaves mustache/handlebars embedded templates in html mode
-	// --------------------------------------------
-	var mixedMode = {
-		name : "htmlmixed",
-		scriptTypes : [ {
-			matches : /\/x-handlebars-template|\/x-mustache/i
-		} ]
+	jQuery.expr[':'].parents = function(a, i, m) {
+		return jQuery(a).parents(m[3]).length < 1;
 	};
 
-	var javascriptMode = {
-		name : "javascript"
+	var readHTMLFile = function(url) {
+		var toReturn;
+		$.ajax({
+			url : url,
+			async : false
+		}).done(function(data) {
+			toReturn = data;
+		});
+		return toReturn;
 	};
-
-	var editorHtml = CodeMirror.fromTextArea(document
-			.getElementById("template_content"), {
-		mode : mixedMode,
-		tabMode : "indent",
-		lineWrapping : true,
-		lineNumbers : true,
-		onKeyEvent : function(e, s) {
-			if (s.type == "keyup") {
-				forceSaveTemplate()
-				renderEdit()
-			}
-		}
-	});
-
-	var editorJavascript = CodeMirror.fromTextArea(document
-			.getElementById("template_scripting"), {
-		mode : javascriptMode,
-		tabMode : "indent",
-		lineWrapping : true,
-		lineNumbers : true,
-		matchBrackets : true,
-		onKeyEvent : function(e, s) {
-			if (s.type == "keyup") {
-				forceSaveTemplate()
-				renderEdit()
-			}
-		}
-	});
-
-	$("#show-codeblock").click(function(e) {
-		var template1 = $(".code-block");
-		if (!e.target.checked) {
-			template1.fadeOut();
-		} else {
-			template1.fadeIn();
-		}
-	})
-
-	// $('#template-code-block').find('.CodeMirror').resizable({
-	// resize : function() {
-	// editorHtml.setSize($(this).width(), $(this).height());
-	// }
-	// });
-	//
-	// $('#scripting-code-block').find('.CodeMirror').resizable({
-	// resize : function() {
-	// editorJavascript.setSize($(this).width(), $(this).height());
-	// }
-	// });
-	// --------------------------------------------
-
-	// --------------------------------------------
-	// Context Menu Configuration
-	// --------------------------------------------
-	$.contextMenu({
-		selector : 'svg',
-		items : {
-			"edit" : {
-				name : "Edit SVG",
-				icon: "edit",
-				callback : function(key, options) {
-					openSvgEditor(this)
-				}
-			}
-		}
-	});
-	
-	function openSvgEditor(e) {
-		svgElement = $(e);
-		var svgstring = $(e).toHtmlString()
-		$("#dialog").dialog("open");
-   		svgCanvas.setSvgString(svgstring);
-	}
-
-	function saveSvg() {
-		svgCanvas.getSvgString()(handleSvgData);
-	}
-
-	function handleSvgData(data, error) {
-		if (error) {
-			alert(error);
-		} else {
-			if (svgElement) {
-				svgElement.replaceWith($(data))
-				editorHtml.setValue($("#result").children().toHtmlString())
-				forceSaveTemplate()
-				renderEdit()
-			}
-		}
-	}
-
-	$("#dialog").dialog({
-		bgiframe : true,
-		autoOpen : true,
-		height : 775,
-		width : 1055,
-		modal : true
-	});
-
-	$("#svgedit").load(function() {
-		var frame = document.getElementById('svgedit');
-		svgCanvas = new embedded_svg_edit(frame);
-		$("#dialog").dialog("close");
-	});
-	
-	$('#dialog').bind('dialogclose', function(event) {
-		saveSvg();
-	});	
-	
-	// --------------------------------------------
-
-	// --------------------------------------------
-	// Calls to Server
-	// --------------------------------------------
-	function forceRendering() {
-		session.sendCmd("forcerendering", {
-			"client" : extern.client
-		})
-	}
-
-	function forceSaveTemplate() {
-		session.sendCmd("saveTemplate", {
-			"template_content" : editorHtml.getValue(),
-			"template_scripting" : editorJavascript.getValue(),
-			"client" : extern.client
-		})
-	}
 	// --------------------------------------------
 
 	// --------------------------------------------
 	// Rendering
 	// --------------------------------------------
-	function renderEdit() {
-		$("#result").html("");
-		$("#result").html(editorHtml.getValue());
-		initDnd()
-	}
 
-	function renderVisualization(data) {
-		
-		$("#render").html("");
-		var template_text = editorHtml.getValue();
-		
-		var observer = JSON.parse(data.observer)
-
-		jQuery.each(observer, function(i, o) {
-			template_text = template_text + session.render(o.template, JSON.parse(o.data));
-		});
-
-		try {
-			var output = Mustache.render(template_text + "<script>"
-					+ editorJavascript.getValue() + "</script>", data);
-		} catch (e) {
-			template_error(e)
-		}
-		$("#render").html(output);
-		$("*.draggable").removeClass('draggable').addClass('draggable-vis');
-		
-	}
-
-	function initDnd() {
-		$('.draggable').draggable({
-			stop : function(e, ui) {
-				editorHtml.setValue($("#result").children().toHtmlString())
-			}
-		});
-	}
-	// --------------------------------------------
-
-	function restoreTemplate(template_content, template_scripting) {
-		if (template_content != null)
-			editorHtml.setValue(template_content);
-		if (template_scripting != null)
-			editorJavascript.setValue(template_scripting);
-	}
-
-	function restoreFormulas(formulas) {
-		var id, formula, idNum;
-		for ( var i = formulas.length - 1; i >= 0; i--) {
-			id = formulas[i].id;
-			formula = formulas[i].formula;
-			$("#formulas").prepend(
-					session.render("/ui/bmsview/formula_entered.html", {
-						id : id,
-						formula : formula
-					}));
-		}
-		hookEnteredFieldListener()
+	function renderVisualization(observer,data) {
+		checkObserver(observer,data)
+		extern.doStep(data)
 	}
 	
-	function restoreObserver(observer) {
-		var observerList = $('#svgedit').contents().find('#observer_list')
-		for ( var i = 0; i <= observer.length - 1; i++) {
-			var o = observer[i];
-			var odata = JSON.parse(o.data)
-			observerList.append(
-			"<h3>New Observer</h3><div>" + 
-			session.render("/ui/bmsview/observer/predicateObserverForm.html", odata) +
-			"</div>")
+	function checkObserver(observer,data) {
+		var observerList = observer.observer;
+		if (observerList !== undefined) {
+			for ( var i = 0; i < observerList.length; i++) {
+				var observer = observerList[i];
+				bms[observer.cmd](observer,data);
+			}
 		}
 	}
+	
+	// --------------------------------------------
 
 	extern.client = ""
+	extern.observer = null;
+	extern.workspace = "";
 	extern.init = session.init
 	extern.session = session
 
+	function browse(dir_dom) {
+		$('#filedialog').off('hidden.bs.modal')
+		$('#filedialog').on('hidden.bs.modal', set_ok_button_state(dir_dom))
+		$("#filedialog").modal('show')
+		browse2(dir_dom)
+	}
+
+	function set_ok_button_state(dir_dom) {
+		return function() {
+			var file = $(dir_dom)[0].value
+			var valid = check_file(file);
+			if (valid) {
+				$("#fb_okbtn").removeAttr("disabled")
+			} else {
+				$("#fb_okbtn").attr("disabled", "disabled")
+			}
+		}
+	}
+
+	function browse2(dir_dom) {
+		var dir = $(dir_dom)[0].value
+		// prepare dialog
+		var data = request_files(dir)
+		$(dir_dom).val(data.path)
+		filldialog(data.dirs, data.files, dir_dom)
+	}
+
+	function request_files(d) {
+		var s;
+		$.ajax({
+			url : "/files?path=" + d + "&extensions=bms&workspace="
+					+ extern.workspace,
+			success : function(result) {
+				if (result.isOk === false) {
+					alert(result.message);
+				} else {
+					s = JSON.parse(result);
+				}
+			},
+			async : false
+		});
+		return s;
+	}
+
+	function check_file(d) {
+		var s;
+		$.ajax({
+			url : "/files?check=true&path=" + d + "&extensions=bms&workspace="
+					+ extern.workspace,
+			success : function(result) {
+				if (result.isOk === false) {
+					alert(result.message);
+				} else {
+					s = JSON.parse(result);
+				}
+			},
+			async : false
+		});
+		return s;
+	}
+
+	function filldialog(dirs, files, dir_dom) {
+		$(".filedialog_item").remove()
+		$(".filedialog_br").remove()
+		var hook = $("#filedialog_content")
+		var s
+		for (s in dirs) {
+			var file = dirs[s]
+			if (!file.hidden) {
+				hook.append(session.render("/ui/bmsview/fb_dir_entry.html", {
+					"name" : file.name,
+					"path" : file.path,
+					"dom" : dir_dom
+				}))
+			}
+		}
+		for (s in files) {
+			var file = files[s]
+			if (!file.hidden) {
+				hook.append(session.render("/ui/bmsview/fb_file_entry.html", {
+					"name" : file.name,
+					"path" : file.path,
+					"dom" : dir_dom
+				}))
+			}
+		}
+	}
+
+	function fb_select_dir(dir_dom, path) {
+		$(dir_dom).val(path)
+		browse2(dir_dom)
+	}
+	function fb_select_file(dir_dom, path) {
+		$(dir_dom).val(path)
+		$("#filedialog").modal('hide')
+	}
+
+	function resizeIframe() {
+		var newIframeHeight = $("#iframeVisualization").contents().find("html")
+				.height()
+				+ 'px';
+		$('#iframeVisualization').css("height", newIframeHeight);
+	}
+
+	extern.browse = browse
+	extern.fb_select_dir = fb_select_dir
+	extern.fb_select_file = fb_select_file
+	extern.fb_load_file = function(dom_dir) {
+		templateFile = $(dom_dir)[0].value
+		session.sendCmd("setTemplate", {
+			"path" : templateFile
+		})
+		$("#sourceModal").modal('hide')
+		$("#chooseTemplateBox").css("display", "none");
+	}
+
+	extern.setTemplate = function(data) {
+		window.location = "/bms" + data.request;
+	}
+	
+	extern.reloadTemplate = function(data) {
+		extern.initTemplate(JSON.parse(data.data))
+		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
+	}
+
 	extern.renderVisualization = function(data) {
-		renderVisualization(JSON.parse(data.data))
-	}
-
-	extern.restorePage = function(data) {
-		restoreFormulas(JSON.parse(data.formulas))
-		restoreTemplate(data.template_content, data.template_scripting)
-		renderEdit()
-	}
-
-	extern.register = function(observer, expression) {
-		session.sendCmd("register", {
-			"observer" : observer,
-			"expression" : expression,
-			"client" : extern.client
-		})
-	}
-
-	extern.formulaRemoved = function(data) {
-		formulaRemoved(data.id);
-	}
-
-	extern.openSvgEditor = function(e) {
-		openSvgEditor(e)
-	}
-
-	// --------------------------------------------
-	// Observer / Formulas
-	// --------------------------------------------
-	function appendNewInputField(nextId) {
-		$("#formulas").append(session.render("/ui/bmsview/input_field.html", {
-			id : nextId,
-			value : "",
-			text : "Add"
-		}));
-	}
-
-	function replaceWithEnteredField(id, formula) {
-		$("#" + id).removeClass("has-error");
-		$("#input-" + id).replaceWith(
-				session.render("/ui/bmsview/formula_entered.html", {
-					id : id,
-					formula : formula
-				}));
-	}
-
-	function replaceWithEditField(id, formula) {
-		var parentId = "#input-" + id;
-		$(parentId).replaceWith(
-				session.render("/ui/bmsview/input_field.html", {
-					id : id,
-					value : formula,
-					text : "Ok"
-				}));
-	}
-
-	function formulaAdded(id, formula, nextId) {
-
-		// Append a new input field ...
-		appendNewInputField(nextId);
-		// ... and hook corresponding listeners
-		hookInputFieldListener(true);
-
-		// Replace formula field and ...
-		replaceWithEnteredField(id, formula);
-		// ... hook listener for edit and remove buttons
-		hookEnteredFieldListener();
-
-	}
-
-	function formulaRemoved(id) {
-		$("#input-" + id).remove();
-	}
-
-	function hookEnteredFieldListener() {
-
-		$("[id^=edit-]").unbind('click');
-		$("[id^=remove-]").unbind('click');
-
-		$("[id^=edit-]").click(function(e) {
-			e.preventDefault();
-			var id = e.target.parentElement.id;
-			var formula = $("#formula-" + id)[0].textContent;
-			editFormula(id, formula);
-		});
-		$("[id^=remove-]").click(function(e) {
-			e.preventDefault();
-			var id = e.target.parentElement.id;
-			session.sendCmd("removeFormula", {
-				"id" : id
-			});
-		})
-
-	}
-
-	function hookInputFieldListener(newformula) {
-
-		$(".add-formula").unbind('click');
-		$(".form-control").unbind('keyup');
-
-		$(".add-formula").click(function(e) {
-			e.preventDefault();
-			var id = e.target.parentNode.parentNode.id;
-			session.sendCmd("addFormula", {
-				"id" : id,
-				"newFormula" : newformula
-			});
-		});
-
-		$(".form-control").keyup(function(e) {
-			session.sendCmd("parse", {
-				"formula" : e.target.value,
-				"id" : e.target.parentNode.id
-			})
-		});
-
-	}
-
-	function editFormula(id, formula) {
-		replaceWithEditField(id, formula);
-		hookInputFieldListener(false);
-	}
-
-	function formulaRestored(id, formula) {
-		replaceWithEnteredField(id, formula);
-		hookEnteredFieldListener();
-		renderEdit()
+		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
 	}
 	
-	function parseOk(id) {
-		$("#" + id).removeClass("has-error")
-		$("#btn-" + id).prop("disabled", false);
+	extern.doStep = function(data) {
 	}
+	
+	extern.initTemplate = function(data) {
+	}
+	
+	extern.translateValue = function(val) {
+		if (val === "true") {
+			return true;
+		} else if (val === "false") {
+			return false;
+		} else if(!isNaN(val)) {
+			val = parseInt(val)
+		}
+		return val;
+	}
+	
+	extern.evalObserver = function(observer,data) {
 
-	function parseError(id) {
-		$("#" + id).addClass("has-error")
-		$("#btn-" + id).prop("disabled", true);
-	}
-	
-	extern.parseError = function(data) {
-		parseError(data.id);
-	}
-	extern.parseOk = function(data) {
-		parseOk(data.id);
-	}
+		var objects = observer.objects
 
-	extern.formulaAdded = function(data) {
-		formulaAdded(data.id, data.formula, data.nextId);
-	}
-	
-	extern.formulaRestored = function(data) {
-		formulaRestored(data.id, data.formula);
-	}
-	
-	extern.restoreObserver = function(observer) {
-		restoreObserver(JSON.parse(observer.data))
-	}	
-	
-	// --------------------------------------------
-	
-	// --------------------------------------------
-	// Error Handling
-	// --------------------------------------------
-	extern.error = function(data) {
-		error(data.id, data);
-	}
+		for ( var i = 0; i < objects.length; i++) {
 
-	function error(id, errormsg) {
-		$("#right-col").prepend(
-				session.render("/ui/bmsview/error_msg.html", errormsg));
-		$("#" + id).addClass("has-error");
-	}
-	// --------------------------------------------
+			var o = objects[i];
+			var predicate = o.predicate;
+			var triggerList = o.trigger;
+
+			if(predicate === undefined) {
+				predicate = true;
+			} else {
+				predicate = extern.translateValue(predicate);
+			}
+			
+			if(predicate) {
+				
+				for ( var t = 0; t < triggerList.length; t++) {
+					
+					var trigger = triggerList[t]			
+					var parameters = trigger.parameters
+					var caller = trigger.call
+					
+					if((parameters !== undefined) && (caller !== undefined)) {
+						var parsedArray = [];
+						$(parameters).each(function(k,v) {
+							parsedArray.push(extern.translateValue(v))		
+						});
+						var obj = $(trigger.selector)
+						var fn = obj[caller];
+						if (typeof fn === "function") {
+							fn.apply(obj, parsedArray);
+						}
+					}
+					
+				}
+				
+			}
+
+		}
+
+	}	  
 	
-	// --------------------------------------------
-	// External API Calls
-	// --------------------------------------------
-	extern.executeOperation = function(op, predicate) {
-		session.sendCmd("executeOperation", {
-			"op" : op,
-			"predicate" : predicate,
-			"client" : extern.client
-		})
-	}
-	// --------------------------------------------
+	var firstCall = true;
+	
+	extern.cspEventObserver = function(observer,data) {
+
+		var objects = observer.objects
 		
+		// Get default values ...
+		if(firstCall) {
+			$.each(objects, function(i,o) {
+				$.each(o.trigger, function(i,t) {
+					var caller = t.call
+					var obj = $(t.selector)
+					var val = null
+					var fn = obj[caller];
+					if (typeof fn === "function") {
+						val = fn.apply(obj,[t.parameters[0]]);
+					}
+					obj.attr("default_value_" + t.parameters[0], val)
+				});
+			});
+			firstCall = false;
+		} else {
+			// Reset default values ...
+			$.each(objects, function(i,o) {
+				$.each(o.trigger, function(i,t) {
+					var caller = t.call
+					var obj = $(t.selector)
+					var val = obj.attr("default_value_" + t.parameters[0])
+					var fn = obj[caller];
+					if (typeof fn === "function") {
+						fn.apply(obj,[t.parameters[0],val]);
+					}
+				});
+			});
+		}
+		
+		// Replay trace ...
+		$.each(data.model.trace, function(i,l) {
+			
+			var lastop = l.full
+			
+			$.each(observer.objects, function(i,o) {
+
+				var events = o.events
+				
+				  if(events.indexOf(lastop) !== -1) {
+					  	
+					  	$.each(o.trigger, function(i,t) {
+						
+							var parameters = t.parameters
+							var caller = t.call
+							
+							if((parameters !== undefined) && (caller !== undefined)) {
+								var parsedArray = [];
+								$(parameters).each(function(k,v) {
+									parsedArray.push(extern.translateValue(v))		
+								});
+								var obj = $(t.selector)
+								var fn = obj[caller];
+								if (typeof fn === "function") {
+									fn.apply(obj, parsedArray);
+								}
+							}
+									
+						});
+					  
+				  }
+			
+			});
+			
+		});
+
+	}
+	
+	extern.executeOperation = function(observer,data) {
+		
+		  var objects = observer.objects
+		  
+		  $.each(objects, function(i,v)
+		  {
+			  var o = v;
+			  var predicate = o.predicate;
+			  if(predicate === undefined)
+				  predicate = "1=1"
+			  var operation = o.operation
+			  var selector = $(o.selector);
+			  
+			  var events = $._data( selector[0], 'events' )
+			  if (events === undefined || (events !== undefined && events.click === undefined)) {
+				    selector.click(function() {
+					 	session.sendCmd("executeOperation", {
+							"op" : o.operation,
+							"predicate" : predicate,
+							"client" : parent.bms.client
+						})	
+				  });
+			  }
+			  
+		  });
+		  
+		}
+
 	return extern;
 
 }())

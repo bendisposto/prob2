@@ -103,6 +103,7 @@ public class ModelChecker {
 
 	private class Worker implements Callable<ModelCheckingResult> {
 
+		private static final int TIME = 500;
 		private final StateSpace s;
 		private final List<String> options;
 		private long last;
@@ -145,7 +146,7 @@ public class ModelChecker {
 		}
 
 		private ModelCheckingResult do_model_checking_step() {
-			ModelCheckingCommand cmd = new ModelCheckingCommand(500, options,
+			ModelCheckingCommand cmd = new ModelCheckingCommand(TIME, options,
 					last);
 
 			s.execute(cmd);

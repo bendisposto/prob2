@@ -15,6 +15,8 @@ import com.google.common.base.Objects;
 
 public class ProBConnection {
 
+	private final int BUFFER_SIZE = 1024;
+
 	private Socket socket;
 	private BufferedInputStream inputStream;
 	private PrintStream outputStream;
@@ -60,7 +62,7 @@ public class ProBConnection {
 	}
 
 	public String send(final String term) throws IOException {
-		logger.trace(term);
+		logger.info(term);
 		if (shutingDown) {
 			final String message = "probcli is currently shutting down";
 			logger.error(message);
@@ -73,7 +75,7 @@ public class ProBConnection {
 			outputStream.flush();
 		}
 		String answer = getAnswer();
-		logger.trace(answer);
+		logger.info(answer);
 		return answer;
 	}
 
@@ -89,7 +91,7 @@ public class ProBConnection {
 
 	protected String readAnswer() throws IOException {
 		final StringBuilder result = new StringBuilder();
-		final byte[] buffer = new byte[1024];
+		final byte[] buffer = new byte[BUFFER_SIZE];
 		boolean done = false;
 
 		while (!done) {

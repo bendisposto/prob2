@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.servlet.AsyncContext;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
 import com.google.inject.Singleton;
@@ -65,7 +67,7 @@ public class Log extends AbstractSession {
 				final String msg) {
 			this.from = from;
 			type = level;
-			this.msg = msg;
+			this.msg = StringEscapeUtils.escapeHtml(msg);
 			this.level = level.toString();
 		}
 	}

@@ -14,11 +14,12 @@ import de.bmotionstudio.core.editor.wizard.observer.CSPEventObserverWizard;
 import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.prob.animator.domainobjects.CSP;
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.exception.ProBError;
-import de.prob.scripting.CSPModel;
-import de.prob.statespace.Trace;
+import de.prob.model.representation.CSPModel;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.Trace;
 
 public class CSPEventObserver extends Observer {
 
@@ -45,11 +46,12 @@ public class CSPEventObserver extends Observer {
 			.getLogger(CSPEventObserver.class);
 
 	@Override
-	public void check(Trace history, BControl control,
-			Map<String, EvaluationResult> results) {
+	public void check(final Trace history, final BControl control,
+			final Map<String, IEvalResult> results) {
 
-		if (currentHisOps == null)
+		if (currentHisOps == null) {
 			currentHisOps = new ArrayList<OpInfo>();
+		}
 
 		List<OpInfo> newHisOps = history.getCurrent().getOpList();
 
@@ -76,18 +78,19 @@ public class CSPEventObserver extends Observer {
 	}
 
 	@Override
-	public void afterCheck(Trace history, BControl control) {
+	public void afterCheck(final Trace history, final BControl control) {
 		setPosition = 0;
 		restored = false;
 	}
 
-	private boolean checkIfAlreadyRestored(BControl control) {
+	private boolean checkIfAlreadyRestored(final BControl control) {
 		for (Observer o : control.getObservers()) {
 			if (o instanceof CSPEventObserver) {
 				CSPEventObserver cspO = (CSPEventObserver) o;
 				if (((CSPEventObserver) o).isRestored()
-						&& cspO.getAttribute().equals(attribute))
+						&& cspO.getAttribute().equals(attribute)) {
 					return true;
+				}
 			}
 		}
 		return false;
@@ -101,25 +104,28 @@ public class CSPEventObserver extends Observer {
 		return setPosition;
 	}
 
-	private int getMaxSetPosition(BControl control) {
+	private int getMaxSetPosition(final BControl control) {
 
 		int maxSetPosition = 0;
 		for (Observer o : control.getObservers()) {
 			if (o instanceof CSPEventObserver) {
 				CSPEventObserver cspO = (CSPEventObserver) o;
 				if (cspO.getSetPosition() > maxSetPosition
-						&& cspO.getAttribute().equals(attribute))
+						&& cspO.getAttribute().equals(attribute)) {
 					maxSetPosition = cspO.getSetPosition();
+				}
 			}
 		}
 		return maxSetPosition;
 
 	}
 
-	private void runme(OpInfo op, int pos, BControl control, Trace history) {
+	private void runme(final OpInfo op, final int pos, final BControl control,
+			final Trace history) {
 
-		if (op == null)
+		if (op == null) {
 			return;
+		}
 
 		String AsImplodedString = "";
 
@@ -151,9 +157,9 @@ public class CSPEventObserver extends Observer {
 
 				try {
 
-					EvaluationResult eval = history.evalCurrent(cspEval);
-					if (eval != null && !eval.hasError()) {
-						String result = eval.value;
+					IEvalResult eval = history.evalCurrent(cspEval);
+					if (eval != null && eval instanceof EvalResult) {
+						String result = ((EvalResult) eval).getValue();
 						result = result.replace("}", "").replace("{", "");
 						String[] split = result.split(",");
 						listOfOps = new ArrayList<String>();
@@ -170,18 +176,19 @@ public class CSPEventObserver extends Observer {
 
 				int maxSetPosition = getMaxSetPosition(control);
 
-				if (pos < maxSetPosition && pos != -1)
+				if (pos < maxSetPosition && pos != -1) {
 					return;
+				}
 
 				if (isCustom) {
 					String parseExpression = parseExpression(value.toString(),
 							control, op);
 					CSP cspE = new CSP(parseExpression,
 							(CSPModel) history.getModel());
-					EvaluationResult subEval = history.evalCurrent(cspE);
-					if (subEval != null && !subEval.hasError()) {
-						control.setAttributeValue(attribute, subEval.value,
-								true, false);
+					IEvalResult subEval = history.evalCurrent(cspE);
+					if (subEval != null && subEval instanceof EvalResult) {
+						control.setAttributeValue(attribute,
+								((EvalResult) subEval).getValue(), true, false);
 					}
 				} else {
 					control.setAttributeValue(attribute, value, true, false);
@@ -195,8 +202,8 @@ public class CSPEventObserver extends Observer {
 
 	}
 
-	private String parseExpression(String expressionString, BControl control,
-			OpInfo op) {
+	private String parseExpression(final String expressionString,
+			final BControl control, final OpInfo op) {
 
 		String finalExpression = expressionString;
 
@@ -209,9 +216,10 @@ public class CSPEventObserver extends Observer {
 			while (matcher.find()) {
 				int subExpr = Integer.valueOf(matcher.group(1));
 				String para = params.get(subExpr);
-				if (para != null)
+				if (para != null) {
 					finalExpression = finalExpression.replace("$" + subExpr
 							+ "$", para);
+				}
 			}
 
 		}
@@ -224,7 +232,7 @@ public class CSPEventObserver extends Observer {
 		return attribute;
 	}
 
-	public void setAttribute(String attribute) {
+	public void setAttribute(final String attribute) {
 		String oldVal = this.attribute;
 		this.attribute = attribute;
 		firePropertyChange("attribute", oldVal, attribute);
@@ -234,7 +242,7 @@ public class CSPEventObserver extends Observer {
 		return expression;
 	}
 
-	public void setExpression(String expression) {
+	public void setExpression(final String expression) {
 		Object oldVal = this.expression;
 		this.expression = expression;
 		firePropertyChange("expression", oldVal, expression);
@@ -245,12 +253,13 @@ public class CSPEventObserver extends Observer {
 	}
 
 	public Boolean isCustom() {
-		if (isCustom == null)
+		if (isCustom == null) {
 			isCustom = false;
+		}
 		return isCustom;
 	}
 
-	public void setIsCustom(Boolean isCustom) {
+	public void setIsCustom(final Boolean isCustom) {
 		Object oldVal = this.isCustom;
 		this.isCustom = isCustom;
 		firePropertyChange("isCustom", oldVal, isCustom);
@@ -260,7 +269,7 @@ public class CSPEventObserver extends Observer {
 		return value;
 	}
 
-	public void setValue(Object value) {
+	public void setValue(final Object value) {
 		Object oldVal = this.value;
 		this.value = value;
 		firePropertyChange("value", oldVal, value);
@@ -272,7 +281,7 @@ public class CSPEventObserver extends Observer {
 	}
 
 	@Override
-	public ObserverWizard getWizard(Shell shell, BControl control) {
+	public ObserverWizard getWizard(final Shell shell, final BControl control) {
 		return new CSPEventObserverWizard(shell, control, this);
 	}
 

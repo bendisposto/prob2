@@ -44,8 +44,8 @@ import de.bmotionstudio.core.model.attribute.BAttributeY;
 import de.bmotionstudio.core.model.attribute.ConnectionList;
 import de.bmotionstudio.core.model.event.Event;
 import de.bmotionstudio.core.model.observer.Observer;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.Trace;
 
 /**
@@ -79,28 +79,29 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 	private transient Point location = null;
 
 	private transient BControl parent;
-	
+
 	private transient boolean newControl;
-	
+
 	public BControl() {
-		this.children = new ArrayList<BControl>();
-		this.observer = new ArrayList<Observer>();
-		this.events = new ArrayList<Event>();
-		this.attributes = new HashMap<String, AbstractAttribute>();
-		this.newControl = true;
+		children = new ArrayList<BControl>();
+		observer = new ArrayList<Observer>();
+		events = new ArrayList<Event>();
+		attributes = new HashMap<String, AbstractAttribute>();
+		newControl = true;
 		init();
 	}
 
 	protected Object readResolve() {
 		// Populate parent
-		for (BControl child : getChildren())
+		for (BControl child : getChildren()) {
 			child.setParent(this);
-		this.newControl = false;
+		}
+		newControl = false;
 		init();
 		return this;
 	}
 
-	public void removeConnection(BConnection conn) {
+	public void removeConnection(final BConnection conn) {
 		if (conn == null) {
 			throw new IllegalArgumentException();
 		}
@@ -115,7 +116,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		}
 	}
 
-	public void addConnection(BConnection conn) {
+	public void addConnection(final BConnection conn) {
 		if (conn == null || conn.getSource().equals(conn.getTarget())) {
 			throw new IllegalArgumentException();
 		}
@@ -141,8 +142,9 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 		// Init unique ID
 		String ID;
-		if (this instanceof Visualization)
+		if (this instanceof Visualization) {
 			ID = "visualization";
+		}
 		// TODO: Reimplement me!!!
 		// else if (visualization == null)
 		ID = UUID.randomUUID().toString();
@@ -156,24 +158,24 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		BAttributeMisc aMisc = new BAttributeMisc("");
 		aMisc.setGroup(AbstractAttribute.ROOT);
 		initAttribute(aMisc);
-		
+
 		// Init location and size attributes
 		BAttributeCoordinates aCoordinates = new BAttributeCoordinates(null);
 		aCoordinates.setGroup(AbstractAttribute.ROOT);
 		initAttribute(aCoordinates);
-		
+
 		BAttributeX aX = new BAttributeX(100);
 		aX.setGroup(aCoordinates);
 		initAttribute(aX);
-		
+
 		BAttributeY aY = new BAttributeY(100);
 		aY.setGroup(aCoordinates);
 		initAttribute(aY);
-		
+
 		BAttributeSize aSize = new BAttributeSize(null);
 		aSize.setGroup(AbstractAttribute.ROOT);
 		initAttribute(aSize);
-		
+
 		BAttributeWidth aWidth = new BAttributeWidth(100);
 		aWidth.setGroup(aSize);
 		initAttribute(aWidth);
@@ -209,11 +211,11 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		return getAttributeValue(AttributeConstants.ATTRIBUTE_ID).toString();
 	}
 
-	public AbstractAttribute getAttribute(String attributeID) {
+	public AbstractAttribute getAttribute(final String attributeID) {
 		return getAttributes().get(attributeID);
 	}
 
-	public Object getAttributeValue(String attributeID) {
+	public Object getAttributeValue(final String attributeID) {
 
 		AbstractAttribute atr = attributes.get(attributeID);
 
@@ -226,17 +228,19 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 	}
 
-	public boolean setAttributeValue(String attributeID, Object value) {
+	public boolean setAttributeValue(final String attributeID,
+			final Object value) {
 		return setAttributeValue(attributeID, value, true, true);
 	}
 
-	public boolean setAttributeValue(String attributeID, Object value,
-			Boolean firePropertyChange) {
+	public boolean setAttributeValue(final String attributeID,
+			final Object value, final Boolean firePropertyChange) {
 		return setAttributeValue(attributeID, value, firePropertyChange, true);
 	}
 
-	public boolean setAttributeValue(String attributeID, Object value,
-			Boolean firePropertyChange, Boolean setInitVal) {
+	public boolean setAttributeValue(final String attributeID,
+			final Object value, final Boolean firePropertyChange,
+			final Boolean setInitVal) {
 
 		AbstractAttribute atr = attributes.get(attributeID);
 
@@ -248,8 +252,9 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		atr.setControl(this);
 
 		if ((atr.getValue() != null && atr.getValue().equals(value))
-				|| !atr.isEditable())
+				|| !atr.isEditable()) {
 			return true;
+		}
 
 		atr.setValue(value, firePropertyChange, setInitVal);
 
@@ -257,7 +262,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 	}
 
-	public void restoreDefaultValue(String attributeID) {
+	public void restoreDefaultValue(final String attributeID) {
 		AbstractAttribute atr = attributes.get(attributeID);
 		if (atr != null) {
 			atr.restoreValue();
@@ -267,11 +272,11 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		}
 	}
 
-	public boolean hasAttribute(String attributeID) {
+	public boolean hasAttribute(final String attributeID) {
 		return attributes.containsKey(attributeID);
 	}
 
-	public void setLayout(Rectangle newLayout) {
+	public void setLayout(final Rectangle newLayout) {
 		Rectangle oldLayout = getLayout();
 		layout = newLayout;
 		setAttributeValue(AttributeConstants.ATTRIBUTE_X, newLayout.x, false);
@@ -323,7 +328,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 	}
 
-	public void setLocation(Point newLocation) {
+	public void setLocation(final Point newLocation) {
 		Point oldLocation = getLocation();
 		location = newLocation;
 		setAttributeValue(AttributeConstants.ATTRIBUTE_X, newLocation.x, false);
@@ -354,11 +359,11 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		return new Dimension(width, height);
 	}
 
-	public void addChild(BControl child) {
+	public void addChild(final BControl child) {
 		addChild(child, -1);
 	}
 
-	public void addChild(BControl child, int index) {
+	public void addChild(final BControl child, final int index) {
 		child.setParent(this);
 		if (index >= 0) {
 			children.add(index, child);
@@ -375,26 +380,28 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 				null, null);
 	}
 
-	public boolean removeChild(int index) {
+	public boolean removeChild(final int index) {
 		BControl control = children.get(index);
 		return removeChild(control);
 	}
 
-	public boolean removeChild(BControl child) {
+	public boolean removeChild(final BControl child) {
 		boolean b = children.remove(child);
-		if (b)
+		if (b) {
 			firePropertyChange(BControlPropertyConstants.PROPERTY_REMOVE_CHILD,
 					child, null);
+		}
 		return b;
 	}
 
 	public List<BControl> getChildren() {
-		if (children == null)
+		if (children == null) {
 			children = new ArrayList<BControl>();
+		}
 		return children;
 	}
 
-	public void setChildrenArray(List<BControl> children) {
+	public void setChildrenArray(final List<BControl> children) {
 		this.children = children;
 	}
 
@@ -402,90 +409,97 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		return children.size() > 0;
 	}
 
-	public BControl getChild(String ID) {
+	public BControl getChild(final String ID) {
 		for (BControl bcontrol : children) {
 			String bcontrolID = bcontrol.getAttributeValue(
 					AttributeConstants.ATTRIBUTE_ID).toString();
 			if (bcontrolID != null) {
-				if (bcontrolID.equals(ID))
+				if (bcontrolID.equals(ID)) {
 					return bcontrol;
+				}
 			}
 		}
 		return null;
 	}
 
 	public List<Observer> getObservers() {
-		if (observer == null)
+		if (observer == null) {
 			observer = new ArrayList<Observer>();
+		}
 		return observer;
 	}
 
-	public void addObserver(Observer observer) {
+	public void addObserver(final Observer observer) {
 		getObservers().add(observer);
 		firePropertyChange(BControlPropertyConstants.PROPERTY_ADD_OBSERVER,
 				observer, null);
 	}
 
-	public void removeObserver(Observer observer) {
+	public void removeObserver(final Observer observer) {
 		if (getObservers().remove(observer)) {
 			firePropertyChange(
-					BControlPropertyConstants.PROPERTY_REMOVE_OBSERVER, observer, null);
+					BControlPropertyConstants.PROPERTY_REMOVE_OBSERVER,
+					observer, null);
 		}
 	}
 
 	public List<Event> getEvents() {
-		if (events == null)
+		if (events == null) {
 			events = new ArrayList<Event>();
+		}
 		return events;
 	}
-	
-	public void addEvent(Event event) {
+
+	public void addEvent(final Event event) {
 		getEvents().add(event);
 		firePropertyChange(BControlPropertyConstants.PROPERTY_ADD_EVENT, event,
 				null);
 	}
 
-	public void removeEvent(Event event) {
-		if (getEvents().remove(event))
+	public void removeEvent(final Event event) {
+		if (getEvents().remove(event)) {
 			firePropertyChange(BControlPropertyConstants.PROPERTY_REMOVE_EVENT,
 					event, null);
+		}
 	}
 
 	public Map<String, AbstractAttribute> getAttributes() {
 		return attributes;
 	}
 
-	public void setAttributes(Map<String, AbstractAttribute> attributes) {
+	public void setAttributes(final Map<String, AbstractAttribute> attributes) {
 		this.attributes = attributes;
 	}
 
-	public void setParent(BControl parent) {
+	public void setParent(final BControl parent) {
 		this.parent = parent;
 	}
 
 	public BControl getParent() {
-		return this.parent;
+		return parent;
 	}
 
 	public Visualization getVisualization() {
 		return getVisualizationRecursive(getParent());
 	}
-	
-	private Visualization getVisualizationRecursive(BControl parent) {
-		if (parent instanceof Visualization)
+
+	private Visualization getVisualizationRecursive(final BControl parent) {
+		if (parent instanceof Visualization) {
 			return (Visualization) parent;
-		else
+		} else {
 			return getVisualizationRecursive(parent.getParent());
+		}
 	}
-	
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+
+	@Override
+	public Object getAdapter(@SuppressWarnings("rawtypes") final Class adapter) {
 		if (adapter == IPropertySource.class) {
 			return new BControlPropertySource(this);
 		}
 		return null;
 	}
 
-	public boolean contains(BControl child) {
+	public boolean contains(final BControl child) {
 		return children.contains(child);
 	}
 
@@ -511,12 +525,13 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		clonedControl.setChildrenArray(new ArrayList<BControl>());
 		Iterator<BControl> it = getChildren().iterator();
 		while (it.hasNext()) {
-			BControl next = (BControl) it.next();
+			BControl next = it.next();
 			BControl childClone = next.clone();
 			CopyPasteHelper cHelper = (CopyPasteHelper) Clipboard.getDefault()
 					.getContents();
-			if (cHelper != null)
+			if (cHelper != null) {
 				cHelper.getAlreadyClonedMap().put(next, childClone);
+			}
 			clonedControl.addChild(childClone);
 		}
 
@@ -536,22 +551,25 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 
 	}
 
-	public Map<Observer, List<IEvalElement>> prepareObserver(Trace history) {
+	public Map<Observer, List<IEvalElement>> prepareObserver(final Trace history) {
 		Map<Observer, List<IEvalElement>> formulaMap = new HashMap<Observer, List<IEvalElement>>();
-		for (Observer observer : getObservers())
+		for (Observer observer : getObservers()) {
 			formulaMap.put(observer, prepareObserver(observer, history));
+		}
 		return formulaMap;
 	}
 
-	public List<IEvalElement> prepareObserver(Observer observer, Trace history) {
+	public List<IEvalElement> prepareObserver(final Observer observer,
+			final Trace history) {
 		return observer.prepareObserver(history, BControl.this);
 	}
-	
-	public void checkObserver(Trace history,
-			Map<String, EvaluationResult> results) {
 
-		for (AbstractAttribute a : getAttributes().values())
+	public void checkObserver(final Trace history,
+			final Map<String, IEvalResult> results) {
+
+		for (AbstractAttribute a : getAttributes().values()) {
 			a.restoreValue();
+		}
 
 		for (Observer observer : getObservers()) {
 			observer.check(history, BControl.this, results);
@@ -562,18 +580,20 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		// state!!!
 		for (String con : getSourceConnections().getConnections()) {
 			BConnection connection = visualization.getConnection(con);
-			if (connection != null)
+			if (connection != null) {
 				connection.checkObserver(history, results);
+			}
 		}
 		for (String con : getTargetConnections().getConnections()) {
 			BConnection connection = visualization.getConnection(con);
-			if (connection != null)
+			if (connection != null) {
 				connection.checkObserver(history, results);
+			}
 		}
 
 	}
-	
-	public void afterCheckObserver(Trace history) {
+
+	public void afterCheckObserver(final Trace history) {
 		for (Observer observer : getObservers()) {
 			observer.afterCheck(history, BControl.this);
 		}
@@ -583,27 +603,30 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		// state!!!
 		for (String con : getSourceConnections().getConnections()) {
 			BConnection connection = visualization.getConnection(con);
-			if (connection != null)
+			if (connection != null) {
 				connection.afterCheckObserver(history);
+			}
 		}
 		for (String con : getTargetConnections().getConnections()) {
 			BConnection connection = visualization.getConnection(con);
-			if (connection != null)
+			if (connection != null) {
 				connection.afterCheckObserver(history);
+			}
 		}
 	}
 
-	public void executeEvent(Trace history, String event) {
+	public void executeEvent(final Trace history, final String event) {
 		if (hasAttribute(AttributeConstants.ATTRIBUTE_ENABLED)) {
-			if (!(Boolean) getAttributeValue(AttributeConstants.ATTRIBUTE_ENABLED))
+			if (!(Boolean) getAttributeValue(AttributeConstants.ATTRIBUTE_ENABLED)) {
 				return;
+			}
 		}
 		for (Event e : getEvents()) {
 			e.execute(history, this);
 		}
 	}
 
-	public void setVerticalGuide(BMotionGuide verticalGuide) {
+	public void setVerticalGuide(final BMotionGuide verticalGuide) {
 		this.verticalGuide = verticalGuide;
 	}
 
@@ -611,7 +634,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 		return verticalGuide;
 	}
 
-	public void setHorizontalGuide(BMotionGuide horizontalGuide) {
+	public void setHorizontalGuide(final BMotionGuide horizontalGuide) {
 		this.horizontalGuide = horizontalGuide;
 	}
 
@@ -640,11 +663,13 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 	 */
 	public List<BConnection> getSourceConnectionInstances() {
 		List<BConnection> connectionInstanceList = new ArrayList<BConnection>();
-		List<String> sourceConnections = getSourceConnections().getConnections();
+		List<String> sourceConnections = getSourceConnections()
+				.getConnections();
 		for (String con : sourceConnections) {
 			BConnection connection = getVisualization().getConnection(con);
-			if (connection != null)
+			if (connection != null) {
 				connectionInstanceList.add(connection);
+			}
 		}
 		return connectionInstanceList;
 	}
@@ -654,30 +679,31 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 	 */
 	public List<BConnection> getTargetConnectionInstances() {
 		List<BConnection> connectionInstanceList = new ArrayList<BConnection>();
-		List<String> targetConnections = getTargetConnections().getConnections();
+		List<String> targetConnections = getTargetConnections()
+				.getConnections();
 		for (String con : targetConnections) {
 			BConnection connection = getVisualization().getConnection(con);
-			if (connection != null)
+			if (connection != null) {
 				connectionInstanceList.add(connection);
+			}
 		}
 		return connectionInstanceList;
 	}
 
-	
 	public boolean hasConnections() {
 		return !getTargetConnections().getConnections().isEmpty()
 				|| !getSourceConnections().getConnections().isEmpty();
 	}
 
-	public void setObservers(List<Observer> observers) {
-		this.observer = observers;
+	public void setObservers(final List<Observer> observers) {
+		observer = observers;
 	}
 
-	public void setEvents(List<Event> events) {
+	public void setEvents(final List<Event> events) {
 		this.events = events;
 	}
 
-	protected void initAttribute(AbstractAttribute atr) {
+	protected void initAttribute(final AbstractAttribute atr) {
 
 		AbstractAttribute oldAtr = getAttribute(atr.getID());
 
@@ -687,7 +713,7 @@ public abstract class BControl extends PropertyChangeSupportObject implements
 			atr.setValue(oldAtr.getValue());
 			atr.setDefaultValue(oldAtr.getDefaultValue());
 		}
-		
+
 		getAttributes().put(atr.getID(), atr);
 
 	}

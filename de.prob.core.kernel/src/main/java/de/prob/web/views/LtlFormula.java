@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import de.be4.ltl.core.parser.LtlParseException;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.domainobjects.LTL;
+import de.prob.animator.domainobjects.LtlCheckingResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateId;
@@ -76,7 +77,7 @@ public class LtlFormula extends AbstractSession implements
 		EvaluationCommand lcc = formula.getCommand(stateid);
 		animations.getCurrentTrace().getStateSpace().execute(lcc);
 
-		String result = lcc.getValues().get(0).getValue();
+		String result = ((LtlCheckingResult) lcc.getValues().get(0)).getValue();
 		tuple.setStatus(result);
 		cache.get(formula).put(stateid, result);
 

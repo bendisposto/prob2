@@ -1,20 +1,61 @@
 li {
-    list-style-type: none;
+	list-style-type: none;
 }
 
 .component {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 .heading {
-    font-style: italic;
-}
-
-span {
-    display: inline-block;
-    width: 300px;
+	font-style: italic;
 }
 
 .changed {
-    font-weight: bold;
+	font-weight: bold;
+}
+
+.no-indent {
+	padding-left: 0px;
+}
+
+.small-indent {
+	padding-left: 20px;
+}
+
+.CodeMirror {
+	border: 1px solid #000;
+	background: #eee;
+	height: auto;
+	font-family: monospace;
+	min-height: 20px;
+}
+
+.CodeMirror-wrap {
+	min-height: 20px;
+}
+
+.CodeMirror-hscrollbar {
+	display: none;
+}
+
+.CodeMirror-scroll {
+	overflow-y: hidden;
+	overflow-x: hidden;
+}
+
+.question {
+	font-style: italic;
+	color: gray;
+}
+
+.response {
+	font-weight: bold;
+}
+
+
+.outbox {
+	margin-bottom: 6px;
+	background-color: #f3f6ff;
+	padding-left: 5px;
+	font-family: monospace;
 }

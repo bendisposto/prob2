@@ -5,15 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.AsyncContext;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvaluationResult;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.eventb.Context;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
@@ -28,6 +31,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.unicode.UnicodeTranslator;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -56,6 +60,13 @@ public class StateInspector extends AbstractSession implements
 					"components", WebUtils.toJson(extracted), "values",
 					WebUtils.toJson(values)));
 		}
+	}
+
+	public Object evaluate(final Map<String, String[]> params) {
+		String code = params.get("code")[0];
+		Object eval = currentTrace.getCurrentState().eval(new ClassicalB(code));
+		return WebUtils.wrap("cmd", "StateInspector.result", "code", code,
+				"result", eval.toString());
 	}
 
 	@Override
@@ -98,19 +109,28 @@ public class StateInspector extends AbstractSession implements
 	public Object calculateFormulas(final Trace t) {
 		List<Object> extracted = new ArrayList<Object>();
 		StateSpace s = t.getStateSpace();
-		Map<IEvalElement, IEvaluationResult> current = s.valuesAt(t
-				.getCurrentState());
-		Map<IEvalElement, IEvaluationResult> previous = s.valuesAt(t
-				.getCurrent().getSrc());
+		Map<IEvalElement, IEvalResult> current = s
+				.valuesAt(t.getCurrentState());
+		Map<IEvalElement, IEvalResult> previous = s.valuesAt(t.getCurrent()
+				.getSrc());
 
 		for (IEvalElement e : formulasForEvaluating) {
-			extracted.add(WebUtils.wrap("id", e.getFormulaId().uuid, "code", e
-					.getCode(), "current", current.get(e) == null ? ""
-					: current.get(e).getValue(), "previous",
-					previous.get(e) == null ? "" : previous.get(e).getValue()));
+			String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current
+					.get(e)).getValue()) : "";
+			String previousVal = previous.get(e) instanceof EvalResult ? unicode(((EvalResult) previous
+					.get(e)).getValue()) : "";
+			extracted.add(WebUtils.wrap("id", e.getFormulaId().uuid, "code",
+					unicode(e.getCode()), "current",
+					current.get(e) == null ? "" : unicode(currentVal),
+					"previous", previous.get(e) == null ? ""
+							: unicode(previousVal)));
 		}
 
 		return extracted;
+	}
+
+	private String unicode(final String code) {
+		return StringEscapeUtils.escapeHtml(UnicodeTranslator.toUnicode(code));
 	}
 
 	private void registerFormulas(final AbstractModel model) {
@@ -131,11 +151,12 @@ public class StateInspector extends AbstractSession implements
 		formulasForEvaluating = new ArrayList<IEvalElement>();
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> components = new ArrayList<Object>();
-
-		for (Entry<String, AbstractElement> e : m.getComponents().entrySet()) {
-			components.add(extractComponent(e.getKey(), e.getValue()));
+		Map<String, AbstractElement> modelComponents = m.getComponents();
+		if (modelComponents != null) {
+			for (Entry<String, AbstractElement> e : modelComponents.entrySet()) {
+				components.add(extractComponent(e.getKey(), e.getValue()));
+			}
 		}
-
 		extracted.put("components", components);
 		return extracted;
 	}
@@ -161,12 +182,13 @@ public class StateInspector extends AbstractSession implements
 			final Class<? extends AbstractElement> c) {
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> kids = new ArrayList<Object>();
-		Set<? extends AbstractElement> children = parent.getChildrenOfType(c);
+		List<? extends AbstractElement> children = parent.getChildrenOfType(c);
 		for (AbstractElement abstractElement : children) {
 			if (abstractElement instanceof IEval) {
 				IEvalElement formula = ((IEval) abstractElement).getEvaluate();
 				Map<String, String> wrap = WebUtils.wrap("code",
-						formula.getCode(), "id", formula.getFormulaId().uuid);
+						unicode(formula.getCode()), "id",
+						formula.getFormulaId().uuid);
 				kids.add(wrap);
 				formulasForEvaluating.add(formula);
 			}

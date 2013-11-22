@@ -7,9 +7,9 @@ import com.google.gson.Gson
 import de.prob.Main
 import de.prob.animator.command.EvaluateFormulasCommand
 import de.prob.animator.command.EvaluationCommand
+import de.prob.model.representation.CSPModel
 import de.prob.model.representation.FormulaUUID
 import de.prob.prolog.output.IPrologTermOutput
-import de.prob.scripting.CSPModel
 import de.prob.statespace.StateId
 
 /**

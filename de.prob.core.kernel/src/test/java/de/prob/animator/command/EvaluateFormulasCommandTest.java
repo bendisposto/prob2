@@ -13,11 +13,13 @@ import java.util.List;
 import org.junit.Test;
 
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvaluationResult;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
+import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -68,19 +70,22 @@ public class EvaluateFormulasCommandTest {
 				evalElements, "root");
 		command.processResult(map);
 
-		List<IEvaluationResult> vals = command.getValues();
+		List<IEvalResult> vals = command.getValues();
 
 		assertEquals(vals.size(), 4);
 
-		assertEquals(vals.get(0).getValue(), "true");
-		assertEquals(vals.get(1).getValue(), "false");
-		assertEquals(vals.get(2).getValue(), "true");
-		assertEquals(vals.get(3).getValue(), "false");
+		assertEquals(((EvalResult) vals.get(0)).getValue(), "true");
+		assertEquals(((EvalResult) vals.get(1)).getValue(), "false");
+		assertEquals(((EvalResult) vals.get(2)).getValue(), "true");
+		assertEquals(((EvalResult) vals.get(3)).getValue(), "false");
 	}
 
 	private CompoundPrologTerm mk_result(final String r) {
 		return new CompoundPrologTerm("result", new CompoundPrologTerm(r),
-				new CompoundPrologTerm(""), new CompoundPrologTerm("foo"));
+				new ListPrologTerm(new CompoundPrologTerm("bind",
+						new CompoundPrologTerm("a"), new CompoundPrologTerm(
+								"int", new IntegerPrologTerm(3)))),
+				new CompoundPrologTerm("foo"));
 	}
 
 }

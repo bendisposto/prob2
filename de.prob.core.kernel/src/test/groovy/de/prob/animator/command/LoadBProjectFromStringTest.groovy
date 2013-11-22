@@ -3,9 +3,6 @@ package de.prob.animator.command
 import static org.junit.Assert.*
 import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
-
-import java.util.Collection
-
 import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.node.Start
@@ -47,13 +44,13 @@ class LoadBProjectFromStringTest  extends Specification {
 		Collection<PrologTerm> sentences = prologTermOutput.getSentences();
 		PrologTerm next = sentences.iterator().next();
 		CompoundPrologTerm t = (CompoundPrologTerm) next;
-		PrologTerm argument = t.getArgument(1);
+		PrologTerm argument = t.getArgument(2);
 
 		expect:
 		next != null
 		next instanceof CompoundPrologTerm == true
-		"load_classical_b" == t.getFunctor()
-		1 == t.getArity()
+		"load_classical_b_from_list_of_facts" == t.getFunctor()
+		2 == t.getArity()
 		argument.isList() == true
 	}
 
