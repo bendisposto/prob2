@@ -11,7 +11,7 @@ Events = (function() {
             'Enter' : function(cm) {
                 hp = null;
                 var code = cm.getValue();
-                console.log("submit: '" + code + "'")
+//                console.log("submit: '" + code + "'")
                 session.sendCmd("executeEvent", {
                     "event" : code
                 })
@@ -21,7 +21,7 @@ Events = (function() {
             },
             'Up' : function(cm) {
                 if (cm.getCursor().line == 0) {
-                    console.log("History up")
+//                    console.log("History up")
                     if (hp == null) {
                         hp = history.length;
                     }
@@ -41,7 +41,7 @@ Events = (function() {
             'Down' : function(cm) {
                 var cnt = cm.doc.lineCount();
                 if (cm.getCursor().line == cnt - 1) {
-                    console.log("History down")
+//                    console.log("History down")
                     if (hp != null) {
                         if (hp < history.length - 1) {
                             hp++
@@ -203,7 +203,7 @@ Events = (function() {
         $(".enabled").click(function(e) {
             var id = e.currentTarget.id
             id = id.substring(2,id.length)
-            console.log(id)
+//            console.log(id)
             session.sendCmd("execute", {
                 "id" : id,
                 "client" : extern.client
