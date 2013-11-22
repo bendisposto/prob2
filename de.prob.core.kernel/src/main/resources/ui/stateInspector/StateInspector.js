@@ -16,7 +16,7 @@ StateInspector = (function() {
 			'Enter' : function(cm) {
 				hp = null;
 				var code = cm.getValue();
-				console.log("submit: '" + code + "'")
+//				console.log("submit: '" + code + "'")
 				session.sendCmd("evaluate", {
 					"code" : code
 				})
@@ -26,7 +26,7 @@ StateInspector = (function() {
 			},
 			'Up' : function(cm) {
 				if (cm.getCursor().line == 0) {
-					console.log("History up")
+//					console.log("History up")
 					if (hp == null) {
 						hp = history.length;
 					}
@@ -46,7 +46,7 @@ StateInspector = (function() {
 			'Down' : function(cm) {
 				var cnt = cm.doc.lineCount();
 				if (cm.getCursor().line == cnt - 1) {
-					console.log("History down")
+//					console.log("History down")
 					if (hp != null) {
 						if (hp < history.length - 1) {
 							hp++
