@@ -66,7 +66,7 @@ bms = (function() {
 
 	function renderVisualization(observer,data) {
 		checkObserver(observer,data)
-		extern.doStep(data)
+		extern.stateChange(data)
 	}
 	
 	function checkObserver(observer,data) {
@@ -198,7 +198,6 @@ bms = (function() {
 	}
 	
 	extern.reloadTemplate = function(data) {
-		extern.initTemplate(JSON.parse(data.data))
 		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
 	}
 
@@ -206,10 +205,7 @@ bms = (function() {
 		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
 	}
 	
-	extern.doStep = function(data) {
-	}
-	
-	extern.initTemplate = function(data) {
+	extern.stateChange = function(data) {
 	}
 	
 	extern.translateValue = function(val) {
