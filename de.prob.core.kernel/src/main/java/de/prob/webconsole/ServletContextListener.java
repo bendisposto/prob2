@@ -21,7 +21,7 @@ import de.prob.MainModule;
 public class ServletContextListener extends GuiceServletContextListener {
 
 	public static final Injector INJECTOR = Guice.createInjector(
-			Stage.DEVELOPMENT, new MainModule());
+			Stage.PRODUCTION, new MainModule());
 
 	@Override
 	protected Injector getInjector() {
