@@ -3,6 +3,7 @@ package de.prob.animator.command
 import static org.junit.Assert.*
 import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
+import spock.lang.Ignore
 import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.node.Start
@@ -36,6 +37,7 @@ class LoadBProjectFromStringTest  extends Specification {
 		c.parseString(testmachine, new BParser()) instanceof Start == true
 	}
 
+	@Ignore
 	def "test write command"() {
 		setup:
 		def prologTermOutput = new StructuredPrologOutput();
