@@ -229,7 +229,7 @@ FormulaView = (function() {
                         }
                         return "t"+ root.id + rootName.indexOf(d) ;
                     });
-            console.log(textW);
+//            console.log(textW);
 
             rootNode.append("svg:text")
                 .attr("class","value")

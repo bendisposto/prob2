@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
@@ -28,8 +28,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -38,7 +36,6 @@ import de.prob.annotations.Sessions;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
 import de.prob.web.ISession;
-import de.prob.web.ReflectionServlet;
 import de.prob.web.WebUtils;
 import de.prob.web.data.SessionResult;
 import de.prob.webconsole.ServletContextListener;
@@ -48,10 +45,6 @@ import de.prob.webconsole.ServletContextListener;
 public class BMotionStudioServlet extends HttpServlet {
 
 	private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB
-	
-	public static final String URL_PATTERN = "/sessions/";
-
-	Logger logger = LoggerFactory.getLogger(ReflectionServlet.class);
 
 	private final Map<String, ISession> sessions;
 	private final ExecutorService taskExecutor = Executors
@@ -62,138 +55,178 @@ public class BMotionStudioServlet extends HttpServlet {
 	private AnimationSelector selector;
 	
 	@Inject
-	public BMotionStudioServlet(AnimationSelector selector, @Sessions Map<String, ISession> sessions) {
+	public BMotionStudioServlet(AnimationSelector selector,
+			@Sessions Map<String, ISession> sessions) {
 		this.selector = selector;
 		this.sessions = sessions;
 	}
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		
-		Trace currentTrace = this.selector.getCurrentTrace();
+	private void update(HttpServletRequest req, BMotionStudioSession bmsSession) {
+		int lastinfo = Integer.parseInt(req.getParameter("lastinfo"));
+		String client = req.getParameter("client");
+		bmsSession.sendPendingUpdates(client, lastinfo, req.startAsync());
+	}
 
-		if(currentTrace == null)
-			return;
-		
-		String modelFolderPath = currentTrace.getModel().getModelFile()
-				.getParent();
-		
-		String uri = req.getRequestURI();
-				
-		String requestPath = uri.replace("/bms/", "");
+	private void executeCommand(HttpServletRequest req, HttpServletResponse resp,
+			BMotionStudioSession bmsSession) throws IOException {
+		Map<String, String[]> parameterMap = req.getParameterMap();
+		Callable<SessionResult> command = bmsSession.command(parameterMap);
+		PrintWriter writer = resp.getWriter();
+		writer.write("submitted");
+		writer.flush();
+		writer.close();
+		submit(command);
+	}
 
-		logger.trace("Request URI " + uri);		
-		List<String> parts = new PartList(uri.split("/"));
-		String session = parts.get(2);
-
-		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
-				.get(session);
+	private void delegateFileRequest(HttpServletRequest req,
+			HttpServletResponse resp, BMotionStudioSession bmsSession) {
 		
-		if (bmsSession == null) {
+		String sessionId = bmsSession.getSessionUUID().toString();
+		String templateFullPath = bmsSession.getTemplate();
 
-			BMotionStudioSession obj = ServletContextListener.INJECTOR
-					.getInstance(BMotionStudioSession.class);
-			String id = obj.getSessionUUID().toString();
-			sessions.put(id, obj);
-			resp.sendRedirect("/bms/" + id + "/" + requestPath);
+		// If no template exists show BMotionStudio base HTML page
+		if (templateFullPath == null) {
+
+			String baseHtml = getBaseHtml(bmsSession);
+			toOutput(resp, new ByteArrayInputStream(baseHtml.getBytes()));
 			return;
 
-		} else if (isUUID(session)) {
+		} else { // Else handle template/file requests ...
+		
+			String fileRequest = req.getRequestURI().replace(
+					"/bms/" + sessionId + "/", "");
+			List<String> parts = new PartList(templateFullPath.split("/"));
+			String templateFile = parts.get(parts.size() - 1);
+			String workspacePath = templateFullPath.replace(templateFile, "");
+			if (fileRequest.isEmpty())
+				fileRequest = templateFile;
+			String fullRequestPath = workspacePath + fileRequest;
+			
+			InputStream stream = null;
+			try {
+				stream = new FileInputStream(fullRequestPath);
+			} catch (FileNotFoundException e1) {
+				// TODO Handle file not found exception!!!
+				e1.printStackTrace();
+				return;
+			}
 
-			requestPath = uri.replace("/bms/" + session + "/", "");
+			// Set correct mimeType
+			String mimeType = getServletContext().getMimeType(fullRequestPath);
+			resp.setContentType(mimeType);
 
-			String mode = req.getParameter("mode");
-			Map<String, String[]> parameterMap = req.getParameterMap();
-			if ("update".equals(mode)) {
-				int lastinfo = Integer.parseInt(req.getParameter("lastinfo"));
-				String client = req.getParameter("client");
-				bmsSession.sendPendingUpdates(client, lastinfo,
-						req.startAsync());
-			} else if ("command".equals(mode)) {
-				Callable<SessionResult> command = bmsSession
-						.command(parameterMap);
-				send(resp, "submitted");
-				submit(command);
-			} else {
-				
-				InputStream stream = null;
+			// Ugly ...
+			if (fullRequestPath.endsWith(".html")) {
 
-				// No request, show base HTML page
-				if (requestPath.isEmpty()) {
+				bmsSession.setTemplate(templateFullPath);
 
-					String baseHtml = getBaseHtml(modelFolderPath);
-					stream = new ByteArrayInputStream(baseHtml.getBytes());
-					toOutput(resp, stream);
-					return;
+				String templateHtml = WebUtils.render(fullRequestPath);
+				String baseHtml = getBaseHtml(bmsSession);
 
-				} else {
+				Document templateDocument = Jsoup.parse(templateHtml);
+				Elements headTag = templateDocument.getElementsByTag("head");
 
-					String fullRequestPath = modelFolderPath + "/"
-							+ requestPath;
-					
-					stream = new FileInputStream(fullRequestPath);
+				String head = headTag.html();
+				Elements bodyTag = templateDocument.getElementsByTag("body");
+				String body = bodyTag.html();
+				Document baseDocument = Jsoup.parse(baseHtml);
 
-					// Set correct mimeType
-					String mimeType = getServletContext().getMimeType(
-							fullRequestPath);
-					resp.setContentType(mimeType);
+				Elements headTag2 = baseDocument.getElementsByTag("head");
+				Element bodyTag2 = baseDocument.getElementById("vis_container");
+				bodyTag2.append(body);
 
-					// Ugly ...
-					if (fullRequestPath.endsWith(".html")) {
+				headTag2.append(head);
 
-						bmsSession.setTemplate(fullRequestPath);
-
-						String templateHtml = WebUtils.render(fullRequestPath);
-						String baseHtml = getBaseHtml(modelFolderPath);
-
-						Document templateDocument = Jsoup.parse(templateHtml);
-						Elements headTag = templateDocument
-								.getElementsByTag("head");
-
-						String head = headTag.html();
-						Elements bodyTag = templateDocument
-								.getElementsByTag("body");
-						String body = bodyTag.html();
-						Document baseDocument = Jsoup.parse(baseHtml);
-
-						Elements headTag2 = baseDocument
-								.getElementsByTag("head");
-						Element bodyTag2 = baseDocument
-								.getElementById("vis_container");
-						bodyTag2.append(body);
-
-						headTag2.append(head);
-
-						// Workaround, since jsoup renames svg image tags to img
-						// tags ...
-						Elements svgElements = baseDocument
-								.getElementsByTag("svg");
-						for (Element e : svgElements) {
-							Elements imgTags = e.getElementsByTag("img");
-							imgTags.tagName("image");
-						}
-						stream = new ByteArrayInputStream(baseDocument.html()
-								.getBytes());
-
-					}
-
+				// Workaround, since jsoup renames svg image tags to img
+				// tags ...
+				Elements svgElements = baseDocument.getElementsByTag("svg");
+				for (Element e : svgElements) {
+					Elements imgTags = e.getElementsByTag("img");
+					imgTags.tagName("image");
 				}
-
-				toOutput(resp, stream);
+				stream = new ByteArrayInputStream(baseDocument.html()
+						.getBytes());
 
 			}
+
+			toOutput(resp, stream);
 
 		}
 
 	}
 	
-	private void toOutput(HttpServletResponse resp, InputStream stream) {
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 
+		Trace currentTrace = this.selector.getCurrentTrace();
+		
+		// No running animation ...
+		if (currentTrace == null) {
+			// TODO: Display a page with a proper message
+			return;
+		}
+
+		// Check if an existing session is request
+		String uri = req.getRequestURI();
+		List<String> parts = new PartList(uri.split("/"));
+		String sessionID = parts.get(2);
+		
+		// Try to get BMotion Studio session
+		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
+				.get(sessionID);
+		
+		// If no session exists yet ...
+		if (bmsSession == null) {
+
+			// Get a new BMotionStudioSession
+			bmsSession = ServletContextListener.INJECTOR
+					.getInstance(BMotionStudioSession.class);
+			String id = bmsSession.getSessionUUID().toString();
+			// Register sessions
+			sessions.put(id, bmsSession);
+
+			String redirect;
+
+			String template = req.getParameter("template");
+			// New template requested via parameter
+			if (template != null) {
+				bmsSession.setTemplate(template);
+				String templateFullPath = bmsSession.getTemplate();
+				List<String> templateParts = new PartList(
+						templateFullPath.split("/"));
+				String templateFile = templateParts
+						.get(templateParts.size() - 1);
+				// Send redirect with new session id and template file
+				redirect = "/bms/" + id + "/" + templateFile;
+			} else {
+				// Send redirect only with new session id (we have still no
+				// template)
+				redirect = "/bms/" + id;
+			}
+
+			resp.sendRedirect(redirect);
+			return;
+
+		} else {
+			
+			String mode = req.getParameter("mode");
+			if ("update".equals(mode)) {
+				update(req, bmsSession);
+			} else if ("command".equals(mode)) {
+				executeCommand(req, resp, bmsSession);
+			} else {
+				delegateFileRequest(req, resp, bmsSession);
+			}
+			
+		}
+
+	}
+
+	private void toOutput(HttpServletResponse resp, InputStream stream) {
 		// Prepare streams.
 		BufferedInputStream input = null;
 		BufferedOutputStream output = null;
-
 		try {
 			// Open streams.
 			input = new BufferedInputStream(stream, DEFAULT_BUFFER_SIZE);
@@ -213,19 +246,11 @@ public class BMotionStudioServlet extends HttpServlet {
 			close(output);
 			close(input);
 		}
+	}
 
-	}
-	
-	private void send(HttpServletResponse resp, String html) throws IOException {
-		PrintWriter writer = resp.getWriter();
-		writer.write(html);
-		writer.flush();
-		writer.close();
-	}
-	
-	private String getBaseHtml(String workspacePath) {
-		Object scope = WebUtils.wrap("clientid", UUID.randomUUID().toString(),
-				"workspace", workspacePath);
+	private String getBaseHtml(BMotionStudioSession bmsSession) {
+		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
+				.toString());
 		return WebUtils.render("/ui/bmsview/index.html", scope);
 	}
 
@@ -243,18 +268,6 @@ public class BMotionStudioServlet extends HttpServlet {
 
 	public void submit(Callable<SessionResult> command) {
 		taskCompletionService.submit(command);
-	}
-
-	private boolean isUUID(String arg) {
-		if (arg == null)
-			return false;
-		try {
-			UUID.fromString(arg);
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
-
 	}
 
 	private class PartList extends ArrayList<String> {
@@ -275,5 +288,4 @@ public class BMotionStudioServlet extends HttpServlet {
 
 	}
 
-	
 }

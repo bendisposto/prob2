@@ -63,10 +63,8 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	public Object setTemplate(final Map<String, String[]> params) {
 		String fullTemplatePath = params.get("path")[0];
-		String modelFolderPath = this.selector.getCurrentTrace().getModel()
-				.getModelFile().getParent();
-		String requestPath = fullTemplatePath.replace(modelFolderPath, "");
-		submit(WebUtils.wrap("cmd", "bms.setTemplate", "request", requestPath));
+		submit(WebUtils.wrap("cmd", "bms.setTemplate", "request",
+				fullTemplatePath));
 		return null;
 	}
 

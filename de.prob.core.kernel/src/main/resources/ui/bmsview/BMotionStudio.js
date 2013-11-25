@@ -66,7 +66,7 @@ bms = (function() {
 
 	function renderVisualization(observer,data) {
 		checkObserver(observer,data)
-		extern.doStep(data)
+		extern.stateChange(data)
 	}
 	
 	function checkObserver(observer,data) {
@@ -83,7 +83,6 @@ bms = (function() {
 
 	extern.client = ""
 	extern.observer = null;
-	extern.workspace = "";
 	extern.init = session.init
 	extern.session = session
 
@@ -117,8 +116,7 @@ bms = (function() {
 	function request_files(d) {
 		var s;
 		$.ajax({
-			url : "/files?path=" + d + "&extensions=bms&workspace="
-					+ extern.workspace,
+			url : "/files?path=" + d + "&extensions=bms",
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -134,8 +132,7 @@ bms = (function() {
 	function check_file(d) {
 		var s;
 		$.ajax({
-			url : "/files?check=true&path=" + d + "&extensions=bms&workspace="
-					+ extern.workspace,
+			url : "/files?check=true&path=" + d + "&extensions=bms",
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -184,13 +181,6 @@ bms = (function() {
 		$("#filedialog").modal('hide')
 	}
 
-	function resizeIframe() {
-		var newIframeHeight = $("#iframeVisualization").contents().find("html")
-				.height()
-				+ 'px';
-		$('#iframeVisualization').css("height", newIframeHeight);
-	}
-
 	extern.browse = browse
 	extern.fb_select_dir = fb_select_dir
 	extern.fb_select_file = fb_select_file
@@ -204,11 +194,10 @@ bms = (function() {
 	}
 
 	extern.setTemplate = function(data) {
-		window.location = "/bms" + data.request;
+		window.location = "/bms/?template=" + data.request;
 	}
 	
 	extern.reloadTemplate = function(data) {
-		extern.initTemplate(JSON.parse(data.data))
 		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
 	}
 
@@ -216,10 +205,7 @@ bms = (function() {
 		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
 	}
 	
-	extern.doStep = function(data) {
-	}
-	
-	extern.initTemplate = function(data) {
+	extern.stateChange = function(data) {
 	}
 	
 	extern.translateValue = function(val) {

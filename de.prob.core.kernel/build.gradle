@@ -44,7 +44,7 @@ def parser_version = '2.4.20-SNAPSHOT'
 
 dependencies {
 
- 	groovy 'org.codehaus.groovy:groovy-all:2.0.5'
+ 	// groovy 'org.codehaus.groovy:groovy-all:2.0.5'
 
 	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
@@ -83,6 +83,8 @@ dependencies {
 
 	compile 'org.antlr:antlr4-runtime:4.0'
 	compile 'de.prob:ltl-dsl:1.0.0'
+	
+	compile 'org.jsoup:jsoup:1.7.2' // MIT
 
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "bparser", version: parser_version , changing: true

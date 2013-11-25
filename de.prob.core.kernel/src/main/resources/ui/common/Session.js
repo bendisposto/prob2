@@ -15,7 +15,7 @@ function Session() {
 	function sendCmd(s, data) {
 		data.mode = 'command'
 		data.cmd = s
-		console.log("Send:", data)
+//		console.log("Send:", data)
 		$.ajax({
 			async : false,
 			cache: false,
@@ -76,7 +76,7 @@ function Session() {
 					success : function(data) {
 						if (data != "") {
 							dx = JSON.parse(data);
-							console.log("DATA:", dx)
+//							console.log("DATA:", dx)
 							dobjs = dx.content
 							current = dx.id
 							if (!(Object.prototype.toString.call(dobjs) === "[object Array]")) {
@@ -84,7 +84,7 @@ function Session() {
 							}
 							for (i in dobjs) {
 								var dobj = dobjs[i]
-								console.log("Eval:", dobj)
+//								console.log("Eval:", dobj)
 								eval(dobj.cmd)(dobj)
 							}
 						}
@@ -101,7 +101,7 @@ function Session() {
 			'lastinfo' : current,
 			'client' : client
 		};
-		console.log("Requesting " + data.lastinfo)
+//		console.log("Requesting " + data.lastinfo)
 		$.ajax({
 					data : data,
 					cache: false,
@@ -109,7 +109,7 @@ function Session() {
 
 						if (data != "") {
 							dx = JSON.parse(data);
-							console.log("DATA:", dx)
+//							console.log("DATA:", dx)
 							dobjs = dx.content
 							current = dx.id
 							if (!(Object.prototype.toString.call(dobjs) === "[object Array]")) {
@@ -117,7 +117,7 @@ function Session() {
 							}
 							for (i in dobjs) {
 								var dobj = dobjs[i]
-								console.log("Eval:", dobj)
+//								console.log("Eval:", dobj)
 								eval(dobj.cmd)(dobj)
 							}
 						}
@@ -131,7 +131,7 @@ function Session() {
 
 	extern.init = function(client) {
 		setInterval(poll, poll_interval);
-		console.log("init")
+//		console.log("init")
 	};
 
 	extern.sendCmd = sendCmd;
