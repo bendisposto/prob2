@@ -1,3 +1,10 @@
+if (!window.console) {
+	window.console = {
+		log : function() {
+		}
+	};
+} // Thank you Internet Explorer
+
 function Session() {
 	var extern = {}
 
