@@ -53,7 +53,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			taskExecutor);
 
 	private AnimationSelector selector;
-	
+
 	@Inject
 	public BMotionStudioServlet(AnimationSelector selector,
 			@Sessions Map<String, ISession> sessions) {
@@ -67,8 +67,9 @@ public class BMotionStudioServlet extends HttpServlet {
 		bmsSession.sendPendingUpdates(client, lastinfo, req.startAsync());
 	}
 
-	private void executeCommand(HttpServletRequest req, HttpServletResponse resp,
-			BMotionStudioSession bmsSession) throws IOException {
+	private void executeCommand(HttpServletRequest req,
+			HttpServletResponse resp, BMotionStudioSession bmsSession)
+			throws IOException {
 		Map<String, String[]> parameterMap = req.getParameterMap();
 		Callable<SessionResult> command = bmsSession.command(parameterMap);
 		PrintWriter writer = resp.getWriter();
@@ -80,7 +81,7 @@ public class BMotionStudioServlet extends HttpServlet {
 
 	private void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, BMotionStudioSession bmsSession) {
-		
+
 		String sessionId = bmsSession.getSessionUUID().toString();
 		String templateFullPath = bmsSession.getTemplate();
 
@@ -92,7 +93,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			return;
 
 		} else { // Else handle template/file requests ...
-		
+
 			String fileRequest = req.getRequestURI().replace(
 					"/bms/" + sessionId + "/", "");
 			List<String> parts = new PartList(templateFullPath.split("/"));
@@ -101,7 +102,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			if (fileRequest.isEmpty())
 				fileRequest = templateFile;
 			String fullRequestPath = workspacePath + fileRequest;
-			
+
 			InputStream stream = null;
 			try {
 				stream = new FileInputStream(fullRequestPath);
@@ -154,13 +155,13 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 
 	}
-	
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
 		Trace currentTrace = this.selector.getCurrentTrace();
-		
+
 		// No running animation ...
 		if (currentTrace == null) {
 			// TODO: Display a page with a proper message
@@ -171,11 +172,11 @@ public class BMotionStudioServlet extends HttpServlet {
 		String uri = req.getRequestURI();
 		List<String> parts = new PartList(uri.split("/"));
 		String sessionID = parts.get(2);
-		
+
 		// Try to get BMotion Studio session
 		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
 				.get(sessionID);
-		
+
 		// If no session exists yet ...
 		if (bmsSession == null) {
 
@@ -209,7 +210,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			return;
 
 		} else {
-			
+
 			String mode = req.getParameter("mode");
 			if ("update".equals(mode)) {
 				update(req, bmsSession);
@@ -218,7 +219,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			} else {
 				delegateFileRequest(req, resp, bmsSession);
 			}
-			
+
 		}
 
 	}
@@ -251,7 +252,7 @@ public class BMotionStudioServlet extends HttpServlet {
 	private String getBaseHtml(BMotionStudioSession bmsSession) {
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
 				.toString());
-		return WebUtils.render("/ui/bmsview/index.html", scope);
+		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 
 	private void close(Closeable resource) {
