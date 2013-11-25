@@ -126,8 +126,6 @@ public class Main {
 			}
 		});
 		System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
-		System.setProperty("PROB_LOGFILE", PROB_HOME + "logs" + separator
-				+ "ProB.txt");
 
 		Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
 
