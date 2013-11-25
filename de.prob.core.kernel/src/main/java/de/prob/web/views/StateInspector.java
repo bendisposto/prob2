@@ -121,9 +121,8 @@ public class StateInspector extends AbstractSession implements
 					.get(e)).getValue()) : "";
 			extracted.add(WebUtils.wrap("id", e.getFormulaId().uuid, "code",
 					unicode(e.getCode()), "current",
-					current.get(e) == null ? "" : unicode(currentVal),
-					"previous", previous.get(e) == null ? ""
-							: unicode(previousVal)));
+					current.get(e) == null ? "" : currentVal, "previous",
+					previous.get(e) == null ? "" : previousVal));
 		}
 
 		return extracted;
