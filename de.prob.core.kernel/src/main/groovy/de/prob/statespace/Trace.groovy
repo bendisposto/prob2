@@ -41,7 +41,7 @@ class Trace {
 		def ops = head.getOpList()
 		ops.each {
 			if (stateSpace.canBeEvaluated(stateSpace.getVertex(it.dest))) {
-				cmds << f.getCommand(it.dest)
+				cmds << f.getCommand(stateSpace.getVertex(it.dest))
 			}
 		}
 
