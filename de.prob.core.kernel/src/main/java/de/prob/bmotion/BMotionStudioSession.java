@@ -2,6 +2,10 @@ package de.prob.bmotion;
 
 import java.util.Map;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import javax.servlet.AsyncContext;
 
 import org.slf4j.Logger;
@@ -10,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
+import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
@@ -27,10 +32,19 @@ public class BMotionStudioSession extends AbstractSession implements
 	private final AnimationSelector selector;
 
 	private String template;
-	
+
+	private ScriptEngine groovy;
+
 	@Inject
-	public BMotionStudioSession(final AnimationSelector selector) {
+	public BMotionStudioSession(final AnimationSelector selector,
+			ScriptEngineProvider sep) {
 		this.selector = selector;
+		this.groovy = sep.get();
+
+		StringBuffer sb = new StringBuffer();
+
+		Bindings bindings = groovy.getBindings(ScriptContext.GLOBAL_SCOPE);
+
 		currentTrace = selector.getCurrentTrace();
 		if (currentTrace == null) {
 			throw new AnimationNotLoadedException(
@@ -44,6 +58,20 @@ public class BMotionStudioSession extends AbstractSession implements
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
 		return null;
+	}
+
+	public Object evalGroovy(final Map<String, String[]> params) {
+		String code = params.get("code")[0];
+		String callback = params.get("callback")[0];
+		String errorCallback = params.get("error_callback")[0];
+		try {
+			Object eval = groovy.eval(code);
+			return WebUtils.wrap("cmd", "bms.callback", "fkt", callback,
+					"value", eval.toString());
+		} catch (ScriptException e) {
+			return WebUtils.wrap("cmd", "bms.callback", "fkt", errorCallback,
+					"value", e.toString());
+		}
 	}
 
 	public Object executeOperation(final Map<String, String[]> params) {
@@ -94,7 +122,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void setTemplate(String template) {
 		this.template = template;
 	}
-	
+
 	public String getTemplate() {
 		return this.template;
 	}
