@@ -20,8 +20,13 @@ public class Trace extends AbstractBox {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object> render(BindingsSnapshot snapshot) {
-		Map<String, String> map = makeHtml(id, "Kommt noch");
-		return pack(map);
+		Map<String, String> renderMap = makeHtml(id, "Kommt noch");
+		String traceList = WebUtils.toJson(new String[] { "Trace_1", "Trace_2",
+				"Trace_3" });
+		Map<String, String> traceDropdownMap = WebUtils.wrap("cmd",
+				"Worksheet.setDropdown", "id", id, "dropdownName",
+				"trace-selection", "items", traceList);
+		return pack(renderMap, traceDropdownMap);
 	}
 
 	@Override
@@ -63,6 +68,18 @@ public class Trace extends AbstractBox {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("editorArgs", WebUtils.toJson(editorArgs));
 		return map;
+	}
+
+	@Override
+	protected Map<String, String> create(String cmd) {
+		Map<String, String> m = new HashMap<String, String>();
+		m.putAll(getAdditionalEntries());
+		m.putAll(WebUtils.wrap("number", id, "type", this.getClass()
+				.getSimpleName(), "content", getContentAsJson(),
+				"renderedhtml", "", "template", getTemplate(), "codemirror",
+				String.valueOf(useCodemirror())));
+		m.put("cmd", "Worksheet." + cmd);
+		return m;
 	}
 
 }
