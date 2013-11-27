@@ -69,17 +69,4 @@ public class Trace extends AbstractBox {
 		map.put("editorArgs", WebUtils.toJson(editorArgs));
 		return map;
 	}
-
-	@Override
-	protected Map<String, String> create(String cmd) {
-		Map<String, String> m = new HashMap<String, String>();
-		m.putAll(getAdditionalEntries());
-		m.putAll(WebUtils.wrap("number", id, "type", this.getClass()
-				.getSimpleName(), "content", getContentAsJson(),
-				"renderedhtml", "", "template", getTemplate(), "codemirror",
-				String.valueOf(useCodemirror())));
-		m.put("cmd", "Worksheet." + cmd);
-		return m;
-	}
-
 }

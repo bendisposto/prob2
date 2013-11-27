@@ -49,7 +49,7 @@ public abstract class AbstractBox implements IBox {
 		this.owner = owner;
 	}
 
-	protected Map<String, String> create(String cmd) {
+	private Map<String, String> create(String cmd) {
 		Map<String, String> m = new HashMap<String, String>();
 		m.putAll(getAdditionalEntries());
 		m.putAll(WebUtils.wrap("number", id, "type", this.getClass()
