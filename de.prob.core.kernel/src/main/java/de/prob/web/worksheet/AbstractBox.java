@@ -1,6 +1,6 @@
 package de.prob.web.worksheet;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +49,7 @@ public abstract class AbstractBox implements IBox {
 		this.owner = owner;
 	}
 
-	private Map<String, String> create(String cmd) {
+	protected Map<String, String> create(String cmd) {
 		Map<String, String> m = new HashMap<String, String>();
 		m.putAll(getAdditionalEntries());
 		m.putAll(WebUtils.wrap("number", id, "type", this.getClass()
