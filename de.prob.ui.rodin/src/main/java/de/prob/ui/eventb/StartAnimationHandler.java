@@ -1,5 +1,7 @@
 package de.prob.ui.eventb;
 
+import java.util.HashMap;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -44,7 +46,8 @@ public class StartAnimationHandler extends AbstractHandler {
 		final EventBFactory instance = injector
 				.getInstance(EventBFactory.class);
 
-		EventBModel model = instance.load(fileName);
+		EventBModel model = instance.load(fileName,
+				new HashMap<String, String>(), true);
 
 		StateSpace s = model.getStatespace();
 
