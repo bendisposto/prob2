@@ -53,8 +53,8 @@ public class ClassicalBFactory {
 	 * @throws IOException
 	 * @throws BException
 	 */
-	public ClassicalBModel load(final File f, final Map<String, String> prefs)
-			throws IOException, BException {
+	public ClassicalBModel load(final File f, final Map<String, String> prefs,
+			final boolean loadVariables) throws IOException, BException {
 		ClassicalBModel classicalBModel = modelCreator.get();
 
 		BParser bparser = new BParser();
@@ -63,6 +63,9 @@ public class ClassicalBFactory {
 
 		classicalBModel.initialize(ast, rml, f);
 		startAnimation(classicalBModel, rml, prefs, f);
+		if (loadVariables) {
+			subscribeVariables(classicalBModel);
+		}
 		return classicalBModel;
 	}
 
@@ -81,7 +84,7 @@ public class ClassicalBFactory {
 	 */
 	private void startAnimation(final ClassicalBModel classicalBModel,
 			final RecursiveMachineLoader rml, final Map<String, String> prefs,
-			File f) {
+			final File f) {
 
 		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
 
@@ -94,8 +97,6 @@ public class ClassicalBFactory {
 		cmds.add(new StartAnimationCommand());
 		classicalBModel.getStatespace().execute(new ComposedCommand(cmds));
 		classicalBModel.getStatespace().setLoadcmd(loadcmd);
-
-		subscribeVariables(classicalBModel);
 	}
 
 	private void subscribeVariables(final ClassicalBModel m) {
