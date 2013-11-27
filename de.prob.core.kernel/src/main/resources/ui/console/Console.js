@@ -1,75 +1,82 @@
 Console = (function() {
-	var extern = {}
-	var controller;
-	var session = Session();
+    var extern = {}
+    var controller
+    var session = Session()
 
-	function scrollDown(){
-  		window.scrollTo(0,document.body.scrollHeight);
-	}
+    function scrollDown(){
+          window.scrollTo(0,document.body.scrollHeight);
+    }
 
-	function onValidate(line) {
-		return true;
-	}
+    $(document).ready(function() {
+        $(window).focus(function() {
+            scrollDown()
+        })
+    })
 
-	function onHandle(line) {
-		session.sendCmd("exec", {
-			"line" : line,
-			"client" : extern.client
-		})
-	}
+    function onValidate(line) {
+        return true;
+    }
 
-	function onComplete(line_text, column_nr, perform_fn) {
-		// console.log(line_text)
-		// console.log(column_nr)
-		// console.log(perform_fn)
-	}
+    function onHandle(line) {
+        session.sendCmd("exec", {
+            "line" : line,
+            "client" : extern.client
+        })
+        scrollDown()
+    }
 
-	$(document).ready(function() {
-		controller = $("#console").console({
-			welcomeMessage : 'ProB 2.0 console',
-			promptLabel : 'ProB> ',
-			continuedPromptLabel : '----| ',
-			commandValidate : onValidate,
-			commandHandle : onHandle,
-			completionHandle : onComplete,
-			autofocus : true,
-			animateScroll : true,
-			lineWrapping : true,
-			promptHistory : true
-		});
-	});
+    function onComplete(line_text, column_nr, perform_fn) {
+        // console.log(line_text)
+        // console.log(column_nr)
+        // console.log(perform_fn)
+    }
 
-	function groovyResult(output, result) {
-		controller.commandResult([ {
-			msg : output,
-			className : "groovy_output"
-		}, {
-			msg : result,
-			className : "groovy_result"
-		} ]);
-	}
+    $(document).ready(function() {
+        controller = $("#console").console({
+            welcomeMessage : 'ProB 2.0 console',
+            promptLabel : 'ProB> ',
+            continuedPromptLabel : '----| ',
+            commandValidate : onValidate,
+            commandHandle : onHandle,
+            completionHandle : onComplete,
+            autofocus : true,
+            animateScroll : true,
+            lineWrapping : true,
+            promptHistory : true
+        });
+    });
 
-	function groovyError(message, trace) {
-		controller.commandResult([ {
-			msg : message,
-			className : "groovy_error"
-		}, {
-			msg : trace,
-			className : "groovy_trace"
-		} ]);
+    function groovyResult(output, result) {
+        controller.commandResult([ {
+            msg : output,
+            className : "groovy_output"
+        }, {
+            msg : result,
+            className : "groovy_result"
+        } ]);
+    }
 
-	}
+    function groovyError(message, trace) {
+        controller.commandResult([ {
+            msg : message,
+            className : "groovy_error"
+        }, {
+            msg : trace,
+            className : "groovy_trace"
+        } ]);
 
-	extern.groovyResult = function(data) {
-		groovyResult(data.output, data.result)
-		scrollDown()
-	}
-	extern.groovyError = function(data) {
-		groovyError(data.message, data.trace)
-		scrollDown()
-	}
-	extern.client = ""
-	extern.init = session.init
+    }
 
-	return extern;
+    extern.groovyResult = function(data) {
+        groovyResult(data.output, data.result)
+        scrollDown()
+    }
+    extern.groovyError = function(data) {
+        groovyError(data.message, data.trace)
+        scrollDown()
+    }
+    extern.client = ""
+    extern.init = session.init
+
+    return extern;
 }())
