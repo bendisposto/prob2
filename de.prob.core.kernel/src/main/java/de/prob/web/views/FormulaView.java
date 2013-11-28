@@ -74,9 +74,11 @@ public class FormulaView extends AbstractSession implements
 		if (currentTrace != null
 				&& currentTrace.getStateSpace().equals(currentStateSpace)) {
 			Object data = calculateData();
-			Map<String, String> wrap = WebUtils.wrap("cmd", "FormulaView.draw",
-					"data", WebUtils.toJson(data));
-			submit(wrap);
+			if (data != null) {
+				Map<String, String> wrap = WebUtils.wrap("cmd",
+						"FormulaView.draw", "data", WebUtils.toJson(data));
+				submit(wrap);
+			}
 		}
 	}
 
