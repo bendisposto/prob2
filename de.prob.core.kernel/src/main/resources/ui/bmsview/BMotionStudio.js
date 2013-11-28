@@ -222,7 +222,16 @@ bms = (function() {
 	extern.evalObserver = function(observer,data) {
 
 		var objects = observer.objects
-
+		var results = data.eval	
+		
+		var evalFunc = function() {
+			return function(text, render) {
+				return results[text];
+			}
+		}
+	
+		data.eval = evalFunc
+		 		
 		for ( var i = 0; i < objects.length; i++) {
 
 			var o = objects[i];
@@ -232,6 +241,9 @@ bms = (function() {
 			if(predicate === undefined) {
 				predicate = true;
 			} else {
+				predicate = Mustache.render(predicate, {
+					"eval" : evalFunc
+				})
 				predicate = extern.translateValue(predicate);
 			}
 			
@@ -246,7 +258,9 @@ bms = (function() {
 					if((parameters !== undefined) && (caller !== undefined)) {
 						var parsedArray = [];
 						$(parameters).each(function(k,v) {
-							parsedArray.push(extern.translateValue(v))		
+							var fval = Mustache.render(v.toString(), data);
+							fval = extern.translateValue(fval);
+							parsedArray.push(fval)		
 						});
 						var obj = $(trigger.selector)
 						var fn = obj[caller];
@@ -261,80 +275,82 @@ bms = (function() {
 
 		}
 
-	}	  
+	}
 	
-	var firstCall = true;
+	var bodyClone;
 	
 	extern.cspEventObserver = function(observer,data) {
 
-		var objects = observer.objects
-		
-		// Get default values ...
-		if(firstCall) {
-			$.each(objects, function(i,o) {
-				$.each(o.trigger, function(i,t) {
-					var caller = t.call
-					var obj = $(t.selector)
-					var val = null
-					var fn = obj[caller];
-					if (typeof fn === "function") {
-						val = fn.apply(obj,[t.parameters[0]]);
-					}
-					obj.attr("default_value_" + t.parameters[0], val)
-				});
-			});
-			firstCall = false;
-		} else {
-			// Reset default values ...
-			$.each(objects, function(i,o) {
-				$.each(o.trigger, function(i,t) {
-					var caller = t.call
-					var obj = $(t.selector)
-					var val = obj.attr("default_value_" + t.parameters[0])
-					var fn = obj[caller];
-					if (typeof fn === "function") {
-						fn.apply(obj,[t.parameters[0],val]);
-					}
-				});
-			});
+		// Revert objects ...
+		if(bodyClone) {
+			$("body").replaceWith(bodyClone)
 		}
+		bodyClone = $("body").clone(true,true)	
+		
+		var objects = observer.objects
+		var trace = data.model.trace
+		var results = data.eval
 		
 		// Replay trace ...
-		$.each(data.model.trace, function(i,l) {
-			
-			var lastop = l.full
-			
-			$.each(observer.objects, function(i,o) {
+		$.each(trace, function(i, l) {
 
-				var events = o.events
+			var lastop = l.full
+			$.each(objects, function(i, o) {
+
+				var result = Mustache.render(o.events, {
+					"eval" : function() {
+						return function(text, render) {
+							return results[text];
+						}
+					}
+				})
 				
-				  if(events.indexOf(lastop) !== -1) {
-					  	
-					  	$.each(o.trigger, function(i,t) {
-						
+				if (result !== undefined) {
+
+					if (result.indexOf(lastop) !== -1) {
+
+						var trigger = o.trigger
+
+						$.each(trigger, function(i, t) {
+
 							var parameters = t.parameters
 							var caller = t.call
-							
-							if((parameters !== undefined) && (caller !== undefined)) {
+
+							if ((parameters !== undefined)
+									&& (caller !== undefined)) {
 								var parsedArray = [];
-								$(parameters).each(function(k,v) {
-									parsedArray.push(extern.translateValue(v))		
+								$(parameters).each(function(k, v) {
+									parsedArray.push(extern.translateValue(Mustache.render(v,l)))
 								});
-								var obj = $(t.selector)
+								var obj = $(Mustache.render(t.selector, l))
 								var fn = obj[caller];
 								if (typeof fn === "function") {
 									fn.apply(obj, parsedArray);
 								}
 							}
-									
-						});
-					  
-				  }
-			
-			});
-			
-		});
 
+						});
+
+					}
+
+				}
+
+			});
+
+		});
+		
+//		console.log(data.eval)
+//		objects = observer.objects
+//		trace = data.model.trace		
+//		var formulas = [];
+//		$.each(observer.objects, function(i,o) {		
+//			formulas.push(o.events)
+//		});
+//		session.sendCmd("eval", {
+//			"formulas" : JSON.stringify(formulas),
+//			"callback" : "bms.cspEventResult"
+//		})
+		
 	}
 	
 	extern.executeOperation = function(observer,data) {

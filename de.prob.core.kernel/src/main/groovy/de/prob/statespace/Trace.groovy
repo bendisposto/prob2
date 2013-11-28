@@ -214,7 +214,7 @@ class Trace {
 	def Trace invokeMethod(String method,  params) {
 		String predicate;
 
-		if(method.startsWith("\$")) {
+		if(method.startsWith("\$") && !(method == "\$setup_constants" || "\$initialise_machine")) {
 			method = method.substring(1)
 		}
 
