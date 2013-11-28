@@ -51,6 +51,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Inject
 	public BMotionStudioSession(final AnimationSelector selector) {
 		this.selector = selector;
+		incrementalUpdate = false;
 		currentTrace = selector.getCurrentTrace();
 		if (currentTrace == null) {
 			throw new AnimationNotLoadedException(
@@ -106,6 +107,9 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
+		
+		System.out.println(lastinfo);
+		
 		String jsonDataFromFile = WebUtils.toJson(getJsoFromFileForRendering(
 				currentTrace, template));
 
@@ -117,6 +121,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		submit(WebUtils.wrap("cmd", "bms.reloadTemplate", "observer",
 				jsonDataFromFile, "data", jsonDataForRendering));
+		
 	}
 
 	@Override
@@ -230,6 +235,7 @@ public class BMotionStudioSession extends AbstractSession implements
 					|| model instanceof ClassicalBModel) {
 
 				evalElement = new ClassicalB(formula);
+				
 				StateSpace stateSpace = trace.getStateSpace();
 				Map<IEvalElement, IEvalResult> valuesAt = stateSpace
 						.valuesAt(trace.getCurrentState());
@@ -254,7 +260,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			}
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 
 		return output;
