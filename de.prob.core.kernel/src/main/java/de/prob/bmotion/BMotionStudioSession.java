@@ -68,17 +68,40 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	public Object eval(final Map<String, String[]> params) {
-		String formulas = params.get("formulas")[0];
+
+		String formula = params.get("formula")[0];
 		String callback = params.get("callback")[0];
-		Map<String, Object> tmp = new HashMap<String, Object>();
-		Object[] oa = (Object[]) JSON.parse(formulas);
-		for (Object o : oa) {
-			String formula = o.toString();
-			Object value = translateValue(getEvalValue(currentTrace, formula));
-			tmp.put(formula, value);
+
+		String data = null;
+		String[] dataPara = params.get("data");
+		if (dataPara != null)
+			data = dataPara[0];
+
+		Object parse = JSON.parse(formula);
+
+		Map<String, String> wrap = WebUtils.wrap("cmd", callback);
+
+		if (parse instanceof Object[]) {
+			Map<String, Object> tmp = new HashMap<String, Object>();
+			Object[] oa = (Object[]) parse;
+			for (Object o : oa) {
+				String f = o.toString();
+				Object value = translateValue(getEvalValue(currentTrace, f));
+				tmp.put(f, value);
+			}
+			wrap.put("result", WebUtils.toJson(tmp));
+		} else {
+			Object value = translateValue(getEvalValue(currentTrace,
+					parse.toString()));
+			wrap.put("result", value.toString());
+
 		}
-		submit(WebUtils.wrap("cmd", callback, "results", WebUtils.toJson(tmp)));
+
+		if (data != null)
+			wrap.put("data", data);
+		submit(wrap);
 		return null;
+
 	}
 	
 	public Object executeOperation(final Map<String, String[]> params) {
@@ -107,8 +130,6 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		
-		System.out.println(lastinfo);
 		
 		String jsonDataFromFile = WebUtils.toJson(getJsoFromFileForRendering(
 				currentTrace, template));
@@ -241,6 +262,7 @@ public class BMotionStudioSession extends AbstractSession implements
 						.valuesAt(trace.getCurrentState());
 				evaluationResult = valuesAt.get(evalElement);
 				if (evaluationResult == null) {
+					evaluationResult = trace.evalCurrent(evalElement);
 					stateSpace.subscribe(this, evalElement);
 					// TODO: unscribe!!!
 				}
