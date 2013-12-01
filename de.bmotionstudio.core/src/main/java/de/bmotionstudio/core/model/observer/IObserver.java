@@ -10,14 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 import de.bmotionstudio.core.model.control.BControl;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.Trace;
 
 public interface IObserver {
 
-	public List<IEvalElement> prepareObserver(Trace history,
-			BControl control);
+	public List<IEvalElement> prepareObserver(Trace history, BControl control);
 
 	/**
 	 * This method is called after every state change. The method tells the
@@ -29,7 +28,7 @@ public interface IObserver {
 	 *            The corresponding control
 	 */
 	public void check(Trace history, BControl control,
-			Map<String, EvaluationResult> results);
+			Map<String, IEvalResult> results);
 
 	public void afterCheck(Trace history, BControl control);
 
@@ -40,5 +39,5 @@ public interface IObserver {
 	public String getDescription();
 
 	public String getType();
-	
+
 }

@@ -55,11 +55,6 @@ public class AnimationSelector {
 		}
 	}
 
-	public void unregisterModelChangedListener(
-			final IModelChangedListener listener) {
-		modelListeners.remove(listener);
-	}
-
 	/**
 	 * Changes the current trace to the specified {@link Trace} and notifies an
 	 * animation change ({@link AnimationSelector#notifyAnimationChange(Trace)})
@@ -193,8 +188,9 @@ public class AnimationSelector {
 	}
 
 	private void remove(final Trace trace) {
-		if (!traces.contains(trace))
+		if (!traces.contains(trace)) {
 			return;
+		}
 		if (currentTrace == trace) {
 			int indexOf = traces.indexOf(trace);
 			traces.remove(trace);

@@ -3,15 +3,8 @@ package de.prob.ui.operationview;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.services.ISourceProviderService;
 
-import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IModelChangedListener;
-import de.prob.statespace.StateSpace;
-import de.prob.ui.services.ModelLoadedProvider;
-import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 
 public class OperationView extends ViewPart {

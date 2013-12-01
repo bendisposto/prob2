@@ -2,12 +2,16 @@ package de.prob.scripting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.prob.animator.command.AbstractCommand;
+import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.LoadEventBProjectCommand;
+import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.EventBModel;
@@ -26,20 +30,31 @@ public class EventBFactory {
 		this.modelProvider = modelProvider;
 	}
 
-	public EventBModel load(final String file) {
+	public EventBModel load(final String file, final Map<String, String> prefs,
+			final boolean loadVariables) {
 		EventBModel model = modelProvider.get();
 
 		new EventBDatabaseTranslator(model, file);
 		model.isFinished();
 
-		AbstractCommand cmd = new LoadEventBProjectCommand(
+		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
+
+		for (Entry<String, String> pref : prefs.entrySet()) {
+			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
+		}
+
+		AbstractCommand loadcmd = new LoadEventBProjectCommand(
 				new EventBModelTranslator(model));
 
+		cmds.add(loadcmd);
+		cmds.add(new StartAnimationCommand());
 		StateSpace s = model.getStatespace();
-		s.execute(cmd);
-		s.execute(new StartAnimationCommand());
+		s.execute(new ComposedCommand(cmds));
+		s.setLoadcmd(loadcmd);
 
-		subscribeVariables(model);
+		if (loadVariables) {
+			subscribeVariables(model);
+		}
 		return model;
 	}
 

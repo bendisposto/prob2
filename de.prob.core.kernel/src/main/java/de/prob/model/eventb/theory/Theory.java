@@ -1,5 +1,7 @@
 package de.prob.model.eventb.theory;
 
+import com.google.common.base.Objects;
+
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
@@ -89,19 +91,22 @@ public class Theory extends AbstractElement {
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == this) {
+		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof Theory) {
-			return name.equals(((Theory) obj).getName())
-					&& parentDirectory.equals(((Theory) obj)
-							.getParentDirectoryName());
+		if (obj == null) {
+			return false;
 		}
-		return false;
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Theory other = (Theory) obj;
+		return Objects.equal(parentDirectory, other.parentDirectory)
+				&& Objects.equal(name, other.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return 13 * name.hashCode() + 27 * parentDirectory.hashCode();
+		return Objects.hashCode(parentDirectory, name);
 	}
 }

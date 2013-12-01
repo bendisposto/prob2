@@ -1,13 +1,9 @@
 package de.prob.web;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -25,19 +21,20 @@ import de.prob.web.data.SessionResult;
 public abstract class AbstractSession implements ISession {
 
 	private final UUID id;
-	private final List<AsyncContext> clients = Collections
-			.synchronizedList(new ArrayList<AsyncContext>());
-	protected final ArrayList<Message> responses = new ArrayList<Message>();
+	protected final Responses responses;
+
+	protected boolean incrementalUpdate = true;
 
 	private final Logger logger = LoggerFactory
 			.getLogger(AbstractSession.class);
 
 	public AbstractSession() {
-		id = UUID.randomUUID();
+		this(UUID.randomUUID());
 	}
 
 	public AbstractSession(final UUID id) {
 		this.id = id;
+		responses = new Responses();
 	}
 
 	@Override
@@ -95,16 +92,6 @@ public abstract class AbstractSession implements ISession {
 	@Override
 	public void submit(final Object... result) {
 		Message message = new Message(responses.size() + 1, result);
-		String json = WebUtils.toJson(message);
-		for (Object object : result) {
-			logger.trace("Sending: {}", object);
-		}
-		synchronized (clients) {
-			for (AsyncContext context : clients) {
-				send(json, context);
-			}
-			clients.clear();
-		}
 		responses.add(message);
 	}
 
@@ -126,42 +113,42 @@ public abstract class AbstractSession implements ISession {
 	}
 
 	@Override
-	public void registerClient(final String client, final int lastinfo,
+	public void sendPendingUpdates(final String client, final int lastinfo,
 			final AsyncContext context) {
-		logger.trace("Register {} Lastinfo {} size {}", new Object[] { client,
-				lastinfo, responses.size() });
+		// logger.trace("Register {} Lastinfo {} size {}", new Object[] {
+		// client,
+		// lastinfo, responses.size() });
 
 		if (lastinfo == -1) {
 			reload(client, lastinfo, context);
 		} else if (lastinfo < responses.size()) {
 			resend(client, lastinfo, context);
 		} else {
-			registerContext(context);
+			send("", context);
 		}
+
 	}
 
 	protected void resend(final String client, final int lastinfo,
 			final AsyncContext context) {
-		Message message = responses.get(lastinfo);
-		String json = WebUtils.toJson(message);
-		send(json, context);
-	}
-
-	protected void resendAll(final String client, final int lastinfo,
-			final AsyncContext context) {
-		checkState(!responses.isEmpty(),
-				"Resending is only possible if something has been sent before.");
-
-		Message lm = responses.get(responses.size() - 1);
-		ArrayList<Object> cp = new ArrayList<Object>();
-		for (Message message : responses) {
-			Object[] content = message.content;
-			for (int i = 0; i < content.length; i++) {
-				cp.add(content[i]);
+		Message m = null;
+		if (incrementalUpdate) {
+			Message lm = responses.get(responses.size() - 1);
+			ArrayList<Object> cp = new ArrayList<Object>();
+			for (int i = lastinfo; i < responses.size(); i++) {
+				Message message = responses.get(i);
+				Object[] content = message.content;
+				for (int j = 0; j < content.length; j++) {
+					cp.add(content[j]);
+				}
 			}
+
+			Object[] everything = cp.toArray();
+			m = new Message(lm.id, everything);
+		} else {
+			m = responses.get(responses.size() - 1);
 		}
-		Object[] everything = cp.toArray();
-		Message m = new Message(lm.id, everything);
+
 		String json = WebUtils.toJson(m);
 		send(json, context);
 	}
@@ -174,14 +161,10 @@ public abstract class AbstractSession implements ISession {
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		// Default is to not send old messages
-		registerContext(context);
-	}
 
-	private void registerContext(final AsyncContext context) {
-		synchronized (clients) {
-			clients.add(context);
-		}
+		// Default is to not send old messages
+		Message message = new Message(0, WebUtils.wrap("cmd", "extern.skip"));
+		send(WebUtils.toJson(message), context);
 	}
 
 	public String simpleRender(final String clientid, final String template) {

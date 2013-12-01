@@ -5,9 +5,12 @@ package de.prob.animator.domainobjects
 import com.google.gson.Gson
 
 import de.prob.Main
+import de.prob.animator.command.EvaluateFormulasCommand
+import de.prob.animator.command.EvaluationCommand
+import de.prob.model.representation.CSPModel
 import de.prob.model.representation.FormulaUUID
 import de.prob.prolog.output.IPrologTermOutput
-import de.prob.scripting.CSPModel
+import de.prob.statespace.StateId
 
 /**
  * A Formula representation for CSP
@@ -111,5 +114,12 @@ class CSP implements IEvalElement {
 	@Override
 	public FormulaUUID getFormulaId() {
 		return uuid;
+	}
+	
+	public EvaluationCommand getCommand(StateId stateId) {
+		/* TODO: we could do a more efficient implementation here */
+		ArrayList<IEvalElement> arrayList = new ArrayList<IEvalElement>();
+		arrayList.add(this);
+		return new EvaluateFormulasCommand(arrayList, stateId.getId());
 	}
 }

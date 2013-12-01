@@ -27,13 +27,14 @@ public class CurrentTrace extends AbstractSession implements
 
 	private final AnimationSelector selector;
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);
-	List<Map<String,String>> ops = new ArrayList<Map<String,String>>();
+	List<Map<String, String>> ops = new ArrayList<Map<String, String>>();
 	private boolean sortDown = true;
 
 	@Inject
 	public CurrentTrace(final AnimationSelector selector) {
 		this.selector = selector;
 		selector.registerAnimationChangeListener(this);
+		incrementalUpdate = false;
 	}
 
 	@Override
@@ -67,10 +68,10 @@ public class CurrentTrace extends AbstractSession implements
 			element = element.getPrevious();
 		}
 		ops.add(WebUtils.wrap("id", 0, "rep", "-- root --", "group", "start"));
-		if(!sortDown) {
+		if (!sortDown) {
 			Collections.reverse(ops);
 		}
-		
+
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
 		submit(wrap);
@@ -95,12 +96,12 @@ public class CurrentTrace extends AbstractSession implements
 		selector.replaceTrace(selector.getCurrentTrace(), trace);
 		return null;
 	}
-	
+
 	public Object changeSort(final Map<String, String[]> params) {
 		sortDown = Boolean.valueOf(params.get("sortDown")[0]);
 		Collections.reverse(ops);
-		return WebUtils.wrap("cmd",
-				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
+		return WebUtils.wrap("cmd", "CurrentTrace.setTrace", "trace",
+				WebUtils.toJson(ops));
 	}
 
 	@Override

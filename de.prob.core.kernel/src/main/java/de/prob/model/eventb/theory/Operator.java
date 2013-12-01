@@ -24,6 +24,8 @@ import org.eventb.core.ast.extension.ITypeMediator;
 import org.eventb.core.ast.extension.IWDMediator;
 import org.eventb.internal.core.ast.extension.ExtensionKind;
 
+import com.google.common.base.Objects;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
@@ -137,24 +139,28 @@ public class Operator extends AbstractElement {
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == this) {
+		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof Operator) {
-			return theoryName.equals(((Operator) obj).getParentTheory())
-					&& syntax.equals(((Operator) obj).getSyntax());
+		if (obj == null) {
+			return false;
 		}
-		return false;
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Operator other = (Operator) obj;
+		return Objects.equal(syntax, other.syntax)
+				&& Objects.equal(theoryName, other.theoryName);
 	}
 
 	@Override
 	public int hashCode() {
-		return 13 * theoryName.hashCode() + 17 * syntax.hashCode();
+		return Objects.hashCode(syntax, theoryName);
 	}
 
 	private class OperatorExtension implements IFormulaExtension {
 
-		String unicode;
+		private final String unicode;
 
 		public OperatorExtension(final EventB syntax) {
 			unicode = UnicodeTranslator.toUnicode(syntax.getCode());

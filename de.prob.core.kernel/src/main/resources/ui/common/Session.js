@@ -1,8 +1,17 @@
+if (!window.console) {
+	window.console = {
+		log : function() {
+		}
+	};
+} // Thank you Internet Explorer
+
 function Session() {
 	var extern = {}
 
 	var current = -1;
 	var poll_interval = 100;
+
+	var polling = true;
 
 	// client side template cache
 	var templates = {}
@@ -13,9 +22,10 @@ function Session() {
 	function sendCmd(s, data) {
 		data.mode = 'command'
 		data.cmd = s
-		console.log("Send:", data)
+//		console.log("Send:", data)
 		$.ajax({
 			async : false,
+			cache: false,
 			data : data
 		});
 	}
@@ -25,6 +35,7 @@ function Session() {
 		if (html == undefined) {
 			$.ajax({
 				url : name,
+				cache: false,
 				success : function(result) {
 					if (result.isOk === false) {
 						alert(result.message);
@@ -52,8 +63,43 @@ function Session() {
 
 	function disconnect() {
 		current = -1;
+		polling = false;
 		$("body").replaceWith(
 				get_template("/ui/common/server_disconnected.html"))
+	}
+
+	function poll(client) {
+		if (!polling)
+			return;
+		var data = {
+			'mode' : 'update',
+			'lastinfo' : current,
+			'client' : client
+		};
+		$.ajax({
+					data : data,
+					async : false,
+					cache: false,
+					success : function(data) {
+						if (data != "") {
+							dx = JSON.parse(data);
+//							console.log("DATA:", dx)
+							dobjs = dx.content
+							current = dx.id
+							if (!(Object.prototype.toString.call(dobjs) === "[object Array]")) {
+								dobjs = [ dobjs ]
+							}
+							for (i in dobjs) {
+								var dobj = dobjs[i]
+//								console.log("Eval:", dobj)
+								eval(dobj.cmd)(dobj)
+							}
+						}
+					},
+					error : function(e, s, r) {
+						disconnect()
+					}
+				});
 	}
 
 	function listen(client) {
@@ -62,15 +108,15 @@ function Session() {
 			'lastinfo' : current,
 			'client' : client
 		};
-		console.log("Requesting " + data.lastinfo)
-		$
-				.ajax({
+//		console.log("Requesting " + data.lastinfo)
+		$.ajax({
 					data : data,
+					cache: false,
 					success : function(data) {
 
 						if (data != "") {
 							dx = JSON.parse(data);
-							console.log("DATA:", dx)
+//							console.log("DATA:", dx)
 							dobjs = dx.content
 							current = dx.id
 							if (!(Object.prototype.toString.call(dobjs) === "[object Array]")) {
@@ -78,7 +124,7 @@ function Session() {
 							}
 							for (i in dobjs) {
 								var dobj = dobjs[i]
-								console.log("Eval:", dobj)
+//								console.log("Eval:", dobj)
 								eval(dobj.cmd)(dobj)
 							}
 						}
@@ -91,13 +137,16 @@ function Session() {
 	}
 
 	extern.init = function(client) {
-		listen(client);
-		console.log("init")
+		setInterval(poll, poll_interval);
+//		console.log("init")
 	};
 
 	extern.sendCmd = sendCmd;
 	extern.get_template = get_template;
 	extern.render = render;
+
+	extern.skip = function() {
+	};
 
 	return extern;
 }

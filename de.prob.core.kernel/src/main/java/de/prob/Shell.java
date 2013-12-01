@@ -20,10 +20,11 @@ class Shell {
 
 	@Inject
 	public Shell(final ScriptEngineProvider executor) {
-		this.sep = executor;
+		sep = executor;
 	}
 
-	public void runScript(final String dir, final File script) throws Throwable {
+	private void runScript(final String dir, final File script)
+			throws Throwable {
 		if (script.isDirectory()) {
 			File[] files = script.listFiles(new FilenameFilter() {
 				@Override

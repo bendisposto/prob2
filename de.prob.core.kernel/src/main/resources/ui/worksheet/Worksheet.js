@@ -147,8 +147,8 @@ Worksheet = (function() {
 		edi.getWrapperElement().onkeypress = function(e) {
 			if (e.shiftKey && e.keyCode === 13)
 				e.preventDefault();
-			if (e.keyCode === 13)
-				console.log("enter")
+//			if (e.keyCode === 13)
+//				console.log("enter")
 		};
 
 		$(".CodeMirror-hscrollbar").remove(); // Hack! no horizontal scrolling
@@ -234,10 +234,10 @@ Worksheet = (function() {
 	}
 
 	function save() {
-		console.log("Save document")
+//		console.log("Save document")
 	}
 	function format() {
-		console.log("Format " + focused)
+//		console.log("Format " + focused)
 	}
 
 	function render(id, html) {
@@ -443,7 +443,7 @@ Worksheet = (function() {
 			var clz = null;
 			if (aside_classes[v.clazz] == null) {
 				clz = make_class_info(v);
-				console.log("Classinfo: ", clz)
+//				console.log("Classinfo: ", clz)
 				aside_classes[v.clazz] = clz
 			} else {
 				clz = aside_classes[v.clazz]
@@ -509,7 +509,7 @@ Worksheet = (function() {
 			b.addClass("btn-selected")
 		}
 		sourceview = !sourceview
-		console.log("Source")
+//		console.log("Source")
 	}
 
 	function noFocus() {

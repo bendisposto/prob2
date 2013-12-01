@@ -21,22 +21,48 @@ import de.prob.web.views.Log;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 
+/**
+ * The Main class initializes ProB 2.0. This class should NOT be instantiated
+ * but should rather be started from a .jar file, accessed through Guice via
+ * {@link ServletContextListener#getInjector()#getInstance()} with Main.class as
+ * parameter, or started in a jetty server via {@link WebConsole#run()}.
+ * 
+ * @author joy
+ * 
+ */
 public class Main {
 
-	private static boolean shellMode;
-
+	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
 	private final Options options;
 	private final Shell shell;
+
+	/**
+	 * String representing the ProB home directory. Calls method
+	 * {@link Main#getProBDirectory()}
+	 */
 	public final static String PROB_HOME = getProBDirectory();
+
+	/**
+	 * String representing the log configuration file. This defaults to
+	 * "production.xml" if the System property "PROB_LOG_CONFIG" is not defined.
+	 * Otherwise, the system property is used.
+	 */
 	public final static String LOG_CONFIG = System
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
 			.getProperty("PROB_LOG_CONFIG");
 
-	public static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
+	private final static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
 
-	Logger logger = LoggerFactory.getLogger(Main.class);
-
+	/**
+	 * Parameters are injected by Guice via {@link MainModule}. This class
+	 * should NOT be instantiated by hand.
+	 * 
+	 * @param parser
+	 * @param options
+	 * @param shell
+	 * @param log
+	 */
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
 			final Shell shell, final Log log) {
@@ -47,7 +73,7 @@ public class Main {
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
-	void run(final String[] args) throws Throwable {
+	private void run(final String[] args) throws Throwable {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("shell")) {
@@ -67,19 +93,28 @@ public class Main {
 		}
 	}
 
+	/**
+	 * @return if System Property "prob.home" is defined, the path to this
+	 *         directory is returned. Otherwise, the directory specified by
+	 *         System Property "user.home" is chosen, and the directory ".prob"
+	 *         is appended to it.
+	 */
 	public static String getProBDirectory() {
-		// String homedir = System.getProperty("prob.home");
-		// if (homedir != null) {
-		// return homedir + separator;
-		// }
-		// String env = System.getenv("PROB_HOME");
-		// if (env != null) {
-		// return env + separator;
-		// }
+		String homedir = System.getProperty("prob.home");
+		if (homedir != null) {
+			return homedir + separator;
+		}
 		return System.getProperty("user.home") + separator + ".prob"
 				+ separator;
 	}
 
+	/**
+	 * Start the ProB 2.0 shell with argument -s. Run integration tests with
+	 * -test /path/to/testDir
+	 * 
+	 * @param args
+	 * @throws Throwable
+	 */
 	public static void main(final String[] args) throws Throwable {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
@@ -91,8 +126,6 @@ public class Main {
 			}
 		});
 		System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
-		System.setProperty("PROB_LOGFILE", PROB_HOME + "logs" + separator
-				+ "ProB.txt");
 
 		Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
 
@@ -100,8 +133,25 @@ public class Main {
 		System.exit(0);
 	}
 
-	public static boolean isShellMode() {
-		return shellMode;
+	/**
+	 * @param process
+	 *            - process is registered here so that it can be destroyed upon
+	 *            shutdown of the program.
+	 */
+	public static void registerPrologProcess(final Process process) {
+		// TODO: Should this be in another class?
+		processes.put(process, Boolean.TRUE);
 	}
 
+	/**
+	 * Destroy all processes associated with the program. This is called during
+	 * shutdown, or if the ServletContext changes.
+	 */
+	public static void destroyPrologProcesses() {
+		// TODO: Should this be in another class?
+		Set<Process> keySet = Main.processes.keySet();
+		for (Process process : keySet) {
+			process.destroy();
+		}
+	}
 }

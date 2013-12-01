@@ -11,4 +11,4 @@ assert ['{}']== s.eval(new StateId("0",s),["waiting" as EventB]).collect { it.to
 assert ['{PID2}']== s.eval(new StateId("2",s),["waiting" as EventB]).collect { it.toString() }
 x = s.eval(new StateId("2",s),["x : waiting & x = PID2" as EventB]).get(0)
 assert x.value == "TRUE"
-assert x.solution.contains("x=PID2")
+assert x.getSolutions().containsKey("x")

@@ -11,7 +11,7 @@ Events = (function() {
             'Enter' : function(cm) {
                 hp = null;
                 var code = cm.getValue();
-                console.log("submit: '" + code + "'")
+//                console.log("submit: '" + code + "'")
                 session.sendCmd("executeEvent", {
                     "event" : code
                 })
@@ -21,7 +21,7 @@ Events = (function() {
             },
             'Up' : function(cm) {
                 if (cm.getCursor().line == 0) {
-                    console.log("History up")
+//                    console.log("History up")
                     if (hp == null) {
                         hp = history.length;
                     }
@@ -41,7 +41,7 @@ Events = (function() {
             'Down' : function(cm) {
                 var cnt = cm.doc.lineCount();
                 if (cm.getCursor().line == cnt - 1) {
-                    console.log("History down")
+//                    console.log("History down")
                     if (hp != null) {
                         if (hp < history.length - 1) {
                             hp++
@@ -95,6 +95,11 @@ Events = (function() {
         $(window).keydown(function(event){
             if(event.keyCode == 13) {
                 event.preventDefault();
+                if(event.target.id === "numRand") {
+                	if(!$("#randomX").prop("disabled")) {
+                		random($("#numRand").val())
+            		}
+                }
                 return false;
             }
         })
@@ -117,9 +122,9 @@ Events = (function() {
             }
         }, 250));
 
-        $("#random1").click(function(e) {random(1)})
-        $("#random5").click(function(e) {random(5)})
-        $("#random10").click(function(e) {random(10)})
+        $("#random1").click(function(e) {e.preventDefault();random(1)})
+        $("#random5").click(function(e) {e.preventDefault();random(5)})
+        $("#random10").click(function(e) {e.preventDefault();random(10)})
         $("#randomX").click(function(e) {
             e.preventDefault();
             if(!$("#randomX").prop("disabled")) {
@@ -196,9 +201,10 @@ Events = (function() {
             e.append(session.render("/ui/eventview/operation.html", v))
         }
         $(".enabled").click(function(e) {
+        	e.preventDefault();
             var id = e.currentTarget.id
             id = id.substring(2,id.length)
-            console.log(id)
+//            console.log(id)
             session.sendCmd("execute", {
                 "id" : id,
                 "client" : extern.client

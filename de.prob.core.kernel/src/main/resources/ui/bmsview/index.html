@@ -2,12 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>BMotion Studio</title>
 <meta name="description" content="">
 <meta name="author" content="Lukas Ladenberger">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link rel="stylesheet" href="/ui/common/bootstrap.css">
 <link rel="stylesheet" href="/ui/bmsview/bms.css">
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/bmsview/BMotionStudio.js"></script>
 </head>
 
 <body>
@@ -18,8 +24,6 @@
 	</ul>
 
 	<div id="vis_container">
-		<iframe src="" width="100%" frameborder="0" scrolling="no"
-			name="iframeVisualization" id="iframeVisualization"></iframe>
 	</div>
 
 	<!-- Modal -->
@@ -71,18 +75,11 @@
 	</div>
 	<!-- /.modal -->
 
-</body>
-
-<script type="text/javascript" src="/ui/libs/jquery.js"></script>
-<script type="text/javascript" src="/ui/libs/bootstrap.min.js"></script>
-<script type="text/javascript" src="/ui/libs/mustache.js"></script>
-<script type="text/javascript" src="/ui/common/Session.js"></script>
-<script type="text/javascript" src="/ui/bmsview/BMotionStudio.js"></script>
-
 <script>
 bms.client = "{{clientid}}";
 bms.init("{{clientid}}");
-bms.workspace = "{{workspace}}"
 </script>
+
+</body>
 
 </html>

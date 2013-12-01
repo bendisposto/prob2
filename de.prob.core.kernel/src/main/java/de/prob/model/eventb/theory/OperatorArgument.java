@@ -4,6 +4,8 @@ import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
+import com.google.common.base.Objects;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 
@@ -32,19 +34,24 @@ public class OperatorArgument extends AbstractElement {
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		if (obj instanceof OperatorArgument) {
-			return identifier.equals(((OperatorArgument) obj).getIdentifier())
-					&& type.equals(((OperatorArgument) obj).getType());
-		}
-		return false;
+	public int hashCode() {
+		return Objects.hashCode(identifier, type);
 	}
 
 	@Override
-	public int hashCode() {
-		return 13 * identifier.hashCode() + 17 * type.hashCode();
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		OperatorArgument other = (OperatorArgument) obj;
+		return Objects.equal(identifier, other.getIdentifier())
+				&& Objects.equal(type, other.getType());
 	}
+
 }

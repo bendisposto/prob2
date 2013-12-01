@@ -1,6 +1,10 @@
 package de.prob.animator.domainobjects;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -8,15 +12,17 @@ public class EvaluationResultTest {
 
 	@Test
 	public void testToString() {
-		EvaluationResult a = new EvaluationResult("0", "c1", "yay", "", "",
-				"exists", new String[0], false);
+		Map<String, String> solutions = new HashMap<String, String>();
+		solutions.put("x", "5");
+		solutions.put("y", "{1,2,3}");
+		EvalResult a = new EvalResult("c1", "yay",
+				new HashMap<String, String>(), null);
 		assertEquals("yay", a.toString());
-		EvaluationResult b = new EvaluationResult("1", "c2", "the", "is 4", "",
-				"exists", new String[0], false);
-		assertEquals("the Solution: is 4", b.toString());
-		EvaluationResult c = new EvaluationResult("3", "c3", "", "",
-				"does not work", "exists", new String[0], false);
-		assertEquals("'Errors: does not work'", c.toString());
+		EvalResult b = new EvalResult("c1", "yay", solutions, null);
+		assertTrue(b.toString().startsWith("yay: "));
+		ComputationNotCompletedResult c = new ComputationNotCompletedResult(
+				"c3", "does not work");
+		assertEquals("does not work", c.toString());
 	}
 
 }

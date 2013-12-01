@@ -11,52 +11,57 @@ import de.bmotionstudio.core.editor.wizard.observer.ObserverWizard;
 import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.util.BMotionUtil;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.Trace;
 
 public class BPredicateObserver extends Observer {
 
 	private String predicate;
-	
+
 	private String attribute;
-	
+
 	private Object value;
-	
+
 	private transient List<IEvalElement> formulas;
-	
+
 	@Override
-	public List<IEvalElement> prepareObserver(Trace history,
-			BControl control) {
-		if (formulas == null)
+	public List<IEvalElement> prepareObserver(final Trace history,
+			final BControl control) {
+		if (formulas == null) {
 			formulas = new ArrayList<IEvalElement>();
+		}
 		formulas.clear();
-		if (predicate != null)
+		if (predicate != null) {
 			formulas.add(new ClassicalB(BMotionUtil.parseFormula(predicate,
 					control)));
+		}
 		return formulas;
 	}
 
 	@Override
-	public void check(Trace history, BControl control,
-			Map<String, EvaluationResult> results) {
+	public void check(final Trace history, final BControl control,
+			final Map<String, IEvalResult> results) {
 
-		if (attribute == null || value == null || predicate == null)
+		if (attribute == null || value == null || predicate == null) {
 			return;
+		}
 
 		String fpredicate = BMotionUtil.parseFormula(predicate, control);
-		EvaluationResult evalResult = results.get(fpredicate);
-		if (evalResult != null && !evalResult.hasError()) {
-			String result = evalResult.value;
+		IEvalResult evalResult = results.get(fpredicate);
+		if (evalResult != null && evalResult instanceof EvalResult) {
+			String result = ((EvalResult) evalResult).getValue();
 			Boolean bResult = Boolean.valueOf(result);
-			if (bResult)
+			if (bResult) {
 				control.setAttributeValue(attribute, value, true, false);
+			}
 		}
 
 	}
 
 	@Override
-	public ObserverWizard getWizard(Shell shell, BControl control) {
+	public ObserverWizard getWizard(final Shell shell, final BControl control) {
 		return new BPredicateObserverWizard(shell, control, this);
 	}
 
@@ -64,7 +69,7 @@ public class BPredicateObserver extends Observer {
 		return predicate;
 	}
 
-	public void setPredicate(String predicate) {
+	public void setPredicate(final String predicate) {
 		String oldVal = this.predicate;
 		this.predicate = predicate;
 		firePropertyChange("predicate", oldVal, predicate);
@@ -74,7 +79,7 @@ public class BPredicateObserver extends Observer {
 		return attribute;
 	}
 
-	public void setAttribute(String attribute) {
+	public void setAttribute(final String attribute) {
 		String oldVal = this.attribute;
 		this.attribute = attribute;
 		firePropertyChange("attribute", oldVal, attribute);
@@ -84,7 +89,7 @@ public class BPredicateObserver extends Observer {
 		return value;
 	}
 
-	public void setValue(Object value) {
+	public void setValue(final Object value) {
 		Object oldVal = this.value;
 		this.value = value;
 		firePropertyChange("value", oldVal, value);
@@ -94,7 +99,7 @@ public class BPredicateObserver extends Observer {
 	public String getType() {
 		return "B Predicate Observer";
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return "This observer sets the value of an attribute whenever the entered predicate was evaluated to true.";

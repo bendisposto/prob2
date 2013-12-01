@@ -15,25 +15,27 @@ bms = (function() {
 	            $('a',$(this)).stop().animate({'marginLeft':'-85px'},200);
 	        }
 	    );
-		
+
+		$('.template').click(function() {
+
+			$("#sourceModal").on('shown', function() {
+				// editorHtml.refresh()
+				// editorJavascript.refresh()
+			}).on('hidden', function() {
+				// renderEdit()
+			});
+			// Show Modal
+			$("#sourceModal").modal('show');
+
+			$(".template").find("a").stop().animate({
+				'marginLeft' : '-85px'
+			}, 200);
+
+		})
+	    
 	});
 
-	$('.template').click(function() {
 
-		$("#sourceModal").on('shown', function() {
-			// editorHtml.refresh()
-			// editorJavascript.refresh()
-		}).on('hidden', function() {
-			// renderEdit()
-		});
-		// Show Modal
-		$("#sourceModal").modal('show');
-
-		$(".template").find("a").stop().animate({
-			'marginLeft' : '-85px'
-		}, 200);
-
-	})
 
 	// --------------------------------------------
 	// Helper functions
@@ -62,48 +64,27 @@ bms = (function() {
 	// Rendering
 	// --------------------------------------------
 
-	function renderVisualization() {
-		if (templateFile) {
-			var src = "http://localhost:8080/bms/" + templateFile;
-			// Prevents flickering ...
-			$("#vis_container")
-					.append(
-							'<iframe src="" width="100%" frameborder="0" scrolling="no" name="tempiframe" id="tempiframe" style="visibility:hidden"></iframe>')
-			$('#tempiframe').attr("src", src)
-			$('#tempiframe').on('load', function() {
-				$('#tempiframe').css("visibility", "visible")
-				$('#iframeVisualization').remove()
-				$('#tempiframe').attr("id", "iframeVisualization")
-				resizeIframe()
-//				checkObserver(data)
-			});
-		}
+	function renderVisualization(observer,data) {
+		checkObserver(observer,data)
+		extern.stateChange(data)
 	}
 	
-//	function checkObserver(data) {
-////		console.log("Start checking observer")
-////		console.log(observer)
-//		var observer = data;
-//		console.log(data)
-//		for (var i = 0; i < observer.length; i++) {
-//			var o = observer[i];
-////			console.log("Calling Observer")
-////			console.log(o.config[0])
-//			bms[o.cmd](o.config[0], data.data);
-//		}
-//	}
+	function checkObserver(observer,data) {
+		var observerList = observer.observer;
+		if (observerList !== undefined) {
+			for ( var i = 0; i < observerList.length; i++) {
+				var observer = observerList[i];
+				bms[observer.cmd](observer,data);
+			}
+		}
+	}
 	
 	// --------------------------------------------
 
 	extern.client = ""
 	extern.observer = null;
-	extern.workspace = "";
 	extern.init = session.init
 	extern.session = session
-
-	extern.renderVisualization = function() {
-		renderVisualization()
-	}
 
 	function browse(dir_dom) {
 		$('#filedialog').off('hidden.bs.modal')
@@ -135,8 +116,7 @@ bms = (function() {
 	function request_files(d) {
 		var s;
 		$.ajax({
-			url : "/files?path=" + d + "&extensions=bms&workspace="
-					+ extern.workspace,
+			url : "/files?path=" + d + "&extensions=bms",
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -152,8 +132,7 @@ bms = (function() {
 	function check_file(d) {
 		var s;
 		$.ajax({
-			url : "/files?check=true&path=" + d + "&extensions=bms&workspace="
-					+ extern.workspace,
+			url : "/files?check=true&path=" + d + "&extensions=bms",
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -202,13 +181,6 @@ bms = (function() {
 		$("#filedialog").modal('hide')
 	}
 
-	function resizeIframe() {
-		var newIframeHeight = $("#iframeVisualization").contents().find("html")
-				.height()
-				+ 'px';
-		$('#iframeVisualization').css("height", newIframeHeight);
-	}
-
 	extern.browse = browse
 	extern.fb_select_dir = fb_select_dir
 	extern.fb_select_file = fb_select_file
@@ -221,10 +193,193 @@ bms = (function() {
 		$("#chooseTemplateBox").css("display", "none");
 	}
 
-	extern.reloadTemplate = function(data) {
-		templateFile = data.template
-		renderVisualization()
+	extern.setTemplate = function(data) {
+		window.location = "/bms/?template=" + data.request;
 	}
+	
+	extern.reloadTemplate = function(data) {
+		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
+	}
+
+	extern.renderVisualization = function(data) {
+		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
+	}
+	
+	extern.stateChange = function(data) {
+	}
+	
+	extern.translateValue = function(val) {
+		if (val === "true") {
+			return true;
+		} else if (val === "false") {
+			return false;
+		} else if(!isNaN(val)) {
+			val = parseInt(val)
+		}
+		return val;
+	}
+	
+	extern.evalObserver = function(observer,data) {
+
+		var objects = observer.objects
+		var results = data.eval	
+		
+		var evalFunc = function() {
+			return function(text, render) {
+				return results[text];
+			}
+		}
+	
+		data.eval = evalFunc
+		 		
+		for ( var i = 0; i < objects.length; i++) {
+
+			var o = objects[i];
+			var predicate = o.predicate;
+			var triggerList = o.trigger;
+
+			if(predicate === undefined) {
+				predicate = true;
+			} else {
+				predicate = Mustache.render(predicate, {
+					"eval" : evalFunc
+				})
+				predicate = extern.translateValue(predicate);
+			}
+			
+			if(predicate) {
+				
+				for ( var t = 0; t < triggerList.length; t++) {
+					
+					var trigger = triggerList[t]			
+					var parameters = trigger.parameters
+					var caller = trigger.call
+					
+					if((parameters !== undefined) && (caller !== undefined)) {
+						var parsedArray = [];
+						$(parameters).each(function(k,v) {
+							var fval = Mustache.render(v.toString(), data);
+							fval = extern.translateValue(fval);
+							parsedArray.push(fval)		
+						});
+						var obj = $(trigger.selector)
+						var fn = obj[caller];
+						if (typeof fn === "function") {
+							fn.apply(obj, parsedArray);
+						}
+					}
+					
+				}
+				
+			}
+
+		}
+
+	}
+	
+	var bodyClone;
+	
+	extern.cspEventObserver = function(observer,data) {
+
+		// Revert objects ...
+		if(bodyClone) {
+			$("body").replaceWith(bodyClone)
+		}
+		bodyClone = $("body").clone(true,true)	
+		
+		var objects = observer.objects
+		var trace = data.model.trace
+		var results = data.eval
+		
+		// Replay trace ...
+		$.each(trace, function(i, l) {
+
+			var lastop = l.full
+			$.each(objects, function(i, o) {
+
+				var result = Mustache.render(o.events, {
+					"eval" : function() {
+						return function(text, render) {
+							return results[text];
+						}
+					}
+				})
+				
+				if (result !== undefined) {
+
+					if (result.indexOf(lastop) !== -1) {
+
+						var trigger = o.trigger
+
+						$.each(trigger, function(i, t) {
+
+							var parameters = t.parameters
+							var caller = t.call
+
+							if ((parameters !== undefined)
+									&& (caller !== undefined)) {
+								var parsedArray = [];
+								$(parameters).each(function(k, v) {
+									parsedArray.push(extern.translateValue(Mustache.render(v,l)))
+								});
+								var obj = $(Mustache.render(t.selector, l))
+								var fn = obj[caller];
+								if (typeof fn === "function") {
+									fn.apply(obj, parsedArray);
+								}
+							}
+
+						});
+
+					}
+
+				}
+
+			});
+
+		});
+		
+//		console.log(data.eval)
+//		objects = observer.objects
+//		trace = data.model.trace		
+//		var formulas = [];
+//		$.each(observer.objects, function(i,o) {		
+//			formulas.push(o.events)
+//		});
+//		session.sendCmd("eval", {
+//			"formulas" : JSON.stringify(formulas),
+//			"callback" : "bms.cspEventResult"
+//		})
+		
+	}
+	
+	extern.executeOperation = function(observer,data) {
+		
+		  var objects = observer.objects
+		  
+		  $.each(objects, function(i,v)
+		  {
+			  var o = v;
+			  var predicate = o.predicate;
+			  if(predicate === undefined)
+				  predicate = "1=1"
+			  var operation = o.operation
+			  var selector = $(o.selector);
+			  
+			  var events = $._data( selector[0], 'events' )
+			  if (events === undefined || (events !== undefined && events.click === undefined)) {
+				    selector.click(function() {
+					 	session.sendCmd("executeOperation", {
+							"op" : o.operation,
+							"predicate" : predicate,
+							"client" : parent.bms.client
+						})	
+				  });
+			  }
+			  
+		  });
+		  
+		}
 
 	return extern;
 

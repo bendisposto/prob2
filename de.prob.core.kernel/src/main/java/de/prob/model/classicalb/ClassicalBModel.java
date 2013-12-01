@@ -24,7 +24,7 @@ public class ClassicalBModel extends AbstractModel {
 
 	private ClassicalBMachine mainMachine = null;
 	private final HashSet<String> done = new HashSet<String>();
-	StateSchema schema = new BStateSchema();
+	private final StateSchema schema = new BStateSchema();
 
 	@Inject
 	public ClassicalBModel(final StateSpace statespace) {

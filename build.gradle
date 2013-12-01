@@ -15,7 +15,7 @@ project.ext {
 apply from: 'tycho_build.gradle'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.2'
+    gradleVersion = '1.8'
 }
 
 

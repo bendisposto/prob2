@@ -44,7 +44,7 @@ def parser_version = '2.4.20-SNAPSHOT'
 
 dependencies {
 
-	groovy 'org.codehaus.groovy:groovy-all:2.0.5'
+ 	//groovy 'org.codehaus.groovy:groovy-all:2.0.5'
 
 	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
@@ -83,6 +83,8 @@ dependencies {
 
 	compile 'org.antlr:antlr4-runtime:4.0'
 	compile 'de.prob:ltl-dsl:1.0.0'
+	
+	compile 'org.jsoup:jsoup:1.7.2' // MIT
 
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "bparser", version: parser_version , changing: true
@@ -99,6 +101,8 @@ dependencies {
 	compile 'junit:junit:4.8.2'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
 	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
+	
+	compile 'org.jsoup:jsoup:1.7.2'
 
 	testCompile 'org.mockito:mockito-core:1.8.5'
 	testCompile "org.gebish:geb-spock:0.9.1"
@@ -218,12 +222,12 @@ public  String getProBDirectory() {
 
 
 task downloadCli << {
-	dir = getProBDirectory();
+	def dir = getProBDirectory();
 	delete file(dir)
 	new File(dir).mkdirs()
-	targetdir = dir
-	targetzip = dir+os_extension()+".zip"
-	url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/" +os_extension()+ ".zip"
+	def targetdir = dir
+	def targetzip = dir+os_extension()+".zip"
+	def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/" +os_extension()+ ".zip"
 	download(url,targetzip)
 	FileTree zip = zipTree(targetzip)
 	copy {
@@ -235,8 +239,8 @@ task downloadCli << {
 
 
 def os_extension() {
-	bits = System.getProperty("sun.arch.data.model");
-	os = System.getProperty("os.name").toLowerCase()
+	def bits = System.getProperty("sun.arch.data.model");
+	def os = System.getProperty("os.name").toLowerCase()
 	if (os.indexOf("mac") > -1) {
 		return "probcli_leopard64"
 	}

@@ -18,6 +18,7 @@ import de.prob.exception.ProBError
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
+import de.prob.model.representation.CSPModel
 import de.prob.webconsole.ServletContextListener
 
 
@@ -28,6 +29,13 @@ public class Api {
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;
 	private final ProBInstanceProvider instanceProvider;
+
+
+	/**
+	 * This variable specifies whether the variables in the model are
+	 * registered by default when loading the model.
+	 */
+	def loadVariablesByDefault = true;
 
 	def globals = [:]
 
@@ -67,8 +75,12 @@ public class Api {
 	}
 
 	public EventBModel eventb_load(String file) {
+		return eventb_load(file, new HashMap<String,String>());
+	}
+
+	public EventBModel eventb_load(String file, final Map<String, String> prefs) {
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
-		return factory.load(file);
+		return factory.load(file, prefs, loadVariablesByDefault);
 	}
 
 	/**
@@ -84,7 +96,7 @@ public class Api {
 		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
-		return bFactory.load(f, prefs);
+		return bFactory.load(f, prefs, loadVariablesByDefault);
 	}
 
 	public CSPModel csp_load(final String file) throws Exception {

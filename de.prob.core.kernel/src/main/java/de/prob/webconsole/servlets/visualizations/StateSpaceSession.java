@@ -42,6 +42,7 @@ import de.prob.statespace.derived.DottyTransitionDiagram;
 import de.prob.statespace.derived.SignatureMergedStateSpace;
 import de.prob.statespace.derived.TransitionDiagram;
 import de.prob.visualization.AbstractData;
+import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.AnimationProperties;
 import de.prob.visualization.DerivedStateSpaceData;
 import de.prob.visualization.DottyData;
@@ -71,17 +72,21 @@ public class StateSpaceSession implements ISessionServlet,
 		this.props = props;
 		if (space != null) {
 			data = createStateSpaceGraph();
-		}
-		AbstractElement mainComponent = space.getModel().getMainComponent();
-		if (mainComponent instanceof Machine) {
-			List<BEvent> ops = mainComponent.getChildrenOfType(BEvent.class);
-			for (BEvent bEvent : ops) {
-				EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
-				events.put(bEvent.getName(), e);
+			AbstractElement mainComponent = space.getModel().getMainComponent();
+			if (mainComponent instanceof Machine) {
+				List<BEvent> ops = mainComponent
+						.getChildrenOfType(BEvent.class);
+				for (BEvent bEvent : ops) {
+					EnabledEvent e = new EnabledEvent(bEvent.getName(), true);
+					events.put(bEvent.getName(), e);
+				}
 			}
+			filename = props.getPropFileFromModel(space.getModel());
+			props.setProperty(filename, sessionId, serialize());
+		} else {
+			throw new AnimationNotLoadedException(
+					"Cannot create visualization for null statespace");
 		}
-		filename = props.getPropFileFromModel(space.getModel());
-		props.setProperty(filename, sessionId, serialize());
 	}
 
 	public StateSpaceSession(final String sessionId, final StateSpace space,

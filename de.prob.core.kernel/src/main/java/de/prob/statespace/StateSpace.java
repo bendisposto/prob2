@@ -23,8 +23,8 @@ import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.CheckInvariantStatusCommand;
 import de.prob.animator.command.ComposedCommand;
-import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.EvaluateRegisteredFormulasCommand;
+import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
@@ -32,13 +32,13 @@ import de.prob.animator.command.GetStatesFromPredicate;
 import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
-import de.prob.scripting.CSPModel;
+import de.prob.model.representation.CSPModel;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 
 /**
@@ -80,7 +80,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private long lastCalculatedStateId;
 	private AbstractModel model;
-	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
+	private final Map<StateId, Map<IEvalElement, IEvalResult>> values = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
 
 	private final HashSet<StateId> invariantOk = new HashSet<StateId>();
 	private final HashSet<StateId> invariantKo = new HashSet<StateId>();
@@ -170,9 +170,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			cannotBeEvaluated.add(state);
 		}
 
-		Map<IEvalElement, EvaluationResult> res = command.getFormulaResults();
+		Map<IEvalElement, IEvalResult> res = command.getFormulaResults();
 		if (values.containsKey(state)) {
-			Map<IEvalElement, EvaluationResult> map = values.get(state);
+			Map<IEvalElement, IEvalResult> map = values.get(state);
 			map.putAll(res);
 		} else {
 			values.put(state, res);
@@ -336,51 +336,50 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return list of {@link EvaluationResult} objects for the given stateId
 	 *         and code
 	 */
-	public List<EvaluationResult> eval(final StateId stateId,
+	public List<IEvalResult> eval(final StateId stateId,
 			final List<IEvalElement> code) {
 		if (!containsVertex(stateId)) {
 			throw new IllegalArgumentException("state does not exist");
 		}
 		if (code.isEmpty()) {
-			return new ArrayList<EvaluationResult>();
+			return new ArrayList<IEvalResult>();
 		}
 
 		// Check to see if there are any cached results for the given StateId
-		Map<IEvalElement, EvaluationResult> map = values.get(stateId);
+		Map<IEvalElement, IEvalResult> map = values.get(stateId);
 		if (map == null) {
-			map = new HashMap<IEvalElement, EvaluationResult>();
+			map = new HashMap<IEvalElement, IEvalResult>();
 		}
 
 		// Filter out any EvalElements that have already been calculated
 		Set<IEvalElement> calculated = map.keySet();
-		List<IEvalElement> toEval = new ArrayList<IEvalElement>();
+		List<EvaluationCommand> toEval = new ArrayList<EvaluationCommand>();
 		for (IEvalElement iEvalElement : code) {
 			if (!calculated.contains(iEvalElement)) {
-				toEval.add(iEvalElement);
+				toEval.add(iEvalElement.getCommand(stateId));
 			}
 		}
 
 		// If there are formulas for which no value has been calculated, send
 		// them to prolog to get the results
-		List<EvaluationResult> fromProlog;
+		List<IEvalResult> fromProlog = new ArrayList<IEvalResult>();
 		if (!toEval.isEmpty()) {
-			final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-					toEval, stateId.getId());
+			final ComposedCommand command = new ComposedCommand(toEval);
 			execute(command);
 
-			fromProlog = command.getValues();
-		} else {
-			fromProlog = new ArrayList<EvaluationResult>();
+			for (EvaluationCommand acmd : toEval) {
+				fromProlog.addAll(acmd.getValues());
+			}
 		}
 
 		// Merge the calculated results from Prolog with the cached results for
 		// the desired list
-		final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
+		final List<IEvalResult> values = new ArrayList<IEvalResult>();
 		for (IEvalElement iEvalElement : code) {
 			if (calculated.contains(iEvalElement)) {
 				values.add(map.get(iEvalElement));
 			} else {
-				values.add(fromProlog.get(toEval.indexOf(iEvalElement)));
+				values.add(fromProlog.get(code.indexOf(iEvalElement)));
 			}
 		}
 
@@ -403,7 +402,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 				state.getId(), subscribedFormulas);
 
 		execute(cmd);
-		Map<IEvalElement, EvaluationResult> results = cmd.getResults();
+		Map<IEvalElement, IEvalResult> results = cmd.getResults();
 
 		if (values.containsKey(state)) {
 			values.get(state).putAll(results);
@@ -420,7 +419,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return map from {@link IEvalElement} object to {@link EvaluationResult}
 	 *         objects
 	 */
-	public Map<IEvalElement, EvaluationResult> valuesAt(final StateId stateId) {
+	public Map<IEvalElement, IEvalResult> valuesAt(final StateId stateId) {
 		if (values.containsKey(stateId)
 				&& values.get(stateId).keySet().size() == subscribedFormulas
 						.size()) {
@@ -430,7 +429,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			evaluateFormulas(stateId);
 			return values.get(stateId);
 		}
-		return new HashMap<IEvalElement, EvaluationResult>();
+		return new HashMap<IEvalElement, IEvalResult>();
 	}
 
 	public boolean canBeEvaluated(final StateId stateId) {
@@ -652,11 +651,11 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 		sb.append("STATE: " + state + "\n\n");
 		sb.append("VALUES:\n");
-		Map<IEvalElement, EvaluationResult> currentState = values.get(state);
+		Map<IEvalElement, IEvalResult> currentState = values.get(state);
 		if (currentState != null) {
-			final Set<Entry<IEvalElement, EvaluationResult>> entrySet = currentState
+			final Set<Entry<IEvalElement, IEvalResult>> entrySet = currentState
 					.entrySet();
-			for (final Entry<IEvalElement, EvaluationResult> entry : entrySet) {
+			for (final Entry<IEvalElement, IEvalResult> entry : entrySet) {
 				sb.append("  " + entry.getKey().getCode() + " -> "
 						+ entry.getValue().toString() + "\n");
 			}
@@ -883,7 +882,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return a map of the formulas and their result for every state in the
 	 *         state space
 	 */
-	public Map<StateId, Map<IEvalElement, EvaluationResult>> evaluateForEveryState(
+	public Map<StateId, Map<IEvalElement, IEvalResult>> evaluateForEveryState(
 			final List<IEvalElement> formulas) {
 		checkInitialized();
 		return evaluateForGivenStates(getVertices(), formulas);
@@ -900,49 +899,46 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return a map of the formulas and their results for all of the specified
 	 *         states
 	 */
-	public Map<StateId, Map<IEvalElement, EvaluationResult>> evaluateForGivenStates(
+	public Map<StateId, Map<IEvalElement, IEvalResult>> evaluateForGivenStates(
 			final Collection<StateId> states, final List<IEvalElement> formulas) {
-		Map<StateId, Map<IEvalElement, EvaluationResult>> result = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
-		List<EvaluateFormulasCommand> cmds = new ArrayList<EvaluateFormulasCommand>();
+		Map<StateId, Map<IEvalElement, IEvalResult>> result = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
+		List<EvaluationCommand> cmds = new ArrayList<EvaluationCommand>();
 
 		for (StateId stateId : states) {
 			if (canBeEvaluated(stateId)) {
-				Map<IEvalElement, EvaluationResult> res = new HashMap<IEvalElement, EvaluationResult>();
+				Map<IEvalElement, IEvalResult> res = new HashMap<IEvalElement, IEvalResult>();
 				result.put(stateId, res);
 
 				// Check for cached values
-				Map<IEvalElement, EvaluationResult> map = values.get(stateId);
+				Map<IEvalElement, IEvalResult> map = values.get(stateId);
 				if (map == null) {
-					cmds.add(new EvaluateFormulasCommand(formulas, stateId
-							.getId()));
+					for (IEvalElement f : formulas) {
+						cmds.add(f.getCommand(stateId));
+					}
 				} else {
-					List<IEvalElement> toEval = new ArrayList<IEvalElement>();
 					for (IEvalElement f : formulas) {
 						if (map.containsKey(f)) {
 							res.put(f, map.get(f));
 						} else {
-							toEval.add(f);
+							cmds.add(f.getCommand(stateId));
 						}
 					}
-					cmds.add(new EvaluateFormulasCommand(toEval, stateId
-							.getId()));
 				}
 			}
 		}
 
 		execute(new ComposedCommand(cmds));
 
-		for (EvaluateFormulasCommand efCmd : cmds) {
+		for (EvaluationCommand efCmd : cmds) {
 			List<IEvalElement> forms = efCmd.getFormulas();
-			List<EvaluationResult> vals = efCmd.getValues();
+			List<IEvalResult> vals = efCmd.getValues();
 			StateId id = getVertex(efCmd.getStateId());
 
 			for (IEvalElement formula : forms) {
 				if (formulaRegistry.containsKey(formula)
 						&& !formulaRegistry.get(formula).isEmpty()) {
 					if (!values.containsKey(id)) {
-						values.put(id,
-								new HashMap<IEvalElement, EvaluationResult>());
+						values.put(id, new HashMap<IEvalElement, IEvalResult>());
 					}
 					values.get(id).put(formula,
 							vals.get(formulas.indexOf(formula)));
@@ -955,7 +951,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return result;
 	}
 
-	public Map<StateId, Map<IEvalElement, EvaluationResult>> getValues() {
+	public Map<StateId, Map<IEvalElement, IEvalResult>> getValues() {
 		return values;
 	}
 
