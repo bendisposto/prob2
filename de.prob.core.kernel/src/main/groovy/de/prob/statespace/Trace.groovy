@@ -12,7 +12,7 @@ import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
 
-class Trace {
+public class Trace {
 
 	def final TraceElement current
 	def final TraceElement head
