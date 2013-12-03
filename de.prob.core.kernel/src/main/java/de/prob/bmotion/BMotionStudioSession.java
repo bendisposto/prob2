@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
@@ -276,9 +277,13 @@ public class BMotionStudioSession extends AbstractSession implements
 			}
 
 			if (evaluationResult != null) {
-				output = ((EvalResult) evaluationResult).getValue();
-				if(model instanceof CSPModel)
-					cachedCSPString.put(formula, output);
+				if(evaluationResult instanceof ComputationNotCompletedResult) {
+					// TODO: do something .....
+				} else if(evaluationResult instanceof EvalResult){
+					output = ((EvalResult) evaluationResult).getValue();
+					if(model instanceof CSPModel)
+						cachedCSPString.put(formula, output);
+				}
 			}
 			
 		} catch (Exception e) {
