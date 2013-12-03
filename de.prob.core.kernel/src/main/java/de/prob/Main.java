@@ -94,6 +94,9 @@ public class Main {
 	}
 
 	/**
+	 * Returns the directory in which the binary files and libraries for ProB
+	 * are stored.
+	 * 
 	 * @return if System Property "prob.home" is defined, the path to this
 	 *         directory is returned. Otherwise, the directory specified by
 	 *         System Property "user.home" is chosen, and the directory ".prob"

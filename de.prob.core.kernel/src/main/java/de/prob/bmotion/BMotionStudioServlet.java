@@ -18,6 +18,7 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -59,6 +60,26 @@ public class BMotionStudioServlet extends HttpServlet {
 			@Sessions Map<String, ISession> sessions) {
 		this.selector = selector;
 		this.sessions = sessions;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Future<SessionResult> message = taskCompletionService
+								.take();
+						if (message != null) { // will filter null values
+							SessionResult res = message.get();
+							if (res != null && res.result != null
+									&& res.result.length > 0) {
+								res.session.submit(res.result);
+							}
+						}
+					} catch (Throwable e) {
+					}
+				}
+
+			}
+		}).start();
 	}
 
 	private void update(HttpServletRequest req, BMotionStudioSession bmsSession) {

@@ -23,8 +23,9 @@ class CommandProcessor {
 		String query = "";
 		if (command instanceof IRawCommand) {
 			query = ((IRawCommand) command).getCommand();
-			if (!query.endsWith("."))
+			if (!query.endsWith(".")) {
 				query += ".";
+			}
 		} else {
 			PrologTermStringOutput pto = new PrologTermStringOutput();
 			command.writeCommand(pto);
@@ -41,10 +42,11 @@ class CommandProcessor {
 	}
 
 	private Start parseResult(final String input) {
-		if (input == null)
+		if (input == null) {
 			return null;
-		else
+		} else {
 			return ProBResultParser.parse(input);
+		}
 	}
 
 	public void configure(final ProBInstance cli) {
