@@ -31,35 +31,19 @@ Languages = (function() {
 			no_vars : true,
 			has_source : true
 		},
-		"Trace" : {
+		"TraceBox" : {
+			getAdditionalData : function(id){
+				return function(){
+					selectedTrace=$("#box"+id+" .trace-selection-menu .active-item").text();
+					return selectedTrace;					
+				}
+			},
 			codemirror : {
 				mode : 'b',
 				lineNumbers : false,
 				lineWrapping : true,
 				theme : "default",
 				viewportMargin : Infinity,
-			},
-			construct : function(id,editor_data){
-				if(editor_data.args!=null){
-					
-					var templateArgs={
-						"withDropdown":(editor_data.args.traces!=null && editor_data.args.traces.length>1),
-						"items":editor_data.args.traces,
-						"type":"trace"
-					};
-					var menu=$(Worksheet.getSession().render("/ui/worksheet/box-menu.html",templateArgs));
-					$("#box"+id+" .heading-bar").append(menu);
-					menu.find(".selectee").click(function(e){
-							$(e.target).closest(".box-menu").find(".selectee").removeClass("selected");
-							$(e.target).addClass("selected");
-							$(e.target).closest(".box-menu").find(".trace-selected").html(e.target.id);
-						});
-					if(editor_data.args.traces!=null && editor_data.args.traces.length>0){ 
-						menu.find(".trace-selected").html(editor_data.args.traces[0]);
-					}else{
-						menu.find(".trace-selected").html("No Traces in Worksheet");
-					}
-				}				
 			},
 			no_vars : true,
 			has_source : true
