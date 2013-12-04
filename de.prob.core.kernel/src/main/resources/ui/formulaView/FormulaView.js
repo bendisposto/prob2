@@ -38,11 +38,11 @@ FormulaView = (function() {
         $(".input-group").addClass("has-error");
     }
 
-    function formulaSet(formula) {
+    function formulaSet(formula, unicode) {
         $(".alert").remove();
         $(".input-group").removeClass("has-error");
         
-        $("#input-field").replaceWith(session.render("/ui/formulaView/formula_entered.html",{formula: formula}));
+        $("#input-field").replaceWith(session.render("/ui/formulaView/formula_entered.html",{formula: unicode}));
         $("#edit-formula").click(function(e) {
             e.preventDefault();
             editFormula(formula);
@@ -296,7 +296,7 @@ FormulaView = (function() {
         error(data);
     }
     extern.formulaSet = function(data) {
-        formulaSet(data.formula);
+        formulaSet(data.formula, data.unicode);
         draw(JSON.parse(data.data));
     }
     extern.parseOk = parseOk;
