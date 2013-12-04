@@ -1,8 +1,8 @@
 package de.prob.web.worksheet;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -11,22 +11,42 @@ import java.util.Set;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import de.prob.web.WebUtils;
 
-public class Trace extends AbstractBox {
+public class TraceBox extends AbstractBox {
 	private String content = "";
+	private String trace;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object> render(BindingsSnapshot snapshot) {
-		Map<String, String> renderMap = makeHtml(id, "Kommt noch");
-		String traceList = WebUtils.toJson(new String[] { "Trace_1", "Trace_2",
-				"Trace_3" });
+		List<Object> res = new ArrayList<Object>();
+		if (this.trace == null) {
+			Map<String, String> renderMap = makeHtml(id,
+					"Kein Trace ausgew&auml;lt");
+			res.add(renderMap);
+		} else {
+			ScriptEngine groovy = owner.getGroovy();
+			String script = "exec_trace(" + this.trace + "){" + this.content
+					+ "}";
+			try {
+				groovy.eval(script);
+			} catch (ScriptException e) {
+
+			}
+			Map<String, String> renderMap = makeHtml(id, "Done on:"
+					+ this.trace);
+			res.add(renderMap);
+		}
+		ArrayList<String> traces = getTraceList();
+		String traceList = WebUtils.toJson(getTraceList());
 		Map<String, String> traceDropdownMap = WebUtils.wrap("cmd",
 				"Worksheet.setDropdown", "id", id, "dropdownName",
 				"trace-selection", "items", traceList);
-		return pack(renderMap, traceDropdownMap);
+		res.add(traceDropdownMap);
+		return res;
 	}
 
 	@Override
@@ -37,6 +57,9 @@ public class Trace extends AbstractBox {
 	@Override
 	public void setContent(Map<String, String[]> data) {
 		this.content = data.get("text")[0];
+		this.trace = data.get("additionalData")[0];
+		if (this.trace.equals(""))
+			this.trace = null;
 	}
 
 	@Override
@@ -49,12 +72,10 @@ public class Trace extends AbstractBox {
 		return EChangeEffect.EVERYTHING_BELOW;
 	}
 
-	@Override
-	protected Map<String, String> getAdditionalEntries() {
+	private ArrayList<String> getTraceList() {
 		ScriptEngine groovy = owner.getGroovy();
 		Set<Entry<String, Object>> engineBindings = groovy.getBindings(
 				ScriptContext.ENGINE_SCOPE).entrySet();
-		Map<String, Object> editorArgs = new HashMap<String, Object>();
 		ArrayList<String> traceKeys = new ArrayList<String>();
 		Iterator<Entry<String, Object>> it = engineBindings.iterator();
 		while (it.hasNext()) {
@@ -63,10 +84,20 @@ public class Trace extends AbstractBox {
 				traceKeys.add(next.getKey());
 		}
 		Collections.sort(traceKeys);
-		editorArgs.put("traces", traceKeys);
+		if (this.trace != null) {
+			traceKeys.remove(this.trace);
+			traceKeys.add(0, this.trace);
+		}
+		return traceKeys;
+	}
 
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("editorArgs", WebUtils.toJson(editorArgs));
-		return map;
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<? extends Object> additionalMessages() {
+		String traceList = WebUtils.toJson(getTraceList());
+		Map<String, String> traceDropdownMap = WebUtils.wrap("cmd",
+				"Worksheet.setDropdown", "id", id, "dropdownName",
+				"trace-selection", "items", traceList);
+		return pack(traceDropdownMap);
 	}
 }

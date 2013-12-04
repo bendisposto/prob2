@@ -24,7 +24,8 @@ Worksheet = (function() {
 						"box" : number,
 						"direction" : "up",
 						"client" : extern.client,
-						"text" : cm.getValue()
+						"text" : cm.getValue(),
+						"additionalData" : editors[number].getAdditionalData()
 					})
 					focused = null; // prevent blur event
 				} else
@@ -38,7 +39,8 @@ Worksheet = (function() {
 						"box" : number,
 						"direction" : "down",
 						"client" : extern.client,
-						"text" : cm.getValue()
+						"text" : cm.getValue(),
+						"additionalData" : editors[number].getAdditionalData()
 					})
 					focused = null; // prevent blur event
 				} else
@@ -186,6 +188,13 @@ Worksheet = (function() {
 			editor_data.focusFkt = lang_data.focusFkt(number)
 		}
 
+		var getAdditionalData= lang_data.getAdditionalData;
+		if(getAdditionalData!=null){
+			editor_data.getAdditionalData=getAdditionalData(number)
+		}else{
+			editor_data.getAdditionalData=function(){return ""};
+		}
+		
 		var konstrukt = lang_data.construct
 		if (konstrukt != null) {
 			konstrukt(number, editor_data)
@@ -208,7 +217,7 @@ Worksheet = (function() {
 				"box" : number,
 				"client" : extern.client,
 				"type" : e.target.id,
-
+				"additionalData" : editors[number].getAdditionalData()
 			}
 			data.text = editors[number].getValue();
 
@@ -524,13 +533,34 @@ Worksheet = (function() {
 				"box" : focused,
 				"direction" : "none",
 				"client" : extern.client,
-				"text" : editors[focused].getValue()
+				"text" : editors[focused].getValue(),
+				"additionalData" : editors[focused].getAdditionalData()
 			})
 			unfocus(focused)
 		}
 	}
  	
- 	
+ 	function setDropdown(boxId,menuName,items){
+		var templateArgs={
+			"withDropdown":(items!=null && items.length>1),
+			"items":items,
+			"type":menuName,
+			"id":boxId
+		};
+		var menu=$(Worksheet.getSession().render("/ui/worksheet/box-menu.html",templateArgs));
+		$("#box"+boxId+" .heading-bar ."+menuName+"-menu").remove();
+		$("#box"+boxId+" .heading-bar").append(menu);
+		menu.find(".selectee").click(function(e){
+			$(e.target).closest(".box-menu").find(".selectee").removeClass("selected").removeClass("hidden");
+			$(e.target).addClass("selected").addClass("hidden");
+			$(e.target).closest(".box-menu").find(".active-item").html(e.target.id);
+		});
+		if(items!=null && items.length>0){ 
+			menu.find(".active-item").html(items[0]);
+		}else{
+			menu.find(".active-item").html("No Traces in Worksheet");
+		}
+ 	}
 	
 	extern.client = ""
 	extern.init = session.init
@@ -613,6 +643,9 @@ Worksheet = (function() {
 
 	extern.invalidate = function(data) {
 		invalidate(data.number)
+	}
+	extern.setDropdown = function(data){
+		setDropdown(data.id,data.dropdownName,JSON.parse(data.items));
 	}
 
 	extern.source = source

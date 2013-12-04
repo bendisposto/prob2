@@ -99,6 +99,7 @@ public class Worksheet extends AbstractSession {
 			initialSnapshot.restoreBindings(groovy);
 			Map<String, String> renderCmd = freshBox.createMessage();
 			messages.add(renderCmd);
+			messages.addAll(freshBox.additionalMessages());
 		} else if (index != order.size()) {
 			messages.addAll(reEvaluate(deleted.changeEffect(), index));
 		}
@@ -200,6 +201,7 @@ public class Worksheet extends AbstractSession {
 			IBox freshBox = appendFreshBox();
 			restorePreviousBoxBindings(freshBox.getId());
 			res.add(freshBox.createMessage());
+			res.addAll(freshBox.additionalMessages());
 		} else {
 			String focused = getSuccessor(boxId);
 			res.add(WebUtils.wrap("cmd", "Worksheet.focus", "number", focused,

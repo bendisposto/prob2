@@ -1,5 +1,6 @@
 package de.prob.web.worksheet;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -24,5 +25,10 @@ public interface IBox {
 	EChangeEffect changeEffect();
 
 	boolean requiresReEvaluation();
+
+	/*
+	 * Returns additional commands following create Message for a box
+	 */
+	Collection<? extends Object> additionalMessages();
 
 }

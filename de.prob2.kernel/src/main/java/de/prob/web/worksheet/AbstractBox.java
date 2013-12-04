@@ -3,6 +3,7 @@ package de.prob.web.worksheet;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +98,11 @@ public abstract class AbstractBox implements IBox {
 	@Override
 	public boolean requiresReEvaluation() {
 		return true;
+	}
+
+	@Override
+	public Collection<? extends Object> additionalMessages() {
+		return Collections.emptyList();
 	}
 
 }
