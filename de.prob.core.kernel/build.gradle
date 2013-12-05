@@ -48,7 +48,7 @@ configurations { // configuration that holds jars to copy into lib
 
 dependencies {
 
- 	//groovy 'org.codehaus.groovy:groovy-all:2.0.5'
+ 	groovy 'org.codehaus.groovy:groovy-all:2.0.5'
 
 	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
