@@ -7,9 +7,10 @@ import java.util.Map;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
@@ -150,7 +151,7 @@ public class B extends AbstractBox {
 		ArrayList<IEvalElement> evalElementList = new ArrayList<IEvalElement>();
 
 		evalElementList.add(new EventB(content));
-		List<EvaluationResult> evalResultList = space.eval(curStateId,
+		List<IEvalResult> evalResultList = space.eval(curStateId,
 				evalElementList);
 		if (evalResultList.size() > 1) {
 			return pack(makeHtml(id, "*ProB returned multiple Results.*"));
@@ -159,11 +160,11 @@ public class B extends AbstractBox {
 			return pack(makeHtml(id, "*ProB returned no Results.*"));
 		}
 
-		EvaluationResult evalResult = evalResultList.get(0);
-		if (evalResult.hasError()) {
+		EvalResult evalResult = (EvalResult) evalResultList.get(0);
+		/*if (evalResult.hasError()) {
 			return pack(makeHtml(id,
 					"*Evaluation Error: " + evalResult.getErrors() + "*"));
-		}
+		}*/
 		res.add(makeHtml(id, WebUtils.render("ui/worksheet/groovy_box.html",
 				WebUtils.wrap("id", id, "result", evalResult, "output", ""))));
 		return res;
