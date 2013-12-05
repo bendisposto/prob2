@@ -29,15 +29,15 @@ public class TraceBox extends AbstractBox {
 			res.add(renderMap);
 		} else {
 			ScriptEngine groovy = owner.getGroovy();
-			String script = "exec_trace(" + this.trace + "){" + this.content
-					+ "}";
+			String script = this.trace + "=execTrace(" + this.trace + "){"
+					+ this.content + "}";
 			try {
 				groovy.eval(script);
 			} catch (ScriptException e) {
 
 			}
-			Map<String, String> renderMap = makeHtml(id, "Done on:"
-					+ this.trace);
+			Map<String, String> renderMap = makeHtml(id, groovy.get(this.trace)
+					.toString());
 			res.add(renderMap);
 		}
 		ArrayList<String> traces = getTraceList();
