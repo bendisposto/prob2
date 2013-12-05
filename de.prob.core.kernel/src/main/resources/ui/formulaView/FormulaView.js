@@ -3,8 +3,8 @@ FormulaView = (function() {
     var extern = {}
     var session = Session();
     var vizUtils = VizUtils();
-    var width = $(".col-lg-12")[0].clientWidth;
-    var height =  vizUtils.calculateHeight() - $(".col-lg-12")[0].clientHeight;
+    var width = vizUtils.calculateWidth();
+    var height =  vizUtils.calculateHeight() - $("#header")[0].clientHeight;
     var vis = vizUtils.createCanvas("#visualization", width, height);
     var tree = d3.layout.tree()
             .size([height, width]);
@@ -191,7 +191,7 @@ FormulaView = (function() {
 
         var maxWidths = []
         nodes.forEach(function(d) { if(maxWidths[d.depth] === undefined) {
-            maxWidths[d.depth] = d.width
+            maxWidths[d.depth] = d.width + 25
         } else {
             maxWidths[d.depth] = (d.width > maxWidths[d.depth]) ? d.width : maxWidths[d.depth]
         }})

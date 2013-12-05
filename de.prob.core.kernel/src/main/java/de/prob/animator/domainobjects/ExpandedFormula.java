@@ -12,6 +12,7 @@ import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.unicode.UnicodeTranslator;
 
 public class ExpandedFormula {
 
@@ -28,6 +29,7 @@ public class ExpandedFormula {
 	public void init(final CompoundPrologTerm cpt) {
 		name = cpt.getArgument(1).getFunctor();
 		fields.put("name", escapeUnicode(name));
+
 		// Value
 		PrologTerm v = cpt.getArgument(2);
 		value = getValue(v);
@@ -65,7 +67,7 @@ public class ExpandedFormula {
 			}
 		} else if (v.getFunctor().equals("v")) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(v, 1);
-			return cpt.getArgument(1).getFunctor();
+			return UnicodeTranslator.toUnicode(cpt.getArgument(1).getFunctor());
 		}
 		v.getFunctor();
 		return null;
