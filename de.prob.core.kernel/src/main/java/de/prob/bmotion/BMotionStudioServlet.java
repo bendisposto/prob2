@@ -146,13 +146,16 @@ public class BMotionStudioServlet extends HttpServlet {
 				String baseHtml = getBaseHtml(bmsSession);
 
 				Document templateDocument = Jsoup.parse(templateHtml);
+				templateDocument.outputSettings().prettyPrint(false);
+				
 				Elements headTag = templateDocument.getElementsByTag("head");
 
 				String head = headTag.html();
 				Elements bodyTag = templateDocument.getElementsByTag("body");
 				String body = bodyTag.html();
 				Document baseDocument = Jsoup.parse(baseHtml);
-
+				baseDocument.outputSettings().prettyPrint(false);
+				
 				Elements headTag2 = baseDocument.getElementsByTag("head");
 				Element bodyTag2 = baseDocument.getElementById("vis_container");
 				bodyTag2.append(body);
