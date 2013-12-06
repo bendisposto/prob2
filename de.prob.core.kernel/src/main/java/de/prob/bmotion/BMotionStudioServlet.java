@@ -34,8 +34,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.annotations.Sessions;
-import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.web.ISession;
 import de.prob.web.WebUtils;
 import de.prob.web.data.SessionResult;
@@ -53,12 +51,11 @@ public class BMotionStudioServlet extends HttpServlet {
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
 
-	private AnimationSelector selector;
+	// private AnimationSelector selector;
 
 	@Inject
-	public BMotionStudioServlet(AnimationSelector selector,
-			@Sessions Map<String, ISession> sessions) {
-		this.selector = selector;
+	public BMotionStudioServlet(@Sessions Map<String, ISession> sessions) {
+		// this.selector = selector;
 		this.sessions = sessions;
 		new Thread(new Runnable() {
 			@Override
@@ -91,9 +88,12 @@ public class BMotionStudioServlet extends HttpServlet {
 	private void executeCommand(HttpServletRequest req,
 			HttpServletResponse resp, BMotionStudioSession bmsSession)
 			throws IOException {
+		
 		Map<String, String[]> parameterMap = req.getParameterMap();
 		Callable<SessionResult> command = bmsSession.command(parameterMap);
+		System.out.println("EXECUTE COMMAND: " + command);
 		PrintWriter writer = resp.getWriter();
+		
 		writer.write("submitted");
 		writer.flush();
 		writer.close();
@@ -180,15 +180,15 @@ public class BMotionStudioServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-
-		Trace currentTrace = this.selector.getCurrentTrace();
+		
+		// Trace currentTrace = this.selector.getCurrentTrace();
 
 		// No running animation ...
-		if (currentTrace == null) {
-			// TODO: Display a page with a proper message
-			return;
-		}
-
+		// if (currentTrace == null) {
+		// TODO: Display a page with a proper message
+		// return;
+		// }
+		
 		// Check if an existing session is request
 		String uri = req.getRequestURI();
 		List<String> parts = new PartList(uri.split("/"));
@@ -211,9 +211,11 @@ public class BMotionStudioServlet extends HttpServlet {
 			String redirect;
 
 			String template = req.getParameter("template");
+			String machine = req.getParameter("machine");
 			// New template requested via parameter
-			if (template != null) {
+			if (template != null && machine != null) {
 				bmsSession.setTemplate(template);
+				bmsSession.setMachine(machine);
 				String templateFullPath = bmsSession.getTemplate();
 				List<String> templateParts = new PartList(
 						templateFullPath.split("/"));
@@ -231,7 +233,6 @@ public class BMotionStudioServlet extends HttpServlet {
 			return;
 
 		} else {
-
 			String mode = req.getParameter("mode");
 			if ("update".equals(mode)) {
 				update(req, bmsSession);
@@ -240,7 +241,6 @@ public class BMotionStudioServlet extends HttpServlet {
 			} else {
 				delegateFileRequest(req, resp, bmsSession);
 			}
-
 		}
 
 	}
