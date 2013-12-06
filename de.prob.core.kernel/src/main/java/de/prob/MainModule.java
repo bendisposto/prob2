@@ -1,7 +1,6 @@
 package de.prob;
 
 import static java.io.File.separator;
-import groovy.lang.Binding;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,14 +14,12 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.codehaus.groovy.tools.shell.Interpreter;
 import org.pegdown.PegDownProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
 import de.prob.animator.AnimatorModule;
@@ -30,65 +27,82 @@ import de.prob.annotations.Home;
 import de.prob.annotations.Logfile;
 import de.prob.annotations.Version;
 import de.prob.cli.ModuleCli;
-import de.prob.scripting.Api;
-import de.prob.scripting.Downloader;
-import de.prob.scripting.ScriptEngineProvider;
+import de.prob.scripting.ScriptingModule;
 import de.prob.statespace.ModelModule;
 import de.prob.web.WebModule;
 
+/**
+ * This Guice {@link AbstractModule} contains all the configuration information
+ * necessary to configure ProB 2.0.
+ * 
+ * @author joy
+ * 
+ */
 public class MainModule extends AbstractModule {
-
-	private static final Logger logger = LoggerFactory
-			.getLogger(MainModule.class);
+	private final Logger logger = LoggerFactory.getLogger(MainModule.class);
 	private final Properties buildConstants;
 
+	/**
+	 * Instantiates module with the build properties necessary to run ProB 2.0.
+	 */
 	public MainModule() {
 		buildConstants = loadBuildConstants();
+
 	}
 
 	@Override
-	protected void configure() {
+	protected final void configure() {
 		install(new ModuleCli());
 		install(new AnimatorModule());
 		install(new ModelModule());
 		install(new WebModule());
+		install(new ScriptingModule());
 
-		bind(Api.class);
 		bind(CommandLineParser.class).to(PosixParser.class);
-
 		bind(String.class).annotatedWith(Version.class).toInstance(
 				buildConstants.getProperty("version", "0.0.0"));
 		bind(ConsoleReader.class);
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
 				.toInstance(Main.class.getClassLoader());
-		bind(Downloader.class);
 		bind(PegDownProcessor.class);
-		bind(ScriptEngineProvider.class);
+
+		// TODO: Should this property be set here? Should it be set at all?
+		System.setProperty("PROB_LOGFILE", getProBLogfile());
 	}
 
+	/**
+	 * Calls {@link Main#getProBDirectory()} to find the absolute path
+	 * associated with the ProB directory. Binds this path to the {@link Home}
+	 * annotation in order to be able to inject it.
+	 * 
+	 * @return the absolute path to ProB directory.
+	 */
 	@Provides
 	@Home
-	public String getProBDirectory() {
+	public final String getProBDirectory() {
 		return Main.getProBDirectory();
 	}
 
-	@Provides
-	public Interpreter getInterpreter(
-			final @Named("Classloader") ClassLoader classloader,
-			final Binding binding) {
-		return new Interpreter(classloader, binding);
-	}
-
+	/**
+	 * Returns the path to the log file associated with ProB 2.0. This is
+	 * currently {@link Main#getProBDirectory()}logs/ProB.txt, but this is
+	 * subject to change. Binds this path to the {@link Logfile} annotation in
+	 * order to be able to inject it.
+	 * 
+	 * @return the path to the fog file for ProB 2.0
+	 */
 	@Provides
 	@Logfile
-	public String getProBLogfile() {
-		String str = getProBDirectory() + "logs" + separator + "ProB.txt";
-		System.setProperty("PROB_LOGFILE", str);
-		return str;
+	public final String getProBLogfile() {
+		return getProBDirectory() + "logs" + separator + "ProB.txt";
 	}
 
+	/**
+	 * @return an {@link Option} object containing the available command line
+	 *         options for ProB 2.0
+	 */
 	@Provides
-	public Options getCommandlineOptions() {
+	public final Options getCommandlineOptions() {
 		Options options = new Options();
 		Option shell = new Option("s", "shell", false,
 				"start ProB's Groovy shell");
@@ -101,6 +115,7 @@ public class MainModule extends AbstractModule {
 						"run a Groovy test script or all .groovy files from a directory")
 				.create("test");
 
+		// TODO: add modelchecking option
 		// Option modelcheck = new Option("mc", "modelcheck", false,
 		// "start ProB model checking");
 		OptionGroup mode = new OptionGroup();

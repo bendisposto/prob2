@@ -13,12 +13,13 @@ import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpFromId;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.CSPModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.scripting.CSPModel;
+import de.prob.statespace.derived.DerivedOp;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -35,7 +36,7 @@ public class OpInfo {
 	public final String dest;
 	public List<String> params = new ArrayList<String>();
 	public String targetState;
-	public String rep = null;
+	protected String rep = null;
 	public boolean evaluated;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
@@ -123,8 +124,9 @@ public class OpInfo {
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
-		if (destTerm instanceof IntegerPrologTerm)
+		if (destTerm instanceof IntegerPrologTerm) {
 			return BindingGenerator.getInteger(destTerm).getValue().toString();
+		}
 		return destTerm.getFunctor();
 	}
 
@@ -170,8 +172,9 @@ public class OpInfo {
 		}
 
 		if (m instanceof CSPModel) {
-			if (params.isEmpty())
+			if (params.isEmpty()) {
 				return name;
+			}
 			return name + "." + Joiner.on(".").join(getParams());
 		}
 		return name + "(" + Joiner.on(",").join(getParams()) + ")";
@@ -179,12 +182,16 @@ public class OpInfo {
 
 	@Override
 	public boolean equals(final Object obj) {
+		if (obj instanceof DerivedOp) {
+			return false;
+		}
 		if (obj instanceof OpInfo) {
 			OpInfo that = (OpInfo) obj;
 			boolean b = that.getId().equals(id);
 			return b;
-		} else
+		} else {
 			return false;
+		}
 	}
 
 	@Override
@@ -193,14 +200,16 @@ public class OpInfo {
 	}
 
 	public boolean isSame(final OpInfo that) {
-		if (!that.isEvaluated())
+		if (!that.isEvaluated()) {
 			return false;
+		}
 		return that.getName().equals(name) && that.getParams().equals(params);
 	}
 
 	public OpInfo ensureEvaluated(final StateSpace s) {
-		if (evaluated)
+		if (evaluated) {
 			return this;
+		}
 		GetOpFromId command = new GetOpFromId(getId());
 		s.execute(command);
 		name = command.getName();
@@ -217,7 +226,7 @@ public class OpInfo {
 	public String sha() throws NoSuchAlgorithmException {
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		md.update(targetState.getBytes());
-		return new BigInteger(1, md.digest()).toString(16);
+		return new BigInteger(1, md.digest()).toString(Character.MAX_RADIX);
 	}
 
 	/**

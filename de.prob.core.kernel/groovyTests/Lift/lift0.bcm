@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.scMachineFile org.eventb.core.accurate="true" org.eventb.core.configuration="org.eventb.core.fwd">
+<org.eventb.core.scSeesContext name="'" org.eventb.core.scTarget="/Lift/levels.bcc" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.seesContext#."/>
+<org.eventb.core.scInternalContext name="levels">
+<org.eventb.core.scAxiom name="'" org.eventb.core.label="axm1" org.eventb.core.predicate="partition(levels,{L0},{L1},{L2},{L3})" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.axiom#," org.eventb.core.theorem="false"/>
+<org.eventb.core.scAxiom name="(" org.eventb.core.label="axm2" org.eventb.core.predicate="up={L0 ↦ L1,L1 ↦ L2,L2 ↦ L3}" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.axiom#." org.eventb.core.theorem="false"/>
+<org.eventb.core.scAxiom name=")" org.eventb.core.label="axm3" org.eventb.core.predicate="down={L1 ↦ L0,L2 ↦ L1,L3 ↦ L2}" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.axiom#0" org.eventb.core.theorem="false"/>
+<org.eventb.core.scConstant name="L0" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#(" org.eventb.core.type="levels"/>
+<org.eventb.core.scConstant name="L1" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#)" org.eventb.core.type="levels"/>
+<org.eventb.core.scConstant name="L2" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#*" org.eventb.core.type="levels"/>
+<org.eventb.core.scConstant name="L3" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#+" org.eventb.core.type="levels"/>
+<org.eventb.core.scConstant name="down" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#\/" org.eventb.core.type="ℙ(levels×levels)"/>
+<org.eventb.core.scCarrierSet name="levels" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.carrierSet#'" org.eventb.core.type="ℙ(levels)"/>
+<org.eventb.core.scConstant name="up" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#-" org.eventb.core.type="ℙ(levels×levels)"/>
+</org.eventb.core.scInternalContext>
+<org.eventb.core.scInvariant name="levelt" org.eventb.core.label="inv1" org.eventb.core.predicate="level∈levels" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.invariant#)" org.eventb.core.theorem="false"/>
+<org.eventb.core.scVariable name="level" org.eventb.core.abstract="false" org.eventb.core.concrete="true" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.variable#(" org.eventb.core.type="levels"/>
+<org.eventb.core.scEvent name="levelu" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#'">
+<org.eventb.core.scAction name="'" org.eventb.core.assignment="level ≔ L0" org.eventb.core.label="act1" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#'|org.eventb.core.action#'"/>
+</org.eventb.core.scEvent>
+<org.eventb.core.scEvent name="levelv" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="up" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#,">
+<org.eventb.core.scGuard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="level∈{L0,L1,L2}" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#,|org.eventb.core.guard#'" org.eventb.core.theorem="false"/>
+<org.eventb.core.scAction name="(" org.eventb.core.assignment="level ≔ up(level)" org.eventb.core.label="act1" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#,|org.eventb.core.action#("/>
+</org.eventb.core.scEvent>
+<org.eventb.core.scEvent name="levelw" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="down" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#-">
+<org.eventb.core.scGuard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="level∈{L1,L2,L3}" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#-|org.eventb.core.guard#'" org.eventb.core.theorem="false"/>
+<org.eventb.core.scAction name="(" org.eventb.core.assignment="level ≔ down(level)" org.eventb.core.label="act1" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#-|org.eventb.core.action#("/>
+</org.eventb.core.scEvent>
+<org.eventb.core.scEvent name="levelx" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="randomCrazyJump" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#\/">
+<org.eventb.core.scGuard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="prm1∈levels" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#\/|org.eventb.core.guard#(" org.eventb.core.theorem="false"/>
+<org.eventb.core.scParameter name="prm1" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#\/|org.eventb.core.parameter#'" org.eventb.core.type="levels"/>
+<org.eventb.core.scAction name="prm2" org.eventb.core.assignment="level ≔ prm1" org.eventb.core.label="act1" org.eventb.core.source="/Lift/lift0.bum|org.eventb.core.machineFile#lift0|org.eventb.core.event#\/|org.eventb.core.action#)"/>
+</org.eventb.core.scEvent>
+</org.eventb.core.scMachineFile>

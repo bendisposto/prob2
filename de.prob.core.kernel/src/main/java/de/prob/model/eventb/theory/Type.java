@@ -49,6 +49,11 @@ public class Type extends AbstractElement {
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		return identifier.hashCode();
+	}
+
 	public IFormulaExtension getFormulaExtension() {
 		if (ext == null) {
 			ext = new TypeExtension();

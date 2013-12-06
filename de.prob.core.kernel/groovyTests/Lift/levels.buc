@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.contextFile org.eventb.core.configuration="org.eventb.core.fwd" version="3">
+<org.eventb.core.carrierSet name="'" org.eventb.core.identifier="levels"/>
+<org.eventb.core.constant name="(" org.eventb.core.identifier="L0"/>
+<org.eventb.core.constant name=")" org.eventb.core.identifier="L1"/>
+<org.eventb.core.constant name="*" org.eventb.core.identifier="L2"/>
+<org.eventb.core.constant name="+" org.eventb.core.identifier="L3"/>
+<org.eventb.core.axiom name="," org.eventb.core.label="axm1" org.eventb.core.predicate="partition(levels, {L0}, {L1}, {L2}, {L3})"/>
+<org.eventb.core.constant name="-" org.eventb.core.identifier="up"/>
+<org.eventb.core.axiom name="." org.eventb.core.label="axm2" org.eventb.core.predicate="up = {L0 ↦ L1, L1 ↦ L2, L2 ↦ L3}"/>
+<org.eventb.core.constant name="/" org.eventb.core.identifier="down"/>
+<org.eventb.core.axiom name="0" org.eventb.core.label="axm3" org.eventb.core.predicate="down = {L1 ↦ L0, L2 ↦ L1, L3 ↦ L2}"/>
+</org.eventb.core.contextFile>

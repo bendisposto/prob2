@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.eclipse.swt.widgets.Shell;
 
+import com.google.inject.Injector;
+
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.core.editor.wizard.event.BExecuteOperationWizard;
 import de.bmotionstudio.core.editor.wizard.event.EventWizard;
@@ -17,8 +19,6 @@ import de.prob.webconsole.ServletContextListener;
 
 public class ExecuteBOperationEvent extends Event {
 
-	private final AnimationSelector animations = ServletContextListener.INJECTOR
-			.getInstance(AnimationSelector.class);
 	private String operation;
 
 	private String predicate;
@@ -26,9 +26,13 @@ public class ExecuteBOperationEvent extends Event {
 	@Override
 	public void execute(final Trace history, final BControl control) {
 
-		if (operation == null) {
+		
+		if (operation == null)
 			return;
-		}
+
+		Injector injector = ServletContextListener.INJECTOR;
+		AnimationSelector selector = injector
+				.getInstance(AnimationSelector.class);
 
 		try {
 
@@ -41,7 +45,7 @@ public class ExecuteBOperationEvent extends Event {
 
 			Trace newTrace = history.add(operation,
 					BMotionUtil.parseFormula(fpredicate, control));
-			animations.replaceTrace(history, newTrace);
+			selector.replaceTrace(history, newTrace);
 
 		} catch (BException e1) {
 		} catch (IllegalArgumentException e2) {

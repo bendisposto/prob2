@@ -13,6 +13,18 @@ function VizUtils(){
         return height;
     }
 
+    function calculateWidth() {
+        var width = 0
+        if (typeof (window.innerWidth) === 'number') {
+            width = window.innerWidth;
+        } else if (document.documentElement && (document.documentElement.clientWidth)) {
+            width = document.documentElement.clientWidth;
+        } else if (document.body && (document.body.clientWidth)) {
+            width = document.body.clientWidth;
+        }
+        return width;
+    }
+
     function applyStyling(styling) {
         var i, j, selector, selected, attributes, styles;
         for (i = 0; i < styling.length; i = i + 1) {
@@ -75,6 +87,7 @@ function VizUtils(){
     }
 
     extern.calculateHeight = calculateHeight;
+    extern.calculateWidth = calculateWidth;
     extern.applyStyling = applyStyling;
     extern.createCanvas = createCanvas;
 

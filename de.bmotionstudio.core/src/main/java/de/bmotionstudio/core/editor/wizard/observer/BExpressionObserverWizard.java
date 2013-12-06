@@ -36,28 +36,29 @@ import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.core.model.attribute.AbstractAttribute;
 import de.bmotionstudio.core.model.control.BControl;
-import de.bmotionstudio.core.model.observer.BExpressionObserver;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.bmotionstudio.core.util.BMotionUtil;
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.ComputationNotCompletedResult;
+import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class BExpressionObserverWizard extends ObserverWizard {
-	
+
 	private final DataBindingContext dbc = new DataBindingContext();
-	
+
 	private Text nameText, expressionText, messageText;
-	
+
 	private ComboViewer attributeCombo;
-	
+
 	private Composite container;
-	
-	private Injector injector = ServletContextListener.INJECTOR;
-	
-	public BExpressionObserverWizard(Shell shell, BControl control,
-			Observer observer) {
+
+	private final Injector injector = ServletContextListener.INJECTOR;
+
+	public BExpressionObserverWizard(final Shell shell, final BControl control,
+			final Observer observer) {
 		super(shell, control, observer);
 	}
 
@@ -65,52 +66,53 @@ public class BExpressionObserverWizard extends ObserverWizard {
 	public Point getSize() {
 		return new Point(375, 325);
 	}
-	
+
 	@Override
-	public Control createDialogArea(Composite parent) {
-		
-		parent.setLayout(new GridLayout(1,true));
-		
-		GridLayout layout = new GridLayout(2,false);
-		
+	public Control createDialogArea(final Composite parent) {
+
+		parent.setLayout(new GridLayout(1, true));
+
+		GridLayout layout = new GridLayout(2, false);
+
 		container = new Composite(parent, SWT.NONE);
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 		container.setLayout(layout);
-		
+
 		GridData gridDataFill = new GridData(GridData.FILL_HORIZONTAL);
-		
+
 		GridData gridDataLabel = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 		gridDataLabel.widthHint = 75;
 		gridDataLabel.heightHint = 25;
 
-		Label label = new Label(container,SWT.NONE);
+		Label label = new Label(container, SWT.NONE);
 		label.setText("Name:");
 		label.setLayoutData(gridDataLabel);
-		
+
 		nameText = new Text(container, SWT.BORDER);
 		nameText.setLayoutData(gridDataFill);
-			
-		label = new Label(container,SWT.NONE);
+
+		label = new Label(container, SWT.NONE);
 		label.setText("Attribute:");
 		label.setLayoutData(gridDataLabel);
-		
+
 		attributeCombo = new ComboViewer(container);
 		attributeCombo.setContentProvider(new ArrayContentProvider());
 		attributeCombo.setLabelProvider(new LabelProvider() {
-			
+
 			@Override
-			public String getText(Object element) {
+			public String getText(final Object element) {
 				AbstractAttribute atr = (AbstractAttribute) element;
 				return atr.getName();
 			}
-			
+
 		});
 		attributeCombo.setInput(getControl().getAttributes().values());
 		attributeCombo.getCombo().setLayoutData(gridDataFill);
 		attributeCombo
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
+					public void selectionChanged(
+							final SelectionChangedEvent event) {
 
 						ISelection selection = event.getSelection();
 						if (selection instanceof StructuredSelection) {
@@ -134,45 +136,47 @@ public class BExpressionObserverWizard extends ObserverWizard {
 
 					}
 				});
-		
-		label = new Label(container,SWT.NONE);
+
+		label = new Label(container, SWT.NONE);
 		label.setText("Expression:");
 		label.setLayoutData(gridDataLabel);
-			
+
 		expressionText = new Text(container, SWT.BORDER);
 		expressionText.setLayoutData(gridDataFill);
 		expressionText.addModifyListener(new ModifyListener() {
-			
+
 			@Override
-			public void modifyText(ModifyEvent e) {
+			public void modifyText(final ModifyEvent e) {
 
 				try {
-					
+
 					messageText.setText("");
-					
+
 					BParser.parse(BParser.EXPRESSION_PREFIX
 							+ expressionText.getText());
-					
+
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					Trace currentTrace = selector.getCurrentTrace();
-					
-					if(currentTrace != null) {
-					
-					EvaluationResult eval = currentTrace.evalCurrent(expressionText
-							.getText());
-						
+
+					if (currentTrace != null) {
+
+						IEvalResult eval = currentTrace
+								.evalCurrent(expressionText.getText());
+
 						if (eval != null) {
 
-							if (!eval.hasError()) {
+							if (eval instanceof EvalResult) {
 								messageText.setText("Result: "
-										+ eval.getValue());
+										+ ((EvalResult) eval).getValue());
 								messageText
 										.setForeground(ColorConstants.darkGreen);
 							} else {
 								messageText.setForeground(ColorConstants.red);
-								messageText.setText("Error: "
-										+ eval.getErrors());
+								messageText
+										.setText("Error: "
+												+ ((ComputationNotCompletedResult) eval)
+														.getReason());
 							}
 
 							messageText.redraw();
@@ -180,7 +184,7 @@ public class BExpressionObserverWizard extends ObserverWizard {
 						}
 
 					}
-					
+
 				} catch (BException e1) {
 					messageText.setForeground(ColorConstants.red);
 					messageText.setText("Error: " + e1.getMessage());
@@ -189,29 +193,29 @@ public class BExpressionObserverWizard extends ObserverWizard {
 				}
 
 			}
-			
+
 		});
-		
-		label = new Label(container,SWT.NONE);
+
+		label = new Label(container, SWT.NONE);
 		label.setText("");
 		label.setLayoutData(gridDataLabel);
 
-		messageText = new Text(container,SWT.MULTI | SWT.WRAP);
+		messageText = new Text(container, SWT.MULTI | SWT.WRAP);
 		messageText.setText("");
 		messageText.setForeground(ColorConstants.red);
 		messageText.setBackground(ColorConstants.menuBackground);
 		messageText.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
+
 		getObserver().addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
+			public void propertyChange(final PropertyChangeEvent evt) {
 
 				if (evt.getPropertyName().equals("expression")) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					Trace currentTrace = selector.getCurrentTrace();
-					Map<String, EvaluationResult> evaluationResults = BMotionUtil
+					Map<String, IEvalResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
 									currentTrace,
 									getControl().prepareObserver(getObserver(),
@@ -221,44 +225,40 @@ public class BExpressionObserverWizard extends ObserverWizard {
 				}
 
 			}
-			
+
 		});
-		
+
 		initBindings(dbc);
-		
+
 		return container;
-		
+
 	}
 
-	private void initBindings(DataBindingContext dbc) {
+	private void initBindings(final DataBindingContext dbc) {
 
-		
-		
 		dbc.bindValue(SWTObservables.observeText(nameText, SWT.Modify),
-				BeansObservables.observeValue(
-						(BExpressionObserver) getObserver(), "name"));
+				BeansObservables.observeValue(getObserver(), "name"));
 
 		dbc.bindValue(SWTObservables.observeText(expressionText, SWT.Modify),
-				BeansObservables.observeValue(
-						(BExpressionObserver) getObserver(), "expression"));
-		
+				BeansObservables.observeValue(getObserver(), "expression"));
+
 		IObservableValue typeSelection = ViewersObservables
 				.observeSingleSelection(attributeCombo);
 		IObservableValue myModelTypeObserveValue = BeansObservables
-				.observeValue((BExpressionObserver) getObserver(), "attribute");
-		
+				.observeValue(getObserver(), "attribute");
+
 		dbc.bindValue(typeSelection, myModelTypeObserveValue,
 				new UpdateValueStrategy() {
 
 					@Override
-					public Object convert(Object value) {
+					public Object convert(final Object value) {
 						return ((AbstractAttribute) value).getID();
 					}
 
 				}, new UpdateValueStrategy() {
 
 					@Override
-					public Object convert(Object value) {
+					public Object convert(final Object value) {
 						BControl control = getControl();
 						return control.getAttribute(value.toString());
 					}

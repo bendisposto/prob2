@@ -1,22 +1,53 @@
-#template_container {
-	margin-top: 25px;
-	display: inline-block;
+body, html {
+  height: 100%;
 }
 
-#observer-code-block {
-	max-width: 400px;
-}
-
-.code-block {
-	margin: 10px;
-	float: left;
-}
-
-.entry {
-	padding-left: 15px;
-	padding-right: 15px;
+#vis_container {
+	margin-left:30px;
 }
 
 .modal-dialog {
-	width:100%;
+	width:95%;
+	margin-left:30px;
+}
+
+ul#navigation {
+    position: fixed;
+    margin: 0px;
+    padding: 0px;
+    top: 10px;
+    left: 0px;
+    list-style: none;
+    z-index:9999;
+}
+ul#navigation li {
+    width: 10px;
+}
+ul#navigation li a {
+    display: block;
+    float:left;
+    margin-top: -2px;
+    width: 100px;
+    height: 25px;
+    background-color:#E7F2F9;
+    background-repeat:no-repeat;
+    background-position:50% 10px;
+    border:1px solid #BDDCEF;
+    -moz-border-radius:0px 10px 10px 0px;
+    -webkit-border-bottom-right-radius: 10px;
+    -webkit-border-top-right-radius: 10px;
+    -khtml-border-bottom-right-radius: 10px;
+    -khtml-border-top-right-radius: 10px;
+    text-decoration:none;
+    text-align:center;
+    padding-top:70px;
+}
+ul#navigation li a:hover{
+     background-color:#CAE3F2;
+}
+ul#navigation .template a {
+    background-image: url(template-icon.png);
+}
+ul#navigation .observer a {
+    background-image: url(observer-icon.png);
 }

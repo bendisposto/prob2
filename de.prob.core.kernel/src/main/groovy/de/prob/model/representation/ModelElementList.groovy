@@ -72,6 +72,14 @@ public class ModelElementList<E> implements List<E> {
 		return list.get(index)
 	}
 
+	/**
+	 * @param name
+	 * @return the element associated with the specified name if a mapping for the name exists in the {@link ModelElementList}
+	 */
+	public E get(String name) {
+		return keys[name]
+	}
+
 	@Override
 	public int indexOf(Object o) {
 		return list.indexOf(o)

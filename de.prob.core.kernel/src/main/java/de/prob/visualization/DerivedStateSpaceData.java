@@ -18,7 +18,7 @@ import de.prob.statespace.derived.DerivedStateId;
 
 public class DerivedStateSpaceData extends AbstractData {
 
-	public int varSize = 2;
+	private int varSize = 2;
 	private final AbstractDerivedStateSpace space;
 	private final Map<String, Transformer> styles = new HashMap<String, Transformer>();
 
@@ -143,6 +143,14 @@ public class DerivedStateSpaceData extends AbstractData {
 	public void closeData() {
 		// TODO Auto-generated method stub
 
+	}
+
+	public int getVarSize() {
+		return varSize;
+	}
+
+	public void setVarSize(final int varSize) {
+		this.varSize = varSize;
 	}
 
 }

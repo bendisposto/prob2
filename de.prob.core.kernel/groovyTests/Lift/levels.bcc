@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.scContextFile org.eventb.core.accurate="true" org.eventb.core.configuration="org.eventb.core.fwd">
+<org.eventb.core.scAxiom name="'" org.eventb.core.label="axm1" org.eventb.core.predicate="partition(levels,{L0},{L1},{L2},{L3})" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.axiom#," org.eventb.core.theorem="false"/>
+<org.eventb.core.scAxiom name="(" org.eventb.core.label="axm2" org.eventb.core.predicate="up={L0 ↦ L1,L1 ↦ L2,L2 ↦ L3}" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.axiom#." org.eventb.core.theorem="false"/>
+<org.eventb.core.scAxiom name=")" org.eventb.core.label="axm3" org.eventb.core.predicate="down={L1 ↦ L0,L2 ↦ L1,L3 ↦ L2}" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.axiom#0" org.eventb.core.theorem="false"/>
+<org.eventb.core.scConstant name="L0" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#(" org.eventb.core.type="levels"/>
+<org.eventb.core.scConstant name="L1" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#)" org.eventb.core.type="levels"/>
+<org.eventb.core.scConstant name="L2" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#*" org.eventb.core.type="levels"/>
+<org.eventb.core.scConstant name="L3" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#+" org.eventb.core.type="levels"/>
+<org.eventb.core.scConstant name="down" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#\/" org.eventb.core.type="ℙ(levels×levels)"/>
+<org.eventb.core.scCarrierSet name="levels" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.carrierSet#'" org.eventb.core.type="ℙ(levels)"/>
+<org.eventb.core.scConstant name="up" org.eventb.core.source="/Lift/levels.buc|org.eventb.core.contextFile#levels|org.eventb.core.constant#-" org.eventb.core.type="ℙ(levels×levels)"/>
+</org.eventb.core.scContextFile>

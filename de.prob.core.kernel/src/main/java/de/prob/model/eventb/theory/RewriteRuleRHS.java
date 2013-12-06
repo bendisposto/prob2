@@ -4,6 +4,8 @@ import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
+import com.google.common.base.Objects;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 
@@ -39,8 +41,7 @@ public class RewriteRuleRHS extends AbstractElement {
 
 	@Override
 	public int hashCode() {
-		return 13 * name.hashCode() + 17 * predicate.hashCode() + 23
-				* formula.hashCode();
+		return Objects.hashCode(name, formula, predicate);
 	}
 
 	@Override
@@ -48,11 +49,15 @@ public class RewriteRuleRHS extends AbstractElement {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof RewriteRuleRHS) {
-			return name.equals(((RewriteRuleRHS) obj).getName())
-					&& formula.equals(((RewriteRuleRHS) obj).getFormula())
-					&& predicate.equals(((RewriteRuleRHS) obj).getPredicate());
+		if (obj == null) {
+			return false;
 		}
-		return false;
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		RewriteRuleRHS that = (RewriteRuleRHS) obj;
+		return Objects.equal(name, that.getName())
+				&& Objects.equal(formula, that.getFormula())
+				&& Objects.equal(predicate, that.getPredicate());
 	}
 }

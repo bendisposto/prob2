@@ -13,6 +13,8 @@ import org.eventb.core.ast.extension.datatype.IConstructorMediator;
 import org.eventb.core.ast.extension.datatype.IDatatypeExtension;
 import org.eventb.core.ast.extension.datatype.ITypeConstructorMediator;
 
+import com.google.common.base.Objects;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
@@ -23,33 +25,34 @@ public class DataType extends AbstractElement {
 	private final String identifierString;
 	private final EventB identifier;
 	private IDatatypeExtension typeDef = null;
-	private final List<Type> typeArguments = new ModelElementList<Type>();
-	private final List<DataTypeConstructor> dataTypeConstructors = new ModelElementList<DataTypeConstructor>();
+	private ModelElementList<Type> typeArguments = new ModelElementList<Type>();
+	private ModelElementList<DataTypeConstructor> dataTypeConstructors = new ModelElementList<DataTypeConstructor>();
 
 	public DataType(final String identifier) {
 		identifierString = identifier;
 		this.identifier = new EventB(identifier);
 	}
 
-	public void addTypeArguments(final List<Type> arguments) {
+	public void addTypeArguments(final ModelElementList<Type> arguments) {
 		put(Type.class, arguments);
-		typeArguments.addAll(arguments);
+		typeArguments = arguments;
 	}
 
-	public void addConstructors(final List<DataTypeConstructor> constructors) {
+	public void addConstructors(
+			final ModelElementList<DataTypeConstructor> constructors) {
 		put(DataTypeConstructor.class, constructors);
-		dataTypeConstructors.addAll(constructors);
+		dataTypeConstructors = constructors;
 	}
 
 	public EventB getTypeIdentifier() {
 		return identifier;
 	}
 
-	public List<DataTypeConstructor> getDataTypeConstructors() {
+	public ModelElementList<DataTypeConstructor> getDataTypeConstructors() {
 		return dataTypeConstructors;
 	}
 
-	public List<Type> getTypeArguments() {
+	public ModelElementList<Type> getTypeArguments() {
 		return typeArguments;
 	}
 
@@ -64,8 +67,7 @@ public class DataType extends AbstractElement {
 			return true;
 		}
 		if (obj instanceof DataType) {
-			return identifierString.equals(((DataTypeConstructor) obj)
-					.toString());
+			return identifierString.equals(((DataType) obj).toString());
 		}
 		return false;
 	}
@@ -157,21 +159,29 @@ public class DataType extends AbstractElement {
 		}
 
 		@Override
-		public boolean equals(final Object o) {
-			if (o == this) {
-				return true;
-			}
-			if (o instanceof DataTypeExtension) {
-				DataTypeExtension other = (DataTypeExtension) o;
-				return constructors.equals(other.getConstructors())
-						&& getId().equals(other.getId());
-			}
-			return false;
+		public int hashCode() {
+			return Objects.hashCode(getId(), constructors);
 		}
 
 		@Override
-		public int hashCode() {
-			return getId().hashCode() * 13 + 23 * constructors.hashCode();
+		public boolean equals(final Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			DataTypeExtension other = (DataTypeExtension) obj;
+			return Objects.equal(constructors, other.getConstructors())
+					&& Objects.equal(getId(), other.getId());
 		}
+
+		private DataType getOuterType() {
+			return DataType.this;
+		}
+
 	}
 }

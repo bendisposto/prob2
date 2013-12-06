@@ -2,9 +2,11 @@ package de.prob.animator.domainobjects;
 
 import com.google.gson.Gson;
 
+import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.StateId;
 
 
 public class LtlFormula extends AbstractEvalElement {
@@ -36,6 +38,12 @@ public class LtlFormula extends AbstractEvalElement {
 	@Override
 	public FormulaUUID getFormulaId() {
 		return uuid;
+	}
+
+	@Override
+	public EvaluationCommand getCommand(StateId stateid) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -24,25 +24,25 @@ public class LoadModel extends AbstractBox {
 	}
 
 	@Override
-	public void setContent(Map<String, String[]> data) {
-		this.content = data.get("text")[0];
+	public void setContent(final Map<String, String[]> data) {
+		content = data.get("text")[0];
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object> render(BindingsSnapshot snapshot) {
+	public List<Object> render(final BindingsSnapshot snapshot) {
 		File file = new File(content);
-		if (!FileBrowserServlet.validFile(file, "prob"))
+		if (!FileBrowserServlet.validFile(file, "prob")) {
 			return pack(makeHtml(id,
 					"<span class='illegal_file'> Not a valid ProB file. </span>"));
-		else {
+		} else {
 			String name = load_file(file.getAbsolutePath());
 			return pack(makeHtml(id, "<b>" + content
 					+ " has been loaded and stored in " + name + " </b>"));
 		}
 	}
 
-	private String load_file(String filename) {
+	private String load_file(final String filename) {
 		ScriptEngine groovy = owner.getGroovy();
 		String command = "";
 		String name = "model";
@@ -57,7 +57,7 @@ public class LoadModel extends AbstractBox {
 		if (extension.equals("csp")) {
 			command = "api.csp_load('" + filename + "')";
 		}
-		if (command != "") {
+		if (!command.equals("")) {
 			try {
 				AbstractModel result = (AbstractModel) groovy.eval(command);
 				StateSpace statespace = result.getStatespace();

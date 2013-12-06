@@ -1,87 +1,79 @@
 package de.prob.model.eventb.theory;
 
-import java.util.List;
+import com.google.common.base.Objects;
 
+import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
 
 public class Theory extends AbstractElement {
 
 	private final String name;
-	private final List<AxiomaticDefinitionsBlock> axiomaticDefinitions = new ModelElementList<AxiomaticDefinitionsBlock>();
-	private final List<DataType> dataTypes = new ModelElementList<DataType>();
-	private final List<Theory> imported = new ModelElementList<Theory>();
-	private final List<Operator> operators = new ModelElementList<Operator>();
-	private final List<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
-	private final List<Theorem> theorems = new ModelElementList<Theorem>();
-	private final List<Type> typeParameters = new ModelElementList<Type>();
+	private ModelElementList<DataType> dataTypes = new ModelElementList<DataType>();
+	private ModelElementList<Theory> imported = new ModelElementList<Theory>();
+	private ModelElementList<Operator> operators = new ModelElementList<Operator>();
+	private ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
+	private ModelElementList<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
+	private ModelElementList<Type> typeParameters = new ModelElementList<Type>();
+	private final String parentDirectory;
 
-	public Theory(final String name) {
+	public Theory(final String name, final String parentDirectory) {
 		this.name = name;
+		this.parentDirectory = parentDirectory;
 	}
 
-	public void addAxiomaticDefinitions(
-			final List<AxiomaticDefinitionsBlock> blocks) {
-		put(AxiomaticDefinitionsBlock.class, blocks);
-		axiomaticDefinitions.addAll(blocks);
-	}
-
-	public void addOperators(final List<Operator> operators) {
+	public void addOperators(final ModelElementList<Operator> operators) {
 		put(Operator.class, operators);
-		this.operators.addAll(operators);
+		this.operators = operators;
 	}
 
-	public void addDataTypes(final List<DataType> dataTypes) {
+	public void addDataTypes(final ModelElementList<DataType> dataTypes) {
 		put(DataType.class, dataTypes);
-		this.dataTypes.addAll(dataTypes);
+		this.dataTypes = dataTypes;
 	}
 
-	public void addTheorems(final List<Theorem> theorems) {
-		put(Theorem.class, theorems);
-		this.theorems.addAll(theorems);
+	public void addTheorems(final ModelElementList<EventBAxiom> theorems) {
+		put(EventBAxiom.class, theorems);
+		this.theorems = theorems;
 	}
 
-	public void addProofRules(final List<ProofRulesBlock> proofRules) {
+	public void addProofRules(final ModelElementList<ProofRulesBlock> proofRules) {
 		put(ProofRulesBlock.class, proofRules);
-		this.proofRules.addAll(proofRules);
+		this.proofRules = proofRules;
 	}
 
-	public void addTypeParameters(final List<Type> parameters) {
+	public void addTypeParameters(final ModelElementList<Type> parameters) {
 		put(Type.class, parameters);
-		typeParameters.addAll(parameters);
+		typeParameters = parameters;
 	}
 
-	public void addImported(final List<Theory> theories) {
+	public void addImported(final ModelElementList<Theory> theories) {
 		put(Theory.class, theories);
-		imported.addAll(theories);
+		imported = theories;
 	}
 
-	public List<Theorem> getTheorems() {
-		return theorems;
-	}
-
-	public List<Type> getTypeParameters() {
-		return typeParameters;
-	}
-
-	public List<DataType> getDataTypes() {
+	public ModelElementList<DataType> getDataTypes() {
 		return dataTypes;
 	}
 
-	public List<Operator> getOperators() {
+	public ModelElementList<Theory> getImported() {
+		return imported;
+	}
+
+	public ModelElementList<Operator> getOperators() {
 		return operators;
 	}
 
-	public List<ProofRulesBlock> getProofRules() {
+	public ModelElementList<ProofRulesBlock> getProofRules() {
 		return proofRules;
 	}
 
-	public List<AxiomaticDefinitionsBlock> getAxiomaticDefinitions() {
-		return axiomaticDefinitions;
+	public ModelElementList<EventBAxiom> getTheorems() {
+		return theorems;
 	}
 
-	public List<Theory> getImported() {
-		return imported;
+	public ModelElementList<Type> getTypeParameters() {
+		return typeParameters;
 	}
 
 	public String getName() {
@@ -93,19 +85,28 @@ public class Theory extends AbstractElement {
 		return name;
 	}
 
+	public String getParentDirectoryName() {
+		return parentDirectory;
+	}
+
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == this) {
+		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof Theory) {
-			return name.equals(((Theory) obj).getName());
+		if (obj == null) {
+			return false;
 		}
-		return false;
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Theory other = (Theory) obj;
+		return Objects.equal(parentDirectory, other.parentDirectory)
+				&& Objects.equal(name, other.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return name.hashCode();
+		return Objects.hashCode(parentDirectory, name);
 	}
 }

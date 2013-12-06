@@ -19,7 +19,7 @@ public class OpenBmsViewHandler extends AbstractHandler implements
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		try {
 			VisualizationUtil.createVisualizationViewPart(
-					"sessions/BMotionStudioSession/", "de.prob.ui.BMotionView");
+					"bms/", "de.prob.ui.BMotionView");
 		} catch (PartInitException e) {
 			logger.error("Could not create bmotion studi visualization view: "
 					+ e.getMessage());

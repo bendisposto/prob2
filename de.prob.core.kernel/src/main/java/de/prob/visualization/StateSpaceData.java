@@ -9,8 +9,9 @@ import java.util.Set;
 import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpsFromIds;
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
 import de.prob.statespace.OpInfo;
@@ -45,9 +46,9 @@ public class StateSpaceData extends AbstractData {
 
 	private List<IEvalElement> extractVariables(final StateSpace s) {
 		List<IEvalElement> vars = new ArrayList<IEvalElement>();
-		Set<Machine> ms = s.getModel().getChildrenOfType(Machine.class);
+		List<Machine> ms = s.getModel().getChildrenOfType(Machine.class);
 		for (Machine machine : ms) {
-			Set<Variable> vs = machine.getChildrenOfType(Variable.class);
+			List<Variable> vs = machine.getChildrenOfType(Variable.class);
 			for (Variable variable : vs) {
 				vars.add(variable.getEvaluate());
 			}
@@ -58,12 +59,12 @@ public class StateSpaceData extends AbstractData {
 	@Override
 	protected Node addNode(final StateId id, final int parentIndex) {
 		List<String> vs = new ArrayList<String>();
-		Map<IEvalElement, EvaluationResult> values = s.getValues().get(id);
+		Map<IEvalElement, IEvalResult> values = s.getValues().get(id);
 		if (values != null) {
 			for (IEvalElement var : vars) {
-				EvaluationResult res = values.get(var);
-				if (res != null) {
-					vs.add(var.getCode() + "=" + res.getValue());
+				IEvalResult res = values.get(var);
+				if (res != null && res instanceof EvalResult) {
+					vs.add(var.getCode() + "=" + ((EvalResult) res).getValue());
 				}
 			}
 		}

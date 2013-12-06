@@ -6,8 +6,18 @@ import java.util.Map;
 import org.eclipse.ui.AbstractSourceProvider;
 import org.eclipse.ui.ISources;
 
-public class ModelLoadedProvider extends AbstractSourceProvider {
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IModelChangedListener;
+import de.prob.statespace.StateSpace;
+import de.prob.webconsole.ServletContextListener;
 
+public class ModelLoadedProvider extends AbstractSourceProvider implements IModelChangedListener {
+
+	public ModelLoadedProvider() {
+		AnimationSelector selector = ServletContextListener.INJECTOR.getInstance(AnimationSelector.class);
+		selector.registerModelChangedListener(this);
+	}
+	
 	public static final String SERVICE = "de.prob.ui.model_loaded";
 	
 	public static final String ENABLED = "enabled";
@@ -44,6 +54,15 @@ public class ModelLoadedProvider extends AbstractSourceProvider {
 	
 	private boolean nochange(final boolean enabled) {
 		return this.enabled == enabled;
+	}
+
+	@Override
+	public void modelChanged(StateSpace s) {
+		if(s == null) {
+			setEnabled(false);
+			return;
+		}
+		setEnabled(true);
 	}
 
 }

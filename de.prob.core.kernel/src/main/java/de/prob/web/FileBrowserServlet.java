@@ -59,7 +59,7 @@ public class FileBrowserServlet extends HttpServlet {
 
 		public FileEntry(File f, String name) {
 			this.name = name;
-			path = f.getAbsolutePath();
+			path = f.getAbsolutePath().replace("\\", "\\\\");
 			hidden = f.isHidden();
 		}
 
@@ -113,9 +113,8 @@ public class FileBrowserServlet extends HttpServlet {
 
 			FileFilter filter = makeFilter(extensionSet);
 			File[] listFiles = f.listFiles(filter);
-			
 			if (f.getParentFile() != null
-					&& !(isWorkspaceMode && !f.getParentFile().toString()
+					&& !(isWorkspaceMode && !f.getParent().toString()
 							.startsWith(workspace))) {
 				dirs.add(new FileEntry(f.getParentFile(), ".."));
 			}

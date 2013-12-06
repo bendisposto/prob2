@@ -7,7 +7,7 @@ import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 
-public class LtlCheckingResult implements IEvaluationResult {
+public class LtlCheckingResult implements IEvalResult {
 	private final Status status;
 	private final ListPrologTerm atomics;
 	private final PrologTerm structure;
@@ -16,12 +16,13 @@ public class LtlCheckingResult implements IEvaluationResult {
 	private final int loopEntry;
 	private final OpInfo[] initPathOps;
 	private final StateId stateId;
+	private final String code;
 
-	public LtlCheckingResult(final Status status, final ListPrologTerm atomics,
-			final PrologTerm structure,
+	public LtlCheckingResult(final IEvalElement ele, final Status status,
+			final ListPrologTerm atomics, final PrologTerm structure,
 			final ListPrologTerm counterexample, final PathType pathType,
- final int loopEntry,
-			final OpInfo[] initPathOps, final StateId stateid) {
+			final int loopEntry, final OpInfo[] initPathOps,
+			final StateId stateid) {
 		this.status = status;
 		this.atomics = atomics;
 		this.structure = structure;
@@ -30,6 +31,7 @@ public class LtlCheckingResult implements IEvaluationResult {
 		this.loopEntry = loopEntry;
 		this.initPathOps = initPathOps;
 		this.stateId = stateid;
+		this.code = ele.getCode();
 	}
 
 	/**
@@ -120,12 +122,15 @@ public class LtlCheckingResult implements IEvaluationResult {
 		return initPathOps;
 	}
 
-	@Override
 	public String getStateId() {
 		return stateId.getId();
 	}
 
 	@Override
+	public String getCode() {
+		return code;
+	}
+
 	public String getValue() {
 		return status.toString();
 	}

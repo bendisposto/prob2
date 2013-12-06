@@ -55,11 +55,11 @@ public class Worksheet extends AbstractSession {
 
 	private final ScriptEngineProvider sep;
 
-	private ReflectionServlet servlet;
+	private final ReflectionServlet servlet;
 
 	@Inject
-	public Worksheet(ScriptEngineProvider sep, BoxFactory boxfactory,
-			ReflectionServlet servlet) {
+	public Worksheet(final ScriptEngineProvider sep,
+			final BoxFactory boxfactory, final ReflectionServlet servlet) {
 		this.sep = sep;
 		this.boxfactory = boxfactory;
 		this.servlet = servlet;
@@ -80,7 +80,7 @@ public class Worksheet extends AbstractSession {
 		return box;
 	}
 
-	public Object deleteBox(Map<String, String[]> params) {
+	public Object deleteBox(final Map<String, String[]> params) {
 		List<Object> messages = new ArrayList<Object>();
 		String box = params.get("number")[0];
 		logger.trace("Delete box {}", box);
@@ -108,18 +108,19 @@ public class Worksheet extends AbstractSession {
 		return groovy;
 	}
 
-	private String getPredecessor(String boxId) {
+	private String getPredecessor(final String boxId) {
 		int index = order.indexOf(boxId) - 1;
 		return order.get(index);
 	}
 
-	private String getSuccessor(String boxId) {
+	private String getSuccessor(final String boxId) {
 		int index = order.indexOf(boxId) + 1;
 		return order.get(index);
 	}
 
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		ArrayList<Object> scopes = new ArrayList<Object>();
 		scopes.add(WebUtils.wrap("clientid", clientid, "default-box-type",
 				defaultboxtype));
@@ -135,11 +136,11 @@ public class Worksheet extends AbstractSession {
 		return index >= 0 ? order.get(index) : null;
 	}
 
-	public Object leaveEditor(Map<String, String[]> params) {
+	public Object leaveEditor(final Map<String, String[]> params) {
 		return leaveEditorMessages(params).toArray();
 	}
 
-	public List<Object> leaveEditorMessages(Map<String, String[]> params) {
+	public List<Object> leaveEditorMessages(final Map<String, String[]> params) {
 		String boxId = params.get("box")[0];
 		String direction = params.get("direction")[0];
 		String text = params.get("text")[0];
@@ -153,8 +154,9 @@ public class Worksheet extends AbstractSession {
 			messages.addAll(leaveEditorDown(boxId, text));
 		}
 
-		if ("up".equals(direction) && boxId.equals(firstBox()))
-			return null;// ignore
+		if ("up".equals(direction) && boxId.equals(firstBox())) {
+			return null; // ignore
+		}
 
 		if ("up".equals(direction) && !boxId.equals(firstBox())) {
 			messages.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number",
@@ -165,12 +167,11 @@ public class Worksheet extends AbstractSession {
 		}
 		IBox box = boxes.get(boxId);
 		box.setContent(params);
-		messages.addAll(render(box));
 		messages.addAll(reEvaluate(boxId, order.indexOf(boxId)));
 		return messages;
 	}
 
-	private List<Object> leaveEditorDown(String boxId, String text) {
+	private List<Object> leaveEditorDown(final String boxId, final String text) {
 		ArrayList<Object> res = new ArrayList<Object>();
 		res.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number", boxId));
 		if (boxId.equals(lastBox())) {
@@ -184,16 +185,17 @@ public class Worksheet extends AbstractSession {
 
 	}
 
-	public IBox makeBox(String type) {
+	public IBox makeBox(final String type) {
 		IBox box = boxfactory.create(this, boxcount++, type);
 		boxes.put(box.getId(), box);
 		return box;
 	}
 
-	private List<Object> reEvaluate(EChangeEffect effect, int position) {
+	private List<Object> reEvaluate(final IBox box, final EChangeEffect effect,
+			final int position) {
 		switch (effect) {
 		case DONT_CARE:
-			return Collections.emptyList();
+			return render(box);
 		case EVERYTHING_BELOW:
 			return reEvaluateBoxes(position);
 		default: // FULL_REEVALUATION
@@ -201,9 +203,18 @@ public class Worksheet extends AbstractSession {
 		}
 	}
 
-	private List<Object> reEvaluate(String boxId, int position) {
-		EChangeEffect effect = boxes.get(boxId).changeEffect();
-		return reEvaluate(effect, position);
+	private List<Object> reEvaluate(final String boxId, final int position) {
+		IBox box = boxes.get(boxId);
+		EChangeEffect effect = box.changeEffect();
+		return reEvaluate(box, effect, position);
+	}
+
+	private Collection<? extends Object> reEvaluate(
+			final EChangeEffect changeEffect, final int index) {
+		if (changeEffect == EChangeEffect.DONT_CARE) {
+			return Collections.emptyList();
+		}
+		return reEvaluate(null, changeEffect, index);
 	}
 
 	private List<Object> reEvaluateBoxes(final int reorderposition) {
@@ -250,7 +261,8 @@ public class Worksheet extends AbstractSession {
 	}
 
 	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
 		VariableDetailTransformer.clear();
 		if (responses.isEmpty()) {
 			IBox box = appendFreshBox();
@@ -279,18 +291,18 @@ public class Worksheet extends AbstractSession {
 		}
 	}
 
-	private List<Object> render(IBox box) {
+	private List<Object> render(final IBox box) {
 
 		Predicate<Entry<String, Object>> p = new Predicate<Entry<String, Object>>() {
 			@Override
-			public boolean apply(@Nullable Entry<String, Object> input) {
+			public boolean apply(@Nullable final Entry<String, Object> input) {
 				return !input.getKey().startsWith("__");
 			}
 		};
 		Comparator<Entry<String, Object>> comperator = new Comparator<Entry<String, Object>>() {
 			@Override
-			public int compare(Entry<String, Object> o1,
-					Entry<String, Object> o2) {
+			public int compare(final Entry<String, Object> o1,
+					final Entry<String, Object> o2) {
 				return o1.getKey().compareTo(o2.getKey());
 			}
 		};
@@ -323,7 +335,8 @@ public class Worksheet extends AbstractSession {
 				new Predicate<Map<String, String>>() {
 
 					@Override
-					public boolean apply(@Nullable Map<String, String> input) {
+					public boolean apply(
+							@Nullable final Map<String, String> input) {
 						return input != null;
 					}
 				});
@@ -334,7 +347,7 @@ public class Worksheet extends AbstractSession {
 		return box_rendering;
 	}
 
-	public Object refreshAll(Map<String, String[]> params) {
+	public Object refreshAll(final Map<String, String[]> params) {
 		List<Object> messages = new ArrayList<Object>();
 		if (params.get("text") != null) {
 			List<Object> leaveEditorMessages = leaveEditorMessages(params);
@@ -344,7 +357,7 @@ public class Worksheet extends AbstractSession {
 		return messages.toArray();
 	}
 
-	public Object reorder(Map<String, String[]> params) {
+	public Object reorder(final Map<String, String[]> params) {
 		String boxId = params.get("box")[0];
 		int oldPos = order.indexOf(boxId);
 		int newpos = Integer.parseInt(params.get("newpos")[0]);
@@ -358,13 +371,13 @@ public class Worksheet extends AbstractSession {
 		return reEvaluate(boxId, position).toArray();
 	}
 
-	public Object setDefaultType(Map<String, String[]> params) {
+	public Object setDefaultType(final Map<String, String[]> params) {
 		String type = params.get("type")[0];
 		defaultboxtype = type;
 		return WebUtils.wrap("cmd", "Worksheet.setDefaultType", "type", type);
 	}
 
-	public Object switchType(Map<String, String[]> params) {
+	public Object switchType(final Map<String, String[]> params) {
 		String type = params.get("type")[0];
 		String id = params.get("box")[0];
 		logger.trace("Switch type of {} to {}", id, type);

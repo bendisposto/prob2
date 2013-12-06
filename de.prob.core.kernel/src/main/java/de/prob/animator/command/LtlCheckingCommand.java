@@ -33,9 +33,9 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 		init, // checks formula in initialisation state(s)
 		starthere, // checks formula in current state
 		checkhere /*
-		 * start in initialisation state(s) and check the formula in
-		 * current state
-		 */
+				 * start in initialisation state(s) and check the formula in
+				 * current state
+				 */
 	};
 
 	public static enum Status {
@@ -71,9 +71,8 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 	}
 
 	public static LtlCheckingResult modelCheck(final IAnimator a,
-			final List<IEvalElement> fomula,
-			final int max, final StartMode mode,
-			final StateId stateid) {
+			final List<IEvalElement> fomula, final int max,
+			final StartMode mode, final StateId stateid) {
 		LtlCheckingCommand command = new LtlCheckingCommand(fomula, max, mode,
 				stateid);
 		a.execute(command);
@@ -141,20 +140,18 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 		final boolean noStructure = (structure instanceof ListPrologTerm)
 				&& ((ListPrologTerm) structure).isEmpty();
 
-		result = new LtlCheckingResult(status, atomics, noStructure ? null : structure,
-				counterexample, pathType, loopEntry, initPath,
+		result = new LtlCheckingResult(evalElements.get(0), status, atomics,
+				noStructure ? null
+				: structure,
+ counterexample, pathType, loopEntry, initPath,
 				stateid);
 		values.add(result);
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		// set the state first
-		// TODO: refactor prolog code, we want to use the stateID as a parameter
-		pto.openTerm("setCurrentState").printAtomOrNumber(stateid.getId())
-		.closeTerm();
-		// then call the ltl modelcheck predicate
 		pto.openTerm("do_ltl_modelcheck");
+		pto.printAtomOrNumber(stateid.getId());
 		evalElements.get(0).printProlog(pto);
 		pto.printNumber(max);
 		pto.printAtom(mode.toString());

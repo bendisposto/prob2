@@ -1,5 +1,7 @@
 package de.prob.web.views;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +17,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
+import de.prob.statespace.TraceElement;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -24,20 +27,49 @@ public class CurrentTrace extends AbstractSession implements
 
 	private final AnimationSelector selector;
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);
+	List<Map<String, String>> ops = new ArrayList<Map<String, String>>();
+	private boolean sortDown = true;
 
 	@Inject
-	public CurrentTrace(AnimationSelector selector) {
+	public CurrentTrace(final AnimationSelector selector) {
 		this.selector = selector;
 		selector.registerAnimationChangeListener(this);
+		incrementalUpdate = false;
 	}
 
 	@Override
-	public void traceChange(Trace trace) {
+	public void traceChange(final Trace trace) {
 		logger.trace("Trace has changed. Submitting");
-		List<OpInfo> elements = getElements(trace);
-		String[] ops = new String[elements.size()];
-		for (int i = 0; i < elements.size(); i++) {
-			ops[i] = elements.get(i).getRep(trace.getModel());
+		ops = new ArrayList<Map<String, String>>();
+		if (trace == null) {
+			Map<String, String> wrap = WebUtils.wrap("cmd",
+					"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
+			submit(wrap);
+			return;
+		}
+
+		TraceElement element = trace.getHead();
+		TraceElement current = trace.getCurrent();
+		String group = "future";
+		while (element.getPrevious() != null) {
+			OpInfo op = element.getOp();
+			String rep = op.getRep(trace.getModel());
+			if (element == current) {
+				group = "current";
+				ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
+						"group", group));
+
+				// After this point, all elements are in the past
+				group = "past";
+			} else {
+				ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
+						"group", group));
+			}
+			element = element.getPrevious();
+		}
+		ops.add(WebUtils.wrap("id", 0, "rep", "-- root --", "group", "start"));
+		if (!sortDown) {
+			Collections.reverse(ops);
 		}
 
 		Map<String, String> wrap = WebUtils.wrap("cmd",
@@ -45,36 +77,51 @@ public class CurrentTrace extends AbstractSession implements
 		submit(wrap);
 	}
 
-	public Object gotoPos(Map<String, String[]> params) {
+	public Object gotoPos(final Map<String, String[]> params) {
 		logger.trace("Goto Position in Trace");
 		Trace trace = selector.getCurrentTrace();
-		int cpos = getElements(trace).size() - 1;
-		int pos = Integer.parseInt(get(params, "pos"));
-		int moves = cpos - pos;
-		for (int i = 0; i < moves; i++) {
-			trace = trace.back();
-
+		int id = Integer.parseInt(params.get("id")[0]);
+		int currentIndex = trace.getCurrent().getIndex();
+		if (id == currentIndex) {
+			return null;
+		} else if (id > currentIndex) {
+			while (!(id == trace.getCurrent().getIndex())) {
+				trace = trace.forward();
+			}
+		} else if (id < currentIndex) {
+			while (!(id == trace.getCurrent().getIndex())) {
+				trace = trace.back();
+			}
 		}
 		selector.replaceTrace(selector.getCurrentTrace(), trace);
 		return null;
 	}
 
+	public Object changeSort(final Map<String, String[]> params) {
+		sortDown = Boolean.valueOf(params.get("sortDown")[0]);
+		Collections.reverse(ops);
+		return WebUtils.wrap("cmd", "CurrentTrace.setTrace", "trace",
+				WebUtils.toJson(ops));
+	}
+
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/currenttrace/index.html");
 	}
 
 	public List<OpInfo> getElements(final Trace trace) {
-		return trace.getCurrent().getOpList();
+		return trace.getHead().getOpList();
 	}
 
 	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		Trace currentTrace = selector.getCurrentTrace();
-		if (currentTrace != null) {
-			traceChange(currentTrace);
-		}
+
+		Map<String, String> wrap = WebUtils.wrap("cmd",
+				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
+		submit(wrap);
 	}
 
 }

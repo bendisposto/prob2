@@ -47,31 +47,31 @@ import de.bmotionstudio.core.model.control.BControl;
 import de.bmotionstudio.core.model.observer.CSPEventObserver;
 import de.bmotionstudio.core.model.observer.Observer;
 import de.bmotionstudio.core.util.BMotionUtil;
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class CSPEventObserverWizard extends ObserverWizard {
-	
+
 	private TableViewer tableViewer;
-	
+
 	private Text customValueText;
-	
+
 	private final DataBindingContext dbc = new DataBindingContext();
-	
-	private Injector injector = ServletContextListener.INJECTOR;
-	
+
+	private final Injector injector = ServletContextListener.INJECTOR;
+
 	private Text predicateText, nameText, messageText;
-	
+
 	private Button isCustomCheckbox;
-	
+
 	private ComboViewer attributeCombo;
-	
+
 	private Composite valueComposite;
-	
-	public CSPEventObserverWizard(Shell shell, BControl control,
-			Observer observer) {
+
+	public CSPEventObserverWizard(final Shell shell, final BControl control,
+			final Observer observer) {
 		super(shell, control, observer);
 	}
 
@@ -79,118 +79,119 @@ public class CSPEventObserverWizard extends ObserverWizard {
 	public Point getSize() {
 		return new Point(375, 325);
 	}
-	
+
 	@Override
-	public Control createDialogArea(Composite parent) {
-		
-		parent.setLayout(new GridLayout(1,true));
-		
-		GridLayout layout = new GridLayout(3,false);
-		
+	public Control createDialogArea(final Composite parent) {
+
+		parent.setLayout(new GridLayout(1, true));
+
+		GridLayout layout = new GridLayout(3, false);
+
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 		container.setLayout(layout);
-		
+
 		GridData gridDataFill = new GridData(GridData.FILL_HORIZONTAL);
 		gridDataFill.horizontalSpan = 2;
-		
+
 		GridData gridDataLabel = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
 		gridDataLabel.widthHint = 75;
 		gridDataLabel.heightHint = 25;
-		
-		Label label = new Label(container,SWT.NONE);
+
+		Label label = new Label(container, SWT.NONE);
 		label.setText("Name:");
 		label.setLayoutData(gridDataLabel);
-		
+
 		nameText = new Text(container, SWT.BORDER);
 		nameText.setLayoutData(gridDataFill);
-		
-		label = new Label(container,SWT.NONE);
+
+		label = new Label(container, SWT.NONE);
 		label.setText("Expression:");
 		label.setLayoutData(gridDataLabel);
-		
+
 		predicateText = new Text(container, SWT.BORDER);
 		predicateText.setLayoutData(gridDataFill);
-//		predicateText.addModifyListener(new ModifyListener() {
-//			
-//			@Override
-//			public void modifyText(ModifyEvent e) {
-//
-//				try {
-//					
-//					messageText.setText("");
-//					
-//					BParser.parse(BParser.PREDICATE_PREFIX
-//							+ predicateText.getText());
-//					
-//					final AnimationSelector selector = injector
-//							.getInstance(AnimationSelector.class);
-//					Trace currentTrace = selector.getCurrentTrace();
-//					
-//					if(currentTrace != null) {
-//					
-//						EvaluationResult eval = currentTrace
-//								.eval(predicateText.getText());
-//
-//						if (eval != null) {
-//
-//							if (!eval.hasError()) {
-//								messageText.setText("Result: "
-//										+ eval.getValue());
-//								messageText
-//										.setForeground(ColorConstants.darkGreen);
-//							} else {
-//								messageText.setForeground(ColorConstants.red);
-//								messageText.setText("Error: "
-//										+ eval.getErrors());
-//							}
-//
-//							messageText.redraw();
-//
-//						}
-//
-//					}
-//					
-//				} catch (BException e1) {
-//					messageText.setForeground(ColorConstants.red);
-//					messageText.setText("Error: " + e1.getMessage());
-//				} finally {
-//					messageText.redraw();
-//				}
-//
-//			}
-//			
-//		});
-		
-		label = new Label(container,SWT.NONE);
+		// predicateText.addModifyListener(new ModifyListener() {
+		//
+		// @Override
+		// public void modifyText(ModifyEvent e) {
+		//
+		// try {
+		//
+		// messageText.setText("");
+		//
+		// BParser.parse(BParser.PREDICATE_PREFIX
+		// + predicateText.getText());
+		//
+		// final AnimationSelector selector = injector
+		// .getInstance(AnimationSelector.class);
+		// Trace currentTrace = selector.getCurrentTrace();
+		//
+		// if(currentTrace != null) {
+		//
+		// EvaluationResult eval = currentTrace
+		// .eval(predicateText.getText());
+		//
+		// if (eval != null) {
+		//
+		// if (!eval.hasError()) {
+		// messageText.setText("Result: "
+		// + eval.getValue());
+		// messageText
+		// .setForeground(ColorConstants.darkGreen);
+		// } else {
+		// messageText.setForeground(ColorConstants.red);
+		// messageText.setText("Error: "
+		// + eval.getErrors());
+		// }
+		//
+		// messageText.redraw();
+		//
+		// }
+		//
+		// }
+		//
+		// } catch (BException e1) {
+		// messageText.setForeground(ColorConstants.red);
+		// messageText.setText("Error: " + e1.getMessage());
+		// } finally {
+		// messageText.redraw();
+		// }
+		//
+		// }
+		//
+		// });
+
+		label = new Label(container, SWT.NONE);
 		label.setText("Attribute:");
 		label.setLayoutData(gridDataLabel);
-		
+
 		attributeCombo = new ComboViewer(container);
 		attributeCombo.setContentProvider(new ArrayContentProvider());
 		attributeCombo.setLabelProvider(new LabelProvider() {
-			
+
 			@Override
-			public String getText(Object element) {
+			public String getText(final Object element) {
 				AbstractAttribute atr = (AbstractAttribute) element;
 				return atr.getName();
 			}
-			
+
 		});
 		attributeCombo.setInput(getControl().getAttributes().values());
 		attributeCombo.getCombo().setLayoutData(gridDataFill);
 		attributeCombo
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
+					public void selectionChanged(
+							final SelectionChangedEvent event) {
 						setInputFromSelection(event.getSelection(), false);
 					}
 				});
-		
-		label = new Label(container,SWT.NONE);
+
+		label = new Label(container, SWT.NONE);
 		label.setText("Value:");
 		label.setLayoutData(gridDataLabel);
-		
+
 		valueComposite = new Composite(container, SWT.NONE);
 		valueComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		valueComposite.setBackground(ColorConstants.red);
@@ -198,7 +199,7 @@ public class CSPEventObserverWizard extends ObserverWizard {
 		gridLayout.marginWidth = 0;
 		gridLayout.marginHeight = 0;
 		valueComposite.setLayout(gridLayout);
-		
+
 		CSPEventObserver ob = (CSPEventObserver) getObserver();
 		if (ob != null && !ob.isCustom()) {
 			createValueEditing(valueComposite);
@@ -208,10 +209,10 @@ public class CSPEventObserverWizard extends ObserverWizard {
 
 		isCustomCheckbox = new Button(container, SWT.CHECK);
 		isCustomCheckbox.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				
+			public void widgetSelected(final SelectionEvent e) {
+
 				if (isCustomCheckbox.getSelection()) {
 					// custom
 					tableViewer.getTable().dispose();
@@ -222,17 +223,17 @@ public class CSPEventObserverWizard extends ObserverWizard {
 					createValueEditing(valueComposite);
 					setInputFromSelection(attributeCombo.getSelection(), true);
 				}
-				
+
 				valueComposite.layout();
-				
+
 			}
-			
+
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
+			public void widgetDefaultSelected(final SelectionEvent e) {
 			}
-			
+
 		});
-		
+
 		GridData gridDataFillMessage = new GridData(GridData.FILL_BOTH);
 		gridDataFillMessage.horizontalSpan = 3;
 
@@ -241,21 +242,21 @@ public class CSPEventObserverWizard extends ObserverWizard {
 		messageText.setForeground(ColorConstants.red);
 		messageText.setBackground(ColorConstants.menuBackground);
 		messageText.setLayoutData(gridDataFillMessage);
-		
+
 		getObserver().addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				
+			public void propertyChange(final PropertyChangeEvent evt) {
+
 				CSPEventObserver cspE = (CSPEventObserver) getObserver();
-				
+
 				if (evt.getPropertyName().equals("expression")
 						|| (cspE.isCustom() && evt.getPropertyName().equals(
 								"value"))) {
 					final AnimationSelector selector = injector
 							.getInstance(AnimationSelector.class);
 					Trace currentTrace = selector.getCurrentTrace();
-					Map<String, EvaluationResult> evaluationResults = BMotionUtil
+					Map<String, IEvalResult> evaluationResults = BMotionUtil
 							.getEvaluationResults(
 									currentTrace,
 									getControl().prepareObserver(getObserver(),
@@ -263,48 +264,45 @@ public class CSPEventObserverWizard extends ObserverWizard {
 					getObserver().check(currentTrace, getControl(),
 							evaluationResults);
 				}
-				
+
 			}
-			
+
 		});
-		
+
 		initBindings(dbc);
-		
+
 		return container;
-		
+
 	}
 
-	private void initBindings(DataBindingContext dbc) {
+	private void initBindings(final DataBindingContext dbc) {
 
 		dbc.bindValue(SWTObservables.observeText(nameText, SWT.Modify),
-				BeansObservables.observeValue(
-						(CSPEventObserver) getObserver(), "name"));
+				BeansObservables.observeValue(getObserver(), "name"));
 
 		dbc.bindValue(SWTObservables.observeText(predicateText, SWT.Modify),
-				BeansObservables.observeValue(
-						(CSPEventObserver) getObserver(), "expression"));
+				BeansObservables.observeValue(getObserver(), "expression"));
 
 		dbc.bindValue(SWTObservables.observeSelection(isCustomCheckbox),
-				BeansObservables.observeValue((CSPEventObserver) getObserver(),
-						"isCustom"));
-		
+				BeansObservables.observeValue(getObserver(), "isCustom"));
+
 		IObservableValue typeSelection = ViewersObservables
 				.observeSingleSelection(attributeCombo);
 		IObservableValue myModelTypeObserveValue = BeansObservables
-				.observeValue((CSPEventObserver) getObserver(), "attribute");
-		
+				.observeValue(getObserver(), "attribute");
+
 		dbc.bindValue(typeSelection, myModelTypeObserveValue,
 				new UpdateValueStrategy() {
 
 					@Override
-					public Object convert(Object value) {
+					public Object convert(final Object value) {
 						return ((AbstractAttribute) value).getID();
 					}
 
 				}, new UpdateValueStrategy() {
 
 					@Override
-					public Object convert(Object value) {
+					public Object convert(final Object value) {
 						BControl control = getControl();
 						return control.getAttribute(value.toString());
 					}
@@ -312,8 +310,9 @@ public class CSPEventObserverWizard extends ObserverWizard {
 				});
 
 	}
-	
-	private void setInputFromSelection(ISelection selection, boolean restore) {
+
+	private void setInputFromSelection(final ISelection selection,
+			final boolean restore) {
 
 		if (selection instanceof StructuredSelection) {
 
@@ -321,11 +320,13 @@ public class CSPEventObserverWizard extends ObserverWizard {
 			AbstractAttribute selectedAttribute = (AbstractAttribute) sel
 					.getFirstElement();
 
-			if(selectedAttribute == null)
+			if (selectedAttribute == null) {
 				return;
-			
-			if (restore)
+			}
+
+			if (restore) {
 				selectedAttribute.restoreValue();
+			}
 
 			String currentAttribute = ((CSPEventObserver) getObserver())
 					.getAttribute();
@@ -343,20 +344,19 @@ public class CSPEventObserverWizard extends ObserverWizard {
 		}
 
 	}
-	
-	private void createCustomValueEditing(Composite container) {
+
+	private void createCustomValueEditing(final Composite container) {
 		customValueText = new Text(container, SWT.BORDER);
 		GridData gridData = new GridData(GridData.FILL_BOTH);
 		gridData.heightHint = 20;
 		customValueText.setLayoutData(gridData);
 		dbc.bindValue(SWTObservables.observeText(customValueText, SWT.Modify),
-				BeansObservables.observeValue((CSPEventObserver) getObserver(),
-						"value"));
+				BeansObservables.observeValue(getObserver(), "value"));
 	}
-	
-	private void createValueEditing(Composite container) {
-		
-		tableViewer = new TableViewer(container, SWT.NONE);		
+
+	private void createValueEditing(final Composite container) {
+
+		tableViewer = new TableViewer(container, SWT.NONE);
 		tableViewer.getTable().setHeaderVisible(false);
 		tableViewer.getTable().setLinesVisible(false);
 		tableViewer.setContentProvider(new IStructuredContentProvider() {
@@ -366,56 +366,58 @@ public class CSPEventObserverWizard extends ObserverWizard {
 			}
 
 			@Override
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
+			public void inputChanged(final Viewer viewer,
+					final Object oldInput, final Object newInput) {
 			}
 
 			@Override
-			public Object[] getElements(Object inputElement) {
-				return new Object[] {inputElement};
+			public Object[] getElements(final Object inputElement) {
+				return new Object[] { inputElement };
 			}
-			
+
 		});
 
 		GridData gridData = new GridData(GridData.FILL_BOTH);
 		gridData.heightHint = 7;
-		
+
 		tableViewer.getTable().setLayoutData(gridData);
 		tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
 			@Override
-			public void handleEvent(Event event) {
+			public void handleEvent(final Event event) {
 				event.gc.setBackground(ColorConstants.white);
 				event.gc.fillRectangle(event.getBounds());
 			}
 		});
-		
-		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.BORDER);
+
+		TableViewerColumn column = new TableViewerColumn(tableViewer,
+				SWT.BORDER);
 		column.getColumn().setResizable(false);
 		column.getColumn().setWidth(215);
 		column.setEditingSupport(new AttributeExpressionEdittingSupport(
 				tableViewer, getControl()) {
 
 			@Override
-			protected void setValue(Object element, Object value) {
+			protected void setValue(final Object element, final Object value) {
 				((CSPEventObserver) getObserver()).setValue(value);
 				tableViewer.refresh();
 			}
 
 			@Override
-			protected Object getValue(Object element) {
+			protected Object getValue(final Object element) {
 				return ((CSPEventObserver) getObserver()).getValue();
 			}
 
 		});
 		column.setLabelProvider(new CellLabelProvider() {
 			@Override
-			public void update(ViewerCell cell) {
+			public void update(final ViewerCell cell) {
 				Object value = ((CSPEventObserver) getObserver()).getValue();
-				if (value != null)
+				if (value != null) {
 					cell.setText(value.toString());
+				}
 			}
 		});
-		
+
 	}
 
 }

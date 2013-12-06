@@ -2,50 +2,40 @@ bms = (function() {
 
 	var extern = {}
 	var session = Session();
-	var svgCanvas = null;
-	var isInit = false;
-	var templateContent = null;
-	var templateFile = null;
-	
+
 	$(document).ready(function() {
 		
-		hookInputFieldListener(true)
+	    $('#navigation a').stop().animate({'marginLeft':'-85px'},1000);
 
-		$('#bmsTab a:first').tab('show');
+	    $('#navigation > li').hover(
+	        function () {
+	            $('a',$(this)).stop().animate({'marginLeft':'-2px'},200);
+	        },
+	        function () {
+	            $('a',$(this)).stop().animate({'marginLeft':'-85px'},200);
+	        }
+	    );
 
-		$('#bmsTab a').click(function(e) {
-			e.preventDefault();
-			$(this).tab('show');
+		$('.template').click(function() {
+
+			$("#sourceModal").on('shown', function() {
+				// editorHtml.refresh()
+				// editorJavascript.refresh()
+			}).on('hidden', function() {
+				// renderEdit()
+			});
+			// Show Modal
+			$("#sourceModal").modal('show');
+
+			$(".template").find("a").stop().animate({
+				'marginLeft' : '-85px'
+			}, 200);
+
 		})
-
-		$('#bmsTab a').on('shown', function(e) {
-			if ($(e.target).attr("href") == "#visualization") {
-//				$("#result").html("")
-				forceRendering()
-				disableContextMenu()
-			} else {
-//				$("#render").html("")
-//				renderEdit()
-				initContextMenu()
-			}
-			// e.relatedTarget // previous tab
-		})
-		
+	    
 	});
-	
-	$('#btShowSourceModal').click(function(){
-		
-	    $("#sourceModal").on('shown', function() {
-//        	editorHtml.refresh()
-//        	editorJavascript.refresh()
-        }).on('hidden', function() {
-//        	renderEdit()
-        });
-        //Show Modal
-        $("#sourceModal").modal('show');
-        		
-	})
-	
+
+
 
 	// --------------------------------------------
 	// Helper functions
@@ -53,435 +43,56 @@ bms = (function() {
 	jQuery.fn.toHtmlString = function() {
 		return $('<div></div>').html($(this).clone()).html();
 	};
-	
-	jQuery.expr[':'].parents = function(a,i,m){
-	    return jQuery(a).parents(m[3]).length < 1;
-	};
-	
-	  var readHTMLFile = function(url){
-          var toReturn;
-          $.ajax({
-              url: url,
-              async: false
-          }).done(function(data){
-              toReturn = data;
-          });
-          return toReturn;
-      };
-	// --------------------------------------------
 
-	// --------------------------------------------
-	// Code Mirror Editor
-	// Define an extended mixed-mode that understands vbscript and
-	// leaves mustache/handlebars embedded templates in html mode
-	// --------------------------------------------
-	var mixedMode = {
-		name : "htmlmixed",
-		scriptTypes : [ {
-			matches : /\/x-handlebars-template|\/x-mustache/i
-		} ]
+	jQuery.expr[':'].parents = function(a, i, m) {
+		return jQuery(a).parents(m[3]).length < 1;
 	};
 
-	var javascriptMode = {
-		name : "javascript"
-	};
-
-//	var editorHtml = CodeMirror.fromTextArea(document
-//			.getElementById("template_content"), {
-//		mode : mixedMode,
-//		tabMode : "indent",
-//		lineWrapping : true,
-//		lineNumbers : true,
-//		onKeyEvent : function(e, s) {
-//			if (s.type == "keyup") {
-//				forceSaveTemplate()
-//				renderEdit()
-//			}
-//		}
-//	});
-
-//	var editorJavascript = CodeMirror.fromTextArea(document
-//			.getElementById("template_scripting"), {
-//		mode : javascriptMode,
-//		tabMode : "indent",
-//		lineWrapping : true,
-//		lineNumbers : true,
-//		matchBrackets : true,
-//		onKeyEvent : function(e, s) {
-//			if (s.type == "keyup") {
-//				forceSaveTemplate()
-//				renderEdit()
-//			}
-//		}
-//	});
-
-//	$("#show-codeblock").click(function(e) {
-//		var template1 = $(".code-block");
-//		if (!e.target.checked) {
-//			template1.fadeOut();
-//		} else {
-//			template1.fadeIn();
-//		}
-//	})
-
-	// $('#template-code-block').find('.CodeMirror').resizable({
-	// resize : function() {
-	// editorHtml.setSize($(this).width(), $(this).height());
-	// }
-	// });
-	//
-	// $('#scripting-code-block').find('.CodeMirror').resizable({
-	// resize : function() {
-	// editorJavascript.setSize($(this).width(), $(this).height());
-	// }
-	// });
-	// --------------------------------------------
-
-	// --------------------------------------------
-	// Context Menu Configuration
-	// --------------------------------------------
-	
-	function initContextMenu() {
-		$.contextMenu({
-			selector : 'svg',
-			items : {
-				"edit" : {
-					name : "Edit SVG",
-					icon: "edit",
-					callback : function(key, options) {
-						openSvgEditor(this)
-					}
-				}
-			}
+	var readHTMLFile = function(url) {
+		var toReturn;
+		$.ajax({
+			url : url,
+			async : false
+		}).done(function(data) {
+			toReturn = data;
 		});
-	}
-	
-	function disableContextMenu() {
-		$.contextMenu( 'destroy' );
-	}
-	
-	function openSvgEditor(e) {
-		var svgElement = $(e);
-		var svgstring = $(e).toHtmlString()
-	    $("#svgModal").on('hidden', function() {
-        	saveSvg(svgElement)
-        });
-		$("#svgModal").modal('show');
-   		svgCanvas.setSvgString(svgstring);
-	}
-
-	function saveSvg(svgElement) {
-		svgCanvas.getSvgString()(function(data, error) {
-			if (error) {
-				alert(error);
-			} else {
-				if (svgElement) {
-					svgElement.replaceWith($(data))
-					editorHtml.setValue($("#result").children().toHtmlString())
-					forceSaveTemplate()
-//					renderEdit()
-				}
-			}
-		});
-	}
-
-	$("#svgedit").load(function() {
-		var frame = document.getElementById('svgedit');
-		svgCanvas = new embedded_svg_edit(frame);
-	});
-	
-	// --------------------------------------------
-
-	// --------------------------------------------
-	// Calls to Server
-	// --------------------------------------------
-	function forceRendering() {
-		session.sendCmd("forcerendering", {
-			"client" : extern.client
-		})
-	}
-
-	function forceSaveTemplate() {
-		session.sendCmd("saveTemplate", {
-			"template_content" : editorHtml.getValue(),
-			"template_scripting" : editorJavascript.getValue(),
-			"client" : extern.client
-		})
-	}
+		return toReturn;
+	};
 	// --------------------------------------------
 
 	// --------------------------------------------
 	// Rendering
 	// --------------------------------------------
-	function renderEdit() {
-		
-		if (template != null) {
-			try {
-				var newIframeHeight = $("#iframeTemplate").contents()
-						.find("html").height()
-						+ 'px';
-				$('#iframeTemplate').css("height", newIframeHeight);
-			} catch (e) {
-				template_error(e)
-			}
-		}		
-		initDnd()
-		
+
+	function renderVisualization(observer,data) {
+		checkObserver(observer,data)
+		extern.stateChange(data)
 	}
 	
-//	function bmsrender(d) {
-//		var s;
-//		$.ajax({
-//			url : "/bms/lift.html?json="+JSON.stringify(d),
-//			type: 'GET',
-//	        dataType: 'json',
-//	        data: JSON.stringify(d),
-//	        contentType: 'application/json',
-//	        mimeType: 'application/text',
-//			success : function(result) {
-//				if (result.isOk === false) {
-//					alert(result.message);
-//				} else {
-//					console.log(result)
-//					s = result;
-//					console.log(s)
-//				}
-//			},
-//			async : false
-//		});
-//		return s;
-//	}
-	
-
-	function renderVisualization(data) {
-
-		if(templateFile) {
-//			var renderedTemplate = readHTMLFile("http://localhost:8080/bms/"
-//					+ templateFile + "?json=" + data)
-//			console.log(renderedTemplate)
-//			var jsonp = JSON.parse(data)
-//			var concatjson = jQuery.extend({}, jsonp, extern.observer);
-//			renderedTemplate = Mustache.render(renderedTemplate, concatjson)
-//			var body = renderedTemplate.replace(/^[\S\s]*<body[^>]*?>/i, "")
-//					.replace(/<\/body[\S\s]*$/i, "");
-			
-			var src = "http://localhost:8080/bms/" + templateFile + "?json=" + data;
-			
-			$("#result_container").append('<iframe src="" width="100%" frameborder="0" scrolling="no" name="tempiframe" id="tempiframe" style="visibility:hidden"></iframe>')
-						
-			$('#tempiframe').attr("src", src)
-							
-			$('#tempiframe').on('load', function() {
-				$('#tempiframe').css("visibility","visible")
-				$('#iframeVisualization').remove()
-				$('#tempiframe').attr("id","iframeVisualization")
-				resizeIframe()
-			});	
-			
-	//		var head = renderedTemplate.replace(/^[\S\s]*<head[^>]*?>/i, "")
-	//				.replace(/<\/head[\S\s]*$/i, "");
-	//		$('#iframeVisualization').contents().find('head').html(head)
-//			$('#iframeVisualization').contents().find('body').html(body)	
+	function checkObserver(observer,data) {
+		var observerList = observer.observer;
+		if (observerList !== undefined) {
+			for ( var i = 0; i < observerList.length; i++) {
+				var observer = observerList[i];
+				bms[observer.cmd](observer,data);
+			}
 		}
-		
 	}
-
-	function initDnd() {
-		$('.draggable').draggable({
-			stop : function(e, ui) {
-				editorHtml.setValue($("#result").children().toHtmlString())
-			}
-		});
-	}
-		
+	
 	// --------------------------------------------
-
-	function restoreTemplate(template_content, template_scripting) {
-		if (template_content != null)
-			editorHtml.setValue(template_content);
-		if (template_scripting != null)
-			editorJavascript.setValue(template_scripting);
-	}
-
-	function restoreFormulas(formulas) {
-		var id, formula, idNum;
-		for ( var i = formulas.length - 1; i >= 0; i--) {
-			id = formulas[i].id;
-			formula = formulas[i].formula;
-			$("#formulas").prepend(
-					session.render("/ui/bmsview/formula_entered.html", {
-						id : id,
-						formula : formula
-					}));
-		}
-		hookEnteredFieldListener()
-	}
-	
-	function restoreObserver(observer) {
-		var observerList = $('#svgedit').contents().find('#observer_list')
-		for ( var i = 0; i <= observer.length - 1; i++) {
-			var o = observer[i];
-			var odata = JSON.parse(o.data)
-			observerList.append(
-			"<h3>New Observer</h3><div>" + 
-			session.render("/ui/bmsview/observer/predicateObserverForm.html", odata) +
-			"</div>")
-		}
-	}
 
 	extern.client = ""
 	extern.observer = null;
-	extern.workspace = "";
 	extern.init = session.init
 	extern.session = session
 
-	extern.renderVisualization = function(data) {
-		renderVisualization(data.data)
-	}
-
-	extern.restorePage = function(data) {
-		restoreFormulas(JSON.parse(data.formulas))
-		restoreTemplate(data.template_content, data.template_scripting)
-		forceRendering()
-	}
-
-	extern.register = function(observer, expression) {
-		session.sendCmd("register", {
-			"observer" : observer,
-			"expression" : expression,
-			"client" : extern.client
-		})
-	}
-
-	extern.formulaRemoved = function(data) {
-		formulaRemoved(data.id);
-	}
-
-	extern.openSvgEditor = function(e) {
-		openSvgEditor(e)
-	}
-
-	// --------------------------------------------
-	// Observer / Formulas
-	// --------------------------------------------
-	function appendNewInputField(nextId) {
-		$("#formulas").append(session.render("/ui/bmsview/input_field.html", {
-			id : nextId,
-			value : "",
-			text : "Add"
-		}));
-	}
-
-	function replaceWithEnteredField(id, formula) {
-		$("#" + id).removeClass("has-error");
-		$("#input-" + id).replaceWith(
-				session.render("/ui/bmsview/formula_entered.html", {
-					id : id,
-					formula : formula
-				}));
-	}
-
-	function replaceWithEditField(id, formula) {
-		var parentId = "#input-" + id;
-		$(parentId).replaceWith(
-				session.render("/ui/bmsview/input_field.html", {
-					id : id,
-					value : formula,
-					text : "Ok"
-				}));
-	}
-
-	function formulaAdded(id, formula, nextId) {
-
-		// Append a new input field ...
-		appendNewInputField(nextId);
-		// ... and hook corresponding listeners
-		hookInputFieldListener(true);
-
-		// Replace formula field and ...
-		replaceWithEnteredField(id, formula);
-		// ... hook listener for edit and remove buttons
-		hookEnteredFieldListener();
-
-	}
-
-	function formulaRemoved(id) {
-		$("#input-" + id).remove();
-	}
-
-	function hookEnteredFieldListener() {
-
-		$("[id^=edit-]").unbind('click');
-		$("[id^=remove-]").unbind('click');
-
-		$("[id^=edit-]").click(function(e) {
-			e.preventDefault();
-			var id = e.target.parentElement.id;
-			var formula = $("#formula-" + id)[0].textContent;
-			editFormula(id, formula);
-		});
-		$("[id^=remove-]").click(function(e) {
-			e.preventDefault();
-			var id = e.target.parentElement.id;
-			session.sendCmd("removeFormula", {
-				"id" : id
-			});
-		})
-
-	}
-
-	function hookInputFieldListener(newformula) {
-
-		$(".add-formula").unbind('click');
-		$(".form-control").unbind('keyup');
-
-		$(".add-formula").click(function(e) {
-			e.preventDefault();
-			var id = e.target.parentNode.parentNode.id;
-			session.sendCmd("addFormula", {
-				"id" : id,
-				"newFormula" : newformula
-			});
-		});
-
-		$(".form-control").keyup(function(e) {
-			session.sendCmd("parse", {
-				"formula" : e.target.value,
-				"id" : e.target.parentNode.id
-			})
-		});
-
-	}
-
-	function editFormula(id, formula) {
-		replaceWithEditField(id, formula);
-		hookInputFieldListener(false);
-	}
-
-	function formulaRestored(id, formula) {
-		replaceWithEnteredField(id, formula);
-		hookEnteredFieldListener();
-//		renderEdit()
-	}
-	
-	function parseOk(id) {
-		$("#" + id).removeClass("has-error")
-		$("#btn-" + id).prop("disabled", false);
-	}
-
-	function parseError(id) {
-		$("#" + id).addClass("has-error")
-		$("#btn-" + id).prop("disabled", true);
-	}
-	
 	function browse(dir_dom) {
 		$('#filedialog').off('hidden.bs.modal')
-		$('#filedialog').on('hidden.bs.modal',
-				set_ok_button_state(dir_dom))
+		$('#filedialog').on('hidden.bs.modal', set_ok_button_state(dir_dom))
 		$("#filedialog").modal('show')
 		browse2(dir_dom)
 	}
-	
+
 	function set_ok_button_state(dir_dom) {
 		return function() {
 			var file = $(dir_dom)[0].value
@@ -493,7 +104,7 @@ bms = (function() {
 			}
 		}
 	}
-	
+
 	function browse2(dir_dom) {
 		var dir = $(dir_dom)[0].value
 		// prepare dialog
@@ -501,11 +112,11 @@ bms = (function() {
 		$(dir_dom).val(data.path)
 		filldialog(data.dirs, data.files, dir_dom)
 	}
-	
+
 	function request_files(d) {
 		var s;
 		$.ajax({
-			url : "/files?path=" + d + "&extensions=bms&workspace="+extern.workspace,
+			url : "/files?path=" + d + "&extensions=bms",
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -517,11 +128,11 @@ bms = (function() {
 		});
 		return s;
 	}
-	
+
 	function check_file(d) {
 		var s;
 		$.ajax({
-			url : "/files?check=true&path=" + d + "&extensions=bms&workspace="+extern.workspace,
+			url : "/files?check=true&path=" + d + "&extensions=bms",
 			success : function(result) {
 				if (result.isOk === false) {
 					alert(result.message);
@@ -552,16 +163,15 @@ bms = (function() {
 		for (s in files) {
 			var file = files[s]
 			if (!file.hidden) {
-				hook.append(session.render("/ui/bmsview/fb_file_entry.html",
-						{
-							"name" : file.name,
-							"path" : file.path,
-							"dom" : dir_dom
-						}))
+				hook.append(session.render("/ui/bmsview/fb_file_entry.html", {
+					"name" : file.name,
+					"path" : file.path,
+					"dom" : dir_dom
+				}))
 			}
 		}
 	}
-	
+
 	function fb_select_dir(dir_dom, path) {
 		$(dir_dom).val(path)
 		browse2(dir_dom)
@@ -570,88 +180,207 @@ bms = (function() {
 		$(dir_dom).val(path)
 		$("#filedialog").modal('hide')
 	}
-	
 
-	function resizeIframe() {
-		var newIframeHeight = $("#iframeVisualization").contents().find("html")
-				.height()
-				+ 'px';
-		$('#iframeVisualization').css("height", newIframeHeight);
-	}
-	
 	extern.browse = browse
 	extern.fb_select_dir = fb_select_dir
 	extern.fb_select_file = fb_select_file
 	extern.fb_load_file = function(dom_dir) {
+		templateFile = $(dom_dir)[0].value
 		session.sendCmd("setTemplate", {
-			"path" : $(dom_dir)[0].value
+			"path" : templateFile
 		})
-		focused = null; // prevent blur event
 		$("#sourceModal").modal('hide')
+		$("#chooseTemplateBox").css("display", "none");
 	}
-	
+
 	extern.setTemplate = function(data) {
-		templateFile = data.templatefile
-		if(templateFile) {
-			$('#iframeVisualization').attr(
-					"src",
-					"http://localhost:8080/bms/" + templateFile + "?json="
-							+ data.data)
-			$('#iframeVisualization').load(function(){
-				resizeIframe();
-//				forceRendering();
-			});
-			
+		window.location = "/bms/?template=" + data.request;
+	}
+	
+	extern.reloadTemplate = function(data) {
+		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
+	}
+
+	extern.renderVisualization = function(data) {
+		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
+	}
+	
+	extern.stateChange = function(data) {
+	}
+	
+	extern.translateValue = function(val) {
+		if (val === "true") {
+			return true;
+		} else if (val === "false") {
+			return false;
+		} else if(!isNaN(val)) {
+			val = parseInt(val)
 		}
+		return val;
 	}
 	
-	extern.parseError = function(data) {
-		parseError(data.id);
-	}
-	extern.parseOk = function(data) {
-		parseOk(data.id);
-	}
+	extern.evalObserver = function(observer,data) {
 
-	extern.formulaAdded = function(data) {
-		formulaAdded(data.id, data.formula, data.nextId);
-	}
-	
-	extern.formulaRestored = function(data) {
-		formulaRestored(data.id, data.formula);
-	}
-	
-	extern.restoreObserver = function(observer) {
-		restoreObserver(JSON.parse(observer.data))
-	}	
-	
-	// --------------------------------------------
-	
-	// --------------------------------------------
-	// Error Handling
-	// --------------------------------------------
-	extern.error = function(data) {
-		error(data.id, data);
-	}
-
-	function error(id, errormsg) {
-		$("#right-col").prepend(
-				session.render("/ui/bmsview/error_msg.html", errormsg));
-		$("#" + id).addClass("has-error");
-	}
-	// --------------------------------------------
-	
-	// --------------------------------------------
-	// External API Calls
-	// --------------------------------------------
-	extern.executeOperation = function(op, predicate) {
-		session.sendCmd("executeOperation", {
-			"op" : op,
-			"predicate" : predicate,
-			"client" : extern.client
-		})
-	}
-	// --------------------------------------------
+		var objects = observer.objects
+		var results = data.eval	
 		
+		var evalFunc = function() {
+			return function(text, render) {
+				return results[text];
+			}
+		}
+	
+		data.eval = evalFunc
+		 		
+		for ( var i = 0; i < objects.length; i++) {
+
+			var o = objects[i];
+			var predicate = o.predicate;
+			var triggerList = o.trigger;
+
+			if(predicate === undefined) {
+				predicate = true;
+			} else {
+				predicate = Mustache.render(predicate, {
+					"eval" : evalFunc
+				})
+				predicate = extern.translateValue(predicate);
+			}
+			
+			if(predicate) {
+				
+				for ( var t = 0; t < triggerList.length; t++) {
+					
+					var trigger = triggerList[t]			
+					var parameters = trigger.parameters
+					var caller = trigger.call
+					
+					if((parameters !== undefined) && (caller !== undefined)) {
+						var parsedArray = [];
+						$(parameters).each(function(k,v) {
+							var fval = Mustache.render(v.toString(), data);
+							fval = extern.translateValue(fval);
+							parsedArray.push(fval)		
+						});
+						var obj = $(trigger.selector)
+						var fn = obj[caller];
+						if (typeof fn === "function") {
+							fn.apply(obj, parsedArray);
+						}
+					}
+					
+				}
+				
+			}
+
+		}
+
+	}
+	
+	var bodyClone;
+	
+	extern.cspEventObserver = function(observer,data) {
+
+		// Revert objects ...
+		if(bodyClone) {
+			$("body").replaceWith(bodyClone)
+		}
+		bodyClone = $("body").clone(true,true)	
+		
+		var objects = observer.objects
+		var trace = data.model.trace
+		var results = data.eval
+		
+		// Replay trace ...
+		$.each(trace, function(i, l) {
+
+			var lastop = l.full
+			$.each(objects, function(i, o) {
+
+				var result = Mustache.render(o.events, {
+					"eval" : function() {
+						return function(text, render) {
+							return results[text];
+						}
+					}
+				})
+				
+				if (result !== undefined) {
+
+					if (result.indexOf(lastop) !== -1) {
+
+						var trigger = o.trigger
+
+						$.each(trigger, function(i, t) {
+
+							var parameters = t.parameters
+							var caller = t.call
+
+							if ((parameters !== undefined)
+									&& (caller !== undefined)) {
+								var parsedArray = [];
+								$(parameters).each(function(k, v) {
+									parsedArray.push(extern.translateValue(Mustache.render(v,l)))
+								});
+								var obj = $(Mustache.render(t.selector, l))
+								var fn = obj[caller];
+								if (typeof fn === "function") {
+									fn.apply(obj, parsedArray);
+								}
+							}
+
+						});
+
+					}
+
+				}
+
+			});
+
+		});
+		
+//		console.log(data.eval)
+//		objects = observer.objects
+//		trace = data.model.trace		
+//		var formulas = [];
+//		$.each(observer.objects, function(i,o) {		
+//			formulas.push(o.events)
+//		});
+//		session.sendCmd("eval", {
+//			"formulas" : JSON.stringify(formulas),
+//			"callback" : "bms.cspEventResult"
+//		})
+		
+	}
+	
+	extern.executeOperation = function(observer,data) {
+		
+		  var objects = observer.objects
+		  
+		  $.each(objects, function(i,v)
+		  {
+			  var o = v;
+			  var predicate = o.predicate;
+			  if(predicate === undefined)
+				  predicate = "1=1"
+			  var operation = o.operation
+			  var selector = $(o.selector);
+			  
+			  var events = $._data( selector[0], 'events' )
+			  if (events === undefined || (events !== undefined && events.click === undefined)) {
+				    selector.click(function() {
+					 	session.sendCmd("executeOperation", {
+							"op" : o.operation,
+							"predicate" : predicate,
+							"client" : parent.bms.client
+						})	
+				  });
+			  }
+			  
+		  });
+		  
+		}
+
 	return extern;
 
 }())

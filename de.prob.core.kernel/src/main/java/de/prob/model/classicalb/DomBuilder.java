@@ -27,19 +27,21 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.model.representation.BSet;
+import de.prob.model.representation.ModelElementList;
+
 public class DomBuilder extends DepthFirstAdapter {
 
 	private static final EOF EOF = new EOF();
 	private String name;
-	private final List<Parameter> parameters = new ArrayList<Parameter>();
-	private final List<Constraint> constraints = new ArrayList<Constraint>();
-	private final List<ClassicalBConstant> constants = new ArrayList<ClassicalBConstant>();
-	private final List<Property> properties = new ArrayList<Property>();
-	private final List<ClassicalBVariable> variables = new ArrayList<ClassicalBVariable>();
-	private final List<ClassicalBInvariant> invariants = new ArrayList<ClassicalBInvariant>();
-	private final List<BSet> sets = new ArrayList<BSet>();
-	private final List<Assertion> assertions = new ArrayList<Assertion>();
-	private final List<Operation> operations = new ArrayList<Operation>();
+	private final ModelElementList<Parameter> parameters = new ModelElementList<Parameter>();
+	private final ModelElementList<Constraint> constraints = new ModelElementList<Constraint>();
+	private final ModelElementList<ClassicalBConstant> constants = new ModelElementList<ClassicalBConstant>();
+	private final ModelElementList<Property> properties = new ModelElementList<Property>();
+	private final ModelElementList<ClassicalBVariable> variables = new ModelElementList<ClassicalBVariable>();
+	private final ModelElementList<ClassicalBInvariant> invariants = new ModelElementList<ClassicalBInvariant>();
+	private final ModelElementList<BSet> sets = new ModelElementList<BSet>();
+	private final ModelElementList<Assertion> assertions = new ModelElementList<Assertion>();
+	private final ModelElementList<Operation> operations = new ModelElementList<Operation>();
 
 	@Override
 	public void outStart(final Start node) {

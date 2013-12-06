@@ -6,10 +6,25 @@ li:nth-child(odd) {
 	background-color: white;
 }
 
+.future {
+    font-style: italic;
+    color: #888;
+}
+
+.current {
+    font-weight: bold;
+}
+
+.start {
+    color: #bbb;
+    letter-spacing: 2px;
+    font-family: "Courier New", Courier, monospace;
+}
+
 li:nth-child(even) {
 	background-color: #f3f6ff;
 }
 
-li:first-child {
-	font-weight: bold;
+ul {
+    padding-left: 0px;
 }

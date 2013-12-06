@@ -1,28 +1,76 @@
-li {
-	list-style-type: none;
+#events li {
+	padding-left: 4px;
 }
 
-tr:nth-child(odd) {
+#events li:nth-child(odd) {
 	background-color: white;
 }
 
-tr:nth-child(even) {
+#events li:nth-child(even) {
 	background-color: #f3f6ff;
 }
 
-th {
-	background-color: #cccccc;
+.btn {
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
-.selected {
-	font-weight: bold;
+.toolbar {
+	margin-bottom: 15px;
+	border-bottom-color: #ddd;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	/* fallback */
+	background-color: #e4e4e4;
+	/* Safari 4-5, Chrome 1-9 */
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff),
+		to(#e4e4e4));
+	/* Safari 5.1, Chrome 10+ */
+	background: -webkit-linear-gradient(top, #ffffff, #e4e4e4);
+	/* Firefox 3.6+ */
+	background: -moz-linear-gradient(top, #ffffff, #e4e4e4);
+	/* IE 10 */
+	background: -ms-linear-gradient(top, #ffffff, #e4e4e4);
+	/* Opera 11.10+ */
+	background: -o-linear-gradient(top, #ffffff, #e4e4e4);
 }
 
-.close-button {
-	color: #660000;
-	opacity: 0.5;
+.enabled {
+	list-style-image: url(/images/enabled.png);
 }
 
-.close-button:hover {
-	opacity: 1;
+.notEnabled {
+	list-style-image: url(/images/disabled.png);
+	color: #888;
+	font-style: italic;
+}
+
+.CodeMirror {
+	border: 1px solid #000;
+	background: #eee;
+	height: auto;
+	font-family: monospace;
+	min-height: 20px;
+}
+
+.CodeMirror-wrap {
+	min-height: 20px;
+}
+
+.input-wrap {
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+.hide-input {
+	display: none;
+}
+
+.CodeMirror-hscrollbar {
+	display: none;
+}
+
+.CodeMirror-scroll {
+	overflow-y: hidden;
+	overflow-x: hidden;
 }
