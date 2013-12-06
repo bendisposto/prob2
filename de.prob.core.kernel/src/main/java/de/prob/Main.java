@@ -142,7 +142,6 @@ public class Main {
 	 *            shutdown of the program.
 	 */
 	public static void registerPrologProcess(final Process process) {
-		// TODO: Should this be in another class?
 		processes.put(process, Boolean.TRUE);
 	}
 
@@ -151,7 +150,6 @@ public class Main {
 	 * shutdown, or if the ServletContext changes.
 	 */
 	public static void destroyPrologProcesses() {
-		// TODO: Should this be in another class?
 		Set<Process> keySet = Main.processes.keySet();
 		for (Process process : keySet) {
 			process.destroy();
