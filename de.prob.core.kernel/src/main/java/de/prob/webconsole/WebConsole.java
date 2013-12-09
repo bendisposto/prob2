@@ -1,6 +1,10 @@
 package de.prob.webconsole;
 
+import java.awt.Desktop;
+import java.io.IOException;
 import java.net.BindException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.ProtectionDomain;
 
 import org.eclipse.jetty.server.Connector;
@@ -22,20 +26,21 @@ public class WebConsole {
 
 	private static int PORT = 8080;
 
-	public static void run() throws Exception {
+	public static void run(final String local) throws Exception {
 		WebConsole.run(new Runnable() {
 
 			@Override
 			public void run() {
-				// try {
-				// Desktop.getDesktop()
-				// .browse(new URI("http://localhost:"
-				// + WebConsole.PORT + "/"));
-				// } catch (IOException e) {
-				// e.printStackTrace();
-				// } catch (URISyntaxException e) {
-				// e.printStackTrace();
-				// }
+				if (!local.isEmpty())
+					try {
+						Desktop.getDesktop().browse(
+								new URI("http://localhost:" + WebConsole.PORT
+										+ "/" + local));
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (URISyntaxException e) {
+						e.printStackTrace();
+					}
 			}
 		});
 	}
@@ -58,42 +63,14 @@ public class WebConsole {
 			warFile += "bin/";
 		}
 
-		// Creating a context handler collection
-		/*
-		 * ContextHandlerCollection contexts=new ContextHandlerCollection();
-		 * WebAppProvider wprv=new WebAppProvider(); wprv.setExtractWars(true);
-		 * DeploymentManager dmgr=new DeploymentManager();
-		 * Collection<AppProvider> prvs=new ArrayList<AppProvider>();
-		 * 
-		 * wprv.setMonitoredDirName(warFile+"webapps/");
-		 * wprv.setScanInterval(10); prvs.add(wprv); dmgr.setContexts(contexts);
-		 * dmgr.setAppProviders(prvs); server.addBean(dmgr);
-		 */
-
 		WebAppContext context = new WebAppContext(warFile, "/");
 		context.setServer(server);
 
-		/*
-		 * WebAppContext worksheetContext = new WebAppContext(warFile +
-		 * "webapps/worksheet.war", "/worksheet");
-		 * worksheetContext.setExtractWAR(true);
-		 * worksheetContext.setServer(server);
-		 */
 		server.setStopAtShutdown(true);
-		/*
-		 * MBeanContainer mbContainer = new MBeanContainer(
-		 * ManagementFactory.getPlatformMBeanServer());
-		 * server.getContainer().addEventListener(mbContainer);
-		 * server.addBean(mbContainer);
-		 */
 
-		// Register loggers as MBeans
-		// mbContainer.addBean(Log.getLog());
 		// Add the handlers
 		HandlerList handlers = new HandlerList();
 		handlers.addHandler(context);
-		// handlers.addHandler(contexts);
-		// handlers.addHandler(worksheetContext);
 		server.setHandler(handlers);
 
 		int port = WebConsole.PORT;
