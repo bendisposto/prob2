@@ -1,0 +1,61 @@
+<!-- CSS -->
+<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+<link rel="stylesheet" href="/ui/common/codemirror.css">
+<link rel="stylesheet" href="/ui/common/show-hint.css">
+<link rel="stylesheet" href="/ui/ltl/splitter/splitter.css">
+<link rel="stylesheet" href="/ui/ltl/editor/editor.css">
+<link rel="stylesheet" href="/ui/ltl/manager/manager.css">
+
+<!-- JavaScript -->
+<script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
+<script type="text/javascript" src="/ui/ltl/splitter/splitter.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
+<script type="text/javascript" src="/ui/libs/show-hint.js"></script>
+<script type="text/javascript" src="/ui/libs/matchbrackets.js"></script>
+<script type="text/javascript" src="/ui/libs/closebrackets.js"></script>
+<script type="text/javascript" src="/ui/ltl/editor/ltl-hint.js"></script>
+<script type="text/javascript" src="/ui/ltl/editor/LtlEditor.js"></script>
+<script type="text/javascript" src="/ui/ltl/manager/LtlPatternManager.js"></script>
+
+<div class="left-bar">
+	<div class="left-bar-heading">
+		<div class="icon"></div>
+		Patterns
+		<button class="btn btn-success btn-xs" id="add-pattern" style="float: right" type="button" title="Create new pattern">
+			<span class="glyphicon glyphicon-plus"></span>
+			New
+		</button>	
+	</div>
+	<div class="pattern-list">
+		<ul id="selectable">
+			<li class="pattern-list-group">Builtin patterns</li>
+			<div id="builtin-patterns">
+			</div>
+			<li class="pattern-list-group">User defined patterns</li>
+			<div id="user-patterns">
+			</div>
+		</ul>
+	</div>
+</div>
+<div class="splitter_horizontal" style="left: 200px;"></div>
+<div class="manager-content">
+	
+</div>
+<script>
+	var options = { 
+		splitter: $('.splitter_horizontal'), 
+		min1: 200,
+		min2: 200,
+		enable: true,
+		resize: function(extern, diff, size1, start2) {								
+			$('.left-bar').css({ width: size1 });
+			$('.pattern-list').css({ width: size1 });
+			extern.splitter.css({ left: size1 });
+			$('.manager-content').css({ left: start2 });
+		}
+	};
+	
+	var splitter = splitter(options);
+	LtlPatternManager.create();
+</script>

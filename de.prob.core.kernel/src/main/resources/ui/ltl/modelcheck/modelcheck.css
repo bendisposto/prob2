@@ -1,0 +1,72 @@
+.mc-content {
+	position: absolute;
+	top: 50px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	padding: 15px 25px;
+	padding-top: 0;
+}
+
+#last-formulas-panel {
+	cursor: pointer;
+}
+
+.last-formulas-list {
+	max-height: 93px;
+	padding: 0;
+	
+	margin: 0;
+		
+	overflow-x: hidden;
+	cursor: default;
+	
+	border-bottom: 1px solid #D4D4D4;
+}
+
+.last-formulas-list li {
+	padding: 0 5px;
+	
+	border-bottom: 1px solid #FAFAFA;
+	
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.last-formulas-list input {
+	margin-right: 5px;
+}
+
+.last-formulas-list .ui-selected {
+	background: #D9EDF7;
+}
+
+.mc-badge-error, 
+#mc-check-passed,
+#mc-check-failed ,
+#mc-check-unchecked {
+	display: none;
+	
+	margin-left: 0;
+	margin-right: 5px;
+}
+
+.mc-badge-error {
+	background-color: #D9534F;
+    border-color: #D43F3A;
+}
+
+#mc-check-passed {	
+	color: #468847;
+}
+
+#mc-check-failed{	
+	color: #B94A48;
+}
+
+#mc-check-unchecked {
+	display: inline;
+	
+	color: #3A87AD;
+}

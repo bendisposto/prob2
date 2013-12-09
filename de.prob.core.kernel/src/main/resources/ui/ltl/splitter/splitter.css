@@ -1,0 +1,31 @@
+.splitter_vertical {
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 5px;
+	
+	border-top: 1px solid #D4D4D4;
+	border-bottom: 1px solid #D4D4D4;
+	
+	background: #FAFAFA;
+	background-image: url('../img/icon_vertical_splitter.gif');
+	background-repeat: no-repeat;
+	background-position: center;
+	cursor: n-resize;
+}
+
+.splitter_horizontal {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 5px;
+	
+	border-left: 1px solid #D4D4D4;
+	border-right: 1px solid #D4D4D4;
+	
+	background: #FAFAFA;
+	background-image: url('../img/icon_horizontal_splitter.gif');
+	background-repeat: no-repeat;
+	background-position: center;
+	cursor: e-resize;
+}	
