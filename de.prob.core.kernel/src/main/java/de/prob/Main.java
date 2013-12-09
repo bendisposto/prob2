@@ -76,9 +76,13 @@ public class Main {
 	private void run(final String[] args) throws Throwable {
 		try {
 			CommandLine line = parser.parse(options, args);
+			if (line.hasOption("browser")) {
+				String value = line.getOptionValue("browser");
+				WebConsole.run(value);
+			}
 			if (line.hasOption("shell")) {
 				try {
-					WebConsole.run();
+					WebConsole.run("");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

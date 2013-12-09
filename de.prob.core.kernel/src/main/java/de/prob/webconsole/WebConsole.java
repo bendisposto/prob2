@@ -1,6 +1,10 @@
 package de.prob.webconsole;
 
+import java.awt.Desktop;
+import java.io.IOException;
 import java.net.BindException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.ProtectionDomain;
 
 import org.eclipse.jetty.server.Connector;
@@ -22,20 +26,21 @@ public class WebConsole {
 
 	private static int PORT = 8080;
 
-	public static void run() throws Exception {
+	public static void run(final String local) throws Exception {
 		WebConsole.run(new Runnable() {
 
 			@Override
 			public void run() {
-				// try {
-				// Desktop.getDesktop()
-				// .browse(new URI("http://localhost:"
-				// + WebConsole.PORT + "/"));
-				// } catch (IOException e) {
-				// e.printStackTrace();
-				// } catch (URISyntaxException e) {
-				// e.printStackTrace();
-				// }
+				if (!local.isEmpty())
+					try {
+						Desktop.getDesktop().browse(
+								new URI("http://localhost:" + WebConsole.PORT
+										+ "/" + local));
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (URISyntaxException e) {
+						e.printStackTrace();
+					}
 			}
 		});
 	}
