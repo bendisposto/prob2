@@ -34,8 +34,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.annotations.Sessions;
-import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.web.ISession;
 import de.prob.web.WebUtils;
 import de.prob.web.data.SessionResult;
@@ -53,12 +51,8 @@ public class BMotionStudioServlet extends HttpServlet {
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
 
-	private AnimationSelector selector;
-
 	@Inject
-	public BMotionStudioServlet(AnimationSelector selector,
-			@Sessions Map<String, ISession> sessions) {
-		this.selector = selector;
+	public BMotionStudioServlet(@Sessions Map<String, ISession> sessions) {
 		this.sessions = sessions;
 		new Thread(new Runnable() {
 			@Override
@@ -146,12 +140,33 @@ public class BMotionStudioServlet extends HttpServlet {
 				String baseHtml = getBaseHtml(bmsSession);
 
 				Document templateDocument = Jsoup.parse(templateHtml);
+				templateDocument.outputSettings().prettyPrint(false);
+
 				Elements headTag = templateDocument.getElementsByTag("head");
+				Element headElement = headTag.get(0);
+
+				Elements machineElements = headElement
+						.getElementsByAttributeValue("name", "machine");
+				Elements scriptElements = headElement
+						.getElementsByAttributeValue("name", "script");
+
+				if (!machineElements.isEmpty()) {
+					Element machineElement = machineElements.get(0);
+					bmsSession.addParameter("machine",
+							machineElement.attr("content"));
+				}
+
+				if (!scriptElements.isEmpty()) {
+					Element scriptElement = scriptElements.get(0);
+					bmsSession.addParameter("script",
+							scriptElement.attr("content"));
+				}
 
 				String head = headTag.html();
 				Elements bodyTag = templateDocument.getElementsByTag("body");
 				String body = bodyTag.html();
 				Document baseDocument = Jsoup.parse(baseHtml);
+				baseDocument.outputSettings().prettyPrint(false);
 
 				Elements headTag2 = baseDocument.getElementsByTag("head");
 				Element bodyTag2 = baseDocument.getElementById("vis_container");
@@ -181,14 +196,6 @@ public class BMotionStudioServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		Trace currentTrace = this.selector.getCurrentTrace();
-
-		// No running animation ...
-		if (currentTrace == null) {
-			// TODO: Display a page with a proper message
-			return;
-		}
-
 		// Check if an existing session is request
 		String uri = req.getRequestURI();
 		List<String> parts = new PartList(uri.split("/"));
@@ -210,10 +217,17 @@ public class BMotionStudioServlet extends HttpServlet {
 
 			String redirect;
 
+			Map<String, String[]> parameterMap = req.getParameterMap();
 			String template = req.getParameter("template");
 			// New template requested via parameter
 			if (template != null) {
+
 				bmsSession.setTemplate(template);
+
+				for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
+					bmsSession.addParameter(e.getKey(), e.getValue()[0]);
+				}
+
 				String templateFullPath = bmsSession.getTemplate();
 				List<String> templateParts = new PartList(
 						templateFullPath.split("/"));
@@ -221,6 +235,7 @@ public class BMotionStudioServlet extends HttpServlet {
 						.get(templateParts.size() - 1);
 				// Send redirect with new session id and template file
 				redirect = "/bms/" + id + "/" + templateFile;
+
 			} else {
 				// Send redirect only with new session id (we have still no
 				// template)
@@ -231,7 +246,6 @@ public class BMotionStudioServlet extends HttpServlet {
 			return;
 
 		} else {
-
 			String mode = req.getParameter("mode");
 			if ("update".equals(mode)) {
 				update(req, bmsSession);
@@ -240,7 +254,6 @@ public class BMotionStudioServlet extends HttpServlet {
 			} else {
 				delegateFileRequest(req, resp, bmsSession);
 			}
-
 		}
 
 	}
@@ -281,8 +294,6 @@ public class BMotionStudioServlet extends HttpServlet {
 			try {
 				resource.close();
 			} catch (IOException e) {
-				// Do your thing with the exception. Print it, log it or mail
-				// it.
 				e.printStackTrace();
 			}
 		}

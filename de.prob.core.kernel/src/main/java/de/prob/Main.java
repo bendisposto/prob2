@@ -74,16 +74,22 @@ public class Main {
 	}
 
 	private void run(final String[] args) throws Throwable {
+		String url = "";
 		try {
 			CommandLine line = parser.parse(options, args);
+			if (line.hasOption("browser")) {
+				logger.debug("Browser");
+				url = line.getOptionValue("browser");
+				logger.debug("Browser started");
+			}
+			runServer(url);
 			if (line.hasOption("shell")) {
-				try {
-					WebConsole.run();
-				} catch (Exception e) {
-					e.printStackTrace();
+				while (true) {
+					Thread.sleep(10);
 				}
 			}
 			if (line.hasOption("test")) {
+				logger.debug("Run Script");
 				String value = line.getOptionValue("test");
 				shell.runScript(new File(value));
 			}
@@ -91,6 +97,22 @@ public class Main {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("java -jar probcli.jar", options);
 		}
+	}
+
+	private void runServer(final String url) {
+		logger.debug("Shell");
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					WebConsole.run(url);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
 	}
 
 	/**
@@ -118,21 +140,26 @@ public class Main {
 	 * @param args
 	 * @throws Throwable
 	 */
-	public static void main(final String[] args) throws Throwable {
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				Set<Process> keySet = Main.processes.keySet();
-				for (Process process : keySet) {
-					process.destroy();
+	public static void main(final String[] args) {
+		try {
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void run() {
+					Set<Process> keySet = Main.processes.keySet();
+					for (Process process : keySet) {
+						process.destroy();
+					}
 				}
-			}
-		});
-		System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
+			});
+			System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
 
-		Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
+			Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
 
-		main.run(args);
+			main.run(args);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
 		System.exit(0);
 	}
 

@@ -219,18 +219,43 @@ bms = (function() {
 		return val;
 	}
 	
-	extern.evalObserver = function(observer,data) {
+	executeOperation = function(observer, formulas) {
+		
+		  var objects = observer.objects
+		  
+		  $.each(objects, function(i,v)
+		  {
+			  var o = v;
+			  var predicate = o.predicate;
+			  if(predicate === undefined)
+				  predicate = "1=1"
+			  var operation = o.operation
+			  var selector = $(o.selector);
+			  
+			  var events = $._data( selector[0], 'events' )
+			  if (events === undefined || (events !== undefined && events.click === undefined)) {
+				    selector.click(function() {
+					 	session.sendCmd("executeOperation", {
+							"op" : o.operation,
+							"predicate" : predicate,
+							"client" : parent.bms.client
+						})	
+				  });
+			  }
+			  
+		  });
+		
+	}
+	
+	evalObserver = function(observer, formulas) {
 
 		var objects = observer.objects
-		var results = data.eval	
 		
 		var evalFunc = function() {
 			return function(text, render) {
-				return results[text];
+				return formulas[text];
 			}
 		}
-	
-		data.eval = evalFunc
 		 		
 		for ( var i = 0; i < objects.length; i++) {
 
@@ -241,9 +266,7 @@ bms = (function() {
 			if(predicate === undefined) {
 				predicate = true;
 			} else {
-				predicate = Mustache.render(predicate, {
-					"eval" : evalFunc
-				})
+				predicate = Mustache.render(predicate, { "eval" : evalFunc })
 				predicate = extern.translateValue(predicate);
 			}
 			
@@ -258,7 +281,7 @@ bms = (function() {
 					if((parameters !== undefined) && (caller !== undefined)) {
 						var parsedArray = [];
 						$(parameters).each(function(k,v) {
-							var fval = Mustache.render(v.toString(), data);
+							var fval = Mustache.render(v.toString(), { "eval" : evalFunc });
 							fval = extern.translateValue(fval);
 							parsedArray.push(fval)		
 						});
@@ -274,13 +297,13 @@ bms = (function() {
 			}
 
 		}
-
+		
 	}
-	
+		
 	var bodyClone;
 	
-	extern.cspEventObserver = function(observer,data) {
-
+	cspEventObserver = function(observer, formulas, trace) {
+		
 		// Revert objects ...
 		if(bodyClone) {
 			$("body").replaceWith(bodyClone)
@@ -288,8 +311,6 @@ bms = (function() {
 		bodyClone = $("body").clone(true,true)	
 		
 		var objects = observer.objects
-		var trace = data.model.trace
-		var results = data.eval
 		
 		// Replay trace ...
 		$.each(trace, function(i, l) {
@@ -300,7 +321,7 @@ bms = (function() {
 				var result = Mustache.render(o.events, {
 					"eval" : function() {
 						return function(text, render) {
-							return results[text];
+							return formulas[text];
 						}
 					}
 				})
@@ -339,47 +360,15 @@ bms = (function() {
 
 		});
 		
-//		console.log(data.eval)
-//		objects = observer.objects
-//		trace = data.model.trace		
-//		var formulas = [];
-//		$.each(observer.objects, function(i,o) {		
-//			formulas.push(o.events)
-//		});
-//		session.sendCmd("eval", {
-//			"formulas" : JSON.stringify(formulas),
-//			"callback" : "bms.cspEventResult"
-//		})
-		
 	}
 	
-	extern.executeOperation = function(observer,data) {
-		
-		  var objects = observer.objects
-		  
-		  $.each(objects, function(i,v)
-		  {
-			  var o = v;
-			  var predicate = o.predicate;
-			  if(predicate === undefined)
-				  predicate = "1=1"
-			  var operation = o.operation
-			  var selector = $(o.selector);
-			  
-			  var events = $._data( selector[0], 'events' )
-			  if (events === undefined || (events !== undefined && events.click === undefined)) {
-				    selector.click(function() {
-					 	session.sendCmd("executeOperation", {
-							"op" : o.operation,
-							"predicate" : predicate,
-							"client" : parent.bms.client
-						})	
-				  });
-			  }
-			  
-		  });
-		  
+	extern.update_visualization = function(data) {
+		vs = eval(data.values);
+		for (e in vs) {
+			v = vs[e];
+			eval(v)
 		}
+	}
 
 	return extern;
 

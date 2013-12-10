@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<head>
+	<title>LTL model checking</title>
+		
+<!-- CSS -->
+	<link rel="stylesheet" href="/ui/ltl/bootstrap.css">
+	<link rel="stylesheet" href="/ui/ltl/main.css">
+	
+<!-- JavaScript -->
+	<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+	<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
+	<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+	<script type="text/javascript" src="/ui/common/Session.js"></script>
+	<script type="text/javascript" src="/ui/ltl/Util.js"></script>
+<script type="text/javascript" src="/ui/ltl/modelcheck/LtlModelCheck.js"></script>
+</head>
+<body>
+	<nav class="navbar navbar-default" role="navigation">
+	<div class="navbar-header">
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+		  <span class="sr-only">Toggle navigation</span>
+		  <span class="icon-bar"></span>
+		  <span class="icon-bar"></span>
+		  <span class="icon-bar"></span>
+		</button>
+		<a class="navbar-brand logo" href="#"></a>
+	</div>
+		<div class="collapse navbar-collapse navbar-ex1-collapse">
+			<ul class="nav navbar-nav">
+				<li id="nav-modelcheck"><span>Model checking</span></li>
+				<li id="nav-manager"><span>Pattern manager</span></li>
+			</ul>
+		</div>
+	</nav>
+	<div class="content" id="modelcheck-container" style="display: none">
+	
+	</div>
+	<div class="content" id="manager-container" style="display: none">
+	
+	</div>
+	<script>
+		$(document).ready(function() {
+			Util.init("{{clientid}}");
+			Util.replaceContent("#modelcheck-container", "/ui/ltl/modelcheck/modelcheck.html");
+			Util.replaceContent("#manager-container", "/ui/ltl/manager/manager.html");
+			
+			LtlModelCheck.movePattern = function(pattern) {
+				LtlPatternManager.movePattern = pattern;
+				showPatternManager();
+			}
+			
+			$("#nav-modelcheck").click(showModelCheck);		
+			$("#nav-manager").click(showPatternManager);
+			
+			showModelCheck();
+		});
+		
+		
+		function showModelCheck() {
+			if (!$("#nav-modelcheck").hasClass("active")) {
+				$("#nav-modelcheck").addClass("active");
+				$("#nav-manager").removeClass("active");
+					
+				LtlPatternManager.saveState();
+				$("#modelcheck-container").show();
+				$("#manager-container").hide();
+				LtlModelCheck.restore();
+			}
+		}
+		
+		function showPatternManager() {
+			if (!$("#nav-manager").hasClass("active")) {
+				$("#nav-manager").addClass("active");
+				$("#nav-modelcheck").removeClass("active");
+				
+				LtlModelCheck.saveState();
+				$("#manager-container").show();
+				$("#modelcheck-container").hide();
+				LtlPatternManager.restore();
+			}
+		}
+		
+	</script>
+</body>
+</html>

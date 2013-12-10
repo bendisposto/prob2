@@ -1,0 +1,68 @@
+<div class="pattern-name">
+	<h1 id="name">
+		{{name}}
+	</h1>
+</div>
+
+<div class="actions">
+	{{#builtin}}
+	<div style="height: 22px"></div>
+	{{/builtin}}
+	{{^builtin}}
+	<button class="btn btn-info btn-xs" id="edit-pattern" type="button" title="Edit pattern">
+		<span class="glyphicon glyphicon-pencil"></span>
+		Edit
+	</button>
+	<button class="btn btn-danger btn-xs" type="button" title="Remove pattern" data-toggle="modal" href="#removeModal">
+		<span class="glyphicon glyphicon-remove"></span>
+		Remove
+	</button>
+	{{/builtin}}
+</div>
+<div class="panel" id="description-panel">
+	<div class="panel-heading">
+		Description
+	</div>
+	<div class="input-group">
+		<textarea class="form-control description" style="height: 70px; border-radius: 0 0 4px 4px;" readonly="readonly">{{description}}</textarea>
+	</div>
+</div>
+<div class="panel" id="code-panel">
+	<div class="panel-heading">
+		Code
+	</div>
+	<textarea id="code">{{code}}</textarea>
+</div>	
+<!-- Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Remove pattern</h4>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to remove the pattern '{{name}}'?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger btn-xs" id="remove-pattern" data-dismiss="modal">
+			<span class="glyphicon glyphicon-remove"></span>
+			Remove
+		</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+	var cmSettings = {
+		lineNumbers: true,
+		matchBrackets: true,
+		autoCloseBrackets: true,
+		readOnly: true,
+		extraKeys: {"Ctrl-Space": "autocomplete"},
+		gutters: ["CodeMirror-linenumbers", "markers"]
+	};		
+	var cm = CodeMirror.fromTextArea(document.getElementById("code"), cmSettings);
+	LtlPatternManager.registerResize(cm);
+</script>

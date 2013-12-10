@@ -1,0 +1,76 @@
+<div class="pattern-name">
+	<h1 id="name">
+		{{#name}}
+		Edit pattern '{{name}}'
+		{{/name}}
+		{{^name}}
+		Create new pattern
+		{{/name}}
+	</h1>
+</div>
+
+<div class="actions">
+	<div style="display: inline-block;">
+		<div class="alert alert-success" id="success-alert" style="display: none">Pattern saved</div>
+		<div class="alert alert-danger" id="error-alert" style="display: none">Saving failed. Fix the problems first</div>
+	</div>
+	<button class="btn btn-success btn-xs" id="save-pattern" type="button" title="Save pattern">
+		<span class="glyphicon glyphicon-ok"></span>
+		Save pattern
+	</button>
+	{{#name}}
+	<button class="btn btn-danger btn-xs" type="button" title="Remove pattern" data-toggle="modal" href="#removeModal">
+		<span class="glyphicon glyphicon-remove"></span>
+		Remove
+	</button>
+	{{/name}}
+</div>
+<div class="panel">
+	<div class="panel-heading">
+		Name
+		<div class="badge badge-error" id="name-unique-error">The name already exists. Choose another one</div>
+		<div class="badge badge-error" id="name-empty-error">The name cannot be empty. Enter a name</div>
+	</div>
+	<div class="input-group">
+		<input class="form-control" id="name-input" type="text" placeholder="Enter a pattern name" value="{{name}}" style="border-radius: 0 0 4px 4px;">
+	</div>
+</div>
+<div class="panel" id="description-panel">
+	<div class="panel-heading">
+		Description
+	</div>
+	<div class="input-group">
+		<textarea class="form-control description" id="description-input" style="height: 70px; border-radius: 0 0 4px 4px;">{{description}}</textarea>
+	</div>
+</div>
+<div class="panel" id="code-panel">
+	<div class="panel-heading">
+		Code
+		<div class="badge badge-error" id="code-error">Fix the errors in the code</div>
+	</div>
+	<textarea id="code">{{code}}</textarea>
+</div>	
+<!-- Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Remove pattern</h4>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to remove the pattern '{{name}}'?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger btn-xs" id="remove-pattern" data-dismiss="modal">
+			<span class="glyphicon glyphicon-remove"></span>
+			Remove
+		</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+	LtlPatternManager.setCodeMirror(document.getElementById("code"), '{{name}}');
+</script>

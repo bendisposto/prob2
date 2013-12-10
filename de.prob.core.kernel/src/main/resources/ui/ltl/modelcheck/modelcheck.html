@@ -1,0 +1,152 @@
+<!-- CSS -->
+<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+<link rel="stylesheet" href="/ui/common/codemirror.css">
+<link rel="stylesheet" href="/ui/common/show-hint.css">
+<link rel="stylesheet" href="/ui/ltl/editor/editor.css">
+<link rel="stylesheet" href="/ui/ltl/modelcheck/modelcheck.css">
+
+<!-- JavaScript -->
+<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+<script type="text/javascript" src="/ui/libs/codemirror_modes/ltl.js"></script>
+<script type="text/javascript" src="/ui/libs/show-hint.js"></script>
+<script type="text/javascript" src="/ui/libs/matchbrackets.js"></script>
+<script type="text/javascript" src="/ui/libs/closebrackets.js"></script>
+<script type="text/javascript" src="/ui/ltl/editor/ltl-hint.js"></script>
+<script type="text/javascript" src="/ui/ltl/editor/LtlEditor.js"></script>
+
+<div class="mc-content">
+	<div class="actions">
+		
+		
+		<button class="btn btn-warning btn-xs" id="mc-settings" type="button" title="Settings" data-toggle="modal" href="#settings">
+			<span class="glyphicon glyphicon-cog"></span>
+			Settings
+		</button>
+	</div>
+	<div class="panel" id="mc-code-panel">
+		<div class="panel-heading" id="last-formulas-panel">
+			<span class="glyphicon glyphicon-chevron-down" id="last-formulas-icon"></span>
+			Saved formulas
+			<div class="badge" id="mc-selected-badge" style="display:inline">0/0</div>
+			<div style="float:right" id="mc-selected">
+				<div class="alert alert-success" id="selected-check-ready" style="display: none; margin: 0 10px">Checking finished</div>
+				Selected formulas: 
+				<button class="btn btn-info btn-xs" id="mc-start-all" type="button" title="Start model checking for all formulas">
+					<span class="glyphicon glyphicon-play"></span>
+					Check
+				</button>
+				<button class="btn btn-danger btn-xs" id="mc-remove-selected-button" data-toggle="modal" href="#removeSelected" type="button" title="Remove the selected formulas">
+					<span class="glyphicon glyphicon-remove"></span>
+					Remove
+				</button>
+			</div>
+		</div>
+		<div class="last-formulas">	
+			<ul class="last-formulas-list">
+			</ul>
+		</div>
+		<div class="panel-heading" id="current-formulas-panel">
+			Current formula
+			<div class="badge badge-error" id="mc-code-error">Fix the errors in the code</div>
+			<div style="float:right">
+				<div class="alert alert-success" id="current-check-ready" style="display: none; margin: 0 10px">Checking finished</div>
+				<button class="btn btn-info btn-xs" id="mc-start-current" type="button" title="Start model checking for the current formula">
+					<span class="glyphicon glyphicon-play"></span>
+					Check
+				</button>
+				<button class="btn btn-success btn-xs" id="mc-add-formula" type="button" title="Add formula">
+					<span class="glyphicon glyphicon-plus"></span>
+					New
+				</button>
+				<button class="btn btn-danger btn-xs" type="button" title="Remove the current formula" data-toggle="modal" href="#removeCurrent">
+					<span class="glyphicon glyphicon-remove"></span>
+					Remove
+				</button>
+			</div>
+		</div>
+		<textarea id="mc-formula-code">{{code}}</textarea>
+	</div>	
+	<!-- Modal -->
+	<div class="modal fade" id="removeCurrent" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h4 class="modal-title">Remove formula</h4>
+		  </div>
+		  <div class="modal-body">
+			<p>Do you really want to remove the current formula?</p>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Cancel</button>
+			<button type="button" class="btn btn-danger btn-xs" id="mc-remove-current" data-dismiss="modal">
+				<span class="glyphicon glyphicon-remove"></span>
+				Remove
+			</button>
+		  </div>
+		</div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	<!-- Modal -->
+	<div class="modal fade" id="removeSelected" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h4 class="modal-title">Remove selected formulas</h4>
+		  </div>
+		  <div class="modal-body">
+			<p>Do you really want to remove the selected formulas?</p>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Cancel</button>
+			<button type="button" class="btn btn-danger btn-xs" id="mc-remove-selected" data-dismiss="modal">
+				<span class="glyphicon glyphicon-remove"></span>
+				Remove
+			</button>
+		  </div>
+		</div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	<!-- Modal -->
+	<div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h4 class="modal-title">LTL model checking settings</h4>
+		  </div>
+		  <div class="modal-body">
+		  
+			<div class="form-group">
+				<label for="startingPoint">Starting point</label>
+				<select id="startingPoint" class="form-control">
+				  <option value="init">Initial state(s)</option>
+				  <option value="starthere">Current state</option>
+				  <option value="checkhere">Initial state(s), but check the formula F in the current state (current => F)</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="symmetryReduction">Symmetry reduction</label>
+				<select id="symmetryReduction" class="form-control">
+				  <option>Not symmetry reduction</option>
+				  <option>Nauty</option>
+				  <option>Permutation flooding</option>
+				  <option>Symmetry marker (hash)</option>
+				</select>
+			</div>
+  
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Cancel</button>
+			<button type="button" class="btn btn-success btn-xs" id="settings-selected" data-dismiss="modal">
+				<span class="glyphicon glyphicon-remove"></span>
+				Ok
+			</button>
+		  </div>
+		</div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+</div>
+<script>	
+</script>

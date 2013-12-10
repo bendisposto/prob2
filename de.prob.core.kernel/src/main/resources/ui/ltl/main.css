@@ -1,0 +1,109 @@
+/* Navigation */
+.nav li span {
+	position: relative;
+	display: block;
+	
+	padding: 10px 15px;
+	padding-bottom: 15px;
+	padding-top: 15px;
+	
+	color: #777777;
+	line-height: 20px;    
+	text-decoration: none;
+	
+	cursor: pointer;
+}	
+
+.active {
+	background-color: #E7E7E7;
+	color: #555555;
+}
+
+.navbar-brand{
+	width: 147px;
+	height: 50px;
+	margin: 0 5px;
+	
+	background-image: url('img/logo.png');
+}
+
+/* Content area */
+.content {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	padding-top: 50px;
+	
+	background-color: #FAFAFA;
+}
+
+/* Panels and modals */
+.panel-heading,
+.panel-footer,
+.modal-header,
+.modal-footer {
+	background-color: #FAFAFA;
+	background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+	background-repeat: repeat-x;
+	border-bottom: 1px solid #D4D4D4;
+}
+
+.panel {
+	border: 1px solid #D4D4D4;
+}
+
+.panel-heading {					
+	padding: 5px;
+	
+	font-weight: bold;
+}
+
+.panel-footer {					
+	padding: 5px;
+	
+	border-top: 0;
+	
+	text-align: right;
+}
+
+.modal-header {
+	padding: 10px;
+	
+	border-radius: 6px 6px 0 0;
+}
+
+.modal-footer {
+	padding: 10px;
+	
+	border-top: 1px solid #D4D4D4;
+	border-bottom: 0;	
+	border-radius: 0 0 6px 6px;
+}
+
+/* Buttons */
+.actions {	
+	width: 100%;
+	text-align: right;
+	margin: 10px 0;
+}	
+
+/* Alert */
+.alert {
+	padding: 1px 5px;
+	margin-bottom: 0;
+	
+    font-size: 12px;
+	text-align: left;
+}
+
+/* CodeMirror */
+.CodeMirror {
+	border-radius: 0 0 4px 4px;
+}
+
+.CodeMirror * { 
+	-moz-box-sizing: content-box; 
+	-webkit-box-sizing: content-box; 
+	box-sizing: content-box; 
+}
