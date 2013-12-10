@@ -161,7 +161,6 @@ public class GroovySE implements ScriptEngine {
 	@Override
 	public Object eval(final String script, final Bindings n)
 			throws ScriptException {
-		System.err.println("Maybe not correct");
 		ScriptContext ctxt = getScriptContext(n);
 		return eval(script, ctxt);
 	}
@@ -169,7 +168,6 @@ public class GroovySE implements ScriptEngine {
 	@Override
 	public Object eval(final Reader reader, final Bindings n)
 			throws ScriptException {
-		System.err.println("Maybe not correct");
 		return eval(readFully(reader), n);
 	}
 
