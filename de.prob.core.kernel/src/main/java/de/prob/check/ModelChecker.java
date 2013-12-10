@@ -30,10 +30,10 @@ public class ModelChecker {
 	private Future<ModelCheckingResult> f;
 
 	public ModelChecker(final StateSpace s) {
-		this(s, ModelCheckingSearchOption.getDefaultOptions());
+		this(s, ModelCheckingOptions.DEFAULT);
 	}
 
-	public ModelChecker(final StateSpace s, final List<String> options) {
+	public ModelChecker(final StateSpace s, final ModelCheckingOptions options) {
 		worker = new Worker(s, options);
 		executor = Executors.newSingleThreadExecutor();
 	}
@@ -105,7 +105,7 @@ public class ModelChecker {
 
 		private static final int TIME = 500;
 		private final StateSpace s;
-		private final List<String> options;
+		private ModelCheckingOptions options;
 		private long last;
 		private ModelCheckingResult res;
 
@@ -117,9 +117,9 @@ public class ModelChecker {
 		 * @param s
 		 *            {@link StateSpace} object in which to perform the model
 		 *            checking
-		 * @param options
+		 * @param options2
 		 */
-		public Worker(final StateSpace s, final List<String> options) {
+		public Worker(final StateSpace s, final ModelCheckingOptions options) {
 			this.s = s;
 			this.options = options;
 			last = s.getLastCalculatedStateId();
@@ -134,8 +134,7 @@ public class ModelChecker {
 					break;
 				}
 				res = do_model_checking_step();
-				options.remove(ModelCheckingSearchOption.inspect_existing_nodes
-						.name());
+				options = options.recheckExisting(false);
 				abort = res.isAbort();
 			}
 			return res;

@@ -20,8 +20,8 @@ public enum ModelCheckingSearchOption {
 			"Find Deadlocks", true), find_invariant_violations(2,
 			"Find Invariant Violations", true), find_assertion_violations(3,
 			"Find Theorem Violations", false), inspect_existing_nodes(4,
-			"Recheck Existing States", false),
-			stop_at_full_coverage(5, "Stop when all Events are Covered", false);
+			"Recheck Existing States", false), stop_at_full_coverage(5,
+			"Stop when all Events are Covered", false);
 
 	private final String text;
 	private final int pos;

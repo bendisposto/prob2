@@ -40,14 +40,6 @@ public class ModelCheckingResult {
 		}
 	}
 
-	public ModelCheckingResult(final Result r) {
-		result = r;
-	}
-
-	public PrologTerm getArgument(final int i) {
-		return arguments.get(i);
-	}
-
 	public Result getResult() {
 		return result;
 	}
@@ -59,5 +51,10 @@ public class ModelCheckingResult {
 	@Override
 	public String toString() {
 		return result.name();
+	}
+
+	public PrologTerm getArgument(final int i) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

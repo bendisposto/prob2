@@ -1,8 +1,6 @@
 package de.prob.ui.modelcheckingview;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.jobs.Job;
@@ -19,19 +17,22 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
-import de.prob.check.ModelCheckingSearchOption;
 import de.prob.check.ModelChecker;
+import de.prob.check.ModelCheckingOptions;
+import de.prob.check.ModelCheckingSearchOption;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.Trace;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.webconsole.ServletContextListener;
 
 public class ModelCheckingView extends ViewPart implements
 		IModelChangedListener, IAnimationChangeListener {
 
 	private final Set<ModelCheckingSearchOption> options = new HashSet<ModelCheckingSearchOption>();
+
+	ModelCheckingOptions ops = ModelCheckingOptions.DEFAULT;
 
 	private Composite container;
 	private Text formulas;
@@ -104,8 +105,8 @@ public class ModelCheckingView extends ViewPart implements
 
 	private void startModelChecking() {
 		if (s != null) {
-			job = new ModelCheckingJob("Model Checking",
-					new ModelChecker(s, optionsToString()));
+			job = new ModelCheckingJob("Model Checking", new ModelChecker(s,
+					ops));
 			job.setUser(true);
 			job.addJobChangeListener(new ModelCheckingFinishedListener(
 					container, currentTrace));
@@ -147,20 +148,13 @@ public class ModelCheckingView extends ViewPart implements
 		if (set) {
 			if (!options.contains(option)) {
 				options.add(option);
+
 			}
 		} else {
 			if (options.contains(option)) {
 				options.remove(option);
 			}
 		}
-	}
-
-	private List<String> optionsToString() {
-		List<String> list = new ArrayList<String>();
-		for (ModelCheckingSearchOption option : options) {
-			list.add(option.name());
-		}
-		return list;
 	}
 
 	@Override
