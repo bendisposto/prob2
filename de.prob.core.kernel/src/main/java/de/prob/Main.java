@@ -85,8 +85,8 @@ public class Main {
 			runServer(url);
 			if (line.hasOption("shell")) {
 				while (true) {
+					Thread.sleep(10);
 				}
-
 			}
 			if (line.hasOption("test")) {
 				logger.debug("Run Script");
