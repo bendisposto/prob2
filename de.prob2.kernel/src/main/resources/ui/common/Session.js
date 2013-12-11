@@ -9,7 +9,7 @@ function Session() {
 	var extern = {}
 
 	var current = -1;
-	var poll_interval = 100;
+	var poll_interval = 5000;
 
 	var polling = true;
 

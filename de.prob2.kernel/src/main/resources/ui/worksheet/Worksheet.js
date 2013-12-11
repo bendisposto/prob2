@@ -254,7 +254,7 @@ Worksheet = (function() {
 	}
 
 	function render(id, html) {
-		$("#render" + id + " *").remove()
+		$("#render" + id).empty()
 		$("#render" + id).removeClass("invalidated")
 		$("#render" + id).append(html)
 
@@ -542,7 +542,7 @@ Worksheet = (function() {
  	
  	function setDropdown(boxId,menuName,items){
 		var templateArgs={
-			"withDropdown":(items!=null && items.length>1),
+			"withDropdown":(items!=null && items.length!=0),
 			"items":items,
 			"type":menuName,
 			"id":boxId
@@ -552,10 +552,18 @@ Worksheet = (function() {
 		$("#box"+boxId+" .heading-bar").append(menu);
 		menu.find(".selectee").click(function(e){
 			$(e.target).closest(".box-menu").find(".selectee").removeClass("selected").removeClass("hidden");
-			$(e.target).addClass("selected").addClass("hidden");
+			$(e.target).addClass("selected");
+				if($(e.target).closest(".box-menu").find(".selectee").size()>1)
+					$(e.target).addClass("hidden");
 			$(e.target).closest(".box-menu").find(".active-item").html(e.target.id);
 		});
 		if(items!=null && items.length>0){ 
+			//if(items.length>1){
+				var selected=menu.find(".selectee").first();
+				selected.addClass("selected");
+				if(items.length>1)
+					selected.addClass("hidden");
+			//}
 			menu.find(".active-item").html(items[0]);
 		}else{
 			menu.find(".active-item").html("No Traces in Worksheet");
