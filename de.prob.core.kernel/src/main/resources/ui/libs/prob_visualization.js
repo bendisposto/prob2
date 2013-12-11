@@ -60,6 +60,7 @@ function VizUtils(){
             .attr("viewBox", "0 0 " + width + " " + height)
             .attr("pointer-events", "all")
             .attr("id","svg-viz")
+            .attr("height",height)
           .append("svg:g")
             .call(zoom)
           .append("svg:g")

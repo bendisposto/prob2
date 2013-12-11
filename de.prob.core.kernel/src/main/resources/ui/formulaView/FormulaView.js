@@ -9,6 +9,7 @@ FormulaView = (function() {
     var tree = d3.layout.tree()
             .size([height, width]);
     var mode;
+    var lastData;
 
     $(document).ready(function() {
         $(window).keydown(function(event){
@@ -17,6 +18,20 @@ FormulaView = (function() {
                 return false;
             }
         });
+
+        $(window).resize(function() {
+            width = vizUtils.calculateWidth();
+            h = vizUtils.calculateHeight() - $("#header")[0].clientHeight;
+            if(h != height) {
+                height = h;
+                $("#visualization").empty();
+                vis = vizUtils.createCanvas("#visualization", width, height);
+                tree = d3.layout.tree().size([height,width]);
+                if(lastData != undefined) {
+                    draw(lastData)
+                }                
+            }
+        })
     });
 
     // UI Interaction
@@ -82,6 +97,7 @@ FormulaView = (function() {
     }
 
     function draw(data) {
+        lastData = data;
         var root, labels, values, i, diagonal;
         clear();
 
