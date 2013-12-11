@@ -32,6 +32,7 @@ import de.prob.animator.command.GetStatesFromPredicate;
 import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.exception.ProBError;
@@ -673,19 +674,19 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	/**
-	 * This calculated the shortest path from root to the specified state
-	 * (specified with an integer id value).
+	 * This calculated the shortest path from root to the specified state.
 	 * 
-	 * @param state
+	 * @param stateId
+	 *            StateId for which the trace through the state space should be
+	 *            found.
 	 * @return trace in the form of a {@link Trace} object
 	 */
-	public Trace getTrace(final String state) {
-		final StateId id = getVertex(state);
+	public Trace getTrace(final StateId stateId) {
 		StateId root = this.getRoot();
 
 		DijkstraShortestPath<StateId, OpInfo> dijkstra = new DijkstraShortestPath<StateId, OpInfo>(
 				this.getGraph());
-		List<OpInfo> path = dijkstra.getPath(root, id);
+		List<OpInfo> path = dijkstra.getPath(root, stateId);
 		Trace h = new Trace(this);
 		for (final OpInfo opInfo : path) {
 			h = h.add(opInfo.getId());

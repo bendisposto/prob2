@@ -34,7 +34,7 @@ public class ModelCheckingOptions {
 		return changeOption(value, Options.find_invariant_violations);
 	}
 
-	public ModelCheckingOptions checkTheorems(final boolean value) {
+	public ModelCheckingOptions checkAssertions(final boolean value) {
 		return changeOption(value, Options.find_assertion_violations);
 	}
 

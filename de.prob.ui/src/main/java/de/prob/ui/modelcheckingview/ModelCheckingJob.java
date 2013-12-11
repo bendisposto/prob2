@@ -27,7 +27,7 @@ public class ModelCheckingJob extends Job {
 		commandFailed = false;
 		try {
 			modelChecker.start();
-			result = modelChecker.getResult();
+			// result = modelChecker.getResult();
 		} catch (Exception e) {
 			commandFailed = true;
 			return Status.CANCEL_STATUS;

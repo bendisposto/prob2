@@ -3,6 +3,7 @@ package de.prob.check;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -28,7 +29,9 @@ public class ModelChecker {
 
 	private final Worker worker;
 	private final ExecutorService executor;
-	private Future<ModelCheckingResult> f;
+	private Future<IModelCheckingResult> f;
+	private final UUID jobId;
+	private final StateSpace stateSpace;
 
 	public ModelChecker(final StateSpace s) {
 		this(s, ModelCheckingOptions.DEFAULT);
@@ -40,8 +43,14 @@ public class ModelChecker {
 
 	public ModelChecker(final StateSpace s, final ModelCheckingOptions options,
 			final ModelCheckingUI ui) {
-		worker = new Worker(s, options, ui);
+		stateSpace = s;
+		jobId = UUID.randomUUID();
+		worker = new Worker(s, options, ui, jobId);
 		executor = Executors.newSingleThreadExecutor();
+	}
+
+	public UUID getJobId() {
+		return jobId;
 	}
 
 	/**
@@ -59,7 +68,7 @@ public class ModelChecker {
 	 * @return the {@link ModelCheckingResult} of the model checking process if
 	 *         the model checking has been started.
 	 */
-	public ModelCheckingResult getResult() {
+	public IModelCheckingResult getResult() {
 		try {
 			if (f != null) {
 				return f.get();
@@ -84,6 +93,13 @@ public class ModelChecker {
 	}
 
 	/**
+	 * @return true, if the job has been started. Otherwise, false.
+	 */
+	public boolean isStarted() {
+		return f != null;
+	}
+
+	/**
 	 * @return true, if the calculation is finished. Otherwise, false.
 	 */
 	public boolean isDone() {
@@ -97,6 +113,14 @@ public class ModelChecker {
 		return f.isCancelled();
 	}
 
+	/**
+	 * @return the state space object that is bound to this {@link ModelChecker}
+	 *         instance
+	 */
+	public StateSpace getStateSpace() {
+		return stateSpace;
+	}
+
 	public static RuntimeException launderThrowable(final Throwable t) {
 		if (t instanceof RuntimeException) {
 			return (RuntimeException) t;
@@ -107,14 +131,15 @@ public class ModelChecker {
 		}
 	}
 
-	private class Worker implements Callable<ModelCheckingResult> {
+	private class Worker implements Callable<IModelCheckingResult> {
 
 		private static final int TIME = 500;
 		private final StateSpace s;
 		private ModelCheckingOptions options;
 		private long last;
-		private ModelCheckingResult res;
+		private IModelCheckingResult res;
 		private final ModelCheckingUI ui;
+		private final UUID id;
 
 		/**
 		 * implements {@link Callable}. When called, the Worker performs model
@@ -129,41 +154,49 @@ public class ModelChecker {
 		 * @param ui
 		 *            {@link ModelCheckingUI} if the UI should be informed of
 		 *            updates. Otherwise, null.
+		 * @param jobId
 		 */
 		public Worker(final StateSpace s, final ModelCheckingOptions options,
-				final ModelCheckingUI ui) {
+				final ModelCheckingUI ui, final UUID jobId) {
 			this.s = s;
 			this.options = options;
 			this.ui = ui;
+			id = jobId;
 			last = s.getLastCalculatedStateId();
 		}
 
 		@Override
-		public ModelCheckingResult call() throws Exception {
-			boolean abort = false;
-			while (!abort) {
+		public IModelCheckingResult call() throws Exception {
+			boolean notFinished = true;
+			while (notFinished) {
 				if (Thread.interrupted()) {
 					Thread.currentThread().interrupt();
 					break;
 				}
 				res = do_model_checking_step();
 				options = options.recheckExisting(false);
-				abort = res.isAbort();
+				notFinished = res instanceof NotYetFinished;
+			}
+			if (ui != null) {
+				ui.isFinished(id, res);
 			}
 			return res;
 		}
 
-		public ModelCheckingResult getResult() {
+		public IModelCheckingResult getResult() {
 			return res;
 		}
 
-		private ModelCheckingResult do_model_checking_step() {
+		private IModelCheckingResult do_model_checking_step() {
 			ModelCheckingCommand cmd = new ModelCheckingCommand(TIME, options,
 					last);
 
 			s.execute(cmd);
-			ModelCheckingResult result = cmd.getResult();
+			IModelCheckingResult result = cmd.getResult();
 			List<OpInfo> newOps = cmd.getNewOps();
+			if (ui != null) {
+				ui.updateStats(id, cmd.getStats());
+			}
 			addCheckedStates(newOps);
 			return result;
 		}
