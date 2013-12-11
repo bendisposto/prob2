@@ -14,6 +14,7 @@ import de.prob.animator.command.ModelCheckingCommand;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
+import de.prob.web.views.ModelCheckingUI;
 
 /**
  * The ModelChecker is a thread safe encapsulation of the model checking
@@ -34,7 +35,12 @@ public class ModelChecker {
 	}
 
 	public ModelChecker(final StateSpace s, final ModelCheckingOptions options) {
-		worker = new Worker(s, options);
+		this(s, options, null);
+	}
+
+	public ModelChecker(final StateSpace s, final ModelCheckingOptions options,
+			final ModelCheckingUI ui) {
+		worker = new Worker(s, options, ui);
 		executor = Executors.newSingleThreadExecutor();
 	}
 
@@ -108,6 +114,7 @@ public class ModelChecker {
 		private ModelCheckingOptions options;
 		private long last;
 		private ModelCheckingResult res;
+		private final ModelCheckingUI ui;
 
 		/**
 		 * implements {@link Callable}. When called, the Worker performs model
@@ -117,11 +124,17 @@ public class ModelChecker {
 		 * @param s
 		 *            {@link StateSpace} object in which to perform the model
 		 *            checking
-		 * @param options2
+		 * @param options
+		 *            {@link ModelCheckingOptions} specified by user
+		 * @param ui
+		 *            {@link ModelCheckingUI} if the UI should be informed of
+		 *            updates. Otherwise, null.
 		 */
-		public Worker(final StateSpace s, final ModelCheckingOptions options) {
+		public Worker(final StateSpace s, final ModelCheckingOptions options,
+				final ModelCheckingUI ui) {
 			this.s = s;
 			this.options = options;
+			this.ui = ui;
 			last = s.getLastCalculatedStateId();
 		}
 
