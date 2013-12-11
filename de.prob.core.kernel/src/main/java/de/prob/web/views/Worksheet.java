@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -112,7 +113,13 @@ public class Worksheet extends AbstractSession {
 				: snapshots.get(getPredecessor(boxId));
 		previous_snapshot.restoreBindings(groovy);
 		return previous_snapshot;
+	}
 
+	private BindingsSnapshot getPreviousBoxBindings(String boxId) {
+		final BindingsSnapshot previous_snapshot = boxId.equals(order.get(0)) ? initialSnapshot
+				: snapshots.get(getPredecessor(boxId));
+		previous_snapshot.restoreBindings(groovy);
+		return previous_snapshot;
 	}
 
 	private String firstBox() {
@@ -191,6 +198,7 @@ public class Worksheet extends AbstractSession {
 					focused, "direction", "up"));
 		}
 		messages.addAll(renderBox);
+		//FIXME Why render the same box twice in case of EVERYTHING_BELOW and DONT_CARE?
 		messages.addAll(reEvaluate(boxId, order.indexOf(boxId)));
 		return messages;
 	}
@@ -336,8 +344,7 @@ public class Worksheet extends AbstractSession {
 			}
 		};
 
-		BindingsSnapshot previous_snapshot = restorePreviousBoxBindings(box
-				.getId());
+		BindingsSnapshot previous_snapshot = getPreviousBoxBindings(box.getId());
 
 		List<Object> box_rendering = box.render(previous_snapshot);
 
@@ -415,6 +422,16 @@ public class Worksheet extends AbstractSession {
 		box.setContent(params);
 		boxes.put(id, box);
 		restorePreviousBoxBindings(box.getId());
-		return box.replaceMessage();
+		Collection<? extends Object> additionalMessages = box
+				.additionalMessages();
+		Object[] res = new Object[additionalMessages.size() + 1];
+		res[0] = box.replaceMessage();
+		Iterator<? extends Object> it = additionalMessages.iterator();
+		int pos = 1;
+		while (it.hasNext()) {
+			res[pos] = it.next();
+			pos++;
+		}
+		return res;
 	}
 }

@@ -34,7 +34,7 @@ Languages = (function() {
 		"TraceBox" : {
 			getAdditionalData : function(id){
 				return function(){
-					selectedTrace=$("#box"+id+" .trace-selection-menu .active-item").text();
+					selectedTrace=$("#box"+id+" .trace-selection-menu .selected").text();
 					return selectedTrace;					
 				}
 			},

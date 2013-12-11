@@ -13,9 +13,13 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.prob.web.WebUtils;
 
 public class TraceBox extends AbstractBox {
+	Logger logger = LoggerFactory.getLogger(TraceBox.class);
 	private String content = "";
 	private String trace;
 
@@ -29,12 +33,20 @@ public class TraceBox extends AbstractBox {
 			res.add(renderMap);
 		} else {
 			ScriptEngine groovy = owner.getGroovy();
-			String script = this.trace + "=execTrace(" + this.trace + "){"
-					+ this.content + "}";
-			try {
-				groovy.eval(script);
-			} catch (ScriptException e) {
-
+			if (snapshot != null)
+				snapshot.restoreBindings(groovy);
+			if (this.content != null) {
+				String script = this.trace + "=execTrace(" + this.trace + "){"
+						+ this.content + "};";
+				try {
+					groovy.eval(script);
+				} catch (ScriptException e) {
+					logger.error("Not able to execute script " + this.content
+							+ " for trace :" + this.trace + " . "
+							+ e.getMessage());
+					Map<String, String> renderMap = makeHtml(id, "Fehler");
+					res.add(renderMap);
+				}
 			}
 			Map<String, String> renderMap = makeHtml(id, groovy.get(this.trace)
 					.toString());
@@ -57,6 +69,8 @@ public class TraceBox extends AbstractBox {
 	@Override
 	public void setContent(Map<String, String[]> data) {
 		this.content = data.get("text")[0];
+		if (this.content.equals(""))
+			this.content = null;
 		this.trace = data.get("additionalData")[0];
 		if (this.trace.equals(""))
 			this.trace = null;
