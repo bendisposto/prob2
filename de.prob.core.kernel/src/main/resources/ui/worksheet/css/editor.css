@@ -1,5 +1,5 @@
 .box-menu {
-	margin: 0 0.5em 0 0;
-	border-right: 1px dashed;
-	padding: 0 0.5em 0 0;
+	margin: 0 0.5em 0 0.5em;
+	border-left: 1px dashed;
+	padding: 0 0.5em 0 0.5em;
 }
