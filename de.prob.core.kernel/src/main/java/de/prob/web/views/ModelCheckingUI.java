@@ -36,8 +36,7 @@ public class ModelCheckingUI extends AbstractSession {
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
-		// TODO Auto-generated method stub
-		return null;
+		return simpleRender(clientid, "ui/modelchecking/index.html");
 	}
 
 	public void updateStats(final UUID id, final StateSpaceStats stats) {

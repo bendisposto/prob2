@@ -1,0 +1,30 @@
+.invisible {
+    display: none;
+}
+
+#content {
+    list-style: none;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.waiting {
+    color: #888;
+    font-style: italic;
+}
+
+.success {
+    color: #69AB86;
+}
+
+.failure {
+    color: #C06666;
+}
+
+#content li {
+    padding-left: 5px;
+}
+
+.selected {
+    background-color: #ECECEC;
+}
