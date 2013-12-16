@@ -247,119 +247,14 @@ bms = (function() {
 		
 	}
 	
-	evalObserver = function(observer, formulas) {
-
-		var objects = observer.objects
-		
-		var evalFunc = function() {
-			return function(text, render) {
-				return formulas[text];
-			}
-		}
-		 		
-		for ( var i = 0; i < objects.length; i++) {
-
-			var o = objects[i];
-			var predicate = o.predicate;
-			var triggerList = o.trigger;
-
-			if(predicate === undefined) {
-				predicate = true;
-			} else {
-				predicate = Mustache.render(predicate, { "eval" : evalFunc })
-				predicate = extern.translateValue(predicate);
-			}
-			
-			if(predicate) {
-				
-				for ( var t = 0; t < triggerList.length; t++) {
-					
-					var trigger = triggerList[t]			
-					var parameters = trigger.parameters
-					var caller = trigger.call
-					
-					if((parameters !== undefined) && (caller !== undefined)) {
-						var parsedArray = [];
-						$(parameters).each(function(k,v) {
-							var fval = Mustache.render(v.toString(), { "eval" : evalFunc });
-							fval = extern.translateValue(fval);
-							parsedArray.push(fval)		
-						});
-						var obj = $(trigger.selector)
-						var fn = obj[caller];
-						if (typeof fn === "function") {
-							fn.apply(obj, parsedArray);
-						}
-					}
-					
-				}
-				
-			}
-
-		}
-		
-	}
-		
 	var bodyClone;
 	
-	cspEventObserver = function(observer, formulas, trace) {
-		
+	resetCSP = function() {
 		// Revert objects ...
 		if(bodyClone) {
 			$("body").replaceWith(bodyClone)
 		}
 		bodyClone = $("body").clone(true,true)	
-		
-		var objects = observer.objects
-		
-		// Replay trace ...
-		$.each(trace, function(i, l) {
-
-			var lastop = l.full
-			$.each(objects, function(i, o) {
-
-				var result = Mustache.render(o.events, {
-					"eval" : function() {
-						return function(text, render) {
-							return formulas[text];
-						}
-					}
-				})
-				
-				if (result !== undefined) {
-
-					if (result.indexOf(lastop) !== -1) {
-
-						var trigger = o.trigger
-
-						$.each(trigger, function(i, t) {
-
-							var parameters = t.parameters
-							var caller = t.call
-
-							if ((parameters !== undefined)
-									&& (caller !== undefined)) {
-								var parsedArray = [];
-								$(parameters).each(function(k, v) {
-									parsedArray.push(extern.translateValue(Mustache.render(v,l)))
-								});
-								var obj = $(Mustache.render(t.selector, l))
-								var fn = obj[caller];
-								if (typeof fn === "function") {
-									fn.apply(obj, parsedArray);
-								}
-							}
-
-						});
-
-					}
-
-				}
-
-			});
-
-		});
-		
 	}
 	
 	extern.update_visualization = function(data) {

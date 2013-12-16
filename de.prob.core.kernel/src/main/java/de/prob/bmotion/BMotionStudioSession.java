@@ -214,7 +214,9 @@ public class BMotionStudioSession extends AbstractSession implements
 						translateValue(((EvalResult) er).getValue()));
 			}
 		}
-
+		
+		formulas.putAll(cachedCSPString);
+		
 		for (IBMotionScript s : scriptListeners) {
 			s.traceChange(trace, formulas);
 		}
@@ -251,7 +253,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				}
 			}
 		}
-
+		
 		json = JSON.parse(jsonRendered);
 
 	}
