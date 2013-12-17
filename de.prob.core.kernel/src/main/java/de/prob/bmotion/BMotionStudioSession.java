@@ -160,6 +160,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		try {
 
 			json = null;
+			
 			scriptListeners.clear();
 			scriptListeners.add(observer);
 
@@ -183,6 +184,8 @@ public class BMotionStudioSession extends AbstractSession implements
 					groovy.eval(fr, bindings);
 				}
 			}
+			
+			traceChange(currentTrace);
 
 		} catch (ScriptException e) {
 			e.printStackTrace();
