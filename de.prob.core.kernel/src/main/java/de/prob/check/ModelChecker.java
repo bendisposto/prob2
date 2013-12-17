@@ -193,10 +193,11 @@ public class ModelChecker {
 
 			s.execute(cmd);
 			IModelCheckingResult result = cmd.getResult();
-			List<OpInfo> newOps = cmd.getNewOps();
 			if (ui != null) {
-				ui.updateStats(id, cmd.getStats());
+				ui.updateStats(id, result);
 			}
+
+			List<OpInfo> newOps = cmd.getNewOps();
 			addCheckedStates(newOps);
 			return result;
 		}

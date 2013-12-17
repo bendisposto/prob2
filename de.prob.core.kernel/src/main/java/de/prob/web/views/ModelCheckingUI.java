@@ -11,7 +11,6 @@ import com.google.inject.Singleton;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.ModelChecker;
 import de.prob.check.ModelCheckingOptions;
-import de.prob.check.StateSpaceStats;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
@@ -39,7 +38,7 @@ public class ModelCheckingUI extends AbstractSession {
 		return simpleRender(clientid, "ui/modelchecking/index.html");
 	}
 
-	public void updateStats(final UUID id, final StateSpaceStats stats) {
+	public void updateStats(final UUID id, final IModelCheckingResult result) {
 
 	}
 

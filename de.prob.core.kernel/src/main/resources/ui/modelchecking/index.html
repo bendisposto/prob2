@@ -16,20 +16,20 @@
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-xs-12 col-md-4">
-                <div class="panel panel-default">
+            <div class="col-sm-4">
+                <div id="sidebar" class="panel panel-default">
                     <div id="stats" class="panel-heading">Model Checking Jobs</div>
                     <div class="panel-body">
                         <ul id="content">
-                            <li class="job"><span class="success glyphicon glyphicon-ok-circle"></span> Model 1</li>
-                            <li class="job waiting"> Model 1</li>
-                            <li class="job"><span class="failure glyphicon glyphicon-remove-circle"></span> Model 2</li>
+                            <li id="job1" class="job"><span class="success glyphicon glyphicon-ok-circle"></span> Model 1</li>
+                            <li id="job2" class="job waiting"> Model 1</li>
+                            <li id="job3" class="job"><span class="failure glyphicon glyphicon-remove-circle"></span> Model 2</li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12 col-md-8">
-                <div class="results"></div>
+            <div class="col-sm-8">
+                <ul id="results"></ul>
            </div>
         </div>
     </div>

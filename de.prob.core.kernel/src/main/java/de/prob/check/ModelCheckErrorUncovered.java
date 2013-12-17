@@ -7,9 +7,11 @@ public class ModelCheckErrorUncovered implements IModelCheckingResult {
 
 	private final String message;
 	private final String errorStateId;
+	private final StateSpaceStats stats;
 
-	public ModelCheckErrorUncovered(final String message,
-			final String errorStateId) {
+	public ModelCheckErrorUncovered(final StateSpaceStats stats,
+			final String message, final String errorStateId) {
+		this.stats = stats;
 		this.message = message;
 		this.errorStateId = errorStateId;
 	}
@@ -26,4 +28,8 @@ public class ModelCheckErrorUncovered implements IModelCheckingResult {
 		return s.getTrace(s.getVertex(errorStateId));
 	}
 
+	@Override
+	public StateSpaceStats getStats() {
+		return stats;
+	}
 }
