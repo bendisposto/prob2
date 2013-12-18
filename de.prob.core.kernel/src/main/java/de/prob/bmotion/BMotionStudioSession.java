@@ -80,7 +80,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	public BMotionStudioSession(final AnimationSelector selector,
 			final ScriptEngineProvider sep) {
 		this.selector = selector;
-		incrementalUpdate = true;
+		incrementalUpdate = false;
 		currentTrace = selector.getCurrentTrace();
 		groovy = sep.get();
 		observer = new Observer(this);
@@ -250,13 +250,13 @@ public class BMotionStudioSession extends AbstractSession implements
 		File folder = new File(folderPath);
 		if (folder.exists()) {
 			for (File f : folder.listFiles()) {
-				if (f.getName().endsWith(".json")) {
+				if (f.getName().equals(filename.replace(".html", ".json"))) {
 					WebUtils.render(f.getPath(), scope);
 					jsonRendered = readFile(f.getPath());
 				}
 			}
 		}
-		
+
 		json = JSON.parse(jsonRendered);
 
 	}
