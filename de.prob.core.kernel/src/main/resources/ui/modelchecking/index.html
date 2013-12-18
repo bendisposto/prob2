@@ -18,11 +18,12 @@
         <div class="row">
             <div class="col-sm-4">
                 <div id="sidebar" class="panel panel-default">
-                    <div id="stats" class="panel-heading">Model Checking Jobs</div>
+                    <div id="stats" class="panel-heading">Model Checking Jobs <div id="start-new" title="Start new job" class="pull-right"><span class="glyphicon glyphicon-plus"></span></div></div>
                     <div class="panel-body">
                         <ul id="content">
                             <li id="job1" class="job"><span class="success glyphicon glyphicon-ok-circle"></span> Model 1</li>
-                            <li id="job2" class="job waiting"> Model 1</li>
+                            <li id="job11" class="job">Model 1</li>
+                            <li id="job2" class="job waiting">Model 1</li>
                             <li id="job3" class="job"><span class="failure glyphicon glyphicon-remove-circle"></span> Model 2</li>
                         </ul>
                     </div>
@@ -32,9 +33,27 @@
                 <ul id="results"></ul>
            </div>
         </div>
+        <div class="modal fade" id="open-new">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Start new model checking job</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="options-body"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Submit</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </div>
 </body>
 <script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
 
 <script type="text/javascript" src="/ui/libs/mustache.js"></script>
 <script type="text/javascript" src="/ui/common/Session.js"></script>

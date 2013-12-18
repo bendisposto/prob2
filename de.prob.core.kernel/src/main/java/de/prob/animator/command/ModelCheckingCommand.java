@@ -41,7 +41,7 @@ public class ModelCheckingCommand extends AbstractCommand {
 	 * <li>Destination Id</li>
 	 * <ol>
 	 */
-	public final static int OP_ARITY = 3;
+	private final static int OP_ARITY = 3;
 
 	/**
 	 * <p>
@@ -58,7 +58,7 @@ public class ModelCheckingCommand extends AbstractCommand {
 	 * <li>Number of nodes that have already been processed</li>
 	 * <ol>
 	 */
-	public final static int STATS_ARITY = 3;
+	private final static int STATS_ARITY = 3;
 
 	private final int time;
 	private final ModelCheckingOptions options;

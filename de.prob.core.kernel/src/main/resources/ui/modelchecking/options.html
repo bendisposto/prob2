@@ -1,0 +1,31 @@
+<form class="form-horizontal" role="form">
+    <div class="form-group">
+        <label class="col-sm-5 control-label">Choose state space to check:</label>
+        <select class="col-sm-12 form-control">
+            {{#spaces}}
+                <option value="{{id}}">{{rep}}</option>
+            {{/spaces}}
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2">Options:</label>
+        <label class="col-sm-5">
+            <input id="breadthFirst" type="checkbox" onclick="ModelChecking.toggleBreadthFirst()" {{#breadth_first_search}}checked{{/breadth_first_search}}> Use breadth first strategy
+        </label>
+        <label class="col-sm-5">
+            <input type="checkbox" {{#find_deadlocks}}checked{{/find_deadlocks}}> Check for deadlocks
+        </label>
+        <label class="col-sm-offset-2 col-sm-5">
+            <input type="checkbox" {{#find_invariant_violations}}checked{{/find_invariant_violations}}> Check for invariant violations
+        </label>
+        <label class="col-sm-5">
+            <input type="checkbox" {{#find_assertion_violations}}checked{{/find_assertion_violations}}> Check assertions
+        </label>
+        <label class="col-sm-offset-2 col-sm-5">
+            <input type="checkbox" {{#inspect_existing_nodes}}checked{{/inspect_existing_nodes}}> Recheck all nodes
+        </label>
+        <label class="col-sm-5">
+            <input type="checkbox" {{#stop_at_full_coverage}}checked{{/stop_at_full_coverage}}> Stop at full coverage
+        </label>
+    </div>
+</form>

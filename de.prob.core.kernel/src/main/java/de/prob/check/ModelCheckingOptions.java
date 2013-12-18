@@ -48,6 +48,10 @@ public class ModelCheckingOptions {
 
 	private ModelCheckingOptions changeOption(final boolean value,
 			final Options o) {
+		if (value == options.contains(o)) {
+			return this;
+		}
+
 		EnumSet<Options> copyOf = EnumSet.copyOf(options);
 		if (value) {
 			copyOf.add(o);

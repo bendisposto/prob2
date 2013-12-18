@@ -64,6 +64,9 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
  */
 public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
+	private static int counter = 0;
+	private final String id = "space" + counter++;
+
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 	private transient IAnimator animator;
 
@@ -190,6 +193,18 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 		final String si = String.valueOf(i);
 		return explore(si);
+	}
+
+	/**
+	 * Whenever a {@link StateSpace} instance is created, it is assigned a
+	 * unique identifier to help external parties differentiate between two
+	 * instances. This getter method returns this id.
+	 * 
+	 * @return the unique {@link String} id associated with this
+	 *         {@link StateSpace} instance
+	 */
+	public String getId() {
+		return id;
 	}
 
 	/**

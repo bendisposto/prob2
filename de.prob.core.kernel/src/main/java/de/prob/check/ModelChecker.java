@@ -3,7 +3,6 @@ package de.prob.check;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -27,10 +26,12 @@ import de.prob.web.views.ModelCheckingUI;
  */
 public class ModelChecker {
 
+	private static int counter = 0;
+
 	private final Worker worker;
 	private final ExecutorService executor;
 	private Future<IModelCheckingResult> f;
-	private final UUID jobId;
+	private final String jobId;
 	private final StateSpace stateSpace;
 
 	public ModelChecker(final StateSpace s) {
@@ -44,12 +45,12 @@ public class ModelChecker {
 	public ModelChecker(final StateSpace s, final ModelCheckingOptions options,
 			final ModelCheckingUI ui) {
 		stateSpace = s;
-		jobId = UUID.randomUUID();
+		jobId = "mc" + counter++;
 		worker = new Worker(s, options, ui, jobId);
 		executor = Executors.newSingleThreadExecutor();
 	}
 
-	public UUID getJobId() {
+	public String getJobId() {
 		return jobId;
 	}
 
@@ -139,7 +140,7 @@ public class ModelChecker {
 		private long last;
 		private IModelCheckingResult res;
 		private final ModelCheckingUI ui;
-		private final UUID id;
+		private final String id;
 
 		/**
 		 * implements {@link Callable}. When called, the Worker performs model
@@ -157,7 +158,7 @@ public class ModelChecker {
 		 * @param jobId
 		 */
 		public Worker(final StateSpace s, final ModelCheckingOptions options,
-				final ModelCheckingUI ui, final UUID jobId) {
+				final ModelCheckingUI ui, final String jobId) {
 			this.s = s;
 			this.options = options;
 			this.ui = ui;

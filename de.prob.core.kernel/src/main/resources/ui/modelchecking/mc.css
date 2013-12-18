@@ -45,3 +45,8 @@
 .progress-list {
     padding: 0px 20px 0px 20px;
 }
+
+.trace-button {
+    text-align: center;
+    padding-top: 10px;
+}
