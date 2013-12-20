@@ -38,7 +38,7 @@ class Observer implements IBMotionScript {
 				}
 				m = m + t
 			}
-		}
+		}	
 		bmssession.toVisualization(m)
 	}
 
@@ -149,13 +149,17 @@ class Observer implements IBMotionScript {
 	@Override
 	public void traceChange(Trace trace, Map<String, Object> formulas) {
 		this.formulas = formulas
-		def json = bmssession.getJson()
+		def json = bmssession.getJsonData()
 		if(json != null) {
-			Object[] ol = json.get("observer");
-			for(Object o : ol) {
-				def methodCall = o.get("cmd")
-				if(this.metaClass.respondsTo(this, methodCall, Object, Object, Object)) {
-					this."$methodCall"(o, formulas, trace)
+			json.each {
+				def ol = it.get("observer");
+				if(ol != null) {
+					ol.each {
+						def methodCall = it.get("cmd")
+						if(this.metaClass.respondsTo(this, methodCall, Object, Object, Object)) {
+							this."$methodCall"(it, formulas, trace)
+						}
+					}
 				}
 			}
 		}

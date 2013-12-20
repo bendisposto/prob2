@@ -62,7 +62,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private Map<String, String> cachedCSPString = new HashMap<String, String>();
 	
-	private Object json;
+	private List<Object> jsonData = new ArrayList<Object>();			
 	
 	private Observer observer;
 	
@@ -150,7 +150,6 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 
-		json = null;
 		// Remove all script listeners and add new observer scriptlistener
 		scriptListeners.clear();
 		scriptListeners.add(observer);
@@ -158,6 +157,8 @@ public class BMotionStudioSession extends AbstractSession implements
 		int old = responses.size() + 1;
 		// Add dummy message
 		submit(WebUtils.wrap("cmd", "extern.skip"));
+		// Initialize json data (if not already done)
+		initJsonData();
 		// Init Groovy scripts
 		initGroovy();
 		// Trigger an init trace change
@@ -176,11 +177,13 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		this.currentTrace = trace;
 
-		// Initialize json data (if not already done)
-		if (json == null)
-			initJsonData();
-
-		// Collect all formulas
+		// Register not yet evaluated formulas (with null value)
+		for (Map.Entry<String, Object> entry : formulas.entrySet()) {
+			if (entry.getValue() == null) {
+				registerFormula(entry.getKey());
+			}
+		}
+		// Collect subscribed values ...
 		Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
 				.valuesAt(trace.getCurrentState());
 		for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt.entrySet()) {
@@ -208,22 +211,17 @@ public class BMotionStudioSession extends AbstractSession implements
 		Map<String, Object> scope = new HashMap<String, Object>();
 		scope.put("eval", new EvalExpression());
 
-		String jsonRendered = "{}";
-
-		String[] split = this.template.split("/");
-		String filename = split[split.length - 1];
-		String folderPath = this.template.replace(filename, "");
-		File folder = new File(folderPath);
-		if (folder.exists()) {
-			for (File f : folder.listFiles()) {
-				if (f.getName().equals(filename.replace(".html", ".json"))) {
-					WebUtils.render(f.getPath(), scope);
-					jsonRendered = readFile(f.getPath());
-				}
+		String templateFolder = getTemplateFolder();
+		Object jsonPaths = parameterMap.get("json");
+		if (jsonPaths != null) {
+			String[] sp = jsonPaths.toString().split(",");
+			for (String s : sp) {
+				File f = new File(templateFolder + "/" + s);
+				WebUtils.render(f.getPath(), scope);
+				String jsonRendered = readFile(f.getPath());
+				jsonData.add(JSON.parse(jsonRendered));
 			}
 		}
-
-		json = JSON.parse(jsonRendered);
 
 	}
 
@@ -257,6 +255,8 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		String output = "???";
 
+		formulas.put(formula, null);
+		
 		if (currentTrace != null) {
 			try {
 
@@ -299,6 +299,7 @@ public class BMotionStudioSession extends AbstractSession implements
 						output = ((EvalResult) evaluationResult).getValue();
 						if (model instanceof CSPModel)
 							cachedCSPString.put(formula, output);
+						formulas.put(formula, translateValue(output));
 					}
 				}
 
@@ -307,8 +308,6 @@ public class BMotionStudioSession extends AbstractSession implements
 				// e.printStackTrace();
 			}
 
-		} else {
-			// TODO: No trace exists ..... return something!
 		}
 
 		return output;
@@ -336,8 +335,8 @@ public class BMotionStudioSession extends AbstractSession implements
 			script.traceChange(currentTrace, formulas);
 	}
 
-	public HashMap<?,?> getJson() {
-		return (HashMap<?, ?>) json;
+	public List<Object> getJsonData() {
+		return jsonData;
 	}
 	
 	public void setTemplate(String template) {
@@ -349,7 +348,9 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 	
 	private String getTemplateFolder() {
-		return new File(this.template).getParent();
+		if(this.template != null)
+			return new File(this.template).getParent();
+		return null;
 	}
 	
 	// private String getFormalism(String machine) {
@@ -406,6 +407,9 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 	
 	private void initGroovy() {
+
+		if (template == null)
+			return;
 		
 		try {
 
