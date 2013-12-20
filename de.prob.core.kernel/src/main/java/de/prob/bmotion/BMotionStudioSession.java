@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.domainobjects.CSP;
@@ -38,18 +34,17 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.CSPModel;
-import de.prob.scripting.Api;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
-import de.prob.webconsole.ServletContextListener;
 
 public class BMotionStudioSession extends AbstractSession implements
-		IAnimationChangeListener {
+		IAnimationChangeListener, IModelChangedListener {
 
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
 
@@ -71,8 +66,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private Observer observer;
 	
-	private String[] eventbExtensions = { "buc", "bcc", "bcm", "bum" };
-	private String[] classicalBExtensions = { "mch" };
+	// private String[] eventbExtensions = { "buc", "bcc", "bcm", "bum" };
+	// private String[] classicalBExtensions = { "mch" };
 
 	private List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
@@ -93,41 +88,41 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 
-	public Object eval(final Map<String, String[]> params) {
-
-		String formula = params.get("formula")[0];
-		String callback = params.get("callback")[0];
-
-		String data = null;
-		String[] dataPara = params.get("data");
-		if (dataPara != null)
-			data = dataPara[0];
-
-		Object parse = JSON.parse(formula);
-
-		Map<String, String> wrap = WebUtils.wrap("cmd", callback);
-
-		if (parse instanceof Object[]) {
-			Map<String, Object> tmp = new HashMap<String, Object>();
-			Object[] oa = (Object[]) parse;
-			for (Object o : oa) {
-				String f = o.toString();
-				Object value = translateValue(registerFormula(f));
-				tmp.put(f, value);
-			}
-			wrap.put("result", WebUtils.toJson(tmp));
-		} else {
-			Object value = translateValue(registerFormula(parse.toString()));
-			wrap.put("result", value.toString());
-
-		}
-
-		if (data != null)
-			wrap.put("data", data);
-
-		return wrap;
-
-	}
+	// public Object eval(final Map<String, String[]> params) {
+	//
+	// String formula = params.get("formula")[0];
+	// String callback = params.get("callback")[0];
+	//
+	// String data = null;
+	// String[] dataPara = params.get("data");
+	// if (dataPara != null)
+	// data = dataPara[0];
+	//
+	// Object parse = JSON.parse(formula);
+	//
+	// Map<String, String> wrap = WebUtils.wrap("cmd", callback);
+	//
+	// if (parse instanceof Object[]) {
+	// Map<String, Object> tmp = new HashMap<String, Object>();
+	// Object[] oa = (Object[]) parse;
+	// for (Object o : oa) {
+	// String f = o.toString();
+	// Object value = translateValue(registerFormula(f));
+	// tmp.put(f, value);
+	// }
+	// wrap.put("result", WebUtils.toJson(tmp));
+	// } else {
+	// Object value = translateValue(registerFormula(parse.toString()));
+	// wrap.put("result", value.toString());
+	//
+	// }
+	//
+	// if (data != null)
+	// wrap.put("data", data);
+	//
+	// return wrap;
+	//
+	// }
 
 	public Object executeOperation(final Map<String, String[]> params) {
 		String op = params.get("op")[0];
@@ -150,52 +145,28 @@ public class BMotionStudioSession extends AbstractSession implements
 				fullTemplatePath));
 		return null;
 	}
-
+	
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 
+		json = null;
+		// Remove all script listeners and add new observer scriptlistener
+		scriptListeners.clear();
+		scriptListeners.add(observer);
+		// After reload do not resent old messages
+		int old = responses.size() + 1;
+		// Add dummy message
+		submit(WebUtils.wrap("cmd", "extern.skip"));
+		// Init Groovy scripts
+		initGroovy();
+		// Trigger an init trace change
+		traceChange(currentTrace);
+		// Resent messages from groovy script and init trace change
+		if (!responses.isEmpty())
+			resend(client, old, context);
+
 		super.reload(client, lastinfo, context);
-
-		try {
-
-			json = null;
-			
-			scriptListeners.clear();
-			scriptListeners.add(observer);
-
-			String templateFolder = new File(template).getParent();
-			Bindings bindings = groovy.getBindings(ScriptContext.GLOBAL_SCOPE);
-			bindings.putAll(parameterMap);
-			bindings.put("bms", this);
-
-			Object machinePath = parameterMap.get("machine");
-			Object load = parameterMap.get("load");
-			if (machinePath != null
-					&& (load != null && load.toString().equals("1"))) {
-				animateModel(machinePath);
-			}
-
-			Object scriptPaths = parameterMap.get("script");
-			if (scriptPaths != null) {
-				String[] sp = scriptPaths.toString().split(",");
-				for (String s : sp) {
-					FileReader fr = new FileReader(templateFolder + "/" + s);
-					groovy.eval(fr, bindings);
-				}
-			}
-			
-			traceChange(currentTrace);
-
-		} catch (ScriptException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
 
 	}
 
@@ -204,9 +175,11 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		this.currentTrace = trace;
 
+		// Initialize json data (if not already done)
 		if (json == null)
 			initJsonData();
 
+		// Collect all formulas
 		Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
 				.valuesAt(trace.getCurrentState());
 		for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt.entrySet()) {
@@ -217,26 +190,18 @@ public class BMotionStudioSession extends AbstractSession implements
 						translateValue(((EvalResult) er).getValue()));
 			}
 		}
-		
 		formulas.putAll(cachedCSPString);
-		
+
+		// Trigger all registered script listeners
 		for (IBMotionScript s : scriptListeners) {
 			s.traceChange(trace, formulas);
 		}
 
 	}
 
-	public void setTemplate(String template) {
-		this.template = template;
-	}
+	private void initJsonData() {
 
-	public String getTemplate() {
-		return this.template;
-	}
-
-	public void initJsonData() {
-
-		if (currentTrace == null || template == null)
+		if (template == null)
 			return;
 
 		Map<String, Object> scope = new HashMap<String, Object>();
@@ -244,9 +209,9 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		String jsonRendered = "{}";
 
-		String[] split = template.split("/");
+		String[] split = this.template.split("/");
 		String filename = split[split.length - 1];
-		String folderPath = template.replace(filename, "");
+		String folderPath = this.template.replace(filename, "");
 		File folder = new File(folderPath);
 		if (folder.exists()) {
 			for (File f : folder.listFiles()) {
@@ -261,7 +226,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 
-	public String readFile(String filename) {
+	private String readFile(String filename) {
 		String content = null;
 		File file = new File(filename); // for ex foo.txt
 		try {
@@ -277,7 +242,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	private class EvalExpression implements Function<String, Object> {
-		
+	
 		@Override
 		public Object apply(final String input) {
 			String finput = input.replace("\\\\", "\\");
@@ -341,6 +306,8 @@ public class BMotionStudioSession extends AbstractSession implements
 				// e.printStackTrace();
 			}
 
+		} else {
+			// TODO: No trace exists ..... return something!
 		}
 
 		return output;
@@ -368,56 +335,109 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	public HashMap<?,?> getJson() {
-		
 		return (HashMap<?, ?>) json;
 	}
 	
-	private String getFormalism(String machine) {
-		String language = "???";
-		if (machine != null) {
-			int i = machine.lastIndexOf('.');
-			if (i > 0) {
-				language = machine.substring(i + 1);
-			}
-			if (Arrays.asList(eventbExtensions).contains(language)) {
-				language = "eventb";
-			} else if (Arrays.asList(classicalBExtensions).contains(language)) {
-				language = "b";
-			}
-		}
-		return language;
+	public void setTemplate(String template) {
+		this.template = template;
 	}
+
+	public String getTemplate() {
+		return this.template;
+	}
+	
+	private String getTemplateFolder() {
+		return new File(this.template).getParent();
+	}
+	
+	// private String getFormalism(String machine) {
+	// String language = "???";
+	// if (machine != null) {
+	// int i = machine.lastIndexOf('.');
+	// if (i > 0) {
+	// language = machine.substring(i + 1);
+	// }
+	// if (Arrays.asList(eventbExtensions).contains(language)) {
+	// language = "eventb";
+	// } else if (Arrays.asList(classicalBExtensions).contains(language)) {
+	// language = "b";
+	// }
+	// }
+	// return language;
+	// }
 
 	public void addParameter(String key, Object value) {
 		this.parameterMap.put(key, value);
 	}
 	
-	private void animateModel(Object machinePath) {
+	// private void animateModel(Object machinePath) {
+	//
+	// try {
+	// Injector injector = ServletContextListener.INJECTOR;
+	// Api api = injector.getInstance(Api.class);
+	// AnimationSelector selector = injector
+	// .getInstance(AnimationSelector.class);
+	// Method method = api.getClass().getMethod(
+	// getFormalism(machinePath.toString()) + "_load",
+	// String.class);
+	// AbstractModel m = (AbstractModel) method.invoke(api, machinePath);
+	// StateSpace s = m.getStatespace();
+	// Trace h = new Trace(s);
+	// selector.addNewAnimation(h);
+	// } catch (NoSuchMethodException e) {
+	// e.printStackTrace();
+	// } catch (SecurityException e) {
+	// e.printStackTrace();
+	// } catch (IllegalAccessException e) {
+	// e.printStackTrace();
+	// } catch (IllegalArgumentException e) {
+	// e.printStackTrace();
+	// } catch (InvocationTargetException e) {
+	// e.printStackTrace();
+	// }
+	//
+	// }
 
+	@Override
+	public void modelChanged(StateSpace s) {
+		// TODO: Reload  ........
+	}
+	
+	private void initGroovy() {
+		
 		try {
-			Injector injector = ServletContextListener.INJECTOR;
-			Api api = injector.getInstance(Api.class);
-			AnimationSelector selector = injector
-					.getInstance(AnimationSelector.class);
-			Method method = api.getClass().getMethod(
-					getFormalism(machinePath.toString()) + "_load",
-					String.class);
-			AbstractModel m = (AbstractModel) method.invoke(api, machinePath);
-			StateSpace s = m.getStatespace();
-			Trace h = new Trace(s);
-			selector.addNewAnimation(h);
-		} catch (NoSuchMethodException e) {
+
+			String templateFolder = getTemplateFolder();
+			Bindings bindings = groovy.getBindings(ScriptContext.GLOBAL_SCOPE);
+			bindings.putAll(parameterMap);
+			bindings.put("bms", this);
+
+			// Object machinePath = parameterMap.get("machine");
+			// Object load = parameterMap.get("load");
+			// if (machinePath != null
+			// && (load != null && load.toString().equals("1"))) {
+			// animateModel(machinePath);
+			// }
+
+			Object scriptPaths = parameterMap.get("script");
+			if (scriptPaths != null) {
+				String[] sp = scriptPaths.toString().split(",");
+				for (String s : sp) {
+					FileReader fr = new FileReader(templateFolder + "/" + s);
+					groovy.eval(fr, bindings);
+				}
+			}
+
+		} catch (ScriptException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
 		}
-
+		
 	}
 	
 }
