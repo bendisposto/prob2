@@ -10,22 +10,22 @@
     <div class="form-group">
         <label class="col-sm-2">Options:</label>
         <label class="col-sm-5">
-            <input id="breadthFirst" type="checkbox" onclick="ModelChecking.toggleBreadthFirst()" {{#breadth_first_search}}checked{{/breadth_first_search}}> Use breadth first strategy
+            <input id="breadthFirst" type="checkbox" onclick="ModelChecking.toggleOption('breadthFirst')" {{#breadth_first_search}}checked{{/breadth_first_search}}> Use breadth first strategy
         </label>
         <label class="col-sm-5">
-            <input type="checkbox" {{#find_deadlocks}}checked{{/find_deadlocks}}> Check for deadlocks
+            <input id="checkDeadlocks" type="checkbox" onclick="ModelChecking.toggleOption('checkDeadlocks')" {{#find_deadlocks}}checked{{/find_deadlocks}}> Check for deadlocks
         </label>
         <label class="col-sm-offset-2 col-sm-5">
-            <input type="checkbox" {{#find_invariant_violations}}checked{{/find_invariant_violations}}> Check for invariant violations
+            <input id="checkInvariantViolations" onclick="ModelChecking.toggleOption('checkInvariantViolations')" type="checkbox" {{#find_invariant_violations}}checked{{/find_invariant_violations}}> Check for invariant violations
         </label>
         <label class="col-sm-5">
-            <input type="checkbox" {{#find_assertion_violations}}checked{{/find_assertion_violations}}> Check assertions
+            <input id="checkAssertions" onclick="ModelChecking.toggleOption('checkAssertions')" type="checkbox" {{#find_assertion_violations}}checked{{/find_assertion_violations}}> Check assertions
         </label>
         <label class="col-sm-offset-2 col-sm-5">
-            <input type="checkbox" {{#inspect_existing_nodes}}checked{{/inspect_existing_nodes}}> Recheck all nodes
+            <input id="recheckExisting" onclick="ModelChecking.toggleOption('recheckExisting')" type="checkbox" {{#inspect_existing_nodes}}checked{{/inspect_existing_nodes}}> Recheck all nodes
         </label>
         <label class="col-sm-5">
-            <input type="checkbox" {{#stop_at_full_coverage}}checked{{/stop_at_full_coverage}}> Stop at full coverage
+            <input id="stopAtFullCoverage" onclick="ModelChecking.toggleOption('stopAtFullCoverage')" type="checkbox" {{#stop_at_full_coverage}}checked{{/stop_at_full_coverage}}> Stop at full coverage
         </label>
     </div>
 </form>

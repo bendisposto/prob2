@@ -40,16 +40,14 @@ ModelChecking = (function() {
         $("#options-body").append(session.render("/ui/modelchecking/options.html"),options)
     }
 
-    function toggleBreadthFirst() {
-        console.log($("#breadthFirst").prop('checked'))
-
+    function toggleOption(id) {
+        session.sendCmd(id, {"set": $("#"+id).prop('checked')})
     }
-
     
     extern.client = ""
     extern.init = session.init
     extern.updateOptions = updateOptions
-    extern.toggleBreadthFirst = toggleBreadthFirst
+    extern.toggleOption = toggleOption
 
 
     return extern;
