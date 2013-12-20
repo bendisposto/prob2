@@ -161,7 +161,8 @@ public class BMotionStudioSession extends AbstractSession implements
 		// Init Groovy scripts
 		initGroovy();
 		// Trigger an init trace change
-		traceChange(currentTrace);
+		if(currentTrace != null)
+			traceChange(currentTrace);
 		// Resent messages from groovy script and init trace change
 		if (!responses.isEmpty())
 			resend(client, old, context);
@@ -328,10 +329,11 @@ public class BMotionStudioSession extends AbstractSession implements
 		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
 				values));
 	}
-	
+
 	public void registerScript(IBMotionScript script) {
 		scriptListeners.add(script);
-		script.traceChange(currentTrace, formulas);
+		if (currentTrace != null)
+			script.traceChange(currentTrace, formulas);
 	}
 
 	public HashMap<?,?> getJson() {
