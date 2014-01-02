@@ -145,21 +145,13 @@ public class BMotionStudioServlet extends HttpServlet {
 				Elements headTag = templateDocument.getElementsByTag("head");
 				Element headElement = headTag.get(0);
 
-				Elements machineElements = headElement
-						.getElementsByAttributeValue("name", "machine");
-				Elements scriptElements = headElement
-						.getElementsByAttributeValue("name", "script");
+				Elements elements = headElement
+						.getElementsByAttributeValueStarting("name", "bms.");
 
-				if (!machineElements.isEmpty()) {
-					Element machineElement = machineElements.get(0);
-					bmsSession.addParameter("machine",
-							machineElement.attr("content"));
-				}
-
-				if (!scriptElements.isEmpty()) {
-					Element scriptElement = scriptElements.get(0);
-					bmsSession.addParameter("script",
-							scriptElement.attr("content"));
+				for (Element e : elements) {
+					String content = e.attr("content");
+					String name = e.attr("name");
+					bmsSession.addParameter(name.replace("bms.", ""), content);
 				}
 
 				String head = headTag.html();

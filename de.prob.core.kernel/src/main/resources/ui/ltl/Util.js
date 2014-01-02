@@ -9,7 +9,8 @@ Util = (function() {
 	}
 	
 	/* Parsing */
-	extern.parseFormula = function(input, callbackObj = "LtlEditor") {
+	extern.parseFormula = function(input, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlEditor" : callbackObj;
 		extern.session.sendCmd("parseFormula", {
 			"input" : input,
 			"callbackObj" : callbackObj,
@@ -17,7 +18,8 @@ Util = (function() {
 		});
 	}
 	
-	extern.parsePattern = function(input, ignorePatternName, callbackObj = "LtlEditor") {
+	extern.parsePattern = function(input, ignorePatternName, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlEditor" : callbackObj;
 		extern.session.sendCmd("parsePattern", {
 			"input" : input,
 			"ignorePatternName": ignorePatternName,
@@ -27,7 +29,8 @@ Util = (function() {
 	}
 	
 	/* Search operator */
-	extern.getOperatorAtPosition = function(pos, callbackObj = "LtlEditor") {
+	extern.getOperatorAtPosition = function(pos, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlEditor" : callbackObj;
 		extern.session.sendCmd("getOperatorAtPosition", {
 			"pos" : pos,
 			"callbackObj" : callbackObj,
@@ -36,7 +39,8 @@ Util = (function() {
 	}
 	
 	/* Autocomplete list */
-	extern.getAutoCompleteList = function(line, ch, startsWith, input, callbackObj = "LtlEditor") {
+	extern.getAutoCompleteList = function(line, ch, startsWith, input, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlEditor" : callbackObj;
 		extern.session.sendCmd("getAutoCompleteList", {
 			"line" : line,
 			"ch" : ch,
@@ -48,7 +52,8 @@ Util = (function() {
 	}
 	
 	/* Get pattern list */
-	extern.getPatternList = function(callbackObj = "LtlPatternManager") {
+	extern.getPatternList = function(callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlEditor" : callbackObj;
 		extern.session.sendCmd("getPatternList", {
 			"callbackObj" : callbackObj,
 			"client" : extern.client
@@ -56,7 +61,8 @@ Util = (function() {
 	}
 	
 	/* Save, update, remove user defined pattern */
-	extern.savePattern = function(pattern, callbackObj = "LtlPatternManager") {
+	extern.savePattern = function(pattern, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlPatternManager" : callbackObj;
 		extern.session.sendCmd("savePattern", {
 			"name" : pattern.name,
 			"description" : pattern.description,
@@ -66,7 +72,8 @@ Util = (function() {
 		});
 	}
 	
-	extern.updatePattern = function(oldPatternName, pattern, callbackObj = "LtlPatternManager") {
+	extern.updatePattern = function(oldPatternName, pattern, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlPatternManager" : callbackObj;
 		extern.session.sendCmd("updatePattern", {
 			"oldPatternName" : oldPatternName,
 			"name" : pattern.name,
@@ -77,7 +84,8 @@ Util = (function() {
 		});
 	}
 	
-	extern.removePatterns = function(patternNames, callbackObj = "LtlPatternManager") {
+	extern.removePatterns = function(patternNames, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlPatternManager" : callbackObj;
 		extern.session.sendCmd("removePatterns", {
 			"names" : JSON.stringify(patternNames),
 			"callbackObj" : callbackObj,
@@ -86,14 +94,16 @@ Util = (function() {
 	}
 	
 	/* Get and save formula list*/
-	extern.getFormulaList = function(callbackObj = "LtlModelCheck") {
+	extern.getFormulaList = function(callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlModelCheck" : callbackObj;
 		extern.session.sendCmd("getFormulaList", {
 			"callbackObj" : callbackObj,
 			"client" : extern.client
 		});
 	}
 	
-	extern.saveFormulaList = function(formulas, callbackObj = "LtlModelCheck") {
+	extern.saveFormulaList = function(formulas, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlModelCheck" : callbackObj;
 		extern.session.sendCmd("saveFormulaList", {
 			"formulas" : JSON.stringify(formulas),
 			"callbackObj" : callbackObj,
@@ -102,7 +112,8 @@ Util = (function() {
 	}
 	
 	/* Model checking */
-	extern.checkFormula = function(index, mode, formula, callbackObj = "LtlModelCheck") {
+	extern.checkFormula = function(index, mode, formula, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlModelCheck" : callbackObj;
 		extern.session.sendCmd("checkFormula", {
 			"formula" : formula,
 			"startMode" : mode,
@@ -112,7 +123,8 @@ Util = (function() {
 		});
 	}
 	
-	extern.checkFormulaList = function(indizes, mode, formulas, callbackObj = "LtlModelCheck") {
+	extern.checkFormulaList = function(indizes, mode, formulas, callbackObj) {
+		callbackObj = typeof callbackObj === 'undefined' ? "LtlModelCheck" : callbackObj;
 		extern.session.sendCmd("checkFormulaList", {
 			"formulas" : JSON.stringify(formulas),
 			"indizes" : JSON.stringify(indizes),
@@ -123,7 +135,8 @@ Util = (function() {
 	}
 	
 	/* Rendering */
-	extern.replaceContent = function(container, template_name, context = {}) {
+	extern.replaceContent = function(container, template_name, context) {
+		context = typeof context === 'undefined' ? {} : context;
 		var content = extern.session.render(template_name, context);
 		$(container).empty().append(content);	
 	}	
