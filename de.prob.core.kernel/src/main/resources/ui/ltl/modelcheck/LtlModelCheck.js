@@ -162,7 +162,8 @@ LtlModelCheck = (function() {
 	}
 	
 	/* List selection */
-	function selectItem(index, elt = null) {
+	function selectItem(index, elt) {
+		elt = typeof elt === 'undefined' ? null : elt;
 		var element = elt || $(".last-formulas-list li")[index];
 		$(element).addClass("ui-selected").siblings().removeClass("ui-selected");
 		

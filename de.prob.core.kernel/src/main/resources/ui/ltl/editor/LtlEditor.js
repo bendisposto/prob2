@@ -6,7 +6,8 @@ LtlEditor = (function() {
 	extern.parseListeners = [];
 	
 	/* Create and destroy CodeMirror */		
-	extern.setCodeMirror = function(codeElement, options = {}) {
+	extern.setCodeMirror = function(codeElement, options) {
+		options = typeof options === 'undefined' ? {} : options;
 		// Remove old CodeMirror instance
 		extern.destroy();
 		
@@ -136,7 +137,8 @@ LtlEditor = (function() {
 	}
 	
 	/* Gutter- and text-markers */
-	function addMarkers(markers, textmarker = true) {
+	function addMarkers(markers, textmarker) {
+		textmarker = typeof textmarker === 'undefined' ? true : textmarker;
 		for (var i = 0; i < markers.length; i++) {
 			var marker = markers[i];
 			var mark = marker.mark;

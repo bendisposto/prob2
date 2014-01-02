@@ -89,7 +89,8 @@ LtlPatternManager = (function() {
 	}
 	
 	/* Show content pages */	
-	function showPage(page, context = {}) {
+	function showPage(page, context) {
+		context = typeof context === 'undefined' ? {} : context;
 		extern.page = page;
 		Util.replaceContent(".manager-content", pages[page], context);
 	}
@@ -123,7 +124,8 @@ LtlPatternManager = (function() {
 		registerRemoveButton($('#remove-pattern'), patterns);
 	}
 		
-	function showEditView(pattern = {}) {
+	function showEditView(pattern) {
+		pattern = typeof pattern === 'undefined' ? {} : pattern;
 		$(window).unbind('resize');		
 		showPage((pattern.name ? "edit" : "create"), pattern);
 		
