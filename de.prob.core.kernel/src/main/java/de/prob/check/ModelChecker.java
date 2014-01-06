@@ -1,8 +1,5 @@
 package de.prob.check;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -10,9 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.prob.animator.command.ModelCheckingCommand;
-import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
+import de.prob.animator.command.ModelCheckingJob;
 import de.prob.statespace.StateSpace;
 import de.prob.web.views.ModelCheckingUI;
 
@@ -134,13 +129,9 @@ public class ModelChecker {
 
 	private class Worker implements Callable<IModelCheckingResult> {
 
-		private static final int TIME = 500;
 		private final StateSpace s;
-		private ModelCheckingOptions options;
-		private long last;
-		private IModelCheckingResult res;
+		private final ModelCheckingJob job;
 		private final ModelCheckingUI ui;
-		private final String id;
 
 		/**
 		 * implements {@link Callable}. When called, the Worker performs model
@@ -160,86 +151,20 @@ public class ModelChecker {
 		public Worker(final StateSpace s, final ModelCheckingOptions options,
 				final ModelCheckingUI ui, final String jobId) {
 			this.s = s;
-			this.options = options;
 			this.ui = ui;
-			id = jobId;
-			last = s.getLastCalculatedStateId();
+			job = new ModelCheckingJob(s, options, jobId, ui);
 		}
 
 		@Override
 		public IModelCheckingResult call() throws Exception {
-			boolean notFinished = true;
-			while (notFinished) {
-				if (Thread.interrupted()) {
-					Thread.currentThread().interrupt();
-					break;
-				}
-				res = do_model_checking_step();
-				options = options.recheckExisting(false);
-				notFinished = res instanceof NotYetFinished;
-			}
-			if (ui != null) {
-				ui.isFinished(id, res);
-			}
-			return res;
-		}
-
-		public IModelCheckingResult getResult() {
-			return res;
-		}
-
-		private IModelCheckingResult do_model_checking_step() {
-			ModelCheckingCommand cmd = new ModelCheckingCommand(TIME, options,
-					last);
-
-			s.execute(cmd);
-			IModelCheckingResult result = cmd.getResult();
-			if (ui != null) {
-				ui.updateStats(id, result);
-			}
-
-			List<OpInfo> newOps = cmd.getNewOps();
-			addCheckedStates(newOps);
+			s.execute(job);
+			IModelCheckingResult result = job.getResult();
+			ui.isFinished(jobId, result);
 			return result;
 		}
 
-		private void addCheckedStates(final List<OpInfo> newOps) {
-			HashMap<String, StateId> states = s.getStates();
-			HashMap<String, OpInfo> ops = s.getOps();
-
-			long i = s.getLastCalculatedStateId();
-
-			List<OpInfo> toNotify = new ArrayList<OpInfo>();
-			for (OpInfo opInfo : newOps) {
-				if (!ops.containsKey(opInfo.id)) {
-					toNotify.add(opInfo);
-					String sK = opInfo.src;
-					if (!sK.equals("root")) {
-						int value = Integer.parseInt(sK);
-						i = Math.max(value, i);
-					}
-
-					String dK = opInfo.dest;
-					StateId src = states.get(sK);
-					if (src == null) {
-						src = new StateId(sK, s);
-						// s.addVertex(src);
-						states.put(sK, src);
-					}
-					StateId dest = states.get(dK);
-					if (dest == null) {
-						dest = new StateId(dK, s);
-						// s.addVertex(dest);
-						states.put(dK, dest);
-					}
-					s.addEdge(opInfo, src, dest);
-					ops.put(opInfo.id, opInfo);
-				}
-			}
-			s.updateLastCalculatedStateId(i);
-			last = i;
-
-			s.notifyStateSpaceChange(toNotify);
+		public IModelCheckingResult getResult() {
+			return job.getResult();
 		}
 
 	}

@@ -26,7 +26,7 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
 
-public class ModelCheckingCommand extends AbstractCommand {
+public class ModelCheckingStepCommand extends AbstractCommand {
 	/**
 	 * <p>
 	 * The prolog core calculates a list of new operations after performing a
@@ -67,11 +67,11 @@ public class ModelCheckingCommand extends AbstractCommand {
 	private final String OPS = "Ops";
 	private final String STATS = "Stats";
 
-	Logger logger = LoggerFactory.getLogger(ModelCheckingCommand.class);
+	Logger logger = LoggerFactory.getLogger(ModelCheckingStepCommand.class);
 	private final long last;
 	private final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
-	public ModelCheckingCommand(final int time,
+	public ModelCheckingStepCommand(final int time,
 			final ModelCheckingOptions options, final long last) {
 		this.time = time;
 		this.options = options;

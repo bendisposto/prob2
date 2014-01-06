@@ -39,24 +39,26 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public synchronized void execute(final AbstractCommand command) {
-		if (cli == null) {
-			logger.error("Probcli is missing. Try \"upgrade\".");
-			throw new CliError("no cli found");
-		}
-		ISimplifiedROMap<String, PrologTerm> bindings = null;
-		try {
-			if (DEBUG && !command.getSubcommands().isEmpty()) {
-				List<AbstractCommand> cmds = command.getSubcommands();
-				for (AbstractCommand abstractCommand : cmds) {
-					execute(abstractCommand);
-				}
-			} else {
-				bindings = processor.sendCommand(command);
-				command.processResult(bindings);
+		do {
+			if (cli == null) {
+				logger.error("Probcli is missing. Try \"upgrade\".");
+				throw new CliError("no cli found");
 			}
-		} finally {
-			getErrors();
-		}
+			ISimplifiedROMap<String, PrologTerm> bindings = null;
+			try {
+				if (DEBUG && !command.getSubcommands().isEmpty()) {
+					List<AbstractCommand> cmds = command.getSubcommands();
+					for (AbstractCommand abstractCommand : cmds) {
+						execute(abstractCommand);
+					}
+				} else {
+					bindings = processor.sendCommand(command);
+					command.processResult(bindings);
+				}
+			} finally {
+				getErrors();
+			}
+		} while (!command.isCompleted());
 	}
 
 	private synchronized void getErrors() {
