@@ -50,6 +50,8 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private Trace currentTrace;
 
+	private AbstractModel currentModel;
+	
 	private final AnimationSelector selector;
 
 	private String template;
@@ -59,16 +61,15 @@ public class BMotionStudioSession extends AbstractSession implements
 	private Map<String, Object> parameterMap = new HashMap<String, Object>();
 	
 	private Map<String, Object> formulas = new HashMap<String, Object>();
+	
+	private Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
 
 	private Map<String, String> cachedCSPString = new HashMap<String, String>();
 	
-	private List<Object> jsonData = new ArrayList<Object>();			
+	private List<Object> jsonData = new ArrayList<Object>();
 	
 	private Observer observer;
 	
-	// private String[] eventbExtensions = { "buc", "bcc", "bcm", "bum" };
-	// private String[] classicalBExtensions = { "mch" };
-
 	private List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
 	@Inject
@@ -87,42 +88,6 @@ public class BMotionStudioSession extends AbstractSession implements
 			final Map<String, String[]> parameterMap) {
 		return null;
 	}
-
-	// public Object eval(final Map<String, String[]> params) {
-	//
-	// String formula = params.get("formula")[0];
-	// String callback = params.get("callback")[0];
-	//
-	// String data = null;
-	// String[] dataPara = params.get("data");
-	// if (dataPara != null)
-	// data = dataPara[0];
-	//
-	// Object parse = JSON.parse(formula);
-	//
-	// Map<String, String> wrap = WebUtils.wrap("cmd", callback);
-	//
-	// if (parse instanceof Object[]) {
-	// Map<String, Object> tmp = new HashMap<String, Object>();
-	// Object[] oa = (Object[]) parse;
-	// for (Object o : oa) {
-	// String f = o.toString();
-	// Object value = translateValue(registerFormula(f));
-	// tmp.put(f, value);
-	// }
-	// wrap.put("result", WebUtils.toJson(tmp));
-	// } else {
-	// Object value = translateValue(registerFormula(parse.toString()));
-	// wrap.put("result", value.toString());
-	//
-	// }
-	//
-	// if (data != null)
-	// wrap.put("data", data);
-	//
-	// return wrap;
-	//
-	// }
 
 	public Object executeOperation(final Map<String, String[]> params) {
 		String op = params.get("op")[0];
@@ -172,17 +137,91 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 
+	private void registerFormulas(final AbstractModel model) {
+
+		StateSpace s = model.getStatespace();
+
+		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
+				.entrySet()) {
+
+			String formula = entry.getKey();
+			IEvalElement evalElement = entry.getValue();
+
+			if (evalElement == null) {
+
+				try {
+
+					if (model instanceof CSPModel) {
+
+						if (cachedCSPString.get(formula) == null) {
+							evalElement = new CSP(formula, (CSPModel) model);
+							IEvalResult evaluationResult = currentTrace
+									.evalCurrent(evalElement);
+							if (evaluationResult != null) {
+								if (evaluationResult instanceof ComputationNotCompletedResult) {
+									// TODO: do something .....
+								} else if (evaluationResult instanceof EvalResult) {
+									cachedCSPString.put(formula,
+											((EvalResult) evaluationResult)
+													.getValue());
+								}
+							}
+						}
+
+					} else if (model instanceof EventBModel
+							|| model instanceof ClassicalBModel) {
+
+						if (model instanceof ClassicalBModel)
+							evalElement = new ClassicalB(formula);
+						else if (model instanceof EventBModel)
+							evalElement = new EventB(formula);
+
+						formulasForEvaluating.put(formula, evalElement);
+						s.subscribe(this, evalElement);
+
+					}
+
+				} catch (Exception e) {
+					// TODO: do something ...
+					// e.printStackTrace();
+				}
+
+			}
+
+		}
+
+	}
+
+	private void deregisterFormulas(final AbstractModel model) {
+		StateSpace s = model.getStatespace();
+		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
+				.entrySet()) {
+			IEvalElement evalElement = entry.getValue();
+			s.unsubscribe(this, evalElement);
+		}
+	}
+
 	@Override
 	public void traceChange(final Trace trace) {
 
+		if (trace == null) {
+			currentTrace = null;
+			deregisterFormulas(currentModel);
+			currentModel = null;
+			return;
+		}
+
 		this.currentTrace = trace;
 
-		// Register not yet evaluated formulas (with null value)
-		for (Map.Entry<String, Object> entry : formulas.entrySet()) {
-			if (entry.getValue() == null) {
-				registerFormula(entry.getKey());
+		AbstractModel newModel = trace.getModel();
+		if (!newModel.equals(currentModel)) {
+			if (currentModel != null) {
+				deregisterFormulas(currentModel);
 			}
+			this.currentModel = newModel;
+			registerFormulas(currentModel);
 		}
+
 		// Collect subscribed values ...
 		Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
 				.valuesAt(trace.getCurrentState());
@@ -241,77 +280,15 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	private class EvalExpression implements Function<String, Object> {
-	
 		@Override
 		public Object apply(final String input) {
-			String finput = input.replace("\\\\", "\\");
-			Object output = translateValue(registerFormula(finput));
-			return output;
+			registerFormula(input.replace("\\\\", "\\"));
+			return null;
 		}
-
 	}
 
-	public String registerFormula(String formula) {
-
-		String output = "???";
-
-		formulas.put(formula, null);
-		
-		if (currentTrace != null) {
-			try {
-
-				IEvalResult evaluationResult = null;
-				IEvalElement evalElement = null;
-
-				AbstractModel model = currentTrace.getModel();
-
-				if (model instanceof EventBModel
-						|| model instanceof ClassicalBModel) {
-
-					if (model instanceof ClassicalBModel)
-						evalElement = new ClassicalB(formula);
-					else if (model instanceof EventBModel)
-						evalElement = new EventB(formula);
-
-					StateSpace stateSpace = currentTrace.getStateSpace();
-					Map<IEvalElement, IEvalResult> valuesAt = stateSpace
-							.valuesAt(currentTrace.getCurrentState());
-					evaluationResult = valuesAt.get(evalElement);
-					if (evaluationResult == null) {
-						evaluationResult = currentTrace.evalCurrent(evalElement);
-						stateSpace.subscribe(this, evalElement);
-						// TODO: unscribe!!!
-					}
-
-				} else if (model instanceof CSPModel) {
-					output = cachedCSPString.get(formula);
-					if (output == null) {
-						evalElement = new CSP(formula,
-								(CSPModel) currentTrace.getModel());
-						evaluationResult = currentTrace.evalCurrent(evalElement);
-					}
-				}
-
-				if (evaluationResult != null) {
-					if (evaluationResult instanceof ComputationNotCompletedResult) {
-						// TODO: do something .....
-					} else if (evaluationResult instanceof EvalResult) {
-						output = ((EvalResult) evaluationResult).getValue();
-						if (model instanceof CSPModel)
-							cachedCSPString.put(formula, output);
-						formulas.put(formula, translateValue(output));
-					}
-				}
-
-			} catch (Exception e) {
-				// TODO: do something ...
-				// e.printStackTrace();
-			}
-
-		}
-
-		return output;
-
+	public void registerFormula(String formula) {
+		formulasForEvaluating.put(formula, null);
 	}
 
 	private Object translateValue(final String val) {
@@ -353,53 +330,9 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 	
-	// private String getFormalism(String machine) {
-	// String language = "???";
-	// if (machine != null) {
-	// int i = machine.lastIndexOf('.');
-	// if (i > 0) {
-	// language = machine.substring(i + 1);
-	// }
-	// if (Arrays.asList(eventbExtensions).contains(language)) {
-	// language = "eventb";
-	// } else if (Arrays.asList(classicalBExtensions).contains(language)) {
-	// language = "b";
-	// }
-	// }
-	// return language;
-	// }
-
 	public void addParameter(String key, Object value) {
 		this.parameterMap.put(key, value);
 	}
-	
-	// private void animateModel(Object machinePath) {
-	//
-	// try {
-	// Injector injector = ServletContextListener.INJECTOR;
-	// Api api = injector.getInstance(Api.class);
-	// AnimationSelector selector = injector
-	// .getInstance(AnimationSelector.class);
-	// Method method = api.getClass().getMethod(
-	// getFormalism(machinePath.toString()) + "_load",
-	// String.class);
-	// AbstractModel m = (AbstractModel) method.invoke(api, machinePath);
-	// StateSpace s = m.getStatespace();
-	// Trace h = new Trace(s);
-	// selector.addNewAnimation(h);
-	// } catch (NoSuchMethodException e) {
-	// e.printStackTrace();
-	// } catch (SecurityException e) {
-	// e.printStackTrace();
-	// } catch (IllegalAccessException e) {
-	// e.printStackTrace();
-	// } catch (IllegalArgumentException e) {
-	// e.printStackTrace();
-	// } catch (InvocationTargetException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// }
 
 	@Override
 	public void modelChanged(StateSpace s) {
@@ -417,13 +350,6 @@ public class BMotionStudioSession extends AbstractSession implements
 			Bindings bindings = groovy.getBindings(ScriptContext.GLOBAL_SCOPE);
 			bindings.putAll(parameterMap);
 			bindings.put("bms", this);
-
-			// Object machinePath = parameterMap.get("machine");
-			// Object load = parameterMap.get("load");
-			// if (machinePath != null
-			// && (load != null && load.toString().equals("1"))) {
-			// animateModel(machinePath);
-			// }
 
 			Object scriptPaths = parameterMap.get("script");
 			if (scriptPaths != null) {
