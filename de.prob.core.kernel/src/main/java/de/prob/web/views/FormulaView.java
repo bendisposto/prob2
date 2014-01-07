@@ -166,4 +166,10 @@ public class FormulaView extends AbstractSession implements
 		return null;
 	}
 
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

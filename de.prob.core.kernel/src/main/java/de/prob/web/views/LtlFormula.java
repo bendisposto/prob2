@@ -67,7 +67,7 @@ public class LtlFormula extends AbstractSession implements
 		submit(wrap);
 	}
 
-	public Object checkNthFormula(Map<String, String[]> params) {
+	public Object checkNthFormula(final Map<String, String[]> params) {
 		int pos = Integer.parseInt(get(params, "pos"));
 		LTLFormulaTuple tuple = formulas.get(pos);
 
@@ -85,14 +85,14 @@ public class LtlFormula extends AbstractSession implements
 		return null;
 	}
 
-	public Object removeFormula(Map<String, String[]> params) {
+	public Object removeFormula(final Map<String, String[]> params) {
 		int pos = Integer.parseInt(get(params, "pos"));
 		formulas.remove(pos);
 		submitFormulas();
 		return null;
 	}
 
-	public Object addFormula(Map<String, String[]> params)
+	public Object addFormula(final Map<String, String[]> params)
 			throws LtlParseException {
 		String formula = get(params, "val");
 		if (formula == null || formula.isEmpty()) {
@@ -109,18 +109,20 @@ public class LtlFormula extends AbstractSession implements
 	}
 
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/ltlFormula/index.html");
 	}
 
 	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
 		submitFormulas();
 	}
 
 	@Override
-	public void traceChange(Trace trace) {
+	public void traceChange(final Trace trace) {
 		StateId current = trace.getCurrentState();
 		for (LTLFormulaTuple tuple : formulas) {
 			String cached = cache.get(tuple.formula).get(current);
@@ -139,7 +141,7 @@ public class LtlFormula extends AbstractSession implements
 		private final LTL formula;
 		private String status;
 
-		public LTLFormulaTuple(LTL f) {
+		public LTLFormulaTuple(final LTL f) {
 			formula = f;
 			this.setStatus("unchecked");
 		}
@@ -152,13 +154,19 @@ public class LtlFormula extends AbstractSession implements
 			return status;
 		}
 
-		public void setStatus(String status) {
+		public void setStatus(final String status) {
 			this.status = status;
 		}
 
 		public void resetStatus() {
 			status = "unchecked";
 		}
+
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// TODO Auto-generated method stub
 
 	}
 

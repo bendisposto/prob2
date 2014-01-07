@@ -9,6 +9,8 @@ import de.prob.statespace.OpInfo;
 
 public class SignatureMergedStateSpace extends AbstractDerivedStateSpace {
 
+	private static int counter = 0;
+	private final String id = "sig-merge-ss" + counter++;
 	private final List<String> disabledEvents;
 
 	public SignatureMergedStateSpace(final IStateSpace stateSpace,
@@ -30,6 +32,11 @@ public class SignatureMergedStateSpace extends AbstractDerivedStateSpace {
 		setTransStyle(cmd.getTransStyle());
 
 		notifyStateSpaceChange(newOps);
+	}
+
+	@Override
+	public String getId() {
+		return id;
 	}
 
 }

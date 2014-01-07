@@ -159,7 +159,9 @@ public class ModelChecker {
 		public IModelCheckingResult call() throws Exception {
 			s.execute(job);
 			IModelCheckingResult result = job.getResult();
-			ui.isFinished(jobId, result);
+			if (ui != null) {
+				ui.isFinished(jobId, result);
+			}
 			return result;
 		}
 

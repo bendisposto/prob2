@@ -64,9 +64,6 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
  */
 public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
-	private static int counter = 0;
-	private final String id = "space" + counter++;
-
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 	private transient IAnimator animator;
 
@@ -203,8 +200,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return the unique {@link String} id associated with this
 	 *         {@link StateSpace} instance
 	 */
+	@Override
 	public String getId() {
-		return id;
+		return animator.getId();
 	}
 
 	/**
@@ -969,6 +967,21 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	public Map<StateId, Map<IEvalElement, IEvalResult>> getValues() {
 		return values;
+	}
+
+	@Override
+	public void startTransaction() {
+		animator.startTransaction();
+	}
+
+	@Override
+	public void endTransaction() {
+		animator.endTransaction();
+	}
+
+	@Override
+	public boolean isBusy() {
+		return animator.isBusy();
 	}
 
 }

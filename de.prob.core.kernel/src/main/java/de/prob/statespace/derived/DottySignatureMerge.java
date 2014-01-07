@@ -8,6 +8,9 @@ import de.prob.statespace.OpInfo;
 
 public class DottySignatureMerge extends AbstractDottyGraph {
 
+	private static int counter = 0;
+	private final String id = "dotty-sig-merge" + counter++;
+
 	private final List<String> disabledEvents;
 
 	public DottySignatureMerge(final IStateSpace space,
@@ -30,6 +33,11 @@ public class DottySignatureMerge extends AbstractDottyGraph {
 			calculate();
 			notifyStateSpaceChange(newOps);
 		}
+	}
+
+	@Override
+	public String getId() {
+		return id;
 	}
 
 }

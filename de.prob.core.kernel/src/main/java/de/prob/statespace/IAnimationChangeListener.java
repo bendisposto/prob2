@@ -17,4 +17,6 @@ public interface IAnimationChangeListener {
 	 * @param trace
 	 */
 	public void traceChange(Trace trace);
+
+	public void animatorStatus(boolean busy);
 }

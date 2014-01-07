@@ -19,21 +19,29 @@ import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.AnimationSelector;
 
 class AnimatorImpl implements IAnimator {
+
+	private static int counter = 0;
+	private final String id = "animator" + counter++;
 
 	private final ProBInstance cli;
 	private final Logger logger = LoggerFactory.getLogger(AnimatorImpl.class);
 	private final CommandProcessor processor;
 	private final GetErrorsCommand getErrors;
 	public static boolean DEBUG = false;
+	private final AnimationSelector animations;
+	private boolean busy = false;
 
 	@Inject
 	public AnimatorImpl(@Nullable final ProBInstance cli,
-			final CommandProcessor processor, final GetErrorsCommand getErrors) {
+			final CommandProcessor processor, final GetErrorsCommand getErrors,
+			final AnimationSelector animations) {
 		this.cli = cli;
 		this.processor = processor;
 		this.getErrors = getErrors;
+		this.animations = animations;
 		processor.configure(cli);
 	}
 
@@ -92,6 +100,28 @@ class AnimatorImpl implements IAnimator {
 
 	public static void setDebug(final boolean debug) {
 		DEBUG = debug;
+	}
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
+	@Override
+	public void startTransaction() {
+		busy = true;
+		animations.notifyAnimatorStatus(id, busy);
+	}
+
+	@Override
+	public void endTransaction() {
+		busy = false;
+		animations.notifyAnimatorStatus(id, busy);
+	}
+
+	@Override
+	public boolean isBusy() {
+		return busy;
 	}
 
 }

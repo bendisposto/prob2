@@ -9,6 +9,8 @@ import de.prob.statespace.OpInfo;
 
 public class TransitionDiagram extends AbstractDerivedStateSpace {
 
+	private static int counter = 0;
+	private final String id = "trans-diag" + counter++;
 	private final String expression;
 
 	public TransitionDiagram(final IStateSpace stateSpace,
@@ -29,6 +31,11 @@ public class TransitionDiagram extends AbstractDerivedStateSpace {
 		setTransStyle(cmd.getTransStyle());
 
 		notifyStateSpaceChange(nOps);
+	}
+
+	@Override
+	public String getId() {
+		return id;
 	}
 
 }

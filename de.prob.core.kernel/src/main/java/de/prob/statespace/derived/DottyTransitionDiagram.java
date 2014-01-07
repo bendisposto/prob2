@@ -8,6 +8,8 @@ import de.prob.statespace.OpInfo;
 
 public class DottyTransitionDiagram extends AbstractDottyGraph {
 
+	private static int counter = 0;
+	private final String id = "dotty-trans-diag" + counter++;
 	private final String expression;
 
 	public DottyTransitionDiagram(final IStateSpace space,
@@ -31,6 +33,11 @@ public class DottyTransitionDiagram extends AbstractDottyGraph {
 			calculate();
 			notifyStateSpaceChange(newOps);
 		}
+	}
+
+	@Override
+	public String getId() {
+		return id;
 	}
 
 }

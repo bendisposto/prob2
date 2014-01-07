@@ -206,4 +206,10 @@ public class StateInspector extends AbstractSession implements
 		return simpleName + "s";
 	}
 
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

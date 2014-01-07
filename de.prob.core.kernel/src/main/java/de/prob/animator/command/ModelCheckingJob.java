@@ -40,9 +40,13 @@ public class ModelCheckingJob extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
+		if (!s.isBusy()) {
+			s.startTransaction();
+		}
 		if (Thread.interrupted()) {
 			completed = true;
 			Thread.currentThread().interrupt();
+			s.endTransaction();
 			return;
 		}
 		cmd.writeCommand(pto);
@@ -53,8 +57,13 @@ public class ModelCheckingJob extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		cmd.processResult(bindings);
 		res = cmd.getResult();
-		ui.updateStats(jobId, res);
+		if (ui != null) {
+			ui.updateStats(jobId, res);
+		}
 		completed = !(res instanceof NotYetFinished);
+		if (completed) {
+			s.endTransaction();
+		}
 
 		addCheckedStates(cmd.getNewOps());
 		options = options.recheckExisting(false);

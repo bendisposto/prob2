@@ -360,4 +360,10 @@ public class ValueOverTime extends AbstractSession implements
 				time == null ? "Number of Animation Steps" : time.getCode(),
 				"drawMode", mode);
 	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// TODO Auto-generated method stub
+
+	}
 }

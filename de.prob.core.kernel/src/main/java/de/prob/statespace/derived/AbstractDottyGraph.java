@@ -85,4 +85,19 @@ public abstract class AbstractDottyGraph implements IStateSpace,
 		return content;
 	}
 
+	@Override
+	public boolean isBusy() {
+		return space.isBusy();
+	}
+
+	@Override
+	public void startTransaction() {
+		space.startTransaction();
+	}
+
+	@Override
+	public void endTransaction() {
+		space.endTransaction();
+	}
+
 }

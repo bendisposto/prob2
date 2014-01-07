@@ -48,6 +48,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	private String filter = "";
 	boolean hide = false;
 	private final ScriptEngine groovy;
+	private boolean busy;
 
 	@Inject
 	public Events(final AnimationSelector selector,
@@ -312,5 +313,15 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 			return -1 * o1.name.compareTo(o2.name);
 		}
 
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		this.busy = busy;
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "Events.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "Events.enable"));
+		}
 	}
 }

@@ -124,4 +124,10 @@ public class CurrentTrace extends AbstractSession implements
 		submit(wrap);
 	}
 
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
