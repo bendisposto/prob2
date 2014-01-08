@@ -22,6 +22,7 @@ class SimplifiedROMap<K, V> implements ISimplifiedROMap<K, V> {
 		this.map = map;
 	}
 
+	@Override
 	public V get(final K key) {
 		return map.get(key);
 	}

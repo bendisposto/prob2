@@ -1,0 +1,165 @@
+.left-bar-heading,
+.pattern-list-group {
+	background-color: #FAFAFA;
+	background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+	background-repeat: repeat-x;
+	border-bottom: 1px solid #D4D4D4;
+}
+
+/* Left bar */
+.left-bar {		
+	position: absolute;
+	top: 50px;
+	bottom: 0;
+	width: 200px;
+}
+
+.left-bar-heading {	
+	height: 33px;	
+	padding: 5px;
+	
+	font-weight: bold;
+	
+	cursor: default;
+}
+
+.left-bar-heading .icon {
+	width: 16px;
+	height: 16px;
+	
+	margin-right: 5px;
+	margin-top: 3px;
+	
+	float: left;
+	
+	background-image: url('../img/icon_pattern.gif');
+}
+
+/* Pattern list */
+.pattern-list {
+	position: absolute;
+	top: 33px;
+	bottom: 0;
+	width: 200px;
+
+	overflow-x: hidden;
+	
+	background: white;
+}
+
+.pattern-list ul {
+	padding: 0;
+	
+	cursor: default;
+}
+
+.pattern-list li {
+	padding: 0 5px;
+	
+	overflow: hidden;
+}
+
+.pattern-list .ui-selecting {
+	background: #ECF3F7;
+}
+
+.pattern-list .ui-selected {
+	background: #D9EDF7;
+}
+
+.pattern-list-item {
+	border-bottom: 1px solid #FAFAFA;
+}
+
+.pattern-list-group {	
+	border-top: 1px solid #D4D4D4;
+	border-radius: 0 0 4px 4px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+	
+	font-weight: bold;
+}
+
+/* Content on the right */
+.manager-content {
+	position: absolute;
+	top: 50px;
+	bottom: 0;
+	left: 205px;
+	right: 0;
+	
+	min-width: 200px;
+	
+	padding: 15px 25px;
+	
+	overflow-x: hidden;
+	
+	background-color: #FAFAFA;
+}
+
+/* Pattern name */
+.pattern-name {	
+	border-bottom: 1px solid #D4D4D4;
+}
+
+.pattern-name h1{
+	margin: 0;
+	margin-bottom: 10px;
+}
+
+.pattern-name .input-group {
+	margin-bottom: 10px;
+	margin-top: 5px;
+	border-bottom: 1px solid #EEEEEE;
+}
+
+/* Description panel */
+.panel .input-group {
+	width: 100%; 
+}
+
+.panel .form-control {
+	border: 0; 
+}
+
+#description-panel .input-group {
+	height: 70px;
+}
+
+.form-control[readonly] {
+    background-color: white;
+    cursor: text;
+}
+
+.description {			
+	width: 100%;
+
+	padding: 5px;	
+	
+	resize: none;
+	
+	border: 0;
+	border-radius: 0 0 4px 4px;
+}
+
+/* Remove list */
+#remove-list-panel ul {	
+	padding: 0;
+	margin: 0;
+	
+	overflow-x: hidden;
+}
+
+#remove-list-panel li {	
+	padding: 10px 15px;
+	
+	border-bottom: 1px solid #D4D4D4;
+}
+
+/* Badge */
+.badge-error{
+	display: none;
+	margin-left: 10px;
+	
+	background-color: #D9534F;
+    border-color: #D43F3A;
+}

@@ -108,6 +108,10 @@ public class MainModule extends AbstractModule {
 				"start ProB's Groovy shell");
 
 		@SuppressWarnings("static-access")
+		Option browser = OptionBuilder.withArgName("url").hasArg()
+				.withDescription("Open URL in browser").create("browser");
+
+		@SuppressWarnings("static-access")
 		Option test = OptionBuilder
 				.withArgName("script/dir")
 				.hasArg()
@@ -124,6 +128,7 @@ public class MainModule extends AbstractModule {
 		mode.addOption(shell);
 		mode.addOption(test);
 		options.addOptionGroup(mode);
+		options.addOption(browser);
 		return options;
 	}
 

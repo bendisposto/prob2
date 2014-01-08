@@ -1,0 +1,71 @@
+<div class="pattern-name">
+	<h1 id="name">
+		Remove selected patterns
+	</h1>
+</div>
+<div class="actions">
+{{#patterns.length}}
+	<button class="btn btn-danger btn-xs" type="button" title="Remove patterns" data-toggle="modal" href="#removeModal">
+		<span class="glyphicon glyphicon-remove"></span>
+		Remove patterns
+	</button>
+{{/patterns.length}}
+{{^patterns.length}}
+	<div style="height: 22px"></div>
+{{/patterns.length}}
+</div>
+<div class="panel" id="remove-list-panel">
+	<div class="panel-heading">
+		User defined patterns
+	</div>
+	<ul class=".remove-list">
+	{{#patterns}}
+		<li>
+			<h4 class="list-group-item-heading">{{name}}</h4>
+			<!--<div class="list-group-item-text">{{description}}</div>-->
+		</li>
+	{{/patterns}}
+	{{^patterns}}
+		<li>
+			<h4 class="list-group-item-heading" style="color: #D9534F">No user defined pattern selected.</h4>
+			<div class="list-group-item-text">Only user defined patterns can be removed.</div>
+		</li>
+	{{/patterns}}
+	</ul>
+</div>
+{{#builtins.length}}
+<div class="panel" id="remove-list-panel">
+	<div class="panel-heading">
+		Builtin patterns (Cannot be removed)
+	</div>
+	<ul style="background-color: #FAFAFA">
+	{{#builtins}}
+		<li>
+			<h4 class="list-group-item-heading">{{name}}</h4>
+			<!--<div class="list-group-item-text">{{description}}</div>-->
+		</li>
+	{{/builtins}}
+	</ul>
+</div>
+{{/builtins.length}}
+<!-- Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Remove selected patterns</h4>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to remove these patterns?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-xs" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger btn-xs" id="remove-pattern" data-dismiss="modal">
+			<span class="glyphicon glyphicon-remove"></span>
+			Remove
+		</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

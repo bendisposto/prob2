@@ -5,11 +5,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javax.servlet.AsyncContext;
-
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 
 import de.prob.animator.command.ExpandFormulaCommand;
@@ -23,6 +24,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.unicode.UnicodeTranslator;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
@@ -55,20 +57,6 @@ public class FormulaView extends AbstractSession implements
 	}
 
 	@Override
-	public void reload(final String client, final int lastinfo,
-			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
-		if (formula != null) {
-			Object data = calculateData();
-			Map<String, String> wrap = WebUtils.wrap("cmd",
-					"FormulaView.formulaSet", "formula", formula.getCode(),
-					"data", WebUtils.toJson(data));
-			submit(wrap);
-		}
-
-	}
-
-	@Override
 	public void traceChange(final Trace trace) {
 		currentTrace = trace;
 		if (currentTrace != null
@@ -76,7 +64,7 @@ public class FormulaView extends AbstractSession implements
 			Object data = calculateData();
 			if (data != null) {
 				Map<String, String> wrap = WebUtils.wrap("cmd",
-						"FormulaView.draw", "data", WebUtils.toJson(data));
+						"FormulaView.draw", "data", data);
 				submit(wrap);
 			}
 		}
@@ -89,7 +77,14 @@ public class FormulaView extends AbstractSession implements
 			currentStateSpace.execute(cmd);
 			ExpandedFormula result = cmd.getResult();
 			result.collapseNodes(new HashSet<String>(collapsedNodes));
-			return result;
+
+			GsonBuilder b = new GsonBuilder();
+			b.disableHtmlEscaping();
+			Gson gson = b.create();
+
+			String json = gson.toJson(result.getFields());
+			String j = json.replaceAll("\\\\u", "\\u");
+			return j;
 		}
 		return null;
 	}
@@ -121,7 +116,9 @@ public class FormulaView extends AbstractSession implements
 
 			Object data = calculateData();
 			return WebUtils.wrap("cmd", "FormulaView.formulaSet", "formula",
-					formula.getCode(), "data", WebUtils.toJson(data));
+					formula.getCode(), "unicode", StringEscapeUtils
+							.escapeHtml(UnicodeTranslator.toUnicode(formula
+									.getCode())), "data", data);
 		} catch (Exception e) {
 			return sendError(
 					"Whoops!",

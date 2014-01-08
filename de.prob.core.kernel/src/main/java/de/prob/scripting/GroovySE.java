@@ -69,10 +69,18 @@ public class GroovySE implements ScriptEngine {
 	@Override
 	public Object eval(final String script, final ScriptContext context)
 			throws ScriptException {
-
+		StringBuffer buff = new StringBuffer();
+		if (groovy.get("__console") == null) {
+			groovy.put("__console", buff);
+		}
 		Object result = groovy.eval(imports + "\n" + script, context);
 		if (result == null) {
 			return "null";
+		}
+		if (buff.length() > 0) {
+			logger.error("Automatically captured prints from groovy. "
+					+ "Users of a groovy engine should provide a console. "
+					+ "Output was: {}", buff.toString());
 		}
 		return result;
 	}
@@ -153,7 +161,6 @@ public class GroovySE implements ScriptEngine {
 	@Override
 	public Object eval(final String script, final Bindings n)
 			throws ScriptException {
-		System.err.println("Maybe not correct");
 		ScriptContext ctxt = getScriptContext(n);
 		return eval(script, ctxt);
 	}
@@ -161,7 +168,6 @@ public class GroovySE implements ScriptEngine {
 	@Override
 	public Object eval(final Reader reader, final Bindings n)
 			throws ScriptException {
-		System.err.println("Maybe not correct");
 		return eval(readFully(reader), n);
 	}
 

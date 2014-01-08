@@ -16,9 +16,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
-import de.prob.scripting.Api;
-import de.prob.scripting.Downloader;
 import de.prob.statespace.AnimationSelector;
+import de.prob.testing.TestRunner;
 
 @Singleton
 public class ScriptEngineProvider implements Provider<ScriptEngine> {
@@ -36,14 +35,18 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 			"import de.prob.animator.domainobjects.*;",
 			"import de.prob.animator.command.*;",
 			"import de.prob.visualization.*" };
+	private final TestRunner tests;
 
 	@Inject
-	public ScriptEngineProvider(Api api, AnimationSelector animations,
-			Downloader downloader) {
+	public ScriptEngineProvider(final Api api,
+			final AnimationSelector animations, final Downloader downloader,
+			final TestRunner tests) {
 		this.api = api;
 		this.animations = animations;
 		this.downloader = downloader;
-		this.manager = new ScriptEngineManager(this.getClass().getClassLoader());
+		this.tests = tests;
+		manager = new ScriptEngineManager(this.getClass().getClassLoader());
+		tests.setExecutor(get());
 	}
 
 	@Override
@@ -53,6 +56,7 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 		bindings.put("api", api);
 		bindings.put("animations", animations);
 		bindings.put("downloader", downloader);
+		bindings.put("tests", tests);
 		URL url = Resources.getResource("initscript");
 		String script;
 		try {

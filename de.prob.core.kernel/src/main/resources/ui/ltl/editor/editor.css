@@ -1,0 +1,103 @@
+.CodeMirror {
+	border: 1px solid #F1F1F1;
+}
+
+div.CodeMirror span.CodeMirror-matchingbracket {
+	color: black;
+	background-color: #DFF0D8;
+	font-weight: bold;
+}
+
+div.CodeMirror span.CodeMirror-nonmatchingbracket {
+	color: black;
+	background-color: #F2DEDE;
+	font-weight: bold;
+}
+
+/* Gutter: warning, error, pattern-move */
+.CodeMirror-gutters {
+	border-right: 1px solid #F1F1F1;
+}
+
+.markers { 
+	width: 16px;
+	background-color: #FCFCFC;
+}
+
+.warning { 
+	background-image: url('../img/icon_warning.gif'); 
+	height: 16px; 
+}
+
+.error { 
+	background-image: url('../img/icon_error.gif');
+	height: 16px; 
+}
+
+.pattern {
+	background-image: url('../img/icon_move_pattern.gif');
+	height: 16px; 
+	cursor: pointer;
+}
+
+/* Text underline */
+.warning-underline {
+	background: url('../img/warning_underline.gif') bottom repeat-x;
+}
+
+.error-underline {
+	background: url('../img/error_underline.gif') bottom repeat-x;
+}
+
+.operator {
+	background-color: #D9EDF7;
+}
+
+.operand {
+	background-color: #DFF0D8;
+}
+
+/* Syntax highlighting */
+.cm-s-default .cm-comment {
+    color: #3F7F5F;
+}
+
+.cm-s-default .cm-keyword {
+	color: #7F0055;
+    font-weight: bold;
+    line-height: 1em;
+}
+
+.cm-s-default .cm-atom , .cm-s-default .cm-number {
+    color: #33AA33;
+}
+
+.cm-s-default .cm-ltl, .cm-s-default .cm-boolean {
+    color: #00AAAA;
+}
+
+.cm-s-default .cm-scope {
+	color: #221199;
+    font-weight: bold;
+    line-height: 1em;
+}
+
+/* Hint */
+.CodeMirror-hint  {
+	white-space: nowrap;
+}
+
+.CodeMirror-hint span {
+	display: block;
+}
+
+.CodeMirror-hint span.text {
+	float: left;
+	margin-right: 10px;
+}
+
+.CodeMirror-hint span.type {
+	float: right;
+	color: silver;
+	text-transform: capitalize;
+}

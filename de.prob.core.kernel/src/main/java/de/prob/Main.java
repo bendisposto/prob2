@@ -74,16 +74,22 @@ public class Main {
 	}
 
 	private void run(final String[] args) throws Throwable {
+		String url = "";
 		try {
 			CommandLine line = parser.parse(options, args);
+			if (line.hasOption("browser")) {
+				logger.debug("Browser");
+				url = line.getOptionValue("browser");
+				logger.debug("Browser started");
+			}
+			runServer(url);
 			if (line.hasOption("shell")) {
-				try {
-					WebConsole.run();
-				} catch (Exception e) {
-					e.printStackTrace();
+				while (true) {
+					Thread.sleep(10);
 				}
 			}
 			if (line.hasOption("test")) {
+				logger.debug("Run Script");
 				String value = line.getOptionValue("test");
 				shell.runScript(new File(value));
 			}
@@ -93,7 +99,26 @@ public class Main {
 		}
 	}
 
+	private void runServer(final String url) {
+		logger.debug("Shell");
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					WebConsole.run(url);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
+	}
+
 	/**
+	 * Returns the directory in which the binary files and libraries for ProB
+	 * are stored.
+	 * 
 	 * @return if System Property "prob.home" is defined, the path to this
 	 *         directory is returned. Otherwise, the directory specified by
 	 *         System Property "user.home" is chosen, and the directory ".prob"
@@ -115,21 +140,26 @@ public class Main {
 	 * @param args
 	 * @throws Throwable
 	 */
-	public static void main(final String[] args) throws Throwable {
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				Set<Process> keySet = Main.processes.keySet();
-				for (Process process : keySet) {
-					process.destroy();
+	public static void main(final String[] args) {
+		try {
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void run() {
+					Set<Process> keySet = Main.processes.keySet();
+					for (Process process : keySet) {
+						process.destroy();
+					}
 				}
-			}
-		});
-		System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
+			});
+			System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
 
-		Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
+			Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
 
-		main.run(args);
+			main.run(args);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
 		System.exit(0);
 	}
 
@@ -139,7 +169,6 @@ public class Main {
 	 *            shutdown of the program.
 	 */
 	public static void registerPrologProcess(final Process process) {
-		// TODO: Should this be in another class?
 		processes.put(process, Boolean.TRUE);
 	}
 
@@ -148,7 +177,6 @@ public class Main {
 	 * shutdown, or if the ServletContext changes.
 	 */
 	public static void destroyPrologProcesses() {
-		// TODO: Should this be in another class?
 		Set<Process> keySet = Main.processes.keySet();
 		for (Process process : keySet) {
 			process.destroy();

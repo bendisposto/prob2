@@ -3,12 +3,13 @@ FormulaView = (function() {
     var extern = {}
     var session = Session();
     var vizUtils = VizUtils();
-    var width = $(".col-lg-12")[0].clientWidth;
-    var height =  vizUtils.calculateHeight() - $(".col-lg-12")[0].clientHeight;
+    var width = vizUtils.calculateWidth();
+    var height =  vizUtils.calculateHeight() - $("#header")[0].clientHeight;
     var vis = vizUtils.createCanvas("#visualization", width, height);
     var tree = d3.layout.tree()
             .size([height, width]);
     var mode;
+    var lastData;
 
     $(document).ready(function() {
         $(window).keydown(function(event){
@@ -17,6 +18,20 @@ FormulaView = (function() {
                 return false;
             }
         });
+
+        $(window).resize(function() {
+            width = vizUtils.calculateWidth();
+            h = vizUtils.calculateHeight() - $("#header")[0].clientHeight;
+            if(h != height) {
+                height = h;
+                $("#visualization").empty();
+                vis = vizUtils.createCanvas("#visualization", width, height);
+                tree = d3.layout.tree().size([height,width]);
+                if(lastData != undefined) {
+                    draw(lastData)
+                }                
+            }
+        })
     });
 
     // UI Interaction
@@ -38,11 +53,11 @@ FormulaView = (function() {
         $(".input-group").addClass("has-error");
     }
 
-    function formulaSet(formula) {
+    function formulaSet(formula, unicode) {
         $(".alert").remove();
         $(".input-group").removeClass("has-error");
         
-        $("#input-field").replaceWith(session.render("/ui/formulaView/formula_entered.html",{formula: formula}));
+        $("#input-field").replaceWith(session.render("/ui/formulaView/formula_entered.html",{formula: unicode}));
         $("#edit-formula").click(function(e) {
             e.preventDefault();
             editFormula(formula);
@@ -82,6 +97,7 @@ FormulaView = (function() {
     }
 
     function draw(data) {
+        lastData = data;
         var root, labels, values, i, diagonal;
         clear();
 
@@ -191,7 +207,7 @@ FormulaView = (function() {
 
         var maxWidths = []
         nodes.forEach(function(d) { if(maxWidths[d.depth] === undefined) {
-            maxWidths[d.depth] = d.width
+            maxWidths[d.depth] = d.width + 25
         } else {
             maxWidths[d.depth] = (d.width > maxWidths[d.depth]) ? d.width : maxWidths[d.depth]
         }})
@@ -296,7 +312,7 @@ FormulaView = (function() {
         error(data);
     }
     extern.formulaSet = function(data) {
-        formulaSet(data.formula);
+        formulaSet(data.formula, data.unicode);
         draw(JSON.parse(data.data));
     }
     extern.parseOk = parseOk;

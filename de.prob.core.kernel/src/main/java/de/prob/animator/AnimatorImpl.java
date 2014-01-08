@@ -40,7 +40,6 @@ class AnimatorImpl implements IAnimator {
 	@Override
 	public synchronized void execute(final AbstractCommand command) {
 		if (cli == null) {
-			// System.out.println("Probcli is missing. Try \"upgrade\".");
 			logger.error("Probcli is missing. Try \"upgrade\".");
 			throw new CliError("no cli found");
 		}

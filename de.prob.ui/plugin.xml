@@ -26,15 +26,6 @@
         </menuContribution>
         <menuContribution
               allPopups="false"
-              locationURI="toolbar:de.prob.ui.BUnitView">
-           <command
-                 commandId="de.prob.ui.specifydirectory"
-                 icon="icons/junit/etool16/new_testcase.gif"
-                 style="push">
-           </command>
-        </menuContribution>
-        <menuContribution
-              allPopups="false"
               locationURI="menu:analyze">
            <command
                  commandId="de.prob.ui.viz.pred"
@@ -88,13 +79,6 @@
    
    <extension
          point="org.eclipse.ui.commands">
-      
-
-            <command
-                  defaultHandler="de.prob.ui.bunitview.SpecifyTestDirectoryHandler"
-                  id="de.prob.ui.specifydirectory"
-                  name="Specify Test Directory">
-            </command>
             <command
                   id="de.prob.ui.bugreport"
                   name="Submit Bug Report">
@@ -131,13 +115,6 @@
    
    <extension
          point="org.eclipse.ui.handlers">      
-     
-      <handler
-            commandId="de.prob.ui.specifytestdir">
-         <class
-               class="de.prob.ui.bunitview.SpecifyTestDirectoryHandler">
-         </class>
-      </handler>
       <handler
             commandId="de.prob.ui.bugreport">
          <class

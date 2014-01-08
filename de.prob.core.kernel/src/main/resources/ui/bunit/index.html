@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>BUnit View</title>
+<meta name="description" content="">
+<meta name="author" content="Joy Clark">
+
+<meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/bunit/bunit.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-4">
+                <div class="panel panel-default">
+                    <div id="stats" class="panel-heading"><h4>Successful: 0/0</h4></div>
+                    <div class="panel-body">
+                        <ul id="content"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-8"><div class="well invisible" id="errors"></div></div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript"
+    src="/ui/bunit/BUnit.js"></script>
+
+
+<script>
+BUnit.client = "{{clientid}}";
+BUnit.init("{{clientid}}")
+
+</script>
+</html>

@@ -152,7 +152,9 @@ public class MachineXmlHandler extends DefaultHandler {
 		String target = attributes.getValue("org.eventb.core.scTarget");
 		String internalName = target.substring(target.lastIndexOf('#') + 1,
 				target.length());
+		internalName = internalName.replace("\\", "");
 		String fileSource = target.substring(0, target.indexOf('|'));
+
 		String refinedMachineName = fileSource.substring(
 				fileSource.lastIndexOf('/') + 1, fileSource.lastIndexOf('.'));
 		refinesForEvent.add(eventCache.get(refinedMachineName)
@@ -279,6 +281,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		String source = attributes.getValue("org.eventb.core.source");
 		String internalName = source.substring(source.lastIndexOf('#') + 1,
 				source.length());
+		internalName = internalName.replace("\\", "");
 		String filePath = source.substring(0, source.indexOf("|"));
 		String machineName = filePath.substring(filePath.lastIndexOf("/") + 1,
 				filePath.lastIndexOf("."));
@@ -326,6 +329,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		String source = attributes.getValue("org.eventb.core.source");
 		String internalName = source.substring(source.lastIndexOf('#') + 1,
 				source.length());
+		internalName = internalName.replace("\\", "");
 		String filePath = source.substring(0, source.indexOf('|'));
 		String contextName = filePath.substring(filePath.lastIndexOf("/") + 1,
 				filePath.lastIndexOf("."));
