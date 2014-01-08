@@ -24,6 +24,7 @@ Languages = (function() {
 				theme : "default",
 				viewportMargin : Infinity,
 			},
+			no_vars : true,
 			has_source : true
 		},
 		"Markdown" : {
