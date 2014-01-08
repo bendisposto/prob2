@@ -11,7 +11,19 @@ public class ModelCheckingOptions {
 	private final EnumSet<Options> options;
 
 	public enum Options {
-		breadth_first_search, find_deadlocks, find_invariant_violations, find_assertion_violations, inspect_existing_nodes, stop_at_full_coverage;
+		breadth_first_search("breadth first"), find_deadlocks("deadlock check"), find_invariant_violations(
+				"invariant check"), find_assertion_violations("assertion check"), inspect_existing_nodes(
+				"recheck nodes"), stop_at_full_coverage("stop at full coverage");
+
+		private final String description;
+
+		private Options(final String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
+		}
 	}
 
 	public ModelCheckingOptions() {

@@ -157,10 +157,12 @@ public class ModelChecker {
 
 		@Override
 		public IModelCheckingResult call() throws Exception {
+			long time = System.currentTimeMillis();
 			s.execute(job);
 			IModelCheckingResult result = job.getResult();
 			if (ui != null) {
-				ui.isFinished(jobId, result);
+				ui.isFinished(s.getId(), jobId, System.currentTimeMillis()
+						- time, result);
 			}
 			return result;
 		}

@@ -4,9 +4,8 @@ ModelChecking = (function() {
 
     $(document).ready(function() {
         $("#start-new").click(function(e) {
-            $("#open-new").modal('show')
+           $("#open-new").modal('show')
         })
-
 
         $("#results").append(session.render("/ui/modelchecking/queued.html", {id: "job1"}))
         $("#results").append(session.render("/ui/modelchecking/queued.html", {id: "job11"}))
@@ -23,30 +22,37 @@ ModelChecking = (function() {
             $(".result").addClass("invisible")
             $("#"+e.currentTarget.id+"-out").removeClass("invisible")
         })
-
-        $("#options-body").append(session.render("/ui/modelchecking/options.html", {
-                                                                                        spaces: [{id: "s1", rep: "Space 1"},{id: "s2", rep: "Space 2"}], 
-                                                                                        "breadth_first_search": true, 
-                                                                                        "find_deadlocks": false,
-                                                                                        "find_assertion_violations": true,
-                                                                                        "find_invariant_violations": false,
-                                                                                        "inspect_existing_nodes": false,
-                                                                                        "stop_at_full_coverage": false
-                                                                                    }))
     })
 
-    function updateOptions(options) {
-        $("#options-body").empty()
-        $("#options-body").append(session.render("/ui/modelchecking/options.html"),options)
+
+    function toggleOption(method,id) {
+        session.sendCmd(method, {"set": $("#"+id).prop('checked')})
     }
 
-    function toggleOption(id) {
-        session.sendCmd(id, {"set": $("#"+id).prop('checked')})
+    function jobStarted(data) {
+        $("#content").append("<li id="+data.id+" class=job>"+data.name+"</li>")
+        $("#results").append(session.render("/ui/modelchecking/queued.html", data))
+        $("#"+data.id).click(function(e) {
+            $(".job").removeClass("selected")
+            $(e.currentTarget).addClass("selected")
+            $(".result").addClass("invisible")
+            $("#"+e.currentTarget.id+"-out").removeClass("invisible")
+        })
+    }
+
+    function updateJob(id,data) {
+        $("#"+id+"-in").replaceWith(session.render("/ui/modelchecking/working.html", data))
+    }
+
+    function finishJob(id,data) {
+        $("#"+id+"-in").replaceWith(session.render("/ui/modelchecking/finished.html", data))
     }
     
     extern.client = ""
     extern.init = session.init
-    extern.updateOptions = updateOptions
+    extern.setDefaultOptions = function(data) {
+        setDefaultOptions(data.options)
+    }
     extern.toggleOption = toggleOption
 
 

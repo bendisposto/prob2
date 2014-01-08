@@ -13,4 +13,10 @@ public interface IModelCheckingResult {
 	 *         when this result was generated
 	 */
 	StateSpaceStats getStats();
+
+	/**
+	 * @return the {@link ModelCheckingOptions} object used when generating this
+	 *         result.
+	 */
+	ModelCheckingOptions getOptions();
 }

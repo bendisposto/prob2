@@ -121,50 +121,54 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 		if (type.equals("not_yet_finished")) {
 			int maxNodesLeft = BindingGenerator.getInteger(cpt.getArgument(1))
 					.getValue().intValue();
-			return new NotYetFinished(stats, maxNodesLeft);
+			return new NotYetFinished(stats, maxNodesLeft, options);
 		}
 
 		if (type.equals("ok")) {
 			return new ModelCheckOk(stats,
-					"Model Checking complete. No error nodes found.");
+					"Model Checking complete. No error nodes found.", options);
 		}
 
 		if (type.equals("ok_not_all_nodes_considered")) {
-			return new ModelCheckOk(stats,
-					"Model Checking complete. No error nodes found. Not all nodes were considered.");
+			return new ModelCheckOk(
+					stats,
+					"Model Checking complete. No error nodes found. Not all nodes were considered.",
+					options);
 		}
 
 		if (type.equals("deadlock")) {
 			return new ModelCheckErrorUncovered(stats, "Deadlock found.", cpt
-					.getArgument(1).getFunctor());
+					.getArgument(1).getFunctor(), options);
 		}
 
 		if (type.equals("invariant_violation")) {
 			return new ModelCheckErrorUncovered(stats,
 					"Invariant violation found.", cpt.getArgument(1)
-							.getFunctor());
+							.getFunctor(), options);
 		}
 
 		if (type.equals("assertion_violation")) {
 			return new ModelCheckErrorUncovered(stats,
 					"Assertion violation found.", cpt.getArgument(1)
-							.getFunctor());
+							.getFunctor(), options);
 		}
 
 		if (type.equals("state_error")) {
 			return new ModelCheckErrorUncovered(stats,
-					"A state error occured.", cpt.getArgument(1).getFunctor());
+					"A state error occured.", cpt.getArgument(1).getFunctor(),
+					options);
 		}
 
 		if (type.equals("well_definedness_error")) {
 			return new ModelCheckErrorUncovered(stats,
 					"A well definedness error occured.", cpt.getArgument(1)
-							.getFunctor());
+							.getFunctor(), options);
 		}
 
 		if (type.equals("general_error")) {
 			return new ModelCheckErrorUncovered(stats,
-					"A general error occured.", cpt.getArgument(1).getFunctor());
+					"A general error occured.",
+					cpt.getArgument(1).getFunctor(), options);
 		}
 
 		logger.error("Model checking result unknown. " + cpt.toString());

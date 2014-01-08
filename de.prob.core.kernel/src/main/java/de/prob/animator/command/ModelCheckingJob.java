@@ -27,6 +27,8 @@ public class ModelCheckingJob extends AbstractCommand {
 	private IModelCheckingResult res;
 	private final ModelCheckingUI ui;
 
+	private long time = -1;
+
 	public ModelCheckingJob(final StateSpace s,
 			final ModelCheckingOptions options, final String jobId,
 			final ModelCheckingUI ui) {
@@ -49,6 +51,10 @@ public class ModelCheckingJob extends AbstractCommand {
 			s.endTransaction();
 			return;
 		}
+		if (time == -1) {
+			time = System.currentTimeMillis();
+		}
+
 		cmd.writeCommand(pto);
 	}
 
@@ -58,7 +64,8 @@ public class ModelCheckingJob extends AbstractCommand {
 		cmd.processResult(bindings);
 		res = cmd.getResult();
 		if (ui != null) {
-			ui.updateStats(jobId, res);
+			ui.updateStats(s.getId(), jobId, System.currentTimeMillis() - time,
+					res);
 		}
 		completed = !(res instanceof NotYetFinished);
 		if (completed) {
