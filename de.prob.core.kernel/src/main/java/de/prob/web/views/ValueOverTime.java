@@ -363,7 +363,10 @@ public class ValueOverTime extends AbstractSession implements
 
 	@Override
 	public void animatorStatus(final boolean busy) {
-		// TODO Auto-generated method stub
-
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "ValueOverTime.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "ValueOverTime.enable"));
+		}
 	}
 }

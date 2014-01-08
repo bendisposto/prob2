@@ -232,7 +232,7 @@ public class AnimationSelector {
 
 	public void notifyAnimatorStatus(final String animatorId, final boolean busy) {
 		if (currentTrace != null
-				& currentTrace.getStateSpace().getId().equals(animatorId)) {
+				&& currentTrace.getStateSpace().getId().equals(animatorId)) {
 			notifyStatusChange(busy);
 		}
 	}

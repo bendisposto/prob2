@@ -63,7 +63,6 @@ public class CurrentAnimations extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		// traceChange(animations.getCurrentTrace());
 	}
 
 	public Object selectTrace(final Map<String, String[]> params) {

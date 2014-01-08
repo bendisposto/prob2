@@ -168,8 +168,11 @@ public class FormulaView extends AbstractSession implements
 
 	@Override
 	public void animatorStatus(final boolean busy) {
-		// TODO Auto-generated method stub
-
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "FormulaView.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "FormulaView.enable"));
+		}
 	}
 
 }

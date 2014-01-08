@@ -306,6 +306,14 @@ FormulaView = (function() {
         vizUtils.applyStyling(styling);
     }
 
+    function disable() {
+        $("body").append("<div class='modal-backdrop disabled'></div>")
+    }
+
+    function enable() {
+        $(".disabled").remove()
+    }
+
     extern.client = ""
     extern.init = session.init
     extern.error = function(data) {
@@ -324,6 +332,8 @@ FormulaView = (function() {
     extern.draw = function(data) {
         draw(JSON.parse(data.data));
     }
+    extern.disable = disable
+    extern.enable = enable
 
     return extern;
 }())

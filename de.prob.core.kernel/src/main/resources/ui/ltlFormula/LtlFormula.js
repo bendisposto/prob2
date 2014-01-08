@@ -58,11 +58,21 @@ LtlFormula = (function() {
 		})
 	}
 
+    function disable() {
+        $("body").append("<div class='modal-backdrop disabled'></div>")
+    }
+
+    function enable() {
+        $(".disabled").remove()
+    }
+
 	extern.setFormulas = function(data) {
 		setContent(data.formulas)
 	}
 	extern.client = ""
 	extern.init = session.init
+    extern.disable = disable
+    extern.enable = enable
 
 	return extern;
 }())
