@@ -180,6 +180,10 @@ public class AnimationSelector {
 	 * @param newTrace
 	 */
 	public void replaceTrace(final Trace oldTrace, final Trace newTrace) {
+		if (oldTrace.getStateSpace().isBusy() != newTrace.getStateSpace()
+				.isBusy()) {
+			notifyStatusChange(newTrace.getStateSpace().isBusy());
+		}
 		int indexOf = traces.indexOf(oldTrace);
 		traces.set(indexOf, newTrace);
 		if (oldTrace.equals(currentTrace)) {
