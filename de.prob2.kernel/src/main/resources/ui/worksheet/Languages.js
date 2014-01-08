@@ -11,6 +11,12 @@ Languages = (function() {
 			has_source : true
 		},
 		"B" : {
+			getAdditionalData : function(id){
+				return function(){
+					selectedTrace=$("#box"+id+" .trace-selection-menu .selected").text();
+					return selectedTrace;					
+				}
+			},
 			codemirror : {
 				mode : 'b',
 				lineNumbers : false,

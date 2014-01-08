@@ -1,178 +1,128 @@
 package de.prob.web.worksheet;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
-import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 import de.prob.web.WebUtils;
 
 public class B extends AbstractBox {
 
 	private String content = "";
-
-	/*
-		@SuppressWarnings("unchecked")
-		@Override
-		public List<Object> render(BindingsSnapshot snapshot) {
-			ScriptEngine groovy = owner.getGroovy();
-			AbstractModel model = (AbstractModel) groovy.getBindings(
-					ScriptContext.ENGINE_SCOPE).get("model");
-			Object store = groovy.getBindings(ScriptContext.ENGINE_SCOPE).get(
-					"store");
-			AnimationSelector animations = (AnimationSelector) groovy.getBindings(
-					ScriptContext.GLOBAL_SCOPE).get("animations");
-			if (model == null) {
-				return pack(makeHtml(id,
-						"*Could not find evaluation context. Maybe you need to load a model*"));
-			} else {
-				ArrayList<Object> res = new ArrayList<Object>();
-				StateSpace space = animations.getCurrentTrace().getStateSpace();
-				if (!(store instanceof Long)) {
-					// Get the current State
-					String stateId = animations.getCurrentTrace().getCurrentState()
-							.getId();
-					// Create a new EvalStore
-					EvalstoreCreateByStateCommand cmd = new EvalstoreCreateByStateCommand(
-							stateId);
-					space.execute(cmd);
-					store = cmd.getEvalstoreId();
-				}
-				if (store == null) {
-					return pack(makeHtml(id,
-							"*Could not create Eval Store. Do sth.*"));
-				} else {
-					try {
-						// Evaluate the expression
-						IEvalElement eval = new EventB(content);
-						EvalstoreEvalCommand cmd = new EvalstoreEvalCommand(
-								(Long) store, eval);
-						space.execute(cmd);
-						EvalstoreResult storeResult = cmd.getResult();
-						if (storeResult.isSuccess()) {
-							store = storeResult.getResultingStoreId();
-							String result = storeResult.getResult().getValue();
-							String output = "";
-							res.add(makeHtml(id, WebUtils.render(
-									"ui/worksheet/groovy_box.html", WebUtils.wrap(
-											"id", id, "result", result, "output",
-											output))));
-							groovy.getBindings(ScriptContext.ENGINE_SCOPE).put(
-									"store", store);
-
-						} else {
-							if (storeResult.hasInterruptedOccurred()) {
-								res.add(makeHtml(
-										id,
-										WebUtils.render(
-												"ui/worksheet/groovy_exception.html",
-												WebUtils.wrap(
-														"id",
-														id,
-														"message",
-														"The evaluation has been interrupted",
-														"stacktrace", ""))));
-							}
-							if (storeResult.hasTimeoutOccurred()) {
-								res.add(makeHtml(id, WebUtils.render(
-										"ui/worksheet/groovy_exception.html",
-										WebUtils.wrap("id", id, "message",
-												"The evaluation has timed out",
-												"stacktrace", ""))));
-							}
-							if (storeResult.getResult().hasError()) {
-								res.add(makeHtml(id, WebUtils.render(
-										"ui/worksheet/groovy_exception.html",
-										WebUtils.wrap("id", id, "message",
-												"No Success Result Error: "
-														+ storeResult.getResult()
-																.getErrors(),
-												"stacktrace", ""))));
-							}
-						}
-					} catch (Exception e) {
-						if (e.getMessage() != null) {
-							res.add(makeHtml(id, WebUtils.render(
-									"ui/worksheet/groovy_exception.html",
-									WebUtils.wrap(
-											"id",
-											id,
-											"message",
-											"No Success Result Error: "
-													+ e.getLocalizedMessage(),
-											"stacktrace", ""))));
-						} else {
-							res.add(makeHtml(
-									id,
-									WebUtils.render(
-											"ui/worksheet/groovy_exception.html",
-											WebUtils.wrap(
-													"id",
-													id,
-													"message",
-													"ProB has thrown an exception maybe your expression is not correctly spelled.",
-													"stacktrace", ""))));
-						}
-					}
-					return res;
-				}
-			}
-		}
-	*/
+	private String trace;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object> render(BindingsSnapshot snapshot) {
-		ScriptEngine groovy = owner.getGroovy();
+		List<Object> res = new ArrayList<Object>();
+		if (this.trace == null) {
+			Map<String, String> renderMap = makeHtml(id,
+					"Kein Trace ausgew&auml;lt");
+			res.add(renderMap);
+		} else {
+			ScriptEngine groovy = owner.getGroovy();
+			Map<String, String> renderMap;
+			if (snapshot != null)
+				snapshot.restoreBindings(groovy);
+			if (this.content != null) {
+				Trace trace;
+				if (this.trace.equals("rodin_current"))
 
-		AnimationSelector animations = (AnimationSelector) groovy.getBindings(
-				ScriptContext.GLOBAL_SCOPE).get("animations");
-		if (animations.getTraces().size() == 0) {
-			return pack(makeHtml(id, "*There is no animation started.*"));
+					trace = ((AnimationSelector) groovy.getBindings(
+							ScriptContext.GLOBAL_SCOPE).get("animations"))
+							.getCurrentTrace();
+				else
+					trace = (Trace) groovy.get(this.trace);
+				StateSpace space = trace.getStateSpace();
+				StateId curStateId = trace.getCurrentState();
+				//
+				if (!space.canBeEvaluated(curStateId)) {
+					return pack(makeHtml(id,
+							"*Current State can not be evaluated*"));
+				}
+				ArrayList<IEvalElement> evalElementList = new ArrayList<IEvalElement>();
+
+				evalElementList.add(new EventB(content));
+				List<IEvalResult> evalResultList = space.eval(curStateId,
+						evalElementList);
+				if (evalResultList.size() > 1) {
+					return pack(makeHtml(id,
+							"*ProB returned multiple Results.*"));
+				}
+				if (evalResultList.size() == 0) {
+					return pack(makeHtml(id, "*ProB returned no Results.*"));
+				}
+				Object evalResult = (Object) evalResultList.get(0);
+
+				res.add(makeHtml(id, WebUtils.render(
+						"ui/worksheet/groovy_box.html", WebUtils.wrap("id", id,
+								"result", evalResult, "output", ""))));
+			} else {
+				return pack(makeHtml(id, ""));
+			}
 		}
-
-		ArrayList<Object> res = new ArrayList<Object>();
-
-		StateSpace space = animations.getCurrentTrace().getStateSpace();
-		StateId curStateId = animations.getCurrentTrace().getCurrentState();
-		//
-		if (!space.canBeEvaluated(curStateId)) {
-			return pack(makeHtml(id, "*Current State can not be evaluated*"));
-		}
-		ArrayList<IEvalElement> evalElementList = new ArrayList<IEvalElement>();
-
-		evalElementList.add(new EventB(content));
-		List<IEvalResult> evalResultList = space.eval(curStateId,
-				evalElementList);
-		if (evalResultList.size() > 1) {
-			return pack(makeHtml(id, "*ProB returned multiple Results.*"));
-		}
-		if (evalResultList.size() == 0) {
-			return pack(makeHtml(id, "*ProB returned no Results.*"));
-		}
-
-		EvalResult evalResult = (EvalResult) evalResultList.get(0);
-		/*if (evalResult.hasError()) {
-			return pack(makeHtml(id,
-					"*Evaluation Error: " + evalResult.getErrors() + "*"));
-		}*/
-		res.add(makeHtml(id, WebUtils.render("ui/worksheet/groovy_box.html",
-				WebUtils.wrap("id", id, "result", evalResult, "output", ""))));
+		ArrayList<String> traces = getTraceList();
+		String traceList = WebUtils.toJson(getTraceList());
+		Map<String, String> traceDropdownMap = WebUtils.wrap("cmd",
+				"Worksheet.setDropdown", "id", id, "dropdownName",
+				"trace-selection", "items", traceList);
+		res.add(traceDropdownMap);
 		return res;
+	}
+
+	private ArrayList<String> getTraceList() {
+		ScriptEngine groovy = owner.getGroovy();
+		Set<Entry<String, Object>> engineBindings = groovy.getBindings(
+				ScriptContext.ENGINE_SCOPE).entrySet();
+		ArrayList<String> traceKeys = new ArrayList<String>();
+		Iterator<Entry<String, Object>> it = engineBindings.iterator();
+		while (it.hasNext()) {
+			Entry<String, Object> next = it.next();
+			if (next.getValue() instanceof de.prob.statespace.Trace)
+				traceKeys.add(next.getKey());
+		}
+		Collections.sort(traceKeys);
+		traceKeys.add(0, "rodin_current");
+		if (this.trace != null) {
+			traceKeys.remove(this.trace);
+			traceKeys.add(0, this.trace);
+		}
+		return traceKeys;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<? extends Object> additionalMessages() {
+		String traceList = WebUtils.toJson(getTraceList());
+		Map<String, String> traceDropdownMap = WebUtils.wrap("cmd",
+				"Worksheet.setDropdown", "id", id, "dropdownName",
+				"trace-selection", "items", traceList);
+		return pack(traceDropdownMap);
 	}
 
 	@Override
 	public void setContent(final Map<String, String[]> data) {
-		content = data.get("text")[0];
+		this.content = data.get("text")[0];
+		if (this.content.equals(""))
+			this.content = null;
+		this.trace = data.get("additionalData")[0];
+		if (this.trace.equals(""))
+			this.trace = null;
 	}
 
 	@Override
