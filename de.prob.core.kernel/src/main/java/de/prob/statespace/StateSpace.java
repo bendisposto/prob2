@@ -500,6 +500,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			subscribers.add(subscriber);
 			formulaRegistry.put(formulaOfInterest, subscribers);
 			execute(new RegisterFormulaCommand(formulaOfInterest));
+		}
+		if (!subscribedFormulas.contains(formulaOfInterest)) {
 			subscribedFormulas.add(formulaOfInterest);
 		}
 	}
