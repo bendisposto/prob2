@@ -139,8 +139,12 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void registerFormulas(final AbstractModel model) {
 
+		System.out.println("REGISTER FORMULAS");
+		
 		StateSpace s = model.getStatespace();
 
+		System.out.println(formulasForEvaluating);
+		
 		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
 				.entrySet()) {
 
@@ -175,7 +179,7 @@ public class BMotionStudioSession extends AbstractSession implements
 							evalElement = new ClassicalB(formula);
 						else if (model instanceof EventBModel)
 							evalElement = new EventB(formula);
-
+						
 						formulasForEvaluating.put(formula, evalElement);
 						s.subscribe(this, evalElement);
 
@@ -204,6 +208,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Override
 	public void traceChange(final Trace trace) {
 
+		// Deregister formulas if no trace exists ...
 		if (trace == null) {
 			currentTrace = null;
 			deregisterFormulas(currentModel);
@@ -213,12 +218,17 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		this.currentTrace = trace;
 
+		// If the model has been changed: (1) deregister formulas in the "old"
+		// model and (2) register formulas for new model. Else check if new
+		// formulas has been added and re register formulas
 		AbstractModel newModel = trace.getModel();
 		if (!newModel.equals(currentModel)) {
 			if (currentModel != null) {
 				deregisterFormulas(currentModel);
 			}
 			this.currentModel = newModel;
+			registerFormulas(currentModel);
+		} else if (formulasForEvaluating.values().contains(null)) {
 			registerFormulas(currentModel);
 		}
 
@@ -233,6 +243,7 @@ public class BMotionStudioSession extends AbstractSession implements
 						translateValue(((EvalResult) er).getValue()));
 			}
 		}
+		// Add all cached CSP formulas
 		formulas.putAll(cachedCSPString);
 
 		// Trigger all registered script listeners
