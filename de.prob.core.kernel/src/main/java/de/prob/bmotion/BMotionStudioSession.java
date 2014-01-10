@@ -64,6 +64,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
 
+	private List<AbstractModel> initializedModels = new ArrayList<AbstractModel>();
+	
 	private Map<String, String> cachedCSPString = new HashMap<String, String>();
 	
 	private List<Object> jsonData = new ArrayList<Object>();
@@ -81,6 +83,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		groovy = sep.get();
 		observer = new Observer(this);
 		selector.registerAnimationChangeListener(this);
+		selector.registerModelChangedListener(this);
 	}
 
 	@Override
@@ -115,36 +118,41 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 
-		// Remove all script listeners and add new observer scriptlistener
-		scriptListeners.clear();
-		scriptListeners.add(observer);
 		// After reload do not resent old messages
 		int old = responses.size() + 1;
 		// Add dummy message
 		submit(WebUtils.wrap("cmd", "extern.skip"));
-		// Initialize json data (if not already done)
-		initJsonData();
-		// Init Groovy scripts
-		initGroovy();
-		// Trigger an init trace change
-		if(currentTrace != null)
+
+		// Remove all script listeners and add new observer scriptlistener
+		scriptListeners.clear();
+		scriptListeners.add(observer);
+
+		// Initialize Session
+		initSession();
+
+		// If a trace already exists, trigger a trace change
+		if (currentTrace != null)
 			traceChange(currentTrace);
-		// Resent messages from groovy script and init trace change
+
+		// Resent messages, send while initializing the session and trace change
 		if (!responses.isEmpty())
 			resend(client, old, context);
 
 		super.reload(client, lastinfo, context);
 
 	}
+	
+	private void initSession() {
+		// Initialize json data (if not already done)
+		initJsonData();
+		// Init Groovy scripts
+		initGroovy();
+	}
 
 	private void registerFormulas(final AbstractModel model) {
 
-		System.out.println("REGISTER FORMULAS");
-		
 		StateSpace s = model.getStatespace();
 
-		System.out.println(formulasForEvaluating);
-		
 		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
 				.entrySet()) {
 
@@ -179,9 +187,16 @@ public class BMotionStudioSession extends AbstractSession implements
 							evalElement = new ClassicalB(formula);
 						else if (model instanceof EventBModel)
 							evalElement = new EventB(formula);
-						
+
 						formulasForEvaluating.put(formula, evalElement);
-						s.subscribe(this, evalElement);
+						try {
+							System.out.println("SUBSCRIBE " + evalElement
+									+ " ======> " + model.getModelFile());
+							s.subscribe(this, evalElement);
+						} catch (Exception e) {
+							System.err.println("SUBSCRIBE ERROR "
+									+ e.getMessage());
+						}
 
 					}
 
@@ -190,6 +205,8 @@ public class BMotionStudioSession extends AbstractSession implements
 					// e.printStackTrace();
 				}
 
+			} else {
+				System.err.println("NOT VALID FORMULAS " + formula);
 			}
 
 		}
@@ -201,14 +218,20 @@ public class BMotionStudioSession extends AbstractSession implements
 		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
 				.entrySet()) {
 			IEvalElement evalElement = entry.getValue();
-			s.unsubscribe(this, evalElement);
+			try {
+				System.out.println("UNSUBSCRIBE " + evalElement);
+				s.unsubscribe(this, evalElement);	
+			} catch (Exception e) {
+				System.err.println("UNSUBSCRIBE ERROR " + e.getMessage());
+			}
+			
 		}
 	}
 
 	@Override
 	public void traceChange(final Trace trace) {
 
-		// Deregister formulas if no trace exists ...
+		// Deregister formulas if no trace exists and exit
 		if (trace == null) {
 			currentTrace = null;
 			deregisterFormulas(currentModel);
@@ -217,22 +240,8 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 
 		this.currentTrace = trace;
-
-		// If the model has been changed: (1) deregister formulas in the "old"
-		// model and (2) register formulas for new model. Else check if new
-		// formulas has been added and re register formulas
-		AbstractModel newModel = trace.getModel();
-		if (!newModel.equals(currentModel)) {
-			if (currentModel != null) {
-				deregisterFormulas(currentModel);
-			}
-			this.currentModel = newModel;
-			registerFormulas(currentModel);
-		} else if (formulasForEvaluating.values().contains(null)) {
-			registerFormulas(currentModel);
-		}
-
-		// Collect subscribed values ...
+		
+		// Collect results of subscibred formulas
 		Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
 				.valuesAt(trace.getCurrentState());
 		for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt.entrySet()) {
@@ -246,11 +255,16 @@ public class BMotionStudioSession extends AbstractSession implements
 		// Add all cached CSP formulas
 		formulas.putAll(cachedCSPString);
 
-		// Trigger all registered script listeners
+		// Trigger all registered script listeners with collected formulas
 		for (IBMotionScript s : scriptListeners) {
 			s.traceChange(trace, formulas);
 		}
 
+	}
+
+	private void initModel(AbstractModel model) {
+		registerFormulas(model);
+		initializedModels.add(model);
 	}
 
 	private void initJsonData() {
@@ -277,7 +291,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private String readFile(String filename) {
 		String content = null;
-		File file = new File(filename); // for ex foo.txt
+		File file = new File(filename);
 		try {
 			FileReader reader = new FileReader(file);
 			char[] chars = new char[(int) file.length()];
@@ -347,7 +361,13 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	@Override
 	public void modelChanged(StateSpace s) {
-		// TODO: Reload  ........
+		AbstractModel newModel = s.getModel();
+		if (!newModel.equals(currentModel)) {
+			this.currentModel = newModel;
+			initSession();
+			if (!initializedModels.contains(newModel))
+				initModel(currentModel);
+		}
 	}
 	
 	private void initGroovy() {
