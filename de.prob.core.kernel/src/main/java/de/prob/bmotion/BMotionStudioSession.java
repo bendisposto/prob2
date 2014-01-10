@@ -190,12 +190,8 @@ public class BMotionStudioSession extends AbstractSession implements
 
 						formulasForEvaluating.put(formula, evalElement);
 						try {
-							System.out.println("SUBSCRIBE " + evalElement
-									+ " ======> " + model.getModelFile());
 							s.subscribe(this, evalElement);
 						} catch (Exception e) {
-							System.err.println("SUBSCRIBE ERROR "
-									+ e.getMessage());
 						}
 
 					}
@@ -205,8 +201,6 @@ public class BMotionStudioSession extends AbstractSession implements
 					// e.printStackTrace();
 				}
 
-			} else {
-				System.err.println("NOT VALID FORMULAS " + formula);
 			}
 
 		}
@@ -219,10 +213,8 @@ public class BMotionStudioSession extends AbstractSession implements
 				.entrySet()) {
 			IEvalElement evalElement = entry.getValue();
 			try {
-				System.out.println("UNSUBSCRIBE " + evalElement);
 				s.unsubscribe(this, evalElement);	
 			} catch (Exception e) {
-				System.err.println("UNSUBSCRIBE ERROR " + e.getMessage());
 			}
 			
 		}
