@@ -63,8 +63,6 @@ public class BMotionStudioSession extends AbstractSession implements
 	private Map<String, Object> formulas = new HashMap<String, Object>();
 	
 	private Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
-
-	private List<AbstractModel> initializedModels = new ArrayList<AbstractModel>();
 	
 	private Map<String, String> cachedCSPString = new HashMap<String, String>();
 	
@@ -150,61 +148,13 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	private void registerFormulas(final AbstractModel model) {
-
-		StateSpace s = model.getStatespace();
-
 		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
 				.entrySet()) {
-
 			String formula = entry.getKey();
 			IEvalElement evalElement = entry.getValue();
-
-			if (evalElement == null) {
-
-				try {
-
-					if (model instanceof CSPModel) {
-
-						if (cachedCSPString.get(formula) == null) {
-							evalElement = new CSP(formula, (CSPModel) model);
-							IEvalResult evaluationResult = currentTrace
-									.evalCurrent(evalElement);
-							if (evaluationResult != null) {
-								if (evaluationResult instanceof ComputationNotCompletedResult) {
-									// TODO: do something .....
-								} else if (evaluationResult instanceof EvalResult) {
-									cachedCSPString.put(formula,
-											((EvalResult) evaluationResult)
-													.getValue());
-								}
-							}
-						}
-
-					} else if (model instanceof EventBModel
-							|| model instanceof ClassicalBModel) {
-
-						if (model instanceof ClassicalBModel)
-							evalElement = new ClassicalB(formula);
-						else if (model instanceof EventBModel)
-							evalElement = new EventB(formula);
-
-						formulasForEvaluating.put(formula, evalElement);
-						try {
-							s.subscribe(this, evalElement);
-						} catch (Exception e) {
-						}
-
-					}
-
-				} catch (Exception e) {
-					// TODO: do something ...
-					// e.printStackTrace();
-				}
-
-			}
-
+			if (evalElement == null)
+				subscribeFormula(formula, model);
 		}
-
 	}
 
 	private void deregisterFormulas(final AbstractModel model) {
@@ -232,7 +182,12 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 
 		this.currentTrace = trace;
-		
+
+		// If a new formula was added dynamically (for instance via a groovy
+		// script), call register formulas method
+		if (formulasForEvaluating.containsValue(null))
+			registerFormulas(currentModel);
+			
 		// Collect results of subscibred formulas
 		Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
 				.valuesAt(trace.getCurrentState());
@@ -252,11 +207,6 @@ public class BMotionStudioSession extends AbstractSession implements
 			s.traceChange(trace, formulas);
 		}
 
-	}
-
-	private void initModel(AbstractModel model) {
-		registerFormulas(model);
-		initializedModels.add(model);
 	}
 
 	private void initJsonData() {
@@ -305,9 +255,57 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	public void registerFormula(String formula) {
+		// Register a fresh new formula
 		formulasForEvaluating.put(formula, null);
+		// If a model exists, try to subscribe the formula
+		if (currentModel != null)
+			subscribeFormula(formula, currentModel);
 	}
 
+	private void subscribeFormula(String formula, AbstractModel model) {
+
+		try {
+
+			StateSpace s = model.getStatespace();
+
+			IEvalElement evalElement = null;
+
+			if (model instanceof CSPModel) {
+
+				if (cachedCSPString.get(formula) == null) {
+					evalElement = new CSP(formula, (CSPModel) model);
+					IEvalResult evaluationResult = currentTrace
+							.evalCurrent(evalElement);
+					if (evaluationResult != null) {
+						if (evaluationResult instanceof ComputationNotCompletedResult) {
+							// TODO: do something .....
+						} else if (evaluationResult instanceof EvalResult) {
+							cachedCSPString.put(formula,
+									((EvalResult) evaluationResult).getValue());
+						}
+					}
+				}
+
+			} else if (model instanceof EventBModel
+					|| model instanceof ClassicalBModel) {
+				if (model instanceof ClassicalBModel)
+					evalElement = new ClassicalB(formula);
+				else if (model instanceof EventBModel)
+					evalElement = new EventB(formula);
+				formulasForEvaluating.put(formula, evalElement);
+				try {
+					s.subscribe(this, evalElement);
+				} catch (Exception e) {
+				}
+			}
+
+		} catch (Exception e) {
+			// TODO: do something ...
+			// e.printStackTrace();
+		}
+
+	}
+	
 	private Object translateValue(final String val) {
 		Object fvalue = val;
 		if (val.equalsIgnoreCase("TRUE")) {
@@ -357,8 +355,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		if (!newModel.equals(currentModel)) {
 			this.currentModel = newModel;
 			initSession();
-			if (!initializedModels.contains(newModel))
-				initModel(currentModel);
+			registerFormulas(currentModel);
 		}
 	}
 	
