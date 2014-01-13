@@ -81,21 +81,14 @@ class Observer implements IBMotionScript {
 		def m = []
 
 		for(op in opList) {
-
 			def fullOp = getOpString(op)
-
 			for(obj in objects) {
-
 				def events = mustacheRender(obj.get("events"),scope)
 				if(events != null) {
-
-					events = events.replace("\"{","").replace("}\"", "")
+					events = events.replace("{","").replace("}", "")
 					events = events.split(",")
-
 					if(events.contains(fullOp)) {
-
 						def pmap = [:]
-
 						op.getParams().eachWithIndex() { v, i -> pmap.put(getCharForNumber(i+1),v) };
 						def triggers = obj.get("trigger")
 						def t = triggers.collect {
@@ -105,7 +98,6 @@ class Observer implements IBMotionScript {
 							}
 							return "\$('"+mustacheRender(it.get("selector"),pmap)+"')."+mustacheRender(it.get("call"),pmap)+"("+parsedParameter.join(",")+")"
 						}
-
 						m = m + t
 					}
 				}
