@@ -10,6 +10,7 @@ import com.google.common.base.Function
 
 import de.prob.bmotion.BMotionStudioSession.EvalExpression;
 import de.prob.statespace.OpInfo
+import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace
 
 class Observer implements IBMotionScript {
@@ -180,6 +181,10 @@ class Observer implements IBMotionScript {
 		Mustache mustache = mf.compile(new StringReader(s.toString()), "bms");
 		mustache.execute(writer, scope);
 		writer.toString()
+	}
+
+	@Override
+	public void modelChanged(StateSpace statespace) {
 	}
 	
 }

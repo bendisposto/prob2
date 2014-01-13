@@ -181,6 +181,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 
 		this.currentTrace = trace;
+		this.currentModel = trace.getModel();
 
 		// If a new formula was added dynamically (for instance via a groovy
 		// script), call register formulas method
@@ -349,12 +350,9 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	@Override
-	public void modelChanged(StateSpace s) {
-		AbstractModel newModel = s.getModel();
-		if (!newModel.equals(currentModel)) {
-			this.currentModel = newModel;
-			initSession();
-			registerFormulas(currentModel);
+	public void modelChanged(StateSpace statespace) {
+		for (IBMotionScript s : scriptListeners) {
+			s.modelChanged(statespace);
 		}
 	}
 	
