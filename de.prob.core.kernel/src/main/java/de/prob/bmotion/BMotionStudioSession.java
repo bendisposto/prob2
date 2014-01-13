@@ -121,10 +121,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		// Add dummy message
 		submit(WebUtils.wrap("cmd", "extern.skip"));
 
-		// Remove all script listeners and add new observer scriptlistener
-		scriptListeners.clear();
-		scriptListeners.add(observer);
-
 		// Initialize Session
 		initSession();
 
@@ -141,6 +137,9 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 	
 	private void initSession() {
+		// Remove all script listeners and add new observer scriptlistener
+		scriptListeners.clear();
+		scriptListeners.add(observer);
 		// Initialize json data (if not already done)
 		initJsonData();
 		// Init Groovy scripts
