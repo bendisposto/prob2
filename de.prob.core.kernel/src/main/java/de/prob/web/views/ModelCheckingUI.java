@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -32,12 +34,14 @@ public class ModelCheckingUI extends AbstractSession implements
 	private final AnimationSelector animations;
 
 	Map<String, WeakReference<ModelChecker>> jobs = new HashMap<String, WeakReference<ModelChecker>>();
+	Map<String, IModelCheckingResult> results = new HashMap<String, IModelCheckingResult>();
 
 	private StateSpace currentStateSpace;
 
 	@Inject
 	public ModelCheckingUI(final AnimationSelector animations) {
 		this.animations = animations;
+		animations.registerModelChangedListener(this);
 		options = ModelCheckingOptions.DEFAULT;
 	}
 
@@ -51,7 +55,7 @@ public class ModelCheckingUI extends AbstractSession implements
 			final IModelCheckingResult result) {
 		int nrProcessedNodes = result.getStats().getNrProcessedNodes();
 		int nrTotalNodes = result.getStats().getNrTotalNodes();
-		int percent = Math.round((nrProcessedNodes / nrTotalNodes) * 100);
+		int percent = nrProcessedNodes * 100 / nrTotalNodes;
 		submit(WebUtils.wrap("cmd", "ModelChecking.updateJob", "id", id,
 				"processedNodes", nrProcessedNodes, "totalNodes", nrTotalNodes,
 				"totalTransitions", result.getStats().getNrTotalTransitions(),
@@ -73,10 +77,11 @@ public class ModelCheckingUI extends AbstractSession implements
 								// reason to keep the model checker
 		}
 
-		submit(WebUtils.wrap("cmd", "ModelChecking.finishJob"), "id", id,
+		submit(WebUtils.wrap("cmd", "ModelChecking.finishJob", "id", id,
 				"time", timeElapsed, "processedNodes", nrProcessedNodes,
 				"totalNodes", nrTotalNodes, "totalTransitions",
-				nrTotalTransitions, "result", result, "hasTrace", hasTrace);
+				nrTotalTransitions, "result", result, "hasTrace", hasTrace,
+				"message", res.getMessage()));
 	}
 
 	public Object startJob(final Map<String, String[]> params) {
@@ -170,12 +175,19 @@ public class ModelCheckingUI extends AbstractSession implements
 	}
 
 	@Override
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
+		super.reload(client, lastinfo, context);
+		resend(client, lastinfo, context);
+	}
+
+	@Override
 	public void modelChanged(final StateSpace stateSpace) {
 		currentStateSpace = stateSpace;
 		if (stateSpace == null) {
 			return;
 		}
-		submit(WebUtils.wrap("cmd", "ModelChecking.changeStateSpaces"), "ssId",
-				currentStateSpace.getId());
+		submit(WebUtils.wrap("cmd", "ModelChecking.changeStateSpaces", "ssId",
+				currentStateSpace.getId()));
 	}
 }
