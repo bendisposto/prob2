@@ -30,6 +30,10 @@
     color: #C06666;
 }
 
+.not-complete {
+    color: #888;
+}
+
 #content li {
     padding-left: 5px;
 }

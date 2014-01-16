@@ -27,4 +27,9 @@ public class NotYetFinished implements IModelCheckingResult {
 		return options;
 	}
 
+	@Override
+	public String getMessage() {
+		return "Model checking not completed";
+	}
+
 }

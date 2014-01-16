@@ -49,6 +49,9 @@ public class ModelCheckingJob extends AbstractCommand {
 			completed = true;
 			Thread.currentThread().interrupt();
 			s.endTransaction();
+			if (ui != null) {
+				ui.isFinished(jobId, System.currentTimeMillis() - time, res);
+			}
 			return;
 		}
 		if (time == -1) {
@@ -64,8 +67,7 @@ public class ModelCheckingJob extends AbstractCommand {
 		cmd.processResult(bindings);
 		res = cmd.getResult();
 		if (ui != null) {
-			ui.updateStats(s.getId(), jobId, System.currentTimeMillis() - time,
-					res);
+			ui.updateStats(jobId, System.currentTimeMillis() - time, res);
 		}
 		completed = !(res instanceof NotYetFinished);
 		if (completed) {

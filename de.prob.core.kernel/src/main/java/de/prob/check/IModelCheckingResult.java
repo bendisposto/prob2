@@ -19,4 +19,10 @@ public interface IModelCheckingResult {
 	 *         result.
 	 */
 	ModelCheckingOptions getOptions();
+
+	/**
+	 * @return a String message describing the result that was generated. This
+	 *         is subject to change.
+	 */
+	String getMessage();
 }

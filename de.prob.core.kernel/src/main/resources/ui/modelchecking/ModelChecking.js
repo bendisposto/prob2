@@ -30,7 +30,7 @@ ModelChecking = (function() {
     }
 
     function jobStarted(data) {
-        $("#content").append("<li id="+data.id+" class=job>"+data.name+"</li>")
+        $("#content").append(session.render("/ui/modelchecking/job.html", data))
         $("#results").append(session.render("/ui/modelchecking/queued.html", data))
         $("#"+data.id).click(function(e) {
             $(".job").removeClass("selected")
@@ -46,12 +46,35 @@ ModelChecking = (function() {
 
     function finishJob(id,data) {
         $("#"+id+"-in").replaceWith(session.render("/ui/modelchecking/finished.html", data))
+        if(data.result === "success") {
+            $("#"+id+"-jobdesc").before("<span class='success glyphicon glyphicon-ok-circle'></span>")
+        }
+        if(data.result === "danger") {
+            $("#"+id+"-jobdesc").before("<span class='failure glyphicon glyphicon-remove-circle'></span>")
+        }
+        if(data.result === "warning") {
+            $("#"+id+"-jobdesc").before("<span class='not-complete glyphicon glyphicon-minus'></span>")
+        }
     }
     
+    function changeStateSpaces(ssId) {
+        $(".job").addClass("invisible")
+        $("."+ssId).removeClass("invisible")
+    }
+
     extern.client = ""
     extern.init = session.init
     extern.setDefaultOptions = function(data) {
         setDefaultOptions(data.options)
+    }
+    extern.changeStateSpaces = function(data) {
+        changeStateSpaces(data.ssId)
+    }
+    extern.updateJob = function(data) {
+        updateJob(data.id, data)
+    }
+    extern.finishJob = function(data) {
+        finishJob(data.id, data)
     }
     extern.toggleOption = toggleOption
 
