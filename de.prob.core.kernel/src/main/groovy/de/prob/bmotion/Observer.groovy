@@ -139,8 +139,7 @@ class Observer implements IBMotionScript {
 
 	}
 
-	@Override
-	public void traceChange(Trace trace, Map<String, Object> formulas) {
+	def void traceChanged(Trace trace, Map<String, Object> formulas) {
 		this.formulas = formulas
 		def json = bmssession.getJsonData()
 		if(json != null) {
@@ -183,8 +182,7 @@ class Observer implements IBMotionScript {
 		writer.toString()
 	}
 
-	@Override
-	public void modelChanged(StateSpace statespace) {
+	def void modelChanged(StateSpace statespace) {
 	}
 	
 }

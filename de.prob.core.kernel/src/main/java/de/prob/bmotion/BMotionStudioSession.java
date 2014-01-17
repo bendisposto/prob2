@@ -206,7 +206,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		// Trigger all registered script listeners with collected formulas
 		for (IBMotionScript s : scriptListeners) {
-			s.traceChange(trace, formulas);
+			s.traceChanged(trace, formulas);
 		}
 
 	}
@@ -326,7 +326,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void registerScript(IBMotionScript script) {
 		scriptListeners.add(script);
 		if (currentTrace != null)
-			script.traceChange(currentTrace, formulas);
+			script.traceChanged(currentTrace, formulas);
 	}
 
 	public List<Object> getJsonData() {
