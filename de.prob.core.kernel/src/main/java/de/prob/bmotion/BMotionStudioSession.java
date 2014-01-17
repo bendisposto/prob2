@@ -124,14 +124,16 @@ public class BMotionStudioSession extends AbstractSession implements
 		// Initialize Session
 		initSession();
 
-		// If a trace already exists, trigger a trace change
-		if (currentTrace != null)
+		// If a trace already exists, trigger a trace change and modelchanged
+		if (currentTrace != null) {
 			traceChange(currentTrace);
+			modelChanged(currentTrace.getStateSpace());
+		}
 
 		// Resent messages, send while initializing the session and trace change
 		if (!responses.isEmpty())
 			resend(client, old, context);
-
+		
 		super.reload(client, lastinfo, context);
 
 	}
