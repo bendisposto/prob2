@@ -88,4 +88,9 @@ public class ModelCheckingOptions {
 		return Collections.unmodifiableSet(options);
 	}
 
+	@Override
+	public String toString() {
+		return options.toString();
+	}
+
 }

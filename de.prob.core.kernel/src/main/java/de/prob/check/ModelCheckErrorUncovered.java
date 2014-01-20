@@ -19,6 +19,7 @@ public class ModelCheckErrorUncovered implements IModelCheckingResult {
 		this.options = options;
 	}
 
+	@Override
 	public String getMessage() {
 		return message;
 	}
