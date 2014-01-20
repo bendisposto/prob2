@@ -14,7 +14,9 @@ public class ModelCheckingOptions {
 		breadth_first_search("breadth first"), find_deadlocks("deadlock check"), find_invariant_violations(
 				"invariant check"), find_assertion_violations("assertion check"), inspect_existing_nodes(
 				"recheck existing states"), stop_at_full_coverage(
-				"stop at full coverage");
+				"stop at full coverage"), partial_order_reduction(
+				"partial order reduction"), partial_guard_evaluation(
+				"partial guard evaluation");
 
 		private final String description;
 
@@ -57,6 +59,14 @@ public class ModelCheckingOptions {
 
 	public ModelCheckingOptions stopAtFullCoverage(final boolean value) {
 		return changeOption(value, Options.stop_at_full_coverage);
+	}
+
+	public ModelCheckingOptions partialOrderReduction(final boolean value) {
+		return changeOption(value, Options.partial_order_reduction);
+	}
+
+	public ModelCheckingOptions partialGuardEvaluation(final boolean value) {
+		return changeOption(value, Options.partial_guard_evaluation);
 	}
 
 	private ModelCheckingOptions changeOption(final boolean value,

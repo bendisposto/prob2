@@ -10,11 +10,15 @@ ModelChecking = (function() {
         $("#submit-job").click(function(e) {
             session.sendCmd("startJob", {})
         })
+
+        $(".option").click(function(e) {
+            toggleOption(e.target.id)
+        })
     })
 
 
-    function toggleOption(method,id) {
-        session.sendCmd(method, {"set": $("#"+id).prop('checked')})
+    function toggleOption(option) {
+        session.sendCmd(option, {"set": $("#"+option).prop('checked')})
     }
 
     function jobStarted(id, data) {

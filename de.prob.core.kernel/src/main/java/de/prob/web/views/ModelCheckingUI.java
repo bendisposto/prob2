@@ -174,6 +174,18 @@ public class ModelCheckingUI extends AbstractSession implements
 		return null;
 	}
 
+	public Object partialOrderReduction(final Map<String, String[]> params) {
+		boolean isSet = Boolean.valueOf(params.get("set")[0]);
+		options = options.partialOrderReduction(isSet);
+		return null;
+	}
+
+	public Object partialGuardEvaluation(final Map<String, String[]> params) {
+		boolean isSet = Boolean.valueOf(params.get("set")[0]);
+		options = options.partialGuardEvaluation(isSet);
+		return null;
+	}
+
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
