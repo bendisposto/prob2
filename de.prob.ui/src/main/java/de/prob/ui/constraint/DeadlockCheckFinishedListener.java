@@ -76,7 +76,8 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 				if (!statespace.containsVertex(deadId)) {
 					statespace.explore("root");
 				}
-				Trace traceToDeadlock = statespace.getTrace(deadlockStateId);
+				Trace traceToDeadlock = statespace.getTrace(statespace
+						.getVertex(deadlockStateId));
 				selector.replaceTrace(selector.getCurrentTrace(),
 						traceToDeadlock);
 				break;
