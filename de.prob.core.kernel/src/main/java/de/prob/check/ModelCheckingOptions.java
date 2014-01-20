@@ -13,7 +13,8 @@ public class ModelCheckingOptions {
 	public enum Options {
 		breadth_first_search("breadth first"), find_deadlocks("deadlock check"), find_invariant_violations(
 				"invariant check"), find_assertion_violations("assertion check"), inspect_existing_nodes(
-				"recheck nodes"), stop_at_full_coverage("stop at full coverage");
+				"recheck existing states"), stop_at_full_coverage(
+				"stop at full coverage");
 
 		private final String description;
 
