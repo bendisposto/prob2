@@ -23,21 +23,20 @@ public class CurrentAnimations extends AbstractSession implements
 	private final AnimationSelector animations;
 
 	@Inject
-	public CurrentAnimations(AnimationSelector animations) {
-
+	public CurrentAnimations(final AnimationSelector animations) {
 		incrementalUpdate = false;
 		this.animations = animations;
 		animations.registerAnimationChangeListener(this);
-
 	}
 
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/animations/index.html");
 	}
 
 	@Override
-	public void traceChange(Trace trace) {
+	public void traceChange(final Trace trace) {
 		List<Trace> traces = animations.getTraces();
 		Object[] result = new Object[traces.size()];
 		int ctr = 0;
@@ -61,23 +60,28 @@ public class CurrentAnimations extends AbstractSession implements
 	}
 
 	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-		// traceChange(animations.getCurrentTrace());
 	}
 
-	public Object selectTrace(Map<String, String[]> params) {
+	public Object selectTrace(final Map<String, String[]> params) {
 		int pos = Integer.parseInt(params.get("pos")[0]);
 		Trace trace = animations.getTraces().get(pos);
 		animations.changeCurrentAnimation(trace);
 		return null;
 	}
 
-	public Object removeTrace(Map<String, String[]> params) {
+	public Object removeTrace(final Map<String, String[]> params) {
 		int pos = Integer.parseInt(params.get("pos")[0]);
 		Trace trace = animations.getTraces().get(pos);
 		animations.removeTrace(trace);
 		return null;
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// The status of the current animator does not affect this view.
 	}
 
 }

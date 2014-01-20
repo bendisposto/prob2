@@ -166,4 +166,13 @@ public class FormulaView extends AbstractSession implements
 		return null;
 	}
 
+	@Override
+	public void animatorStatus(final boolean busy) {
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "FormulaView.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "FormulaView.enable"));
+		}
+	}
+
 }

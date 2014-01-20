@@ -141,4 +141,19 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 	public void setTransStyle(final Map<String, Set<DerivedOp>> transStyle) {
 		this.transStyle = transStyle;
 	}
+
+	@Override
+	public boolean isBusy() {
+		return stateSpace.isBusy();
+	}
+
+	@Override
+	public void startTransaction() {
+		stateSpace.startTransaction();
+	}
+
+	@Override
+	public void endTransaction() {
+		stateSpace.endTransaction();
+	}
 }

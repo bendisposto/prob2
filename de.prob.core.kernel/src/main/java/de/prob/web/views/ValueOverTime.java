@@ -360,4 +360,13 @@ public class ValueOverTime extends AbstractSession implements
 				time == null ? "Number of Animation Steps" : time.getCode(),
 				"drawMode", mode);
 	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "ValueOverTime.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "ValueOverTime.enable"));
+		}
+	}
 }

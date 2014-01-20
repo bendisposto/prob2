@@ -118,10 +118,18 @@ public class CurrentTrace extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
 		submit(wrap);
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "CurrentTrace.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "CurrentTrace.enable"));
+		}
 	}
 
 }

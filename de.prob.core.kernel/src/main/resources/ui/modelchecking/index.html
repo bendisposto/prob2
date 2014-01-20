@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Model Checking View</title>
+<meta name="description" content="">
+<meta name="author" content="Joy Clark">
+
+<meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/modelchecking/mc.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div id="sidebar" class="panel panel-default">
+                    <div id="stats" class="panel-heading">Model Checking Jobs <div id="start-new" title="Start new job" class="pull-right"><span class="glyphicon glyphicon-plus"></span></div></div>
+                    <div class="panel-body">
+                        <ul id="content"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <ul id="results"></ul>
+           </div>
+        </div>
+        <div class="modal fade" id="open-new">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Start new model checking job</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="options-body">
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label class="col-sm-2">Options:</label>
+                                    <label class="col-sm-5">
+                                        <input id="breadth_first_search" type="checkbox" onclick="ModelChecking.toggleOption('breadthFirst','breadth_first_search')"> Use breadth first strategy
+                                    </label>
+                                    <label class="col-sm-5">
+                                        <input id="find_deadlocks" type="checkbox" onclick="ModelChecking.toggleOption('checkDeadlocks','find_deadlocks')" checked> Check for deadlocks
+                                    </label>
+                                    <label class="col-sm-offset-2 col-sm-5">
+                                        <input id="find_invariant_violations" onclick="ModelChecking.toggleOption('checkInvariantViolations','find_invariant_violations')" type="checkbox" checked> Check for invariant violations
+                                    </label>
+                                    <label class="col-sm-5">
+                                        <input id="find_assertion_violations" onclick="ModelChecking.toggleOption('checkAssertions','find_assertion_violations')" type="checkbox"> Check assertions
+                                    </label>
+                                    <label class="col-sm-offset-2 col-sm-5">
+                                        <input id="inspect_existing_nodes" onclick="ModelChecking.toggleOption('recheckExisting','inspect_existing_nodes')" type="checkbox"> Recheck all nodes
+                                    </label>
+                                    <label class="col-sm-5">
+                                        <input id="stop_at_full_coverage" onclick="ModelChecking.toggleOption('stopAtFullCoverage','stop_at_full_coverage')" type="checkbox"> Stop at full coverage
+                                    </label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="submit-job" type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+</body>
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
+
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript"
+    src="/ui/modelchecking/ModelChecking.js"></script>
+
+
+<script>
+ModelChecking.client = "{{clientid}}";
+ModelChecking.init("{{clientid}}")
+
+</script>
+</html>

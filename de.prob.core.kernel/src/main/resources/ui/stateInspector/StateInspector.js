@@ -109,6 +109,14 @@ StateInspector = (function() {
 		// corner
 	}
 
+	function disable() {
+        $("body").append("<div class='modal-backdrop disabled'></div>")
+    }
+
+    function enable() {
+        $(".disabled").remove()
+    }
+
 	extern.setModel = function(data) {
 		setModel(JSON.parse(data.components));
 		updateValues(JSON.parse(data.values));
@@ -123,12 +131,12 @@ StateInspector = (function() {
 		session.init()
 		init()
 	}
-
 	extern.result = showresult
-
 	extern.cm = function() {
 		return cm;
 	}
+	extern.disable = disable
+    extern.enable = enable
 
 	return extern;
 }())

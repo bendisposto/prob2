@@ -1,8 +1,5 @@
 package de.prob.check;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -10,10 +7,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.prob.animator.command.ModelCheckingCommand;
-import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
+import de.prob.animator.command.ModelCheckingJob;
 import de.prob.statespace.StateSpace;
+import de.prob.web.views.ModelCheckingUI;
 
 /**
  * The ModelChecker is a thread safe encapsulation of the model checking
@@ -25,17 +21,32 @@ import de.prob.statespace.StateSpace;
  */
 public class ModelChecker {
 
+	private static int counter = 0;
+
 	private final Worker worker;
 	private final ExecutorService executor;
-	private Future<ModelCheckingResult> f;
+	private Future<IModelCheckingResult> f;
+	private final String jobId;
+	private final StateSpace stateSpace;
 
 	public ModelChecker(final StateSpace s) {
-		this(s, ModelCheckingSearchOption.getDefaultOptions());
+		this(s, ModelCheckingOptions.DEFAULT);
 	}
 
-	public ModelChecker(final StateSpace s, final List<String> options) {
-		worker = new Worker(s, options);
+	public ModelChecker(final StateSpace s, final ModelCheckingOptions options) {
+		this(s, options, null);
+	}
+
+	public ModelChecker(final StateSpace s, final ModelCheckingOptions options,
+			final ModelCheckingUI ui) {
+		stateSpace = s;
+		jobId = "mc" + counter++;
+		worker = new Worker(s, options, ui, jobId);
 		executor = Executors.newSingleThreadExecutor();
+	}
+
+	public String getJobId() {
+		return jobId;
 	}
 
 	/**
@@ -53,7 +64,7 @@ public class ModelChecker {
 	 * @return the {@link ModelCheckingResult} of the model checking process if
 	 *         the model checking has been started.
 	 */
-	public ModelCheckingResult getResult() {
+	public IModelCheckingResult getResult() {
 		try {
 			if (f != null) {
 				return f.get();
@@ -78,6 +89,13 @@ public class ModelChecker {
 	}
 
 	/**
+	 * @return true, if the job has been started. Otherwise, false.
+	 */
+	public boolean isStarted() {
+		return f != null;
+	}
+
+	/**
 	 * @return true, if the calculation is finished. Otherwise, false.
 	 */
 	public boolean isDone() {
@@ -91,6 +109,14 @@ public class ModelChecker {
 		return f.isCancelled();
 	}
 
+	/**
+	 * @return the state space object that is bound to this {@link ModelChecker}
+	 *         instance
+	 */
+	public StateSpace getStateSpace() {
+		return stateSpace;
+	}
+
 	public static RuntimeException launderThrowable(final Throwable t) {
 		if (t instanceof RuntimeException) {
 			return (RuntimeException) t;
@@ -101,13 +127,11 @@ public class ModelChecker {
 		}
 	}
 
-	private class Worker implements Callable<ModelCheckingResult> {
+	private class Worker implements Callable<IModelCheckingResult> {
 
-		private static final int TIME = 500;
 		private final StateSpace s;
-		private final List<String> options;
-		private long last;
-		private ModelCheckingResult res;
+		private final ModelCheckingJob job;
+		private final ModelCheckingUI ui;
 
 		/**
 		 * implements {@link Callable}. When called, the Worker performs model
@@ -118,81 +142,32 @@ public class ModelChecker {
 		 *            {@link StateSpace} object in which to perform the model
 		 *            checking
 		 * @param options
+		 *            {@link ModelCheckingOptions} specified by user
+		 * @param ui
+		 *            {@link ModelCheckingUI} if the UI should be informed of
+		 *            updates. Otherwise, null.
+		 * @param jobId
 		 */
-		public Worker(final StateSpace s, final List<String> options) {
+		public Worker(final StateSpace s, final ModelCheckingOptions options,
+				final ModelCheckingUI ui, final String jobId) {
 			this.s = s;
-			this.options = options;
-			last = s.getLastCalculatedStateId();
+			this.ui = ui;
+			job = new ModelCheckingJob(s, options, jobId, ui);
 		}
 
 		@Override
-		public ModelCheckingResult call() throws Exception {
-			boolean abort = false;
-			while (!abort) {
-				if (Thread.interrupted()) {
-					Thread.currentThread().interrupt();
-					break;
-				}
-				res = do_model_checking_step();
-				options.remove(ModelCheckingSearchOption.inspect_existing_nodes
-						.name());
-				abort = res.isAbort();
+		public IModelCheckingResult call() throws Exception {
+			long time = System.currentTimeMillis();
+			s.execute(job);
+			IModelCheckingResult result = job.getResult();
+			if (ui != null) {
+				ui.isFinished(jobId, System.currentTimeMillis() - time, result);
 			}
-			return res;
-		}
-
-		public ModelCheckingResult getResult() {
-			return res;
-		}
-
-		private ModelCheckingResult do_model_checking_step() {
-			ModelCheckingCommand cmd = new ModelCheckingCommand(TIME, options,
-					last);
-
-			s.execute(cmd);
-			ModelCheckingResult result = cmd.getResult();
-			List<OpInfo> newOps = cmd.getNewOps();
-			addCheckedStates(newOps);
 			return result;
 		}
 
-		private void addCheckedStates(final List<OpInfo> newOps) {
-			HashMap<String, StateId> states = s.getStates();
-			HashMap<String, OpInfo> ops = s.getOps();
-
-			long i = s.getLastCalculatedStateId();
-
-			List<OpInfo> toNotify = new ArrayList<OpInfo>();
-			for (OpInfo opInfo : newOps) {
-				if (!ops.containsKey(opInfo.id)) {
-					toNotify.add(opInfo);
-					String sK = opInfo.src;
-					if (!sK.equals("root")) {
-						int value = Integer.parseInt(sK);
-						i = Math.max(value, i);
-					}
-
-					String dK = opInfo.dest;
-					StateId src = states.get(sK);
-					if (src == null) {
-						src = new StateId(sK, s);
-						// s.addVertex(src);
-						states.put(sK, src);
-					}
-					StateId dest = states.get(dK);
-					if (dest == null) {
-						dest = new StateId(dK, s);
-						// s.addVertex(dest);
-						states.put(dK, dest);
-					}
-					s.addEdge(opInfo, src, dest);
-					ops.put(opInfo.id, opInfo);
-				}
-			}
-			s.updateLastCalculatedStateId(i);
-			last = i;
-
-			s.notifyStateSpaceChange(toNotify);
+		public IModelCheckingResult getResult() {
+			return job.getResult();
 		}
 
 	}

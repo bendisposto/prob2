@@ -16,6 +16,12 @@ class AnimationSelectorTest extends Specification {
 		public void traceChange(Trace trace) {
 			count++;
 		}
+
+		@Override
+		public void animatorStatus(boolean busy) {
+			// TODO Auto-generated method stub
+
+		}
 	}
 
 	def trace

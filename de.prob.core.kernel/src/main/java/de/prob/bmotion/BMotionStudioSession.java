@@ -53,23 +53,23 @@ public class BMotionStudioSession extends AbstractSession implements
 	private final AnimationSelector selector;
 
 	private String template;
-	
+
 	private final ScriptEngine groovy;
 
-	private Map<String, Object> parameterMap = new HashMap<String, Object>();
-	
-	private Map<String, Object> formulas = new HashMap<String, Object>();
+	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
 
-	private Map<String, String> cachedCSPString = new HashMap<String, String>();
-	
-	private List<Object> jsonData = new ArrayList<Object>();			
-	
-	private Observer observer;
-	
+	private final Map<String, Object> formulas = new HashMap<String, Object>();
+
+	private final Map<String, String> cachedCSPString = new HashMap<String, String>();
+
+	private final List<Object> jsonData = new ArrayList<Object>();
+
+	private final Observer observer;
+
 	// private String[] eventbExtensions = { "buc", "bcc", "bcm", "bum" };
 	// private String[] classicalBExtensions = { "mch" };
 
-	private List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
+	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
 	@Inject
 	public BMotionStudioSession(final AnimationSelector selector,
@@ -127,8 +127,9 @@ public class BMotionStudioSession extends AbstractSession implements
 	public Object executeOperation(final Map<String, String[]> params) {
 		String op = params.get("op")[0];
 		String predicate = params.get("predicate")[0];
-		if (predicate.isEmpty())
+		if (predicate.isEmpty()) {
 			predicate = "1=1";
+		}
 		Trace currentTrace = selector.getCurrentTrace();
 		try {
 			Trace newTrace = currentTrace.add(op, predicate);
@@ -145,7 +146,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				fullTemplatePath));
 		return null;
 	}
-	
+
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
@@ -162,11 +163,13 @@ public class BMotionStudioSession extends AbstractSession implements
 		// Init Groovy scripts
 		initGroovy();
 		// Trigger an init trace change
-		if(currentTrace != null)
+		if (currentTrace != null) {
 			traceChange(currentTrace);
+		}
 		// Resent messages from groovy script and init trace change
-		if (!responses.isEmpty())
+		if (!responses.isEmpty()) {
 			resend(client, old, context);
+		}
 
 		super.reload(client, lastinfo, context);
 
@@ -175,7 +178,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Override
 	public void traceChange(final Trace trace) {
 
-		this.currentTrace = trace;
+		currentTrace = trace;
 
 		// Register not yet evaluated formulas (with null value)
 		for (Map.Entry<String, Object> entry : formulas.entrySet()) {
@@ -205,8 +208,9 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initJsonData() {
 
-		if (template == null)
+		if (template == null) {
 			return;
+		}
 
 		Map<String, Object> scope = new HashMap<String, Object>();
 		scope.put("eval", new EvalExpression());
@@ -225,7 +229,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 
-	private String readFile(String filename) {
+	private String readFile(final String filename) {
 		String content = null;
 		File file = new File(filename); // for ex foo.txt
 		try {
@@ -241,7 +245,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	private class EvalExpression implements Function<String, Object> {
-	
+
 		@Override
 		public Object apply(final String input) {
 			String finput = input.replace("\\\\", "\\");
@@ -251,12 +255,12 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 
-	public String registerFormula(String formula) {
+	public String registerFormula(final String formula) {
 
 		String output = "???";
 
 		formulas.put(formula, null);
-		
+
 		if (currentTrace != null) {
 			try {
 
@@ -268,17 +272,19 @@ public class BMotionStudioSession extends AbstractSession implements
 				if (model instanceof EventBModel
 						|| model instanceof ClassicalBModel) {
 
-					if (model instanceof ClassicalBModel)
+					if (model instanceof ClassicalBModel) {
 						evalElement = new ClassicalB(formula);
-					else if (model instanceof EventBModel)
+					} else if (model instanceof EventBModel) {
 						evalElement = new EventB(formula);
+					}
 
 					StateSpace stateSpace = currentTrace.getStateSpace();
 					Map<IEvalElement, IEvalResult> valuesAt = stateSpace
 							.valuesAt(currentTrace.getCurrentState());
 					evaluationResult = valuesAt.get(evalElement);
 					if (evaluationResult == null) {
-						evaluationResult = currentTrace.evalCurrent(evalElement);
+						evaluationResult = currentTrace
+								.evalCurrent(evalElement);
 						stateSpace.subscribe(this, evalElement);
 						// TODO: unscribe!!!
 					}
@@ -288,7 +294,8 @@ public class BMotionStudioSession extends AbstractSession implements
 					if (output == null) {
 						evalElement = new CSP(formula,
 								(CSPModel) currentTrace.getModel());
-						evaluationResult = currentTrace.evalCurrent(evalElement);
+						evaluationResult = currentTrace
+								.evalCurrent(evalElement);
 					}
 				}
 
@@ -297,8 +304,9 @@ public class BMotionStudioSession extends AbstractSession implements
 						// TODO: do something .....
 					} else if (evaluationResult instanceof EvalResult) {
 						output = ((EvalResult) evaluationResult).getValue();
-						if (model instanceof CSPModel)
+						if (model instanceof CSPModel) {
 							cachedCSPString.put(formula, output);
+						}
 						formulas.put(formula, translateValue(output));
 					}
 				}
@@ -324,35 +332,37 @@ public class BMotionStudioSession extends AbstractSession implements
 		return fvalue;
 	}
 
-	public void toVisualization(Object values) {
+	public void toVisualization(final Object values) {
 		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
 				values));
 	}
 
-	public void registerScript(IBMotionScript script) {
+	public void registerScript(final IBMotionScript script) {
 		scriptListeners.add(script);
-		if (currentTrace != null)
+		if (currentTrace != null) {
 			script.traceChange(currentTrace, formulas);
+		}
 	}
 
 	public List<Object> getJsonData() {
 		return jsonData;
 	}
-	
-	public void setTemplate(String template) {
+
+	public void setTemplate(final String template) {
 		this.template = template;
 	}
 
 	public String getTemplate() {
-		return this.template;
+		return template;
 	}
-	
+
 	private String getTemplateFolder() {
-		if(this.template != null)
-			return new File(this.template).getParent();
+		if (template != null) {
+			return new File(template).getParent();
+		}
 		return null;
 	}
-	
+
 	// private String getFormalism(String machine) {
 	// String language = "???";
 	// if (machine != null) {
@@ -369,10 +379,10 @@ public class BMotionStudioSession extends AbstractSession implements
 	// return language;
 	// }
 
-	public void addParameter(String key, Object value) {
-		this.parameterMap.put(key, value);
+	public void addParameter(final String key, final Object value) {
+		parameterMap.put(key, value);
 	}
-	
+
 	// private void animateModel(Object machinePath) {
 	//
 	// try {
@@ -402,15 +412,16 @@ public class BMotionStudioSession extends AbstractSession implements
 	// }
 
 	@Override
-	public void modelChanged(StateSpace s) {
-		// TODO: Reload  ........
+	public void modelChanged(final StateSpace s) {
+		// TODO: Reload ........
 	}
-	
+
 	private void initGroovy() {
 
-		if (template == null)
+		if (template == null) {
 			return;
-		
+		}
+
 		try {
 
 			String templateFolder = getTemplateFolder();
@@ -443,7 +454,13 @@ public class BMotionStudioSession extends AbstractSession implements
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

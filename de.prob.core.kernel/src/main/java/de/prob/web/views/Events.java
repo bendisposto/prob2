@@ -313,4 +313,13 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		}
 
 	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "Events.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "Events.enable"));
+		}
+	}
 }

@@ -24,3 +24,7 @@ path.link {
 #header {
   margin: 25px 25px 0px 25px;
 }
+
+.disabled {
+  opacity: 0.1;
+}

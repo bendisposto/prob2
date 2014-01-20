@@ -206,4 +206,13 @@ public class StateInspector extends AbstractSession implements
 		return simpleName + "s";
 	}
 
+	@Override
+	public void animatorStatus(final boolean busy) {
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "StateInspector.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "StateInspector.enable"));
+		}
+	}
+
 }

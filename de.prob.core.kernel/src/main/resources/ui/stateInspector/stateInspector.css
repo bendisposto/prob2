@@ -52,10 +52,13 @@ li {
 	font-weight: bold;
 }
 
-
 .outbox {
 	margin-bottom: 6px;
 	background-color: #f3f6ff;
 	padding-left: 5px;
 	font-family: monospace;
+}
+
+.disabled {
+    opacity: 0.1;
 }

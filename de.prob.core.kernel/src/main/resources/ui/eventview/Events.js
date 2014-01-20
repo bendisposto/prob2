@@ -241,6 +241,14 @@ Events = (function() {
         hidden = isHidden === "true"
     }
 
+    function disable() {
+        $("body").append("<div class='modal-backdrop disabled'></div>")
+    }
+
+    function enable() {
+        $(".disabled").remove()
+    }
+
     extern.client = ""
     extern.init = function() {
         session.init()
@@ -261,6 +269,8 @@ Events = (function() {
         setBackEnabled(data.canGoBack)
         setForwardEnabled(data.canGoForward)
     }
+    extern.disable = disable
+    extern.enable = enable
 
     return extern;
 }())

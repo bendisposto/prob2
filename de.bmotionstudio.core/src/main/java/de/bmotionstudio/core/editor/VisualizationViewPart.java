@@ -869,4 +869,10 @@ public class VisualizationViewPart extends ViewPart implements
 		return BMotionUtil.openSaveDialog();
 	}
 
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

@@ -31,11 +31,21 @@ CurrentTrace = (function() {
 		})
 	}
 
+    function disable() {
+        $("body").append("<div class='modal-backdrop disabled'></div>")
+    }
+
+    function enable() {
+        $(".disabled").remove()
+    }
+
 	extern.setTrace = function(data) {
 		setTrace(data.trace)
 	}
 	extern.client = ""
 	extern.init = session.init
+	extern.disable = disable
+    extern.enable = enable
 
 	return extern;
 }())
