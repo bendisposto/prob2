@@ -122,18 +122,21 @@ public class LtlFormula extends AbstractSession implements
 	}
 
 	@Override
-	public void traceChange(final Trace trace) {
-		StateId current = trace.getCurrentState();
-		for (LTLFormulaTuple tuple : formulas) {
-			String cached = cache.get(tuple.formula).get(current);
-			if (cached != null) {
-				tuple.setStatus(cached);
-			} else {
-				tuple.resetStatus();
-			}
+	public void traceChange(final Trace trace,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			StateId current = trace.getCurrentState();
+			for (LTLFormulaTuple tuple : formulas) {
+				String cached = cache.get(tuple.formula).get(current);
+				if (cached != null) {
+					tuple.setStatus(cached);
+				} else {
+					tuple.resetStatus();
+				}
 
+			}
+			submitFormulas();
 		}
-		submitFormulas();
 	}
 
 	private class LTLFormulaTuple {

@@ -76,34 +76,37 @@ public class StateInspector extends AbstractSession implements
 	}
 
 	@Override
-	public void traceChange(final Trace trace) {
-		if (trace == null) {
-			currentTrace = null;
-			deregisterFormulas(currentModel);
-			currentModel = null;
-			submit(WebUtils.wrap("cmd", "StateInspector.clearInput"));
-			return;
-		}
-		currentTrace = trace;
-		AbstractModel newModel = trace.getModel();
-		if (!newModel.equals(currentModel)) {
-			if (currentModel != null) {
+	public void traceChange(final Trace trace,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			if (trace == null) {
+				currentTrace = null;
 				deregisterFormulas(currentModel);
+				currentModel = null;
+				submit(WebUtils.wrap("cmd", "StateInspector.clearInput"));
+				return;
 			}
-			currentModel = newModel;
-			Map<String, Object> extracted = extractModel(currentModel);
-			registerFormulas(currentModel);
+			currentTrace = trace;
+			AbstractModel newModel = trace.getModel();
+			if (!newModel.equals(currentModel)) {
+				if (currentModel != null) {
+					deregisterFormulas(currentModel);
+				}
+				currentModel = newModel;
+				Map<String, Object> extracted = extractModel(currentModel);
+				registerFormulas(currentModel);
+
+				Object calculatedValues = calculateFormulas(currentTrace);
+				submit(WebUtils.wrap("cmd", "StateInspector.setModel",
+						"components", WebUtils.toJson(extracted), "values",
+						WebUtils.toJson(calculatedValues)));
+				return;
+			}
 
 			Object calculatedValues = calculateFormulas(currentTrace);
-			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
-					"components", WebUtils.toJson(extracted), "values",
-					WebUtils.toJson(calculatedValues)));
-			return;
+			submit(WebUtils.wrap("cmd", "StateInspector.updateValues",
+					"values", WebUtils.toJson(calculatedValues)));
 		}
-
-		Object calculatedValues = calculateFormulas(currentTrace);
-		submit(WebUtils.wrap("cmd", "StateInspector.updateValues", "values",
-				WebUtils.toJson(calculatedValues)));
 	}
 
 	public Object calculateFormulas(final Trace t) {

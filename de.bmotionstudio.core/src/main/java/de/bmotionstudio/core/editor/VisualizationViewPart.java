@@ -750,14 +750,17 @@ public class VisualizationViewPart extends ViewPart implements
 	}
 
 	@Override
-	public void traceChange(final Trace history) {
-		if (visualizationView != null) {
-			Display.getDefault().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					checkObserver(history);
-				}
-			});
+	public void traceChange(final Trace history,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			if (visualizationView != null) {
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						checkObserver(history);
+					}
+				});
+			}
 		}
 	}
 

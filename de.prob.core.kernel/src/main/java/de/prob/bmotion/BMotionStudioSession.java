@@ -127,7 +127,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		// If a trace already exists, trigger a trace change and modelchanged
 		if (currentTrace != null) {
-			traceChange(currentTrace);
+			traceChange(currentTrace, true);
 			modelChanged(currentTrace.getStateSpace());
 		}
 
@@ -175,43 +175,46 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	@Override
-	public void traceChange(final Trace trace) {
+	public void traceChange(final Trace trace,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			// Deregister formulas if no trace exists and exit
+			if (trace == null) {
+				currentTrace = null;
+				deregisterFormulas(currentModel);
+				currentModel = null;
+				return;
 
-		// Deregister formulas if no trace exists and exit
-		if (trace == null) {
-			currentTrace = null;
-			deregisterFormulas(currentModel);
-			currentModel = null;
-			return;
-
-		}
-
-		currentTrace = trace;
-		currentModel = trace.getModel();
-
-		// If a new formula was added dynamically (for instance via a groovy
-		// script), call register formulas method
-		if (formulasForEvaluating.containsValue(null)) {
-			registerFormulas(currentModel);
-		}
-
-		// Collect results of subscibred formulas
-		Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
-				.valuesAt(trace.getCurrentState());
-		for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt.entrySet()) {
-			IEvalElement ee = entry.getKey();
-			IEvalResult er = entry.getValue();
-			if (er instanceof EvalResult) {
-				formulas.put(ee.getCode(),
-						translateValue(((EvalResult) er).getValue()));
 			}
-		}
-		// Add all cached CSP formulas
-		formulas.putAll(cachedCSPString);
 
-		// Trigger all registered script listeners with collected formulas
-		for (IBMotionScript s : scriptListeners) {
-			s.traceChanged(trace, formulas);
+			currentTrace = trace;
+			currentModel = trace.getModel();
+
+			// If a new formula was added dynamically (for instance via a groovy
+			// script), call register formulas method
+			if (formulasForEvaluating.containsValue(null)) {
+				registerFormulas(currentModel);
+			}
+
+			// Collect results of subscibred formulas
+			Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
+					.valuesAt(trace.getCurrentState());
+			for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt
+					.entrySet()) {
+				IEvalElement ee = entry.getKey();
+				IEvalResult er = entry.getValue();
+				if (er instanceof EvalResult) {
+					formulas.put(ee.getCode(),
+							translateValue(((EvalResult) er).getValue()));
+				}
+			}
+			// Add all cached CSP formulas
+			formulas.putAll(cachedCSPString);
+
+			// Trigger all registered script listeners with collected formulas
+			for (IBMotionScript s : scriptListeners) {
+				s.traceChanged(trace, formulas);
+			}
 		}
 
 	}

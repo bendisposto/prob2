@@ -11,12 +11,14 @@ import com.google.inject.Singleton;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 @Singleton
-public class CurrentAnimations extends AbstractSession {
+public class CurrentAnimations extends AbstractSession implements
+		IAnimationChangeListener {
 
 	private final AnimationSelector animations;
 
@@ -24,7 +26,6 @@ public class CurrentAnimations extends AbstractSession {
 	public CurrentAnimations(final AnimationSelector animations) {
 		incrementalUpdate = false;
 		this.animations = animations;
-		animations.setUi(this);
 	}
 
 	@Override
@@ -74,5 +75,35 @@ public class CurrentAnimations extends AbstractSession {
 		Trace trace = animations.getTraces().get(pos);
 		animations.removeTrace(trace);
 		return null;
+	}
+
+	@Override
+	public void traceChange(final Trace currentTrace,
+			final boolean currentAnimationChanged) {
+		List<Trace> traces = animations.getTraces();
+		Object[] result = new Object[traces.size()];
+		int ctr = 0;
+		for (Trace t : traces) {
+			AbstractModel model = t.getModel();
+			AbstractElement mainComponent = model.getMainComponent();
+			String modelName = mainComponent != null ? mainComponent.toString()
+					: model.getModelFile().getName();
+			String lastOp = !t.getCurrent().getSrc().getId().equals("root") ? t
+					.getCurrent().getOp().toString() : "";
+
+			String steps = t.getCurrent().getOpList().size() + "";
+			String isCurrent = t.equals(currentTrace) + "";
+			Map<String, String> wrapped = WebUtils.wrap("model", modelName,
+					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent);
+			result[ctr++] = wrapped;
+		}
+		Map<String, String> wrap = WebUtils.wrap("cmd",
+				"Animations.setContent", "animations", WebUtils.toJson(result));
+		submit(wrap);
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		// This does not need to be considered for this view
 	}
 }

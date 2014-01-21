@@ -8,7 +8,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.google.inject.Singleton;
 
 import de.prob.model.representation.AbstractElement;
-import de.prob.web.views.CurrentAnimations;
 
 /**
  * This class provides a registry of all currently running animations. It
@@ -31,7 +30,6 @@ public class AnimationSelector {
 
 	Trace currentTrace = null;
 	StateSpace currentStateSpace = null;
-	private CurrentAnimations ui;
 
 	/**
 	 * An {@link IAnimationChangeListener} can register itself via this method
@@ -45,7 +43,7 @@ public class AnimationSelector {
 		traceListeners
 				.add(new WeakReference<IAnimationChangeListener>(listener));
 		if (currentTrace != null) {
-			notifyAnimationChange(currentTrace);
+			notifyAnimationChange(currentTrace, true);
 		}
 	}
 
@@ -65,7 +63,7 @@ public class AnimationSelector {
 	 */
 	public void changeCurrentAnimation(final Trace trace) {
 		currentTrace = trace;
-		notifyAnimationChange(trace);
+		notifyAnimationChange(trace, true);
 
 		if (currentTrace != null
 				&& currentTrace.getStateSpace() != currentStateSpace) {
@@ -84,7 +82,7 @@ public class AnimationSelector {
 	public void addNewAnimation(final Trace trace) {
 		traces.add(trace);
 		currentTrace = trace;
-		notifyAnimationChange(trace);
+		notifyAnimationChange(trace, true);
 
 		StateSpace s = trace.getStateSpace();
 		if (s != null && !s.equals(currentStateSpace)) {
@@ -100,12 +98,13 @@ public class AnimationSelector {
 	 * @param trace
 	 *            {@link Trace} representing the current animation
 	 */
-	private void notifyAnimationChange(final Trace trace) {
-		notifyUIchange(trace);
+	private void notifyAnimationChange(final Trace trace,
+			final boolean currentAnimationChanged) {
 		for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
 			IAnimationChangeListener animationChangeListener = listener.get();
 			if (animationChangeListener != null) {
-				animationChangeListener.traceChange(trace);
+				animationChangeListener.traceChange(trace,
+						currentAnimationChanged);
 			}
 		}
 	}
@@ -170,7 +169,7 @@ public class AnimationSelector {
 	 * {@link AnimationSelector#notifyAnimationChange(Trace)}
 	 */
 	public void refresh() {
-		notifyAnimationChange(currentTrace);
+		notifyAnimationChange(currentTrace, true);
 		notifyModelChanged(currentStateSpace);
 	}
 
@@ -190,14 +189,14 @@ public class AnimationSelector {
 		int indexOf = traces.indexOf(oldTrace);
 		if (indexOf == -1) {
 			traces.add(newTrace);
-			notifyUIchange(currentTrace);
+			notifyAnimationChange(currentTrace, false);
 		} else {
 			traces.set(indexOf, newTrace);
 			if (oldTrace.equals(currentTrace)) {
-				notifyAnimationChange(newTrace);
+				notifyAnimationChange(newTrace, true);
 				currentTrace = newTrace;
 			} else {
-				notifyUIchange(currentTrace);
+				notifyAnimationChange(currentTrace, false);
 			}
 		}
 
@@ -248,16 +247,6 @@ public class AnimationSelector {
 		if (currentTrace != null
 				&& currentTrace.getStateSpace().getId().equals(animatorId)) {
 			notifyStatusChange(busy);
-		}
-	}
-
-	public void setUi(final CurrentAnimations ui) {
-		this.ui = ui;
-	}
-
-	private void notifyUIchange(final Trace current) {
-		if (ui != null) {
-			ui.change(current);
 		}
 	}
 }

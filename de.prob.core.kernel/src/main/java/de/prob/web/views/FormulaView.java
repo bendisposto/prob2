@@ -57,15 +57,18 @@ public class FormulaView extends AbstractSession implements
 	}
 
 	@Override
-	public void traceChange(final Trace trace) {
-		currentTrace = trace;
-		if (currentTrace != null
-				&& currentTrace.getStateSpace().equals(currentStateSpace)) {
-			Object data = calculateData();
-			if (data != null) {
-				Map<String, String> wrap = WebUtils.wrap("cmd",
-						"FormulaView.draw", "data", data);
-				submit(wrap);
+	public void traceChange(final Trace trace,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			currentTrace = trace;
+			if (currentTrace != null
+					&& currentTrace.getStateSpace().equals(currentStateSpace)) {
+				Object data = calculateData();
+				if (data != null) {
+					Map<String, String> wrap = WebUtils.wrap("cmd",
+							"FormulaView.draw", "data", data);
+					submit(wrap);
+				}
 			}
 		}
 	}

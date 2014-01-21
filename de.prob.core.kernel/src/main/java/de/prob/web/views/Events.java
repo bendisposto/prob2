@@ -75,45 +75,49 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	}
 
 	@Override
-	public void traceChange(final Trace trace) {
-		if (trace == null) {
-			currentTrace = null;
-			currentModel = null;
-			opNames = new ArrayList<String>();
-			if (sorter instanceof ModelOrder) {
-				sorter = new ModelOrder(opNames);
+	public void traceChange(final Trace trace,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			if (trace == null) {
+				currentTrace = null;
+				currentModel = null;
+				opNames = new ArrayList<String>();
+				if (sorter instanceof ModelOrder) {
+					sorter = new ModelOrder(opNames);
+				}
+				Map<String, String> wrap = WebUtils.wrap("cmd",
+						"Events.newTrace", "ops", WebUtils.toJson(opNames),
+						"canGoBack", false, "canGoForward", false);
+				submit(wrap);
+				return;
 			}
-			Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
-					"ops", WebUtils.toJson(opNames), "canGoBack", false,
-					"canGoForward", false);
-			submit(wrap);
-			return;
-		}
 
-		if (trace.getModel() != currentModel) {
-			updateModel(trace);
-		}
-		currentTrace = trace;
-		Set<OpInfo> ops = trace.getNextTransitions();
-		events = new ArrayList<Operation>(ops.size());
-		Set<String> notEnabled = new HashSet<String>(opNames);
-		for (OpInfo opInfo : ops) {
-			String name = opInfo.name;
-			notEnabled.remove(name);
-			Operation o = new Operation(opInfo.id, name, opInfo.params, true);
-			events.add(o);
-		}
-		for (String s : notEnabled) {
-			if (!s.equals("INITIALISATION")) {
-				events.add(new Operation(s, s, opToParams.get(s), false));
+			if (trace.getModel() != currentModel) {
+				updateModel(trace);
 			}
+			currentTrace = trace;
+			Set<OpInfo> ops = trace.getNextTransitions();
+			events = new ArrayList<Operation>(ops.size());
+			Set<String> notEnabled = new HashSet<String>(opNames);
+			for (OpInfo opInfo : ops) {
+				String name = opInfo.name;
+				notEnabled.remove(name);
+				Operation o = new Operation(opInfo.id, name, opInfo.params,
+						true);
+				events.add(o);
+			}
+			for (String s : notEnabled) {
+				if (!s.equals("INITIALISATION")) {
+					events.add(new Operation(s, s, opToParams.get(s), false));
+				}
+			}
+			Collections.sort(events, sorter);
+			String json = WebUtils.toJson(applyFilter(filter));
+			Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
+					"ops", json, "canGoBack", currentTrace.canGoBack(),
+					"canGoForward", currentTrace.canGoForward());
+			submit(wrap);
 		}
-		Collections.sort(events, sorter);
-		String json = WebUtils.toJson(applyFilter(filter));
-		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
-				"ops", json, "canGoBack", currentTrace.canGoBack(),
-				"canGoForward", currentTrace.canGoForward());
-		submit(wrap);
 	}
 
 	private void updateModel(final Trace trace) {
