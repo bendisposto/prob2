@@ -11,14 +11,12 @@ import com.google.inject.Singleton;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 @Singleton
-public class CurrentAnimations extends AbstractSession implements
-		IAnimationChangeListener {
+public class CurrentAnimations extends AbstractSession {
 
 	private final AnimationSelector animations;
 
@@ -26,7 +24,7 @@ public class CurrentAnimations extends AbstractSession implements
 	public CurrentAnimations(final AnimationSelector animations) {
 		incrementalUpdate = false;
 		this.animations = animations;
-		animations.registerAnimationChangeListener(this);
+		animations.setUi(this);
 	}
 
 	@Override
@@ -35,8 +33,7 @@ public class CurrentAnimations extends AbstractSession implements
 		return simpleRender(clientid, "ui/animations/index.html");
 	}
 
-	@Override
-	public void traceChange(final Trace trace) {
+	public void change(final Trace current) {
 		List<Trace> traces = animations.getTraces();
 		Object[] result = new Object[traces.size()];
 		int ctr = 0;
@@ -49,7 +46,7 @@ public class CurrentAnimations extends AbstractSession implements
 					.getCurrent().getOp().toString() : "";
 
 			String steps = t.getCurrent().getOpList().size() + "";
-			String isCurrent = t.equals(trace) + "";
+			String isCurrent = t.equals(current) + "";
 			Map<String, String> wrapped = WebUtils.wrap("model", modelName,
 					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent);
 			result[ctr++] = wrapped;
@@ -78,10 +75,4 @@ public class CurrentAnimations extends AbstractSession implements
 		animations.removeTrace(trace);
 		return null;
 	}
-
-	@Override
-	public void animatorStatus(final boolean busy) {
-		// The status of the current animator does not affect this view.
-	}
-
 }

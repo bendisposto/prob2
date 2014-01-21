@@ -8,6 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.google.inject.Singleton;
 
 import de.prob.model.representation.AbstractElement;
+import de.prob.web.views.CurrentAnimations;
 
 /**
  * This class provides a registry of all currently running animations. It
@@ -30,6 +31,7 @@ public class AnimationSelector {
 
 	Trace currentTrace = null;
 	StateSpace currentStateSpace = null;
+	private CurrentAnimations ui;
 
 	/**
 	 * An {@link IAnimationChangeListener} can register itself via this method
@@ -99,6 +101,7 @@ public class AnimationSelector {
 	 *            {@link Trace} representing the current animation
 	 */
 	private void notifyAnimationChange(final Trace trace) {
+		notifyUIchange(trace);
 		for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
 			IAnimationChangeListener animationChangeListener = listener.get();
 			if (animationChangeListener != null) {
@@ -185,10 +188,17 @@ public class AnimationSelector {
 			notifyStatusChange(newTrace.getStateSpace().isBusy());
 		}
 		int indexOf = traces.indexOf(oldTrace);
-		traces.set(indexOf, newTrace);
-		if (oldTrace.equals(currentTrace)) {
-			notifyAnimationChange(newTrace);
-			currentTrace = newTrace;
+		if (indexOf == -1) {
+			traces.add(newTrace);
+			notifyUIchange(currentTrace);
+		} else {
+			traces.set(indexOf, newTrace);
+			if (oldTrace.equals(currentTrace)) {
+				notifyAnimationChange(newTrace);
+				currentTrace = newTrace;
+			} else {
+				notifyUIchange(currentTrace);
+			}
 		}
 
 		if (currentTrace != null
@@ -241,4 +251,13 @@ public class AnimationSelector {
 		}
 	}
 
+	public void setUi(final CurrentAnimations ui) {
+		this.ui = ui;
+	}
+
+	private void notifyUIchange(final Trace current) {
+		if (ui != null) {
+			ui.change(current);
+		}
+	}
 }
