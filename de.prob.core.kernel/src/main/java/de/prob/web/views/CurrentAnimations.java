@@ -26,35 +26,13 @@ public class CurrentAnimations extends AbstractSession implements
 	public CurrentAnimations(final AnimationSelector animations) {
 		incrementalUpdate = false;
 		this.animations = animations;
+		animations.registerAnimationChangeListener(this);
 	}
 
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/animations/index.html");
-	}
-
-	public void change(final Trace current) {
-		List<Trace> traces = animations.getTraces();
-		Object[] result = new Object[traces.size()];
-		int ctr = 0;
-		for (Trace t : traces) {
-			AbstractModel model = t.getModel();
-			AbstractElement mainComponent = model.getMainComponent();
-			String modelName = mainComponent != null ? mainComponent.toString()
-					: model.getModelFile().getName();
-			String lastOp = !t.getCurrent().getSrc().getId().equals("root") ? t
-					.getCurrent().getOp().toString() : "";
-
-			String steps = t.getCurrent().getOpList().size() + "";
-			String isCurrent = t.equals(current) + "";
-			Map<String, String> wrapped = WebUtils.wrap("model", modelName,
-					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent);
-			result[ctr++] = wrapped;
-		}
-		Map<String, String> wrap = WebUtils.wrap("cmd",
-				"Animations.setContent", "animations", WebUtils.toJson(result));
-		submit(wrap);
 	}
 
 	@Override
