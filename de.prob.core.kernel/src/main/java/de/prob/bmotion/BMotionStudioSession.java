@@ -186,7 +186,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				return;
 
 			}
-
+	
 			currentTrace = trace;
 			currentModel = trace.getModel();
 
@@ -195,8 +195,9 @@ public class BMotionStudioSession extends AbstractSession implements
 			if (formulasForEvaluating.containsValue(null)) {
 				registerFormulas(currentModel);
 			}
-
+			
 			// Collect results of subscibred formulas
+			formulas.clear();
 			Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
 					.valuesAt(trace.getCurrentState());
 			for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt
