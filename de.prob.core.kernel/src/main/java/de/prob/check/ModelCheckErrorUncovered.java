@@ -1,9 +1,12 @@
 package de.prob.check;
 
+import de.prob.statespace.ITraceDescription;
+import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
-public class ModelCheckErrorUncovered implements IModelCheckingResult {
+public class ModelCheckErrorUncovered implements IModelCheckingResult,
+		ITraceDescription {
 
 	private final String message;
 	private final String errorStateId;
@@ -28,8 +31,9 @@ public class ModelCheckErrorUncovered implements IModelCheckingResult {
 		return errorStateId;
 	}
 
-	public Trace getTraceToErrorState(final StateSpace s) {
-		return s.getTrace(s.getVertex(errorStateId));
+	@Override
+	public Trace getTrace(final StateSpace s) {
+		return s.getTrace(new StateId(errorStateId, s));
 	}
 
 	@Override

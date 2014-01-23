@@ -20,6 +20,7 @@ import de.prob.check.ModelCheckingOptions;
 import de.prob.check.ModelCheckingOptions.Options;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IModelChangedListener;
+import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
@@ -126,9 +127,8 @@ public class ModelCheckingUI extends AbstractSession implements
 		if (modelChecker != null) {
 			IModelCheckingResult result = modelChecker.getResult();
 			StateSpace stateSpace = modelChecker.getStateSpace();
-			if (result instanceof ModelCheckErrorUncovered) {
-				Trace trace = ((ModelCheckErrorUncovered) result)
-						.getTraceToErrorState(stateSpace);
+			if (result instanceof ITraceDescription) {
+				Trace trace = stateSpace.getTrace((ITraceDescription) result);
 				animations.addNewAnimation(trace);
 			}
 		} else {
