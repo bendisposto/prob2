@@ -75,6 +75,8 @@ dependencies {
 	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
+	// If you consider to update jetty ... just don't
+	// it'll make you puke 
 	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-server:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3' // EPL
