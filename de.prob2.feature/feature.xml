@@ -230,12 +230,12 @@ litigation.
 
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.rodinp.core" version="1.6.1" match="compatible"/>
+      <import plugin="org.rodinp.core" version="1.6.1" match="greaterOrEqual"/>
       <import plugin="org.eventb.core"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="de.prob.core.rodin" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eventb.core" version="2.5.1" match="compatible"/>
-      <import plugin="org.rodinp" version="1.6.1" match="compatible"/>
+      <import plugin="org.eventb.core" version="2.5.1" match="greaterOrEqual"/>
+      <import plugin="org.rodinp" version="1.6.1" match="greaterOrEqual"/>
       <import plugin="de.prob.ui" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.ide" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
