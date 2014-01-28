@@ -161,7 +161,8 @@ public class ModelChecker {
 			s.execute(job);
 			IModelCheckingResult result = job.getResult();
 			if (ui != null) {
-				ui.isFinished(jobId, System.currentTimeMillis() - time, result);
+				ui.isFinished(jobId, System.currentTimeMillis() - time, result,
+						job.getStats());
 			}
 			return result;
 		}

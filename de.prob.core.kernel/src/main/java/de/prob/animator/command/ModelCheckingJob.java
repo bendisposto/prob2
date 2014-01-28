@@ -7,6 +7,7 @@ import java.util.List;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.ModelCheckingOptions;
 import de.prob.check.NotYetFinished;
+import de.prob.check.StateSpaceStats;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -25,6 +26,7 @@ public class ModelCheckingJob extends AbstractCommand {
 	private boolean completed = false;
 	private long last;
 	private IModelCheckingResult res;
+	private StateSpaceStats stats;
 	private final ModelCheckingUI ui;
 
 	private long time = -1;
@@ -50,7 +52,8 @@ public class ModelCheckingJob extends AbstractCommand {
 			Thread.currentThread().interrupt();
 			s.endTransaction();
 			if (ui != null) {
-				ui.isFinished(jobId, System.currentTimeMillis() - time, res);
+				ui.isFinished(jobId, System.currentTimeMillis() - time, res,
+						stats);
 			}
 			return;
 		}
@@ -66,8 +69,9 @@ public class ModelCheckingJob extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		cmd.processResult(bindings);
 		res = cmd.getResult();
+		stats = cmd.getStats();
 		if (ui != null) {
-			ui.updateStats(jobId, System.currentTimeMillis() - time, res);
+			ui.updateStats(jobId, System.currentTimeMillis() - time, res, stats);
 		}
 		completed = !(res instanceof NotYetFinished);
 		if (completed) {
@@ -123,6 +127,10 @@ public class ModelCheckingJob extends AbstractCommand {
 		last = i;
 
 		s.notifyStateSpaceChange(toNotify);
+	}
+
+	public StateSpaceStats getStats() {
+		return stats;
 	}
 
 }

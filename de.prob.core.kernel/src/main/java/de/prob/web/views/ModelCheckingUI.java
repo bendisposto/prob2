@@ -1,6 +1,5 @@
 package de.prob.web.views;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +17,7 @@ import de.prob.check.ModelCheckOk;
 import de.prob.check.ModelChecker;
 import de.prob.check.ModelCheckingOptions;
 import de.prob.check.ModelCheckingOptions.Options;
+import de.prob.check.StateSpaceStats;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.ITraceDescription;
@@ -34,7 +34,7 @@ public class ModelCheckingUI extends AbstractSession implements
 
 	private final AnimationSelector animations;
 
-	Map<String, WeakReference<ModelChecker>> jobs = new HashMap<String, WeakReference<ModelChecker>>();
+	Map<String, ModelChecker> jobs = new HashMap<String, ModelChecker>();
 	Map<String, IModelCheckingResult> results = new HashMap<String, IModelCheckingResult>();
 
 	private StateSpace currentStateSpace;
@@ -53,44 +53,47 @@ public class ModelCheckingUI extends AbstractSession implements
 	}
 
 	public void updateStats(final String id, final long timeElapsed,
-			final IModelCheckingResult result) {
-		int nrProcessedNodes = result.getStats().getNrProcessedNodes();
-		int nrTotalNodes = result.getStats().getNrTotalNodes();
+			final IModelCheckingResult result, final StateSpaceStats stats) {
+		results.put(id, result);
+
+		int nrProcessedNodes = stats.getNrProcessedNodes();
+		int nrTotalNodes = stats.getNrTotalNodes();
 		int percent = nrProcessedNodes * 100 / nrTotalNodes;
 		submit(WebUtils.wrap("cmd", "ModelChecking.updateJob", "id", id,
 				"processedNodes", nrProcessedNodes, "totalNodes", nrTotalNodes,
-				"totalTransitions", result.getStats().getNrTotalTransitions(),
-				"percent", percent, "time", timeElapsed));
+				"totalTransitions", stats.getNrTotalTransitions(), "percent",
+				percent, "time", timeElapsed));
 	}
 
 	public void isFinished(final String id, final long timeElapsed,
-			final IModelCheckingResult res) {
-		int nrProcessedNodes = res.getStats().getNrProcessedNodes();
-		int nrTotalNodes = res.getStats().getNrTotalNodes();
-		int nrTotalTransitions = res.getStats().getNrTotalTransitions();
-		String result = (res instanceof ModelCheckOk) ? "success"
-				: ((res instanceof ModelCheckErrorUncovered) ? "danger"
-						: "warning");
-		boolean hasTrace = res instanceof ModelCheckErrorUncovered;
+			final IModelCheckingResult result, final StateSpaceStats stats) {
+		results.put(id, result);
 
-		if (!hasTrace) {
-			jobs.remove(id); // if there is no trace to be opened, there is no
-								// reason to keep the model checker
-		}
+		boolean hasStats = stats != null;
+		int nrProcessedNodes = hasStats ? stats.getNrProcessedNodes() : null;
+		int nrTotalNodes = hasStats ? stats.getNrTotalNodes() : null;
+		int nrTotalTransitions = hasStats ? stats.getNrTotalTransitions()
+				: null;
+
+		String res = (result instanceof ModelCheckOk) ? "success"
+				: ((result instanceof ModelCheckErrorUncovered) ? "danger"
+						: "warning");
+		boolean hasTrace = result instanceof ModelCheckErrorUncovered;
+
+		jobs.remove(id);
 
 		submit(WebUtils.wrap("cmd", "ModelChecking.finishJob", "id", id,
-				"time", timeElapsed, "processedNodes", nrProcessedNodes,
-				"totalNodes", nrTotalNodes, "totalTransitions",
-				nrTotalTransitions, "result", result, "hasTrace", hasTrace,
-				"message", res.getMessage()));
+				"time", timeElapsed, "stats", hasStats, "processedNodes",
+				nrProcessedNodes, "totalNodes", nrTotalNodes,
+				"totalTransitions", nrTotalTransitions, "result", res,
+				"hasTrace", hasTrace, "message", result.getMessage()));
 	}
 
 	public Object startJob(final Map<String, String[]> params) {
 		if (currentStateSpace != null) {
 			ModelChecker checker = new ModelChecker(currentStateSpace, options,
 					this);
-			jobs.put(checker.getJobId(), new WeakReference<ModelChecker>(
-					checker));
+			jobs.put(checker.getJobId(), checker);
 			checker.start();
 			String name = currentStateSpace.getModel().getMainComponent()
 					.toString();
@@ -112,7 +115,7 @@ public class ModelCheckingUI extends AbstractSession implements
 
 	public Object cancel(final Map<String, String[]> params) {
 		String jobId = params.get("jobId")[0];
-		ModelChecker modelChecker = jobs.get(jobId).get();
+		ModelChecker modelChecker = jobs.get(jobId);
 		if (modelChecker != null) {
 			modelChecker.cancel();
 		} else {
@@ -123,16 +126,12 @@ public class ModelCheckingUI extends AbstractSession implements
 
 	public Object openTrace(final Map<String, String[]> params) {
 		String jobId = params.get("jobId")[0];
-		ModelChecker modelChecker = jobs.get(jobId).get();
-		if (modelChecker != null) {
-			IModelCheckingResult result = modelChecker.getResult();
-			StateSpace stateSpace = modelChecker.getStateSpace();
-			if (result instanceof ITraceDescription) {
-				Trace trace = stateSpace.getTrace((ITraceDescription) result);
-				animations.addNewAnimation(trace);
-			}
-		} else {
-			// FIXME handle error
+
+		IModelCheckingResult result = results.get(jobId);
+		if (result instanceof ITraceDescription) {
+			Trace trace = currentStateSpace
+					.getTrace((ITraceDescription) result);
+			animations.addNewAnimation(trace);
 		}
 		return null;
 	}
@@ -196,10 +195,9 @@ public class ModelCheckingUI extends AbstractSession implements
 	@Override
 	public void modelChanged(final StateSpace stateSpace) {
 		currentStateSpace = stateSpace;
-		if (stateSpace == null) {
-			return;
-		}
+		String sId = currentStateSpace == null ? "none" : currentStateSpace
+				.getId();
 		submit(WebUtils.wrap("cmd", "ModelChecking.changeStateSpaces", "ssId",
-				currentStateSpace.getId()));
+				sId));
 	}
 }

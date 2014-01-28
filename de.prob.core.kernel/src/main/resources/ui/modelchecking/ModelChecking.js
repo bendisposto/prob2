@@ -12,7 +12,8 @@ ModelChecking = (function() {
         })
 
         $(".option").click(function(e) {
-            toggleOption(e.target.id)
+            toggleOption(e.target.id
+                )
         })
     })
 

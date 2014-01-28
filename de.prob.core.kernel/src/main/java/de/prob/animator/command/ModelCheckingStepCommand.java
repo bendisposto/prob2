@@ -71,6 +71,8 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 	private final long last;
 	private final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
+	private StateSpaceStats stats;
+
 	public ModelCheckingStepCommand(final int time,
 			final ModelCheckingOptions options, final long last) {
 		this.time = time;
@@ -105,14 +107,12 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 		int numberProcessed = BindingGenerator
 				.getInteger(statsTerm.getArgument(3)).getValue().intValue();
 
-		StateSpaceStats stats = new StateSpaceStats(numberNodes, numberTrans,
-				numberProcessed);
-		result = extractResult(stats, bindings.get(RESULT));
+		stats = new StateSpaceStats(numberNodes, numberTrans, numberProcessed);
+		result = extractResult(bindings.get(RESULT));
 
 	}
 
-	private IModelCheckingResult extractResult(final StateSpaceStats stats,
-			final PrologTerm prologTerm) {
+	private IModelCheckingResult extractResult(final PrologTerm prologTerm) {
 		CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(prologTerm,
 				prologTerm.getArity());
 
@@ -121,54 +121,48 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 		if (type.equals("not_yet_finished")) {
 			int maxNodesLeft = BindingGenerator.getInteger(cpt.getArgument(1))
 					.getValue().intValue();
-			return new NotYetFinished(stats, maxNodesLeft, options);
+			return new NotYetFinished(maxNodesLeft);
 		}
 
 		if (type.equals("ok")) {
-			return new ModelCheckOk(stats,
-					"Model Checking complete. No error nodes found.", options);
+			return new ModelCheckOk(
+					"Model Checking complete. No error nodes found.");
 		}
 
 		if (type.equals("ok_not_all_nodes_considered")) {
 			return new ModelCheckOk(
-					stats,
-					"Model Checking complete. No error nodes found. Not all nodes were considered.",
-					options);
+					"Model Checking complete. No error nodes found. Not all nodes were considered.");
 		}
 
 		if (type.equals("deadlock")) {
-			return new ModelCheckErrorUncovered(stats, "Deadlock found.", cpt
-					.getArgument(1).getFunctor(), options);
+			return new ModelCheckErrorUncovered("Deadlock found.", cpt
+					.getArgument(1).getFunctor());
 		}
 
 		if (type.equals("invariant_violation")) {
-			return new ModelCheckErrorUncovered(stats,
-					"Invariant violation found.", cpt.getArgument(1)
-							.getFunctor(), options);
+			return new ModelCheckErrorUncovered("Invariant violation found.",
+					cpt.getArgument(1).getFunctor());
 		}
 
 		if (type.equals("assertion_violation")) {
-			return new ModelCheckErrorUncovered(stats,
-					"Assertion violation found.", cpt.getArgument(1)
-							.getFunctor(), options);
+			return new ModelCheckErrorUncovered("Assertion violation found.",
+					cpt.getArgument(1).getFunctor());
 		}
 
 		if (type.equals("state_error")) {
-			return new ModelCheckErrorUncovered(stats,
-					"A state error occured.", cpt.getArgument(1).getFunctor(),
-					options);
+			return new ModelCheckErrorUncovered("A state error occured.", cpt
+					.getArgument(1).getFunctor());
 		}
 
 		if (type.equals("well_definedness_error")) {
-			return new ModelCheckErrorUncovered(stats,
+			return new ModelCheckErrorUncovered(
 					"A well definedness error occured.", cpt.getArgument(1)
-							.getFunctor(), options);
+							.getFunctor());
 		}
 
 		if (type.equals("general_error")) {
-			return new ModelCheckErrorUncovered(stats,
-					"A general error occured.",
-					cpt.getArgument(1).getFunctor(), options);
+			return new ModelCheckErrorUncovered("A general error occured.", cpt
+					.getArgument(1).getFunctor());
 		}
 
 		logger.error("Model checking result unknown. " + cpt.toString());
@@ -189,5 +183,9 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 
 	public List<OpInfo> getNewOps() {
 		return newOps;
+	}
+
+	public StateSpaceStats getStats() {
+		return stats;
 	}
 }

@@ -10,16 +10,11 @@ public class ModelCheckErrorUncovered implements IModelCheckingResult,
 
 	private final String message;
 	private final String errorStateId;
-	private final StateSpaceStats stats;
-	private final ModelCheckingOptions options;
 
-	public ModelCheckErrorUncovered(final StateSpaceStats stats,
-			final String message, final String errorStateId,
-			final ModelCheckingOptions options) {
-		this.stats = stats;
+	public ModelCheckErrorUncovered(final String message,
+			final String errorStateId) {
 		this.message = message;
 		this.errorStateId = errorStateId;
-		this.options = options;
 	}
 
 	@Override
@@ -36,13 +31,4 @@ public class ModelCheckErrorUncovered implements IModelCheckingResult,
 		return s.getTrace(new StateId(errorStateId, s));
 	}
 
-	@Override
-	public StateSpaceStats getStats() {
-		return stats;
-	}
-
-	@Override
-	public ModelCheckingOptions getOptions() {
-		return options;
-	}
 }
