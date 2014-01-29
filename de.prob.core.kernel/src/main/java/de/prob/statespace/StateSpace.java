@@ -30,6 +30,7 @@ import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;
 import de.prob.animator.command.GetStatesFromPredicate;
+import de.prob.animator.command.IStateSpaceModifier;
 import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
@@ -78,7 +79,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	private final Set<IStatesCalculatedListener> stateSpaceListeners = new HashSet<IStatesCalculatedListener>();
 
-	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private long lastCalculatedStateId;
 	private AbstractModel model;
 	private final Map<StateId, Map<IEvalElement, IEvalResult>> values = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
@@ -113,33 +113,13 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
 		}
-
 		final ExploreStateCommand command = new ExploreStateCommand(
 				state.getId(), subscribedFormulas);
+
 		try {
-			animator.execute(command);
+			execute(command);
 			extractInformation(state, command);
-
 			explored.add(state);
-
-			if (!state.getId().equals("root")) {
-				updateLastCalculatedStateId(state.numericalId());
-			}
-			final List<OpInfo> enabledOperations = command
-					.getEnabledOperations();
-
-			List<OpInfo> newOps = new ArrayList<OpInfo>();
-			for (final OpInfo op : enabledOperations) {
-				if (!containsEdge(op)) {
-					ops.put(op.id, op);
-					newOps.add(op);
-
-					final StateId newState = new StateId(op.dest, this);
-					addVertex(newState);
-					addEdge(op, getVertex(op.src), getVertex(op.dest));
-				}
-			}
-			notifyStateSpaceChange(newOps);
 		} catch (ProBError e) {
 			if (state == getRoot()) {
 				explored.add(state);
@@ -148,6 +128,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 						Collections.<String> emptyList(), "");
 				ops.put(op.id, op);
 				addEdge(op, state, state);
+			} else {
+				throw e;
 			}
 		}
 		return toString();
@@ -248,13 +230,19 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	/**
 	 * Takes the name of an operation and a predicate and finds Operations that
 	 * satisfy the name and predicate at the given stateId. New Operations are
-	 * added to the graph.
+	 * added to the graph. This is only valid for ClassicalB predicates.
 	 * 
 	 * @param stateId
+	 *            {@link StateId} from which the operation should be found
 	 * @param name
+	 *            name of the operation that should be executed
 	 * @param predicate
+	 *            an additional guard for the operation. This usually describes
+	 *            the parameters
 	 * @param nrOfSolutions
-	 * @return list of operations
+	 *            int number of solutions that should be found for the given
+	 *            predicate
+	 * @return list of operations calculated by ProB
 	 * @throws BException
 	 */
 	public List<OpInfo> opFromPredicate(final StateId stateId,
@@ -263,27 +251,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
-		animator.execute(command);
-		final List<OpInfo> newOps = command.getOperations();
-		updateLastCalculatedStateId(stateId.numericalId());
-
-		List<OpInfo> toNotify = new ArrayList<OpInfo>();
-		// (id,name,src,dest,args)
-		for (final OpInfo op : newOps) {
-
-			StateId vertex = getVertex(op.dest);
-			if (vertex == null) {
-				vertex = new StateId(op.dest, this);
-				addVertex(vertex);
-			}
-			if (!containsEdge(op)) {
-				ops.put(op.id, op);
-				toNotify.add(op);
-				addEdge(op, getVertex(op.src), vertex);
-			}
-		}
-		notifyStateSpaceChange(toNotify);
-		return newOps;
+		execute(command);
+		return command.getNewTransitions();
 	}
 
 	/**
@@ -540,20 +509,57 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	// ANIMATOR
+	@Override
+	public void sendInterrupt() {
+		animator.sendInterrupt();
+	}
 
 	@Override
 	public void execute(final AbstractCommand command) {
 		animator.execute(command);
+		addTransitions(new AbstractCommand[] { command });
 	}
 
 	@Override
 	public void execute(final AbstractCommand... commands) {
 		animator.execute(commands);
+		addTransitions(commands);
 	}
 
-	@Override
-	public void sendInterrupt() {
-		animator.sendInterrupt();
+	private void addTransitions(final AbstractCommand[] commands) {
+		List<OpInfo> toNotify = new ArrayList<OpInfo>();
+
+		long last = lastCalculatedStateId;
+		for (AbstractCommand cmd : commands) {
+			if (cmd instanceof IStateSpaceModifier) {
+				List<OpInfo> newOps = ((IStateSpaceModifier) cmd)
+						.getNewTransitions();
+				for (final OpInfo op : newOps) {
+					if (!containsEdge(op)) {
+						StateId src = getVertex(op.src);
+						if (src == null) {
+							src = new StateId(op.src, this);
+							addVertex(src);
+						}
+						last = Math.max(last, src.numericalId());
+
+						StateId dest = getVertex(op.dest);
+						if (dest == null) {
+							dest = new StateId(op.dest, this);
+							addVertex(dest);
+						}
+
+						toNotify.add(op);
+						addEdge(op, src, dest);
+					}
+				}
+			}
+		}
+		updateLastCalculatedStateId(last);
+
+		if (!toNotify.isEmpty()) {
+			notifyStateSpaceChange(toNotify);
+		}
 	}
 
 	// NOTIFICATION SYSTEM
