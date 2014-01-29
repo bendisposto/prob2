@@ -3,8 +3,10 @@ package de.prob.check;
 public class NotYetFinished implements IModelCheckingResult {
 
 	private final int maxNumberNodesLeft;
+	private final String message;
 
-	public NotYetFinished(final int maxNumberNodesLeft) {
+	public NotYetFinished(final String message, final int maxNumberNodesLeft) {
+		this.message = message;
 		this.maxNumberNodesLeft = maxNumberNodesLeft;
 	}
 
@@ -14,7 +16,7 @@ public class NotYetFinished implements IModelCheckingResult {
 
 	@Override
 	public String getMessage() {
-		return "Model checking not completed";
+		return message;
 	}
 
 }

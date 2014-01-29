@@ -54,7 +54,8 @@ public class ModelChecker {
 	 *         the future has been created. Otherwise false.
 	 */
 	public boolean cancel() {
-		if (f != null) {
+		if (!isDone()) {
+			stateSpace.sendInterrupt();
 			return f.cancel(true);
 		}
 		return false;
