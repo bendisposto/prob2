@@ -26,7 +26,8 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
 
-public class ModelCheckingStepCommand extends AbstractCommand {
+public class ModelCheckingStepCommand extends AbstractCommand implements
+		IStateSpaceModifier {
 	/**
 	 * <p>
 	 * The prolog core calculates a list of new operations after performing a
@@ -121,7 +122,8 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 		if (type.equals("not_yet_finished")) {
 			int maxNodesLeft = BindingGenerator.getInteger(cpt.getArgument(1))
 					.getValue().intValue();
-			return new NotYetFinished(maxNodesLeft);
+			return new NotYetFinished("Model checking not completed",
+					maxNodesLeft);
 		}
 
 		if (type.equals("ok")) {
@@ -181,11 +183,12 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 				.printVariable(RESULT).printVariable(STATS).closeTerm();
 	}
 
-	public List<OpInfo> getNewOps() {
-		return newOps;
-	}
-
 	public StateSpaceStats getStats() {
 		return stats;
+	}
+
+	@Override
+	public List<OpInfo> getNewTransitions() {
+		return newOps;
 	}
 }

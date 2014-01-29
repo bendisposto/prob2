@@ -1,9 +1,5 @@
 package de.prob.animator.command;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.ModelCheckingOptions;
 import de.prob.check.NotYetFinished;
@@ -11,8 +7,6 @@ import de.prob.check.StateSpaceStats;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.web.views.ModelCheckingUI;
 
@@ -24,7 +18,7 @@ public class ModelCheckingJob extends AbstractCommand {
 	private ModelCheckingOptions options;
 	private ModelCheckingStepCommand cmd;
 	private boolean completed = false;
-	private long last;
+	private final long last;
 	private IModelCheckingResult res;
 	private StateSpaceStats stats;
 	private final ModelCheckingUI ui;
@@ -78,7 +72,6 @@ public class ModelCheckingJob extends AbstractCommand {
 			s.endTransaction();
 		}
 
-		addCheckedStates(cmd.getNewOps());
 		options = options.recheckExisting(false);
 		cmd = new ModelCheckingStepCommand(TIME, options, last);
 	}
@@ -90,43 +83,6 @@ public class ModelCheckingJob extends AbstractCommand {
 	@Override
 	public boolean isCompleted() {
 		return completed;
-	}
-
-	private void addCheckedStates(final List<OpInfo> newOps) {
-		HashMap<String, StateId> states = s.getStates();
-		HashMap<String, OpInfo> ops = s.getOps();
-
-		long i = s.getLastCalculatedStateId();
-
-		List<OpInfo> toNotify = new ArrayList<OpInfo>();
-		for (OpInfo opInfo : newOps) {
-			if (!ops.containsKey(opInfo.id)) {
-				toNotify.add(opInfo);
-				String sK = opInfo.src;
-				if (!sK.equals("root")) {
-					int value = Integer.parseInt(sK);
-					i = Math.max(value, i);
-				}
-
-				String dK = opInfo.dest;
-				StateId src = states.get(sK);
-				if (src == null) {
-					src = new StateId(sK, s);
-					states.put(sK, src);
-				}
-				StateId dest = states.get(dK);
-				if (dest == null) {
-					dest = new StateId(dK, s);
-					states.put(dK, dest);
-				}
-				s.addEdge(opInfo, src, dest);
-				ops.put(opInfo.id, opInfo);
-			}
-		}
-		s.updateLastCalculatedStateId(i);
-		last = i;
-
-		s.notifyStateSpaceChange(toNotify);
 	}
 
 	public StateSpaceStats getStats() {
