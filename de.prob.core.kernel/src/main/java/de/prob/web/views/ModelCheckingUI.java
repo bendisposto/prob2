@@ -11,6 +11,7 @@ import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.check.ConsistencyChecker;
 import de.prob.check.IModelCheckingResult;
 import de.prob.check.ModelCheckErrorUncovered;
 import de.prob.check.ModelCheckOk;
@@ -91,8 +92,8 @@ public class ModelCheckingUI extends AbstractSession implements
 
 	public Object startJob(final Map<String, String[]> params) {
 		if (currentStateSpace != null) {
-			ModelChecker checker = new ModelChecker(currentStateSpace, options,
-					this);
+			ModelChecker checker = new ModelChecker(new ConsistencyChecker(
+					currentStateSpace, options, this));
 			jobs.put(checker.getJobId(), checker);
 			checker.start();
 			String name = currentStateSpace.getModel().getMainComponent()
