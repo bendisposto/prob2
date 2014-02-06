@@ -443,6 +443,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			} else {
 				if (formulaRegistry.containsKey(formulaOfInterest)) {
 					formulaRegistry.get(formulaOfInterest).add(subscriber);
+					subscribedFormulas.add(formulaOfInterest);
 				} else {
 					HashSet<Object> subscribers = new HashSet<Object>();
 					subscribers.add(subscriber);
@@ -455,7 +456,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 		execute(new ComposedCommand(subscribeCmds));
 	}
-
+	
 	/**
 	 * If a class is interested in having a particular formula calculated and
 	 * cached whenever a new state is explored, then they "subscribe" to that
@@ -489,6 +490,10 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 	}
 
+	public boolean isSubscribed(IEvalElement formula) {
+		return formulaRegistry.containsKey(formula) && !formulaRegistry.get(formula).isEmpty();
+	}
+	
 	/**
 	 * If a subscribed class is no longer interested in the value of a
 	 * particular formula, then they can unsubscribe to that formula

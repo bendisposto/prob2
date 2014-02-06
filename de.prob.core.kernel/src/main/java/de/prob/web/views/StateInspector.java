@@ -156,31 +156,31 @@ public class StateInspector extends AbstractSession implements
 		Map<String, AbstractElement> modelComponents = m.getComponents();
 		if (modelComponents != null) {
 			for (Entry<String, AbstractElement> e : modelComponents.entrySet()) {
-				components.add(extractComponent(e.getKey(), e.getValue()));
+				components.add(extractComponent(m.getStatespace(), e.getKey(), e.getValue()));
 			}
 		}
 		extracted.put("components", components);
 		return extracted;
 	}
 
-	private Object extractComponent(final String name, final AbstractElement e) {
+	private Object extractComponent(StateSpace s, final String name, final AbstractElement e) {
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> kids = new ArrayList<Object>();
 		if (e instanceof Context) {
-			kids.add(extractElement(e, BSet.class));
-			kids.add(extractElement(e, Constant.class));
-			kids.add(extractElement(e, Axiom.class));
+			kids.add(extractElement(s, e, BSet.class));
+			kids.add(extractElement(s, e, Constant.class));
+			kids.add(extractElement(s, e, Axiom.class));
 		}
 		if (e instanceof Machine) {
-			kids.add(extractElement(e, Variable.class));
-			kids.add(extractElement(e, Invariant.class));
+			kids.add(extractElement(s, e, Variable.class));
+			kids.add(extractElement(s, e, Invariant.class));
 		}
 		extracted.put("label", name);
 		extracted.put("children", kids);
 		return extracted;
 	}
 
-	private Object extractElement(final AbstractElement parent,
+	private Object extractElement(StateSpace s, final AbstractElement parent,
 			final Class<? extends AbstractElement> c) {
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> kids = new ArrayList<Object>();
@@ -188,11 +188,13 @@ public class StateInspector extends AbstractSession implements
 		for (AbstractElement abstractElement : children) {
 			if (abstractElement instanceof IEval) {
 				IEvalElement formula = ((IEval) abstractElement).getEvaluate();
-				Map<String, String> wrap = WebUtils.wrap("code",
-						unicode(formula.getCode()), "id",
-						formula.getFormulaId().uuid);
-				kids.add(wrap);
-				formulasForEvaluating.add(formula);
+				if(s.isSubscribed(formula)) {
+					Map<String, String> wrap = WebUtils.wrap("code",
+							unicode(formula.getCode()), "id",
+							formula.getFormulaId().uuid);
+					kids.add(wrap);
+					formulasForEvaluating.add(formula);					
+				}
 			}
 		}
 		String label = extractLabel(c);
