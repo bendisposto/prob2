@@ -24,7 +24,6 @@ public class CurrentAnimations extends AbstractSession implements
 
 	@Inject
 	public CurrentAnimations(final AnimationSelector animations) {
-		incrementalUpdate = false;
 		this.animations = animations;
 		animations.registerAnimationChangeListener(this);
 	}
@@ -33,12 +32,6 @@ public class CurrentAnimations extends AbstractSession implements
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/animations/index.html");
-	}
-
-	@Override
-	public void reload(final String client, final int lastinfo,
-			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
 	}
 
 	public Object selectTrace(final Map<String, String[]> params) {
