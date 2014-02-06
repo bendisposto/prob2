@@ -14,7 +14,7 @@ CurrentTrace = (function() {
 	});
 
 	function setTrace(trace) {
-		ops = JSON.parse(trace)
+		var ops = JSON.parse(trace)
 		$("li").remove()
 		for (var i = 0; i < ops.length; i++) {
 			$("#content").append(Mustache.render(pattern,ops[i]))

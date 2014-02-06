@@ -43,7 +43,8 @@ public class AnimationSelector {
 		traceListeners
 				.add(new WeakReference<IAnimationChangeListener>(listener));
 		if (currentTrace != null) {
-			notifyAnimationChange(currentTrace, true);
+			listener.traceChange(currentTrace, true);
+			listener.animatorStatus(currentTrace.getStateSpace().isBusy());
 		}
 	}
 
@@ -51,7 +52,7 @@ public class AnimationSelector {
 			final IModelChangedListener listener) {
 		modelListeners.add(new WeakReference<IModelChangedListener>(listener));
 		if (currentStateSpace != null) {
-			notifyModelChanged(currentStateSpace);
+			listener.modelChanged(currentStateSpace);
 		}
 	}
 
@@ -171,6 +172,7 @@ public class AnimationSelector {
 	public void refresh() {
 		notifyAnimationChange(currentTrace, true);
 		notifyModelChanged(currentStateSpace);
+		notifyStatusChange(currentStateSpace.isBusy());
 	}
 
 	/**
