@@ -2,14 +2,20 @@
     display: none;
 }
 
-#content {
+.list {
     list-style: none;
+}
+
+.list li {
+    cursor: pointer;
+}
+
+#content {
     padding-left: 10px;
     padding-right: 10px;
 }
 
 #results {
-    list-style: none;
     padding-right: 40px; 
 }
 
@@ -39,6 +45,10 @@
 }
 
 .selected {
+    background-color: #ECECEC;
+}
+
+.event-selected {
     background-color: #ECECEC;
 }
 

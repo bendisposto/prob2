@@ -1,19 +1,27 @@
 ModelChecking = (function() {
     var extern = {}
     var session = Session()
+    var mode = ""
 
     $(document).ready(function() {
-        $("#start-new").click(function(e) {
-           $("#open-new").modal('show')
-        })
+        $(".op-btn").click(function(e) {
+            var id = "#" + e.target.id + "-mode"
+            $("#open-new").modal('hide')
+            $(".mc-mode").addClass("invisible")
+            $(id).removeClass("invisible")
+            $("#submit-job").unbind()
+            var mode = e.currentTarget.id
+            $("#submit-job").click(function(e) {
+                session.sendCmd("startJob", {
+                    "check-mode": mode
+                })
+            })
+            $("#open-new").modal('show')
 
-        $("#submit-job").click(function(e) {
-            session.sendCmd("startJob", {})
         })
 
         $(".option").click(function(e) {
-            toggleOption(e.target.id
-                )
+            toggleOption(e.target.id)
         })
     })
 
@@ -53,8 +61,8 @@ ModelChecking = (function() {
     }
 
     function finishJob(id, data) {
-        var hasTrace = data.hasTrace === "true"
-        data.hasTrace = hasTrace
+        data.hasTrace = data.hasTrace === "true"
+        data.stats = data.stats === "true"
         $("#"+id+"-in").replaceWith(session.render("/ui/modelchecking/finished.html", data))
         if(data.hasTrace) {
             $("#"+id+"-opentrace").click(function(e) {
@@ -74,10 +82,24 @@ ModelChecking = (function() {
         }
     }
     
-    function changeStateSpaces(ssId) {
+    function changeStateSpaces(ssId, events) {
         $(".job").addClass("invisible")
         $(".result").addClass("invisible")
         $("."+ssId).removeClass("invisible")
+        $("#cbc-inv-event-list").replaceWith(session.render("/ui/modelchecking/cbc-inv-list.html", {"events": events}))
+        $(".cbc-inv-event").click(function(e) {
+            if($(e.currentTarget).hasClass("event-selected")) {
+                $(e.currentTarget).removeClass("event-selected")
+                session.sendCmd("removeEvent", {
+                    "event": $(e.currentTarget).text()
+                })
+            } else {
+                $(e.currentTarget).addClass("event-selected")
+                session.sendCmd("selectEvent", {
+                    "event": $(e.currentTarget).text()
+                })
+            }
+        })
     }
 
     extern.client = ""
@@ -86,7 +108,8 @@ ModelChecking = (function() {
         setDefaultOptions(data.options)
     }
     extern.changeStateSpaces = function(data) {
-        changeStateSpaces(data.ssId)
+        var events = JSON.parse(data.events)
+        changeStateSpaces(data.ssId, JSON.parse(data.events))
     }
     extern.updateJob = function(data) {
         updateJob(data.id, data)

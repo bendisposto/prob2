@@ -20,19 +20,19 @@
                 <div id="sidebar" class="panel panel-default">
                     <div id="stats" class="panel-heading">Model Checking Jobs 
                         <div class="pull-right">
-                            <img class="op-btn" id="start-new" src="/ui/common/img/Consistency.png" alt="mc" title="Start new consistency checking job" width="16" height="16">
-                            <!--<img class="op-btn" id="cbc-dead" src="/ui/common/img/DeadlockCheck.png" alt="dead" title="Check for deadlocks" width="16" height="16">
+                            <img class="op-btn" id="cc-check" src="/ui/common/img/Consistency.png" alt="mc" title="Start new consistency checking job" width="16" height="16">
                             <img class="op-btn" id="cbc-inv" src="/ui/common/img/CBCInvariantCheck.png" alt="inv" title="Check for invariant violations" width="16" height="16">
+                            <!--<img class="op-btn" id="cbc-dead" src="/ui/common/img/DeadlockCheck.png" alt="dead" title="Check for deadlocks" width="16" height="16">
                             <img class="op-btn" id="start-ltl" src="/ui/common/img/LTL_Modelcheck.png" alt="ltl" title="Check an LTL Formula" width="16" height="16">-->
                         </div>
                     </div>
                     <div class="panel-body">
-                        <ul id="content"></ul>
+                        <ul id="content" class="list"></ul>
                     </div>
                 </div>
             </div>
             <div class="col-sm-8">
-                <ul id="results"></ul>
+                <ul id="results" class="list"></ul>
            </div>
         </div>
         <div class="modal fade" id="open-new">
@@ -45,7 +45,7 @@
                     <div class="modal-body">
                         <div id="options-body">
                             <form class="form-horizontal" role="form">
-                                <div class="form-group">
+                                <div id="cc-check-mode" class="mc-mode form-group">
                                     <label class="col-sm-2">Options:</label>
                                     <label class="col-sm-5">
                                         <input id="breadthFirst" class="option" type="checkbox"> Use breadth first strategy
@@ -71,6 +71,10 @@
                                     <label class="col-sm-5">
                                         <input id="partialGuardEvaluation" class="option" type="checkbox"> Partial guard evaluation
                                     </label>
+                                </div>
+                                <div id="cbc-inv-mode" class="mc-mode">
+                                    <h4>Select events from the list for invariant checking. By default, all events will be selected.</h4>
+                                    <ul id="cbc-inv-event-list" class="list"></ul>
                                 </div>
                             </form>
                         </div>

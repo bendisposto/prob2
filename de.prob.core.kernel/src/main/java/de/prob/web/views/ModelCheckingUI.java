@@ -7,18 +7,22 @@ import java.util.Map;
 
 import javax.servlet.AsyncContext;
 
+import org.eclipse.jetty.util.ajax.JSON;
+
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.check.CBCInvariantChecker;
 import de.prob.check.ConsistencyChecker;
 import de.prob.check.IModelCheckingResult;
-import de.prob.check.ModelCheckErrorUncovered;
 import de.prob.check.ModelCheckOk;
 import de.prob.check.ModelChecker;
 import de.prob.check.ModelCheckingOptions;
 import de.prob.check.ModelCheckingOptions.Options;
 import de.prob.check.StateSpaceStats;
+import de.prob.model.representation.BEvent;
+import de.prob.model.representation.ModelElementList;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.ITraceDescription;
@@ -37,6 +41,8 @@ public class ModelCheckingUI extends AbstractSession implements
 
 	Map<String, ModelChecker> jobs = new HashMap<String, ModelChecker>();
 	Map<String, IModelCheckingResult> results = new HashMap<String, IModelCheckingResult>();
+
+	List<String> selectedEvents = new ArrayList<String>();
 
 	private StateSpace currentStateSpace;
 
@@ -70,48 +76,76 @@ public class ModelCheckingUI extends AbstractSession implements
 			final IModelCheckingResult result, final StateSpaceStats stats) {
 		results.put(id, result);
 
-		boolean hasStats = stats != null;
-		int nrProcessedNodes = hasStats ? stats.getNrProcessedNodes() : null;
-		int nrTotalNodes = hasStats ? stats.getNrTotalNodes() : null;
-		int nrTotalTransitions = hasStats ? stats.getNrTotalTransitions()
-				: null;
-
 		String res = (result instanceof ModelCheckOk) ? "success"
-				: ((result instanceof ModelCheckErrorUncovered) ? "danger"
-						: "warning");
-		boolean hasTrace = result instanceof ModelCheckErrorUncovered;
+				: ((result instanceof ITraceDescription) ? "danger" : "warning");
+		boolean hasTrace = result instanceof ITraceDescription;
 
 		jobs.remove(id);
+		boolean hasStats = stats != null;
+		if (hasStats) {
+			submit(WebUtils.wrap("cmd", "ModelChecking.finishJob", "id", id,
+					"time", timeElapsed, "stats", hasStats, "processedNodes",
+					stats.getNrProcessedNodes(), "totalNodes",
+					stats.getNrTotalNodes(), "totalTransitions",
+					stats.getNrTotalTransitions(), "result", res, "hasTrace",
+					hasTrace, "message", result.getMessage()));
+		} else {
+			Map<String, String> wrap = WebUtils.wrap("cmd",
+					"ModelChecking.finishJob", "id", id, "time", timeElapsed,
+					"stats", hasStats, "result", res, "hasTrace", hasTrace,
+					"message", result.getMessage());
+			submit(wrap);
+		}
 
-		submit(WebUtils.wrap("cmd", "ModelChecking.finishJob", "id", id,
-				"time", timeElapsed, "stats", hasStats, "processedNodes",
-				nrProcessedNodes, "totalNodes", nrTotalNodes,
-				"totalTransitions", nrTotalTransitions, "result", res,
-				"hasTrace", hasTrace, "message", result.getMessage()));
 	}
 
 	public Object startJob(final Map<String, String[]> params) {
 		if (currentStateSpace != null) {
-			ModelChecker checker = new ModelChecker(new ConsistencyChecker(
-					currentStateSpace, options, this));
-			jobs.put(checker.getJobId(), checker);
-			checker.start();
-			String name = currentStateSpace.getModel().getMainComponent()
-					.toString();
-			List<String> ss = new ArrayList<String>();
-			for (Options opts : options.getPrologOptions()) {
-				ss.add(opts.getDescription());
+			String mode = params.get("check-mode")[0];
+			if (mode.equals("cc-check")) {
+				return startConsistencyChecking();
 			}
-			if (!ss.isEmpty()) {
-				name += " with " + Joiner.on(", ").join(ss);
+			if (mode.equals("cbc-inv")) {
+				return startCBCInvariant();
 			}
-			return WebUtils.wrap("cmd", "ModelChecking.jobStarted", "name",
-					name, "id", checker.getJobId(), "ssId",
-					currentStateSpace.getId());
 		} else {
 			// FIXME handle error
 		}
 		return null;
+	}
+
+	public Object startConsistencyChecking() {
+		ModelChecker checker = new ModelChecker(new ConsistencyChecker(
+				currentStateSpace, options, this));
+		jobs.put(checker.getJobId(), checker);
+		checker.start();
+		String name = currentStateSpace.getModel().getMainComponent()
+				.toString();
+		List<String> ss = new ArrayList<String>();
+		for (Options opts : options.getPrologOptions()) {
+			ss.add(opts.getDescription());
+		}
+		if (!ss.isEmpty()) {
+			name += " with " + Joiner.on(", ").join(ss);
+		}
+		return WebUtils.wrap("cmd", "ModelChecking.jobStarted", "name", name,
+				"id", checker.getJobId(), "ssId", currentStateSpace.getId());
+	}
+
+	public Object startCBCInvariant() {
+		ModelChecker checker = new ModelChecker(new CBCInvariantChecker(
+				currentStateSpace, selectedEvents.isEmpty() ? null
+						: selectedEvents, this));
+		jobs.put(checker.getJobId(), checker);
+		checker.start();
+		String name = "CBC invariant check with ";
+		if (selectedEvents.isEmpty()) {
+			name += "all events";
+		} else {
+			name += Joiner.on(", ").join(selectedEvents);
+		}
+		return WebUtils.wrap("cmd", "ModelChecking.jobStarted", "name", name,
+				"id", checker.getJobId(), "ssId", currentStateSpace.getId());
 	}
 
 	public Object cancel(final Map<String, String[]> params) {
@@ -186,6 +220,19 @@ public class ModelCheckingUI extends AbstractSession implements
 		return null;
 	}
 
+	// SET EVENTS FOR CBC INVARIANT CHECKING
+	public Object removeEvent(final Map<String, String[]> params) {
+		String eventName = params.get("event")[0];
+		selectedEvents.remove(eventName);
+		return null;
+	}
+
+	public Object selectEvent(final Map<String, String[]> params) {
+		String eventName = params.get("event")[0];
+		selectedEvents.add(eventName);
+		return null;
+	}
+
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
@@ -198,7 +245,28 @@ public class ModelCheckingUI extends AbstractSession implements
 		currentStateSpace = stateSpace;
 		String sId = currentStateSpace == null ? "none" : currentStateSpace
 				.getId();
+		List<String> eventNames = extractEventNames(currentStateSpace);
+		selectedEvents = new ArrayList<String>();
 		submit(WebUtils.wrap("cmd", "ModelChecking.changeStateSpaces", "ssId",
-				sId));
+				sId, "events", JSON.toString(eventNames)));
+	}
+
+	/**
+	 * @param s
+	 *            Current state space
+	 * @return List of the names of the events for the main component in the
+	 *         model corresponding to the state space
+	 */
+	private List<String> extractEventNames(final StateSpace s) {
+		List<String> sts = new ArrayList<String>();
+		if (s == null) {
+			return sts;
+		}
+		ModelElementList<BEvent> events = s.getModel().getMainComponent()
+				.getChildrenOfType(BEvent.class);
+		for (BEvent bEvent : events) {
+			sts.add(bEvent.getName());
+		}
+		return sts;
 	}
 }
