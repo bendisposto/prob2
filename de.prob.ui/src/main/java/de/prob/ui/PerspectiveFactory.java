@@ -33,20 +33,17 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		leftb.addView("fr.systerel.explorer.navigator.view");
 		leftb.addView("org.eventb.ui.views.RodinProblemView");
 		// ---------------------------------
-		
+
 		// RIGHT ---------------------------------
 		// Palette View
 		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT,
 				0.80f, editorArea);
-		right.addView("de.bmotionstudio.core.view.PaletteView");
-		right.addView("de.bmotionstudio.core.view.OutlineView");
 
 		// Library View
 		IFolderLayout rightb = layout.createFolder("rightb",
 				IPageLayout.BOTTOM, 0.65f, "right");
-		rightb.addView("de.bmotionstudio.core.view.LibraryView");
 		// ---------------------------------
-		
+
 		// MAIN ---------------------------------
 		// Properties view + observer view + control panel
 		IFolderLayout bottom1 = layout.createFolder("bottom1",
@@ -55,16 +52,16 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		bottom1.addView("de.prob.ui.AnimationsView");
 		bottom1.addView(IPageLayout.ID_PROP_SHEET);
 		// bottom1.addView("de.prob.ui.EventErrorView");
-		
+
 		// Place the outline to right of editor area.
 		final IFolderLayout main1 = layout.createFolder("main1",
 				IPageLayout.BOTTOM, 0.5f, editorArea);
 		main1.addView("de.prob.ui.HistoryView");
 		// right1.addView("de.prob.ui.ltl.CounterExampleView");
 		// Placeholder for new visualization views
-		main1.addPlaceholder("de.bmotionstudio.core.view.VisualizationView:*");
+
 		// ---------------------------------
-		
+
 	}
 
 	public static void openPerspective() {
@@ -75,8 +72,8 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 			workbench.getActiveWorkbenchWindow().addPerspectiveListener(
 					new PerspectiveListener());
 		} catch (final WorkbenchException e) {
-//			final String message = "Error opening ProB perspective.";
-			//FIXME add Error handling
+			// final String message = "Error opening ProB perspective.";
+			// FIXME add Error handling
 		}
 	}
 
