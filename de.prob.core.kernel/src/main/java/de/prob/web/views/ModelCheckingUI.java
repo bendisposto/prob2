@@ -13,6 +13,9 @@ import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.animator.domainobjects.EventB;
+import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.check.CBCDeadlockChecker;
 import de.prob.check.CBCInvariantChecker;
 import de.prob.check.ConsistencyChecker;
 import de.prob.check.IModelCheckingResult;
@@ -42,6 +45,7 @@ public class ModelCheckingUI extends AbstractSession implements
 
 	Map<String, ModelChecker> jobs = new HashMap<String, ModelChecker>();
 	Map<String, IModelCheckingResult> results = new HashMap<String, IModelCheckingResult>();
+	IEvalElement cbcFormula = null;
 
 	List<String> selectedEvents = new ArrayList<String>();
 
@@ -109,6 +113,9 @@ public class ModelCheckingUI extends AbstractSession implements
 			if (mode.equals("cbc-inv")) {
 				return startCBCInvariant();
 			}
+			if (mode.equals("cbc-deadlock")) {
+				return startDBCDeadlock();
+			}
 		} else {
 			// FIXME handle error
 		}
@@ -144,6 +151,19 @@ public class ModelCheckingUI extends AbstractSession implements
 			name += "all events";
 		} else {
 			name += Joiner.on(", ").join(selectedEvents);
+		}
+		return WebUtils.wrap("cmd", "ModelChecking.jobStarted", "name", name,
+				"id", checker.getJobId(), "ssId", currentStateSpace.getId());
+	}
+
+	private Object startDBCDeadlock() {
+		ModelChecker checker = new ModelChecker(new CBCDeadlockChecker(
+				currentStateSpace, cbcFormula, this));
+		jobs.put(checker.getJobId(), checker);
+		checker.start();
+		String name = "CBC deadlock check ";
+		if (cbcFormula != null) {
+			name += "with constraint " + cbcFormula.getCode();
 		}
 		return WebUtils.wrap("cmd", "ModelChecking.jobStarted", "name", name,
 				"id", checker.getJobId(), "ssId", currentStateSpace.getId());
@@ -271,5 +291,29 @@ public class ModelCheckingUI extends AbstractSession implements
 			sts.add(bEvent.getName());
 		}
 		return sts;
+	}
+
+	public Object parse(final Map<String, String[]> params) {
+		String f = params.get("formula")[0];
+		String id = params.get("id")[0];
+
+		try {
+			IEvalElement e = currentStateSpace.getModel().parseFormula(f);
+			if (e instanceof EventB) {
+				((EventB) e).getAst();
+			}
+			if (id.equals("cbc-deadlock-input")) {
+				cbcFormula = e;
+			}
+			return WebUtils.wrap("cmd", "ModelChecking.parseOk", "id", id);
+		} catch (Exception e) {
+			if (id.equals("cbc-deadlock-input")) {
+				cbcFormula = null;
+			}
+			if ("".equals(f)) {
+				return WebUtils.wrap("cmd", "ModelChecking.parseOk", "id", id);
+			}
+			return WebUtils.wrap("cmd", "ModelChecking.parseError", "id", id);
+		}
 	}
 }

@@ -4,6 +4,13 @@ ModelChecking = (function() {
     var mode = ""
 
     $(document).ready(function() {
+        $(window).keydown(function(event){
+            if(event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        })
+
         $(".op-btn").click(function(e) {
             var id = "#" + e.target.id + "-mode"
             $("#open-new").modal('hide')
@@ -11,17 +18,24 @@ ModelChecking = (function() {
             $(id).removeClass("invisible")
             $("#submit-job").unbind()
             var mode = e.currentTarget.id
+            $("#submit-job").prop("disabled", $(id).hasClass("parse-incorrect"))
             $("#submit-job").click(function(e) {
                 session.sendCmd("startJob", {
                     "check-mode": mode
                 })
             })
             $("#open-new").modal('show')
-
         })
 
         $(".option").click(function(e) {
             toggleOption(e.target.id)
+        })
+
+        $(".form-control").keyup(function(e) {
+            session.sendCmd("parse", {
+                "formula" : e.target.value,
+                "id" : e.target.parentNode.id
+            })
         })
     })
 
@@ -105,6 +119,18 @@ ModelChecking = (function() {
         })
     }
 
+    function parseOk(id) {
+        $("#"+id).removeClass("has-error")
+        $("#submit-job").prop("disabled", false)
+        $("#"+id).parent().removeClass("parse-incorrect")
+    }
+
+    function parseError(id) {
+        $("#"+id).addClass("has-error")
+        $("#submit-job").prop("disabled",true)
+        $("#"+id).parent().addClass("parse-incorrect")
+    }
+
     extern.client = ""
     extern.init = session.init
     extern.setDefaultOptions = function(data) {
@@ -124,7 +150,12 @@ ModelChecking = (function() {
         jobStarted(data.id, data)
     }
     extern.toggleOption = toggleOption
-
+    extern.parseOk = function(data) {
+        parseOk(data.id)
+    }
+    extern.parseError = function(data) {
+        parseError(data.id)
+    }
 
     return extern;
 }())
