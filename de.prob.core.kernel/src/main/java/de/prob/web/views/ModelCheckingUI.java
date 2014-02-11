@@ -22,6 +22,7 @@ import de.prob.check.ModelCheckingOptions;
 import de.prob.check.ModelCheckingOptions.Options;
 import de.prob.check.StateSpaceStats;
 import de.prob.model.representation.BEvent;
+import de.prob.model.representation.CSPModel;
 import de.prob.model.representation.ModelElementList;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IModelChangedListener;
@@ -245,10 +246,12 @@ public class ModelCheckingUI extends AbstractSession implements
 		currentStateSpace = stateSpace;
 		String sId = currentStateSpace == null ? "none" : currentStateSpace
 				.getId();
-		List<String> eventNames = extractEventNames(currentStateSpace);
+		boolean b_model = !(currentStateSpace.getModel() instanceof CSPModel);
+		List<String> eventNames = b_model ? extractEventNames(currentStateSpace)
+				: new ArrayList<String>();
 		selectedEvents = new ArrayList<String>();
 		submit(WebUtils.wrap("cmd", "ModelChecking.changeStateSpaces", "ssId",
-				sId, "events", JSON.toString(eventNames)));
+				sId, "events", JSON.toString(eventNames), "withCBC", b_model));
 	}
 
 	/**

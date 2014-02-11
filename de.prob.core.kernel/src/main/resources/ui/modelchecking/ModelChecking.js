@@ -82,10 +82,13 @@ ModelChecking = (function() {
         }
     }
     
-    function changeStateSpaces(ssId, events) {
+    function changeStateSpaces(ssId, events, withCBC) {
         $(".job").addClass("invisible")
         $(".result").addClass("invisible")
         $("."+ssId).removeClass("invisible")
+        if(!withCBC) {
+            $("#cbc-inv").addClass("invisible")
+        }
         $("#cbc-inv-event-list").replaceWith(session.render("/ui/modelchecking/cbc-inv-list.html", {"events": events}))
         $(".cbc-inv-event").click(function(e) {
             if($(e.currentTarget).hasClass("event-selected")) {
@@ -109,7 +112,7 @@ ModelChecking = (function() {
     }
     extern.changeStateSpaces = function(data) {
         var events = JSON.parse(data.events)
-        changeStateSpaces(data.ssId, JSON.parse(data.events))
+        changeStateSpaces(data.ssId, JSON.parse(data.events), data.withCBC === "true")
     }
     extern.updateJob = function(data) {
         updateJob(data.id, data)
