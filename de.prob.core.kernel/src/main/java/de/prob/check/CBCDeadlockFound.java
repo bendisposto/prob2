@@ -5,6 +5,14 @@ import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
+/**
+ * Class returned if a deadlock is found during CBC deadlock checking. The
+ * counterexample produced by ProB consists of one transition to the error
+ * state.
+ * 
+ * @author joy
+ * 
+ */
 public class CBCDeadlockFound implements IModelCheckingResult,
 		ITraceDescription {
 
@@ -23,6 +31,9 @@ public class CBCDeadlockFound implements IModelCheckingResult,
 		return t;
 	}
 
+	/**
+	 * @return String state id associated with the error state found in ProB
+	 */
 	public String getErrorId() {
 		return errorId;
 	}
