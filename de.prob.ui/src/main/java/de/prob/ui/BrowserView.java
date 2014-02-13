@@ -1,5 +1,10 @@
 package de.prob.ui;
 
+import javafx.embed.swt.FXCanvas;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
@@ -11,6 +16,7 @@ public abstract class BrowserView extends ViewPart {
 
 	private final int port;
 	private Browser browser;
+	private FXCanvas canvas;
 
 	public BrowserView() {
 		port = WebConsole.getPort();
@@ -22,8 +28,15 @@ public abstract class BrowserView extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(final Composite parent) {
-		browser = new Browser(parent, SWT.NONE);
-		browser.setUrl("http://localhost:" + port + "/sessions/" + getUrl());
+
+		canvas = new FXCanvas(parent, SWT.NONE);
+
+		WebView browser = new WebView();
+		Scene scene = new Scene(browser);
+		canvas.setScene(scene);
+		WebEngine engine = browser.getEngine();
+		engine.setJavaScriptEnabled(true);
+		engine.load("http://localhost:" + port + "/sessions/" + getUrl());
 	}
 
 	protected abstract String getUrl();
@@ -33,7 +46,7 @@ public abstract class BrowserView extends ViewPart {
 	 */
 	@Override
 	public void setFocus() {
-		browser.setFocus();
+		canvas.setFocus();
 	}
 
 }
