@@ -17,7 +17,7 @@ import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.animator.command.EvaluateFormulasCommand;
+import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
@@ -123,6 +123,6 @@ public class ClassicalB extends AbstractEvalElement {
 
 	@Override
 	public EvaluationCommand getCommand(final StateId stateId) {
-		return new EvaluateFormulasCommand(this, stateId.getId());
+		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
 }

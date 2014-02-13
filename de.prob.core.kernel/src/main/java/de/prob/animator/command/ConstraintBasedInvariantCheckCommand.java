@@ -17,6 +17,7 @@ import de.prob.check.InvariantCheckCounterExample;
 import de.prob.check.ModelCheckOk;
 import de.prob.check.NotYetFinished;
 import de.prob.exception.ProBError;
+import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -111,10 +112,12 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 			final CompoundPrologTerm term = (CompoundPrologTerm) t;
 			final String eventName = PrologTerm.atomicString(term
 					.getArgument(1));
-			final OpInfo step1 = new OpInfo(
-					(CompoundPrologTerm) term.getArgument(2));
-			final OpInfo step2 = new OpInfo(
-					(CompoundPrologTerm) term.getArgument(3));
+			final OpInfo step1 = OpInfo
+					.createOpInfoFromCompoundPrologTerm(BindingGenerator
+							.getCompoundTerm(term.getArgument(2), 3));
+			final OpInfo step2 = OpInfo
+					.createOpInfoFromCompoundPrologTerm(BindingGenerator
+							.getCompoundTerm(term.getArgument(3), 3));
 			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(
 					eventName, step1, step2);
 			newTransitions.add(step1);

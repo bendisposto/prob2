@@ -54,8 +54,8 @@ public class InvariantCheckCounterExample implements ITraceDescription {
 	@Override
 	public Trace getTrace(final StateSpace s) {
 		Trace t = new Trace(s);
-		t = t.add(step1.id);
-		t = t.add(step2.id);
+		t = t.add(step1.getId());
+		t = t.add(step2.getId());
 		return t;
 	}
 }

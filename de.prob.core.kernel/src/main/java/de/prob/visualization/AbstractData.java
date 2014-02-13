@@ -38,15 +38,15 @@ public abstract class AbstractData {
 	public void addNewLinks(final StateSpaceGraph graph,
 			final List<? extends OpInfo> newOps) {
 		for (OpInfo opInfo : newOps) {
-			if (!links.containsKey(opInfo.id)) {
-				if (!nodes.containsKey(opInfo.src)) {
-					Node newSrc = addNode(graph.getVertex(opInfo.src));
+			if (!links.containsKey(opInfo.getId())) {
+				if (!nodes.containsKey(opInfo.getSrc())) {
+					Node newSrc = addNode(graph.getVertex(opInfo.getSrc()));
 					changes.nodes.add(newSrc);
 				}
 
-				if (!nodes.containsKey(opInfo.dest)) {
-					Node newDest = addNode(graph.getVertex(opInfo.dest),
-							data.nodes.indexOf(nodes.get(opInfo.src)));
+				if (!nodes.containsKey(opInfo.getDest())) {
+					Node newDest = addNode(graph.getVertex(opInfo.getDest()),
+							data.nodes.indexOf(nodes.get(opInfo.getSrc())));
 					changes.nodes.add(newDest);
 				}
 

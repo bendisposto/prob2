@@ -26,13 +26,13 @@ import de.prob.prolog.term.PrologTerm;
  * @author joy
  * 
  */
-public class EvaluateFormulasCommand extends EvaluationCommand {
+public class EvaluateFormulaCommand extends EvaluationCommand {
 
-	Logger logger = LoggerFactory.getLogger(EvaluateFormulasCommand.class);
+	Logger logger = LoggerFactory.getLogger(EvaluateFormulaCommand.class);
 
 	private static final String EVALUATE_RESULT_VARIABLE = "Res";
 
-	public EvaluateFormulasCommand(final IEvalElement evalElement,
+	public EvaluateFormulaCommand(final IEvalElement evalElement,
 			final String id) {
 		super(evalElement, id);
 	}

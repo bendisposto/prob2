@@ -12,7 +12,6 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
-import de.prob.statespace.derived.DerivedOp;
 import de.prob.statespace.derived.DerivedStateId;
 
 public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
@@ -30,10 +29,10 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 
 	public final String SPACE = "StateSpace";
 	public final List<DerivedStateId> states = new ArrayList<DerivedStateId>();
-	public final List<DerivedOp> ops = new ArrayList<DerivedOp>();
+	public final List<OpInfo> ops = new ArrayList<OpInfo>();
 	public final Map<String, Set<DerivedStateId>> nodeColors = new HashMap<String, Set<DerivedStateId>>();
-	public final Map<String, Set<DerivedOp>> transStyle = new HashMap<String, Set<DerivedOp>>();
-	public final Map<String, Set<DerivedOp>> transColor = new HashMap<String, Set<DerivedOp>>();
+	public final Map<String, Set<OpInfo>> transStyle = new HashMap<String, Set<OpInfo>>();
+	public final Map<String, Set<OpInfo>> transColor = new HashMap<String, Set<OpInfo>>();
 
 	// Transitions take the form trans(TransId,Src,Dest,Label,Style,Color)
 	protected void extractTransitions(final ListPrologTerm trans) {
@@ -47,7 +46,8 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 				String dest = OpInfo.getIdFromPrologTerm(cpt
 						.getArgument(OP_DEST_INDEX));
 				String label = cpt.getArgument(OP_LABEL_INDEX).toString();
-				DerivedOp op = new DerivedOp(id, src, dest, label);
+				OpInfo op = OpInfo.generateArtificialTransition(id, label, src,
+						dest);
 
 				String style = cpt.getArgument(OP_STYLE_INDEX).getFunctor();
 				String color = cpt.getArgument(OP_COLOR_INDEX).getFunctor();
@@ -56,7 +56,7 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 				if (transStyle.containsKey(style)) {
 					transStyle.get(style).add(op);
 				} else {
-					Set<DerivedOp> ids = new HashSet<DerivedOp>();
+					Set<OpInfo> ids = new HashSet<OpInfo>();
 					ids.add(op);
 					transStyle.put(style, ids);
 				}
@@ -64,7 +64,7 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 				if (transColor.containsKey(color)) {
 					transColor.get(color).add(op);
 				} else {
-					Set<DerivedOp> ids = new HashSet<DerivedOp>();
+					Set<OpInfo> ids = new HashSet<OpInfo>();
 					ids.add(op);
 					transColor.put(color, ids);
 				}
@@ -113,7 +113,7 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 		return states;
 	}
 
-	public List<DerivedOp> getOps() {
+	public List<OpInfo> getOps() {
 		return ops;
 	}
 
@@ -121,11 +121,11 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 		return nodeColors;
 	}
 
-	public Map<String, Set<DerivedOp>> getTransStyle() {
+	public Map<String, Set<OpInfo>> getTransStyle() {
 		return transStyle;
 	}
 
-	public Map<String, Set<DerivedOp>> getTransColor() {
+	public Map<String, Set<OpInfo>> getTransColor() {
 		return transColor;
 	}
 

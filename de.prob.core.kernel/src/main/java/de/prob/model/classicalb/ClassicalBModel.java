@@ -17,6 +17,7 @@ import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.StateSchema;
+import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
@@ -91,5 +92,10 @@ public class ClassicalBModel extends AbstractModel {
 	@Override
 	public IEvalElement parseFormula(final String formula) {
 		return new ClassicalB(formula);
+	}
+
+	@Override
+	public FormalismType getFormalismType() {
+		return FormalismType.B;
 	}
 }

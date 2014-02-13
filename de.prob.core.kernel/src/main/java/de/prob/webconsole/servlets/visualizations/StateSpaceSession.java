@@ -357,7 +357,7 @@ public class StateSpaceSession implements ISessionServlet,
 	}
 
 	@Override
-	public void newTransitions(final List<? extends OpInfo> newOps) {
+	public void newTransitions(final List<OpInfo> newOps) {
 		try {
 			if (space instanceof AbstractDottyGraph) {
 				notifyRefresh();

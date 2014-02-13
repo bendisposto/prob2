@@ -97,9 +97,9 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 			CompoundPrologTerm deadlockTerm = BindingGenerator.getCompoundTerm(
 					resultTerm, 2);
 
-			OpInfo deadlockOperation = new OpInfo(
-					BindingGenerator.getCompoundTerm(
-							deadlockTerm.getArgument(1), 8));
+			OpInfo deadlockOperation = OpInfo
+					.createOpInfoFromCompoundPrologTerm(BindingGenerator
+							.getCompoundTerm(deadlockTerm.getArgument(1), 3));
 			newOps.add(deadlockOperation);
 			String deadlockStateId = deadlockTerm.getArgument(2).toString();
 

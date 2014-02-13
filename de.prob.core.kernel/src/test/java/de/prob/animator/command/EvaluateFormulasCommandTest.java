@@ -26,7 +26,7 @@ public class EvaluateFormulasCommandTest {
 		IEvalElement element = new ClassicalB("1<3");
 
 		StructuredPrologOutput prologTermOutput = new StructuredPrologOutput();
-		EvaluateFormulasCommand command = new EvaluateFormulasCommand(element,
+		EvaluateFormulaCommand command = new EvaluateFormulaCommand(element,
 				"root");
 		command.writeCommand(prologTermOutput);
 		prologTermOutput.fullstop().flush();
@@ -59,7 +59,7 @@ public class EvaluateFormulasCommandTest {
 			}
 
 		};
-		EvaluateFormulasCommand command = new EvaluateFormulasCommand(element,
+		EvaluateFormulaCommand command = new EvaluateFormulaCommand(element,
 				"root");
 		command.processResult(m1);
 

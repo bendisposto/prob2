@@ -13,7 +13,6 @@ import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpaceGraph;
 import de.prob.statespace.derived.AbstractDerivedStateSpace;
-import de.prob.statespace.derived.DerivedOp;
 import de.prob.statespace.derived.DerivedStateId;
 
 public class DerivedStateSpaceData extends AbstractData {
@@ -62,11 +61,11 @@ public class DerivedStateSpaceData extends AbstractData {
 
 	@Override
 	public Link addLink(final OpInfo op) {
-		Node src = nodes.get(op.src);
-		Node dest = nodes.get(op.dest);
-		Link link = new Link(op.id, data.nodes.indexOf(src),
+		Node src = nodes.get(op.getSrc());
+		Node dest = nodes.get(op.getDest());
+		Link link = new Link(op.getId(), data.nodes.indexOf(src),
 				data.nodes.indexOf(dest), op.getRep(), "#666");
-		links.put(op.id, link);
+		links.put(op.getId(), link);
 		data.links.add(link);
 		count++;
 		return link;
@@ -104,12 +103,12 @@ public class DerivedStateSpaceData extends AbstractData {
 			}
 		}
 
-		Map<String, Set<DerivedOp>> tCs = space.getTransColor();
-		for (Entry<String, Set<DerivedOp>> e : tCs.entrySet()) {
-			Set<DerivedOp> v = e.getValue();
+		Map<String, Set<OpInfo>> tCs = space.getTransColor();
+		for (Entry<String, Set<OpInfo>> e : tCs.entrySet()) {
+			Set<OpInfo> v = e.getValue();
 			if (!v.isEmpty()) {
 				List<String> toSelect = new ArrayList<String>();
-				for (DerivedOp derivedOp : v) {
+				for (OpInfo derivedOp : v) {
 					toSelect.add("#t" + derivedOp.getId());
 				}
 				Transformer transformer = styles.get(e.getKey());
@@ -122,10 +121,10 @@ public class DerivedStateSpaceData extends AbstractData {
 			}
 		}
 
-		Set<DerivedOp> dashed = space.getTransStyle().get("dashed");
+		Set<OpInfo> dashed = space.getTransStyle().get("dashed");
 		if (dashed != null && !dashed.isEmpty()) {
 			List<String> toSelect = new ArrayList<String>();
-			for (DerivedOp derivedOp : dashed) {
+			for (OpInfo derivedOp : dashed) {
 				toSelect.add("#t" + derivedOp.getId());
 			}
 			Transformer transformer = styles.get("dashed");
