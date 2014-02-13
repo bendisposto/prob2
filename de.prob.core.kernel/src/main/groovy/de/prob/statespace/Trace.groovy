@@ -51,7 +51,7 @@ public class Trace {
 		def res = []
 
 		cmds.each {
-			res << new Tuple2<String,IEvalResult>(it.getStateId(),it.getValues().get(0))
+			res << new Tuple2<String,IEvalResult>(it.getStateId(),it.getValue())
 		}
 		res
 	}

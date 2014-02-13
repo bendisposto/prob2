@@ -2,7 +2,6 @@ package de.prob.animator.command;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -31,72 +30,61 @@ public class EvaluateFormulasCommand extends EvaluationCommand {
 
 	Logger logger = LoggerFactory.getLogger(EvaluateFormulasCommand.class);
 
-	private static final String EVALUATE_TERM_VARIABLE = "Val";
+	private static final String EVALUATE_RESULT_VARIABLE = "Res";
 
-	public EvaluateFormulasCommand(final List<IEvalElement> evalElements,
+	public EvaluateFormulasCommand(final IEvalElement evalElement,
 			final String id) {
-		super(evalElements, id);
+		super(evalElement, id);
 	}
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 
-		ListPrologTerm prologTerm = BindingGenerator.getList(bindings
-				.get(EVALUATE_TERM_VARIABLE));
+		PrologTerm term = bindings.get(EVALUATE_RESULT_VARIABLE);
 
-		for (PrologTerm term : prologTerm) {
-			if (term instanceof ListPrologTerm) {
-				ListPrologTerm lpt = (ListPrologTerm) term;
-				ArrayList<String> list = new ArrayList<String>();
+		if (term instanceof ListPrologTerm) {
+			ListPrologTerm lpt = (ListPrologTerm) term;
+			ArrayList<String> list = new ArrayList<String>();
 
-				String code = lpt.get(0).getFunctor();
+			String code = lpt.get(0).getFunctor();
 
-				for (int i = 1; i < lpt.size(); i++) {
-					list.add(lpt.get(i).getArgument(1).getFunctor());
-				}
-
-				values.add(new ComputationNotCompletedResult(code, Joiner.on(
-						',').join(list)));
-			} else {
-				String value = term.getArgument(1).getFunctor();
-				Map<String, String> solutions = new HashMap<String, String>();
-				Map<String, PrologTerm> solutionsSource = new HashMap<String, PrologTerm>();
-				ListPrologTerm list = BindingGenerator.getList(term
-						.getArgument(2));
-				for (PrologTerm t : list) {
-					CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
-							t, 2);
-					solutions.put(cpt.getArgument(1).getFunctor(),
-							new ValueTranslator().toGroovy(cpt.getArgument(2))
-									.toString());
-					solutionsSource.put(cpt.getArgument(1).getFunctor(),
-							cpt.getArgument(2));
-				}
-				String code = term.getArgument(3).getFunctor();
-				values.add(new EvalResult(code, value, solutions,
-						solutionsSource));
+			for (int i = 1; i < lpt.size(); i++) {
+				list.add(lpt.get(i).getArgument(1).getFunctor());
 			}
-		}
 
+			value = new ComputationNotCompletedResult(code, Joiner.on(',')
+					.join(list));
+		} else {
+			String value_str = term.getArgument(1).getFunctor();
+			Map<String, String> solutions = new HashMap<String, String>();
+			Map<String, PrologTerm> solutionsSource = new HashMap<String, PrologTerm>();
+			ListPrologTerm list = BindingGenerator.getList(term.getArgument(2));
+			for (PrologTerm t : list) {
+				CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(t, 2);
+				solutions.put(cpt.getArgument(1).getFunctor(),
+						new ValueTranslator().toGroovy(cpt.getArgument(2))
+								.toString());
+				solutionsSource.put(cpt.getArgument(1).getFunctor(),
+						cpt.getArgument(2));
+			}
+			String code = term.getArgument(3).getFunctor();
+			value = new EvalResult(code, value_str, solutions, solutionsSource);
+		}
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
-		pout.openTerm("evaluate_formulas");
+		pout.openTerm("evaluate_formula");
 		pout.printAtomOrNumber(stateId);
-		pout.openList();
 
-		// print parsed expressions/predicates
-		for (IEvalElement term : evalElements) {
-			pout.openTerm("eval");
-			term.printProlog(pout);
-			pout.printAtom(term.getKind().toString());
-			pout.printAtom(term.getCode());
-			pout.closeTerm();
-		}
-		pout.closeList();
-		pout.printVariable(EVALUATE_TERM_VARIABLE);
+		pout.openTerm("eval");
+		evalElement.printProlog(pout);
+		pout.printAtom(evalElement.getKind().toString());
+		pout.printAtom(evalElement.getCode());
+		pout.closeTerm();
+
+		pout.printVariable(EVALUATE_RESULT_VARIABLE);
 		pout.closeTerm();
 	}
 

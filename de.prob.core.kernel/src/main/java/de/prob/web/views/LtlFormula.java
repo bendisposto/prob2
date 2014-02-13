@@ -77,7 +77,7 @@ public class LtlFormula extends AbstractSession implements
 		EvaluationCommand lcc = formula.getCommand(stateid);
 		animations.getCurrentTrace().getStateSpace().execute(lcc);
 
-		String result = ((LtlCheckingResult) lcc.getValues().get(0)).getValue();
+		String result = ((LtlCheckingResult) lcc.getValue()).getValue();
 		tuple.setStatus(result);
 		cache.get(formula).put(stateid, result);
 

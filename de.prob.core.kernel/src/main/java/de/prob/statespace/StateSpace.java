@@ -351,7 +351,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			execute(command);
 
 			for (EvaluationCommand acmd : toEval) {
-				fromProlog.addAll(acmd.getValues());
+				fromProlog.add(acmd.getValue());
 			}
 		}
 
@@ -456,7 +456,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 		execute(new ComposedCommand(subscribeCmds));
 	}
-	
+
 	/**
 	 * If a class is interested in having a particular formula calculated and
 	 * cached whenever a new state is explored, then they "subscribe" to that
@@ -490,10 +490,11 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 	}
 
-	public boolean isSubscribed(IEvalElement formula) {
-		return formulaRegistry.containsKey(formula) && !formulaRegistry.get(formula).isEmpty();
+	public boolean isSubscribed(final IEvalElement formula) {
+		return formulaRegistry.containsKey(formula)
+				&& !formulaRegistry.get(formula).isEmpty();
 	}
-	
+
 	/**
 	 * If a subscribed class is no longer interested in the value of a
 	 * particular formula, then they can unsubscribe to that formula
@@ -978,22 +979,18 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		execute(new ComposedCommand(cmds));
 
 		for (EvaluationCommand efCmd : cmds) {
-			List<IEvalElement> forms = efCmd.getFormulas();
-			List<IEvalResult> vals = efCmd.getValues();
+			IEvalElement formula = efCmd.getEvalElement();
+			IEvalResult value = efCmd.getValue();
 			StateId id = getVertex(efCmd.getStateId());
 
-			for (IEvalElement formula : forms) {
-				if (formulaRegistry.containsKey(formula)
-						&& !formulaRegistry.get(formula).isEmpty()) {
-					if (!values.containsKey(id)) {
-						values.put(id, new HashMap<IEvalElement, IEvalResult>());
-					}
-					values.get(id).put(formula,
-							vals.get(formulas.indexOf(formula)));
+			if (formulaRegistry.containsKey(formula)
+					&& !formulaRegistry.get(formula).isEmpty()) {
+				if (!values.containsKey(id)) {
+					values.put(id, new HashMap<IEvalElement, IEvalResult>());
 				}
-				result.get(id)
-						.put(formula, vals.get(formulas.indexOf(formula)));
+				values.get(id).put(formula, value);
 			}
+			result.get(id).put(formula, value);
 		}
 
 		return result;

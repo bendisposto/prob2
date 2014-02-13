@@ -190,9 +190,6 @@ public class EventB extends AbstractEvalElement {
 
 	@Override
 	public EvaluationCommand getCommand(final StateId stateId) {
-		/* TODO: we could do a more efficient implementation here */
-		ArrayList<IEvalElement> arrayList = new ArrayList<IEvalElement>();
-		arrayList.add(this);
-		return new EvaluateFormulasCommand(arrayList, stateId.getId());
+		return new EvaluateFormulasCommand(this, stateId.getId());
 	}
 }
