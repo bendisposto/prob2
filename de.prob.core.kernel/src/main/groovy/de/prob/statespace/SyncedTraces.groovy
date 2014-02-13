@@ -125,6 +125,7 @@ class SyncedTraces {
 		currentOpsOnH.each { op ->
 			if(syncedOps.contains(op.getName())) {
 				traces.each { trace ->
+					trace.ensureOpInfosEvaluated()
 					def op2 = trace.getOp(op.getName(),op.getParams())
 					if(op2==null) {
 						copy.remove(op)

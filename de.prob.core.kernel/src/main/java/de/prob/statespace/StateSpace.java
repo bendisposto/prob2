@@ -917,7 +917,16 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	public Set<OpInfo> evaluateOps(final Collection<OpInfo> ops) {
-		GetOpsFromIds cmd = new GetOpsFromIds(ops);
+		List<OpInfo> notEvaluated = new ArrayList<OpInfo>();
+		for (OpInfo opInfo : ops) {
+			if (!opInfo.isEvaluated()) {
+				notEvaluated.add(opInfo);
+			}
+		}
+		if (notEvaluated.isEmpty()) {
+			return new LinkedHashSet<OpInfo>(ops);
+		}
+		GetOpsFromIds cmd = new GetOpsFromIds(notEvaluated);
 		execute(cmd);
 		return new LinkedHashSet<OpInfo>(ops);
 	}

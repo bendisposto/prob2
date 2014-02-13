@@ -294,6 +294,9 @@ public class Trace {
 	}
 
 	def ensureOpInfosEvaluated() {
-		stateSpace.evaluateOps(head.getOpList());
+		def notEvaluated = head.getOpList().findAll { !it.isEvaluated() }
+		if(!notEvaluated.isEmpty()) {
+			stateSpace.evaluateOps(notEvaluated);
+		}
 	}
 }
