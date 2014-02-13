@@ -6,17 +6,17 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import de.prob.webconsole.WebConsole;
+import de.prob.webconsole.servlets.visualizations.IRefreshListener;
 
-public abstract class BrowserView extends ViewPart {
+public abstract class BrowserView extends ViewPart implements IRefreshListener {
 
 	private final int port;
-	private Browser browser;
 	private FXCanvas canvas;
+	private WebEngine engine;
 
 	public BrowserView() {
 		port = WebConsole.getPort();
@@ -34,9 +34,13 @@ public abstract class BrowserView extends ViewPart {
 		WebView browser = new WebView();
 		Scene scene = new Scene(browser);
 		canvas.setScene(scene);
-		WebEngine engine = browser.getEngine();
+		engine = browser.getEngine();
 		engine.setJavaScriptEnabled(true);
 		engine.load("http://localhost:" + port + "/sessions/" + getUrl());
+	}
+
+	public void refresh() {
+		engine.reload();
 	}
 
 	protected abstract String getUrl();
