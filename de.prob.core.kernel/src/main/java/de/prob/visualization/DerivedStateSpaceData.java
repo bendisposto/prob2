@@ -73,7 +73,7 @@ public class DerivedStateSpaceData extends AbstractData {
 
 	@Override
 	public void addNewLinks(final StateSpaceGraph graph,
-			final List<? extends OpInfo> newOps) {
+			final List<OpInfo> newOps) {
 		updateTransformers();
 		super.addNewLinks(graph, newOps);
 	}

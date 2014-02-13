@@ -8,7 +8,6 @@ import java.util.Set;
 
 import com.google.common.base.Joiner;
 
-import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
@@ -98,7 +97,7 @@ public class StateSpaceData extends AbstractData {
 
 	@Override
 	public void addNewLinks(final StateSpaceGraph graph,
-			final List<? extends OpInfo> newOps) {
+			final List<OpInfo> newOps) {
 		HashSet<StateId> ids = new HashSet<StateId>();
 		for (OpInfo newOp : newOps) {
 			ids.add(s.getVertex(newOp.getSrc()));
@@ -108,7 +107,7 @@ public class StateSpaceData extends AbstractData {
 
 		List<OpInfo> ops = new ArrayList<OpInfo>();
 		ops.addAll(newOps);
-		s.execute(new GetOpsFromIds(ops));
+		s.evaluateOps(ops);
 		for (OpInfo opInfo : ops) {
 			calculateInvariant(s, s.getVertex(opInfo.getSrc()));
 			calculateInvariant(s, s.getVertex(opInfo.getDest()));

@@ -177,8 +177,8 @@ public class Trace {
 	}
 
 	def String getOp(final String name, final List<String> params) {
-		Set<OpInfo> outgoingEdges = stateSpace
-				.getOutEdges(current.getCurrentState())
+		Set<OpInfo> outgoingEdges = stateSpace.evaluateOps(stateSpace
+				.getOutEdges(current.getCurrentState()));
 		String id = null
 		for (OpInfo op : outgoingEdges) {
 			if (op.getName().equals(name) && op.getParams().equals(params)) {
@@ -291,5 +291,9 @@ public class Trace {
 			return list.reverse()
 		}
 		throw new ClassCastException("Not able to convert Trace object to ${className}")
+	}
+
+	def ensureOpInfosEvaluated() {
+		stateSpace.evaluateOps(head.getOpList());
 	}
 }

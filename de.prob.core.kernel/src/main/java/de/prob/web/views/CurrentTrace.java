@@ -49,6 +49,7 @@ public class CurrentTrace extends AbstractSession implements
 				return;
 			}
 
+			trace.ensureOpInfosEvaluated();
 			TraceElement element = trace.getHead();
 			TraceElement current = trace.getCurrent();
 			String group = "future";

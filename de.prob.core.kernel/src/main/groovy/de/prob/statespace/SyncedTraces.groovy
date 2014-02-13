@@ -72,7 +72,7 @@ class SyncedTraces {
 
 	def SyncedTraces add(String opId, int index) {
 		def trace = traces.get(index)
-		def op = trace.stateSpace.getOp(opId)
+		def op = trace.stateSpace.getEvaluatedOpInfo(opId)
 		if(syncedOps.contains(op.getName())) {
 			return add(op.getName(),op.getParams())
 		}
@@ -138,6 +138,7 @@ class SyncedTraces {
 		sb.append("Operations:\n")
 		sb.append("synced: ${copy}\n")
 		traces.each { trace ->
+			trace.ensureOpInfosEvaluated()
 			sb.append("${traces.indexOf(trace)}: ")
 			def o = trace.stateSpace.getOutEdges(trace.current.getCurrentState())
 			def list = []

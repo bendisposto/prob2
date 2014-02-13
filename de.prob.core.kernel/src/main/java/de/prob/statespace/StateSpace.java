@@ -638,7 +638,15 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return ops;
 	}
 
-	public OpInfo getOp(final String id) {
+	/**
+	 * This method finds the specified {@link OpInfo} AND ensures that the
+	 * {@link OpInfo} has been evaluated as a side effect.
+	 * 
+	 * @param id
+	 *            String operation id
+	 * @return {@link OpInfo} specified by the id parameter
+	 */
+	public OpInfo getEvaluatedOpInfo(final String id) {
 		return ops.get(id).ensureEvaluated(this);
 	}
 
@@ -842,15 +850,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	@Override
 	public Set<OpInfo> getOutEdges(final StateId arg0) {
 		Collection<OpInfo> outgoingEdgesOf = super.getOutEdges(arg0);
-		List<OpInfo> notEvaluated = new ArrayList<OpInfo>();
-		for (OpInfo opInfo : outgoingEdgesOf) {
-			if (!opInfo.isEvaluated()) {
-				notEvaluated.add(opInfo);
-			}
-		}
-		if (!notEvaluated.isEmpty()) {
-			execute(new GetOpsFromIds(notEvaluated));
-		}
 		return new LinkedHashSet<OpInfo>(outgoingEdgesOf);
 	}
 
@@ -915,6 +914,12 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		GetOpsFromIds cmd = new GetOpsFromIds(edges);
 		execute(cmd);
 		return edges;
+	}
+
+	public Set<OpInfo> evaluateOps(final Collection<OpInfo> ops) {
+		GetOpsFromIds cmd = new GetOpsFromIds(ops);
+		execute(cmd);
+		return new LinkedHashSet<OpInfo>(ops);
 	}
 
 	/*

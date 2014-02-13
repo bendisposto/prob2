@@ -36,7 +36,7 @@ public abstract class AbstractData {
 	}
 
 	public void addNewLinks(final StateSpaceGraph graph,
-			final List<? extends OpInfo> newOps) {
+			final List<OpInfo> newOps) {
 		for (OpInfo opInfo : newOps) {
 			if (!links.containsKey(opInfo.getId())) {
 				if (!nodes.containsKey(opInfo.getSrc())) {
