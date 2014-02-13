@@ -135,7 +135,7 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("do_ltl_modelcheck");
+		pto.openTerm("prob2_do_ltl_modelcheck");
 		pto.printAtomOrNumber(stateid.getId());
 		evalElement.printProlog(pto);
 		pto.printNumber(max);

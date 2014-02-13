@@ -37,7 +37,7 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedInvariantCheckCommand.class);
 
-	private static final String COMMAND_NAME = "invariant_check";
+	private static final String COMMAND_NAME = "prob2_invariant_check";
 	private static final String RESULT_VARIABLE = "R";
 
 	private final Collection<String> events;

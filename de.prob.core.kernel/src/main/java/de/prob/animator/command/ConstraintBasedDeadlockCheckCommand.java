@@ -35,7 +35,7 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedDeadlockCheckCommand.class);
 
-	private static final String COMMAND_NAME = "deadlock_freedom_check";
+	private static final String COMMAND_NAME = "prob2_deadlock_freedom_check";
 	private static final String RESULT_VARIABLE = "R";
 
 	private IModelCheckingResult result;

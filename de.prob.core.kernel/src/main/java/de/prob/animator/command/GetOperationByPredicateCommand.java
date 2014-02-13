@@ -60,8 +60,8 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	 */
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("execute_custom_operations").printAtomOrNumber(stateId)
-				.printAtom(name);
+		pto.openTerm("prob2_execute_custom_operations")
+				.printAtomOrNumber(stateId).printAtom(name);
 		final ASTProlog prolog = new ASTProlog(pto, null);
 		evalElement.getAst().apply(prolog);
 		pto.printNumber(nrOfSolutions);

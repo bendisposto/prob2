@@ -226,7 +226,7 @@ public class Trace {
 
 	def Trace anyOperation(filter) {
 		def ops = new ArrayList<OpInfo>()
-		ops.addAll(stateSpace.getOutEdges(current.getCurrentState()));
+		ops.addAll(stateSpace.evaluateOps(stateSpace.getOutEdges(current.getCurrentState())));
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.name.matches(filter);

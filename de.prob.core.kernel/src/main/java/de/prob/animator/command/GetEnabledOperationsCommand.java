@@ -57,7 +57,7 @@ public final class GetEnabledOperationsCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("computeOperationsForState");
+		pto.openTerm("compute_operations_for_state");
 		pto.printAtomOrNumber(id);
 		pto.printVariable(OPERATIONS_VARIABLE);
 		pto.closeTerm();
