@@ -26,7 +26,11 @@ public class WebConsole {
 
 	private static int PORT = 8080;
 
-	public static void run(final String local) throws Exception {
+	public static void run(final String local, int port) throws Exception {
+
+		if (port > 0)
+			PORT = port;
+
 		WebConsole.run(new Runnable() {
 
 			@Override

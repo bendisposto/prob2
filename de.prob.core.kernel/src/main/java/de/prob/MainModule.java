@@ -112,6 +112,10 @@ public class MainModule extends AbstractModule {
 				.withDescription("Open URL in browser").create("browser");
 
 		@SuppressWarnings("static-access")
+		Option port = OptionBuilder.withArgName("port").hasArg()
+				.withDescription("Set specific port for UI").create("port");
+
+		@SuppressWarnings("static-access")
 		Option test = OptionBuilder
 				.withArgName("script/dir")
 				.hasArg()
@@ -129,6 +133,7 @@ public class MainModule extends AbstractModule {
 		mode.addOption(test);
 		options.addOptionGroup(mode);
 		options.addOption(browser);
+		options.addOption(port);
 		return options;
 	}
 

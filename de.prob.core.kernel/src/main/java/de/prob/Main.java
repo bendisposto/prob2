@@ -75,6 +75,7 @@ public class Main {
 
 	private void run(final String[] args) throws Throwable {
 		String url = "";
+		int port = -1;
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("browser")) {
@@ -82,7 +83,10 @@ public class Main {
 				url = line.getOptionValue("browser");
 				logger.debug("Browser started");
 			}
-			runServer(url);
+			if (line.hasOption("port")) {
+				port = Integer.parseInt(line.getOptionValue("port"));
+			}
+			runServer(url, port);
 			if (line.hasOption("shell")) {
 				while (true) {
 					Thread.sleep(10);
@@ -99,14 +103,14 @@ public class Main {
 		}
 	}
 
-	private void runServer(final String url) {
+	private void runServer(final String url, final int port) {
 		logger.debug("Shell");
 		Thread thread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				try {
-					WebConsole.run(url);
+					WebConsole.run(url, port);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
