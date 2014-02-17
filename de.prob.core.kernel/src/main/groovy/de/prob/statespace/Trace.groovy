@@ -177,8 +177,8 @@ public class Trace {
 	}
 
 	def String getOp(final String name, final List<String> params) {
-		Set<OpInfo> outgoingEdges = stateSpace
-				.getOutEdges(current.getCurrentState())
+		Set<OpInfo> outgoingEdges = stateSpace.evaluateOps(stateSpace
+				.getOutEdges(current.getCurrentState()));
 		String id = null
 		for (OpInfo op : outgoingEdges) {
 			if (op.getName().equals(name) && op.getParams().equals(params)) {
@@ -226,7 +226,7 @@ public class Trace {
 
 	def Trace anyOperation(filter) {
 		def ops = new ArrayList<OpInfo>()
-		ops.addAll(stateSpace.getOutEdges(current.getCurrentState()));
+		ops.addAll(stateSpace.evaluateOps(stateSpace.getOutEdges(current.getCurrentState())));
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.name.matches(filter);
@@ -291,5 +291,12 @@ public class Trace {
 			return list.reverse()
 		}
 		throw new ClassCastException("Not able to convert Trace object to ${className}")
+	}
+
+	def ensureOpInfosEvaluated() {
+		def notEvaluated = head.getOpList().findAll { !it.isEvaluated() }
+		if(!notEvaluated.isEmpty()) {
+			stateSpace.evaluateOps(notEvaluated);
+		}
 	}
 }

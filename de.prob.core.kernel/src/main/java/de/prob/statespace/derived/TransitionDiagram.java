@@ -20,12 +20,12 @@ public class TransitionDiagram extends AbstractDerivedStateSpace {
 	}
 
 	@Override
-	public void newTransitions(final List<? extends OpInfo> newOps) {
+	public void newTransitions(final List<OpInfo> newOps) {
 		CalculateTransitionDiagramCommand cmd = new CalculateTransitionDiagramCommand(
 				expression);
 		stateSpace.execute(cmd);
 		addStates(cmd.getStates());
-		List<DerivedOp> nOps = addTransitions(cmd.getOps());
+		List<OpInfo> nOps = addTransitions(cmd.getOps());
 		setNodeColors(cmd.getNodeColors());
 		setTransColor(cmd.getTransColor());
 		setTransStyle(cmd.getTransStyle());

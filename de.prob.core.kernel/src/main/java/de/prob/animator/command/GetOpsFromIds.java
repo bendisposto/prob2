@@ -18,7 +18,7 @@ public class GetOpsFromIds extends AbstractCommand {
 		for (OpInfo opInfo : edges) {
 			if (!opInfo.isEvaluated()) {
 				toCheck.add(opInfo);
-				cmds.add(new GetOpFromId(opInfo.id));
+				cmds.add(new GetOpFromId(opInfo.getId()));
 			}
 		}
 		List<AbstractCommand> cs = new ArrayList<AbstractCommand>(cmds);

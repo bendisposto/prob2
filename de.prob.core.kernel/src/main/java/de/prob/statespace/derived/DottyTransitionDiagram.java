@@ -28,7 +28,7 @@ public class DottyTransitionDiagram extends AbstractDottyGraph {
 	}
 
 	@Override
-	public void newTransitions(final List<? extends OpInfo> newOps) {
+	public void newTransitions(final List<OpInfo> newOps) {
 		if (!newOps.isEmpty()) {
 			calculate();
 			notifyStateSpaceChange(newOps);

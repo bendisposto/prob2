@@ -108,7 +108,7 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 			int i = 0;
 			for (final PrologTerm opTerm : operationIds) {
 				if (opTerm instanceof CompoundPrologTerm) {
-					initPath[i] = new OpInfo((CompoundPrologTerm) opTerm);
+					// initPath[i] = new OpInfo((CompoundPrologTerm) opTerm);
 				} else {
 					throw new ClassCastException(
 							"LTL model check returned invalid result");
@@ -135,7 +135,7 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("do_ltl_modelcheck");
+		pto.openTerm("prob2_do_ltl_modelcheck");
 		pto.printAtomOrNumber(stateid.getId());
 		evalElement.printProlog(pto);
 		pto.printNumber(max);

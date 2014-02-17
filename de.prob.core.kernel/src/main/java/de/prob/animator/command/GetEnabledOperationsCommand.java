@@ -49,14 +49,15 @@ public final class GetEnabledOperationsCommand extends AbstractCommand {
 				.get(OPERATIONS_VARIABLE);
 		for (PrologTerm op : prologTerm) {
 			CompoundPrologTerm cpt;
-			cpt = BindingGenerator.getCompoundTerm(op, 8);
-			enabledOperations.add(new OpInfo(cpt));
+			cpt = BindingGenerator.getCompoundTerm(op, 3);
+			enabledOperations.add(OpInfo
+					.createOpInfoFromCompoundPrologTerm(cpt));
 		}
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("computeOperationsForState");
+		pto.openTerm("compute_operations_for_state");
 		pto.printAtomOrNumber(id);
 		pto.printVariable(OPERATIONS_VARIABLE);
 		pto.closeTerm();

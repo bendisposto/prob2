@@ -34,14 +34,10 @@ public class GetNewestStateSpaceEdges extends AbstractCommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		newOps = new ArrayList<OpInfo>();
-		long last = this.last;
 		for (PrologTerm prologTerm : (ListPrologTerm) bindings.get(NEW)) {
 			CompoundPrologTerm op = BindingGenerator.getCompoundTerm(
 					prologTerm, OP_ARITY);
-			String id = OpInfo.getIdFromPrologTerm(op.getArgument(1));
-			String src = OpInfo.getIdFromPrologTerm(op.getArgument(2));
-			String dest = OpInfo.getIdFromPrologTerm(op.getArgument(3));
-			newOps.add(new OpInfo(id, src, dest));
+			newOps.add(OpInfo.createOpInfoFromCompoundPrologTerm(op));
 		}
 	}
 

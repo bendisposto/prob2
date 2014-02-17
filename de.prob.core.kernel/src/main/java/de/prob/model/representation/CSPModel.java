@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractModel;
+import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
 public class CSPModel extends AbstractModel {
@@ -56,5 +56,10 @@ public class CSPModel extends AbstractModel {
 	@Override
 	public IEvalElement parseFormula(final String formula) {
 		return new CSP(formula, this);
+	}
+
+	@Override
+	public FormalismType getFormalismType() {
+		return FormalismType.CSP;
 	}
 }

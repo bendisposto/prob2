@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
-import de.prob.animator.command.EvaluateFormulasCommand;
+import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.formula.TranslationVisitor;
 import de.prob.model.representation.FormulaUUID;
@@ -190,6 +190,6 @@ public class EventB extends AbstractEvalElement {
 
 	@Override
 	public EvaluationCommand getCommand(final StateId stateId) {
-		return new EvaluateFormulasCommand(this, stateId.getId());
+		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
 }

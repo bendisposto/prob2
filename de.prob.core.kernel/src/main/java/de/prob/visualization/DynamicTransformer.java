@@ -41,11 +41,11 @@ public class DynamicTransformer extends Transformer implements
 	}
 
 	@Override
-	public void newTransitions(final List<? extends OpInfo> newOps) {
+	public void newTransitions(final List<OpInfo> newOps) {
 		List<StateId> toFilter = new ArrayList<StateId>();
 		for (OpInfo opInfo : newOps) {
-			StateId src = space.getVertex(opInfo.src);
-			StateId dest = space.getVertex(opInfo.dest);
+			StateId src = space.getVertex(opInfo.getSrc());
+			StateId dest = space.getVertex(opInfo.getDest());
 			if (!filtered.contains(src)) {
 				toFilter.add(src);
 			}
@@ -64,8 +64,9 @@ public class DynamicTransformer extends Transformer implements
 	}
 
 	private String recalculateSelector(final List<String> f) {
-		if (f.isEmpty())
+		if (f.isEmpty()) {
 			return selector;
+		}
 
 		List<String> toConvert = new ArrayList<String>();
 		for (String string : f) {
@@ -73,8 +74,9 @@ public class DynamicTransformer extends Transformer implements
 			toConvert.add("#s" + string);
 		}
 		String newSelector = Joiner.on(",").join(toConvert);
-		if (selector.equals(""))
+		if (selector.equals("")) {
 			return newSelector;
+		}
 		return selector + "," + newSelector;
 	}
 

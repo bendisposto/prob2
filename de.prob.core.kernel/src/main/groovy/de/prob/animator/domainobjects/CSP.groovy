@@ -5,7 +5,7 @@ package de.prob.animator.domainobjects
 import com.google.gson.Gson
 
 import de.prob.Main
-import de.prob.animator.command.EvaluateFormulasCommand
+import de.prob.animator.command.EvaluateFormulaCommand
 import de.prob.animator.command.EvaluationCommand
 import de.prob.model.representation.CSPModel
 import de.prob.model.representation.FormulaUUID
@@ -115,11 +115,11 @@ class CSP implements IEvalElement {
 	public FormulaUUID getFormulaId() {
 		return uuid;
 	}
-	
+
 	public EvaluationCommand getCommand(StateId stateId) {
 		/* TODO: we could do a more efficient implementation here */
 		ArrayList<IEvalElement> arrayList = new ArrayList<IEvalElement>();
 		arrayList.add(this);
-		return new EvaluateFormulasCommand(arrayList, stateId.getId());
+		return new EvaluateFormulaCommand(arrayList, stateId.getId());
 	}
 }

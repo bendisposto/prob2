@@ -96,14 +96,15 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 				updateModel(trace);
 			}
 			currentTrace = trace;
-			Set<OpInfo> ops = trace.getNextTransitions();
+			Set<OpInfo> ops = currentTrace.getStateSpace().evaluateOps(
+					trace.getNextTransitions());
 			events = new ArrayList<Operation>(ops.size());
 			Set<String> notEnabled = new HashSet<String>(opNames);
 			for (OpInfo opInfo : ops) {
-				String name = opInfo.name;
+				String name = opInfo.getName();
 				notEnabled.remove(name);
-				Operation o = new Operation(opInfo.id, name, opInfo.params,
-						true);
+				Operation o = new Operation(opInfo.getId(), name,
+						opInfo.getParams(), true);
 				events.add(o);
 			}
 			for (String s : notEnabled) {
