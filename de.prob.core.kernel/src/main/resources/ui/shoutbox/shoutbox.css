@@ -14,9 +14,10 @@ em {
 }
 
 #shout {
-	width: 90%;
+	width: 80%;
+	float:left;
+	margin-right: 4px;
 }
-
 .future {
     font-style: italic;
     color: #888;
