@@ -15,9 +15,7 @@ public class LoadEventBProjectCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		long time = System.currentTimeMillis();
 		translator.printProlog(pto);
-		System.out.println("Prolog: " + (System.currentTimeMillis() - time));
 	}
 
 	@Override
