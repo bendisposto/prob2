@@ -63,7 +63,7 @@ class Observer implements IBMotionScript {
 	def executeOperation(observer, formulas, trace) {
 		def jsonObserver = new com.google.gson.Gson().toJson(observer)
 		def jsonFormulas = new com.google.gson.Gson().toJson(formulas)
-		bmssession.toVisualization("executeOperation("+jsonObserver+","+jsonFormulas+")")
+		bmssession.toVisualization(["executeOperation("+jsonObserver+","+jsonFormulas+")"])
 	}
 	
 	def getCharForNumber(i) {
