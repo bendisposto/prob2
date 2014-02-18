@@ -10,16 +10,19 @@ Shoutbox = (function() {
 			$("#content").prepend(Mustache.render(pattern, lines[i]))
 		}
 	}
+
+	$(document).ready(function() {
+		$("#send").click(function(e) {
+			var text = $("#shout").val()
+			session.sendCmd("addText", {
+				"text" : text
+			})
+		})
+	});
+
 	function append(text) {
 		var line = JSON.parse(text)
-		$("#content").prepend(Mustache.render(pattern,line))
-	}
-
-	function send() {
-		var text = $("#shout").val()
-		session.sendCmd("addText", {
-			"text" : text
-		})
+		$("#content").prepend(Mustache.render(pattern, line))
 	}
 
 	extern.setText = function(data) {
