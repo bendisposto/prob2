@@ -24,7 +24,8 @@ import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateSpace;
 
-public final class LtlCheckingCommand extends EvaluationCommand {
+public final class LtlCheckingCommand extends EvaluationCommand implements
+		IStateSpaceModifier {
 
 	private static final String VARIABLE_NAME_RESULT = "R";
 
@@ -129,6 +130,15 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 		LtlCheckingCommand cmd = new LtlCheckingCommand(formula, max);
 		s.execute(cmd);
 		return cmd.getResult();
+	}
+
+	@Override
+	public List<OpInfo> getNewTransitions() {
+		List<OpInfo> newOps = new ArrayList<OpInfo>();
+		if (result instanceof LTLCounterExample) {
+			newOps.addAll(((LTLCounterExample) result).getOpList());
+		}
+		return newOps;
 	}
 
 }

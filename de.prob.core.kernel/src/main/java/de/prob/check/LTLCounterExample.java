@@ -1,5 +1,6 @@
 package de.prob.check;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.prob.animator.command.LtlCheckingCommand.PathType;
@@ -39,6 +40,13 @@ public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 
 	public PathType getPathType() {
 		return pathType;
+	}
+
+	public List<OpInfo> getOpList() {
+		List<OpInfo> ops = new ArrayList<OpInfo>();
+		ops.addAll(pathToCE);
+		ops.addAll(counterExample);
+		return ops;
 	}
 
 	@Override

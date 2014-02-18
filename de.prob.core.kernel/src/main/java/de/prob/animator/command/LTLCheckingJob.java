@@ -1,39 +1,35 @@
 package de.prob.animator.command;
 
+import de.prob.animator.domainobjects.LTL;
 import de.prob.check.IModelCheckingResult;
-import de.prob.check.ModelCheckingOptions;
-import de.prob.check.NotYetFinished;
-import de.prob.check.StateSpaceStats;
+import de.prob.check.LTLNotYetFinished;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.StateSpace;
 import de.prob.web.views.ModelCheckingUI;
 
-public class ModelCheckingJob extends AbstractCommand {
+public class LTLCheckingJob extends AbstractCommand {
 
-	private static final int TIME = 500;
-	private final String jobId;
+	private static final int MAX = 500;
+
 	private final StateSpace s;
-	private ModelCheckingOptions options;
-	private ModelCheckingStepCommand cmd;
-	private boolean completed = false;
-	private final long last;
-	private IModelCheckingResult res;
-	private StateSpaceStats stats;
+	private final LTL formula;
+	private final String jobId;
 	private final ModelCheckingUI ui;
 
-	private long time = -1;
+	private IModelCheckingResult res;
+	private LtlCheckingCommand cmd;
+	private long time;
+	private boolean completed;
 
-	public ModelCheckingJob(final StateSpace s,
-			final ModelCheckingOptions options, final String jobId,
-			final ModelCheckingUI ui) {
+	public LTLCheckingJob(final StateSpace s, final LTL formula,
+			final String jobId, final ModelCheckingUI ui) {
 		this.s = s;
-		this.options = options;
+		this.formula = formula;
 		this.jobId = jobId;
 		this.ui = ui;
-		last = s.getLastCalculatedStateId();
-		cmd = new ModelCheckingStepCommand(TIME, options, last);
+		cmd = new LtlCheckingCommand(formula, MAX);
 	}
 
 	@Override
@@ -50,7 +46,7 @@ public class ModelCheckingJob extends AbstractCommand {
 			s.endTransaction();
 			if (ui != null) {
 				ui.isFinished(jobId, System.currentTimeMillis() - time, res,
-						stats);
+						null);
 			}
 			return;
 		}
@@ -63,17 +59,15 @@ public class ModelCheckingJob extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		cmd.processResult(bindings);
 		res = cmd.getResult();
-		stats = cmd.getStats();
 		if (ui != null) {
-			ui.updateStats(jobId, System.currentTimeMillis() - time, res, stats);
+			ui.updateStats(jobId, System.currentTimeMillis() - time, res, null);
 		}
-		completed = !(res instanceof NotYetFinished);
+		completed = !(res instanceof LTLNotYetFinished);
 		if (completed) {
 			s.endTransaction();
 		}
 
-		options = options.recheckExisting(false);
-		cmd = new ModelCheckingStepCommand(TIME, options, last);
+		cmd = new LtlCheckingCommand(formula, MAX);
 	}
 
 	public IModelCheckingResult getResult() {
@@ -82,11 +76,7 @@ public class ModelCheckingJob extends AbstractCommand {
 
 	@Override
 	public boolean isCompleted() {
-		return completed;
-	}
-
-	public StateSpaceStats getStats() {
-		return stats;
+		return true;
 	}
 
 }

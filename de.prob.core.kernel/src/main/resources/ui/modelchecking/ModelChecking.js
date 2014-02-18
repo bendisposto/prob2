@@ -66,6 +66,7 @@ ModelChecking = (function() {
     }
 
     function updateJob(id,data) {
+        data.stats = data.stats === "true"
         $("#"+id+"-in").replaceWith(session.render("/ui/modelchecking/working.html", data))
         $("#"+id+"-cancel").click(function(e) {
             session.sendCmd(session.sendCmd("cancel", {

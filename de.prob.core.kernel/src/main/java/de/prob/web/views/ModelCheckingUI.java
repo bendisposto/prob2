@@ -68,13 +68,21 @@ public class ModelCheckingUI extends AbstractSession implements
 			final IModelCheckingResult result, final StateSpaceStats stats) {
 		results.put(id, result);
 
-		int nrProcessedNodes = stats.getNrProcessedNodes();
-		int nrTotalNodes = stats.getNrTotalNodes();
-		int percent = nrProcessedNodes * 100 / nrTotalNodes;
-		submit(WebUtils.wrap("cmd", "ModelChecking.updateJob", "id", id,
-				"processedNodes", nrProcessedNodes, "totalNodes", nrTotalNodes,
-				"totalTransitions", stats.getNrTotalTransitions(), "percent",
-				percent, "time", timeElapsed));
+		boolean hasStats = stats != null;
+
+		if (hasStats) {
+			int nrProcessedNodes = stats.getNrProcessedNodes();
+			int nrTotalNodes = stats.getNrTotalNodes();
+			int percent = nrProcessedNodes * 100 / nrTotalNodes;
+			submit(WebUtils.wrap("cmd", "ModelChecking.updateJob", "id", id,
+					"stats", hasStats, "processedNodes", nrProcessedNodes,
+					"totalNodes", nrTotalNodes, "totalTransitions",
+					stats.getNrTotalTransitions(), "percent", percent, "time",
+					timeElapsed));
+		} else {
+			submit(WebUtils.wrap("cmd", "ModelChecking.updateJob", "id", id,
+					"stats", hasStats, "percent", 100, "time", timeElapsed));
+		}
 	}
 
 	public void isFinished(final String id, final long timeElapsed,
