@@ -6,87 +6,83 @@
 
 package de.prob.animator.command;
 
-import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.LtlCheckingResult;
+import java.util.ArrayList;
+import java.util.List;
+
+import de.prob.animator.domainobjects.LTL;
+import de.prob.check.IModelCheckingResult;
+import de.prob.check.LTLCounterExample;
+import de.prob.check.LTLError;
+import de.prob.check.LTLNotYetFinished;
+import de.prob.check.LTLOk;
+import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 
-/**
- * @ Andriy: Das ist jetzt deine Baustelle :)
- */
 public final class LtlCheckingCommand extends EvaluationCommand {
 
-	private static final String VARIABLE_NAME_ATOMICS = "A";
-	private static final String VARIABLE_NAME_STRUCTURE = "S";
 	private static final String VARIABLE_NAME_RESULT = "R";
-
-	public static enum StartMode {
-		init, // checks formula in initialisation state(s)
-		starthere, // checks formula in current state
-		checkhere /*
-				 * start in initialisation state(s) and check the formula in
-				 * current state
-				 */
-	};
-
-	public static enum Status {
-		incomplete(false), ok(true), counterexample(true), nostart(true), typeerror(
-				true);
-		private final boolean abort;
-
-		private Status(final boolean abort) {
-			this.abort = abort;
-		}
-
-		public boolean isAbort() {
-			return abort;
-		}
-	}
 
 	public static enum PathType {
 		INFINITE, FINITE, REDUCED
 	};
 
 	private final int max;
-	private final StartMode mode;
-	private LtlCheckingResult result;
-	private final StateId stateid;
+	private IModelCheckingResult result;
+	private final LTL ltlFormula;
 
-	public LtlCheckingCommand(final IEvalElement ltlFormula, final int max,
-			final StartMode mode, final StateId stateid) {
-		super(ltlFormula, stateid.getId());
+	public LtlCheckingCommand(final LTL ltlFormula, final int max) {
+		super(ltlFormula, null);
+		this.ltlFormula = ltlFormula;
 		this.max = max;
-		this.mode = mode;
-		this.stateid = stateid;
 	}
 
-	public LtlCheckingResult getResult() {
+	public IModelCheckingResult getResult() {
 		return result;
 	}
 
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		CompoundPrologTerm term = (CompoundPrologTerm) bindings
-				.get(VARIABLE_NAME_RESULT);
+		PrologTerm term = bindings.get(VARIABLE_NAME_RESULT);
 
-		final Status status = Enum.valueOf(Status.class, term.getFunctor());
+		if (term.hasFunctor("ok", 0)) {
+			LTLOk res = new LTLOk(ltlFormula);
+			result = res;
+			value = res;
+		} else if (term.hasFunctor("nostart", 0)) {
+			LTLError res = new LTLError(ltlFormula,
+					"Could not find initialisation. Try to animating the model.");
+			result = res;
+			value = res;
+		} else if (term.hasFunctor("typeerror", 0)) {
+			LTLError res = new LTLError(ltlFormula,
+					"Type error discovered in formula");
+			result = res;
+			value = res;
+		} else if (term.hasFunctor("incomplete", 0)) {
+			LTLNotYetFinished res = new LTLNotYetFinished(ltlFormula);
+			result = res;
+			value = res;
+		} else if (term.hasFunctor("counterexample", 3)) {
+			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(term, 3);
+			List<OpInfo> counterExample = new ArrayList<OpInfo>();
+			List<OpInfo> pathToCE = new ArrayList<OpInfo>();
 
-		final ListPrologTerm counterexample;
-		final PathType pathType;
-		final int loopEntry;
-		final OpInfo[] initPath;
-		if (term.hasFunctor("counterexample", 3)) {
-			counterexample = (ListPrologTerm) term.getArgument(1);
-			CompoundPrologTerm loopStatus = (CompoundPrologTerm) term
-					.getArgument(2);
+			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(1))) {
+				counterExample.add(OpInfo
+						.createOpInfoFromCompoundPrologTerm(BindingGenerator
+								.getCompoundTerm(pt, 3)));
+			}
+
+			PathType pathType;
+			int loopEntry;
+			PrologTerm loopStatus = cpt.getArgument(2);
 			if (loopStatus.hasFunctor("no_loop", 0)) {
 				pathType = PathType.REDUCED;
 				loopEntry = -1;
@@ -102,55 +98,35 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 						"LTL model check returned unexpected loop status: "
 								+ loopStatus);
 			}
-			final ListPrologTerm operationIds = (ListPrologTerm) term
-					.getArgument(3);
-			initPath = new OpInfo[operationIds.size()];
-			int i = 0;
-			for (final PrologTerm opTerm : operationIds) {
-				if (opTerm instanceof CompoundPrologTerm) {
-					// initPath[i] = new OpInfo((CompoundPrologTerm) opTerm);
-				} else {
-					throw new ClassCastException(
-							"LTL model check returned invalid result");
-				}
-				i++;
+
+			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(3))) {
+				pathToCE.add(OpInfo
+						.createOpInfoFromCompoundPrologTerm(BindingGenerator
+								.getCompoundTerm(pt, 3)));
 			}
+
+			LTLCounterExample res = new LTLCounterExample(ltlFormula, pathToCE,
+					counterExample, loopEntry, pathType);
+			result = res;
+			value = res;
 		} else {
-			counterexample = null;
-			pathType = null;
-			loopEntry = -1;
-			initPath = null;
+			throw new RuntimeException("Unknown result from LTL checking: "
+					+ term.toString());
 		}
-
-		final ListPrologTerm atomics = (ListPrologTerm) bindings
-				.get(VARIABLE_NAME_ATOMICS);
-		final PrologTerm structure = bindings.get(VARIABLE_NAME_STRUCTURE);
-		final boolean noStructure = (structure instanceof ListPrologTerm)
-				&& ((ListPrologTerm) structure).isEmpty();
-
-		value = new LtlCheckingResult(evalElement, status, atomics,
-				noStructure ? null : structure, counterexample, pathType,
-				loopEntry, initPath, stateid);
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("prob2_do_ltl_modelcheck");
-		pto.printAtomOrNumber(stateid.getId());
 		evalElement.printProlog(pto);
 		pto.printNumber(max);
-		pto.printAtom(mode.toString());
-		pto.printVariable(VARIABLE_NAME_ATOMICS);
-		pto.printVariable(VARIABLE_NAME_STRUCTURE);
 		pto.printVariable(VARIABLE_NAME_RESULT);
 		pto.closeTerm();
 	}
 
-	public static LtlCheckingResult modelCheck(final StateSpace s,
-			final IEvalElement formula, final int max,
-			final StartMode startMode, final StateId stateId) {
-		LtlCheckingCommand cmd = new LtlCheckingCommand(formula, max,
-				startMode, stateId);
+	public static IModelCheckingResult modelCheck(final StateSpace s,
+			final LTL formula, final int max) {
+		LtlCheckingCommand cmd = new LtlCheckingCommand(formula, max);
 		s.execute(cmd);
 		return cmd.getResult();
 	}
