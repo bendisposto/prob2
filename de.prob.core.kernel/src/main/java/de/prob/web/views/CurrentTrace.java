@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.annotations.PublicSession;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
@@ -22,6 +23,7 @@ import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 @Singleton
+@PublicSession
 public class CurrentTrace extends AbstractSession implements
 		IAnimationChangeListener {
 

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventParameter;
 import de.prob.model.representation.AbstractElement;
@@ -34,6 +35,7 @@ import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
+@PublicSession
 @Singleton
 public class Events extends AbstractSession implements IAnimationChangeListener {
 

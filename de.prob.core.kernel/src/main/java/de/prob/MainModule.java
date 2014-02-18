@@ -107,6 +107,9 @@ public class MainModule extends AbstractModule {
 		Option shell = new Option("s", "shell", false,
 				"start ProB's Groovy shell");
 
+		Option restricted = new Option("local",
+				"Free access to Groovy shell. Interface will be bound to 127.0.0.1");
+
 		@SuppressWarnings("static-access")
 		Option browser = OptionBuilder.withArgName("url").hasArg()
 				.withDescription("Open URL in browser").create("browser");
@@ -134,6 +137,7 @@ public class MainModule extends AbstractModule {
 		options.addOptionGroup(mode);
 		options.addOption(browser);
 		options.addOption(port);
+		options.addOption(restricted);
 		return options;
 	}
 

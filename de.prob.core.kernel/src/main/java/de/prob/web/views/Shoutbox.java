@@ -13,9 +13,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Singleton;
 
+import de.prob.annotations.PublicSession;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
+@PublicSession
 @Singleton
 public class Shoutbox extends AbstractSession {
 

@@ -30,6 +30,7 @@ import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.annotations.PublicSession;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
@@ -43,6 +44,7 @@ import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
+@PublicSession
 public class BMotionStudioSession extends AbstractSession implements
 		IAnimationChangeListener, IModelChangedListener {
 
@@ -186,7 +188,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				return;
 
 			}
-	
+
 			currentTrace = trace;
 			currentModel = trace.getModel();
 
@@ -195,7 +197,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			if (formulasForEvaluating.containsValue(null)) {
 				registerFormulas(currentModel);
 			}
-			
+
 			// Collect results of subscibred formulas
 			formulas.clear();
 			Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
