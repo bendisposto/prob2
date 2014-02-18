@@ -6,9 +6,6 @@
 
 package de.prob.animator.command;
 
-import java.util.List;
-
-import de.prob.animator.IAnimator;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.LtlCheckingResult;
 import de.prob.parser.ISimplifiedROMap;
@@ -19,6 +16,7 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
+import de.prob.statespace.StateSpace;
 
 /**
  * @ Andriy: Das ist jetzt deine Baustelle :)
@@ -61,22 +59,12 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 	private LtlCheckingResult result;
 	private final StateId stateid;
 
-	public LtlCheckingCommand(final List<IEvalElement> ltlFormula,
-			final int max,
+	public LtlCheckingCommand(final IEvalElement ltlFormula, final int max,
 			final StartMode mode, final StateId stateid) {
 		super(ltlFormula, stateid.getId());
 		this.max = max;
 		this.mode = mode;
 		this.stateid = stateid;
-	}
-
-	public static LtlCheckingResult modelCheck(final IAnimator a,
-			final List<IEvalElement> fomula, final int max,
-			final StartMode mode, final StateId stateid) {
-		LtlCheckingCommand command = new LtlCheckingCommand(fomula, max, mode,
-				stateid);
-		a.execute(command);
-		return command.getResult();
 	}
 
 	public LtlCheckingResult getResult() {
@@ -120,7 +108,7 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 			int i = 0;
 			for (final PrologTerm opTerm : operationIds) {
 				if (opTerm instanceof CompoundPrologTerm) {
-					initPath[i] = new OpInfo((CompoundPrologTerm) opTerm);
+					// initPath[i] = new OpInfo((CompoundPrologTerm) opTerm);
 				} else {
 					throw new ClassCastException(
 							"LTL model check returned invalid result");
@@ -140,25 +128,31 @@ public final class LtlCheckingCommand extends EvaluationCommand {
 		final boolean noStructure = (structure instanceof ListPrologTerm)
 				&& ((ListPrologTerm) structure).isEmpty();
 
-		result = new LtlCheckingResult(evalElements.get(0), status, atomics,
-				noStructure ? null
-				: structure,
- counterexample, pathType, loopEntry, initPath,
-				stateid);
-		values.add(result);
+		value = new LtlCheckingResult(evalElement, status, atomics,
+				noStructure ? null : structure, counterexample, pathType,
+				loopEntry, initPath, stateid);
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("do_ltl_modelcheck");
+		pto.openTerm("prob2_do_ltl_modelcheck");
 		pto.printAtomOrNumber(stateid.getId());
-		evalElements.get(0).printProlog(pto);
+		evalElement.printProlog(pto);
 		pto.printNumber(max);
 		pto.printAtom(mode.toString());
 		pto.printVariable(VARIABLE_NAME_ATOMICS);
 		pto.printVariable(VARIABLE_NAME_STRUCTURE);
 		pto.printVariable(VARIABLE_NAME_RESULT);
 		pto.closeTerm();
+	}
+
+	public static LtlCheckingResult modelCheck(final StateSpace s,
+			final IEvalElement formula, final int max,
+			final StartMode startMode, final StateId stateId) {
+		LtlCheckingCommand cmd = new LtlCheckingCommand(formula, max,
+				startMode, stateId);
+		s.execute(cmd);
+		return cmd.getResult();
 	}
 
 }

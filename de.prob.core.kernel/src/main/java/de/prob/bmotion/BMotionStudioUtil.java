@@ -23,7 +23,8 @@ import de.prob.web.WebUtils;
 
 public class BMotionStudioUtil {
 
-	public static Map<String, Object> getJsonDataForRendering(final Trace currentTrace) {
+	public static Map<String, Object> getJsonDataForRendering(
+			final Trace currentTrace) {
 
 		Map<String, Object> modelMap = new HashMap<String, Object>();
 		Map<String, Object> fMap = new HashMap<String, Object>();
@@ -75,6 +76,7 @@ public class BMotionStudioUtil {
 
 		// Add trace
 		List<Map<String, Object>> trace = new ArrayList<Map<String, Object>>();
+		currentTrace.ensureOpInfosEvaluated();
 		List<OpInfo> opList = currentTrace.getCurrent().getOpList();
 		for (OpInfo op : opList) {
 			Map<String, Object> opm = new HashMap<String, Object>();
@@ -93,7 +95,7 @@ public class BMotionStudioUtil {
 		return modelMap;
 
 	}
-	
+
 	public static Map<String, Object> getBInvariantsAsJson(final Trace trace,
 			final EventBModel model) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -167,7 +169,7 @@ public class BMotionStudioUtil {
 		}
 		return map;
 	}
-	
+
 	private static String getOpString(final OpInfo op) {
 
 		String opName = op.getName();

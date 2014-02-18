@@ -131,11 +131,14 @@ public abstract class AbstractSession implements ISession {
 
 	protected void resend(final String client, final int lastinfo,
 			final AsyncContext context) {
+		if (responses.isEmpty()) {
+			return;
+		}
 		Message m = null;
 		if (incrementalUpdate || lastinfo > 0) {
 			Message lm = responses.get(responses.size() - 1);
 			ArrayList<Object> cp = new ArrayList<Object>();
-			for (int i = lastinfo; i < responses.size(); i++) {
+			for (int i = Math.max(lastinfo, 0); i < responses.size(); i++) {
 				Message message = responses.get(i);
 				Object[] content = message.content;
 				for (int j = 0; j < content.length; j++) {

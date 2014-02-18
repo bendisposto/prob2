@@ -42,7 +42,7 @@ public class StateSpaceGraph {
 
 	public boolean addEdge(final OpInfo with, final StateId from,
 			final StateId to) {
-		ops.put(with.id, with);
+		ops.put(with.getId(), with);
 		return graph.addEdge(with, from, to);
 	}
 

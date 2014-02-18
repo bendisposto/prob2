@@ -4,6 +4,13 @@ ModelChecking = (function() {
     var mode = ""
 
     $(document).ready(function() {
+        $(window).keydown(function(event){
+            if(event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        })
+
         $(".op-btn").click(function(e) {
             var id = "#" + e.target.id + "-mode"
             $("#open-new").modal('hide')
@@ -11,17 +18,24 @@ ModelChecking = (function() {
             $(id).removeClass("invisible")
             $("#submit-job").unbind()
             var mode = e.currentTarget.id
+            $("#submit-job").prop("disabled", $(id).hasClass("parse-incorrect"))
             $("#submit-job").click(function(e) {
                 session.sendCmd("startJob", {
                     "check-mode": mode
                 })
             })
             $("#open-new").modal('show')
-
         })
 
         $(".option").click(function(e) {
             toggleOption(e.target.id)
+        })
+
+        $(".form-control").keyup(function(e) {
+            session.sendCmd("parse", {
+                "formula" : e.target.value,
+                "id" : e.target.parentNode.id
+            })
         })
     })
 
@@ -82,10 +96,13 @@ ModelChecking = (function() {
         }
     }
     
-    function changeStateSpaces(ssId, events) {
+    function changeStateSpaces(ssId, events, withCBC) {
         $(".job").addClass("invisible")
         $(".result").addClass("invisible")
         $("."+ssId).removeClass("invisible")
+        if(!withCBC) {
+            $("#cbc-inv").addClass("invisible")
+        }
         $("#cbc-inv-event-list").replaceWith(session.render("/ui/modelchecking/cbc-inv-list.html", {"events": events}))
         $(".cbc-inv-event").click(function(e) {
             if($(e.currentTarget).hasClass("event-selected")) {
@@ -102,6 +119,18 @@ ModelChecking = (function() {
         })
     }
 
+    function parseOk(id) {
+        $("#"+id).removeClass("has-error")
+        $("#submit-job").prop("disabled", false)
+        $("#"+id).parent().removeClass("parse-incorrect")
+    }
+
+    function parseError(id) {
+        $("#"+id).addClass("has-error")
+        $("#submit-job").prop("disabled",true)
+        $("#"+id).parent().addClass("parse-incorrect")
+    }
+
     extern.client = ""
     extern.init = session.init
     extern.setDefaultOptions = function(data) {
@@ -109,7 +138,7 @@ ModelChecking = (function() {
     }
     extern.changeStateSpaces = function(data) {
         var events = JSON.parse(data.events)
-        changeStateSpaces(data.ssId, JSON.parse(data.events))
+        changeStateSpaces(data.ssId, JSON.parse(data.events), data.withCBC === "true")
     }
     extern.updateJob = function(data) {
         updateJob(data.id, data)
@@ -121,7 +150,12 @@ ModelChecking = (function() {
         jobStarted(data.id, data)
     }
     extern.toggleOption = toggleOption
-
+    extern.parseOk = function(data) {
+        parseOk(data.id)
+    }
+    extern.parseError = function(data) {
+        parseError(data.id)
+    }
 
     return extern;
 }())

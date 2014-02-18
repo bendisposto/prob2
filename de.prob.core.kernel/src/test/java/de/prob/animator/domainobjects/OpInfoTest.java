@@ -1,63 +1,28 @@
 package de.prob.animator.domainobjects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
-import de.prob.prolog.term.VariablePrologTerm;
 import de.prob.statespace.OpInfo;
 
 public class OpInfoTest {
 
 	@Test
-	public void testConstructor1() {
-		OpInfo opInfo = new OpInfo("3", "blah", "4", "5", null, "");
-		assertEquals("3", opInfo.id);
-		assertEquals("blah", opInfo.name);
-		assertEquals("4", opInfo.src);
-		assertEquals("5", opInfo.dest);
-		assertTrue(opInfo.params.isEmpty());
-	}
-
-	@Test
-	@Ignore
-	public void testConstructor2() {
+	public void testConstructor() {
 		IntegerPrologTerm one = new IntegerPrologTerm(1);
-		CompoundPrologTerm two = new CompoundPrologTerm("NAME");
-		VariablePrologTerm three = new VariablePrologTerm("src");
-		VariablePrologTerm four = new VariablePrologTerm("dest");
-		VariablePrologTerm five = new VariablePrologTerm("something");
-		ListPrologTerm six = new ListPrologTerm(
-				new VariablePrologTerm("param"),
-				new VariablePrologTerm("param"));
-		VariablePrologTerm seven = new VariablePrologTerm("something else");
-		VariablePrologTerm eight = new VariablePrologTerm("target state");
+		IntegerPrologTerm two = new IntegerPrologTerm(2);
+		IntegerPrologTerm three = new IntegerPrologTerm(3);
 
-		CompoundPrologTerm cpt = new CompoundPrologTerm("blah", one, two,
-				three, four, five, six, seven, eight);
+		CompoundPrologTerm cpt = new CompoundPrologTerm("op", one, two, three);
 
-		OpInfo opInfo = new OpInfo(cpt);
-		assertEquals("1", opInfo.id);
-		assertEquals("NAME", opInfo.name);
-		assertEquals("src", opInfo.src);
-		assertEquals("dest", opInfo.dest);
+		OpInfo opInfo = OpInfo.createOpInfoFromCompoundPrologTerm(cpt);
+		assertEquals("1", opInfo.getId());
+		assertEquals("2", opInfo.getSrc());
+		assertEquals("3", opInfo.getDest());
 
-		for (String param : opInfo.params) {
-			assertEquals(param, "param");
-		}
-
-		assertEquals("target state", opInfo.targetState);
 	}
 
-	@Test
-	public void testGetIdFromPrologTerm() {
-		IntegerPrologTerm idPT = new IntegerPrologTerm(1);
-		VariablePrologTerm vPT = new VariablePrologTerm("root");
-		assertEquals("1", OpInfo.getIdFromPrologTerm(idPT));
-		assertEquals("root", OpInfo.getIdFromPrologTerm(vPT));
-	}
 }

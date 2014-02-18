@@ -1,33 +1,25 @@
 package de.prob.animator.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 
-
 public abstract class EvaluationCommand extends AbstractCommand {
 
-	/*
-	 * TODO: we shouldn't need a list here as we only hold one element, worry
-	 * about this later
-	 */
-	protected final List<IEvalResult> values = new ArrayList<IEvalResult>();
-	protected final List<IEvalElement> evalElements;
+	protected IEvalResult value;
 	protected final String stateId;
+	protected final IEvalElement evalElement;
 
-	public EvaluationCommand(List<IEvalElement> evalElements, String id) {
-		this.evalElements = evalElements;
+	public EvaluationCommand(final IEvalElement evalElement, final String id) {
+		this.evalElement = evalElement;
 		this.stateId = id;
 	}
 
-	public List<IEvalResult> getValues() {
-		return values;
+	public IEvalElement getEvalElement() {
+		return evalElement;
 	}
 
-	public List<IEvalElement> getFormulas() {
-		return evalElements;
+	public IEvalResult getValue() {
+		return value;
 	}
 
 	public String getStateId() {

@@ -2,7 +2,6 @@ package de.prob.statespace;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -123,10 +122,11 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		} catch (ProBError e) {
 			if (state == getRoot()) {
 				explored.add(state);
-				OpInfo op = new OpInfo("FAIL", "NO INITIALIZATION FOUND",
-						state.getId(), state.getId(),
-						Collections.<String> emptyList(), "");
-				ops.put(op.id, op);
+				OpInfo op = OpInfo
+						.generateArtificialTransition("FAIL",
+								"NO INITIALIZATION FOUND", state.getId(),
+								state.getId());
+				ops.put(op.getId(), op);
 				addEdge(op, state, state);
 			} else {
 				throw e;
@@ -351,7 +351,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			execute(command);
 
 			for (EvaluationCommand acmd : toEval) {
-				fromProlog.addAll(acmd.getValues());
+				fromProlog.add(acmd.getValue());
 			}
 		}
 
@@ -456,7 +456,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 		execute(new ComposedCommand(subscribeCmds));
 	}
-	
+
 	/**
 	 * If a class is interested in having a particular formula calculated and
 	 * cached whenever a new state is explored, then they "subscribe" to that
@@ -490,10 +490,11 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 	}
 
-	public boolean isSubscribed(IEvalElement formula) {
-		return formulaRegistry.containsKey(formula) && !formulaRegistry.get(formula).isEmpty();
+	public boolean isSubscribed(final IEvalElement formula) {
+		return formulaRegistry.containsKey(formula)
+				&& !formulaRegistry.get(formula).isEmpty();
 	}
-	
+
 	/**
 	 * If a subscribed class is no longer interested in the value of a
 	 * particular formula, then they can unsubscribe to that formula
@@ -541,16 +542,16 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 						.getNewTransitions();
 				for (final OpInfo op : newOps) {
 					if (!containsEdge(op)) {
-						StateId src = getVertex(op.src);
+						StateId src = getVertex(op.getSrc());
 						if (src == null) {
-							src = new StateId(op.src, this);
+							src = new StateId(op.getSrc(), this);
 							addVertex(src);
 						}
 						last = Math.max(last, src.numericalId());
 
-						StateId dest = getVertex(op.dest);
+						StateId dest = getVertex(op.getDest());
 						if (dest == null) {
-							dest = new StateId(op.dest, this);
+							dest = new StateId(op.getDest(), this);
 							addVertex(dest);
 						}
 
@@ -587,7 +588,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	@Override
-	public void notifyStateSpaceChange(final List<? extends OpInfo> newOps) {
+	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
 			listener.newTransitions(newOps);
 		}
@@ -637,7 +638,15 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return ops;
 	}
 
-	public OpInfo getOp(final String id) {
+	/**
+	 * This method finds the specified {@link OpInfo} AND ensures that the
+	 * {@link OpInfo} has been evaluated as a side effect.
+	 * 
+	 * @param id
+	 *            String operation id
+	 * @return {@link OpInfo} specified by the id parameter
+	 */
+	public OpInfo getEvaluatedOpInfo(final String id) {
 		return ops.get(id).ensureEvaluated(this);
 	}
 
@@ -654,8 +663,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.id + ": " + opId.getRep(model));
-			if (withTO.contains(opId.id)) {
+			sb.append("  " + opId.getId() + ": " + opId.getRep(model));
+			if (withTO.contains(opId.getId())) {
 				sb.append(" (WITH TIMEOUT)");
 			}
 			sb.append("\n");
@@ -841,9 +850,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	@Override
 	public Set<OpInfo> getOutEdges(final StateId arg0) {
 		Collection<OpInfo> outgoingEdgesOf = super.getOutEdges(arg0);
-		for (OpInfo opInfo : outgoingEdgesOf) {
-			opInfo.ensureEvaluated(this);
-		}
 		return new LinkedHashSet<OpInfo>(outgoingEdgesOf);
 	}
 
@@ -908,6 +914,21 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		GetOpsFromIds cmd = new GetOpsFromIds(edges);
 		execute(cmd);
 		return edges;
+	}
+
+	public Set<OpInfo> evaluateOps(final Collection<OpInfo> ops) {
+		List<OpInfo> notEvaluated = new ArrayList<OpInfo>();
+		for (OpInfo opInfo : ops) {
+			if (!opInfo.isEvaluated()) {
+				notEvaluated.add(opInfo);
+			}
+		}
+		if (notEvaluated.isEmpty()) {
+			return new LinkedHashSet<OpInfo>(ops);
+		}
+		GetOpsFromIds cmd = new GetOpsFromIds(notEvaluated);
+		execute(cmd);
+		return new LinkedHashSet<OpInfo>(ops);
 	}
 
 	/*
@@ -978,22 +999,18 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		execute(new ComposedCommand(cmds));
 
 		for (EvaluationCommand efCmd : cmds) {
-			List<IEvalElement> forms = efCmd.getFormulas();
-			List<IEvalResult> vals = efCmd.getValues();
+			IEvalElement formula = efCmd.getEvalElement();
+			IEvalResult value = efCmd.getValue();
 			StateId id = getVertex(efCmd.getStateId());
 
-			for (IEvalElement formula : forms) {
-				if (formulaRegistry.containsKey(formula)
-						&& !formulaRegistry.get(formula).isEmpty()) {
-					if (!values.containsKey(id)) {
-						values.put(id, new HashMap<IEvalElement, IEvalResult>());
-					}
-					values.get(id).put(formula,
-							vals.get(formulas.indexOf(formula)));
+			if (formulaRegistry.containsKey(formula)
+					&& !formulaRegistry.get(formula).isEmpty()) {
+				if (!values.containsKey(id)) {
+					values.put(id, new HashMap<IEvalElement, IEvalResult>());
 				}
-				result.get(id)
-						.put(formula, vals.get(formulas.indexOf(formula)));
+				values.get(id).put(formula, value);
 			}
+			result.get(id).put(formula, value);
 		}
 
 		return result;

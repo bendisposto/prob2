@@ -9,9 +9,6 @@ package de.prob.animator.domainobjects;
 import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
 import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
 import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
-
-import java.util.ArrayList;
-
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
@@ -20,7 +17,7 @@ import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.animator.command.EvaluateFormulasCommand;
+import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
@@ -125,10 +122,7 @@ public class ClassicalB extends AbstractEvalElement {
 	}
 
 	@Override
-	public EvaluationCommand getCommand(StateId stateId) {
-		/* TODO: we could do a more efficient implementation here */
-		ArrayList<IEvalElement> arrayList = new ArrayList<IEvalElement>();
-		arrayList.add(this);
-		return new EvaluateFormulasCommand(arrayList, stateId.getId());
+	public EvaluationCommand getCommand(final StateId stateId) {
+		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
 }

@@ -8,6 +8,7 @@ package de.prob.check;
  * 
  */
 public interface IModelCheckingResult {
+
 	/**
 	 * @return a String message describing the result that was generated. This
 	 *         is subject to change.

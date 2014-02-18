@@ -3,11 +3,10 @@ package de.prob.web.views;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.AsyncContext;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.annotations.PublicSession;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
@@ -17,6 +16,7 @@ import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 @Singleton
+@PublicSession
 public class CurrentAnimations extends AbstractSession implements
 		IAnimationChangeListener {
 

@@ -4,6 +4,17 @@ import de.prob.animator.command.ModelCheckingJob;
 import de.prob.statespace.StateSpace;
 import de.prob.web.views.ModelCheckingUI;
 
+/**
+ * This {@link IModelCheckJob} performs consistency checking on a given
+ * {@link StateSpace} based on the specified {@link ModelCheckingOptions}
+ * specified by the user or by the default options. This class should be used
+ * with the {@link ModelChecker} wrapper class in order to perform model
+ * checking. Communications with the ProB kernel take place via the
+ * {@link ModelCheckingJob} command.
+ * 
+ * @author joy
+ * 
+ */
 public class ConsistencyChecker implements IModelCheckJob {
 
 	private final StateSpace s;

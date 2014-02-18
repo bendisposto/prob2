@@ -93,10 +93,7 @@ public class ModelCheckingStepCommand extends AbstractCommand implements
 		for (PrologTerm prologTerm : list) {
 			CompoundPrologTerm op = BindingGenerator.getCompoundTerm(
 					prologTerm, OP_ARITY);
-			String id = OpInfo.getIdFromPrologTerm(op.getArgument(1));
-			String src = OpInfo.getIdFromPrologTerm(op.getArgument(2));
-			String dest = OpInfo.getIdFromPrologTerm(op.getArgument(3));
-			newOps.add(new OpInfo(id, src, dest));
+			newOps.add(OpInfo.createOpInfoFromCompoundPrologTerm(op));
 		}
 
 		CompoundPrologTerm statsTerm = BindingGenerator.getCompoundTerm(

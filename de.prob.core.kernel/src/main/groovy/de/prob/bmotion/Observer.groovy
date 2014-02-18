@@ -1,16 +1,11 @@
 package de.prob.bmotion;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
-import com.github.mustachejava.MustacheFactory
 import com.google.common.base.Function
 
-import de.prob.bmotion.BMotionStudioSession.EvalExpression;
 import de.prob.statespace.OpInfo
-import de.prob.statespace.StateSpace;
+import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 
 class Observer implements IBMotionScript {
@@ -19,12 +14,12 @@ class Observer implements IBMotionScript {
 	def formulas
 	def mf = new DefaultMustacheFactory()
 	def scope = [:]
-	
+
 	def Observer(bmssession) {
 		this.bmssession = bmssession
 		scope.put("eval", new EvalExpression());
 	}
-	
+
 	def evalObserver(observer, formulas, trace) {
 		def objects = observer.get("objects")
 		def m = []
@@ -39,7 +34,7 @@ class Observer implements IBMotionScript {
 				}
 				m = m + t
 			}
-		}	
+		}
 		bmssession.toVisualization(m)
 	}
 
@@ -65,7 +60,7 @@ class Observer implements IBMotionScript {
 		def jsonFormulas = new com.google.gson.Gson().toJson(formulas)
 		bmssession.toVisualization(["executeOperation("+jsonObserver+","+jsonFormulas+")"])
 	}
-	
+
 	def getCharForNumber(i) {
 		return i > 0 && i < 27 ? String.valueOf((char)(i + 64)) : null;
 	}
@@ -77,6 +72,7 @@ class Observer implements IBMotionScript {
 		def jsonFormulas = new com.google.gson.Gson().toJson(formulas)
 
 		def objects = observer.get("objects")
+		trace.ensureOpInfosEvaluated()
 		def opList = trace.getCurrent().getOpList();
 
 		def m = []
@@ -117,7 +113,7 @@ class Observer implements IBMotionScript {
 			null
 		}
 	}
-	
+
 	def getOpString(OpInfo op) {
 
 		String opName = op.getName();
@@ -125,7 +121,7 @@ class Observer implements IBMotionScript {
 		List<String> opParameter = op.getParams();
 		if (opParameter.size() > 0) {
 			String[] inputArray = opParameter.toArray(new String[opParameter
-					.size()]);
+						.size()]);
 			StringBuffer sb = new StringBuffer();
 			sb.append(inputArray[0]);
 			for (int i = 1; i < inputArray.length; i++) {
@@ -136,7 +132,6 @@ class Observer implements IBMotionScript {
 		}
 		String opNameWithParameter = opName + AsImplodedString;
 		return opNameWithParameter;
-
 	}
 
 	def void traceChanged(Trace trace, Map<String, Object> formulas) {
@@ -174,7 +169,7 @@ class Observer implements IBMotionScript {
 				return "\""+input+"\""
 		}
 	}
-	
+
 	def mustacheRender(s,scope) {
 		def writer = new StringWriter()
 		Mustache mustache = mf.compile(new StringReader(s.toString()), "bms");
@@ -184,5 +179,4 @@ class Observer implements IBMotionScript {
 
 	def void modelChanged(StateSpace statespace) {
 	}
-	
 }

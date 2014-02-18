@@ -2,6 +2,7 @@ package de.prob.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -29,6 +30,8 @@ import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.Main;
+import de.prob.annotations.PublicSession;
 import de.prob.annotations.Sessions;
 import de.prob.web.data.SessionResult;
 import de.prob.webconsole.ServletContextListener;
@@ -189,8 +192,18 @@ public class ReflectionServlet extends HttpServlet {
 
 	private ISession instantiate(final Class<ISession> clazz)
 			throws IOException {
+		boolean publicSession = false;
+		Annotation[] annotations = clazz.getAnnotations();
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof PublicSession) {
+				publicSession = true;
+				break;
+			}
+		}
+
 		ISession obj = null;
-		obj = ServletContextListener.INJECTOR.getInstance(clazz);
+		if (!Main.restricted || publicSession)
+			obj = ServletContextListener.INJECTOR.getInstance(clazz);
 		return obj;
 	}
 

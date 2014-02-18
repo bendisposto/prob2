@@ -2,6 +2,7 @@ package de.prob.model.representation;
 
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.RefType.ERefType
+import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
@@ -79,6 +80,8 @@ public abstract class AbstractModel extends AbstractElement {
 	public abstract AbstractElement getMainComponent();
 
 	public abstract IEvalElement parseFormula(String formula);
+
+	public abstract FormalismType getFormalismType();
 
 	public File getModelFile() {
 		return modelFile;

@@ -67,12 +67,12 @@ public class Activator extends AbstractUIPlugin {
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
-
+		Main.restricted = false;
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
 				try {
-					WebConsole.run(new Runnable() {
+					WebConsole.run("127.0.0.1", new Runnable() {
 						@Override
 						public void run() {
 						}

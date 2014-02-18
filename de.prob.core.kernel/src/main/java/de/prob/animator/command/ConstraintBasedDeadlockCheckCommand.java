@@ -35,7 +35,7 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedDeadlockCheckCommand.class);
 
-	private static final String COMMAND_NAME = "deadlock_freedom_check";
+	private static final String COMMAND_NAME = "prob2_deadlock_freedom_check";
 	private static final String RESULT_VARIABLE = "R";
 
 	private IModelCheckingResult result;
@@ -97,9 +97,9 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 			CompoundPrologTerm deadlockTerm = BindingGenerator.getCompoundTerm(
 					resultTerm, 2);
 
-			OpInfo deadlockOperation = new OpInfo(
-					BindingGenerator.getCompoundTerm(
-							deadlockTerm.getArgument(1), 8));
+			OpInfo deadlockOperation = OpInfo
+					.createOpInfoFromCompoundPrologTerm(BindingGenerator
+							.getCompoundTerm(deadlockTerm.getArgument(1), 3));
 			newOps.add(deadlockOperation);
 			String deadlockStateId = deadlockTerm.getArgument(2).toString();
 
