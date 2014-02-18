@@ -31,4 +31,9 @@ public class ModelCheckErrorUncovered implements IModelCheckingResult,
 		return s.getTrace(new StateId(errorStateId, s));
 	}
 
+	@Override
+	public String toString() {
+		return getMessage();
+	}
+
 }

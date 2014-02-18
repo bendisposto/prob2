@@ -12,4 +12,9 @@ public class ModelCheckOk implements IModelCheckingResult {
 	public String getMessage() {
 		return message;
 	}
+
+	@Override
+	public String toString() {
+		return getMessage();
+	}
 }

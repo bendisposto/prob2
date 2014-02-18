@@ -58,4 +58,9 @@ public class CBCInvariantViolationFound implements IModelCheckingResult,
 	public String getMessage() {
 		return "Invariant violation uncovered.";
 	}
+
+	@Override
+	public String toString() {
+		return getMessage();
+	}
 }

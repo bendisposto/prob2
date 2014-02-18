@@ -13,4 +13,9 @@ public class CheckError implements IModelCheckingResult {
 		return message;
 	}
 
+	@Override
+	public String toString() {
+		return getMessage();
+	}
+
 }

@@ -43,4 +43,9 @@ public class CBCDeadlockFound implements IModelCheckingResult,
 		return "A deadlock was found.";
 	}
 
+	@Override
+	public String toString() {
+		return getMessage();
+	}
+
 }
