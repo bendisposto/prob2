@@ -179,9 +179,5 @@ public class DataType extends AbstractElement {
 					&& Objects.equal(getId(), other.getId());
 		}
 
-		private DataType getOuterType() {
-			return DataType.this;
-		}
-
 	}
 }
