@@ -21,9 +21,9 @@
                     <div id="stats" class="panel-heading">Model Checking Jobs 
                         <div class="pull-right">
                             <img class="op-btn" id="cc-check" src="/ui/common/img/Consistency.png" alt="mc" title="Start new consistency checking job" width="16" height="16">
-                            <img class="op-btn" id="cbc-inv" src="/ui/common/img/CBCInvariantCheck.png" alt="inv" title="Check for invariant violations" width="16" height="16">
-                            <img class="op-btn" id="cbc-deadlock" src="/ui/common/img/DeadlockCheck.png" alt="dead" title="Check for deadlocks" width="16" height="16">
-                            <!--<img class="op-btn" id="start-ltl" src="/ui/common/img/LTL_Modelcheck.png" alt="ltl" title="Check an LTL Formula" width="16" height="16">-->
+                            <img class="op-btn b-type" id="cbc-inv" src="/ui/common/img/CBCInvariantCheck.png" alt="inv" title="Check for invariant violations" width="16" height="16">
+                            <img class="op-btn b-type" id="cbc-deadlock" src="/ui/common/img/DeadlockCheck.png" alt="dead" title="Check for deadlocks" width="16" height="16">
+                            <img class="op-btn b-type" id="ltl-check" src="/ui/common/img/LTL_Modelcheck.png" alt="ltl" title="Check an LTL Formula" width="16" height="16">
                         </div>
                     </div>
                     <div class="panel-body">
@@ -81,6 +81,13 @@
                                     <div id="cbc-deadlock-input-parent" class="form-group">
                                         <label for="cbc-deadlock-input">Predicate:</label>
                                         <input type="text" class="form-control" id="cbc-deadlock-input" placeholder="Enter predicate">
+                                    </div>
+                                </div>
+                                <div id="ltl-check-mode" class="mc-mode parse-incorrect">
+                                    <h4>ProB will check the following LTL Formula (CANNOT be empty):</h4>
+                                    <div id="ltl-check-input-parent" class="form-group has-error">
+                                        <label for="ltl-check-input">Formula:</label>
+                                        <input type="text" class="form-control" id="ltl-check-input" placeholder="Enter LTL Formula">
                                     </div>
                                 </div>
                             </form>

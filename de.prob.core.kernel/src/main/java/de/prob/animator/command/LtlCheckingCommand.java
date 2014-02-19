@@ -76,9 +76,12 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			List<OpInfo> pathToCE = new ArrayList<OpInfo>();
 
 			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(1))) {
-				counterExample.add(OpInfo
-						.createOpInfoFromCompoundPrologTerm(BindingGenerator
-								.getCompoundTerm(pt, 3)));
+				if (!pt.hasFunctor("none", 0)) {
+					counterExample
+							.add(OpInfo
+									.createOpInfoFromCompoundPrologTerm(BindingGenerator
+											.getCompoundTerm(pt, 3)));
+				}
 			}
 
 			PathType pathType;

@@ -19,6 +19,10 @@ public class LTLChecker implements IModelCheckJob {
 
 	public LTLChecker(final StateSpace s, final LTL formula,
 			final ModelCheckingUI ui) {
+		if (formula == null) {
+			throw new IllegalArgumentException(
+					"Cannot perform LTL checking without a correctly parsed LTL Formula");
+		}
 		this.s = s;
 		this.formula = formula;
 		this.ui = ui;
