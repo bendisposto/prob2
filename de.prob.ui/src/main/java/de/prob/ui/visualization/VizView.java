@@ -7,7 +7,6 @@ public class VizView extends BrowserView implements IRefreshListener {
 
 	public static final String ID = "de.prob.ui.viz.VizView";
 
-	private String secondaryId;
 	private String url;
 
 	public void init(final String url) {
