@@ -12,7 +12,7 @@ project.group = 'de.prob'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
-project.version = '2.0.0-milestone-12-SNAPSHOT'
+project.version = '2.0.0-milestone-13'
 
 repositories {
 	maven {
@@ -44,15 +44,15 @@ def parser_version = '2.4.20-SNAPSHOT'
 
 dependencies {
 
-	groovy 'org.codehaus.groovy:groovy-all:2.0.5'
+ 	//groovy 'org.codehaus.groovy:groovy-all:2.0.5'
 
 	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
 
-    compile 'commons-lang:commons-lang:2.6' // Replace by guava 15 once it is released (used in GroovyShellServlet)
+	compile 'commons-lang:commons-lang:2.6' // Replace by guava 15 once it is released (used in GroovyShellServlet)
 
 	compile 'org.codehaus.groovy:groovy-all:2.0.5' // Apache Licence 2.0
- 	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
+	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
 	compile 'jline:jline:0.9.94' // BSD
 
 	compile 'org.pegdown:pegdown:1.1.0' // Apache Licence 2.0
@@ -75,14 +75,18 @@ dependencies {
 	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
+	// If you consider to update jetty ... just don't
+	// it'll make you puke 
 	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-server:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3' // EPL
 
-    compile 'org.antlr:antlr4-runtime:4.0'
-    compile 'de.prob:ltl-dsl:1.0.0'
+	compile 'org.antlr:antlr4-runtime:4.0'
+	compile 'de.prob:ltl-dsl:1.0.0'
+	
+	compile 'org.jsoup:jsoup:1.7.2' // MIT
 
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "bparser", version: parser_version , changing: true
@@ -99,11 +103,13 @@ dependencies {
 	compile 'junit:junit:4.8.2'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
 	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
+	
+	compile 'org.jsoup:jsoup:1.7.2'
 
 	testCompile 'org.mockito:mockito-core:1.8.5'
 	testCompile "org.gebish:geb-spock:0.9.1"
 	testCompile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.26.0'
-	
+
 }
 
 task createBuildConstants  {
@@ -118,7 +124,7 @@ version=${project.version}"""
 
 
 
-compileJava { dependsOn= [createBuildConstants] }
+compileJava { dependsOn= [createBuildConstants]}
 
 def listJars() {
 	enumerateClasses()
@@ -212,21 +218,18 @@ public  String getProBDirectory() {
 	String homedir = System.getProperty("prob.home");
 	if (homedir != null)
 		return homedir + java.io.File.separator;
-	String env = System.getenv("PROB_HOME");
-	if (env != null)
-		return env + java.io.File.separator;
 	return System.getProperty("user.home") + java.io.File.separator + ".prob"
 	+ java.io.File.separator;
 }
 
 
 task downloadCli << {
-	dir = getProBDirectory();
+	def dir = getProBDirectory();
 	delete file(dir)
 	new File(dir).mkdirs()
-	targetdir = dir
-	targetzip = dir+os_extension()+".zip"
-	url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/" +os_extension()+ ".zip"
+	def targetdir = dir
+	def targetzip = dir+os_extension()+".zip"
+	def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/" +os_extension()+ ".zip"
 	download(url,targetzip)
 	FileTree zip = zipTree(targetzip)
 	copy {
@@ -238,8 +241,8 @@ task downloadCli << {
 
 
 def os_extension() {
-	bits = System.getProperty("sun.arch.data.model");
-	os = System.getProperty("os.name").toLowerCase()
+	def bits = System.getProperty("sun.arch.data.model");
+	def os = System.getProperty("os.name").toLowerCase()
 	if (os.indexOf("mac") > -1) {
 		return "probcli_leopard64"
 	}

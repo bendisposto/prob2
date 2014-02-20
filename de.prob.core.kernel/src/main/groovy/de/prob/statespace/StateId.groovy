@@ -6,7 +6,7 @@ import de.prob.animator.domainobjects.EventB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
-import de.prob.scripting.CSPModel
+import de.prob.model.representation.CSPModel;
 import de.prob.statespace.derived.AbstractDerivedStateSpace
 
 

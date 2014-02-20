@@ -1,0 +1,19 @@
+li {
+	list-style-type: none;
+}
+
+li:nth-child(odd) {
+	background-color: white;
+}
+
+li:nth-child(even) {
+	background-color: #f3f6ff;
+}
+
+li:first-child {
+	font-weight: bold;
+}
+
+.disabled {
+    opacity: 0.1;
+}

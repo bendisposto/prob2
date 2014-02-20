@@ -19,45 +19,54 @@ import de.prob.exception.CliError;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.AnimationSelector;
 
 class AnimatorImpl implements IAnimator {
+
+	private static int counter = 0;
+	private final String id = "animator" + counter++;
 
 	private final ProBInstance cli;
 	private final Logger logger = LoggerFactory.getLogger(AnimatorImpl.class);
 	private final CommandProcessor processor;
 	private final GetErrorsCommand getErrors;
 	public static boolean DEBUG = false;
+	private final AnimationSelector animations;
+	private boolean busy = false;
 
 	@Inject
 	public AnimatorImpl(@Nullable final ProBInstance cli,
-			final CommandProcessor processor, final GetErrorsCommand getErrors) {
+			final CommandProcessor processor, final GetErrorsCommand getErrors,
+			final AnimationSelector animations) {
 		this.cli = cli;
 		this.processor = processor;
 		this.getErrors = getErrors;
+		this.animations = animations;
 		processor.configure(cli);
 	}
 
 	@Override
 	public synchronized void execute(final AbstractCommand command) {
-		if (cli == null) {
-			// System.out.println("Probcli is missing. Try \"upgrade\".");
-			logger.error("Probcli is missing. Try \"upgrade\".");
-			throw new CliError("no cli found");
-		}
-		ISimplifiedROMap<String, PrologTerm> bindings = null;
-		try {
-			if (DEBUG && !command.getSubcommands().isEmpty()) {
-				List<AbstractCommand> cmds = command.getSubcommands();
-				for (AbstractCommand abstractCommand : cmds) {
-					execute(abstractCommand);
-				}
-			} else {
-				bindings = processor.sendCommand(command);
-				command.processResult(bindings);
+		do {
+			if (cli == null) {
+				logger.error("Probcli is missing. Try \"upgrade\".");
+				throw new CliError("no cli found");
 			}
-		} finally {
-			getErrors();
-		}
+			ISimplifiedROMap<String, PrologTerm> bindings = null;
+			try {
+				if (DEBUG && !command.getSubcommands().isEmpty()) {
+					List<AbstractCommand> cmds = command.getSubcommands();
+					for (AbstractCommand abstractCommand : cmds) {
+						execute(abstractCommand);
+					}
+				} else {
+					bindings = processor.sendCommand(command);
+					command.processResult(bindings);
+				}
+			} finally {
+				getErrors();
+			}
+		} while (!command.isCompleted());
 	}
 
 	private synchronized void getErrors() {
@@ -91,6 +100,28 @@ class AnimatorImpl implements IAnimator {
 
 	public static void setDebug(final boolean debug) {
 		DEBUG = debug;
+	}
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
+	@Override
+	public void startTransaction() {
+		busy = true;
+		animations.notifyAnimatorStatus(id, busy);
+	}
+
+	@Override
+	public void endTransaction() {
+		busy = false;
+		animations.notifyAnimatorStatus(id, busy);
+	}
+
+	@Override
+	public boolean isBusy() {
+		return busy;
 	}
 
 }

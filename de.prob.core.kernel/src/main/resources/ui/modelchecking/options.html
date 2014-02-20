@@ -1,0 +1,23 @@
+<form class="form-horizontal" role="form">
+    <div class="form-group">
+        <label class="col-sm-2">Options:</label>
+        <label class="col-sm-5">
+            <input id="breadth_first_search" type="checkbox" onclick="ModelChecking.toggleOption('breadthFirst')"> Use breadth first strategy
+        </label>
+        <label class="col-sm-5">
+            <input id="find_deadlocks" type="checkbox" onclick="ModelChecking.toggleOption('checkDeadlocks')"> Check for deadlocks
+        </label>
+        <label class="col-sm-offset-2 col-sm-5">
+            <input id="find_invariant_violations" onclick="ModelChecking.toggleOption('checkInvariantViolations')" type="checkbox"> Check for invariant violations
+        </label>
+        <label class="col-sm-5">
+            <input id="find_assertion_violations" onclick="ModelChecking.toggleOption('checkAssertions')" type="checkbox"> Check assertions
+        </label>
+        <label class="col-sm-offset-2 col-sm-5">
+            <input id="inspect_existing_nodes" onclick="ModelChecking.toggleOption('recheckExisting')" type="checkbox"> Recheck all nodes
+        </label>
+        <label class="col-sm-5">
+            <input id="stop_at_full_coverage" onclick="ModelChecking.toggleOption('stopAtFullCoverage')" type="checkbox"> Stop at full coverage
+        </label>
+    </div>
+</form>

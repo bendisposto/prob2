@@ -36,10 +36,14 @@ public class FileBrowserServlet extends HttpServlet {
 			Arrays.asList((new String[] { "mch", "ref", "imp", "bum", "buc",
 					"eventb" })));
 
+	private final static Set<String> BMS_FILES = new HashSet<String>(
+			Arrays.asList((new String[] { "htm", "html", "svg" })));
+	
 	private final static Map<String, Set<String>> EXTENSIONS = new HashMap<String, Set<String>>();
 
 	static {
 		EXTENSIONS.put("prob", PROB_FILES);
+		EXTENSIONS.put("bms", BMS_FILES);
 	}
 
 	@SuppressWarnings("unused")
@@ -55,7 +59,7 @@ public class FileBrowserServlet extends HttpServlet {
 
 		public FileEntry(File f, String name) {
 			this.name = name;
-			path = f.getAbsolutePath();
+			path = f.getAbsolutePath().replace("\\", "\\\\");
 			hidden = f.isHidden();
 		}
 
@@ -83,12 +87,15 @@ public class FileBrowserServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-
 		String path = req.getParameter("path");
+		String workspace = req.getParameter("workspace");
 		String check = req.getParameter("check");
 		String extensionSet = req.getParameter("extensions");
-		logger.trace("File Browser Request. Path {} Check {} Extensions {} ",
-				new Object[] { path, check, extensionSet });
+		logger.trace("File Browser Request. Path {} Check {} Extensions {} Workspace {}",
+				new Object[] { path, check, extensionSet, workspace });
+		
+		boolean isWorkspaceMode = workspace != null && !workspace.isEmpty();
+
 		if (path != null && !path.isEmpty()) {
 			File f = new File(path);
 			if (check != null) {
@@ -106,7 +113,9 @@ public class FileBrowserServlet extends HttpServlet {
 
 			FileFilter filter = makeFilter(extensionSet);
 			File[] listFiles = f.listFiles(filter);
-			if (f.getParentFile() != null) {
+			if (f.getParentFile() != null
+					&& !(isWorkspaceMode && !f.getParent().toString()
+							.startsWith(workspace))) {
 				dirs.add(new FileEntry(f.getParentFile(), ".."));
 			}
 			for (File file : listFiles) {
@@ -132,7 +141,9 @@ public class FileBrowserServlet extends HttpServlet {
 				writer.println(false);
 				writer.close();
 			} else {
-				resp.sendRedirect("/files/?path=" + userdir + "&extensions="
+				String pathStr = isWorkspaceMode ? "path=" + workspace
+						+ "&workspace=" + workspace : "path=" + this.userdir;
+				resp.sendRedirect("/files/?" + pathStr + "&extensions="
 						+ extensionSet);
 			}
 		}

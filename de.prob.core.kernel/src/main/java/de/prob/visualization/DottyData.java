@@ -35,7 +35,7 @@ public class DottyData extends AbstractData {
 
 	@Override
 	public void addNewLinks(final StateSpaceGraph graph,
-			final List<? extends OpInfo> newOps) {
+			final List<OpInfo> newOps) {
 		data.reset = true;
 		data.content = space.getContent();
 		changes.content = space.getContent();

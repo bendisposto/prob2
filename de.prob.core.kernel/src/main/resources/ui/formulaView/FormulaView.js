@@ -3,12 +3,13 @@ FormulaView = (function() {
     var extern = {}
     var session = Session();
     var vizUtils = VizUtils();
-    var width = $(".col-lg-12")[0].clientWidth;
-    var height =  vizUtils.calculateHeight() - $(".col-lg-12")[0].clientHeight;
+    var width = vizUtils.calculateWidth();
+    var height =  vizUtils.calculateHeight() - $("#header")[0].clientHeight;
     var vis = vizUtils.createCanvas("#visualization", width, height);
     var tree = d3.layout.tree()
             .size([height, width]);
     var mode;
+    var lastData;
 
     $(document).ready(function() {
         $(window).keydown(function(event){
@@ -17,6 +18,20 @@ FormulaView = (function() {
                 return false;
             }
         });
+
+        $(window).resize(function() {
+            width = vizUtils.calculateWidth();
+            h = vizUtils.calculateHeight() - $("#header")[0].clientHeight;
+            if(h != height) {
+                height = h;
+                $("#visualization").empty();
+                vis = vizUtils.createCanvas("#visualization", width, height);
+                tree = d3.layout.tree().size([height,width]);
+                if(lastData != undefined) {
+                    draw(lastData)
+                }                
+            }
+        })
     });
 
     // UI Interaction
@@ -38,11 +53,11 @@ FormulaView = (function() {
         $(".input-group").addClass("has-error");
     }
 
-    function formulaSet(formula) {
+    function formulaSet(formula, unicode) {
         $(".alert").remove();
         $(".input-group").removeClass("has-error");
         
-        $("#input-field").replaceWith(session.render("/ui/formulaView/formula_entered.html",{formula: formula}));
+        $("#input-field").replaceWith(session.render("/ui/formulaView/formula_entered.html",{formula: unicode}));
         $("#edit-formula").click(function(e) {
             e.preventDefault();
             editFormula(formula);
@@ -82,6 +97,7 @@ FormulaView = (function() {
     }
 
     function draw(data) {
+        lastData = data;
         var root, labels, values, i, diagonal;
         clear();
 
@@ -135,9 +151,6 @@ FormulaView = (function() {
             };
         };
 
-        // Normalize for fixed-depth.
-        
-
         // Update the nodes…
         var node = vis.selectAll("g.node")
             .data(nodes, function(d) { return d.id || (d.id = ++i); });
@@ -149,14 +162,7 @@ FormulaView = (function() {
             .on("click", function(d) { toggle(d); update(root, d, i, diagonal); })
             .attr("id", function(d) { return "node" + d.id; });
 
-        nodeEnter.append("svg:rect")
-                    .attr("height",60)
-                    .attr("y",-30)
-                    .attr("rx",10)
-                    .attr("id",function(d) { return "r"+d.id})
-                    .style("fill", function(d) { return calcColor(d); })
-                    .style("stroke", function(d) { return colorMain(d); })
-                    .style("stroke-width", 1e-6);
+        nodeEnter.each(function(d) { d.width = 0 })
 
         nodeEnter.append("svg:text")
             .attr("class","label")
@@ -167,11 +173,9 @@ FormulaView = (function() {
             .style("fill-opacity", 1e-6)
             .attr("id", function(d) {
                 var textW = this.getBBox().width;
-                var newX = hasChildren(d) ? -(textW+20) : 0;
-                d3.select("#r"+d.id)
-                    .attr("width",textW+20)
-                    .attr("x",newX);
-                d["tW"] = textW;
+                if((textW + 20) > d.width) {
+                    d.width = textW + 20
+                }
                 return "t"+d.id;
             });
 
@@ -184,75 +188,34 @@ FormulaView = (function() {
             .style("fill-opacity", 1e-6)
             .attr("id",function(d) {
                 var textW = this.getBBox().width;
-                if(textW > d.tW) {
-                  var newX = hasChildren(d) ? -(textW+20) : 0;
-                  d3.select("#r"+d.id)
-                    .attr("width",textW+20)
-                    .attr("x",newX);
-                  d["tW"] = textW;
+                if((textW + 20) > d.width) {
+                    d.width = textW + 20
                 }
                 return "v"+d.id;
             });
 
-        var main = root.name;
-        if(main.indexOf("&") !== -1 && !root.calculated) {
-            var rootName = main.split("&");
-            for( i = 0 ; i < rootName.length - 1; i = i + 1 ) {
-                rootName[i] = rootName[i] + "&";
-            }
-            var boxH = 30 + rootName.length * 15;
-            var upperLimit = -(boxH / 2);
-            var rootNode = vis.select("#node" + root.id);
+        nodeEnter.append("svg:rect")
+            .attr("height",60)
+            .attr("y",-30)
+            .attr("rx",10)
+            .attr("x", function(d) { return hasChildren(d) ? -(d.width) : 0})
+            .attr("width", function(d) { return d.width })
+            .attr("id",function(d) { return "r"+d.id})
+            .style("fill", function(d) { return calcColor(d); })
+            .style("stroke", function(d) { return colorMain(d); })
+            .style("stroke-width", 1e-6);
 
-            var rootRect = rootNode.select("#r"+root.id)
-                .attr("height", 30 + rootName.length * 15)
-                .attr("y", upperLimit);
-
-            rootNode.selectAll(".label").remove();
-            rootNode.select(".value").remove();
-
-            var textW = 0;
-            rootNode.selectAll("text")
-                    .data(rootName)
-                    .enter()
-                   .append("text")
-                    .attr("class","label")
-                    .attr("x", -10)
-                    .attr("dy", function(d) { return upperLimit + 15 + rootName.indexOf(d) * 15; })
-                    .attr("text-anchor", "end" )
-                    .text(function(d) { return d; })
-                    .style("fill-opacity", 1e-6)
-                    .attr("id", function(d) {
-                        var tW = this.getBBox().width;
-                        if( tW > textW ) {
-                            textW = tW;
-                        }
-                        return "t"+ root.id + rootName.indexOf(d) ;
-                    });
-            console.log(textW);
-
-            rootNode.append("svg:text")
-                .attr("class","value")
-                .attr("x", -10)
-                .attr("dy", boxH + upperLimit - 8)
-                .attr("text-anchor","end")
-                .text(root.value)
-                .style("fill-opacity", 1e-6)
-                .attr("id",function(d) {
-                    var tW = this.getBBox().width;
-                    if(tW > textW) {
-                      textW = tW;
-                    }
-                    return "v" + root.id;
-                });
-
-            root.tW = textW;
-            rootRect.attr("width", textW + 20)
-                    .attr("x", -(textW + 20));
-            root.calculated = true;
+        var maxWidths = []
+        nodes.forEach(function(d) { if(maxWidths[d.depth] === undefined) {
+            maxWidths[d.depth] = d.width + 25
+        } else {
+            maxWidths[d.depth] = (d.width > maxWidths[d.depth]) ? d.width : maxWidths[d.depth]
+        }})
+        var depths = (maxWidths.length > 0) ? [maxWidths[0]] : []
+        for(var i = 1 ; i < maxWidths.length ; i++) {
+            depths[i] = maxWidths[i] + depths[(i-1)] + 40
         }
-
-        nodes.forEach(function(d) { d.y = d.depth * 180 + 40 + root.tW; });
+        nodes.forEach(function(d) { d.y = depths[d.depth] });
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
@@ -343,13 +306,21 @@ FormulaView = (function() {
         vizUtils.applyStyling(styling);
     }
 
+    function disable() {
+        $("body").append("<div class='modal-backdrop disabled'></div>")
+    }
+
+    function enable() {
+        $(".disabled").remove()
+    }
+
     extern.client = ""
     extern.init = session.init
     extern.error = function(data) {
         error(data);
     }
     extern.formulaSet = function(data) {
-        formulaSet(data.formula);
+        formulaSet(data.formula, data.unicode);
         draw(JSON.parse(data.data));
     }
     extern.parseOk = parseOk;
@@ -361,6 +332,8 @@ FormulaView = (function() {
     extern.draw = function(data) {
         draw(JSON.parse(data.data));
     }
+    extern.disable = disable
+    extern.enable = enable
 
     return extern;
 }())

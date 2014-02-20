@@ -1,19 +1,21 @@
 package de.prob.model.representation;
 
+import de.prob.animator.domainobjects.IEvalElement;
+
 public abstract class Action extends AbstractElement {
 
-	private final String code;
+	private final IEvalElement code;
 
-	public Action(final String code) {
+	public Action(final IEvalElement code) {
 		this.code = code;
 	}
 
-	public String getCode() {
+	public IEvalElement getCode() {
 		return code;
 	}
 
 	@Override
 	public String toString() {
-		return code;
+		return code.toString();
 	}
 }

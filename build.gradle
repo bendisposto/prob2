@@ -8,14 +8,14 @@ project.ext {
 
 	excludeFromTychoBuild = ["de.prob.core.kernel"]
 	excludeFromClassPath = [ 'de.prob.ui.rodin', 'de.prob2.feature' ]		// Projects defined here will also be exluded from changes of MF File
-	excludeManifestClassPathDelete = ['de.bmotionstudio.core', 'de.bmotionstudio.rodin','de.prob.ui.worksheet']		// Projects defined here will still have classpath changes but no changes in the MF File
+	excludeManifestClassPathDelete = ['de.prob.ui.worksheet']		// Projects defined here will still have classpath changes but no changes in the MF File
 }
 
 
 apply from: 'tycho_build.gradle'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.2'
+    gradleVersion = '1.8'
 }
 
 

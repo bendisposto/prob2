@@ -2,13 +2,12 @@ package de.prob.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -25,10 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.Main;
+import de.prob.annotations.PublicSession;
 import de.prob.annotations.Sessions;
 import de.prob.web.data.SessionResult;
 import de.prob.webconsole.ServletContextListener;
@@ -50,14 +50,13 @@ public class ReflectionServlet extends HttpServlet {
 	private final static String FQN = "(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)+\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*";
 
 	@Inject
-	public ReflectionServlet(@Sessions Map<String, ISession> sessions) {
+	public ReflectionServlet(@Sessions final Map<String, ISession> sessions) {
 		this.sessions = sessions;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				while (true) {
 					try {
-						logger.trace("Grabbing result");
 						Future<SessionResult> message = taskCompletionService
 								.take();
 						if (message != null) { // will filter null values
@@ -81,10 +80,9 @@ public class ReflectionServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-
-		logger.trace("Received {}", asString(req.getParameterMap()));
+	protected void doGet(final HttpServletRequest req,
+			final HttpServletResponse resp) throws ServletException,
+			IOException {
 
 		String uri = req.getRequestURI();
 		List<String> parts = new PartList(uri.split("/"));
@@ -100,7 +98,7 @@ public class ReflectionServlet extends HttpServlet {
 		} else {
 			Class<ISession> clazz = getClass(className);
 			if (clazz == null) {
-				resp.sendError(404);
+				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
 
@@ -117,28 +115,16 @@ public class ReflectionServlet extends HttpServlet {
 
 	}
 
-	private String asString(Map<String, String[]> m) {
-		StringBuffer res = new StringBuffer();
-		Set<Entry<String, String[]>> entrySet = m.entrySet();
-		for (Entry<String, String[]> e : entrySet) {
-			res.append(e.getKey());
-			res.append("=[");
-			res.append(Joiner.on(", ").join(e.getValue()));
-			res.append("] ");
-		}
-		return res.toString();
-	}
-
-	private void delegateToSession(HttpServletRequest req,
-			HttpServletResponse resp, ISession session) throws IOException {
+	private void delegateToSession(final HttpServletRequest req,
+			final HttpServletResponse resp, final ISession session)
+			throws IOException {
 		String mode = req.getParameter("mode");
 		Map<String, String[]> parameterMap = req.getParameterMap();
 		if ("update".equals(mode)) {
 			int lastinfo = Integer.parseInt(req.getParameter("lastinfo"));
-			logger.trace("Incomming Request: {}. Size of Session-Responses {}",
-					lastinfo, session.getResponseCount());
+
 			String client = req.getParameter("client");
-			session.registerClient(client, lastinfo, req.startAsync());
+			session.sendPendingUpdates(client, lastinfo, req.startAsync());
 		} else if ("command".equals(mode)) {
 			Callable<SessionResult> command = session.command(parameterMap);
 			send(resp, "submitted");
@@ -149,20 +135,22 @@ public class ReflectionServlet extends HttpServlet {
 		}
 	}
 
-	public void submit(Callable<SessionResult> command) {
+	public void submit(final Callable<SessionResult> command) {
 		taskCompletionService.submit(command);
 	}
 
-	private void send(HttpServletResponse resp, String html) throws IOException {
+	private void send(final HttpServletResponse resp, final String html)
+			throws IOException {
 		PrintWriter writer = resp.getWriter();
 		writer.write(html);
 		writer.flush();
 		writer.close();
 	}
 
-	private boolean isUUID(String arg) {
-		if (arg == null)
+	private boolean isUUID(final String arg) {
+		if (arg == null) {
 			return false;
+		}
 		try {
 			UUID.fromString(arg);
 			return true;
@@ -187,9 +175,20 @@ public class ReflectionServlet extends HttpServlet {
 		return rest;
 	}
 
-	private ISession instantiate(Class<ISession> clazz) throws IOException {
+	private ISession instantiate(final Class<ISession> clazz)
+			throws IOException {
+		boolean publicSession = false;
+		Annotation[] annotations = clazz.getAnnotations();
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof PublicSession) {
+				publicSession = true;
+				break;
+			}
+		}
+
 		ISession obj = null;
-		obj = ServletContextListener.INJECTOR.getInstance(clazz);
+		if (!Main.restricted || publicSession)
+			obj = ServletContextListener.INJECTOR.getInstance(clazz);
 		return obj;
 	}
 
@@ -211,16 +210,17 @@ public class ReflectionServlet extends HttpServlet {
 
 		private static final long serialVersionUID = -5668244262489304794L;
 
-		public PartList(String[] split) {
+		public PartList(final String[] split) {
 			super(Arrays.asList(split));
 		}
 
 		@Override
-		public String get(int index) {
-			if (index >= this.size())
+		public String get(final int index) {
+			if (index >= this.size()) {
 				return "";
-			else
+			} else {
 				return super.get(index);
+			}
 		}
 
 	}

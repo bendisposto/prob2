@@ -1,5 +1,6 @@
 package de.prob.model.eventb;
 
+import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
@@ -9,8 +10,15 @@ import de.prob.model.representation.ModelElementList
 public class Context extends AbstractElement {
 
 	private final String name;
+	def ModelElementList<ProofObligation> proofs
+	def ModelElementList<Context> Extends
+	def ModelElementList<BSet> sets
+	def ModelElementList<EventBAxiom> axioms
+	def ModelElementList<EventBConstant> constants
+	private final String directoryPath;
 
-	public Context(final String name) {
+	public Context(final String name, final String directoryPath) {
+		this.directoryPath = directoryPath;
 		this.name = name;
 	}
 
@@ -18,48 +26,39 @@ public class Context extends AbstractElement {
 		return name;
 	}
 
-	public void addExtends(final List<Context> contexts) {
+	public void addExtends(final ModelElementList<Context> contexts) {
 		put(Context.class, contexts);
+		Extends = contexts
 	}
 
-	public void addSets(final List<BSet> sets) {
+	public void addSets(final ModelElementList<BSet> sets) {
 		put(BSet.class, sets);
+		this.sets = sets
 	}
 
-	public void addConstants(final List<EventBConstant> constants) {
+	public void addConstants(final ModelElementList<EventBConstant> constants) {
 		put(Constant.class, constants);
+		this.constants = constants
 	}
 
-	public void addAxioms(final List<EventBAxiom> axioms) {
-		put(Axiom.class, axioms);
+	public void addAxioms(final ModelElementList<EventBAxiom> axioms, ModelElementList<EventBAxiom> inherited) {
+		inherited.addAll(axioms)
+		put(Axiom.class, inherited);
+		this.axioms = axioms
 	}
 
-	public List<BSet> getSets() {
-		List<BSet> sets = new ModelElementList<BSet>();
-		sets.addAll(getChildrenOfType(BSet.class));
-		return sets;
+	public void addProofs(final ModelElementList<? extends ProofObligation> proofs) {
+		put(ProofObligation.class, proofs);
+		this.proofs = proofs
 	}
 
-	public List<EventBConstant> getConstants() {
-		List<EventBConstant> elements = new ModelElementList<EventBConstant>();
-		Set<Constant> kids = getChildrenOfType(Constant.class);
-		for (Constant kid : kids) {
-			if (kid instanceof EventBConstant) {
-				elements.add((EventBConstant) kid);
-			}
-		}
-		return elements;
+	def ModelElementList<ProofObligation> getProofs() {
+		//TODO: Implement way to translate from UncalculatedPO to CalculatedPO
+		return proofs
 	}
 
-	public List<EventBAxiom> getAxioms() {
-		List<EventBAxiom> elements = new ModelElementList<EventBAxiom>();
-		Set<Axiom> kids = getChildrenOfType(Axiom.class);
-		for (Axiom kid : kids) {
-			if (kid instanceof EventBAxiom) {
-				elements.add((EventBAxiom) kid);
-			}
-		}
-		return elements;
+	def ModelElementList<ProofObligation> getRawProofs() {
+		return proofs
 	}
 
 	@Override
@@ -67,14 +66,15 @@ public class Context extends AbstractElement {
 		return name;
 	}
 
-	def getProperty(String prop) {
-		if(prop == "sets") {
-			return getSets()
-		} else if(prop == "constants") {
-			return getConstants()
-		} else if(prop == "axioms") {
-			return getAxioms()
-		}
-		Context.getMetaClass().getProperty(this, prop)
+	def EventBAxiom getAxiom(String name) {
+		return axioms[name]
+	}
+
+	def EventBConstant getConstant(String name) {
+		return constants[name]
+	}
+
+	def Context getExtendedContext(String name) {
+		return Extends[name]
 	}
 }

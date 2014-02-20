@@ -1,7 +1,6 @@
 Log = (function() {
 	var extern = {}
 	var session = Session()
-	var template = "<li class=\"logged {{type}}\"><strong>{{level}}</strong> {{from}} - {{msg}}</li>"
 
 	$(document).ready(function() {
 	});
@@ -11,7 +10,7 @@ Log = (function() {
 	}
 
 	function addEntry(entry) {
-		$("#content").append(Mustache.to_html(template, entry));
+		$("#content").append(session.render("/ui/log/entry.html",entry));
 		scrollDown()
 	}
 

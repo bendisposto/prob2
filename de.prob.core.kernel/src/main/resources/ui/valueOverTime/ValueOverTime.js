@@ -9,7 +9,6 @@ ValueOverTime = (function() {
     var w = 600;
     var h = 400;
 
-
     $(document).ready(function() {
         $(window).keydown(function(event){
             if(event.keyCode == 13) {
@@ -473,6 +472,14 @@ ValueOverTime = (function() {
         $("#"+id).addClass("has-error");
     }
 
+    function disable() {
+        $("body").append("<div class='modal-backdrop disabled'></div>")
+    }
+
+    function enable() {
+        $(".disabled").remove()
+    }
+
     extern.draw = function(data) {
         mode = data.drawMode;
         draw(JSON.parse(data.data),data.xLabel);
@@ -523,8 +530,9 @@ ValueOverTime = (function() {
         }
         draw(JSON.parse(data.data),data.xLabel);
     }
-
     extern.session = session;
+    extern.disable = disable
+    extern.enable = enable
 
     return extern;
 }())

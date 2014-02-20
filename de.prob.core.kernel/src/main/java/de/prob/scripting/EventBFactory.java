@@ -1,22 +1,24 @@
 package de.prob.scripting;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import de.prob.animator.command.LoadEventBCommand;
+import de.prob.animator.command.AbstractCommand;
+import de.prob.animator.command.ComposedCommand;
+import de.prob.animator.command.LoadEventBProjectCommand;
+import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
-import de.prob.model.eventb.Context;
-import de.prob.model.eventb.EventBMachine;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.representation.AbstractElement;
+import de.prob.model.eventb.translate.EventBDatabaseTranslator;
+import de.prob.model.eventb.translate.EventBModelTranslator;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
-import de.prob.model.serialize.ModelObject;
-import de.prob.model.serialize.Serializer;
 import de.prob.statespace.StateSpace;
 
 public class EventBFactory {
@@ -28,53 +30,44 @@ public class EventBFactory {
 		this.modelProvider = modelProvider;
 	}
 
-	public EventBModel load(final AbstractElement mainComponent,
-			final Collection<EventBMachine> machines,
-			final Collection<Context> contexts, final File modelFile) {
+	public EventBModel load(final String file, final Map<String, String> prefs,
+			final boolean loadVariables) {
 		EventBModel model = modelProvider.get();
 
-		setModelInformation(mainComponent, machines, contexts, modelFile, model);
-
-		return model;
-	}
-
-	private void setModelInformation(final AbstractElement mainComponent,
-			final Collection<EventBMachine> machines,
-			final Collection<Context> contexts, final File modelFile,
-			final EventBModel model) {
-		model.setMainComponent(mainComponent);
-		model.addMachines(machines);
-		model.addContexts(contexts);
-		model.setModelFile(modelFile);
-
+		new EventBDatabaseTranslator(model, file);
 		model.isFinished();
-	}
 
-	public EventBModel load(final String cmd, final String coded) {
-		EventBModel model = modelProvider.get();
+		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
 
-		ModelObject mo = Serializer.deserialize(coded);
+		for (Entry<String, String> pref : prefs.entrySet()) {
+			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
+		}
 
-		setModelInformation(mo.getMainComponent(), mo.getMachines(),
-				mo.getContexts(), mo.getModelFile(), model);
+		AbstractCommand loadcmd = new LoadEventBProjectCommand(
+				new EventBModelTranslator(model));
 
+		cmds.add(loadcmd);
+		cmds.add(new StartAnimationCommand());
 		StateSpace s = model.getStatespace();
-		s.execute(new LoadEventBCommand(cmd));
-		s.execute(new StartAnimationCommand());
+		s.execute(new ComposedCommand(cmds));
+		s.setLoadcmd(loadcmd);
 
-		subscribeVariables(model);
-
+		if (loadVariables) {
+			subscribeVariables(model);
+		}
 		return model;
 	}
 
 	private void subscribeVariables(final EventBModel m) {
-		Set<Machine> machines = m.getChildrenOfType(Machine.class);
+		List<Machine> machines = m.getChildrenOfType(Machine.class);
 		for (Machine machine : machines) {
-			Set<Variable> childrenOfType = machine
+			List<Variable> childrenOfType = machine
 					.getChildrenOfType(Variable.class);
+			List<IEvalElement> formulas = new ArrayList<IEvalElement>();
 			for (Variable variable : childrenOfType) {
-				m.getStatespace().subscribe(this, variable.getExpression());
+				formulas.add(variable.getExpression());
 			}
+			m.getStatespace().subscribe(this, formulas);
 		}
 	}
 }

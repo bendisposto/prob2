@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ProB LTL Formulas</title>
+<meta name="description" content="">
+<meta name="author" content="Jens Bendisposto">
+
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
+<link rel="stylesheet" href="/ui/ltlFormula/trace.css"> <!-- TODO: css file -->
+
+</head>
+<body>
+	<div class="container">
+	<div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <fieldset id="enter-formula">
+                    <div class="form-group entry" id="input-field">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Enter Formula" value="">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default add-formula" type="button" id="input-button">Set</button>
+                            </span>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+		<div class="row">
+			<div class="col-lg-12">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Formula</th>
+							<th>Status</th>
+							<th>Trash it!</th>
+							<th>Edit</th>
+						</tr>
+					</thead>
+					<tbody id="content"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/ltlFormula/LtlFormula.js"></script>
+
+<script>
+LtlFormula.client = "{{clientid}}";
+LtlFormula.init("{{clientid}}")
+</script>
+</html>

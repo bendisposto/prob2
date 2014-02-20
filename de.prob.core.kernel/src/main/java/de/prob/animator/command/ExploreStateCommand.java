@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -32,7 +32,8 @@ import de.prob.statespace.OpInfo;
  * @author joy
  * 
  */
-public final class ExploreStateCommand extends AbstractCommand {
+public final class ExploreStateCommand extends AbstractCommand implements
+		IStateSpaceModifier {
 
 	Logger logger = LoggerFactory.getLogger(ExploreStateCommand.class);
 
@@ -104,11 +105,7 @@ public final class ExploreStateCommand extends AbstractCommand {
 		return checkMaxOpCmd.getResult();
 	}
 
-	public List<OpInfo> getEnabledOperations() {
-		return getOpsCmd.getEnabledOperations();
-	}
-
-	public Map<IEvalElement, EvaluationResult> getFormulaResults() {
+	public Map<IEvalElement, IEvalResult> getFormulaResults() {
 		return evalFormulasCmd.getResults();
 	}
 
@@ -124,5 +121,10 @@ public final class ExploreStateCommand extends AbstractCommand {
 	public List<AbstractCommand> getSubcommands() {
 		List<AbstractCommand> subcommands = allCommands.getSubcommands();
 		return subcommands;
+	}
+
+	@Override
+	public List<OpInfo> getNewTransitions() {
+		return getOpsCmd.getEnabledOperations();
 	}
 }

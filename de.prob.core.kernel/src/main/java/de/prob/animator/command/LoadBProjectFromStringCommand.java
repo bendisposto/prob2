@@ -1,20 +1,16 @@
 package de.prob.animator.command;
 
 import java.io.File;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.BParser;
-import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.output.StructuredPrologOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
@@ -25,28 +21,18 @@ import de.prob.prolog.term.PrologTerm;
  */
 public class LoadBProjectFromStringCommand extends AbstractCommand {
 
-	private final PrologTerm model;
 	Logger logger = LoggerFactory
 			.getLogger(LoadBProjectFromStringCommand.class);
-	private NodeIdAssignment nodeIdMapping;
+	private LoadBProjectCommand loadBProjectCommand;
 
 	public LoadBProjectFromStringCommand(final String s) throws BException {
-		model = getLoadTerm(s);
+		RecursiveMachineLoader rml = getLoader(s);
+		loadBProjectCommand = new LoadBProjectCommand(rml, new File(
+				"from_string"));
 	}
 
-	@Override
-	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("load_classical_b");
-		pto.printTerm(model);
-		pto.closeTerm();
-	}
-
-	@Override
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings) {
-	}
-
-	private PrologTerm getLoadTerm(final String model) throws BException {
+	private RecursiveMachineLoader getLoader(final String model)
+			throws BException {
 
 		BParser bparser = new BParser();
 		Start ast = parseString(model, bparser);
@@ -54,12 +40,8 @@ public class LoadBProjectFromStringCommand extends AbstractCommand {
 				bparser.getContentProvider());
 		rml.loadAllMachines(new File(""), ast, null, bparser.getDefinitions(),
 				bparser.getPragmas());
+		return rml;
 
-		StructuredPrologOutput parserOutput = new StructuredPrologOutput();
-		logger.trace("Done with parsing '{}'", model);
-		rml.printAsProlog(parserOutput);
-		nodeIdMapping = rml.getNodeIdMapping();
-		return collectSentencesInList(parserOutput);
 	}
 
 	private Start parseString(final String model, final BParser bparser)
@@ -71,25 +53,14 @@ public class LoadBProjectFromStringCommand extends AbstractCommand {
 		return ast;
 	}
 
-	private PrologTerm collectSentencesInList(final StructuredPrologOutput po) {
-		List<PrologTerm> parserOutput = po.getSentences();
-		StructuredPrologOutput loadCommandTerm = new StructuredPrologOutput();
-		loadCommandTerm.openList();
-		// skip the first two sentences (parser version + filepath)
-		for (int i = 2; i < parserOutput.size(); i++) {
-			CompoundPrologTerm prologTerm = (CompoundPrologTerm) parserOutput
-					.get(i);
-			loadCommandTerm.printTerm(prologTerm.getArgument(1));
-		}
-		loadCommandTerm.closeList();
-		loadCommandTerm.fullstop();
-
-		PrologTerm result = loadCommandTerm.getSentences().get(0);
-		return result;
+	@Override
+	public void writeCommand(IPrologTermOutput pto) {
+		loadBProjectCommand.writeCommand(pto);
 	}
 
-	public NodeIdAssignment getNodeIdMapping() {
-		return nodeIdMapping;
+	@Override
+	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
+		loadBProjectCommand.processResult(bindings);
 	}
 
 }

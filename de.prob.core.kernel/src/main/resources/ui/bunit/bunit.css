@@ -1,0 +1,41 @@
+.test-ok {
+    list-style-image: url(/images/tests/testok.gif);
+}
+
+.test-fail {
+    list-style-image: url(/images/tests/testfail.gif);
+}
+
+.test-error {
+    list-style-image: url(/images/tests/testerr.gif);
+}
+
+.test-suite-ok {
+    list-style-image: url(/images/tests/tsuiteok.gif);
+}
+
+.test-suite-fail {
+    list-style-image: url(/images/tests/tsuitefail.gif);
+}
+
+.test-suite-error {
+    list-style-image: url(/images/tests/tsuiteerror.gif);
+}
+
+.test-ignored {
+    list-style-image: url(/images/tests/testignored.gif);
+}
+
+.trace {
+    list-style: none;
+}
+
+#errors {
+    font-family: "Courier New", Courier, monospace;
+    word-wrap: break-word;
+}
+
+.invisible {
+    display: none;
+}
+

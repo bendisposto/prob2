@@ -9,16 +9,29 @@ import de.prob.exception.ProBError
 
 class StateSpaceTest extends Specification {
 
+	private class MyProvider<E> implements com.google.inject.Provider<E> {
+
+		def animator
+
+		def MyProvider(animator) {
+			this.animator = animator
+		}
+
+		@Override
+		public E get() {
+			return animator
+		}
+	}
+
 
 	def StateSpace s
 
 	def setup() {
 
 		def mock = mock(IAnimator.class)
-
 		doThrow(new ProBError("XXX")).when(mock).execute(any(Object.class));
 
-		s = new StateSpace(mock, new DirectedMultigraphProvider())
+		s = new StateSpace(new MyProvider<IAnimator>(mock), new DirectedMultigraphProvider())
 
 		def states = [
 			new StateId("1",s),
@@ -31,11 +44,11 @@ class StateSpaceTest extends Specification {
 		]
 
 		def ops = [
-			new OpInfo("b","b","root","2",[],"2"),
-			new OpInfo("c","c","2","3",[],"3"),
-			new OpInfo("d","d","3","4",[],"4"),
-			new OpInfo("e","e","3","5",[],"5"),
-			new OpInfo("f","f","4","6",[],"6")
+			new OpInfo("b","root","2"),
+			new OpInfo("c","2","3"),
+			new OpInfo("d","3","4"),
+			new OpInfo("e","3","5"),
+			new OpInfo("f","4","6")
 		]
 
 		states.each { it ->
@@ -99,7 +112,7 @@ class StateSpaceTest extends Specification {
 	}
 
 	def "The node is not a deadlock"() {
-		s.addEdge(new OpInfo("bla","blah","1","2",[],"2"), s.states.get("1"), s.states.get("2"))
+		s.addEdge(new OpInfo("bla","1","2"), s.states.get("1"), s.states.get("2"))
 
 		expect:
 		s.isDeadlock(s[1]) == false

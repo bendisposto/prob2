@@ -1,5 +1,6 @@
 package de.prob.model.eventb;
 
+import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
@@ -8,90 +9,86 @@ import de.prob.model.representation.Variable
 
 public class EventBMachine extends Machine {
 
-	public EventBMachine(final String name) {
-		super(name);
+	def ModelElementList<Context> sees = new ModelElementList<Context>()
+	def ModelElementList<EventBVariable> variables = new ModelElementList<EventBVariable>()
+	def ModelElementList<EventBMachine> refines = new ModelElementList<EventBMachine>()
+	def ModelElementList<Event> events = new ModelElementList<Event>()
+	def ModelElementList<EventBInvariant> invariants = new ModelElementList<EventBInvariant>()
+	def ModelElementList<ProofObligation> proofs = new ModelElementList<ProofObligation>()
+	def Variant variant
+	private final String directoryPath
+
+	public EventBMachine(final String name, final String directoryPath) {
+		super(name)
+		this.directoryPath = directoryPath;
 	}
 
-	public void addRefines(final List<EventBMachine> refines) {
+	public void addRefines(final ModelElementList<EventBMachine> refines) {
 		put(Machine.class, refines);
+		this.refines = refines
 	}
 
-	public void addSees(final List<Context> sees) {
+	public void addSees(final ModelElementList<Context> sees) {
 		put(Context.class, sees);
+		this.sees = sees
 	}
 
-	public void addVariables(final List<EventBVariable> variables) {
+	public void addVariables(final ModelElementList<EventBVariable> variables) {
 		put(Variable.class, variables);
+		this.variables = variables
 	}
 
-	public void addInvariants(final List<EventBInvariant> invariants) {
-		put(Invariant.class, invariants);
+	public void addInvariants(final ModelElementList<EventBInvariant> invariants, ModelElementList<EventBInvariant> inherited) {
+		inherited.addAll(invariants)
+		put(Invariant.class, inherited);
+		this.invariants = invariants
 	}
 
-	public void addVariant(final List<Variant> variant) {
+	public void addVariant(final ModelElementList<Variant> variant) {
 		put(Variant.class, variant);
+		this.variant = variant.isEmpty() ? null : variant[0]
 	}
 
-	public void addEvents(final List<Event> events) {
+	public void addEvents(final ModelElementList<Event> events) {
 		put(BEvent.class, events);
+		this.events = events
 	}
 
-	public List<EventBVariable> getVariables() {
-		List<EventBVariable> vars = new ModelElementList<EventBVariable>();
-		Set<Variable> c = getChildrenOfType(Variable.class);
-		for (Variable variable : c) {
-			vars.add((EventBVariable) variable);
-		}
-		return vars;
+	public void addProofs(final ModelElementList<? extends ProofObligation> proofs) {
+		put(ProofObligation.class, proofs);
+		this.proofs = proofs
 	}
 
-	public List<EventBInvariant> getInvariants() {
-		List<EventBInvariant> invs = new ModelElementList<EventBInvariant>();
-		Collection<Invariant> kids = getChildrenOfType(Invariant.class);
-		for (Invariant invariant : kids) {
-			if (invariant instanceof EventBInvariant) {
-				invs.add((EventBInvariant) invariant);
-			}
-		}
-		return invs;
+	public ModelElementList<Event> getOperations() {
+		return events
 	}
 
-	public Variant getVariant() {
-		Set<Variant> kids = getChildrenOfType(Variant.class);
-		if (!kids.isEmpty()) {
-			return kids.iterator().next();
-		}
-		return null;
+	def ModelElementList<ProofObligation> getProofs() {
+		//TODO: Implement way to translate from UncalculatedPO to CalculatedPO
+		return proofs
 	}
 
-	public List<Event> getEvents() {
-		List<Event> events = new ModelElementList<Event>();
-		Set<BEvent> kids = getChildrenOfType(BEvent.class);
-		for (BEvent bEvent : kids) {
-			if (bEvent instanceof Event) {
-				events.add((Event) bEvent);
-			}
-		}
-		return events;
+	def ModelElementList<ProofObligation> getRawProofs() {
+		return proofs
 	}
 
 	def Event getEvent(String name) {
-		for (Event e : getEvents()) {
-			if (e.getName().equals(name)) return e;
-		}
-		return null;
+		return events[name]
 	}
 
-	def getProperty(String prop) {
-		if(prop == "variables") {
-			return getVariables()
-		} else if(prop == "invariants") {
-			return getInvariants()
-		} else if(prop == "variant") {
-			return getVariant()
-		} else if(prop == "events") {
-			return getEvents()
-		}
-		Machine.getMetaClass().getProperty(this, prop)
+	def EventBInvariant getInvariant(String name) {
+		return invariants[name]
+	}
+
+	def EventBVariable getVariable(String name) {
+		return invariants[name]
+	}
+
+	def EventBMachine getRefinedMachine(String name) {
+		return refines[name]
+	}
+
+	def Context getSeenContext(String name) {
+		return sees[name]
 	}
 }

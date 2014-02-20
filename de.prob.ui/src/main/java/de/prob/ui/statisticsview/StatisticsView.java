@@ -108,7 +108,7 @@ public class StatisticsView extends ViewPart implements IModelChangedListener,
 	}
 
 	@Override
-	public void newTransitions(final List<? extends OpInfo> ops) {
+	public void newTransitions(final List<OpInfo> ops) {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {

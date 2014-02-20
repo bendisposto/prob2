@@ -2,9 +2,9 @@ package de.prob.statespace;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,23 +22,25 @@ import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckInitialisationStatusCommand;
 import de.prob.animator.command.CheckInvariantStatusCommand;
 import de.prob.animator.command.ComposedCommand;
-import de.prob.animator.command.EvaluateFormulasCommand;
 import de.prob.animator.command.EvaluateRegisteredFormulasCommand;
+import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
+import de.prob.animator.command.GetShortestTraceCommand;
 import de.prob.animator.command.GetStatesFromPredicate;
+import de.prob.animator.command.IStateSpaceModifier;
 import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.exception.ProBError;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
-import de.prob.scripting.CSPModel;
-import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
+import de.prob.model.representation.CSPModel;
 
 /**
  * 
@@ -76,33 +78,20 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	private final Set<IStatesCalculatedListener> stateSpaceListeners = new HashSet<IStatesCalculatedListener>();
 
-	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private long lastCalculatedStateId;
 	private AbstractModel model;
-	private final Map<StateId, Map<IEvalElement, EvaluationResult>> values = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
+	private final Map<StateId, Map<IEvalElement, IEvalResult>> values = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
 
 	private final HashSet<StateId> invariantOk = new HashSet<StateId>();
 	private final HashSet<StateId> invariantKo = new HashSet<StateId>();
 	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
 	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
-	private final IAnimator animator2;
 
 	@Inject
 	public StateSpace(final Provider<IAnimator> panimator,
 			final DirectedMultigraphProvider graphProvider) {
 		super(graphProvider.get());
 		animator = panimator.get();
-		animator2 = panimator.get();
-		lastCalculatedStateId = -1;
-	}
-
-	public StateSpace(final IAnimator animator,
-			final DirectedMultigraphProvider graphProvider) {
-		// FIXME Hack to make the test run again. We should get rid of this
-		// constructor by fixing the test
-		super(graphProvider.get());
-		this.animator = animator;
-		animator2 = animator;
 		lastCalculatedStateId = -1;
 	}
 
@@ -123,41 +112,24 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
 		}
-
 		final ExploreStateCommand command = new ExploreStateCommand(
 				state.getId(), subscribedFormulas);
+
 		try {
-			animator.execute(command);
+			execute(command);
 			extractInformation(state, command);
-
 			explored.add(state);
-
-			if (!state.getId().equals("root")) {
-				updateLastCalculatedStateId(state.numericalId());
-			}
-			final List<OpInfo> enabledOperations = command
-					.getEnabledOperations();
-
-			List<OpInfo> newOps = new ArrayList<OpInfo>();
-			for (final OpInfo op : enabledOperations) {
-				if (!containsEdge(op)) {
-					ops.put(op.id, op);
-					newOps.add(op);
-
-					final StateId newState = new StateId(op.dest, this);
-					addVertex(newState);
-					addEdge(op, getVertex(op.src), getVertex(op.dest));
-				}
-			}
-			notifyStateSpaceChange(newOps);
 		} catch (ProBError e) {
 			if (state == getRoot()) {
 				explored.add(state);
-				OpInfo op = new OpInfo("FAIL", "NO INITIALIZATION FOUND",
-						state.getId(), state.getId(),
-						Collections.<String> emptyList(), "");
-				ops.put(op.id, op);
+				OpInfo op = OpInfo
+						.generateArtificialTransition("FAIL",
+								"NO INITIALIZATION FOUND", state.getId(),
+								state.getId());
+				ops.put(op.getId(), op);
 				addEdge(op, state, state);
+			} else {
+				throw e;
 			}
 		}
 		return toString();
@@ -181,9 +153,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			cannotBeEvaluated.add(state);
 		}
 
-		Map<IEvalElement, EvaluationResult> res = command.getFormulaResults();
+		Map<IEvalElement, IEvalResult> res = command.getFormulaResults();
 		if (values.containsKey(state)) {
-			Map<IEvalElement, EvaluationResult> map = values.get(state);
+			Map<IEvalElement, IEvalResult> map = values.get(state);
 			map.putAll(res);
 		} else {
 			values.put(state, res);
@@ -200,6 +172,19 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 		final String si = String.valueOf(i);
 		return explore(si);
+	}
+
+	/**
+	 * Whenever a {@link StateSpace} instance is created, it is assigned a
+	 * unique identifier to help external parties differentiate between two
+	 * instances. This getter method returns this id.
+	 * 
+	 * @return the unique {@link String} id associated with this
+	 *         {@link StateSpace} instance
+	 */
+	@Override
+	public String getId() {
+		return animator.getId();
 	}
 
 	/**
@@ -245,13 +230,19 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	/**
 	 * Takes the name of an operation and a predicate and finds Operations that
 	 * satisfy the name and predicate at the given stateId. New Operations are
-	 * added to the graph.
+	 * added to the graph. This is only valid for ClassicalB predicates.
 	 * 
 	 * @param stateId
+	 *            {@link StateId} from which the operation should be found
 	 * @param name
+	 *            name of the operation that should be executed
 	 * @param predicate
+	 *            an additional guard for the operation. This usually describes
+	 *            the parameters
 	 * @param nrOfSolutions
-	 * @return list of operations
+	 *            int number of solutions that should be found for the given
+	 *            predicate
+	 * @return list of operations calculated by ProB
 	 * @throws BException
 	 */
 	public List<OpInfo> opFromPredicate(final StateId stateId,
@@ -260,27 +251,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
-		animator.execute(command);
-		final List<OpInfo> newOps = command.getOperations();
-		updateLastCalculatedStateId(stateId.numericalId());
-
-		List<OpInfo> toNotify = new ArrayList<OpInfo>();
-		// (id,name,src,dest,args)
-		for (final OpInfo op : newOps) {
-
-			StateId vertex = getVertex(op.dest);
-			if (vertex == null) {
-				vertex = new StateId(op.dest, this);
-				addVertex(vertex);
-			}
-			if (!containsEdge(op)) {
-				ops.put(op.id, op);
-				toNotify.add(op);
-				addEdge(op, getVertex(op.src), vertex);
-			}
-		}
-		notifyStateSpaceChange(toNotify);
-		return newOps;
+		execute(command);
+		return command.getNewTransitions();
 	}
 
 	/**
@@ -347,51 +319,50 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return list of {@link EvaluationResult} objects for the given stateId
 	 *         and code
 	 */
-	public List<EvaluationResult> eval(final StateId stateId,
+	public List<IEvalResult> eval(final StateId stateId,
 			final List<IEvalElement> code) {
 		if (!containsVertex(stateId)) {
 			throw new IllegalArgumentException("state does not exist");
 		}
 		if (code.isEmpty()) {
-			return new ArrayList<EvaluationResult>();
+			return new ArrayList<IEvalResult>();
 		}
 
 		// Check to see if there are any cached results for the given StateId
-		Map<IEvalElement, EvaluationResult> map = values.get(stateId);
+		Map<IEvalElement, IEvalResult> map = values.get(stateId);
 		if (map == null) {
-			map = new HashMap<IEvalElement, EvaluationResult>();
+			map = new HashMap<IEvalElement, IEvalResult>();
 		}
 
 		// Filter out any EvalElements that have already been calculated
 		Set<IEvalElement> calculated = map.keySet();
-		List<IEvalElement> toEval = new ArrayList<IEvalElement>();
+		List<EvaluationCommand> toEval = new ArrayList<EvaluationCommand>();
 		for (IEvalElement iEvalElement : code) {
 			if (!calculated.contains(iEvalElement)) {
-				toEval.add(iEvalElement);
+				toEval.add(iEvalElement.getCommand(stateId));
 			}
 		}
 
 		// If there are formulas for which no value has been calculated, send
 		// them to prolog to get the results
-		List<EvaluationResult> fromProlog;
+		List<IEvalResult> fromProlog = new ArrayList<IEvalResult>();
 		if (!toEval.isEmpty()) {
-			final EvaluateFormulasCommand command = new EvaluateFormulasCommand(
-					toEval, stateId.getId());
+			final ComposedCommand command = new ComposedCommand(toEval);
 			execute(command);
 
-			fromProlog = command.getValues();
-		} else {
-			fromProlog = new ArrayList<EvaluationResult>();
+			for (EvaluationCommand acmd : toEval) {
+				fromProlog.add(acmd.getValue());
+			}
 		}
 
 		// Merge the calculated results from Prolog with the cached results for
 		// the desired list
-		final List<EvaluationResult> values = new ArrayList<EvaluationResult>();
+		final List<IEvalResult> values = new ArrayList<IEvalResult>();
 		for (IEvalElement iEvalElement : code) {
 			if (calculated.contains(iEvalElement)) {
 				values.add(map.get(iEvalElement));
 			} else {
-				values.add(fromProlog.get(toEval.indexOf(iEvalElement)));
+				values.add(fromProlog.get(code.indexOf(iEvalElement)));
 			}
 		}
 
@@ -414,7 +385,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 				state.getId(), subscribedFormulas);
 
 		execute(cmd);
-		Map<IEvalElement, EvaluationResult> results = cmd.getResults();
+		Map<IEvalElement, IEvalResult> results = cmd.getResults();
 
 		if (values.containsKey(state)) {
 			values.get(state).putAll(results);
@@ -431,7 +402,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return map from {@link IEvalElement} object to {@link EvaluationResult}
 	 *         objects
 	 */
-	public Map<IEvalElement, EvaluationResult> valuesAt(final StateId stateId) {
+	public Map<IEvalElement, IEvalResult> valuesAt(final StateId stateId) {
 		if (values.containsKey(stateId)
 				&& values.get(stateId).keySet().size() == subscribedFormulas
 						.size()) {
@@ -441,7 +412,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			evaluateFormulas(stateId);
 			return values.get(stateId);
 		}
-		return new HashMap<IEvalElement, EvaluationResult>();
+		return new HashMap<IEvalElement, IEvalResult>();
 	}
 
 	public boolean canBeEvaluated(final StateId stateId) {
@@ -459,6 +430,31 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			initializedStates.add(stateId);
 		}
 		return result;
+	}
+
+	public void subscribe(final Object subscriber,
+			final List<IEvalElement> formulasOfInterest) {
+		List<AbstractCommand> subscribeCmds = new ArrayList<AbstractCommand>();
+		for (IEvalElement formulaOfInterest : formulasOfInterest) {
+			if (formulaOfInterest instanceof CSP) {
+				logger.info(
+						"CSP formula {} not subscribed because CSP evaluation is not state based. Use eval method instead",
+						formulaOfInterest.getCode());
+			} else {
+				if (formulaRegistry.containsKey(formulaOfInterest)) {
+					formulaRegistry.get(formulaOfInterest).add(subscriber);
+					subscribedFormulas.add(formulaOfInterest);
+				} else {
+					HashSet<Object> subscribers = new HashSet<Object>();
+					subscribers.add(subscriber);
+					formulaRegistry.put(formulaOfInterest, subscribers);
+					subscribeCmds.add(new RegisterFormulaCommand(
+							formulaOfInterest));
+					subscribedFormulas.add(formulaOfInterest);
+				}
+			}
+		}
+		execute(new ComposedCommand(subscribeCmds));
 	}
 
 	/**
@@ -484,12 +480,19 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		if (formulaRegistry.containsKey(formulaOfInterest)) {
 			formulaRegistry.get(formulaOfInterest).add(subscriber);
 		} else {
+			execute(new RegisterFormulaCommand(formulaOfInterest));
 			HashSet<Object> subscribers = new HashSet<Object>();
 			subscribers.add(subscriber);
 			formulaRegistry.put(formulaOfInterest, subscribers);
-			execute(new RegisterFormulaCommand(formulaOfInterest));
+		}
+		if (!subscribedFormulas.contains(formulaOfInterest)) {
 			subscribedFormulas.add(formulaOfInterest);
 		}
+	}
+
+	public boolean isSubscribed(final IEvalElement formula) {
+		return formulaRegistry.containsKey(formula)
+				&& !formulaRegistry.get(formula).isEmpty();
 	}
 
 	/**
@@ -512,20 +515,57 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	// ANIMATOR
+	@Override
+	public void sendInterrupt() {
+		animator.sendInterrupt();
+	}
 
 	@Override
 	public void execute(final AbstractCommand command) {
 		animator.execute(command);
+		addTransitions(new AbstractCommand[] { command });
 	}
 
 	@Override
 	public void execute(final AbstractCommand... commands) {
 		animator.execute(commands);
+		addTransitions(commands);
 	}
 
-	@Override
-	public void sendInterrupt() {
-		animator.sendInterrupt();
+	private void addTransitions(final AbstractCommand[] commands) {
+		List<OpInfo> toNotify = new ArrayList<OpInfo>();
+
+		long last = lastCalculatedStateId;
+		for (AbstractCommand cmd : commands) {
+			if (cmd instanceof IStateSpaceModifier) {
+				List<OpInfo> newOps = ((IStateSpaceModifier) cmd)
+						.getNewTransitions();
+				for (final OpInfo op : newOps) {
+					if (!containsEdge(op)) {
+						StateId src = getVertex(op.getSrc());
+						if (src == null) {
+							src = new StateId(op.getSrc(), this);
+							addVertex(src);
+						}
+						last = Math.max(last, src.numericalId());
+
+						StateId dest = getVertex(op.getDest());
+						if (dest == null) {
+							dest = new StateId(op.getDest(), this);
+							addVertex(dest);
+						}
+
+						toNotify.add(op);
+						addEdge(op, src, dest);
+					}
+				}
+			}
+		}
+		updateLastCalculatedStateId(last);
+
+		if (!toNotify.isEmpty()) {
+			notifyStateSpaceChange(toNotify);
+		}
 	}
 
 	// NOTIFICATION SYSTEM
@@ -548,7 +588,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	@Override
-	public void notifyStateSpaceChange(final List<? extends OpInfo> newOps) {
+	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
 			listener.newTransitions(newOps);
 		}
@@ -598,7 +638,15 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return ops;
 	}
 
-	public OpInfo getOp(final String id) {
+	/**
+	 * This method finds the specified {@link OpInfo} AND ensures that the
+	 * {@link OpInfo} has been evaluated as a side effect.
+	 * 
+	 * @param id
+	 *            String operation id
+	 * @return {@link OpInfo} specified by the id parameter
+	 */
+	public OpInfo getEvaluatedOpInfo(final String id) {
 		return ops.get(id).ensureEvaluated(this);
 	}
 
@@ -615,8 +663,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.id + ": " + opId.getRep(model));
-			if (withTO.contains(opId.id)) {
+			sb.append("  " + opId.getId() + ": " + opId.getRep(model));
+			if (withTO.contains(opId.getId())) {
 				sb.append(" (WITH TIMEOUT)");
 			}
 			sb.append("\n");
@@ -639,11 +687,11 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 		sb.append("STATE: " + state + "\n\n");
 		sb.append("VALUES:\n");
-		Map<IEvalElement, EvaluationResult> currentState = values.get(state);
+		Map<IEvalElement, IEvalResult> currentState = values.get(state);
 		if (currentState != null) {
-			final Set<Entry<IEvalElement, EvaluationResult>> entrySet = currentState
+			final Set<Entry<IEvalElement, IEvalResult>> entrySet = currentState
 					.entrySet();
-			for (final Entry<IEvalElement, EvaluationResult> entry : entrySet) {
+			for (final Entry<IEvalElement, IEvalResult> entry : entrySet) {
 				sb.append("  " + entry.getKey().getCode() + " -> "
 						+ entry.getValue().toString() + "\n");
 			}
@@ -661,24 +709,45 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	/**
-	 * This calculated the shortest path from root to the specified state
-	 * (specified with an integer id value).
+	 * This calculated the shortest path from root to the specified state. This
+	 * contacts the ProB kernel via the {@link GetShortestTraceCommand} and then
+	 * uses the generated {@link List} of operation ids to generate a Trace via
+	 * the {@link StateSpace#getTrace(List)} method.
 	 * 
-	 * @param state
+	 * @param stateId
+	 *            StateId for which the trace through the state space should be
+	 *            found.
 	 * @return trace in the form of a {@link Trace} object
 	 */
-	public Trace getTrace(final String state) {
-		final StateId id = getVertex(state);
-		StateId root = this.getRoot();
+	public Trace getTrace(final StateId stateId) {
+		GetShortestTraceCommand cmd = new GetShortestTraceCommand(stateId);
+		execute(cmd);
+		List<String> opIds = cmd.getOperationIds();
+		return getTrace(opIds);
+	}
 
-		DijkstraShortestPath<StateId, OpInfo> dijkstra = new DijkstraShortestPath<StateId, OpInfo>(
-				this.getGraph());
-		List<OpInfo> path = dijkstra.getPath(root, id);
-		Trace h = new Trace(this);
-		for (final OpInfo opInfo : path) {
-			h = h.add(opInfo.getId());
+	/**
+	 * Takes a list of {@link String} operation id names and generates a
+	 * {@link Trace} by executing each one in order. This calls the
+	 * {@link Trace#add(String)} method which can throw an
+	 * {@link IllegalArgumentException} if executing the operations in the
+	 * specified order is not possible.
+	 * 
+	 * @param opIds
+	 *            List of operation ids in the order that they should be
+	 *            executed.
+	 * @return {@link Trace} generated by executing the ids.
+	 */
+	public Trace getTrace(final List<String> opIds) {
+		Trace t = new Trace(this);
+		for (String id : opIds) {
+			t = t.add(id);
 		}
-		return h;
+		return t;
+	}
+
+	public Trace getTrace(final ITraceDescription description) {
+		return description.getTrace(this);
 	}
 
 	public void setAnimator(final IAnimator animator) {
@@ -781,10 +850,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	@Override
 	public Set<OpInfo> getOutEdges(final StateId arg0) {
 		Collection<OpInfo> outgoingEdgesOf = super.getOutEdges(arg0);
-		for (OpInfo opInfo : outgoingEdgesOf) {
-			opInfo.ensureEvaluated(this);
-		}
-		return new HashSet<OpInfo>(outgoingEdgesOf);
+		return new LinkedHashSet<OpInfo>(outgoingEdgesOf);
 	}
 
 	public long getLastCalculatedStateId() {
@@ -850,6 +916,21 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return edges;
 	}
 
+	public Set<OpInfo> evaluateOps(final Collection<OpInfo> ops) {
+		List<OpInfo> notEvaluated = new ArrayList<OpInfo>();
+		for (OpInfo opInfo : ops) {
+			if (!opInfo.isEvaluated()) {
+				notEvaluated.add(opInfo);
+			}
+		}
+		if (notEvaluated.isEmpty()) {
+			return new LinkedHashSet<OpInfo>(ops);
+		}
+		GetOpsFromIds cmd = new GetOpsFromIds(notEvaluated);
+		execute(cmd);
+		return new LinkedHashSet<OpInfo>(ops);
+	}
+
 	/*
 	 * What this method should do: 1) Extract all states from state space 2) For
 	 * each state For each formula Check to see if formula is cached. IF so,
@@ -870,7 +951,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return a map of the formulas and their result for every state in the
 	 *         state space
 	 */
-	public Map<StateId, Map<IEvalElement, EvaluationResult>> evaluateForEveryState(
+	public Map<StateId, Map<IEvalElement, IEvalResult>> evaluateForEveryState(
 			final List<IEvalElement> formulas) {
 		checkInitialized();
 		return evaluateForGivenStates(getVertices(), formulas);
@@ -887,63 +968,71 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return a map of the formulas and their results for all of the specified
 	 *         states
 	 */
-	public Map<StateId, Map<IEvalElement, EvaluationResult>> evaluateForGivenStates(
+	public Map<StateId, Map<IEvalElement, IEvalResult>> evaluateForGivenStates(
 			final Collection<StateId> states, final List<IEvalElement> formulas) {
-		Map<StateId, Map<IEvalElement, EvaluationResult>> result = new HashMap<StateId, Map<IEvalElement, EvaluationResult>>();
-		List<EvaluateFormulasCommand> cmds = new ArrayList<EvaluateFormulasCommand>();
+		Map<StateId, Map<IEvalElement, IEvalResult>> result = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
+		List<EvaluationCommand> cmds = new ArrayList<EvaluationCommand>();
 
 		for (StateId stateId : states) {
 			if (canBeEvaluated(stateId)) {
-				Map<IEvalElement, EvaluationResult> res = new HashMap<IEvalElement, EvaluationResult>();
+				Map<IEvalElement, IEvalResult> res = new HashMap<IEvalElement, IEvalResult>();
 				result.put(stateId, res);
 
 				// Check for cached values
-				Map<IEvalElement, EvaluationResult> map = values.get(stateId);
+				Map<IEvalElement, IEvalResult> map = values.get(stateId);
 				if (map == null) {
-					cmds.add(new EvaluateFormulasCommand(formulas, stateId
-							.getId()));
+					for (IEvalElement f : formulas) {
+						cmds.add(f.getCommand(stateId));
+					}
 				} else {
-					List<IEvalElement> toEval = new ArrayList<IEvalElement>();
 					for (IEvalElement f : formulas) {
 						if (map.containsKey(f)) {
 							res.put(f, map.get(f));
 						} else {
-							toEval.add(f);
+							cmds.add(f.getCommand(stateId));
 						}
 					}
-					cmds.add(new EvaluateFormulasCommand(toEval, stateId
-							.getId()));
 				}
 			}
 		}
 
 		execute(new ComposedCommand(cmds));
 
-		for (EvaluateFormulasCommand efCmd : cmds) {
-			List<IEvalElement> forms = efCmd.getFormulas();
-			List<EvaluationResult> vals = efCmd.getValues();
+		for (EvaluationCommand efCmd : cmds) {
+			IEvalElement formula = efCmd.getEvalElement();
+			IEvalResult value = efCmd.getValue();
 			StateId id = getVertex(efCmd.getStateId());
 
-			for (IEvalElement formula : forms) {
-				if (formulaRegistry.containsKey(formula)
-						&& !formulaRegistry.get(formula).isEmpty()) {
-					if (!values.containsKey(id)) {
-						values.put(id,
-								new HashMap<IEvalElement, EvaluationResult>());
-					}
-					values.get(id).put(formula,
-							vals.get(formulas.indexOf(formula)));
+			if (formulaRegistry.containsKey(formula)
+					&& !formulaRegistry.get(formula).isEmpty()) {
+				if (!values.containsKey(id)) {
+					values.put(id, new HashMap<IEvalElement, IEvalResult>());
 				}
-				result.get(id)
-						.put(formula, vals.get(formulas.indexOf(formula)));
+				values.get(id).put(formula, value);
 			}
+			result.get(id).put(formula, value);
 		}
 
 		return result;
 	}
 
-	public Map<StateId, Map<IEvalElement, EvaluationResult>> getValues() {
+	public Map<StateId, Map<IEvalElement, IEvalResult>> getValues() {
 		return values;
+	}
+
+	@Override
+	public void startTransaction() {
+		animator.startTransaction();
+	}
+
+	@Override
+	public void endTransaction() {
+		animator.endTransaction();
+	}
+
+	@Override
+	public boolean isBusy() {
+		return animator.isBusy();
 	}
 
 }

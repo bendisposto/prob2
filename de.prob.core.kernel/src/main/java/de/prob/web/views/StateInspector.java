@@ -5,15 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.AsyncContext;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.animator.domainobjects.EvaluationResult;
+import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.eventb.Context;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
@@ -28,6 +31,7 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.unicode.UnicodeTranslator;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -58,6 +62,13 @@ public class StateInspector extends AbstractSession implements
 		}
 	}
 
+	public Object evaluate(final Map<String, String[]> params) {
+		String code = params.get("code")[0];
+		Object eval = currentTrace.getCurrentState().eval(new ClassicalB(code));
+		return WebUtils.wrap("cmd", "StateInspector.result", "code", code,
+				"result", eval.toString());
+	}
+
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
@@ -65,52 +76,63 @@ public class StateInspector extends AbstractSession implements
 	}
 
 	@Override
-	public void traceChange(final Trace trace) {
-		if (trace == null) {
-			currentTrace = null;
-			deregisterFormulas(currentModel);
-			currentModel = null;
-			submit(WebUtils.wrap("cmd", "StateInspector.clearInput"));
-			return;
-		}
-		currentTrace = trace;
-		AbstractModel newModel = trace.getModel();
-		if (!newModel.equals(currentModel)) {
-			if (currentModel != null) {
+	public void traceChange(final Trace trace,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			if (trace == null) {
+				currentTrace = null;
 				deregisterFormulas(currentModel);
+				currentModel = null;
+				submit(WebUtils.wrap("cmd", "StateInspector.clearInput"));
+				return;
 			}
-			currentModel = newModel;
-			Map<String, Object> extracted = extractModel(currentModel);
-			registerFormulas(currentModel);
+			currentTrace = trace;
+			AbstractModel newModel = trace.getModel();
+			if (!newModel.equals(currentModel)) {
+				if (currentModel != null) {
+					deregisterFormulas(currentModel);
+				}
+				currentModel = newModel;
+				Map<String, Object> extracted = extractModel(currentModel);
+				registerFormulas(currentModel);
+
+				Object calculatedValues = calculateFormulas(currentTrace);
+				submit(WebUtils.wrap("cmd", "StateInspector.setModel",
+						"components", WebUtils.toJson(extracted), "values",
+						WebUtils.toJson(calculatedValues)));
+				return;
+			}
 
 			Object calculatedValues = calculateFormulas(currentTrace);
-			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
-					"components", WebUtils.toJson(extracted), "values",
-					WebUtils.toJson(calculatedValues)));
-			return;
+			submit(WebUtils.wrap("cmd", "StateInspector.updateValues",
+					"values", WebUtils.toJson(calculatedValues)));
 		}
-
-		Object calculatedValues = calculateFormulas(currentTrace);
-		submit(WebUtils.wrap("cmd", "StateInspector.updateValues", "values",
-				WebUtils.toJson(calculatedValues)));
 	}
 
 	public Object calculateFormulas(final Trace t) {
 		List<Object> extracted = new ArrayList<Object>();
 		StateSpace s = t.getStateSpace();
-		Map<IEvalElement, EvaluationResult> current = s.valuesAt(t
-				.getCurrentState());
-		Map<IEvalElement, EvaluationResult> previous = s.valuesAt(t
-				.getCurrent().getSrc());
+		Map<IEvalElement, IEvalResult> current = s
+				.valuesAt(t.getCurrentState());
+		Map<IEvalElement, IEvalResult> previous = s.valuesAt(t.getCurrent()
+				.getSrc());
 
 		for (IEvalElement e : formulasForEvaluating) {
-			extracted.add(WebUtils.wrap("id", e.getFormulaId().uuid, "code", e
-					.getCode(), "current", current.get(e) == null ? ""
-					: current.get(e).getValue(), "previous",
-					previous.get(e) == null ? "" : previous.get(e).getValue()));
+			String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current
+					.get(e)).getValue()) : "";
+			String previousVal = previous.get(e) instanceof EvalResult ? unicode(((EvalResult) previous
+					.get(e)).getValue()) : "";
+			extracted.add(WebUtils.wrap("id", e.getFormulaId().uuid, "code",
+					unicode(e.getCode()), "current",
+					current.get(e) == null ? "" : currentVal, "previous",
+					previous.get(e) == null ? "" : previousVal));
 		}
 
 		return extracted;
+	}
+
+	private String unicode(final String code) {
+		return StringEscapeUtils.escapeHtml(UnicodeTranslator.toUnicode(code));
 	}
 
 	private void registerFormulas(final AbstractModel model) {
@@ -131,44 +153,48 @@ public class StateInspector extends AbstractSession implements
 		formulasForEvaluating = new ArrayList<IEvalElement>();
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> components = new ArrayList<Object>();
-
-		for (Entry<String, AbstractElement> e : m.getComponents().entrySet()) {
-			components.add(extractComponent(e.getKey(), e.getValue()));
+		Map<String, AbstractElement> modelComponents = m.getComponents();
+		if (modelComponents != null) {
+			for (Entry<String, AbstractElement> e : modelComponents.entrySet()) {
+				components.add(extractComponent(m.getStatespace(), e.getKey(), e.getValue()));
+			}
 		}
-
 		extracted.put("components", components);
 		return extracted;
 	}
 
-	private Object extractComponent(final String name, final AbstractElement e) {
+	private Object extractComponent(StateSpace s, final String name, final AbstractElement e) {
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> kids = new ArrayList<Object>();
 		if (e instanceof Context) {
-			kids.add(extractElement(e, BSet.class));
-			kids.add(extractElement(e, Constant.class));
-			kids.add(extractElement(e, Axiom.class));
+			kids.add(extractElement(s, e, BSet.class));
+			kids.add(extractElement(s, e, Constant.class));
+			kids.add(extractElement(s, e, Axiom.class));
 		}
 		if (e instanceof Machine) {
-			kids.add(extractElement(e, Variable.class));
-			kids.add(extractElement(e, Invariant.class));
+			kids.add(extractElement(s, e, Variable.class));
+			kids.add(extractElement(s, e, Invariant.class));
 		}
 		extracted.put("label", name);
 		extracted.put("children", kids);
 		return extracted;
 	}
 
-	private Object extractElement(final AbstractElement parent,
+	private Object extractElement(StateSpace s, final AbstractElement parent,
 			final Class<? extends AbstractElement> c) {
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> kids = new ArrayList<Object>();
-		Set<? extends AbstractElement> children = parent.getChildrenOfType(c);
+		List<? extends AbstractElement> children = parent.getChildrenOfType(c);
 		for (AbstractElement abstractElement : children) {
 			if (abstractElement instanceof IEval) {
 				IEvalElement formula = ((IEval) abstractElement).getEvaluate();
-				Map<String, String> wrap = WebUtils.wrap("code",
-						formula.getCode(), "id", formula.getFormulaId().uuid);
-				kids.add(wrap);
-				formulasForEvaluating.add(formula);
+				if(s.isSubscribed(formula)) {
+					Map<String, String> wrap = WebUtils.wrap("code",
+							unicode(formula.getCode()), "id",
+							formula.getFormulaId().uuid);
+					kids.add(wrap);
+					formulasForEvaluating.add(formula);					
+				}
 			}
 		}
 		String label = extractLabel(c);
@@ -183,6 +209,15 @@ public class StateInspector extends AbstractSession implements
 			return "Sets";
 		}
 		return simpleName + "s";
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "StateInspector.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "StateInspector.enable"));
+		}
 	}
 
 }

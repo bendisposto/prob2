@@ -50,3 +50,4 @@ Bundle-ClassPath: .,
  lib/dependencies/atlassian-event-2.2.0.jar,
  lib/dependencies/aopalliance-1.0.jar,
  lib/dependencies/activation-1.1.jar
+ lib/dependencies/javafx.mvn-2.2.0-SNAPSHOT.jar

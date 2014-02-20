@@ -22,8 +22,8 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 
 	protected final StateSpace stateSpace;
 	public Map<String, Set<DerivedStateId>> nodeColors = new HashMap<String, Set<DerivedStateId>>();
-	public Map<String, Set<DerivedOp>> transStyle = new HashMap<String, Set<DerivedOp>>();
-	public Map<String, Set<DerivedOp>> transColor = new HashMap<String, Set<DerivedOp>>();
+	public Map<String, Set<OpInfo>> transStyle = new HashMap<String, Set<OpInfo>>();
+	public Map<String, Set<OpInfo>> transColor = new HashMap<String, Set<OpInfo>>();
 	public boolean registered = false;
 
 	public AbstractDerivedStateSpace(final IStateSpace stateSpace,
@@ -49,10 +49,10 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 	Set<IStatesCalculatedListener> listeners = new HashSet<IStatesCalculatedListener>();
 
 	@Override
-	public abstract void newTransitions(final List<? extends OpInfo> newOps);
+	public abstract void newTransitions(final List<OpInfo> newOps);
 
 	@Override
-	public void notifyStateSpaceChange(final List<? extends OpInfo> newOps) {
+	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
 		for (IStatesCalculatedListener l : listeners) {
 			l.newTransitions(newOps);
 		}
@@ -92,9 +92,9 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		}
 	}
 
-	public List<DerivedOp> addTransitions(final List<DerivedOp> ops) {
-		List<DerivedOp> newOps = new ArrayList<DerivedOp>();
-		for (DerivedOp op : ops) {
+	public List<OpInfo> addTransitions(final List<OpInfo> ops) {
+		List<OpInfo> newOps = new ArrayList<OpInfo>();
+		for (OpInfo op : ops) {
 			if (!containsEdge(op)) {
 				newOps.add(op);
 				addEdge(op, states.get(op.getSrc()), states.get(op.getDest()));
@@ -122,11 +122,11 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		return nodeColors;
 	}
 
-	public Map<String, Set<DerivedOp>> getTransColor() {
+	public Map<String, Set<OpInfo>> getTransColor() {
 		return transColor;
 	}
 
-	public Map<String, Set<DerivedOp>> getTransStyle() {
+	public Map<String, Set<OpInfo>> getTransStyle() {
 		return transStyle;
 	}
 
@@ -134,11 +134,26 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		this.nodeColors = nodeColors;
 	}
 
-	public void setTransColor(final Map<String, Set<DerivedOp>> transColor) {
+	public void setTransColor(final Map<String, Set<OpInfo>> transColor) {
 		this.transColor = transColor;
 	}
 
-	public void setTransStyle(final Map<String, Set<DerivedOp>> transStyle) {
+	public void setTransStyle(final Map<String, Set<OpInfo>> transStyle) {
 		this.transStyle = transStyle;
+	}
+
+	@Override
+	public boolean isBusy() {
+		return stateSpace.isBusy();
+	}
+
+	@Override
+	public void startTransaction() {
+		stateSpace.startTransaction();
+	}
+
+	@Override
+	public void endTransaction() {
+		stateSpace.endTransaction();
 	}
 }

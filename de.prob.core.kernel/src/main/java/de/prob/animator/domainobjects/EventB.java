@@ -1,27 +1,32 @@
 package de.prob.animator.domainobjects;
 
+import static de.prob.animator.domainobjects.EvalElementType.ASSIGNMENT;
 import static de.prob.animator.domainobjects.EvalElementType.EXPRESSION;
 import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import org.eventb.core.ast.ASTProblem;
+import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.LanguageVersion;
 import org.eventb.core.ast.Predicate;
-
-import com.google.common.base.Joiner;
+import org.eventb.core.ast.extension.IFormulaExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
-import de.prob.formula.eventb.ExpressionVisitor;
-import de.prob.formula.eventb.PredicateVisitor;
+import de.prob.animator.command.EvaluateFormulaCommand;
+import de.prob.animator.command.EvaluationCommand;
+import de.prob.formula.TranslationVisitor;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.statespace.StateId;
 import de.prob.unicode.UnicodeTranslator;
 
 /**
@@ -32,10 +37,13 @@ import de.prob.unicode.UnicodeTranslator;
  */
 public class EventB extends AbstractEvalElement {
 
-	public FormulaUUID uuid = new FormulaUUID();
+	Logger logger = LoggerFactory.getLogger(EventB.class);
+	private final FormulaUUID uuid = new FormulaUUID();
 
 	private String kind;
 	private Node ast = null;
+
+	private final Set<IFormulaExtension> types;
 
 	/**
 	 * @param code
@@ -44,60 +52,104 @@ public class EventB extends AbstractEvalElement {
 	 */
 	public EventB(final String code) {
 		this.code = UnicodeTranslator.toAscii(code);
-		ensureParsed();
+		types = Collections.emptySet();
+	}
+
+	public EventB(final String code, final Set<IFormulaExtension> types) {
+		this.code = UnicodeTranslator.toAscii(code);
+		this.types = types;
 	}
 
 	private void ensureParsed() {
 		final String unicode = UnicodeTranslator.toUnicode(code);
 		kind = PREDICATE.toString();
-		IParseResult parseResult = FormulaFactory.getDefault().parsePredicate(
-				unicode, LanguageVersion.LATEST, null);
+		IParseResult parseResult = FormulaFactory.getInstance(types)
+				.parsePredicate(unicode, LanguageVersion.LATEST, null);
+		List<String> errors = new ArrayList<String>();
 
 		if (!parseResult.hasProblem()) {
 			ast = preparePredicateAst(parseResult);
-
 		} else {
+			errors.add("Parsing predicate failed because: "
+					+ parseResult.toString());
 			kind = EXPRESSION.toString();
-			parseResult = FormulaFactory.getDefault().parseExpression(unicode,
-					LanguageVersion.LATEST, null);
-			ast = prepareExpressionAst(parseResult);
+			parseResult = FormulaFactory.getInstance(types).parseExpression(
+					unicode, LanguageVersion.LATEST, null);
+			if (!parseResult.hasProblem()) {
+				ast = prepareExpressionAst(parseResult);
+			} else {
+				errors.add("Parsing expression failed because: "
+						+ parseResult.toString());
+				kind = ASSIGNMENT.toString();
+				parseResult = FormulaFactory.getInstance(types)
+						.parseAssignment(unicode, LanguageVersion.LATEST, null);
+				if (!parseResult.hasProblem()) {
+					ast = prepareAssignmentAst(parseResult);
+				} else {
+					errors.add("Parsing assignment failed because: "
+							+ parseResult.toString());
+				}
+			}
 		}
 		if (parseResult.hasProblem()) {
-			throwException(code, parseResult);
+			for (String string : errors) {
+				logger.error(string);
+			}
+			logger.error("Parsing of code failed. Ascii is: " + code);
+			logger.error("Parsing of code failed. Unicode is: " + unicode);
+			throw new EvaluationException("Was not able to parse code: " + code
+					+ " See log for details.");
 		}
+	}
+
+	private Node prepareAssignmentAst(final IParseResult parseResult) {
+		final Assignment assign = parseResult.getParsedAssignment();
+		final TranslationVisitor visitor = new TranslationVisitor();
+		try {
+			assign.accept(visitor);
+		} catch (Exception e) {
+			logger.error("Creation of ast failed for assignment " + code, e);
+			throw new EvaluationException(
+					"Could not create AST for assignment " + assign.toString());
+		}
+		return visitor.getSubstitution();
 	}
 
 	private Node prepareExpressionAst(final IParseResult parseResult) {
 		final Expression expr = parseResult.getParsedExpression();
-		final ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>());
-		expr.accept(visitor);
+		final TranslationVisitor visitor = new TranslationVisitor();
+		try {
+			expr.accept(visitor);
+		} catch (Exception e) {
+			logger.error("Creation of ast failed for expression " + code, e);
+			throw new EvaluationException(
+					"Could not create AST for expression " + expr.toString());
+		}
 		final Node expression = visitor.getExpression();
 		return expression;
 	}
 
 	private Node preparePredicateAst(final IParseResult parseResult) {
 		final Predicate parsedPredicate = parseResult.getParsedPredicate();
-		final PredicateVisitor visitor = new PredicateVisitor();
-		parsedPredicate.accept(visitor);
-		return visitor.getPredicate();
-	}
-
-	private void throwException(final String code,
-			final IParseResult parseResult) {
-		final List<ASTProblem> problems = parseResult.getProblems();
-		final ArrayList<String> msgs = new ArrayList<String>();
-		for (final ASTProblem astProblem : problems) {
-			msgs.add(astProblem.getMessage().toString());
+		final TranslationVisitor visitor = new TranslationVisitor();
+		try {
+			parsedPredicate.accept(visitor);
+		} catch (Exception e) {
+			logger.error("Creation of ast failed for expression " + code, e);
+			throw new EvaluationException("Could not create AST for predicate "
+					+ parsedPredicate.toString());
 		}
-		final String error = Joiner.on(", \n").join(msgs);
-		throw new EvaluationException("Cannot parse " + code + ":\n " + error);
+		return visitor.getPredicate();
 	}
 
 	@Override
 	public void printProlog(final IPrologTermOutput pout) {
 		if (ast == null) {
 			ensureParsed();
+		}
+		if (getKind().equals(ASSIGNMENT.toString())) {
+			throw new EvaluationException(
+					"Assignments are currently unsupported for evaluation");
 		}
 
 		assert ast != null;
@@ -107,6 +159,7 @@ public class EventB extends AbstractEvalElement {
 
 	@Override
 	public String getKind() {
+		ensureParsed();
 		return kind;
 	}
 
@@ -133,5 +186,10 @@ public class EventB extends AbstractEvalElement {
 	@Override
 	public FormulaUUID getFormulaId() {
 		return uuid;
+	}
+
+	@Override
+	public EvaluationCommand getCommand(final StateId stateId) {
+		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
 }

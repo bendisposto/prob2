@@ -25,6 +25,7 @@ public class GroovySE implements ScriptEngine {
 	private final Logger logger = LoggerFactory.getLogger(GroovySE.class);
 
 	private static volatile int varcount = 0;
+	private static final int BUFFER_SIZE = 1024;
 
 	public static int nextVar() {
 		return varcount++;
@@ -41,7 +42,7 @@ public class GroovySE implements ScriptEngine {
 
 	private final String imports = Joiner.on("\n").join(IMPORTS);
 
-	public GroovySE(ScriptEngine engine) {
+	public GroovySE(final ScriptEngine engine) {
 		groovy = engine;
 		initialize();
 	}
@@ -66,12 +67,21 @@ public class GroovySE implements ScriptEngine {
 	}
 
 	@Override
-	public Object eval(String script, ScriptContext context)
+	public Object eval(final String script, final ScriptContext context)
 			throws ScriptException {
-
+		StringBuffer buff = new StringBuffer();
+		if (groovy.get("__console") == null) {
+			groovy.put("__console", buff);
+		}
 		Object result = groovy.eval(imports + "\n" + script, context);
-		if (result == null)
+		if (result == null) {
 			return "null";
+		}
+		if (buff.length() > 0) {
+			logger.error("Automatically captured prints from groovy. "
+					+ "Users of a groovy engine should provide a console. "
+					+ "Output was: {}", buff.toString());
+		}
 		return result;
 	}
 
@@ -86,17 +96,17 @@ public class GroovySE implements ScriptEngine {
 	}
 
 	@Override
-	public Bindings getBindings(int scope) {
+	public Bindings getBindings(final int scope) {
 		return groovy.getBindings(scope);
 	}
 
 	@Override
-	public void setBindings(Bindings bindings, int scope) {
+	public void setBindings(final Bindings bindings, final int scope) {
 		groovy.setBindings(bindings, scope);
 	}
 
 	@Override
-	public void setContext(ScriptContext context) {
+	public void setContext(final ScriptContext context) {
 		groovy.setContext(context);
 	}
 
@@ -106,12 +116,12 @@ public class GroovySE implements ScriptEngine {
 	}
 
 	@Override
-	public Object get(String key) {
+	public Object get(final String key) {
 		return groovy.get(key);
 	}
 
 	@Override
-	public void put(String key, Object value) {
+	public void put(final String key, final Object value) {
 		groovy.put(key, value);
 	}
 
@@ -119,13 +129,13 @@ public class GroovySE implements ScriptEngine {
 	 * Delegate to eval(String, ScriptContext)
 	 */
 	@Override
-	public Object eval(Reader reader, ScriptContext context)
+	public Object eval(final Reader reader, final ScriptContext context)
 			throws ScriptException {
 		return eval(readFully(reader), context);
 	}
 
-	private String readFully(Reader reader) throws ScriptException {
-		char[] arr = new char[8 * 1024]; // 8K at a time
+	private String readFully(final Reader reader) throws ScriptException {
+		char[] arr = new char[8 * BUFFER_SIZE]; // 8K at a time
 		StringBuilder buf = new StringBuilder();
 		int numChars;
 		try {
@@ -139,29 +149,29 @@ public class GroovySE implements ScriptEngine {
 	}
 
 	@Override
-	public Object eval(String script) throws ScriptException {
+	public Object eval(final String script) throws ScriptException {
 		return eval(script, getContext());
 	}
 
 	@Override
-	public Object eval(Reader reader) throws ScriptException {
+	public Object eval(final Reader reader) throws ScriptException {
 		return eval(readFully(reader));
 	}
 
 	@Override
-	public Object eval(String script, Bindings n) throws ScriptException {
-		System.err.println("Maybe not correct");
+	public Object eval(final String script, final Bindings n)
+			throws ScriptException {
 		ScriptContext ctxt = getScriptContext(n);
 		return eval(script, ctxt);
 	}
 
 	@Override
-	public Object eval(Reader reader, Bindings n) throws ScriptException {
-		System.err.println("Maybe not correct");
+	public Object eval(final Reader reader, final Bindings n)
+			throws ScriptException {
 		return eval(readFully(reader), n);
 	}
 
-	protected ScriptContext getScriptContext(Bindings nn) {
+	protected ScriptContext getScriptContext(final Bindings nn) {
 
 		SimpleScriptContext ctxt = new SimpleScriptContext();
 		Bindings gs = getBindings(ScriptContext.GLOBAL_SCOPE);
@@ -172,9 +182,10 @@ public class GroovySE implements ScriptEngine {
 
 		if (nn != null) {
 			ctxt.setBindings(nn, ScriptContext.ENGINE_SCOPE);
-		} else
+		} else {
 			throw new NullPointerException(
 					"Engine scope Bindings may not be null.");
+		}
 
 		return ctxt;
 
