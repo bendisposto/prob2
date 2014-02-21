@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
@@ -142,6 +143,14 @@ public class BMotionStudioServlet extends HttpServlet {
 				Document templateDocument = Jsoup.parse(templateHtml);
 				templateDocument.outputSettings().prettyPrint(false);
 
+				for (Element e : templateDocument.getElementsByTag("svg")) {
+					// If svg element has no id, set unique ID
+					if (e.attr("id").isEmpty())
+						e.attr("id", UUID.randomUUID().toString());
+				}
+							
+				bmsSession.setTemplateDocument(templateDocument);
+				
 				Elements headTag = templateDocument.getElementsByTag("head");
 				Element headElement = headTag.get(0);
 
