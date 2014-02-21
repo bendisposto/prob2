@@ -117,7 +117,6 @@ public class BMotionStudioServlet extends HttpServlet {
 			if (fileRequest.isEmpty())
 				fileRequest = templateFile;
 			String fullRequestPath = workspacePath + fileRequest;
-
 			InputStream stream = null;
 			try {
 				stream = new FileInputStream(fullRequestPath);
@@ -134,14 +133,14 @@ public class BMotionStudioServlet extends HttpServlet {
 			// Ugly ...
 			if (fullRequestPath.endsWith(".html")) {
 
-				bmsSession.setTemplate(templateFullPath);
+				bmsSession.setTemplatePath(templateFullPath);
 
 				String templateHtml = WebUtils.render(fullRequestPath);
 				String baseHtml = getBaseHtml(bmsSession);
 
 				Document templateDocument = Jsoup.parse(templateHtml);
 				templateDocument.outputSettings().prettyPrint(false);
-
+				
 				Elements headTag = templateDocument.getElementsByTag("head");
 				Element headElement = headTag.get(0);
 
@@ -162,17 +161,17 @@ public class BMotionStudioServlet extends HttpServlet {
 
 				Elements headTag2 = baseDocument.getElementsByTag("head");
 				Element bodyTag2 = baseDocument.getElementById("vis_container");
+				
 				bodyTag2.append(body);
-
 				headTag2.append(head);
-
-				// Workaround, since jsoup renames svg image tags to img
-				// tags ...
-				Elements svgElements = baseDocument.getElementsByTag("svg");
-				for (Element e : svgElements) {
+				
+				for (Element e : baseDocument.getElementsByTag("svg")) {
+					// Workaround, since jsoup renames svg image tags to img
+					// tags ...
 					Elements imgTags = e.getElementsByTag("img");
 					imgTags.tagName("image");
 				}
+				
 				stream = new ByteArrayInputStream(baseDocument.html()
 						.getBytes());
 
@@ -188,56 +187,55 @@ public class BMotionStudioServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		// Check if an existing session is request
+		// Get request URI
 		String uri = req.getRequestURI();
+		// Get session id from URI
 		List<String> parts = new PartList(uri.split("/"));
 		String sessionID = parts.get(2);
-
-		// Try to get BMotion Studio session
 		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
 				.get(sessionID);
 
 		// If no session exists yet ...
 		if (bmsSession == null) {
 
-			// Get a new BMotionStudioSession
+			// Create a new BMotionStudioSession
 			bmsSession = ServletContextListener.INJECTOR
 					.getInstance(BMotionStudioSession.class);
 			String id = bmsSession.getSessionUUID().toString();
-			// Register sessions
+			// Register the new session
 			sessions.put(id, bmsSession);
 
-			String redirect;
-
+			// Prepare redirect ...			
+			String redirect = "/bms/" + id;
 			Map<String, String[]> parameterMap = req.getParameterMap();
+			
+			// Get path to template from corresponding parameter
 			String template = req.getParameter("template");
-			// New template requested via parameter
+			
+			// If a template was specified ...
 			if (template != null) {
-
-				bmsSession.setTemplate(template);
-
+				// Set template path in BMotionStudioSession
+				bmsSession.setTemplatePath(template);
+				// Build up parameter string
+				StringBuilder parameterString = new StringBuilder();
 				for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
 					bmsSession.addParameter(e.getKey(), e.getValue()[0]);
+					parameterString.append("&" + e.getKey() + "=" + e.getValue()[0]);
 				}
-
-				String templateFullPath = bmsSession.getTemplate();
-				List<String> templateParts = new PartList(
-						templateFullPath.split("/"));
+				String fpstring = "?"+parameterString.substring(1, parameterString.length());
+				// Get only template file (no full path)
+				List<String> templateParts = new PartList(template.split("/"));
 				String templateFile = templateParts
 						.get(templateParts.size() - 1);
 				// Send redirect with new session id and template file
-				redirect = "/bms/" + id + "/" + templateFile;
-
-			} else {
-				// Send redirect only with new session id (we have still no
-				// template)
-				redirect = "/bms/" + id;
+				redirect = "/bms/" + id + "/" + templateFile + fpstring;
 			}
 
 			resp.sendRedirect(redirect);
+			
 			return;
 
-		} else {
+		} else { // If an session already exists ... delegate
 			String mode = req.getParameter("mode");
 			if ("update".equals(mode)) {
 				update(req, bmsSession);

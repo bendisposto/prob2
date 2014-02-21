@@ -56,7 +56,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private final AnimationSelector selector;
 
-	private String template;
+	private String templatePath;
 
 	private final ScriptEngine groovy;
 
@@ -224,7 +224,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initJsonData() {
 
-		if (template == null) {
+		if (templatePath == null) {
 			return;
 		}
 
@@ -350,17 +350,17 @@ public class BMotionStudioSession extends AbstractSession implements
 		return jsonData;
 	}
 
-	public void setTemplate(final String template) {
-		this.template = template;
+	public void setTemplatePath(final String templatePath) {
+		this.templatePath = templatePath;
 	}
 
 	public String getTemplate() {
-		return template;
+		return templatePath;
 	}
 
 	private String getTemplateFolder() {
-		if (template != null) {
-			return new File(template).getParent();
+		if (templatePath != null) {
+			return new File(templatePath).getParent();
 		}
 		return null;
 	}
@@ -378,7 +378,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initGroovy() {
 
-		if (template == null) {
+		if (templatePath == null) {
 			return;
 		}
 
