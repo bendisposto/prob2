@@ -2,6 +2,7 @@ package de.prob.bmotion;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +17,9 @@ import javax.script.ScriptException;
 import javax.servlet.AsyncContext;
 
 import org.eclipse.jetty.util.ajax.JSON;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +34,6 @@ import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
-import de.prob.annotations.PublicSession;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
@@ -44,7 +47,6 @@ import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
-@PublicSession
 public class BMotionStudioSession extends AbstractSession implements
 		IAnimationChangeListener, IModelChangedListener {
 
@@ -56,9 +58,11 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private final AnimationSelector selector;
 
-	private String template;
+	private String templatePath;
+	
+	private Document templateDocument;
 
-	private final ScriptEngine groovy;
+	private final ScriptEngine groovyScriptEngine;
 
 	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
 
@@ -80,7 +84,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		this.selector = selector;
 		incrementalUpdate = false;
 		currentTrace = selector.getCurrentTrace();
-		groovy = sep.get();
+		groovyScriptEngine = sep.get();
 		observer = new Observer(this);
 		selector.registerAnimationChangeListener(this);
 		selector.registerModelChangedListener(this);
@@ -101,6 +105,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		Trace currentTrace = selector.getCurrentTrace();
 		try {
 			Trace newTrace = currentTrace.add(op, predicate);
+			System.out.println("===> ssdawqwqw");
 			selector.replaceTrace(currentTrace, newTrace);
 		} catch (BException e) {
 			e.printStackTrace();
@@ -108,6 +113,54 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 
+	public Object openSvgEditor(final Map<String, String[]> params) {
+		String svgId = params.get("id")[0];
+		Element orgSvgElement = templateDocument.getElementById(svgId);
+		submit(WebUtils.wrap("cmd", "bms.openSvgEditor", "svg",
+				orgSvgElement.toString(), "json", WebUtils.toJson(jsonData)));
+		return null;
+	}
+	
+	public Object saveSvg(final Map<String, String[]> params) {
+		
+		// Replace old SVG element with new one		
+		String svgString = params.get("svg")[0];
+		String svgId = params.get("id")[0];
+		Element orgSvgElement = templateDocument.getElementById(svgId);
+		Document parse = Jsoup.parse(svgString);
+		Element newSvgElement = parse.getElementsByTag("svg").first();
+		newSvgElement.attr("id",svgId);
+		orgSvgElement.replaceWith(newSvgElement);
+		
+		// Save template
+		try {
+			File templateFile = new File(templatePath);
+			FileOutputStream fop = new FileOutputStream(templateFile);
+			String content = templateDocument.html();
+			// if file doesnt exists, then create it
+			if (!templateFile.exists()) {
+				templateFile.createNewFile();
+			} 
+			// get the content in bytes
+			byte[] contentInBytes = content.getBytes();
+ 			fop.write(contentInBytes);
+			fop.flush();
+			fop.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Reload template or prompt ...
+		submit(WebUtils.wrap("cmd", "bms.promptReload"));
+		
+		return null;
+		
+	}
+	
 	public Object setTemplate(final Map<String, String[]> params) {
 		String fullTemplatePath = params.get("path")[0];
 		submit(WebUtils.wrap("cmd", "bms.setTemplate", "request",
@@ -123,7 +176,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		int old = responses.size() + 1;
 		// Add dummy message
 		submit(WebUtils.wrap("cmd", "extern.skip"));
-
+		
 		// Initialize Session
 		initSession();
 
@@ -188,7 +241,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				return;
 
 			}
-
+	
 			currentTrace = trace;
 			currentModel = trace.getModel();
 
@@ -197,7 +250,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			if (formulasForEvaluating.containsValue(null)) {
 				registerFormulas(currentModel);
 			}
-
+			
 			// Collect results of subscibred formulas
 			formulas.clear();
 			Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
@@ -224,13 +277,15 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initJsonData() {
 
-		if (template == null) {
+		if (templatePath == null) {
 			return;
 		}
 
 		Map<String, Object> scope = new HashMap<String, Object>();
 		scope.put("eval", new EvalExpression());
 
+		jsonData.clear();
+		
 		String templateFolder = getTemplateFolder();
 		Object jsonPaths = parameterMap.get("json");
 		if (jsonPaths != null) {
@@ -242,7 +297,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				jsonData.add(JSON.parse(jsonRendered));
 			}
 		}
-
+		
 	}
 
 	private String readFile(final String filename) {
@@ -351,16 +406,16 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	public void setTemplate(final String template) {
-		this.template = template;
+		this.templatePath = template;
 	}
 
 	public String getTemplate() {
-		return template;
+		return templatePath;
 	}
 
 	private String getTemplateFolder() {
-		if (template != null) {
-			return new File(template).getParent();
+		if (templatePath != null) {
+			return new File(templatePath).getParent();
 		}
 		return null;
 	}
@@ -378,14 +433,14 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initGroovy() {
 
-		if (template == null) {
+		if (templatePath == null) {
 			return;
 		}
 
 		try {
 
 			String templateFolder = getTemplateFolder();
-			Bindings bindings = groovy.getBindings(ScriptContext.GLOBAL_SCOPE);
+			Bindings bindings = groovyScriptEngine.getBindings(ScriptContext.GLOBAL_SCOPE);
 			bindings.putAll(parameterMap);
 			bindings.put("bms", this);
 
@@ -394,7 +449,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				String[] sp = scriptPaths.toString().split(",");
 				for (String s : sp) {
 					FileReader fr = new FileReader(templateFolder + "/" + s);
-					groovy.eval(fr, bindings);
+					groovyScriptEngine.eval(fr, bindings);
 				}
 			}
 
@@ -414,6 +469,10 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void animatorStatus(final boolean busy) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void setTemplateDocument(Document templateDocument) {
+		this.templateDocument = templateDocument;		
 	}
 
 }

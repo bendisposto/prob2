@@ -31,7 +31,6 @@ bms = (function() {
 				"id" : svgId,
 				"client" : parent.bms.client
 			})
-			
 			/*$( "#svgeditor" ).on('shown.bs.modal', function (e) {				
 			}).on('hidden.bs.modal', function (e) {
 			});*/
@@ -246,10 +245,30 @@ bms = (function() {
 	}
 	
 	extern.openSvgEditor = function(data) {
+		
+		// Init observers
+		var oContainer = $("#svgedit").contents().find("#observers").find(
+				"#accordion")
+		oContainer.empty()
+		var json = JSON.parse(data.json)[0]
+		if (json !== undefined) {
+			var observer = json.observer
+			$.each(observer, function(i, v) {
+				var oName = v.cmd
+				$.each(v.objects, function(i, v) {
+					oContainer.append(session.render("/ui/bmsview/ui_" + oName
+							+ ".html", v))
+				});
+			});
+			svgCanvas.initObservers();
+		}
+		
+		// Init editor
 		var svg = data.svg
 		svgCanvas.setSvgString(svg)
 		$("#modal_svgeditor").modal('show');
-		rescale();	
+		rescale();
+		
 	}
 	
 	extern.promptReload = function(data) {
