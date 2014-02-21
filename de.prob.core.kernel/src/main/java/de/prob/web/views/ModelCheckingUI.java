@@ -15,10 +15,13 @@ import com.google.inject.Singleton;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.LTL;
 import de.prob.check.CBCDeadlockChecker;
 import de.prob.check.CBCInvariantChecker;
 import de.prob.check.ConsistencyChecker;
 import de.prob.check.IModelCheckingResult;
+import de.prob.check.LTLChecker;
+import de.prob.check.LTLOk;
 import de.prob.check.ModelCheckOk;
 import de.prob.check.ModelChecker;
 import de.prob.check.ModelCheckingOptions;
@@ -51,6 +54,8 @@ public class ModelCheckingUI extends AbstractSession implements
 
 	private StateSpace currentStateSpace;
 
+	private LTL ltlFormula;
+
 	@Inject
 	public ModelCheckingUI(final AnimationSelector animations) {
 		this.animations = animations;
@@ -68,20 +73,28 @@ public class ModelCheckingUI extends AbstractSession implements
 			final IModelCheckingResult result, final StateSpaceStats stats) {
 		results.put(id, result);
 
-		int nrProcessedNodes = stats.getNrProcessedNodes();
-		int nrTotalNodes = stats.getNrTotalNodes();
-		int percent = nrProcessedNodes * 100 / nrTotalNodes;
-		submit(WebUtils.wrap("cmd", "ModelChecking.updateJob", "id", id,
-				"processedNodes", nrProcessedNodes, "totalNodes", nrTotalNodes,
-				"totalTransitions", stats.getNrTotalTransitions(), "percent",
-				percent, "time", timeElapsed));
+		boolean hasStats = stats != null;
+
+		if (hasStats) {
+			int nrProcessedNodes = stats.getNrProcessedNodes();
+			int nrTotalNodes = stats.getNrTotalNodes();
+			int percent = nrProcessedNodes * 100 / nrTotalNodes;
+			submit(WebUtils.wrap("cmd", "ModelChecking.updateJob", "id", id,
+					"stats", hasStats, "processedNodes", nrProcessedNodes,
+					"totalNodes", nrTotalNodes, "totalTransitions",
+					stats.getNrTotalTransitions(), "percent", percent, "time",
+					timeElapsed));
+		} else {
+			submit(WebUtils.wrap("cmd", "ModelChecking.updateJob", "id", id,
+					"stats", hasStats, "percent", 100, "time", timeElapsed));
+		}
 	}
 
 	public void isFinished(final String id, final long timeElapsed,
 			final IModelCheckingResult result, final StateSpaceStats stats) {
 		results.put(id, result);
 
-		String res = (result instanceof ModelCheckOk) ? "success"
+		String res = ((result instanceof ModelCheckOk) || (result instanceof LTLOk)) ? "success"
 				: ((result instanceof ITraceDescription) ? "danger" : "warning");
 		boolean hasTrace = result instanceof ITraceDescription;
 
@@ -116,13 +129,16 @@ public class ModelCheckingUI extends AbstractSession implements
 			if (mode.equals("cbc-deadlock")) {
 				return startDBCDeadlock();
 			}
+			if (mode.equals("ltl-check") && ltlFormula != null) {
+				return startLTLCheck();
+			}
 		} else {
 			// FIXME handle error
 		}
 		return null;
 	}
 
-	public Object startConsistencyChecking() {
+	private Object startConsistencyChecking() {
 		ModelChecker checker = new ModelChecker(new ConsistencyChecker(
 				currentStateSpace, options, this));
 		jobs.put(checker.getJobId(), checker);
@@ -140,7 +156,7 @@ public class ModelCheckingUI extends AbstractSession implements
 				"id", checker.getJobId(), "ssId", currentStateSpace.getId());
 	}
 
-	public Object startCBCInvariant() {
+	private Object startCBCInvariant() {
 		ModelChecker checker = new ModelChecker(new CBCInvariantChecker(
 				currentStateSpace, selectedEvents.isEmpty() ? null
 						: selectedEvents, this));
@@ -169,11 +185,22 @@ public class ModelCheckingUI extends AbstractSession implements
 				"id", checker.getJobId(), "ssId", currentStateSpace.getId());
 	}
 
+	private Object startLTLCheck() {
+		ModelChecker checker = new ModelChecker(new LTLChecker(
+				currentStateSpace, ltlFormula, this));
+		jobs.put(checker.getJobId(), checker);
+		checker.start();
+		String name = "LTL check " + ltlFormula.getCode();
+		return WebUtils.wrap("cmd", "ModelChecking.jobStarted", "name", name,
+				"id", checker.getJobId(), "ssId", currentStateSpace.getId());
+	}
+
 	public Object cancel(final Map<String, String[]> params) {
 		String jobId = params.get("jobId")[0];
 		ModelChecker modelChecker = jobs.get(jobId);
 		if (modelChecker != null) {
 			modelChecker.cancel();
+			return WebUtils.wrap("cmd", "ModelChecking.cancelJob", "id", jobId);
 		} else {
 			// FIXME handle error
 		}
@@ -271,7 +298,7 @@ public class ModelCheckingUI extends AbstractSession implements
 				: new ArrayList<String>();
 		selectedEvents = new ArrayList<String>();
 		submit(WebUtils.wrap("cmd", "ModelChecking.changeStateSpaces", "ssId",
-				sId, "events", JSON.toString(eventNames), "withCBC", b_model));
+				sId, "events", JSON.toString(eventNames), "bType", b_model));
 	}
 
 	/**
@@ -297,23 +324,40 @@ public class ModelCheckingUI extends AbstractSession implements
 		String f = params.get("formula")[0];
 		String id = params.get("id")[0];
 
+		if ("cbc-deadlock-input-parent".equals(id)) {
+			return parseCBC(f, id);
+		}
+		if ("ltl-check-input-parent".equals(id)) {
+			return parseLTL(f, id);
+		}
+		return null;
+	}
+
+	public Object parseCBC(final String formula, final String id) {
 		try {
-			IEvalElement e = currentStateSpace.getModel().parseFormula(f);
+			IEvalElement e = currentStateSpace.getModel().parseFormula(formula);
 			if (e instanceof EventB) {
 				((EventB) e).getAst();
 			}
-			if (id.equals("cbc-deadlock-input")) {
-				cbcFormula = e;
-			}
+			cbcFormula = e;
 			return WebUtils.wrap("cmd", "ModelChecking.parseOk", "id", id);
 		} catch (Exception e) {
-			if (id.equals("cbc-deadlock-input")) {
-				cbcFormula = null;
-			}
-			if ("".equals(f)) {
+			cbcFormula = null;
+			if ("".equals(formula)) {
 				return WebUtils.wrap("cmd", "ModelChecking.parseOk", "id", id);
 			}
 			return WebUtils.wrap("cmd", "ModelChecking.parseError", "id", id);
 		}
 	}
+
+	public Object parseLTL(final String formula, final String id) {
+		try {
+			ltlFormula = new LTL(formula);
+			return WebUtils.wrap("cmd", "ModelChecking.parseOk", "id", id);
+		} catch (Exception e) {
+			ltlFormula = null;
+			return WebUtils.wrap("cmd", "ModelChecking.parseError", "id", id);
+		}
+	}
+
 }

@@ -18,16 +18,14 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.be4.classicalb.core.parser.ClassicalBParser;
+import de.be4.ltl.core.parser.LtlParseException;
 import de.prob.animator.command.LtlCheckingCommand;
-import de.prob.animator.command.LtlCheckingCommand.StartMode;
-import de.prob.animator.domainobjects.LtlCheckingResult;
-import de.prob.animator.domainobjects.LtlFormula;
+import de.prob.animator.domainobjects.LTL;
+import de.prob.check.IModelCheckingResult;
+import de.prob.check.LTLOk;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.parser.ResultParserException;
-import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.visualization.AnimationNotLoadedException;
@@ -82,6 +80,8 @@ public class LtlModelCheck extends LtlPatternManager {
 				}
 			} catch (ResultParserException ex) {
 				submit(checkFormulaError(3, index, callback));
+			} catch (LtlParseException e) {
+				submit(checkFormulaError(3, index, callback));
 			}
 		}
 
@@ -115,6 +115,8 @@ public class LtlModelCheck extends LtlPatternManager {
 					}
 				} catch (ResultParserException ex) {
 					submit(checkFormulaError(3, index, callback));
+				} catch (LtlParseException e) {
+					submit(checkFormulaError(3, index, callback));
 				}
 			}
 		}
@@ -123,25 +125,15 @@ public class LtlModelCheck extends LtlPatternManager {
 	}
 
 	private boolean checkFormula(final String formula, final LtlParser parser,
-			final String mode) {
-		PrologTerm term = parser.generatePrologTerm("root",
-				new ClassicalBParser());
+			final String mode) throws LtlParseException {
 
-		LtlFormula f = new LtlFormula(term);
-
-		StartMode startMode = StartMode.init;
-		if (mode.equals("starthere")) {
-			startMode = StartMode.starthere;
-		} else if (mode.equals("checkhere")) {
-			startMode = StartMode.checkhere;
-		}
+		LTL f = new LTL(formula);
 
 		// TODO: Replace this with new model checking abstraction when it is
 		// finished
-		LtlCheckingResult result = LtlCheckingCommand.modelCheck(
-				currentStateSpace, f, 500, startMode, new StateId("root",
-						currentStateSpace));
-		return (result.getCounterexample() == null);
+		IModelCheckingResult result = LtlCheckingCommand.modelCheck(
+				currentStateSpace, f, 500);
+		return (result instanceof LTLOk);
 	}
 
 	private Object checkFormulaError(final int error, final String index,

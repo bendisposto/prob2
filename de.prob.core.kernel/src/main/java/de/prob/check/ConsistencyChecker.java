@@ -82,7 +82,8 @@ public class ConsistencyChecker implements IModelCheckJob {
 
 	@Override
 	public IModelCheckingResult getResult() {
-		return job.getResult();
+		return job.getResult() == null ? new NotYetFinished("Job Interrupted",
+				-1) : job.getResult();
 	}
 
 	@Override

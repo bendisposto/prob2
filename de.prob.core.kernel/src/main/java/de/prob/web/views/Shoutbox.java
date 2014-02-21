@@ -8,9 +8,6 @@ import java.util.Map;
 
 import javax.servlet.AsyncContext;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Singleton;
 
 import de.prob.annotations.PublicSession;
@@ -21,10 +18,10 @@ import de.prob.web.WebUtils;
 @Singleton
 public class Shoutbox extends AbstractSession {
 
-	private final Logger logger = LoggerFactory.getLogger(Shoutbox.class);
 	private final List<Shout> texts = new ArrayList<Shout>();
 	protected boolean incrementalUpdate = false;
 
+	@SuppressWarnings("unused")
 	private static class Shout {
 		public final String text;
 		public final Date time;

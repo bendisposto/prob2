@@ -7,7 +7,6 @@ import de.be4.ltl.core.parser.LtlParseException;
 import de.be4.ltl.core.parser.LtlParser;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.command.LtlCheckingCommand;
-import de.prob.animator.command.LtlCheckingCommand.StartMode;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -50,8 +49,7 @@ public class LTL extends AbstractEvalElement {
 
 	@Override
 	public EvaluationCommand getCommand(final StateId stateid) {
-		return new LtlCheckingCommand(this, 500,
-				StartMode.checkhere, stateid);
+		return new LtlCheckingCommand(this, 500);
 	}
 
 }

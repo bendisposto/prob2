@@ -65,7 +65,12 @@ ModelChecking = (function() {
         $("#"+id+"-out").removeClass("invisible")
     }
 
+    function cancelJob(id) {
+        $("#"+id+"-in").replaceWith(session.render("/ui/modelchecking/cancelled.html", {"id": id}))
+    }
+
     function updateJob(id,data) {
+        data.stats = data.stats === "true"
         $("#"+id+"-in").replaceWith(session.render("/ui/modelchecking/working.html", data))
         $("#"+id+"-cancel").click(function(e) {
             session.sendCmd(session.sendCmd("cancel", {
@@ -96,12 +101,12 @@ ModelChecking = (function() {
         }
     }
     
-    function changeStateSpaces(ssId, events, withCBC) {
+    function changeStateSpaces(ssId, events, bType) {
         $(".job").addClass("invisible")
         $(".result").addClass("invisible")
         $("."+ssId).removeClass("invisible")
-        if(!withCBC) {
-            $("#cbc-inv").addClass("invisible")
+        if(!bType) {
+            $(".b-type").addClass("invisible")
         }
         $("#cbc-inv-event-list").replaceWith(session.render("/ui/modelchecking/cbc-inv-list.html", {"events": events}))
         $(".cbc-inv-event").click(function(e) {
@@ -138,7 +143,7 @@ ModelChecking = (function() {
     }
     extern.changeStateSpaces = function(data) {
         var events = JSON.parse(data.events)
-        changeStateSpaces(data.ssId, JSON.parse(data.events), data.withCBC === "true")
+        changeStateSpaces(data.ssId, JSON.parse(data.events), data.bType === "true")
     }
     extern.updateJob = function(data) {
         updateJob(data.id, data)
@@ -148,6 +153,9 @@ ModelChecking = (function() {
     }
     extern.jobStarted = function(data) {
         jobStarted(data.id, data)
+    }
+    extern.cancelJob = function(data) {
+        cancelJob(data.id)
     }
     extern.toggleOption = toggleOption
     extern.parseOk = function(data) {
