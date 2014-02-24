@@ -1391,6 +1391,7 @@
 			// updates the context panel tools based on the selected element
 			var updateContextPanel = function(e) {
 			var elem = selectedElement;
+
 				// If element has just been deleted, consider it null
 				if(elem != null && !elem.parentNode) elem = null;
 				if (multiselected && multiselected[0] != null && !multiselected[0].parentNode) multiselected = false;
@@ -1452,6 +1453,14 @@
 				}
 		
 				if (elem != null) {
+
+				  // select observer ...
+				  // TODO: We select only by id .. manage other selection (e.g. by class, etc.)
+				  var indexToActive = $("h3[observer-name=item_#"+$(elem).attr("id")+"]").parent().index()
+				  if(indexToActive > -1) {
+					  $( "#accordion" ).accordion( "option", "active", indexToActive );
+				  }
+					
 				  $("#stroke_panel").show();
 					var elname = elem.nodeName;
 					var angle = svgCanvas.getRotationAngle(elem);

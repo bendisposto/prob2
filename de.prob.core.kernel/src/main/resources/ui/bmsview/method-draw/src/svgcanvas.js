@@ -9034,10 +9034,28 @@ var svgDimensionAttributes = [
   	{value: 'height', text: 'height'}
 ];
 
+var svgTextAttributes = [
+	{value: 'font-size', text: 'font-size'},
+	{value: 'font-family', text: 'font-family'},
+	{value: 'font-weight', text: 'font-weight'},
+	{value: 'font-family', text: 'font-family'}
+];
+
+var svgLineCoordinatesAttributes = [
+	{value: 'x1', text: 'x1'},
+	{value: 'x2', text: 'x2'},
+	{value: 'y1', text: 'y1'},
+	{value: 'y2', text: 'y2'}
+];
+
 var svgAttributes = {
 		
 	"rect" : mergeAttr([svgAllElementAttributes, svgAllShapesAttributes, svgCoordinatesAttributes, svgRoundedCoordinatesAttributes, svgDimensionAttributes]),
-	"ellipse" : mergeAttr([svgAllElementAttributes, svgAllShapesAttributes, svgRadiusCoordinatesAttributes, svgRoundedCoordinatesAttributes, svgDimensionAttributes])
+	"ellipse" : mergeAttr([svgAllElementAttributes, svgAllShapesAttributes, svgRadiusCoordinatesAttributes, svgRoundedCoordinatesAttributes, svgDimensionAttributes]),
+	"text" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes, svgTextAttributes]),
+	"line" : mergeAttr([svgAllElementAttributes, svgLineCoordinatesAttributes]),
+	"path" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes])
+	
 		
 }
 
@@ -9057,22 +9075,9 @@ this.initObservers = function() {
 	}
 	container.accordion({
 		header: "> div > h3",
-		collapsible: true
+		collapsible: true,
+		active: 2
 	});
-	
-	/*container.accordion({ 
-			  collapsible: true,
-			  header: "> div > h3",
-			  heightStyle: "content"
-		   }).sortable({
-		        axis: "y",
-		        handle: "h3",
-		        stop: function( event, ui ) {
-		          // IE doesn't register the blur when sorting
-		          // so trigger focusout handlers to remove .ui-state-focus
-		          ui.item.children( "h3" ).triggerHandler( "focusout" );
-		        }
-		      });*/
 	
 	container.find(".oitem_attr").editable({
 		type: 'select',
