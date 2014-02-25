@@ -13,3 +13,4 @@ mylyn/
 *.viz
 *.class
 nullconfig.groovy
+prob_log.txt
