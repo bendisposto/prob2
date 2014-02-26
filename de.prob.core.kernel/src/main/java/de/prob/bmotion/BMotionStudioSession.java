@@ -186,21 +186,17 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 	
 	public Object changeObserverData(final Map<String, String[]> params) {
-
 		String type = params.get("type")[0];
 		String group = params.get("group")[0];
 		Integer index = Integer.valueOf(params.get("index")[0]);
 		String key = params.get("key")[0];
 		String value = params.get("value")[0];
-
 		JsonObject observerJsonObject = getObserverGroupJsonObject(type, group);
 		JsonArray observerItems = observerJsonObject.get("items")
 				.getAsJsonArray();
 		JsonObject item = observerItems.get(index).getAsJsonObject();
 		item.addProperty(key, value);
-
 		return null;
-
 	}
 	
 	public Object saveSvg(final Map<String, String[]> params) {
@@ -316,7 +312,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	private void initSession() {
 		// Remove all script listeners and add new observer scriptlistener
 		scriptListeners.clear();
-		//scriptListeners.add(defaultObserver);
+		scriptListeners.add(defaultObserver);
 		// Initialize json data (if not already done)
 		initJsonData();
 		// Init Groovy scripts
@@ -523,7 +519,6 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	public void registerScript(final IBMotionScript script) {
 		scriptListeners.add(script);
-
 		if (currentTrace != null) {
 			script.traceChanged(currentTrace, formulas);
 		}
