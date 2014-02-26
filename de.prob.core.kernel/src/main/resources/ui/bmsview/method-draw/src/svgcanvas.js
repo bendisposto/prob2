@@ -8989,82 +8989,9 @@ this.cycleElement = function(next) {
 	call("selected", selectedElements);
 }
 
-var svgAllElementAttributes = [
-	{value: "style", text: 'style'},
-	{value: "classs", text: 'class'}
-];
-
-var svgAllShapesAttributes = [
-	{value: 'clip-path', text: 'clip-path'},
-	{value: 'fill', text: 'fill'},
-	{value: 'fill-opacity', text: 'fill-opacity'},
-	{value: 'fill-rule', text: 'fill-rule'},
-	{value: 'marker-end', text: 'marker-end'},
-	{value: 'marker-mid', text: 'marker-mid'},
-	{value: 'marker-start', text: 'marker-start'},
-	{value: 'pattern', text: 'pattern'},
-	{value: 'stroke', text: 'stroke'},
-	{value: 'stroke-dasharray', text: 'stroke-dasharray'},
-	{value: 'stroke-dashoffset', text: 'stroke-dashoffset'},
-	{value: 'stroke-linecap', text: 'stroke-linecap'},
-	{value: 'stroke-linejoin', text: 'stroke-linejoin'},
-	{value: 'stroke-miterlimit', text: 'stroke-miterlimit'},
-	{value: 'stroke-opacity', text: 'stroke-opacity'},
-	{value: 'stroke-width', text: 'stroke-width'},
-	{value: 'transform', text: 'transform'}
-];
-
-var svgCoordinatesAttributes = [
-	{value: 'x', text: 'x'},
-	{value: 'y', text: 'y'}
-];
-
-var svgRoundedCoordinatesAttributes = [
-	{value: 'rx', text: 'rx'},
-	{value: 'ry', text: 'ry'}
-];
-
-var svgRadiusCoordinatesAttributes = [
-	{value: 'cx', text: 'cx'},
-	{value: 'cy', text: 'cy'}
-];
-
-var svgDimensionAttributes = [
-   	{value: 'width', text: 'width'},
-  	{value: 'height', text: 'height'}
-];
-
-var svgTextAttributes = [
-	{value: 'font-size', text: 'font-size'},
-	{value: 'font-family', text: 'font-family'},
-	{value: 'font-weight', text: 'font-weight'},
-	{value: 'font-family', text: 'font-family'}
-];
-
-var svgLineCoordinatesAttributes = [
-	{value: 'x1', text: 'x1'},
-	{value: 'x2', text: 'x2'},
-	{value: 'y1', text: 'y1'},
-	{value: 'y2', text: 'y2'}
-];
-
-var svgAttributes = {
-		
-	"rect" : mergeAttr([svgAllElementAttributes, svgAllShapesAttributes, svgCoordinatesAttributes, svgRoundedCoordinatesAttributes, svgDimensionAttributes]),
-	"ellipse" : mergeAttr([svgAllElementAttributes, svgAllShapesAttributes, svgRadiusCoordinatesAttributes, svgRoundedCoordinatesAttributes, svgDimensionAttributes]),
-	"text" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes, svgTextAttributes]),
-	"line" : mergeAttr([svgAllElementAttributes, svgLineCoordinatesAttributes]),
-	"path" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes])
-	
-		
-}
-
-function mergeAttr(list) {
-	var l = []
-	$.each(list, function(i, v) {
-		l = $.merge(l, v);
-	});
-	return l;
+this.initObserver = function(oName) {
+	var funcCall = "init" + oName + "();";
+	var ret = eval(funcCall);
 }
 
 this.initObservers = function() {
@@ -9076,45 +9003,46 @@ this.initObservers = function() {
 	container.accordion({
 		header: "> div > h3",
 		collapsible: true,
-		active: 2
-	});
-	
-	container.find(".oitem_attr").editable({
-		type: 'select',
-	    title: 'Attribute',
-	    source: function() {
-	    	var selector = $(this).attr("selector")
-	    	var elementName = $(selector).prop('tagName')
-	    	return svgAttributes[elementName];
-	    },
-	    success: function(response, newValue) {
-	    	var obj = $(this)
-	    	var id = obj.attr("id")
-	        console.log(newValue + " " + id)
-	    }
-	});		  
-	
-	container.find(".oitem_predicate").editable({
-		type: 'textarea',
-		title: 'Predicate',
-		success: function(response, newValue) {
-			var obj = $(this)
-			var id = obj.attr("id")
-			console.log(newValue + " " + id)
-	    }
-	});
-
-	container.find(".oitem_value").editable({
-		type: 'textarea',
-		title: 'Value',
-		success: function(response, newValue) {
-			var obj = $(this)
-			var id = obj.attr("id")
-			console.log(newValue + " " + id)
-	    }
+		active: 0
 	});
 	
 	container.find('.truncate').textOverflow();
+	
+	var add_observer_menu = $("#cmenu_addobserver");
+	var remove_observer_menu = $("#cmenu_removeobserver");
+	
+	$(".observer_head").contextMenu({
+		menu: 'cmenu_addobserver',
+		inSpeed: 0
+	},
+	function(action, el, pos) {
+		switch ( action ) {
+			case 'add_EvalObserver':
+				var group = el.attr('group')
+				eval("addEvalObserver('"+group+"');");
+				break;
+			case 'removeObserver':
+				console.log(el)
+				break;
+		}
+	});
+	
+	$(".observer_item").contextMenu({
+		menu: 'cmenu_removeobserver',
+		inSpeed: 0
+	},
+	function(action, el, pos) {
+		switch ( action ) {
+			case 'remove_Observer':
+				var bms = window.top.bms
+				var group = el.attr('group')
+				var type = el.attr('type')
+				var index = el.index()
+				el.remove()
+				bms.removeObserver(type, group, index)
+				break;
+		}
+	});
 	
 }
 

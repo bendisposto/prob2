@@ -16,14 +16,21 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.servlet.AsyncContext;
 
-import org.eclipse.jetty.util.ajax.JSON;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
@@ -60,6 +67,8 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private String templatePath;
 	
+	private String jsonPath;
+	
 	private Document templateDocument;
 
 	private final ScriptEngine groovyScriptEngine;
@@ -72,9 +81,9 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private final Map<String, String> cachedCSPString = new HashMap<String, String>();
 
-	private final List<Object> jsonData = new ArrayList<Object>();
-
-	private final Observer observer;
+	private final Observer defaultObserver;
+	
+	private JsonElement json;
 
 	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
@@ -85,7 +94,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		incrementalUpdate = false;
 		currentTrace = selector.getCurrentTrace();
 		groovyScriptEngine = sep.get();
-		observer = new Observer(this);
+		defaultObserver = new Observer(this);
 		selector.registerAnimationChangeListener(this);
 		selector.registerModelChangedListener(this);
 	}
@@ -105,7 +114,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		Trace currentTrace = selector.getCurrentTrace();
 		try {
 			Trace newTrace = currentTrace.add(op, predicate);
-			System.out.println("===> ssdawqwqw");
 			selector.replaceTrace(currentTrace, newTrace);
 		} catch (BException e) {
 			e.printStackTrace();
@@ -116,9 +124,83 @@ public class BMotionStudioSession extends AbstractSession implements
 	public Object openSvgEditor(final Map<String, String[]> params) {
 		String svgId = params.get("id")[0];
 		Element orgSvgElement = templateDocument.getElementById(svgId);
-		submit(WebUtils.wrap("cmd", "bms.openSvgEditor", "svg",
-				orgSvgElement.toString(), "json", WebUtils.toJson(jsonData)));
+		if(json.isJsonObject()) {
+			JsonObject asJsonObject = json.getAsJsonObject();
+			JsonElement jsonElement = asJsonObject.get("observers");
+			if (jsonElement.isJsonArray()) {
+				submit(WebUtils.wrap("cmd", "bms.openSvgEditor", "svg",
+						orgSvgElement.toString(), "json", jsonElement));
+			}			
+		} else {
+			submit(WebUtils.wrap("cmd", "bms.openSvgEditor", "svg",
+					orgSvgElement.toString()));
+		}
 		return null;
+	}
+	
+	public Object removeObserver(final Map<String, String[]> params) {
+		String type = params.get("type")[0];
+		String group = params.get("group")[0];
+		Integer index = Integer.valueOf(params.get("index")[0]);
+		JsonObject observerJsonObject = getObserverGroupJsonObject(type, group);
+		JsonArray observerItems = observerJsonObject.get("items")
+				.getAsJsonArray();
+		JsonArray tmpArray = new JsonArray();
+		for (int i = 0; i < observerItems.size(); i++) {
+			if (i != index)
+				tmpArray.add(observerItems.get(i));
+		}
+		observerJsonObject.add("items", tmpArray);
+		return null;
+	}
+	
+	public Object addObserver(final Map<String, String[]> params) {
+		String type = params.get("type")[0];
+		String group = params.get("group")[0];
+		JsonObject observerJsonObject = getObserverGroupJsonObject(type, group);
+		JsonArray observerItems = observerJsonObject.get("items")
+				.getAsJsonArray();
+		JsonObject jsonObject = new JsonObject();
+		observerItems.add(jsonObject);
+		return null;
+	}
+	
+	private JsonObject getObserverGroupJsonObject(String type, String group) {
+		JsonArray asJsonArray = json.getAsJsonObject().get("observers")
+				.getAsJsonArray();
+		for (JsonElement el : asJsonArray) {
+			JsonObject asJsonObject = el.getAsJsonObject();
+			String observerType = asJsonObject.get("type").getAsString();
+			if (observerType.equals(type)) {
+				JsonArray observerObjs = asJsonObject.get("objs").getAsJsonArray();
+				for (JsonElement obj : observerObjs) {
+					JsonObject asJsonObject2 = obj.getAsJsonObject();
+					String observerGroup = asJsonObject2.get("group")
+							.getAsString();
+					if (observerGroup.equals(group))
+						return asJsonObject2;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public Object changeObserverData(final Map<String, String[]> params) {
+
+		String type = params.get("type")[0];
+		String group = params.get("group")[0];
+		Integer index = Integer.valueOf(params.get("index")[0]);
+		String key = params.get("key")[0];
+		String value = params.get("value")[0];
+
+		JsonObject observerJsonObject = getObserverGroupJsonObject(type, group);
+		JsonArray observerItems = observerJsonObject.get("items")
+				.getAsJsonArray();
+		JsonObject item = observerItems.get(index).getAsJsonObject();
+		item.addProperty(key, value);
+
+		return null;
+
 	}
 	
 	public Object saveSvg(final Map<String, String[]> params) {
@@ -126,23 +208,65 @@ public class BMotionStudioSession extends AbstractSession implements
 		// Replace old SVG element with new one		
 		String svgString = params.get("svg")[0];
 		String svgId = params.get("id")[0];
+		
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.setPrettyPrinting();
+		gsonBuilder.disableHtmlEscaping();
+		Gson gson = gsonBuilder.create();
+		
+		String jsonToFile = gson.toJson(json);
+		
 		Element orgSvgElement = templateDocument.getElementById(svgId);
 		Document parse = Jsoup.parse(svgString);
 		Element newSvgElement = parse.getElementsByTag("svg").first();
 		newSvgElement.attr("id",svgId);
 		orgSvgElement.replaceWith(newSvgElement);
 		
-		// Save template
+		// Save template and json file
+		File templateFile = new File(templatePath);
+
+		if (jsonPath == null) {
+			String templateFileName = templateFile.getName();
+			String extension = templateFileName.substring(
+					templateFileName.lastIndexOf('.'),
+					templateFileName.length());
+			String jsonFileName = templateFileName.replace("." + extension,
+					".json");
+			jsonPath = templatePath.replace(templateFileName, jsonFileName);
+			Elements headTag = templateDocument.getElementsByTag("head");
+			Element metaElement = templateDocument.createElement("meta");
+			metaElement.attr("name", "bms.json");
+			metaElement.attr("content", jsonFileName);
+			headTag.append(metaElement.toString());
+		}
+
+		writeStringToFile(templateDocument.html(), templateFile);
+		
 		try {
-			File templateFile = new File(templatePath);
-			FileOutputStream fop = new FileOutputStream(templateFile);
-			String content = templateDocument.html();
+			File jsonFile = new File(jsonPath);
+			if (!jsonFile.exists())
+				jsonFile.createNewFile();
+			writeStringToFile(jsonToFile, jsonFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Reload template or prompt ...
+		submit(WebUtils.wrap("cmd", "bms.promptReload"));
+		
+		return null;
+		
+	}
+	
+	private void writeStringToFile(String str, File file) {
+		try {
+			FileOutputStream fop = new FileOutputStream(file);
 			// if file doesnt exists, then create it
-			if (!templateFile.exists()) {
-				templateFile.createNewFile();
+			if (!file.exists()) {
+				file.createNewFile();
 			} 
 			// get the content in bytes
-			byte[] contentInBytes = content.getBytes();
+			byte[] contentInBytes = str.getBytes();
  			fop.write(contentInBytes);
 			fop.flush();
 			fop.close();
@@ -153,12 +277,6 @@ public class BMotionStudioSession extends AbstractSession implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		// Reload template or prompt ...
-		submit(WebUtils.wrap("cmd", "bms.promptReload"));
-		
-		return null;
-		
 	}
 	
 	public Object setTemplate(final Map<String, String[]> params) {
@@ -198,7 +316,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	private void initSession() {
 		// Remove all script listeners and add new observer scriptlistener
 		scriptListeners.clear();
-		scriptListeners.add(observer);
+		//scriptListeners.add(defaultObserver);
 		// Initialize json data (if not already done)
 		initJsonData();
 		// Init Groovy scripts
@@ -281,23 +399,33 @@ public class BMotionStudioSession extends AbstractSession implements
 			return;
 		}
 
+		json = null;
+		jsonPath = null;
+		
 		Map<String, Object> scope = new HashMap<String, Object>();
 		scope.put("eval", new EvalExpression());
 
-		jsonData.clear();
-		
 		String templateFolder = getTemplateFolder();
 		Object jsonPaths = parameterMap.get("json");
 		if (jsonPaths != null) {
+
 			String[] sp = jsonPaths.toString().split(",");
 			for (String s : sp) {
-				File f = new File(templateFolder + "/" + s);
-				WebUtils.render(f.getPath(), scope);
-				String jsonRendered = readFile(f.getPath());
-				jsonData.add(JSON.parse(jsonRendered));
+				jsonPath = templateFolder + "/" + s;
+				File f = new File(jsonPath);
+				if (f.exists()) {
+					WebUtils.render(f.getPath(), scope);
+					String jsonRendered = readFile(f.getPath());
+					JsonParser jsonParser = new JsonParser();
+					JsonElement jsonElement = jsonParser.parse(jsonRendered);
+					if (!(jsonElement instanceof JsonNull))
+						json = jsonElement;
+				}
+
 			}
+
 		}
-		
+
 	}
 
 	private String readFile(final String filename) {
@@ -388,7 +516,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		return fvalue;
 	}
 
-	public void toVisualization(final Object values) {
+	public void toGui(final Object values) {
 		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
 				values));
 	}
@@ -399,10 +527,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		if (currentTrace != null) {
 			script.traceChanged(currentTrace, formulas);
 		}
-	}
-
-	public List<Object> getJsonData() {
-		return jsonData;
 	}
 
 	public void setTemplate(final String template) {
@@ -475,4 +599,12 @@ public class BMotionStudioSession extends AbstractSession implements
 		this.templateDocument = templateDocument;		
 	}
 
+	public Map<String, Object> getParameterMap() {
+		return parameterMap;
+	}
+	
+	public JsonElement getJson() {
+		return json;
+	}
+	
 }

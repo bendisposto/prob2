@@ -56,7 +56,7 @@ bms = (function() {
 		if (error) {
 			alert('error ' + error);
 		} else {
-		 	session.sendCmd("saveSvg", {
+			session.sendCmd("saveSvg", {
 				"svg" : data,
 				"id" : svgId,
 				"client" : parent.bms.client
@@ -244,23 +244,69 @@ bms = (function() {
 	extern.stateChange = function(data) {
 	}
 	
+	extern.addObserver = function(type, group) {
+		var obj =  { "items": [ { } ] }
+		var template = session.render("/ui/bmsview/ui_" + type + ".html", obj)
+		var container = $("#svgedit").contents().find(
+				"div[oid='observer_" + group + "']").find(
+				".observer_content")
+		container.append(template)
+		svgCanvas.initObserver(type);
+		session.sendCmd("addObserver", {
+			"type" : type,
+			"group" : group,
+			"client" : parent.bms.client
+		})
+	}
+	
+	extern.removeObserver = function(type, group, index) {
+		session.sendCmd("removeObserver", {
+			"type" : type,
+			"group" : group,
+			"index" : index,
+			"client" : parent.bms.client
+		})
+	}
+	
+	extern.changeObserverData = function(data) {
+		session.sendCmd("changeObserverData", {
+			"type" : data.type,
+			"group" : data.group,
+			"index" : data.index,
+			"key" : data.key,
+			"value" : data.value,
+			"client" : parent.bms.client
+		})
+	}
+	
 	extern.openSvgEditor = function(data) {
 		
 		// Init observers
 		var oContainer = $("#svgedit").contents().find("#observers").find(
 				"#accordion")
 		oContainer.empty()
-		var json = JSON.parse(data.json)[0]
-		if (json !== undefined) {
-			var observer = json.observer
-			$.each(observer, function(i, v) {
-				var oName = v.cmd
-				$.each(v.objects, function(i, v) {
-					oContainer.append(session.render("/ui/bmsview/ui_" + oName
-							+ ".html", v))
+
+		svgCanvas.initObservers();
+		
+		if(data.json !== undefined) {
+			var observer = JSON.parse(data.json)
+			if (observer !== undefined) {
+				$.each(observer, function(i, v) {
+					var type = v.type
+					$.each(v.objs, function(i, v) {
+						var group = v.group				
+						v.type = type
+						var groupObject = oContainer.find("div[oid='observer_" + group + "']")
+						var template = session.render("/ui/bmsview/ui_" + type + ".html", v)
+						if(groupObject.length === 0) {
+							groupObject = $('<div oid="observer_' + group	+ '"><h3 class="observer_head" group="' + group	+ '">' + group + '</h3><div class="observer_content"></div></div>')
+							oContainer.append(groupObject)
+						}
+						groupObject.find(".observer_content").append(template)						
+					});
+					svgCanvas.initObserver(type);
 				});
-			});
-			svgCanvas.initObservers();
+			}
 		}
 		
 		// Init editor

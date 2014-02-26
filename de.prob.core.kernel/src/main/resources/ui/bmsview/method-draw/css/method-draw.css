@@ -713,7 +713,7 @@ table {
 	font-weight:bold;
 }
 
-.accordion_content {
+.observer_content {
 	max-height:190px;
 	overflow:scroll;
 }

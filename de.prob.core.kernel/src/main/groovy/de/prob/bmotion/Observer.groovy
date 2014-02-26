@@ -3,6 +3,7 @@ package de.prob.bmotion;
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
 import com.google.common.base.Function
+import com.google.gson.JsonArray;
 
 import de.prob.statespace.OpInfo
 import de.prob.statespace.StateSpace
@@ -136,9 +137,15 @@ class Observer implements IBMotionScript {
 
 	def void traceChanged(Trace trace, Map<String, Object> formulas) {
 		this.formulas = formulas
-		def json = bmssession.getJsonData()
+		def json = bmssession.getJson()
+		
 		if(json != null) {
-			json.each {
+			
+			JsonArray asJsonArray = json.getAsJsonObject().get("observers").getAsJsonArray();
+			
+			System.out.println(asJsonArray);
+			
+			/*json.each {
 				def ol = it.get("observer");
 				if(ol != null) {
 					ol.each {
@@ -148,7 +155,8 @@ class Observer implements IBMotionScript {
 						}
 					}
 				}
-			}
+			}*/
+			
 		}
 	}
 

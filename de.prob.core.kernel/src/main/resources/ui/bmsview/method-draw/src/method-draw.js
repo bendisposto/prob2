@@ -1456,7 +1456,7 @@
 
 				  // select observer ...
 				  // TODO: We select only by id .. manage other selection (e.g. by class, etc.)
-				  var indexToActive = $("h3[observer-name=item_#"+$(elem).attr("id")+"]").parent().index()
+				  var indexToActive = $("div[oid=observer_#"+$(elem).attr("id")+"]").index()
 				  if(indexToActive > -1) {
 					  $( "#accordion" ).accordion( "option", "active", indexToActive );
 				  }
@@ -3529,12 +3529,12 @@
 			$('#text_x')       .dragInput({ min: null, max: null,  step:  1,  callback: changeAttribute,     cursor: false                         });
 			$('#image_y')      .dragInput({ min: null, max: null,  step:  1,  callback: changeAttribute,     cursor: false                         });
 			$('#rect_rx')      .dragInput({ min: 0,    max: 100,   step:  1,  callback: changeAttribute,    cursor: true                          });
-	    $('#stroke_width') .dragInput({ min: 0,    max: 99,    step:  1,  callback: changeStrokeWidth,   cursor: true, smallStep: 0.1, start: 1.5          });
+			$('#stroke_width') .dragInput({ min: 0,    max: 99,    step:  1,  callback: changeStrokeWidth,   cursor: true, smallStep: 0.1, start: 1.5          });
 			$('#angle')        .dragInput({ min: -180, max: 180,   step:  1,  callback: changeRotationAngle, cursor: false, dragAdjust: 0.5      });
 			$('#font_size')    .dragInput({ min: 1, max: 250, step: 1, callback: changeFontSize, cursor: true, stepfunc: stepFontSize, dragAdjust: .15 });
 			$('#group_opacity').dragInput({ min: 0,    max: 100,   step:  5,  callback: changeAttribute,       cursor: true,  start: 100             });
 			$('#blur')         .dragInput({ min: 0,    max: 10,    step: .1,  callback: changeBlur,          cursor: true,  start: 0               });
-				// Set default zoom 
+			// Set default zoom 
 			$('#zoom').val(svgCanvas.getZoom() * 100);
 			
 			$("#workarea").contextMenu({

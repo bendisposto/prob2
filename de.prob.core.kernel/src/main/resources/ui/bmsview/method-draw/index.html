@@ -48,6 +48,7 @@
   <script type="text/javascript" src="src/draw.js"></script>
   <script type="text/javascript" src="src/path.js"></script>
   <script type="text/javascript" src="src/dialog.js"></script>
+  <script type="text/javascript" src="src/observers.js"></script>
   <script type="text/javascript" src="src/svgcanvas.js"></script>
   <script type="text/javascript" src="src/method-draw.js"></script>
   <script type="text/javascript" src="lib/jquery-draginput.js"></script>
@@ -158,8 +159,6 @@
     		<div class="menu_item" id="tool_source">Source... <span class="shortcut">⌘U</span></div>
     </div>
   </div>
-  
-
   
 </div>
 
@@ -647,10 +646,20 @@
 	<li class="separator"><a href="#delete">Delete<span class="shortcut">⌫</span></a></li>
 	<li class="separator"><a href="#group">Group<span class="shortcut">⌘G</span></a></li>
 	<li><a href="#ungroup">Ungroup<span class="shortcut">⌘⇧G</span></a></li>
-  <li class="separator"><a href="#move_front">Bring to Front<span class="shortcut">⌘⇧↑</span></a></li>
+    <li class="separator"><a href="#move_front">Bring to Front<span class="shortcut">⌘⇧↑</span></a></li>
 	<li><a href="#move_up">Bring Forward<span class="shortcut">⌘↑</span></a></li>
 	<li><a href="#move_down">Send Backward<span class="shortcut">⌘↓</span></a></li>
   <li><a href="#move_back">Send to Back<span class="shortcut">⌘⇧↓</span></a></li>
+</ul>
+
+<ul id="cmenu_addobserver" class="contextMenu">
+	<li><a href="#add_EvalObserver">Add Eval Observer</a></li>
+	<li><a href="#add_EvalObserver">Add Listen Operation</a></li>
+	<li><a href="#add_EvalObserver">Add Execute Operation</a></li>
+</ul>
+
+<ul id="cmenu_removeobserver" class="contextMenu">
+	<li><a href="#remove_Observer">Remove Observer</a></li>
 </ul>
 
 </body>
