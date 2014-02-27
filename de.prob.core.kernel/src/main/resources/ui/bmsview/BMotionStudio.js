@@ -317,8 +317,15 @@ bms = (function() {
 		
 	}
 	
-	extern.promptReload = function(data) {
-		window.location.reload();	
+	extern.saveSvg = function(data) {
+		var svgid = data.svgid
+		var svgstring = data.svgstring
+		var svgElement = $('#'+svgid)
+		svgElement.replaceWith(svgstring)
+		$("#modal_svgeditor").modal('hide');
+		session.sendCmd("triggerListener", {
+			"client" : parent.bms.client
+		})
 	}
 	
 	extern.translateValue = function(val) {

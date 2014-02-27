@@ -3,8 +3,7 @@ package de.prob.bmotion;
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
 import com.google.common.base.Function
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject
+import com.google.gson.JsonArray
 
 import de.prob.statespace.OpInfo
 import de.prob.statespace.StateSpace
@@ -16,39 +15,29 @@ class Observer implements IBMotionScript {
 	def formulas
 	def mf = new DefaultMustacheFactory()
 	def scope = [:]
-
+	
 	def Observer(bmssession) {
 		this.bmssession = bmssession
 		scope.put("eval", new EvalExpression());
 	}
 
 	def EvalObserver(observer, formulas, trace) {
-		
-		def objs = observer.getAsJsonObject().get("objs").getAsJsonArray()
-		def m = []
-		objs.each {
-			
-			def obj = it.getAsJsonObject()
-			def selector = obj.get("group").getAsString()
-			def items = obj.get("items").getAsJsonArray()
-			def t = items.collect {
-				def item = it.getAsJsonObject()
-				def attr = item.get("attr")
-				def value = item.get("value")
-				def predicate = item.get("predicate") == null ? true : mustacheRender(item.get("predicate").getAsString(),scope).toBoolean()
+		def m = observer.objs.collect { obj ->
+			def selector = obj.group.getAsString()
+			def t = obj.items.collect { item ->
+				def attr = item.attr
+				def value = item.value
+				def predicate = item.predicate == null ? true : mustacheRender(item.predicate.getAsString(),scope).toBoolean()
 				if(predicate & attr != null & value != null) {
-					def fattr = attr.getAsString()
 					def fvalue = translateValue(mustacheRender(value.getAsString(),scope))
-					return "\$('"+selector+"').attr('"+fattr+"','"+fvalue+"')"
+					return "\$('"+selector+"').attr('"+attr.getAsString()+"','"+fvalue+"')"
 				} else {
 					return ""
 				}
 			}
-			m = m + t
+			return t
 		}
-		
 		bmssession.toGui(m)
-
 	}
 
 	def listenOperation(observer, formulas, trace) {

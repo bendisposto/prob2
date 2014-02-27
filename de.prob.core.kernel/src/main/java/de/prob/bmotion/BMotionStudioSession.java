@@ -246,10 +246,12 @@ public class BMotionStudioSession extends AbstractSession implements
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		// Reload template or prompt ...
-		submit(WebUtils.wrap("cmd", "bms.promptReload"));
 		
+		initJsonData();
+
+		submit(WebUtils.wrap("cmd", "bms.saveSvg", "svgid", svgId, "svgstring",
+				newSvgElement.toString()));
+
 		return null;
 		
 	}
@@ -282,6 +284,14 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 
+	public Object triggerListener(final Map<String, String[]> params) {
+		// Trigger all registered script listeners with collected formulas
+		for (IBMotionScript s : scriptListeners) {
+			s.traceChanged(currentTrace, formulas);
+		}
+		return null;
+	}
+	
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
@@ -346,6 +356,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Override
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
+		
 		if (currentAnimationChanged) {
 			// Deregister formulas if no trace exists and exit
 			if (trace == null) {
@@ -353,18 +364,14 @@ public class BMotionStudioSession extends AbstractSession implements
 				deregisterFormulas(currentModel);
 				currentModel = null;
 				return;
-
 			}
-	
 			currentTrace = trace;
 			currentModel = trace.getModel();
-
 			// If a new formula was added dynamically (for instance via a groovy
 			// script), call register formulas method
 			if (formulasForEvaluating.containsValue(null)) {
 				registerFormulas(currentModel);
 			}
-			
 			// Collect results of subscibred formulas
 			formulas.clear();
 			Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
@@ -380,11 +387,11 @@ public class BMotionStudioSession extends AbstractSession implements
 			}
 			// Add all cached CSP formulas
 			formulas.putAll(cachedCSPString);
-
 			// Trigger all registered script listeners with collected formulas
 			for (IBMotionScript s : scriptListeners) {
-				s.traceChanged(trace, formulas);
+				s.traceChanged(currentTrace, formulas);
 			}
+
 		}
 
 	}
