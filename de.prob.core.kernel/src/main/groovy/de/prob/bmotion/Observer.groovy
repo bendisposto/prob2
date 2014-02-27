@@ -22,17 +22,16 @@ class Observer implements IBMotionScript {
 	}
 
 	def EvalObserver(observer, formulas, trace) {
-		def m = observer.objs.collect { obj ->
+		def m = []
+		observer.objs.each { obj ->
 			def selector = obj.group.getAsString()
-			def t = obj.items.collect { item ->
+			m = m + obj.items.collect { item ->
 				def attr = item.attr
 				def value = item.value
 				def predicate = item.predicate == null ? true : mustacheRender(item.predicate.getAsString(),scope).toBoolean()
 				if(predicate & attr != null & value != null) {
 					def fvalue = translateValue(mustacheRender(value.getAsString(),scope))
 					return "\$('"+selector+"').attr('"+attr.getAsString()+"','"+fvalue+"')"
-				} else {
-					return ""
 				}
 			}
 			return t
@@ -67,44 +66,30 @@ class Observer implements IBMotionScript {
 		return i > 0 && i < 27 ? String.valueOf((char)(i + 64)) : null;
 	}
 
-	def cspEventObserver(observer, formulas, trace) {
-
-		def observerCall = observer.get("cmd")
-		def jsonObserver = new com.google.gson.Gson().toJson(observer)
-		def jsonFormulas = new com.google.gson.Gson().toJson(formulas)
-
-		def objects = observer.get("objects")
+	def CspEventObserver(observer, formulas, trace) {
 		trace.ensureOpInfosEvaluated()
-		def opList = trace.getCurrent().getOpList();
-
+		def opList = trace.getCurrent().getOpList()		
+		def selectors = []
 		def m = []
-
-		for(op in opList) {
+		opList.each { op ->
 			def fullOp = getOpString(op)
-			for(obj in objects) {
-				def events = mustacheRender(obj.get("events"),scope)
-				if(events != null) {
-					events = events.replace("{","").replace("}", "")
-					events = events.split(",")
-					if(events.contains(fullOp)) {
-						def pmap = [:]
-						op.getParams().eachWithIndex() { v, i -> pmap.put(getCharForNumber(i+1),v) };
-						def triggers = obj.get("trigger")
-						def t = triggers.collect {
-							def parameter = it.get("parameters")
-							def parsedParameter = parameter.collect {
-								return translateValue(mustacheRender(it,pmap+scope))
-							}
-							return "\$('"+mustacheRender(it.get("selector"),pmap)+"')."+mustacheRender(it.get("call"),pmap)+"("+parsedParameter.join(",")+")"
-						}
-						m = m + t
+			return observer.objs.each { obj ->
+				def events = mustacheRender(obj.events.getAsString(),scope)
+				events = events.replace("{","").replace("}", "")
+				events = events.split(",")
+				if(events.contains(fullOp)) {
+					def pmap = [:]
+					op.getParams().eachWithIndex() { v, i -> pmap.put(getCharForNumber(i+1),v) };
+					m = m + obj.items.collect { item ->
+						def selector = mustacheRender(item.selector.getAsString(),pmap)
+						selectors.add("'" + selector +  "'")
+						def fvalue = translateValue(mustacheRender(item.value.getAsString(),pmap+scope))
+						return "\$('"+selector+"').attr('"+mustacheRender(item.attr.getAsString(),pmap)+"','"+fvalue+"')"
 					}
 				}
 			}
 		}
-
-		m = ["resetCSP()"]+ m
-		bmssession.toVisualization(m);
+		bmssession.toGui(["resetCSP("+selectors+")"]+m);
 	}
 
 	def getOp(trace,name,pred) {

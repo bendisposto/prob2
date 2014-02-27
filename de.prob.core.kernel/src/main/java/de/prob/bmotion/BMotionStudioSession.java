@@ -473,7 +473,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			IEvalElement evalElement = null;
 
 			if (model instanceof CSPModel) {
-
+				
 				if (cachedCSPString.get(formula) == null) {
 					evalElement = new CSP(formula, (CSPModel) model);
 					IEvalResult evaluationResult = currentTrace
@@ -504,7 +504,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		} catch (Exception e) {
 			// TODO: do something ...
-			// e.printStackTrace();
+			e.printStackTrace();
 		}
 
 	}

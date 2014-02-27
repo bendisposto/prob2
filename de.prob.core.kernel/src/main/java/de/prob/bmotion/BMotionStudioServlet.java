@@ -157,11 +157,6 @@ public class BMotionStudioServlet extends HttpServlet {
 				Elements elements = headElement
 						.getElementsByAttributeValueStarting("name", "bms.");
 
-				bmsSession.getParameterMap().clear();
-				Map<String, String[]> parameterMap = req.getParameterMap();
-				for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
-					bmsSession.addParameter(e.getKey(), e.getValue()[0]);
-				}
 				for (Element e : elements) {
 					String content = e.attr("content");
 					String name = e.attr("name");
@@ -222,8 +217,13 @@ public class BMotionStudioServlet extends HttpServlet {
 			sessions.put(id, bmsSession);
 
 			String redirect;
-			
 			String template = req.getParameter("template");
+			
+			for (Map.Entry<String, String[]> e : req.getParameterMap()
+					.entrySet()) {
+				bmsSession.addParameter(e.getKey(), e.getValue()[0]);
+			}
+			
 			// New template requested via parameter
 			if (template != null) {
 
