@@ -1,7 +1,8 @@
 <div><a href="#" class="csp_events truncate">{{events}}</a></div>
 {{#items}}
-<table class="observer_item bordered" group="{{group}}" type="{{type}}">
-	<tr><td class="ra">Attribute</td><td><a href="#" group="{{group}}" class="csp_attr truncate">{{attr}}</a></td></tr>
-	<tr><td class="ra">Value</td><td><a href="#" group="{{group}}" class="csp_value truncate">{{value}}</a></td></tr>
+<table class="observer_item bordered" selector="{{selector}}" group="{{group}}" type="{{type}}">
+	<tr><td class="ra">Selector</td><td><a href="#" class="csp_selector truncate">{{selector}}</a></td></tr>
+	<tr><td class="ra">Attribute</td><td><a href="#" class="csp_attr truncate">{{attr}}</a></td></tr>
+	<tr><td class="ra">Value</td><td><a href="#" class="csp_value truncate">{{value}}</a></td></tr>
 </table>
 {{/items}}

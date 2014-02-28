@@ -114,7 +114,11 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 					events.add(new Operation(s, s, opToParams.get(s), false));
 				}
 			}
+			try {
 			Collections.sort(events, sorter);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
 			String json = WebUtils.toJson(applyFilter(filter));
 			Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
 					"ops", json, "canGoBack", currentTrace.canGoBack(),

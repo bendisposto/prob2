@@ -84,7 +84,7 @@ class Observer implements IBMotionScript {
 						def selector = mustacheRender(item.selector.getAsString(),pmap)
 						selectors.add("'" + selector +  "'")
 						def fvalue = translateValue(mustacheRender(item.value.getAsString(),pmap+scope))
-						return "\$('"+selector+"').attr('"+mustacheRender(item.attr.getAsString(),pmap)+"','"+fvalue+"')"
+						return '\$("'+selector+'").attr("'+mustacheRender(item.attr.getAsString(),pmap)+'","'+fvalue+'")'
 					}
 				}
 			}

@@ -56,7 +56,8 @@ bms = (function() {
 		if (error) {
 			alert('error ' + error);
 		} else {
-			session.sendCmd("saveSvg", {
+			session.sendCmdPost("saveSvg", {
+				"url" : "/bms/",
 				"svg" : data,
 				"id" : svgId,
 				"client" : parent.bms.client
@@ -280,12 +281,11 @@ bms = (function() {
 	}
 	
 	extern.openSvgEditor = function(data) {
-		
 		// Init observers
 		var oContainer = $("#svgedit").contents().find("#observers").find(
 				"#accordion")
 		oContainer.empty()
-
+		
 		svgCanvas.initObservers();
 		
 		if(data.json !== undefined) {
@@ -375,14 +375,14 @@ bms = (function() {
 	
 	var clones = {};	
 	resetCSP = function(selectors) {
-		// Revert objects ...
-		$.each(clones, function(i, v) {
-			$(i).replaceWith(v)
-		});
-		// Clone objects
-		$.each(selectors, function(i, v) {
-			clones[v] = $(v).clone(true,true)
-		});	
+//		// Revert objects ...
+//		$.each(clones, function(i, v) {
+//			$(i).replaceWith(v)
+//		});
+//		// Clone objects
+//		$.each(selectors, function(i, v) {
+//			clones[v] = $(v).clone(true,true)
+//		});
 	}
 	
 	extern.update_visualization = function(data) {

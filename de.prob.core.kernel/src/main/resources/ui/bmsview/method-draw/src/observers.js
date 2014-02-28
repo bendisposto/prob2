@@ -58,14 +58,11 @@ var svgLineCoordinatesAttributes = [
 ];
 
 var svgAttributes = {
-		
 	"rect" : mergeAttr([svgAllElementAttributes, svgAllShapesAttributes, svgCoordinatesAttributes, svgRoundedCoordinatesAttributes, svgDimensionAttributes]),
 	"ellipse" : mergeAttr([svgAllElementAttributes, svgAllShapesAttributes, svgRadiusCoordinatesAttributes, svgRoundedCoordinatesAttributes, svgDimensionAttributes]),
 	"text" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes, svgTextAttributes]),
 	"line" : mergeAttr([svgAllElementAttributes, svgLineCoordinatesAttributes]),
 	"path" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes])
-	
-		
 }
 
 function mergeAttr(list) {
@@ -74,6 +71,11 @@ function mergeAttr(list) {
 		l = $.merge(l, v);
 	});
 	return l;
+}
+
+function addCspEventObserver(group) {
+	var bms = window.top.bms
+	bms.addObserver("CspEventObserver", group)
 }
 
 function addEvalObserver(group) {
@@ -93,6 +95,68 @@ function changeEvalObserverData(obj,key,value) {
 		"value" : value
 	}
 	bms.changeObserverData(data)
+}
+
+function changeCspEventObserverData(obj,key,value) {
+	var index = obj.parent().parent().parent().parent().index()
+	var group = obj.attr("group")
+	var bms = window.top.bms
+	var data = {
+		"type" : "CspEventObserver",
+		"group" : group,
+		"index" : index-1,
+		"key" : key,
+		"value" : value
+	}
+	bms.changeObserverData(data)
+}
+
+function initCspEventObserver() {
+	
+	var container = $("#observers").find("#accordion")
+	
+	container.find(".csp_events").editable({
+		type: 'textarea',
+		title: 'Events',
+		success: function(response, newValue) {		
+			changeCspEventObserverData($(this),"events",newValue)
+	    }
+	});
+	
+	container.find(".csp_selector").editable({
+		type: 'textarea',
+		title: 'Selector',
+		success: function(response, newValue) {
+			$(this).parent().parent().parent().parent().attr("selector",newValue)
+			changeCspEventObserverData($(this),"selector",newValue)
+	    }
+	});
+	
+	container.find(".csp_attr").editable({
+		type: 'select',
+	    title: 'Attribute',
+	    source: function() {
+	    	var selector = $(this).parent().parent().parent().parent().attr("selector")
+			try {
+	    		var elementName = $(selector).prop('tagName')
+	    		return svgAttributes[elementName];
+			} catch(error) {
+				return {}
+			}
+	    },
+	    success: function(response, newValue) {
+	    	changeCspEventObserverData($(this),"attr",newValue)
+	    }
+	});		  
+
+	container.find(".csp_value").editable({
+		type: 'textarea',
+		title: 'Value',
+		success: function(response, newValue) {
+			changeCspEventObserverData($(this),"value",newValue)
+	    }
+	});
+	
 }
 
 function initEvalObserver() {
