@@ -6,6 +6,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
@@ -15,8 +16,8 @@ import de.prob.webconsole.servlets.visualizations.IRefreshListener;
 public abstract class BrowserView extends ViewPart implements IRefreshListener {
 
 	private final int port;
-	private FXCanvas canvas;
-	private WebEngine engine;
+	private Composite canvas;
+	private Object browser;
 
 	public BrowserView() {
 		port = WebConsole.getPort();
@@ -29,18 +30,31 @@ public abstract class BrowserView extends ViewPart implements IRefreshListener {
 	@Override
 	public void createPartControl(final Composite parent) {
 
-		canvas = new FXCanvas(parent, SWT.NONE);
-
-		WebView browser = new WebView();
-		Scene scene = new Scene(browser);
-		canvas.setScene(scene);
-		engine = browser.getEngine();
-		engine.setJavaScriptEnabled(true);
-		engine.load("http://localhost:" + port + "/sessions/" + getUrl());
+		try {
+			FXCanvas c = new FXCanvas(parent, SWT.NONE);
+			WebView webview = new WebView();
+			Scene scene = new Scene(webview);
+			c.setScene(scene);
+			WebEngine engine = webview.getEngine();
+			engine.setJavaScriptEnabled(true);
+			engine.load("http://localhost:" + port + "/sessions/" + getUrl());
+			this.browser = engine;
+			canvas = c;
+		} catch (Throwable t) {
+			Browser b = new Browser(parent, SWT.NONE);
+			b.setUrl("http://localhost:" + port + "/sessions/" + getUrl());
+			browser = b;
+			canvas = b;
+		}
 	}
 
 	public void refresh() {
-		engine.reload();
+		if (browser instanceof Browser) {
+			((Browser) browser).refresh();
+		}
+		if (browser instanceof WebEngine) {
+			((WebEngine) browser).reload();
+		}
 	}
 
 	protected abstract String getUrl();
