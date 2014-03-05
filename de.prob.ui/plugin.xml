@@ -40,11 +40,6 @@
                  label="Open State Space Visualization"
                  style="push">
            </command>
-           <command
-                 commandId="de.prob.ui.BmsView"
-                 label="Open BMotion Studio Visualization "
-                 style="push">
-           </command>
         </menuContribution>
         <menuContribution
               allPopups="false"
@@ -52,6 +47,15 @@
            <command
                  commandId="de.prob.ui.groovyconsole"
                  label="Open new Groovy console"
+                 style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:bms">
+           <command
+                 commandId="de.prob.ui.command.OpenBMotionStudioTemplate"
+                 label="Open BMotion Studio Template"
                  style="push">
            </command>
         </menuContribution>
@@ -76,12 +80,12 @@
                   name="Open State Space Visualization">
             </command>
             <command
-                  id="de.prob.ui.BmsView"
-                  name="Open BMotion Studio Visualization">
-            </command>
-            <command
                   id="de.prob.ui.groovyconsole"
                   name="Open Groovy Console">
+            </command>
+            <command
+                  id="de.prob.ui.command.OpenBMotionStudioTemplate"
+                  name="Open BMotion Studio Template">
             </command>
    </extension>
    
@@ -97,20 +101,6 @@
             commandId="de.prob.ui.viz.pred">
          <class
                class="de.prob.ui.visualization.OpenPredicateVizHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="de.prob.ui.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
-         </enabledWhen>
-      </handler>
-      <handler
-            commandId="de.prob.ui.BmsView">
-         <class
-               class="de.prob.ui.visualization.OpenBmsViewHandler">
          </class>
          <enabledWhen>
             <with
@@ -154,6 +144,10 @@
          <class
                class="de.prob.ui.OpenGroovyHandler">
          </class>
+      </handler>
+      <handler
+            class="de.prob.ui.visualization.OpenBMotionTemplateHandler"
+            commandId="de.prob.ui.command.OpenBMotionStudioTemplate">
       </handler>
    </extension>
    <extension
