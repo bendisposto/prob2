@@ -8997,11 +8997,6 @@ this.getSaveData = function() {
 	return {svg : this.svgCanvasToString(), json: ko.toJSON(observerModel) };
 };
 
-this.initObserver = function(oName) {
-	var funcCall = "init" + oName + "();";
-	var ret = eval(funcCall);
-}
-
 function convertToObservable(list) 
 { 
     var newList = []; 
@@ -9033,7 +9028,7 @@ this.initObservers = function(observers) {
 	     self.addObserver = function(item) {
 	     };
 	     self.save = function() {
-	         console.log("===> " + JSON.stringify(ko.toJS(self.observers), null, 2));
+	         //console.log(JSON.stringify(ko.toJS(self.observers), null, 2));
 	     };	  
 	     self.lastSavedJson = ko.observable("")
 	}

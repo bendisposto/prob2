@@ -62,17 +62,11 @@
   <script type="text/javascript" src="lib/taphold.js"></script>
   <script type="text/javascript" src="lib/jquery.text-overflow.js"></script>
   <script type="text/javascript" src="lib/jqueryui-editable.min.js"></script>
-  <script type="text/javascript" src="lib/knockout-3.0.0.js"></script>
-  <script type="text/javascript" src="lib/knockout.x-editable.js"></script>  
+  <script type="text/javascript" src="lib/knockout-3.1.0.js"></script>
+  <script type="text/javascript" src="lib/knockout.x-editable.min.js"></script>  
 <!--{endif}-->
 
-  <script>
-  $(function() {  
-	  	  
-  });  
-  </script>
-
-<title>Method Draw</title>
+<title>BMotion Studio Editor</title>
 </head>
 <body>
 
@@ -225,7 +219,6 @@
 </script>
 
 <div id="observers">
-<button data-bind="click: save">test</button>
   	   <div data-bind="foreach: { data: observers, as: 'observer' }">
     		   	<h4 class="observer_type" data-bind="text: observer.type"></h4>
  			   	<div class="observer_list" data-bind="foreach: { data: objs, as: 'obj' }">
