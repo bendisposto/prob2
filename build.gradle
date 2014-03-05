@@ -2,7 +2,8 @@ project.ext {
 
 	targetRepositories = ["http://download.eclipse.org/releases/indigo/",
                           "http://rodin-b-sharp.sourceforge.net/updates",
-                          "http://rodin-b-sharp.sourceforge.net/core-updates"]	
+                          "http://rodin-b-sharp.sourceforge.net/core-updates",
+                          "http://downloads.efxclipse.org/p2-repos/releases/latest"]	
 
 	groupID = "de.prob2"
 
