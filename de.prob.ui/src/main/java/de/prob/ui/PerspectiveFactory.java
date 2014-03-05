@@ -34,16 +34,6 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		leftb.addView("org.eventb.ui.views.RodinProblemView");
 		// ---------------------------------
 
-		// RIGHT ---------------------------------
-		// Palette View
-		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT,
-				0.80f, editorArea);
-
-		// Library View
-		IFolderLayout rightb = layout.createFolder("rightb",
-				IPageLayout.BOTTOM, 0.65f, "right");
-		// ---------------------------------
-
 		// MAIN ---------------------------------
 		// Properties view + observer view + control panel
 		IFolderLayout bottom1 = layout.createFolder("bottom1",
