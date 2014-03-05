@@ -4,6 +4,7 @@ bms = (function() {
 	var session = Session();
 	var svgCanvas = null;
 	var svgId = null;
+	var observers = null;
 
 	$(document).ready(function() {
 		
@@ -31,7 +32,6 @@ bms = (function() {
 				"id" : svgId,
 				"client" : parent.bms.client
 			})
-			
 			/*$( "#svgeditor" ).on('shown.bs.modal', function (e) {				
 			}).on('hidden.bs.modal', function (e) {
 			});*/
@@ -47,7 +47,7 @@ bms = (function() {
 		});
 		
 		$('#bt_svgSave').click(function() {
-			svgCanvas.getSvgString()(handleSvgData);
+			svgCanvas.getSaveData()(handleSvgData);
 		});
 		
 	});
@@ -57,11 +57,14 @@ bms = (function() {
 		if (error) {
 			alert('error ' + error);
 		} else {
-		 	session.sendCmd("saveSvg", {
-				"svg" : data,
+			session.sendCmdPost("saveSvg", {
+				"url" : "/bms/",
+				"svg" : data.svg,
 				"id" : svgId,
+				"json" : data.json,
 				"client" : parent.bms.client
 			})
+			
 		}			
 	}
 	
@@ -245,15 +248,66 @@ bms = (function() {
 	extern.stateChange = function(data) {
 	}
 	
+	extern.addObserver = function(type, group) {
+		var obj =  { "items": [ { } ] }
+		var template = session.render("/ui/bmsview/ui_" + type + ".html", obj)
+		var container = $("#svgedit").contents().find(
+				"div[oid='observer_" + group + "']").find(
+				".observer_content")
+		container.append(template)
+		svgCanvas.initObserver(type);
+		session.sendCmd("addObserver", {
+			"type" : type,
+			"group" : group,
+			"client" : parent.bms.client
+		})
+	}
+	
+	extern.removeObserver = function(type, group, index) {
+		session.sendCmd("removeObserver", {
+			"type" : type,
+			"group" : group,
+			"index" : index,
+			"client" : parent.bms.client
+		})
+	}
+	
+	extern.changeObserverData = function(data) {
+		session.sendCmd("changeObserverData", {
+			"type" : data.type,
+			"group" : data.group,
+			"index" : data.index,
+			"key" : data.key,
+			"value" : data.value,
+			"client" : parent.bms.client
+		})
+	}
+	
 	extern.openSvgEditor = function(data) {
+		// Init observers	
+		if(data.json !== undefined) {
+			var jsonobserver = JSON.parse(data.json)
+			if (jsonobserver !== undefined && observers === null) {
+				observers = jsonobserver
+				svgCanvas.initObservers(observers);
+			}
+		}
+		// Init editor
 		var svg = data.svg
 		svgCanvas.setSvgString(svg)
 		$("#modal_svgeditor").modal('show');
-		rescale();	
+		rescale();		
 	}
 	
-	extern.promptReload = function(data) {
-		window.location.reload();	
+	extern.saveSvg = function(data) {
+		var svgid = data.svgid
+		var svgstring = data.svgstring
+		var svgElement = $('#'+svgid)
+		svgElement.replaceWith(svgstring)
+		$("#modal_svgeditor").modal('hide');
+		session.sendCmd("triggerListener", {
+			"client" : parent.bms.client
+		})
 	}
 	
 	extern.translateValue = function(val) {
@@ -301,14 +355,16 @@ bms = (function() {
 		
 	}
 	
-	var bodyClone;
-	
-	resetCSP = function() {
-		// Revert objects ...
-		if(bodyClone) {
-			$("body").replaceWith(bodyClone)
-		}
-		bodyClone = $("body").clone(true,true)	
+	var clones = {};	
+	resetCSP = function(selectors) {
+//		// Revert objects ...
+//		$.each(clones, function(i, v) {
+//			$(i).replaceWith(v)
+//		});
+//		// Clone objects
+//		$.each(selectors, function(i, v) {
+//			clones[v] = $(v).clone(true,true)
+//		});
 	}
 	
 	extern.update_visualization = function(data) {

@@ -18,7 +18,7 @@ import de.prob.statespace.StateId
  * @author joy
  *
  */
-class CSP implements IEvalElement {
+class CSP extends AbstractEvalElement {
 
 	private FormulaUUID uuid = new FormulaUUID();
 	private String code,home;
@@ -116,10 +116,9 @@ class CSP implements IEvalElement {
 		return uuid;
 	}
 
+	@Override
 	public EvaluationCommand getCommand(StateId stateId) {
 		/* TODO: we could do a more efficient implementation here */
-		ArrayList<IEvalElement> arrayList = new ArrayList<IEvalElement>();
-		arrayList.add(this);
-		return new EvaluateFormulaCommand(arrayList, stateId.getId());
+		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
 }

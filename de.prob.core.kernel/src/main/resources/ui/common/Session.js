@@ -29,6 +29,18 @@ function Session() {
 			data : data
 		});
 	}
+	
+	function sendCmdPost(s, data) {
+		data.cmd = s
+//		console.log("Send:", data)
+		$.ajax({
+			type: "POST",
+			url : data.url,
+			async : false,
+			cache: false,
+			data : data
+		});		
+	}
 
 	function get_template(name) {
 		var html = templates[name];
@@ -142,6 +154,7 @@ function Session() {
 	};
 
 	extern.sendCmd = sendCmd;
+	extern.sendCmdPost = sendCmdPost;
 	extern.get_template = get_template;
 	extern.render = render;
 

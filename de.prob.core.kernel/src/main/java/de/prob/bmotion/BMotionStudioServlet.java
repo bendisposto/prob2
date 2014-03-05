@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
@@ -140,6 +141,14 @@ public class BMotionStudioServlet extends HttpServlet {
 
 				Document templateDocument = Jsoup.parse(templateHtml);
 				templateDocument.outputSettings().prettyPrint(false);
+
+				for (Element e : templateDocument.getElementsByTag("svg")) {
+					// If svg element has no id, set unique ID
+					if (e.attr("id").isEmpty())
+						e.attr("id", UUID.randomUUID().toString());
+				}
+							
+				bmsSession.setTemplateDocument(templateDocument);
 				
 				Elements headTag = templateDocument.getElementsByTag("head");
 				Element headElement = headTag.get(0);
@@ -182,6 +191,19 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 
 	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		String svgString = req.getParameter("svg");
+		String svgId = req.getParameter("id");
+		String json = req.getParameter("json");
+		String sessionID = req.getParameter("client");
+		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
+				.get(sessionID);
+		if (bmsSession != null)
+			bmsSession.saveSvg(svgString, svgId, json);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -205,34 +227,49 @@ public class BMotionStudioServlet extends HttpServlet {
 			// Register the new session
 			sessions.put(id, bmsSession);
 
-			// Prepare redirect ...			
+			// Prepare redirect ...
 			String redirect = "/bms/" + id;
 			Map<String, String[]> parameterMap = req.getParameterMap();
-			
+
 			// Get path to template from corresponding parameter
 			String template = req.getParameter("template");
-			
+
 			// If a template was specified ...
 			if (template != null) {
+				
 				// Set template path in BMotionStudioSession
 				bmsSession.setTemplatePath(template);
+				
 				// Build up parameter string
 				StringBuilder parameterString = new StringBuilder();
+				
 				for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
 					bmsSession.addParameter(e.getKey(), e.getValue()[0]);
-					parameterString.append("&" + e.getKey() + "=" + e.getValue()[0]);
+					parameterString.append("&" + e.getKey() + "="
+							+ e.getValue()[0]);
 				}
-				String fpstring = "?"+parameterString.substring(1, parameterString.length());
+				String fpstring = "?"
+						+ parameterString
+								.substring(1, parameterString.length());
+				
 				// Get only template file (no full path)
 				List<String> templateParts = new PartList(template.split("/"));
+
+				for (Map.Entry<String, String[]> e : req.getParameterMap()
+						.entrySet()) {
+					bmsSession.addParameter(e.getKey(), e.getValue()[0]);
+				}
+
+				// New template requested via parameter
 				String templateFile = templateParts
 						.get(templateParts.size() - 1);
 				// Send redirect with new session id and template file
 				redirect = "/bms/" + id + "/" + templateFile + fpstring;
+				
 			}
 
 			resp.sendRedirect(redirect);
-			
+
 			return;
 
 		} else { // If an session already exists ... delegate

@@ -3,6 +3,7 @@ package de.prob.bmotion;
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
 import com.google.common.base.Function
+import com.google.gson.JsonArray
 
 import de.prob.statespace.OpInfo
 import de.prob.statespace.StateSpace
@@ -14,28 +15,28 @@ class Observer implements IBMotionScript {
 	def formulas
 	def mf = new DefaultMustacheFactory()
 	def scope = [:]
-
+	
 	def Observer(bmssession) {
 		this.bmssession = bmssession
 		scope.put("eval", new EvalExpression());
 	}
 
-	def evalObserver(observer, formulas, trace) {
-		def objects = observer.get("objects")
+	def EvalObserver(observer, formulas, trace) {
 		def m = []
-		for(o in objects) {
-			def predicate = o.get("predicate") == null ? true : translateValue(mustacheRender(o.get("predicate"),scope))
-			if(predicate) {
-				def triggers = o.get("trigger")
-				def t = triggers.collect {
-					def parameter = it.get("parameters")
-					def parsedParameter = parameter.collect { return translateValue(mustacheRender(it,scope)) }
-					return "\$('"+it.get("selector")+"')."+it.get("call")+"("+parsedParameter.join(",")+")"
+		observer.objs.each { obj ->
+			def selector = obj.group.getAsString()
+			m = m + obj.items.collect { item ->
+				def attr = item.attr
+				def value = item.value
+				def predicate = item.predicate == null ? true : mustacheRender(item.predicate.getAsString(),scope).toBoolean()
+				if(predicate & attr != null & value != null) {
+					def fvalue = translateValue(mustacheRender(value.getAsString(),scope))
+					return "\$('"+selector+"').attr('"+attr.getAsString()+"','"+fvalue+"')"
 				}
-				m = m + t
 			}
+			return m
 		}
-		bmssession.toVisualization(m)
+		bmssession.toGui(m)
 	}
 
 	def listenOperation(observer, formulas, trace) {
@@ -65,44 +66,30 @@ class Observer implements IBMotionScript {
 		return i > 0 && i < 27 ? String.valueOf((char)(i + 64)) : null;
 	}
 
-	def cspEventObserver(observer, formulas, trace) {
-
-		def observerCall = observer.get("cmd")
-		def jsonObserver = new com.google.gson.Gson().toJson(observer)
-		def jsonFormulas = new com.google.gson.Gson().toJson(formulas)
-
-		def objects = observer.get("objects")
+	def CspEventObserver(observer, formulas, trace) {
 		trace.ensureOpInfosEvaluated()
-		def opList = trace.getCurrent().getOpList();
-
+		def opList = trace.getCurrent().getOpList()		
+		def selectors = []
 		def m = []
-
-		for(op in opList) {
+		opList.each { op ->
 			def fullOp = getOpString(op)
-			for(obj in objects) {
-				def events = mustacheRender(obj.get("events"),scope)
-				if(events != null) {
-					events = events.replace("{","").replace("}", "")
-					events = events.split(",")
-					if(events.contains(fullOp)) {
-						def pmap = [:]
-						op.getParams().eachWithIndex() { v, i -> pmap.put(getCharForNumber(i+1),v) };
-						def triggers = obj.get("trigger")
-						def t = triggers.collect {
-							def parameter = it.get("parameters")
-							def parsedParameter = parameter.collect {
-								return translateValue(mustacheRender(it,pmap+scope))
-							}
-							return "\$('"+mustacheRender(it.get("selector"),pmap)+"')."+mustacheRender(it.get("call"),pmap)+"("+parsedParameter.join(",")+")"
-						}
-						m = m + t
+			return observer.objs.each { obj ->
+				def events = mustacheRender(obj.events.getAsString(),scope)
+				events = events.replace("{","").replace("}", "")
+				events = events.split(",")
+				if(events.contains(fullOp)) {
+					def pmap = [:]
+					op.getParams().eachWithIndex() { v, i -> pmap.put(getCharForNumber(i+1),v) };
+					m = m + obj.items.collect { item ->
+						def selector = mustacheRender(item.selector.getAsString(),pmap)
+						selectors.add("'" + selector +  "'")
+						def fvalue = translateValue(mustacheRender(item.value.getAsString(),pmap+scope))
+						return '\$("'+selector+'").attr("'+mustacheRender(item.attr.getAsString(),pmap)+'","'+fvalue+'")'
 					}
 				}
 			}
 		}
-
-		m = ["resetCSP()"]+ m
-		bmssession.toVisualization(m);
+		bmssession.toGui(["resetCSP("+selectors+")"]+m);
 	}
 
 	def getOp(trace,name,pred) {
@@ -136,17 +123,13 @@ class Observer implements IBMotionScript {
 
 	def void traceChanged(Trace trace, Map<String, Object> formulas) {
 		this.formulas = formulas
-		def json = bmssession.getJsonData()
+		def json = bmssession.getJson()
 		if(json != null) {
-			json.each {
-				def ol = it.get("observer");
-				if(ol != null) {
-					ol.each {
-						def methodCall = it.get("cmd")
-						if(this.metaClass.respondsTo(this, methodCall, Object, Object, Object)) {
-							this."$methodCall"(it, formulas, trace)
-						}
-					}
+			JsonArray asJsonArray = json.getAsJsonObject().get("observers").getAsJsonArray();
+			asJsonArray.each {
+				def methodCall = it.getAsJsonObject().get("type").getAsString()
+				if(this.metaClass.respondsTo(this, methodCall, Object, Object, Object)) {
+					this."$methodCall"(it, formulas, trace)
 				}
 			}
 		}
@@ -162,11 +145,11 @@ class Observer implements IBMotionScript {
 	def translateValue(input) {
 		switch (input) {
 			case 'true':
-				return true;
+				return true
 			case 'false':
-				return false;
+				return false
 			default:
-				return "\""+input+"\""
+				return input
 		}
 	}
 
