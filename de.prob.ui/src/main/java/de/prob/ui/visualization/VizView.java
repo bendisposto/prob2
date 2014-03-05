@@ -11,11 +11,12 @@ public class VizView extends BrowserView implements IRefreshListener {
 
 	public void init(final String url) {
 		this.url = url;
-
+		load(url);
 	}
 
 	@Override
 	protected String getUrl() {
 		return url;
 	}
+	
 }

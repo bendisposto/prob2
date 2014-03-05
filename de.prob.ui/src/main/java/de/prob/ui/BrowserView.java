@@ -29,7 +29,6 @@ public abstract class BrowserView extends ViewPart implements IRefreshListener {
 	 */
 	@Override
 	public void createPartControl(final Composite parent) {
-
 		try {
 			FXCanvas c = new FXCanvas(parent, SWT.NONE);
 			WebView webview = new WebView();
@@ -37,13 +36,13 @@ public abstract class BrowserView extends ViewPart implements IRefreshListener {
 			c.setScene(scene);
 			WebEngine engine = webview.getEngine();
 			engine.setJavaScriptEnabled(true);
-			engine.load("http://localhost:" + port + "/sessions/" + getUrl());
 			this.browser = engine;
+			load(getUrl());
 			canvas = c;
 		} catch (Throwable t) {
 			Browser b = new Browser(parent, SWT.NONE);
-			b.setUrl("http://localhost:" + port + "/sessions/" + getUrl());
-			browser = b;
+			this.browser = b;
+			load(getUrl());
 			canvas = b;
 		}
 	}
@@ -54,6 +53,18 @@ public abstract class BrowserView extends ViewPart implements IRefreshListener {
 		}
 		if (browser instanceof WebEngine) {
 			((WebEngine) browser).reload();
+		}
+	}
+
+	public void load(String url) {
+		if (url != null) {
+			if (browser instanceof WebEngine) {
+				((WebEngine) browser).load("http://localhost:" + port + "/"
+						+ url);
+			} else if (browser instanceof Browser) {
+				((Browser) browser).setUrl("http://localhost:" + port + "/"
+						+ url);
+			}
 		}
 	}
 

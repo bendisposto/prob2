@@ -11,7 +11,7 @@ public class OperationView extends BrowserView {
 
 	@Override
 	protected String getUrl() {
-		return "Events";
+		return "sessions/Events";
 	}
 
 }

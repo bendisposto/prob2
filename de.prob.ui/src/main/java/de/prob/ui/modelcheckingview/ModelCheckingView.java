@@ -10,7 +10,7 @@ public class ModelCheckingView extends BrowserView {
 
 	@Override
 	protected String getUrl() {
-		return "ModelCheckingUI";
+		return "sessions/ModelCheckingUI";
 	}
 
 }

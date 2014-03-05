@@ -8,7 +8,7 @@ public class LogView extends BrowserView {
 
 	@Override
 	protected String getUrl() {
-		return "Log";
+		return "sessions/Log";
 	}
 
 }

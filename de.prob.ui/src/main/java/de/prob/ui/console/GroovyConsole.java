@@ -23,7 +23,7 @@ public class GroovyConsole extends BrowserView {
 
 	@Override
 	protected String getUrl() {
-		return "GroovyConsoleSession";
+		return "sessions/GroovyConsoleSession";
 	}
 
 }

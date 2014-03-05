@@ -8,7 +8,7 @@ public class BUnitView extends BrowserView {
 
 	@Override
 	protected String getUrl() {
-		return "BUnit";
+		return "sessions/BUnit";
 	}
 
 }
