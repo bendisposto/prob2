@@ -66,14 +66,14 @@ methodDraw.addExtension("eyedropper", function(S) {
 		
 		return {
 			name: "eyedropper",
-			svgicons: "extensions/eyedropper-icon.xml",
+			svgicons: "/ui/bmsview/bms-editor/extensions/eyedropper-icon.xml",
 			buttons: [{
 				id: "tool_eyedropper",
 				type: "mode",
 				title: "Eye Dropper Tool",
 				position: 8,
 				key: "I",
-				icon: "extensions/eyedropper.png",
+				icon: "/ui/bmsview/bms-editor/extensions/eyedropper.png",
 				events: {
 					"click": function() {
 						svgCanvas.setMode("eyedropper");

@@ -33,9 +33,9 @@
 		  initFill: {color: 'fff', opacity: 1},
 		  initStroke: {width: 1.5, color: '000', opacity: 1},
 			initOpacity: 1,
-			imgPath: 'images/',
-			extPath: 'extensions/',
-			jGraduatePath: 'lib/jgraduate/images/',
+			imgPath: '/ui/bmsview/bms-editor/images/',
+			extPath: '/ui/bmsview/bms-editor/extensions/',
+			jGraduatePath: '/ui/bmsview/bms-editor/lib/jgraduate/images/',
 			extensions: [],
 			initTool: 'select',
 			wireframe: false,
@@ -3040,7 +3040,7 @@
 			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
-				svgCanvas.embedImage('images/placeholder.svg', function(datauri) {
+				svgCanvas.embedImage('/ui/bmsview/bms-editor/images/placeholder.svg', function(datauri) {
 					if(!datauri) {
 						// Disable option
 						$('#image_save_opts [value=embed]').attr('disabled','disabled');
@@ -4147,6 +4147,71 @@
 				if(svgCanvas) svgCanvas.addExtension.apply(this, args);
 			});
 		};
+		
+		function convertToObservable(list) 
+		{ 
+		    var newList = []; 
+		    $.each(list, function (i, obj) {
+		        var newObj = {}; 
+		        Object.keys(obj).forEach(function (key) { 
+		            newObj[key] = ko.observable(obj[key]); 
+		        }); 
+		        newList.push(newObj); 
+		    }); 
+		    return newList; 
+		}
+		
+		Editor.initObservers = function(observers) {
+			
+			var ObserverJsonModel = function(observers) {
+				 var self = this;
+			     self.observers = ko.observableArray(ko.utils.arrayMap(observers, function(observer) { 
+			         return { type: observer.type, objs: ko.observableArray(ko.utils.arrayMap(observer.objs, function(obj) {	    		                    	 
+			                     return { group: obj.group, items: ko.observableArray(convertToObservable(obj.items)) };		    		                         
+			                 })
+			         )};  
+			     }));
+			     self.removeItem = function(parent,item) {
+					if (confirm("Delete?")==true) {
+						parent.items.remove(item)
+					}
+			     };
+			     self.addObserver = function(item) {
+			     };
+			}
+			
+			observerModel = new ObserverJsonModel(observers);
+
+			ko.applyBindings(observerModel);
+			
+			var container = $(".observer_list")
+			/*if(container.attr("role") !== undefined) {
+				container.accordion("destroy");
+			}*/
+			container.accordion({
+				header: "> div > h3",
+				collapsible: true,
+				active: 0
+			});
+			
+			container.find('.truncate').textOverflow();
+
+			var add_observer_menu = $("#cmenu_addobserver");
+			
+			$(".observer_head").contextMenu({
+				menu: 'cmenu_addobserver',
+				inSpeed: 0
+			},
+			function(action, el, pos) {
+				switch ( action ) {
+					case 'add_EvalObserver':
+						//var group = el.attr('group')
+						//eval("addEvalObserver('"+group+"');");
+						break;
+				}
+			});
+			
+		}
 
 		return Editor;
 	}(jQuery);

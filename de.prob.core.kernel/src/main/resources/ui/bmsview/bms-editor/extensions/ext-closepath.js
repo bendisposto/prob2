@@ -45,7 +45,7 @@ methodDraw.addExtension("ClosePath", function(S) {
 		
 		return {
 			name: "ClosePath",
-			svgicons: "extensions/closepath_icons.svg",
+			svgicons: "/ui/bmsview/bms-editor/extensions/closepath_icons.svg",
 			buttons: [{
 				id: "tool_openpath",
 				type: "context",

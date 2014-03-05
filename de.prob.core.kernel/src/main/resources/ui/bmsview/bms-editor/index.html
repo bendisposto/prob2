@@ -4,66 +4,53 @@
 <head>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
-<link rel="icon" type="image/png" href="images/logo.png"/>
+<link rel="icon" type="image/png" href="/ui/bmsview/bms-editor/images/logo.png"/>
 
-<!--
-<!--{if svg_edit_release}-->
-  <!-- link rel="stylesheet" href="css/method-draw.compiled.css" type="text/css"/-->
-<!--{else}>
- -->
   <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="css/dot-luv/jquery-ui-1.10.4.custom.css" type="text/css"/>
-  <link rel="stylesheet" href="lib/jgraduate/css/jPicker.css" type="text/css"/>
-  <link rel="stylesheet" href="lib/jgraduate/css/jgraduate.css" type="text/css"/>
-  <link rel="stylesheet" href="css/method-draw.css" type="text/css"/>
-  <link rel="stylesheet" href="css/fonts.css" type="text/css"/>  
-<!--{endif}-->
+  <link rel="stylesheet" href="/ui/bmsview/bms-editor/css/dot-luv/jquery-ui-1.10.4.custom.css" type="text/css"/>
+  <link rel="stylesheet" href="/ui/bmsview/bms-editor/lib/jgraduate/css/jPicker.css" type="text/css"/>
+  <link rel="stylesheet" href="/ui/bmsview/bms-editor/lib/jgraduate/css/jgraduate.css" type="text/css"/>
+  <link rel="stylesheet" href="/ui/bmsview/bms-editor/css/method-draw.css" type="text/css"/>
+  <link rel="stylesheet" href="/ui/bmsview/bms-editor/css/fonts.css" type="text/css"/>  
   <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
 
 
-  <script type="text/javascript" src="lib/jquery.js"></script>
-
-
-<!--
-<!--{if svg_edit_release}-->
-  <!-- script type="text/javascript" src="method-draw.compiled.js"></script-->
-<!--{else}>
- -->
-  <script type="text/javascript" src="lib/touch.js"></script>
-  <script type="text/javascript" src="lib/js-hotkeys/jquery.hotkeys.min.js"></script>
-  <script type="text/javascript" src="lib/jquerybbq/jquery.bbq.min.js"></script>
-  <script type="text/javascript" src="icons/jquery.svgicons.js"></script>
-  <script type="text/javascript" src="lib/jgraduate/jquery.jgraduate.js"></script>
-  <script type="text/javascript" src="lib/contextmenu/jquery.contextMenu.js"></script>
-  <script type="text/javascript" src="lib/jquery-ui/jquery-ui-1.10.4.custom.min.js"></script>
-  <script type="text/javascript" src="src/browser.js"></script>
-  <script type="text/javascript" src="src/svgtransformlist.js"></script>
-  <script type="text/javascript" src="src/math.js"></script>
-  <script type="text/javascript" src="src/units.js"></script>
-  <script type="text/javascript" src="src/svgutils.js"></script>
-  <script type="text/javascript" src="src/sanitize.js"></script>
-  <script type="text/javascript" src="src/history.js"></script>
-  <script type="text/javascript" src="src/select.js"></script>
-  <script type="text/javascript" src="src/draw.js"></script>
-  <script type="text/javascript" src="src/path.js"></script>
-  <script type="text/javascript" src="src/dialog.js"></script>
-  <script type="text/javascript" src="src/observers.js"></script>
-  <script type="text/javascript" src="src/svgcanvas.js"></script>
-  <script type="text/javascript" src="src/method-draw.js"></script>
-  <script type="text/javascript" src="lib/jquery-draginput.js"></script>
-  <script type="text/javascript" src="lib/contextmenu.js"></script>
-  <script type="text/javascript" src="lib/jgraduate/jpicker.min.js"></script>
-  <script type="text/javascript" src="lib/mousewheel.js"></script>
-  <script type="text/javascript" src="extensions/ext-eyedropper.js"></script>
-  <script type="text/javascript" src="extensions/ext-shapes.js"></script>
-  <script type="text/javascript" src="extensions/ext-grid.js"></script>
-  <script type="text/javascript" src="lib/requestanimationframe.js"></script>
-  <script type="text/javascript" src="lib/taphold.js"></script>
-  <script type="text/javascript" src="lib/jquery.text-overflow.js"></script>
-  <script type="text/javascript" src="lib/jqueryui-editable.min.js"></script>
-  <script type="text/javascript" src="lib/knockout-3.1.0.js"></script>
-  <script type="text/javascript" src="lib/knockout.x-editable.min.js"></script>  
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jquery.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/touch.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/js-hotkeys/jquery.hotkeys.min.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jquerybbq/jquery.bbq.min.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/icons/jquery.svgicons.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jgraduate/jquery.jgraduate.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/contextmenu/jquery.contextMenu.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jquery-ui/jquery-ui-1.10.4.custom.min.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/browser.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/svgtransformlist.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/math.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/units.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/svgutils.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/sanitize.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/history.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/select.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/draw.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/path.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/dialog.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/observers.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/svgcanvas.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/method-draw.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jquery-draginput.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/contextmenu.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jgraduate/jpicker.min.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/mousewheel.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/extensions/ext-eyedropper.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/extensions/ext-shapes.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/extensions/ext-grid.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/requestanimationframe.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/taphold.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jquery.text-overflow.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jqueryui-editable.min.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout-3.1.0.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout.x-editable.min.js"></script>  
 <!--{endif}-->
 
 <title>BMotion Studio Editor</title>
@@ -161,7 +148,7 @@
 <script type="text/html" id="CspEventObserver">
 	<div data-bind="foreach: { data: obj.items, as: 'item' }">
 		<div class="observer_wrapper">
-			<img src="images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
+			<img src="/ui/bmsview/bms-editor/images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
 			<table class="observer_item bordered">
 				<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector"></a></td></tr>
 				<tr><td class="ra">Attribute</td><td>
@@ -185,7 +172,7 @@
 <script type="text/html" id="ExecuteOperation">
 	<div data-bind="foreach: { data: obj.items, as: 'item' }">
 		<div class="observer_wrapper">
-			<img src="images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
+			<img src="/ui/bmsview/bms-editor/images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
 			<table class="observer_item bordered">
 				<tr><td class="ra">Operation</td><td><a href="#" class="truncate" data-bind="editable: item.operation"></a></td></tr>
 				<tr><td class="ra">Parameter</td><td><a href="#" class="truncate" data-bind="editable: item.parameter, editableOptions: { type: 'textarea' }"></a></td></tr>
@@ -197,7 +184,7 @@
 <script type="text/html" id="EvalObserver">
 	<div data-bind="foreach: { data: obj.items, as: 'item' }">
 		<div class="observer_wrapper">
-			<img src="images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
+			<img src="/ui/bmsview/bms-editor/images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
 			<table class="observer_item bordered">
 				<tr><td class="ra">Predicate</td><td><a href="#" class="truncate" data-bind="editable: item.predicate, editableOptions: { type: 'textarea' }"></a></td></tr>
 				<tr><td class="ra">Attribute</td><td>
@@ -228,7 +215,6 @@
 			   	 		</div>
 		   	 		</div>
 			   	</div>
-		</div> 
 	  </div>  
 </div>
 
@@ -721,6 +707,27 @@
 	<li><a href="#add_EvalObserver">Add Listen Operation</a></li>
 	<li><a href="#add_EvalObserver">Add Execute Operation</a></li>
 </ul>
+
+<script>
+
+$.ajax({
+    type: 'POST',
+    data: {
+    		task: 'init',
+    		template: '{{templatePath}}'
+    	},
+    success: function (data) {
+        var svg = data.svg
+        var json = data.json
+        methodDraw.loadFromString(svg)
+        methodDraw.initObservers(JSON.parse(json).observers)
+    },
+    error:function(data,status,er) {
+        alert("error: "+data+" status: "+status+" er:"+er);
+    }
+});
+
+</script>
 
 </body>
 </html>

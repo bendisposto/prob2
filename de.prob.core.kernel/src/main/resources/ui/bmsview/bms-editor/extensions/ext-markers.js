@@ -478,7 +478,7 @@ methodDraw.addExtension("Markers", function(S) {
 
 	return {
 		name: "Markers",
-		svgicons: "extensions/markers-icons.xml",
+		svgicons: "/ui/bmsview/bms-editor/extensions/markers-icons.xml",
 		buttons: buildButtonList(),
 		context_tools: [
 		   {

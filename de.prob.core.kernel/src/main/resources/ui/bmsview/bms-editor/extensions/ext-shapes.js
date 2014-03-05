@@ -142,13 +142,13 @@ methodDraw.addExtension("shapes", function() {
 
 	
 	return {
-		svgicons: "extensions/ext-shapes.xml",
+		svgicons: "/ui/bmsview/bms-editor/extensions/ext-shapes.xml",
 		buttons: [{
 			id: "tool_shapelib",
 			type: "mode_flyout", // _flyout
 			position: 6,
 			title: "Shape library",
-			icon: "extensions/ext-shapes.png",
+			icon: "/ui/bmsview/bms-editor/extensions/ext-shapes.png",
 			events: {
 				"click": function() {
 					canv.setMode(mode_id);

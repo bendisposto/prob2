@@ -81,9 +81,9 @@ methodDraw.addExtension("server_opensave", {
 		var cancelled = false;
 	
 		// Change these to appropriate script file
-		var open_svg_action = 'extensions/fileopen.php?type=load_svg';
-		var import_svg_action = 'extensions/fileopen.php?type=import_svg';
-		var import_img_action = 'extensions/fileopen.php?type=import_img';
+		var open_svg_action = '/ui/bmsview/bms-editor/extensions/fileopen.php?type=load_svg';
+		var import_svg_action = '/ui/bmsview/bms-editor/extensions/fileopen.php?type=import_svg';
+		var import_img_action = '/ui/bmsview/bms-editor/extensions/fileopen.php?type=import_img';
 		
 		// Set up function for PHP uploader to use
 		methodDraw.processFile = function(str64, type) {

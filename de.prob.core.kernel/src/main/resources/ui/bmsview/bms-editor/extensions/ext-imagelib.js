@@ -23,7 +23,7 @@ methodDraw.addExtension("imagelib", function() {
 
 	var img_libs = [{
 			name: 'Demo library (local)',
-			url: 'extensions/imagelib/index.html',
+			url: '/ui/bmsview/bms-editor/extensions/imagelib/index.html',
 			description: 'Demonstration library for SVG-edit on this server'
 		}, 
 		{

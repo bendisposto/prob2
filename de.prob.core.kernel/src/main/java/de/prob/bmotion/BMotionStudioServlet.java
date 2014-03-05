@@ -4,11 +4,14 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -148,8 +151,6 @@ public class BMotionStudioServlet extends HttpServlet {
 						e.attr("id", UUID.randomUUID().toString());
 				}
 							
-				bmsSession.setTemplateDocument(templateDocument);
-				
 				Elements headTag = templateDocument.getElementsByTag("head");
 				Element headElement = headTag.get(0);
 
@@ -195,22 +196,79 @@ public class BMotionStudioServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		String svgString = req.getParameter("svg");
-		String svgId = req.getParameter("id");
-		String json = req.getParameter("json");
-		String sessionID = req.getParameter("client");
-		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
-				.get(sessionID);
-		if (bmsSession != null)
-			bmsSession.saveSvg(svgString, svgId, json);
+
+		String task = req.getParameter("task");
+		
+		if (task != null && task.equals("init")) {
+
+			String templatePath = req.getParameter("template");
+			// Get svg string from template
+			String templateHtml = WebUtils.render(templatePath);
+			Document templateDocument = Jsoup.parse(templateHtml);
+			templateDocument.outputSettings().prettyPrint(false);
+			for (Element e : templateDocument.getElementsByTag("svg")) {
+				// If svg element has no id, set unique ID
+				if (e.attr("id").isEmpty())
+					e.attr("id", UUID.randomUUID().toString());
+			}
+			Element svgElement = templateDocument.getElementsByTag("svg")
+					.first();
+			String svgString = svgElement.toString();
+			
+			// Get json data from template
+			Elements headTag = templateDocument.getElementsByTag("head");
+			Element headElement = headTag.get(0);
+
+			Elements elements = headElement.getElementsByAttributeValue("name",
+					"bms.json");
+			Element jsonDomElement = elements.first();
+			String jsonFileName = jsonDomElement.attr("content");
+			String templateFolder = new File(templatePath).getParent();
+			String jsonFilePath = templateFolder + "/" + jsonFileName;
+			String jsonRendered = readFile(jsonFilePath);
+					
+			// Send svg string and json data to client ...
+			resp.setContentType("application/json");
+			String json = WebUtils.toJson(WebUtils.wrap("svg", svgString,
+					"json", jsonRendered));
+			send(resp, json);
+
+		}
+
 	}
+	
+	private String readFile(final String filename) {
+		String content = null;
+		File file = new File(filename);
+		try {
+			FileReader reader = new FileReader(file);
+			char[] chars = new char[(int) file.length()];
+			reader.read(chars);
+			content = new String(chars);
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
+	
+	private void delegateEditMode(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException {
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+		String templatePath = req.getParameter("template");
+		URL editorPath = getClass().getResource(
+				"/ui/bmsview/bms-editor/index.html");
+		send(resp,
+				WebUtils.render(editorPath.getPath(),
+						WebUtils.wrap("templatePath", templatePath)));
 
-		// Get request URI
+	}
+	
+	private void delegateRunMode(HttpServletRequest req,
+			HttpServletResponse resp) throws IOException {
+
 		String uri = req.getRequestURI();
+
 		// Get session id from URI
 		List<String> parts = new PartList(uri.split("/"));
 		String sessionID = parts.get(2);
@@ -236,13 +294,13 @@ public class BMotionStudioServlet extends HttpServlet {
 
 			// If a template was specified ...
 			if (template != null) {
-				
+
 				// Set template path in BMotionStudioSession
 				bmsSession.setTemplatePath(template);
-				
+
 				// Build up parameter string
 				StringBuilder parameterString = new StringBuilder();
-				
+
 				for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
 					bmsSession.addParameter(e.getKey(), e.getValue()[0]);
 					parameterString.append("&" + e.getKey() + "="
@@ -251,7 +309,7 @@ public class BMotionStudioServlet extends HttpServlet {
 				String fpstring = "?"
 						+ parameterString
 								.substring(1, parameterString.length());
-				
+
 				// Get only template file (no full path)
 				List<String> templateParts = new PartList(template.split("/"));
 
@@ -265,7 +323,7 @@ public class BMotionStudioServlet extends HttpServlet {
 						.get(templateParts.size() - 1);
 				// Send redirect with new session id and template file
 				redirect = "/bms/" + id + "/" + templateFile + fpstring;
-				
+
 			}
 
 			resp.sendRedirect(redirect);
@@ -283,6 +341,19 @@ public class BMotionStudioServlet extends HttpServlet {
 			}
 		}
 
+	}
+	
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		String edit = req.getParameter("edit");
+		if (edit != null && edit.equals("1")) {
+			delegateEditMode(req, resp);
+			return;
+		} else {
+			delegateRunMode(req, resp);
+			return;
+		}
 	}
 
 	private void toOutput(HttpServletResponse resp, InputStream stream) {
@@ -326,6 +397,14 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 	}
 
+	private void send(final HttpServletResponse resp, final String html)
+			throws IOException {
+		PrintWriter writer = resp.getWriter();
+		writer.write(html);
+		writer.flush();
+		writer.close();
+	}
+	
 	public void submit(Callable<SessionResult> command) {
 		taskCompletionService.submit(command);
 	}

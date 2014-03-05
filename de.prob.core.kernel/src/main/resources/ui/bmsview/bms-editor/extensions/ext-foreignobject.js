@@ -95,7 +95,7 @@ methodDraw.addExtension("foreignObject", function(S) {
 		
 		return {
 			name: "foreignObject",
-			svgicons: "extensions/foreignobject-icons.xml",
+			svgicons: "/ui/bmsview/bms-editor/extensions/foreignobject-icons.xml",
 			buttons: [{
 				id: "tool_foreign",
 				type: "mode",
