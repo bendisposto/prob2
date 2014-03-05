@@ -31,6 +31,7 @@ function Session() {
 	}
 	
 	function sendCmdPost(s, data) {
+		data.cmd = s
 //		console.log("Send:", data)
 		$.ajax({
 			type: "POST",

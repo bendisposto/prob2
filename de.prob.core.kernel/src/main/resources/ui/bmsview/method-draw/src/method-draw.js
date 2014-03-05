@@ -1456,9 +1456,9 @@
 
 				  // select observer ...
 				  // TODO: We select only by id .. manage other selection (e.g. by class, etc.)
-				  var indexToActive = $("div[oid=observer_#"+$(elem).attr("id")+"]").index()
+				  var indexToActive = $("div[oid=#"+$(elem).attr("id")+"]").index()
 				  if(indexToActive > -1) {
-					  $( "#accordion" ).accordion( "option", "active", indexToActive );
+					  $( ".observer_list" ).accordion( "option", "active", indexToActive );
 				  }
 					
 				  $("#stroke_panel").show();

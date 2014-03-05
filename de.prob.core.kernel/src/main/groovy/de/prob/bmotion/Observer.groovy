@@ -34,7 +34,7 @@ class Observer implements IBMotionScript {
 					return "\$('"+selector+"').attr('"+attr.getAsString()+"','"+fvalue+"')"
 				}
 			}
-			return t
+			return m
 		}
 		bmssession.toGui(m)
 	}

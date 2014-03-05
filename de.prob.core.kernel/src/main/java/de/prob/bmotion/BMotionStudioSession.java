@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Function;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -138,79 +137,15 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 	
-	public Object removeObserver(final Map<String, String[]> params) {
-		String type = params.get("type")[0];
-		String group = params.get("group")[0];
-		Integer index = Integer.valueOf(params.get("index")[0]);
-		JsonObject observerJsonObject = getObserverGroupJsonObject(type, group);
-		JsonArray observerItems = observerJsonObject.get("items")
-				.getAsJsonArray();
-		JsonArray tmpArray = new JsonArray();
-		for (int i = 0; i < observerItems.size(); i++) {
-			if (i != index)
-				tmpArray.add(observerItems.get(i));
-		}
-		observerJsonObject.add("items", tmpArray);
-		return null;
-	}
-	
-	public Object addObserver(final Map<String, String[]> params) {
-		String type = params.get("type")[0];
-		String group = params.get("group")[0];
-		JsonObject observerJsonObject = getObserverGroupJsonObject(type, group);
-		JsonArray observerItems = observerJsonObject.get("items")
-				.getAsJsonArray();
-		JsonObject jsonObject = new JsonObject();
-		observerItems.add(jsonObject);
-		return null;
-	}
-	
-	private JsonObject getObserverGroupJsonObject(String type, String group) {
-		JsonArray asJsonArray = json.getAsJsonObject().get("observers")
-				.getAsJsonArray();
-		for (JsonElement el : asJsonArray) {
-			JsonObject asJsonObject = el.getAsJsonObject();
-			String observerType = asJsonObject.get("type").getAsString();
-			if (observerType.equals(type)) {
-				JsonArray observerObjs = asJsonObject.get("objs").getAsJsonArray();
-				for (JsonElement obj : observerObjs) {
-					JsonObject asJsonObject2 = obj.getAsJsonObject();
-					String observerGroup = asJsonObject2.get("group")
-							.getAsString();
-					if (observerGroup.equals(group))
-						return asJsonObject2;
-				}
-			}
-		}
-		return null;
-	}
-	
-	public Object changeObserverData(final Map<String, String[]> params) {
-		String type = params.get("type")[0];
-		String group = params.get("group")[0];
-		Integer index = Integer.valueOf(params.get("index")[0]);
-		String key = params.get("key")[0];
-		String value = params.get("value")[0];
-		JsonObject observerJsonObject = getObserverGroupJsonObject(type, group);
-		JsonArray observerItems = observerJsonObject.get("items")
-				.getAsJsonArray();
-		JsonObject item = observerItems.get(index).getAsJsonObject();
-		item.addProperty(key, value);
-		return null;
-	}
-	
-	public Object saveSvg(final Map<String, String[]> params) {
-		
-		// Replace old SVG element with new one		
-		String svgString = params.get("svg")[0];
-		String svgId = params.get("id")[0];
+	public void saveSvg(String svgString, String svgId, String json) {
 		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.setPrettyPrinting();
 		gsonBuilder.disableHtmlEscaping();
 		Gson gson = gsonBuilder.create();
-		
-		String jsonToFile = gson.toJson(json);
+		JsonParser jp = new JsonParser();
+		JsonElement je = jp.parse(json);
+		String jsonToFile = gson.toJson(je);
 		
 		Element orgSvgElement = templateDocument.getElementById(svgId);
 		Document parse = Jsoup.parse(svgString);
@@ -251,8 +186,6 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		submit(WebUtils.wrap("cmd", "bms.saveSvg", "svgid", svgId, "svgstring",
 				newSvgElement.toString()));
-
-		return null;
 		
 	}
 	

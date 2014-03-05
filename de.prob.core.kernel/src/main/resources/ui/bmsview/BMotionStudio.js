@@ -4,6 +4,7 @@ bms = (function() {
 	var session = Session();
 	var svgCanvas = null;
 	var svgId = null;
+	var observers = null;
 
 	$(document).ready(function() {
 		
@@ -46,7 +47,7 @@ bms = (function() {
 		});
 		
 		$('#bt_svgSave').click(function() {
-			svgCanvas.getSvgString()(handleSvgData);
+			svgCanvas.getSaveData()(handleSvgData);
 		});
 		
 	});
@@ -58,10 +59,12 @@ bms = (function() {
 		} else {
 			session.sendCmdPost("saveSvg", {
 				"url" : "/bms/",
-				"svg" : data,
+				"svg" : data.svg,
 				"id" : svgId,
+				"json" : data.json,
 				"client" : parent.bms.client
 			})
+			
 		}			
 	}
 	
@@ -281,40 +284,19 @@ bms = (function() {
 	}
 	
 	extern.openSvgEditor = function(data) {
-		// Init observers
-		var oContainer = $("#svgedit").contents().find("#observers").find(
-				"#accordion")
-		oContainer.empty()
-		
-		svgCanvas.initObservers();
-		
+		// Init observers	
 		if(data.json !== undefined) {
-			var observer = JSON.parse(data.json)
-			if (observer !== undefined) {
-				$.each(observer, function(i, v) {
-					var type = v.type
-					$.each(v.objs, function(i, v) {
-						var group = v.group				
-						v.type = type
-						var groupObject = oContainer.find("div[oid='observer_" + group + "']")
-						var template = session.render("/ui/bmsview/ui_" + type + ".html", v)
-						if(groupObject.length === 0) {
-							groupObject = $('<div oid="observer_' + group	+ '"><h3 class="observer_head" group="' + group	+ '">' + group + '</h3><div class="observer_content"></div></div>')
-							oContainer.append(groupObject)
-						}
-						groupObject.find(".observer_content").append(template)						
-					});
-					svgCanvas.initObserver(type);
-				});
+			var jsonobserver = JSON.parse(data.json)
+			if (jsonobserver !== undefined && observers === null) {
+				observers = jsonobserver
+				svgCanvas.initObservers(observers);
 			}
 		}
-		
 		// Init editor
 		var svg = data.svg
 		svgCanvas.setSvgString(svg)
 		$("#modal_svgeditor").modal('show');
-		rescale();
-		
+		rescale();		
 	}
 	
 	extern.saveSvg = function(data) {

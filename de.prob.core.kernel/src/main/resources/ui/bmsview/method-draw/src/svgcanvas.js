@@ -206,6 +206,9 @@ var current_zoom = 1;
 // pointer to current group (for in-group editing)
 var current_group = null;
 
+// Observer model
+var observerModel = null;
+
 // Object containing data for the currently selected styles
 var all_properties = {
 	shape: {
@@ -8989,17 +8992,60 @@ this.cycleElement = function(next) {
 	call("selected", selectedElements);
 }
 
+this.getSaveData = function() {
+	save_options.apply = false;
+	return {svg : this.svgCanvasToString(), json: ko.toJSON(observerModel) };
+};
+
 this.initObserver = function(oName) {
 	var funcCall = "init" + oName + "();";
 	var ret = eval(funcCall);
 }
 
-this.initObservers = function() {
-	
-	var container = $("#observers").find("#accordion")
-	if(container.attr("class") !== undefined) {
-		container.accordion("destroy");
+function convertToObservable(list) 
+{ 
+    var newList = []; 
+    $.each(list, function (i, obj) {
+        var newObj = {}; 
+        Object.keys(obj).forEach(function (key) { 
+            newObj[key] = ko.observable(obj[key]); 
+        }); 
+        newList.push(newObj); 
+    }); 
+    return newList; 
+}
+
+this.initObservers = function(observers) {
+		                 
+	var ObserverJsonModel = function(observers) {
+		 var self = this;
+	     self.observers = ko.observableArray(ko.utils.arrayMap(observers, function(observer) { 
+	         return { type: observer.type, objs: ko.observableArray(ko.utils.arrayMap(observer.objs, function(obj) {	    		                    	 
+	                     return { group: obj.group, items: ko.observableArray(convertToObservable(obj.items)) };		    		                         
+	                 })
+	         )};  
+	     }));
+	     self.removeItem = function(parent,item) {
+			if (confirm("Delete?")==true) {
+				parent.items.remove(item)
+			}
+	     };
+	     self.addObserver = function(item) {
+	     };
+	     self.save = function() {
+	         console.log("===> " + JSON.stringify(ko.toJS(self.observers), null, 2));
+	     };	  
+	     self.lastSavedJson = ko.observable("")
 	}
+	
+	observerModel = new ObserverJsonModel(observers);
+
+	ko.applyBindings(observerModel);
+	
+	var container = $(".observer_list")
+	/*if(container.attr("role") !== undefined) {
+		container.accordion("destroy");
+	}*/
 	container.accordion({
 		header: "> div > h3",
 		collapsible: true,
@@ -9007,9 +9053,8 @@ this.initObservers = function() {
 	});
 	
 	container.find('.truncate').textOverflow();
-	
+
 	var add_observer_menu = $("#cmenu_addobserver");
-	var remove_observer_menu = $("#cmenu_removeobserver");
 	
 	$(".observer_head").contextMenu({
 		menu: 'cmenu_addobserver',
@@ -9018,28 +9063,8 @@ this.initObservers = function() {
 	function(action, el, pos) {
 		switch ( action ) {
 			case 'add_EvalObserver':
-				var group = el.attr('group')
-				eval("addEvalObserver('"+group+"');");
-				break;
-			case 'removeObserver':
-				console.log(el)
-				break;
-		}
-	});
-	
-	$(".observer_item").contextMenu({
-		menu: 'cmenu_removeobserver',
-		inSpeed: 0
-	},
-	function(action, el, pos) {
-		switch ( action ) {
-			case 'remove_Observer':
-				var bms = window.top.bms
-				var group = el.attr('group')
-				var type = el.attr('type')
-				var index = el.index()
-				el.remove()
-				bms.removeObserver(type, group, index)
+				//var group = el.attr('group')
+				//eval("addEvalObserver('"+group+"');");
 				break;
 		}
 	});

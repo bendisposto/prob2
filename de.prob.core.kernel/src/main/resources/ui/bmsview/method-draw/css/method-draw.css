@@ -609,27 +609,6 @@ html, body {
 	z-index: 2;
 }
 
-#observers {
-	
-	position: absolute;
-	width: 250px;
-	height: 100%;
-	background: #2f2f2c;
-	right: 145px;
-	top: 18px;
-	border-bottom: none;
-	overflow: visible;
-	padding: 0 0 0 15px;
-		
-}
-
-#observers h4 {
-	margin-top:10px;
-	margin-bottom:5px;
-	color:#fff;
-	font-weight:normal;
-}
-
 table {
     *border-collapse: collapse; /* IE7 and lower */
     border-spacing: 0;
@@ -697,6 +676,27 @@ table {
     border-radius: 0 0 6px 0;
 }
 
+#observers {
+	
+	position: absolute;
+	width: 250px;
+	height: 100%;
+	background: #2f2f2c;
+	right: 145px;
+	top: 18px;
+	border-bottom: none;
+	overflow: visible;
+	padding: 0 0 0 15px;
+		
+}
+
+#observers h4 {
+	margin-top:10px;
+	margin-bottom:5px;
+	color:#fff;
+	font-weight:normal;
+}
+
 .truncate {
 	overflow: hidden;
 	white-space: nowrap;
@@ -705,6 +705,16 @@ table {
 	padding:0;
 	margin:0;
 	width:130px;
+}
+
+.observer_wrapper {
+   position:relative;
+   width: 98%;
+}
+.observer_wrapper img {
+   position:absolute;
+   right:0;
+   top:0;
 }
 
 .observer_item .ra {
@@ -2265,4 +2275,10 @@ input[readonly=readonly]:focus {
 #tool_align_relative select {
 	width: 100%;
 	display: block;
+}
+
+#observers ul {
+	 list-style-type: none;
+	 padding:0; 
+	 margin:0;
 }

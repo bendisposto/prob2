@@ -196,7 +196,14 @@ public class BMotionStudioServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		// TODO: implement me!
+		String svgString = req.getParameter("svg");
+		String svgId = req.getParameter("id");
+		String json = req.getParameter("json");
+		String sessionID = req.getParameter("client");
+		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
+				.get(sessionID);
+		if (bmsSession != null)
+			bmsSession.saveSvg(svgString, svgId, json);
 	}
 
 	@Override

@@ -60,13 +60,15 @@
   <script type="text/javascript" src="extensions/ext-grid.js"></script>
   <script type="text/javascript" src="lib/requestanimationframe.js"></script>
   <script type="text/javascript" src="lib/taphold.js"></script>
-  <script type="text/javascript" src="/ui/bmsview/method-draw/lib/jquery.text-overflow.js"></script>
-  <script type="text/javascript" src="/ui/bmsview/method-draw/lib/jqueryui-editable.min.js"></script>
+  <script type="text/javascript" src="lib/jquery.text-overflow.js"></script>
+  <script type="text/javascript" src="lib/jqueryui-editable.min.js"></script>
+  <script type="text/javascript" src="lib/knockout-3.0.0.js"></script>
+  <script type="text/javascript" src="lib/knockout.x-editable.js"></script>  
 <!--{endif}-->
 
   <script>
-  $(function() {
-				
+  $(function() {  
+	  	  
   });  
   </script>
 
@@ -162,10 +164,79 @@
   
 </div>
 
+<script type="text/html" id="CspEventObserver">
+	<div data-bind="foreach: { data: obj.items, as: 'item' }">
+		<div class="observer_wrapper">
+			<img src="images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
+			<table class="observer_item bordered">
+				<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector"></a></td></tr>
+				<tr><td class="ra">Attribute</td><td>
+				<a href="#" class="truncate" data-bind="attr: { selector: obj.group }, editable: item.attr, editableOptions: {type: 'select', source: 
+					function() {
+						try {
+	    					var selector = $(this).attr('selector')
+	    					var elementName = $(selector).prop('tagName')
+	    					return svgAttributes[elementName];
+						} catch(error) {
+							return {}
+						}
+	    			}
+				}"></a></td></tr>
+				<tr><td class="ra">Value</td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
+			</table>
+		</div>
+	</div>
+</script>
+
+<script type="text/html" id="ExecuteOperation">
+	<div data-bind="foreach: { data: obj.items, as: 'item' }">
+		<div class="observer_wrapper">
+			<img src="images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
+			<table class="observer_item bordered">
+				<tr><td class="ra">Operation</td><td><a href="#" class="truncate" data-bind="editable: item.operation"></a></td></tr>
+				<tr><td class="ra">Parameter</td><td><a href="#" class="truncate" data-bind="editable: item.parameter, editableOptions: { type: 'textarea' }"></a></td></tr>
+			</table>
+		</div>
+	</div>
+</script>
+
+<script type="text/html" id="EvalObserver">
+	<div data-bind="foreach: { data: obj.items, as: 'item' }">
+		<div class="observer_wrapper">
+			<img src="images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
+			<table class="observer_item bordered">
+				<tr><td class="ra">Predicate</td><td><a href="#" class="truncate" data-bind="editable: item.predicate, editableOptions: { type: 'textarea' }"></a></td></tr>
+				<tr><td class="ra">Attribute</td><td>
+				<a href="#" class="truncate" data-bind="text: item.attr, attr: { selector: obj.group }, editable: item.attr, editableOptions: { type: 'select', source:  
+					function() {
+						try {
+	    					var selector = $(this).attr('selector')
+	    					var elementName = $(selector).prop('tagName')
+	    					return svgAttributes[elementName];
+						} catch(error) {
+							return {}
+						}
+	    			}
+				}"></a></td></tr>
+				<tr><td class="ra">Value</td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
+			</table>
+		</div>
+	</div>
+</script>
+
 <div id="observers">
-<h4>Observers</h4>
-  <div id="accordion">
-  </div>  
+<button data-bind="click: save">test</button>
+  	   <div data-bind="foreach: { data: observers, as: 'observer' }">
+    		   	<h4 class="observer_type" data-bind="text: observer.type"></h4>
+ 			   	<div class="observer_list" data-bind="foreach: { data: objs, as: 'obj' }">
+ 			   		<div data-bind="attr: { oid: obj.group }">
+			   	 		<h3 class="observer_head" data-bind="text: obj.group"></h3>
+			   			<div class="observer_content" data-bind="template: { name: observer.type, foreach: obj }">
+			   	 		</div>
+		   	 		</div>
+			   	</div>
+		</div> 
+	  </div>  
 </div>
 
 <div id="tools_top" class="tools_panel">
@@ -656,10 +727,6 @@
 	<li><a href="#add_EvalObserver">Add Eval Observer</a></li>
 	<li><a href="#add_EvalObserver">Add Listen Operation</a></li>
 	<li><a href="#add_EvalObserver">Add Execute Operation</a></li>
-</ul>
-
-<ul id="cmenu_removeobserver" class="contextMenu">
-	<li><a href="#remove_Observer">Remove Observer</a></li>
 </ul>
 
 </body>

@@ -83,34 +83,6 @@ function addEvalObserver(group) {
 	bms.addObserver("EvalObserver", group)
 }
 
-function changeEvalObserverData(obj,key,value) {
-	var index = obj.parent().parent().parent().parent().index()
-	var group = obj.attr("group")
-	var bms = window.top.bms
-	var data = {
-		"type" : "EvalObserver",
-		"group" : group,
-		"index" : index,
-		"key" : key,
-		"value" : value
-	}
-	bms.changeObserverData(data)
-}
-
-function changeCspEventObserverData(obj,key,value) {
-	var index = obj.parent().parent().parent().parent().index()
-	var group = obj.attr("group")
-	var bms = window.top.bms
-	var data = {
-		"type" : "CspEventObserver",
-		"group" : group,
-		"index" : index-1,
-		"key" : key,
-		"value" : value
-	}
-	bms.changeObserverData(data)
-}
-
 function initCspEventObserver() {
 	
 	var container = $("#observers").find("#accordion")
@@ -154,41 +126,6 @@ function initCspEventObserver() {
 		title: 'Value',
 		success: function(response, newValue) {
 			changeCspEventObserverData($(this),"value",newValue)
-	    }
-	});
-	
-}
-
-function initEvalObserver() {
-	
-	var container = $("#observers").find("#accordion")
-	
-	container.find(".oitem_predicate").editable({
-		type: 'textarea',
-		title: 'Predicate',
-		success: function(response, newValue) {		
-			changeEvalObserverData($(this),"predicate",newValue)
-	    }
-	});
-	
-	container.find(".oitem_attr").editable({
-		type: 'select',
-	    title: 'Attribute',
-	    source: function() {
-	    	var selector = $(this).attr("group")
-	    	var elementName = $(selector).prop('tagName')
-	    	return svgAttributes[elementName];
-	    },
-	    success: function(response, newValue) {
-	    	changeEvalObserverData($(this),"attr",newValue)
-	    }
-	});		  
-
-	container.find(".oitem_value").editable({
-		type: 'textarea',
-		title: 'Value',
-		success: function(response, newValue) {
-			changeEvalObserverData($(this),"value",newValue)
 	    }
 	});
 	
