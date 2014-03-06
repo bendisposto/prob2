@@ -179,3 +179,23 @@ def String getExportedPackages(){
 
 	return exports
 }
+
+
+
+
+task remove_tycho_data << {
+
+	delete{
+	 delete  'de.prob.core.kernel/pom.xml',
+	       'de.prob.core.rodin/pom.xml',
+	       'de.prob.core.rodin/target/',
+	       'de.prob.ui.rodin/pom.xml',
+	       'de.prob.ui.rodin/target/',
+	       'de.prob.ui/pom.xml',
+	       'de.prob.ui/target/',
+	       'de.prob2.feature/pom.xml',
+	       'de.prob2.feature/target/',
+	       'de.prob2.parent/',
+	       'de.prob2.repository/'
+	}
+}
