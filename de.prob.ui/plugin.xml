@@ -146,7 +146,7 @@
          </class>
       </handler>
       <handler
-            class="de.prob.ui.visualization.OpenBMotionTemplateHandler"
+            class="de.prob.ui.bmsview.OpenBMotionTemplateHandler"
             commandId="de.prob.ui.command.OpenBMotionStudioTemplate">
       </handler>
    </extension>
@@ -218,9 +218,9 @@
       <view
             allowMultiple="true"
             category="de.hhu.stups.prob"
-            class="de.prob.ui.visualization.VizView"
-            id="de.prob.ui.viz.VizView"
-            name="Visualization"
+            class="de.prob.ui.view.ProB2View"
+            id="de.prob.ui.views.prob2"
+            name="ProB2 View"
             restorable="true">
       </view>
 
@@ -245,10 +245,19 @@
       <view
             allowMultiple="true"
             category="de.hhu.stups.prob"
-            class="de.prob.ui.visualization.VizView"
+            class="de.prob.ui.bmsview.BmsRunView"
             icon="icons/bms.png"
-            id="de.prob.ui.BMotionView"
-            name="BMotion HTML Visualization"
+            id="de.prob.ui.views.bmsrun"
+            name="BMotion Studio View"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.bmsview.BmsEditView"
+            icon="icons/bms.png"
+            id="de.prob.ui.views.bmsedit"
+            name="BMotion Studio Editor"
             restorable="true">
       </view>
 

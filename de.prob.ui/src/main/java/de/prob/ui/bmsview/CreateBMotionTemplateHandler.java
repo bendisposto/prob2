@@ -1,4 +1,4 @@
-package de.prob.ui.visualization;
+package de.prob.ui.bmsview;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

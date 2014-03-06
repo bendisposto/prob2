@@ -1,4 +1,4 @@
-package de.prob.ui.visualization;
+package de.prob.ui.view;
 
 import java.util.UUID;
 
@@ -7,18 +7,17 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-public class VisualizationUtil {
 
-	public static int counter = 0;
+public class ProB2ViewUtil {
 
-	public static VizView createVisualizationViewPart(final String relativeUrl,
+	public static ProB2View createProB2ViewPart(final String relativeUrl,
 			final String id) throws PartInitException {
 
 		IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		IWorkbenchPage activePage = window.getActivePage();
 
-		VizView vizView = (VizView) activePage.showView(id, relativeUrl,
+		ProB2View vizView = (ProB2View) activePage.showView(id, relativeUrl,
 				IWorkbenchPage.VIEW_VISIBLE);
 
 		if (vizView != null) {
@@ -27,13 +26,14 @@ public class VisualizationUtil {
 
 		return vizView;
 	}
-	
-	public static VizView createVisualizationViewPart(final String relativeUrl)
+
+	public static ProB2View createProB2ViewPart(final String relativeUrl)
 			throws PartInitException {
-		return createVisualizationViewPart(relativeUrl, VizView.ID);
+		return createProB2ViewPart(relativeUrl, ProB2View.ID);
 	}
 
 	public static String createSessionId() {
 		return UUID.randomUUID().toString();
 	}
+
 }

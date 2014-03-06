@@ -1,11 +1,11 @@
-package de.prob.ui.visualization;
+package de.prob.ui.view;
 
 import de.prob.ui.BrowserView;
 import de.prob.webconsole.servlets.visualizations.IRefreshListener;
 
-public class VizView extends BrowserView implements IRefreshListener {
+public class ProB2View extends BrowserView implements IRefreshListener {
 
-	public static final String ID = "de.prob.ui.viz.VizView";
+	public static final String ID = "de.prob.ui.views.prob2";
 
 	private String url;
 

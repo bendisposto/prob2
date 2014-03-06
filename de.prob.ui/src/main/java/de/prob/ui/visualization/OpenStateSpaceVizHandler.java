@@ -10,6 +10,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.prob.ui.view.ProB2View;
+import de.prob.ui.view.ProB2ViewUtil;
 import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.visualization.VisualizationException;
 import de.prob.webconsole.ServletContextListener;
@@ -33,13 +35,13 @@ public class OpenStateSpaceVizHandler extends AbstractHandler implements
 		Shell shell = HandlerUtil.getActiveShell(event);
 
 		try {
-			String sessionId = VisualizationUtil.createSessionId();
+			String sessionId = ProB2ViewUtil.createSessionId();
 			servlet.openSession(sessionId);
 
 			StateSpaceSession sessionServlet = servlet
 					.getSessionServlet(sessionId);
-			VizView vizView = VisualizationUtil
-					.createVisualizationViewPart("statespace_servlet/?init="
+			ProB2View vizView = ProB2ViewUtil
+					.createProB2ViewPart("statespace_servlet/?init="
 							+ sessionId);
 			sessionServlet.registerRefreshListener(vizView);
 		} catch (PartInitException e) {

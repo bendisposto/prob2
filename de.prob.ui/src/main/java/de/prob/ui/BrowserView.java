@@ -18,7 +18,7 @@ public abstract class BrowserView extends ViewPart implements IRefreshListener {
 	private final int port;
 	private Composite canvas;
 	private Object browser;
-
+	
 	public BrowserView() {
 		port = WebConsole.getPort();
 	}
@@ -29,22 +29,34 @@ public abstract class BrowserView extends ViewPart implements IRefreshListener {
 	 */
 	@Override
 	public void createPartControl(final Composite parent) {
-		try {
-			FXCanvas c = new FXCanvas(parent, SWT.NONE);
-			WebView webview = new WebView();
-			Scene scene = new Scene(webview);
-			c.setScene(scene);
-			WebEngine engine = webview.getEngine();
-			engine.setJavaScriptEnabled(true);
-			this.browser = engine;
-			load(getUrl());
-			canvas = c;
-		} catch (Throwable t) {
-			Browser b = new Browser(parent, SWT.NONE);
-			this.browser = b;
-			load(getUrl());
-			canvas = b;
+		if (forceSWTBrowser()) {
+			createSWTBrowser(parent);
+			return;
 		}
+		try {
+			createJavaFXBrowser(parent);
+		} catch (Throwable t) {
+			createSWTBrowser(parent);
+		}
+	}
+	
+	private void createSWTBrowser(Composite parent) {
+		Browser b = new Browser(parent, SWT.NONE);
+		this.browser = b;
+		load(getUrl());
+		canvas = b;
+	}
+	
+	private void createJavaFXBrowser(Composite parent) {
+		FXCanvas c = new FXCanvas(parent, SWT.NONE);
+		WebView webview = new WebView();
+		Scene scene = new Scene(webview);
+		c.setScene(scene);
+		WebEngine engine = webview.getEngine();
+		engine.setJavaScriptEnabled(true);
+		this.browser = engine;
+		load(getUrl());
+		canvas = c;
 	}
 
 	public void refresh() {
@@ -69,6 +81,10 @@ public abstract class BrowserView extends ViewPart implements IRefreshListener {
 	}
 
 	protected abstract String getUrl();
+
+	protected boolean forceSWTBrowser() {
+		return false;
+	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
