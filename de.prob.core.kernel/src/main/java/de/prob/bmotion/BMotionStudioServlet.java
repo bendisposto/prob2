@@ -7,6 +7,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -199,41 +204,104 @@ public class BMotionStudioServlet extends HttpServlet {
 
 		String task = req.getParameter("task");
 		
-		if (task != null && task.equals("init")) {
+		if(task != null) {
 
-			String templatePath = req.getParameter("template");
-			// Get svg string from template
-			String templateHtml = WebUtils.render(templatePath);
-			Document templateDocument = Jsoup.parse(templateHtml);
-			templateDocument.outputSettings().prettyPrint(false);
-			for (Element e : templateDocument.getElementsByTag("svg")) {
-				// If svg element has no id, set unique ID
-				if (e.attr("id").isEmpty())
-					e.attr("id", UUID.randomUUID().toString());
+			if (task.equals("init")) {
+
+				String templatePath = req.getParameter("template");
+				// Get svg string from template
+				String templateHtml = WebUtils.render(templatePath);
+				Document templateDocument = Jsoup.parse(templateHtml);
+				templateDocument.outputSettings().prettyPrint(false);
+				for (Element e : templateDocument.getElementsByTag("svg")) {
+					// If svg element has no id, set unique ID
+					if (e.attr("id").isEmpty())
+						e.attr("id", UUID.randomUUID().toString());
+				}
+				Element svgElement = templateDocument.getElementsByTag("svg")
+						.first();
+				String svgString = svgElement.toString();
+				String svgId = svgElement.attr("id");
+				
+				// Get json data from template
+				Elements headTag = templateDocument.getElementsByTag("head");
+				Element headElement = headTag.get(0);
+				Elements elements = headElement.getElementsByAttributeValue("name",
+						"bms.json");
+				Element jsonDomElement = elements.first();
+				String jsonFileName = jsonDomElement.attr("content");
+				String templateFolder = new File(templatePath).getParent();
+				String jsonFilePath = templateFolder + "/" + jsonFileName;
+				String jsonRendered = readFile(jsonFilePath);
+						
+				// Send svg string and json data to client ...
+				resp.setContentType("application/json");
+				String json = WebUtils.toJson(WebUtils.wrap("svg", svgString,
+						"svgid", svgId, "json", jsonRendered));
+				toOutput(resp, json);
+
+			} else if(task.equals("save")) {
+				
+				String templatePath = req.getParameter("template");
+				String jsonString = req.getParameter("json");
+				String svgString = req.getParameter("svg");
+				String svgElementId = req.getParameter("svgid");
+
+				// Prepare template
+				String templateHtml = WebUtils.render(templatePath);
+				Document templateDocument = Jsoup.parse(templateHtml);
+				templateDocument.outputSettings().prettyPrint(false);
+				Document tmpParsed = Jsoup.parse(svgString);
+				Element newSvgElement = tmpParsed.getElementsByTag("svg")
+						.first();
+				newSvgElement.attr("id", svgElementId);
+				Element orgSvgElement = templateDocument
+						.getElementById(svgElementId);
+				orgSvgElement.replaceWith(newSvgElement);
+				File templateFile = new File(templatePath);				
+				
+				// Prepare json data
+				GsonBuilder gsonBuilder = new GsonBuilder();
+				gsonBuilder.setPrettyPrinting();
+				gsonBuilder.disableHtmlEscaping();
+				Gson gson = gsonBuilder.create();
+				JsonParser jp = new JsonParser();
+				JsonElement je = jp.parse(jsonString);
+				String prettyJsonString = gson.toJson(je);
+				String jsonFilePath = null;
+				Elements elements = templateDocument
+						.getElementsByAttributeValue("name", "bms.json");
+				Element jsonDomElement = elements.first();
+				if (jsonDomElement != null) { // Json file is linked
+					String jsonFileName = jsonDomElement.attr("content");
+					String templateFolder = templateFile.getParent();
+					jsonFilePath = templateFolder + "/" + jsonFileName;
+				} else { // No json file is linked
+					String templateFileName = templateFile.getName();
+					String extension = templateFileName.substring(
+							templateFileName.lastIndexOf('.'),
+							templateFileName.length());
+					String jsonFileName = templateFileName.replace("."
+							+ extension, ".json");
+					jsonFilePath = templatePath.replace(templateFileName,
+							jsonFileName);
+					Elements headTag = templateDocument
+							.getElementsByTag("head");
+					Element metaElement = templateDocument
+							.createElement("meta");
+					metaElement.attr("name", "bms.json");
+					metaElement.attr("content", jsonFileName);
+					headTag.append(metaElement.toString());
+				}
+				
+				// Save data
+				writeStringToFile(prettyJsonString, new File(jsonFilePath));
+				writeStringToFile(templateDocument.html(), templateFile);
+				toOutput(resp, "ok");
+				
 			}
-			Element svgElement = templateDocument.getElementsByTag("svg")
-					.first();
-			String svgString = svgElement.toString();
-			
-			// Get json data from template
-			Elements headTag = templateDocument.getElementsByTag("head");
-			Element headElement = headTag.get(0);
-
-			Elements elements = headElement.getElementsByAttributeValue("name",
-					"bms.json");
-			Element jsonDomElement = elements.first();
-			String jsonFileName = jsonDomElement.attr("content");
-			String templateFolder = new File(templatePath).getParent();
-			String jsonFilePath = templateFolder + "/" + jsonFileName;
-			String jsonRendered = readFile(jsonFilePath);
-					
-			// Send svg string and json data to client ...
-			resp.setContentType("application/json");
-			String json = WebUtils.toJson(WebUtils.wrap("svg", svgString,
-					"json", jsonRendered));
-			send(resp, json);
-
-		}
+	
+		}		
 
 	}
 	
@@ -254,14 +322,13 @@ public class BMotionStudioServlet extends HttpServlet {
 	
 	private void delegateEditMode(HttpServletRequest req,
 			HttpServletResponse resp) throws ServletException, IOException {
-
 		String templatePath = req.getParameter("template");
 		URL editorPath = getClass().getResource(
 				"/ui/bmsview/bms-editor/index.html");
-		send(resp,
+		resp.setCharacterEncoding("UTF-8");
+		toOutput(resp,
 				WebUtils.render(editorPath.getPath(),
 						WebUtils.wrap("templatePath", templatePath)));
-
 	}
 	
 	private void delegateRunMode(HttpServletRequest req,
@@ -346,8 +413,7 @@ public class BMotionStudioServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		String edit = req.getParameter("edit");
-		if (edit != null && edit.equals("1")) {
+		if (req.getParameter("edit") != null) {
 			delegateEditMode(req, resp);
 			return;
 		} else {
@@ -381,6 +447,20 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 	}
 
+	private void toOutput(HttpServletResponse resp, String html) {
+		PrintWriter writer = null;
+		try {
+			writer = resp.getWriter();
+			writer.write(html);
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			// Gently close streams.
+			close(writer);
+		}
+	}
+
 	private String getBaseHtml(BMotionStudioSession bmsSession) {
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
 				.toString());
@@ -396,13 +476,26 @@ public class BMotionStudioServlet extends HttpServlet {
 			}
 		}
 	}
-
-	private void send(final HttpServletResponse resp, final String html)
-			throws IOException {
-		PrintWriter writer = resp.getWriter();
-		writer.write(html);
-		writer.flush();
-		writer.close();
+	
+	private void writeStringToFile(String str, File file) {
+		try {
+			FileOutputStream fop = new FileOutputStream(file);
+			// if file doesnt exists, then create it
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			// get the content in bytes
+			byte[] contentInBytes = str.getBytes();
+			fop.write(contentInBytes);
+			fop.flush();
+			fop.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void submit(Callable<SessionResult> command) {

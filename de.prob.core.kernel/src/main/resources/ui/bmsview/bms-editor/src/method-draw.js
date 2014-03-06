@@ -89,7 +89,10 @@
 				}
 			};
 		
-
+		// Observer model
+		var observerModel = null;
+		var workingSvgId = null;
+		
 		var curPrefs = {}; //$.extend({}, defaultPrefs);
 		var customHandlers = {};
 		Editor.curConfig = curConfig;
@@ -2376,6 +2379,29 @@
 					svgCanvas.runExtensions('onNewDocument');
 				});
 			};
+
+			var clickSavedata = function(){
+				
+				$.ajax({
+				    type: 'POST',
+				    data: {
+				    		task: 'save',
+				    		template: $('#svg_editor').attr('template'),
+				    		svg : svgCanvas.getSvgString(),
+				    		svgid : workingSvgId,
+				    		json: ko.toJSON(observerModel)
+				    	},
+				    success: function (data) {
+				    	if(data === 'ok') {
+				    		alert("Template saved")
+				    	}
+				    },
+				    error:function(data,status,er) {
+				        alert("error: "+data+" status: "+status+" er:"+er);
+				    }
+				});
+				
+			};
 			
 			var clickBold = function(){
 				svgCanvas.setBold( !svgCanvas.getBold() );
@@ -3261,7 +3287,8 @@
 					{sel:'#tool_image', fn: clickImage, evt: 'mouseup'},
 					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: ['Z', true]},
 					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey + 'N', true]},
-					{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey + 'S', true]},
+					{sel:'#tool_savedata', fn: clickSavedata, evt: 'click', key: [modKey + 'S', true]},
+					//{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey + 'S', true]},
 					{sel:'#tool_export', fn: clickExport, evt: 'mouseup'},
 					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup'},
 					{sel:'#tool_import', fn: clickImport, evt: 'mouseup'},
@@ -4159,6 +4186,10 @@
 		        newList.push(newObj); 
 		    }); 
 		    return newList; 
+		}
+		
+		Editor.setWorkingSvgId = function(svgid) {
+			workingSvgId = svgid;
 		}
 		
 		Editor.initObservers = function(observers) {

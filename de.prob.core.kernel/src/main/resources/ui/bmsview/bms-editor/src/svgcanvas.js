@@ -206,9 +206,6 @@ var current_zoom = 1;
 // pointer to current group (for in-group editing)
 var current_group = null;
 
-// Observer model
-var observerModel = null;
-
 // Object containing data for the currently selected styles
 var all_properties = {
 	shape: {
@@ -8991,11 +8988,6 @@ this.cycleElement = function(next) {
 	selectOnly([elem], true);
 	call("selected", selectedElements);
 }
-
-this.getSaveData = function() {
-	save_options.apply = false;
-	return {svg : this.svgCanvasToString(), json: ko.toJSON(observerModel) };
-};
 
 this.clear();
 

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
-<!-- removed for now, causes problems in Firefox: manifest="svg-editor.manifest" -->
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
-<link rel="icon" type="image/png" href="/ui/bmsview/bms-editor/images/logo.png"/>
 
+  <title>BMotion Studio Editor</title>
+    
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  
+  <link rel="icon" type="image/png" href="/ui/bmsview/bms-editor/images/logo.png"/>
   <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
   <link rel="stylesheet" href="/ui/bmsview/bms-editor/css/dot-luv/jquery-ui-1.10.4.custom.css" type="text/css"/>
   <link rel="stylesheet" href="/ui/bmsview/bms-editor/lib/jgraduate/css/jPicker.css" type="text/css"/>
   <link rel="stylesheet" href="/ui/bmsview/bms-editor/lib/jgraduate/css/jgraduate.css" type="text/css"/>
   <link rel="stylesheet" href="/ui/bmsview/bms-editor/css/method-draw.css" type="text/css"/>
   <link rel="stylesheet" href="/ui/bmsview/bms-editor/css/fonts.css" type="text/css"/>  
-  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-
-
+  
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jquery.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/touch.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/js-hotkeys/jquery.hotkeys.min.js"></script>
@@ -51,13 +52,11 @@
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jqueryui-editable.min.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout-3.1.0.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout.x-editable.min.js"></script>  
-<!--{endif}-->
 
-<title>BMotion Studio Editor</title>
 </head>
 <body>
 
-<div id="svg_editor">
+<div id="svg_editor" template="{{templatePath}}">
 
 <div id="rulers">
 	<div id="ruler_corner"></div>
@@ -82,25 +81,30 @@
 </div>
 
 <div id="menu_bar">
-  <a class="menu">
+  
+  <div class="menu">
+  	<div id="tool_savedata" class="menu_title">Save</div>
+  </div>
+  
+  <!--a class="menu">
     <div class="menu_title" id="logo"></div>
     <div class="menu_list">
       <div id="tool_about" class="menu_item">About this Editor...</div>
       <div class="separator"></div>
       <div id="tool_about" class="menu_item">Keyboard Shortcus...</div>
     </div>
-  </a>
+  </a-->
   
-  <div class="menu">
+  <!--div class="menu">
   	<div class="menu_title">File</div>
-  	<div class="menu_list" id="file_menu"> 
+  	<div class="menu_list" id="file_menu">
   		<div id="tool_clear" class="menu_item">New Document</div>
   		<div id="tool_open" class="menu_item" style="display: none;"><div id="fileinputs"></div>Open SVG...</div>
   		<div id="tool_import" class="menu_item" style="display: none;"><div id="fileinputs_import"></div>Import Image...</div>
   		<div id="tool_save" class="menu_item">Save Image... <span class="shortcut">⌘S</span></div>
   		<div id="tool_export" class="menu_item">Export as PNG</div>
   	</div>
-  </div>
+  </div-->
 
   <div class="menu">
     <div class="menu_title">Edit</div>
@@ -717,10 +721,9 @@ $.ajax({
     		template: '{{templatePath}}'
     	},
     success: function (data) {
-        var svg = data.svg
-        var json = data.json
-        methodDraw.loadFromString(svg)
-        methodDraw.initObservers(JSON.parse(json).observers)
+        methodDraw.setWorkingSvgId(data.svgid)     
+        methodDraw.loadFromString(data.svg)
+        methodDraw.initObservers(JSON.parse(data.json).observers)
     },
     error:function(data,status,er) {
         alert("error: "+data+" status: "+status+" er:"+er);
