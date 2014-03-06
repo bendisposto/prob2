@@ -612,7 +612,6 @@ html, body {
 table {
     *border-collapse: collapse; /* IE7 and lower */
     border-spacing: 0;
-    width: 225px;
 }
 
 .bordered {
