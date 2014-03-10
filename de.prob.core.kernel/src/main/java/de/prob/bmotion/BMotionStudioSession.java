@@ -63,7 +63,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	private Map<String, Object> formulas = new HashMap<String, Object>();
 	
 	private Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
-
+	
 	private Map<String, String> cachedCSPString = new HashMap<String, String>();
 	
 	private List<Object> jsonData = new ArrayList<Object>();
@@ -81,6 +81,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		groovy = sep.get();
 		observer = new Observer(this);
 		selector.registerAnimationChangeListener(this);
+		selector.registerModelChangedListener(this);
 	}
 
 	@Override
@@ -115,81 +116,44 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 
-		// Remove all script listeners and add new observer scriptlistener
-		scriptListeners.clear();
-		scriptListeners.add(observer);
 		// After reload do not resent old messages
 		int old = responses.size() + 1;
 		// Add dummy message
 		submit(WebUtils.wrap("cmd", "extern.skip"));
-		// Initialize json data (if not already done)
-		initJsonData();
-		// Init Groovy scripts
-		initGroovy();
-		// Trigger an init trace change
-		if(currentTrace != null)
+
+		// Initialize Session
+		initSession();
+
+		// If a trace already exists, trigger a trace change
+		if (currentTrace != null)
 			traceChange(currentTrace);
-		// Resent messages from groovy script and init trace change
+
+		// Resent messages, send while initializing the session and trace change
 		if (!responses.isEmpty())
 			resend(client, old, context);
 
 		super.reload(client, lastinfo, context);
 
 	}
+	
+	private void initSession() {
+		// Remove all script listeners and add new observer scriptlistener
+		scriptListeners.clear();
+		scriptListeners.add(observer);
+		// Initialize json data (if not already done)
+		initJsonData();
+		// Init Groovy scripts
+		initGroovy();
+	}
 
 	private void registerFormulas(final AbstractModel model) {
-
-		StateSpace s = model.getStatespace();
-
 		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
 				.entrySet()) {
-
 			String formula = entry.getKey();
 			IEvalElement evalElement = entry.getValue();
-
-			if (evalElement == null) {
-
-				try {
-
-					if (model instanceof CSPModel) {
-
-						if (cachedCSPString.get(formula) == null) {
-							evalElement = new CSP(formula, (CSPModel) model);
-							IEvalResult evaluationResult = currentTrace
-									.evalCurrent(evalElement);
-							if (evaluationResult != null) {
-								if (evaluationResult instanceof ComputationNotCompletedResult) {
-									// TODO: do something .....
-								} else if (evaluationResult instanceof EvalResult) {
-									cachedCSPString.put(formula,
-											((EvalResult) evaluationResult)
-													.getValue());
-								}
-							}
-						}
-
-					} else if (model instanceof EventBModel
-							|| model instanceof ClassicalBModel) {
-
-						if (model instanceof ClassicalBModel)
-							evalElement = new ClassicalB(formula);
-						else if (model instanceof EventBModel)
-							evalElement = new EventB(formula);
-
-						formulasForEvaluating.put(formula, evalElement);
-						s.subscribe(this, evalElement);
-
-					}
-
-				} catch (Exception e) {
-					// TODO: do something ...
-					// e.printStackTrace();
-				}
-
-			}
-
+			if (evalElement == null)
+				subscribeFormula(formula, model);
 		}
-
 	}
 
 	private void deregisterFormulas(final AbstractModel model) {
@@ -197,13 +161,18 @@ public class BMotionStudioSession extends AbstractSession implements
 		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
 				.entrySet()) {
 			IEvalElement evalElement = entry.getValue();
-			s.unsubscribe(this, evalElement);
+			try {
+				s.unsubscribe(this, evalElement);	
+			} catch (Exception e) {
+			}
+			
 		}
 	}
 
 	@Override
 	public void traceChange(final Trace trace) {
 
+		// Deregister formulas if no trace exists and exit
 		if (trace == null) {
 			currentTrace = null;
 			deregisterFormulas(currentModel);
@@ -212,17 +181,14 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 
 		this.currentTrace = trace;
+		this.currentModel = trace.getModel();
 
-		AbstractModel newModel = trace.getModel();
-		if (!newModel.equals(currentModel)) {
-			if (currentModel != null) {
-				deregisterFormulas(currentModel);
-			}
-			this.currentModel = newModel;
+		// If a new formula was added dynamically (for instance via a groovy
+		// script), call register formulas method
+		if (formulasForEvaluating.containsValue(null))
 			registerFormulas(currentModel);
-		}
-
-		// Collect subscribed values ...
+			
+		// Collect results of subscibred formulas
 		Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
 				.valuesAt(trace.getCurrentState());
 		for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt.entrySet()) {
@@ -233,9 +199,10 @@ public class BMotionStudioSession extends AbstractSession implements
 						translateValue(((EvalResult) er).getValue()));
 			}
 		}
+		// Add all cached CSP formulas
 		formulas.putAll(cachedCSPString);
 
-		// Trigger all registered script listeners
+		// Trigger all registered script listeners with collected formulas
 		for (IBMotionScript s : scriptListeners) {
 			s.traceChange(trace, formulas);
 		}
@@ -266,7 +233,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private String readFile(String filename) {
 		String content = null;
-		File file = new File(filename); // for ex foo.txt
+		File file = new File(filename);
 		try {
 			FileReader reader = new FileReader(file);
 			char[] chars = new char[(int) file.length()];
@@ -288,9 +255,57 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	public void registerFormula(String formula) {
+		// Register a fresh new formula
 		formulasForEvaluating.put(formula, null);
+		// If a model exists, try to subscribe the formula
+		if (currentModel != null)
+			subscribeFormula(formula, currentModel);
 	}
 
+	private void subscribeFormula(String formula, AbstractModel model) {
+
+		try {
+
+			StateSpace s = model.getStatespace();
+
+			IEvalElement evalElement = null;
+
+			if (model instanceof CSPModel) {
+
+				if (cachedCSPString.get(formula) == null) {
+					evalElement = new CSP(formula, (CSPModel) model);
+					IEvalResult evaluationResult = currentTrace
+							.evalCurrent(evalElement);
+					if (evaluationResult != null) {
+						if (evaluationResult instanceof ComputationNotCompletedResult) {
+							// TODO: do something .....
+						} else if (evaluationResult instanceof EvalResult) {
+							cachedCSPString.put(formula,
+									((EvalResult) evaluationResult).getValue());
+						}
+					}
+				}
+
+			} else if (model instanceof EventBModel
+					|| model instanceof ClassicalBModel) {
+				if (model instanceof ClassicalBModel)
+					evalElement = new ClassicalB(formula);
+				else if (model instanceof EventBModel)
+					evalElement = new EventB(formula);
+				formulasForEvaluating.put(formula, evalElement);
+				try {
+					s.subscribe(this, evalElement);
+				} catch (Exception e) {
+				}
+			}
+
+		} catch (Exception e) {
+			// TODO: do something ...
+			// e.printStackTrace();
+		}
+
+	}
+	
 	private Object translateValue(final String val) {
 		Object fvalue = val;
 		if (val.equalsIgnoreCase("TRUE")) {
@@ -335,8 +350,10 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	@Override
-	public void modelChanged(StateSpace s) {
-		// TODO: Reload  ........
+	public void modelChanged(StateSpace statespace) {
+		for (IBMotionScript s : scriptListeners) {
+			s.modelChanged(statespace);
+		}
 	}
 	
 	private void initGroovy() {

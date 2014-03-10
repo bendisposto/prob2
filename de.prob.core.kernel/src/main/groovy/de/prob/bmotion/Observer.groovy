@@ -10,6 +10,7 @@ import com.google.common.base.Function
 
 import de.prob.bmotion.BMotionStudioSession.EvalExpression;
 import de.prob.statespace.OpInfo
+import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace
 
 class Observer implements IBMotionScript {
@@ -81,21 +82,14 @@ class Observer implements IBMotionScript {
 		def m = []
 
 		for(op in opList) {
-
 			def fullOp = getOpString(op)
-
 			for(obj in objects) {
-
 				def events = mustacheRender(obj.get("events"),scope)
 				if(events != null) {
-
-					events = events.replace("\"{","").replace("}\"", "")
+					events = events.replace("{","").replace("}", "")
 					events = events.split(",")
-
 					if(events.contains(fullOp)) {
-
 						def pmap = [:]
-
 						op.getParams().eachWithIndex() { v, i -> pmap.put(getCharForNumber(i+1),v) };
 						def triggers = obj.get("trigger")
 						def t = triggers.collect {
@@ -105,7 +99,6 @@ class Observer implements IBMotionScript {
 							}
 							return "\$('"+mustacheRender(it.get("selector"),pmap)+"')."+mustacheRender(it.get("call"),pmap)+"("+parsedParameter.join(",")+")"
 						}
-
 						m = m + t
 					}
 				}
@@ -188,6 +181,10 @@ class Observer implements IBMotionScript {
 		Mustache mustache = mf.compile(new StringReader(s.toString()), "bms");
 		mustache.execute(writer, scope);
 		writer.toString()
+	}
+
+	@Override
+	public void modelChanged(StateSpace statespace) {
 	}
 	
 }
