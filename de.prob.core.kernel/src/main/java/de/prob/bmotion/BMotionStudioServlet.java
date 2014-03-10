@@ -209,6 +209,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			if (task.equals("init")) {
 
 				String templatePath = req.getParameter("template");
+				String lang = req.getParameter("lang");
 				// Get svg string from template
 				String templateHtml = WebUtils.render(templatePath);
 				Document templateDocument = Jsoup.parse(templateHtml);
@@ -222,22 +223,24 @@ public class BMotionStudioServlet extends HttpServlet {
 						.first();
 				String svgString = svgElement.toString();
 				String svgId = svgElement.attr("id");
-				
+
 				// Get json data from template
 				Elements headTag = templateDocument.getElementsByTag("head");
 				Element headElement = headTag.get(0);
-				Elements elements = headElement.getElementsByAttributeValue("name",
-						"bms.json");
+				Elements elements = headElement.getElementsByAttributeValue(
+						"name", "bms.json");
 				Element jsonDomElement = elements.first();
-				String jsonFileName = jsonDomElement.attr("content");
-				String templateFolder = new File(templatePath).getParent();
-				String jsonFilePath = templateFolder + "/" + jsonFileName;
-				String jsonRendered = readFile(jsonFilePath);
-						
+				String jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
+				if (jsonDomElement != null) {
+					String jsonFileName = jsonDomElement.attr("content");
+					String templateFolder = new File(templatePath).getParent();
+					String jsonFilePath = templateFolder + "/" + jsonFileName;
+					jsonRendered = readFile(jsonFilePath);
+				}
 				// Send svg string and json data to client ...
 				resp.setContentType("application/json");
 				String json = WebUtils.toJson(WebUtils.wrap("svg", svgString,
-						"svgid", svgId, "json", jsonRendered));
+						"svgid", svgId, "json", jsonRendered, "lang", lang));
 				toOutput(resp, json);
 
 			} else if(task.equals("save")) {
@@ -272,19 +275,12 @@ public class BMotionStudioServlet extends HttpServlet {
 				Elements elements = templateDocument
 						.getElementsByAttributeValue("name", "bms.json");
 				Element jsonDomElement = elements.first();
+				String jsonFileName = "observers.json";
+				String templateFolder = templateFile.getParent();
+				
 				if (jsonDomElement != null) { // Json file is linked
-					String jsonFileName = jsonDomElement.attr("content");
-					String templateFolder = templateFile.getParent();
-					jsonFilePath = templateFolder + "/" + jsonFileName;
+					jsonFileName = jsonDomElement.attr("content");
 				} else { // No json file is linked
-					String templateFileName = templateFile.getName();
-					String extension = templateFileName.substring(
-							templateFileName.lastIndexOf('.'),
-							templateFileName.length());
-					String jsonFileName = templateFileName.replace("."
-							+ extension, ".json");
-					jsonFilePath = templatePath.replace(templateFileName,
-							jsonFileName);
 					Elements headTag = templateDocument
 							.getElementsByTag("head");
 					Element metaElement = templateDocument
@@ -293,6 +289,7 @@ public class BMotionStudioServlet extends HttpServlet {
 					metaElement.attr("content", jsonFileName);
 					headTag.append(metaElement.toString());
 				}
+				jsonFilePath = templateFolder + "/" + jsonFileName;
 				
 				// Save data
 				writeStringToFile(prettyJsonString, new File(jsonFilePath));
