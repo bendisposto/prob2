@@ -192,4 +192,24 @@ public class EventB extends AbstractEvalElement {
 	public EvaluationCommand getCommand(final StateId stateId) {
 		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
+
+	public String toUnicode() {
+		return UnicodeTranslator.toUnicode(code);
+	}
+
+	public IParseResult getRodinParsedResult() {
+		if (kind.equals(PREDICATE.toString())) {
+			FormulaFactory.getInstance(types).parsePredicate(toUnicode(),
+					LanguageVersion.LATEST, null);
+		}
+		if (kind.equals(EXPRESSION.toString())) {
+			FormulaFactory.getInstance(types).parseExpression(toUnicode(),
+					LanguageVersion.LATEST, null);
+		}
+		if (kind.equals(ASSIGNMENT.toString())) {
+			FormulaFactory.getInstance(types).parseAssignment(toUnicode(),
+					LanguageVersion.LATEST, null);
+		}
+		return null;
+	}
 }
