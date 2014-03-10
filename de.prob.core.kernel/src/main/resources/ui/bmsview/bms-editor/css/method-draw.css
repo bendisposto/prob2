@@ -624,9 +624,6 @@ table {
 }
   
 .bordered td, .bordered th {
-    border-left: 1px solid #3f3f3c;
-    border-top: 1px solid #3f3f3c;
-    padding: 4px 7px 4px 10px;
     vertical-align: top;
     text-align: left;
 }
@@ -689,6 +686,12 @@ table {
 		
 }
 
+#observers ul {
+	 list-style-type: none;
+	 padding:0; 
+	 margin:0;
+}
+
 #observers h4 {
 	margin-top:10px;
 	margin-bottom:5px;
@@ -708,23 +711,87 @@ table {
 
 .observer_wrapper {
    position:relative;
-   width: 98%;
 }
-.observer_wrapper img {
+.observer_menu_inner {
    position:absolute;
    right:0;
    top:0;
 }
 
-.observer_item .ra {
-	text-align:right;
-	width:25px;
-	font-weight:bold;
+.observer_menu {
+	margin-left:5px;
+}
+
+.observer_menu a, .observer_menu_inner a {
+	background-repeat:no-repeat;
+	background-position: 0 3px;
+	padding-left: 15px;
+	cursor:pointer;
+	text-decoration:none;
+}
+
+.bt_removeitem {
+	background-image:url('/ui/bmsview/bms-editor/images/edit-delete-6.png');
+}
+
+.bt_additem {
+	background-image:url('/ui/bmsview/bms-editor/images/dialog-more.png');
 }
 
 .observer_content {
-	max-height:190px;
+	max-height:200px;
+	max-width:240px;
 	overflow:scroll;
+}
+
+.observer_item {
+	background-color: #50504F;
+	width:95%;
+	margin-left:5px;
+}
+
+.observer_item .ra {
+	text-align:right;
+	font-weight:bold;
+}
+
+.ui-state-active {
+	background: #3f3f3c none;
+	color: white;
+}
+
+.ui-state-active .ui-icon {
+	background-image: url(dot-luv/images/ui-icons_ffffff_256x240.png);
+}
+
+.ui-state-default {
+	border: 0;
+	background: #3f3f3c none;
+	color: white;
+	border:1px solid #50504F;
+}
+
+
+.ui-state-focus {
+	background: #3f3f3c none;
+	color: white;
+}
+
+.ui-accordion {
+	font-size: 12px;
+	width: 235px;
+}
+
+.ui-accordion-header {
+}
+
+.ui-accordion-content {
+	background-color: #3f3f3c;
+}
+
+.ui-widget-content {
+	background-image: none;
+	border:1px solid #50504F;
 }
 
 /* IE has layout issues when sorting (see #5413) */
@@ -737,23 +804,6 @@ a.editable-click {
 a:hover.editable-click {
 	border:0;
 	font-style:italic;
-}
-
-.ui-accordion {
-	font-size: 12px;
-	width: 235px;
-}
-
-.ui-accordion-header {
-}
-
-.ui-accordion-content {
-}
-
-.ui-widget-content {
-	background-color: #2f2f2c;
-	background-image: none;
-	border: 0;
 }
 
 #tools_top {
@@ -2274,10 +2324,4 @@ input[readonly=readonly]:focus {
 #tool_align_relative select {
 	width: 100%;
 	display: block;
-}
-
-#observers ul {
-	 list-style-type: none;
-	 padding:0; 
-	 margin:0;
 }

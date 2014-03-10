@@ -4192,55 +4192,54 @@
 			workingSvgId = svgid;
 		}
 		
+		function refreshAccordion() {
+			var container = $(".observer_list")
+			if(container.attr("role") !== undefined) {
+				container.accordion("destroy");
+			}
+			container.accordion({
+				header: "> div > h3",
+				collapsible: true
+			});
+		}
+		
 		Editor.initObservers = function(observers) {
-			
 			var ObserverJsonModel = function(observers) {
 				 var self = this;
 			     self.observers = ko.observableArray(ko.utils.arrayMap(observers, function(observer) { 
 			         return { type: observer.type, objs: ko.observableArray(ko.utils.arrayMap(observer.objs, function(obj) {	    		                    	 
-			                     return { group: obj.group, items: ko.observableArray(convertToObservable(obj.items)) };		    		                         
+			                     return { group: ko.observable(obj.group), items: ko.observableArray(convertToObservable(obj.items)) };		    		                         
 			                 })
 			         )};  
 			     }));
-			     self.removeItem = function(parent,item) {
+			     self.removeItem = function(list,item) {
+			    	 console.log(list)
 					if (confirm("Delete?")==true) {
-						parent.items.remove(item)
+						list.remove(item)
+						refreshAccordion();			
 					}
 			     };
-			     self.addObserver = function(item) {
+			     self.addItem = function(items, item) {
+			    	 items.push(item);
+			    	 refreshAccordion();
 			     };
+			     self.addObserver = function(objs) {
+			    	 objs.push({
+			             "group": ko.observable("group"),
+			             "items": ko.observableArray([])
+			    	 })
+			    	 refreshAccordion()
+			     }
 			}
 			
 			observerModel = new ObserverJsonModel(observers);
 
 			ko.applyBindings(observerModel);
 			
+			refreshAccordion()
+			
 			var container = $(".observer_list")
-			/*if(container.attr("role") !== undefined) {
-				container.accordion("destroy");
-			}*/
-			container.accordion({
-				header: "> div > h3",
-				collapsible: true,
-				active: 0
-			});
-			
 			container.find('.truncate').textOverflow();
-
-			var add_observer_menu = $("#cmenu_addobserver");
-			
-			$(".observer_head").contextMenu({
-				menu: 'cmenu_addobserver',
-				inSpeed: 0
-			},
-			function(action, el, pos) {
-				switch ( action ) {
-					case 'add_EvalObserver':
-						//var group = el.attr('group')
-						//eval("addEvalObserver('"+group+"');");
-						break;
-				}
-			});
 			
 		}
 
