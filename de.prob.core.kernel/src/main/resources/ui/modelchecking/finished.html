@@ -1,0 +1,18 @@
+<div id="{{id}}-in">
+    <div class="alert alert-{{result}}">
+        {{message}}
+    </div>
+    <div class="progress-list">
+        <div class="break-after">Time Elapsed: {{time}}</div>
+        {{#stats}}
+        <div>Processed Nodes: {{processedNodes}}</div>
+        <div>Total Nodes: {{totalNodes}}</div>
+        <div>Total Transitions: {{totalTransitions}}</div>
+        {{/stats}}
+    </div>
+    {{#hasTrace}}
+        <div class="trace-button">
+            <button id="{{id}}-opentrace" type="button" class="btn btn-default">Open trace to error state</button>
+        </div>
+    {{/hasTrace}}
+</div>  

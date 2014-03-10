@@ -3,11 +3,10 @@ package de.prob.web.views;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.AsyncContext;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.annotations.PublicSession;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
@@ -17,27 +16,41 @@ import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 @Singleton
+@PublicSession
 public class CurrentAnimations extends AbstractSession implements
 		IAnimationChangeListener {
 
 	private final AnimationSelector animations;
 
 	@Inject
-	public CurrentAnimations(AnimationSelector animations) {
-
-		incrementalUpdate = false;
+	public CurrentAnimations(final AnimationSelector animations) {
 		this.animations = animations;
 		animations.registerAnimationChangeListener(this);
-
 	}
 
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/animations/index.html");
 	}
 
+	public Object selectTrace(final Map<String, String[]> params) {
+		int pos = Integer.parseInt(params.get("pos")[0]);
+		Trace trace = animations.getTraces().get(pos);
+		animations.changeCurrentAnimation(trace);
+		return null;
+	}
+
+	public Object removeTrace(final Map<String, String[]> params) {
+		int pos = Integer.parseInt(params.get("pos")[0]);
+		Trace trace = animations.getTraces().get(pos);
+		animations.removeTrace(trace);
+		return null;
+	}
+
 	@Override
-	public void traceChange(Trace trace) {
+	public void traceChange(final Trace currentTrace,
+			final boolean currentAnimationChanged) {
 		List<Trace> traces = animations.getTraces();
 		Object[] result = new Object[traces.size()];
 		int ctr = 0;
@@ -50,7 +63,7 @@ public class CurrentAnimations extends AbstractSession implements
 					.getCurrent().getOp().toString() : "";
 
 			String steps = t.getCurrent().getOpList().size() + "";
-			String isCurrent = t.equals(trace) + "";
+			String isCurrent = t.equals(currentTrace) + "";
 			Map<String, String> wrapped = WebUtils.wrap("model", modelName,
 					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent);
 			result[ctr++] = wrapped;
@@ -61,23 +74,7 @@ public class CurrentAnimations extends AbstractSession implements
 	}
 
 	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
-		super.reload(client, lastinfo, context);
-		// traceChange(animations.getCurrentTrace());
+	public void animatorStatus(final boolean busy) {
+		// This does not need to be considered for this view
 	}
-
-	public Object selectTrace(Map<String, String[]> params) {
-		int pos = Integer.parseInt(params.get("pos")[0]);
-		Trace trace = animations.getTraces().get(pos);
-		animations.changeCurrentAnimation(trace);
-		return null;
-	}
-
-	public Object removeTrace(Map<String, String[]> params) {
-		int pos = Integer.parseInt(params.get("pos")[0]);
-		Trace trace = animations.getTraces().get(pos);
-		animations.removeTrace(trace);
-		return null;
-	}
-
 }

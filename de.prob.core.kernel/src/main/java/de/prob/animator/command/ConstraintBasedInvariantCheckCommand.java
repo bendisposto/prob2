@@ -6,12 +6,18 @@ package de.prob.animator.command;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.check.ConstraintBasedCheckingResult;
+import de.prob.check.CBCInvariantViolationFound;
+import de.prob.check.IModelCheckingResult;
+import de.prob.check.InvariantCheckCounterExample;
+import de.prob.check.ModelCheckOk;
+import de.prob.check.NotYetFinished;
 import de.prob.exception.ProBError;
+import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -25,42 +31,20 @@ import de.prob.statespace.OpInfo;
  * 
  * @author plagge
  */
-public class ConstraintBasedInvariantCheckCommand extends AbstractCommand {
+public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
+		implements IStateSpaceModifier {
 
 	Logger logger = LoggerFactory
 			.getLogger(ConstraintBasedInvariantCheckCommand.class);
 
-	public static class InvariantCheckCounterExample {
-		private final String eventName;
-		private final OpInfo step1, step2;
-
-		public InvariantCheckCounterExample(final String eventName,
-				final OpInfo step1, final OpInfo step2) {
-			this.eventName = eventName;
-			this.step1 = step1;
-			this.step2 = step2;
-		}
-
-		public String getEventName() {
-			return eventName;
-		}
-
-		public OpInfo getStep1() {
-			return step1;
-		}
-
-		public OpInfo getStep2() {
-			return step2;
-		}
-	}
-
-	private static final String COMMAND_NAME = "invariant_check";
+	private static final String COMMAND_NAME = "prob2_invariant_check";
 	private static final String RESULT_VARIABLE = "R";
 
 	private final Collection<String> events;
 
-	private ConstraintBasedCheckingResult result;
-	private Collection<InvariantCheckCounterExample> counterexamples;
+	private IModelCheckingResult result;
+	private final List<InvariantCheckCounterExample> counterexamples = new ArrayList<InvariantCheckCounterExample>();
+	private final List<OpInfo> newTransitions = new ArrayList<OpInfo>();
 
 	/**
 	 * @param events
@@ -77,7 +61,7 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand {
 		return events;
 	}
 
-	public Collection<InvariantCheckCounterExample> getCounterExamples() {
+	public List<InvariantCheckCounterExample> getCounterExamples() {
 		return counterexamples;
 	}
 
@@ -103,48 +87,52 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
-		;
-		final Collection<InvariantCheckCounterExample> counterexamples;
 		if (resultTerm.hasFunctor("interrupted", 0)) {
-			result = new ConstraintBasedCheckingResult(
-					ConstraintBasedCheckingResult.Result.interrupted);
-			counterexamples = null;
+			result = new NotYetFinished(
+					"The invariant check has been interrupted by the user.", -1);
+
 		} else if (resultTerm.isList()) {
 			ListPrologTerm ceTerm = (ListPrologTerm) resultTerm;
-			result = ceTerm.isEmpty() ? new ConstraintBasedCheckingResult(
-					ConstraintBasedCheckingResult.Result.no_invariant_violation_found)
-					: new ConstraintBasedCheckingResult(
-							ConstraintBasedCheckingResult.Result.invariant_violation);
-			counterexamples = Collections
-					.unmodifiableCollection(extractExamples(ceTerm));
+			counterexamples.addAll(extractExamples(ceTerm));
+			result = ceTerm.isEmpty() ? new ModelCheckOk(
+					"No Invariant violation was found")
+					: new CBCInvariantViolationFound(counterexamples);
 		} else {
 			String msg = "unexpected result from invariant check: "
 					+ resultTerm;
 			logger.error(msg);
 			throw new ProBError(msg);
 		}
-		this.counterexamples = counterexamples;
 	}
 
-	private Collection<InvariantCheckCounterExample> extractExamples(
+	private List<InvariantCheckCounterExample> extractExamples(
 			final ListPrologTerm ceTerm) {
-		Collection<InvariantCheckCounterExample> examples = new ArrayList<ConstraintBasedInvariantCheckCommand.InvariantCheckCounterExample>();
+		List<InvariantCheckCounterExample> examples = new ArrayList<InvariantCheckCounterExample>();
 		for (final PrologTerm t : ceTerm) {
 			final CompoundPrologTerm term = (CompoundPrologTerm) t;
 			final String eventName = PrologTerm.atomicString(term
 					.getArgument(1));
-			final OpInfo step1 = new OpInfo(
-					(CompoundPrologTerm) term.getArgument(2));
-			final OpInfo step2 = new OpInfo(
-					(CompoundPrologTerm) term.getArgument(3));
+			final OpInfo step1 = OpInfo
+					.createOpInfoFromCompoundPrologTerm(BindingGenerator
+							.getCompoundTerm(term.getArgument(2), 3));
+			final OpInfo step2 = OpInfo
+					.createOpInfoFromCompoundPrologTerm(BindingGenerator
+							.getCompoundTerm(term.getArgument(3), 3));
 			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(
 					eventName, step1, step2);
+			newTransitions.add(step1);
+			newTransitions.add(step2);
 			examples.add(ce);
 		}
 		return examples;
 	}
 
-	public ConstraintBasedCheckingResult getResult() {
+	public IModelCheckingResult getResult() {
 		return result;
+	}
+
+	@Override
+	public List<OpInfo> getNewTransitions() {
+		return newTransitions;
 	}
 }

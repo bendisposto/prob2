@@ -23,13 +23,13 @@ import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
 
 /**
- * Command to execute an event that has not been enumerated by ProB, for further
- * information see ({@link #getOperations})
+ * Command to execute an event that has not been enumerated by ProB.
  * 
  * @author Jens Bendisposto
  * 
  */
-public final class GetOperationByPredicateCommand extends AbstractCommand {
+public final class GetOperationByPredicateCommand extends AbstractCommand
+		implements IStateSpaceModifier {
 
 	Logger logger = LoggerFactory
 			.getLogger(GetOperationByPredicateCommand.class);
@@ -37,7 +37,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand {
 	private final ClassicalB evalElement;
 	private final String stateId;
 	private final String name;
-	private final List<OpInfo> operation = new ArrayList<OpInfo>();
+	private final List<OpInfo> operations = new ArrayList<OpInfo>();
 	private final int nrOfSolutions;
 
 	public GetOperationByPredicateCommand(final String stateId,
@@ -60,8 +60,8 @@ public final class GetOperationByPredicateCommand extends AbstractCommand {
 	 */
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("execute_custom_operations").printAtomOrNumber(stateId)
-				.printAtom(name);
+		pto.openTerm("prob2_execute_custom_operations")
+				.printAtomOrNumber(stateId).printAtom(name);
 		final ASTProlog prolog = new ASTProlog(pto, null);
 		evalElement.getAst().apply(prolog);
 		pto.printNumber(nrOfSolutions);
@@ -81,24 +81,22 @@ public final class GetOperationByPredicateCommand extends AbstractCommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-
-		operation.clear();
-
 		ListPrologTerm list = BindingGenerator.getList(bindings
 				.get(NEW_STATE_ID_VARIABLE));
 
 		if (!list.isEmpty()) {
 			for (PrologTerm prologTerm : list) {
 				CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
-						prologTerm, 8);
-				operation.add(new OpInfo(cpt));
+						prologTerm, 3);
+				operations.add(OpInfo.createOpInfoFromCompoundPrologTerm(cpt));
 			}
 		}
 
 	}
 
-	public List<OpInfo> getOperations() {
-		return operation;
+	@Override
+	public List<OpInfo> getNewTransitions() {
+		return operations;
 	}
 
 }

@@ -32,6 +32,7 @@ import de.prob.webconsole.WebConsole;
  */
 public class Main {
 
+	public static boolean restricted = true;
 	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
 	private final Options options;
@@ -75,6 +76,8 @@ public class Main {
 
 	private void run(final String[] args) throws Throwable {
 		String url = "";
+		int port = -1;
+		String iface = "0.0.0.0";
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line.hasOption("browser")) {
@@ -82,7 +85,15 @@ public class Main {
 				url = line.getOptionValue("browser");
 				logger.debug("Browser started");
 			}
-			runServer(url);
+			if (line.hasOption("port")) {
+				port = Integer.parseInt(line.getOptionValue("port"));
+			}
+			if (line.hasOption("local")) {
+				Main.restricted = false;
+				iface = "127.0.0.1";
+			}
+
+			runServer(url, iface, port);
 			if (line.hasOption("shell")) {
 				while (true) {
 					Thread.sleep(10);
@@ -99,14 +110,14 @@ public class Main {
 		}
 	}
 
-	private void runServer(final String url) {
+	private void runServer(final String url, final String iface, final int port) {
 		logger.debug("Shell");
 		Thread thread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				try {
-					WebConsole.run(url);
+					WebConsole.run(url, iface, port);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

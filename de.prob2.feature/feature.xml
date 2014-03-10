@@ -230,22 +230,14 @@ litigation.
 
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.rodinp.core" version="1.6.1" match="compatible"/>
-      <import plugin="org.eventb.core"/>
+      <import plugin="org.eventb.core" version="2.5.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="de.prob.core.rodin" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eventb.core" version="2.5.1" match="compatible"/>
-      <import plugin="org.rodinp" version="1.6.1" match="compatible"/>
       <import plugin="de.prob.ui" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.ide" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.views.properties.tabbed" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.core.databinding" version="1.2.0" match="compatible"/>
-      <import plugin="org.eclipse.jface.databinding" version="1.2.1" match="compatible"/>
-      <import plugin="org.eclipse.core.databinding.beans" version="1.1.1" match="compatible"/>
-      <import plugin="org.eclipse.gef" version="3.7.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.navigator" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="de.bmotionstudio.core" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.rodinp" version="1.6.1" match="compatible"/>
+      <import plugin="org.eventb.core" version="2.5.1"/>
+      <import plugin="org.eclipse.core.resources" version="3.7.101" match="greaterOrEqual"/>
+      <import plugin="org.rodinp.core" version="1.6.1" match="compatible"/>
    </requires>
 
    <plugin
@@ -271,14 +263,14 @@ litigation.
          unpack="false"/>
 
    <plugin
-         id="de.bmotionstudio.core"
+         id="at.bestsolution.efxclipse.runtime.javafx"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="de.bmotionstudio.rodin"
+         id="at.bestsolution.efxclipse.runtime.osgi"
          download-size="0"
          install-size="0"
          version="0.0.0"

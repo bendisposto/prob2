@@ -1,0 +1,51 @@
+li {
+	list-style-type: none;
+	margin-left: 6px;
+	margin-right: 6px;
+}
+
+li:nth-child(odd) {
+	background-color: white;
+}
+
+em {
+	color: lightgray;
+	font-style: italic;
+}
+
+#shout {
+	width: 80%;
+	float: left;
+	margin-right: 4px;
+}
+
+#content {
+	float: left;
+}
+
+.future {
+	font-style: italic;
+	color: #888;
+}
+
+.current {
+	font-weight: bold;
+}
+
+.start {
+	color: #bbb;
+	letter-spacing: 2px;
+	font-family: "Courier New", Courier, monospace;
+}
+
+.disabled {
+	opacity: 0.1;
+}
+
+li:nth-child(even) {
+	background-color: #f3f6ff;
+}
+
+ul {
+	padding-left: 0px;
+}

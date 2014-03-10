@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.annotations.PublicSession;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
@@ -22,6 +23,7 @@ import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 @Singleton
+@PublicSession
 public class CurrentTrace extends AbstractSession implements
 		IAnimationChangeListener {
 
@@ -34,47 +36,51 @@ public class CurrentTrace extends AbstractSession implements
 	public CurrentTrace(final AnimationSelector selector) {
 		this.selector = selector;
 		selector.registerAnimationChangeListener(this);
-		incrementalUpdate = false;
 	}
 
 	@Override
-	public void traceChange(final Trace trace) {
-		logger.trace("Trace has changed. Submitting");
-		ops = new ArrayList<Map<String, String>>();
-		if (trace == null) {
+	public void traceChange(final Trace trace,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			logger.trace("Trace has changed. Submitting");
+			ops = new ArrayList<Map<String, String>>();
+			if (trace == null) {
+				Map<String, String> wrap = WebUtils.wrap("cmd",
+						"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
+				submit(wrap);
+				return;
+			}
+
+			trace.ensureOpInfosEvaluated();
+			TraceElement element = trace.getHead();
+			TraceElement current = trace.getCurrent();
+			String group = "future";
+			while (element.getPrevious() != null) {
+				OpInfo op = element.getOp();
+				String rep = op.getRep(trace.getModel());
+				if (element == current) {
+					group = "current";
+					ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
+							"group", group));
+
+					// After this point, all elements are in the past
+					group = "past";
+				} else {
+					ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
+							"group", group));
+				}
+				element = element.getPrevious();
+			}
+			ops.add(WebUtils.wrap("id", 0, "rep", "-- root --", "group",
+					"start"));
+			if (!sortDown) {
+				Collections.reverse(ops);
+			}
+
 			Map<String, String> wrap = WebUtils.wrap("cmd",
 					"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
 			submit(wrap);
-			return;
 		}
-
-		TraceElement element = trace.getHead();
-		TraceElement current = trace.getCurrent();
-		String group = "future";
-		while (element.getPrevious() != null) {
-			OpInfo op = element.getOp();
-			String rep = op.getRep(trace.getModel());
-			if (element == current) {
-				group = "current";
-				ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
-						"group", group));
-
-				// After this point, all elements are in the past
-				group = "past";
-			} else {
-				ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
-						"group", group));
-			}
-			element = element.getPrevious();
-		}
-		ops.add(WebUtils.wrap("id", 0, "rep", "-- root --", "group", "start"));
-		if (!sortDown) {
-			Collections.reverse(ops);
-		}
-
-		Map<String, String> wrap = WebUtils.wrap("cmd",
-				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
-		submit(wrap);
 	}
 
 	public Object gotoPos(final Map<String, String[]> params) {
@@ -118,10 +124,18 @@ public class CurrentTrace extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
-
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
 		submit(wrap);
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "CurrentTrace.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "CurrentTrace.enable"));
+		}
 	}
 
 }

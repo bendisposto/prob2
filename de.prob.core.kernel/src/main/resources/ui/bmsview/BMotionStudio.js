@@ -2,41 +2,72 @@ bms = (function() {
 
 	var extern = {}
 	var session = Session();
+	var svgCanvas = null;
+	var svgId = null;
+	var observers = null;
 
 	$(document).ready(function() {
 		
-	    $('#navigation a').stop().animate({'marginLeft':'-85px'},1000);
+	    $('#navigation a').stop().animate({'marginLeft':'-60px'},1000);
 
 	    $('#navigation > li').hover(
 	        function () {
 	            $('a',$(this)).stop().animate({'marginLeft':'-2px'},200);
 	        },
 	        function () {
-	            $('a',$(this)).stop().animate({'marginLeft':'-85px'},200);
+	            $('a',$(this)).stop().animate({'marginLeft':'-60px'},200);
 	        }
 	    );
 
-		$('.template').click(function() {
+	    $('.nav_open_template').click(function() {
+			$("#modal_open_template").modal('show');
+	    });
+	    
+		$('.nav_edit_template').click(function() {
 
-			$("#sourceModal").on('shown', function() {
-				// editorHtml.refresh()
-				// editorJavascript.refresh()
-			}).on('hidden', function() {
-				// renderEdit()
-			});
-			// Show Modal
-			$("#sourceModal").modal('show');
+			// TODO: what is if we have more than one svg element in template?
+			var svgElement = $('svg', window.parent.document)
+			svgId = svgElement.attr("id")
+			session.sendCmd("openSvgEditor", {
+				"id" : svgId,
+				"client" : parent.bms.client
+			})
+			/*$( "#svgeditor" ).on('shown.bs.modal', function (e) {				
+			}).on('hidden.bs.modal', function (e) {
+			});*/
 
 			$(".template").find("a").stop().animate({
-				'marginLeft' : '-85px'
+				'marginLeft' : '-60px'
 			}, 200);
 
 		})
-	    
+
+		$('#svgedit').load(function() {
+			svgCanvas = new embedded_svg_edit(this);
+		});
+		
+		$('#bt_svgSave').click(function() {
+			svgCanvas.getSaveData()(handleSvgData);
+		});
+		
 	});
-
-
-
+	$(window).bind("resize", rescale);	
+	
+	function handleSvgData(data, error) {
+		if (error) {
+			alert('error ' + error);
+		} else {
+			session.sendCmdPost("saveSvg", {
+				"url" : "/bms/",
+				"svg" : data.svg,
+				"id" : svgId,
+				"json" : data.json,
+				"client" : parent.bms.client
+			})
+			
+		}			
+	}
+	
 	// --------------------------------------------
 	// Helper functions
 	// --------------------------------------------
@@ -58,6 +89,15 @@ bms = (function() {
 		});
 		return toReturn;
 	};
+	
+	function rescale() {
+	    var size = {width: $(window).width() , height: $(window).height() }
+	    var offset = 25;
+	    var offsetBody = 200;
+	    $('#modal_svgeditor').css('height', size.height - offset );
+	    $('#modal_svgeditor .modal-body').css('height', size.height - (offset + offsetBody));
+	    $('#modal_svgeditor').css('top', 0);
+	}
 	// --------------------------------------------
 
 	// --------------------------------------------
@@ -87,9 +127,9 @@ bms = (function() {
 	extern.session = session
 
 	function browse(dir_dom) {
-		$('#filedialog').off('hidden.bs.modal')
-		$('#filedialog').on('hidden.bs.modal', set_ok_button_state(dir_dom))
-		$("#filedialog").modal('show')
+		$('#modal_filedialog').off('hidden.bs.modal')
+		$('#modal_filedialog').on('hidden.bs.modal', set_ok_button_state(dir_dom))
+		$("#modal_filedialog").modal('show')
 		browse2(dir_dom)
 	}
 
@@ -178,7 +218,7 @@ bms = (function() {
 	}
 	function fb_select_file(dir_dom, path) {
 		$(dir_dom).val(path)
-		$("#filedialog").modal('hide')
+		$("#modal_filedialog").modal('hide')
 	}
 
 	extern.browse = browse
@@ -208,6 +248,68 @@ bms = (function() {
 	extern.stateChange = function(data) {
 	}
 	
+	extern.addObserver = function(type, group) {
+		var obj =  { "items": [ { } ] }
+		var template = session.render("/ui/bmsview/ui_" + type + ".html", obj)
+		var container = $("#svgedit").contents().find(
+				"div[oid='observer_" + group + "']").find(
+				".observer_content")
+		container.append(template)
+		svgCanvas.initObserver(type);
+		session.sendCmd("addObserver", {
+			"type" : type,
+			"group" : group,
+			"client" : parent.bms.client
+		})
+	}
+	
+	extern.removeObserver = function(type, group, index) {
+		session.sendCmd("removeObserver", {
+			"type" : type,
+			"group" : group,
+			"index" : index,
+			"client" : parent.bms.client
+		})
+	}
+	
+	extern.changeObserverData = function(data) {
+		session.sendCmd("changeObserverData", {
+			"type" : data.type,
+			"group" : data.group,
+			"index" : data.index,
+			"key" : data.key,
+			"value" : data.value,
+			"client" : parent.bms.client
+		})
+	}
+	
+	extern.openSvgEditor = function(data) {
+		// Init observers	
+		if(data.json !== undefined) {
+			var jsonobserver = JSON.parse(data.json)
+			if (jsonobserver !== undefined && observers === null) {
+				observers = jsonobserver
+				svgCanvas.initObservers(observers);
+			}
+		}
+		// Init editor
+		var svg = data.svg
+		svgCanvas.setSvgString(svg)
+		$("#modal_svgeditor").modal('show');
+		rescale();		
+	}
+	
+	extern.saveSvg = function(data) {
+		var svgid = data.svgid
+		var svgstring = data.svgstring
+		var svgElement = $('#'+svgid)
+		svgElement.replaceWith(svgstring)
+		$("#modal_svgeditor").modal('hide');
+		session.sendCmd("triggerListener", {
+			"client" : parent.bms.client
+		})
+	}
+	
 	extern.translateValue = function(val) {
 		if (val === "true") {
 			return true;
@@ -226,35 +328,43 @@ bms = (function() {
 		  $.each(objects, function(i,v)
 		  {
 			  var o = v;
-			  var predicate = o.predicate;
-			  if(predicate === undefined)
-				  predicate = "1=1"
-			  var operation = o.operation
 			  var selector = $(o.selector);
 			  
 			  var events = $._data( selector[0], 'events' )
 			  if (events === undefined || (events !== undefined && events.click === undefined)) {
+				    selector.attr("class","mouse_hand")
+				    var ops = o.ops
 				    selector.click(function() {
-					 	session.sendCmd("executeOperation", {
-							"op" : o.operation,
-							"predicate" : predicate,
-							"client" : parent.bms.client
-						})	
-				  });
+					 	 $.each(ops, function(i,v) {
+							  var predicate = v.predicate;
+							  if(predicate === undefined)
+								  predicate = "1=1"
+							  var operation = v.operation
+  					 		  session.sendCmd("executeOperation", {
+									"op" : operation,
+									"predicate" : predicate,
+									"client" : parent.bms.client
+								})
+						 });
+				   
+				    });
+			  
 			  }
 			  
 		  });
 		
 	}
 	
-	var bodyClone;
-	
-	resetCSP = function() {
-		// Revert objects ...
-		if(bodyClone) {
-			$("body").replaceWith(bodyClone)
-		}
-		bodyClone = $("body").clone(true,true)	
+	var clones = {};	
+	resetCSP = function(selectors) {
+//		// Revert objects ...
+//		$.each(clones, function(i, v) {
+//			$(i).replaceWith(v)
+//		});
+//		// Clone objects
+//		$.each(selectors, function(i, v) {
+//			clones[v] = $(v).clone(true,true)
+//		});
 	}
 	
 	extern.update_visualization = function(data) {

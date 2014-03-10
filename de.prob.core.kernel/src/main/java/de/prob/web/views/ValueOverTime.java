@@ -97,22 +97,21 @@ public class ValueOverTime extends AbstractSession implements
 	}
 
 	@Override
-	public void traceChange(final Trace trace) {
-		if (trace != null
-				&& trace.getStateSpace().equals(model.getStatespace())) {
-			currentTrace = trace;
-			List<Object> result = calculateData();
-			IEvalElement time = formulas.get("time");
+	public void traceChange(final Trace trace,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			if (trace != null
+					&& trace.getStateSpace().equals(model.getStatespace())) {
+				currentTrace = trace;
+				List<Object> result = calculateData();
+				IEvalElement time = formulas.get("time");
 
-			Map<String, String> wrap = WebUtils
-					.wrap("cmd",
-							"ValueOverTime.draw",
-							"data",
-							WebUtils.toJson(result),
-							"xLabel",
-							time == null ? "Number of Animation Steps" : time
-									.getCode(), "drawMode", mode);
-			submit(wrap);
+				Map<String, String> wrap = WebUtils.wrap("cmd",
+						"ValueOverTime.draw", "data", WebUtils.toJson(result),
+						"xLabel", time == null ? "Number of Animation Steps"
+								: time.getCode(), "drawMode", mode);
+				submit(wrap);
+			}
 		}
 	}
 
@@ -359,5 +358,14 @@ public class ValueOverTime extends AbstractSession implements
 				"data", WebUtils.toJson(data), "xLabel",
 				time == null ? "Number of Animation Steps" : time.getCode(),
 				"drawMode", mode);
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "ValueOverTime.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "ValueOverTime.enable"));
+		}
 	}
 }

@@ -21,6 +21,10 @@ li:nth-child(odd) {
     font-family: "Courier New", Courier, monospace;
 }
 
+.disabled {
+    opacity: 0.1;
+}
+
 li:nth-child(even) {
 	background-color: #f3f6ff;
 }

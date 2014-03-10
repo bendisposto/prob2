@@ -67,4 +67,8 @@ public abstract class AbstractCommand {
 	public List<AbstractCommand> getSubcommands() {
 		return Collections.emptyList();
 	}
+
+	public boolean isCompleted() {
+		return true;
+	}
 }

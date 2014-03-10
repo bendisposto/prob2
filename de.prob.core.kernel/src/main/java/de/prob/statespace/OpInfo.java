@@ -4,8 +4,10 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,13 +15,10 @@ import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpFromId;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.CSPModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.derived.DerivedOp;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -30,97 +29,34 @@ import de.prob.statespace.derived.DerivedOp;
  * 
  */
 public class OpInfo {
-	public final String id;
-	public String name;
-	public final String src;
-	public final String dest;
-	public List<String> params = new ArrayList<String>();
-	public String targetState;
-	protected String rep = null;
-	public boolean evaluated;
+	private final String id;
+	private String name;
+	private final String src;
+	private final String dest;
+	private List<String> params = new ArrayList<String>();
+	private String targetState;
+	private String rep = null;
+	private boolean evaluated;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
-	public OpInfo(final String id, final String src, final String dest) {
-		this(id, null, src, dest, new ArrayList<String>(), null);
+	private OpInfo(final String id, final String src, final String dest) {
+		this.id = id;
+		this.src = src;
+		this.dest = dest;
 		evaluated = false;
 	}
 
-	/**
-	 * The user can specify all of the fields necessary to identify a particular
-	 * operation
-	 * 
-	 * @param id
-	 * @param name
-	 * @param src
-	 * @param dest
-	 * @param params
-	 * @param targetState
-	 */
-	public OpInfo(final String id, final String name, final String src,
-			final String dest, final List<String> params,
-			final String targetState) {
+	private OpInfo(final String id, final String name, final String src,
+			final String dest) {
 		this.id = id;
 		this.name = name;
 		this.src = src;
 		this.dest = dest;
-		this.targetState = targetState;
-		if (params != null) {
-			for (String string : params) {
-				this.params.add(string);
-			}
-		}
-		evaluated = true;
-	}
-
-	/**
-	 * The {@link CompoundPrologTerm} that this constructor takes as an argument
-	 * should have an arity of 8. The following information should be contained
-	 * in the {@link CompoundPrologTerm}:
-	 * 
-	 * 
-	 * ( id , name , src , dest , {@link ListPrologTerm} represenation of
-	 * parameters that can be translated to groovy values ,
-	 * {@link ListPrologTerm} representation of names of parameters , _ , target
-	 * state )
-	 * 
-	 * @param opTerm
-	 *            - a {@link CompoundPrologTerm} which contains all of the
-	 *            information about the operation.
-	 * 
-	 * 
-	 */
-	public OpInfo(final CompoundPrologTerm opTerm) {
-		String id = null, src = null, dest = null;
-		id = getIdFromPrologTerm(opTerm.getArgument(1));
-		src = getIdFromPrologTerm(opTerm.getArgument(3));
-		dest = getIdFromPrologTerm(opTerm.getArgument(4));
-		// ListPrologTerm parameters = BindingGenerator.getList(opTerm
-		// .getArgument(5));
-		// ValueTranslator valueTranslator = new ValueTranslator();
-		// for (PrologTerm prologTerm : parameters) {
-		// try {
-		// Object translated = valueTranslator.toGroovy(prologTerm);
-		// String retranslated = valueTranslator.asString(translated);
-		// System.out.println("T: " + translated.getClass() + " "
-		// + translated.toString() + " " + retranslated);
-		// } catch (IllegalArgumentException e) {
-		// // Ignore exception for now. Translation is not implemented for
-		// // CSP
-		// }
-		// }
-
-		ListPrologTerm lpt = BindingGenerator.getList(opTerm.getArgument(6));
-		for (PrologTerm prologTerm : lpt) {
-			params.add(prologTerm.getFunctor());
-		}
-		targetState = getIdFromPrologTerm(opTerm.getArgument(8));
-
-		this.id = id;
-		name = PrologTerm.atomicString(opTerm.getArgument(2));
-		this.src = src;
-		this.dest = dest;
-		evaluated = true;
+		this.params = Collections.emptyList();
+		this.targetState = "";
+		this.evaluated = true;
+		this.rep = name;
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
@@ -171,7 +107,7 @@ public class OpInfo {
 			ensureEvaluated(m.getStatespace());
 		}
 
-		if (m instanceof CSPModel) {
+		if (m.getFormalismType().equals(FormalismType.CSP)) {
 			if (params.isEmpty()) {
 				return name;
 			}
@@ -182,21 +118,22 @@ public class OpInfo {
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj instanceof DerivedOp) {
-			return false;
+		if (obj == this) {
+			return true;
 		}
 		if (obj instanceof OpInfo) {
 			OpInfo that = (OpInfo) obj;
-			boolean b = that.getId().equals(id);
-			return b;
-		} else {
-			return false;
+			return this.getId().equals(that.getId())
+					&& this.getSrc().equals(that.getSrc())
+					&& this.getDest().equals(that.getDest());
 		}
+		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return id.hashCode();
+		return new HashCodeBuilder(13, 7).append(getId()).append(getSrc())
+				.append(getDest()).toHashCode();
 	}
 
 	public boolean isSame(final OpInfo that) {
@@ -244,5 +181,17 @@ public class OpInfo {
 		this.params = params;
 		this.targetState = targetState;
 		evaluated = true;
+	}
+
+	public static OpInfo generateArtificialTransition(final String transId,
+			final String description, final String srcId, final String destId) {
+		return new OpInfo(transId, description, srcId, destId);
+	}
+
+	public static OpInfo createOpInfoFromCompoundPrologTerm(
+			final CompoundPrologTerm cpt) {
+		return new OpInfo(OpInfo.getIdFromPrologTerm(cpt.getArgument(1)),
+				OpInfo.getIdFromPrologTerm(cpt.getArgument(2)),
+				OpInfo.getIdFromPrologTerm(cpt.getArgument(3)));
 	}
 }

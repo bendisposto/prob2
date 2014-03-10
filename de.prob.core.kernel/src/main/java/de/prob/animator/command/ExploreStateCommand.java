@@ -32,7 +32,8 @@ import de.prob.statespace.OpInfo;
  * @author joy
  * 
  */
-public final class ExploreStateCommand extends AbstractCommand {
+public final class ExploreStateCommand extends AbstractCommand implements
+		IStateSpaceModifier {
 
 	Logger logger = LoggerFactory.getLogger(ExploreStateCommand.class);
 
@@ -104,10 +105,6 @@ public final class ExploreStateCommand extends AbstractCommand {
 		return checkMaxOpCmd.getResult();
 	}
 
-	public List<OpInfo> getEnabledOperations() {
-		return getOpsCmd.getEnabledOperations();
-	}
-
 	public Map<IEvalElement, IEvalResult> getFormulaResults() {
 		return evalFormulasCmd.getResults();
 	}
@@ -124,5 +121,10 @@ public final class ExploreStateCommand extends AbstractCommand {
 	public List<AbstractCommand> getSubcommands() {
 		List<AbstractCommand> subcommands = allCommands.getSubcommands();
 		return subcommands;
+	}
+
+	@Override
+	public List<OpInfo> getNewTransitions() {
+		return getOpsCmd.getEnabledOperations();
 	}
 }

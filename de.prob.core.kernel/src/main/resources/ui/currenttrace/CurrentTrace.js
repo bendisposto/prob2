@@ -14,7 +14,7 @@ CurrentTrace = (function() {
 	});
 
 	function setTrace(trace) {
-		ops = JSON.parse(trace)
+		var ops = JSON.parse(trace)
 		$("li").remove()
 		for (var i = 0; i < ops.length; i++) {
 			$("#content").append(Mustache.render(pattern,ops[i]))
@@ -31,11 +31,21 @@ CurrentTrace = (function() {
 		})
 	}
 
+    function disable() {
+        $("body").append("<div class='modal-backdrop disabled'></div>")
+    }
+
+    function enable() {
+        $(".disabled").remove()
+    }
+
 	extern.setTrace = function(data) {
 		setTrace(data.trace)
 	}
 	extern.client = ""
 	extern.init = session.init
+	extern.disable = disable
+    extern.enable = enable
 
 	return extern;
 }())

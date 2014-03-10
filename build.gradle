@@ -2,13 +2,14 @@ project.ext {
 
 	targetRepositories = ["http://download.eclipse.org/releases/indigo/",
                           "http://rodin-b-sharp.sourceforge.net/updates",
-                          "http://rodin-b-sharp.sourceforge.net/core-updates"]	
+                          "http://rodin-b-sharp.sourceforge.net/core-updates",
+                          "http://downloads.efxclipse.org/p2-repos/releases/latest"]	
 
 	groupID = "de.prob2"
 
 	excludeFromTychoBuild = ["de.prob.core.kernel"]
 	excludeFromClassPath = [ 'de.prob.ui.rodin', 'de.prob2.feature' ]		// Projects defined here will also be exluded from changes of MF File
-	excludeManifestClassPathDelete = ['de.bmotionstudio.core', 'de.bmotionstudio.rodin','de.prob.ui.worksheet']		// Projects defined here will still have classpath changes but no changes in the MF File
+	excludeManifestClassPathDelete = ['de.prob.ui.worksheet']		// Projects defined here will still have classpath changes but no changes in the MF File
 }
 
 
@@ -177,4 +178,25 @@ def String getExportedPackages(){
 	
 
 	return exports
+}
+
+
+
+
+task remove_tycho_data << {
+
+	delete{
+	 delete  'de.prob.core.kernel/pom.xml',
+	       'de.prob.core.rodin/pom.xml',
+	       'de.prob.core.rodin/target/',
+	       'de.prob.ui.rodin/pom.xml',
+	       'de.prob.ui.rodin/target/',
+	       'de.prob.ui/pom.xml',
+	       'de.prob.ui/target/',
+	       'de.prob2.feature/pom.xml',
+	       'de.prob2.feature/target/',
+	       'de.prob2.parent/',
+	       'de.prob2.repository/',
+	       'updatesite'
+	}
 }

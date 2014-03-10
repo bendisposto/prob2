@@ -43,7 +43,8 @@ public class AnimationSelector {
 		traceListeners
 				.add(new WeakReference<IAnimationChangeListener>(listener));
 		if (currentTrace != null) {
-			notifyAnimationChange(currentTrace);
+			listener.traceChange(currentTrace, true);
+			listener.animatorStatus(currentTrace.getStateSpace().isBusy());
 		}
 	}
 
@@ -51,7 +52,7 @@ public class AnimationSelector {
 			final IModelChangedListener listener) {
 		modelListeners.add(new WeakReference<IModelChangedListener>(listener));
 		if (currentStateSpace != null) {
-			notifyModelChanged(currentStateSpace);
+			listener.modelChanged(currentStateSpace);
 		}
 	}
 
@@ -63,7 +64,7 @@ public class AnimationSelector {
 	 */
 	public void changeCurrentAnimation(final Trace trace) {
 		currentTrace = trace;
-		notifyAnimationChange(trace);
+		notifyAnimationChange(trace, true);
 
 		if (currentTrace != null
 				&& currentTrace.getStateSpace() != currentStateSpace) {
@@ -82,7 +83,7 @@ public class AnimationSelector {
 	public void addNewAnimation(final Trace trace) {
 		traces.add(trace);
 		currentTrace = trace;
-		notifyAnimationChange(trace);
+		notifyAnimationChange(trace, true);
 
 		StateSpace s = trace.getStateSpace();
 		if (s != null && !s.equals(currentStateSpace)) {
@@ -96,12 +97,33 @@ public class AnimationSelector {
 	 * has changed
 	 * 
 	 * @param trace
+	 *            {@link Trace} representing the current animation
 	 */
-	public void notifyAnimationChange(final Trace trace) {
+	private void notifyAnimationChange(final Trace trace,
+			final boolean currentAnimationChanged) {
 		for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
 			IAnimationChangeListener animationChangeListener = listener.get();
 			if (animationChangeListener != null) {
-				animationChangeListener.traceChange(trace);
+				animationChangeListener.traceChange(trace,
+						currentAnimationChanged);
+			}
+		}
+	}
+
+	/**
+	 * Informs all {@link IAnimationChangeListener}s of the current status of
+	 * the animator in the current animation. Calls method
+	 * {@link IAnimationChangeListener#animatorStatus(boolean)}.
+	 * 
+	 * @param busy
+	 *            boolean value of the status of the animator for the current
+	 *            animation
+	 */
+	private void notifyStatusChange(final boolean busy) {
+		for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
+			IAnimationChangeListener animationChangeListener = listener.get();
+			if (animationChangeListener != null) {
+				animationChangeListener.animatorStatus(busy);
 			}
 		}
 	}
@@ -148,8 +170,9 @@ public class AnimationSelector {
 	 * {@link AnimationSelector#notifyAnimationChange(Trace)}
 	 */
 	public void refresh() {
-		notifyAnimationChange(currentTrace);
+		notifyAnimationChange(currentTrace, true);
 		notifyModelChanged(currentStateSpace);
+		notifyStatusChange(currentStateSpace.isBusy());
 	}
 
 	/**
@@ -161,11 +184,22 @@ public class AnimationSelector {
 	 * @param newTrace
 	 */
 	public void replaceTrace(final Trace oldTrace, final Trace newTrace) {
+		if (oldTrace.getStateSpace().isBusy() != newTrace.getStateSpace()
+				.isBusy()) {
+			notifyStatusChange(newTrace.getStateSpace().isBusy());
+		}
 		int indexOf = traces.indexOf(oldTrace);
-		traces.set(indexOf, newTrace);
-		if (oldTrace.equals(currentTrace)) {
-			notifyAnimationChange(newTrace);
-			currentTrace = newTrace;
+		if (indexOf == -1) {
+			traces.add(newTrace);
+			notifyAnimationChange(currentTrace, false);
+		} else {
+			traces.set(indexOf, newTrace);
+			if (oldTrace.equals(currentTrace)) {
+				notifyAnimationChange(newTrace, true);
+				currentTrace = newTrace;
+			} else {
+				notifyAnimationChange(currentTrace, false);
+			}
 		}
 
 		if (currentTrace != null
@@ -211,4 +245,10 @@ public class AnimationSelector {
 		traces.remove(trace);
 	}
 
+	public void notifyAnimatorStatus(final String animatorId, final boolean busy) {
+		if (currentTrace != null
+				&& currentTrace.getStateSpace().getId().equals(animatorId)) {
+			notifyStatusChange(busy);
+		}
+	}
 }

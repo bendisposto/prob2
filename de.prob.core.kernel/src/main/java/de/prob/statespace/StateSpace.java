@@ -2,7 +2,6 @@ package de.prob.statespace;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -28,10 +27,13 @@ import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.command.ExploreStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
+import de.prob.animator.command.GetShortestTraceCommand;
 import de.prob.animator.command.GetStatesFromPredicate;
+import de.prob.animator.command.IStateSpaceModifier;
 import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.exception.ProBError;
@@ -39,7 +41,6 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.CSPModel;
-import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 
 /**
  * 
@@ -77,7 +78,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	private final Set<IStatesCalculatedListener> stateSpaceListeners = new HashSet<IStatesCalculatedListener>();
 
-	private final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	private long lastCalculatedStateId;
 	private AbstractModel model;
 	private final Map<StateId, Map<IEvalElement, IEvalResult>> values = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
@@ -112,41 +112,24 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
 		}
-
 		final ExploreStateCommand command = new ExploreStateCommand(
 				state.getId(), subscribedFormulas);
+
 		try {
-			animator.execute(command);
+			execute(command);
 			extractInformation(state, command);
-
 			explored.add(state);
-
-			if (!state.getId().equals("root")) {
-				updateLastCalculatedStateId(state.numericalId());
-			}
-			final List<OpInfo> enabledOperations = command
-					.getEnabledOperations();
-
-			List<OpInfo> newOps = new ArrayList<OpInfo>();
-			for (final OpInfo op : enabledOperations) {
-				if (!containsEdge(op)) {
-					ops.put(op.id, op);
-					newOps.add(op);
-
-					final StateId newState = new StateId(op.dest, this);
-					addVertex(newState);
-					addEdge(op, getVertex(op.src), getVertex(op.dest));
-				}
-			}
-			notifyStateSpaceChange(newOps);
 		} catch (ProBError e) {
 			if (state == getRoot()) {
 				explored.add(state);
-				OpInfo op = new OpInfo("FAIL", "NO INITIALIZATION FOUND",
-						state.getId(), state.getId(),
-						Collections.<String> emptyList(), "");
-				ops.put(op.id, op);
+				OpInfo op = OpInfo
+						.generateArtificialTransition("FAIL",
+								"NO INITIALIZATION FOUND", state.getId(),
+								state.getId());
+				ops.put(op.getId(), op);
 				addEdge(op, state, state);
+			} else {
+				throw e;
 			}
 		}
 		return toString();
@@ -192,6 +175,19 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	/**
+	 * Whenever a {@link StateSpace} instance is created, it is assigned a
+	 * unique identifier to help external parties differentiate between two
+	 * instances. This getter method returns this id.
+	 * 
+	 * @return the unique {@link String} id associated with this
+	 *         {@link StateSpace} instance
+	 */
+	@Override
+	public String getId() {
+		return animator.getId();
+	}
+
+	/**
 	 * Checks to see if the specified state has already been explored. If not,
 	 * the state is explored and in either case, the corresponding StateId is
 	 * returned
@@ -234,13 +230,19 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	/**
 	 * Takes the name of an operation and a predicate and finds Operations that
 	 * satisfy the name and predicate at the given stateId. New Operations are
-	 * added to the graph.
+	 * added to the graph. This is only valid for ClassicalB predicates.
 	 * 
 	 * @param stateId
+	 *            {@link StateId} from which the operation should be found
 	 * @param name
+	 *            name of the operation that should be executed
 	 * @param predicate
+	 *            an additional guard for the operation. This usually describes
+	 *            the parameters
 	 * @param nrOfSolutions
-	 * @return list of operations
+	 *            int number of solutions that should be found for the given
+	 *            predicate
+	 * @return list of operations calculated by ProB
 	 * @throws BException
 	 */
 	public List<OpInfo> opFromPredicate(final StateId stateId,
@@ -249,27 +251,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
-		animator.execute(command);
-		final List<OpInfo> newOps = command.getOperations();
-		updateLastCalculatedStateId(stateId.numericalId());
-
-		List<OpInfo> toNotify = new ArrayList<OpInfo>();
-		// (id,name,src,dest,args)
-		for (final OpInfo op : newOps) {
-
-			StateId vertex = getVertex(op.dest);
-			if (vertex == null) {
-				vertex = new StateId(op.dest, this);
-				addVertex(vertex);
-			}
-			if (!containsEdge(op)) {
-				ops.put(op.id, op);
-				toNotify.add(op);
-				addEdge(op, getVertex(op.src), vertex);
-			}
-		}
-		notifyStateSpaceChange(toNotify);
-		return newOps;
+		execute(command);
+		return command.getNewTransitions();
 	}
 
 	/**
@@ -368,7 +351,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			execute(command);
 
 			for (EvaluationCommand acmd : toEval) {
-				fromProlog.addAll(acmd.getValues());
+				fromProlog.add(acmd.getValue());
 			}
 		}
 
@@ -460,6 +443,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			} else {
 				if (formulaRegistry.containsKey(formulaOfInterest)) {
 					formulaRegistry.get(formulaOfInterest).add(subscriber);
+					subscribedFormulas.add(formulaOfInterest);
 				} else {
 					HashSet<Object> subscribers = new HashSet<Object>();
 					subscribers.add(subscriber);
@@ -506,6 +490,11 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 	}
 
+	public boolean isSubscribed(final IEvalElement formula) {
+		return formulaRegistry.containsKey(formula)
+				&& !formulaRegistry.get(formula).isEmpty();
+	}
+
 	/**
 	 * If a subscribed class is no longer interested in the value of a
 	 * particular formula, then they can unsubscribe to that formula
@@ -526,20 +515,57 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	// ANIMATOR
+	@Override
+	public void sendInterrupt() {
+		animator.sendInterrupt();
+	}
 
 	@Override
 	public void execute(final AbstractCommand command) {
 		animator.execute(command);
+		addTransitions(new AbstractCommand[] { command });
 	}
 
 	@Override
 	public void execute(final AbstractCommand... commands) {
 		animator.execute(commands);
+		addTransitions(commands);
 	}
 
-	@Override
-	public void sendInterrupt() {
-		animator.sendInterrupt();
+	private void addTransitions(final AbstractCommand[] commands) {
+		List<OpInfo> toNotify = new ArrayList<OpInfo>();
+
+		long last = lastCalculatedStateId;
+		for (AbstractCommand cmd : commands) {
+			if (cmd instanceof IStateSpaceModifier) {
+				List<OpInfo> newOps = ((IStateSpaceModifier) cmd)
+						.getNewTransitions();
+				for (final OpInfo op : newOps) {
+					if (!containsEdge(op)) {
+						StateId src = getVertex(op.getSrc());
+						if (src == null) {
+							src = new StateId(op.getSrc(), this);
+							addVertex(src);
+						}
+						last = Math.max(last, src.numericalId());
+
+						StateId dest = getVertex(op.getDest());
+						if (dest == null) {
+							dest = new StateId(op.getDest(), this);
+							addVertex(dest);
+						}
+
+						toNotify.add(op);
+						addEdge(op, src, dest);
+					}
+				}
+			}
+		}
+		updateLastCalculatedStateId(last);
+
+		if (!toNotify.isEmpty()) {
+			notifyStateSpaceChange(toNotify);
+		}
 	}
 
 	// NOTIFICATION SYSTEM
@@ -562,7 +588,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	@Override
-	public void notifyStateSpaceChange(final List<? extends OpInfo> newOps) {
+	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
 			listener.newTransitions(newOps);
 		}
@@ -612,7 +638,15 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		return ops;
 	}
 
-	public OpInfo getOp(final String id) {
+	/**
+	 * This method finds the specified {@link OpInfo} AND ensures that the
+	 * {@link OpInfo} has been evaluated as a side effect.
+	 * 
+	 * @param id
+	 *            String operation id
+	 * @return {@link OpInfo} specified by the id parameter
+	 */
+	public OpInfo getEvaluatedOpInfo(final String id) {
 		return ops.get(id).ensureEvaluated(this);
 	}
 
@@ -629,8 +663,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.id + ": " + opId.getRep(model));
-			if (withTO.contains(opId.id)) {
+			sb.append("  " + opId.getId() + ": " + opId.getRep(model));
+			if (withTO.contains(opId.getId())) {
 				sb.append(" (WITH TIMEOUT)");
 			}
 			sb.append("\n");
@@ -675,24 +709,45 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	/**
-	 * This calculated the shortest path from root to the specified state
-	 * (specified with an integer id value).
+	 * This calculated the shortest path from root to the specified state. This
+	 * contacts the ProB kernel via the {@link GetShortestTraceCommand} and then
+	 * uses the generated {@link List} of operation ids to generate a Trace via
+	 * the {@link StateSpace#getTrace(List)} method.
 	 * 
-	 * @param state
+	 * @param stateId
+	 *            StateId for which the trace through the state space should be
+	 *            found.
 	 * @return trace in the form of a {@link Trace} object
 	 */
-	public Trace getTrace(final String state) {
-		final StateId id = getVertex(state);
-		StateId root = this.getRoot();
+	public Trace getTrace(final StateId stateId) {
+		GetShortestTraceCommand cmd = new GetShortestTraceCommand(stateId);
+		execute(cmd);
+		List<String> opIds = cmd.getOperationIds();
+		return getTrace(opIds);
+	}
 
-		DijkstraShortestPath<StateId, OpInfo> dijkstra = new DijkstraShortestPath<StateId, OpInfo>(
-				this.getGraph());
-		List<OpInfo> path = dijkstra.getPath(root, id);
-		Trace h = new Trace(this);
-		for (final OpInfo opInfo : path) {
-			h = h.add(opInfo.getId());
+	/**
+	 * Takes a list of {@link String} operation id names and generates a
+	 * {@link Trace} by executing each one in order. This calls the
+	 * {@link Trace#add(String)} method which can throw an
+	 * {@link IllegalArgumentException} if executing the operations in the
+	 * specified order is not possible.
+	 * 
+	 * @param opIds
+	 *            List of operation ids in the order that they should be
+	 *            executed.
+	 * @return {@link Trace} generated by executing the ids.
+	 */
+	public Trace getTrace(final List<String> opIds) {
+		Trace t = new Trace(this);
+		for (String id : opIds) {
+			t = t.add(id);
 		}
-		return h;
+		return t;
+	}
+
+	public Trace getTrace(final ITraceDescription description) {
+		return description.getTrace(this);
 	}
 
 	public void setAnimator(final IAnimator animator) {
@@ -795,9 +850,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	@Override
 	public Set<OpInfo> getOutEdges(final StateId arg0) {
 		Collection<OpInfo> outgoingEdgesOf = super.getOutEdges(arg0);
-		for (OpInfo opInfo : outgoingEdgesOf) {
-			opInfo.ensureEvaluated(this);
-		}
 		return new LinkedHashSet<OpInfo>(outgoingEdgesOf);
 	}
 
@@ -862,6 +914,21 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		GetOpsFromIds cmd = new GetOpsFromIds(edges);
 		execute(cmd);
 		return edges;
+	}
+
+	public Set<OpInfo> evaluateOps(final Collection<OpInfo> ops) {
+		List<OpInfo> notEvaluated = new ArrayList<OpInfo>();
+		for (OpInfo opInfo : ops) {
+			if (!opInfo.isEvaluated()) {
+				notEvaluated.add(opInfo);
+			}
+		}
+		if (notEvaluated.isEmpty()) {
+			return new LinkedHashSet<OpInfo>(ops);
+		}
+		GetOpsFromIds cmd = new GetOpsFromIds(notEvaluated);
+		execute(cmd);
+		return new LinkedHashSet<OpInfo>(ops);
 	}
 
 	/*
@@ -932,22 +999,18 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		execute(new ComposedCommand(cmds));
 
 		for (EvaluationCommand efCmd : cmds) {
-			List<IEvalElement> forms = efCmd.getFormulas();
-			List<IEvalResult> vals = efCmd.getValues();
+			IEvalElement formula = efCmd.getEvalElement();
+			IEvalResult value = efCmd.getValue();
 			StateId id = getVertex(efCmd.getStateId());
 
-			for (IEvalElement formula : forms) {
-				if (formulaRegistry.containsKey(formula)
-						&& !formulaRegistry.get(formula).isEmpty()) {
-					if (!values.containsKey(id)) {
-						values.put(id, new HashMap<IEvalElement, IEvalResult>());
-					}
-					values.get(id).put(formula,
-							vals.get(formulas.indexOf(formula)));
+			if (formulaRegistry.containsKey(formula)
+					&& !formulaRegistry.get(formula).isEmpty()) {
+				if (!values.containsKey(id)) {
+					values.put(id, new HashMap<IEvalElement, IEvalResult>());
 				}
-				result.get(id)
-						.put(formula, vals.get(formulas.indexOf(formula)));
+				values.get(id).put(formula, value);
 			}
+			result.get(id).put(formula, value);
 		}
 
 		return result;
@@ -955,6 +1018,21 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	public Map<StateId, Map<IEvalElement, IEvalResult>> getValues() {
 		return values;
+	}
+
+	@Override
+	public void startTransaction() {
+		animator.startTransaction();
+	}
+
+	@Override
+	public void endTransaction() {
+		animator.endTransaction();
+	}
+
+	@Override
+	public boolean isBusy() {
+		return animator.isBusy();
 	}
 
 }

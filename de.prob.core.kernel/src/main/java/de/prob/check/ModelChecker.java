@@ -1,8 +1,5 @@
 package de.prob.check;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -10,9 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.prob.animator.command.ModelCheckingCommand;
-import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 
 /**
@@ -25,17 +19,28 @@ import de.prob.statespace.StateSpace;
  */
 public class ModelChecker {
 
-	private final Worker worker;
-	private final ExecutorService executor;
-	private Future<ModelCheckingResult> f;
+	private static int counter = 0;
+	private static String JOBPREFIX = "mc";
 
-	public ModelChecker(final StateSpace s) {
-		this(s, ModelCheckingSearchOption.getDefaultOptions());
+	public static String generateJobId() {
+		return JOBPREFIX + counter++;
 	}
 
-	public ModelChecker(final StateSpace s, final List<String> options) {
-		worker = new Worker(s, options);
+	private final ExecutorService executor;
+	private Future<IModelCheckingResult> f;
+	private final String jobId;
+	private final StateSpace stateSpace;
+	private final IModelCheckJob job;
+
+	public ModelChecker(final IModelCheckJob job) {
+		this.job = job;
+		jobId = job.getJobId();
+		stateSpace = job.getStateSpace();
 		executor = Executors.newSingleThreadExecutor();
+	}
+
+	public String getJobId() {
+		return jobId;
 	}
 
 	/**
@@ -43,7 +48,8 @@ public class ModelChecker {
 	 *         the future has been created. Otherwise false.
 	 */
 	public boolean cancel() {
-		if (f != null) {
+		if (!isDone()) {
+			stateSpace.sendInterrupt();
 			return f.cancel(true);
 		}
 		return false;
@@ -53,7 +59,7 @@ public class ModelChecker {
 	 * @return the {@link ModelCheckingResult} of the model checking process if
 	 *         the model checking has been started.
 	 */
-	public ModelCheckingResult getResult() {
+	public IModelCheckingResult getResult() {
 		try {
 			if (f != null) {
 				return f.get();
@@ -63,7 +69,7 @@ public class ModelChecker {
 		} catch (ExecutionException e) {
 			launderThrowable(e.getCause());
 		} catch (CancellationException e) {
-			return worker.getResult();
+			return job.getResult();
 		}
 		return null;
 	}
@@ -74,7 +80,14 @@ public class ModelChecker {
 	 * to a single threaded {@link ExecutorService}
 	 */
 	public void start() {
-		f = executor.submit(worker);
+		f = executor.submit(job);
+	}
+
+	/**
+	 * @return true, if the job has been started. Otherwise, false.
+	 */
+	public boolean isStarted() {
+		return f != null;
 	}
 
 	/**
@@ -88,7 +101,18 @@ public class ModelChecker {
 	 * @return {@link Future#isCancelled()}
 	 */
 	public boolean isCancelled() {
+		if (f == null) {
+			return false;
+		}
 		return f.isCancelled();
+	}
+
+	/**
+	 * @return the state space object that is bound to this {@link ModelChecker}
+	 *         instance
+	 */
+	public StateSpace getStateSpace() {
+		return stateSpace;
 	}
 
 	public static RuntimeException launderThrowable(final Throwable t) {
@@ -99,102 +123,6 @@ public class ModelChecker {
 		} else {
 			throw new IllegalStateException("Not unchecked", t);
 		}
-	}
-
-	private class Worker implements Callable<ModelCheckingResult> {
-
-		private static final int TIME = 500;
-		private final StateSpace s;
-		private final List<String> options;
-		private long last;
-		private ModelCheckingResult res;
-
-		/**
-		 * implements {@link Callable}. When called, the Worker performs model
-		 * checking until an result is found or until the user cancels the
-		 * operation.
-		 * 
-		 * @param s
-		 *            {@link StateSpace} object in which to perform the model
-		 *            checking
-		 * @param options
-		 */
-		public Worker(final StateSpace s, final List<String> options) {
-			this.s = s;
-			this.options = options;
-			last = s.getLastCalculatedStateId();
-		}
-
-		@Override
-		public ModelCheckingResult call() throws Exception {
-			boolean abort = false;
-			while (!abort) {
-				if (Thread.interrupted()) {
-					Thread.currentThread().interrupt();
-					break;
-				}
-				res = do_model_checking_step();
-				options.remove(ModelCheckingSearchOption.inspect_existing_nodes
-						.name());
-				abort = res.isAbort();
-			}
-			return res;
-		}
-
-		public ModelCheckingResult getResult() {
-			return res;
-		}
-
-		private ModelCheckingResult do_model_checking_step() {
-			ModelCheckingCommand cmd = new ModelCheckingCommand(TIME, options,
-					last);
-
-			s.execute(cmd);
-			ModelCheckingResult result = cmd.getResult();
-			List<OpInfo> newOps = cmd.getNewOps();
-			addCheckedStates(newOps);
-			return result;
-		}
-
-		private void addCheckedStates(final List<OpInfo> newOps) {
-			HashMap<String, StateId> states = s.getStates();
-			HashMap<String, OpInfo> ops = s.getOps();
-
-			long i = s.getLastCalculatedStateId();
-
-			List<OpInfo> toNotify = new ArrayList<OpInfo>();
-			for (OpInfo opInfo : newOps) {
-				if (!ops.containsKey(opInfo.id)) {
-					toNotify.add(opInfo);
-					String sK = opInfo.src;
-					if (!sK.equals("root")) {
-						int value = Integer.parseInt(sK);
-						i = Math.max(value, i);
-					}
-
-					String dK = opInfo.dest;
-					StateId src = states.get(sK);
-					if (src == null) {
-						src = new StateId(sK, s);
-						// s.addVertex(src);
-						states.put(sK, src);
-					}
-					StateId dest = states.get(dK);
-					if (dest == null) {
-						dest = new StateId(dK, s);
-						// s.addVertex(dest);
-						states.put(dK, dest);
-					}
-					s.addEdge(opInfo, src, dest);
-					ops.put(opInfo.id, opInfo);
-				}
-			}
-			s.updateLastCalculatedStateId(i);
-			last = i;
-
-			s.notifyStateSpaceChange(toNotify);
-		}
-
 	}
 
 }

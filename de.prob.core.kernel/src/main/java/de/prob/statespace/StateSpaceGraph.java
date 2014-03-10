@@ -9,6 +9,7 @@ public class StateSpaceGraph {
 
 	private final DirectedSparseMultigraph<StateId, OpInfo> graph;
 	protected final HashMap<String, StateId> states = new HashMap<String, StateId>();
+	protected final HashMap<String, OpInfo> ops = new HashMap<String, OpInfo>();
 	public final StateId __root;
 
 	public StateSpaceGraph(final DirectedSparseMultigraph<StateId, OpInfo> graph) {
@@ -41,6 +42,7 @@ public class StateSpaceGraph {
 
 	public boolean addEdge(final OpInfo with, final StateId from,
 			final StateId to) {
+		ops.put(with.getId(), with);
 		return graph.addEdge(with, from, to);
 	}
 

@@ -92,6 +92,13 @@
                <separator
                      name="debug">
                </separator>
+            </menu>
+            <menu
+                  id="bms"
+                  label="BMotion">
+               <separator
+                     name="bms">
+               </separator>
             </menu> </menu>
       </menuContribution>
       <menuContribution

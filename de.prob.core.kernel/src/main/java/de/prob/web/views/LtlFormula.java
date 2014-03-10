@@ -15,7 +15,6 @@ import com.google.inject.Inject;
 import de.be4.ltl.core.parser.LtlParseException;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.domainobjects.LTL;
-import de.prob.animator.domainobjects.LtlCheckingResult;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateId;
@@ -67,7 +66,7 @@ public class LtlFormula extends AbstractSession implements
 		submit(wrap);
 	}
 
-	public Object checkNthFormula(Map<String, String[]> params) {
+	public Object checkNthFormula(final Map<String, String[]> params) {
 		int pos = Integer.parseInt(get(params, "pos"));
 		LTLFormulaTuple tuple = formulas.get(pos);
 
@@ -77,7 +76,7 @@ public class LtlFormula extends AbstractSession implements
 		EvaluationCommand lcc = formula.getCommand(stateid);
 		animations.getCurrentTrace().getStateSpace().execute(lcc);
 
-		String result = ((LtlCheckingResult) lcc.getValues().get(0)).getValue();
+		String result = lcc.getValue().toString();
 		tuple.setStatus(result);
 		cache.get(formula).put(stateid, result);
 
@@ -85,14 +84,14 @@ public class LtlFormula extends AbstractSession implements
 		return null;
 	}
 
-	public Object removeFormula(Map<String, String[]> params) {
+	public Object removeFormula(final Map<String, String[]> params) {
 		int pos = Integer.parseInt(get(params, "pos"));
 		formulas.remove(pos);
 		submitFormulas();
 		return null;
 	}
 
-	public Object addFormula(Map<String, String[]> params)
+	public Object addFormula(final Map<String, String[]> params)
 			throws LtlParseException {
 		String formula = get(params, "val");
 		if (formula == null || formula.isEmpty()) {
@@ -109,29 +108,34 @@ public class LtlFormula extends AbstractSession implements
 	}
 
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/ltlFormula/index.html");
 	}
 
 	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
 		super.reload(client, lastinfo, context);
 		submitFormulas();
 	}
 
 	@Override
-	public void traceChange(Trace trace) {
-		StateId current = trace.getCurrentState();
-		for (LTLFormulaTuple tuple : formulas) {
-			String cached = cache.get(tuple.formula).get(current);
-			if (cached != null) {
-				tuple.setStatus(cached);
-			} else {
-				tuple.resetStatus();
-			}
+	public void traceChange(final Trace trace,
+			final boolean currentAnimationChanged) {
+		if (currentAnimationChanged) {
+			StateId current = trace.getCurrentState();
+			for (LTLFormulaTuple tuple : formulas) {
+				String cached = cache.get(tuple.formula).get(current);
+				if (cached != null) {
+					tuple.setStatus(cached);
+				} else {
+					tuple.resetStatus();
+				}
 
+			}
+			submitFormulas();
 		}
-		submitFormulas();
 	}
 
 	private class LTLFormulaTuple {
@@ -139,7 +143,7 @@ public class LtlFormula extends AbstractSession implements
 		private final LTL formula;
 		private String status;
 
-		public LTLFormulaTuple(LTL f) {
+		public LTLFormulaTuple(final LTL f) {
 			formula = f;
 			this.setStatus("unchecked");
 		}
@@ -152,7 +156,7 @@ public class LtlFormula extends AbstractSession implements
 			return status;
 		}
 
-		public void setStatus(String status) {
+		public void setStatus(final String status) {
 			this.status = status;
 		}
 
@@ -160,6 +164,15 @@ public class LtlFormula extends AbstractSession implements
 			status = "unchecked";
 		}
 
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+		if (busy) {
+			submit(WebUtils.wrap("cmd", "LtlFormula.disable"));
+		} else {
+			submit(WebUtils.wrap("cmd", "LtlFormula.enable"));
+		}
 	}
 
 }

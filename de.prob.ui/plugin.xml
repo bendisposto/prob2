@@ -10,10 +10,8 @@
                    label="Submit Bugreport"
                    style="push">
              </command>
-
+	
       </menuContribution>
-      
-       
         <menuContribution
               allPopups="false"
               locationURI="popup:de.prob.ui.groovybinding">
@@ -42,29 +40,6 @@
                  label="Open State Space Visualization"
                  style="push">
            </command>
-           <command
-                 commandId="de.prob.ui.BmsView"
-                 label="Open BMotion Studio Visualization "
-                 style="push">
-           </command>
-        </menuContribution>
-        <menuContribution
-              allPopups="false"
-              locationURI="toolbar:de.prob.ui.model_check">
-           <command
-                 commandId="de.prob.ui.deadlock_check"
-                 icon="icons/DeadlockCheck.png"
-                 label="Deadlock Freedom Check"
-                 mnemonic="D"
-                 style="push">
-           </command>
-           <command
-                 commandId="de.prob.ui.inv_check"
-                 icon="icons/CBCInvariantCheck.png"
-                 label="Invariant Preservation Check"
-                 mnemonic="I"
-                 style="push">
-           </command>
         </menuContribution>
         <menuContribution
               allPopups="false"
@@ -75,6 +50,15 @@
                  style="push">
            </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:bms">
+           <command
+                 commandId="de.prob.ui.command.OpenBMotionStudioTemplate"
+                 label="Open BMotion Studio Template"
+                 style="push">
+           </command>
+        </menuContribution>
    </extension>
    
    <extension
@@ -82,14 +66,6 @@
             <command
                   id="de.prob.ui.bugreport"
                   name="Submit Bug Report">
-            </command>
-            <command
-                  id="de.prob.ui.deadlock_check"
-                  name="Deadlock Freedom Check">
-            </command>
-            <command
-                  id="de.prob.ui.inv_check"
-                  name="Invariant Preservation Check">
             </command>
             <command
                   id="de.prob.ui.viz.pred"
@@ -104,12 +80,12 @@
                   name="Open State Space Visualization">
             </command>
             <command
-                  id="de.prob.ui.BmsView"
-                  name="Open BMotion Studio Visualization">
-            </command>
-            <command
                   id="de.prob.ui.groovyconsole"
                   name="Open Groovy Console">
+            </command>
+            <command
+                  id="de.prob.ui.command.OpenBMotionStudioTemplate"
+                  name="Open BMotion Studio Template">
             </command>
    </extension>
    
@@ -125,48 +101,6 @@
             commandId="de.prob.ui.viz.pred">
          <class
                class="de.prob.ui.visualization.OpenPredicateVizHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="de.prob.ui.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
-         </enabledWhen>
-      </handler>
-      <handler
-            commandId="de.prob.ui.BmsView">
-         <class
-               class="de.prob.ui.visualization.OpenBmsViewHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="de.prob.ui.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
-         </enabledWhen>
-      </handler>
-      <handler
-            commandId="de.prob.ui.deadlock_check">
-         <class
-               class="de.prob.ui.constraint.DeadlockCheckHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="de.prob.ui.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
-         </enabledWhen>
-      </handler>
-      <handler
-            commandId="de.prob.ui.inv_check">
-         <class
-               class="de.prob.ui.constraint.InvariantCheckHandler">
          </class>
          <enabledWhen>
             <with
@@ -210,6 +144,10 @@
          <class
                class="de.prob.ui.OpenGroovyHandler">
          </class>
+      </handler>
+      <handler
+            class="de.prob.ui.bmsview.OpenBMotionTemplateHandler"
+            commandId="de.prob.ui.command.OpenBMotionStudioTemplate">
       </handler>
    </extension>
    <extension
@@ -280,9 +218,9 @@
       <view
             allowMultiple="true"
             category="de.hhu.stups.prob"
-            class="de.prob.ui.visualization.VizView"
-            id="de.prob.ui.viz.VizView"
-            name="Visualization"
+            class="de.prob.ui.view.ProB2View"
+            id="de.prob.ui.views.prob2"
+            name="ProB2 View"
             restorable="true">
       </view>
 
@@ -307,10 +245,19 @@
       <view
             allowMultiple="true"
             category="de.hhu.stups.prob"
-            class="de.prob.ui.visualization.VizView"
+            class="de.prob.ui.bmsview.BmsRunView"
             icon="icons/bms.png"
-            id="de.prob.ui.BMotionView"
-            name="BMotion HTML Visualization"
+            id="de.prob.ui.views.bmsrun"
+            name="BMotion Studio View"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.bmsview.BmsEditView"
+            icon="icons/bms.png"
+            id="de.prob.ui.views.bmsedit"
+            name="BMotion Studio Editor"
             restorable="true">
       </view>
 

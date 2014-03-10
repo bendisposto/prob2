@@ -13,8 +13,14 @@ class AnimationSelectorTest extends Specification {
 		}
 
 		@Override
-		public void traceChange(Trace trace) {
+		public void traceChange(Trace trace, boolean currentAnimationChanged) {
 			count++;
+		}
+
+		@Override
+		public void animatorStatus(boolean busy) {
+			// TODO Auto-generated method stub
+
 		}
 	}
 
@@ -37,7 +43,7 @@ class AnimationSelectorTest extends Specification {
 
 	def "It is possible to notify the listener"() {
 		when:
-		selector.notifyAnimationChange(null)
+		selector.notifyAnimationChange(null, true)
 
 		then:
 		listener.getCount() == 1

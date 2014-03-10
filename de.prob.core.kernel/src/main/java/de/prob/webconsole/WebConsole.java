@@ -26,8 +26,13 @@ public class WebConsole {
 
 	private static int PORT = 8080;
 
-	public static void run(final String local) throws Exception {
-		WebConsole.run(new Runnable() {
+	public static void run(final String local, final String iface, int port)
+			throws Exception {
+
+		if (port > 0)
+			PORT = port;
+
+		WebConsole.run(iface, new Runnable() {
 
 			@Override
 			public void run() {
@@ -45,7 +50,8 @@ public class WebConsole {
 		});
 	}
 
-	public static void run(final Runnable openBrowser) throws Exception {
+	public static void run(String iface, final Runnable openBrowser)
+			throws Exception {
 
 		System.setProperty("org.eclipse.jetty.util.log.class", "");
 
@@ -80,7 +86,7 @@ public class WebConsole {
 				Connector connector = new SelectChannelConnector();
 				connector.setStatsOn(true);
 				connector.setServer(server);
-				String hostname = System.getProperty("prob.host", "127.0.0.1");
+				String hostname = System.getProperty("prob.host", iface);
 				connector.setHost(hostname);
 				server.setConnectors(new Connector[] { connector });
 				connector.setPort(port);

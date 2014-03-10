@@ -2,13 +2,12 @@ package de.prob.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -25,10 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.Main;
+import de.prob.annotations.PublicSession;
 import de.prob.annotations.Sessions;
 import de.prob.web.data.SessionResult;
 import de.prob.webconsole.ServletContextListener;
@@ -115,18 +115,6 @@ public class ReflectionServlet extends HttpServlet {
 
 	}
 
-	private String asString(final Map<String, String[]> m) {
-		StringBuffer res = new StringBuffer();
-		Set<Entry<String, String[]>> entrySet = m.entrySet();
-		for (Entry<String, String[]> e : entrySet) {
-			res.append(e.getKey());
-			res.append("=[");
-			res.append(Joiner.on(", ").join(e.getValue()));
-			res.append("] ");
-		}
-		return res.toString();
-	}
-
 	private void delegateToSession(final HttpServletRequest req,
 			final HttpServletResponse resp, final ISession session)
 			throws IOException {
@@ -189,8 +177,18 @@ public class ReflectionServlet extends HttpServlet {
 
 	private ISession instantiate(final Class<ISession> clazz)
 			throws IOException {
+		boolean publicSession = false;
+		Annotation[] annotations = clazz.getAnnotations();
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof PublicSession) {
+				publicSession = true;
+				break;
+			}
+		}
+
 		ISession obj = null;
-		obj = ServletContextListener.INJECTOR.getInstance(clazz);
+		if (!Main.restricted || publicSession)
+			obj = ServletContextListener.INJECTOR.getInstance(clazz);
 		return obj;
 	}
 

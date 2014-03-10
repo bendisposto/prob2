@@ -8,8 +8,6 @@ import de.prob.webconsole.servlets.visualizations.IVisualizationEngine;
 @Singleton
 public class VisualizationSelector {
 
-	private static int ctr = 0;
-
 	@Inject
 	public VisualizationSelector() {
 	}

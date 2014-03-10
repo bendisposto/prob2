@@ -13,10 +13,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.prob.annotations.Dangerous;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
+@Dangerous
 public class GroovyConsoleSession extends AbstractSession {
 
 	private final Logger logger = LoggerFactory
@@ -42,7 +44,8 @@ public class GroovyConsoleSession extends AbstractSession {
 			String resultString = eval.toString();
 			logger.trace("Evaled {} to {}", line, resultString);
 			return WebUtils.wrap("cmd", "Console.groovyResult", "result",
-					StringEscapeUtils.escapeHtml(resultString), "output", console.toString());
+					StringEscapeUtils.escapeHtml(resultString), "output",
+					console.toString());
 		} catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));

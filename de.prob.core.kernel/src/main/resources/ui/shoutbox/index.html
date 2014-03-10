@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Shoutbox</title>
+<meta name="description" content="">
+<meta name="author" content="Jens Bendisposto">
+
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/shoutbox/shoutbox.css">
+
+</head>
+<body>
+	<div>
+	<form class="form-inline" role="form">
+		<input type="text" class="form-control" id="shout"
+			placeholder="Enter your comment">
+		<button type="submit" class="btn btn-default" id="send">Send</button>
+	</form>
+	</div>
+	<div>
+		<ul id="content"></ul>
+	</div>
+</body>
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/shoutbox/Shoutbox.js"></script>
+
+<script>
+Shoutbox.client = "{{clientid}}"
+Shoutbox.init("{{clientid}}")
+</script>
+</html>

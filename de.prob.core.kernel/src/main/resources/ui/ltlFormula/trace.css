@@ -13,3 +13,7 @@ li:nth-child(even) {
 li:first-child {
 	font-weight: bold;
 }
+
+.disabled {
+    opacity: 0.1;
+}

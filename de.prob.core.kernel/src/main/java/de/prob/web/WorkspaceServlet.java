@@ -15,6 +15,7 @@ import com.google.inject.Singleton;
 
 import de.prob.annotations.Home;
 
+@SuppressWarnings("serial")
 @Singleton
 public class WorkspaceServlet extends HttpServlet {
 
