@@ -4249,7 +4249,7 @@
 					}
 			     };
 			     self.addItem = function(items, item, refresh) {
-			    	 items.push(convertToObservable(item));
+			    	 items.unshift(convertToObservable(item))
 			    	 if(refresh) refreshAccordion();
 			     };
 			}
