@@ -151,8 +151,8 @@
 
 <script type="text/html" id="CspEventObserver">
 		<div class="observer_menu">
-			<a href="#" class="bt_additem" data-bind="click: function() { $root.addItem(obj.items, {'selector': '', 'attr': '', 'value' : ''}) }">Add Item</a>
-			<a href="#" class="bt_removeitem" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Group</a>
+			<a href="#" class="bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'selector': '', 'attr': '', 'value' : ''}) }">Add Item</a>
+			<a href="#" class="bt_removeitem" title="Remove Observer" alt="Remove Observer" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Observer</a>
 		</div>
 			<table class="observer_item bordered" cellpadding="5">
 			<tr>
@@ -164,7 +164,7 @@
 	<div data-bind="foreach: { data: obj.items, as: 'item' }">
 		<div class="observer_wrapper">
 			<div class="observer_menu_inner">
-				<img src="/ui/bmsview/bms-editor/images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
+				<a href="#" class="bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
 			</div>
 			<table class="observer_item bordered" cellpadding="5">
 				<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector"></a></td></tr>
@@ -188,8 +188,8 @@
 
 <script type="text/html" id="ExecuteOperation">
 		<div class="observer_menu">
-			<a href="#" class="bt_additem" data-bind="click: function() { $root.addItem(obj.items, {'predicate': '', 'attr': '', 'value' : ''}) }">Add Item</a>
-			<a href="#" class="bt_removeitem" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Group</a>
+			<a href="#" class="bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'operation': '', 'parameter': ''}) }">Add Item</a>
+			<a href="#" class="bt_removeitem" title="Remove Observer" alt="Remove Observer" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Observer</a>
 		</div>
 
 		<table class="observer_item bordered" cellpadding="5">
@@ -202,7 +202,7 @@
 	<div data-bind="foreach: { data: obj.items, as: 'item' }">
 		<div class="observer_wrapper">
 			<div class="observer_menu_inner">
-				<img src="/ui/bmsview/bms-editor/images/edit-delete-6.png" data-bind="click: function() { $root.removeItem($parent,item) }" />
+				<a href="#" class="bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
 			</div>
 			<table class="observer_item bordered" cellpadding="5">
 				<tr><td class="ra">Operation</td><td><a href="#" class="truncate" data-bind="editable: item.operation"></a></td></tr>
@@ -214,8 +214,8 @@
 
 <script type="text/html" id="EvalObserver">
 	<div class="observer_menu">
-		<a href="#" class="bt_additem" data-bind="click: function() { $root.addItem(obj.items, {'predicate': '', 'attr': '', 'value' : ''}) }">Add Item</a>
-		<a href="#" class="bt_removeitem" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Group</a>
+		<a href="#" class="bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'predicate': '', 'attr': '', 'value' : ''}) }">Add Item</a>
+		<a href="#" class="bt_removeitem" title="Remove Observer" alt="Remove Observer" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Observer</a>
 	</div>
 
 	<table class="observer_item bordered" cellpadding="5">
@@ -228,7 +228,7 @@
 	<div data-bind="foreach: { data: obj.items, as: 'item' }">
 		<div class="observer_wrapper">
 			<div class="observer_menu_inner">
-				<a href="#" class="bt_removeitem" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
+				<a href="#" class="bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
 			</div>
 			<table class="observer_item bordered" cellpadding="5">
 				<tr><td class="ra">Predicate</td><td><a href="#" class="truncate" data-bind="editable: item.predicate, editableOptions: { type: 'textarea' }"></a></td></tr>
@@ -252,9 +252,15 @@
 
 <div id="observers">
   	   <div data-bind="foreach: { data: observers, as: 'observer' }">
-  				<h4 class="observer_type" data-bind="text: observer.type"></h4>
-   				<a href="#" class="bt_additem" data-bind="click: function() { $root.addObserver(observer.objs) }"></a>
-  	   		   	<div style="clear:left;" class="observer_list" data-bind="foreach: { data: objs, as: 'obj' }">
+  				
+  				<div style="width:235px;">
+  					<h4  class="observer_type" data-bind="text: observer.type"></h4>
+  					<div class="observer_menu">
+   						<a href="#" class="bt_additem" data-bind="click: function() { $root.addObserver(observer.objs) }">Add Observer</a>
+	   				</div>
+   				</div>
+   				
+  	   		   	<div class="observer_list" data-bind="foreach: { data: objs, as: 'obj' }">
  			   		<div data-bind="attr: { oid: obj.group }">
 			   	 		<h3 class="observer_head" data-bind="text: obj.group"></h3>
 			   			<div class="observer_content" data-bind="template: { name: observer.type, foreach: obj }">

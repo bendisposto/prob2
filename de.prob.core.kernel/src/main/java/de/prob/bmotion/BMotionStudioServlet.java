@@ -410,7 +410,7 @@ public class BMotionStudioServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		if (req.getParameter("edit") != null) {
+		if (req.getParameter("editor") != null) {
 			delegateEditMode(req, resp);
 			return;
 		} else {

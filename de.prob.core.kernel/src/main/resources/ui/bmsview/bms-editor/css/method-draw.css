@@ -679,7 +679,7 @@ table {
 	height: 100%;
 	background: #2f2f2c;
 	right: 145px;
-	top: 18px;
+	top: 30px;
 	border-bottom: none;
 	overflow: visible;
 	padding: 0 0 0 15px;
@@ -712,28 +712,27 @@ table {
 .observer_wrapper {
    position:relative;
 }
+
 .observer_menu_inner {
    position:absolute;
    right:0;
    top:0;
 }
-
 .observer_menu {
 	margin-left:5px;
 }
-
 .observer_menu a, .observer_menu_inner a {
 	background-repeat:no-repeat;
 	background-position: 0 3px;
-	padding-left: 15px;
+	padding-left:15px;
 	cursor:pointer;
 	text-decoration:none;
+	color:#d9d9d9;
+	font-size:12px;
 }
-
 .bt_removeitem {
 	background-image:url('/ui/bmsview/bms-editor/images/edit-delete-6.png');
 }
-
 .bt_additem {
 	background-image:url('/ui/bmsview/bms-editor/images/dialog-more.png');
 }
