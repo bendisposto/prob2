@@ -695,7 +695,7 @@ table {
 	.observer_objs {}
 		.observer_obj {}
 			.observer_content {
-				max-height:200px;
+				height:200px;
 				max-width:240px;
 				overflow:scroll;
 			}

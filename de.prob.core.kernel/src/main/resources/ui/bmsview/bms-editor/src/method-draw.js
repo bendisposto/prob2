@@ -4189,14 +4189,24 @@
     		    });
     		    return ko.observableArray(newList);
         		
+        	} else if(isObject(observable)) {
+		        var newObj = {}; 
+		        Object.keys(observable).forEach(function (key) { 
+						newObj[key] = convertToObservable(observable[key]);
+		        }); 
+		        return newObj;
         	} else {
-        		return ko.observable(observable); 
+        		return ko.observable(observable);
         	}
 		    
 		}
 		
 		function isArray(what) {
 		    return Object.prototype.toString.call(what) === '[object Array]';
+		}
+		
+		function isObject(what) {
+		    return Object.prototype.toString.call(what) === '[object Object]';
 		}
 		
 		function initObserverables(list) {
@@ -4232,15 +4242,15 @@
 				 self.observers = ko.observableArray(ko.utils.arrayMap(observers, function(observer) { 
 			         return { type: observer.type, objs: ko.observableArray(initObserverables(observer.objs)) }
 			     }));
-			     self.removeItem = function(list,item) {
+			     self.removeItem = function(list,item, refresh) {
 					if (confirm("Delete?")==true) {
 						list.remove(item)
-						refreshAccordion();			
+						if(refresh) refreshAccordion();
 					}
 			     };
-			     self.addItem = function(items, item) {
-			    	 items.push(item);
-			    	 refreshAccordion();
+			     self.addItem = function(items, item, refresh) {
+			    	 items.push(convertToObservable(item));
+			    	 if(refresh) refreshAccordion();
 			     };
 			}
 			
