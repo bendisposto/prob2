@@ -673,7 +673,6 @@ table {
 }
 
 #observers {
-	
 	position: absolute;
 	width: 250px;
 	height: 100%;
@@ -683,13 +682,6 @@ table {
 	border-bottom: none;
 	overflow: visible;
 	padding: 0 0 0 15px;
-		
-}
-
-#observers ul {
-	 list-style-type: none;
-	 padding:0; 
-	 margin:0;
 }
 
 #observers h4 {
@@ -698,6 +690,25 @@ table {
 	color:#fff;
 	font-weight:normal;
 }
+
+.observer_type {}
+	.observer_objs {}
+		.observer_obj {}
+			.observer_content {
+				max-height:200px;
+				max-width:240px;
+				overflow:scroll;
+			}
+				.observer_items {}
+					.observer_item {
+						background-color: #50504F;
+						width:95%;
+						margin-left:5px;
+					}
+						.observer_item .ra {
+							text-align:right;
+							font-weight:bold;
+						}
 
 .truncate {
 	overflow: hidden;
@@ -710,18 +721,17 @@ table {
 }
 
 .observer_wrapper {
-   position:relative;
+	position:relative; 
 }
-
-.observer_menu_inner {
+.observer_menu_item {
    position:absolute;
    right:0;
    top:0;
 }
-.observer_menu {
+.observer_menu_observer {
 	margin-left:5px;
 }
-.observer_menu a, .observer_menu_inner a {
+.bt_observeritem {
 	background-repeat:no-repeat;
 	background-position: 0 3px;
 	padding-left:15px;
@@ -735,23 +745,6 @@ table {
 }
 .bt_additem {
 	background-image:url('/ui/bmsview/bms-editor/images/dialog-more.png');
-}
-
-.observer_content {
-	max-height:200px;
-	max-width:240px;
-	overflow:scroll;
-}
-
-.observer_item {
-	background-color: #50504F;
-	width:95%;
-	margin-left:5px;
-}
-
-.observer_item .ra {
-	text-align:right;
-	font-weight:bold;
 }
 
 .ui-state-active {
@@ -781,8 +774,7 @@ table {
 	width: 235px;
 }
 
-.ui-accordion-header {
-}
+.ui-accordion-header {}
 
 .ui-accordion-content {
 	background-color: #3f3f3c;

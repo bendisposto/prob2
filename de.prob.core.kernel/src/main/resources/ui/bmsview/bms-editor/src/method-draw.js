@@ -4187,7 +4187,7 @@
     		        }); 
     		        newList.push(newObj); 
     		    });
-    		    return newList;
+    		    return ko.observableArray(newList);
         		
         	} else {
         		return ko.observable(observable); 
@@ -4216,7 +4216,7 @@
 		}
 		
 		function refreshAccordion() {
-			var container = $(".observer_list")
+			var container = $(".observer_objs")
 			if(container.attr("role") !== undefined) {
 				container.accordion("destroy");
 			}
@@ -4233,7 +4233,6 @@
 			         return { type: observer.type, objs: ko.observableArray(initObserverables(observer.objs)) }
 			     }));
 			     self.removeItem = function(list,item) {
-			    	 console.log(list)
 					if (confirm("Delete?")==true) {
 						list.remove(item)
 						refreshAccordion();			
@@ -4243,13 +4242,6 @@
 			    	 items.push(item);
 			    	 refreshAccordion();
 			     };
-			     self.addObserver = function(objs) {
-			    	 objs.push({
-			             "group": ko.observable("group"),
-			             "items": ko.observableArray([])
-			    	 })
-			    	 refreshAccordion()
-			     }
 			}
 			
 			observerModel = new ObserverJsonModel(observers);

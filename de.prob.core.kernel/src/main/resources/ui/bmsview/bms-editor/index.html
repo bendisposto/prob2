@@ -150,127 +150,160 @@
 </div>
 
 <script type="text/html" id="CspEventObserver">
-		<div class="observer_menu">
-			<a href="#" class="bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'selector': '', 'attr': '', 'value' : ''}) }">Add Item</a>
-			<a href="#" class="bt_removeitem" title="Remove Observer" alt="Remove Observer" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Observer</a>
-		</div>
-			<table class="observer_item bordered" cellpadding="5">
-			<tr>
-				<td class="ra">Group</td>
-				<td><a href="#" class="truncate" data-bind="editable: obj.group, editableOptions: { type: 'textarea' }"></a></td>
-			</tr>
-			<tr>
-				<td class="ra">Events</td>
-				<td><a href="#" class="truncate" data-bind="editable: obj.events, editableOptions: { type: 'textarea' }"></a></td>
-			</tr>
-		</table>
-
-	<div data-bind="foreach: { data: obj.items, as: 'item' }">
-		<div class="observer_wrapper">
-			<div class="observer_menu_inner">
-				<a href="#" class="bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
-			</div>
-			<table class="observer_item bordered" cellpadding="5">
-				<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector"></a></td></tr>
-				<tr><td class="ra">Attribute</td><td>
-				<a href="#" class="truncate" data-bind="attr: { selector: obj.group }, editable: item.attr, editableOptions: {type: 'select', source: 
-					function() {
-						try {
-	    					var selector = $(this).attr('selector')
-	    					var elementName = $(selector).prop('tagName')
-	    					return svgAttributes[elementName];
-						} catch(error) {
-							return {}
-						}
-	    			}
-				}"></a></td></tr>
-				<tr><td class="ra">Value</td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
-			</table>
-		</div>
-	</div>
+				<div class="observer_type">
+  					<h4 data-bind="text: observer.type"></h4>
+					<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'group': 'group', 'events': '', 'items' : [] }) }">Add Observer</a>
+   				</div>
+				<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }">
+ 			   		<div class="observer_obj" data-bind="attr: { oid: obj.group }">
+			   	 		<h3 class="observer_head" data-bind="text: obj.group"></h3>
+						<div class="observer_content">
+							<div class="observer_menu_observer">
+								<a href="#" class="bt_observeritem bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'selector': '', 'attr': '', 'value' : ''}) }">Add Item</a>
+								<a href="#" class="bt_observeritem bt_removeitem" title="Remove Observer" alt="Remove Observer" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Observer</a>
+							</div>
+							<table class="observer_item bordered" cellpadding="5">
+								<tr>
+									<td class="ra">Group</td>
+									<td><a href="#" class="truncate" data-bind="editable: obj.group, editableOptions: { type: 'textarea' }"></a></td>
+								</tr>
+								<tr>
+									<td class="ra">Events</td>
+									<td><a href="#" class="truncate" data-bind="editable: obj.events, editableOptions: { type: 'textarea' }"></a></td>
+								</tr>
+							</table>
+							<div class="observer_items" data-bind="foreach: { data: obj.items, as: 'item' }">
+								<div class="observer_wrapper">
+									<div class="observer_menu_item">
+										<a href="#" class="bt_observeritem bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
+									</div>
+								</div>
+								<table class="observer_item bordered" cellpadding="5">
+									<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector, editableOptions: { type: 'textarea' }"></a></td></tr>
+									<tr><td class="ra">Attribute</td><td>
+										<a href="#" class="truncate" data-bind="text: item.attr, attr: { selector: obj.group }, editable: item.attr, editableOptions: { type: 'select', source:  
+										function() {
+											try {
+	    										var selector = $(this).attr('selector')
+	    										var elementName = $(selector).prop('tagName')
+	    										return svgAttributes[elementName];
+											} catch(error) {
+												return {}
+											}
+	    								}
+										}"></a></td></tr>
+									<tr><td class="ra">Value</td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>	
 </script>
 
 <script type="text/html" id="ExecuteOperation">
-		<div class="observer_menu">
-			<a href="#" class="bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'operation': '', 'parameter': ''}) }">Add Item</a>
-			<a href="#" class="bt_removeitem" title="Remove Observer" alt="Remove Observer" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Observer</a>
-		</div>
-
-		<table class="observer_item bordered" cellpadding="5">
-			<tr>
-				<td class="ra">Selector</td>
-				<td><a href="#" class="truncate" data-bind="editable: obj.group, editableOptions: { type: 'textarea' }"></a></td>
-			</tr>
-		</table>
-
-	<div data-bind="foreach: { data: obj.items, as: 'item' }">
-		<div class="observer_wrapper">
-			<div class="observer_menu_inner">
-				<a href="#" class="bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
-			</div>
-			<table class="observer_item bordered" cellpadding="5">
-				<tr><td class="ra">Operation</td><td><a href="#" class="truncate" data-bind="editable: item.operation"></a></td></tr>
-				<tr><td class="ra">Parameter</td><td><a href="#" class="truncate" data-bind="editable: item.parameter, editableOptions: { type: 'textarea' }"></a></td></tr>
-			</table>
-		</div>
-	</div>
+				<div class="observer_type">
+  					<h4 data-bind="text: observer.type"></h4>
+					<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'group': 'group', 'items' : [] }) }">Add Observer</a>
+   				</div>
+				<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }">
+ 			   		<div class="observer_obj" data-bind="attr: { oid: obj.group }">
+			   	 		<h3 class="observer_head" data-bind="text: obj.group"></h3>
+						<div class="observer_content">
+							<div class="observer_menu_observer">
+								<a href="#" class="bt_observeritem bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'operation': '', 'parameter': ''}) }">Add Item</a>
+								<a href="#" class="bt_observeritem bt_removeitem" title="Remove Observer" alt="Remove Observer" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Observer</a>
+							</div>
+							<table class="observer_item bordered" cellpadding="5">
+								<tr>
+									<td class="ra">Group</td>
+									<td><a href="#" class="truncate" data-bind="editable: obj.group, editableOptions: { type: 'textarea' }"></a></td>
+								</tr>
+								<tr>
+									<td class="ra">Events</td>
+									<td><a href="#" class="truncate" data-bind="editable: obj.events, editableOptions: { type: 'textarea' }"></a></td>
+								</tr>
+							</table>
+							<div class="observer_items" data-bind="foreach: { data: obj.items, as: 'item' }">
+								<div class="observer_menu_item">
+									<a href="#" class="bt_observeritem bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
+								</div>
+								<table class="observer_item bordered" cellpadding="5">
+									<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector, editableOptions: { type: 'textarea' }"></a></td></tr>
+									<tr><td class="ra">Attribute</td><td>
+										<a href="#" class="truncate" data-bind="text: item.attr, attr: { selector: obj.group }, editable: item.attr, editableOptions: { type: 'select', source:  
+										function() {
+											try {
+	    										var selector = $(this).attr('selector')
+	    										var elementName = $(selector).prop('tagName')
+	    										return svgAttributes[elementName];
+											} catch(error) {
+												return {}
+											}
+	    								}
+										}"></a></td></tr>
+									<tr><td class="ra">Value</td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
 </script>
 
 <script type="text/html" id="EvalObserver">
-	<div class="observer_menu">
-		<a href="#" class="bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'predicate': '', 'attr': '', 'value' : ''}) }">Add Item</a>
-		<a href="#" class="bt_removeitem" title="Remove Observer" alt="Remove Observer" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Observer</a>
-	</div>
-
-	<table class="observer_item bordered" cellpadding="5">
-		<tr>
-			<td class="ra">Selector</td>
-			<td><a href="#" class="truncate" data-bind="editable: obj.group, editableOptions: { type: 'textarea' }"></a></td>
-		</tr>
-	</table>
-
-	<div data-bind="foreach: { data: obj.items, as: 'item' }">
-		<div class="observer_wrapper">
-			<div class="observer_menu_inner">
-				<a href="#" class="bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
-			</div>
-			<table class="observer_item bordered" cellpadding="5">
-				<tr><td class="ra">Predicate</td><td><a href="#" class="truncate" data-bind="editable: item.predicate, editableOptions: { type: 'textarea' }"></a></td></tr>
-				<tr><td class="ra">Attribute</td><td>
-				<a href="#" class="truncate" data-bind="text: item.attr, attr: { selector: obj.group }, editable: item.attr, editableOptions: { type: 'select', source:  
-					function() {
-						try {
-	    					var selector = $(this).attr('selector')
-	    					var elementName = $(selector).prop('tagName')
-	    					return svgAttributes[elementName];
-						} catch(error) {
-							return {}
-						}
-	    			}
-				}"></a></td></tr>
-				<tr><td class="ra">Value</td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
-			</table>
-		</div>
-	</div>
+				<div class="observer_type">
+  					<h4 data-bind="text: observer.type"></h4>
+					<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'group': 'group', 'items' : [] }) }">Add Observer</a>
+   				</div>
+				<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }">
+ 			   		<div class="observer_obj" data-bind="attr: { oid: obj.group }">
+			   	 		<h3 class="observer_head" data-bind="text: obj.group"></h3>
+						<div class="observer_content">
+							<div class="observer_menu_observer">
+								<a href="#" class="bt_observeritem bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'predicate': '', 'attr': '', 'value' : ''}) }">Add Item</a>
+								<a href="#" class="bt_observeritem bt_removeitem" title="Remove Observer" alt="Remove Observer" data-bind="click: function() { $root.removeItem($parents[1].objs,obj) }">Remove Observer</a>
+							</div>
+							<table class="observer_item bordered" cellpadding="5">
+								<tr>
+									<td class="ra">Group</td>
+									<td><a href="#" class="truncate" data-bind="editable: obj.group, editableOptions: { type: 'textarea' }"></a></td>
+								</tr>
+								<tr>
+									<td class="ra">Events</td>
+									<td><a href="#" class="truncate" data-bind="editable: obj.events, editableOptions: { type: 'textarea' }"></a></td>
+								</tr>
+							</table>
+							<div class="observer_items" data-bind="foreach: { data: obj.items, as: 'item' }">
+								<div class="observer_menu_item">
+									<a href="#" class="bt_observeritem bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
+								</div>
+								<table class="observer_item bordered" cellpadding="5">
+									<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector, editableOptions: { type: 'textarea' }"></a></td></tr>
+									<tr><td class="ra">Attribute</td><td>
+										<a href="#" class="truncate" data-bind="text: item.attr, attr: { selector: obj.group }, editable: item.attr, editableOptions: { type: 'select', source:  
+										function() {
+											try {
+	    										var selector = $(this).attr('selector')
+	    										var elementName = $(selector).prop('tagName')
+	    										return svgAttributes[elementName];
+											} catch(error) {
+												return {}
+											}
+	    								}
+										}"></a></td></tr>
+									<tr><td class="ra">Value</td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
 </script>
 
 <div id="observers">
   	   <div data-bind="foreach: { data: observers, as: 'observer' }">
   				
-  				<div style="width:235px;">
-  					<h4  class="observer_type" data-bind="text: observer.type"></h4>
-  					<div class="observer_menu">
-   						<a href="#" class="bt_additem" data-bind="click: function() { $root.addObserver(observer.objs) }">Add Observer</a>
-	   				</div>
-   				</div>
-   				
-  	   		   	<div class="observer_list" data-bind="foreach: { data: objs, as: 'obj' }">
- 			   		<div data-bind="attr: { oid: obj.group }">
-			   	 		<h3 class="observer_head" data-bind="text: obj.group"></h3>
-			   			<div class="observer_content" data-bind="template: { name: observer.type, foreach: obj }">
-			   	 		</div>
-		   	 		</div>
-			   	</div>
+  				<div data-bind="template: { name: observer.type, data : observer }">
+	   	 		</div>
+ 			   	
 	  </div>  
 </div>
 
