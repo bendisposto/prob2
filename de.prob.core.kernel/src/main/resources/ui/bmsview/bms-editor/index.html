@@ -215,12 +215,8 @@
 							</div>
 							<table class="observer_item bordered" cellpadding="5">
 								<tr>
-									<td class="ra">Group</td>
+									<td class="ra">Selector</td>
 									<td><a href="#" class="truncate" data-bind="editable: obj.group, editableOptions: { type: 'textarea' }"></a></td>
-								</tr>
-								<tr>
-									<td class="ra">Events</td>
-									<td><a href="#" class="truncate" data-bind="editable: obj.events, editableOptions: { type: 'textarea' }"></a></td>
 								</tr>
 							</table>
 							<div class="observer_items" data-bind="foreach: { data: obj.items, as: 'item' }">
@@ -228,20 +224,8 @@
 									<a href="#" class="bt_observeritem bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
 								</div>
 								<table class="observer_item bordered" cellpadding="5">
-									<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector, editableOptions: { type: 'textarea' }"></a></td></tr>
-									<tr><td class="ra">Attribute</td><td>
-										<a href="#" class="truncate" data-bind="text: item.attr, attr: { selector: obj.group }, editable: item.attr, editableOptions: { type: 'select', source:  
-										function() {
-											try {
-	    										var selector = $(this).attr('selector')
-	    										var elementName = $(selector).prop('tagName')
-	    										return svgAttributes[elementName];
-											} catch(error) {
-												return {}
-											}
-	    								}
-										}"></a></td></tr>
-									<tr><td class="ra">Value</td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
+									<tr><td class="ra">Operation</td><td><a href="#" class="truncate" data-bind="editable: item.operation, editableOptions: { type: 'textarea' }"></a></td></tr>
+									<tr><td class="ra">Parameter</td><td><a href="#" class="truncate" data-bind="editable: item.parameter, editableOptions: { type: 'textarea' }"></a></td></tr>
 								</table>
 							</div>
 						</div>
@@ -264,12 +248,8 @@
 							</div>
 							<table class="observer_item bordered" cellpadding="5">
 								<tr>
-									<td class="ra">Group</td>
+									<td class="ra">Selector</td>
 									<td><a href="#" class="truncate" data-bind="editable: obj.group, editableOptions: { type: 'textarea' }"></a></td>
-								</tr>
-								<tr>
-									<td class="ra">Events</td>
-									<td><a href="#" class="truncate" data-bind="editable: obj.events, editableOptions: { type: 'textarea' }"></a></td>
 								</tr>
 							</table>
 							<div class="observer_items" data-bind="foreach: { data: obj.items, as: 'item' }">
@@ -277,7 +257,7 @@
 									<a href="#" class="bt_observeritem bt_removeitem" title="Remove Item" alt="Remove Item" data-bind="click: function() { $root.removeItem($parent.items,item) }" /></a>
 								</div>
 								<table class="observer_item bordered" cellpadding="5">
-									<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector, editableOptions: { type: 'textarea' }"></a></td></tr>
+									<tr><td class="ra">Predicate</td><td><a href="#" class="truncate" data-bind="editable: item.predicate, editableOptions: { type: 'textarea' }"></a></td></tr>
 									<tr><td class="ra">Attribute</td><td>
 										<a href="#" class="truncate" data-bind="text: item.attr, attr: { selector: obj.group }, editable: item.attr, editableOptions: { type: 'select', source:  
 										function() {
@@ -811,11 +791,6 @@ $.ajax({
         	methodDraw.loadFromString(data.svg)
     	}
        	methodDraw.initObservers(JSON.parse(data.json).observers)
-        if(data.lang !== undefined) {
-        	var menu = $('#menu_addobserver_'+data.lang)
-        	if(menu !== undefined)
-        		menu.css("display","inline-block")
-		}
     },
     error:function(data,status,er) {
         alert("error: "+data+" status: "+status+" er:"+er);
