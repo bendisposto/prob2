@@ -4175,16 +4175,39 @@
 			});
 		};
 		
-		function convertToObservable(list) 
-		{ 
+		function convertToObservable(observable) { 
+			
+        	if (isArray(observable)) {
+
+    		    var newList = []; 
+    		    $.each(observable, function (i, obj) {
+    		        var newObj = {}; 
+    		        Object.keys(obj).forEach(function (key) { 
+   						newObj[key] = convertToObservable(obj[key]);
+    		        }); 
+    		        newList.push(newObj); 
+    		    });
+    		    return newList;
+        		
+        	} else {
+        		return ko.observable(observable); 
+        	}
+		    
+		}
+		
+		function isArray(what) {
+		    return Object.prototype.toString.call(what) === '[object Array]';
+		}
+		
+		function initObserverables(list) {
 		    var newList = []; 
 		    $.each(list, function (i, obj) {
 		        var newObj = {}; 
-		        Object.keys(obj).forEach(function (key) { 
-		            newObj[key] = ko.observable(obj[key]); 
+		        Object.keys(obj).forEach(function (key) {
+		        	newObj[key] = convertToObservable(obj[key]);
 		        }); 
 		        newList.push(newObj); 
-		    }); 
+		    });
 		    return newList; 
 		}
 		
@@ -4206,11 +4229,8 @@
 		Editor.initObservers = function(observers) {
 			var ObserverJsonModel = function(observers) {
 				 var self = this;
-			     self.observers = ko.observableArray(ko.utils.arrayMap(observers, function(observer) { 
-			         return { type: observer.type, objs: ko.observableArray(ko.utils.arrayMap(observer.objs, function(obj) {	    		                    	 
-			                     return { group: ko.observable(obj.group), items: ko.observableArray(convertToObservable(obj.items)) };		    		                         
-			                 })
-			         )};  
+				 self.observers = ko.observableArray(ko.utils.arrayMap(observers, function(observer) { 
+			         return { type: observer.type, objs: ko.observableArray(initObserverables(observer.objs)) }
 			     }));
 			     self.removeItem = function(list,item) {
 			    	 console.log(list)
