@@ -9,6 +9,7 @@ import de.prob.model.eventb.Context;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.proof.ProofObligation;
+import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.Machine;
 import de.prob.prolog.output.IPrologTermOutput;
 
@@ -16,6 +17,7 @@ public class EventBModelTranslator {
 	List<EventBMachineTranslator> machineTranslators = new ArrayList<EventBMachineTranslator>();
 	List<ContextTranslator> contextTranslators = new ArrayList<ContextTranslator>();
 	List<ProofObligation> proofObligations = new ArrayList<ProofObligation>();
+	private final TheoryTranslator theoryTranslator;
 
 	public EventBModelTranslator(final EventBModel model) {
 
@@ -29,6 +31,9 @@ public class EventBModelTranslator {
 			contextTranslators.add(new ContextTranslator(context));
 			proofObligations.addAll(context.getProofs());
 		}
+
+		theoryTranslator = new TheoryTranslator(
+				model.getChildrenOfType(Theory.class));
 	}
 
 	public void printProlog(final IPrologTermOutput pto) {
@@ -67,6 +72,9 @@ public class EventBModelTranslator {
 		for (ProofObligation po : proofObligations) {
 			po.toProlog(pto);
 		}
+
+		theoryTranslator.toProlog(pto);
+
 		pto.closeList();
 
 		pto.printVariable("_Error");
