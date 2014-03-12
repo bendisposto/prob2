@@ -42,10 +42,9 @@ import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
-import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
-public class BMotionStudioSession extends AbstractSession implements
+public class BMotionStudioSession extends AbstractBMotionStudioSession implements
 		IAnimationChangeListener, IModelChangedListener {
 
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
@@ -362,14 +361,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		if (currentTrace != null) {
 			script.traceChanged(currentTrace, formulas);
 		}
-	}
-
-	public void setTemplatePath(final String templatePath) {
-		this.templatePath = templatePath;
-	}
-	
-	public String getTemplate() {
-		return templatePath;
 	}
 
 	private String getTemplateFolder() {

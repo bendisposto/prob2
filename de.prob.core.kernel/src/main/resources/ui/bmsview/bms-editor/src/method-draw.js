@@ -555,7 +555,7 @@
 			};
 			
 			// called when we've selected a different element
-			var selectedChanged = function(window,elems) {			  
+			var selectedChanged = function(window,elems) {
 				var mode = svgCanvas.getMode();
 				if(mode === "select") setSelectMode();
 				if (mode === "pathedit") return updateContextPanel();
@@ -620,6 +620,7 @@
 		
 			// called when any element has changed
 			var elementChanged = function(window,elems) {
+				
 				var mode = svgCanvas.getMode();
 				if(mode === "select") {
 					setSelectMode();
@@ -1329,8 +1330,9 @@
 					  $("#use_panel").show();
 					  break;
 					case 'image':
-  					$(".context_panel").hide();
-  				  $("#image_panel").show();
+						$(".context_panel").hide();
+						$("#image_panel").show();
+						updateContextPanel();
   				  break;
 					case 'foreignObject':
   					$(".context_panel").hide();
@@ -1351,7 +1353,7 @@
 						}
 						
 						$('#stroke_width').val(gWidth === null ? "0" : gWidth);
-            updateContextPanel();
+						updateContextPanel();
 						break;
 					default:
 						//removed because multiselect shouldnt set color
@@ -1364,8 +1366,8 @@
 						$('#stroke_style option[value="'+ dash +'"]').attr("selected", "selected");
 						$('#stroke_style').trigger('change');
 
-	          $.fn.dragInput.updateCursor($('#stroke_width')[0])
-	          $.fn.dragInput.updateCursor($('#blur')[0])
+			            $.fn.dragInput.updateCursor($('#stroke_width')[0])
+			            $.fn.dragInput.updateCursor($('#blur')[0])
 					}
 	
 				}
@@ -1393,7 +1395,8 @@
 		
 			// updates the context panel tools based on the selected element
 			var updateContextPanel = function(e) {
-			var elem = selectedElement;
+				
+				var elem = selectedElement;
 
 				// If element has just been deleted, consider it null
 				if(elem != null && !elem.parentNode) elem = null;
@@ -1405,9 +1408,9 @@
 				var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 				
 				if (is_node) {
-				  $('.context_panel').hide();
-				  $('#path_node_panel').show();
-				  $('#stroke_panel').hide();
+					$('.context_panel').hide();
+					$('#path_node_panel').show();
+					$('#stroke_panel').hide();
 					var point = path.getNodePoint();
 					$('#tool_add_subpath').removeClass('push_button_pressed').addClass('tool_button');
 					$('#tool_node_delete').toggleClass('disabled', !path.canDeleteNodes);
@@ -1431,31 +1434,30 @@
 						}
 					}
 					$("#tools_top").removeClass("multiselected")			  
-          $("#stroke_panel").hide();
-          $("#canvas_panel").hide();
+					$("#stroke_panel").hide();
+					$("#canvas_panel").hide();
 					return;
 				}
 				
 				var menu_items = $('#cmenu_canvas li');
 				$('.context_panel').hide();
 				$('.menu_item', '#edit_menu').addClass('disabled');
-				$('.menu_item', '#object_menu').addClass('disabled');
-				
+				$('.menu_item', '#object_menu').addClass('disabled');			
         
-        //hack to show the proper multialign box
-        if (multiselected) {
-          multiselected = multiselected.filter(Boolean);
-          elem = (svgCanvas.elementsAreSame(multiselected)) ? multiselected[0] : null
-          if (elem) $("#tools_top").addClass("multiselected")
-        }
+				//hack to show the proper multialign box
+				if (multiselected) {
+					multiselected = multiselected.filter(Boolean);
+					elem = (svgCanvas.elementsAreSame(multiselected)) ? multiselected[0] : null
+					if (elem) $("#tools_top").addClass("multiselected")
+				}
 
-        if (!elem && !multiselected) {
-          $("#tools_top").removeClass("multiselected")			  
-          $("#stroke_panel").hide();
-          $("#canvas_panel").show();
+				if (!elem && !multiselected) {
+					$("#tools_top").removeClass("multiselected")			  
+					$("#stroke_panel").hide();
+					$("#canvas_panel").show();
 				}
 		
-				if (elem != null) {
+        		if (elem != null) {
 
 				  // select observer ...
 				  // TODO: We select only by id .. manage other selection (e.g. by class, etc.)
@@ -1471,11 +1473,12 @@
 					
 					var blurval = svgCanvas.getBlur(elem);
 					$('#blur').val(blurval);
+
 					if(!is_node && currentMode != 'pathedit') {
 						$('#selected_panel').show();
 						$('.action_selected').removeClass('disabled');
 						// Elements in this array already have coord fields
-            var x, y
+						var x, y
 						if(['g', 'polyline', 'path'].indexOf(elname) >= 0) {
 							var bb = svgCanvas.getStrokedBBox([elem]);
 							if(bb) {
@@ -1760,6 +1763,14 @@
 				var val = $( this ).val();
 				svgCanvas.clearSelection();
 				elem.id = val;
+				svgCanvas.addToSelection([elem],true);
+			});
+			
+			$('.path_changer').change(function() {
+				var elem = selectedElement;
+				var val = $( this ).val();
+				svgCanvas.clearSelection();
+				$(elem).attr("xlink:href",val);
 				svgCanvas.addToSelection([elem],true);
 			});
 			
@@ -2284,7 +2295,7 @@
 					svgCanvas.setMode("pathedit")
 					path.toEditMode(elems[0]);
 					svgCanvas.clearSelection();
-          updateContextPanel();
+					updateContextPanel();
 				}
 			}
 			
@@ -2381,7 +2392,6 @@
 			};
 
 			var clickSavedata = function(){
-				
 				$.ajax({
 				    type: 'POST',
 				    data: {
@@ -2402,7 +2412,6 @@
 				        alert("error: "+data+" status: "+status+" er:"+er);
 				    }
 				});
-				
 			};
 			
 			var clickBold = function(){

@@ -386,6 +386,14 @@
 		  <input id="image_height" class="attr_changer" data-title="Change image height" size="3" data-attr="height" pattern="[0-9]*" />
 		  <span class="icon_label">Height</span>
 		</label>
+
+		<div class="clearfix"></div>		
+		<label class="idLabel" title="Set Image Path">
+		 <input id="image_url" class="path_changer" data-attr="xlink:href" size="10" type="text"/>
+		 <span>Path</span>
+		</label>
+		<div class="clearfix"></div>
+		
   </div>
   
   <div id="circle_panel" class="context_panel">
@@ -443,7 +451,7 @@
 		  <span>End Y</span>
 		</label>
 	</div>
-
+	
 	<div id="text_panel" class="context_panel">
 	  <h4>Text</h4>
 		<label>
@@ -665,6 +673,7 @@
 	<div class="tool_button" id="tool_ellipse" title="Ellipse/Circle Tool [C]"></div>
 	<div class="tool_button" id="tool_path" title="Path Tool [P]"></div>
 	<div class="tool_button" id="tool_text" title="Text Tool [T]"></div>
+	<div class="tool_button" id="tool_image" title="Image Tool [I]"></div>
 	<div class="tool_button" id="tool_zoom" title="Zoom Tool [Z]"></div>
 	
   <div id="color_tools">
@@ -798,6 +807,7 @@ $.ajax({
     	
     	if(data.svg.length > 0)
     		methodDraw.loadFromString(data.svg)
+    		
     	methodDraw.setWorkingSvgId(data.svgid)
        	methodDraw.initObservers(JSON.parse(data.json).observers)
        	
