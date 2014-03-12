@@ -25,11 +25,11 @@
 <p style="color:red;">
 Some errors occured:
 </p>
-<ul style="list-style-type: none; color:red; font-weight:bold;">
+<div style="list-style-type: none; color:red; font-weight:bold;">
 {{#errors}}
-	<li>{{.}}</li>
+	<p>{{.}}</p>
 {{/errors}}
-</ul>
+</div>
 <p style="margin-top:50px;">Example URLs:</p>
 <p><strong>Start visualisation:</strong> http://localhost:8080/bms/?template=/home/lukas/template.html&lang=b</p>
 <p><strong>Start editor:</strong> http://localhost:8080/bms/?template=/home/lukas/template.html&lang=b&editor</p>

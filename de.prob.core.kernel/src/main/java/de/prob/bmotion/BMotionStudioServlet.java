@@ -104,99 +104,209 @@ public class BMotionStudioServlet extends HttpServlet {
 		writer.close();
 		submit(command);
 	}
+	
+	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession) {
+
+		String templateHtml = WebUtils.render(bmsSession.getTemplate());
+		String baseHtml = getBaseHtml(bmsSession);
+
+		Document templateDocument = Jsoup.parse(templateHtml);
+		templateDocument.outputSettings().prettyPrint(false);
+
+		for (Element e : templateDocument.getElementsByTag("svg")) {
+			// If svg element has no id, set unique ID
+			if (e.attr("id").isEmpty())
+				e.attr("id", UUID.randomUUID().toString());
+		}
+
+		Elements headTag = templateDocument.getElementsByTag("head");
+		Element headElement = headTag.get(0);
+
+		Elements elements = headElement.getElementsByAttributeValueStarting(
+				"name", "bms.");
+
+		// Add additional parameters from template to BMotionStudioSession
+		for (Element e : elements) {
+			String content = e.attr("content");
+			String name = e.attr("name");
+			bmsSession.addParameter(name.replace("bms.", ""), content);
+		}
+
+		String head = headTag.html();
+		Elements bodyTag = templateDocument.getElementsByTag("body");
+		String body = bodyTag.html();
+		Document baseDocument = Jsoup.parse(baseHtml);
+		baseDocument.outputSettings().prettyPrint(false);
+
+		Elements headTag2 = baseDocument.getElementsByTag("head");
+		Element bodyTag2 = baseDocument.getElementById("vis_container");
+
+		bodyTag2.append(body);
+		headTag2.append(head);
+
+		for (Element e : baseDocument.getElementsByTag("svg")) {
+			// Workaround, since jsoup renames svg image tags to img
+			// tags ...
+			Elements imgTags = e.getElementsByTag("img");
+			imgTags.tagName("image");
+		}
+
+		return baseDocument.html();
+
+	}
 
 	private void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, BMotionStudioSession bmsSession) {
 
 		String sessionId = bmsSession.getSessionUUID().toString();
-		String templateFullPath = bmsSession.getTemplate();
+		String templatePath = bmsSession.getTemplate();
+		File templateFile = new File(templatePath);
+		String templateFolderPath = templateFile.getParent();
+		String fileRequest = req.getRequestURI().replace(
+				"/bms/" + sessionId + "/", "");
+		String fullRequestPath = templateFolderPath + "/" + fileRequest;
 
-		// If no template exists show BMotionStudio base HTML page
-		if (templateFullPath == null) {
-
-			String baseHtml = getBaseHtml(bmsSession);
-			toOutput(resp, new ByteArrayInputStream(baseHtml.getBytes()));
+		InputStream stream = null;
+		try {
+			stream = new FileInputStream(fullRequestPath);
+		} catch (FileNotFoundException e1) {
+			// TODO Handle file not found exception!!!
+			e1.printStackTrace();
 			return;
+		}
 
-		} else { // Else handle template/file requests ...
+		// Set correct mimeType
+		String mimeType = getServletContext().getMimeType(fullRequestPath);
+		resp.setContentType(mimeType);
 
-			String fileRequest = req.getRequestURI().replace(
-					"/bms/" + sessionId + "/", "");
-			List<String> parts = new PartList(templateFullPath.split("/"));
-			String templateFile = parts.get(parts.size() - 1);
-			String workspacePath = templateFullPath.replace(templateFile, "");
-			if (fileRequest.isEmpty())
-				fileRequest = templateFile;
-			String fullRequestPath = workspacePath + fileRequest;
-			InputStream stream = null;
-			try {
-				stream = new FileInputStream(fullRequestPath);
-			} catch (FileNotFoundException e1) {
-				// TODO Handle file not found exception!!!
-				e1.printStackTrace();
-				return;
+		// Ugly ...
+		if (fullRequestPath.endsWith(".html")) {
+			String html = buildBMotionStudioRunPage(bmsSession);
+			stream = new ByteArrayInputStream(html.getBytes());
+		}
+
+		toOutput(resp, stream);
+
+	}
+	
+	private void taskInit(HttpServletRequest req, HttpServletResponse resp) {
+
+		// Get parameters
+		String templatePath = req.getParameter("template");
+		String lang = req.getParameter("lang");
+
+		String svgString = "";
+		String svgId = UUID.randomUUID().toString();
+
+		String jsonRendered = "{}";
+		if (lang != null) {
+			if (lang.equals("b")) {
+				jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
+			} else if (lang.equals("csp")) {
+				jsonRendered = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
 			}
+		}
 
-			// Set correct mimeType
-			String mimeType = getServletContext().getMimeType(fullRequestPath);
-			resp.setContentType(mimeType);
+		File templateFile = new File(templatePath);
+		if (templateFile.exists()) {
 
-			// Ugly ...
-			if (fullRequestPath.endsWith(".html")) {
-
-				bmsSession.setTemplatePath(templateFullPath);
-
-				String templateHtml = WebUtils.render(fullRequestPath);
-				String baseHtml = getBaseHtml(bmsSession);
-
-				Document templateDocument = Jsoup.parse(templateHtml);
-				templateDocument.outputSettings().prettyPrint(false);
-
-				for (Element e : templateDocument.getElementsByTag("svg")) {
-					// If svg element has no id, set unique ID
-					if (e.attr("id").isEmpty())
-						e.attr("id", UUID.randomUUID().toString());
-				}
-							
-				Elements headTag = templateDocument.getElementsByTag("head");
-				Element headElement = headTag.get(0);
-
-				Elements elements = headElement
-						.getElementsByAttributeValueStarting("name", "bms.");
-
-				for (Element e : elements) {
-					String content = e.attr("content");
-					String name = e.attr("name");
-					bmsSession.addParameter(name.replace("bms.", ""), content);
-				}
-
-				String head = headTag.html();
-				Elements bodyTag = templateDocument.getElementsByTag("body");
-				String body = bodyTag.html();
-				Document baseDocument = Jsoup.parse(baseHtml);
-				baseDocument.outputSettings().prettyPrint(false);
-
-				Elements headTag2 = baseDocument.getElementsByTag("head");
-				Element bodyTag2 = baseDocument.getElementById("vis_container");
-				
-				bodyTag2.append(body);
-				headTag2.append(head);
-				
-				for (Element e : baseDocument.getElementsByTag("svg")) {
-					// Workaround, since jsoup renames svg image tags to img
-					// tags ...
-					Elements imgTags = e.getElementsByTag("img");
-					imgTags.tagName("image");
-				}
-				
-				stream = new ByteArrayInputStream(baseDocument.html()
-						.getBytes());
-
+			// Get svg string from template
+			String templateHtml = WebUtils.render(templatePath);
+			Document templateDocument = Jsoup.parse(templateHtml);
+			templateDocument.outputSettings().prettyPrint(false);
+			for (Element e : templateDocument.getElementsByTag("svg")) {
+				// If svg element has no id, set unique ID
+				if (e.attr("id").isEmpty())
+					e.attr("id", UUID.randomUUID().toString());
 			}
+			Element svgElement = templateDocument.getElementsByTag("svg")
+					.first();
 
-			toOutput(resp, stream);
+			if (svgElement != null)
+				svgString = svgElement.toString();
+			if (svgElement != null)
+				svgId = svgElement.attr("id");
+
+			// Get json data from template
+			Elements headTag = templateDocument.getElementsByTag("head");
+			Element headElement = headTag.get(0);
+			Elements elements = headElement.getElementsByAttributeValue("name",
+					"bms.json");
+			Element jsonDomElement = elements.first();
+			if (jsonDomElement != null) {
+				String jsonFileName = jsonDomElement.attr("content");
+				String templateFolder = templateFile.getParent();
+				String jsonFilePath = templateFolder + "/" + jsonFileName;
+				jsonRendered = readFile(jsonFilePath);
+			}
 
 		}
+
+		// Send svg string and json data to client ...
+		resp.setContentType("application/json");
+		toOutput(resp, WebUtils.toJson(WebUtils.wrap("svg", svgString, "svgid",
+				svgId, "json", jsonRendered, "lang", lang)));
+
+	}
+	
+	private void taskSave(HttpServletRequest req, HttpServletResponse resp) {
+
+		// Get parameter
+		String templatePath = req.getParameter("template");
+		String jsonString = req.getParameter("json");
+		String svgString = req.getParameter("svg");
+		String svgElementId = req.getParameter("svgid");
+
+		File templateFile = new File(templatePath);
+		String templateHtml = null;
+		
+		if (!templateFile.exists()) {
+			templateHtml = WebUtils.render("ui/bmsview/default_template.html",
+					WebUtils.wrap("svgid", svgElementId));
+			writeStringToFile(templateHtml, templateFile);
+		} else {
+			templateHtml = WebUtils.render(templatePath);
+		}
+		
+		Document templateDocument = Jsoup.parse(templateHtml);
+		templateDocument.outputSettings().prettyPrint(false);
+		Document tmpParsed = Jsoup.parse(svgString);
+		Element newSvgElement = tmpParsed.getElementsByTag("svg").first();
+		newSvgElement.attr("id", svgElementId);
+
+		Element orgSvgElement = templateDocument.getElementById(svgElementId);
+		orgSvgElement.replaceWith(newSvgElement);
+
+		// Prepare json data
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.setPrettyPrinting();
+		gsonBuilder.disableHtmlEscaping();
+		Gson gson = gsonBuilder.create();
+		JsonParser jp = new JsonParser();
+		JsonElement je = jp.parse(jsonString);
+		String prettyJsonString = gson.toJson(je);
+		String jsonFilePath = null;
+		Elements elements = templateDocument.getElementsByAttributeValue(
+				"name", "bms.json");
+		Element jsonDomElement = elements.first();
+		String jsonFileName = "observers.json";
+		String templateFolder = templateFile.getParent();
+
+		if (jsonDomElement != null) { // Json file is linked
+			jsonFileName = jsonDomElement.attr("content");
+		} else { // No json file is linked
+			Elements headTag = templateDocument.getElementsByTag("head");
+			Element metaElement = templateDocument.createElement("meta");
+			metaElement.attr("name", "bms.json");
+			metaElement.attr("content", jsonFileName);
+			headTag.append(metaElement.toString());
+		}
+		jsonFilePath = templateFolder + "/" + jsonFileName;
+
+		// Save data
+		writeStringToFile(prettyJsonString, new File(jsonFilePath));
+		writeStringToFile(templateDocument.html(), templateFile);
+		toOutput(resp, "ok");
 
 	}
 	
@@ -205,146 +315,19 @@ public class BMotionStudioServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		String task = req.getParameter("task");
-		
-		if(task != null) {
+
+		if (task != null) {
 
 			if (task.equals("init")) {
-
-				// Get parameters
-				String templatePath = req.getParameter("template");
-				String lang = req.getParameter("lang");
-				
-				String svgString = "";
-				String svgId = UUID.randomUUID().toString();
-				
-				String jsonRendered = "{}";
-				if(lang != null) {
-					if(lang.equals("b")) {
-						jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
-					} else if(lang.equals("csp")) {
-						jsonRendered = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
-					}		
-				}
-				
-				File templateFile = new File(templatePath);
-				if (templateFile.exists()) {
-
-					// Get svg string from template
-					String templateHtml = WebUtils.render(templatePath);
-					Document templateDocument = Jsoup.parse(templateHtml);
-					templateDocument.outputSettings().prettyPrint(false);
-					for (Element e : templateDocument.getElementsByTag("svg")) {
-						// If svg element has no id, set unique ID
-						if (e.attr("id").isEmpty())
-							e.attr("id", UUID.randomUUID().toString());
-					}
-					Element svgElement = templateDocument.getElementsByTag(
-							"svg").first();
-
-					if(svgElement != null) svgString = svgElement.toString();
-					if(svgElement != null) svgId = svgElement.attr("id");
-
-					// Get json data from template
-					Elements headTag = templateDocument
-							.getElementsByTag("head");
-					Element headElement = headTag.get(0);
-					Elements elements = headElement
-							.getElementsByAttributeValue("name", "bms.json");
-					Element jsonDomElement = elements.first();
-					if (jsonDomElement != null) {
-						String jsonFileName = jsonDomElement.attr("content");
-						String templateFolder = templateFile.getParent();
-						String jsonFilePath = templateFolder + "/"
-								+ jsonFileName;
-						jsonRendered = readFile(jsonFilePath);
-					}
-
-				}
-				
-				// Send svg string and json data to client ...
-				resp.setContentType("application/json");
-				toOutput(resp, WebUtils.toJson(WebUtils.wrap("svg", svgString,
-						"svgid", svgId, "json", jsonRendered, "lang", lang)));
-
-			} else if(task.equals("save")) {
-				
-				// Get parameter
-				String templatePath = req.getParameter("template");
-				String jsonString = req.getParameter("json");
-				String svgString = req.getParameter("svg");
-				String svgElementId = req.getParameter("svgid");
-				
-				File templateFile = new File(templatePath);
-				
-				if (templatePath.length() == 0) {
-					toOutput(resp, "notemplate");
-					return;
-				} 
-				
-				if (!templateFile.exists()) {
-					// TODO: create fresh template ...
-				}
-				
-				// Handle save ....
-				// TODO: What is with no html / not supported files, e.g.
-				// someone enters a different file format???
-				if (templateFile.exists()) {
-
-					// Prepare template
-					String templateHtml = WebUtils.render(templatePath);
-					Document templateDocument = Jsoup.parse(templateHtml);
-					templateDocument.outputSettings().prettyPrint(false);
-					Document tmpParsed = Jsoup.parse(svgString);
-					Element newSvgElement = tmpParsed.getElementsByTag("svg")
-							.first();
-					newSvgElement.attr("id", svgElementId);
-
-					Element orgSvgElement = templateDocument
-							.getElementById(svgElementId);
-					orgSvgElement.replaceWith(newSvgElement);
-
-					// Prepare json data
-					GsonBuilder gsonBuilder = new GsonBuilder();
-					gsonBuilder.setPrettyPrinting();
-					gsonBuilder.disableHtmlEscaping();
-					Gson gson = gsonBuilder.create();
-					JsonParser jp = new JsonParser();
-					JsonElement je = jp.parse(jsonString);
-					String prettyJsonString = gson.toJson(je);
-					String jsonFilePath = null;
-					Elements elements = templateDocument
-							.getElementsByAttributeValue("name", "bms.json");
-					Element jsonDomElement = elements.first();
-					String jsonFileName = "observers.json";
-					String templateFolder = templateFile.getParent();
-
-					if (jsonDomElement != null) { // Json file is linked
-						jsonFileName = jsonDomElement.attr("content");
-					} else { // No json file is linked
-						Elements headTag = templateDocument
-								.getElementsByTag("head");
-						Element metaElement = templateDocument
-								.createElement("meta");
-						metaElement.attr("name", "bms.json");
-						metaElement.attr("content", jsonFileName);
-						headTag.append(metaElement.toString());
-					}
-					jsonFilePath = templateFolder + "/" + jsonFileName;
-
-					// Save data
-					writeStringToFile(prettyJsonString, new File(jsonFilePath));
-					writeStringToFile(templateDocument.html(), templateFile);
-					toOutput(resp, "ok");
-					return;
-
-				}
-				
+				taskInit(req, resp);
+			} else if (task.equals("save")) {
+				taskSave(req, resp);
 			}
-	
-		}		
+
+		}
 
 	}
-	
+
 	private String readFile(final String filename) {
 		String content = null;
 		File file = new File(filename);
@@ -378,11 +361,9 @@ public class BMotionStudioServlet extends HttpServlet {
 	private void delegateRunMode(HttpServletRequest req,
 			HttpServletResponse resp) throws IOException {
 
-		String templatePath = req.getParameter("template");
-
 		String uri = req.getRequestURI();
-		
-		// Get session id from URI
+
+		// Get session from URI
 		List<String> parts = new PartList(uri.split("/"));
 		String sessionID = parts.get(2);
 		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
@@ -399,43 +380,27 @@ public class BMotionStudioServlet extends HttpServlet {
 			sessions.put(id, bmsSession);
 
 			// Prepare redirect ...
-			String redirect = "/bms/" + id;
 			Map<String, String[]> parameterMap = req.getParameterMap();
 
-			// If a template was specified ...
-			if (templatePath != null) {
+			// Get template path
+			String templatePath = req.getParameter("template");
+			// Set template path in BMotionStudioSession
+			bmsSession.setTemplatePath(templatePath);
 
-				// Set template path in BMotionStudioSession
-				bmsSession.setTemplatePath(templatePath);
-
-				// Build up parameter string
-				StringBuilder parameterString = new StringBuilder();
-
-				for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
-					bmsSession.addParameter(e.getKey(), e.getValue()[0]);
-					parameterString.append("&" + e.getKey() + "="
-							+ e.getValue()[0]);
-				}
-				String fpstring = "?"
-						+ parameterString
-								.substring(1, parameterString.length());
-
-				// Get only template file (no full path)
-				List<String> templateParts = new PartList(templatePath.split("/"));
-
-				for (Map.Entry<String, String[]> e : req.getParameterMap()
-						.entrySet()) {
-					bmsSession.addParameter(e.getKey(), e.getValue()[0]);
-				}
-
-				// New template requested via parameter
-				String newTemplateFile = templateParts
-						.get(templateParts.size() - 1);
-				// Send redirect with new session id and template file
-				redirect = "/bms/" + id + "/" + newTemplateFile + fpstring;
-
+			// Build up parameter string and add parameters to
+			// BMotionStudioSession
+			StringBuilder parameterString = new StringBuilder();
+			for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
+				bmsSession.addParameter(e.getKey(), e.getValue()[0]);
+				parameterString
+						.append("&" + e.getKey() + "=" + e.getValue()[0]);
 			}
+			String fpstring = "?"
+					+ parameterString.substring(1, parameterString.length());
 
+			// Send redirect with new session id, template file and parameters
+			String fileName = new File(templatePath).getName();
+			String redirect = "/bms/" + id + "/" + fileName + fpstring;
 			resp.sendRedirect(redirect);
 
 			return;
@@ -476,7 +441,8 @@ public class BMotionStudioServlet extends HttpServlet {
 
 		String templatePath = req.getParameter("template");
 		String lang = req.getParameter("lang");
-
+		String editor = req.getParameter("editor");
+		
 		List<String> errors = new ArrayList<String>();
 
 		if (templatePath == null)
@@ -489,7 +455,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			String fileExtension = Files.getFileExtension(templatePath);
 			if (!(fileExtension.equals("html") || fileExtension.equals("htm"))) {
 				errors.add("Plese enter a valid template (.html).");
-			} else {
+			} else if (editor == null) {
 				File file = new File(templatePath);
 				if (!file.exists())
 					errors.add("The template " + templatePath
