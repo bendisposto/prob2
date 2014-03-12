@@ -74,7 +74,7 @@ class Observer implements IBMotionScript {
 		opList.each { op ->
 			def fullOp = getOpString(op)
 			return observer.objs.each { obj ->
-				def events = mustacheRender(obj.events.getAsString(),scope)
+				def events = mustacheRender(obj.group.getAsString(),scope)
 				events = events.replace("{","").replace("}", "")
 				events = events.split(",")
 				if(events.contains(fullOp)) {
