@@ -357,14 +357,14 @@ bms = (function() {
 	
 	var clones = {};	
 	resetCSP = function(selectors) {
-//		// Revert objects ...
-//		$.each(clones, function(i, v) {
-//			$(i).replaceWith(v)
-//		});
-//		// Clone objects
-//		$.each(selectors, function(i, v) {
-//			clones[v] = $(v).clone(true,true)
-//		});
+		// Revert objects ...
+		$.each(clones, function(i, v) {
+			$(i).replaceWith(v)
+		});
+		// Clone objects
+		$.each(selectors, function(i, v) {
+			clones[v] = $(v).clone(true,true)
+		});
 	}
 	
 	extern.update_visualization = function(data) {
