@@ -87,15 +87,14 @@ public class BMotionStudioServlet extends HttpServlet {
 		}).start();
 	}
 
-	private void update(HttpServletRequest req,
-			AbstractBMotionStudioSession bmsSession) {
+	private void update(HttpServletRequest req, BMotionStudioSession bmsSession) {
 		int lastinfo = Integer.parseInt(req.getParameter("lastinfo"));
 		String client = req.getParameter("client");
 		bmsSession.sendPendingUpdates(client, lastinfo, req.startAsync());
 	}
 
 	private void executeCommand(HttpServletRequest req,
-			HttpServletResponse resp, AbstractBMotionStudioSession bmsSession)
+			HttpServletResponse resp, BMotionStudioSession bmsSession)
 			throws IOException {
 		Map<String, String[]> parameterMap = req.getParameterMap();
 		Callable<SessionResult> command = bmsSession.command(parameterMap);
@@ -108,7 +107,7 @@ public class BMotionStudioServlet extends HttpServlet {
 	
 	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession) {
 
-		String templateHtml = WebUtils.render(bmsSession.getTemplate());
+		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
 		String baseHtml = getBaseHtml(bmsSession);
 
 		Document templateDocument = Jsoup.parse(templateHtml);
@@ -161,46 +160,46 @@ public class BMotionStudioServlet extends HttpServlet {
 	}
 
 	private void delegateFileRequest(HttpServletRequest req,
-			HttpServletResponse resp, AbstractBMotionStudioSession bmsSession) {
-		
+			HttpServletResponse resp, BMotionStudioSession bmsSession) {
+
 		String sessionId = bmsSession.getSessionUUID().toString();
-		String templatePath = bmsSession.getTemplate();
+		String templatePath = bmsSession.getTemplatePath();
 		File templateFile = new File(templatePath);
 		String templateFolderPath = templateFile.getParent();
 		String fileRequest = req.getRequestURI().replace(
 				"/bms/" + sessionId + "/", "");
 		String fullRequestPath = templateFolderPath + "/" + fileRequest;
-		
-		if(new File(fullRequestPath).isDirectory())
+
+		if (new File(fullRequestPath).isDirectory())
 			return;
-		
+
 		InputStream stream = null;
 		try {
 			stream = new FileInputStream(fullRequestPath);
 		} catch (FileNotFoundException e1) {
 			// TODO Handle file not found exception!!!
-			e1.printStackTrace();
+			// e1.printStackTrace();
 			return;
 		}
 
 		// Set correct mimeType
 		String mimeType = getServletContext().getMimeType(fullRequestPath);
 		resp.setContentType(mimeType);
-		
+
 		// Ugly ...
 		if (fullRequestPath.endsWith(".html")) {
-			if (bmsSession instanceof BMotionStudioSession) {
-				String html = buildBMotionStudioRunPage((BMotionStudioSession) bmsSession);
-				stream = new ByteArrayInputStream(html.getBytes());
-			} else if (bmsSession instanceof BMotionStudioEditorSession) {
+			if (req.getParameter("editor") != null) {
 				URL editorPath = getClass().getResource(
 						"/ui/bmsview/bms-editor/index.html");
 				resp.setCharacterEncoding("UTF-8");
 				String render = WebUtils.render(editorPath.getPath(),
 						WebUtils.wrap("templatePath", templatePath));
 				stream = new ByteArrayInputStream(render.getBytes());
+			} else {
+				String html = buildBMotionStudioRunPage((BMotionStudioSession) bmsSession);
+				stream = new ByteArrayInputStream(html.getBytes());
 			}
-		}		
+		}
 		toOutput(resp, stream);
 
 	}
@@ -371,8 +370,8 @@ public class BMotionStudioServlet extends HttpServlet {
 		String templatePath = req.getParameter("template");
 
 		// Create a new BMotionStudioSession
-		BMotionStudioEditorSession bmsSession = ServletContextListener.INJECTOR
-				.getInstance(BMotionStudioEditorSession.class);
+		BMotionStudioSession bmsSession = ServletContextListener.INJECTOR
+				.getInstance(BMotionStudioSession.class);
 		String id = bmsSession.getSessionUUID().toString();
 		// Register the new session
 		sessions.put(id, bmsSession);
@@ -438,13 +437,11 @@ public class BMotionStudioServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-			
 		String uri = req.getRequestURI();
-		
 		// Get session from URI
 		List<String> parts = new PartList(uri.split("/"));
 		String sessionID = parts.get(2);
-		AbstractBMotionStudioSession bmsSession = (AbstractBMotionStudioSession) sessions
+		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
 				.get(sessionID);
 		if (bmsSession == null) {
 			if (validateRequest(req, resp)) {
@@ -457,7 +454,6 @@ public class BMotionStudioServlet extends HttpServlet {
 				}
 			}
 		} else {
-
 			String mode = req.getParameter("mode");
 			if ("update".equals(mode)) {
 				update(req, bmsSession);
@@ -466,11 +462,8 @@ public class BMotionStudioServlet extends HttpServlet {
 			} else {
 				delegateFileRequest(req, resp, bmsSession);
 			}
-
 		}
-
 		return;
-
 	}
 
 	private boolean validateRequest(HttpServletRequest req,

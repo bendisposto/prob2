@@ -42,9 +42,10 @@ import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
-public class BMotionStudioSession extends AbstractBMotionStudioSession implements
+public class BMotionStudioSession extends AbstractSession implements
 		IAnimationChangeListener, IModelChangedListener {
 
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
@@ -55,9 +56,9 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession implement
 
 	private final AnimationSelector selector;
 
-	private String templatePath;
-
 	private String jsonPath;
+	
+	private String templatePath;
 	
 	private final ScriptEngine groovyScriptEngine;
 
@@ -230,7 +231,7 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession implement
 
 	private void initJsonData() {
 
-		if (templatePath == null) {
+		if (getTemplatePath() == null) {
 			return;
 		}
 
@@ -364,8 +365,9 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession implement
 	}
 
 	private String getTemplateFolder() {
-		if (templatePath != null) {
-			return new File(templatePath).getParent();
+		String template = getTemplatePath();
+		if (template != null) {
+			return new File(template).getParent();
 		}
 		return null;
 	}
@@ -383,7 +385,7 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession implement
 
 	private void initGroovy() {
 
-		if (templatePath == null) {
+		if (getTemplatePath() == null) {
 			return;
 		}
 		
@@ -427,6 +429,14 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession implement
 	
 	public JsonElement getJson() {
 		return json;
+	}
+	
+	public void setTemplatePath(final String templatePath) {
+		this.templatePath = templatePath;
+	}
+
+	public String getTemplatePath() {
+		return templatePath;
 	}
 	
 }
