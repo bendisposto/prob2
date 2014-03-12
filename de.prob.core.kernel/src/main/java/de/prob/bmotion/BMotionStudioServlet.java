@@ -289,7 +289,8 @@ public class BMotionStudioServlet extends HttpServlet {
 		Elements elements = templateDocument.getElementsByAttributeValue(
 				"name", "bms.json");
 		Element jsonDomElement = elements.first();
-		String jsonFileName = "observers.json";
+		String jsonFileName = Files.getNameWithoutExtension(templateFile
+				.getName()) + ".json";
 		String templateFolder = templateFile.getParent();
 
 		if (jsonDomElement != null) { // Json file is linked
