@@ -2394,6 +2394,8 @@
 				    success: function (data) {
 				    	if(data === 'ok') {
 				    		alert("Template saved")
+				    	} else if(data === 'notemplate') {
+				    		alert("No template specified")
 				    	}
 				    },
 				    error:function(data,status,er) {
@@ -4210,14 +4212,16 @@
 		}
 		
 		function initObserverables(list) {
-		    var newList = []; 
-		    $.each(list, function (i, obj) {
-		        var newObj = {}; 
-		        Object.keys(obj).forEach(function (key) {
-		        	newObj[key] = convertToObservable(obj[key]);
-		        }); 
-		        newList.push(newObj); 
-		    });
+		    var newList = [];
+		    if(list !== undefined) {
+		    	$.each(list, function (i, obj) {
+		        	var newObj = {}; 
+		        	Object.keys(obj).forEach(function (key) {
+		        		newObj[key] = convertToObservable(obj[key]);
+		        	}); 
+		        	newList.push(newObj); 
+		    	});
+		    }
 		    return newList; 
 		}
 		

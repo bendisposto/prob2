@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,6 +36,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -208,93 +210,134 @@ public class BMotionStudioServlet extends HttpServlet {
 
 			if (task.equals("init")) {
 
+				// Get parameters
 				String templatePath = req.getParameter("template");
 				String lang = req.getParameter("lang");
-				// Get svg string from template
-				String templateHtml = WebUtils.render(templatePath);
-				Document templateDocument = Jsoup.parse(templateHtml);
-				templateDocument.outputSettings().prettyPrint(false);
-				for (Element e : templateDocument.getElementsByTag("svg")) {
-					// If svg element has no id, set unique ID
-					if (e.attr("id").isEmpty())
-						e.attr("id", UUID.randomUUID().toString());
+				
+				String svgString = "";
+				String svgId = UUID.randomUUID().toString();
+				
+				String jsonRendered = "{}";
+				if(lang != null) {
+					if(lang.equals("b")) {
+						jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
+					} else if(lang.equals("csp")) {
+						jsonRendered = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
+					}		
 				}
-				Element svgElement = templateDocument.getElementsByTag("svg")
-						.first();
-				String svgString = svgElement.toString();
-				String svgId = svgElement.attr("id");
+				
+				File templateFile = new File(templatePath);
+				if (templateFile.exists()) {
 
-				// Get json data from template
-				Elements headTag = templateDocument.getElementsByTag("head");
-				Element headElement = headTag.get(0);
-				Elements elements = headElement.getElementsByAttributeValue(
-						"name", "bms.json");
-				Element jsonDomElement = elements.first();
-				String jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
-				if (jsonDomElement != null) {
-					String jsonFileName = jsonDomElement.attr("content");
-					String templateFolder = new File(templatePath).getParent();
-					String jsonFilePath = templateFolder + "/" + jsonFileName;
-					jsonRendered = readFile(jsonFilePath);
+					// Get svg string from template
+					String templateHtml = WebUtils.render(templatePath);
+					Document templateDocument = Jsoup.parse(templateHtml);
+					templateDocument.outputSettings().prettyPrint(false);
+					for (Element e : templateDocument.getElementsByTag("svg")) {
+						// If svg element has no id, set unique ID
+						if (e.attr("id").isEmpty())
+							e.attr("id", UUID.randomUUID().toString());
+					}
+					Element svgElement = templateDocument.getElementsByTag(
+							"svg").first();
+
+					if(svgElement != null) svgString = svgElement.toString();
+					if(svgElement != null) svgId = svgElement.attr("id");
+
+					// Get json data from template
+					Elements headTag = templateDocument
+							.getElementsByTag("head");
+					Element headElement = headTag.get(0);
+					Elements elements = headElement
+							.getElementsByAttributeValue("name", "bms.json");
+					Element jsonDomElement = elements.first();
+					if (jsonDomElement != null) {
+						String jsonFileName = jsonDomElement.attr("content");
+						String templateFolder = templateFile.getParent();
+						String jsonFilePath = templateFolder + "/"
+								+ jsonFileName;
+						jsonRendered = readFile(jsonFilePath);
+					}
+
 				}
+				
 				// Send svg string and json data to client ...
 				resp.setContentType("application/json");
-				String json = WebUtils.toJson(WebUtils.wrap("svg", svgString,
-						"svgid", svgId, "json", jsonRendered, "lang", lang));
-				toOutput(resp, json);
+				toOutput(resp, WebUtils.toJson(WebUtils.wrap("svg", svgString,
+						"svgid", svgId, "json", jsonRendered, "lang", lang)));
 
 			} else if(task.equals("save")) {
 				
+				// Get parameter
 				String templatePath = req.getParameter("template");
 				String jsonString = req.getParameter("json");
 				String svgString = req.getParameter("svg");
 				String svgElementId = req.getParameter("svgid");
-
-				// Prepare template
-				String templateHtml = WebUtils.render(templatePath);
-				Document templateDocument = Jsoup.parse(templateHtml);
-				templateDocument.outputSettings().prettyPrint(false);
-				Document tmpParsed = Jsoup.parse(svgString);
-				Element newSvgElement = tmpParsed.getElementsByTag("svg")
-						.first();
-				newSvgElement.attr("id", svgElementId);
-				Element orgSvgElement = templateDocument
-						.getElementById(svgElementId);
-				orgSvgElement.replaceWith(newSvgElement);
-				File templateFile = new File(templatePath);				
 				
-				// Prepare json data
-				GsonBuilder gsonBuilder = new GsonBuilder();
-				gsonBuilder.setPrettyPrinting();
-				gsonBuilder.disableHtmlEscaping();
-				Gson gson = gsonBuilder.create();
-				JsonParser jp = new JsonParser();
-				JsonElement je = jp.parse(jsonString);
-				String prettyJsonString = gson.toJson(je);
-				String jsonFilePath = null;
-				Elements elements = templateDocument
-						.getElementsByAttributeValue("name", "bms.json");
-				Element jsonDomElement = elements.first();
-				String jsonFileName = "observers.json";
-				String templateFolder = templateFile.getParent();
+				File templateFile = new File(templatePath);
 				
-				if (jsonDomElement != null) { // Json file is linked
-					jsonFileName = jsonDomElement.attr("content");
-				} else { // No json file is linked
-					Elements headTag = templateDocument
-							.getElementsByTag("head");
-					Element metaElement = templateDocument
-							.createElement("meta");
-					metaElement.attr("name", "bms.json");
-					metaElement.attr("content", jsonFileName);
-					headTag.append(metaElement.toString());
+				if (templatePath.length() == 0) {
+					toOutput(resp, "notemplate");
+					return;
+				} 
+				
+				if (!templateFile.exists()) {
+					// TODO: create fresh template ...
 				}
-				jsonFilePath = templateFolder + "/" + jsonFileName;
 				
-				// Save data
-				writeStringToFile(prettyJsonString, new File(jsonFilePath));
-				writeStringToFile(templateDocument.html(), templateFile);
-				toOutput(resp, "ok");
+				// Handle save ....
+				// TODO: What is with no html / not supported files, e.g.
+				// someone enters a different file format???
+				if (templateFile.exists()) {
+
+					// Prepare template
+					String templateHtml = WebUtils.render(templatePath);
+					Document templateDocument = Jsoup.parse(templateHtml);
+					templateDocument.outputSettings().prettyPrint(false);
+					Document tmpParsed = Jsoup.parse(svgString);
+					Element newSvgElement = tmpParsed.getElementsByTag("svg")
+							.first();
+					newSvgElement.attr("id", svgElementId);
+
+					Element orgSvgElement = templateDocument
+							.getElementById(svgElementId);
+					orgSvgElement.replaceWith(newSvgElement);
+
+					// Prepare json data
+					GsonBuilder gsonBuilder = new GsonBuilder();
+					gsonBuilder.setPrettyPrinting();
+					gsonBuilder.disableHtmlEscaping();
+					Gson gson = gsonBuilder.create();
+					JsonParser jp = new JsonParser();
+					JsonElement je = jp.parse(jsonString);
+					String prettyJsonString = gson.toJson(je);
+					String jsonFilePath = null;
+					Elements elements = templateDocument
+							.getElementsByAttributeValue("name", "bms.json");
+					Element jsonDomElement = elements.first();
+					String jsonFileName = "observers.json";
+					String templateFolder = templateFile.getParent();
+
+					if (jsonDomElement != null) { // Json file is linked
+						jsonFileName = jsonDomElement.attr("content");
+					} else { // No json file is linked
+						Elements headTag = templateDocument
+								.getElementsByTag("head");
+						Element metaElement = templateDocument
+								.createElement("meta");
+						metaElement.attr("name", "bms.json");
+						metaElement.attr("content", jsonFileName);
+						headTag.append(metaElement.toString());
+					}
+					jsonFilePath = templateFolder + "/" + jsonFileName;
+
+					// Save data
+					writeStringToFile(prettyJsonString, new File(jsonFilePath));
+					writeStringToFile(templateDocument.html(), templateFile);
+					toOutput(resp, "ok");
+					return;
+
+				}
 				
 			}
 	
@@ -319,20 +362,26 @@ public class BMotionStudioServlet extends HttpServlet {
 	
 	private void delegateEditMode(HttpServletRequest req,
 			HttpServletResponse resp) throws ServletException, IOException {
+
 		String templatePath = req.getParameter("template");
+
 		URL editorPath = getClass().getResource(
 				"/ui/bmsview/bms-editor/index.html");
 		resp.setCharacterEncoding("UTF-8");
-		toOutput(resp,
+		toOutput(
+				resp,
 				WebUtils.render(editorPath.getPath(),
 						WebUtils.wrap("templatePath", templatePath)));
+
 	}
 	
 	private void delegateRunMode(HttpServletRequest req,
 			HttpServletResponse resp) throws IOException {
 
-		String uri = req.getRequestURI();
+		String templatePath = req.getParameter("template");
 
+		String uri = req.getRequestURI();
+		
 		// Get session id from URI
 		List<String> parts = new PartList(uri.split("/"));
 		String sessionID = parts.get(2);
@@ -353,14 +402,11 @@ public class BMotionStudioServlet extends HttpServlet {
 			String redirect = "/bms/" + id;
 			Map<String, String[]> parameterMap = req.getParameterMap();
 
-			// Get path to template from corresponding parameter
-			String template = req.getParameter("template");
-
 			// If a template was specified ...
-			if (template != null) {
+			if (templatePath != null) {
 
 				// Set template path in BMotionStudioSession
-				bmsSession.setTemplatePath(template);
+				bmsSession.setTemplatePath(templatePath);
 
 				// Build up parameter string
 				StringBuilder parameterString = new StringBuilder();
@@ -375,7 +421,7 @@ public class BMotionStudioServlet extends HttpServlet {
 								.substring(1, parameterString.length());
 
 				// Get only template file (no full path)
-				List<String> templateParts = new PartList(template.split("/"));
+				List<String> templateParts = new PartList(templatePath.split("/"));
 
 				for (Map.Entry<String, String[]> e : req.getParameterMap()
 						.entrySet()) {
@@ -383,10 +429,10 @@ public class BMotionStudioServlet extends HttpServlet {
 				}
 
 				// New template requested via parameter
-				String templateFile = templateParts
+				String newTemplateFile = templateParts
 						.get(templateParts.size() - 1);
 				// Send redirect with new session id and template file
-				redirect = "/bms/" + id + "/" + templateFile + fpstring;
+				redirect = "/bms/" + id + "/" + newTemplateFile + fpstring;
 
 			}
 
@@ -410,13 +456,58 @@ public class BMotionStudioServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		if (req.getParameter("editor") != null) {
-			delegateEditMode(req, resp);
-			return;
-		} else {
-			delegateRunMode(req, resp);
-			return;
+
+		if (validateRequest(req, resp)) {
+			if (req.getParameter("editor") != null) {
+				delegateEditMode(req, resp);
+				return;
+			} else {
+				delegateRunMode(req, resp);
+				return;
+			}
 		}
+		
+		return;
+
+	}
+
+	private boolean validateRequest(HttpServletRequest req,
+			HttpServletResponse resp) {
+
+		String templatePath = req.getParameter("template");
+		String lang = req.getParameter("lang");
+
+		List<String> errors = new ArrayList<String>();
+
+		if (templatePath == null)
+			errors.add("Please enter a template.");
+
+		if (lang == null)
+			errors.add("Please enter a formalism (e.g. b or csp).");
+
+		if (templatePath != null) {
+			String fileExtension = Files.getFileExtension(templatePath);
+			if (!(fileExtension.equals("html") || fileExtension.equals("htm"))) {
+				errors.add("Plese enter a valid template (.html).");
+			} else {
+				File file = new File(templatePath);
+				if (!file.exists())
+					errors.add("The template " + templatePath
+							+ " does not exist.");
+			}
+		}
+
+		Map<String, Object> scope = new HashMap<String, Object>();
+		scope.put("errors", errors);
+		String errorSite = WebUtils.render("ui/bmsview/error.html", scope);
+
+		if (errors.isEmpty()) {
+			return true;
+		} else {
+			toOutput(resp, errorSite);
+			return false;
+		}
+
 	}
 
 	private void toOutput(HttpServletResponse resp, InputStream stream) {

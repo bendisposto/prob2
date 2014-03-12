@@ -790,11 +790,17 @@ $.ajax({
     		template: '{{templatePath}}'
     	},
     success: function (data) {
-    	if(data.svg.length > 0) {
-    		methodDraw.setWorkingSvgId(data.svgid)
-        	methodDraw.loadFromString(data.svg)
+    	
+    	if(data === 'notemplate') {
+    		alert("No template specified")
+    		return;
     	}
+    	
+    	if(data.svg.length > 0)
+    		methodDraw.loadFromString(data.svg)
+    	methodDraw.setWorkingSvgId(data.svgid)
        	methodDraw.initObservers(JSON.parse(data.json).observers)
+       	
     },
     error:function(data,status,er) {
         alert("error: "+data+" status: "+status+" er:"+er);
