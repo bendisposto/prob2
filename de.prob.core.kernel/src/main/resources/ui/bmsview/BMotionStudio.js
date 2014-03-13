@@ -321,38 +321,29 @@ bms = (function() {
 		return val;
 	}
 	
-	executeOperation = function(observer, formulas) {
-		
-		  var objects = observer.objects
-		  
-		  $.each(objects, function(i,v)
-		  {
-			  var o = v;
-			  var selector = $(o.selector);
-			  
-			  var events = $._data( selector[0], 'events' )
-			  if (events === undefined || (events !== undefined && events.click === undefined)) {
-				    selector.attr("class","mouse_hand")
-				    var ops = o.ops
-				    selector.click(function() {
-					 	 $.each(ops, function(i,v) {
-							  var predicate = v.predicate;
-							  if(predicate === undefined)
-								  predicate = "1=1"
-							  var operation = v.operation
-  					 		  session.sendCmd("executeOperation", {
-									"op" : operation,
-									"predicate" : predicate,
-									"client" : parent.bms.client
-								})
-						 });
-				   
-				    });
-			  
-			  }
-			  
-		  });
-		
+	var initExecuteOperationObserver = function(objs) {
+		$.each(objs, function(i,o)
+		{	
+			var selector = $(o.group);
+			var events = $._data( selector[0], 'events' )
+			if (events === undefined || (events !== undefined && events.click === undefined)) {
+			    selector.attr("class","mouse_hand")
+			    var items = o.items
+			    selector.click(function() {
+				 	 $.each(items, function(i,item) {
+						  var parameter = item.parameter;
+						  if(parameter === undefined)
+							  parameter = "1=1"
+						  var operation = item.operation
+					 		  session.sendCmd("executeOperation", {
+								"op" : operation,
+								"predicate" : parameter,
+								"client" : parent.bms.client
+							})
+					 });
+			    });
+			}			
+		});		
 	}
 	
 	var clones = {};	

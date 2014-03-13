@@ -28,7 +28,10 @@ class Observer implements IBMotionScript {
 			m = m + obj.items.collect { item ->
 				def attr = item.attr
 				def value = item.value
-				def predicate = item.predicate == null ? true : mustacheRender(item.predicate.getAsString(),scope).toBoolean()
+				def predicate = true
+				if(item.predicate != null && !item.predicate.getAsString().isEmpty()) {
+					predicate = mustacheRender(item.predicate.getAsString(),scope).toBoolean();
+				}
 				if(predicate & attr != null & value != null) {
 					def fvalue = translateValue(mustacheRender(value.getAsString(),scope))
 					return "\$('"+selector+"').attr('"+attr.getAsString()+"','"+fvalue+"')"
@@ -36,6 +39,7 @@ class Observer implements IBMotionScript {
 			}
 			return m
 		}
+		def clean = m.findAll { item -> item != null }
 		bmssession.toGui(m)
 	}
 
@@ -56,10 +60,9 @@ class Observer implements IBMotionScript {
 		bmssession.toVisualization(m)
 	}
 
-	def executeOperation(observer, formulas, trace) {
-		def jsonObserver = new com.google.gson.Gson().toJson(observer)
-		def jsonFormulas = new com.google.gson.Gson().toJson(formulas)
-		bmssession.toVisualization(["executeOperation("+jsonObserver+","+jsonFormulas+")"])
+	def ExecuteOperation(observer, formulas, trace) {
+		def jsonObserver = new com.google.gson.Gson().toJson(observer.objs)
+		bmssession.toGui(["initExecuteOperationObserver("+jsonObserver+")"])
 	}
 
 	def getCharForNumber(i) {
