@@ -1755,7 +1755,7 @@
 			});
 				
 			$('#text').keyup(function(){
-				selectedElement
+				svgCanvas.setTextContent(this.value);
 			});
 		  
 			$('.id_changer').change(function() {
