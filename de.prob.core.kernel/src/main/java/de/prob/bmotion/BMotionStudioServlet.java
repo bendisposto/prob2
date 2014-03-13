@@ -364,7 +364,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		return content;
 	}
 	
-	private void delegateEditMode(HttpServletRequest req,
+	private void createNewSessionAndRedirect(HttpServletRequest req,
 			HttpServletResponse resp) throws ServletException, IOException {
 
 		String templatePath = req.getParameter("template");
@@ -398,42 +398,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		resp.sendRedirect(redirect);
 
 	}
-	
-	private void delegateRunMode(HttpServletRequest req,
-			HttpServletResponse resp) throws IOException {
-
-		// Create a new BMotionStudioSession
-		BMotionStudioSession bmsSession = ServletContextListener.INJECTOR
-				.getInstance(BMotionStudioSession.class);
-		String id = bmsSession.getSessionUUID().toString();
-		// Register the new session
-		sessions.put(id, bmsSession);
-
-		// Prepare redirect ...
-		Map<String, String[]> parameterMap = req.getParameterMap();
-
-		// Get template path
-		String templatePath = req.getParameter("template");
-		// Set template path in BMotionStudioSession
-		bmsSession.setTemplatePath(templatePath);
-
-		// Build up parameter string and add parameters to
-		// BMotionStudioSession
-		StringBuilder parameterString = new StringBuilder();
-		for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
-			bmsSession.addParameter(e.getKey(), e.getValue()[0]);
-			parameterString.append("&" + e.getKey() + "=" + e.getValue()[0]);
-		}
-		String fpstring = "?"
-				+ parameterString.substring(1, parameterString.length());
-
-		// Send redirect with new session id, template file and parameters
-		String fileName = new File(templatePath).getName();
-		String redirect = "/bms/" + id + "/" + fileName + fpstring;
-		resp.sendRedirect(redirect);
-
-	}
-	
+		
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -445,13 +410,8 @@ public class BMotionStudioServlet extends HttpServlet {
 				.get(sessionID);
 		if (bmsSession == null) {
 			if (validateRequest(req, resp)) {
-				if (req.getParameter("editor") != null) {
-					delegateEditMode(req, resp);
-					return;
-				} else {
-					delegateRunMode(req, resp);
-					return;
-				}
+				createNewSessionAndRedirect(req, resp);
+				return;
 			}
 		} else {
 			String mode = req.getParameter("mode");
