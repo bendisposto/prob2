@@ -162,17 +162,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		initGroovy();
 	}
 
-	private void registerFormulas(final AbstractModel model) {
-		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
-				.entrySet()) {
-			String formula = entry.getKey();
-			IEvalElement evalElement = entry.getValue();
-			if (evalElement == null) {
-				subscribeFormula(formula, model);
-			}
-		}
-	}
-
 	private void deregisterFormulas(final AbstractModel model) {
 		StateSpace s = model.getStatespace();
 		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
@@ -191,6 +180,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			final boolean currentAnimationChanged) {
 		
 		if (currentAnimationChanged) {
+			
 			// Deregister formulas if no trace exists and exit
 			if (trace == null) {
 				currentTrace = null;
@@ -200,11 +190,9 @@ public class BMotionStudioSession extends AbstractSession implements
 			}
 			currentTrace = trace;
 			currentModel = trace.getModel();
-			// If a new formula was added dynamically (for instance via a groovy
-			// script), call register formulas method
-			if (formulasForEvaluating.containsValue(null)) {
-				registerFormulas(currentModel);
-			}
+			
+			checkSubscribedFormulas(currentTrace, currentModel);
+
 			// Collect results of subscibred formulas
 			formulas.clear();
 			Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
@@ -225,6 +213,20 @@ public class BMotionStudioSession extends AbstractSession implements
 				s.traceChanged(currentTrace, formulas);
 			}
 
+		}
+
+	}
+
+	private void checkSubscribedFormulas(Trace trace, AbstractModel model) {
+
+		// Subscribe formulas if not done yet ...
+		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
+				.entrySet()) {
+			IEvalElement evalElement = entry.getValue();
+			if (evalElement == null
+					|| !trace.getStateSpace().isSubscribed(evalElement)) {
+				subscribeFormula(entry.getKey(), currentModel);
+			}
 		}
 
 	}
