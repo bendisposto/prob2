@@ -156,7 +156,7 @@
    				</div>
 				<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }">
  			   		<div class="observer_obj" data-bind="attr: { oid: obj.group }">
-			   	 		<h3 class="observer_head" data-bind="text: obj.group"></h3>
+			   	 		<h3 class="observer_head" data-bind="text: $root.withoutEvalString(obj.group())"></h3>
 						<div class="observer_content">
 							<div class="observer_menu_observer">
 								<a href="#" class="bt_observeritem bt_additem" title="Add Item" alt="Add Item" data-bind="click: function() { $root.addItem(obj.items, {'selector': '', 'attr': '', 'value' : ''}, false) }">Add Item</a>

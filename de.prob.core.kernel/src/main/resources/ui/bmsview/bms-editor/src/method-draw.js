@@ -4265,6 +4265,9 @@
 			    	 items.unshift(convertToObservable(item))
 			    	 if(refresh) refreshAccordion();
 			     };
+			     self.withoutEvalString = function(str) {
+			    	 return str.replace("{{#eval}}","").replace("{{/eval}}","");
+			     }
 			}
 			
 			observerModel = new ObserverJsonModel(observers);
