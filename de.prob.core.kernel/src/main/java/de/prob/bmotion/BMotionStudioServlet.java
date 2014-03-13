@@ -215,7 +215,7 @@ public class BMotionStudioServlet extends HttpServlet {
 
 		String jsonRendered = "{}";
 		if (lang != null) {
-			if (lang.equals("b")) {
+			if (lang.equals("b") || lang.equals("eventb")) {
 				jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
 			} else if (lang.equals("csp")) {
 				jsonRendered = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
