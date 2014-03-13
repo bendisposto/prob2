@@ -34,7 +34,11 @@ class Observer implements IBMotionScript {
 				}
 				if(predicate & attr != null & value != null) {
 					def fvalue = translateValue(mustacheRender(value.getAsString(),scope))
-					return "\$('"+selector+"').attr('"+attr.getAsString()+"','"+fvalue+"')"
+					if(attr.getAsString() == 'html') {
+						return '\$("'+selector+'").html("'+fvalue+'")'
+					} else {
+						return '\$("'+selector+'").attr("'+mustacheRender(attr.getAsString(),pmap)+'","'+fvalue+'")'
+					}
 				}
 			}
 			return m
@@ -88,7 +92,12 @@ class Observer implements IBMotionScript {
 						def selector = mustacheRender(item.selector.getAsString(),pmap)
 						selectors.add("'" + selector +  "'")
 						def fvalue = translateValue(mustacheRender(item.value.getAsString(),pmap+scope))
-						return '\$("'+selector+'").attr("'+mustacheRender(item.attr.getAsString(),pmap)+'","'+fvalue+'")'
+						def attr = item.attr.getAsString()
+						if(attr == 'html') {
+							return '\$("'+selector+'").html("'+fvalue+'")'
+						} else {
+							return '\$("'+selector+'").attr("'+mustacheRender(item.attr.getAsString(),pmap)+'","'+fvalue+'")'
+						}
 					}
 				}
 			}
