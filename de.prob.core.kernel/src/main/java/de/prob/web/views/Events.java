@@ -115,8 +115,8 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 				}
 			}
 			try {
-			Collections.sort(events, sorter);
-			}catch (Exception e) {
+				Collections.sort(events, sorter);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			String json = WebUtils.toJson(applyFilter(filter));
@@ -294,7 +294,8 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 
 		@Override
 		public int compare(final Operation o1, final Operation o2) {
-			if (ops.indexOf(o1.name) == ops.indexOf(o2.name)) {
+			if (ops.contains(o1.name) && ops.contains(o2.name)
+					&& ops.indexOf(o1.name) == ops.indexOf(o2.name)) {
 				return compareParams(o1.params, o2.params);
 			}
 			return ops.indexOf(o1.name) - ops.indexOf(o2.name);

@@ -27,12 +27,12 @@ public class GroovyConsoleSession extends AbstractSession {
 	private final ScriptEngine engine;
 
 	@Inject
-	public GroovyConsoleSession(UUID id, ScriptEngineProvider sep) {
+	public GroovyConsoleSession(final UUID id, final ScriptEngineProvider sep) {
 		super(id);
 		engine = sep.get();
 	}
 
-	public Object exec(Map<String, String[]> params) {
+	public Object exec(final Map<String, String[]> params) {
 
 		logger.trace("Exec");
 		String line = get(params, "line");
@@ -57,7 +57,8 @@ public class GroovyConsoleSession extends AbstractSession {
 	}
 
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/console/index.html");
 	}
 
