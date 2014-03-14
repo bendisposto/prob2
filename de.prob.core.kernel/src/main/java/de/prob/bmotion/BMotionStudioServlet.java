@@ -61,6 +61,8 @@ public class BMotionStudioServlet extends HttpServlet {
 			.newFixedThreadPool(3);
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
+	private final String[] supportedFormalism = new String[] { "b", "eventb",
+			"csp" };
 
 	@Inject
 	public BMotionStudioServlet(@Sessions Map<String, ISession> sessions) {
@@ -439,8 +441,12 @@ public class BMotionStudioServlet extends HttpServlet {
 		if (templatePath == null)
 			errors.add("Please enter a template.");
 
-		if (lang == null)
+		if (lang != null) {
+			if (!Arrays.asList(supportedFormalism).contains(lang))
+				errors.add("The formalism " + lang + " is not supported.");
+		} else {
 			errors.add("Please enter a formalism (e.g. b or csp).");
+		}
 
 		if (templatePath != null) {
 			String fileExtension = Files.getFileExtension(templatePath);
