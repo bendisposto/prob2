@@ -141,26 +141,29 @@ public class BMotionStudioSession extends AbstractSession implements
 		// Remove all script listeners and add new observer scriptlistener
 		scriptListeners.clear();
 		scriptListeners.add(defaultObserver);
-		// Initialize json data (if not already done)
-		initJsonData();
 		// Init formal model
 		initFormalModel();
+		// Initialize json data (if not already done)
+		initJsonData();
 		// Init Groovy scripts
 		initGroovy();
 	}
 
 	private void initFormalModel() {
 
-		if (!modelStarted) {
+		Object formalism = getParameterMap().get("lang");
+		Object machinePath = getParameterMap().get("machine");
 
-			Object formalism = getParameterMap().get("lang");
-			Object machinePath = getParameterMap().get("machine");
+		if (machinePath != null && formalism != null) {
 
-			if (machinePath != null && formalism != null) {
+			File machineFile = new File(machinePath.toString());
+			if (!machineFile.isAbsolute())
+				machinePath = getTemplateFolder() + "/" + machinePath;
+			File currentMachineFile = currentModel.getModelFile();
 
-				File machineFile = new File(machinePath.toString());
-				if (!machineFile.isAbsolute())
-					machinePath = getTemplateFolder() + "/" + machinePath;
+			if (!modelStarted
+					|| !currentMachineFile.getAbsolutePath()
+							.equals(machinePath)) {
 
 				try {
 					Method method = api.getClass().getMethod(
@@ -181,9 +184,9 @@ public class BMotionStudioSession extends AbstractSession implements
 					e.printStackTrace();
 				}
 
-			}
+				modelStarted = true;
 
-			modelStarted = true;
+			}
 
 		}
 
