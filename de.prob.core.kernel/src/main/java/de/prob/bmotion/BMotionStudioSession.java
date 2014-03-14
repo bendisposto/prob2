@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -163,30 +165,23 @@ public class BMotionStudioSession extends AbstractSession implements
 					|| (currentModel != null && !currentModel.getModelFile()
 							.getAbsolutePath().equals(machinePath))) {
 				try {
-					AbstractModel model = null;
-					// Ugly, but reflection is not working in standalone
-					// product?!
-					// Needs to be analysed!
-					if (formalism.equals("b")) {
-						model = api.b_load(machinePath.toString());
-					} else if (formalism.equals("eventb")) {
-						model = api.eventb_load(machinePath.toString());
-					} else if (formalism.equals("csp")) {
-						model = api.csp_load(machinePath.toString());
-					}
-					if (model != null) {
-						StateSpace s = model.getStatespace();
-						selector.addNewAnimation(new Trace(s));
-						modelStarted = true;
-					}
-				} catch (IOException e) {
+					Method method = api.getClass().getMethod(
+							formalism + "_load", String.class);
+					AbstractModel model = (AbstractModel) method.invoke(api,
+							machinePath);
+					StateSpace s = model.getStatespace();
+					selector.addNewAnimation(new Trace(s));
+				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
-				} catch (BException e) {
+				} catch (SecurityException e) {
 					e.printStackTrace();
-				} catch (Exception e) {
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
 					e.printStackTrace();
 				}
-
 			}
 
 		}
