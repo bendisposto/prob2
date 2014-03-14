@@ -18,7 +18,7 @@ import de.prob.scripting.ScriptEngineProvider;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
-// Access to this view is restricted to localhost
+/* Access to this view is restricted to localhost */
 @Dangerous
 public class GroovyConsoleSession extends AbstractSession {
 
