@@ -94,29 +94,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 
-	public Object executeOperation(final Map<String, String[]> params) {
-		String op = params.get("op")[0];
-		String predicate = params.get("predicate")[0];
-		if (predicate.isEmpty()) {
-			predicate = "1=1";
-		}
-		Trace currentTrace = selector.getCurrentTrace();
-		try {
-			Trace newTrace = currentTrace.add(op, predicate);
-			selector.replaceTrace(currentTrace, newTrace);
-		} catch (BException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public Object setTemplate(final Map<String, String[]> params) {
-		String fullTemplatePath = params.get("path")[0];
-		submit(WebUtils.wrap("cmd", "bms.setTemplate", "request",
-				fullTemplatePath));
-		return null;
-	}
-
 	public Object triggerListener(final Map<String, String[]> params) {
 		// Trigger all registered script listeners with collected formulas
 		for (IBMotionScript s : scriptListeners) {
@@ -290,15 +267,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 	}
 
-	public void registerFormula(final String formula) {
-		// Register a fresh new formula
-		formulasForEvaluating.put(formula, null);
-		// If a model exists, try to subscribe the formula
-		if (currentModel != null) {
-			subscribeFormula(formula, currentModel);
-		}
-	}
-
 	private void subscribeFormula(final String formula,
 			final AbstractModel model) {
 
@@ -352,11 +320,6 @@ public class BMotionStudioSession extends AbstractSession implements
 			fvalue = false;
 		}
 		return fvalue;
-	}
-
-	public void toGui(final Object values) {
-		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
-				values));
 	}
 
 	public void registerScript(final IBMotionScript script) {
@@ -440,5 +403,37 @@ public class BMotionStudioSession extends AbstractSession implements
 	public String getTemplatePath() {
 		return templatePath;
 	}
+	
+	// ---------- BMS API
+	public void toGui(final Object values) {
+		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
+				values));
+	}
+
+	public void registerFormula(final String formula) {
+		// Register a fresh new formula
+		formulasForEvaluating.put(formula, null);
+		// If a model exists, try to subscribe the formula
+		if (currentModel != null) {
+			subscribeFormula(formula, currentModel);
+		}
+	}
+
+	public Object executeOperation(final Map<String, String[]> params) {
+		String op = params.get("op")[0];
+		String predicate = params.get("predicate")[0];
+		if (predicate.isEmpty()) {
+			predicate = "1=1";
+		}
+		Trace currentTrace = selector.getCurrentTrace();
+		try {
+			Trace newTrace = currentTrace.add(op, predicate);
+			selector.replaceTrace(currentTrace, newTrace);
+		} catch (BException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	// ------------------
 	
 }
