@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.CSPModel;
+import de.prob.scripting.Api;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -55,6 +58,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	private AbstractModel currentModel;
 
 	private final AnimationSelector selector;
+	
+	private final Api api;
 
 	private String jsonPath;
 	
@@ -73,12 +78,15 @@ public class BMotionStudioSession extends AbstractSession implements
 	private final Observer defaultObserver;
 	
 	private JsonElement json;
+	
+	private boolean modelStarted = false;
 
 	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
 	@Inject
 	public BMotionStudioSession(final AnimationSelector selector,
-			final ScriptEngineProvider sep) {
+			final ScriptEngineProvider sep, final Api api) {
+		this.api = api;
 		this.selector = selector;
 		incrementalUpdate = false;
 		currentTrace = selector.getCurrentTrace();
@@ -135,8 +143,50 @@ public class BMotionStudioSession extends AbstractSession implements
 		scriptListeners.add(defaultObserver);
 		// Initialize json data (if not already done)
 		initJsonData();
+		// Init formal model
+		initFormalModel();
 		// Init Groovy scripts
 		initGroovy();
+	}
+
+	private void initFormalModel() {
+
+		if (!modelStarted) {
+
+			Object formalism = getParameterMap().get("lang");
+			Object machinePath = getParameterMap().get("machine");
+
+			if (machinePath != null && formalism != null) {
+
+				File machineFile = new File(machinePath.toString());
+				if (!machineFile.isAbsolute())
+					machinePath = getTemplateFolder() + "/" + machinePath;
+
+				try {
+					Method method = api.getClass().getMethod(
+							formalism + "_load", String.class);
+					AbstractModel model = (AbstractModel) method.invoke(api,
+							machinePath);
+					StateSpace s = model.getStatespace();
+					selector.addNewAnimation(new Trace(s));
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
+
+			}
+
+			modelStarted = true;
+
+		}
+
 	}
 
 	private void deregisterFormulas(final AbstractModel model) {

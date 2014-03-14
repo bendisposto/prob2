@@ -385,6 +385,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		// BMotionStudioSession
 		StringBuilder parameterString = new StringBuilder();
 		for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
+			bmsSession.addParameter(e.getKey(), e.getValue()[0]);
 			parameterString.append("&" + e.getKey());
 			if (!e.getValue()[0].isEmpty())
 				parameterString.append("=" + e.getValue()[0]);
