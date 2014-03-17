@@ -69,3 +69,6 @@ ul#navigation .nav_open_template a {
 ul#navigation .nav_edit_template a {
     background-image: url(edit-template.png);
 }
+.ui-dialog .ui-dialog-content {
+	padding: 5px 0 0 0;
+}

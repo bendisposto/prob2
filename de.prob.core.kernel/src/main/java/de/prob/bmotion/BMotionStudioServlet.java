@@ -107,10 +107,11 @@ public class BMotionStudioServlet extends HttpServlet {
 		submit(command);
 	}
 	
-	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession) {
+	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession,
+			int port) {
 
 		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
-		String baseHtml = getBaseHtml(bmsSession);
+		String baseHtml = getBaseHtml(bmsSession, port);
 
 		Document templateDocument = Jsoup.parse(templateHtml);
 		templateDocument.outputSettings().prettyPrint(false);
@@ -164,6 +165,7 @@ public class BMotionStudioServlet extends HttpServlet {
 	private void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, BMotionStudioSession bmsSession) {
 
+		int port = req.getLocalPort();
 		String sessionId = bmsSession.getSessionUUID().toString();
 		String templatePath = bmsSession.getTemplatePath();
 		File templateFile = new File(templatePath);
@@ -198,7 +200,8 @@ public class BMotionStudioServlet extends HttpServlet {
 						WebUtils.wrap("templatePath", templatePath));
 				stream = new ByteArrayInputStream(render.getBytes());
 			} else {
-				String html = buildBMotionStudioRunPage((BMotionStudioSession) bmsSession);
+				String html = buildBMotionStudioRunPage(
+						(BMotionStudioSession) bmsSession, port);
 				stream = new ByteArrayInputStream(html.getBytes());
 			}
 		}
@@ -512,9 +515,9 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 	}
 
-	private String getBaseHtml(BMotionStudioSession bmsSession) {
+	private String getBaseHtml(BMotionStudioSession bmsSession, int port) {
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
-				.toString());
+				.toString(), "port", port);
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 
