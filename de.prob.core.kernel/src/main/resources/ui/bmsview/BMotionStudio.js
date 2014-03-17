@@ -187,13 +187,13 @@ bms = (function() {
 	var clones = {};	
 	function resetCSP(selectors) {
 		// Revert objects ...
-		$.each(clones, function(i, v) {
-			$(i).replaceWith(v)
-		});
+		//$.each(clones, function(i, v) {
+		//	$(i).replaceWith(v)
+		//});
 		// Clone objects
-		$.each(selectors, function(i, v) {
-			clones[v] = $(v).clone(true,true)
-		});
+		//$.each(selectors, function(i, v) {
+		//	clones[v] = $(v).clone(true,true)
+		//});
 	}
 	
 	extern.client = ""
