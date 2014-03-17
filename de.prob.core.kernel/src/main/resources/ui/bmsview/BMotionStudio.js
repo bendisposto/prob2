@@ -3,13 +3,10 @@ bms = (function() {
 	var extern = {}
 	var session = Session();
 
-//	$(document).ready(function() {
-//
-//	    $('.nav_open_template').click(function() {
-//			$("#modal_open_template").modal('show');
-//	    });
-//		
-//	});
+	$(function() {
+		initDialog($("#events_view"),$("#events_iframe"),$("#bt_open_events_view"),"http://localhost:"+bms.port+"/sessions/Events",true);
+		initDialog($("#history_view"),$("#history_iframe"),$("#bt_open_history_view"),"http://localhost:"+bms.port+"/sessions/CurrentTrace",false);	
+	});
 	
 	// --------------------------------------------
 	// Helper functions
@@ -24,6 +21,49 @@ bms = (function() {
 			
 	// --------------------------------------------
 
+	function fixSizeDialog(dialog,iframe) {
+		var newwidth = dialog.parent().width()
+		var newheight = dialog.parent().height()
+		iframe.attr("style","width:"+(newwidth)+"px;height:"+(newheight-50)+"px");  
+	}
+  
+	function initDialog(dialog,iframe,bt,url,autoopen) {
+
+		dialog.dialog({
+			  
+			dragStart: function() {
+				iframe.hide();
+			},
+			dragStop: function() { 
+				iframe.show();
+			},
+			resize: function() { 
+				iframe.hide(); 
+			}, 
+			resizeStart: function() { 
+				iframe.hide(); 
+			},
+			resizeStop: function(ev, ui){
+				iframe.show();
+				fixSizeDialog(dialog,iframe);
+			},
+			open: function(ev, ui){
+				iframe.attr("src",url);
+				fixSizeDialog(dialog,iframe);
+				dialog.css('overflow', 'hidden'); //this line does the actual hiding
+			},
+			autoOpen: autoopen,
+			width: 300,
+			height: 400
+	
+		});
+  
+		bt.click(function() {
+			dialog.dialog( "open" );
+		});
+	  
+	}
+	
 	function browse(dir_dom) {
 		$('#modal_filedialog').off('hidden.bs.modal')
 		$('#modal_filedialog').on('hidden.bs.modal', set_ok_button_state(dir_dom))
@@ -136,7 +176,7 @@ bms = (function() {
 					 		  session.sendCmd("executeOperation", {
 								"op" : operation,
 								"predicate" : parameter,
-								"client" : parent.bms.client
+								"client" : bms.client
 							})
 					 });
 			    });
@@ -160,7 +200,8 @@ bms = (function() {
 	extern.observer = null;
 	extern.init = session.init
 	extern.session = session
-
+	extern.port = null;
+	
 	extern.browse = browse
 	extern.fb_select_dir = fb_select_dir
 	extern.fb_select_file = fb_select_file

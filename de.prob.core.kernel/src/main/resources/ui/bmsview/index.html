@@ -17,58 +17,6 @@
 	<script type="text/javascript" src="/ui/libs/mustache.js"></script>
 	<script type="text/javascript" src="/ui/common/Session.js"></script>
 	<script type="text/javascript" src="/ui/bmsview/BMotionStudio.js"></script>
-	<script>
-	
-		$(function() {
-			initDialog($("#events_view"),$("#events_iframe"),$("#bt_open_events_view"),"http://localhost:{{port}}/sessions/Events",true);
-			initDialog($("#history_view"),$("#history_iframe"),$("#bt_open_history_view"),"http://localhost:{{port}}/sessions/CurrentTrace",false);
-		});
-		 
-		function fixSizeDialog(dialog,iframe) {
-			var newwidth = dialog.parent().width()
-			var newheight = dialog.parent().height()
-			iframe.attr("style","width:"+(newwidth)+"px;height:"+(newheight-50)+"px");
-			//dialog.attr("style","width:"+(newwidth)+"px;height:"+(newheight)+"px");	  
-		}
-	  
-		function initDialog(dialog,iframe,bt,url,autoopen) {
-	
-			dialog.dialog({
-				  
-				dragStart: function() {
-					iframe.hide();
-				},
-				dragStop: function() { 
-					iframe.show();
-				},
-				resize: function() { 
-					iframe.hide(); 
-				}, 
-				resizeStart: function() { 
-					iframe.hide(); 
-				},
-				resizeStop: function(ev, ui){
-					iframe.show();
-					fixSizeDialog(dialog,iframe);
-				},
-				open: function(ev, ui){
-					iframe.attr("src",url);
-					fixSizeDialog(dialog,iframe);
-					dialog.css('overflow', 'hidden'); //this line does the actual hiding
-				},
-				autoOpen: autoopen,
-				width: 300,
-				height: 400
-		
-			});
-	  
-			bt.click(function() {
-				dialog.dialog( "open" );
-			});
-		  
-		}
-	  
-	</script>	
 </head>
 
 <body>
@@ -106,73 +54,11 @@
 	
 	<div id="vis_container">
 	</div>
-	
-	<!-- SVG Editor Modal
-	<div class="modal fade" id="modal_svgeditor">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">SVG Editor</h4>
-				</div>
-				<div class="modal-body">
-					<iframe src="/ui/bmsview/method-draw/index.html" width="100%" height="100%" id="svgedit"></iframe>
-				</div>
-			    <div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        			<button type="button" class="btn btn-primary" id="bt_svgSave">Save changes</button>
-      			</div>
-			</div>
-		</div>
-	</div>
-	-->
-
-	<!-- Open Template Modal
-	<div class="modal fade" id="modal_open_template">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Open BMotion Studio Template</h4>
-				</div>
-				<div class="modal-body">
-					<input type="text" class="form-control loadfile_input"
-						id="openfile" value="" placeholder="Path to model file"></input>
-					<button onClick="bms.browse('#openfile')" type="button"
-						class="load-btn btn btn-primary">Browse ...</button>
-					<button id="fb_okbtn" onClick="bms.fb_load_file('#openfile')"
-						type="button" class="load-btn btn btn-primary">Ok</button>
-				</div>
-				<div class="modal-footer">
-      			</div>
-			</div>
-		</div>
-	</div>
-	-->
-
-	<!-- File Dialog Modal
-	<div class="modal fade" id="modal_filedialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Select BMotion Studio Template</h4>
-				</div>
-				<div id="filedialog_content" class="modal-body"></div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	-->
 
 	<script>
 	bms.client = "{{clientid}}";
 	bms.init("{{clientid}}");
+	bms.port = "{{port}}";
 	</script>
 
 </body>
