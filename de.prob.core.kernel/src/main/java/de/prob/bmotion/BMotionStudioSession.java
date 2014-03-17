@@ -171,6 +171,7 @@ public class BMotionStudioSession extends AbstractSession implements
 							machinePath);
 					StateSpace s = model.getStatespace();
 					selector.addNewAnimation(new Trace(s));
+					modelStarted = true;
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (SecurityException e) {
