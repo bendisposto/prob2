@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -193,10 +192,9 @@ public class BMotionStudioServlet extends HttpServlet {
 		// Ugly ...
 		if (fullRequestPath.endsWith(".html")) {
 			if (req.getParameter("editor") != null) {
-				URL editorPath = getClass().getResource(
-						"/ui/bmsview/bms-editor/index.html");
 				resp.setCharacterEncoding("UTF-8");
-				String render = WebUtils.render(editorPath.getPath(),
+				String render = WebUtils.render(
+						"ui/bmsview/bms-editor/index.html",
 						WebUtils.wrap("templatePath", templatePath));
 				stream = new ByteArrayInputStream(render.getBytes());
 			} else {
