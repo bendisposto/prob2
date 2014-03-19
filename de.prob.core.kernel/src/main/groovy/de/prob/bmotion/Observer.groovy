@@ -81,14 +81,14 @@ class Observer implements IBMotionScript {
 		opList.each { op ->
 			def fullOp = getOpString(op)
 			return observer.objs.each { obj ->
-				def events = mustacheRender(obj.group.getAsString(),scope)
+				def events = mustacheRender(obj.guard.getAsString(),scope)
 				events = events.replace("{","").replace("}", "")
 				events = events.split(",")
 				if(events.contains(fullOp)) {
 					def pmap = [:]
 					op.getParams().eachWithIndex() { v, i -> pmap.put(getCharForNumber(i+1),v) };
 					pmap.put("Event", op.getName())
-					m = m + obj.items.collect { item ->
+					m = m + obj.actions.collect { item ->
 						def selector = mustacheRender(item.selector.getAsString(),pmap)
 						selectors.add("'" + selector +  "'")
 						def fvalue = translateValue(mustacheRender(item.value.getAsString(),pmap+scope))
