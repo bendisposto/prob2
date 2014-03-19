@@ -371,6 +371,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			HttpServletResponse resp) throws ServletException, IOException {
 
 		String templatePath = req.getParameter("template");
+		String lang = req.getParameter("lang");
 
 		// Create a new BMotionStudioSession
 		BMotionStudioSession bmsSession = ServletContextListener.INJECTOR
@@ -382,8 +383,9 @@ public class BMotionStudioServlet extends HttpServlet {
 		// Prepare redirect ...
 		Map<String, String[]> parameterMap = req.getParameterMap();
 
-		// Set template path in BMotionStudioSession
+		// Set template path and language in BMotionStudioSession
 		bmsSession.setTemplatePath(templatePath);
+		bmsSession.setLanguage(lang);
 		// Build up parameter string and add parameters to
 		// BMotionStudioSession
 		StringBuilder parameterString = new StringBuilder();
@@ -515,7 +517,8 @@ public class BMotionStudioServlet extends HttpServlet {
 
 	private String getBaseHtml(BMotionStudioSession bmsSession, int port) {
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
-				.toString(), "port", port);
+				.toString(), "port", port, "template", bmsSession
+				.getTemplatePath(), "lang", bmsSession.getLanguage());
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 

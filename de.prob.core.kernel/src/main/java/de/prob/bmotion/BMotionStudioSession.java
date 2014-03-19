@@ -65,6 +65,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private String templatePath;
 	
+	private String language;
+	
 	private final ScriptEngine groovyScriptEngine;
 
 	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
@@ -452,6 +454,14 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	public String getTemplatePath() {
 		return templatePath;
+	}
+	
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 	
 	// ---------- BMS API
