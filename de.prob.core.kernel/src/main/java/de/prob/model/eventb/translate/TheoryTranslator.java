@@ -8,7 +8,6 @@ import org.eventb.core.ast.FreeIdentifier;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.animator.domainobjects.EventB;
-import de.prob.model.eventb.theory.AxiomaticOperatorDefinition;
 import de.prob.model.eventb.theory.DataType;
 import de.prob.model.eventb.theory.DataTypeConstructor;
 import de.prob.model.eventb.theory.DataTypeDestructor;
@@ -50,6 +49,8 @@ public class TheoryTranslator {
 			printTypeParameters(theory.getTypeParameters(), pto);
 			printDataTypes(theory.getDataTypes(), pto);
 			printOperatorDefs(theory.getOperators(), pto);
+
+			// TODO printAxiomaticDefs
 			// findProBMappingFile(theory, pto);
 			pto.closeTerm();
 		}
@@ -145,10 +146,6 @@ public class TheoryTranslator {
 
 	private void printOperator(final Operator operator,
 			final IPrologTermOutput pto) {
-		if (operator.getDefinition() instanceof AxiomaticOperatorDefinition) {
-			printAxiomaticOperator(operator, pto);
-			return;
-		}
 
 		pto.openTerm("operator");
 		pto.printAtom(operator.toString());

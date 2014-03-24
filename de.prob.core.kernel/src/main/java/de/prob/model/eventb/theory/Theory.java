@@ -16,6 +16,7 @@ public class Theory extends AbstractElement {
 	private ModelElementList<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
 	private ModelElementList<Type> typeParameters = new ModelElementList<Type>();
 	private final String parentDirectory;
+	private ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionBlocks;
 
 	public Theory(final String name, final String parentDirectory) {
 		this.name = name;
@@ -25,6 +26,12 @@ public class Theory extends AbstractElement {
 	public void addOperators(final ModelElementList<Operator> operators) {
 		put(Operator.class, operators);
 		this.operators = operators;
+	}
+
+	public void addAxiomaticDefintionsBlocks(
+			final ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionBlocks) {
+		put(AxiomaticDefinitionBlock.class, axiomaticDefinitionBlocks);
+		this.axiomaticDefinitionBlocks = axiomaticDefinitionBlocks;
 	}
 
 	public void addDataTypes(final ModelElementList<DataType> dataTypes) {
@@ -62,6 +69,10 @@ public class Theory extends AbstractElement {
 
 	public ModelElementList<Operator> getOperators() {
 		return operators;
+	}
+
+	public ModelElementList<AxiomaticDefinitionBlock> getAxiomaticDefinitionBlocks() {
+		return axiomaticDefinitionBlocks;
 	}
 
 	public ModelElementList<ProofRulesBlock> getProofRules() {

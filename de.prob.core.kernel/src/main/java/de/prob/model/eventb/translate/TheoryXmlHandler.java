@@ -21,7 +21,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.eventb.EventBModel;
-import de.prob.model.eventb.theory.AxiomaticOperatorDefinition;
+import de.prob.model.eventb.theory.AxiomaticDefinitionBlock;
 import de.prob.model.eventb.theory.DataType;
 import de.prob.model.eventb.theory.DataTypeConstructor;
 import de.prob.model.eventb.theory.DataTypeDestructor;
@@ -100,13 +100,15 @@ public class TheoryXmlHandler extends DefaultHandler {
 		private final ModelElementList<Type> typeParameters = new ModelElementList<Type>();
 		private final ModelElementList<DataType> dataTypes = new ModelElementList<DataType>();
 		private final ModelElementList<Operator> operators = new ModelElementList<Operator>();
+		private final ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionsBlocks = new ModelElementList<AxiomaticDefinitionBlock>();
 		private final ModelElementList<EventBAxiom> theorems = new ModelElementList<EventBAxiom>();
 		private final ModelElementList<ProofRulesBlock> proofRules = new ModelElementList<ProofRulesBlock>();
 
 		// For adding DataType
 		private DataType dataType;
 		private ModelElementList<DataTypeConstructor> constructors;
-		private ModelElementList<Type> typeArguments;
+		private ModelElementList<Type> typeArguments; // Also used for axiomatic
+														// definition blocks
 
 		// For adding DataType constructors
 		private DataTypeConstructor constructor;
@@ -122,7 +124,10 @@ public class TheoryXmlHandler extends DefaultHandler {
 		// If recursive definition cases arise
 		private ModelElementList<RecursiveDefinitionCase> recursiveDefinitions;
 
-		// If axiomatic definitions are present
+		// For adding axiomatic definitions
+		private AxiomaticDefinitionBlock axiomaticDefinitionBlock;
+		private Operator axiomaticOperator;
+		private ModelElementList<Operator> axiomaticOperators;
 		private ModelElementList<EventBAxiom> definitionAxioms;
 
 		// For adding proof rules block
@@ -184,6 +189,9 @@ public class TheoryXmlHandler extends DefaultHandler {
 			} else if (qName
 					.equals("org.eventb.theory.core.scOperatorArgument")) {
 				addOperatorArgument(attributes);
+			} else if (qName
+					.equals("org.eventb.theory.core.scAxiomaticDefinitionsBlock")) {
+				addAxiomaticDefinitionBlock(attributes);
 			} else if (qName
 					.equals("org.eventb.theory.core.scAxiomaticOperatorDefinition")) {
 				beginAddingAxiomaticOperator(attributes);
@@ -278,11 +286,21 @@ public class TheoryXmlHandler extends DefaultHandler {
 			theorems.add(new EventBAxiom(label, predicate, true, typeEnv));
 		}
 
-		private void beginAddingAxiomaticOperator(final Attributes attributes) {
+		private void addAxiomaticDefinitionBlock(final Attributes attributes) {
+			String name = attributes.getValue("org.eventb.core.label");
+			axiomaticDefinitionBlock = new AxiomaticDefinitionBlock(name);
+			typeArguments = new ModelElementList<Type>();
+			axiomaticOperators = new ModelElementList<Operator>();
 			definitionAxioms = new ModelElementList<EventBAxiom>();
-			beginAddingOperator(attributes);
 
-			definition = new AxiomaticOperatorDefinition();
+			axiomaticDefinitionsBlocks.add(axiomaticDefinitionBlock);
+		}
+
+		private void beginAddingAxiomaticOperator(final Attributes attributes) {
+			axiomaticOperator = createOperator(attributes);
+			axiomaticOperators.add(axiomaticOperator);
+
+			opArgs = new ModelElementList<OperatorArgument>();
 		}
 
 		private void addDefinitionAxiom(final Attributes attributes) {
@@ -291,14 +309,12 @@ public class TheoryXmlHandler extends DefaultHandler {
 
 			definitionAxioms.add(new EventBAxiom(label, predicate, false,
 					typeEnv));
-
 		}
 
 		private void addOperatorArgument(final Attributes attributes) {
 			String identifier = attributes.getValue("name");
 			String type = attributes.getValue("org.eventb.core.type");
 			opArgs.add(new OperatorArgument(identifier, type, typeEnv));
-
 		}
 
 		private void addDirectDefinition(final Attributes attributes) {
@@ -325,6 +341,13 @@ public class TheoryXmlHandler extends DefaultHandler {
 		}
 
 		private void beginAddingOperator(final Attributes attributes) {
+			operator = createOperator(attributes);
+			operators.add(operator);
+
+			opArgs = new ModelElementList<OperatorArgument>();
+		}
+
+		private Operator createOperator(final Attributes attributes) {
 			String label = attributes.getValue("org.eventb.core.label");
 			boolean associative = "true".equals(attributes
 					.getValue("org.eventb.theory.core.associative"));
@@ -339,13 +362,9 @@ public class TheoryXmlHandler extends DefaultHandler {
 			String predicate = attributes.getValue("org.eventb.core.predicate");
 			String type = attributes.getValue("org.eventb.theory.core.type");
 			String wd = attributes.getValue("org.eventb.theory.core.wd");
-			operator = new Operator(theory.getName(), label, associative,
+			return new Operator(theory.getName(), label, associative,
 					commutative, formulaType, notationType, groupId, type, wd,
 					predicate, typeEnv);
-
-			operators.add(operator);
-
-			opArgs = new ModelElementList<OperatorArgument>();
 		}
 
 		private void addDestructor(final Attributes attributes) {
@@ -424,6 +443,9 @@ public class TheoryXmlHandler extends DefaultHandler {
 			} else if (qName
 					.equals("org.eventb.theory.core.scAxiomaticOperatorDefinition")) {
 				finishAxiomaticOperator();
+			} else if (qName
+					.equals("org.eventb.theory.core.scAxiomaticDefinitionsBlock")) {
+				finishAxiomaticDefinitionBlock();
 			} else if (qName.equals("org.eventb.theory.core.scProofRulesBlock")) {
 				finishProofRulesBlock();
 			} else if (qName.equals("org.eventb.theory.core.scRewriteRule")) {
@@ -431,6 +453,12 @@ public class TheoryXmlHandler extends DefaultHandler {
 			} else if (qName.equals("org.eventb.theory.core.scInferenceRule")) {
 				finishInferenceRule();
 			}
+		}
+
+		private void finishAxiomaticDefinitionBlock() {
+			axiomaticDefinitionBlock.addDefinitionAxioms(definitionAxioms);
+			axiomaticDefinitionBlock.addOperators(axiomaticOperators);
+			axiomaticDefinitionBlock.addTypeParameters(typeArguments);
 		}
 
 		private void finishInferenceRule() {
@@ -453,9 +481,9 @@ public class TheoryXmlHandler extends DefaultHandler {
 		}
 
 		private void finishAxiomaticOperator() {
-			((AxiomaticOperatorDefinition) definition)
-					.addDefinitionAxioms(definitionAxioms);
-			finishOperator();
+			axiomaticOperator.addArguments(opArgs);
+
+			typeEnv.add(axiomaticOperator.getFormulaExtension());
 		}
 
 		private void finishOperator() {
@@ -472,7 +500,6 @@ public class TheoryXmlHandler extends DefaultHandler {
 				}
 				recursiveDefinitions = null;
 			}
-
 		}
 
 		private void finishDataType() {
@@ -490,6 +517,7 @@ public class TheoryXmlHandler extends DefaultHandler {
 			theory.addDataTypes(dataTypes);
 			theory.addImported(imported);
 			theory.addOperators(operators);
+			theory.addAxiomaticDefintionsBlocks(axiomaticDefinitionsBlocks);
 			theory.addProofRules(proofRules);
 			theory.addTheorems(theorems);
 			theory.addTypeParameters(typeParameters);
