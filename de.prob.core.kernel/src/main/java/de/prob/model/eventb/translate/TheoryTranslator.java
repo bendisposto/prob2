@@ -8,6 +8,8 @@ import org.eventb.core.ast.FreeIdentifier;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.animator.domainobjects.EventB;
+import de.prob.model.eventb.EventBAxiom;
+import de.prob.model.eventb.theory.AxiomaticDefinitionBlock;
 import de.prob.model.eventb.theory.DataType;
 import de.prob.model.eventb.theory.DataTypeConstructor;
 import de.prob.model.eventb.theory.DataTypeDestructor;
@@ -49,9 +51,8 @@ public class TheoryTranslator {
 			printTypeParameters(theory.getTypeParameters(), pto);
 			printDataTypes(theory.getDataTypes(), pto);
 			printOperatorDefs(theory.getOperators(), pto);
-
-			// TODO printAxiomaticDefs
-			// findProBMappingFile(theory, pto);
+			printAxiomaticDefintionBlocks(
+					theory.getAxiomaticDefinitionBlocks(), pto);
 			pto.closeTerm();
 		}
 	}
@@ -139,14 +140,15 @@ public class TheoryTranslator {
 
 	private void printOperatorDefs(final ModelElementList<Operator> operators,
 			final IPrologTermOutput pto) {
+		pto.openList();
 		for (Operator operator : operators) {
 			printOperator(operator, pto);
 		}
+		pto.closeList();
 	}
 
 	private void printOperator(final Operator operator,
 			final IPrologTermOutput pto) {
-
 		pto.openTerm("operator");
 		pto.printAtom(operator.toString());
 
@@ -217,10 +219,47 @@ public class TheoryTranslator {
 		pto.closeList();
 	}
 
+	private void printAxiomaticDefintionBlocks(
+			final ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionBlocks,
+			final IPrologTermOutput pto) {
+		pto.openList();
+		for (AxiomaticDefinitionBlock block : axiomaticDefinitionBlocks) {
+			printAxiomaticDefinitonBlock(block, pto);
+		}
+		pto.closeList();
+	}
+
+	private void printAxiomaticDefinitonBlock(
+			final AxiomaticDefinitionBlock block, final IPrologTermOutput pto) {
+		pto.openTerm("axiomatic_def_block");
+		pto.printAtom(block.getName());
+
+		printTypeParameters(block.getTypeParameters(), pto);
+
+		pto.openList();
+		for (Operator operator : block.getOperators()) {
+			printAxiomaticOperator(operator, pto);
+		}
+		pto.closeList();
+
+		pto.openList();
+		for (EventBAxiom axiom : block.getAxioms()) {
+			printEventBElement((EventB) axiom.getPredicate(), pto);
+		}
+		pto.closeList();
+
+		pto.closeTerm();
+	}
+
 	private void printAxiomaticOperator(final Operator operator,
 			final IPrologTermOutput pto) {
-		// TODO Auto-generated method stub
-
+		pto.openTerm("op_def");
+		pto.printAtom(operator.toString());
+		printOperatorArguments(operator.getArguments(), pto);
+		pto.openList();
+		printEventBElement(operator.getWD(), pto);
+		pto.closeList();
+		pto.closeTerm();
 	}
 
 }
