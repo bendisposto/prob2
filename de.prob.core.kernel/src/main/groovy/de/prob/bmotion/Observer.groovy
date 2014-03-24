@@ -37,7 +37,7 @@ class Observer implements IBMotionScript {
 					if(attr.getAsString() == 'html') {
 						return '\$("'+selector+'").html("'+fvalue+'")'
 					} else {
-						return '\$("'+selector+'").attr("'+mustacheRender(attr.getAsString(),pmap)+'","'+fvalue+'")'
+						return '\$("'+selector+'").attr("'+mustacheRender(attr.getAsString(),scope)+'","'+fvalue+'")'
 					}
 				}
 			}
