@@ -40,6 +40,11 @@ public class ModelDir {
 		return f
 	}
 
+	def List<String> getLines(String fileName) {
+		def list = []
+		getFile(fileName).each { list << it }
+		list
+	}
 
 	def boolean equals(Object obj) {
 		if(obj instanceof ModelDir) {
