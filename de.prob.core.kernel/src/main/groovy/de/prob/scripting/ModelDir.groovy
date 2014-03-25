@@ -32,7 +32,7 @@ class ModelDir {
 		getFile(fileName).setText(text)
 	}
 
-	def private File getFile(String fileName) {
+	def File getFile(String fileName) {
 		if(files.contains(fileName)) {
 			return files[fileName]
 		}
