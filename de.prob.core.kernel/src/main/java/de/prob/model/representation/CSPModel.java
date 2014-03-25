@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.scripting.ModelDir;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -22,6 +23,7 @@ public class CSPModel extends AbstractModel {
 	public void init(final String content, final File modelFile) {
 		this.content = content;
 		this.modelFile = modelFile;
+		modelDir = new ModelDir(modelFile);
 		statespace.setModel(this);
 	}
 

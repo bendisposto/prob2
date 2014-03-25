@@ -1,8 +1,6 @@
 package de.prob.scripting
 
-
-
-class ModelDir {
+public class ModelDir {
 
 	File modelFile
 	File dir

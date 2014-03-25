@@ -15,6 +15,7 @@ import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.model.representation.StateSchema;
+import de.prob.scripting.ModelDir;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -45,6 +46,7 @@ public class EventBModel extends AbstractModel {
 
 	public void setModelFile(final File modelFile) {
 		this.modelFile = modelFile;
+		modelDir = new ModelDir(modelFile);
 	}
 
 	public void isFinished() {

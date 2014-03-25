@@ -2,6 +2,7 @@ package de.prob.model.representation;
 
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.RefType.ERefType
+import de.prob.scripting.ModelDir
 import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
@@ -12,6 +13,7 @@ public abstract class AbstractModel extends AbstractElement {
 	protected StateSpace statespace;
 	protected boolean dirty = false;
 	protected File modelFile;
+	protected ModelDir modelDir;
 	protected DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
 
