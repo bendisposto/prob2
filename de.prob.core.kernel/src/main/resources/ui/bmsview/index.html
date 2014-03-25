@@ -7,10 +7,13 @@
 	<meta name="description" content="">
 	<meta name="author" content="Lukas Ladenberger">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/ui/bmsview/bms-editor/css/dot-luv/jquery-ui-1.10.4.custom.min.css">
 	<link rel="stylesheet" href="/ui/common/bootstrap.css">
-	<link rel="stylesheet" href="/ui/bmsview/bms.css">
+	<link rel="stylesheet" href="/ui/bmsview/bms.css">	
 	<script type="text/javascript" src="/ui/libs/jquery.js"></script>
 	<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
+	<script type="text/javascript" src="/ui/libs/jquery-ui.js"></script>
+	
 	<script type="text/javascript" src="/ui/libs/mustache.js"></script>
 	<script type="text/javascript" src="/ui/common/Session.js"></script>
 	<script type="text/javascript" src="/ui/bmsview/BMotionStudio.js"></script>
@@ -18,80 +21,49 @@
 
 <body>
 
-	<!--ul id="navigation">
-	     <li class="nav_open_template"><a href="#" title="Open BMotion Studio Template"><span></span></a></li>
-	     <li class="nav_edit_template"><a href="#" title="Edit BMotion Studio Template"><span></span></a></li>
-	</ul-->
-
-	<div id="vis_container">
+	<nav class="navbar navbar-default" role="navigation">
+	  <div class="container-fluid">
+	    <!-- Brand and toggle get grouped for better mobile display -->
+	    <div class="navbar-header">
+	      <a class="navbar-brand" href="#">BMotion Studio</a>
+	    </div>
+	
+	    <!-- Collect the nav links, forms, and other content for toggling -->
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	      <ul class="nav navbar-nav navbar-right">
+	        <li><a href="http://localhost:{{port}}/bms/?template={{template}}&lang={{lang}}&editor">Start Editor</a></li>
+	        <li class="dropdown">
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Open View <b class="caret"></b></a>
+	          <ul class="dropdown-menu">
+	            <li><a href="#" id="bt_open_events_view">Events</a></li>
+	            <li><a href="#" id="bt_open_history_view">History</a></li>
+	            <li><a href="#" id="bt_open_animation_view">CurrentAnimations</a></li>
+	          </ul>
+	        </li>
+	      </ul>
+	    </div><!-- /.navbar-collapse -->
+	  </div><!-- /.container-fluid -->
+	</nav>
+	
+	<div id="events_view" title="Events">
+  		<iframe src="" id="events_iframe" frameBorder="0"></iframe>
 	</div>
 	
-	<!-- SVG Editor Modal
-	<div class="modal fade" id="modal_svgeditor">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">SVG Editor</h4>
-				</div>
-				<div class="modal-body">
-					<iframe src="/ui/bmsview/method-draw/index.html" width="100%" height="100%" id="svgedit"></iframe>
-				</div>
-			    <div class="modal-footer">
-        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        			<button type="button" class="btn btn-primary" id="bt_svgSave">Save changes</button>
-      			</div>
-			</div>
-		</div>
+	<div id="history_view" title="History">
+  		<iframe src="" id="history_iframe" frameBorder="0"></iframe>
 	</div>
-	-->
 
-	<!-- Open Template Modal
-	<div class="modal fade" id="modal_open_template">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Open BMotion Studio Template</h4>
-				</div>
-				<div class="modal-body">
-					<input type="text" class="form-control loadfile_input"
-						id="openfile" value="" placeholder="Path to model file"></input>
-					<button onClick="bms.browse('#openfile')" type="button"
-						class="load-btn btn btn-primary">Browse ...</button>
-					<button id="fb_okbtn" onClick="bms.fb_load_file('#openfile')"
-						type="button" class="load-btn btn btn-primary">Ok</button>
-				</div>
-				<div class="modal-footer">
-      			</div>
-			</div>
-		</div>
+	<div id="animation_view" title="CurrentAnimations">
+  		<iframe src="" id="animation_iframe" frameBorder="0"></iframe>
 	</div>
-	-->
-
-	<!-- File Dialog Modal
-	<div class="modal fade" id="modal_filedialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title">Select BMotion Studio Template</h4>
-				</div>
-				<div id="filedialog_content" class="modal-body"></div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
+	
+	<div id="vis_container">
 	</div>
-	-->
 
 	<script>
 	bms.client = "{{clientid}}";
 	bms.init("{{clientid}}");
+	bms.port = "{{port}}";
 	</script>
 
 </body>

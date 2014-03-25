@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.CSPModel;
+import de.prob.scripting.Api;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -55,10 +58,14 @@ public class BMotionStudioSession extends AbstractSession implements
 	private AbstractModel currentModel;
 
 	private final AnimationSelector selector;
+	
+	private final Api api;
 
 	private String jsonPath;
 	
 	private String templatePath;
+	
+	private String language;
 	
 	private final ScriptEngine groovyScriptEngine;
 
@@ -73,12 +80,15 @@ public class BMotionStudioSession extends AbstractSession implements
 	private final Observer defaultObserver;
 	
 	private JsonElement json;
+	
+	private boolean modelStarted = false;
 
 	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
 	@Inject
 	public BMotionStudioSession(final AnimationSelector selector,
-			final ScriptEngineProvider sep) {
+			final ScriptEngineProvider sep, final Api api) {
+		this.api = api;
 		this.selector = selector;
 		incrementalUpdate = false;
 		currentTrace = selector.getCurrentTrace();
@@ -91,29 +101,6 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
-		return null;
-	}
-
-	public Object executeOperation(final Map<String, String[]> params) {
-		String op = params.get("op")[0];
-		String predicate = params.get("predicate")[0];
-		if (predicate.isEmpty()) {
-			predicate = "1=1";
-		}
-		Trace currentTrace = selector.getCurrentTrace();
-		try {
-			Trace newTrace = currentTrace.add(op, predicate);
-			selector.replaceTrace(currentTrace, newTrace);
-		} catch (BException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public Object setTemplate(final Map<String, String[]> params) {
-		String fullTemplatePath = params.get("path")[0];
-		submit(WebUtils.wrap("cmd", "bms.setTemplate", "request",
-				fullTemplatePath));
 		return null;
 	}
 
@@ -156,10 +143,52 @@ public class BMotionStudioSession extends AbstractSession implements
 		// Remove all script listeners and add new observer scriptlistener
 		scriptListeners.clear();
 		scriptListeners.add(defaultObserver);
+		// Init formal model
+		initFormalModel();
 		// Initialize json data (if not already done)
 		initJsonData();
 		// Init Groovy scripts
 		initGroovy();
+	}
+
+	private void initFormalModel() {
+
+		Object formalism = getParameterMap().get("lang");
+		Object machinePath = getParameterMap().get("machine");
+
+		if (machinePath != null && formalism != null) {
+
+			File machineFile = new File(machinePath.toString());
+
+			if (!machineFile.isAbsolute())
+				machinePath = getTemplateFolder() + "/" + machinePath;
+
+			if (!modelStarted
+					|| (currentModel != null && !currentModel.getModelFile()
+							.getAbsolutePath().equals(machinePath))) {
+				try {
+					Method method = api.getClass().getMethod(
+							formalism + "_load", String.class);
+					AbstractModel model = (AbstractModel) method.invoke(api,
+							machinePath);
+					StateSpace s = model.getStatespace();
+					selector.addNewAnimation(new Trace(s));
+					modelStarted = true;
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+
 	}
 
 	private void deregisterFormulas(final AbstractModel model) {
@@ -290,15 +319,6 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 	}
 
-	public void registerFormula(final String formula) {
-		// Register a fresh new formula
-		formulasForEvaluating.put(formula, null);
-		// If a model exists, try to subscribe the formula
-		if (currentModel != null) {
-			subscribeFormula(formula, currentModel);
-		}
-	}
-
 	private void subscribeFormula(final String formula,
 			final AbstractModel model) {
 
@@ -352,11 +372,6 @@ public class BMotionStudioSession extends AbstractSession implements
 			fvalue = false;
 		}
 		return fvalue;
-	}
-
-	public void toGui(final Object values) {
-		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
-				values));
 	}
 
 	public void registerScript(final IBMotionScript script) {
@@ -440,5 +455,45 @@ public class BMotionStudioSession extends AbstractSession implements
 	public String getTemplatePath() {
 		return templatePath;
 	}
+	
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	
+	// ---------- BMS API
+	public void toGui(final Object values) {
+		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
+				values));
+	}
+
+	public void registerFormula(final String formula) {
+		// Register a fresh new formula
+		formulasForEvaluating.put(formula, null);
+		// If a model exists, try to subscribe the formula
+		if (currentModel != null) {
+			subscribeFormula(formula, currentModel);
+		}
+	}
+
+	public Object executeOperation(final Map<String, String[]> params) {
+		String op = params.get("op")[0];
+		String predicate = params.get("predicate")[0];
+		if (predicate.isEmpty()) {
+			predicate = "1=1";
+		}
+		Trace currentTrace = selector.getCurrentTrace();
+		try {
+			Trace newTrace = currentTrace.add(op, predicate);
+			selector.replaceTrace(currentTrace, newTrace);
+		} catch (BException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	// ------------------
 	
 }

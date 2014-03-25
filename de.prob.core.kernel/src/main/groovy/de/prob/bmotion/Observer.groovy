@@ -37,7 +37,7 @@ class Observer implements IBMotionScript {
 					if(attr.getAsString() == 'html') {
 						return '\$("'+selector+'").html("'+fvalue+'")'
 					} else {
-						return '\$("'+selector+'").attr("'+mustacheRender(attr.getAsString(),pmap)+'","'+fvalue+'")'
+						return '\$("'+selector+'").attr("'+mustacheRender(attr.getAsString(),scope)+'","'+fvalue+'")'
 					}
 				}
 			}
@@ -81,14 +81,14 @@ class Observer implements IBMotionScript {
 		opList.each { op ->
 			def fullOp = getOpString(op)
 			return observer.objs.each { obj ->
-				def events = mustacheRender(obj.group.getAsString(),scope)
+				def events = mustacheRender(obj.exp.getAsString(),scope)
 				events = events.replace("{","").replace("}", "")
 				events = events.split(",")
 				if(events.contains(fullOp)) {
 					def pmap = [:]
-					op.getParams().eachWithIndex() { v, i -> pmap.put(getCharForNumber(i+1),v) };
+					op.getParams().eachWithIndex() { v, i -> pmap.put("p"+(i+1),v) };
 					pmap.put("Event", op.getName())
-					m = m + obj.items.collect { item ->
+					m = m + obj.actions.collect { item ->
 						def selector = mustacheRender(item.selector.getAsString(),pmap)
 						selectors.add("'" + selector +  "'")
 						def fvalue = translateValue(mustacheRender(item.value.getAsString(),pmap+scope))

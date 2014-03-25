@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,6 +60,8 @@ public class BMotionStudioServlet extends HttpServlet {
 			.newFixedThreadPool(3);
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
+	private final String[] supportedFormalism = new String[] { "b", "eventb",
+			"csp" };
 
 	@Inject
 	public BMotionStudioServlet(@Sessions Map<String, ISession> sessions) {
@@ -105,10 +106,11 @@ public class BMotionStudioServlet extends HttpServlet {
 		submit(command);
 	}
 	
-	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession) {
+	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession,
+			int port) {
 
 		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
-		String baseHtml = getBaseHtml(bmsSession);
+		String baseHtml = getBaseHtml(bmsSession, port);
 
 		Document templateDocument = Jsoup.parse(templateHtml);
 		templateDocument.outputSettings().prettyPrint(false);
@@ -162,6 +164,7 @@ public class BMotionStudioServlet extends HttpServlet {
 	private void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, BMotionStudioSession bmsSession) {
 
+		int port = req.getLocalPort();
 		String sessionId = bmsSession.getSessionUUID().toString();
 		String templatePath = bmsSession.getTemplatePath();
 		File templateFile = new File(templatePath);
@@ -189,14 +192,14 @@ public class BMotionStudioServlet extends HttpServlet {
 		// Ugly ...
 		if (fullRequestPath.endsWith(".html")) {
 			if (req.getParameter("editor") != null) {
-				URL editorPath = getClass().getResource(
-						"/ui/bmsview/bms-editor/index.html");
 				resp.setCharacterEncoding("UTF-8");
-				String render = WebUtils.render(editorPath.getPath(),
+				String render = WebUtils.render(
+						"ui/bmsview/bms-editor/index.html",
 						WebUtils.wrap("templatePath", templatePath));
 				stream = new ByteArrayInputStream(render.getBytes());
 			} else {
-				String html = buildBMotionStudioRunPage((BMotionStudioSession) bmsSession);
+				String html = buildBMotionStudioRunPage(
+						(BMotionStudioSession) bmsSession, port);
 				stream = new ByteArrayInputStream(html.getBytes());
 			}
 		}
@@ -368,6 +371,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			HttpServletResponse resp) throws ServletException, IOException {
 
 		String templatePath = req.getParameter("template");
+		String lang = req.getParameter("lang");
 
 		// Create a new BMotionStudioSession
 		BMotionStudioSession bmsSession = ServletContextListener.INJECTOR
@@ -379,12 +383,14 @@ public class BMotionStudioServlet extends HttpServlet {
 		// Prepare redirect ...
 		Map<String, String[]> parameterMap = req.getParameterMap();
 
-		// Set template path in BMotionStudioSession
+		// Set template path and language in BMotionStudioSession
 		bmsSession.setTemplatePath(templatePath);
+		bmsSession.setLanguage(lang);
 		// Build up parameter string and add parameters to
 		// BMotionStudioSession
 		StringBuilder parameterString = new StringBuilder();
 		for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
+			bmsSession.addParameter(e.getKey(), e.getValue()[0]);
 			parameterString.append("&" + e.getKey());
 			if (!e.getValue()[0].isEmpty())
 				parameterString.append("=" + e.getValue()[0]);
@@ -438,8 +444,12 @@ public class BMotionStudioServlet extends HttpServlet {
 		if (templatePath == null)
 			errors.add("Please enter a template.");
 
-		if (lang == null)
+		if (lang != null) {
+			if (!Arrays.asList(supportedFormalism).contains(lang))
+				errors.add("The formalism " + lang + " is not supported.");
+		} else {
 			errors.add("Please enter a formalism (e.g. b or csp).");
+		}
 
 		if (templatePath != null) {
 			String fileExtension = Files.getFileExtension(templatePath);
@@ -505,9 +515,10 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 	}
 
-	private String getBaseHtml(BMotionStudioSession bmsSession) {
+	private String getBaseHtml(BMotionStudioSession bmsSession, int port) {
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
-				.toString());
+				.toString(), "port", port, "template", bmsSession
+				.getTemplatePath(), "lang", bmsSession.getLanguage());
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 
