@@ -83,7 +83,7 @@ class Observer implements IBMotionScript {
 				events = events.split(",")
 				if(events.contains(fullOp)) {
 					def pmap = [:]
-					op.getParams().eachWithIndex() { v, i -> pmap.put("p"+(i+1),v) };
+					op.getParams().eachWithIndex() { v, i -> pmap.put("a"+(i+1),v) };
 					pmap.put("Event", op.getName())	
 					m = m + obj.actions.collect { item ->
 						def fselector = mustacheRender(item.selector.getAsString(),pmap)
