@@ -19,7 +19,7 @@ public class ModelDir {
 	}
 
 	def appendToFile(String fileName, String text) {
-		getFile(fileName) << text
+		getFile(fileName) << "$text\n"
 	}
 
 	def clearFile(String fileName) {
@@ -31,7 +31,7 @@ public class ModelDir {
 	}
 
 	def File getFile(String fileName) {
-		if(files.contains(fileName)) {
+		if(files.containsKey(fileName)) {
 			return files[fileName]
 		}
 		def f = new File("${dir.absolutePath}/$fileName")

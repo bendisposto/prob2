@@ -89,6 +89,10 @@ public abstract class AbstractModel extends AbstractElement {
 		return modelFile;
 	}
 
+	public ModelDir getModelDir() {
+		return modelDir
+	}
+
 	def getProperty(final String name) {
 		return components.get(name)
 	}

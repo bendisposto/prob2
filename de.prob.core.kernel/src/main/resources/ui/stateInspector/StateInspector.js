@@ -3,8 +3,8 @@ StateInspector = (function() {
 	var session = Session();
 	var cm = null;
 	;
-	var history = [];
-	var hp = null;
+	history = [];
+	hp = null;
 
 	var editorkeys = function() {
 		return {
@@ -14,32 +14,32 @@ StateInspector = (function() {
 				return true;
 			},
 			'Enter' : function(cm) {
-				hp = null;
+				this.hp = null;
 				var code = cm.getValue();
 //				console.log("submit: '" + code + "'")
 				session.sendCmd("evaluate", {
 					"code" : code
 				})
-				history.push(code);
+				this.history.push(code)
 				cm.setValue("")
 				return false;
 			},
 			'Up' : function(cm) {
 				if (cm.getCursor().line == 0) {
 //					console.log("History up")
-					if (hp == null) {
-						hp = history.length;
+					if (this.hp == null) {
+						this.hp = this.history.length;
 					}
-					if (hp >= 0) {
-						if (hp > 0) {
-							hp--
+					if (this.hp >= 0) {
+						if (this.hp > 0) {
+							this.hp--
 						}
-						cm.setValue(history[hp])
+						cm.setValue(this.history[this.hp])
 						cm.se
 					}
 
 				} else
-					hp = null;
+					this.hp = null;
 				return CodeMirror.Pass;
 				;
 			},
@@ -47,10 +47,10 @@ StateInspector = (function() {
 				var cnt = cm.doc.lineCount();
 				if (cm.getCursor().line == cnt - 1) {
 //					console.log("History down")
-					if (hp != null) {
-						if (hp < history.length - 1) {
-							hp++
-							cm.setValue(history[hp])
+					if (this.hp != null) {
+						if (this.hp < this.history.length - 1) {
+							this.hp++
+							cm.setValue(this.history[this.hp])
 						} else {
 							cm.setValue("")
 						}
@@ -86,6 +86,11 @@ StateInspector = (function() {
 		}
 	}
 
+	function updateHistory(history) {
+		this.history = history
+		this.hp = this.history.length
+	}
+
 	function showresult(data) {
 		var output = session.render("/ui/stateInspector/shell_answer.html", data)
 		$(".outbox").append(output)
@@ -118,11 +123,12 @@ StateInspector = (function() {
     }
 
 	extern.setModel = function(data) {
-		setModel(JSON.parse(data.components));
-		updateValues(JSON.parse(data.values));
+		setModel(JSON.parse(data.components))
+		updateValues(JSON.parse(data.values))
+		updateHistory(JSON.parse(data.history))
 	}
 	extern.updateValues = function(data) {
-		updateValues(JSON.parse(data.values));
+		updateValues(JSON.parse(data.values))
 	}
 	extern.clearInput = clearInput;
 

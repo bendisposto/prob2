@@ -39,6 +39,7 @@ import de.prob.web.WebUtils;
 public class StateInspector extends AbstractSession implements
 		IAnimationChangeListener {
 
+	private static final String HISTORY_FILE_NAME = "stateInspectorRepl";
 	List<IEvalElement> formulasForEvaluating = new ArrayList<IEvalElement>();
 	Trace currentTrace;
 	AbstractModel currentModel;
@@ -56,14 +57,24 @@ public class StateInspector extends AbstractSession implements
 		if (currentModel != null && currentTrace != null) {
 			Map<String, Object> extracted = extractModel(currentModel);
 			Object values = calculateFormulas(currentTrace);
-			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
-					"components", WebUtils.toJson(extracted), "values",
-					WebUtils.toJson(values)));
+			submit(WebUtils.wrap(
+					"cmd",
+					"StateInspector.setModel",
+					"components",
+					WebUtils.toJson(extracted),
+					"values",
+					WebUtils.toJson(values),
+					"history",
+					WebUtils.toJson(currentModel.getModelDir().getLines(
+							HISTORY_FILE_NAME))));
 		}
 	}
 
 	public Object evaluate(final Map<String, String[]> params) {
 		String code = params.get("code")[0];
+		currentModel.getModelDir().appendToFile(HISTORY_FILE_NAME, code);
+
+		// TODO: What happens if we try to use CSP or EventB???
 		Object eval = currentTrace.getCurrentState().eval(new ClassicalB(code));
 		return WebUtils.wrap("cmd", "StateInspector.result", "code", code,
 				"result", eval.toString());
@@ -97,9 +108,16 @@ public class StateInspector extends AbstractSession implements
 				registerFormulas(currentModel);
 
 				Object calculatedValues = calculateFormulas(currentTrace);
-				submit(WebUtils.wrap("cmd", "StateInspector.setModel",
-						"components", WebUtils.toJson(extracted), "values",
-						WebUtils.toJson(calculatedValues)));
+				submit(WebUtils.wrap(
+						"cmd",
+						"StateInspector.setModel",
+						"components",
+						WebUtils.toJson(extracted),
+						"values",
+						WebUtils.toJson(calculatedValues),
+						"history",
+						WebUtils.toJson(currentModel.getModelDir().getLines(
+								HISTORY_FILE_NAME))));
 				return;
 			}
 
@@ -156,14 +174,16 @@ public class StateInspector extends AbstractSession implements
 		Map<String, AbstractElement> modelComponents = m.getComponents();
 		if (modelComponents != null) {
 			for (Entry<String, AbstractElement> e : modelComponents.entrySet()) {
-				components.add(extractComponent(m.getStatespace(), e.getKey(), e.getValue()));
+				components.add(extractComponent(m.getStatespace(), e.getKey(),
+						e.getValue()));
 			}
 		}
 		extracted.put("components", components);
 		return extracted;
 	}
 
-	private Object extractComponent(StateSpace s, final String name, final AbstractElement e) {
+	private Object extractComponent(final StateSpace s, final String name,
+			final AbstractElement e) {
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> kids = new ArrayList<Object>();
 		if (e instanceof Context) {
@@ -180,7 +200,8 @@ public class StateInspector extends AbstractSession implements
 		return extracted;
 	}
 
-	private Object extractElement(StateSpace s, final AbstractElement parent,
+	private Object extractElement(final StateSpace s,
+			final AbstractElement parent,
 			final Class<? extends AbstractElement> c) {
 		Map<String, Object> extracted = new HashMap<String, Object>();
 		List<Object> kids = new ArrayList<Object>();
@@ -188,12 +209,12 @@ public class StateInspector extends AbstractSession implements
 		for (AbstractElement abstractElement : children) {
 			if (abstractElement instanceof IEval) {
 				IEvalElement formula = ((IEval) abstractElement).getEvaluate();
-				if(s.isSubscribed(formula)) {
+				if (s.isSubscribed(formula)) {
 					Map<String, String> wrap = WebUtils.wrap("code",
 							unicode(formula.getCode()), "id",
 							formula.getFormulaId().uuid);
 					kids.add(wrap);
-					formulasForEvaluating.add(formula);					
+					formulasForEvaluating.add(formula);
 				}
 			}
 		}
