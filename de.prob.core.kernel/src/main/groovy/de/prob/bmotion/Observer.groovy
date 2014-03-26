@@ -15,6 +15,7 @@ class Observer implements IBMotionScript {
 	def formulas
 	def mf = new DefaultMustacheFactory()
 	def scope = [:]
+	def builder = new groovy.json.JsonBuilder()
 	
 	def Observer(bmssession) {
 		this.bmssession = bmssession
@@ -24,27 +25,28 @@ class Observer implements IBMotionScript {
 	def EvalObserver(observer, formulas, trace) {
 		def m = []
 		observer.objs.each { obj ->
-			def selector = obj.group.getAsString()
-			m = m + obj.items.collect { item ->
-				def attr = item.attr
-				def value = item.value
-				def predicate = true
-				if(item.predicate != null && !item.predicate.getAsString().isEmpty()) {
-					predicate = mustacheRender(item.predicate.getAsString(),scope).toBoolean();
-				}
-				if(predicate & attr != null & value != null) {
-					def fvalue = translateValue(mustacheRender(value.getAsString(),scope))
-					if(attr.getAsString() == 'html') {
-						return '\$("'+selector+'").html("'+fvalue+'")'
-					} else {
-						return '\$("'+selector+'").attr("'+mustacheRender(attr.getAsString(),scope)+'","'+fvalue+'")'
-					}
-				}
+			def fselector = translateValue(mustacheRender(obj.selector.getAsString(),scope))
+			m = m + obj.actions.collect { item ->
+				def fattr = translateValue(mustacheRender(item.attr.getAsString(),scope))
+				def fvalue = translateValue(mustacheRender(item.value.getAsString(),scope))
+				def fpredicate = true
+				if(!item.predicate.getAsString().isEmpty())
+					fpredicate = bmssession.eval(item.predicate.getAsString())	
+				if(fpredicate) {
+					def data = [
+						selector: fselector,
+						attr: fattr,
+						value: fvalue
+					]
+					return data
+				}				
 			}
 			return m
 		}
-		def clean = m.findAll { item -> item != null }
-		bmssession.toGui(m)
+		bmssession.toGui(builder {
+			cmd 'bms.triggerObserverActions'
+			actions builder.call(m.findAll { item -> item != null })
+		})
 	}
 
 	def listenOperation(observer, formulas, trace) {
@@ -69,40 +71,38 @@ class Observer implements IBMotionScript {
 		bmssession.toGui(["initExecuteOperationObserver("+jsonObserver+")"])
 	}
 
-	def getCharForNumber(i) {
-		return i > 0 && i < 27 ? String.valueOf((char)(i + 64)) : null;
-	}
-
 	def CspEventObserver(observer, formulas, trace) {
 		trace.ensureOpInfosEvaluated()
 		def opList = trace.getCurrent().getOpList()		
-		def selectors = []
 		def m = []
 		opList.each { op ->
 			def fullOp = getOpString(op)
 			return observer.objs.each { obj ->
-				def events = mustacheRender(obj.exp.getAsString(),scope)
+				def events = bmssession.eval(obj.exp.getAsString())
 				events = events.replace("{","").replace("}", "")
 				events = events.split(",")
 				if(events.contains(fullOp)) {
 					def pmap = [:]
 					op.getParams().eachWithIndex() { v, i -> pmap.put("p"+(i+1),v) };
-					pmap.put("Event", op.getName())
+					pmap.put("Event", op.getName())	
 					m = m + obj.actions.collect { item ->
-						def selector = mustacheRender(item.selector.getAsString(),pmap)
-						selectors.add("'" + selector +  "'")
-						def fvalue = translateValue(mustacheRender(item.value.getAsString(),pmap+scope))
-						def attr = item.attr.getAsString()
-						if(attr == 'html') {
-							return '\$("'+selector+'").html("'+fvalue+'")'
-						} else {
-							return '\$("'+selector+'").attr("'+mustacheRender(item.attr.getAsString(),pmap)+'","'+fvalue+'")'
-						}
+						def fselector = mustacheRender(item.selector.getAsString(),pmap)
+						def fvalue = mustacheRender(item.value.getAsString(),pmap)
+						def fattr = mustacheRender(item.attr.getAsString(),pmap)
+						def data = [
+						  selector: fselector,
+						  attr: fattr,
+						  value: fvalue
+						]
+						return data
 					}
 				}
 			}
 		}
-		bmssession.toGui(["resetCSP("+selectors+")"]+m);
+		bmssession.toGui(builder {
+			cmd 'bms.triggerObserverActions'
+			actions builder.call(m.findAll { item -> item != null })
+		})	
 	}
 
 	def getOp(trace,name,pred) {

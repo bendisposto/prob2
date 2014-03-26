@@ -75,7 +75,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private final Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
 
-	private final Map<String, String> cachedCSPString = new HashMap<String, String>();
+	private final Map<String, Object> cachedCspResults = new HashMap<String, Object>();
 
 	private final Observer defaultObserver;
 	
@@ -236,7 +236,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				}
 			}
 			// Add all cached CSP formulas
-			formulas.putAll(cachedCSPString);
+			formulas.putAll(cachedCspResults);
 			// Trigger all registered script listeners with collected formulas
 			for (IBMotionScript s : scriptListeners) {
 				s.traceChanged(currentTrace, formulas);
@@ -319,17 +319,19 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 	}
 
-	private void subscribeFormula(final String formula,
+	private Object subscribeFormula(final String formula,
 			final AbstractModel model) {
 
+		Object result = null;
+		
 		try {
-
+			
 			StateSpace s = model.getStatespace();
 			IEvalElement evalElement = null;
 
 			if (model instanceof CSPModel) {
 				
-				if (cachedCSPString.get(formula) == null) {
+				if (cachedCspResults.get(formula) == null) {
 					evalElement = new CSP(formula, (CSPModel) model);
 					IEvalResult evaluationResult = currentTrace
 							.evalCurrent(evalElement);
@@ -337,8 +339,8 @@ public class BMotionStudioSession extends AbstractSession implements
 						if (evaluationResult instanceof ComputationNotCompletedResult) {
 							// TODO: do something .....
 						} else if (evaluationResult instanceof EvalResult) {
-							cachedCSPString.put(formula,
-									((EvalResult) evaluationResult).getValue());
+							result = ((EvalResult) evaluationResult).getValue();
+							cachedCspResults.put(formula, result);
 						}
 					}
 				}
@@ -353,6 +355,10 @@ public class BMotionStudioSession extends AbstractSession implements
 				formulasForEvaluating.put(formula, evalElement);
 				try {
 					s.subscribe(this, evalElement);
+					Map<IEvalElement, IEvalResult> valuesAt = s
+							.valuesAt(currentTrace.getCurrentState());
+					return translateValue(((EvalResult) valuesAt
+							.get(evalElement)).getValue());
 				} catch (Exception e) {
 				}
 			}
@@ -362,6 +368,8 @@ public class BMotionStudioSession extends AbstractSession implements
 			e.printStackTrace();
 		}
 
+		return result;
+		
 	}
 
 	private Object translateValue(final String val) {
@@ -465,18 +473,33 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 	
 	// ---------- BMS API
-	public void toGui(final Object values) {
-		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
-				values));
+	// public void toGui(final Object values) {
+	// submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
+	// values));
+	// }
+	
+	public void toGui(final Object json) {
+		submit(json);
 	}
 
-	public void registerFormula(final String formula) {
+	public Object registerFormula(final String formula) {
+		Object result = null;
 		// Register a fresh new formula
 		formulasForEvaluating.put(formula, null);
 		// If a model exists, try to subscribe the formula
-		if (currentModel != null) {
-			subscribeFormula(formula, currentModel);
-		}
+		if (currentModel != null)
+			result = subscribeFormula(formula, currentModel);
+		return result;
+	}
+	
+	public Object eval(final String formula) throws Exception {
+		if (currentModel == null)
+			throw new Exception("No model loaded. Evaluating " + formula
+					+ " not possible.");
+		Object result = formulas.get(formula);
+		if (result == null)
+			result = subscribeFormula(formula, currentModel);
+		return result;
 	}
 
 	public Object executeOperation(final Map<String, String[]> params) {

@@ -248,7 +248,17 @@ bms = (function() {
 			eval(v)
 		}
 	}
-
+	
+	extern.triggerObserverActions = function(data) {
+		$.each(data.actions, function(i,action) {
+			if(action.attr == 'html') {
+				$(action.selector).html(action.value)
+			} else {
+				$(action.selector).attr(action.attr,action.value)
+			}
+		});
+	}
+	
 	return extern;
 
 }())
