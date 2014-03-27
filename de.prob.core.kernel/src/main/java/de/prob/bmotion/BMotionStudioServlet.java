@@ -516,9 +516,11 @@ public class BMotionStudioServlet extends HttpServlet {
 	}
 
 	private String getBaseHtml(BMotionStudioSession bmsSession, int port) {
+		String templatePath = bmsSession.getTemplatePath();
+		String fileName = new File(templatePath).getName();
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
-				.toString(), "port", port, "template", bmsSession
-				.getTemplatePath(), "lang", bmsSession.getLanguage());
+				.toString(), "port", port, "template", templatePath, "lang",
+				bmsSession.getLanguage(), "templatefile", fileName);
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 
