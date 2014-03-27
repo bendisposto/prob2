@@ -43,7 +43,7 @@ project(':de.prob.core.rodin'){
 	task generateMF()<<{
 		
 		prepareMF("de.prob.ui/META-INF/MANIFEST.MF", "de.prob.ui/META-INF/MF.MF")	
-		prepareMF("de.prob.ui/META-INF/MANIFEST.MF", "de.prob.ui/META-INF/MF.MF")
+		//prepareMF("de.prob.rodin.core/META-INF/MANIFEST.MF", "de.prob.rodin.core/META-INF/MF.MF")
 	}
 	
 }
