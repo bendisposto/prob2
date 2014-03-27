@@ -38,7 +38,7 @@ sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as gr
 
 dependencies {
 
-	runtime group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
+//	runtime group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
 	
 }
 
