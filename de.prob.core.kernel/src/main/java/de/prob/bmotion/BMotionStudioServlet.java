@@ -237,7 +237,7 @@ public class BMotionStudioServlet extends HttpServlet {
 				if (e.attr("id").isEmpty())
 					e.attr("id", UUID.randomUUID().toString());
 			}
-			
+		
 			fixSvgImageTags(templateDocument);
 			
 			Element svgElement = templateDocument.getElementsByTag("svg")
@@ -295,8 +295,13 @@ public class BMotionStudioServlet extends HttpServlet {
 		Element newSvgElement = tmpParsed.getElementsByTag("svg").first();
 		newSvgElement.attr("id", svgElementId);
 		
+		// Try first to get the svg element by id. If no exists, try to get the
+		// first existing svg element in document
 		Element orgSvgElement = templateDocument.getElementById(svgElementId);
-		orgSvgElement.replaceWith(newSvgElement);
+		if (orgSvgElement == null)
+			orgSvgElement = templateDocument.getElementsByTag("svg").first();
+		if (orgSvgElement != null)
+			orgSvgElement.replaceWith(newSvgElement);
 
 		// Prepare json data
 		GsonBuilder gsonBuilder = new GsonBuilder();
