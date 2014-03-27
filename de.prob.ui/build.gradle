@@ -39,8 +39,7 @@ dependencies {
 
 	compile(group: 'javafx', name: 'javafx.mvn', version: '2.2.0-SNAPSHOT')
 	
-	//compile group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
-
+	runtime group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
 
 }
 
