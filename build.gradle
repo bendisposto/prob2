@@ -21,7 +21,7 @@ task wrapper(type: Wrapper) {
 
 
 
-project(':de.prob.core.rodin'){
+project(':de.prob.ui'){
 	
 	// Currently not in use
 	task switchToBuildMF()<<{
@@ -44,8 +44,8 @@ project(':de.prob.core.rodin'){
 		String exports = getExportedPackages()
 		//println exports
 		
-		def oldMF = new File( workspacePath+"de.prob.core.rodin/META-INF/MANIFEST.MF" ).getText("UTF-8")
-		def mf = new File( workspacePath+"de.prob.core.rodin/META-INF/MF.MF" )
+		def oldMF = new File( workspacePath+"de.prob.ui/META-INF/MANIFEST.MF" ).getText("UTF-8")
+		def mf = new File( workspacePath+"de.prob.ui/META-INF/MF.MF" )
 		mf.delete()
 		def lib = getLibs()
 		
@@ -60,9 +60,9 @@ project(':de.prob.core.rodin'){
 			//}																//
 		}
 		oldMF.eachLine(setExports)
-		def oldManiF = new File(workspacePath+"de.prob.core.rodin/META-INF/MANIFEST.MF")
+		def oldManiF = new File(workspacePath+"de.prob.ui/META-INF/MANIFEST.MF")
 		oldManiF.delete()
-		mf.renameTo(workspacePath+"de.prob.core.rodin/META-INF/MANIFEST.MF")
+		mf.renameTo(workspacePath+"de.prob.ui/META-INF/MANIFEST.MF")
 			
 	}
 	
@@ -123,11 +123,11 @@ println """\
 }
 
 
-// collects the Libs from de.prob.core.rodin for the build
+// collects the Libs from de.prob.ui for the build
 def getLibs(){
 	def dependencyList = []
 	//try{
-		def dir = new File(workspacePath+"de.prob.core.rodin"+"/"+dependencyFolder).eachFile() { file->  		
+		def dir = new File(workspacePath+"de.prob.ui"+"/"+dependencyFolder).eachFile() { file->  		
 	    	if( !(file.getName() ==~/.*\.txt/) ){
 				dependencyList << file.getName()  
 			}

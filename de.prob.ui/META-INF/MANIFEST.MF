@@ -8,7 +8,6 @@ Bundle-Vendor: STUPS group
 Bundle-Activator: de.prob.ui.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
- de.prob.core.rodin;bundle-version="1.0.0",
  de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional,
  at.bestsolution.efxclipse.runtime.javafx;bundle-version="2.2.0",
  org.eclipse.core.resources;bundle-version="3.7.100"
