@@ -41,7 +41,6 @@ dependencies {
 	
 	runtime group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
 
-
 }
 
 
