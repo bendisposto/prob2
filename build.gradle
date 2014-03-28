@@ -42,21 +42,21 @@ project(':de.prob.core.rodin'){
 	
 	task generateMF()<<{
 		
-		prepareMF("de.prob.ui/META-INF/MANIFEST.MF", "de.prob.ui/META-INF/MF.MF")	
+		prepareMF("de.prob.ui")	
 		//prepareMF("de.prob.rodin.core/META-INF/MANIFEST.MF", "de.prob.rodin.core/META-INF/MF.MF")
 	}
 	
 }
 
 
-void prepareMF(def MF, def MF_C){
+void prepareMF(def MF){
 	String exports = getExportedPackages()
 	//println exports
 	
-	def oldMF = new File( workspacePath + MF).getText("UTF-8")
-	def mf = new File( workspacePath + MF_C)
+	def oldMF = new File( workspacePath + MF + "/META-INF/MANIFEST.MF").getText("UTF-8")
+	def mf = new File( workspacePath + MF + "/META-INF/MF.MF")
 	mf.delete()
-	def lib = getLibs()
+	def lib = getLibs(MF)
 	
 	def setExports = { 
 		if( it ==~ /Export-Package:.*/ )  it = it + ",\n" + exports
@@ -128,11 +128,11 @@ println """\
 }
 
 
-// collects the Libs from de.prob.core.rodin for the build
-def getLibs(){
+// collects the Libs for the build
+def getLibs(String MF){
 	def dependencyList = []
 	//try{
-		def dir = new File(workspacePath+"de.prob.core.rodin"+"/"+dependencyFolder).eachFile() { file->  		
+		def dir = new File(workspacePath+MF+"/"+dependencyFolder).eachFile() { file->  		
 	    	if( !(file.getName() ==~/.*\.txt/) ){
 				dependencyList << file.getName()  
 			}
