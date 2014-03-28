@@ -5,7 +5,7 @@ bms = (function() {
 
 	$(function() {
 		initDialog($("#events_view"),$("#events_iframe"),$("#bt_open_events_view"),"http://localhost:"+bms.port+"/sessions/Events",true);
-		initDialog($("#history_view"),$("#history_iframe"),$("#bt_open_history_view"),"http://localhost:"+bms.port+"/sessions/CurrentTrace",false);
+		initDialog($("#history_view"),$("#history_iframe"),$("#bt_open_history_view"),"http://localhost:"+bms.port+"/sessions/CurrentTrace",true);
 		initDialog($("#animation_view"),$("#animation_iframe"),$("#bt_open_animation_view"),"http://localhost:"+bms.port+"/sessions/CurrentAnimations",false);
 	});
 	
