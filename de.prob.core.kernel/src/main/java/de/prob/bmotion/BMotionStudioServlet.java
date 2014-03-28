@@ -213,6 +213,9 @@ public class BMotionStudioServlet extends HttpServlet {
 		String templatePath = req.getParameter("template");
 		String lang = req.getParameter("lang");
 
+		List<String> parts = new PartList(req.getRequestURI().split("/"));
+		String sessionID = parts.get(2);
+
 		String svgString = "";
 		String svgId = UUID.randomUUID().toString();
 
@@ -237,9 +240,9 @@ public class BMotionStudioServlet extends HttpServlet {
 				if (e.attr("id").isEmpty())
 					e.attr("id", UUID.randomUUID().toString());
 			}
-		
+
 			fixSvgImageTags(templateDocument);
-			
+
 			Element svgElement = templateDocument.getElementsByTag("svg")
 					.first();
 
@@ -262,11 +265,13 @@ public class BMotionStudioServlet extends HttpServlet {
 			}
 
 		}
-		
+
 		// Send svg string and json data to client ...
 		resp.setContentType("application/json");
 		toOutput(resp, WebUtils.toJson(WebUtils.wrap("svg", svgString, "svgid",
-				svgId, "json", jsonRendered, "lang", lang)));
+				svgId, "sessionid", sessionID, "json", jsonRendered, "lang",
+				lang, "templatefile", templateFile.getName(), "templatepath",
+				templatePath)));
 
 	}
 	

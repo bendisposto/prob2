@@ -146,6 +146,10 @@
     		<div class="menu_item" id="tool_source">Source... <span class="shortcut">⌘U</span></div>
     </div>
   </div>
+  
+  <div class="menu">
+  	<div id="tool_startvis" class="menu_title">Visualisation</div>
+  </div>
     
 </div>
 
@@ -800,7 +804,7 @@ $.ajax({
     	if(data.svg.length > 0)
     		methodDraw.loadFromString(data.svg)
     		
-    	methodDraw.setWorkingSvgId(data.svgid)
+    	methodDraw.setVisualisationData(data)
        	methodDraw.initObservers(JSON.parse(data.json).observers)
        	
     },

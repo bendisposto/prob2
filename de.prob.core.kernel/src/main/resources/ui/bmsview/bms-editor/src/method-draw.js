@@ -91,8 +91,13 @@
 		
 		// Observer model
 		var observerModel = null;
-		var workingSvgId = null;
 		
+		var workingSvgId = null;
+		var workingSessionId = null;
+		var workingLanguage = null;
+		var workingTemplateFile = null;
+		var workingTemplatePath = null;
+				
 		var curPrefs = {}; //$.extend({}, defaultPrefs);
 		var customHandlers = {};
 		Editor.curConfig = curConfig;
@@ -2391,7 +2396,7 @@
 				});
 			};
 
-			var clickSavedata = function(){
+			var clickSavedata = function() {
 				$.ajax({
 				    type: 'POST',
 				    data: {
@@ -2412,6 +2417,10 @@
 				        alert("error: "+data+" status: "+status+" er:"+er);
 				    }
 				});
+			};
+					
+			var clickStartVisualisation = function() {
+				window.location = workingTemplateFile + "?template=" + workingTemplatePath + "&lang="+ workingLanguage
 			};
 			
 			var clickBold = function(){
@@ -3299,6 +3308,7 @@
 					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: ['Z', true]},
 					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey + 'N', true]},
 					{sel:'#tool_savedata', fn: clickSavedata, evt: 'click', key: [modKey + 'S', true]},
+					{sel:'#tool_startvis', fn: clickStartVisualisation, evt: 'click', key: [modKey + 'R', true]},
 					//{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey + 'S', true]},
 					{sel:'#tool_export', fn: clickExport, evt: 'mouseup'},
 					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup'},
@@ -4234,10 +4244,14 @@
 		    return newList; 
 		}
 		
-		Editor.setWorkingSvgId = function(svgid) {
-			workingSvgId = svgid;
+		Editor.setVisualisationData = function(data) {
+			workingSvgId = data.svgid;
+			workingSessionId = data.sessionid;
+			workingLanguage = data.lang;
+			workingTemplateFile = data.templatefile;
+			workingTemplatePath = data.templatepath;
 		}
-		
+
 		function refreshAccordion() {
 			var container = $(".observer_objs")
 			if(container.attr("role") !== undefined) {
