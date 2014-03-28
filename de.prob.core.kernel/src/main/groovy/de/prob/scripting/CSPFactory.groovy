@@ -1,6 +1,5 @@
 package de.prob.scripting
 
-import java.util.HashMap.Entry
 
 import com.google.inject.Inject
 import com.google.inject.Provider
@@ -10,7 +9,7 @@ import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.LoadCSPCommand
 import de.prob.animator.command.SetPreferenceCommand
 import de.prob.animator.command.StartAnimationCommand
-import de.prob.model.representation.CSPModel;
+import de.prob.model.representation.CSPModel
 
 class CSPFactory {
 
@@ -36,9 +35,7 @@ class CSPFactory {
 	private void startAnimation(final CSPModel cspModel, final File f, final Map<String, String> prefs) {
 		def cmds = [];
 
-		for (Entry<String,String> pref : prefs.entrySet()) {
-			cmds << new SetPreferenceCommand(pref.getKey(), pref.getValue())
-		}
+		prefs.each { k,v -> cmds << new SetPreferenceCommand(k, v) }
 
 		def loadcmd = new LoadCSPCommand(f.getAbsolutePath());
 		cmds << loadcmd
