@@ -239,11 +239,11 @@
 <script type="text/html" id="EvalObserver">
 				<div class="observer_type">
   					<h4 data-bind="text: observer.type"></h4>
-					<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'group': 'group', 'actions' : [] }, true) }">Add Observer</a>
+					<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'selector': 'selector', 'actions' : [] }, true) }">Add Observer</a>
    				</div>
 				<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }">
- 			   		<div class="observer_obj" data-bind="attr: { oid: obj.group }">
-			   	 		<h3 class="observer_head" data-bind="text: obj.group"></h3>
+ 			   		<div class="observer_obj" data-bind="attr: { oid: obj.selector }">
+			   	 		<h3 class="observer_head" data-bind="text: obj.selector"></h3>
 						<div class="observer_content">
 							<div class="observer_menu_observer">
 								<a href="#" class="bt_observeritem bt_additem" title="Add action" alt="Add action" data-bind="click: function() { $root.addItem(obj.actions, {'predicate': '', 'attr': '', 'value' : ''}, false) }">Add action</a>
@@ -252,7 +252,7 @@
 							<table class="observer_item bordered" cellpadding="5">
 								<tr>
 									<td class="ra">Selector</td>
-									<td><a href="#" class="truncate" data-bind="editable: obj.group, editableOptions: { type: 'textarea' }"></a></td>
+									<td><a href="#" class="truncate" data-bind="editable: obj.selector, editableOptions: { type: 'textarea' }"></a></td>
 								</tr>
 							</table>
 							<div class="observer_items" data-bind="foreach: { data: obj.actions, as: 'item' }">
@@ -265,7 +265,7 @@
 									<tr><td class="ra">Predicate</td><td><a href="#" class="truncate" data-bind="editable: item.predicate, editableOptions: { type: 'textarea' }"></a></td></tr>
 									<tr><td class="ra">Attribute</td><td><a href="#" class="truncate" data-bind="editable: item.attr, editableOptions: { type: 'textarea' }"></a></td></tr>
 									<!--tr><td class="ra">Attribute</td><td>
-										<a href="#" class="truncate" data-bind="text: item.attr, attr: { selector: obj.group }, editable: item.attr, editableOptions: { type: 'select', source:  
+										<a href="#" class="truncate" data-bind="text: item.attr, attr: { selector: obj.selector }, editable: item.attr, editableOptions: { type: 'select', source:  
 										function() {
 											try {
 	    										var selector = $(this).attr('selector')
