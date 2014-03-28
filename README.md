@@ -7,6 +7,9 @@ The source code of the current ProB release is located at http://github.com/bend
 
 # Setting up a development environment
 
+ProB 2.0 requires Oracle JDK 7.
+Please note that openjdk 7 does not work. Java 8 is not yet tested.
+
 We assume, you have a fresh copy of Eclipse 4.2 and an empty workspace at hand. Furthermore, we assume that you have a recent version of gradle (http://www.gradle.org/) installed on your computer. Gradle 1.1 or newer will be sufficient.
 
 1. Install Groovy-Eclipse for Juno using the Eclipse Marketplace.
