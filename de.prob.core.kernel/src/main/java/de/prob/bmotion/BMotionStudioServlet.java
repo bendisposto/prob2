@@ -182,7 +182,6 @@ public class BMotionStudioServlet extends HttpServlet {
 		} catch (FileNotFoundException e1) {
 			// TODO Handle file not found exception!!!
 			// e1.printStackTrace();
-			return;
 		}
 
 		// Set correct mimeType
