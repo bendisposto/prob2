@@ -140,7 +140,7 @@ public class Api {
 			m = cspFactory.load(f, prefs);
 		} catch (ProBError error) {
 			throw new Exception(
-			"Could find CSP Parser. Perform 'upgrade cspm' to install cspm in your ProB lib directory");
+			"Could not find CSP Parser. Perform 'upgrade cspm' to install cspm in your ProB lib directory");
 		}
 		return m;
 	}
