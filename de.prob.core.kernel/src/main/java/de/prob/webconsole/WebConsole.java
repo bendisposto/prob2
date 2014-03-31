@@ -67,7 +67,8 @@ public class WebConsole {
 				.toExternalForm();
 		WebConsole.LOGGER.debug("External Form: " + warFile);
 
-		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/"))) {
+		if (!warFile.endsWith(".jar") && !warFile.endsWith("bin/")
+				&& (!warFile.endsWith("main/"))) {
 			warFile += "bin/";
 		}
 
