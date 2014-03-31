@@ -65,8 +65,6 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private String templatePath;
 	
-	private String language;
-	
 	private final ScriptEngine groovyScriptEngine;
 
 	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
@@ -81,9 +79,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private JsonElement json;
 	
-	private boolean modelStarted = false;
-	
-	private String modelFile;
+	private AbstractModel model;
 
 	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
@@ -155,19 +151,19 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initFormalModel() {
 
-		Object formalism = getParameterMap().get("lang");
 		Object machinePath = getParameterMap().get("machine");
 
-		if (machinePath != null && formalism != null) {
+		if (machinePath != null) {
 
 			File machineFile = new File(machinePath.toString());
 
 			if (!machineFile.isAbsolute())
 				machinePath = getTemplateFolder() + "/" + machinePath;
 
-			if (!modelStarted
-					|| (currentModel != null && !currentModel.getModelFile()
-							.getAbsolutePath().equals(machinePath))) {
+			String formalism = getFormalism(machinePath.toString());
+
+			if (model == null && formalism != null) {
+
 				try {
 					Method method = api.getClass().getMethod(
 							formalism + "_load", String.class);
@@ -175,8 +171,7 @@ public class BMotionStudioSession extends AbstractSession implements
 							machinePath);
 					StateSpace s = model.getStatespace();
 					selector.addNewAnimation(new Trace(s));
-					modelStarted = true;
-					setModelFile(s.getModel().getModelFile().getAbsolutePath());
+					this.model = model;
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (SecurityException e) {
@@ -221,9 +216,9 @@ public class BMotionStudioSession extends AbstractSession implements
 				return;
 			}
 
-			if (modelFile != null
-					&& modelFile.equals(trace.getModel().getModelFile()
-							.getAbsolutePath())) {
+			if (model != null
+					&& model.getModelFile().equals(
+							trace.getModel().getModelFile())) {
 
 				currentTrace = trace;
 				currentModel = trace.getModel();
@@ -474,21 +469,40 @@ public class BMotionStudioSession extends AbstractSession implements
 	public String getTemplatePath() {
 		return templatePath;
 	}
+
+	public AbstractModel getModel() {
+		return model;
+	}
+
+	public void setModel(AbstractModel model) {
+		this.model = model;
+	}
 	
-	public String getLanguage() {
-		return language;
+	public String getFormalism() {
+		String lang = null;
+		if (model instanceof CSPModel) {
+			return "csp";
+		} else if (model instanceof EventBModel) {
+			return "eventb";
+		} else if (model instanceof ClassicalBModel) {
+			return "b";
+		}
+		return lang;
 	}
+	
+	public String getFormalism(String machinePath) {
 
-	public void setLanguage(String language) {
-		this.language = language;
-	}
+		String lang = null;
+		if (machinePath.endsWith(".csp")) {
+			return "csp";
+		} else if (machinePath.endsWith(".buc") || machinePath.endsWith(".bcc")
+				|| machinePath.endsWith(".bum") || machinePath.endsWith(".bcm")) {
+			return "eventb";
+		} else if (machinePath.endsWith(".mch")) {
+			return "b";
+		}
+		return lang;
 
-	public String getModelFile() {
-		return modelFile;
-	}
-
-	public void setModelFile(String modelFile) {
-		this.modelFile = modelFile;
 	}
 	
 	// ---------- BMS API

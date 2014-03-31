@@ -61,9 +61,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			.newFixedThreadPool(3);
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
-	private final String[] supportedFormalism = new String[] { "b", "eventb",
-			"csp" };
-
+	
 	@Inject
 	public BMotionStudioServlet(@Sessions Map<String, ISession> sessions) {
 		this.sessions = sessions;
@@ -176,7 +174,7 @@ public class BMotionStudioServlet extends HttpServlet {
 
 		if (new File(fullRequestPath).isDirectory())
 			return;
-
+		
 		InputStream stream = null;
 		try {
 			stream = new FileInputStream(fullRequestPath);
@@ -207,11 +205,11 @@ public class BMotionStudioServlet extends HttpServlet {
 
 	}
 	
-	private void taskInit(HttpServletRequest req, HttpServletResponse resp) {
+	private void taskInit(HttpServletRequest req, HttpServletResponse resp,
+			BMotionStudioSession bmsSession) {
 
 		// Get parameters
 		String templatePath = req.getParameter("template");
-		String lang = req.getParameter("lang");
 
 		List<String> parts = new PartList(req.getRequestURI().split("/"));
 		String sessionID = parts.get(2);
@@ -220,12 +218,11 @@ public class BMotionStudioServlet extends HttpServlet {
 		String svgId = UUID.randomUUID().toString();
 
 		String jsonRendered = "{}";
-		if (lang != null) {
-			if (lang.equals("b") || lang.equals("eventb")) {
-				jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
-			} else if (lang.equals("csp")) {
-				jsonRendered = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
-			}
+		String formalism = bmsSession.getFormalism();
+		if (formalism.equals("b") || formalism.equals("eventb")) {
+			jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
+		} else if (formalism.equals("csp")) {
+			jsonRendered = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
 		}
 
 		File templateFile = new File(templatePath);
@@ -269,8 +266,8 @@ public class BMotionStudioServlet extends HttpServlet {
 		// Send svg string and json data to client ...
 		resp.setContentType("application/json");
 		toOutput(resp, WebUtils.toJson(WebUtils.wrap("svg", svgString, "svgid",
-				svgId, "sessionid", sessionID, "json", jsonRendered, "lang",
-				lang, "templatefile", templateFile.getName(), "templatepath",
+				svgId, "sessionid", sessionID, "json", jsonRendered,
+				"templatefile", templateFile.getName(), "templatepath",
 				templatePath)));
 
 	}
@@ -348,12 +345,18 @@ public class BMotionStudioServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
+		String uri = req.getRequestURI();
+		// Get session from URI
+		List<String> parts = new PartList(uri.split("/"));
+		String sessionID = parts.get(2);
+		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
+				.get(sessionID);
 		String task = req.getParameter("task");
 
 		if (task != null) {
 
 			if (task.equals("init")) {
-				taskInit(req, resp);
+				taskInit(req, resp, bmsSession);
 			} else if (task.equals("save")) {
 				taskSave(req, resp);
 			}
@@ -381,7 +384,6 @@ public class BMotionStudioServlet extends HttpServlet {
 			HttpServletResponse resp) throws ServletException, IOException {
 
 		String templatePath = req.getParameter("template");
-		String lang = req.getParameter("lang");
 
 		// Create a new BMotionStudioSession
 		BMotionStudioSession bmsSession = ServletContextListener.INJECTOR
@@ -393,9 +395,8 @@ public class BMotionStudioServlet extends HttpServlet {
 		// Prepare redirect ...
 		Map<String, String[]> parameterMap = req.getParameterMap();
 
-		// Set template path and language in BMotionStudioSession
+		// Set template path
 		bmsSession.setTemplatePath(templatePath);
-		bmsSession.setLanguage(lang);
 		// Build up parameter string and add parameters to
 		// BMotionStudioSession
 		StringBuilder parameterString = new StringBuilder();
@@ -426,25 +427,25 @@ public class BMotionStudioServlet extends HttpServlet {
 		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
 				.get(sessionID);
 
-		List<String> errors = validateRequest(req, resp);
-		if (!errors.isEmpty()) {
-			ByteArrayInputStream errorSiteStream = new ByteArrayInputStream(
-					getErrorHtml(errors).getBytes());
-			toOutput(resp, errorSiteStream);
-			return;
-		} else {
-			if (bmsSession == null) {
-				createNewSessionAndRedirect(req, resp);
+		if (bmsSession == null) {
+			List<String> errors = validateRequest(req, resp);
+			if (!errors.isEmpty()) {
+				ByteArrayInputStream errorSiteStream = new ByteArrayInputStream(
+						getErrorHtml(errors).getBytes());
+				toOutput(resp, errorSiteStream);
 				return;
 			} else {
-				String mode = req.getParameter("mode");
-				if ("update".equals(mode)) {
-					update(req, bmsSession);
-				} else if ("command".equals(mode)) {
-					executeCommand(req, resp, bmsSession);
-				} else {
-					delegateFileRequest(req, resp, bmsSession);
-				}
+				createNewSessionAndRedirect(req, resp);
+				return;
+			}
+		} else {
+			String mode = req.getParameter("mode");
+			if ("update".equals(mode)) {
+				update(req, bmsSession);
+			} else if ("command".equals(mode)) {
+				executeCommand(req, resp, bmsSession);
+			} else {
+				delegateFileRequest(req, resp, bmsSession);
 			}
 		}
 
@@ -456,20 +457,12 @@ public class BMotionStudioServlet extends HttpServlet {
 			HttpServletResponse resp) {
 
 		String templatePath = req.getParameter("template");
-		String lang = req.getParameter("lang");
 		String editor = req.getParameter("editor");
 
 		List<String> errors = new ArrayList<String>();
 
 		if (templatePath == null)
 			errors.add("Please enter a template.");
-
-		if (lang != null) {
-			if (!Arrays.asList(supportedFormalism).contains(lang))
-				errors.add("The formalism " + lang + " is not supported.");
-		} else {
-			errors.add("Please enter a formalism (e.g. b or csp).");
-		}
 
 		if (templatePath != null) {
 			String fileExtension = Files.getFileExtension(templatePath);
@@ -531,9 +524,8 @@ public class BMotionStudioServlet extends HttpServlet {
 		String fileName = new File(templatePath).getName();
 		String standalone = Main.standalone ? "yes" : "";
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
-				.toString(), "port", port, "template", templatePath, "lang",
-				bmsSession.getLanguage(), "templatefile", fileName,
-				"standalone", standalone);
+				.toString(), "port", port, "template", templatePath,
+				"templatefile", fileName, "standalone", standalone);
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 	
