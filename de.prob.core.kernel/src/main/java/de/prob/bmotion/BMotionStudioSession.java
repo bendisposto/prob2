@@ -225,8 +225,6 @@ public class BMotionStudioSession extends AbstractSession implements
 					&& modelFile.equals(trace.getModel().getModelFile()
 							.getAbsolutePath())) {
 
-				System.out.println("TRACE CHANGE ON: " + modelFile);
-
 				currentTrace = trace;
 				currentModel = trace.getModel();
 
