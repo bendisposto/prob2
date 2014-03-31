@@ -78,6 +78,11 @@ public class Api {
 		return eventb_load(file, new HashMap<String,String>());
 	}
 
+	public ClassicalBModel tla_load(final String file) throws IOException,
+	BException {
+		return tla_load(file, new HashMap<String, String>());
+	}
+
 	public EventBModel eventb_load(final String file, final Map<String, String> prefs) {
 		def fileName = file;
 		if (fileName.endsWith(".buc")) {
@@ -104,6 +109,13 @@ public class Api {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 		return bFactory.load(f, prefs, loadVariablesByDefault);
+	}
+
+	public ClassicalBModel tla_load(final String file,
+			final Map<String, String> prefs) throws IOException, BException {
+		File f = new File(file);
+		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
+		return tlaFactory.load(f, prefs, loadVariablesByDefault);
 	}
 
 	public CSPModel csp_load(final String file) throws Exception {
