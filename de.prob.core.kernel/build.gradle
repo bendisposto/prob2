@@ -95,6 +95,8 @@ dependencies {
 	compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
 	compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
 	compile group: "de.prob", name: "unicode", version: parser_version , changing: true
+	
+	compile group: 'de.prob', name: 'tla2bAST', version: '1.0.0-SNAPSHOT', changing: true
 
 	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
 

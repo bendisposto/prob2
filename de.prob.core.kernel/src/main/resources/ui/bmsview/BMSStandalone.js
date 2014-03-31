@@ -156,5 +156,5 @@
 	bms.fb_select_file = fb_select_file
 	bms.fb_load_file = function(dom_dir) {
 		templateFile = $(dom_dir)[0].value
-		window.location = "/bms/?template=" + templateFile + "&lang=" + bms.lang
+		window.location = "/bms/?template=" + templateFile
 	}
