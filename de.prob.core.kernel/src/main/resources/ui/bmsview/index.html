@@ -21,39 +21,82 @@
 		{{/standalone}}
 	</head>
 	<body>
-		{{#standalone}}
-		<nav class="navbar navbar-default" role="navigation">
-		  <div class="container-fluid">
-		    <!-- Brand and toggle get grouped for better mobile display -->
-		    <div class="navbar-header">
-		      <a class="navbar-brand" href="#">BMotion Studio</a>
-		    </div>
+	
+		{{#error}}
+			{{#standalone}}
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <a class="navbar-brand" href="#">BMotion Studio</a>
+			    </div>
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav navbar-right">
+			        <li><a href="#" id="bt_open_template">Open Template</a></li>
+			      </ul>
+			    </div>
+			  </div>
+			</nav>
+			{{/standalone}}
+			
+			<div style="text-align:center">
+				<h3 style="color:red;">Some errors occured</h3>
+				<div style="list-style-type: none; color:red; font-weight:bold;">
+				{{#errors}}
+					<p>{{.}}</p>
+				{{/errors}}
+				</div>
+			</div>
+			
+		{{/error}}
+		{{^error}}
+
+			{{#standalone}}
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <a class="navbar-brand" href="#">BMotion Studio</a>
+			    </div>
+			
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav navbar-right">
+			        <li><a href="#" id="bt_open_template">Open Template</a></li>
+			        <li><a href="{{templatefile}}?template={{template}}&lang={{lang}}&editor">Start Editor</a></li>
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Open View <b class="caret"></b></a>
+			          <ul class="dropdown-menu">
+			            <li><a href="#" id="bt_open_events_view">Events</a></li>
+			            <li><a href="#" id="bt_open_history_view">History</a></li>
+			            <li><a href="#" id="bt_open_animation_view">CurrentAnimations</a></li>
+			          </ul>
+			        </li>
+			      </ul>
+			    </div>
+			  </div>
+			</nav>
+			
+			<div id="events_view" title="Events">
+		  		<iframe src="" id="events_iframe" frameBorder="0"></iframe>
+			</div>
+			<div id="history_view" title="History">
+		  		<iframe src="" id="history_iframe" frameBorder="0"></iframe>
+			</div>
+			<div id="animation_view" title="CurrentAnimations">
+		  		<iframe src="" id="animation_iframe" frameBorder="0"></iframe>
+			</div>
+			{{/standalone}}
+			
+			<div id="vis_container">
+			</div>
+			<script>
+				bms.client = "{{clientid}}";
+				bms.init("{{clientid}}");
+				bms.port = "{{port}}";
+				bms.lang = "{{lang}}"
+			</script>
 		
-		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		      <ul class="nav navbar-nav navbar-right">
-		        <li><a href="#" id="bt_open_template">Open Template</a></li>
-		        <li><a href="{{templatefile}}?template={{template}}&lang={{lang}}&editor">Start Editor</a></li>
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Open View <b class="caret"></b></a>
-		          <ul class="dropdown-menu">
-		            <li><a href="#" id="bt_open_events_view">Events</a></li>
-		            <li><a href="#" id="bt_open_history_view">History</a></li>
-		            <li><a href="#" id="bt_open_animation_view">CurrentAnimations</a></li>
-		          </ul>
-		        </li>
-		      </ul>
-		    </div>
-		  </div>
-		</nav>
-		<div id="events_view" title="Events">
-	  		<iframe src="" id="events_iframe" frameBorder="0"></iframe>
-		</div>
-		<div id="history_view" title="History">
-	  		<iframe src="" id="history_iframe" frameBorder="0"></iframe>
-		</div>
-		<div id="animation_view" title="CurrentAnimations">
-	  		<iframe src="" id="animation_iframe" frameBorder="0"></iframe>
-		</div>
+		{{/error}}
 		
 		<div class="modal fade" id="modal_open_template">
 			<div class="modal-dialog">
@@ -92,14 +135,6 @@
 				</div>
 			</div>
 		</div>
-		{{/standalone}}
-		<div id="vis_container">
-		</div>
-		<script>
-			bms.client = "{{clientid}}";
-			bms.init("{{clientid}}");
-			bms.port = "{{port}}";
-			bms.lang = "{{lang}}"
-		</script>
+		
 	</body>
 </html>

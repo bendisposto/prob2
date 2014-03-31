@@ -161,7 +161,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			imgTags.tagName("image");
 		}
 	}
-
+	
 	private void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, BMotionStudioSession bmsSession) {
 
@@ -418,37 +418,47 @@ public class BMotionStudioServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+
 		String uri = req.getRequestURI();
 		// Get session from URI
 		List<String> parts = new PartList(uri.split("/"));
 		String sessionID = parts.get(2);
 		BMotionStudioSession bmsSession = (BMotionStudioSession) sessions
 				.get(sessionID);
-		if (bmsSession == null) {
-			if (validateRequest(req, resp)) {
+
+		List<String> errors = validateRequest(req, resp);
+		if (!errors.isEmpty()) {
+			ByteArrayInputStream errorSiteStream = new ByteArrayInputStream(
+					getErrorHtml(errors).getBytes());
+			toOutput(resp, errorSiteStream);
+			return;
+		} else {
+			if (bmsSession == null) {
 				createNewSessionAndRedirect(req, resp);
 				return;
-			}
-		} else {
-			String mode = req.getParameter("mode");
-			if ("update".equals(mode)) {
-				update(req, bmsSession);
-			} else if ("command".equals(mode)) {
-				executeCommand(req, resp, bmsSession);
 			} else {
-				delegateFileRequest(req, resp, bmsSession);
+				String mode = req.getParameter("mode");
+				if ("update".equals(mode)) {
+					update(req, bmsSession);
+				} else if ("command".equals(mode)) {
+					executeCommand(req, resp, bmsSession);
+				} else {
+					delegateFileRequest(req, resp, bmsSession);
+				}
 			}
 		}
-		return;
-	}
 
-	private boolean validateRequest(HttpServletRequest req,
+		return;
+
+	}
+	
+	private List<String> validateRequest(HttpServletRequest req,
 			HttpServletResponse resp) {
 
 		String templatePath = req.getParameter("template");
 		String lang = req.getParameter("lang");
 		String editor = req.getParameter("editor");
-		
+
 		List<String> errors = new ArrayList<String>();
 
 		if (templatePath == null)
@@ -473,16 +483,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			}
 		}
 
-		Map<String, Object> scope = new HashMap<String, Object>();
-		scope.put("errors", errors);
-		String errorSite = WebUtils.render("ui/bmsview/error.html", scope);
-
-		if (errors.isEmpty()) {
-			return true;
-		} else {
-			toOutput(resp, errorSite);
-			return false;
-		}
+		return errors;
 
 	}
 
@@ -533,6 +534,15 @@ public class BMotionStudioServlet extends HttpServlet {
 				.toString(), "port", port, "template", templatePath, "lang",
 				bmsSession.getLanguage(), "templatefile", fileName,
 				"standalone", standalone);
+		return WebUtils.render("ui/bmsview/index.html", scope);
+	}
+	
+	private String getErrorHtml(List<String> errors) {
+		String standalone = Main.standalone ? "yes" : "";
+		Map<String, Object> scope = new HashMap<String, Object>();
+		scope.put("error", true);
+		scope.put("standalone", standalone);
+		scope.put("errors", errors);
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 
