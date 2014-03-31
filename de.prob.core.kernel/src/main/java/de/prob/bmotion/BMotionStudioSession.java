@@ -82,6 +82,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	private JsonElement json;
 	
 	private boolean modelStarted = false;
+	
+	private String modelFile;
 
 	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
@@ -174,6 +176,7 @@ public class BMotionStudioSession extends AbstractSession implements
 					StateSpace s = model.getStatespace();
 					selector.addNewAnimation(new Trace(s));
 					modelStarted = true;
+					setModelFile(s.getModel().getModelFile().getAbsolutePath());
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (SecurityException e) {
@@ -207,9 +210,9 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Override
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
-		
+
 		if (currentAnimationChanged) {
-			
+
 			// Deregister formulas if no trace exists and exit
 			if (trace == null) {
 				currentTrace = null;
@@ -217,29 +220,39 @@ public class BMotionStudioSession extends AbstractSession implements
 				currentModel = null;
 				return;
 			}
-			currentTrace = trace;
-			currentModel = trace.getModel();
-			
-			checkSubscribedFormulas(currentTrace, currentModel);
 
-			// Collect results of subscibred formulas
-			formulas.clear();
-			Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
-					.valuesAt(trace.getCurrentState());
-			for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt
-					.entrySet()) {
-				IEvalElement ee = entry.getKey();
-				IEvalResult er = entry.getValue();
-				if (er instanceof EvalResult) {
-					formulas.put(ee.getCode(),
-							translateValue(((EvalResult) er).getValue()));
+			if (modelFile != null
+					&& modelFile.equals(trace.getModel().getModelFile()
+							.getAbsolutePath())) {
+
+				System.out.println("TRACE CHANGE ON: " + modelFile);
+
+				currentTrace = trace;
+				currentModel = trace.getModel();
+
+				checkSubscribedFormulas(currentTrace, currentModel);
+
+				// Collect results of subscibred formulas
+				formulas.clear();
+				Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
+						.valuesAt(trace.getCurrentState());
+				for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt
+						.entrySet()) {
+					IEvalElement ee = entry.getKey();
+					IEvalResult er = entry.getValue();
+					if (er instanceof EvalResult) {
+						formulas.put(ee.getCode(),
+								translateValue(((EvalResult) er).getValue()));
+					}
 				}
-			}
-			// Add all cached CSP formulas
-			formulas.putAll(cachedCspResults);
-			// Trigger all registered script listeners with collected formulas
-			for (IBMotionScript s : scriptListeners) {
-				s.traceChanged(currentTrace, formulas);
+				// Add all cached CSP formulas
+				formulas.putAll(cachedCspResults);
+				// Trigger all registered script listeners with collected
+				// formulas
+				for (IBMotionScript s : scriptListeners) {
+					s.traceChanged(currentTrace, formulas);
+				}
+
 			}
 
 		}
@@ -470,6 +483,14 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	public String getModelFile() {
+		return modelFile;
+	}
+
+	public void setModelFile(String modelFile) {
+		this.modelFile = modelFile;
 	}
 	
 	// ---------- BMS API
