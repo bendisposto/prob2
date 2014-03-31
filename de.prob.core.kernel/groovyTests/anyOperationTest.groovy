@@ -15,5 +15,4 @@ assert h.current.edge.name == "new" || h.current.edge.name == "del"
 h = h.anyEvent("nr_ready")
 assert h.current.edge.name == "nr_ready"
 
-
-
+s.animator.cli.shutdown();

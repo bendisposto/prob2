@@ -10,6 +10,7 @@ a = h.current.getCurrentState()
 assert a == s.states.get("4")
 assert a.getClass() == de.prob.statespace.StateId
 
+s.animator.cli.shutdown();
 
 //assert !s.info.stateHasVariable(a,"waiting\\/ready")
 //s.addUserFormula("waiting\\/ready", "waiting\\/ready")
