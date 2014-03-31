@@ -208,22 +208,21 @@ public class BMotionStudioServlet extends HttpServlet {
 	private void taskInit(HttpServletRequest req, HttpServletResponse resp,
 			BMotionStudioSession bmsSession) {
 
-		// Get parameters
-		String templatePath = req.getParameter("template");
-
 		List<String> parts = new PartList(req.getRequestURI().split("/"));
 		String sessionID = parts.get(2);
 
+		String templatePath = bmsSession.getTemplatePath();
+//		String formalism = bmsSession.getFormalism();
+		
 		String svgString = "";
 		String svgId = UUID.randomUUID().toString();
 
 		String jsonRendered = "{}";
-		String formalism = bmsSession.getFormalism();
-		if (formalism.equals("b") || formalism.equals("eventb")) {
-			jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
-		} else if (formalism.equals("csp")) {
-			jsonRendered = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
-		}
+//		if (formalism.equals("b") || formalism.equals("eventb")) {
+//			jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
+//		} else if (formalism.equals("csp")) {
+//			jsonRendered = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
+//		}
 
 		File templateFile = new File(templatePath);
 		if (templateFile.exists()) {
@@ -272,71 +271,102 @@ public class BMotionStudioServlet extends HttpServlet {
 
 	}
 	
+	private void addJsonMetaData(Document templateDocument, String jsonFileName) {
+
+		Elements headTag = templateDocument.getElementsByTag("head");
+		Element metaElement = templateDocument.createElement("meta");
+		metaElement.attr("name", "bms.json");
+		metaElement.attr("content", jsonFileName);
+		headTag.append(metaElement.toString());
+
+	}
+	
 	private void taskSave(HttpServletRequest req, HttpServletResponse resp) {
 
 		// Get parameter
-		String templatePath = req.getParameter("template");
-		String jsonString = req.getParameter("json");
-		String svgString = req.getParameter("svg");
-		String svgElementId = req.getParameter("svgid");
+		String templatePath = req.getParameter("newtemplate");
+		String newjson = req.getParameter("json");
+		String newsvg = req.getParameter("svg");
+		String svgElementId = req.getParameter("svgid") == null ? UUID
+				.randomUUID().toString() : req.getParameter("svgid");
 
 		File templateFile = new File(templatePath);
-		String templateHtml = null;
-		
+		File jsonFile = null;
+
+		String jsonSaveString = null;
+		Document templateDocument = null;
+		boolean createJson = false;
+
+		// If template file doesn't exist, create a new one
 		if (!templateFile.exists()) {
-			templateHtml = WebUtils.render("ui/bmsview/default_template.html",
-					WebUtils.wrap("svgid", svgElementId));
-			writeStringToFile(templateHtml, templateFile);
+
+			templateDocument = Jsoup.parse(WebUtils.render(
+					"ui/bmsview/default_template.html",
+					WebUtils.wrap("svgid", svgElementId)));
+			createJson = true;
+
 		} else {
-			templateHtml = WebUtils.render(templatePath);
+
+			templateDocument = Jsoup.parse(WebUtils.render(templatePath));
+			Elements elements = templateDocument.getElementsByAttributeValue(
+					"name", "bms.json");
+			Element jsonDomElement = elements.first();
+			if (jsonDomElement != null) { // Json file is linked
+				jsonFile = new File(templateFile.getParent() + "/"
+						+ jsonDomElement.attr("content"));
+				jsonSaveString = readFile(jsonFile.getAbsolutePath());
+			} else { // No json file is linked
+				createJson = true;
+			}
+
 		}
 		
-		Document templateDocument = Jsoup.parse(templateHtml);
-		templateDocument.outputSettings().prettyPrint(false);
-		Document tmpParsed = Jsoup.parse(svgString);
-		Element newSvgElement = tmpParsed.getElementsByTag("svg").first();
-		newSvgElement.attr("id", svgElementId);
-		
-		// Try first to get the svg element by id. If no exists, try to get the
-		// first existing svg element in document
-		Element orgSvgElement = templateDocument.getElementById(svgElementId);
-		if (orgSvgElement == null)
-			orgSvgElement = templateDocument.getElementsByTag("svg").first();
-		if (orgSvgElement != null)
-			orgSvgElement.replaceWith(newSvgElement);
-
-		// Prepare json data
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.setPrettyPrinting();
-		gsonBuilder.disableHtmlEscaping();
-		Gson gson = gsonBuilder.create();
-		JsonParser jp = new JsonParser();
-		JsonElement je = jp.parse(jsonString);
-		String prettyJsonString = gson.toJson(je);
-		String jsonFilePath = null;
-		Elements elements = templateDocument.getElementsByAttributeValue(
-				"name", "bms.json");
-		Element jsonDomElement = elements.first();
-		String jsonFileName = Files.getNameWithoutExtension(templateFile
-				.getName()) + ".json";
-		String templateFolder = templateFile.getParent();
-
-		if (jsonDomElement != null) { // Json file is linked
-			jsonFileName = jsonDomElement.attr("content");
-		} else { // No json file is linked
-			Elements headTag = templateDocument.getElementsByTag("head");
-			Element metaElement = templateDocument.createElement("meta");
-			metaElement.attr("name", "bms.json");
-			metaElement.attr("content", jsonFileName);
-			headTag.append(metaElement.toString());
+		if (createJson) {
+			String jsonFileName = Files.getNameWithoutExtension(templateFile
+					.getName()) + ".json";
+			addJsonMetaData(templateDocument, jsonFileName);
+			// TODO: create correct json string!
+			jsonSaveString = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
+			jsonFile = new File(templateFile.getParent() + "/" + jsonFileName);
 		}
-		jsonFilePath = templateFolder + "/" + jsonFileName;
+		
+		// If a new svg dom was passed, save in template
+		if (newsvg != null) {
+			templateDocument.outputSettings().prettyPrint(false);
+			Document tmpParsed = Jsoup.parse(newsvg);
+			Element newSvgElement = tmpParsed.getElementsByTag("svg").first();
+			newSvgElement.attr("id", svgElementId);
+			// Try first to get the svg element by id. If no exists, try to get
+			// the first existing svg element in document
+			Element orgSvgElement = templateDocument
+					.getElementById(svgElementId);
+			if (orgSvgElement == null)
+				orgSvgElement = templateDocument.getElementsByTag("svg")
+						.first();
+			if (orgSvgElement != null)
+				orgSvgElement.replaceWith(newSvgElement);
+		}
+		
+		// If a new json was passed, save in json file
+		if (newjson != null) {
+
+			// Prepare json data
+			GsonBuilder gsonBuilder = new GsonBuilder();
+			gsonBuilder.setPrettyPrinting();
+			gsonBuilder.disableHtmlEscaping();
+			Gson gson = gsonBuilder.create();
+			JsonParser jp = new JsonParser();
+			JsonElement je = jp.parse(newjson);
+			jsonSaveString = gson.toJson(je);
+
+		}
 
 		fixSvgImageTags(templateDocument);
-		
+		String templateSaveString = templateDocument.toString();
+
 		// Save data
-		writeStringToFile(prettyJsonString, new File(jsonFilePath));
-		writeStringToFile(templateDocument.html(), templateFile);
+		writeStringToFile(jsonSaveString, jsonFile);
+		writeStringToFile(templateSaveString, templateFile);
 		toOutput(resp, "ok");
 
 	}
@@ -550,11 +580,12 @@ public class BMotionStudioServlet extends HttpServlet {
 	
 	private void writeStringToFile(String str, File file) {
 		try {
-			FileOutputStream fop = new FileOutputStream(file);
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
+				file.getParentFile().mkdirs();
 				file.createNewFile();
 			}
+			FileOutputStream fop = new FileOutputStream(file);
 			// get the content in bytes
 			byte[] contentInBytes = str.getBytes();
 			fop.write(contentInBytes);

@@ -8,6 +8,9 @@
 		$("#bt_open_template").click(function() {
 			$("#modal_open_template").modal('show')
 		});
+		$("#bt_create_template").click(function() {
+			$("#modal_create_template").modal('show')
+		});
 		
 	});
 	
@@ -158,3 +161,31 @@
 		templateFile = $(dom_dir)[0].value
 		window.location = "/bms/?template=" + templateFile
 	}
+
+	bms.createTemplateFile = function(dom_dir) {
+		
+		templateFile = $(dom_dir)[0].value
+		
+		$.ajax({
+		    type: 'POST',
+		    data: {
+		    		task: 'save',
+		    		newtemplate: templateFile
+		    	},
+		    success: function (data) {
+		    	if(data === 'ok') {
+		    		alert("Template saved")
+		    		window.location = "/bms/?template=" + templateFile	
+		    	} else if(data === 'notemplate') {
+		    		alert("No template specified")
+		    	}
+		    },
+		    error:function(data,status,er) {
+		        alert("error: "+data+" status: "+status+" er:"+er);
+		    }
+		});
+		
+		//window.location = "/bms/?template=" + templateFile
+		//console.log(templateFile)
+	}
+	
