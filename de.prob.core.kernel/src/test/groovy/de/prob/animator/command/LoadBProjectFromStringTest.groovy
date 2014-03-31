@@ -4,8 +4,6 @@ import static org.junit.Assert.*
 import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
 
-import java.lang.invoke.MethodHandleImpl.BindCaller.T
-
 import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.node.Start
