@@ -15,3 +15,5 @@ assert cmd.getResults().get(f).getValue() == "2"
 cmd = new EvaluateRegisteredFormulasCommand("root",[f])
 s.execute(cmd)
 assert cmd.getResults().isEmpty()
+
+s.animator.cli.shutdown();

@@ -1,11 +1,13 @@
 import static org.junit.Assert.*
-import spock.lang.Ignore
+
+import java.lang.invoke.MethodHandleImpl.BindCaller.T
+
 import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.be4.classicalb.core.parser.node.Start
-import de.prob.model.classicalb.ClassicalBMachine;
-import de.prob.model.classicalb.DomBuilder;
+import de.prob.model.classicalb.ClassicalBMachine
+import de.prob.model.classicalb.DomBuilder
 
 class SpockDomWalkerTest extends Specification {
 
@@ -34,25 +36,29 @@ class SpockDomWalkerTest extends Specification {
 		machine = new DomBuilder().build(ast)
 	}
 
-	@Ignore
 	def "testing that variables are handled correctly"() {
 		when:
-		def r = machine.variables().collect { it.getIdentifier() }
+		def r = machine.variables.collect { it.getName() }
 		then:
 		r == ['aa', 'b', 'Cc']
 	}
 
-	@Ignore
 	def "testing that the name is handled correctly"() {
 		expect:
 		machine.name == 'SimplyStructure'
 	}
 
-	@Ignore
 	def "test if there are any constants"() {
 		when:
-		def r = machine.constants().collect { it.getIdentifier() }
+		def r = machine.constants.collect { it.getName() }
 		then:
 		r == ['dd', 'e', 'Ff']
+	}
+	
+	def "test if there are any invariants"() {
+		when:
+		def r = machine.invariants.collect { it.getPredicate().getCode() }
+		then:
+		r == ["aa:NAT"]
 	}
 }
