@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eventb.core.contextFile version="3" org.eventb.core.configuration="org.eventb.core.fwd">
+<org.eventb.core.carrierSet name="internal_set1" org.eventb.core.identifier="ProcID"/>
+</org.eventb.core.contextFile>

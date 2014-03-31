@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="CTXHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="1">
+<org.eventb.core.poIdentifier name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="inv4/WD" org.eventb.core.accurate="true" org.eventb.core.poDesc="Well-definedness of Invariant" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#HYPProcessev"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="finite(active)" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSelHint name="SEQHYS" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#HYPProcessev"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="INITIALISATION/inv4/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcesse\|"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="card(∅ ⦂ ℙ(ProcID))≤1" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt11"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#INITIALISATION\/inv4\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD3"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="INITIALISATION/inv5/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcesse\|"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt11"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#INITIALISATION\/inv5\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD4"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="INITIALISATION/inv6/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcesse\|"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt11"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#INITIALISATION\/inv6\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD5"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="INITIALISATION/inv7/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcesse\|"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt11"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#INITIALISATION\/inv7\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="INITIALISATION/inv8/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcesse\|"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))⇒(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt11"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#INITIALISATION\/inv8\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD7"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTProcesse|" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="active'" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="ready'" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="waiting'" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPProcesse|" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTIDENTProcesse\|" org.eventb.core.poStamp="0"/>
+<org.eventb.core.poSequent name="new/inv6/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcesse}"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="ready∩(waiting∪{p})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt12"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#new\/inv6\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD5"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="new/inv7/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcesse}"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="active∩(waiting∪{p})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt12"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#new\/inv7\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTProcesse}" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.poIdentifier name="waiting'" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPProcesse}" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTIDENTProcesse}" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="p∈ProcID" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt12|org.eventb.core.guard#internal_grd1"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="p∉waiting∪ready∪active" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt12|org.eventb.core.guard#internal_grd2"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="del/inv6/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcesse~"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="ready∩(waiting ∖ {p})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt13"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#del\/inv6\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD5"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="del/inv7/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcesse~"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="active∩(waiting ∖ {p})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt13"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#del\/inv7\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTProcesse~" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.poIdentifier name="waiting'" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPProcesse~" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTIDENTProcesse~" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="p∈waiting" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt13|org.eventb.core.guard#internal_grd1"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="ready_active/inv4/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf'"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="card({r})≤1" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt14"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#ready_active\/inv4\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD3"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="ready_active/inv5/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf'"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="{r}∩ready=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt14"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#ready_active\/inv5\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD4"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="ready_active/inv6/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf'"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="ready∩(waiting ∖ {r})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt14"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#ready_active\/inv6\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD5"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="ready_active/inv7/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf'"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="{r}∩(waiting ∖ {r})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt14"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#ready_active\/inv7\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="ready_active/inv8/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf'"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="{r}=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt14"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#ready_active\/inv8\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD7"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTProcessf'" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="active'" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="waiting'" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="r" org.eventb.core.type="ProcID"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPProcessf'" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTIDENTProcessf'" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="r∈waiting" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt14|org.eventb.core.guard#internal_grd1"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt14|org.eventb.core.guard#internal_grd2"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="ready_notactive/inv5/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf("/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="active∩(ready∪{r})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt15"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#ready_notactive\/inv5\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD4"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="ready_notactive/inv6/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf("/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(ready∪{r})∩(waiting ∖ {r})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt15"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#ready_notactive\/inv6\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD5"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="ready_notactive/inv7/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf("/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="active∩(waiting ∖ {r})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt15"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#ready_notactive\/inv7\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="ready_notactive/inv8/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf("/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready∪{r}=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt15"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#ready_notactive\/inv8\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD7"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTProcessf(" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="ready'" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="waiting'" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="r" org.eventb.core.type="ProcID"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPProcessf(" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTIDENTProcessf(" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="r∈waiting" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt15|org.eventb.core.guard#internal_grd1"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt15|org.eventb.core.guard#internal_grd2"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="swap_ready_empty/inv4/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf)"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="card(∅ ⦂ ℙ(ProcID))≤1" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt16"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready_empty\/inv4\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD3"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="swap_ready_empty/inv5/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf)"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩ready=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt16"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready_empty\/inv5\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD4"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="swap_ready_empty/inv6/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf)"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="ready∩(waiting∪active)=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt16"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready_empty\/inv6\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD5"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="swap_ready_empty/inv7/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf)"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(waiting∪active)=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt16"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready_empty\/inv7\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="swap_ready_empty/inv8/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf)"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt16"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready_empty\/inv8\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD7"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTProcessf)" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="active'" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="waiting'" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPProcessf)" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTIDENTProcessf)" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt16|org.eventb.core.guard#internal_grd1"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt16|org.eventb.core.guard#internal_grd2"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="swap_ready/inv4/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf*"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="card({p})≤1" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt17"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready\/inv4\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD3"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="swap_ready/inv5/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf*"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="{p}∩(ready ∖ {p})=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt17"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready\/inv5\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD4"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="swap_ready/inv6/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf*"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="(ready ∖ {p})∩(waiting∪active)=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt17"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready\/inv6\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD5"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="swap_ready/inv7/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf*"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="{p}∩(waiting∪active)=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt17"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready\/inv7\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD6"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="swap_ready/inv8/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTALLHYPProcessf*"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="{p}=(∅ ⦂ ℙ(ProcID))⇒ready ∖ {p}=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt17"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poSequent#swap_ready\/inv8\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD7"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTProcessf*" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.poIdentifier name="active'" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="ready'" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.poIdentifier name="waiting'" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPProcessf*" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#EVTIDENTProcessf*" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="p∈ready" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt17|org.eventb.core.guard#internal_grd1"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="ready≠(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt17|org.eventb.core.guard#internal_grd2"/>
+<org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.event#internal_evt17|org.eventb.core.guard#internal_grd3"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="HYPProcessev" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="active∈ℙ(ProcID)" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv1I"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="ready∈ℙ(ProcID)" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv2I"/>
+<org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="waiting∈ℙ(ProcID)" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv3I"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="ALLHYP" org.eventb.core.parentSet="/Scheduler/Scheduler0.bpo|org.eventb.core.poFile#Scheduler0|org.eventb.core.poPredicateSet#HYPProcessev" org.eventb.core.poStamp="13">
+<org.eventb.core.poPredicate name="PRD3" org.eventb.core.predicate="card(active)≤1" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv4I"/>
+<org.eventb.core.poPredicate name="PRD4" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv5I"/>
+<org.eventb.core.poPredicate name="PRD5" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv6I"/>
+<org.eventb.core.poPredicate name="PRD6" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv7I"/>
+<org.eventb.core.poPredicate name="PRD7" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))" org.eventb.core.source="/Scheduler/Scheduler0.bum|org.eventb.core.machineFile#Scheduler0|org.eventb.core.invariant#internal_inv8I"/>
+</org.eventb.core.poPredicateSet>
+</org.eventb.core.poFile>
