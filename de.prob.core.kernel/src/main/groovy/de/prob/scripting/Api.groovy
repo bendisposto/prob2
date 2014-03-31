@@ -78,9 +78,16 @@ public class Api {
 		return eventb_load(file, new HashMap<String,String>());
 	}
 
-	public EventBModel eventb_load(String file, final Map<String, String> prefs) {
+	public EventBModel eventb_load(final String file, final Map<String, String> prefs) {
+		def fileName = file;
+		if (fileName.endsWith(".buc")) {
+			fileName = fileName.replace(".buc", ".bcc");
+		}
+		if (fileName.endsWith(".buc")) {
+			fileName = fileName.replace(".bum", ".bcm");
+		}
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
-		return factory.load(file, prefs, loadVariablesByDefault);
+		return factory.load(fileName, prefs, loadVariablesByDefault);
 	}
 
 	/**
