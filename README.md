@@ -18,7 +18,7 @@ We assume, you have a fresh copy of Eclipse 4.2 and an empty workspace at hand. 
 3. cd into gitrepo/prob2, switch to the development branch (git checkout develop) and run `gradle magic` 
 4. In Eclipse, choose File | Import | General | Existing projects into workspace. Select gitrepo/prob2 as root directory. 
 6. Import all projects.
-7. Open the file de.prob.core.rodin/prob_target.target and click "Set as Target Platform" (upper right corner). 
+7. Open the file de.prob.core.rodin/rodin.target and click "Set as Target Platform" (upper right corner). 
    This will take a while ...
 8. Select "Run as Eclipse application" from the context menu of de.prob.ui. This will open a new Eclipse Window and create a fresh run configuration.
 9. Close the new Eclipse window and edit the run configuration. Change "Run a product" to org.rodinp.platform.product.
