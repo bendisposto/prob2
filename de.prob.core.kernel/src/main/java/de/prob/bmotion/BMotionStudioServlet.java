@@ -43,6 +43,7 @@ import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.Main;
 import de.prob.annotations.Sessions;
 import de.prob.web.ISession;
 import de.prob.web.WebUtils;
@@ -527,9 +528,11 @@ public class BMotionStudioServlet extends HttpServlet {
 	private String getBaseHtml(BMotionStudioSession bmsSession, int port) {
 		String templatePath = bmsSession.getTemplatePath();
 		String fileName = new File(templatePath).getName();
+		String standalone = Main.standalone ? "yes" : "";
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
 				.toString(), "port", port, "template", templatePath, "lang",
-				bmsSession.getLanguage(), "templatefile", fileName);
+				bmsSession.getLanguage(), "templatefile", fileName,
+				"standalone", standalone);
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 

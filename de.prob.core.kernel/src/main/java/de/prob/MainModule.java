@@ -110,6 +110,9 @@ public class MainModule extends AbstractModule {
 		Option restricted = new Option("local",
 				"Free access to Groovy shell. Interface will be bound to 127.0.0.1");
 
+		Option standalone = new Option("standalone",
+				"Run in standalone mode");
+		
 		@SuppressWarnings("static-access")
 		Option browser = OptionBuilder.withArgName("url").hasArg()
 				.withDescription("Open URL in browser").create("browser");
@@ -138,6 +141,7 @@ public class MainModule extends AbstractModule {
 		options.addOption(browser);
 		options.addOption(port);
 		options.addOption(restricted);
+		options.addOption(standalone);
 		return options;
 	}
 

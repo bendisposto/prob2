@@ -33,6 +33,7 @@ import de.prob.webconsole.WebConsole;
 public class Main {
 
 	public static boolean restricted = true;
+	public static boolean standalone = false;
 	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
 	private final Options options;
@@ -92,7 +93,10 @@ public class Main {
 				Main.restricted = false;
 				iface = "127.0.0.1";
 			}
-
+			if (line.hasOption("standalone")) {
+				Main.standalone = true;
+			}
+			
 			runServer(url, iface, port);
 			if (line.hasOption("shell")) {
 				while (true) {
