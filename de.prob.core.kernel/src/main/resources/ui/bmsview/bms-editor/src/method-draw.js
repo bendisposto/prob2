@@ -2401,7 +2401,7 @@
 				    type: 'POST',
 				    data: {
 				    		task: 'save',
-				    		template: $('#svg_editor').attr('template'),
+				    		newtemplate: $('#svg_editor').attr('template'),
 				    		svg : svgCanvas.getSvgString(),
 				    		svgid : workingSvgId,
 				    		json: ko.toJSON(observerModel)
@@ -2420,7 +2420,7 @@
 			};
 					
 			var clickStartVisualisation = function() {
-				window.location = workingTemplateFile + "?template=" + workingTemplatePath + "&lang="+ workingLanguage
+				window.location = workingTemplateFile + "?template=" + workingTemplatePath
 			};
 			
 			var clickBold = function(){

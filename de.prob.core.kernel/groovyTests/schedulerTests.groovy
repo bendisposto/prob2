@@ -25,6 +25,8 @@ assert s.isExplored(s.states.get("6"))
 assert s.isExplored(s.states.get("root"))
 assert !s.isExplored(s.states.get("5"))
 assert s.states.get("5") != null
+
+s.animator.cli.shutdown();
 //varsAt6 = s.info.getState(s.states.get("6"))
 //assert varsAt6.get("waiting") == "{}"
 //assert varsAt6.get("active") == "{PID2}"

@@ -15,3 +15,5 @@ st = c.getCurrentState()
 assert st != s.root
 c = c.anyEvent()
 assert c.getCurrentState() != st
+
+s.animator.cli.shutdown();

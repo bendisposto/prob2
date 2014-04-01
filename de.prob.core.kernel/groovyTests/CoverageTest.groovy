@@ -15,3 +15,5 @@ assert result.getTotalNumberOfNodes() == 8
 assert result.getTotalNumberOfTransitions() == 10
 assert result.getNodes() == ["'deadlocked:0'","'invariant_violated:0'","'live:3'","'open:5'","'invariant_not_checked:5'","'total:8'"]
 assert result.getUncovered() == ["swap"]
+
+s.animator.cli.shutdown();
