@@ -214,13 +214,13 @@ public class Trace {
 	def Trace invokeMethod(String method,  params) {
 		String predicate;
 
-		if(method.startsWith("\$") && !(method == "\$setup_constants" || "\$initialise_machine")) {
+		if(method.startsWith("\$") && !(method == "\$setup_constants" || method == "\$initialise_machine")) {
 			method = method.substring(1)
 		}
 
 		if (params == []) predicate = "TRUE = TRUE"
 		else predicate = params[0];
-		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), method,predicate , 1)[0];
+		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), method, predicate , 1)[0];
 		return add(op.id)
 	}
 
