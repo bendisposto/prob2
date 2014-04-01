@@ -6,7 +6,7 @@ import de.prob.animator.domainobjects.EventB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
-import de.prob.model.representation.CSPModel;
+import de.prob.model.representation.CSPModel
 import de.prob.statespace.derived.AbstractDerivedStateSpace
 
 
@@ -15,17 +15,35 @@ class StateId {
 	protected def id;
 	def StateSpace space;
 
-	//FIXME delete
+	/**
+	 * This method is included for groovy magic in a console environment.
+	 * Use the {@link StateId#perform} method instead.
+	 *
+	 * @param method String method name that was called
+	 * @param params List of parameter objects that it was called with
+	 * @return result of {@link StateId#perform}
+	 * @deprecated use {@link StateId#perform}
+	 */
 	@Deprecated
 	def invokeMethod(String method,  params) {
-		return perform(method,params)
+		return perform(method, params)
 	}
 
-	def perform(String method,  params) {
-		String predicate;
-		if (params == []) predicate = "TRUE = TRUE"
-		else predicate = params[0];
-		OpInfo op = space.opFromPredicate(this, method,predicate , 1)[0];
+	/**
+	 * Uses {@link StateSpace#opFromPredicate} to calculate the destination state of the event
+	 * with the specified event name and the conjunction of the parameters.
+	 * An exception will be thrown if the specified event and params are invalid for this StateId.
+	 * @param event String event name to execute
+	 * @param params List of String predicates
+	 * @return {@link StateId} that results from executing the specified event
+	 */
+	def StateId perform(String event, List<String> params) {
+		if(event.startsWith("\$") && !(event == "\$setup_constants" || event == "\$initialise_machine")) {
+			event = event.substring(1)
+		}
+
+		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+		OpInfo op = space.opFromPredicate(this, event, predicate , 1)[0];
 		StateId newState = space.getDest(op);
 		space.explore(newState);
 		return newState;

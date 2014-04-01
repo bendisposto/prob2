@@ -211,16 +211,39 @@ public class Trace {
 		return newTrace
 	}
 
-	def Trace invokeMethod(String method,  params) {
-		String predicate;
 
-		if(method.startsWith("\$") && !(method == "\$setup_constants" || method == "\$initialise_machine")) {
-			method = method.substring(1)
+	/**
+	 * This method is included because it translates to groovy magic in a console environment
+	 * (allows the execution of an event by calling it as a method in the Trace class).
+	 * For executing an event from within Java, use {@link Trace#execute} instead.
+	 *
+	 * @param method String method name called
+	 * @param params List of parameters
+	 * @return {@link Trace#execute(method, params)}
+	 * @deprecated use {@link Trace#execute}
+	 */
+	@Deprecated
+	def invokeMethod(method, params) {
+		execute(method, params)
+	}
+
+	/**
+	 * Takes an event name and a list of String predicates and uses {@link StateSpace#opFromPredicate}
+	 * with the {@link Trace#currentState}, the specified event name, and the conjunction of the parameters.
+	 * If the specified operation is invalid, a runtime exception will be thrown.
+	 *
+	 * @param event String event name
+	 * @param params List of String predicates to be conjoined
+	 * @return {@link Trace} which is a result of executing the specified operation
+	 */
+	def Trace execute(String event, List<String> params) {
+		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+
+		if(event.startsWith("\$") && !(event == "\$setup_constants" || event == "\$initialise_machine")) {
+			event = event.substring(1)
 		}
 
-		if (params == []) predicate = "TRUE = TRUE"
-		else predicate = params[0];
-		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), method, predicate , 1)[0];
+		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), event, predicate , 1)[0];
 		return add(op.id)
 	}
 
