@@ -7,6 +7,6 @@ import de.prob.statespace.Trace;
 
 interface IBMotionScript
 { 
-	void traceChanged(Trace trace, Map<String,Object> formulas)
-	void modelChanged(StateSpace statespace)
+	public void traceChanged(Trace trace)
+	public void modelChanged(StateSpace statespace)
 }

@@ -4,6 +4,7 @@ import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
 import com.google.common.base.Function
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject;
 
 import de.prob.statespace.OpInfo
 import de.prob.statespace.StateSpace
@@ -11,8 +12,7 @@ import de.prob.statespace.Trace
 
 class Observer implements IBMotionScript {
 
-	def bmssession
-	def formulas
+	private BMotionStudioSession bmssession
 	def mf = new DefaultMustacheFactory()
 	def scope = [:]
 	def builder = new groovy.json.JsonBuilder()
@@ -22,7 +22,7 @@ class Observer implements IBMotionScript {
 		scope.put("eval", new EvalExpression());
 	}
 
-	def EvalObserver(observer, formulas, trace) {
+	private void EvalObserver(JsonObject observer, Trace trace) {
 		def m = []
 		observer.objs.each { obj ->
 			def fselector = translateValue(mustacheRender(obj.selector.getAsString(),scope))
@@ -41,7 +41,6 @@ class Observer implements IBMotionScript {
 					return data
 				}				
 			}
-			return m
 		}
 		bmssession.toGui(builder {
 			cmd 'bms.triggerObserverActions'
@@ -49,7 +48,7 @@ class Observer implements IBMotionScript {
 		})
 	}
 
-	def listenOperation(observer, formulas, trace) {
+	def listenOperation(observer, trace) {
 		def statespace = trace.getStateSpace()
 		def objects = observer.get("objects")
 		def m = []
@@ -66,35 +65,37 @@ class Observer implements IBMotionScript {
 		bmssession.toVisualization(m)
 	}
 
-	def ExecuteOperation(observer, formulas, trace) {
+	def ExecuteOperation(observer, trace) {
 		def jsonObserver = new com.google.gson.Gson().toJson(observer.objs)
 		bmssession.toGui(["initExecuteOperationObserver("+jsonObserver+")"])
 	}
 
-	def CspEventObserver(observer, formulas, trace) {
+	private void CspEventObserver(JsonObject observer, Trace trace) {
 		trace.ensureOpInfosEvaluated()
-		def opList = trace.getCurrent().getOpList()		
+		def opList = trace.getCurrent().getOpList()
 		def m = []
 		opList.each { op ->
 			def fullOp = getOpString(op)
-			return observer.objs.each { obj ->
+			observer.objs.each { obj ->
 				def events = bmssession.eval(obj.exp.getAsString())
-				events = events.replace("{","").replace("}", "")
-				events = events.split(",")
-				if(events.contains(fullOp)) {
-					def pmap = [:]
-					op.getParams().eachWithIndex() { v, i -> pmap.put("a"+(i+1),v) };
-					pmap.put("Event", op.getName())	
-					m = m + obj.actions.collect { item ->
-						def fselector = mustacheRender(item.selector.getAsString(),pmap)
-						def fvalue = mustacheRender(item.value.getAsString(),pmap)
-						def fattr = mustacheRender(item.attr.getAsString(),pmap)
-						def data = [
-						  selector: fselector,
-						  attr: fattr,
-						  value: fvalue
-						]
-						return data
+				if(events != null) {
+					events = events.replace("{","").replace("}", "")
+					def event_names = events.split(",")
+					if(event_names.contains(fullOp)) {
+						def pmap = [:]
+						op.getParams().eachWithIndex() { v, i -> pmap.put("a"+(i+1),v) };
+						pmap.put("Event", op.getName())
+						m = m + obj.actions.collect { item ->
+							def fselector = mustacheRender(item.selector.getAsString(),pmap)
+							def fvalue = mustacheRender(item.value.getAsString(),pmap)
+							def fattr = mustacheRender(item.attr.getAsString(),pmap)
+							def data = [
+								selector: fselector,
+								attr: fattr,
+								value: fvalue
+							]
+							return data
+						}
 					}
 				}
 			}
@@ -102,7 +103,7 @@ class Observer implements IBMotionScript {
 		bmssession.toGui(builder {
 			cmd 'bms.triggerObserverActions'
 			actions builder.call(m.findAll { item -> item != null })
-		})	
+		})
 	}
 
 	def getOp(trace,name,pred) {
@@ -134,15 +135,14 @@ class Observer implements IBMotionScript {
 		return opNameWithParameter;
 	}
 
-	def void traceChanged(Trace trace, Map<String, Object> formulas) {
-		this.formulas = formulas
+	public void traceChanged(Trace trace) {
 		def json = bmssession.getJson()
 		if(json != null) {
 			JsonArray asJsonArray = json.getAsJsonObject().get("observers").getAsJsonArray();
 			asJsonArray.each {
 				def methodCall = it.getAsJsonObject().get("type").getAsString()
-				if(this.metaClass.respondsTo(this, methodCall, Object, Object, Object)) {
-					this."$methodCall"(it, formulas, trace)
+				if(this.metaClass.respondsTo(this, methodCall, JsonObject, Trace)) {
+					this."$methodCall"(it, trace)
 				}
 			}
 		}
@@ -151,7 +151,7 @@ class Observer implements IBMotionScript {
 	private class EvalExpression implements Function<String, Object> {
 		@Override
 		public Object apply(final String input) {
-			return formulas.get(input);
+			return bmssession.eval(input)
 		}
 	}
 
@@ -173,6 +173,6 @@ class Observer implements IBMotionScript {
 		writer.toString()
 	}
 
-	def void modelChanged(StateSpace statespace) {
+	public void modelChanged(StateSpace statespace) {
 	}
 }
