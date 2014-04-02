@@ -495,6 +495,11 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void toGui(final Object json) {
 		submit(json);
 	}
+	
+	public void callJs(final Object values) {
+		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
+				values));
+	}
 
 	public Object eval(final String formula) throws Exception {
 		if (currentModel != null) 
