@@ -30,14 +30,10 @@ StateInspector = (function() {
 					if (this.hp == null) {
 						this.hp = this.history.length;
 					}
-					if (this.hp >= 0) {
-						if (this.hp > 0) {
-							this.hp--
-						}
+					if (this.hp > 0) {
+						this.hp--
 						cm.setValue(this.history[this.hp])
-						cm.se
 					}
-
 				} else
 					this.hp = null;
 				return CodeMirror.Pass;
@@ -122,9 +118,15 @@ StateInspector = (function() {
         $(".disabled").remove()
     }
 
+    function clearResults() {
+    	$(".outbox").empty()
+    	cm.getDoc().setValue('')
+    }
+
 	extern.setModel = function(data) {
 		setModel(JSON.parse(data.components))
 		updateValues(JSON.parse(data.values))
+		clearResults()
 		updateHistory(JSON.parse(data.history))
 	}
 	extern.updateValues = function(data) {
