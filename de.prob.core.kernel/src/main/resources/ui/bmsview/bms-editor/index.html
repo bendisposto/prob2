@@ -285,9 +285,9 @@
 </script>
 
 <div id="observers">
-  	   <div data-bind="foreach: { data: observers, as: 'observer' }">
+  	   <div class="observer_loop" data-bind="foreach: { data: observers, as: 'observer' }">
   				
-  				<div data-bind="template: { name: observer.type, data : observer }">
+  				<div class="observer_template" data-bind="template: { name: observer.type, data : observer }">
 	   	 		</div>
  			   	
 	  </div>  

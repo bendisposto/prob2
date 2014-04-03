@@ -1466,8 +1466,12 @@
 
 				  // select observer ...
 				  // TODO: We select only by id .. manage other selection (e.g. by class, etc.)
-				  var indexToActive = $("div[oid=#"+$(elem).attr("id")+"]").index()
+        		  var activeElement = $("div[oid=#"+$(elem).attr("id")+"]");
+				  var indexToActive = activeElement.index()
 				  if(indexToActive > -1) {
+					  $('.observer_loop').animate({
+					        scrollTop: activeElement.offset().top - 240
+					    }, 0);
 					  $( ".observer_objs" ).accordion( "option", "active", indexToActive );
 				  }
 					
@@ -2857,6 +2861,7 @@
 			
 			$(window).resize(function(evt) {
 					updateCanvas();
+					updateObserverContainer();
 			});
 			
 			(function() {
@@ -4028,6 +4033,7 @@
 		
 // 			$(function() {
 				updateCanvas(true);
+				updateObserverContainer();
 // 			});
 			
 		//	var revnums = "svg-editor.js ($Rev: 2083 $) ";
@@ -4261,6 +4267,11 @@
 				header: "> div > h3",
 				collapsible: true
 			});
+		}
+		
+		function updateObserverContainer() {
+			var height = $("#observers").height()
+			$(".observer_loop").css("max-height",height-60+"px");
 		}
 		
 		Editor.initObservers = function(observers) {
