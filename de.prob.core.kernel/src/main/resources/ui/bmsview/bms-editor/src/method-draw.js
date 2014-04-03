@@ -1466,9 +1466,13 @@
 
 				  // select observer ...
 				  // TODO: We select only by id .. manage other selection (e.g. by class, etc.)
-				  var indexToActive = $("div[oid=#"+$(elem).attr("id")+"]").index()
+        		  var activeElement = $("div[oid=#"+$(elem).attr("id")+"]");
+				  var indexToActive = activeElement.index()
 				  if(indexToActive > -1) {
-					  $( ".observer_list" ).accordion( "option", "active", indexToActive );
+					  $('.observer_loop').animate({
+					        scrollTop: activeElement.offset().top - 240
+					    }, 0);
+					  $( ".observer_objs" ).accordion( "option", "active", indexToActive );
 				  }
 					
 				  $("#stroke_panel").show();
@@ -2857,6 +2861,7 @@
 			
 			$(window).resize(function(evt) {
 					updateCanvas();
+					updateObserverContainer();
 			});
 			
 			(function() {
@@ -4028,6 +4033,7 @@
 		
 // 			$(function() {
 				updateCanvas(true);
+				updateObserverContainer();
 // 			});
 			
 		//	var revnums = "svg-editor.js ($Rev: 2083 $) ";
@@ -4260,7 +4266,20 @@
 			container.accordion({
 				header: "> div > h3",
 				collapsible: true
-			});
+			}).sortable({
+		        axis: "y",
+		        handle: "h3",
+		        stop: function( event, ui ) {
+		          // IE doesn't register the blur when sorting
+		          // so trigger focusout handlers to remove .ui-state-focus
+		          ui.item.children( "h3" ).triggerHandler( "focusout" );
+		        }
+		      });
+		}
+		
+		function updateObserverContainer() {
+			var height = $("#observers").height()
+			$(".observer_loop").css("max-height",height-60+"px");
 		}
 		
 		Editor.initObservers = function(observers) {
@@ -4286,7 +4305,32 @@
 			
 			observerModel = new ObserverJsonModel(observers);
 
+			 ko.bindingHandlers.sortableList = {
+				      init: function(element, valueAccessor) {
+				          var list = valueAccessor();
+				          $(element).sortable({
+				              update: function(event, ui) {
+				                  //retrieve our actual data item
+				                  var item = ko.dataFor(ui.item.get(0));
+				                  //figure out its new position
+				                  var position = ko.utils.arrayIndexOf(ui.item.parent().children(), ui.item[0]);
+				                  ui.item.get(0).remove()
+				                  //remove the item and add it back in the right spot
+				                  if (position >= 0) {
+				                     
+				                	 list.remove(item);
+				                     list.splice(position, 0, item);
+				                     
+				                  }
+				                  refreshAccordion();
+				              }
+				          });
+				      }
+				  };
+
+			
 			ko.applyBindings(observerModel);
+			
 			
 			refreshAccordion()
 			

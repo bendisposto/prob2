@@ -219,7 +219,7 @@ html, body {
 	height: 15px;
 	top: 30px;
 	left: 66px;
-	right: 410px;
+	right: 460px;
 	border-top: solid #444 1px;
 	border-right: solid #444 1px;
 }
@@ -541,7 +541,7 @@ html, body {
 	top: 30px;
 	left: 50px;
 	bottom: 40px;
-	right: 410px;
+	right: 460px;
 	background-color: #444;
 	overflow: auto;
 	text-align: center;
@@ -674,13 +674,13 @@ table {
 
 #observers {
 	position: absolute;
-	width: 250px;
+	width: 300px;
 	height: 100%;
 	background: #2f2f2c;
 	right: 145px;
 	top: 20px;
 	border-bottom: none;
-	overflow: visible;
+	overflow:visible;
 	padding: 0 0 0 15px;
 }
 
@@ -691,13 +691,18 @@ table {
 	font-weight:normal;
 }
 
+.observer_loop {
+	width:285px;
+	overflow:scroll;
+}
 .observer_type {}
-	.observer_objs {}
+	.observer_objs {
+		max-width:275px;
+	}
 		.observer_obj {}
+			.observer_head {}
 			.observer_content {
 				height:200px;
-				max-width:240px;
-				overflow:scroll;
 			}
 				.observer_items {}
 					.observer_item {
@@ -717,7 +722,7 @@ table {
 	display:block;
 	padding:0;
 	margin:0;
-	width:130px;
+	width:165px;
 }
 
 .observer_wrapper {
@@ -771,7 +776,7 @@ table {
 
 .ui-accordion {
 	font-size: 12px;
-	width: 235px;
+	width: 285px;
 }
 
 .ui-accordion-header {}
@@ -2195,7 +2200,7 @@ box-shadow: inset 0 3px 10px rgba(255, 255, 255, 0.1),
 
 #zoom_panel {
 	padding: 9px 0;
-	right: 410px;
+	right: 460px;
     position: absolute;
 }
 

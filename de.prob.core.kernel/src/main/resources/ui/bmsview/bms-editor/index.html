@@ -241,7 +241,7 @@
   					<h4 data-bind="text: observer.type"></h4>
 					<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'selector': 'selector', 'actions' : [] }, true) }">Add Observer</a>
    				</div>
-				<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }">
+				<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }, sortableList: observer.objs">
  			   		<div class="observer_obj" data-bind="attr: { oid: obj.selector }">
 			   	 		<h3 class="observer_head" data-bind="text: obj.selector"></h3>
 						<div class="observer_content">
@@ -285,9 +285,9 @@
 </script>
 
 <div id="observers">
-  	   <div data-bind="foreach: { data: observers, as: 'observer' }">
+  	   <div class="observer_loop" data-bind="foreach: { data: observers, as: 'observer' }">
   				
-  				<div data-bind="template: { name: observer.type, data : observer }">
+  				<div class="observer_template" data-bind="template: { name: observer.type, data : observer }">
 	   	 		</div>
  			   	
 	  </div>  
