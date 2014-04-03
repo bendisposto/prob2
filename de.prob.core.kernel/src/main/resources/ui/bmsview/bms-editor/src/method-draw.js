@@ -4334,6 +4334,9 @@
 			
 			refreshAccordion()
 			
+			$( ".observer_items" ).sortable();
+			$( ".observer_items" ).disableSelection();
+			
 			var container = $(".observer_list")
 			container.find('.truncate').textOverflow();
 			
