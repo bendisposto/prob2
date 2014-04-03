@@ -1,7 +1,12 @@
 package de.prob.scripting
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
 public class ModelDir {
 
+	JsonSlurper slurper = new JsonSlurper()
+	JsonOutput writer = new JsonOutput()
 	File modelFile
 	File dir
 	def files = [:]
@@ -18,16 +23,23 @@ public class ModelDir {
 		getFile(fileName).getText()
 	}
 
-	def appendToFile(String fileName, String text) {
-		getFile(fileName) << "$text\n"
-	}
-
-	def clearFile(String fileName) {
-		getFile(fileName).setText("")
+	/**
+	 * Attempts to use {@link JsonSlurper#parseText(String)} to translate
+	 * the specified file. Calls method {@link ModelDir#getFileText}.
+	 * If translation fails, an exception may be thrown.
+	 * @param fileName where the serialized information is stored
+	 * @return The translated Object from
+	 */
+	def getContent(String fileName) {
+		slurper.parseText(getFileText(fileName))
 	}
 
 	def setFileText(String fileName, String text) {
 		getFile(fileName).setText(text)
+	}
+
+	def setContent(String fileName, content) {
+		setFileText(fileName, writer.toJson(content))
 	}
 
 	def File getFile(String fileName) {
@@ -38,12 +50,6 @@ public class ModelDir {
 		f.createNewFile()
 		files[fileName] = f
 		return f
-	}
-
-	def List<String> getLines(String fileName) {
-		def list = []
-		getFile(fileName).each { list << it }
-		list
 	}
 
 	def boolean equals(Object obj) {
