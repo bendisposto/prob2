@@ -3,6 +3,7 @@ package de.prob.scripting
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
+
 public class ModelDir {
 
 	JsonSlurper slurper = new JsonSlurper()
@@ -46,7 +47,7 @@ public class ModelDir {
 		if(files.containsKey(fileName)) {
 			return files[fileName]
 		}
-		def f = new File("${dir.absolutePath}/$fileName")
+		def f = FileHandler.getFile("${dir.absolutePath}${File.separator}$fileName")
 		f.createNewFile()
 		files[fileName] = f
 		return f
