@@ -4266,7 +4266,15 @@
 			container.accordion({
 				header: "> div > h3",
 				collapsible: true
-			});
+			}).sortable({
+		        axis: "y",
+		        handle: "h3",
+		        stop: function( event, ui ) {
+		          // IE doesn't register the blur when sorting
+		          // so trigger focusout handlers to remove .ui-state-focus
+		          ui.item.children( "h3" ).triggerHandler( "focusout" );
+		        }
+		      });
 		}
 		
 		function updateObserverContainer() {
@@ -4297,7 +4305,32 @@
 			
 			observerModel = new ObserverJsonModel(observers);
 
+			 ko.bindingHandlers.sortableList = {
+				      init: function(element, valueAccessor) {
+				          var list = valueAccessor();
+				          $(element).sortable({
+				              update: function(event, ui) {
+				                  //retrieve our actual data item
+				                  var item = ko.dataFor(ui.item.get(0));
+				                  //figure out its new position
+				                  var position = ko.utils.arrayIndexOf(ui.item.parent().children(), ui.item[0]);
+				                  ui.item.get(0).remove()
+				                  //remove the item and add it back in the right spot
+				                  if (position >= 0) {
+				                     
+				                	 list.remove(item);
+				                     list.splice(position, 0, item);
+				                     
+				                  }
+				                  refreshAccordion();
+				              }
+				          });
+				      }
+				  };
+
+			
 			ko.applyBindings(observerModel);
+			
 			
 			refreshAccordion()
 			
