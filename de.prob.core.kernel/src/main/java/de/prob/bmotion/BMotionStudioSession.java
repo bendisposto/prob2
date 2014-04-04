@@ -408,6 +408,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			Bindings bindings = groovyScriptEngine.getBindings(ScriptContext.GLOBAL_SCOPE);
 			bindings.putAll(parameterMap);
 			bindings.put("bms", this);
+			bindings.put("templatefolder", templateFolder);
 
 			Object scriptPaths = parameterMap.get("script");
 			if (scriptPaths != null) {
