@@ -21,12 +21,14 @@ import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
 import de.prob.statespace.StateSpace;
 
-public class EventBFactory {
+public class EventBFactory extends ModelFactory {
 
 	private final Provider<EventBModel> modelProvider;
 
 	@Inject
-	public EventBFactory(final Provider<EventBModel> modelProvider) {
+	public EventBFactory(final Provider<EventBModel> modelProvider,
+			final FileHandler fileHandler) {
+		super(fileHandler);
 		this.modelProvider = modelProvider;
 	}
 
@@ -39,7 +41,8 @@ public class EventBFactory {
 
 		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
 
-		for (Entry<String, String> pref : prefs.entrySet()) {
+		for (Entry<String, String> pref : getPreferences(model, prefs)
+				.entrySet()) {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 

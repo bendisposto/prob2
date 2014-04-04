@@ -17,7 +17,6 @@ import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.StateSchema;
-import de.prob.scripting.ModelDir;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
@@ -38,12 +37,13 @@ public class ClassicalBModel extends AbstractModel {
 			final File modelFile) {
 
 		this.modelFile = modelFile;
-		modelDir = new ModelDir(modelFile);
 
 		final DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 
 		final DomBuilder d = new DomBuilder();
 		mainMachine = d.build(mainast);
+
+		extractModelDir(modelFile, mainMachine.getName());
 
 		graph.addVertex(mainMachine.getName());
 		ModelElementList<ClassicalBMachine> machines = new ModelElementList<ClassicalBMachine>();

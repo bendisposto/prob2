@@ -3,7 +3,6 @@ package de.prob;
 import static java.io.File.separator;
 
 import java.io.File;
-import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -17,10 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import de.prob.animator.IAnimator;
-import de.prob.animator.command.GetCurrentPreferencesCommand;
 import de.prob.exception.ProBAppender;
-import de.prob.scripting.FileHandler;
 import de.prob.web.views.Log;
 import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
@@ -150,35 +146,6 @@ public class Main {
 		}
 		return System.getProperty("user.home") + separator + ".prob"
 				+ separator;
-	}
-
-	/**
-	 * Checks to see if there is a file with file name "prob2preferences" in the
-	 * {@link Main#getProBDirectory()} file. If there is, the method attempts to
-	 * read the default global preferences out of this file via
-	 * {@link FileHandler#getMapOfStrings(String)}. If no file exists, the
-	 * IAnimator proB is contacted to determine the current default preferences,
-	 * and these are written to the preference file via
-	 * {@link FileHandler#setContent(String, Object)} .
-	 * 
-	 * @param proB
-	 *            IAnimator which will be contacted in the case that no
-	 *            preference file exists in the home file
-	 * @return Map of default preferences
-	 */
-	public static Map<String, String> getDefaultPreferences(final IAnimator proB) {
-		String preferenceFileName = getProBDirectory() + "prob2preferences";
-		Map<String, String> prefs = FileHandler
-				.getMapOfStrings(preferenceFileName);
-
-		if (prefs == null) {
-			GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand();
-			proB.execute(cmd);
-			prefs = cmd.getPreferences();
-			FileHandler.setContent(preferenceFileName, prefs);
-		}
-
-		return prefs;
 	}
 
 	/**
