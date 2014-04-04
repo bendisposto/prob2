@@ -13,22 +13,22 @@ import groovy.json.JsonSlurper
  *
  */
 class FileHandler {
-	def static JsonSlurper slurper
-	def static JsonOutput writer
-
-	static {
-		slurper = new JsonSlurper()
-		writer = new JsonOutput()
-	}
+	private JsonSlurper slurper = new JsonSlurper()
+	private JsonOutput writer = new JsonOutput()
+	private files = [:]
 
 	/**
 	 * Finds the specified file if it exists, or creates it if it does not exist
 	 * @param fileName of desired File.
 	 * @return File object specified by fileName
 	 */
-	def static File getFile(String fileName) {
+	def File getFile(String fileName) {
+		if(files.containsKey(fileName)) {
+			files[fileName]
+		}
 		def f = new File(fileName)
 		f.createNewFile()
+		files[fileName] = f
 		f
 	}
 
@@ -37,7 +37,7 @@ class FileHandler {
 	 * @param fileName of desired File
 	 * @return String text contained in file
 	 */
-	def static String getFileText(String fileName) {
+	def String getFileText(String fileName) {
 		getFile(fileName).getText()
 	}
 
@@ -48,7 +48,7 @@ class FileHandler {
 	 * @param fileName where the serialized information is stored
 	 * @return The translated Object from the file.
 	 */
-	def static getContent(String fileName) {
+	def getContent(String fileName) {
 		slurper.parseText(getFileText(fileName))
 	}
 
@@ -60,7 +60,7 @@ class FileHandler {
 	 * @return the deserialized content casted to Map<String,String> if this is possible,
 	 * or null if not
 	 */
-	def static Map<String,String> getMapOfStrings(String fileName) {
+	def Map<String,String> getMapOfStrings(String fileName) {
 		try {
 			(Map<String,String>) getContent(fileName)
 		} catch(Exception e) {
@@ -76,7 +76,7 @@ class FileHandler {
 	 * @return the deserialized content casted to List<String> if this is possible,
 	 * or null if not
 	 */
-	def static List<String> getListOfStrings(String fileName) {
+	def List<String> getListOfStrings(String fileName) {
 		try {
 			(List<String>) getContent(fileName)
 		} catch(Exception e) {
@@ -89,7 +89,7 @@ class FileHandler {
 	 * @param fileName of the file where the information is to be stored
 	 * @param text to be stored in the file
 	 */
-	def static void setFileText(String fileName, String text) {
+	def void setFileText(String fileName, String text) {
 		getFile(fileName).setText(text)
 	}
 
@@ -100,7 +100,7 @@ class FileHandler {
 	 * @param fileName of the file where the content is to be stored
 	 * @param content to be serialized
 	 */
-	def static void setContent(String fileName, content) {
+	def void setContent(String fileName, content) {
 		setFileText(fileName, writer.toJson(content))
 	}
 }

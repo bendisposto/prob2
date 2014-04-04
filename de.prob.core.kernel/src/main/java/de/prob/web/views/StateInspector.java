@@ -27,7 +27,7 @@ import de.prob.model.representation.IEval;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
-import de.prob.scripting.ModelDir;
+import de.prob.scripting.FileHandler;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
@@ -45,9 +45,12 @@ public class StateInspector extends AbstractSession implements
 	List<String> history = new ArrayList<String>();
 	Trace currentTrace;
 	AbstractModel currentModel;
+	private final FileHandler fileWriter;
 
 	@Inject
-	public StateInspector(final AnimationSelector animations) {
+	public StateInspector(final FileHandler fileWriter,
+			final AnimationSelector animations) {
+		this.fileWriter = fileWriter;
 		animations.registerAnimationChangeListener(this);
 	}
 
@@ -72,7 +75,10 @@ public class StateInspector extends AbstractSession implements
 			history = history.subList(100, history.size());
 		}
 		history.add(code);
-		currentModel.getModelDir().setContent(HISTORY_FILE_NAME, history);
+		if (currentModel != null) {
+			fileWriter.setContent(currentModel.getModelDirPath()
+					+ HISTORY_FILE_NAME, history);
+		}
 
 		// TODO: What happens if we try to use CSP or EventB???
 		Object eval = currentTrace.getCurrentState().eval(new ClassicalB(code));
@@ -107,7 +113,7 @@ public class StateInspector extends AbstractSession implements
 				Map<String, Object> extracted = extractModel(currentModel);
 				registerFormulas(currentModel);
 
-				history = getCurrentHistory(currentModel.getModelDir());
+				history = getCurrentHistory(currentModel.getModelDirPath());
 
 				Object calculatedValues = calculateFormulas(currentTrace);
 				submit(WebUtils.wrap("cmd", "StateInspector.setModel",
@@ -123,14 +129,12 @@ public class StateInspector extends AbstractSession implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<String> getCurrentHistory(final ModelDir modelDir) {
-		List<String> history;
-		try {
-			history = (List<String>) modelDir.getContent(HISTORY_FILE_NAME);
-		} catch (Exception e) {
+	private List<String> getCurrentHistory(final String modelDirPath) {
+		String fileName = modelDirPath + HISTORY_FILE_NAME;
+		List<String> history = fileWriter.getListOfStrings(fileName);
+		if (history == null) {
 			history = new ArrayList<String>();
-			currentModel.getModelDir().setContent(HISTORY_FILE_NAME, history);
+			fileWriter.setContent(fileName, history);
 		}
 		return history;
 	}
