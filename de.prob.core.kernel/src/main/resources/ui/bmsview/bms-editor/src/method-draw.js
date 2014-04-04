@@ -4282,25 +4282,94 @@
 			$(".observer_loop").css("max-height",height-60+"px");
 		}
 		
+		function duplicateItem(listel, el) {
+			
+			var	obj = ko.dataFor(el.get(0));
+			var clone = ko.toJS(obj)
+			var list = ko.dataFor(listel)
+			var listname = $(listel).attr("list")
+			var newPosition = ko.utils.arrayIndexOf($(listel).children(), el[0]);
+			var newel = $(listel).children().get(newPosition);		
+			list[listname].splice(newPosition,0,convertToObservable(clone));
+			return newPosition;
+		}
+		
+		function deleteItem(listel,objel) {
+			if (confirm("Delete?")==true) {
+				var list = ko.dataFor(listel)
+				var obj = ko.dataFor(objel)
+				var listname = $(listel).attr("list")
+				list[listname].remove(obj)
+			}
+		}
+		
+		function addAction(el) {
+			var parentel = el.parent()
+			var observerlistel = parentel.find(".observer_items");
+			var observerlist = ko.dataFor(observerlistel.get(0))
+			var listname = observerlistel.attr("list")
+			var jsonpattern = observerlistel.attr("jsonpattern")
+			var list = observerlist[listname]
+			list.unshift(convertToObservable(jQuery.parseJSON(jsonpattern)))
+			updateObserverActionMenu()
+		}
+		
+		function updateObserverObjMenu() {
+			$(".observer_head").contextMenu({
+				menu: 'cmenu_observer_obj',
+				inSpeed: 0
+			},
+			function(action, el, pos) {
+				switch ( action ) {
+					case 'duplicate':
+						var newPosition =  duplicateItem(el.parent().parent().get(0), el.parent())
+						refreshAccordion()
+					    $( ".observer_objs" ).accordion( "option", "active", newPosition );
+						$('.observer_loop').animate({
+					        scrollTop: $(el.parent()).offset().top - 240
+					    }, 0);
+						updateObserverObjMenu();
+						updateObserverActionMenu();
+						break;
+					case 'delete':
+						deleteItem(el.parent().parent().get(0), el.parent().get(0))
+						break;
+					case 'addaction':
+						addAction(el)
+						break;
+					default:
+						break;
+				}
+				
+			});
+		}
+		
+		function updateObserverActionMenu() {
+			$(".observer_item").contextMenu({
+				menu: 'cmenu_observer_action',
+				inSpeed: 0
+			},
+			function(action, el, pos) {
+				switch ( action ) {
+					case 'duplicate':
+						var newPosition =  duplicateItem(el.parent().get(0), el)
+						updateObserverActionMenu();
+						break;
+					case 'delete':
+						deleteItem(el.parent().get(0), el.get(0))
+						break;
+					default:
+						break;
+				}
+				
+			});
+		}		
 		Editor.initObservers = function(observers) {
 			var ObserverJsonModel = function(observers) {
 				 var self = this;
 				 self.observers = ko.observableArray(ko.utils.arrayMap(observers, function(observer) { 
 			         return { type: observer.type, objs: ko.observableArray(initObserverables(observer.objs)) }
 			     }));
-			     self.removeItem = function(list,item, refresh) {
-					if (confirm("Delete?")==true) {
-						list.remove(item)
-						if(refresh) refreshAccordion();
-					}
-			     };
-			     self.addItem = function(items, item, refresh) {
-			    	 items.unshift(convertToObservable(item))
-			    	 if(refresh) refreshAccordion();
-			     };
-			     self.withoutEvalString = function(str) {
-			    	 return str.replace("{{#eval}}","").replace("{{/eval}}","");
-			     }
 			}
 			
 			observerModel = new ObserverJsonModel(observers);
@@ -4316,11 +4385,9 @@
 				                  var position = ko.utils.arrayIndexOf(ui.item.parent().children(), ui.item[0]);
 				                  ui.item.get(0).remove()
 				                  //remove the item and add it back in the right spot
-				                  if (position >= 0) {
-				                     
+				                  if (position >= 0) {		                     
 				                	 list.remove(item);
 				                     list.splice(position, 0, item);
-				                     
 				                  }
 				                  refreshAccordion();
 				              }
@@ -4331,7 +4398,6 @@
 			
 			ko.applyBindings(observerModel);
 			
-			
 			refreshAccordion()
 			
 			$( ".observer_items" ).sortable();
@@ -4339,6 +4405,9 @@
 			
 			var container = $(".observer_list")
 			container.find('.truncate').textOverflow();
+
+			updateObserverObjMenu();
+			updateObserverActionMenu();
 			
 		}
 
