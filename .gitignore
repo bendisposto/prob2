@@ -14,3 +14,11 @@ mylyn/
 *.class
 nullconfig.groovy
 prob_log.txt
+de.prob.core.kernel/groovyTests/counter/machine.bum/
+de.prob.core.kernel/groovyTests/Lift/levels/
+de.prob.core.kernel/groovyTests/Lift/lift0/
+de.prob.core.kernel/groovyTests/machines/Lift/
+de.prob.core.kernel/groovyTests/machines/references/Foo
+de.prob.core.kernel/groovyTests/machines/scheduler/
+de.prob.core.kernel/groovyTests/Scheduler/Scheduler0/
+de.prob.core.kernel/src/test/resources/tla/Foo/
