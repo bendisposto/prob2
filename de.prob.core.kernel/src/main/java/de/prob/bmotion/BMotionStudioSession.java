@@ -55,8 +55,6 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private Trace currentTrace;
 
-	private AbstractModel currentModel;
-
 	private final AnimationSelector selector;
 	
 	private final Api api;
@@ -209,8 +207,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			// Deregister formulas if no trace exists and exit
 			if (trace == null) {
 				currentTrace = null;
-				deregisterFormulas(currentModel);
-				currentModel = null;
+				deregisterFormulas(model);
 				return;
 			}
 
@@ -219,7 +216,6 @@ public class BMotionStudioSession extends AbstractSession implements
 							trace.getModel().getModelFile())) {
 
 				currentTrace = trace;
-				currentModel = trace.getModel();
 
 				// Trigger all registered script listeners with collected
 				// formulas
@@ -297,7 +293,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	private Object subscribeFormula(final String formula,
-			final AbstractModel model) {
+			final AbstractModel model, Trace trace) {
 
 		Object result = null;
 
@@ -311,7 +307,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				result = cachedCspResults.get(formula);
 				if (result == null) {
 					evalElement = new CSP(formula, (CSPModel) model);
-					IEvalResult evaluationResult = currentTrace
+					IEvalResult evaluationResult = trace
 							.evalCurrent(evalElement);
 					if (evaluationResult != null) {
 						if (evaluationResult instanceof ComputationNotCompletedResult) {
@@ -331,13 +327,13 @@ public class BMotionStudioSession extends AbstractSession implements
 					evalElement = new EventB(formula);
 				}
 
-				result = getResultFromSubscription(evalElement, s, currentTrace);
+				result = getResultFromSubscription(evalElement, s, trace);
 				if (result == null) {
 					try {
 						s.subscribe(this, evalElement);
 						formulasForEvaluating.put(formula, evalElement);
 						result = getResultFromSubscription(evalElement, s,
-								currentTrace);
+								trace);
 					} catch (Exception e) {
 						// TODO: do something .....
 					}
@@ -349,7 +345,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			// TODO: do something ...
 			e.printStackTrace();
 		}
-		
+
 		return result;
 
 	}
@@ -376,9 +372,10 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	public void registerScript(final IBMotionScript script) {
 		scriptListeners.add(script);
-		if (currentTrace != null) {
+		if (currentTrace != null)
 			script.traceChanged(currentTrace);
-		}
+		if (model != null)
+			script.modelChanged(model.getStatespace());
 	}
 
 	private String getTemplateFolder() {
@@ -402,9 +399,8 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initGroovy() {
 
-		if (getTemplatePath() == null) {
+		if (templatePath == null)
 			return;
-		}
 		
 		try {
 
@@ -412,6 +408,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			Bindings bindings = groovyScriptEngine.getBindings(ScriptContext.GLOBAL_SCOPE);
 			bindings.putAll(parameterMap);
 			bindings.put("bms", this);
+			bindings.put("templatefolder", templateFolder);
 
 			Object scriptPaths = parameterMap.get("script");
 			if (scriptPaths != null) {
@@ -502,8 +499,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	public Object eval(final String formula) throws Exception {
-		if (currentModel != null) 
-			return subscribeFormula(formula, currentModel);
+		if (model != null && currentTrace != null)
+			return subscribeFormula(formula, model, currentTrace);
 		return null;
 	}
 
