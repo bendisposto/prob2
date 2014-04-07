@@ -425,7 +425,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		Map<String, String[]> parameterMap = req.getParameterMap();
 
 		// Set template path, port and host
-		bmsSession.setTemplatePath(templatePath);
+		bmsSession.setTemplatePath(getFullTemplatePath(templatePath));
 		bmsSession.setPort(port);
 		bmsSession.setHost(host);
 		// Build up parameter string and add parameters to
@@ -500,7 +500,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			if (!(fileExtension.equals("html") || fileExtension.equals("htm"))) {
 				errors.add("Plese enter a valid template (.html).");
 			} else if (editor == null) {
-				File file = new File(templatePath);
+				File file = new File(getFullTemplatePath(templatePath));
 				if (!file.exists())
 					errors.add("The template " + templatePath
 							+ " does not exist.");
@@ -622,6 +622,17 @@ public class BMotionStudioServlet extends HttpServlet {
 				return super.get(index);
 		}
 
+	}
+	
+	private String getFullTemplatePath(String templatePath) {
+		if (!new File(templatePath).isAbsolute()) {
+			String homedir = System.getProperty("bms.home");
+			if (homedir != null)
+				return templatePath = homedir + templatePath;
+			return templatePath = System.getProperty("user.home")
+					+ templatePath;
+		}
+		return templatePath;
 	}
 
 }
