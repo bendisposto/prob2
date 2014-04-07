@@ -76,6 +76,10 @@ public class BMotionStudioSession extends AbstractSession implements
 	private JsonElement json;
 	
 	private AbstractModel model;
+	
+	private int port;
+	
+	private String host;
 
 	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
@@ -378,7 +382,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			script.modelChanged(model.getStatespace());
 	}
 
-	private String getTemplateFolder() {
+	public String getTemplateFolder() {
 		String template = getTemplatePath();
 		if (template != null) {
 			return new File(template).getParent();
@@ -520,5 +524,21 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 	// ------------------
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
 	
 }

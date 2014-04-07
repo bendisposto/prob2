@@ -105,11 +105,10 @@ public class BMotionStudioServlet extends HttpServlet {
 		submit(command);
 	}
 	
-	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession,
-			int port) {
+	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession) {
 
 		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
-		String baseHtml = getBaseHtml(bmsSession, port);
+		String baseHtml = getBaseHtml(bmsSession);
 
 		Document templateDocument = Jsoup.parse(templateHtml);
 		templateDocument.outputSettings().prettyPrint(false);
@@ -163,7 +162,6 @@ public class BMotionStudioServlet extends HttpServlet {
 	private void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, BMotionStudioSession bmsSession) {
 
-		int port = req.getLocalPort();
 		String sessionId = bmsSession.getSessionUUID().toString();
 		String templatePath = bmsSession.getTemplatePath();
 		File templateFile = new File(templatePath);
@@ -174,7 +172,7 @@ public class BMotionStudioServlet extends HttpServlet {
 
 		if (new File(fullRequestPath).isDirectory())
 			return;
-		
+
 		InputStream stream = null;
 		try {
 			stream = new FileInputStream(fullRequestPath);
@@ -196,8 +194,7 @@ public class BMotionStudioServlet extends HttpServlet {
 						WebUtils.wrap("templatePath", templatePath));
 				stream = new ByteArrayInputStream(render.getBytes());
 			} else {
-				String html = buildBMotionStudioRunPage(
-						(BMotionStudioSession) bmsSession, port);
+				String html = buildBMotionStudioRunPage((BMotionStudioSession) bmsSession);
 				stream = new ByteArrayInputStream(html.getBytes());
 			}
 		}
@@ -414,7 +411,9 @@ public class BMotionStudioServlet extends HttpServlet {
 			HttpServletResponse resp) throws ServletException, IOException {
 
 		String templatePath = req.getParameter("template");
-
+		int port = req.getLocalPort();
+		String host = req.getLocalName();
+		
 		// Create a new BMotionStudioSession
 		BMotionStudioSession bmsSession = ServletContextListener.INJECTOR
 				.getInstance(BMotionStudioSession.class);
@@ -425,8 +424,10 @@ public class BMotionStudioServlet extends HttpServlet {
 		// Prepare redirect ...
 		Map<String, String[]> parameterMap = req.getParameterMap();
 
-		// Set template path
+		// Set template path, port and host
 		bmsSession.setTemplatePath(templatePath);
+		bmsSession.setPort(port);
+		bmsSession.setHost(host);
 		// Build up parameter string and add parameters to
 		// BMotionStudioSession
 		StringBuilder parameterString = new StringBuilder();
@@ -549,13 +550,14 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 	}
 
-	private String getBaseHtml(BMotionStudioSession bmsSession, int port) {
+	private String getBaseHtml(BMotionStudioSession bmsSession) {
 		String templatePath = bmsSession.getTemplatePath();
 		String fileName = new File(templatePath).getName();
 		String standalone = Main.standalone ? "yes" : "";
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
-				.toString(), "port", port, "template", templatePath,
-				"templatefile", fileName, "standalone", standalone);
+				.toString(), "port", bmsSession.getPort(), "host", bmsSession
+				.getHost(), "template", templatePath, "templatefile", fileName,
+				"standalone", standalone);
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 	
