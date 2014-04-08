@@ -4370,6 +4370,14 @@
 				 self.observers = ko.observableArray(ko.utils.arrayMap(observers, function(observer) { 
 			         return { type: observer.type, objs: ko.observableArray(initObserverables(observer.objs)) }
 			     }));
+			     self.addItem = function(items, item, refresh) {
+			    	 items.unshift(convertToObservable(item))
+			    	 if(refresh) {
+						refreshAccordion();
+						updateObserverObjMenu();
+						updateObserverActionMenu();
+			    	 }
+			     };
 			}
 			
 			observerModel = new ObserverJsonModel(observers);
