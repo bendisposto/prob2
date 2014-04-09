@@ -71,6 +71,10 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private final Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
 	
+	private final List<String> invalidFormulas = new ArrayList<String>();
+	
+	private final Map<String, Object> formulas = new HashMap<String, Object>();
+	
 	private final Observer defaultObserver;
 	
 	private JsonElement json;
@@ -137,19 +141,24 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 
+	public void registerFormula(String formula) {
+		if (!formulasForEvaluating.containsKey(formula))
+			formulasForEvaluating.put(formula, null);
+	}
+
 	private void initSession() {
 		// Remove all script listeners and add new observer scriptlistener
 		scriptListeners.clear();
 		scriptListeners.add(defaultObserver);
 		// Init formal model
-		initFormalModel();
+		this.model = initFormalModel();
 		// Initialize json data (if not already done)
-		initJsonData();
+		this.json = initJsonData();
 		// Init Groovy scripts
 		initGroovy();
 	}
 
-	private void initFormalModel() {
+	private AbstractModel initFormalModel() {
 
 		Object machinePath = getParameterMap().get("machine");
 
@@ -171,7 +180,7 @@ public class BMotionStudioSession extends AbstractSession implements
 							machinePath);
 					StateSpace s = model.getStatespace();
 					selector.addNewAnimation(new Trace(s));
-					this.model = model;
+					return model;
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (SecurityException e) {
@@ -186,6 +195,8 @@ public class BMotionStudioSession extends AbstractSession implements
 			}
 
 		}
+
+		return null;
 
 	}
 
@@ -202,6 +213,14 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 	}
 
+	private void registerFormulas(final AbstractModel model, final Trace trace) {
+		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
+				.entrySet()) {
+			if (entry.getValue() == null)
+				subscribeFormula(entry.getKey(), model, trace);
+		}
+	}
+	
 	@Override
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
@@ -220,6 +239,25 @@ public class BMotionStudioSession extends AbstractSession implements
 							trace.getModel().getModelFile())) {
 
 				currentTrace = trace;
+				StateSpace stateSpace = currentTrace.getStateSpace();
+
+				if (formulasForEvaluating.containsValue(null)) {
+					registerFormulas(model, trace);
+					formulasForEvaluating.keySet().removeAll(invalidFormulas);
+				}
+				
+				Map<IEvalElement, IEvalResult> valuesAt = stateSpace
+						.valuesAt(trace.getCurrentState());
+				for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt
+						.entrySet()) {
+					IEvalElement evalElement = entry.getKey();
+					IEvalResult evalResult = entry.getValue();
+					if (evalResult instanceof EvalResult) {
+						formulas.put(evalElement.getCode(),
+								translateValue(((EvalResult) evalResult)
+										.getValue()));
+					}
+				}
 
 				// Trigger all registered script listeners with collected
 				// formulas
@@ -233,38 +271,40 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 
-	private void initJsonData() {
+	private JsonElement initJsonData() {
 
-		if (getTemplatePath() == null) {
-			return;
-		}
+		if (getTemplatePath() != null) {
 
-		json = null;
-		jsonPath = null;
-		
-		Map<String, Object> scope = new HashMap<String, Object>();
-		scope.put("eval", new EvalExpression());
+			json = null;
+			jsonPath = null;
 
-		String templateFolder = getTemplateFolder();
-		Object jsonPaths = parameterMap.get("json");
-		if (jsonPaths != null) {
+			Map<String, Object> scope = new HashMap<String, Object>();
+			scope.put("eval", new EvalExpression());
 
-			String[] sp = jsonPaths.toString().split(",");
-			for (String s : sp) {
-				jsonPath = templateFolder + "/" + s;
-				File f = new File(jsonPath);
-				if (f.exists()) {
-					WebUtils.render(f.getPath(), scope);
-					String jsonRendered = readFile(f.getPath());
-					JsonParser jsonParser = new JsonParser();
-					JsonElement jsonElement = jsonParser.parse(jsonRendered);
-					if (!(jsonElement instanceof JsonNull))
-						json = jsonElement;
+			String templateFolder = getTemplateFolder();
+			Object jsonPaths = parameterMap.get("json");
+			if (jsonPaths != null) {
+
+				String[] sp = jsonPaths.toString().split(",");
+				for (String s : sp) {
+					jsonPath = templateFolder + "/" + s;
+					File f = new File(jsonPath);
+					if (f.exists()) {
+						WebUtils.render(f.getPath(), scope);
+						String jsonRendered = readFile(f.getPath());
+						JsonParser jsonParser = new JsonParser();
+						JsonElement jsonElement = jsonParser
+								.parse(jsonRendered);
+						if (!(jsonElement instanceof JsonNull))
+							json = jsonElement;
+					}
+
 				}
 
 			}
-
 		}
+
+		return json;
 
 	}
 
@@ -338,8 +378,10 @@ public class BMotionStudioSession extends AbstractSession implements
 						formulasForEvaluating.put(formula, evalElement);
 						result = getResultFromSubscription(evalElement, s,
 								trace);
+						formulas.put(formula, result);
 					} catch (Exception e) {
-						// TODO: do something .....
+						System.err.println("Invalid formula: " + formula);
+						invalidFormulas.add(formula);
 					}
 				}
 
@@ -504,7 +546,8 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	public Object eval(final String formula) throws Exception {
 		if (model != null && currentTrace != null)
-			return subscribeFormula(formula, model, currentTrace);
+			return formulas.get(formula) != null ? formulas.get(formula)
+					: subscribeFormula(formula, model, currentTrace);
 		return null;
 	}
 
