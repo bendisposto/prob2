@@ -89,15 +89,6 @@ class Observer implements IBMotionScript {
 		})
 	}
 
-	def getOp(trace,name,pred) {
-		try {
-			def ops = trace.getStateSpace().opFromPredicate(trace.getCurrentState(),name,pred,1)
-			ops[0]
-		} catch (Exception e) {
-			null
-		}
-	}
-
 	def getOpString(OpInfo op) {
 
 		String opName = op.getName();
@@ -138,17 +129,6 @@ class Observer implements IBMotionScript {
 		}
 	}
 
-	def translateValue(input) {
-		switch (input) {
-			case 'true':
-				return true
-			case 'false':
-				return false
-			default:
-				return input
-		}
-	}
-
 	def mustacheRender(s,scope) {
 		def writer = new StringWriter()
 		Mustache mustache = mf.compile(new StringReader(s.toString()), "bms");
@@ -158,4 +138,5 @@ class Observer implements IBMotionScript {
 
 	public void modelChanged(StateSpace statespace) {
 	}
+	
 }
