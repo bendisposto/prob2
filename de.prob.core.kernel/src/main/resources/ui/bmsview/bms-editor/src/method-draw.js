@@ -4283,7 +4283,6 @@
 		}
 		
 		function duplicateItem(listel, el) {
-			
 			var	obj = ko.dataFor(el.get(0));
 			var clone = ko.toJS(obj)
 			var list = ko.dataFor(listel)
@@ -4303,23 +4302,22 @@
 			}
 		}
 		
-		function addAction(el) {
+		function addAction(el,jsonpattern) {
 			var parentel = el.parent()
 			var observerlistel = parentel.find(".observer_items");
+			var listname= $(observerlistel).attr("list")
 			var observerlist = ko.dataFor(observerlistel.get(0))
-			var listname = observerlistel.attr("list")
-			var jsonpattern = observerlistel.attr("jsonpattern")
 			var list = observerlist[listname]
 			list.unshift(convertToObservable(jQuery.parseJSON(jsonpattern)))
-			updateObserverActionMenu()
+			updateObserverBindingMenu()
 		}
 		
 		function updateObserverObjMenu() {
+			
 			$(".observer_head").contextMenu({
-				menu: 'cmenu_observer_obj',
 				inSpeed: 0
 			},
-			function(action, el, pos) {
+			function(action, el, menuitem, pos) {
 				switch ( action ) {
 					case 'duplicate':
 						var newPosition =  duplicateItem(el.parent().parent().get(0), el.parent())
@@ -4329,31 +4327,32 @@
 					        scrollTop: $(el.parent()).offset().top - 240
 					    }, 0);
 						updateObserverObjMenu();
-						updateObserverActionMenu();
+						updateObserverBindingMenu();
 						break;
 					case 'delete':
 						deleteItem(el.parent().parent().get(0), el.parent().get(0))
 						break;
-					case 'addaction':
-						addAction(el)
+					case 'addBinding':
+						addAction(el,menuitem.attr('json'))
 						break;
 					default:
 						break;
 				}
 				
 			});
+			
 		}
 		
-		function updateObserverActionMenu() {
-			$(".observer_item").contextMenu({
-				menu: 'cmenu_observer_action',
+		function updateObserverBindingMenu() {
+			$(".binding_template").contextMenu({
+				menu: 'cmenu_observer_binding',
 				inSpeed: 0
 			},
 			function(action, el, pos) {
 				switch ( action ) {
 					case 'duplicate':
 						var newPosition =  duplicateItem(el.parent().get(0), el)
-						updateObserverActionMenu();
+						updateObserverBindingMenu();
 						break;
 					case 'delete':
 						deleteItem(el.parent().get(0), el.get(0))
@@ -4363,7 +4362,8 @@
 				}
 				
 			});
-		}		
+		}
+		
 		Editor.initObservers = function(observers) {
 			var ObserverJsonModel = function(observers) {
 				 var self = this;
@@ -4375,7 +4375,7 @@
 			    	 if(refresh) {
 						refreshAccordion();
 						updateObserverObjMenu();
-						updateObserverActionMenu();
+						updateObserverBindingMenu();
 			    	 }
 			     };
 			}
@@ -4415,7 +4415,7 @@
 			container.find('.truncate').textOverflow();
 
 			updateObserverObjMenu();
-			updateObserverActionMenu();
+			updateObserverBindingMenu();
 			
 		}
 

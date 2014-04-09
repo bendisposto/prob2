@@ -21,6 +21,8 @@ if(jQuery)( function() {
 		
 		contextMenu: function(o, callback) {
 			// Defaults
+			if( o.menu == undefined )
+				o.menu = $(this).attr("menu")
 			if( o.menu == undefined ) return false;
 			if( o.inSpeed == undefined ) o.inSpeed = 150;
 			if( o.outSpeed == undefined ) o.outSpeed = 75;
@@ -124,7 +126,7 @@ if(jQuery)( function() {
 				  	doc.unbind('click').unbind('keypress');
 				  	$(".contextMenu").hide();
 				  	// Callback
-				  	if( callback ) callback( $(this).attr('href').substr(1), $(srcElement), {x: x - offset.left, y: y - offset.top, docX: x, docY: y} );
+				  	if( callback ) callback( $(this).attr('href').substr(1), $(srcElement), $(this), {x: x - offset.left, y: y - offset.top, docX: x, docY: y} );
 				  	return false;
 				  });
 				
