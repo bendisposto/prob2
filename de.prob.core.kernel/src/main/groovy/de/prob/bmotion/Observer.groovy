@@ -36,7 +36,7 @@ class Observer implements IBMotionScript {
 					def data = [
 						selector: fselector,
 						attr: fattr,
-						value: fvalue
+						value: fvalue.toString()
 					]
 					return data
 				}
