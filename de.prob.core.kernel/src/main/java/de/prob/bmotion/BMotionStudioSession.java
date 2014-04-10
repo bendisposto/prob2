@@ -59,8 +59,6 @@ public class BMotionStudioSession extends AbstractSession implements
 	
 	private final Api api;
 
-	private String jsonPath;
-	
 	private String templatePath;
 	
 	private final ScriptEngine groovyScriptEngine;
@@ -151,14 +149,14 @@ public class BMotionStudioSession extends AbstractSession implements
 		scriptListeners.clear();
 		scriptListeners.add(defaultObserver);
 		// Init formal model
-		this.model = initFormalModel();
+		initFormalModel();
 		// Initialize json data (if not already done)
-		this.json = initJsonData();
+		initJsonData();
 		// Init Groovy scripts
 		initGroovy();
 	}
 
-	private AbstractModel initFormalModel() {
+	private void initFormalModel() {
 
 		Object machinePath = getParameterMap().get("machine");
 
@@ -170,9 +168,9 @@ public class BMotionStudioSession extends AbstractSession implements
 				machinePath = getTemplateFolder() + "/" + machinePath;
 
 			String formalism = getFormalism(machinePath.toString());
-
-			if (model == null && formalism != null) {
-
+			
+			if (this.model == null && formalism != null) {
+				
 				try {
 					Method method = api.getClass().getMethod(
 							formalism + "_load", String.class);
@@ -180,7 +178,7 @@ public class BMotionStudioSession extends AbstractSession implements
 							machinePath);
 					StateSpace s = model.getStatespace();
 					selector.addNewAnimation(new Trace(s));
-					return model;
+					this.model = model;
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (SecurityException e) {
@@ -195,8 +193,6 @@ public class BMotionStudioSession extends AbstractSession implements
 			}
 
 		}
-
-		return null;
 
 	}
 
@@ -271,12 +267,9 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 
-	private JsonElement initJsonData() {
+	private void initJsonData() {
 
 		if (getTemplatePath() != null) {
-
-			json = null;
-			jsonPath = null;
 
 			Map<String, Object> scope = new HashMap<String, Object>();
 			scope.put("eval", new EvalExpression());
@@ -287,7 +280,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 				String[] sp = jsonPaths.toString().split(",");
 				for (String s : sp) {
-					jsonPath = templateFolder + "/" + s;
+					String jsonPath = templateFolder + "/" + s;
 					File f = new File(jsonPath);
 					if (f.exists()) {
 						WebUtils.render(f.getPath(), scope);
@@ -296,15 +289,13 @@ public class BMotionStudioSession extends AbstractSession implements
 						JsonElement jsonElement = jsonParser
 								.parse(jsonRendered);
 						if (!(jsonElement instanceof JsonNull))
-							json = jsonElement;
+							this.json = jsonElement;
 					}
 
 				}
 
 			}
 		}
-
-		return json;
 
 	}
 
