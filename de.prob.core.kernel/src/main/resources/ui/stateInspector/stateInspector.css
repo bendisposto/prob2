@@ -2,7 +2,25 @@ li {
 	list-style-type: none;
 }
 
+.table thead tr th {
+	text-align: center;
+	border-left: 1px solid #d3d3d3;
+	border-right: 1px solid #d3d3d3;
+}
+
+.table tbody tr td { 
+     border-top: none;
+     border-left: 1px solid #d3d3d3; 
+     padding-left: 10px;
+}
+
+.table {
+	border-bottom: 1px solid #d3d3d3;
+	border-right: 1px solid #d3d3d3;
+}
+
 .component {
+	padding-left: 10px;
 	font-weight: bold;
 }
 
@@ -14,12 +32,16 @@ li {
 	font-weight: bold;
 }
 
-.no-indent {
-	padding-left: 0px;
+.tiny-indent {
+	padding-left: 10px;
 }
 
 .small-indent {
-	padding-left: 20px;
+	padding-left: 30px;
+}
+
+.large-indent {
+	padding-left: 50px;
 }
 
 .CodeMirror {

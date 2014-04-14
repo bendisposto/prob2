@@ -50,6 +50,7 @@ public class StateInspector extends AbstractSession implements
 	@Inject
 	public StateInspector(final FileHandler fileWriter,
 			final AnimationSelector animations) {
+		this.incrementalUpdate = false;
 		this.fileWriter = fileWriter;
 		animations.registerAnimationChangeListener(this);
 	}
@@ -230,6 +231,7 @@ public class StateInspector extends AbstractSession implements
 				}
 			}
 		}
+
 		String label = extractLabel(c);
 		extracted.put("label", label);
 		extracted.put("children", kids);

@@ -23,7 +23,9 @@ import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.Variable;
 
 /**
@@ -109,6 +111,11 @@ public class ClassicalBFactory extends ModelFactory {
 					.getChildrenOfType(Variable.class);
 			for (Variable variable : childrenOfType) {
 				m.getStatespace().subscribe(this, variable.getExpression());
+			}
+			ModelElementList<Invariant> invariants = machine
+					.getChildrenOfType(Invariant.class);
+			for (Invariant invariant : invariants) {
+				m.getStatespace().subscribe(this, invariant.getPredicate());
 			}
 		}
 	}

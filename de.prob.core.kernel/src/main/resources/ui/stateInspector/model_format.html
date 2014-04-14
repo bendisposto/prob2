@@ -1,19 +1,14 @@
-<ul class="no-indent" id="content">
-    {{#components}}
-    <li>
-        <div class="component">{{label}}</div>
-        {{#children}}
-        <ul class="small-indent">
-            <li>
-                <div class="heading">{{label}}</div>
-                <ul class="small-indent">
-                    {{#children}}
-                    <li class="entry" id="{{id}}"><span class="code">{{code}}</span></li>
-                    {{/children}}
-                </ul>
-            </li>
-        </ul>
-        {{/children}}
-    </li>
-    {{/components}}
-</ul>
+<table id="content" class="table">
+	<thead><tr class="active"><th>Name</th><th>Value</th><th>Previous Value</th></tr></thead>
+	<tbody>
+	{{#components}}
+	<tr><td><div class="component">{{label}}</div></td><td></td><td></td></tr>
+	{{#children}}
+	<tr><td><div class="small-indent heading">{{label}}</div></td><td></td><td></td></tr>
+    {{#children}}
+	<tr id="{{id}}"><td><div class="large-indent">{{code}}</div></td><td></td><td></td></tr>
+	{{/children}}
+	{{/children}}
+	{{/components}}
+	</tbody>
+</table>

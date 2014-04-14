@@ -63,12 +63,13 @@ StateInspector = (function() {
 	});
 
 	function clearInput() {
-		$("#content").replaceWith("<ul class='no-indent' id='content'></ul>");
+		$("#content").replaceWith("<table id='content' class='table table-bordered'></table>");
 	}
 
 	function setModel(model) {
 		$("#content").replaceWith(
 				session.render("/ui/stateInspector/model_format.html", model))
+        $("#content").colResizable()
 	}
 
 	function updateValues(values) {
