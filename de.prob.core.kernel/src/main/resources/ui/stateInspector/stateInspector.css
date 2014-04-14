@@ -44,6 +44,10 @@ li {
 	padding-left: 50px;
 }
 
+.x-large-indent {
+	padding-left: 70px;
+}
+
 .CodeMirror {
 	border: 1px solid #000;
 	background: #eee;
@@ -83,4 +87,8 @@ li {
 
 .disabled {
     opacity: 0.1;
+}
+
+.empty {
+	display: none;
 }

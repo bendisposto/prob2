@@ -21,11 +21,14 @@ import de.prob.model.eventb.Context;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Axiom;
+import de.prob.model.representation.BEvent;
 import de.prob.model.representation.BSet;
 import de.prob.model.representation.Constant;
+import de.prob.model.representation.Guard;
 import de.prob.model.representation.IEval;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.Variable;
 import de.prob.scripting.FileHandler;
 import de.prob.statespace.AnimationSelector;
@@ -207,6 +210,7 @@ public class StateInspector extends AbstractSession implements
 		if (e instanceof Machine) {
 			kids.add(extractElement(s, e, Variable.class));
 			kids.add(extractElement(s, e, Invariant.class));
+			kids.add(extractGuards(s, (Machine) e));
 		}
 		extracted.put("label", name);
 		extracted.put("children", kids);
@@ -235,6 +239,40 @@ public class StateInspector extends AbstractSession implements
 		String label = extractLabel(c);
 		extracted.put("label", label);
 		extracted.put("children", kids);
+		extracted.put("class", kids.isEmpty() ? "empty" : "visible");
+		extracted.put("isGuards", false);
+		return extracted;
+	}
+
+	private Object extractGuards(final StateSpace s, final Machine m) {
+		Map<String, Object> extracted = new HashMap<String, Object>();
+		List<Object> kids = new ArrayList<Object>();
+
+		ModelElementList<BEvent> events = m.getChildrenOfType(BEvent.class);
+		for (BEvent bEvent : events) {
+			Map<String, Object> o = new HashMap<String, Object>();
+			List<Object> kids2 = new ArrayList<Object>();
+			for (Guard guard : bEvent.getChildrenOfType(Guard.class)) {
+				if (s.isSubscribed(guard.getPredicate())) {
+					Map<String, String> wrap = WebUtils.wrap("code",
+							unicode(guard.getPredicate().getCode()), "id",
+							guard.getPredicate().getFormulaId().uuid);
+					kids2.add(wrap);
+					formulasForEvaluating.add(guard.getPredicate());
+				}
+			}
+			o.put("name", bEvent.getName());
+			o.put("guards", kids2);
+			o.put("class", kids2.isEmpty() ? "empty" : "visible");
+			if (!kids2.isEmpty()) {
+				kids.add(o);
+			}
+		}
+
+		extracted.put("label", "Guards");
+		extracted.put("children", kids);
+		extracted.put("class", kids.isEmpty() ? "empty" : "visible");
+		extracted.put("isGuards", true);
 		return extracted;
 	}
 
