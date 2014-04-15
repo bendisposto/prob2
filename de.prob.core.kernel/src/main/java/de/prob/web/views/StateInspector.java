@@ -239,7 +239,7 @@ public class StateInspector extends AbstractSession implements
 		String label = extractLabel(c);
 		extracted.put("label", label);
 		extracted.put("children", kids);
-		extracted.put("class", kids.isEmpty() ? "empty" : "visible");
+		extracted.put("class", kids.isEmpty() ? "empty" : null);
 		extracted.put("isGuards", false);
 		return extracted;
 	}
@@ -263,7 +263,7 @@ public class StateInspector extends AbstractSession implements
 			}
 			o.put("name", bEvent.getName());
 			o.put("guards", kids2);
-			o.put("class", kids2.isEmpty() ? "empty" : "visible");
+			o.put("class", kids2.isEmpty() ? "empty" : null);
 			if (!kids2.isEmpty()) {
 				kids.add(o);
 			}
@@ -271,7 +271,7 @@ public class StateInspector extends AbstractSession implements
 
 		extracted.put("label", "Guards");
 		extracted.put("children", kids);
-		extracted.put("class", kids.isEmpty() ? "empty" : "visible");
+		extracted.put("class", kids.isEmpty() ? "empty" : null);
 		extracted.put("isGuards", true);
 		return extracted;
 	}
