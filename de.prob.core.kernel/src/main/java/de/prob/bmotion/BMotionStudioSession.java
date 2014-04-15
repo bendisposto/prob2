@@ -541,19 +541,27 @@ public class BMotionStudioSession extends AbstractSession implements
 					: subscribeFormula(formula, model, currentTrace);
 		return null;
 	}
-
+	
 	public Object executeOperation(final Map<String, String[]> params) {
-		String op = params.get("op")[0];
-		String predicate = params.get("predicate")[0];
-		if (predicate.isEmpty()) {
-			predicate = "1=1";
-		}
-		Trace currentTrace = selector.getCurrentTrace();
-		try {
-			Trace newTrace = currentTrace.add(op, predicate);
+		String[] id = params.get("id");
+		String[] op = params.get("op");
+		String[] predicate = params.get("predicate");
+		if (id != null) {
+			Trace newTrace = currentTrace.add(id[0]);
 			selector.replaceTrace(currentTrace, newTrace);
-		} catch (BException e) {
-			e.printStackTrace();
+			return null;
+		} else if (op != null && predicate != null) {
+			String fpredicate = predicate[0];
+			if (fpredicate.isEmpty()) {
+				fpredicate = "1=1";
+			}
+			Trace currentTrace = selector.getCurrentTrace();
+			try {
+				Trace newTrace = currentTrace.add(op[0], fpredicate);
+				selector.replaceTrace(currentTrace, newTrace);
+			} catch (BException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
