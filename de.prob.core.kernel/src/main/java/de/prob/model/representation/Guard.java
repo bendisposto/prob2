@@ -3,7 +3,7 @@ package de.prob.model.representation;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.unicode.UnicodeTranslator;
 
-public abstract class Guard extends AbstractElement implements IEval {
+public abstract class Guard extends AbstractFormulaElement {
 
 	private final IEvalElement predicate;
 
@@ -16,7 +16,7 @@ public abstract class Guard extends AbstractElement implements IEval {
 	}
 
 	@Override
-	public IEvalElement getEvaluate() {
+	public IEvalElement getFormula() {
 		return predicate;
 	}
 

@@ -5,7 +5,7 @@ import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.statespace.Trace;
 import de.prob.unicode.UnicodeTranslator;
 
-public abstract class Constant extends AbstractElement implements IEval {
+public abstract class Constant extends AbstractFormulaElement {
 
 	protected final IEvalElement expression;
 	protected IEvalResult result;
@@ -19,7 +19,7 @@ public abstract class Constant extends AbstractElement implements IEval {
 	}
 
 	@Override
-	public IEvalElement getEvaluate() {
+	public IEvalElement getFormula() {
 		return expression;
 	}
 
@@ -32,7 +32,7 @@ public abstract class Constant extends AbstractElement implements IEval {
 	// it.
 	public IEvalResult getValue(final Trace h) {
 		if (result == null) {
-			result = h.evalCurrent(getEvaluate());
+			result = h.evalCurrent(getFormula());
 		}
 		return result;
 	}

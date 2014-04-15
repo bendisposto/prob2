@@ -19,13 +19,13 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.eventb.Context;
 import de.prob.model.representation.AbstractElement;
+import de.prob.model.representation.AbstractFormulaElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Axiom;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.BSet;
 import de.prob.model.representation.Constant;
 import de.prob.model.representation.Guard;
-import de.prob.model.representation.IEval;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
@@ -224,8 +224,9 @@ public class StateInspector extends AbstractSession implements
 		List<Object> kids = new ArrayList<Object>();
 		List<? extends AbstractElement> children = parent.getChildrenOfType(c);
 		for (AbstractElement abstractElement : children) {
-			if (abstractElement instanceof IEval) {
-				IEvalElement formula = ((IEval) abstractElement).getEvaluate();
+			if (abstractElement instanceof AbstractFormulaElement) {
+				IEvalElement formula = ((AbstractFormulaElement) abstractElement)
+						.getFormula();
 				if (s.isSubscribed(formula)) {
 					Map<String, String> wrap = WebUtils.wrap("code",
 							unicode(formula.getCode()), "id",

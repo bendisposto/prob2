@@ -6,10 +6,9 @@ import org.eventb.core.ast.extension.IFormulaExtension;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.IEval;
+import de.prob.model.representation.AbstractFormulaElement;
 
-public class Variant extends AbstractElement implements IEval {
+public class Variant extends AbstractFormulaElement {
 	private final IEvalElement expression;
 
 	public Variant(final String code, final Set<IFormulaExtension> typeEnv) {
@@ -21,7 +20,7 @@ public class Variant extends AbstractElement implements IEval {
 	}
 
 	@Override
-	public IEvalElement getEvaluate() {
+	public IEvalElement getFormula() {
 		return expression;
 	}
 }
