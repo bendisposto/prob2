@@ -412,7 +412,7 @@ public class BMotionStudioServlet extends HttpServlet {
 
 		String templatePath = req.getParameter("template");
 		int port = req.getLocalPort();
-		String host = req.getLocalAddr();
+		String host = req.getRemoteAddr();
 		// Create a new BMotionStudioSession
 		BMotionStudioSession bmsSession = ServletContextListener.INJECTOR
 				.getInstance(BMotionStudioSession.class);
