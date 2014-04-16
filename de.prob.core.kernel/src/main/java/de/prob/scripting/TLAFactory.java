@@ -43,7 +43,7 @@ public class TLAFactory extends ModelFactory {
 
 	/**
 	 * This method loads a TLA module from file, parses the module, translates
-	 * the tla AST to a B AST, starts the animation, and returns the created
+	 * the TLA AST to a B AST, starts the animation, and returns the created
 	 * {@link ClassicalBModel}
 	 * 
 	 * @param f
@@ -52,21 +52,23 @@ public class TLAFactory extends ModelFactory {
 	 * @return {@link ClassicalBModel} translated from the specified TLA file.
 	 * @throws IOException
 	 * @throws BException
-	 * @throws FrontEndException 
+	 * @throws FrontEndException
 	 */
 	public ClassicalBModel load(final File f, final Map<String, String> prefs,
-			final boolean loadVariables) throws IOException, BException, FrontEndException {
+			final boolean loadVariables) throws IOException, BException {
 		ClassicalBModel classicalBModel = modelCreator.get();
 
-		Translator translator = new Translator(f.getAbsolutePath(), null);
+		Translator translator;
 
 		Start ast;
 		try {
+			translator = new Translator(f.getAbsolutePath(), null);
 			ast = translator.translate();
 		} catch (TLA2BException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Translation error");
 		}
+		
 		BParser bparser = new BParser();
 		bparser.getDefinitions().addAll(translator.getBDefinitions());
 		
