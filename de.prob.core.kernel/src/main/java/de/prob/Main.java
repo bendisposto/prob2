@@ -34,6 +34,7 @@ public class Main {
 
 	public static boolean restricted = true;
 	public static boolean standalone = false;
+	public static boolean local = false;
 	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
 	private final Options options;
@@ -90,6 +91,7 @@ public class Main {
 				port = Integer.parseInt(line.getOptionValue("port"));
 			}
 			if (line.hasOption("local")) {
+				Main.local = true;
 				Main.restricted = false;
 				iface = "127.0.0.1";
 			}
