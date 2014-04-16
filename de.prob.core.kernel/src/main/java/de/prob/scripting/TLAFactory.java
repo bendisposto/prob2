@@ -25,6 +25,7 @@ import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.Variable;
+import de.tla2b.exceptions.FrontEndException;
 import de.tla2b.exceptions.TLA2BException;
 import de.tla2bAst.Translator;
 
@@ -49,9 +50,10 @@ public class TLAFactory {
 	 * @return {@link ClassicalBModel} translated from the specified TLA file.
 	 * @throws IOException
 	 * @throws BException
+	 * @throws FrontEndException 
 	 */
 	public ClassicalBModel load(final File f, final Map<String, String> prefs,
-			final boolean loadVariables) throws IOException, BException {
+			final boolean loadVariables) throws IOException, BException, FrontEndException {
 		ClassicalBModel classicalBModel = modelCreator.get();
 		
 		Translator translator = new Translator(f.getAbsolutePath(), null);
@@ -64,14 +66,16 @@ public class TLAFactory {
 			throw new RuntimeException("Translation error");
 		}
 		BParser bparser = new BParser();
+		bparser.getDefinitions().addAll(translator.getBDefinitions());
+		
 		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
-
 		classicalBModel.initialize(ast, rml, f);
 		startAnimation(classicalBModel, rml, prefs, f);
 		if (loadVariables) {
 			subscribeVariables(classicalBModel);
 		}
 		return classicalBModel;
+		
 	}
 
 	/**
