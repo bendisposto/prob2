@@ -1466,9 +1466,13 @@
 
 				  // select observer ...
 				  // TODO: We select only by id .. manage other selection (e.g. by class, etc.)
-				  var indexToActive = $("div[oid=#"+$(elem).attr("id")+"]").index()
+        		  var activeElement = $("div[oid=#"+$(elem).attr("id")+"]");
+				  var indexToActive = activeElement.index()
 				  if(indexToActive > -1) {
-					  $( ".observer_list" ).accordion( "option", "active", indexToActive );
+					  $('.observer_loop').animate({
+					        scrollTop: activeElement.offset().top - 240
+					    }, 0);
+					  $( ".observer_objs" ).accordion( "option", "active", indexToActive );
 				  }
 					
 				  $("#stroke_panel").show();
@@ -2401,7 +2405,7 @@
 				    type: 'POST',
 				    data: {
 				    		task: 'save',
-				    		template: $('#svg_editor').attr('template'),
+				    		newtemplate: $('#svg_editor').attr('template'),
 				    		svg : svgCanvas.getSvgString(),
 				    		svgid : workingSvgId,
 				    		json: ko.toJSON(observerModel)
@@ -2420,7 +2424,7 @@
 			};
 					
 			var clickStartVisualisation = function() {
-				window.location = workingTemplateFile + "?template=" + workingTemplatePath + "&lang="+ workingLanguage
+				window.location = workingTemplateFile + "?template=" + workingTemplatePath
 			};
 			
 			var clickBold = function(){
@@ -2857,6 +2861,7 @@
 			
 			$(window).resize(function(evt) {
 					updateCanvas();
+					updateObserverContainer();
 			});
 			
 			(function() {
@@ -4028,6 +4033,7 @@
 		
 // 			$(function() {
 				updateCanvas(true);
+				updateObserverContainer();
 // 			});
 			
 		//	var revnums = "svg-editor.js ($Rev: 2083 $) ";
@@ -4260,6 +4266,101 @@
 			container.accordion({
 				header: "> div > h3",
 				collapsible: true
+			}).sortable({
+		        axis: "y",
+		        handle: "h3",
+		        stop: function( event, ui ) {
+		          // IE doesn't register the blur when sorting
+		          // so trigger focusout handlers to remove .ui-state-focus
+		          ui.item.children( "h3" ).triggerHandler( "focusout" );
+		        }
+		      });
+		}
+		
+		function updateObserverContainer() {
+			var height = $("#observers").height()
+			$(".observer_loop").css("max-height",height-60+"px");
+		}
+		
+		function duplicateItem(listel, el) {
+			var	obj = ko.dataFor(el.get(0));
+			var clone = ko.toJS(obj)
+			var list = ko.dataFor(listel)
+			var listname = $(listel).attr("list")
+			var newPosition = ko.utils.arrayIndexOf($(listel).children(), el[0]);
+			var newel = $(listel).children().get(newPosition);		
+			list[listname].splice(newPosition,0,convertToObservable(clone));
+			return newPosition;
+		}
+		
+		function deleteItem(listel,objel) {
+			if (confirm("Delete?")==true) {
+				var list = ko.dataFor(listel)
+				var obj = ko.dataFor(objel)
+				var listname = $(listel).attr("list")
+				list[listname].remove(obj)
+			}
+		}
+		
+		function addAction(el,jsonpattern) {
+			var parentel = el.parent()
+			var observerlistel = parentel.find(".observer_items");
+			var listname= $(observerlistel).attr("list")
+			var observerlist = ko.dataFor(observerlistel.get(0))
+			var list = observerlist[listname]
+			list.unshift(convertToObservable(jQuery.parseJSON(jsonpattern)))
+			updateObserverBindingMenu()
+		}
+		
+		function updateObserverObjMenu() {
+			
+			$(".observer_head").contextMenu({
+				inSpeed: 0
+			},
+			function(action, el, menuitem, pos) {
+				switch ( action ) {
+					case 'duplicate':
+						var newPosition =  duplicateItem(el.parent().parent().get(0), el.parent())
+						refreshAccordion()
+					    $( ".observer_objs" ).accordion( "option", "active", newPosition );
+						$('.observer_loop').animate({
+					        scrollTop: $(el.parent()).offset().top - 240
+					    }, 0);
+						updateObserverObjMenu();
+						updateObserverBindingMenu();
+						break;
+					case 'delete':
+						deleteItem(el.parent().parent().get(0), el.parent().get(0))
+						break;
+					case 'addBinding':
+						addAction(el,menuitem.attr('json'))
+						break;
+					default:
+						break;
+				}
+				
+			});
+			
+		}
+		
+		function updateObserverBindingMenu() {
+			$(".binding_template").contextMenu({
+				menu: 'cmenu_observer_binding',
+				inSpeed: 0
+			},
+			function(action, el, pos) {
+				switch ( action ) {
+					case 'duplicate':
+						var newPosition =  duplicateItem(el.parent().get(0), el)
+						updateObserverBindingMenu();
+						break;
+					case 'delete':
+						deleteItem(el.parent().get(0), el.get(0))
+						break;
+					default:
+						break;
+				}
+				
 			});
 		}
 		
@@ -4269,29 +4370,52 @@
 				 self.observers = ko.observableArray(ko.utils.arrayMap(observers, function(observer) { 
 			         return { type: observer.type, objs: ko.observableArray(initObserverables(observer.objs)) }
 			     }));
-			     self.removeItem = function(list,item, refresh) {
-					if (confirm("Delete?")==true) {
-						list.remove(item)
-						if(refresh) refreshAccordion();
-					}
-			     };
 			     self.addItem = function(items, item, refresh) {
 			    	 items.unshift(convertToObservable(item))
-			    	 if(refresh) refreshAccordion();
+			    	 if(refresh) {
+						refreshAccordion();
+						updateObserverObjMenu();
+						updateObserverBindingMenu();
+			    	 }
 			     };
-			     self.withoutEvalString = function(str) {
-			    	 return str.replace("{{#eval}}","").replace("{{/eval}}","");
-			     }
 			}
 			
 			observerModel = new ObserverJsonModel(observers);
 
+			 ko.bindingHandlers.sortableList = {
+				      init: function(element, valueAccessor) {
+				          var list = valueAccessor();
+				          $(element).sortable({
+				              update: function(event, ui) {
+				                  //retrieve our actual data item
+				                  var item = ko.dataFor(ui.item.get(0));
+				                  //figure out its new position
+				                  var position = ko.utils.arrayIndexOf(ui.item.parent().children(), ui.item[0]);
+				                  ui.item.get(0).remove()
+				                  //remove the item and add it back in the right spot
+				                  if (position >= 0) {		                     
+				                	 list.remove(item);
+				                     list.splice(position, 0, item);
+				                  }
+				                  refreshAccordion();
+				              }
+				          });
+				      }
+				  };
+
+			
 			ko.applyBindings(observerModel);
 			
 			refreshAccordion()
 			
+			$( ".observer_items" ).sortable();
+			$( ".observer_items" ).disableSelection();
+			
 			var container = $(".observer_list")
 			container.find('.truncate').textOverflow();
+
+			updateObserverObjMenu();
+			updateObserverBindingMenu();
 			
 		}
 

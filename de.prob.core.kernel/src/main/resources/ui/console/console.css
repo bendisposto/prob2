@@ -16,6 +16,7 @@
    color: red;
 }
 .groovy_trace {
+   padding-left: 25px;	
    font-family:  monospace;
    color: #999999;
 }

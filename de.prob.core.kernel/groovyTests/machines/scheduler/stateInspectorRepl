@@ -1,7 +1,1 @@
-card(active) = 1
-card(ready) = 1
-card(waiting) = 1
-card(active) = 1
-card(ready) = 1
-card(active) = 1
-card(waiting) = 1
+["active /\\ ready = {}","ready \\/ waiting = {}","active /\\ ready = {}","active /\\ ready = {}","ready \\/ waiting = {}","active /\\ ready = {}","active /\\ ready = {}","ready \\/ waiting = {}","ready \\/ waiting = {}","active /\\ ready = {}","waiting","waiting","waiting","waiting","waiting","waiting \\/ active","card(active) = 0","ready \\/ waiting = {}"]

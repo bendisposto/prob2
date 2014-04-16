@@ -1,7 +1,5 @@
 package de.prob.web.views;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,13 +46,21 @@ public class GroovyConsoleSession extends AbstractSession {
 					StringEscapeUtils.escapeHtml(resultString), "output",
 					console.toString());
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			// def trace = e.getStackTrace().collect {it.toString() };
 			return WebUtils.wrap("cmd", "Console.groovyError", "message",
-					e.getMessage(), "trace", sw.toString());
+					e.getMessage(), "trace", extractTrace(e.getStackTrace()));
 		}
 
+	}
+
+	private String extractTrace(final StackTraceElement[] stackTrace) {
+		if (stackTrace.length == 0) {
+			return "";
+		}
+		if (stackTrace.length == 1) {
+			return "at " + stackTrace[0].toString();
+		}
+		return "at " + stackTrace[0].toString()
+				+ System.getProperty("line.separator") + "...";
 	}
 
 	@Override

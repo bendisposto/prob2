@@ -21,12 +21,16 @@ import de.prob.model.eventb.Context;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Axiom;
+import de.prob.model.representation.BEvent;
 import de.prob.model.representation.BSet;
 import de.prob.model.representation.Constant;
+import de.prob.model.representation.Guard;
 import de.prob.model.representation.IEval;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.Variable;
+import de.prob.scripting.FileHandler;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
@@ -41,11 +45,16 @@ public class StateInspector extends AbstractSession implements
 
 	private static final String HISTORY_FILE_NAME = "stateInspectorRepl";
 	List<IEvalElement> formulasForEvaluating = new ArrayList<IEvalElement>();
+	List<String> history = new ArrayList<String>();
 	Trace currentTrace;
 	AbstractModel currentModel;
+	private final FileHandler fileWriter;
 
 	@Inject
-	public StateInspector(final AnimationSelector animations) {
+	public StateInspector(final FileHandler fileWriter,
+			final AnimationSelector animations) {
+		this.incrementalUpdate = false;
+		this.fileWriter = fileWriter;
 		animations.registerAnimationChangeListener(this);
 	}
 
@@ -57,22 +66,23 @@ public class StateInspector extends AbstractSession implements
 		if (currentModel != null && currentTrace != null) {
 			Map<String, Object> extracted = extractModel(currentModel);
 			Object values = calculateFormulas(currentTrace);
-			submit(WebUtils.wrap(
-					"cmd",
-					"StateInspector.setModel",
-					"components",
-					WebUtils.toJson(extracted),
-					"values",
-					WebUtils.toJson(values),
-					"history",
-					WebUtils.toJson(currentModel.getModelDir().getLines(
-							HISTORY_FILE_NAME))));
+			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
+					"components", WebUtils.toJson(extracted), "values",
+					WebUtils.toJson(values), "history",
+					WebUtils.toJson(history)));
 		}
 	}
 
 	public Object evaluate(final Map<String, String[]> params) {
 		String code = params.get("code")[0];
-		currentModel.getModelDir().appendToFile(HISTORY_FILE_NAME, code);
+		if (history.size() > 200) {
+			history = history.subList(100, history.size());
+		}
+		history.add(code);
+		if (currentModel != null) {
+			fileWriter.setContent(currentModel.getModelDirPath()
+					+ HISTORY_FILE_NAME, history);
+		}
 
 		// TODO: What happens if we try to use CSP or EventB???
 		Object eval = currentTrace.getCurrentState().eval(new ClassicalB(code));
@@ -107,17 +117,13 @@ public class StateInspector extends AbstractSession implements
 				Map<String, Object> extracted = extractModel(currentModel);
 				registerFormulas(currentModel);
 
+				history = getCurrentHistory(currentModel.getModelDirPath());
+
 				Object calculatedValues = calculateFormulas(currentTrace);
-				submit(WebUtils.wrap(
-						"cmd",
-						"StateInspector.setModel",
-						"components",
-						WebUtils.toJson(extracted),
-						"values",
-						WebUtils.toJson(calculatedValues),
-						"history",
-						WebUtils.toJson(currentModel.getModelDir().getLines(
-								HISTORY_FILE_NAME))));
+				submit(WebUtils.wrap("cmd", "StateInspector.setModel",
+						"components", WebUtils.toJson(extracted), "values",
+						WebUtils.toJson(calculatedValues), "history",
+						WebUtils.toJson(history)));
 				return;
 			}
 
@@ -125,6 +131,16 @@ public class StateInspector extends AbstractSession implements
 			submit(WebUtils.wrap("cmd", "StateInspector.updateValues",
 					"values", WebUtils.toJson(calculatedValues)));
 		}
+	}
+
+	private List<String> getCurrentHistory(final String modelDirPath) {
+		String fileName = modelDirPath + HISTORY_FILE_NAME;
+		List<String> history = fileWriter.getListOfStrings(fileName);
+		if (history == null) {
+			history = new ArrayList<String>();
+			fileWriter.setContent(fileName, history);
+		}
+		return history;
 	}
 
 	public Object calculateFormulas(final Trace t) {
@@ -194,6 +210,7 @@ public class StateInspector extends AbstractSession implements
 		if (e instanceof Machine) {
 			kids.add(extractElement(s, e, Variable.class));
 			kids.add(extractElement(s, e, Invariant.class));
+			kids.add(extractGuards(s, (Machine) e));
 		}
 		extracted.put("label", name);
 		extracted.put("children", kids);
@@ -218,9 +235,44 @@ public class StateInspector extends AbstractSession implements
 				}
 			}
 		}
+
 		String label = extractLabel(c);
 		extracted.put("label", label);
 		extracted.put("children", kids);
+		extracted.put("class", kids.isEmpty() ? "empty" : null);
+		extracted.put("isGuards", false);
+		return extracted;
+	}
+
+	private Object extractGuards(final StateSpace s, final Machine m) {
+		Map<String, Object> extracted = new HashMap<String, Object>();
+		List<Object> kids = new ArrayList<Object>();
+
+		ModelElementList<BEvent> events = m.getChildrenOfType(BEvent.class);
+		for (BEvent bEvent : events) {
+			Map<String, Object> o = new HashMap<String, Object>();
+			List<Object> kids2 = new ArrayList<Object>();
+			for (Guard guard : bEvent.getChildrenOfType(Guard.class)) {
+				if (s.isSubscribed(guard.getPredicate())) {
+					Map<String, String> wrap = WebUtils.wrap("code",
+							unicode(guard.getPredicate().getCode()), "id",
+							guard.getPredicate().getFormulaId().uuid);
+					kids2.add(wrap);
+					formulasForEvaluating.add(guard.getPredicate());
+				}
+			}
+			o.put("name", bEvent.getName());
+			o.put("guards", kids2);
+			o.put("class", kids2.isEmpty() ? "empty" : null);
+			if (!kids2.isEmpty()) {
+				kids.add(o);
+			}
+		}
+
+		extracted.put("label", "Guards");
+		extracted.put("children", kids);
+		extracted.put("class", kids.isEmpty() ? "empty" : null);
+		extracted.put("isGuards", true);
 		return extracted;
 	}
 

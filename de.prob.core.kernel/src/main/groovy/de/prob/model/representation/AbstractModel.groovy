@@ -2,7 +2,6 @@ package de.prob.model.representation;
 
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.RefType.ERefType
-import de.prob.scripting.ModelDir
 import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
@@ -13,7 +12,7 @@ public abstract class AbstractModel extends AbstractElement {
 	protected StateSpace statespace;
 	protected boolean dirty = false;
 	protected File modelFile;
-	protected ModelDir modelDir;
+	protected String modelDirPath;
 	protected DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
 
@@ -85,12 +84,17 @@ public abstract class AbstractModel extends AbstractElement {
 
 	public abstract FormalismType getFormalismType();
 
+	protected void extractModelDir(File modelFile, String dirName) {
+		modelDirPath = modelFile.absolutePath.substring(0, modelFile.absolutePath.lastIndexOf(File.separator)+1) + dirName + File.separator
+		new File(modelDirPath).mkdir()
+	}
+
 	public File getModelFile() {
 		return modelFile;
 	}
 
-	public ModelDir getModelDir() {
-		return modelDir
+	public String getModelDirPath() {
+		return modelDirPath;
 	}
 
 	def getProperty(final String name) {

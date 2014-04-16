@@ -55,35 +55,33 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private Trace currentTrace;
 
-	private AbstractModel currentModel;
-
 	private final AnimationSelector selector;
 	
 	private final Api api;
 
-	private String jsonPath;
-	
 	private String templatePath;
-	
-	private String language;
 	
 	private final ScriptEngine groovyScriptEngine;
 
 	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
 
-	private final Map<String, Object> formulas = new HashMap<String, Object>();
-
-	private final Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
-
 	private final Map<String, Object> cachedCspResults = new HashMap<String, Object>();
 
+	private final Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
+	
+	private final List<String> invalidFormulas = new ArrayList<String>();
+	
+	private final Map<String, Object> formulas = new HashMap<String, Object>();
+	
 	private final Observer defaultObserver;
 	
 	private JsonElement json;
 	
-	private boolean modelStarted = false;
+	private AbstractModel model;
 	
-	private String modelFile;
+	private int port;
+	
+	private String host;
 
 	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
 
@@ -109,7 +107,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	public Object triggerListener(final Map<String, String[]> params) {
 		// Trigger all registered script listeners with collected formulas
 		for (IBMotionScript s : scriptListeners) {
-			s.traceChanged(currentTrace, formulas);
+			s.traceChanged(currentTrace);
 		}
 		return null;
 	}
@@ -141,6 +139,11 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	}
 
+	public void registerFormula(String formula) {
+		if (!formulasForEvaluating.containsKey(formula))
+			formulasForEvaluating.put(formula, null);
+	}
+
 	private void initSession() {
 		// Remove all script listeners and add new observer scriptlistener
 		scriptListeners.clear();
@@ -155,19 +158,19 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initFormalModel() {
 
-		Object formalism = getParameterMap().get("lang");
 		Object machinePath = getParameterMap().get("machine");
 
-		if (machinePath != null && formalism != null) {
+		if (machinePath != null) {
 
 			File machineFile = new File(machinePath.toString());
 
 			if (!machineFile.isAbsolute())
 				machinePath = getTemplateFolder() + "/" + machinePath;
 
-			if (!modelStarted
-					|| (currentModel != null && !currentModel.getModelFile()
-							.getAbsolutePath().equals(machinePath))) {
+			String formalism = getFormalism(machinePath.toString());
+			
+			if (this.model == null && formalism != null) {
+				
 				try {
 					Method method = api.getClass().getMethod(
 							formalism + "_load", String.class);
@@ -175,8 +178,7 @@ public class BMotionStudioSession extends AbstractSession implements
 							machinePath);
 					StateSpace s = model.getStatespace();
 					selector.addNewAnimation(new Trace(s));
-					modelStarted = true;
-					setModelFile(s.getModel().getModelFile().getAbsolutePath());
+					this.model = model;
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (SecurityException e) {
@@ -207,6 +209,14 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 	}
 
+	private void registerFormulas(final AbstractModel model, final Trace trace) {
+		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
+				.entrySet()) {
+			if (entry.getValue() == null)
+				subscribeFormula(entry.getKey(), model, trace);
+		}
+	}
+	
 	@Override
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
@@ -216,92 +226,75 @@ public class BMotionStudioSession extends AbstractSession implements
 			// Deregister formulas if no trace exists and exit
 			if (trace == null) {
 				currentTrace = null;
-				deregisterFormulas(currentModel);
-				currentModel = null;
+				deregisterFormulas(model);
 				return;
 			}
 
-			if (modelFile != null
-					&& modelFile.equals(trace.getModel().getModelFile()
-							.getAbsolutePath())) {
+			if (model != null
+					&& model.getModelFile().equals(
+							trace.getModel().getModelFile())) {
 
 				currentTrace = trace;
-				currentModel = trace.getModel();
+				StateSpace stateSpace = currentTrace.getStateSpace();
 
-				checkSubscribedFormulas(currentTrace, currentModel);
-
-				// Collect results of subscibred formulas
-				formulas.clear();
-				Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
+				if (formulasForEvaluating.containsValue(null)) {
+					registerFormulas(model, trace);
+					formulasForEvaluating.keySet().removeAll(invalidFormulas);
+				}
+				
+				Map<IEvalElement, IEvalResult> valuesAt = stateSpace
 						.valuesAt(trace.getCurrentState());
 				for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt
 						.entrySet()) {
-					IEvalElement ee = entry.getKey();
-					IEvalResult er = entry.getValue();
-					if (er instanceof EvalResult) {
-						formulas.put(ee.getCode(),
-								translateValue(((EvalResult) er).getValue()));
+					IEvalElement evalElement = entry.getKey();
+					IEvalResult evalResult = entry.getValue();
+					if (evalResult instanceof EvalResult) {
+						formulas.put(evalElement.getCode(),
+								translateValue(((EvalResult) evalResult)
+										.getValue()));
 					}
 				}
-				// Add all cached CSP formulas
-				formulas.putAll(cachedCspResults);
+
 				// Trigger all registered script listeners with collected
 				// formulas
 				for (IBMotionScript s : scriptListeners) {
-					s.traceChanged(currentTrace, formulas);
+					s.traceChanged(currentTrace);
 				}
 
 			}
 
-		}
-
-	}
-
-	private void checkSubscribedFormulas(Trace trace, AbstractModel model) {
-
-		// Subscribe formulas if not done yet ...
-		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
-				.entrySet()) {
-			IEvalElement evalElement = entry.getValue();
-			if (evalElement == null
-					|| !trace.getStateSpace().isSubscribed(evalElement)) {
-				subscribeFormula(entry.getKey(), currentModel);
-			}
 		}
 
 	}
 
 	private void initJsonData() {
 
-		if (getTemplatePath() == null) {
-			return;
-		}
+		if (getTemplatePath() != null) {
 
-		json = null;
-		jsonPath = null;
-		
-		Map<String, Object> scope = new HashMap<String, Object>();
-		scope.put("eval", new EvalExpression());
+			Map<String, Object> scope = new HashMap<String, Object>();
+			scope.put("eval", new EvalExpression());
 
-		String templateFolder = getTemplateFolder();
-		Object jsonPaths = parameterMap.get("json");
-		if (jsonPaths != null) {
+			String templateFolder = getTemplateFolder();
+			Object jsonPaths = parameterMap.get("json");
+			if (jsonPaths != null) {
 
-			String[] sp = jsonPaths.toString().split(",");
-			for (String s : sp) {
-				jsonPath = templateFolder + "/" + s;
-				File f = new File(jsonPath);
-				if (f.exists()) {
-					WebUtils.render(f.getPath(), scope);
-					String jsonRendered = readFile(f.getPath());
-					JsonParser jsonParser = new JsonParser();
-					JsonElement jsonElement = jsonParser.parse(jsonRendered);
-					if (!(jsonElement instanceof JsonNull))
-						json = jsonElement;
+				String[] sp = jsonPaths.toString().split(",");
+				for (String s : sp) {
+					String jsonPath = templateFolder + "/" + s;
+					File f = new File(jsonPath);
+					if (f.exists()) {
+						WebUtils.render(f.getPath(), scope);
+						String jsonRendered = readFile(f.getPath());
+						JsonParser jsonParser = new JsonParser();
+						JsonElement jsonElement = jsonParser
+								.parse(jsonRendered);
+						if (!(jsonElement instanceof JsonNull))
+							this.json = jsonElement;
+					}
+
 				}
 
 			}
-
 		}
 
 	}
@@ -322,29 +315,34 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	private class EvalExpression implements Function<String, Object> {
-
 		@Override
 		public Object apply(final String input) {
-			registerFormula(input.replace("\\\\", "\\"));
+			try {
+				return eval(input.replace("\\\\", "\\"));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return null;
 		}
 	}
 
 	private Object subscribeFormula(final String formula,
-			final AbstractModel model) {
+			final AbstractModel model, Trace trace) {
 
 		Object result = null;
-		
+
 		try {
-			
+
 			StateSpace s = model.getStatespace();
 			IEvalElement evalElement = null;
 
 			if (model instanceof CSPModel) {
-				
-				if (cachedCspResults.get(formula) == null) {
+
+				result = cachedCspResults.get(formula);
+				if (result == null) {
 					evalElement = new CSP(formula, (CSPModel) model);
-					IEvalResult evaluationResult = currentTrace
+					IEvalResult evaluationResult = trace
 							.evalCurrent(evalElement);
 					if (evaluationResult != null) {
 						if (evaluationResult instanceof ComputationNotCompletedResult) {
@@ -363,15 +361,21 @@ public class BMotionStudioSession extends AbstractSession implements
 				} else if (model instanceof EventBModel) {
 					evalElement = new EventB(formula);
 				}
-				formulasForEvaluating.put(formula, evalElement);
-				try {
-					s.subscribe(this, evalElement);
-					Map<IEvalElement, IEvalResult> valuesAt = s
-							.valuesAt(currentTrace.getCurrentState());
-					return translateValue(((EvalResult) valuesAt
-							.get(evalElement)).getValue());
-				} catch (Exception e) {
+
+				result = getResultFromSubscription(evalElement, s, trace);
+				if (result == null) {
+					try {
+						s.subscribe(this, evalElement);
+						formulasForEvaluating.put(formula, evalElement);
+						result = getResultFromSubscription(evalElement, s,
+								trace);
+						formulas.put(formula, result);
+					} catch (Exception e) {
+						System.err.println("Invalid formula: " + formula);
+						invalidFormulas.add(formula);
+					}
 				}
+
 			}
 
 		} catch (Exception e) {
@@ -380,7 +384,17 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 
 		return result;
-		
+
+	}
+	
+	private Object getResultFromSubscription(IEvalElement evalElement,
+			StateSpace s, Trace t) {
+		Map<IEvalElement, IEvalResult> valuesAt = s.valuesAt(currentTrace
+				.getCurrentState());
+		EvalResult evalResult = (EvalResult) valuesAt.get(evalElement);
+		if (evalResult != null)
+			return translateValue(evalResult.getValue());
+		return null;
 	}
 
 	private Object translateValue(final String val) {
@@ -395,12 +409,13 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	public void registerScript(final IBMotionScript script) {
 		scriptListeners.add(script);
-		if (currentTrace != null) {
-			script.traceChanged(currentTrace, formulas);
-		}
+		if (currentTrace != null)
+			script.traceChanged(currentTrace);
+		if (model != null)
+			script.modelChanged(model.getStatespace());
 	}
 
-	private String getTemplateFolder() {
+	public String getTemplateFolder() {
 		String template = getTemplatePath();
 		if (template != null) {
 			return new File(template).getParent();
@@ -421,9 +436,8 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initGroovy() {
 
-		if (getTemplatePath() == null) {
+		if (templatePath == null)
 			return;
-		}
 		
 		try {
 
@@ -431,6 +445,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			Bindings bindings = groovyScriptEngine.getBindings(ScriptContext.GLOBAL_SCOPE);
 			bindings.putAll(parameterMap);
 			bindings.put("bms", this);
+			bindings.put("templatefolder", templateFolder);
 
 			Object scriptPaths = parameterMap.get("script");
 			if (scriptPaths != null) {
@@ -474,68 +489,98 @@ public class BMotionStudioSession extends AbstractSession implements
 	public String getTemplatePath() {
 		return templatePath;
 	}
+
+	public AbstractModel getModel() {
+		return model;
+	}
+
+	public void setModel(AbstractModel model) {
+		this.model = model;
+	}
 	
-	public String getLanguage() {
-		return language;
+	public String getFormalism() {
+		String lang = null;
+		if (model instanceof CSPModel) {
+			return "csp";
+		} else if (model instanceof EventBModel) {
+			return "eventb";
+		} else if (model instanceof ClassicalBModel) {
+			return "b";
+		}
+		return lang;
 	}
+	
+	public String getFormalism(String machinePath) {
 
-	public void setLanguage(String language) {
-		this.language = language;
-	}
+		String lang = null;
+		if (machinePath.endsWith(".csp")) {
+			return "csp";
+		} else if (machinePath.endsWith(".buc") || machinePath.endsWith(".bcc")
+				|| machinePath.endsWith(".bum") || machinePath.endsWith(".bcm")) {
+			return "eventb";
+		} else if (machinePath.endsWith(".mch")) {
+			return "b";
+		}
+		return lang;
 
-	public String getModelFile() {
-		return modelFile;
-	}
-
-	public void setModelFile(String modelFile) {
-		this.modelFile = modelFile;
 	}
 	
 	// ---------- BMS API
-	// public void toGui(final Object values) {
-	// submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
-	// values));
-	// }
-	
 	public void toGui(final Object json) {
 		submit(json);
 	}
+	
+	public void callJs(final Object values) {
+		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
+				values));
+	}
 
-	public Object registerFormula(final String formula) {
-		Object result = null;
-		// Register a fresh new formula
-		formulasForEvaluating.put(formula, null);
-		// If a model exists, try to subscribe the formula
-		if (currentModel != null)
-			result = subscribeFormula(formula, currentModel);
-		return result;
+	public Object eval(final String formula) throws Exception {
+		if (model != null && currentTrace != null)
+			return formulas.get(formula) != null ? formulas.get(formula)
+					: subscribeFormula(formula, model, currentTrace);
+		return null;
 	}
 	
-	public Object eval(final String formula) throws Exception {
-		if (currentModel == null)
-			throw new Exception("No model loaded. Evaluating " + formula
-					+ " not possible.");
-		Object result = formulas.get(formula);
-		if (result == null)
-			result = subscribeFormula(formula, currentModel);
-		return result;
-	}
-
 	public Object executeOperation(final Map<String, String[]> params) {
-		String op = params.get("op")[0];
-		String predicate = params.get("predicate")[0];
-		if (predicate.isEmpty()) {
-			predicate = "1=1";
-		}
-		Trace currentTrace = selector.getCurrentTrace();
-		try {
-			Trace newTrace = currentTrace.add(op, predicate);
+		String[] id = params.get("id");
+		String[] op = params.get("op");
+		String[] predicate = params.get("predicate");
+		if (id != null) {
+			Trace newTrace = currentTrace.add(id[0]);
 			selector.replaceTrace(currentTrace, newTrace);
-		} catch (BException e) {
-			e.printStackTrace();
+			return null;
+		} else if (op != null && predicate != null) {
+			String fpredicate = predicate[0];
+			if (fpredicate.isEmpty()) {
+				fpredicate = "1=1";
+			}
+			Trace currentTrace = selector.getCurrentTrace();
+			try {
+				Trace newTrace = currentTrace.add(op[0], fpredicate);
+				selector.replaceTrace(currentTrace, newTrace);
+			} catch (BException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
 	// ------------------
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
 	
 }

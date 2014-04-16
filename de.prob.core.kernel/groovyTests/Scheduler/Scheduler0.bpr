@@ -1,0 +1,838 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.prFile version="1">
+<org.eventb.core.prProof name="inv4/WD" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p2"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="active∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="ready∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="waiting∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="INITIALISATION/inv4/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p2">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p2" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="card(∅ ⦂ ℙ(ProcID))≤1"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="finite(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="INITIALISATION/inv5/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p1" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="INITIALISATION/inv6/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p1" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="INITIALISATION/inv7/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p1" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="new/inv6/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p9,p2,p5,p1,p8,p4,p7,p10,p3,p6">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="p∈ProcID"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="p∉waiting∪ready∪active"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="ready∩(waiting∪{p})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="new/inv7/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p9,p2,p5,p1,p8,p4,p7,p10,p3,p6">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="p∈ProcID"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="p∉waiting∪ready∪active"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="active∩(waiting∪{p})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="INITIALISATION/inv8/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p1">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p1" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))⇒(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="del/inv6/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p8,p2,p4,p1,p7,p3,p6,p10,p9,p5">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="ready∩(waiting ∖ {p})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="p∈waiting"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="del/inv7/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p8,p2,p4,p1,p7,p3,p6,p10,p9,p5">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="p∈waiting"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="active∩(waiting ∖ {p})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="ready_active/inv4/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p6">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p4"/>
+<org.eventb.core.prHypAction name="FORWARD_INF1" org.eventb.core.prHyps="p3" org.eventb.core.prInfHyps="p5"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p6" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="r" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="finite({r})"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="card({r})≤1"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="⊤⇒ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="ready_active/inv5/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p3" org.eventb.core.prInfHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p6"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p7"/>
+<org.eventb.core.prRule name="r3" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="eh with active=∅" org.eventb.core.prHyps="p1">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p8" org.eventb.core.prInfHyps="p9"/>
+<org.eventb.core.prHypAction name="DESELECT1" org.eventb.core.prHyps="p8"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p9"/>
+<org.eventb.core.prRule name="r3" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="eh with ready=∅" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p4">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p10">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p10" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p11">
+<org.eventb.core.prRule name="r4" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p11" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="r" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="{r}∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="active∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="{r}∩(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="⊤⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="ready∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="waiting∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r3" org.eventb.core.prRID="org.eventb.core.seqprover.eq:1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r4" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="ready_active/inv7/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p8,p2,p5,p1,p7,p4,p6,p11,p10,p3,p9">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="r" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="r∈waiting"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="{r}∩(waiting ∖ {r})=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="ready_active/inv8/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p3" org.eventb.core.prInfHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p4">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p5">
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p5" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p6">
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p6" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="r" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="{r}=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="{r}=(∅ ⦂ ℙ(ProcID))⇒⊤"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="⊤⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="ready_notactive/inv5/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p9,p2,p6,p1,p8,p5,p7,p11,p10,p3,p4">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="r" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="active∩(ready∪{r})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="r∈waiting"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="ready_notactive/inv6/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p9,p2,p6,p1,p8,p5,p7,p11,p10,p3,p4">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="r" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="r∈waiting"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(ready∪{r})∩(waiting ∖ {r})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="ready_notactive/inv8/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1" org.eventb.core.prInfHyps="p2"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p2">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p5">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p2,p3" org.eventb.core.prInfHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p5" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p6">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p4"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p6" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="r" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="⊥⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="¬active=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="⊥⇒ready∪{r}=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready∪{r}=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready_empty/inv4/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p7">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p4" org.eventb.core.prInfHyps="p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p6"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p7" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒⊤">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬active=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="card(∅ ⦂ ℙ(ProcID))≤1"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="finite(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready_empty/inv5/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p6">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p4" org.eventb.core.prInfHyps="p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p6" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒⊤">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬active=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready_empty/inv6/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p4" org.eventb.core.prInfHyps="p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p6"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p7"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p8"/>
+<org.eventb.core.prRule name="r3" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="eh with ready=∅" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p11">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p9" org.eventb.core.prInfHyps="p10"/>
+<org.eventb.core.prHypAction name="DESELECT1" org.eventb.core.prHyps="p9"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p11" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p12">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p10"/>
+<org.eventb.core.prRule name="r4" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p12" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(waiting∪active)=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="waiting∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒⊤"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬active=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="ready∩(waiting∪active)=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="active∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r3" org.eventb.core.prRID="org.eventb.core.seqprover.eq:1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r4" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready_empty/inv7/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p6">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p4" org.eventb.core.prInfHyps="p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p6" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒⊤"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="¬active=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(waiting∪active)=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready_empty/inv8/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p4">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p4" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p7">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p5" org.eventb.core.prInfHyps="p6"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p7" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒⊤">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="¬active=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))=(∅ ⦂ ℙ(ProcID))⇒⊤"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready/inv4/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p6">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1" org.eventb.core.prInfHyps="p2"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p1"/>
+<org.eventb.core.prHypAction name="FORWARD_INF2" org.eventb.core.prHyps="p3" org.eventb.core.prInfHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE4" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p6" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="¬active=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="ready≠(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="¬ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="card({p})≤1"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="finite({p})"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready/inv5/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p9,p2,p6,p1,p8,p5,p7,p11,p10,p3,p12,p4">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="ready≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="p∈ready"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="{p}∩(ready ∖ {p})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready/inv6/INV" org.eventb.core.confidence="0" org.eventb.core.prFresh="" org.eventb.core.prHyps="">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p0" org.eventb.core.prInfHyps="p1"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p0"/>
+<org.eventb.core.prHypAction name="FORWARD_INF2" org.eventb.core.prHyps="p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE3" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p3,p4" org.eventb.core.prInfHyps="p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p4"/>
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p6"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p7"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p8"/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="¬active=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="ready≠(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="¬ready=(∅ ⦂ ℙ(ProcID))">
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="active∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="⊥⇒⊥"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="waiting∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready/inv7/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p9,p2,p6,p1,p8,p5,p7,p11,p10,p3,p12,p4">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="{p}∩(waiting∪active)=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="ready≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="p∈ready"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="swap_ready/inv8/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p9,p2,p6,p1,p8,p5,p7,p11,p10,p3,p12,p4">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="p" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="{p}=(∅ ⦂ ℙ(ProcID))⇒ready ∖ {p}=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p12" org.eventb.core.predicate="ready≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="p∈ready"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="ready_active/inv6/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2">
+<org.eventb.core.prRule name="r0" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="generalized MP" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p1,p2" org.eventb.core.prInfHyps="p3"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p2"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p3" org.eventb.core.prInfHyps="p4"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p3"/>
+<org.eventb.core.prRule name="r2" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="type rewrites" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p5"/>
+<org.eventb.core.prHypAction name="HIDE1" org.eventb.core.prHyps="p6"/>
+<org.eventb.core.prHypAction name="HIDE2" org.eventb.core.prHyps="p7"/>
+<org.eventb.core.prRule name="r3" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="eh with ready=∅" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p4">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p10">
+<org.eventb.core.prHypAction name="FORWARD_INF0" org.eventb.core.prHyps="p8" org.eventb.core.prInfHyps="p9"/>
+<org.eventb.core.prHypAction name="DESELECT1" org.eventb.core.prHyps="p8"/>
+<org.eventb.core.prRule name="r1" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="simplification rewrites" org.eventb.core.prGoal="p10" org.eventb.core.prHyps="">
+<org.eventb.core.prAnte name="'" org.eventb.core.prGoal="p11">
+<org.eventb.core.prHypAction name="HIDE0" org.eventb.core.prHyps="p9"/>
+<org.eventb.core.prRule name="r4" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="⊤ goal" org.eventb.core.prGoal="p11" org.eventb.core.prHyps=""/>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+</org.eventb.core.prAnte>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="r" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="⊤"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩(waiting ∖ {r})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="ready∩(waiting ∖ {r})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="active∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="(∅ ⦂ ℙ(ProcID))∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="⊤⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="ready∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="waiting∈ℙ(ProcID)">
+<org.eventb.core.prIdent name="ProcID" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.prPred>
+<org.eventb.core.prReas name="r3" org.eventb.core.prRID="org.eventb.core.seqprover.eq:1"/>
+<org.eventb.core.prReas name="r2" org.eventb.core.prRID="org.eventb.core.seqprover.typeRewrites:1"/>
+<org.eventb.core.prReas name="r0" org.eventb.core.prRID="org.eventb.core.seqprover.genMPL1"/>
+<org.eventb.core.prReas name="r4" org.eventb.core.prRID="org.eventb.core.seqprover.trueGoal"/>
+<org.eventb.core.prReas name="r1" org.eventb.core.prRID="org.eventb.core.seqprover.autoRewritesL3:0"/>
+</org.eventb.core.prProof>
+<org.eventb.core.prProof name="ready_notactive/inv7/INV" org.eventb.core.confidence="1000" org.eventb.core.prFresh="" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11" org.eventb.core.prSets="ProcID">
+<org.eventb.core.prRule name="com.clearsy.atelierb.provers.core.externalML" org.eventb.core.confidence="1000" org.eventb.core.prDisplay="ML" org.eventb.core.prGoal="p0" org.eventb.core.prHyps="p9,p2,p6,p1,p8,p5,p7,p11,p10,p3,p4">
+<org.eventb.core.prString name=".arg" org.eventb.core.prSValue="0;1:500"/>
+</org.eventb.core.prRule>
+<org.eventb.core.prIdent name="active" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="r" org.eventb.core.type="ProcID"/>
+<org.eventb.core.prIdent name="ready" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prIdent name="waiting" org.eventb.core.type="ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p1" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.prPred name="p2" org.eventb.core.predicate="ready∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p3" org.eventb.core.predicate="r∈waiting"/>
+<org.eventb.core.prPred name="p6" org.eventb.core.predicate="waiting∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p5" org.eventb.core.predicate="active∩ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p4" org.eventb.core.predicate="active≠(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p0" org.eventb.core.predicate="active∩(waiting ∖ {r})=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p7" org.eventb.core.predicate="ready∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p9" org.eventb.core.predicate="active∈ℙ(ProcID)"/>
+<org.eventb.core.prPred name="p8" org.eventb.core.predicate="finite(active)"/>
+<org.eventb.core.prPred name="p10" org.eventb.core.predicate="active=(∅ ⦂ ℙ(ProcID))⇒ready=(∅ ⦂ ℙ(ProcID))"/>
+<org.eventb.core.prPred name="p11" org.eventb.core.predicate="active∩waiting=(∅ ⦂ ℙ(ProcID))"/>
+</org.eventb.core.prProof>
+</org.eventb.core.prFile>

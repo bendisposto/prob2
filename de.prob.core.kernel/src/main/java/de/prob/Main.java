@@ -96,7 +96,7 @@ public class Main {
 			if (line.hasOption("standalone")) {
 				Main.standalone = true;
 			}
-			
+
 			runServer(url, iface, port);
 			if (line.hasOption("shell")) {
 				while (true) {

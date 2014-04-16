@@ -86,10 +86,10 @@ public class Api {
 	public EventBModel eventb_load(final String file, final Map<String, String> prefs) {
 		def fileName = file;
 		if (fileName.endsWith(".buc")) {
-			fileName = fileName.replace(".buc", ".bcc");
+			fileName = fileName.replaceAll("\\.buc\$", ".bcc");
 		}
-		if (fileName.endsWith(".buc")) {
-			fileName = fileName.replace(".bum", ".bcm");
+		if (fileName.endsWith(".bum")) {
+			fileName = fileName.replaceAll("\\.bum\$", ".bcm");
 		}
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		return factory.load(fileName, prefs, loadVariablesByDefault);
@@ -140,7 +140,7 @@ public class Api {
 			m = cspFactory.load(f, prefs);
 		} catch (ProBError error) {
 			throw new Exception(
-			"Could find CSP Parser. Perform 'upgrade cspm' to install cspm in your ProB lib directory");
+			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory");
 		}
 		return m;
 	}

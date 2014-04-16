@@ -29,20 +29,22 @@ import de.tla2b.exceptions.FrontEndException;
 import de.tla2b.exceptions.TLA2BException;
 import de.tla2bAst.Translator;
 
-public class TLAFactory {
+public class TLAFactory extends ModelFactory {
 
-	
 	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
 	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
-	public TLAFactory(final Provider<ClassicalBModel> modelCreator) {
+	public TLAFactory(final Provider<ClassicalBModel> modelCreator,
+			final FileHandler fileHandler) {
+		super(fileHandler);
 		this.modelCreator = modelCreator;
 	}
 
 	/**
-	 * This method loads a TLA module from file, parses the module, translates the tla AST to a B AST, starts the
-	 * animation, and returns the created {@link ClassicalBModel}
+	 * This method loads a TLA module from file, parses the module, translates
+	 * the tla AST to a B AST, starts the animation, and returns the created
+	 * {@link ClassicalBModel}
 	 * 
 	 * @param f
 	 *            {@link File} containing the TLA module to be loaded.
@@ -55,12 +57,12 @@ public class TLAFactory {
 	public ClassicalBModel load(final File f, final Map<String, String> prefs,
 			final boolean loadVariables) throws IOException, BException, FrontEndException {
 		ClassicalBModel classicalBModel = modelCreator.get();
-		
+
 		Translator translator = new Translator(f.getAbsolutePath(), null);
-		
+
 		Start ast;
 		try {
-			ast = (Start) translator.translate();
+			ast = translator.translate();
 		} catch (TLA2BException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Translation error");
@@ -70,7 +72,8 @@ public class TLAFactory {
 		
 		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 		classicalBModel.initialize(ast, rml, f);
-		startAnimation(classicalBModel, rml, prefs, f);
+		startAnimation(classicalBModel, rml,
+				getPreferences(classicalBModel, prefs), f);
 		if (loadVariables) {
 			subscribeVariables(classicalBModel);
 		}

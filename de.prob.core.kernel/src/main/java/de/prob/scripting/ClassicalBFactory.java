@@ -23,7 +23,9 @@ import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
+import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
+import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.Variable;
 
 /**
@@ -32,13 +34,15 @@ import de.prob.model.representation.Variable;
  * @author joy
  * 
  */
-public class ClassicalBFactory {
+public class ClassicalBFactory extends ModelFactory {
 
 	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
 	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
-	public ClassicalBFactory(final Provider<ClassicalBModel> modelCreator) {
+	public ClassicalBFactory(final Provider<ClassicalBModel> modelCreator,
+			final FileHandler fileHandler) {
+		super(fileHandler);
 		this.modelCreator = modelCreator;
 	}
 
@@ -62,7 +66,8 @@ public class ClassicalBFactory {
 		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 
 		classicalBModel.initialize(ast, rml, f);
-		startAnimation(classicalBModel, rml, prefs, f);
+		startAnimation(classicalBModel, rml,
+				getPreferences(classicalBModel, prefs), f);
 		if (loadVariables) {
 			subscribeVariables(classicalBModel);
 		}
@@ -106,6 +111,11 @@ public class ClassicalBFactory {
 					.getChildrenOfType(Variable.class);
 			for (Variable variable : childrenOfType) {
 				m.getStatespace().subscribe(this, variable.getExpression());
+			}
+			ModelElementList<Invariant> invariants = machine
+					.getChildrenOfType(Invariant.class);
+			for (Invariant invariant : invariants) {
+				m.getStatespace().subscribe(this, invariant.getPredicate());
 			}
 		}
 	}

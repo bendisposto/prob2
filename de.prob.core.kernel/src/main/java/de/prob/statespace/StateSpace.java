@@ -120,12 +120,11 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			extractInformation(state, command);
 			explored.add(state);
 		} catch (ProBError e) {
-			if (state == getRoot()) {
+			if (state.equals(__root)) {
 				explored.add(state);
-				OpInfo op = OpInfo
-						.generateArtificialTransition("FAIL",
-								"NO INITIALIZATION FOUND", state.getId(),
-								state.getId());
+				OpInfo op = OpInfo.generateArtificialTransition("FAIL",
+						"NO INITIALIZATION OR VALID CONSTANTS FOUND",
+						state.getId(), state.getId());
 				ops.put(op.getId(), op);
 				addEdge(op, state, state);
 			} else {
@@ -659,7 +658,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public String printOps(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
 		final Collection<OpInfo> opIds = getOutEdges(state);
-		Set<String> withTO = operationsWithTimeout.get(state);
+		Set<String> withTO = operationsWithTimeout.get(state) == null ? new HashSet<String>()
+				: operationsWithTimeout.get(state);
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
