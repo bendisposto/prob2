@@ -12,15 +12,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -65,20 +61,10 @@ public class BMotionStudioServlet extends HttpServlet {
 			.newFixedThreadPool(3);
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
-	private final Set<String> localhostAddresses = new HashSet<String>();
 	
 	@Inject
 	public BMotionStudioServlet(@Sessions Map<String, ISession> sessions) {
 		this.sessions = sessions;
-		try {
-			this.localhostAddresses.add(InetAddress.getLocalHost()
-					.getHostAddress());
-			for (InetAddress address : InetAddress.getAllByName("localhost")) {
-				localhostAddresses.add(address.getHostAddress());
-			}
-		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
-		}
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -427,8 +413,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		String templatePath = req.getParameter("template");
 		int port = req.getLocalPort();
 		String host = req.getRemoteAddr();
-
-		if (localhostAddresses.contains(req.getRemoteAddr()))
+		if (Main.local)
 			host = "localhost";
 		
 		// Create a new BMotionStudioSession
