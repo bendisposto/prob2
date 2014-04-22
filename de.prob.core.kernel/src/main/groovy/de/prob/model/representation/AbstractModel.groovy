@@ -84,6 +84,8 @@ public abstract class AbstractModel extends AbstractElement {
 
 	public abstract FormalismType getFormalismType();
 
+	public abstract void subscribeFormulasOfInterest();
+
 	protected void extractModelDir(File modelFile, String dirName) {
 		modelDirPath = modelFile.absolutePath.substring(0, modelFile.absolutePath.lastIndexOf(File.separator)+1) + dirName + File.separator
 		new File(modelDirPath).mkdir()
