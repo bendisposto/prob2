@@ -15,7 +15,7 @@ public abstract class AbstractFormulaElement extends AbstractElement {
 		s.unsubscribe(this, getFormula());
 	}
 
-	public void isSubscribed(final StateSpace s) {
-		s.isSubscribed(getFormula());
+	public boolean isSubscribed(final StateSpace s) {
+		return s.isSubscribed(getFormula());
 	}
 }
