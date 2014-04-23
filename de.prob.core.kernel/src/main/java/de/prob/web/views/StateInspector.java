@@ -29,6 +29,7 @@ import de.prob.model.representation.Guard;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
+import de.prob.model.representation.ModelRep;
 import de.prob.model.representation.Variable;
 import de.prob.scripting.FileHandler;
 import de.prob.statespace.AnimationSelector;
@@ -67,8 +68,9 @@ public class StateInspector extends AbstractSession implements
 			Map<String, Object> extracted = extractModel(currentModel);
 			Object values = calculateFormulas(currentTrace);
 			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
-					"components", WebUtils.toJson(extracted), "values",
-					WebUtils.toJson(values), "history",
+					"components",
+					WebUtils.toJson(ModelRep.translate(currentModel)),
+					"values", WebUtils.toJson(values), "history",
 					WebUtils.toJson(history)));
 		}
 	}
@@ -121,8 +123,9 @@ public class StateInspector extends AbstractSession implements
 
 				Object calculatedValues = calculateFormulas(currentTrace);
 				submit(WebUtils.wrap("cmd", "StateInspector.setModel",
-						"components", WebUtils.toJson(extracted), "values",
-						WebUtils.toJson(calculatedValues), "history",
+						"components",
+						WebUtils.toJson(ModelRep.translate(currentModel)),
+						"values", WebUtils.toJson(calculatedValues), "history",
 						WebUtils.toJson(history)));
 				return;
 			}

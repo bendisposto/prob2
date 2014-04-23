@@ -11,9 +11,7 @@ import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Axiom;
-import de.prob.model.representation.BEvent;
 import de.prob.model.representation.Constant;
-import de.prob.model.representation.Guard;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
@@ -150,11 +148,6 @@ public class EventBModel extends AbstractModel {
 			for (Invariant invariant : machine
 					.getChildrenOfType(Invariant.class)) {
 				invariant.subscribe(statespace);
-			}
-			for (BEvent bEvent : machine.getChildrenOfType(BEvent.class)) {
-				for (Guard guard : bEvent.getChildrenOfType(Guard.class)) {
-					guard.subscribe(statespace);
-				}
 			}
 		}
 		for (Context context : getChildrenOfType(Context.class)) {

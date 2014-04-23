@@ -48,6 +48,10 @@ li {
 	padding-left: 70px;
 }
 
+.xx-large-indent {
+	padding-left: 90px;
+}
+
 .CodeMirror {
 	border: 1px solid #000;
 	background: #eee;

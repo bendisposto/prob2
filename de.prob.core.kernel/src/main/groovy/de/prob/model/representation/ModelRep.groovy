@@ -1,8 +1,11 @@
 package de.prob.model.representation
 
+import org.apache.commons.lang.StringEscapeUtils
+
 import de.prob.animator.domainobjects.AbstractEvalElement
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.eventb.Context
 import de.prob.statespace.StateSpace
 import de.prob.unicode.UnicodeTranslator
 
@@ -14,6 +17,17 @@ class ModelRep {
 	def formula
 	def children = []
 
+	def static List<ModelRep> translate(AbstractModel m) {
+		def reps = []
+		m.getChildrenOfType(Machine.class).each {
+			reps << translate(it, m.getStatespace())
+		}
+		m.getChildrenOfType(Context.class).each {
+			reps << translate(it, m.getStatespace())
+		}
+		reps
+	}
+
 	def static ModelRep translate(AbstractElement e, StateSpace s) {
 		def mRep = new ModelRep()
 		mRep.label = e.getMetaClass().respondsTo(e, "getName") ? e.getName() : "None"
@@ -23,10 +37,12 @@ class ModelRep {
 
 		def kids = e.getChildren()
 		kids.each {
-			def child = translate(it.key, it.value, s)
-			mRep.children << child
-			if(child.ofInterest) {
-				mRep.ofInterest = true
+			if(!(it.key == Machine.class || it.key == Context.class)) {
+				def child = translate(it.key, it.value, s)
+				mRep.children << child
+				if(child.ofInterest) {
+					mRep.ofInterest = true
+				}
 			}
 		}
 		mRep
@@ -37,7 +53,7 @@ class ModelRep {
 		mRep.formulaId = formula.getFormulaId().uuid
 		mRep.ofInterest = e.isSubscribed(s)
 		if(formula instanceof EventB || formula instanceof ClassicalB) {
-			mRep.formula = UnicodeTranslator.toUnicode(formula.getCode())
+			mRep.formula = StringEscapeUtils.escapeHtml(UnicodeTranslator.toUnicode(formula.getCode()))
 		}
 	}
 

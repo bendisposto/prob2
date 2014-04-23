@@ -68,7 +68,7 @@ StateInspector = (function() {
 
 	function setModel(model) {
 		$("#content").replaceWith(
-				session.render("/ui/stateInspector/model_format.html", model))
+				session.render("/ui/stateInspector/model_format.html", {components: model}))
         $("#content").colResizable()
 	}
 

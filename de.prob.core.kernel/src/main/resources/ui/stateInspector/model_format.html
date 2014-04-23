@@ -4,20 +4,16 @@
 	{{#components}}
 	<tr><td><div class="component">{{label}}</div></td><td></td><td></td></tr>
 	{{#children}}
-		<tr class="{{class}}"><td><div class="small-indent heading">{{label}}</div></td><td></td><td></td></tr>
-		{{#isGuards}}
+		<tr class="{{^ofInterest}}empty{{/ofInterest}}"><td><div class="small-indent heading">{{label}}</div></td><td></td><td></td></tr>
+		{{#children}}
+			<tr id="{{formulaId}}" class="{{^ofInterest}}empty{{/ofInterest}}"><td><div class="large-indent">{{#formula}}{{{formula}}}{{/formula}}{{^formula}}{{label}}{{/formula}}</div></td><td></td><td></td></tr>
 			{{#children}}
-			<tr class="{{class}}"><td><div class="large-indent heading">{{name}}</div></td><td></td><td></td></tr>
-				{{#guards}}
-				<tr id="{{id}}"><td><div class="x-large-indent">{{code}}</div></td><td></td><td></td></tr>
-				{{/guards}}
+				<tr class="{{^ofInterest}}empty{{/ofInterest}}"><td><div class="x-large-indent">{{label}}</div></td><td></td><td></td></tr>
+				{{#children}}
+				<tr class="{{^ofInterest}}empty{{/ofInterest}}"><td><div class="xx-large-indent">{{#formula}}{{{formula}}}{{/formula}}{{^formula}}{{label}}{{/formula}}</div></td><td></td><td></td></tr>
+				{{/children}}
 			{{/children}}
-		{{/isGuards}}
-		{{^isGuards}}
-		    {{#children}}
-			<tr id="{{id}}"><td><div class="large-indent">{{code}}</div></td><td></td><td></td></tr>
-			{{/children}}
-		{{/isGuards}}
+		{{/children}}
 	{{/children}}
 	{{/components}}
 	</tbody>
