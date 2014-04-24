@@ -59,19 +59,18 @@ public class TLAFactory extends ModelFactory {
 		ClassicalBModel classicalBModel = modelCreator.get();
 
 		Translator translator;
-
 		Start ast;
 		try {
-			translator = new Translator(f.getAbsolutePath(), null);
+			translator = new Translator(f.getAbsolutePath());
 			ast = translator.translate();
 		} catch (TLA2BException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Translation error");
 		}
-		
+
 		BParser bparser = new BParser();
 		bparser.getDefinitions().addAll(translator.getBDefinitions());
-		
+
 		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 		classicalBModel.initialize(ast, rml, f);
 		startAnimation(classicalBModel, rml,
@@ -80,7 +79,7 @@ public class TLAFactory extends ModelFactory {
 			subscribeVariables(classicalBModel);
 		}
 		return classicalBModel;
-		
+
 	}
 
 	/**

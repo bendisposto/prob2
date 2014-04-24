@@ -53,7 +53,15 @@ public class SimpleLoadTest {
 	public void testLoadBFile() throws IOException, BException {
 		ClassicalBModel model = api.b_load("src/test/resources/tla/Foo.mch");
 		assertNotNull(model);
-
 	}
+	
 
+
+	@Test
+	public void testLoadTLAFileChoose() throws IOException, BException {
+		ClassicalBModel model = api
+				.tla_load("src/test/resources/tla/Choose.tla");
+		assertNotNull(model);
+	}
+	
 }
