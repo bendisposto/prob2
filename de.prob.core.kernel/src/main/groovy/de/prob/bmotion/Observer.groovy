@@ -21,31 +21,46 @@ class Observer implements IBMotionScript {
 	}
 
 	private void EvalObserver(JsonObject observer, Trace trace) {
-		def m = []
+		
+		def factions = []
 		observer.objs.each { obj ->
+			
 			def fselector = obj.selector.getAsString()
-			m = m + obj.bindings.collect { item ->
+			
+			obj.bindings.each { item ->
+				
 				def fpredicate = true
-				if(item.type.getAsString() == "predicate" && !item.formula.getAsString().isEmpty())
+				def fvalue = ""
+				
+				if(item.type.getAsString() == "predicate") {
 					fpredicate = bmssession.eval(item.formula.getAsString())
-				def fattr = item.attr.getAsString()
-				def fvalue = item.value.getAsString()
-				if(item.type.getAsString() == "expression" && !item.formula.getAsString().isEmpty())
+				} else if(item.type.getAsString() == "expression" && item.formula != null) {
 					fvalue = bmssession.eval(item.formula.getAsString())
-				if(fpredicate) {
-					def data = [
-						selector: fselector,
-						attr: fattr,
-						value: fvalue.toString()
-					]
-					return data
 				}
+					
+				if(fpredicate) {
+
+					item.actions.each { act ->
+						def fattr = act.attr == null ? "" : act.attr.getAsString()
+						if(item.type.getAsString() == "predicate")
+							fvalue = act.value.getAsString()
+						def data = [
+							selector: fselector,
+							attr: fattr,
+							value: fvalue.toString()
+						]
+						factions = factions + data
+					}
+					
+				}
+				
 			}
 		}
 		bmssession.toGui(builder {
 			cmd 'bms.triggerObserverActions'
-			actions builder.call(m.findAll { item -> item != null })
+			actions builder.call(factions.findAll { item -> item != null })
 		})
+		
 	}
 
 	def ExecuteOperation(observer, trace) {

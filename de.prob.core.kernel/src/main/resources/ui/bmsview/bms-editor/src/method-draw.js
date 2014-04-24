@@ -4302,7 +4302,7 @@
 			}
 		}
 		
-		function addAction(el,jsonpattern) {
+		function addBinding(el,jsonpattern) {
 			var parentel = el.parent()
 			var observerlistel = parentel.find(".observer_items");
 			var listname= $(observerlistel).attr("list")
@@ -4310,6 +4310,13 @@
 			var list = observerlist[listname]
 			list.unshift(convertToObservable(jQuery.parseJSON(jsonpattern)))
 			updateObserverBindingMenu()
+		}
+		
+		function addAction(el,jsonpattern) {
+			var actionListElement = el.find(".action_items");
+			var actionList = ko.dataFor(actionListElement.get(0))
+			var list = actionList["actions"]
+			list.unshift(convertToObservable(jQuery.parseJSON(jsonpattern)))
 		}
 		
 		function updateObserverObjMenu() {
@@ -4333,7 +4340,7 @@
 						deleteItem(el.parent().parent().get(0), el.parent().get(0))
 						break;
 					case 'addBinding':
-						addAction(el,menuitem.attr('json'))
+						addBinding(el,menuitem.attr('json'))
 						break;
 					default:
 						break;
@@ -4345,10 +4352,9 @@
 		
 		function updateObserverBindingMenu() {
 			$(".binding_template").contextMenu({
-				menu: 'cmenu_observer_binding',
 				inSpeed: 0
 			},
-			function(action, el, pos) {
+			function(action, el, menuitem, pos) {
 				switch ( action ) {
 					case 'duplicate':
 						var newPosition =  duplicateItem(el.parent().get(0), el)
@@ -4357,6 +4363,9 @@
 					case 'delete':
 						deleteItem(el.parent().get(0), el.get(0))
 						break;
+					case 'addAction':
+						addAction(el,menuitem.attr('json'))
+						break;						
 					default:
 						break;
 				}
