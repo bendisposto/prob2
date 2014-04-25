@@ -131,7 +131,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 				throw e;
 			}
 		}
-		return toString();
+		return "";
 	}
 
 	private void extractInformation(final StateId state,
@@ -589,7 +589,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	@Override
 	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
-			listener.newTransitions(newOps);
+			if (!animator.isBusy())
+				listener.newTransitions(newOps);
 		}
 	}
 

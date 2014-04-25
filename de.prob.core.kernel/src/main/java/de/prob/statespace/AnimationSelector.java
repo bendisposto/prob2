@@ -106,18 +106,23 @@ public class AnimationSelector {
 	 */
 	private void notifyAnimationChange(final Trace trace,
 			final boolean currentAnimationChanged) {
-		for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
-			IAnimationChangeListener animationChangeListener = listener.get();
-			if (animationChangeListener != null) {
-				try {
-					animationChangeListener.traceChange(trace,
-							currentAnimationChanged);
-				} catch (Exception e) {
-					logger.error("An exception of type "
-							+ e.getClass()
-							+ " was thrown while executing IAnimationChangeListener of class "
-							+ animationChangeListener.getClass()
-							+ " with message " + e.getMessage());
+
+		if (!trace.getStateSpace().isBusy()) {
+
+			for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
+				IAnimationChangeListener animationChangeListener = listener
+						.get();
+				if (animationChangeListener != null) {
+					try {
+						animationChangeListener.traceChange(trace,
+								currentAnimationChanged);
+					} catch (Exception e) {
+						logger.error("An exception of type "
+								+ e.getClass()
+								+ " was thrown while executing IAnimationChangeListener of class "
+								+ animationChangeListener.getClass()
+								+ " with message " + e.getMessage());
+					}
 				}
 			}
 		}

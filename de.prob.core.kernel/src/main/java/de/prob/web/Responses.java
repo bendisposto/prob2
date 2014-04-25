@@ -28,7 +28,10 @@ public class Responses {
 
 	public void add(Message message) {
 		responses.add(message);
+	}
 
+	public void clear() {
+		responses.clear();
 	}
 
 }

@@ -34,27 +34,29 @@ public class Log extends AbstractSession {
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Log.addEntries",
 				"entries", WebUtils.toJson(elements));
 		submit(wrap);
+		responses.clear();
 	}
 
 	public synchronized void logEvent(final ILoggingEvent event) {
-		String from = event.getLoggerName();
-		if (event.hasCallerData()) {
-			StackTraceElement[] callerData = event.getCallerData();
-			if (callerData.length > 0) {
-				StackTraceElement call = callerData[0];
-				from = call.getClassName() + "." + call.getMethodName() + ":"
-						+ call.getLineNumber();
-			}
-		}
-		String level = event.getLevel().toString().toLowerCase();
-		if (!level.equals("trace")) {
-			LogElement entry = new LogElement(from, level,
-					event.getFormattedMessage());
-			elements.add(entry);
-			Map<String, String> wrap = WebUtils.wrap("cmd", "Log.addEntry",
-					"entry", WebUtils.toJson(entry));
-			submit(wrap);
-		}
+		// String from = event.getLoggerName();
+		// if (event.hasCallerData()) {
+		// StackTraceElement[] callerData = event.getCallerData();
+		// if (callerData.length > 0) {
+		// StackTraceElement call = callerData[0];
+		// from = call.getClassName() + "." + call.getMethodName() + ":"
+		// + call.getLineNumber();
+		// }
+		// }
+		// String level = event.getLevel().toString().toLowerCase();
+		// if (!level.equals("trace")) {
+		// LogElement entry = new LogElement(from, level,
+		// event.getFormattedMessage());
+		// elements.add(entry);
+		// Map<String, String> wrap = WebUtils.wrap("cmd", "Log.addEntry",
+		// "entry", WebUtils.toJson(entry));
+		// submit(wrap);
+		// responses.clear();
+		// }
 	}
 
 	class LogElement {
