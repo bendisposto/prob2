@@ -17,7 +17,7 @@ public class Operation extends BEvent {
 		this.output = output;
 	}
 
-	public void addGuards(final ModelElementList<Guard> guards) {
+	public void addGuards(final ModelElementList<ClassicalBGuard> guards) {
 		put(Guard.class, guards);
 		this.guards = guards
 	}

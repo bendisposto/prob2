@@ -13,8 +13,6 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.BStateSchema;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.BEvent;
-import de.prob.model.representation.Guard;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
@@ -115,11 +113,6 @@ public class ClassicalBModel extends AbstractModel {
 			for (Invariant invariant : machine
 					.getChildrenOfType(Invariant.class)) {
 				invariant.subscribe(statespace);
-			}
-			for (BEvent bEvent : machine.getChildrenOfType(BEvent.class)) {
-				for (Guard guard : bEvent.getChildrenOfType(Guard.class)) {
-					guard.subscribe(statespace);
-				}
 			}
 		}
 	}
