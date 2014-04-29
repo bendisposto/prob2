@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
@@ -87,9 +86,9 @@ public class StateInspector extends AbstractSession implements
 		}
 
 		// TODO: What happens if we try to use CSP or EventB???
-		Object eval = currentTrace.getCurrentState().eval(new ClassicalB(code));
-		return WebUtils.wrap("cmd", "StateInspector.result", "code", code,
-				"result", eval.toString());
+		Object eval = currentTrace.evalCurrent(currentModel.parseFormula(code));
+		return WebUtils.wrap("cmd", "StateInspector.result", "code",
+				unicode(code), "result", eval.toString());
 	}
 
 	@Override
