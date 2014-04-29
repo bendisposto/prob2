@@ -6,6 +6,9 @@ import de.prob.animator.domainobjects.AbstractEvalElement
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.eventb.Context
+import de.prob.model.eventb.EventParameter
+import de.prob.model.eventb.Variant
+import de.prob.model.eventb.Witness
 import de.prob.statespace.StateSpace
 import de.prob.unicode.UnicodeTranslator
 
@@ -59,7 +62,7 @@ class ModelRep {
 
 	def static ModelRep translate(Class<? extends AbstractElement> c, ModelElementList<? extends AbstractElement> kids, StateSpace s) {
 		def ModelRep r = new ModelRep()
-		r.label = c.getSimpleName()
+		r.label = getLabelName(c)
 		r.ofInterest = false
 		kids.each {
 			def child = translate(it, s)
@@ -69,5 +72,29 @@ class ModelRep {
 			}
 		}
 		r
+	}
+
+	def static String getLabelName(Class<? extends AbstractElement> c) {
+		def result = ""
+		switch(c) {
+			case BEvent:
+				result = "events"
+				break
+			case BSet:
+				result = "sets"
+				break
+			case EventParameter:
+				result = "parameters"
+				break
+			case Witness:
+				result = "witnesses"
+				break
+			case Variant:
+				result = "variant"
+				break
+			default:
+				result = c.getSimpleName().toLowerCase() + "s"
+		}
+		return result
 	}
 }

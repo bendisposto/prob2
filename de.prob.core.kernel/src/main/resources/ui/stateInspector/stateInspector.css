@@ -93,6 +93,7 @@ li {
     opacity: 0.1;
 }
 
-.empty {
+
+._empty {
 	display: none;
 }
