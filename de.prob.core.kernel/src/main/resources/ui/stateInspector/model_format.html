@@ -1,30 +1,25 @@
-<table id="content" class="table">
-	<thead><tr class="active"><th>Name</th><th>Value</th><th>Previous Value</th></tr></thead>
-	<tbody>
-	{{#components}}
-	<tr id="{{label}}"><td><div class="component {{#path}}{{.}} {{/path}}">{{label}}</div></td><td></td><td></td></tr>
-	{{#children}}
-		<tr id="{{label}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="small-indent heading">{{label}}</div></td><td></td><td></td></tr>
-		{{#children}}
-			{{#formulaId}}
-			<tr id="{{formulaId}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="large-indent">{{{formula}}}</div></td><td><div id="{{formulaId}}_current" class="tiny-indent"></div></td><td><div id="{{formulaId}}_previous" class="tiny-indent"></div></td></tr>
-			{{/formulaId}}
-			{{^formulaId}}
-			<tr id="{{label}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="large-indent">{{label}}</div></td><td></td><td></td></tr>
-			{{/formulaId}}
-			{{#children}}
-				<tr id="{{label}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="x-large-indent">{{label}}</div></td><td></td><td></td></tr>
-				{{#children}}
-				{{#formulaId}}
-				<tr id="{{formulaId}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="xx-large-indent">{{{formula}}}</div></td><td><div id="{{formulaId}}_current" class="tiny-indent"></div></td><td><div id="{{formulaId}}_previous" class="tiny-indent"></div></td></tr>
-				{{/formulaId}}
-				{{^formulaId}}
-				<tr id="{{label}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="xx-large-indent">{{label}}</div></td><td></td><td></td></tr>
-				{{/formulaId}}
-				{{/children}}
-			{{/children}}
-		{{/children}}
-	{{/children}}
-	{{/components}}
-	</tbody>
-</table>
+{{#components}}
+    <tr id="{{label}}"><td><div class="component {{#path}}{{.}} {{/path}}">{{label}}</div></td><td></td><td></td></tr>
+    {{#children}}
+        <tr id="{{label}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="small-indent heading">{{label}}</div></td><td></td><td></td></tr>
+        {{#children}}
+            {{#formulaId}}
+            <tr id="{{formulaId}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="large-indent">{{{formula}}}</div></td><td><div id="{{formulaId}}_current" class="tiny-indent"></div></td><td><div id="{{formulaId}}_previous" class="tiny-indent"></div></td></tr>
+            {{/formulaId}}
+            {{^formulaId}}
+            <tr id="{{label}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="large-indent">{{label}}</div></td><td></td><td></td></tr>
+            {{/formulaId}}
+            {{#children}}
+                <tr id="{{label}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="x-large-indent">{{label}}</div></td><td></td><td></td></tr>
+                {{#children}}
+                {{#formulaId}}
+                <tr id="{{formulaId}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="xx-large-indent">{{{formula}}}</div></td><td><div id="{{formulaId}}_current" class="tiny-indent"></div></td><td><div id="{{formulaId}}_previous" class="tiny-indent"></div></td></tr>
+                {{/formulaId}}
+                {{^formulaId}}
+                <tr id="{{label}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="xx-large-indent">{{label}}</div></td><td></td><td></td></tr>
+                {{/formulaId}}
+                {{/children}}
+            {{/children}}
+        {{/children}}
+    {{/children}}
+{{/components}}

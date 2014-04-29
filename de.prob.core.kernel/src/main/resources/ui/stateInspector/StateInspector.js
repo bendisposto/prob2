@@ -63,7 +63,7 @@ StateInspector = (function() {
     });
 
     function clearInput() {
-        $("#content").replaceWith("<table id='content' class='table table-bordered'></table>");
+        $("#content").replaceWith("<tbody id='content'></tbody>");
     }
 
     function setModel(model) {
@@ -71,9 +71,10 @@ StateInspector = (function() {
         for (var i = 0; i < model.length; i++) {
             m.push(calculatePath(model[i],[]))
         };
-        $("#content").replaceWith(
+        $("#table").colResizable({disable: true})
+        $("#content").html(
                 session.render("/ui/stateInspector/model_format.html", {components: m}))
-        $("#content").colResizable()
+        $("#table").colResizable()
     }
 
     function calculatePath(data, path) {
@@ -123,6 +124,10 @@ StateInspector = (function() {
         $(".CodeMirror-scrollbar-filler").remove(); // Hack! no funny white
         // square in bottom right
         // corner
+
+        $("#edit").click(function(e) {
+            $("#edit-screen").modal('show')
+        })
     }
 
     function disable() {

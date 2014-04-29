@@ -15,8 +15,8 @@ li {
 }
 
 .table {
-	border-bottom: 1px solid #d3d3d3;
-	border-right: 1px solid #d3d3d3;
+	margin-top: 10px;
+	border: 2px solid #d3d3d3;
 }
 
 .component {
@@ -96,4 +96,10 @@ li {
 
 ._empty {
 	display: none;
+}
+
+
+#edit {
+	padding-right: 10px;
+	cursor: pointer;
 }
