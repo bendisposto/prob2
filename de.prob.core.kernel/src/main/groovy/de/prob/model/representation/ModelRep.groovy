@@ -9,6 +9,7 @@ import de.prob.model.eventb.Context
 import de.prob.model.eventb.EventParameter
 import de.prob.model.eventb.Variant
 import de.prob.model.eventb.Witness
+import de.prob.model.eventb.proof.ProofObligation
 import de.prob.statespace.StateSpace
 import de.prob.unicode.UnicodeTranslator
 
@@ -17,6 +18,7 @@ class ModelRep {
 	def label
 	def formulaId
 	def ofInterest = false
+	def hasSubformula = false
 	def formula
 	def children = []
 
@@ -40,11 +42,14 @@ class ModelRep {
 
 		def kids = e.getChildren()
 		kids.each {
-			if(!(it.key == Machine.class || it.key == Context.class)) {
+			if(!(it.key == Machine.class || it.key == Context.class || it.key == ProofObligation.class)) {
 				def child = translate(it.key, it.value, s)
 				mRep.children << child
 				if(child.ofInterest) {
 					mRep.ofInterest = true
+				}
+				if(child.hasSubformula) {
+					mRep.hasSubformula = true
 				}
 			}
 		}
@@ -55,6 +60,7 @@ class ModelRep {
 		def AbstractEvalElement formula = e.getFormula()
 		mRep.formulaId = formula.getFormulaId().uuid
 		mRep.ofInterest = e.isSubscribed(s)
+		mRep.hasSubformula = true
 		if(formula instanceof EventB || formula instanceof ClassicalB) {
 			mRep.formula = StringEscapeUtils.escapeHtml(UnicodeTranslator.toUnicode(formula.getCode()))
 		}
@@ -69,6 +75,9 @@ class ModelRep {
 			r.children << child
 			if (child.ofInterest) {
 				r.ofInterest = true
+			}
+			if (child.hasSubformula) {
+				r.hasSubformula = true
 			}
 		}
 		r
