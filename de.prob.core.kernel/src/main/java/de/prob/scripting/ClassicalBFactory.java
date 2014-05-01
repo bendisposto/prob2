@@ -23,10 +23,6 @@ import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
-import de.prob.model.representation.Invariant;
-import de.prob.model.representation.Machine;
-import de.prob.model.representation.ModelElementList;
-import de.prob.model.representation.Variable;
 
 /**
  * Creates new {@link ClassicalBModel} objects.
@@ -69,7 +65,7 @@ public class ClassicalBFactory extends ModelFactory {
 		startAnimation(classicalBModel, rml,
 				getPreferences(classicalBModel, prefs), f);
 		if (loadVariables) {
-			subscribeVariables(classicalBModel);
+			classicalBModel.subscribeFormulasOfInterest();
 		}
 		return classicalBModel;
 	}
@@ -102,22 +98,6 @@ public class ClassicalBFactory extends ModelFactory {
 		cmds.add(new StartAnimationCommand());
 		classicalBModel.getStatespace().execute(new ComposedCommand(cmds));
 		classicalBModel.getStatespace().setLoadcmd(loadcmd);
-	}
-
-	private void subscribeVariables(final ClassicalBModel m) {
-		List<Machine> machines = m.getChildrenOfType(Machine.class);
-		for (Machine machine : machines) {
-			List<Variable> childrenOfType = machine
-					.getChildrenOfType(Variable.class);
-			for (Variable variable : childrenOfType) {
-				m.getStatespace().subscribe(this, variable.getExpression());
-			}
-			ModelElementList<Invariant> invariants = machine
-					.getChildrenOfType(Invariant.class);
-			for (Invariant invariant : invariants) {
-				m.getStatespace().subscribe(this, invariant.getPredicate());
-			}
-		}
 	}
 
 	/**

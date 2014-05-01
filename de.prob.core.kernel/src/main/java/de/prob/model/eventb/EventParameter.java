@@ -2,10 +2,9 @@ package de.prob.model.eventb;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.IEval;
+import de.prob.model.representation.AbstractFormulaElement;
 
-public class EventParameter extends AbstractElement implements IEval {
+public class EventParameter extends AbstractFormulaElement {
 
 	private final String name;
 	private final EventB expression;
@@ -35,7 +34,7 @@ public class EventParameter extends AbstractElement implements IEval {
 	}
 
 	@Override
-	public IEvalElement getEvaluate() {
+	public IEvalElement getFormula() {
 		return expression;
 	}
 

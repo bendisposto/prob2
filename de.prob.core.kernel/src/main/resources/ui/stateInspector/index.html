@@ -16,8 +16,27 @@
 <link rel="stylesheet" href="/ui/stateInspector/stateInspector.css">
 </head>
 <body>
+	<div id="edit-screen" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Select model elements to show in the State Inspector</h4>
+				</div>
+				<div id="model-edit" class="modal-body">
+					<p id="model-select">No model loaded</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="container">
-		<table id='content' class='table table-bordered'></table>
+		<table id="table" class='table'>
+			<thead><tr class="active"><th>Name</th><th>Value</th><th>Previous Value <span id="edit" class="pull-right glyphicon glyphicon-edit"></span></th></tr></thead>
+			<tbody id="content"></tbody>
+		</table>
 	<hr>
 	<div class="outbox">
 	</div>
@@ -26,6 +45,7 @@
 </body>
 <script type="text/javascript" src="/ui/libs/jquery.js"></script>
 <script type="text/javascript" src="/ui/libs/colResizable.js"></script>
+<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
 <script type="text/javascript" src="/ui/libs/codemirror.js"></script>
 <script type="text/javascript" src="/ui/libs/codemirror_modes/b.js"></script>
 

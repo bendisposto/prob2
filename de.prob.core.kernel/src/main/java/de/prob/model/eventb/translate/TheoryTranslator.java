@@ -205,7 +205,7 @@ public class TheoryTranslator {
 	private void printDirectDefinition(final DirectDefinition definition,
 			final IPrologTermOutput pto) {
 		pto.openList();
-		printEventBElement(definition.getFormula(), pto);
+		printEventBElement((EventB) definition.getFormula(), pto);
 		pto.closeList();
 	}
 

@@ -1,24 +1,11 @@
-<table id="content" class="table">
-	<thead><tr class="active"><th>Name</th><th>Value</th><th>Previous Value</th></tr></thead>
-	<tbody>
-	{{#components}}
-	<tr><td><div class="component">{{label}}</div></td><td></td><td></td></tr>
-	{{#children}}
-		<tr class="{{class}}"><td><div class="small-indent heading">{{label}}</div></td><td></td><td></td></tr>
-		{{#isGuards}}
-			{{#children}}
-			<tr class="{{class}}"><td><div class="large-indent heading">{{name}}</div></td><td></td><td></td></tr>
-				{{#guards}}
-				<tr id="{{id}}"><td><div class="x-large-indent">{{code}}</div></td><td></td><td></td></tr>
-				{{/guards}}
-			{{/children}}
-		{{/isGuards}}
-		{{^isGuards}}
-		    {{#children}}
-			<tr id="{{id}}"><td><div class="large-indent">{{code}}</div></td><td></td><td></td></tr>
-			{{/children}}
-		{{/isGuards}}
-	{{/children}}
-	{{/components}}
-	</tbody>
-</table>
+{{#components}}
+    <tr id="{{label}}_" class="{{^ofInterest}}_empty{{/ofInterest}}"><td><div class="component {{#path}}{{.}} {{/path}}">{{label}}</div></td><td></td><td></td></tr>
+    {{#children}}
+        <tr id="{{#path}}{{.}}_{{/path}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="small-indent heading">{{label}}</div></td><td></td><td></td></tr>
+        {{#children}}
+            {{#formulaId}}
+            <tr id="{{formulaId}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="large-indent">{{{formula}}} {{#parentName}}<span class="heading">({{parentName}})</span>{{/parentName}}</div></td><td><div id="{{formulaId}}_current" class="tiny-indent"></div></td><td><div id="{{formulaId}}_previous" class="tiny-indent"></div></td></tr>
+            {{/formulaId}}
+        {{/children}}
+    {{/children}}
+{{/components}}

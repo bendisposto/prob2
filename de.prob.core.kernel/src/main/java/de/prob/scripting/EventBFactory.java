@@ -13,12 +13,9 @@ import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.LoadEventBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
-import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.translate.EventBDatabaseTranslator;
 import de.prob.model.eventb.translate.EventBModelTranslator;
-import de.prob.model.representation.Machine;
-import de.prob.model.representation.Variable;
 import de.prob.statespace.StateSpace;
 
 public class EventBFactory extends ModelFactory {
@@ -56,21 +53,8 @@ public class EventBFactory extends ModelFactory {
 		s.setLoadcmd(loadcmd);
 
 		if (loadVariables) {
-			subscribeVariables(model);
+			model.subscribeFormulasOfInterest();
 		}
 		return model;
-	}
-
-	private void subscribeVariables(final EventBModel m) {
-		List<Machine> machines = m.getChildrenOfType(Machine.class);
-		for (Machine machine : machines) {
-			List<Variable> childrenOfType = machine
-					.getChildrenOfType(Variable.class);
-			List<IEvalElement> formulas = new ArrayList<IEvalElement>();
-			for (Variable variable : childrenOfType) {
-				formulas.add(variable.getExpression());
-			}
-			m.getStatespace().subscribe(this, formulas);
-		}
 	}
 }

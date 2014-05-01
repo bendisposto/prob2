@@ -1,0 +1,17 @@
+<ul id="model-select">
+{{#components}}
+    <li class="bold">{{label}}</li>
+    {{#children}}
+        <li class="small-indent heading">{{label}}</li>
+        {{#children}}
+            {{#formulaId}}
+                <li class="x-large-indent checkbox">
+                    <label>
+                        <input type="checkbox" class="{{#path}}{{.}} {{/path}}" {{#ofInterest}}checked{{/ofInterest}}>{{#label}}{{label}}: {{/label}}{{{formula}}}{{#parentName}}<span class="heading"> ({{parentName}})</span>{{/parentName}}
+                    </label>
+                </li>
+            {{/formulaId}}
+        {{/children}}
+    {{/children}}    
+{{/components}}
+</ul>

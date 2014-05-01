@@ -10,11 +10,13 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.RefType.ERefType;
 import de.prob.model.representation.StateSchema;
+import de.prob.model.representation.Variable;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -27,7 +29,7 @@ public class EventBModel extends AbstractModel {
 
 	@Inject
 	public EventBModel(final StateSpace statespace) {
-		this.statespace = statespace;
+		this.stateSpace = statespace;
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class EventBModel extends AbstractModel {
 	public void isFinished() {
 		addMachines(machines);
 		addContexts(contexts);
-		statespace.setModel(this);
+		stateSpace.setModel(this);
 		extractModelDir(modelFile, getMainComponentName());
 	}
 
@@ -133,6 +135,19 @@ public class EventBModel extends AbstractModel {
 	@Override
 	public FormalismType getFormalismType() {
 		return FormalismType.B;
+	}
+
+	@Override
+	public void subscribeFormulasOfInterest() {
+		for (Machine machine : getChildrenOfType(Machine.class)) {
+			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
+				variable.subscribe(stateSpace);
+			}
+			for (Invariant invariant : machine
+					.getChildrenOfType(Invariant.class)) {
+				invariant.subscribe(stateSpace);
+			}
+		}
 	}
 
 }

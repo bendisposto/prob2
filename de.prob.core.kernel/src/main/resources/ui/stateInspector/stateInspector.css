@@ -15,12 +15,16 @@ li {
 }
 
 .table {
-	border-bottom: 1px solid #d3d3d3;
-	border-right: 1px solid #d3d3d3;
+	margin-top: 10px;
+	border: 2px solid #d3d3d3;
 }
 
 .component {
 	padding-left: 10px;
+	font-weight: bold;
+}
+
+.bold {
 	font-weight: bold;
 }
 
@@ -46,6 +50,14 @@ li {
 
 .x-large-indent {
 	padding-left: 70px;
+}
+
+.xx-large-indent {
+	padding-left: 90px;
+}
+
+.xxx-large-indent {
+	padding-left: 110px;
 }
 
 .CodeMirror {
@@ -89,6 +101,13 @@ li {
     opacity: 0.1;
 }
 
-.empty {
+
+._empty {
 	display: none;
+}
+
+
+#edit {
+	padding-right: 10px;
+	cursor: pointer;
 }

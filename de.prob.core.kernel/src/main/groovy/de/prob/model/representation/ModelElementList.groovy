@@ -25,6 +25,9 @@ public class ModelElementList<E> implements List<E> {
 		if(e.metaClass.respondsTo(e, "getName")) {
 			keys[e.getName()]=e
 		}
+		if(e.metaClass.respondsTo(e, "getFormula")) {
+			keys["_" + e.getFormula().getFormulaId().uuid]=e
+		}
 	}
 
 	@Override
