@@ -67,27 +67,12 @@ StateInspector = (function() {
     }
 
     function setModel(model) {
-        var m = []
-        for (var i = 0; i < model.length; i++) {
-            m.push(manipulateData(model[i],[]))
-        };
         $("#table").colResizable({disable: true})
         $("#content").html(
-                session.render("/ui/stateInspector/model_format.html", {components: m}))
+                session.render("/ui/stateInspector/model_format.html", {components: model}))
         $("#model-select").replaceWith(
-                session.render("/ui/stateInspector/model_select.html", {components: m}))
+                session.render("/ui/stateInspector/model_select.html", {components: model}))
         $("#table").colResizable()
-    }
-
-    function manipulateData(data, path) {
-        var path = path.slice()
-        var id = data.formulaId ? "_" + data.formulaId : data.label
-        path.push(id)
-        data.path = path
-        for (var i = 0 ; i < data.children.length; i++) {
-            data.children[i] = manipulateData(data.children[i], path)
-        } 
-        return data
     }
 
     function updateValues(values) {
