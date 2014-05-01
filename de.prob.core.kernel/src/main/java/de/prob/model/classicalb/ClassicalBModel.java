@@ -31,7 +31,7 @@ public class ClassicalBModel extends AbstractModel {
 
 	@Inject
 	public ClassicalBModel(final StateSpace statespace) {
-		this.statespace = statespace;
+		this.stateSpace = statespace;
 	}
 
 	public DirectedSparseMultigraph<String, RefType> initialize(
@@ -75,7 +75,7 @@ public class ClassicalBModel extends AbstractModel {
 			components.put(classicalBMachine.getName(), classicalBMachine);
 		}
 
-		statespace.setModel(this);
+		stateSpace.setModel(this);
 		return graph;
 	}
 
@@ -108,11 +108,11 @@ public class ClassicalBModel extends AbstractModel {
 		ModelElementList<Machine> childrenOfType = getChildrenOfType(Machine.class);
 		for (Machine machine : childrenOfType) {
 			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
-				variable.subscribe(statespace);
+				variable.subscribe(stateSpace);
 			}
 			for (Invariant invariant : machine
 					.getChildrenOfType(Invariant.class)) {
-				invariant.subscribe(statespace);
+				invariant.subscribe(stateSpace);
 			}
 		}
 	}

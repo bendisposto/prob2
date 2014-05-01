@@ -29,7 +29,7 @@ public class EventBModel extends AbstractModel {
 
 	@Inject
 	public EventBModel(final StateSpace statespace) {
-		this.statespace = statespace;
+		this.stateSpace = statespace;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class EventBModel extends AbstractModel {
 	public void isFinished() {
 		addMachines(machines);
 		addContexts(contexts);
-		statespace.setModel(this);
+		stateSpace.setModel(this);
 		extractModelDir(modelFile, getMainComponentName());
 	}
 
@@ -141,11 +141,11 @@ public class EventBModel extends AbstractModel {
 	public void subscribeFormulasOfInterest() {
 		for (Machine machine : getChildrenOfType(Machine.class)) {
 			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
-				variable.subscribe(statespace);
+				variable.subscribe(stateSpace);
 			}
 			for (Invariant invariant : machine
 					.getChildrenOfType(Invariant.class)) {
-				invariant.subscribe(statespace);
+				invariant.subscribe(stateSpace);
 			}
 		}
 	}
