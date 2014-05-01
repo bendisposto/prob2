@@ -1,4 +1,5 @@
 {{#components}}
+    {{#ofInterest}}
     <tr id="{{label}}"><td><div class="component {{#path}}{{.}} {{/path}}">{{label}}</div></td><td></td><td></td></tr>
     {{#children}}
         <tr id="{{label}}" class="{{^ofInterest}}_empty {{/ofInterest}}{{#path}}{{.}} {{/path}}"><td><div class="small-indent heading">{{label}}</div></td><td></td><td></td></tr>
@@ -22,4 +23,5 @@
             {{/children}}
         {{/children}}
     {{/children}}
+    {{/ofInterest}}
 {{/components}}

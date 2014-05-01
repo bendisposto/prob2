@@ -10,8 +10,6 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.Axiom;
-import de.prob.model.representation.Constant;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
@@ -149,15 +147,6 @@ public class EventBModel extends AbstractModel {
 					.getChildrenOfType(Invariant.class)) {
 				invariant.subscribe(statespace);
 			}
-		}
-		for (Context context : getChildrenOfType(Context.class)) {
-			for (Axiom axiom : context.getChildrenOfType(Axiom.class)) {
-				axiom.subscribe(statespace);
-			}
-			for (Constant constant : context.getChildrenOfType(Constant.class)) {
-				constant.subscribe(statespace);
-			}
-
 		}
 	}
 

@@ -1,40 +1,17 @@
 <ul id="model-select">
 {{#components}}
-	{{#hasSubformula}}
-		<li class="bold">{{label}}</li>
-		{{#children}}
-			{{#hasSubformula}}
-				<li class="small-indent heading">{{label}}</li>
-				{{#children}}
-					{{#formulaId}}
-						<li class="x-large-indent checkbox">
-							<label>
-								<input type="checkbox" class="{{#path}}{{.}} {{/path}}" {{#ofInterest}}checked{{/ofInterest}}>{{{formula}}}
-							</label>
-						</li>
-					{{/formulaId}}
-					{{^formulaId}}
-						{{#hasSubformula}}
-							<li class="large-indent">{{label}}</li>
-							{{#children}}
-								{{#hasSubformula}}
-									<li class="heading x-large-indent">{{label}}</li>
-									{{#children}}
-										{{#formulaId}}
-										<li class="xx-large-indent checkbox">
-											<label>
-												<input type="checkbox" class="{{#path}}{{.}} {{/path}}" {{#ofInterest}}checked{{/ofInterest}}>{{{formula}}}
-											</label>
-										</li>
-										{{/formulaId}}
-									{{/children}}
-								{{/hasSubformula}}
-							{{/children}}
-						{{/hasSubformula}}
-					{{/formulaId}}
-				{{/children}}
-			{{/hasSubformula}}
-		{{/children}}	
-	{{/hasSubformula}}
+    <li class="bold">{{label}}</li>
+    {{#children}}
+        <li class="small-indent heading">{{label}}</li>
+        {{#children}}
+            {{#formulaId}}
+                <li class="x-large-indent checkbox">
+                    <label>
+                        <input type="checkbox" class="{{#path}}{{.}} {{/path}}" {{#ofInterest}}checked{{/ofInterest}}>{{#label}}{{label}}: {{/label}}{{{formula}}}{{#parentName}}<span class="heading"> ({{parentName}})</span>{{/parentName}}
+                    </label>
+                </li>
+            {{/formulaId}}
+        {{/children}}
+    {{/children}}    
 {{/components}}
 </ul>

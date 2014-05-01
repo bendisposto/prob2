@@ -18,6 +18,7 @@ class ModelRep {
 	def ofInterest = false
 	def hasSubformula = false
 	def formula
+	def parentName
 	def children = []
 	def path = []
 
@@ -34,7 +35,7 @@ class ModelRep {
 
 	def static ModelRep translate(AbstractElement e, path, StateSpace s) {
 		def mRep = new ModelRep()
-		mRep.label = e.getMetaClass().respondsTo(e, "getName") ? e.getName() : "None"
+		mRep.label = e.getMetaClass().respondsTo(e, "getName") ? e.getName() : false
 		if(e instanceof AbstractFormulaElement) {
 			extractFormula(e, s, path, mRep)
 		} else {
@@ -78,6 +79,9 @@ class ModelRep {
 		mRep.path << "_" + mRep.formulaId
 		if(formula instanceof EventB || formula instanceof ClassicalB) {
 			mRep.formula = StringEscapeUtils.escapeHtml(UnicodeTranslator.toUnicode(formula.getCode()))
+			if(mRep.formula == mRep.label) {
+				mRep.label = false
+			}
 		}
 	}
 
@@ -114,6 +118,7 @@ class ModelRep {
 			p << "guards"
 			guards.each {
 				def g = translate(it, p, s)
+				g.parentName = event.getName()
 				if(g.ofInterest) {
 					r.ofInterest = true
 				}
