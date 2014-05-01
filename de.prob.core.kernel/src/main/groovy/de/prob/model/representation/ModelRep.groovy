@@ -17,6 +17,7 @@ class ModelRep {
 	def formulaId
 	def ofInterest = false
 	def hasSubformula = false
+	def nrOfInterest = 0
 	def formula
 	def parentName
 	def children = []
@@ -55,6 +56,7 @@ class ModelRep {
 						mRep.hasSubformula = true
 						mRep.children << child
 					}
+					mRep.nrOfInterest += child.nrOfInterest
 				} else {
 					def child = translate(it.key, it.value, mRep.path, s)
 					if(child.ofInterest) {
@@ -64,6 +66,7 @@ class ModelRep {
 						mRep.hasSubformula = true
 						mRep.children << child
 					}
+					mRep.nrOfInterest += child.nrOfInterest
 				}
 			}
 		}
@@ -74,6 +77,7 @@ class ModelRep {
 		def AbstractEvalElement formula = e.getFormula()
 		mRep.formulaId = formula.getFormulaId().uuid
 		mRep.ofInterest = e.isSubscribed(s)
+		mRep.nrOfInterest = mRep.ofInterest ? 1 : 0
 		mRep.hasSubformula = true
 		mRep.path = new ArrayList<String>(path)
 		mRep.path << "_" + mRep.formulaId
@@ -100,6 +104,7 @@ class ModelRep {
 				r.hasSubformula = true
 				r.children << child
 			}
+			r.nrOfInterest += child.nrOfInterest
 		}
 		r
 	}
@@ -126,6 +131,7 @@ class ModelRep {
 					r.hasSubformula = true
 					r.children << g
 				}
+				r.nrOfInterest += g.nrOfInterest
 			}
 		}
 		r

@@ -6,6 +6,8 @@ StateInspector = (function() {
     history = [];
     hp = null;
 
+    var nrOfInterest = {}
+
     var editorkeys = function() {
         return {
             'Shift-Enter' : function(cm) {
@@ -66,6 +68,16 @@ StateInspector = (function() {
         $("#content").replaceWith("<tbody id='content'></tbody>");
     }
 
+    function extractOfInterest(data) {
+        if(data.formulaId) {
+            return
+        }
+        nrOfInterest[data.path.join("_")+"_"] = data.nrOfInterest
+        for (var i = 0; i < data.children.length; i++) {
+            extractOfInterest(data.children[i])
+        };
+    }
+
     function setModel(model) {
         $("#table").colResizable({disable: true})
         $("#content").html(
@@ -73,6 +85,47 @@ StateInspector = (function() {
         $("#model-select").replaceWith(
                 session.render("/ui/stateInspector/model_select.html", {components: model}))
         $("#table").colResizable()
+        for (var i = 0; i < model.length; i++) {
+            extractOfInterest(model[i])
+        };
+        $("input").click(clickFunction)
+    }
+
+    function clickFunction(e) {
+        var path = []
+        var componentS, headingS, formulaS
+        for (var i = 0; i < this.classList.length; i++) {
+            path.push(this.classList[i])
+            if(i === 0) {
+                componentS = path[0] + "_"
+            } else if(i === 1) {
+                headingS = path.join("_") + "_"
+            }
+        };
+        if(path.length === 5) {
+            headingS = path[0] + "_guards_"
+        }
+        formulaS = path.join(".")
+
+        if($(this).is(":checked")) {
+            $("tr#"+componentS).removeClass("_empty")
+            $("tr#"+headingS).removeClass("_empty")
+            $("tr."+formulaS).removeClass("_empty")
+            nrOfInterest[componentS]++
+            nrOfInterest[headingS]++
+            session.sendCmd("registerFormula", {"path": path})
+        } else {
+            nrOfInterest[componentS]--
+            nrOfInterest[headingS]--
+            if(nrOfInterest[componentS] === 0) {
+                $("tr#"+componentS).addClass("_empty")
+            }
+            if(nrOfInterest[headingS] === 0) {
+                $("tr#"+headingS).addClass("_empty")
+            }
+            $("tr."+formulaS).addClass("_empty")
+            session.sendCmd("deregisterFormula", {"path": path})
+        }
     }
 
     function updateValues(values) {

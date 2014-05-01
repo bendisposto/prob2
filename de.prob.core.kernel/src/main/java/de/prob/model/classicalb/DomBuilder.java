@@ -12,7 +12,6 @@ import de.be4.classicalb.core.parser.node.AConstantsMachineClause;
 import de.be4.classicalb.core.parser.node.AConstraintsMachineClause;
 import de.be4.classicalb.core.parser.node.ADeferredSetSet;
 import de.be4.classicalb.core.parser.node.AEnumeratedSetSet;
-import de.be4.classicalb.core.parser.node.AExistsPredicate;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.AInvariantMachineClause;
@@ -147,8 +146,7 @@ public class DomBuilder extends DepthFirstAdapter {
 		if (body instanceof ASelectSubstitution) {
 			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 			PPredicate condition = ((ASelectSubstitution) body).getCondition();
-			guards.add(new ClassicalBGuard(
-					createPredicateAST(new AExistsPredicate(paramIds, condition))));
+			guards.add(new ClassicalBGuard(createPredicateAST(condition)));
 			operation.addGuards(guards);
 		}
 

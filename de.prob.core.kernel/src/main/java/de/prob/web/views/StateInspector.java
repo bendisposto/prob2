@@ -1,10 +1,10 @@
 package de.prob.web.views;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.AsyncContext;
 
@@ -16,22 +16,14 @@ import com.google.inject.Singleton;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
-import de.prob.model.eventb.Context;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractFormulaElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.Axiom;
-import de.prob.model.representation.BEvent;
-import de.prob.model.representation.BSet;
-import de.prob.model.representation.Constant;
-import de.prob.model.representation.Guard;
-import de.prob.model.representation.Invariant;
-import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.ModelRep;
-import de.prob.model.representation.Variable;
 import de.prob.scripting.FileHandler;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.FormalismType;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
@@ -64,7 +56,8 @@ public class StateInspector extends AbstractSession implements
 		super.reload(client, lastinfo, context);
 
 		if (currentModel != null && currentTrace != null) {
-			Map<String, Object> extracted = extractModel(currentModel);
+
+			extractFormulas(currentModel);
 			Object values = calculateFormulas(currentTrace);
 			submit(WebUtils.wrap("cmd", "StateInspector.setModel",
 					"components",
@@ -85,10 +78,45 @@ public class StateInspector extends AbstractSession implements
 					+ HISTORY_FILE_NAME, history);
 		}
 
-		// TODO: What happens if we try to use CSP or EventB???
 		Object eval = currentTrace.evalCurrent(currentModel.parseFormula(code));
 		return WebUtils.wrap("cmd", "StateInspector.result", "code",
 				unicode(code), "result", eval.toString());
+	}
+
+	public Object registerFormula(final Map<String, String[]> params) {
+		String[] path = params.get("path[]");
+		List<String> listP = Arrays.asList(path);
+		if (currentModel != null) {
+			StateSpace s = currentModel.getStatespace();
+			AbstractElement abstractElement = currentModel.get(listP);
+			if (abstractElement instanceof AbstractFormulaElement) {
+				AbstractFormulaElement e = (AbstractFormulaElement) abstractElement;
+				if (!e.isSubscribed(s)) {
+					e.subscribe(s);
+					formulasForEvaluating.add(e.getFormula());
+				}
+			}
+		}
+		return WebUtils.wrap("cmd", "StateInspector.updateValues", "values",
+				WebUtils.toJson(calculateFormulas(currentTrace)));
+	}
+
+	public Object deregisterFormula(final Map<String, String[]> params) {
+		String[] path = params.get("path[]");
+		List<String> listP = Arrays.asList(path);
+		if (currentModel != null) {
+			StateSpace s = currentModel.getStatespace();
+			AbstractElement element = currentModel.get(listP);
+			if (element instanceof AbstractFormulaElement) {
+				AbstractFormulaElement e = (AbstractFormulaElement) element;
+				if (e.isSubscribed(s)) {
+					e.unsubscribe(s);
+					formulasForEvaluating.remove(e.getFormula());
+				}
+			}
+		}
+		return WebUtils.wrap("cmd", "StateInspector.updateValues", "values",
+				WebUtils.toJson(calculateFormulas(currentTrace)));
 	}
 
 	@Override
@@ -103,7 +131,6 @@ public class StateInspector extends AbstractSession implements
 		if (currentAnimationChanged) {
 			if (trace == null) {
 				currentTrace = null;
-				deregisterFormulas(currentModel);
 				currentModel = null;
 				submit(WebUtils.wrap("cmd", "StateInspector.clearInput"));
 				return;
@@ -111,12 +138,8 @@ public class StateInspector extends AbstractSession implements
 			currentTrace = trace;
 			AbstractModel newModel = trace.getModel();
 			if (!newModel.equals(currentModel)) {
-				if (currentModel != null) {
-					deregisterFormulas(currentModel);
-				}
 				currentModel = newModel;
-				Map<String, Object> extracted = extractModel(currentModel);
-				registerFormulas(currentModel);
+				extractFormulas(currentModel);
 
 				history = getCurrentHistory(currentModel.getModelDirPath());
 
@@ -171,120 +194,30 @@ public class StateInspector extends AbstractSession implements
 		return StringEscapeUtils.escapeHtml(UnicodeTranslator.toUnicode(code));
 	}
 
-	private void registerFormulas(final AbstractModel model) {
-		StateSpace s = model.getStatespace();
-		for (IEvalElement e : formulasForEvaluating) {
-			s.subscribe(this, e);
-		}
-	}
-
-	private void deregisterFormulas(final AbstractModel model) {
-		StateSpace s = model.getStatespace();
-		for (IEvalElement iEvalElement : formulasForEvaluating) {
-			s.unsubscribe(this, iEvalElement);
-		}
-	}
-
-	private Map<String, Object> extractModel(final AbstractModel m) {
+	private void extractFormulas(final AbstractModel m) {
 		formulasForEvaluating = new ArrayList<IEvalElement>();
-		Map<String, Object> extracted = new HashMap<String, Object>();
-		List<Object> components = new ArrayList<Object>();
-		Map<String, AbstractElement> modelComponents = m.getComponents();
-		if (modelComponents != null) {
-			for (Entry<String, AbstractElement> e : modelComponents.entrySet()) {
-				components.add(extractComponent(m.getStatespace(), e.getKey(),
-						e.getValue()));
-			}
+		if (m.getFormalismType().equals(FormalismType.B)) {
+			extractFormulas(m, m.getStatespace());
 		}
-		extracted.put("components", components);
-		return extracted;
 	}
 
-	private Object extractComponent(final StateSpace s, final String name,
-			final AbstractElement e) {
-		Map<String, Object> extracted = new HashMap<String, Object>();
-		List<Object> kids = new ArrayList<Object>();
-		if (e instanceof Context) {
-			kids.add(extractElement(s, e, BSet.class));
-			kids.add(extractElement(s, e, Constant.class));
-			kids.add(extractElement(s, e, Axiom.class));
+	private void extractFormulas(final AbstractElement e, final StateSpace s) {
+		if (e instanceof AbstractFormulaElement) {
+			AbstractFormulaElement formulaElement = (AbstractFormulaElement) e;
+			if (formulaElement.isSubscribed(s)) {
+				formulasForEvaluating.add(formulaElement.getFormula());
+			}
+			return;
 		}
-		if (e instanceof Machine) {
-			kids.add(extractElement(s, e, Variable.class));
-			kids.add(extractElement(s, e, Invariant.class));
-			kids.add(extractGuards(s, (Machine) e));
-		}
-		extracted.put("label", name);
-		extracted.put("children", kids);
-		return extracted;
-	}
-
-	private Object extractElement(final StateSpace s,
-			final AbstractElement parent,
-			final Class<? extends AbstractElement> c) {
-		Map<String, Object> extracted = new HashMap<String, Object>();
-		List<Object> kids = new ArrayList<Object>();
-		List<? extends AbstractElement> children = parent.getChildrenOfType(c);
-		for (AbstractElement abstractElement : children) {
-			if (abstractElement instanceof AbstractFormulaElement) {
-				IEvalElement formula = ((AbstractFormulaElement) abstractElement)
-						.getFormula();
-				if (s.isSubscribed(formula)) {
-					Map<String, String> wrap = WebUtils.wrap("code",
-							unicode(formula.getCode()), "id",
-							formula.getFormulaId().uuid);
-					kids.add(wrap);
-					formulasForEvaluating.add(formula);
-				}
+		Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children = e
+				.getChildren();
+		Collection<ModelElementList<? extends AbstractElement>> values = children
+				.values();
+		for (ModelElementList<? extends AbstractElement> modelElementList : values) {
+			for (AbstractElement e2 : modelElementList) {
+				extractFormulas(e2, s);
 			}
 		}
-
-		String label = extractLabel(c);
-		extracted.put("label", label);
-		extracted.put("children", kids);
-		extracted.put("class", kids.isEmpty() ? "empty" : null);
-		extracted.put("isGuards", false);
-		return extracted;
-	}
-
-	private Object extractGuards(final StateSpace s, final Machine m) {
-		Map<String, Object> extracted = new HashMap<String, Object>();
-		List<Object> kids = new ArrayList<Object>();
-
-		ModelElementList<BEvent> events = m.getChildrenOfType(BEvent.class);
-		for (BEvent bEvent : events) {
-			Map<String, Object> o = new HashMap<String, Object>();
-			List<Object> kids2 = new ArrayList<Object>();
-			for (Guard guard : bEvent.getChildrenOfType(Guard.class)) {
-				if (s.isSubscribed(guard.getPredicate())) {
-					Map<String, String> wrap = WebUtils.wrap("code",
-							unicode(guard.getPredicate().getCode()), "id",
-							guard.getPredicate().getFormulaId().uuid);
-					kids2.add(wrap);
-					formulasForEvaluating.add(guard.getPredicate());
-				}
-			}
-			o.put("name", bEvent.getName());
-			o.put("guards", kids2);
-			o.put("class", kids2.isEmpty() ? "empty" : null);
-			if (!kids2.isEmpty()) {
-				kids.add(o);
-			}
-		}
-
-		extracted.put("label", "Guards");
-		extracted.put("children", kids);
-		extracted.put("class", kids.isEmpty() ? "empty" : null);
-		extracted.put("isGuards", true);
-		return extracted;
-	}
-
-	private String extractLabel(final Class<? extends AbstractElement> c) {
-		String simpleName = c.getSimpleName();
-		if ("BSet".equals(simpleName)) {
-			return "Sets";
-		}
-		return simpleName + "s";
 	}
 
 	@Override
