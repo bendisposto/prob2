@@ -4,6 +4,7 @@ li {
 
 .table thead tr th {
 	text-align: center;
+	vertical-align: text-top;
 	border-left: 1px solid #d3d3d3;
 	border-right: 1px solid #d3d3d3;
 }
