@@ -289,6 +289,10 @@ public class Trace {
 		return stateSpace.getModel()
 	}
 
+	def UUID getUUID() {
+		return uuid
+	}
+
 	def Object asType(Class className) {
 		if(className == StateSpace) {
 			return stateSpace
