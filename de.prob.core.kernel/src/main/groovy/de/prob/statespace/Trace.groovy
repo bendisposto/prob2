@@ -65,7 +65,7 @@ public class Trace {
 		this.stateSpace = s
 		head = new TraceElement(s.getState(s.getVertex("root")))
 		current = head
-		uuid = UUID.randomUUID()
+		uuid = java.util.UUID.randomUUID()
 	}
 
 	def Trace(final StateSpace s, final TraceElement head, UUID uuid) {
