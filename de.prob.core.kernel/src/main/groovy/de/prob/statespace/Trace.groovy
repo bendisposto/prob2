@@ -17,6 +17,7 @@ public class Trace {
 	def final TraceElement current
 	def final TraceElement head
 	def final StateSpace stateSpace
+	def final UUID uuid
 
 	def IEvalResult evalCurrent(formula) {
 		if(!stateSpace.canBeEvaluated(getCurrentState())) {
@@ -56,30 +57,27 @@ public class Trace {
 		res
 	}
 
+	def Trace(final AbstractModel m) {
+		this(m.getStateSpace())
+	}
 
 	def Trace(final StateSpace s) {
 		this.stateSpace = s
 		head = new TraceElement(s.getState(s.getVertex("root")))
 		current = head
+		uuid = UUID.randomUUID()
 	}
 
-	def Trace(final AbstractModel m) {
-		this.stateSpace = m.getStatespace()
-		head = new TraceElement(s.getState(s.getVertex("root")))
-		current = head
-	}
-
-	def Trace(final StateSpace s, final TraceElement head) {
-		this.stateSpace = s
-		this.head = head
-		this.current = head
+	def Trace(final StateSpace s, final TraceElement head, UUID uuid) {
+		this(s, head, head, uuid)
 	}
 
 	def Trace(final StateSpace s, final TraceElement head,
-	final TraceElement current) {
+	final TraceElement current, UUID uuid) {
 		this.stateSpace = s
 		this.head = head
 		this.current = current
+		this.uuid = uuid
 	}
 
 	def Trace add(final String name, final List<String> params) {
@@ -95,7 +93,7 @@ public class Trace {
 		StateId newState = stateSpace.getState(op)
 
 		def newHE = new TraceElement(current.getCurrentState(), newState, op, current)
-		Trace newTrace = new Trace(stateSpace, newHE)
+		Trace newTrace = new Trace(stateSpace, newHE, this.uuid)
 
 		return newTrace
 	}
@@ -110,7 +108,7 @@ public class Trace {
 	 */
 	def Trace back() {
 		if (canGoBack()) {
-			Trace trace = new Trace(stateSpace, head, current.getPrevious())
+			Trace trace = new Trace(stateSpace, head, current.getPrevious(), this.uuid)
 			return trace
 		}
 		return this
@@ -128,7 +126,7 @@ public class Trace {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious()
 			}
-			Trace trace = new Trace(stateSpace, head, p)
+			Trace trace = new Trace(stateSpace, head, p, this.uuid)
 			return trace
 		}
 		return this
@@ -207,7 +205,7 @@ public class Trace {
 			currentState = newState
 		}
 
-		Trace newTrace = new Trace(stateSpace, current)
+		Trace newTrace = new Trace(stateSpace, current, this.uuid)
 		return newTrace
 	}
 
@@ -289,6 +287,10 @@ public class Trace {
 
 	def AbstractModel getModel() {
 		return stateSpace.getModel()
+	}
+
+	def UUID getUUID() {
+		return uuid
 	}
 
 	def Object asType(Class className) {
