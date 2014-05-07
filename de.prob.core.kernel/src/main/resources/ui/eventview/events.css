@@ -1,5 +1,6 @@
 #events li {
 	padding-left: 4px;
+	cursor: pointer;
 }
 
 #events li:nth-child(odd) {
@@ -39,9 +40,10 @@
 	list-style-image: url(/images/enabled.png);
 }
 
-.notEnabled {
+#events li.notEnabled {
 	list-style-image: url(/images/disabled.png);
 	color: #888;
+	cursor: not-allowed;
 	font-style: italic;
 }
 

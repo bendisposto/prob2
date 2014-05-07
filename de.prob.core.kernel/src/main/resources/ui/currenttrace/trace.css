@@ -1,5 +1,6 @@
 li {
 	list-style-type: none;
+    cursor: pointer;
 }
 
 li:nth-child(odd) {
@@ -31,4 +32,8 @@ li:nth-child(even) {
 
 ul {
     padding-left: 0px;
+}
+
+#sort {
+    cursor: pointer;
 }
