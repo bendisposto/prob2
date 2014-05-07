@@ -176,7 +176,7 @@ public class BMotionStudioSession extends AbstractSession implements
 							formalism + "_load", String.class);
 					AbstractModel model = (AbstractModel) method.invoke(api,
 							machinePath);
-					StateSpace s = model.getStatespace();
+					StateSpace s = model.getStateSpace();
 					selector.addNewAnimation(new Trace(s));
 					this.model = model;
 				} catch (NoSuchMethodException e) {
@@ -192,12 +192,21 @@ public class BMotionStudioSession extends AbstractSession implements
 				}
 			}
 
+		} else {
+			
+			Trace traceFromAnimatedModel = selector.getCurrentTrace();
+			if (traceFromAnimatedModel != null)
+				this.model = traceFromAnimatedModel.getModel();
+			
 		}
+		
+		if (this.model == null)
+			throw new RuntimeException("No model was found.");
 
 	}
 
 	private void deregisterFormulas(final AbstractModel model) {
-		StateSpace s = model.getStatespace();
+		StateSpace s = model.getStateSpace();
 		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
 				.entrySet()) {
 			IEvalElement evalElement = entry.getValue();
@@ -334,7 +343,7 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		try {
 
-			StateSpace s = model.getStatespace();
+			StateSpace s = model.getStateSpace();
 			IEvalElement evalElement = null;
 
 			if (model instanceof CSPModel) {
@@ -412,7 +421,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		if (currentTrace != null)
 			script.traceChanged(currentTrace);
 		if (model != null)
-			script.modelChanged(model.getStatespace());
+			script.modelChanged(model.getStateSpace());
 	}
 
 	public String getTemplateFolder() {
