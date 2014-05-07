@@ -11,6 +11,7 @@
 	content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/common/bootstrap-glyphicons.css">
 <link rel="stylesheet" href="/ui/common/codemirror.css">
 <link rel="stylesheet" href="/ui/libs/codemirror_modes/b.css">
 <link rel="stylesheet" href="/ui/stateInspector/stateInspector.css">
@@ -34,7 +35,7 @@
 	</div>
 	<div class="container">
 		<table id="table" class='table'>
-			<thead><tr class="active"><th>Name</th><th>Value</th><th>Previous Value <button type="button" id="edit" class="pull-right btn btn-default btn-sm" title="Choose model elements to display"><span class="glyphicon glyphicon-edit"></span></button></th></tr></thead>
+			<thead><tr class="active"><th>Name</th><th>Value</th><th>Previous Value <span id="edit" class="pull-right glyphicon glyphicon-edit" title="Add or remove elements"></span></th></tr></thead>
 			<tbody id="content"></tbody>
 		</table>
 	<hr>

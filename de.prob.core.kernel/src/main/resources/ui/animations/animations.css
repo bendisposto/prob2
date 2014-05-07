@@ -1,13 +1,11 @@
-li {
-	list-style-type: none;
-}
-
 tr:nth-child(odd) {
 	background-color: white;
+	cursor: pointer;
 }
 
 tr:nth-child(even) {
 	background-color: #f3f6ff;
+	cursor: pointer;
 }
 
 th {
@@ -21,6 +19,7 @@ th {
 .close-button {
 	color: #660000;
 	opacity: 0.5;
+	cursor: pointer;
 }
 
 .close-button:hover {
