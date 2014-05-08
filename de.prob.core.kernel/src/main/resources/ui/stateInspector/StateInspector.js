@@ -130,12 +130,26 @@ StateInspector = (function() {
     }
 
     function updateValues(values) {
+        var id;
         for ( var i = 0; i < values.length; i++) {
-            $("#" + values[i].id + "_current").html(values[i].current);
-            $("#" + values[i].id + "_previous").html(values[i].previous);
+            id = "#" + values[i].id;
+            $(id + "_current").html(values[i].current);
+            $(id + "_previous").html(values[i].previous);
             if (values[i].current !== values[i].previous) {
-                $("#" + values[i].id).addClass("changed");
+                $(id).addClass("changed");
             }
+            if (values[i].current == "TRUE") {
+                $(id + "_current").addClass("true")
+            }
+            if (values[i].current == "FALSE") {
+                $(id + "_current").addClass("false")
+            }
+            if (values[i].previous == "TRUE") {
+                $(id + "_previous").addClass("true")
+            } 
+            if (values[i].previous == "FALSE") {
+                $(id = "_previous").addClass("false")
+            } 
         }
     }
 

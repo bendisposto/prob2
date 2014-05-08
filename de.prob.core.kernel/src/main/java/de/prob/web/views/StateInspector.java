@@ -87,7 +87,7 @@ public class StateInspector extends AbstractSession implements
 		String[] path = params.get("path[]");
 		List<String> listP = Arrays.asList(path);
 		if (currentModel != null) {
-			StateSpace s = currentModel.getStatespace();
+			StateSpace s = currentModel.getStateSpace();
 			AbstractElement abstractElement = currentModel.get(listP);
 			if (abstractElement instanceof AbstractFormulaElement) {
 				AbstractFormulaElement e = (AbstractFormulaElement) abstractElement;
@@ -105,7 +105,7 @@ public class StateInspector extends AbstractSession implements
 		String[] path = params.get("path[]");
 		List<String> listP = Arrays.asList(path);
 		if (currentModel != null) {
-			StateSpace s = currentModel.getStatespace();
+			StateSpace s = currentModel.getStateSpace();
 			AbstractElement element = currentModel.get(listP);
 			if (element instanceof AbstractFormulaElement) {
 				AbstractFormulaElement e = (AbstractFormulaElement) element;
@@ -197,7 +197,7 @@ public class StateInspector extends AbstractSession implements
 	private void extractFormulas(final AbstractModel m) {
 		formulasForEvaluating = new ArrayList<IEvalElement>();
 		if (m.getFormalismType().equals(FormalismType.B)) {
-			extractFormulas(m, m.getStatespace());
+			extractFormulas(m, m.getStateSpace());
 		}
 	}
 
