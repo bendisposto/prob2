@@ -5,6 +5,7 @@ StateInspector = (function() {
     ;
     history = [];
     hp = null;
+    var ctr = 0;
 
     var nrOfInterest = {}
 
@@ -144,8 +145,13 @@ StateInspector = (function() {
     }
 
     function showresult(data) {
+        var id = "_answer_" + ctr++
+        data.id = id
         var output = session.render("/ui/stateInspector/shell_answer.html", data)
         $(".outbox").append(output)
+        $("#"+id).click(function(e) {
+            $(this).remove()
+        })
     }
 
     function init() {

@@ -112,3 +112,17 @@ li {
 	padding-right: 10px;
 	cursor: pointer;
 }
+
+.dismissable {
+	padding-bottom: 2px;
+}
+
+.dismiss {
+	padding-top: 12px;
+	padding-right: 10px;
+}
+
+.close {
+	font-size: 14px;
+	opacity: 0.1;
+}
