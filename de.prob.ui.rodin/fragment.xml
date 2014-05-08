@@ -92,13 +92,6 @@
                <separator
                      name="debug">
                </separator>
-            </menu>
-            <menu
-                  id="bms"
-                  label="BMotion">
-               <separator
-                     name="bms">
-               </separator>
             </menu> </menu>
       </menuContribution>
       <menuContribution
@@ -106,6 +99,17 @@
          <toolbar
                id="probtoolbar">
          </toolbar>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               id="bms"
+               label="BMotion Studio">
+            <separator
+                  name="bms">
+            </separator>
+         </menu>
       </menuContribution>
    </extension>
      <extension
