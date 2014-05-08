@@ -545,6 +545,8 @@ public class BMotionStudioSession extends AbstractSession implements
 			return "eventb";
 		} else if (machinePath.endsWith(".mch")) {
 			return "b";
+		} else if(machinePath.endsWith(".tla")) {
+			return "tla";
 		}
 		return lang;
 
