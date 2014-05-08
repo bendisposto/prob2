@@ -31,6 +31,7 @@ import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
@@ -54,6 +55,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
 
 	private Trace currentTrace;
+	
+	private StateSpace currentStateSpace;
 
 	private final AnimationSelector selector;
 	
@@ -145,6 +148,9 @@ public class BMotionStudioSession extends AbstractSession implements
 	}
 
 	private void initSession() {
+		// Clear formula data
+		formulas.clear();
+		formulasForEvaluating.clear();
 		// Remove all script listeners and add new observer scriptlistener
 		scriptListeners.clear();
 		scriptListeners.add(defaultObserver);
@@ -176,7 +182,7 @@ public class BMotionStudioSession extends AbstractSession implements
 							formalism + "_load", String.class);
 					AbstractModel model = (AbstractModel) method.invoke(api,
 							machinePath);
-					StateSpace s = model.getStatespace();
+					StateSpace s = model.getStateSpace();
 					selector.addNewAnimation(new Trace(s));
 					this.model = model;
 				} catch (NoSuchMethodException e) {
@@ -192,12 +198,18 @@ public class BMotionStudioSession extends AbstractSession implements
 				}
 			}
 
+		} else {
+			
+			Trace traceFromAnimatedModel = selector.getCurrentTrace();
+			if (traceFromAnimatedModel != null)
+				this.model = traceFromAnimatedModel.getModel();
+			
 		}
-
+		
 	}
 
 	private void deregisterFormulas(final AbstractModel model) {
-		StateSpace s = model.getStatespace();
+		StateSpace s = model.getStateSpace();
 		for (Map.Entry<String, IEvalElement> entry : formulasForEvaluating
 				.entrySet()) {
 			IEvalElement evalElement = entry.getValue();
@@ -220,7 +232,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	@Override
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
-
+		
 		if (currentAnimationChanged) {
 
 			// Deregister formulas if no trace exists and exit
@@ -229,10 +241,13 @@ public class BMotionStudioSession extends AbstractSession implements
 				deregisterFormulas(model);
 				return;
 			}
-
-			if (model != null
-					&& model.getModelFile().equals(
-							trace.getModel().getModelFile())) {
+		
+			// TODO: We get problems if we have "dead" sessions ...... this
+			// part is still executed!
+			// if (model != null
+			// && model.getModelFile().equals(
+			// trace.getModel().getModelFile())) {
+			if (model != null) {
 
 				currentTrace = trace;
 				StateSpace stateSpace = currentTrace.getStateSpace();
@@ -334,24 +349,29 @@ public class BMotionStudioSession extends AbstractSession implements
 
 		try {
 
-			StateSpace s = model.getStatespace();
+			StateSpace s = model.getStateSpace();
 			IEvalElement evalElement = null;
 
 			if (model instanceof CSPModel) {
 
-				result = cachedCspResults.get(formula);
-				if (result == null) {
-					evalElement = new CSP(formula, (CSPModel) model);
-					IEvalResult evaluationResult = trace
-							.evalCurrent(evalElement);
-					if (evaluationResult != null) {
-						if (evaluationResult instanceof ComputationNotCompletedResult) {
-							// TODO: do something .....
-						} else if (evaluationResult instanceof EvalResult) {
-							result = ((EvalResult) evaluationResult).getValue();
-							cachedCspResults.put(formula, result);
+				try {
+					result = cachedCspResults.get(formula);
+					if (result == null) {
+						evalElement = new CSP(formula, (CSPModel) model);
+						IEvalResult evaluationResult = trace
+								.evalCurrent(evalElement);
+						if (evaluationResult != null) {
+							if (evaluationResult instanceof ComputationNotCompletedResult) {
+								// TODO: do something .....
+							} else if (evaluationResult instanceof EvalResult) {
+								result = ((EvalResult) evaluationResult)
+										.getValue();
+								cachedCspResults.put(formula, result);
+							}
 						}
 					}
+				} catch (EvaluationException e) {
+					System.err.println("Invalid CSP formula: " + formula);
 				}
 
 			} else if (model instanceof EventBModel
@@ -371,7 +391,7 @@ public class BMotionStudioSession extends AbstractSession implements
 								trace);
 						formulas.put(formula, result);
 					} catch (Exception e) {
-						System.err.println("Invalid formula: " + formula);
+						System.err.println("Invalid B formula: " + formula);
 						invalidFormulas.add(formula);
 					}
 				}
@@ -412,7 +432,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		if (currentTrace != null)
 			script.traceChanged(currentTrace);
 		if (model != null)
-			script.modelChanged(model.getStatespace());
+			script.modelChanged(model.getStateSpace());
 	}
 
 	public String getTemplateFolder() {
@@ -429,6 +449,11 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	@Override
 	public void modelChanged(final StateSpace statespace) {
+		if (this.currentStateSpace != null
+				&& this.currentStateSpace != statespace) {
+			initSession();
+		}
+		this.currentStateSpace = statespace;
 		for (IBMotionScript s : scriptListeners) {
 			s.modelChanged(statespace);
 		}
@@ -520,6 +545,8 @@ public class BMotionStudioSession extends AbstractSession implements
 			return "eventb";
 		} else if (machinePath.endsWith(".mch")) {
 			return "b";
+		} else if(machinePath.endsWith(".tla")) {
+			return "tla";
 		}
 		return lang;
 
