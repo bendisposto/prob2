@@ -55,6 +55,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
 
 	private Trace currentTrace;
+	
+	private StateSpace currentStateSpace;
 
 	private final AnimationSelector selector;
 	
@@ -447,7 +449,11 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	@Override
 	public void modelChanged(final StateSpace statespace) {
-		initSession();
+		if (this.currentStateSpace != null
+				&& this.currentStateSpace != statespace) {
+			initSession();
+		}
+		this.currentStateSpace = statespace;
 		for (IBMotionScript s : scriptListeners) {
 			s.modelChanged(statespace);
 		}
