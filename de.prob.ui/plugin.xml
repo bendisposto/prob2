@@ -58,6 +58,11 @@
                  label="Open BMotion Studio Template"
                  style="push">
            </command>
+           <command
+                 commandId="de.prob.ui.command.EditBMotionStudioTemplate"
+                 label="Edit BMotion Studio Template"
+                 style="push">
+           </command>
         </menuContribution>
    </extension>
    
@@ -86,6 +91,10 @@
             <command
                   id="de.prob.ui.command.OpenBMotionStudioTemplate"
                   name="Open BMotion Studio Template">
+            </command>
+            <command
+                  id="de.prob.ui.command.EditBMotionStudioTemplate"
+                  name="Edit BMotion Studio Template">
             </command>
    </extension>
    
@@ -148,6 +157,10 @@
       <handler
             class="de.prob.ui.bmsview.OpenBMotionTemplateHandler"
             commandId="de.prob.ui.command.OpenBMotionStudioTemplate">
+      </handler>
+      <handler
+            class="de.prob.ui.bmsview.EditBMotionTemplateHandler"
+            commandId="de.prob.ui.command.EditBMotionStudioTemplate">
       </handler>
    </extension>
    <extension

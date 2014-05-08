@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory;
 
 import de.prob.ui.view.ProB2ViewUtil;
 
-public class OpenBMotionTemplateHandler extends AbstractHandler implements
+public class EditBMotionTemplateHandler extends AbstractHandler implements
 		IHandler {
 
 	Logger logger = LoggerFactory.getLogger(OpenBMotionTemplateHandler.class);
 
 	@Override
-	public Object execute(final ExecutionEvent event) throws ExecutionException {
+	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 		// File standard dialog
 		FileDialog fileDialog = new FileDialog(Display.getDefault()
@@ -33,10 +33,10 @@ public class OpenBMotionTemplateHandler extends AbstractHandler implements
 		String selected = fileDialog.open();
 
 		try {
-			ProB2ViewUtil.createProB2ViewPart("bms/?template="
-					+ selected, BmsRunView.ID);
+			ProB2ViewUtil.createProB2ViewPart("bms/?template=" + selected
+					+ "&editor", BmsEditView.ID);
 		} catch (PartInitException e) {
-			logger.error("Could not create BMotion Studio visualization view: "
+			logger.error("Could not open BMotion Studio editor: "
 					+ e.getMessage());
 		}
 
