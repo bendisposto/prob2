@@ -18,5 +18,6 @@ public class AnimatorModule extends AbstractModule {
 		bind(IAnimator.class).to(AnimatorImpl.class);
 		bind(CommandProcessor.class);
 		bind(EvalElementFactory.class);
+
 	}
 }

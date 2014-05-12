@@ -1,8 +1,10 @@
 package de.prob.statespace;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
@@ -31,7 +33,7 @@ public class AnimationSelector {
 	List<WeakReference<IAnimationChangeListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<IAnimationChangeListener>>();
 	List<WeakReference<IModelChangedListener>> modelListeners = new CopyOnWriteArrayList<WeakReference<IModelChangedListener>>();
 
-	List<Trace> traces = new ArrayList<Trace>();
+	Map<UUID, Trace> traces = new HashMap<UUID, Trace>();
 
 	Trace currentTrace = null;
 	StateSpace currentStateSpace = null;
@@ -86,7 +88,7 @@ public class AnimationSelector {
 	 * @param trace
 	 */
 	public void addNewAnimation(final Trace trace) {
-		traces.add(trace);
+		traces.put(trace.getUuid(), trace);
 		currentTrace = trace;
 		notifyAnimationChange(trace, true);
 

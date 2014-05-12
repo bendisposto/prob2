@@ -1,22 +1,20 @@
 package de.prob.ui.api;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.inject.Inject;
+
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.Trace;
 
 public class ToolRegistry {
 
-	private final Map<String, ITool> tools = new HashMap<String, ITool>();
+	private AnimationSelector animations;
 
-	public void register(String name, ITool stateprovider) {
-		tools.put(name, stateprovider);
+	@Inject
+	public ToolRegistry(AnimationSelector animations) {
+		this.animations = animations;
 	}
 
-	public void unregister(String name) {
-		tools.remove(name);
+	public void stateChange(Trace id, String oldref, String newRef) {
+animations.replaceTrace(oldTrace, newTrace)
 	}
-
-	public void stateChange(String statereference) {
-
-	}
-
 }

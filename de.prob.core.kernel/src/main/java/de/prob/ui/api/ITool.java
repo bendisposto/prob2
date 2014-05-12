@@ -1,6 +1,7 @@
 package de.prob.ui.api;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * API for integration of ProB visualization into other tools. A tool has to
@@ -76,5 +77,16 @@ public interface ITool {
 	 *         different state than the current one.
 	 */
 	public boolean canBacktrack();
+
+	/**
+	 * Returns the unique identifier associated with the trace of animation
+	 * steps associated with this ITool instance. Each instance of a Tool must
+	 * always return the same id. Probably the best way is to call
+	 * <code>UUID.randomUUID()</code> within the constructor of the tool and
+	 * store it in an instance attribute.
+	 * 
+	 * @return unique identifier associated with the trace
+	 */
+	public UUID getID();
 
 }
