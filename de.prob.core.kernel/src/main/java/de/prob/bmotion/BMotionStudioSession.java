@@ -145,13 +145,17 @@ public class BMotionStudioSession extends AbstractSession implements
 			formulasForEvaluating.put(formula, null);
 	}
 
+	private void clearSession() {
+		// Clear formula data
+		formulas.clear();
+		formulasForEvaluating.clear();
+	}
+	
 	/**
 	 * This method initializes the session.
 	 */
 	private void initSession() {
-		// Clear formula data
-		formulas.clear();
-		formulasForEvaluating.clear();
+		clearSession();
 		// Remove all script listeners and add new observer scriptlistener
 		scriptListeners.clear();
 		scriptListeners.add(defaultObserver);
@@ -469,7 +473,8 @@ public class BMotionStudioSession extends AbstractSession implements
 		if (model == null
 				|| (model != null && model.getModelFile().equals(
 						statespace.getModel().getModelFile()))) {
-			initSession();
+			clearSession();
+			initFormalModel();
 			for (IBMotionScript s : scriptListeners) {
 				s.modelChanged(statespace);
 			}
