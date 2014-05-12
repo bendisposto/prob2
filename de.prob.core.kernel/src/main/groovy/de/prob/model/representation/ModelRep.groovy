@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringEscapeUtils
 import de.prob.animator.domainobjects.AbstractEvalElement
 import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EventB
+import de.prob.model.classicalb.Property
 import de.prob.model.eventb.Context
 import de.prob.model.eventb.Variant
 import de.prob.model.eventb.proof.ProofObligation
@@ -145,6 +146,9 @@ class ModelRep {
 				break
 			case Variant:
 				result = "variant"
+				break
+			case Property:
+				result = "properties"
 				break
 			default:
 				result = c.getSimpleName().toLowerCase() + "s"

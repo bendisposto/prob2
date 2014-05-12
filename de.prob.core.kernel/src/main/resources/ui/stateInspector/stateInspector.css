@@ -2,6 +2,10 @@ li {
 	list-style-type: none;
 }
 
+tr:nth-child(even) {
+	background-color: #f0f0f0;
+}
+
 .table thead tr th {
 	text-align: center;
 	vertical-align: text-top;
@@ -13,6 +17,8 @@ li {
      border-top: none;
      border-left: 1px solid #d3d3d3; 
      padding-left: 10px;
+     padding-top: 2px;
+     padding-bottom: 2px;
 }
 
 .table {
@@ -111,4 +117,28 @@ li {
 #edit {
 	padding-right: 10px;
 	cursor: pointer;
+}
+
+.dismissable {
+	padding-bottom: 2px;
+}
+
+.dismiss {
+	padding-top: 12px;
+	padding-right: 10px;
+}
+
+.close {
+	font-size: 14px;
+	opacity: 0.1;
+}
+
+.true {
+	color: green;
+	font-weight: bold;
+}
+
+.false {
+	color: red;
+	font-weight: bold;
 }
