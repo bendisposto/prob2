@@ -56,8 +56,6 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private Trace currentTrace;
 	
-	private StateSpace currentStateSpace;
-
 	private final AnimationSelector selector;
 	
 	private final Api api;
@@ -164,6 +162,9 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initFormalModel() {
 
+		if (this.model != null)
+			return;
+
 		Object machinePath = getParameterMap().get("machine");
 
 		if (machinePath != null) {
@@ -174,17 +175,16 @@ public class BMotionStudioSession extends AbstractSession implements
 				machinePath = getTemplateFolder() + "/" + machinePath;
 
 			String formalism = getFormalism(machinePath.toString());
-			
-			if (this.model == null && formalism != null) {
-				
+
+			if (formalism != null) {
+
 				try {
 					Method method = api.getClass().getMethod(
 							formalism + "_load", String.class);
-					AbstractModel model = (AbstractModel) method.invoke(api,
-							machinePath);
+					this.model = (AbstractModel) method
+							.invoke(api, machinePath);
 					StateSpace s = model.getStateSpace();
 					selector.addNewAnimation(new Trace(s));
-					this.model = model;
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (SecurityException e) {
@@ -199,13 +199,13 @@ public class BMotionStudioSession extends AbstractSession implements
 			}
 
 		} else {
-			
+
 			Trace traceFromAnimatedModel = selector.getCurrentTrace();
 			if (traceFromAnimatedModel != null)
 				this.model = traceFromAnimatedModel.getModel();
-			
+
 		}
-		
+
 	}
 
 	private void deregisterFormulas(final AbstractModel model) {
@@ -242,12 +242,9 @@ public class BMotionStudioSession extends AbstractSession implements
 				return;
 			}
 		
-			// TODO: We get problems if we have "dead" sessions ...... this
-			// part is still executed!
-			// if (model != null
-			// && model.getModelFile().equals(
-			// trace.getModel().getModelFile())) {
-			if (model != null) {
+			if (model != null
+					&& model.getModelFile().equals(
+							trace.getModel().getModelFile())) {
 
 				currentTrace = trace;
 				StateSpace stateSpace = currentTrace.getStateSpace();
@@ -256,7 +253,7 @@ public class BMotionStudioSession extends AbstractSession implements
 					registerFormulas(model, trace);
 					formulasForEvaluating.keySet().removeAll(invalidFormulas);
 				}
-				
+
 				Map<IEvalElement, IEvalResult> valuesAt = stateSpace
 						.valuesAt(trace.getCurrentState());
 				for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt
@@ -449,13 +446,13 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	@Override
 	public void modelChanged(final StateSpace statespace) {
-		if (this.currentStateSpace != null
-				&& this.currentStateSpace != statespace) {
+		if (model != null
+				&& model.getModelFile().equals(
+						statespace.getModel().getModelFile())) {
 			initSession();
-		}
-		this.currentStateSpace = statespace;
-		for (IBMotionScript s : scriptListeners) {
-			s.modelChanged(statespace);
+			for (IBMotionScript s : scriptListeners) {
+				s.modelChanged(statespace);
+			}
 		}
 	}
 
