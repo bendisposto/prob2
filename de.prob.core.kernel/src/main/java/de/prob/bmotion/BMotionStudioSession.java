@@ -56,8 +56,6 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private Trace currentTrace;
 	
-	private StateSpace currentStateSpace;
-
 	private final AnimationSelector selector;
 	
 	private final Api api;
@@ -147,6 +145,9 @@ public class BMotionStudioSession extends AbstractSession implements
 			formulasForEvaluating.put(formula, null);
 	}
 
+	/**
+	 * This method initializes the session.
+	 */
 	private void initSession() {
 		// Clear formula data
 		formulas.clear();
@@ -162,10 +163,23 @@ public class BMotionStudioSession extends AbstractSession implements
 		initGroovy();
 	}
 
+	/**
+	 * This method is responsible to reference a model. If a reference model
+	 * already exists, the method is existed. If no model is referenced: (1) If
+	 * the visualization template points to a specific model, the method tries
+	 * to start this model and takes it as the reference model. (2) Else the
+	 * method checks if a model is currently animated by ProB2 and takes this
+	 * model as the reference model.
+	 */
 	private void initFormalModel() {
+
+		// Exit method if a model already exists
+		if (this.model != null)
+			return;
 
 		Object machinePath = getParameterMap().get("machine");
 
+		// If the template references a specific model, try to load this model
 		if (machinePath != null) {
 
 			File machineFile = new File(machinePath.toString());
@@ -174,17 +188,16 @@ public class BMotionStudioSession extends AbstractSession implements
 				machinePath = getTemplateFolder() + "/" + machinePath;
 
 			String formalism = getFormalism(machinePath.toString());
-			
-			if (this.model == null && formalism != null) {
-				
+
+			if (formalism != null) {
+
 				try {
 					Method method = api.getClass().getMethod(
 							formalism + "_load", String.class);
-					AbstractModel model = (AbstractModel) method.invoke(api,
-							machinePath);
+					this.model = (AbstractModel) method
+							.invoke(api, machinePath);
 					StateSpace s = model.getStateSpace();
 					selector.addNewAnimation(new Trace(s));
-					this.model = model;
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (SecurityException e) {
@@ -199,13 +212,14 @@ public class BMotionStudioSession extends AbstractSession implements
 			}
 
 		} else {
-			
+			// Else check if a current animation exists, and take the
+			// corresponding model
 			Trace traceFromAnimatedModel = selector.getCurrentTrace();
 			if (traceFromAnimatedModel != null)
 				this.model = traceFromAnimatedModel.getModel();
-			
+
 		}
-		
+
 	}
 
 	private void deregisterFormulas(final AbstractModel model) {
@@ -242,12 +256,12 @@ public class BMotionStudioSession extends AbstractSession implements
 				return;
 			}
 		
-			// TODO: We get problems if we have "dead" sessions ...... this
-			// part is still executed!
-			// if (model != null
-			// && model.getModelFile().equals(
-			// trace.getModel().getModelFile())) {
-			if (model != null) {
+			// Trigger only if a reference model exists and the reference model
+			// is the same as the model of the changed trace (they have the same
+			// model files)
+			if (model != null
+					&& model.getModelFile().equals(
+							trace.getModel().getModelFile())) {
 
 				currentTrace = trace;
 				StateSpace stateSpace = currentTrace.getStateSpace();
@@ -256,7 +270,7 @@ public class BMotionStudioSession extends AbstractSession implements
 					registerFormulas(model, trace);
 					formulasForEvaluating.keySet().removeAll(invalidFormulas);
 				}
-				
+
 				Map<IEvalElement, IEvalResult> valuesAt = stateSpace
 						.valuesAt(trace.getCurrentState());
 				for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt
@@ -449,25 +463,33 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	@Override
 	public void modelChanged(final StateSpace statespace) {
-		if (this.currentStateSpace != null
-				&& this.currentStateSpace != statespace) {
+		// The session is (re)initialized if a model change was detected and (1)
+		// no model exist yet or (2) the current model is the same as the new
+		// model (they have the same model files).
+		if (model == null
+				|| (model != null && model.getModelFile().equals(
+						statespace.getModel().getModelFile()))) {
 			initSession();
-		}
-		this.currentStateSpace = statespace;
-		for (IBMotionScript s : scriptListeners) {
-			s.modelChanged(statespace);
+			for (IBMotionScript s : scriptListeners) {
+				s.modelChanged(statespace);
+			}
 		}
 	}
 
+	/**
+	 * This method initializes the Groovy script which is referenced by the
+	 * visualization template.
+	 */
 	private void initGroovy() {
 
 		if (templatePath == null)
 			return;
-		
+
 		try {
 
 			String templateFolder = getTemplateFolder();
-			Bindings bindings = groovyScriptEngine.getBindings(ScriptContext.GLOBAL_SCOPE);
+			Bindings bindings = groovyScriptEngine
+					.getBindings(ScriptContext.GLOBAL_SCOPE);
 			bindings.putAll(parameterMap);
 			bindings.put("bms", this);
 			bindings.put("templatefolder", templateFolder);
