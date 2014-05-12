@@ -1,8 +1,6 @@
 package de.prob.animator.domainobjects;
 
-import java.util.Map;
-
-import de.prob.prolog.term.PrologTerm;
+import de.prob.prolog.term.PrologTerm
 
 public class EvalResult implements IEvalResult {
 
@@ -12,8 +10,8 @@ public class EvalResult implements IEvalResult {
 	private final String code;
 
 	public EvalResult(final String code, final String value,
-			final Map<String, String> solutions,
-			final Map<String, PrologTerm> solutionsSource) {
+	final Map<String, String> solutions,
+	final Map<String, PrologTerm> solutionsSource) {
 		this.code = code;
 		this.value = value;
 		this.solutions = solutions;
@@ -45,4 +43,10 @@ public class EvalResult implements IEvalResult {
 		return value + ": " + solutions.toString();
 	}
 
+	def getProperty(String name) {
+		if(solutions.containsKey(name)) {
+			return solutions[name]
+		}
+		return getMetaClass().getProperty(this, name)
+	}
 }
