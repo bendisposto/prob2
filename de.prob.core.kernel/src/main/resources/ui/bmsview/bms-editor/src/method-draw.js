@@ -4387,6 +4387,11 @@
 						updateObserverBindingMenu();
 			    	 }
 			     };
+			     self.deleteItem = function(item,list) {
+			    	 if (confirm("Delete?")==true) {
+			    		 list.remove(item)
+			    	 }
+			     }
 			}
 			
 			observerModel = new ObserverJsonModel(observers);
@@ -4425,6 +4430,7 @@
 
 			updateObserverObjMenu();
 			updateObserverBindingMenu();
+			
 			
 		}
 
