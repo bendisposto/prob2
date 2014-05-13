@@ -221,8 +221,15 @@ public class Trace {
 	 * @deprecated use {@link Trace#execute}
 	 */
 	@Deprecated
-	def invokeMethod(method, params) {
-		execute(method, params)
+	def invokeMethod(String method, params) {
+		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+
+		if(method.startsWith("\$") && !(method == "\$setup_constants" || method == "\$initialise_machine")) {
+			method = method.substring(1)
+		}
+
+		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), method, predicate , 1)[0];
+		return add(op.id)
 	}
 
 	/**
