@@ -42,6 +42,10 @@ sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as gr
 
 def parser_version = '2.4.22-SNAPSHOT'
 
+configurations { // configuration that holds jars to copy into lib
+	releaseJars 
+}
+
 dependencies {
 
  	//groovy 'org.codehaus.groovy:groovy-all:2.0.5'
@@ -112,6 +116,7 @@ dependencies {
 	testCompile "org.gebish:geb-spock:0.9.1"
 	testCompile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.26.0'
 
+    releaseJars (group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT')
 }
 
 task createBuildConstants  {
@@ -140,6 +145,7 @@ def listJars() {
 
 jar {
 	from sourceSets.main.allJava
+    from configurations.releaseJars.collect { it.isDirectory() ? it : zipTree(it) }
 	manifest {
 		attributes 'Main-Class': 'de.prob.Main'
 		attributes 'Class-Path': listJars()
