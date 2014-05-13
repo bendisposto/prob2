@@ -522,8 +522,6 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	@Override
 	public void animatorStatus(final boolean busy) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public Map<String, Object> getParameterMap() {
@@ -549,17 +547,21 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void setModel(AbstractModel model) {
 		this.model = model;
 	}
-	
-	public String getFormalism() {
-		String lang = null;
-		if (model instanceof CSPModel) {
-			return "csp";
-		} else if (model instanceof EventBModel) {
-			return "eventb";
-		} else if (model instanceof ClassicalBModel) {
-			return "b";
-		}
-		return lang;
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 	
 	public String getFormalism(String machinePath) {
@@ -584,11 +586,33 @@ public class BMotionStudioSession extends AbstractSession implements
 		submit(json);
 	}
 	
+	/**
+	 * 
+	 * This method calls a list of JavaScript calls represented as Strings on
+	 * the GUI.
+	 * 
+	 * @param values
+	 *            A list of JavaScript call represented as Strings
+	 */
 	public void callJs(final Object values) {
 		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
 				values));
 	}
 
+	/**
+	 * 
+	 * This method evaluates a given formula and returns the corresponding
+	 * result. The method tries first to get the result for the given formula
+	 * from the cache (The cache is constructed by the subscription mechanism of
+	 * ProB2). If no result is cached, the method subscribes the formula and
+	 * returns the result.
+	 * 
+	 * @param formula
+	 *            The formula to evaluate
+	 * @return the result of the formula or null if no result was found or no
+	 *         reference model and no trace exists
+	 * @throws Exception
+	 */
 	public Object eval(final String formula) throws Exception {
 		if (model != null && currentTrace != null)
 			return formulas.get(formula) != null ? formulas.get(formula)
@@ -620,21 +644,5 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 	// ------------------
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
 	
 }
