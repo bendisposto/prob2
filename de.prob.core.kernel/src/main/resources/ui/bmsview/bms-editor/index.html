@@ -187,7 +187,7 @@
 	<tr><td class="ra" data-bind="text:binding.type"></td><td><a href="#" class="truncate" data-bind="editable: binding.formula, editableOptions: { type: 'textarea' }"></a></td></tr>
 </table>
 <table cellpadding="5" data-bind="foreach: { data: binding.actions, as: 'act' }" class="action_items">
-	<tr><td class="ra">attribute</td><td><a href="#" class="truncate" data-bind="editable: act.attr, editableOptions: { type: 'textarea' }"></a></td></tr>
+	<tr class="binding_action"><td class="ra">attribute</td><td><a href="#" class="truncate" data-bind="editable: act.attr, editableOptions: { type: 'textarea' }"></a></td><td data-bind="click: function() { $root.deleteItem(act, binding.actions) }"><img src="/ui/bmsview/bms-editor/images/delete_10_10.gif" /></td></tr>
 </table>
 </div>
 </script>
@@ -198,7 +198,7 @@
 	<tr><td class="ra" data-bind="text:binding.type"></td><td><a href="#" class="truncate" data-bind="editable: binding.formula, editableOptions: { type: 'textarea' }"></a></td></tr>
 </table>
 <table cellpadding="5" data-bind="foreach: { data: binding.actions, as: 'act' }" class="action_items">
-	<tr><td>>></td><td><a href="#" class="truncate_act" data-bind="editable: act.attr, editableOptions: { type: 'textarea' }"></a></td><td>>></td><td><a href="#" class="truncate_act" data-bind="editable: act.value, editableOptions: { type: 'textarea' }"></a></td></tr>
+	<tr class="binding_action"><td>>></td><td><a href="#" class="truncate_act" data-bind="editable: act.attr, editableOptions: { type: 'textarea' }"></a></td><td>>></td><td><a href="#" class="truncate_act" data-bind="editable: act.value, editableOptions: { type: 'textarea' }"></a></td><td data-bind="click: function() { $root.deleteItem(act, binding.actions) }"><img src="/ui/bmsview/bms-editor/images/delete_10_10.gif" /></td></tr>
 </table>
 </div>
 </script>
@@ -731,8 +731,8 @@
 <ul id="cmenu_b_observer_obj" class="contextMenu">
 	<li><a href="#delete">Delete Observer</a></li>
 	<li><a href="#duplicate">Duplicate Observer</a></li>
-	<li class="separator"><a href="#addBinding" json='{"type" : "predicate", "formula" : "", "actions": []}'>Add Predicate Binding</a></li>
-	<li><a href="#addBinding" json='{"type" : "expression", "formula" : "", "attr": "", "value" : ""}'>Add Expression Binding</a></li>
+	<li class="separator"><a href="#addBinding" json='{"type" : "predicate", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ]}'>Add Predicate Binding</a></li>
+	<li><a href="#addBinding" json='{"type" : "expression", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ] }'>Add Expression Binding</a></li>
 </ul>
 
 <ul id="cmenu_csp_observer_obj" class="contextMenu">
