@@ -71,6 +71,7 @@
 			            <li><a href="#" id="bt_open_events_view">Events</a></li>
 			            <li><a href="#" id="bt_open_history_view">History</a></li>
 			            <li><a href="#" id="bt_open_animation_view">CurrentAnimations</a></li>
+			            <li><a href="#" id="bt_open_state_view">StateInspector</a></li>
 			          </ul>
 			        </li>
 			      </ul>
@@ -87,6 +88,9 @@
 			<div id="animation_view" title="CurrentAnimations">
 		  		<iframe src="" id="animation_iframe" frameBorder="0"></iframe>
 			</div>
+			<div id="state_view" title="StateInspector">
+		  		<iframe src="" id="state_iframe" frameBorder="0"></iframe>
+			</div>
 			{{/standalone}}
 			
 			<div id="vis_container">
@@ -101,6 +105,7 @@
 		
 		{{/error}}
 		
+		{{#standalone}}
 		<div class="modal fade" id="modal_open_template">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -158,6 +163,7 @@
 				</div>
 			</div>
 		</div>
+		{{/standalone}}
 		
 	</body>
 </html>
