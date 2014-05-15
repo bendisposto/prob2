@@ -585,7 +585,12 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void toGui(final Object json) {
 		submit(json);
 	}
-	
+
+	public void toGui(final String cmd, final Map<Object, Object> json) {
+		json.put("cmd", cmd);
+		submit(json);
+	}
+
 	/**
 	 * 
 	 * This method calls a list of JavaScript calls represented as Strings on
