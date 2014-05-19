@@ -8,7 +8,7 @@ project.ext {
 	groupID = "de.prob2"
 
 	excludeFromTychoBuild = ["de.prob.core.kernel"]
-	excludeFromClassPath = [ 'de.prob.ui.rodin', 'de.prob2.feature', 'de.prob2.core.feature' ]		// Projects defined here will also be exluded from changes of MF File
+	excludeFromClassPath = [ 'de.prob.ui.rodin', 'de.prob2.feature', 'de.prob.core.feature' ]		// Projects defined here will also be exluded from changes of MF File
 	excludeManifestClassPathDelete = ['de.prob.ui.worksheet']		// Projects defined here will still have classpath changes but no changes in the MF File
 }
 
