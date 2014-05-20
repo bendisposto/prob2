@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="de.prob2.feature"
-      label="ProB2 for Rodin2"
+      label="ProB 2.0 Rodin Integration"
       version="1.0.0.qualifier">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB/">
@@ -258,7 +258,5 @@ litigation.
          version="0.0.0"
          fragment="true"
          unpack="false"/>
-
-
 
 </feature>
