@@ -57,13 +57,13 @@ public class BMotionStudioSession extends AbstractSession implements
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
 
 	private Trace currentTrace;
-	
+
 	private final AnimationSelector selector;
-	
+
 	private final Api api;
 
 	private String templatePath;
-	
+
 	private final ScriptEngine groovyScriptEngine;
 
 	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
@@ -71,19 +71,19 @@ public class BMotionStudioSession extends AbstractSession implements
 	private final Map<String, Object> cachedCspResults = new HashMap<String, Object>();
 
 	private final Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
-	
+
 	private final List<String> invalidFormulas = new ArrayList<String>();
-	
+
 	private final Map<String, Object> formulas = new HashMap<String, Object>();
-	
+
 	private final Observer defaultObserver;
-	
+
 	private JsonElement json;
-	
+
 	private AbstractModel model;
-	
+
 	private int port;
-	
+
 	private String host;
 
 	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
@@ -114,31 +114,12 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 		return null;
 	}
-	
+
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-
-		// After reload do not resent old messages
-		int old = responses.size() + 1;
-		// Add dummy message
-		submit(WebUtils.wrap("cmd", "extern.skip"));
-		
-		// Initialize Session
-		initSession();
-
-		// If a trace already exists, trigger a trace change and modelchanged
-		if (currentTrace != null) {
-			traceChange(currentTrace, true);
-			modelChanged(currentTrace.getStateSpace());
-		}
-
-		// Resent messages, send while initializing the session and trace change
-		if (!responses.isEmpty()) {
-			resend(client, old, context);
-		}
-
-		super.reload(client, lastinfo, context);
+		sendInitMessage(context);
+		traceChange(currentTrace, true);
 
 	}
 
@@ -152,7 +133,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		formulas.clear();
 		formulasForEvaluating.clear();
 	}
-	
+
 	/**
 	 * This method initializes the session.
 	 */
@@ -248,11 +229,11 @@ public class BMotionStudioSession extends AbstractSession implements
 				subscribeFormula(entry.getKey(), model, trace);
 		}
 	}
-	
+
 	@Override
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
-		
+
 		if (currentAnimationChanged) {
 
 			// Deregister formulas if no trace exists and exit
@@ -261,7 +242,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				deregisterFormulas(model);
 				return;
 			}
-		
+
 			// Trigger only if a reference model exists and the reference model
 			// is the same as the model of the changed trace (they have the same
 			// model files)
@@ -432,7 +413,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		return result;
 
 	}
-	
+
 	private Object getResultFromSubscription(IEvalElement evalElement,
 			StateSpace s, Trace t) {
 		Map<IEvalElement, IEvalResult> valuesAt = s.valuesAt(currentTrace
@@ -535,11 +516,11 @@ public class BMotionStudioSession extends AbstractSession implements
 	public Map<String, Object> getParameterMap() {
 		return parameterMap;
 	}
-	
+
 	public JsonElement getJson() {
 		return json;
 	}
-	
+
 	public void setTemplatePath(final String templatePath) {
 		this.templatePath = templatePath;
 	}
@@ -571,7 +552,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void setHost(String host) {
 		this.host = host;
 	}
-	
+
 	public String getFormalism(String machinePath) {
 
 		String lang = null;
@@ -582,13 +563,13 @@ public class BMotionStudioSession extends AbstractSession implements
 			return "eventb";
 		} else if (machinePath.endsWith(".mch")) {
 			return "b";
-		} else if(machinePath.endsWith(".tla")) {
+		} else if (machinePath.endsWith(".tla")) {
 			return "tla";
 		}
 		return lang;
 
 	}
-	
+
 	// ---------- BMS API
 	public void toGui(final Object json) {
 		submit(json);
@@ -632,7 +613,7 @@ public class BMotionStudioSession extends AbstractSession implements
 					: subscribeFormula(formula, model, currentTrace);
 		return null;
 	}
-	
+
 	public Object executeOperation(final Map<String, String[]> params) {
 		String[] id = params.get("id");
 		String[] op = params.get("op");
@@ -657,5 +638,5 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 	// ------------------
-	
+
 }

@@ -135,21 +135,35 @@ public abstract class AbstractSession implements ISession {
 			return;
 		}
 		Message m = null;
+		int lastMessageId = -1;
+		Message lastMessage = null;
+		try {
+			lastMessage = responses.get(responses.size() - 1);
+			lastMessageId = lastMessage.id;
+		} catch (ReloadRequiredException e) {
+			reload(client, lastinfo, context);
+			return;
+		}
+
 		if (incrementalUpdate || lastinfo > 0) {
-			Message lm = responses.get(responses.size() - 1);
 			ArrayList<Object> cp = new ArrayList<Object>();
-			for (int i = Math.max(lastinfo, 0); i < responses.size(); i++) {
-				Message message = responses.get(i);
-				Object[] content = message.content;
-				for (int j = 0; j < content.length; j++) {
-					cp.add(content[j]);
+			try {
+				for (int i = Math.max(lastinfo, 0); i < responses.size(); i++) {
+					Message message = responses.get(i);
+					Object[] content = message.content;
+					for (int j = 0; j < content.length; j++) {
+						cp.add(content[j]);
+					}
 				}
+			} catch (ReloadRequiredException e) {
+				reload(client, lastinfo, context);
+				return;
 			}
 
 			Object[] everything = cp.toArray();
-			m = new Message(lm.id, everything);
+			m = new Message(lastMessageId, everything);
 		} else {
-			m = responses.get(responses.size() - 1);
+			m = lastMessage;
 		}
 
 		String json = WebUtils.toJson(m);
@@ -161,14 +175,14 @@ public abstract class AbstractSession implements ISession {
 		return responses.size();
 	}
 
-	@Override
-	public void reload(final String client, final int lastinfo,
-			final AsyncContext context) {
-
-		// Default is to not send old messages
+	public void sendInitMessage(AsyncContext context) {
 		Message message = new Message(0, WebUtils.wrap("cmd", "extern.skip"));
 		send(WebUtils.toJson(message), context);
 	}
+
+	@Override
+	public abstract void reload(final String client, final int lastinfo,
+			final AsyncContext context);
 
 	public String simpleRender(final String clientid, final String template) {
 		Object scope = WebUtils.wrap("clientid", clientid);

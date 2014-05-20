@@ -1,37 +1,48 @@
 package de.prob.web;
 
-import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import de.prob.web.data.Message;
 
 /**
- * Used for debugging purposes only.
  * 
  * @author bendisposto
  * 
  */
 public class Responses {
 
-	private ArrayList<Message> responses = new ArrayList<Message>();
+	private final Cache<Integer, Message> responseCache;
+	private int itemcount = 0;
+
+	public Responses() {
+		this(5, TimeUnit.SECONDS);
+	}
+
+	public Responses(int timeout, TimeUnit unit) {
+		responseCache = CacheBuilder.newBuilder()
+				.expireAfterWrite(timeout, unit).build();
+	}
 
 	public int size() {
-		return responses.size();
+		return itemcount;
 	}
 
 	public boolean isEmpty() {
-		return responses.isEmpty();
+		return itemcount == 0;
 	}
 
-	public Message get(int i) {
-		return responses.get(i);
+	public Message get(int i) throws ReloadRequiredException {
+		Message v = responseCache.getIfPresent(i);
+		if (v == null)
+			throw new ReloadRequiredException();
+		return v;
 	}
 
 	public void add(Message message) {
-		responses.add(message);
-	}
-
-	public void clear() {
-		responses.clear();
+		responseCache.put(itemcount++, message);
 	}
 
 }

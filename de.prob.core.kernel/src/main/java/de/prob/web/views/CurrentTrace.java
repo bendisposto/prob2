@@ -123,7 +123,7 @@ public class CurrentTrace extends AbstractSession implements
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
+		sendInitMessage(context);
 		Map<String, String> wrap = WebUtils.wrap("cmd",
 				"CurrentTrace.setTrace", "trace", WebUtils.toJson(ops));
 		submit(wrap);

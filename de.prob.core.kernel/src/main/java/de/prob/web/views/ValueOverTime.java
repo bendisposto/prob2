@@ -73,8 +73,7 @@ public class ValueOverTime extends AbstractSession implements
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
-
+		sendInitMessage(context);
 		List<Object> result = new ArrayList<Object>();
 		for (FormulaElement formula : testedFormulas) {
 			result.add(WebUtils.wrap("id", formula.id, "formula",
