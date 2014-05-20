@@ -119,7 +119,8 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		traceChange(currentTrace, true);
+		if (currentTrace != null)
+			traceChange(currentTrace, true);
 
 	}
 
