@@ -55,9 +55,9 @@ dependencies {
 
 	compile 'commons-lang:commons-lang:2.6' // Replace by guava 15 once it is released (used in GroovyShellServlet)
 
-	compile 'org.codehaus.groovy:groovy-all:2.0.5' // Apache Licence 2.0
-	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
-	compile 'jline:jline:0.9.94' // BSD
+	compile 'org.codehaus.groovy:groovy-all:2.3.0' // Apache Licence 2.0
+	//	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
+	//	compile 'jline:jline:0.9.94' // BSD
 
 	compile 'org.pegdown:pegdown:1.1.0' // Apache Licence 2.0
 

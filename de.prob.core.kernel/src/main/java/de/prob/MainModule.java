@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import jline.ConsoleReader;
-
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
@@ -61,7 +59,6 @@ public class MainModule extends AbstractModule {
 		bind(CommandLineParser.class).to(PosixParser.class);
 		bind(String.class).annotatedWith(Version.class).toInstance(
 				buildConstants.getProperty("version", "0.0.0"));
-		bind(ConsoleReader.class);
 		bind(ClassLoader.class).annotatedWith(Names.named("Classloader"))
 				.toInstance(Main.class.getClassLoader());
 		bind(PegDownProcessor.class);
@@ -110,9 +107,8 @@ public class MainModule extends AbstractModule {
 		Option restricted = new Option("local",
 				"Free access to Groovy shell. Interface will be bound to 127.0.0.1");
 
-		Option standalone = new Option("standalone",
-				"Run in standalone mode");
-		
+		Option standalone = new Option("standalone", "Run in standalone mode");
+
 		@SuppressWarnings("static-access")
 		Option browser = OptionBuilder.withArgName("url").hasArg()
 				.withDescription("Open URL in browser").create("browser");
