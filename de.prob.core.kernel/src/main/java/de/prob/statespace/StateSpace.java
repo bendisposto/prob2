@@ -33,7 +33,6 @@ import de.prob.animator.command.IStateSpaceModifier;
 import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.exception.ProBError;
@@ -315,8 +314,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * 
 	 * @param stateId
 	 * @param code
-	 * @return list of {@link EvaluationResult} objects for the given stateId
-	 *         and code
+	 * @return list of {@link IEvalResult} objects for the given stateId and
+	 *         code
 	 */
 	public List<IEvalResult> eval(final StateId stateId,
 			final List<IEvalElement> code) {
@@ -398,7 +397,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * cached values
 	 * 
 	 * @param stateId
-	 * @return map from {@link IEvalElement} object to {@link EvaluationResult}
+	 * @return map from {@link IEvalElement} object to {@link IEvalResult}
 	 *         objects
 	 */
 	public Map<IEvalElement, IEvalResult> valuesAt(final StateId stateId) {
@@ -589,8 +588,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	@Override
 	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
-			if (!animator.isBusy())
+			if (!animator.isBusy()) {
 				listener.newTransitions(newOps);
+			}
 		}
 	}
 
