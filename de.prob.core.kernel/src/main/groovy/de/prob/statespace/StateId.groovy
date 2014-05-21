@@ -1,5 +1,6 @@
 package de.prob.statespace
 
+import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
 import de.prob.statespace.derived.AbstractDerivedStateSpace
@@ -48,20 +49,27 @@ class StateId {
 	/**
 	 * Evaluates the given formula key via the {@link #eval(Object)} method.
 	 * If the result has a "value" property, this is returned.
-	 * Otherwise, the result is returned.
+	 * Otherwise, an {@link EvaluationException} is thrown if a reason is found, and an
+	 * {@link IllegalArgumentException} is thrown if no identifiable reason can be found.
 	 *
 	 * This method is meant to be used for extracting the value of variables at a given state.
 	 * For more complicated formulas, we suggest using the {@link #eval(Object)} method.
 	 *
 	 * @param key String representation of the formula
-	 * @return the value property of the result, if one exists, or the result object itself
+	 * @return the value property of the result, if one exists
 	 */
 	def value(String key) {
 		IEvalResult res = eval(key)
 		if (res.hasProperty("value")) {
 			return res.getValue()
 		}
-		return res
+		if (res.hasProperty("reason")) {
+			throw new EvaluationException("Could not evaluate formula $key because ${res.getReason()}")
+		}
+		if (res.getMetaClass().respondsTo("getMessage")) {
+			throw new EvaluationException("Could not evaluate formula $key because ${res.getMessage()}")
+		}
+		throw new IllegalArgumentException("Evaluation of formula failed with unknown reason. Result type was: $res")
 	}
 
 
