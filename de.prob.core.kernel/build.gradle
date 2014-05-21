@@ -204,13 +204,8 @@ test { ignoreFailures=true }
 
 test.doFirst { systemProperties['integrationtest'] = 'true' }
 
-javadoc {
+groovydoc {
 	title="ProB Core "+project.version
-	options.tags = [
-		"ordered",
-		"model",
-		"generated"
-	]
 }
 
 task wrapper(type: Wrapper) { gradleVersion = gradle_version }
