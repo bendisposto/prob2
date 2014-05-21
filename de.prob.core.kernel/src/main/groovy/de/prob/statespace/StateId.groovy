@@ -54,7 +54,11 @@ class StateId {
 		def v = space.valuesAt(this);
 		for (def entry : v.entrySet()) {
 			if(entry.getKey().code == key) {
-				return entry.getValue().value
+				def res = entry.getValue()
+				if (res.hasProperty("value")) {
+					return res.getValue()
+				}
+				return res
 			}
 		}
 		def m = space.getModel();
