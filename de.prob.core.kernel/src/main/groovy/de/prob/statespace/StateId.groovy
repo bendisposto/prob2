@@ -66,7 +66,7 @@ class StateId {
 
 
 	/**
-	 * Takes a formula and evaluates it via the {@link StateSpace#eval(StateId, java.util.List)}
+	 * Takes a formula and evaluates it via the {@link de.prob.statespace.StateSpace#eval(StateId, java.util.List)}
 	 * method. If the input is a String, the formula is parsed via the {@link AbstractModel#parseFormula(String)} method.
 	 * @param formula String or IEvalElement representation of a formula
 	 * @return the {@link IEvalResult} calculated from ProB
