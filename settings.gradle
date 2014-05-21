@@ -1,1 +1,1 @@
-include 'de.prob.core.rodin', 'de.prob.ui', 'de.prob.ui.rodin', 'de.prob2.feature', 'de.prob.core.kernel'
+include 'de.prob.core.rodin', 'de.prob.ui', 'de.prob.ui.rodin', 'de.prob2.feature','de.prob.core.feature', 'de.prob.core.kernel'

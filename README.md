@@ -5,6 +5,9 @@ It is intended for internal usage, do not rely on any of the features or interfa
 
 The source code of the current ProB release is located at http://github.com/bendisposto/prob
 
+# Bugs
+Please report bugs and feature requests at http://jira.cobra.cs.uni-duesseldorf.de/
+
 # Setting up a development environment
 
 ProB 2.0 requires Oracle JDK 7.
