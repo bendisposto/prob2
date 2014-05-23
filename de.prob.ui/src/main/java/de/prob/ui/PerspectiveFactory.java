@@ -40,6 +40,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 				IPageLayout.BOTTOM, 0.65f, editorArea);
 		bottom1.addView("de.prob.ui.StateView");
 		bottom1.addView("de.prob.ui.AnimationsView");
+		bottom1.addView("de.prob.ui.modelcheckingview.ModelCheckingView");
 		bottom1.addView(IPageLayout.ID_PROP_SHEET);
 		// bottom1.addView("de.prob.ui.EventErrorView");
 
