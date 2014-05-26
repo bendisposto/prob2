@@ -1,10 +1,13 @@
 package de.prob.model.eventb.theory;
 
+import java.util.Collection;
+
 import com.google.common.base.Objects;
 
 import de.prob.model.eventb.EventBAxiom;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
+import de.prob.tmparser.OperatorMapping;
 
 public class Theory extends AbstractElement {
 
@@ -17,10 +20,13 @@ public class Theory extends AbstractElement {
 	private ModelElementList<Type> typeParameters = new ModelElementList<Type>();
 	private final String parentDirectory;
 	private ModelElementList<AxiomaticDefinitionBlock> axiomaticDefinitionBlocks;
+	private final Collection<OperatorMapping> proBMappings;
 
-	public Theory(final String name, final String parentDirectory) {
+	public Theory(final String name, final String parentDirectory,
+			final Collection<OperatorMapping> mappings) {
 		this.name = name;
 		this.parentDirectory = parentDirectory;
+		proBMappings = mappings;
 	}
 
 	public void addOperators(final ModelElementList<Operator> operators) {
@@ -114,6 +120,10 @@ public class Theory extends AbstractElement {
 		Theory other = (Theory) obj;
 		return Objects.equal(parentDirectory, other.parentDirectory)
 				&& Objects.equal(name, other.name);
+	}
+
+	public Collection<OperatorMapping> getProBMappings() {
+		return proBMappings;
 	}
 
 	@Override
