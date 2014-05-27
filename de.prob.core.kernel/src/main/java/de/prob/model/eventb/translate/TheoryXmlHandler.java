@@ -3,6 +3,7 @@ package de.prob.model.eventb.translate;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,9 @@ import de.prob.model.eventb.theory.RewriteRuleRHS;
 import de.prob.model.eventb.theory.Theory;
 import de.prob.model.eventb.theory.Type;
 import de.prob.model.representation.ModelElementList;
+import de.prob.tmparser.OperatorMapping;
+import de.prob.tmparser.TheoryMappingException;
+import de.prob.tmparser.TheoryMappingParser;
 
 public class TheoryXmlHandler extends DefaultHandler {
 
@@ -149,7 +153,20 @@ public class TheoryXmlHandler extends DefaultHandler {
 					path.lastIndexOf('/'));
 			String name = path.substring(path.lastIndexOf('/') + 1,
 					path.lastIndexOf('.'));
-			theory = new Theory(name, dir);
+			Collection<OperatorMapping> mappings = null;
+			try {
+				String mappingFileName = workspacePath + File.separator + dir
+						+ File.separator + name + ".ptm";
+				mappings = TheoryMappingParser.parseTheoryMapping(name,
+						mappingFileName);
+			} catch (TheoryMappingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			theory = new Theory(name, dir, mappings);
 			theoryMap.put(path, theory);
 		}
 
@@ -422,7 +439,6 @@ public class TheoryXmlHandler extends DefaultHandler {
 		private void addTypeParameter(final Attributes attributes) {
 			String name = attributes.getValue("name");
 			Type p = new Type(name, typeEnv);
-			typeEnv.add(p.getFormulaExtension());
 			typeParameters.add(p);
 		}
 

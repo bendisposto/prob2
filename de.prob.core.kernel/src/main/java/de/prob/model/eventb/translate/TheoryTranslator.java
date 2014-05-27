@@ -1,6 +1,7 @@
 package de.prob.model.eventb.translate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eventb.core.ast.Expression;
@@ -23,6 +24,7 @@ import de.prob.model.eventb.theory.Theory;
 import de.prob.model.eventb.theory.Type;
 import de.prob.model.representation.ModelElementList;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.tmparser.OperatorMapping;
 
 public class TheoryTranslator {
 
@@ -53,6 +55,7 @@ public class TheoryTranslator {
 			printOperatorDefs(theory.getOperators(), pto);
 			printAxiomaticDefintionBlocks(
 					theory.getAxiomaticDefinitionBlocks(), pto);
+			printMappings(theory.getProBMappings(), pto);
 			pto.closeTerm();
 		}
 	}
@@ -85,9 +88,11 @@ public class TheoryTranslator {
 
 	private void printDataTypes(final ModelElementList<DataType> dataTypes,
 			final IPrologTermOutput pto) {
+		pto.openList();
 		for (DataType dataType : dataTypes) {
 			printDataType(dataType, pto);
 		}
+		pto.closeList();
 	}
 
 	private void printDataType(final DataType dataType,
@@ -253,13 +258,29 @@ public class TheoryTranslator {
 
 	private void printAxiomaticOperator(final Operator operator,
 			final IPrologTermOutput pto) {
-		pto.openTerm("op_def");
+		pto.openTerm("opdef");
 		pto.printAtom(operator.toString());
 		printOperatorArguments(operator.getArguments(), pto);
 		pto.openList();
 		printEventBElement(operator.getWD(), pto);
 		pto.closeList();
 		pto.closeTerm();
+	}
+
+	private void printMappings(final Collection<OperatorMapping> proBMappings,
+			final IPrologTermOutput pto) {
+		pto.openList();
+		// Currently, we support only one kind of operator mapping, just tagging
+		// an operator to indicate that an optimized ProB implementation should
+		// be used. We do not invest any effort in preparing future kinds of
+		// other operator mappings.
+		for (OperatorMapping mapping : proBMappings) {
+			pto.openTerm("tag");
+			pto.printAtom(mapping.getOperatorName());
+			pto.printAtom(mapping.getSpec());
+			pto.closeTerm();
+		}
+		pto.closeList();
 	}
 
 }

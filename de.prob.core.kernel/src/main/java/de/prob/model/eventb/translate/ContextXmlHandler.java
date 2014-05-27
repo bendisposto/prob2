@@ -191,12 +191,17 @@ public class ContextXmlHandler extends DefaultHandler {
 		internalConstants = new ModelElementList<EventBConstant>();
 	}
 
-	private void endInternalContextExtraction() {
+	private void endInternalContextExtraction() throws SAXException {
 		internalContext.addAxioms(internalAxioms, internalInheritedAxioms);
 		internalContext.addConstants(internalConstants);
 		internalContext.addExtends(internalExtends);
 		internalContext.addSets(internalSets);
 		internalContext.addConstants(internalConstants);
+
+		ProofExtractor extractor = new ProofExtractor(internalContext,
+				directoryPath + File.separatorChar + internalContext.getName());
+		internalContext.addProofs(extractor.getProofs());
+
 		inInternalContext = false;
 	}
 
