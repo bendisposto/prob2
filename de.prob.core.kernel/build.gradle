@@ -105,6 +105,9 @@ dependencies {
 	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
 
 	compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
+	
+	
+    compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT'
 
 	compile 'junit:junit:4.8.2'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
@@ -116,7 +119,6 @@ dependencies {
 	testCompile "org.gebish:geb-spock:0.9.1"
 	testCompile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.26.0'
 
-    releaseJars (group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT')
 }
 
 task createBuildConstants  {
@@ -145,7 +147,7 @@ def listJars() {
 
 jar {
 	from sourceSets.main.allJava
-    from configurations.releaseJars.collect { it.isDirectory() ? it : zipTree(it) }
+    //from configurations.releaseJars.collect { it.isDirectory() ? it : zipTree(it) }
 	manifest {
 		attributes 'Main-Class': 'de.prob.Main'
 		attributes 'Class-Path': listJars()
