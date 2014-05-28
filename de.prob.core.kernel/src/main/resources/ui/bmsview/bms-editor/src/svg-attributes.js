@@ -112,7 +112,8 @@ var svgAttributes = {
 	"text" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes, svgAllShapesAttributes, svgTextAttributes]),
 	"line" : mergeAttr([svgAllElementAttributes, svgLineCoordinatesAttributes]),
 	"path" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes]),
-	"image" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes, svgDimensionAttributes, svgImageAttributes])
+	"image" : mergeAttr([svgAllElementAttributes, svgCoordinatesAttributes, svgDimensionAttributes, svgImageAttributes]),
+	"g" : mergeAttr([svgAllElementAttributes, svgAllShapesAttributes])
 }
 
 function mergeAttr(list) {
