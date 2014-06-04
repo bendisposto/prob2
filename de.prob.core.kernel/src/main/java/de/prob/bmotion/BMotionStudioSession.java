@@ -1,5 +1,7 @@
 package de.prob.bmotion;
 
+import static java.io.File.separator;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -189,7 +191,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			File machineFile = new File(machinePath.toString());
 
 			if (!machineFile.isAbsolute())
-				machinePath = getTemplateFolder() + "/" + machinePath;
+				machinePath = getTemplateFolder() + separator + machinePath;
 
 			String formalism = getFormalism(machinePath.toString());
 
