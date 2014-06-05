@@ -1,5 +1,7 @@
 package de.prob.bmotion;
 
+import static java.io.File.separator;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -189,7 +191,7 @@ public class BMotionStudioSession extends AbstractSession implements
 			File machineFile = new File(machinePath.toString());
 
 			if (!machineFile.isAbsolute())
-				machinePath = getTemplateFolder() + "/" + machinePath;
+				machinePath = getTemplateFolder() + separator + machinePath;
 
 			String formalism = getFormalism(machinePath.toString());
 
@@ -394,23 +396,29 @@ public class BMotionStudioSession extends AbstractSession implements
 
 			} else if (model instanceof EventBModel
 					|| model instanceof ClassicalBModel) {
+				
+				String fformula = "TRUE=TRUE";
+				
+				if(formula.length() > 0)
+					fformula = formula;
+					
 				if (model instanceof ClassicalBModel) {
-					evalElement = new ClassicalB(formula);
+					evalElement = new ClassicalB(fformula);
 				} else if (model instanceof EventBModel) {
-					evalElement = new EventB(formula);
+					evalElement = new EventB(fformula);
 				}
 
 				result = getResultFromSubscription(evalElement, s, trace);
 				if (result == null) {
 					try {
 						s.subscribe(this, evalElement);
-						formulasForEvaluating.put(formula, evalElement);
+						formulasForEvaluating.put(fformula, evalElement);
 						result = getResultFromSubscription(evalElement, s,
 								trace);
-						formulas.put(formula, result);
+						formulas.put(fformula, result);
 					} catch (Exception e) {
-						System.err.println("Invalid B formula: " + formula);
-						invalidFormulas.add(formula);
+						System.err.println("Invalid B formula: " + fformula);
+						invalidFormulas.add(fformula);
 					}
 				}
 

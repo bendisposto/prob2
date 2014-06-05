@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/-->
   
   <link rel="icon" type="image/png" href="/ui/bmsview/bms-editor/images/logo.png"/>
-  <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/jqueryui-editable/css/jqueryui-editable.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="/ui/bmsview/bms-editor/lib/jqueryui-editable/css/jqueryui-editable.css"/>
   <link rel="stylesheet" href="/ui/bmsview/bms-editor/css/dot-luv/jquery-ui-1.10.4.custom.css" type="text/css"/>
   <link rel="stylesheet" href="/ui/bmsview/bms-editor/lib/jgraduate/css/jPicker.css" type="text/css"/>
   <link rel="stylesheet" href="/ui/bmsview/bms-editor/lib/jgraduate/css/jgraduate.css" type="text/css"/>
@@ -36,7 +36,7 @@
   <script type="text/javascript" src="/ui/bmsview/bms-editor/src/draw.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/src/path.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/src/dialog.js"></script>
-  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/observers.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/svg-attributes.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/src/svgcanvas.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/src/method-draw.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jquery-draginput.js"></script>
@@ -49,9 +49,11 @@
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/requestanimationframe.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/taphold.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jquery.text-overflow.js"></script>
-  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jqueryui-editable.min.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/jqueryui-editable/jqueryui-editable.min.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout-3.1.0.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout.x-editable.min.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/koExternalTemplateEngine_all.min.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/BMotionStudio.js"></script>
 </head>
 <body>
 
@@ -181,56 +183,9 @@
 				</div>	
 </script>
 
-<script type="text/html" id="expression">
-<div class="observer_item bordered">
-<table cellpadding="5">
-	<tr><td class="ra" data-bind="text:binding.type"></td><td><a href="#" class="truncate" data-bind="editable: binding.formula, editableOptions: { type: 'textarea' }"></a></td></tr>
-</table>
-<table cellpadding="5" data-bind="foreach: { data: binding.actions, as: 'act' }" class="action_items">
-	<tr class="binding_action"><td class="ra">attribute</td><td><a href="#" class="truncate" data-bind="editable: act.attr, editableOptions: { type: 'textarea' }"></a></td><td data-bind="click: function() { $root.deleteItem(act, binding.actions) }"><img src="/ui/bmsview/bms-editor/images/delete_10_10.gif" /></td></tr>
-</table>
-</div>
-</script>
-
-<script type="text/html" id="predicate">
-<div class="observer_item bordered">
-<table cellpadding="5">
-	<tr><td class="ra" data-bind="text:binding.type"></td><td><a href="#" class="truncate" data-bind="editable: binding.formula, editableOptions: { type: 'textarea' }"></a></td></tr>
-</table>
-<table cellpadding="5" data-bind="foreach: { data: binding.actions, as: 'act' }" class="action_items">
-	<tr class="binding_action"><td>>></td><td><a href="#" class="truncate_act" data-bind="editable: act.attr, editableOptions: { type: 'textarea' }"></a></td><td>>></td><td><a href="#" class="truncate_act" data-bind="editable: act.value, editableOptions: { type: 'textarea' }"></a></td><td data-bind="click: function() { $root.deleteItem(act, binding.actions) }"><img src="/ui/bmsview/bms-editor/images/delete_10_10.gif" /></td></tr>
-</table>
-</div>
-</script>
-
-<script type="text/html" id="EvalObserver">
-				<div class="observer_type">
-  					<h4 data-bind="text: observer.type"></h4>
-					<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'selector': 'selector', 'bindings' : [] }, true) }">Add Observer</a>
-   				</div>
-				<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }, sortableList: observer.objs" list="objs">
- 			   		<div class="observer_obj" data-bind="attr: { oid: obj.selector }">
-			   	 		<h3 class="observer_head" menu="cmenu_b_observer_obj" data-bind="text: obj.selector"></h3>
-						<div class="observer_content">
-							<table class="observer_item bordered" cellpadding="5">
-								<tr>
-									<td class="ra">Selector</td>
-									<td><a href="#" class="truncate" data-bind="editable: obj.selector, editableOptions: { type: 'textarea' }"></a></td>
-								</tr>
-							</table>
-							<div class="observer_items" data-bind="foreach: { data: obj.bindings, as: 'binding' }, sortableList: obj.bindings" list="bindings">
-								<div class="binding_template" data-bind="template: { name: binding.type, data : binding }" class="binding_template" menu="cmenu_b_observer_binding">
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-</script>
-
-
 <div id="observers">
   	   <div class="observer_loop" data-bind="foreach: { data: observers, as: 'observer' }">
-  				<div class="observer_template" data-bind="template: { name: observer.type, data : observer }">
+  				<div class="observer_template" data-bind="template: { name: observer.type, data : observer, afterRender: $root.postRender }">
 	   	 		</div>
 	  </div>  
 </div>
@@ -771,8 +726,8 @@ $.ajax({
     		methodDraw.loadFromString(data.svg)
     		
     	methodDraw.setVisualisationData(data)
-       	methodDraw.initObservers(JSON.parse(data.json).observers)
-       	
+       	initObservers(JSON.parse(data.json).observers)
+
     },
     error:function(data,status,er) {
         alert("error: "+data+" status: "+status+" er:"+er);

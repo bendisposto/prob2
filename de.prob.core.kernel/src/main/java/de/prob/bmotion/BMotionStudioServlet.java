@@ -161,7 +161,7 @@ public class BMotionStudioServlet extends HttpServlet {
 	
 	private void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, BMotionStudioSession bmsSession) {
-
+		
 		String sessionId = bmsSession.getSessionUUID().toString();
 		String templatePath = bmsSession.getTemplatePath();
 		File templateFile = new File(templatePath);
@@ -186,7 +186,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		resp.setContentType(mimeType);
 
 		// Ugly ...
-		if (fullRequestPath.endsWith(".html")) {
+		if (fullRequestPath.endsWith(templateFile.getName())) {
 			if (req.getParameter("editor") != null) {
 				resp.setCharacterEncoding("UTF-8");
 				String render = WebUtils.render(
@@ -197,6 +197,10 @@ public class BMotionStudioServlet extends HttpServlet {
 				String html = buildBMotionStudioRunPage((BMotionStudioSession) bmsSession);
 				stream = new ByteArrayInputStream(html.getBytes());
 			}
+		} else if (fullRequestPath.endsWith("tpl.html")) {
+			String content = WebUtils.render("ui/bmsview/bms-editor/templates/"
+					+ fileRequest);
+			stream = new ByteArrayInputStream(content.getBytes());
 		}
 		toOutput(resp, stream);
 

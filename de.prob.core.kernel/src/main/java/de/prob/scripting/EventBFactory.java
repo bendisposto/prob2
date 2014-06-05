@@ -48,7 +48,7 @@ public class EventBFactory extends ModelFactory {
 
 		cmds.add(loadcmd);
 		cmds.add(new StartAnimationCommand());
-		StateSpace s = model.getStatespace();
+		StateSpace s = model.getStateSpace();
 		s.execute(new ComposedCommand(cmds));
 		s.setLoadcmd(loadcmd);
 

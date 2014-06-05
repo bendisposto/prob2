@@ -97,10 +97,14 @@ bms = (function() {
 	
 	extern.triggerObserverActions = function(data) {
 		$.each(data.actions, function(i,action) {
-			if(action.attr == 'html') {
-				$(action.selector).html(action.value)
-			} else {
-				$(action.selector).attr(action.attr,action.value)
+			var attrObj = svgAttributeList[action.attr]
+			if(attrObj !== undefined) {
+				var changeFunc = attrObj.change
+				if(changeFunc !== undefined) {
+					changeFunc(action.selector,action.value)
+				} else {
+					$(action.selector).attr(action.attr,action.value)
+				}	
 			}
 		});
 	}
