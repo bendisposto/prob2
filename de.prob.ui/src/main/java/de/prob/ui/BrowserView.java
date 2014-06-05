@@ -83,7 +83,7 @@ public abstract class BrowserView extends ViewPart implements IRefreshListener {
 	protected abstract String getUrl();
 
 	protected boolean forceSWTBrowser() {
-		return false;
+		return true;
 	}
 
 	/**
