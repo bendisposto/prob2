@@ -6,9 +6,4 @@ public class BmsEditView extends ProB2View {
 
 	public static final String ID = "de.prob.ui.views.bmsedit";
 
-	@Override
-	protected boolean forceSWTBrowser() {
-		return true;
-	}
-	
 }
