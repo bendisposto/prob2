@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.script.ScriptEngine;
+import javax.servlet.AsyncContext;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -67,6 +68,11 @@ public class GroovyConsoleSession extends AbstractSession {
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/console/index.html");
+	}
+
+	@Override
+	public void reload(String client, int lastinfo, AsyncContext context) {
+		sendInitMessage(context);
 	}
 
 }

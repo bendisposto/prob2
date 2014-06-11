@@ -3,6 +3,8 @@ package de.prob.web.views;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -76,5 +78,11 @@ public class CurrentAnimations extends AbstractSession implements
 	@Override
 	public void animatorStatus(final boolean busy) {
 		// This does not need to be considered for this view
+	}
+
+	@Override
+	public void reload(String client, int lastinfo, AsyncContext context) {
+		sendInitMessage(context);
+		traceChange(animations.getCurrentTrace(), false);
 	}
 }

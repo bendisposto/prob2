@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.servlet.AsyncContext;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,13 +65,17 @@ public class FormulaView extends AbstractSession implements
 			currentTrace = trace;
 			if (currentTrace != null
 					&& currentTrace.getStateSpace().equals(currentStateSpace)) {
-				Object data = calculateData();
-				if (data != null) {
-					Map<String, String> wrap = WebUtils.wrap("cmd",
-							"FormulaView.draw", "data", data);
-					submit(wrap);
-				}
+				sendRefresh();
 			}
+		}
+	}
+
+	private void sendRefresh() {
+		Object data = calculateData();
+		if (data != null) {
+			Map<String, String> wrap = WebUtils.wrap("cmd", "FormulaView.draw",
+					"data", data);
+			submit(wrap);
 		}
 	}
 
@@ -176,6 +182,12 @@ public class FormulaView extends AbstractSession implements
 		} else {
 			submit(WebUtils.wrap("cmd", "FormulaView.enable"));
 		}
+	}
+
+	@Override
+	public void reload(String client, int lastinfo, AsyncContext context) {
+		sendInitMessage(context);
+		sendRefresh();
 	}
 
 }

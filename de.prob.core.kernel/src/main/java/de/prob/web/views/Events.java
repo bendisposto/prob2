@@ -185,7 +185,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
+		sendInitMessage(context);
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.setView",
 				"ops", WebUtils.toJson(events), "canGoBack",
 				currentTrace == null ? false : currentTrace.canGoBack(),
