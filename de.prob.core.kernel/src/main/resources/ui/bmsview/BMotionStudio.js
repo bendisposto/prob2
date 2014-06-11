@@ -105,6 +105,8 @@ bms = (function() {
 				} else {
 					$(action.selector).attr(action.attr,action.value)
 				}	
+			} else {
+				$(action.selector).attr(action.attr,action.value)
 			}
 		});
 	}
