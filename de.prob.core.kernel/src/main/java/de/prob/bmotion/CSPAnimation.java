@@ -73,4 +73,9 @@ public class CSPAnimation implements ITool {
 	public boolean canBacktrack() {
 		return true;
 	}
+
+	@Override
+	public String getName() {
+		return trace.getUUID().toString();
+	}
 }

@@ -79,4 +79,9 @@ public class BAnimation implements ITool {
 		return true;
 	}
 
+	@Override
+	public String getName() {
+		return trace.getUUID().toString();
+	}
+
 }
