@@ -105,6 +105,25 @@ public class BMotionStudioServlet extends HttpServlet {
 		submit(command);
 	}
 	
+	private void initParameterFromTemplate(BMotionStudioSession bmsSession) {
+
+		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
+		Document templateDocument = Jsoup.parse(templateHtml);
+		Elements headTag = templateDocument.getElementsByTag("head");
+		Element headElement = headTag.get(0);
+
+		Elements elements = headElement.getElementsByAttributeValueStarting(
+				"name", "bms.");
+
+		// Add additional parameters from template to BMotionStudioSession
+		for (Element e : elements) {
+			String content = e.attr("content");
+			String name = e.attr("name");
+			bmsSession.addParameter(name.replace("bms.", ""), content);
+		}
+
+	}
+	
 	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession) {
 
 		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
@@ -419,7 +438,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		String host = req.getRemoteAddr();
 		if (Main.local)
 			host = "localhost";
-		
+
 		// Create a new BMotionStudioSession
 		BMotionStudioSession bmsSession = ServletContextListener.INJECTOR
 				.getInstance(BMotionStudioSession.class);
@@ -443,10 +462,12 @@ public class BMotionStudioServlet extends HttpServlet {
 			if (!e.getValue()[0].isEmpty())
 				parameterString.append("=" + e.getValue()[0]);
 		}
-		String fpstring = "?"
-				+ parameterString.substring(1, parameterString.length());
+		initParameterFromTemplate(bmsSession);
+		bmsSession.initSession();
 
 		// Send redirect with new session id, template file and parameters
+		String fpstring = "?"
+				+ parameterString.substring(1, parameterString.length());
 		String fileName = new File(templatePath).getName();
 		String redirect = "/bms/" + id + "/" + fileName + fpstring;
 		resp.sendRedirect(redirect);
