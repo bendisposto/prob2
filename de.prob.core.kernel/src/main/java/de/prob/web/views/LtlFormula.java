@@ -116,7 +116,7 @@ public class LtlFormula extends AbstractSession implements
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
+		sendInitMessage(context);
 		submitFormulas();
 	}
 

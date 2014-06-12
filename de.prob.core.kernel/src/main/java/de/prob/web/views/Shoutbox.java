@@ -49,7 +49,7 @@ public class Shoutbox extends AbstractSession {
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
+		sendInitMessage(context);
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Shoutbox.setText",
 				"texts", WebUtils.toJson(texts));
 		submit(wrap);

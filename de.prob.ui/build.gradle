@@ -36,6 +36,7 @@ configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
 
 
 dependencies {
+        compile 'org.codehaus.groovy:groovy-all:2.3.0' // Apache Licence 2.0
 
 	compile(group: 'javafx', name: 'javafx.mvn', version: '2.2.0-SNAPSHOT')
 	

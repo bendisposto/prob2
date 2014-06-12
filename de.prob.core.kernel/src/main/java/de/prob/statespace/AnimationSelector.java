@@ -107,7 +107,7 @@ public class AnimationSelector {
 	private void notifyAnimationChange(final Trace trace,
 			final boolean currentAnimationChanged) {
 
-		if (!trace.getStateSpace().isBusy()) {
+		if (trace != null  && !trace.getStateSpace().isBusy()) {
 
 			for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
 				IAnimationChangeListener animationChangeListener = listener

@@ -1,5 +1,7 @@
 package de.prob.bmotion;
 
+import static java.io.File.separator;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -55,13 +57,13 @@ public class BMotionStudioSession extends AbstractSession implements
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
 
 	private Trace currentTrace;
-	
+
 	private final AnimationSelector selector;
-	
+
 	private final Api api;
 
 	private String templatePath;
-	
+
 	private final ScriptEngine groovyScriptEngine;
 
 	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
@@ -69,19 +71,19 @@ public class BMotionStudioSession extends AbstractSession implements
 	private final Map<String, Object> cachedCspResults = new HashMap<String, Object>();
 
 	private final Map<String, IEvalElement> formulasForEvaluating = new HashMap<String, IEvalElement>();
-	
+
 	private final List<String> invalidFormulas = new ArrayList<String>();
-	
+
 	private final Map<String, Object> formulas = new HashMap<String, Object>();
-	
+
 	private final Observer defaultObserver;
-	
+
 	private JsonElement json;
-	
+
 	private AbstractModel model;
-	
+
 	private int port;
-	
+
 	private String host;
 
 	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
@@ -112,31 +114,13 @@ public class BMotionStudioSession extends AbstractSession implements
 		}
 		return null;
 	}
-	
+
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-
-		// After reload do not resent old messages
-		int old = responses.size() + 1;
-		// Add dummy message
-		submit(WebUtils.wrap("cmd", "extern.skip"));
-		
-		// Initialize Session
-		initSession();
-
-		// If a trace already exists, trigger a trace change and modelchanged
-		if (currentTrace != null) {
+		sendInitMessage(context);
+		if (currentTrace != null)
 			traceChange(currentTrace, true);
-			modelChanged(currentTrace.getStateSpace());
-		}
-
-		// Resent messages, send while initializing the session and trace change
-		if (!responses.isEmpty()) {
-			resend(client, old, context);
-		}
-
-		super.reload(client, lastinfo, context);
 
 	}
 
@@ -150,46 +134,43 @@ public class BMotionStudioSession extends AbstractSession implements
 		formulas.clear();
 		formulasForEvaluating.clear();
 	}
-	
+
 	/**
-	 * This method initializes the session.
+	 * This method initializes the session. This method is called by the
+	 * {@link BMotionStudioServlet}.
 	 */
-	private void initSession() {
-		clearSession();
-		// Remove all script listeners and add new observer scriptlistener
-		scriptListeners.clear();
+	public void initSession() {
+		System.out.println("BMS: Init Session");
+		// Add new default observer scriptlistener
 		scriptListeners.add(defaultObserver);
 		// Init formal model
 		initFormalModel();
-		// Initialize json data (if not already done)
+		// Initialize json data
 		initJsonData();
 		// Init Groovy scripts
 		initGroovy();
 	}
 
 	/**
-	 * This method is responsible to reference a model. If a reference model
-	 * already exists, the method is existed. If no model is referenced: (1) If
-	 * the visualization template points to a specific model, the method tries
-	 * to start this model and takes it as the reference model. (2) Else the
-	 * method checks if a model is currently animated by ProB2 and takes this
-	 * model as the reference model.
+	 * This method is responsible to reference a model. If no model is
+	 * referenced: (1) If the visualization template points to a specific model,
+	 * the method tries to start this model and takes it as the reference model.
+	 * (2) Else the method checks if a model is currently animated by ProB2 and
+	 * takes this model as the reference model.
 	 */
 	private void initFormalModel() {
 
-		// Exit method if a model already exists
-		if (this.model != null)
-			return;
-
 		Object machinePath = getParameterMap().get("machine");
-
+		
+		System.out.println("BMS: Initialise Model " + machinePath);
+		
 		// If the template references a specific model, try to load this model
 		if (machinePath != null) {
 
 			File machineFile = new File(machinePath.toString());
 
 			if (!machineFile.isAbsolute())
-				machinePath = getTemplateFolder() + "/" + machinePath;
+				machinePath = getTemplateFolder() + separator + machinePath;
 
 			String formalism = getFormalism(machinePath.toString());
 
@@ -221,7 +202,6 @@ public class BMotionStudioSession extends AbstractSession implements
 			Trace traceFromAnimatedModel = selector.getCurrentTrace();
 			if (traceFromAnimatedModel != null)
 				this.model = traceFromAnimatedModel.getModel();
-
 		}
 
 	}
@@ -246,10 +226,44 @@ public class BMotionStudioSession extends AbstractSession implements
 				subscribeFormula(entry.getKey(), model, trace);
 		}
 	}
+
+	private void triggerObservers(Trace trace) {
+
+		// Trigger all registered script listeners with collected
+		// formulas
+		for (IBMotionScript s : scriptListeners) {
+			s.traceChanged(trace);
+		}
+
+	}
+	
+	private void evaluateFormulas(Trace trace) {
+
+		// If the set of formulas contains a null value (the formula was
+		// not evaluated yet), register/evaluate them
+		if (formulasForEvaluating.containsValue(null)) {
+			registerFormulas(model, trace);
+			formulasForEvaluating.keySet().removeAll(invalidFormulas);
+		}
+
+		Map<IEvalElement, IEvalResult> valuesAt = trace.getStateSpace()
+				.valuesAt(trace.getCurrentState());
+		for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt.entrySet()) {
+			IEvalElement evalElement = entry.getKey();
+			IEvalResult evalResult = entry.getValue();
+			if (evalResult instanceof EvalResult) {
+				formulas.put(evalElement.getCode(),
+						translateValue(((EvalResult) evalResult).getValue()));
+			}
+		}
+
+	}
 	
 	@Override
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
+
+		System.out.println("BMS: Trace changed ...");
 		
 		if (currentAnimationChanged) {
 
@@ -259,7 +273,7 @@ public class BMotionStudioSession extends AbstractSession implements
 				deregisterFormulas(model);
 				return;
 			}
-		
+
 			// Trigger only if a reference model exists and the reference model
 			// is the same as the model of the changed trace (they have the same
 			// model files)
@@ -268,31 +282,8 @@ public class BMotionStudioSession extends AbstractSession implements
 							trace.getModel().getModelFile())) {
 
 				currentTrace = trace;
-				StateSpace stateSpace = currentTrace.getStateSpace();
-
-				if (formulasForEvaluating.containsValue(null)) {
-					registerFormulas(model, trace);
-					formulasForEvaluating.keySet().removeAll(invalidFormulas);
-				}
-
-				Map<IEvalElement, IEvalResult> valuesAt = stateSpace
-						.valuesAt(trace.getCurrentState());
-				for (Map.Entry<IEvalElement, IEvalResult> entry : valuesAt
-						.entrySet()) {
-					IEvalElement evalElement = entry.getKey();
-					IEvalResult evalResult = entry.getValue();
-					if (evalResult instanceof EvalResult) {
-						formulas.put(evalElement.getCode(),
-								translateValue(((EvalResult) evalResult)
-										.getValue()));
-					}
-				}
-
-				// Trigger all registered script listeners with collected
-				// formulas
-				for (IBMotionScript s : scriptListeners) {
-					s.traceChanged(currentTrace);
-				}
+				evaluateFormulas(trace);
+				triggerObservers(trace);
 
 			}
 
@@ -302,32 +293,30 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private void initJsonData() {
 
-		if (getTemplatePath() != null) {
+		String tf = getTemplateFolder();
+		if (tf == null)
+			return;
 
-			Map<String, Object> scope = new HashMap<String, Object>();
-			scope.put("eval", new EvalExpression());
+		Map<String, Object> scope = new HashMap<String, Object>();
+		scope.put("eval", new EvalExpression());
 
-			String templateFolder = getTemplateFolder();
-			Object jsonPaths = parameterMap.get("json");
-			if (jsonPaths != null) {
-
-				String[] sp = jsonPaths.toString().split(",");
-				for (String s : sp) {
-					String jsonPath = templateFolder + "/" + s;
-					File f = new File(jsonPath);
-					if (f.exists()) {
-						WebUtils.render(f.getPath(), scope);
-						String jsonRendered = readFile(f.getPath());
-						JsonParser jsonParser = new JsonParser();
-						JsonElement jsonElement = jsonParser
-								.parse(jsonRendered);
-						if (!(jsonElement instanceof JsonNull))
-							this.json = jsonElement;
-					}
-
+		Object jsonPaths = parameterMap.get("json");
+		if (jsonPaths != null) {
+			String[] sp = jsonPaths.toString().split(",");
+			for (String s : sp) {
+				String jsonPath = tf + separator + s;
+				File f = new File(jsonPath);
+				if (f.exists()) {
+					WebUtils.render(f.getPath(), scope);
+					String jsonRendered = readFile(f.getPath());
+					JsonParser jsonParser = new JsonParser();
+					JsonElement jsonElement = jsonParser.parse(jsonRendered);
+					if (!(jsonElement instanceof JsonNull))
+						this.json = jsonElement;
 				}
 
 			}
+
 		}
 
 	}
@@ -430,7 +419,7 @@ public class BMotionStudioSession extends AbstractSession implements
 		return result;
 
 	}
-	
+
 	private Object getResultFromSubscription(IEvalElement evalElement,
 			StateSpace s, Trace t) {
 		Map<IEvalElement, IEvalResult> valuesAt = s.valuesAt(currentTrace
@@ -473,17 +462,22 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	@Override
 	public void modelChanged(final StateSpace statespace) {
-		// The session is (re)initialized if a model change was detected and (1)
-		// no model exist yet or (2) the current model is the same as the new
-		// model (they have the same model files).
-		if (model == null
-				|| (model != null && model.getModelFile().equals(
-						statespace.getModel().getModelFile()))) {
+		System.out.println("BMS: Model changed ...");
+		Trace trace = selector.getCurrentTrace();
+		if (model == null) {
+			Trace traceFromAnimatedModel = trace;
+			if (traceFromAnimatedModel != null)
+				this.model = traceFromAnimatedModel.getModel();
+		} else if (model != null
+				&& model.getModelFile().equals(
+						statespace.getModel().getModelFile())) {
+			this.model = statespace.getModel();
 			clearSession();
-			initFormalModel();
-			for (IBMotionScript s : scriptListeners) {
-				s.modelChanged(statespace);
-			}
+			evaluateFormulas(trace);
+			triggerObservers(trace);
+		}
+		for (IBMotionScript s : scriptListeners) {
+			s.modelChanged(statespace);
 		}
 	}
 
@@ -493,23 +487,23 @@ public class BMotionStudioSession extends AbstractSession implements
 	 */
 	private void initGroovy() {
 
-		if (templatePath == null)
+		String tf = getTemplateFolder();
+		if (tf == null)
 			return;
 
 		try {
 
-			String templateFolder = getTemplateFolder();
 			Bindings bindings = groovyScriptEngine
 					.getBindings(ScriptContext.GLOBAL_SCOPE);
 			bindings.putAll(parameterMap);
 			bindings.put("bms", this);
-			bindings.put("templatefolder", templateFolder);
+			bindings.put("templatefolder", tf);
 
 			Object scriptPaths = parameterMap.get("script");
 			if (scriptPaths != null) {
 				String[] sp = scriptPaths.toString().split(",");
 				for (String s : sp) {
-					FileReader fr = new FileReader(templateFolder + "/" + s);
+					FileReader fr = new FileReader(tf + separator + s);
 					groovyScriptEngine.eval(fr, bindings);
 				}
 			}
@@ -533,11 +527,11 @@ public class BMotionStudioSession extends AbstractSession implements
 	public Map<String, Object> getParameterMap() {
 		return parameterMap;
 	}
-	
+
 	public JsonElement getJson() {
 		return json;
 	}
-	
+
 	public void setTemplatePath(final String templatePath) {
 		this.templatePath = templatePath;
 	}
@@ -569,7 +563,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	public void setHost(String host) {
 		this.host = host;
 	}
-	
+
 	public String getFormalism(String machinePath) {
 
 		String lang = null;
@@ -580,13 +574,13 @@ public class BMotionStudioSession extends AbstractSession implements
 			return "eventb";
 		} else if (machinePath.endsWith(".mch")) {
 			return "b";
-		} else if(machinePath.endsWith(".tla")) {
+		} else if (machinePath.endsWith(".tla")) {
 			return "tla";
 		}
 		return lang;
 
 	}
-	
+
 	// ---------- BMS API
 	public void toGui(final Object json) {
 		submit(json);
@@ -630,7 +624,7 @@ public class BMotionStudioSession extends AbstractSession implements
 					: subscribeFormula(formula, model, currentTrace);
 		return null;
 	}
-	
+
 	public Object executeOperation(final Map<String, String[]> params) {
 		String[] id = params.get("id");
 		String[] op = params.get("op");
@@ -655,5 +649,5 @@ public class BMotionStudioSession extends AbstractSession implements
 		return null;
 	}
 	// ------------------
-	
+
 }

@@ -36,9 +36,6 @@ sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as gr
 dependencies {
 
 
-	testCompile 'junit:junit:4.8.2'
-	testCompile 'org.mockito:mockito-core:1.8.5'
-	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 
 //	compile group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
 	

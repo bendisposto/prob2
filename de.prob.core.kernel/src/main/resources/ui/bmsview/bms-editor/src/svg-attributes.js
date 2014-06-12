@@ -39,12 +39,14 @@ var svgAttributeList = {
 	"stroke-miterlimit" : {value: 'stroke-miterlimit', text: 'stroke-miterlimit'},
 	"stroke-opacity" : {value: 'stroke-opacity', text: 'stroke-opacity'},
 	"stroke-width" : {value: 'stroke-width', text: 'stroke-width'},
-	"transform" : {value: 'transform', text: 'transform'}
+	"transform" : {value: 'transform', text: 'transform'},
+	"opacity" : {value: 'opacity', text: 'opacity'}
 };
 
 var svgAllElementAttributes = [
     svgAttributeList["style"], 
-    svgAttributeList["class"]
+    svgAttributeList["class"],
+    svgAttributeList["opacity"]
 ];
 
 var svgAllShapesAttributes = [

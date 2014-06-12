@@ -284,8 +284,8 @@ public class ModelCheckingUI extends AbstractSession implements
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
-		resend(client, lastinfo, context);
+		sendInitMessage(context);
+		// FIXME Requires something differend than resending!
 	}
 
 	@Override
