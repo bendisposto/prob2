@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.IToolListener;
 import de.prob.ui.api.IllegalFormulaException;
@@ -57,6 +59,13 @@ public class BMSSession extends AbstractSession implements IToolListener {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
