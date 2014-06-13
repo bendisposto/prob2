@@ -6,8 +6,10 @@ import java.util.List;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.model.eventb.Context;
+import de.prob.model.eventb.EventBConstant;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
+import de.prob.model.eventb.EventBVariable;
 import de.prob.model.eventb.proof.ProofObligation;
 import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.Machine;
@@ -18,9 +20,11 @@ public class EventBModelTranslator {
 	List<ContextTranslator> contextTranslators = new ArrayList<ContextTranslator>();
 	List<ProofObligation> proofObligations = new ArrayList<ProofObligation>();
 	private final TheoryTranslator theoryTranslator;
+	private final EventBModel model;
 
 	public EventBModelTranslator(final EventBModel model) {
 
+		this.model = model;
 		for (Machine machine : model.getChildrenOfType(Machine.class)) {
 			EventBMachine ebM = (EventBMachine) machine;
 			machineTranslators.add(new EventBMachineTranslator(ebM));
@@ -75,10 +79,45 @@ public class EventBModelTranslator {
 
 		theoryTranslator.toProlog(pto);
 
+		printPragmas(pto);
+
 		pto.closeList();
 
 		pto.printVariable("_Error");
 		pto.closeTerm();
+	}
+
+	private void printPragmas(IPrologTermOutput pto) {
+		for (Machine machine : model.getChildrenOfType(Machine.class)) {
+			EventBMachine ebM = (EventBMachine) machine;
+			for (EventBVariable var : ebM.getVariables()) {
+				if (var.hasUnit()) {
+					pto.openTerm("pragma");
+					pto.printAtom("unit");
+					pto.printAtom(machine.getName());
+					pto.printAtom(var.getName());
+					pto.openList();
+					pto.printAtom(var.getUnit());
+					pto.closeList();
+					pto.closeTerm();
+				}
+			}
+		}
+
+		for (Context context : model.getChildrenOfType(Context.class)) {
+			for (EventBConstant constant : context.getConstants()) {
+				if (constant.hasUnit()) {
+					pto.openTerm("pragma");
+					pto.printAtom("unit");
+					pto.printAtom(context.getName());
+					pto.printAtom(constant.getName());
+					pto.openList();
+					pto.printAtom(constant.getUnit());
+					pto.closeList();
+					pto.closeTerm();
+				}
+			}
+		}
 	}
 
 }
