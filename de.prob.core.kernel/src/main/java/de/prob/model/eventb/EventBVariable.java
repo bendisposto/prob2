@@ -6,10 +6,20 @@ import de.prob.model.representation.Variable;
 public class EventBVariable extends Variable {
 
 	private final String name;
+	private final String unit;
 
-	public EventBVariable(final String name) {
+	public EventBVariable(final String name, final String unit) {
 		super(new EventB(name));
 		this.name = name;
+		this.unit = unit;
+	}
+
+	public boolean hasUnit() {
+		return unit != null;
+	}
+
+	public String getUnit() {
+		return unit;
 	}
 
 	@Override

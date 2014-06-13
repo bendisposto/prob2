@@ -7,11 +7,14 @@ public class EventBConstant extends Constant {
 
 	private final String name;
 	private final boolean isAbstract;
+	private final String unit;
 
-	public EventBConstant(final String name, final boolean isAbstract) {
+	public EventBConstant(final String name, final boolean isAbstract,
+			final String unit) {
 		super(new EventB(name));
 		this.name = name;
 		this.isAbstract = isAbstract;
+		this.unit = unit;
 	}
 
 	public String getName() {
@@ -20,5 +23,13 @@ public class EventBConstant extends Constant {
 
 	public boolean isAbstract() {
 		return isAbstract;
+	}
+
+	public boolean hasUnit() {
+		return unit != null;
+	}
+
+	public String getUnit() {
+		return unit;
 	}
 }

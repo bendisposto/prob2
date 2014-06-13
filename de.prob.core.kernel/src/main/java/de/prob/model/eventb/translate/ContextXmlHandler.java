@@ -106,10 +106,11 @@ public class ContextXmlHandler extends DefaultHandler {
 		String name = attributes.getValue("name");
 		boolean symbolic = "true".equals(attributes
 				.getValue("de.prob.symbolic.symbolicAttribute"));
+		String unit = attributes.getValue("de.prob.units.unitPragmaAttribute");
 		if (inInternalContext) {
-			internalConstants.add(new EventBConstant(name, symbolic));
+			internalConstants.add(new EventBConstant(name, symbolic, unit));
 		} else {
-			constants.add(new EventBConstant(name, symbolic));
+			constants.add(new EventBConstant(name, symbolic, unit));
 		}
 	}
 
