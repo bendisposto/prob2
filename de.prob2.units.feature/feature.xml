@@ -232,7 +232,6 @@ litigation.
       <import plugin="org.eventb.ui" version="3.0.0" match="equivalent"/>
       <import plugin="org.eventb.core" version="3.0.0" match="equivalent"/>
       <import plugin="org.eclipse.ui.workbench"/>
-      <import plugin="de.prob.core.rodin"/>
    </requires>
 
    <plugin
