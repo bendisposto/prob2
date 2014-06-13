@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eventb.ui;bundle-version="[3.0.0,3.1.0)",
  org.eventb.core;bundle-version="[3.0.0,3.1.0)",
  org.eclipse.ui.workbench,
- de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional
+ de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional,
+ de.prob.ui;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: HHU Düsseldorf STUPS Group
