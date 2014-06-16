@@ -4,6 +4,7 @@ Bundle-Name: ProB Physical Units Support
 Bundle-SymbolicName: de.prob.units;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: de.prob.units.Activator
+Bundle-Vendor: HHU Düsseldorf STUPS Group
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.commands,
  org.eclipse.core.resources,
@@ -14,6 +15,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench,
  de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional,
  de.prob.ui;bundle-version="1.0.0"
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Vendor: HHU Düsseldorf STUPS Group
+Bundle-ActivationPolicy: lazy
