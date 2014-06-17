@@ -10,26 +10,39 @@ import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.model.representation.AbstractModel;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
+import de.prob.ui.api.ToolRegistry;
 
-public class BAnimation implements ITool {
+public class BAnimation implements ITool, IAnimationChangeListener {
 
 	private Trace trace;
+	private final String modelPath;
 	Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
+	private final ToolRegistry toolRegistry;
 
-	public BAnimation(final Trace trace) {
-		this.trace = trace;
+	public BAnimation(final AbstractModel model,
+			final AnimationSelector animations, final ToolRegistry toolRegistry) {
+		this.toolRegistry = toolRegistry;
+		this.modelPath = model.getModelFile().getAbsolutePath();
+		trace = new Trace(model);
+		animations.registerAnimationChangeListener(this);
+		animations.addNewAnimation(trace);
+		toolRegistry.register(getName(), this);
 	}
 
 	@Override
 	public String doStep(final String stateref, final String event,
 			final String... parameters) throws ImpossibleStepException {
 		trace = trace.execute(event, Arrays.asList(parameters));
+		toolRegistry.notifyToolChange(this);
 		return trace.getCurrentState().getId();
 	}
 
@@ -81,7 +94,25 @@ public class BAnimation implements ITool {
 
 	@Override
 	public String getName() {
-		return trace.getUUID().toString();
+		return modelPath;
+	}
+
+	@Override
+	public void traceChange(final Trace currentTrace,
+			final boolean currentAnimationChanged) {
+		if (currentTrace != null
+				&& currentTrace.getModel().getModelFile().getAbsolutePath()
+						.equals(modelPath)) {
+			trace = currentTrace;
+			toolRegistry.notifyToolChange(this);
+		} else if (currentTrace == null) {
+			trace = currentTrace;
+		}
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
+
 	}
 
 }

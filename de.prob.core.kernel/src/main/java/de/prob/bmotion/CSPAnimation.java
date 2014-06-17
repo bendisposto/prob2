@@ -10,19 +10,35 @@ import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.model.representation.AbstractModel;
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
+import de.prob.ui.api.ToolRegistry;
 
-public class CSPAnimation implements ITool {
+public class CSPAnimation implements ITool, IAnimationChangeListener {
 
 	private Trace trace;
 	private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
+	private final ToolRegistry toolRegistry;
+	private final String modelPath;
 
-	public CSPAnimation(final Trace trace) {
-		this.trace = trace;
+	public CSPAnimation(final AbstractModel model,
+			final AnimationSelector animations, final ToolRegistry toolRegistry) {
+		this(new Trace(model), animations, toolRegistry);
+	}
+
+	public CSPAnimation(final Trace trace, final AnimationSelector animations,
+			final ToolRegistry toolRegistry) {
+		this.toolRegistry = toolRegistry;
+		this.modelPath = trace.getModel().getModelFile().getAbsolutePath();
+		animations.registerAnimationChangeListener(this);
+		animations.addNewAnimation(trace);
+		toolRegistry.register(getName(), this);
 	}
 
 	@Override
@@ -77,5 +93,26 @@ public class CSPAnimation implements ITool {
 	@Override
 	public String getName() {
 		return trace.getUUID().toString();
+	}
+
+	public Trace getTrace() {
+		return trace;
+	}
+
+	@Override
+	public void traceChange(final Trace currentTrace,
+			final boolean currentAnimationChanged) {
+		if (currentTrace != null
+				&& currentTrace.getModel().getModelFile().getAbsolutePath()
+						.equals(modelPath)) {
+			trace = currentTrace;
+			toolRegistry.notifyToolChange(this);
+		} else if (currentTrace == null) {
+			trace = currentTrace;
+		}
+	}
+
+	@Override
+	public void animatorStatus(final boolean busy) {
 	}
 }
