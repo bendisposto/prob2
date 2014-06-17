@@ -57,8 +57,6 @@ bms = (function() {
 	extern.observer = null;
 	extern.init = session.init
 	extern.session = session
-	extern.port = null;
-	extern.host = null;
 	extern.lang = null;
 
 	extern.setTemplate = function(data) {
