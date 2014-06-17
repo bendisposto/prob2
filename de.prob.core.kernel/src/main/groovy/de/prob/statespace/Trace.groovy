@@ -17,7 +17,7 @@ public class Trace {
 	def final TraceElement current
 	def final TraceElement head
 	def final StateSpace stateSpace
-	def final UUID uuid
+	def final UUID UUID
 
 	def IEvalResult evalCurrent(formula) {
 		if(!stateSpace.canBeEvaluated(getCurrentState())) {
@@ -65,7 +65,7 @@ public class Trace {
 		this.stateSpace = s
 		head = new TraceElement(s.getState(s.getVertex("root")))
 		current = head
-		uuid = java.util.UUID.randomUUID()
+		UUID = java.util.UUID.randomUUID()
 	}
 
 	def Trace(final StateSpace s, final TraceElement head, UUID uuid) {
@@ -294,10 +294,6 @@ public class Trace {
 
 	def AbstractModel getModel() {
 		return stateSpace.getModel()
-	}
-
-	def UUID getUUID() {
-		return uuid
 	}
 
 	def Object asType(Class className) {
