@@ -27,10 +27,16 @@ public class BMotionStudioSession extends AbstractSession implements
 
 	private final String templatePath;
 
+	private final String host;
+
+	private final int port;
+
 	public BMotionStudioSession(final ITool tool, final ToolRegistry registry,
-			final String templatePath) {
+			final String templatePath, final String host, final int port) {
 		this.tool = tool;
 		this.templatePath = templatePath;
+		this.host = host;
+		this.port = port;
 		incrementalUpdate = false;
 		registry.registerListener(this);
 	}
@@ -123,6 +129,14 @@ public class BMotionStudioSession extends AbstractSession implements
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
 	}
 
 	// ------------------

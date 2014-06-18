@@ -475,6 +475,12 @@ public class BMotionStudioServlet extends HttpServlet {
 			final HttpServletResponse resp) throws ServletException,
 			IOException {
 
+		int port = req.getLocalPort();
+		String host = req.getRemoteAddr();
+		if (Main.local) {
+			host = "localhost";
+		}
+
 		// Prepare redirect ...
 		Map<String, String[]> parameterMap = req.getParameterMap();
 
@@ -500,7 +506,7 @@ public class BMotionStudioServlet extends HttpServlet {
 				params.get("machine"), api, animations, toolRegistry);
 
 		BMotionStudioSession bmsSession = new BMotionStudioSession(tool,
-				toolRegistry, templatePath);
+				toolRegistry, templatePath, host, port);
 		String id = bmsSession.getSessionUUID().toString();
 		// Register the new session
 		sessions.put(id, bmsSession);
@@ -632,8 +638,9 @@ public class BMotionStudioServlet extends HttpServlet {
 		String fileName = new File(templatePath).getName();
 		String standalone = Main.standalone ? "yes" : "";
 		Object scope = WebUtils.wrap("clientid", bmsSession.getSessionUUID()
-				.toString(), "template", templatePath, "templatefile",
-				fileName, "standalone", standalone);
+				.toString(), "host", bmsSession.getHost(), "port", bmsSession
+				.getPort(), "template", templatePath, "templatefile", fileName,
+				"standalone", standalone);
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 
