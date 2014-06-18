@@ -2,6 +2,7 @@ package de.prob.bmotion
 
 import javax.script.Bindings
 import javax.script.ScriptContext
+import javax.script.ScriptEngine
 
 import com.google.common.base.Function
 import com.google.gson.JsonElement
@@ -10,7 +11,6 @@ import com.google.gson.JsonParser
 
 import de.prob.model.representation.AbstractModel
 import de.prob.scripting.Api
-import de.prob.scripting.GroovySE
 import de.prob.statespace.AnimationSelector
 import de.prob.statespace.FormalismType
 import de.prob.statespace.Trace
@@ -45,7 +45,7 @@ class BMotionUtil {
 		return observers
 	}
 
-	def void evaluateGroovy(GroovySE evaluator, String templatePath, Map<String, String> parameters, BMotionStudioSession bms) {
+	def static void evaluateGroovy(ScriptEngine evaluator, String templatePath, Map<String, String> parameters, BMotionStudioSession bms) {
 		String scriptPaths = parameters.get("script")
 		if (templatePath != null && scriptPaths != null) {
 			def templateFolder = BMotionUtil.getTemplateFolder(templatePath)

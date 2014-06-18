@@ -517,6 +517,9 @@ public class BMotionStudioServlet extends HttpServlet {
 			bmsSession.registerScript(observer);
 		}
 
+		BMotionUtil.evaluateGroovy(engineProvider.get(), fullTemplatePath,
+				params, bmsSession);
+
 		// Send redirect with new session id, template file and parameters
 		String fpstring = "?"
 				+ parameterString.substring(1, parameterString.length());
