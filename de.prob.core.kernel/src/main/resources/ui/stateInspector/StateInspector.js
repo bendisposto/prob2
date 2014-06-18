@@ -130,7 +130,7 @@ StateInspector = (function() {
     }
 
     function updateValues(values) {
-        var id;
+        var id, curr_id, prev_id;
         for ( var i = 0; i < values.length; i++) {
             id = "#" + values[i].id;
             $(id + "_current").html(values[i].current);
@@ -138,17 +138,23 @@ StateInspector = (function() {
             if (values[i].current !== values[i].previous) {
                 $(id).addClass("changed");
             }
+            curr_id = id + "_current"
+            prev_id = id + "_previous"
             if (values[i].current == "TRUE") {
-                $(id + "_current").addClass("true")
+                $(curr_id).removeClass("false")
+                $(curr_id).addClass("true")
             }
             if (values[i].current == "FALSE") {
-                $(id + "_current").addClass("false")
+                $(curr_id).removeClass("true")
+                $(curr_id).addClass("false")
             }
             if (values[i].previous == "TRUE") {
-                $(id + "_previous").addClass("true")
+                $(prev_id).removeClass("false")
+                $(prev_id).addClass("true")
             } 
             if (values[i].previous == "FALSE") {
-                $(id = "_previous").addClass("false")
+                $(prev_id).removeClass("true")
+                $(prev_id).addClass("false")
             } 
         }
     }
