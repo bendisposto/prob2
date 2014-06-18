@@ -179,7 +179,7 @@ public class Api {
 	public void save(final AbstractModel m, final String filename) {
 		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand();
 
-		m.getStatespace().execute(cmd);
+		m.getStateSpace().execute(cmd);
 		Map<String, String> prefs = cmd.getPreferences();
 
 		try {
