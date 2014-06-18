@@ -496,8 +496,8 @@ public class BMotionStudioServlet extends HttpServlet {
 		// Create a new BMotionStudioSession
 		params.putAll(getParametersFromTemplate(fullTemplatePath));
 
-		ITool tool = BMotionUtil.loadTool(params.get("machine"), api,
-				animations, toolRegistry);
+		ITool tool = BMotionUtil.loadTool(fullTemplatePath,
+				params.get("machine"), api, animations, toolRegistry);
 
 		BMotionStudioSession bmsSession = new BMotionStudioSession(tool,
 				toolRegistry, templatePath);

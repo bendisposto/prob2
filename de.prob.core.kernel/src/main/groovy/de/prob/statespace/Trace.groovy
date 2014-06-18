@@ -77,7 +77,7 @@ public class Trace {
 		this.stateSpace = s
 		this.head = head
 		this.current = current
-		this.uuid = uuid
+		this.UUID = uuid
 	}
 
 	def Trace add(final String name, final List<String> params) {
@@ -93,7 +93,7 @@ public class Trace {
 		StateId newState = stateSpace.getState(op)
 
 		def newHE = new TraceElement(current.getCurrentState(), newState, op, current)
-		Trace newTrace = new Trace(stateSpace, newHE, this.uuid)
+		Trace newTrace = new Trace(stateSpace, newHE, this.UUID)
 
 		return newTrace
 	}
@@ -108,7 +108,7 @@ public class Trace {
 	 */
 	def Trace back() {
 		if (canGoBack()) {
-			Trace trace = new Trace(stateSpace, head, current.getPrevious(), this.uuid)
+			Trace trace = new Trace(stateSpace, head, current.getPrevious(), this.UUID)
 			return trace
 		}
 		return this
@@ -126,7 +126,7 @@ public class Trace {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious()
 			}
-			Trace trace = new Trace(stateSpace, head, p, this.uuid)
+			Trace trace = new Trace(stateSpace, head, p, this.UUID)
 			return trace
 		}
 		return this
@@ -205,7 +205,7 @@ public class Trace {
 			currentState = newState
 		}
 
-		Trace newTrace = new Trace(stateSpace, current, this.uuid)
+		Trace newTrace = new Trace(stateSpace, current, this.UUID)
 		return newTrace
 	}
 

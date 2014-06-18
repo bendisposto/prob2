@@ -32,26 +32,32 @@ class Observer implements IBMotionScript {
 
 				def fpredicate = true
 				def fvalue = ""
+				def formula = item.formula.getAsString()
 
-				if(item.type.getAsString() == "predicate") {
-					fpredicate = tool.evaluate(tool.getCurrentState(), item.formula.getAsString())
-				} else if(item.type.getAsString() == "expression" && item.formula != null) {
-					fvalue = tool.evaluate(tool.getCurrentState(), item.formula.getAsString())
-				}
-
-				if(fpredicate) {
-
-					item.actions.each { act ->
-						def fattr = act.attr == null ? "" : act.attr.getAsString()
-						if(item.type.getAsString() == "predicate")
-							fvalue = act.value.getAsString()
-						def data = [
-							selector: fselector,
-							attr: fattr,
-							value: fvalue.toString()
-						]
-						factions = factions + data
+				if (tool.getErrors(tool.getCurrentState(), formula).isEmpty()) {
+					if(item.type.getAsString() == "predicate") {
+						fpredicate = tool.evaluate(tool.getCurrentState(), formula)
+						fpredicate = fpredicate == "TRUE"
+					} else if(item.type.getAsString() == "expression" && formula != null) {
+						fvalue = tool.evaluate(tool.getCurrentState(), formula)
 					}
+
+					if(fpredicate) {
+
+						item.actions.each { act ->
+							def fattr = act.attr == null ? "" : act.attr.getAsString()
+							if(item.type.getAsString() == "predicate")
+								fvalue = act.value.getAsString()
+							def data = [
+								selector: fselector,
+								attr: fattr,
+								value: fvalue.toString()
+							]
+							factions = factions + data
+						}
+					}
+				} else {
+					// Somehow inform the user??
 				}
 			}
 		}

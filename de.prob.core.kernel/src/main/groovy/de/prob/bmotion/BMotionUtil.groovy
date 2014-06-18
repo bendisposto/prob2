@@ -23,7 +23,7 @@ class BMotionUtil {
 	def static List<IBMotionScript> createObservers(String templatePath, String jsonPaths, BMotionStudioSession bms) {
 		List<IBMotionScript> observers = new ArrayList<IBMotionScript>()
 		if (templatePath != null && jsonPaths != null) {
-			def templateFolder = new File(templatePath).getParent()
+			def templateFolder = BMotionUtil.getTemplateFolder(templatePath)
 			Map<String, Object> scope = new HashMap<String, Object>();
 			scope.put("eval", new EvalExpression());
 
@@ -48,7 +48,7 @@ class BMotionUtil {
 	def void evaluateGroovy(GroovySE evaluator, String templatePath, Map<String, String> parameters, BMotionStudioSession bms) {
 		String scriptPaths = parameters.get("script")
 		if (templatePath != null && scriptPaths != null) {
-			def templateFolder = new File(templatePath).getParent()
+			def templateFolder = BMotionUtil.getTemplateFolder(templatePath)
 			Bindings bindings = evaluator.getBindings(ScriptContext.GLOBAL_SCOPE)
 			bindings.putAll(parameters)
 			bindings.put("bms", bms)
@@ -74,10 +74,11 @@ class BMotionUtil {
 		}
 	}
 
-	def static ITool loadTool(String path, Api api, AnimationSelector animations, ToolRegistry toolRegistry) {
+	def static ITool loadTool(String templatePath, String modelPath, Api api, AnimationSelector animations, ToolRegistry toolRegistry) {
 		ITool tool = null
-		if (path != null) {
-			String formalism = BMotionUtil.getFormalism(path)
+		if (modelPath != null) {
+			String formalism = BMotionUtil.getFormalism(modelPath)
+			def path = BMotionUtil.getTemplateFolder(templatePath) + File.separator +  modelPath
 			AbstractModel model = Eval.x(api, "x.${formalism}_load('$path')")
 			if(model.getFormalismType() == FormalismType.B) {
 				return new BAnimation(model, animations, toolRegistry);
@@ -110,5 +111,9 @@ class BMotionUtil {
 			return "tla";
 		}
 		return lang;
+	}
+
+	def static String getTemplateFolder(String templatePath) {
+		return new File(templatePath).getParent()
 	}
 }
