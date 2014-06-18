@@ -26,6 +26,7 @@ public class CSPAnimation implements ITool, IAnimationChangeListener {
 	private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
 	private final ToolRegistry toolRegistry;
 	private final String modelPath;
+	private final AnimationSelector animations;
 
 	public CSPAnimation(final AbstractModel model,
 			final AnimationSelector animations, final ToolRegistry toolRegistry) {
@@ -34,6 +35,7 @@ public class CSPAnimation implements ITool, IAnimationChangeListener {
 
 	public CSPAnimation(final Trace trace, final AnimationSelector animations,
 			final ToolRegistry toolRegistry) {
+		this.animations = animations;
 		this.toolRegistry = toolRegistry;
 		this.modelPath = trace.getModel().getModelFile().getAbsolutePath();
 		animations.registerAnimationChangeListener(this);
@@ -44,7 +46,14 @@ public class CSPAnimation implements ITool, IAnimationChangeListener {
 	@Override
 	public String doStep(final String stateref, final String event,
 			final String... parameters) throws ImpossibleStepException {
-		trace = trace.execute(event, Arrays.asList(parameters));
+		try {
+			Trace new_trace = trace.execute(event, Arrays.asList(parameters));
+			animations.replaceTrace(trace, new_trace);
+			trace = new_trace;
+			toolRegistry.notifyToolChange(this);
+		} catch (Exception e) {
+			throw new ImpossibleStepException();
+		}
 		return trace.getCurrentState().getId();
 	}
 
@@ -104,7 +113,7 @@ public class CSPAnimation implements ITool, IAnimationChangeListener {
 			final boolean currentAnimationChanged) {
 		if (currentTrace != null
 				&& currentTrace.getModel().getModelFile().getAbsolutePath()
-						.equals(modelPath)) {
+						.equals(modelPath) && !currentTrace.equals(trace)) {
 			trace = currentTrace;
 			toolRegistry.notifyToolChange(this);
 		} else if (currentTrace == null) {
