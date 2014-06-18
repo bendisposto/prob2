@@ -103,7 +103,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 			events = new ArrayList<Operation>(ops.size());
 			Set<String> notEnabled = new HashSet<String>(opNames);
 			for (OpInfo opInfo : ops) {
-				String name = opInfo.getName();
+				String name = extractPrettyName(opInfo.getName());
 				notEnabled.remove(name);
 				Operation o = new Operation(opInfo.getId(), name,
 						opInfo.getParams(), true);
@@ -125,6 +125,16 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 					"canGoForward", currentTrace.canGoForward());
 			submit(wrap);
 		}
+	}
+
+	private String extractPrettyName(final String name) {
+		if ("$setup_constants".equals(name)) {
+			return "SETUP_CONSTANTS";
+		}
+		if ("$initialise_machine".equals(name)) {
+			return "INITIALISATION";
+		}
+		return name;
 	}
 
 	private void updateModel(final Trace trace) {
