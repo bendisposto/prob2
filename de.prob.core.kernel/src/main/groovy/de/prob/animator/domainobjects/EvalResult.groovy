@@ -1,5 +1,7 @@
 package de.prob.animator.domainobjects;
 
+import com.google.common.base.Joiner
+
 import de.prob.prolog.term.PrologTerm
 
 public class EvalResult implements IEvalResult {
@@ -40,7 +42,9 @@ public class EvalResult implements IEvalResult {
 		if (solutions.isEmpty()) {
 			return value;
 		}
-		return value + ": " + solutions.toString();
+		def sols = solutions.collect { "${it.getKey()} = ${it.getValue()}" }
+
+		return value + "(" + Joiner.on(" & ").join(sols) + ")";
 	}
 
 	def getProperty(String name) {
