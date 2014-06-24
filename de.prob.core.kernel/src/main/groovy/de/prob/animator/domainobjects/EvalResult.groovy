@@ -3,6 +3,7 @@ package de.prob.animator.domainobjects;
 import com.google.common.base.Joiner
 
 import de.prob.prolog.term.PrologTerm
+import de.prob.unicode.UnicodeTranslator
 
 public class EvalResult implements IEvalResult {
 
@@ -44,7 +45,7 @@ public class EvalResult implements IEvalResult {
 		}
 		def sols = solutions.collect { "${it.getKey()} = ${it.getValue()}" }
 
-		return value + "(" + Joiner.on(" & ").join(sols) + ")";
+		return value + " (" + UnicodeTranslator.toUnicode(Joiner.on(" & ").join(sols)) + ")";
 	}
 
 	def getProperty(String name) {
