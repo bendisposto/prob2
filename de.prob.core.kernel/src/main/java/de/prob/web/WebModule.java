@@ -44,6 +44,7 @@ public class WebModule extends ServletModule {
 		serve("/bms/*").with(BMotionStudioServlet.class);
 		serve("/data*").with(DataServlet.class);
 		serve("/content*").with(ContentServlet.class);
+		serve("/bumm*").with(ExpServlet.class);
 
 	}
 
