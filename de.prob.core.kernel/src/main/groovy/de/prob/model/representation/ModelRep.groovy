@@ -7,8 +7,8 @@ import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.classicalb.Property
 import de.prob.model.eventb.Context
+import de.prob.model.eventb.ProofObligation;
 import de.prob.model.eventb.Variant
-import de.prob.model.eventb.proof.ProofObligation
 import de.prob.statespace.StateSpace
 import de.prob.unicode.UnicodeTranslator
 

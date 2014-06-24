@@ -10,7 +10,7 @@ import de.prob.model.eventb.EventBConstant;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.eventb.EventBVariable;
-import de.prob.model.eventb.proof.ProofObligation;
+import de.prob.model.eventb.ProofObligation;
 import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.Machine;
 import de.prob.prolog.output.IPrologTermOutput;

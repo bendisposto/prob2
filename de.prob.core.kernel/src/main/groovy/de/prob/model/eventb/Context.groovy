@@ -1,6 +1,5 @@
 package de.prob.model.eventb;
 
-import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
@@ -47,18 +46,9 @@ public class Context extends AbstractElement {
 		this.axioms = axioms
 	}
 
-	public void addProofs(final ModelElementList<? extends ProofObligation> proofs) {
+	public void addProofs(final ModelElementList<ProofObligation> proofs) {
 		put(ProofObligation.class, proofs);
 		this.proofs = proofs
-	}
-
-	def ModelElementList<ProofObligation> getProofs() {
-		//TODO: Implement way to translate from UncalculatedPO to CalculatedPO
-		return proofs
-	}
-
-	def ModelElementList<ProofObligation> getRawProofs() {
-		return proofs
 	}
 
 	@Override
