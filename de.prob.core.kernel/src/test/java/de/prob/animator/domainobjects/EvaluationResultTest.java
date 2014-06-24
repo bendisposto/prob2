@@ -19,7 +19,8 @@ public class EvaluationResultTest {
 				new HashMap<String, String>(), null);
 		assertEquals("yay", a.toString());
 		EvalResult b = new EvalResult("c1", "yay", solutions, null);
-		assertTrue(b.toString().startsWith("yay: "));
+		assertTrue(b.toString().equals("yay (x = 5 \u2227 y = {1,2,3})")
+				|| b.toString().equals("yay (y = {1,2,3} \u2227 x = 5)"));
 		ComputationNotCompletedResult c = new ComputationNotCompletedResult(
 				"c3", "does not work");
 		assertEquals("does not work", c.toString());
