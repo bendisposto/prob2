@@ -75,11 +75,14 @@ public class StateInspector extends AbstractSession implements
 		if (currentModel != null) {
 			fileWriter.setContent(currentModel.getModelDirPath()
 					+ HISTORY_FILE_NAME, history);
-		}
 
-		Object eval = currentTrace.evalCurrent(currentModel.parseFormula(code));
-		return WebUtils.wrap("cmd", "StateInspector.result", "code",
-				unicode(code), "result", eval.toString());
+			Object eval = currentTrace.evalCurrent(currentModel
+					.parseFormula(code));
+			return WebUtils.wrap("cmd", "StateInspector.result", "code",
+					unicode(code), "result", eval.toString());
+		}
+		return null;
+
 	}
 
 	public Object registerFormula(final Map<String, String[]> params) {

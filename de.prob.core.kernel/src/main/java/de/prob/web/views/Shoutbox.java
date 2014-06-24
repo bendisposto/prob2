@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.AsyncContext;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.annotations.PublicSession;
@@ -19,14 +20,18 @@ import de.prob.web.WebUtils;
 public class Shoutbox extends AbstractSession {
 
 	private final List<Shout> texts = new ArrayList<Shout>();
-	protected boolean incrementalUpdate = false;
+
+	@Inject
+	public Shoutbox() {
+		incrementalUpdate = false;
+	}
 
 	@SuppressWarnings("unused")
 	private static class Shout {
 		public final String text;
 		public final Date time;
 
-		public Shout(String text) {
+		public Shout(final String text) {
 			this.text = text;
 			time = Calendar.getInstance().getTime();
 		}
