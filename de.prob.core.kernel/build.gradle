@@ -107,7 +107,7 @@ dependencies {
 
 	compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
 	
-	compile 'syncserver:syncserver:0.1.0-SNAPSHOT'
+	compile 'syncserver:syncserver:0.1.1-SNAPSHOT'
 	
     compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT'
 

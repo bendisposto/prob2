@@ -1,18 +1,12 @@
 package de.prob.web
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import com.google.common.cache.Cache;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import javax.servlet.ServletException;
+import javax.servlet.ServletException
 import javax.servlet.http.HttpServlet
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
-import syncserver.UIState;
+import com.google.inject.Inject
+import com.google.inject.Singleton
 
 @Singleton
 class ExpServlet extends HttpServlet {

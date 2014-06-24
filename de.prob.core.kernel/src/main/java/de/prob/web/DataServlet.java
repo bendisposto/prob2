@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import syncserver.UIState;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.inject.Singleton;
+
+import de.prob.sync.UIState;
 
 @Singleton
 public class DataServlet extends HttpServlet {
