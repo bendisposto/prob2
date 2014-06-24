@@ -59,9 +59,10 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 		final IEventBRoot rootElement = getRootElement();
 		final IFile resource = extractResource(rootElement);
 
-		removeUnitErrorMarkers(resource);
-
 		if (resource != null) {
+
+			removeUnitErrorMarkers(resource);
+
 			try {
 				// load machine and activate plugin
 				UnitAnalysis ua = ServletContextListener.INJECTOR
@@ -111,7 +112,7 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 		}
 	}
 
-	private void processResults(CompoundPrologTerm result)
+	private void processResults(final CompoundPrologTerm result)
 			throws RodinDBException, ExecutionException {
 		// preprocess the list into a map
 		Map<String, String> variables = new HashMap<String, String>();
@@ -245,8 +246,9 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 					root = (IEventBRoot) element;
 				} else if (element instanceof IFile) {
 					IRodinFile rodinFile = RodinCore.valueOf((IFile) element);
-					if (rodinFile != null)
+					if (rodinFile != null) {
 						root = (IEventBRoot) rodinFile.getRoot();
+					}
 				}
 			}
 		}
