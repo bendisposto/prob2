@@ -96,6 +96,11 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 					"Model Checking complete. No error nodes found.");
 		}
 
+		if (type.equals("full_coverage")) {
+			return new ModelCheckOk(
+					"Model Checking complete. All operations were covered.");
+		}
+
 		if (type.equals("ok_not_all_nodes_considered")) {
 			return new ModelCheckOk(
 					"Model Checking complete. No error nodes found. Not all nodes were considered.");
