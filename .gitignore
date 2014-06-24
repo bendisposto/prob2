@@ -3,6 +3,7 @@
 **/.project
 **/.settings
 **/bin
+**/pom.xml
 .gradle/
 **/lib/dependencies
 **/build/
