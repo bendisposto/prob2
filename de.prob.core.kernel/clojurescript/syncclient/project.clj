@@ -14,6 +14,5 @@
               :source-paths ["src"]
               :compiler {
                 :output-to "syncclient.js"
-                :output-dir "out"
-                :optimizations :advanced
+                :optimizations :simple
                 :source-map "syncclient.js.map"}}]})

@@ -53,7 +53,7 @@ configurations { // configuration that holds jars to copy into lib
 }
 
 
-task buildClojureScript {
+task buildClojureScript << {
 	exec {
 		workingDir = './clojurescript/syncclient'
 		executable = 'chmod'
@@ -64,7 +64,11 @@ task buildClojureScript {
 		executable = 'lein'
 		args = ["cljsbuild","once"]
 	}
-	
+	copy {
+	    from './clojurescript/syncclient/syncclient.js'
+	    from './clojurescript/syncclient/syncclient.js.map'
+        into './src/main/resources/nui/'
+	}
 	
 }
 
@@ -83,7 +87,6 @@ dependencies {
         }
      
 
- 	//groovy 'org.codehaus.groovy:groovy-all:2.0.5'
 
 	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
@@ -154,6 +157,7 @@ dependencies {
 	testCompile "org.gebish:geb-spock:0.9.1"
 	testCompile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.26.0'
 
+	compile 'org.clojure:clojure:1.6.0'
     compile name: 'syncserver-' + syncserver_version
 
 
@@ -314,4 +318,4 @@ eclipse {
 
 magic.dependsOn createBuildConstants
 magic.dependsOn deployKernel
-magic.dependson buildClojureScript
+magic.dependsOn buildClojureScript
