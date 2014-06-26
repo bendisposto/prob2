@@ -137,7 +137,7 @@ class Downloader {
 
 		if(os == "win32") {
 			def target = probhome+"lib.zip";
-			download(versionurl+"windowslib.zip",target)
+			download(versionurl+"windowslib32.zip",target)
 			File r = new File(target)
 			r.unzip(probhome)
 			r.delete()
