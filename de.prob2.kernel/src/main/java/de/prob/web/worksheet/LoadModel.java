@@ -3,6 +3,8 @@ package de.prob.web.worksheet;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
@@ -36,7 +38,11 @@ public class LoadModel extends AbstractBox {
 			return pack(makeHtml(id,
 					"<span class='illegal_file'> Not a valid ProB file. </span>"));
 		} else {
-			String name = load_file(file.getAbsolutePath());
+			String absPath=file.getAbsolutePath();
+			// Double Escape Paths separators if necessary
+			if(File.separatorChar=='\\')
+				absPath=absPath.replaceAll(Pattern.quote("\\"), Matcher.quoteReplacement("\\\\"));
+			String name = load_file(absPath);
 			return pack(makeHtml(id, "<b>" + content
 					+ " has been loaded and stored in " + name + " </b>"));
 		}
