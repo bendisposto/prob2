@@ -2,40 +2,97 @@ package de.prob.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.gson.Gson;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.OpInfo;
+import de.prob.statespace.Trace;
+import de.prob.statespace.TraceElement;
 import de.prob.sync.UIState;
 
 @Singleton
-public class DataServlet extends HttpServlet {
-
-	private static final Gson GSON = new Gson();
+public class DataServlet extends HttpServlet implements
+		IAnimationChangeListener {
 
 	private static final long serialVersionUID = -6568158351553781071L;
-	Cache<Integer, Object> states = CacheBuilder.newBuilder()
-			.expireAfterWrite(5, TimeUnit.SECONDS).build();
+	private final AnimationSelector animations;
+
+	@Inject
+	public DataServlet(AnimationSelector animations) {
+		this.animations = animations;
+		animations.registerAnimationChangeListener(this);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String state = req.getParameter("state");
-		Object[] delta = UIState.delta(state);
+		String delta = UIState.delta(state);
 		resp.setContentType("text/edn");
 		PrintWriter writer = resp.getWriter();
-		writer.write(delta[0].toString());
-		writer.write('\n');
-		writer.write(delta[1].toString());
+		writer.write(delta);
 		writer.flush();
 		writer.close();
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void traceChange(Trace currentTrace, boolean currentAnimationChanged) {
+		String traceId = currentTrace.getUUID().toString();
+		String component = currentTrace.getModel().getMainComponent()
+				.toString();
+		List<String> path1 = Arrays.asList(new String[] { component, traceId,
+				"past" });
+
+		TraceElement element = currentTrace.getHead();
+		TraceElement current = currentTrace.getCurrent();
+
+		ArrayList past = new ArrayList();
+		ArrayList future = new ArrayList();
+
+		List selected = future;
+
+		while (element.getPrevious() != null) {
+			OpInfo op = element.getOp();
+			String rep = op.getRep(currentTrace.getModel());
+			if (element == current) {
+				selected = past;
+			}
+			selected.add(rep);
+			element = element.getPrevious();
+		}
+
+		List<String> path2 = Arrays.asList(new String[] { component, traceId,
+				"future" });
+
+		ArrayList t1 = new ArrayList();
+		t1.add(path1);
+		t1.add(past);
+		ArrayList t2 = new ArrayList();
+		t2.add(path2);
+		t2.add(future);
+
+		List tt = new ArrayList();
+		tt.add(t1);
+		tt.add(t2);
+
+		UIState.transact(tt);
+
+	}
+
+	@Override
+	public void animatorStatus(boolean busy) {
+
 	}
 }

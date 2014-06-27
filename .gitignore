@@ -28,3 +28,4 @@ de.prob.core.kernel/src/test/resources/tla/Foo/
 /de.prob.core.kernel/src/test/resources/tla/ForDistribution/Club/prob2preferences
 de.prob.core.kernel/lib/localjar
 de.prob.core.kernel/src/main/resources/gui/js/syncclient/out
+syncclient.js

@@ -50,7 +50,7 @@ configurations { // configuration that holds jars to copy into lib
 	releaseJars  }
 
 
-task buildClojureScript << {
+task buildClojureScript  {
 
     file("./clojurescript/").listFiles().findAll {it.isDirectory() }.each {
       proj -> 
@@ -185,6 +185,9 @@ dependencies {
 
 	compile 'org.clojure:clojure:1.6.0'
 	compile name: 'syncserver-' + syncserver_version
+	
+	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
+	
 
 
 }
@@ -346,4 +349,4 @@ magic.dependsOn createBuildConstants
 magic.dependsOn deployKernel
 magic.dependsOn buildClojureScript
 
-clean.dependsOn cleanClojureScript
+

@@ -50,28 +50,29 @@ will not be present in the new structure."
   (map mk-fn updates))
 
 (defn receiver [event]
-  (let [response (.-target event)
-        [id content] (string/split-lines (.getResponseText response))
-        changes (r/read-string content)
-        _ (println "c" changes)
+  (let [response (.getResponseText (.-target event))
+    _ (println response)
+        [id changes] (r/read-string response)
+        _ (println "id" id)
+        _ (println "content" changes)
         chg-fkt (apply comp (map mk-fn changes))
         ]
     (swap! state (fn [cs] (let [os (:state cs)
                                ns (chg-fkt os)]
-                           (println os)
-                           (println ns)
-                           (assoc s :current id :state ns))))
-    (doseq [c changes] (println c))
-    (println @state)
+                           (assoc os :current id :state ns))))
     #_(.write js/document text)))
 
-(defn get [url]
+(defn get-state [url]
   (xhr/send url receiver "GET" ""))
 
+(defn ^:extern pp-state []
+  (println "ID:" (:current @state))
+  (println "State:" (:state @state)))
 
 
 (defn ^:extern get-updates []
-  (println @state)
-  (let [url (str  "http://localhost:8080/data?state=" (:current @state))]
-    (println url)
-    (get url)))
+  (let [url (str  "/data?state=" (:current @state))]
+    (get-state url)))
+
+
+
