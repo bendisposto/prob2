@@ -21,9 +21,7 @@ repositories {
 		url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
 	}
 
-	flatDir {
-        dirs 'clojure/syncserver/target'
-    }
+	flatDir { dirs 'lib/localjar' }
 }
 
 
@@ -49,44 +47,73 @@ sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as gr
 def parser_version = '2.4.22-SNAPSHOT'
 
 configurations { // configuration that holds jars to copy into lib
-	releaseJars 
-}
+	releaseJars  }
 
 
 task buildClojureScript << {
-	exec {
-		workingDir = './clojurescript/syncclient'
-		executable = 'chmod'
-		args = ["-x","lein"]
-	}
-	exec {
-		workingDir = './clojurescript/syncclient'
-		executable = 'lein'
-		args = ["cljsbuild","once"]
-	}
-	copy {
-	    from './clojurescript/syncclient/syncclient.js'
-	    from './clojurescript/syncclient/syncclient.js.map'
-        into './src/main/resources/nui/'
-	}
-	
+
+    file("./clojurescript/").listFiles().findAll {it.isDirectory() }.each {
+      proj -> 
+        println "Compiling ClojureScript: "+proj
+   	    exec {
+		  workingDir = proj
+		  executable = 'chmod'
+		  args = ["-x", "lein"]
+	    }
+	    exec {
+		  workingDir = proj
+		  executable = 'lein'
+		  args = ["cljsbuild", "once"]
+	    }
+
+	   
+	}    
 }
+
+
+task cleanClojureScript << {
+	
+		file("./clojurescript/").listFiles().findAll {it.isDirectory() }.each {
+		  proj ->
+			println "Compiling ClojureScript: "+proj
+			   exec {
+			  workingDir = proj
+			  executable = 'chmod'
+			  args = ["-x", "lein"]
+			}
+			exec {
+			  workingDir = proj
+			  executable = 'lein'
+			  args = ["cljsbuild", "clean"]
+			}
+	
+		   
+		}
+	}
+
+
 
 dependencies {
 
-    
-        exec {
-            workingDir = './clojure/syncserver'
-            executable = 'chmod'
-            args = ["-x","lein"]
-        }
-        exec {
-            workingDir = './clojure/syncserver'
-            executable = 'lein'
-            args = ["jar"]
-        }
-     
+ println "Wiping out lib/localjar"
+ file('lib/localjar/').listFiles().each {delete it}
 
+ file("./clojure/").listFiles().findAll {it.isDirectory() }.each {
+      proj -> 
+    println "Compiling Clojure: "+proj
+	exec {
+		workingDir = proj
+		executable = 'chmod'
+		args = ["-x", "lein"]
+	}
+	exec {
+		workingDir = proj
+		executable = 'lein'
+		args = ["jar"]
+	}
+    println "Cleaning lib/localjar"
+	file('lib/localjar/').listFiles().findAll { !it.getAbsolutePath().endsWith(".jar")}. each {delete it}
+ }
 
 	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
@@ -118,7 +145,7 @@ dependencies {
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
 	// If you consider to update jetty ... just don't
-	// it'll make you puke 
+	// it'll make you puke
 	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-server:8.0.0.M3' // EPL
 	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3' // EPL
@@ -127,7 +154,7 @@ dependencies {
 
 	compile 'org.antlr:antlr4-runtime:4.0'
 	compile 'de.prob:ltl-dsl:1.0.0'
-	
+
 	compile 'org.jsoup:jsoup:1.7.2' // MIT
 
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
@@ -138,19 +165,18 @@ dependencies {
 	compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
 	compile group: "de.prob", name: "unicode", version: parser_version , changing: true
 	compile group: "de.prob", name: "theorymapping", version: parser_version, changing: true
-	
+
 	compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT', changing: true
 
 	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
 
 	compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
 
-    compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT'
+	compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT'
 
 	compile 'junit:junit:4.8.2'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
-	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
-	
+
 	compile 'org.jsoup:jsoup:1.7.2'
 
 	testCompile 'org.mockito:mockito-core:1.8.5'
@@ -158,7 +184,7 @@ dependencies {
 	testCompile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.26.0'
 
 	compile 'org.clojure:clojure:1.6.0'
-    compile name: 'syncserver-' + syncserver_version
+	compile name: 'syncserver-' + syncserver_version
 
 
 }
@@ -187,7 +213,7 @@ def listJars() {
 
 jar {
 	from sourceSets.main.allJava
-    //from configurations.releaseJars.collect { it.isDirectory() ? it : zipTree(it) }
+	//from configurations.releaseJars.collect { it.isDirectory() ? it : zipTree(it) }
 	manifest {
 		attributes 'Main-Class': 'de.prob.Main'
 		attributes 'Class-Path': listJars()
@@ -319,3 +345,5 @@ eclipse {
 magic.dependsOn createBuildConstants
 magic.dependsOn deployKernel
 magic.dependsOn buildClojureScript
+
+clean.dependsOn cleanClojureScript

@@ -13,6 +13,7 @@
     :builds [{:id "syncclient"
               :source-paths ["src"]
               :compiler {
-                :output-to "syncclient.js"
-                :optimizations :simple
-                :source-map "syncclient.js.map"}}]})
+                :output-dir "../../src/main/resources/gui/js/syncclient/out"
+                :output-to "../../src/main/resources/gui/js/syncclient/syncclient.js"
+                :optimizations :none
+                :source-map "../../src/main/resources/gui/js/syncclient/syncclient.js.map"}}]})

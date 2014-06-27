@@ -1,7 +1,5 @@
 package de.prob.bmotion;
 
-import com.github.mustachejava.DefaultMustacheFactory
-import com.github.mustachejava.Mustache
 import com.google.common.base.Function
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject;
@@ -13,31 +11,30 @@ import de.prob.statespace.Trace
 class Observer implements IBMotionScript {
 
 	private BMotionStudioSession bmssession
-	def mf = new DefaultMustacheFactory()
 	def builder = new groovy.json.JsonBuilder()
-	
+
 	def Observer(bmssession) {
 		this.bmssession = bmssession
 	}
 
 	private void EvalObserver(JsonObject observer, Trace trace) {
-		
+
 		def factions = []
 		observer.objs.each { obj ->
-			
+
 			def fselector = obj.selector.getAsString()
-			
+
 			obj.bindings.each { item ->
-				
+
 				def fpredicate = true
 				def fvalue = ""
-				
+
 				if(item.type.getAsString() == "predicate") {
 					fpredicate = bmssession.eval(item.formula.getAsString())
 				} else if(item.type.getAsString() == "expression" && item.formula != null) {
 					fvalue = bmssession.eval(item.formula.getAsString())
 				}
-					
+
 				if(fpredicate) {
 
 					item.actions.each { act ->
@@ -51,21 +48,20 @@ class Observer implements IBMotionScript {
 						]
 						factions = factions + data
 					}
-					
 				}
-				
 			}
 		}
 		bmssession.toGui(builder {
 			cmd 'bms.triggerObserverActions'
 			actions builder.call(factions.findAll { item -> item != null })
 		})
-		
 	}
 
 	def ExecuteOperation(observer, trace) {
 		def jsonObserver = new com.google.gson.Gson().toJson(observer.objs)
-		bmssession.toGui(["initExecuteOperationObserver("+jsonObserver+")"])
+		bmssession.toGui([
+			"initExecuteOperationObserver("+jsonObserver+")"
+		])
 	}
 
 	private void CspEventObserver(JsonObject observer, Trace trace) {
@@ -144,14 +140,8 @@ class Observer implements IBMotionScript {
 		}
 	}
 
-	def mustacheRender(s,scope) {
-		def writer = new StringWriter()
-		Mustache mustache = mf.compile(new StringReader(s.toString()), "bms");
-		mustache.execute(writer, scope);
-		writer.toString()
-	}
+
 
 	public void modelChanged(StateSpace statespace) {
 	}
-	
 }
