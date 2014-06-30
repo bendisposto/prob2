@@ -52,8 +52,21 @@ public class DataServlet extends HttpServlet implements
 		String traceId = currentTrace.getUUID().toString();
 		String component = currentTrace.getModel().getMainComponent()
 				.toString();
-		List<String> path1 = Arrays.asList(new String[] { component, traceId,
-				"past" });
+
+		List<String> cpath = Arrays.asList(new String[] { "current-animation",
+				"component" });
+		List<String> upath = Arrays.asList(new String[] { "current-animation",
+				"uuid" });
+
+		ArrayList tc = new ArrayList();
+		tc.add(cpath);
+		tc.add(component);
+
+		ArrayList tu = new ArrayList();
+		tu.add(upath);
+		tu.add(traceId);
+
+		List<String> path1 = Arrays.asList(new String[] { traceId, "past" });
 
 		TraceElement element = currentTrace.getHead();
 		TraceElement current = currentTrace.getCurrent();
@@ -73,8 +86,7 @@ public class DataServlet extends HttpServlet implements
 			element = element.getPrevious();
 		}
 
-		List<String> path2 = Arrays.asList(new String[] { component, traceId,
-				"future" });
+		List<String> path2 = Arrays.asList(new String[] { traceId, "future" });
 
 		ArrayList t1 = new ArrayList();
 		t1.add(path1);
@@ -86,6 +98,8 @@ public class DataServlet extends HttpServlet implements
 		List tt = new ArrayList();
 		tt.add(t1);
 		tt.add(t2);
+		tt.add(tc);
+		tt.add(tu);
 
 		UIState.transact(tt);
 

@@ -1,7 +1,8 @@
-(ns syncclient.core
+(ns prob-ui.syncclient
   (:require [goog.Uri :as uri]
             [goog.net.XhrIo :as xhr]
-            [clojure.string :as string]
+            [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true]
             [cljs.reader :as r]))
 
 (enable-console-print!)
@@ -23,24 +24,32 @@ will not be present in the new structure."
 (defn prep-merge [path mergemap]
   (if (seq path) (assoc-in {} path mergemap) mergemap))
 
-(def state (atom {:current -1 :state {}}))
+(def ^:export state (atom {:current -1 :state {}}))
 
 (defmulti mk-fn first)
 
-(defmethod mk-fn :set [[_ path val]] (fn [s] (println :set-fn s path val)
+(defmethod mk-fn :set [[_ path val]] (fn [s] 
+  (println :set s path val)
                                        (if (seq path)
                                          (update-in s path (constantly val))
                                          (merge s val))))
+
 (defmethod mk-fn :del-keys [[_ path dkys]]
-  (fn [s] (let [x (map #(into path %) dkys)]
+  (fn [s] 
+     (println :delkeys s path dkys)
+    (let [x (map #(into path %) dkys)]
            (reduce (fn [s e] (dissoc-in s e)) s dkys))))
+
 (defmethod mk-fn :merge [[_ path add]]
-  (fn [s] (merge s (prep-merge path add))))
+  (fn [s] (println :merge s path add)
+    (merge s (prep-merge path add))))
+
 (defmethod mk-fn :concat [[_ path elems]]
-  (fn [s] (update-in s path #(into % elems))))
+  (fn [s] (println :concat s path elems)
+    (update-in s path #(into % elems))))
+
 (defmethod mk-fn :del [[_ path index]]
-  (println "Call del" index "@" path)
-  (fn [s] (update-in s path
+  (fn [s] (println :del s path index)(update-in s path
                     (fn [v]
                       (into [] (remove nil?
                                        (map-indexed (fn [i v] (if ((into #{} index) i) nil v)) v)))))))
@@ -55,24 +64,28 @@ will not be present in the new structure."
         [id changes] (r/read-string response)
         _ (println "id" id)
         _ (println "content" changes)
-        chg-fkt (apply comp (map mk-fn changes))
+        fns (doall (map mk-fn changes))
+        _ (println "fns" fns)
+        chg-fkt (apply comp fns)
         ]
     (swap! state (fn [cs] (let [os (:state cs)
-                               ns (chg-fkt os)]
-                           (assoc os :current id :state ns))))
-    #_(.write js/document text)))
+      _ (println "oldstate" os)
+                                ns (chg-fkt os)
+                                _ (println "newstate" ns)]
+                           (assoc os :current id :state ns)))))
+  (println "receiver done"))
 
 (defn get-state [url]
-  (xhr/send url receiver "GET" ""))
+  (xhr/send url receiver "GET" "")
+  (println "get-state done"))
 
-(defn ^:extern pp-state []
-  (println "ID:" (:current @state))
-  (println "State:" (:state @state)))
+(defn ^:export pp-state []
+  (let [cs @state]
+    (println "ID:" (cs :current))
+    (println "State:" (cs :state))))
 
-
-(defn ^:extern get-updates []
+(defn ^:export get-updates []
   (let [url (str  "/data?state=" (:current @state))]
     (get-state url)))
-
 
 
