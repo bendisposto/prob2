@@ -7,6 +7,8 @@
 
 (enable-console-print!)
 
+(declare notify-watchers)
+
 (defn dissoc-in
   "Dissociates an entry from a nested associative structure returning a new
 nested structure. keys is a sequence of keys. Any empty maps that result
@@ -64,15 +66,17 @@ will not be present in the new structure."
         [id changes] (r/read-string response)
         _ (println "id" id)
         _ (println "content" changes)
+        modpath (doall (map second changes))
         fns (doall (map mk-fn changes))
         _ (println "fns" fns)
         chg-fkt (apply comp fns)
         ]
     (swap! state (fn [cs] (let [os (:state cs)
-      _ (println "oldstate" os)
+                                _ (println "oldstate" os)
                                 ns (chg-fkt os)
                                 _ (println "newstate" ns)]
-                           (assoc os :current id :state ns)))))
+                           (assoc os :current id :state ns))))
+                           (notify-watchers modpath))
   (println "receiver done"))
 
 (defn get-state [url]
@@ -87,5 +91,17 @@ will not be present in the new structure."
 (defn ^:export get-updates []
   (let [url (str  "/data?state=" (:current @state))]
     (get-state url)))
+
+(def watchers (atom {}))
+
+(defn ^:export register-watcher [nme js-fn]
+  (swap! watchers assoc nme js-fn))
+
+(defn ^:export deregister-watcher [nme js-fn]
+  (swap! watchers dissoc-in nme))
+
+(defn ^:export notify-watchers [paths]
+  (doseq [[_ w] @watchers]
+    (w paths)))
 
 

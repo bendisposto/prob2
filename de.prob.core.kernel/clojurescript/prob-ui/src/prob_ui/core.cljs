@@ -45,3 +45,10 @@
   history-view
   sync/state
   {:target (. js/document (getElementById "app"))})
+
+(when-let [t (. js/document (getElementById "blapp"))]
+ (om/root
+  history-view
+  sync/state
+  {:target t}))
+
