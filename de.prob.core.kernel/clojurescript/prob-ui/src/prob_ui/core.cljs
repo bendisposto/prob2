@@ -5,42 +5,33 @@
 
 (enable-console-print!)
 
-(sync/pp-state)
 
-(defn mk-history-item [cn]
- (fn [app owner]
+(defn history-item [[_ app] owner]
   (reify
     om/IRenderState
     (render-state [a b]
- 	   (dom/li #js {:className cn} app)))))
-
-
-
+ 	   (dom/li #js {:className (get app "type")} (get app "name")))))
 
 (defn history-view [app owner]
   (reify
     om/IRenderState
     (render-state [a b]
-      (println "params" (print-str a) (print-str b))
       (let [s (:state app)
   		  uuid (get-in s ["current-animation" "uuid"])
-  		  past (get-in s [uuid "past"])
-  		  futr (get-in s [uuid "future"])
-  		  curr (first past)
-  		  past (rest past)]
+  		  hist1 (into [["0" {"name" "--root--" "type" "start"}]] 
+          (sort-by first (get-in s [uuid])))
+        history (if (:history-reverse (:localstate app)) (reverse hist1) hist1)
+        ]
         (dom/div nil
-          (dom/header #js {:id "header"}
-            (dom/h1 nil "History")
+           (dom/button
+            #js {:onClick
+              (fn [] (let [ls (:history-reverse (:localstate @sync/state))]
+                (swap! sync/state assoc-in [:localstate :history-reverse] (not ls))))
+            }
+            "Reverse Order")
             (apply dom/ul #js {:id "filters"} 
-            	(concat 
-            		(om/build-all (mk-history-item "future") futr)
-            		[(dom/li #js {:className "current"} curr)]
-            		(om/build-all (mk-history-item "past") past)
-            		[(dom/li #js {:className "start"} "--root--")]
-)
-            	
-            	)))))))
-
+            	(om/build-all history-item history)))))))
+ 
 (om/root
   history-view
   sync/state

@@ -23,7 +23,7 @@ import de.prob.sync.UIState;
 
 @Singleton
 public class DataServlet extends HttpServlet implements
-		IAnimationChangeListener {
+IAnimationChangeListener {
 
 	private static final long serialVersionUID = -6568158351553781071L;
 	private final AnimationSelector animations;
@@ -36,7 +36,7 @@ public class DataServlet extends HttpServlet implements
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	throws ServletException, IOException {
 		String state = req.getParameter("state");
 		String delta = UIState.delta(state);
 		resp.setContentType("text/edn");
@@ -46,67 +46,70 @@ public class DataServlet extends HttpServlet implements
 		writer.close();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void traceChange(Trace currentTrace, boolean currentAnimationChanged) {
 		String traceId = currentTrace.getUUID().toString();
 		String component = currentTrace.getModel().getMainComponent()
 				.toString();
 
-		List<String> cpath = Arrays.asList(new String[] { "current-animation",
-				"component" });
-		List<String> upath = Arrays.asList(new String[] { "current-animation",
-				"uuid" });
+		def tt = []
 
-		ArrayList tc = new ArrayList();
-		tc.add(cpath);
-		tc.add(component);
-
-		ArrayList tu = new ArrayList();
-		tu.add(upath);
-		tu.add(traceId);
-
-		List<String> path1 = Arrays.asList(new String[] { traceId, "past" });
+		tt << [
+			[
+				"current-animation",
+				"component"
+			],
+			component
+		]
+		tt << [
+			["current-animation", "uuid"],
+			traceId
+		]
 
 		TraceElement element = currentTrace.getHead();
 		TraceElement current = currentTrace.getCurrent();
 
-		ArrayList past = new ArrayList();
-		ArrayList future = new ArrayList();
-
-		List selected = future;
+		boolean past = false;
 
 		while (element.getPrevious() != null) {
 			OpInfo op = element.getOp();
 			String rep = op.getRep(currentTrace.getModel());
 			if (element == current) {
-				selected = past;
+				tt << [
+					[
+						traceId,
+						element.index.toString(),
+						"type"
+					],
+					"current"
+				]
+				past = true;
 			}
-			selected.add(rep);
+			else {
+				tt << [
+					[
+						traceId,
+						element.index.toString(),
+						"type"
+					],
+					past?"past":"future"
+				]
+			}
+			tt << [
+				[
+					traceId,
+					element.index.toString(),
+					"name"
+				],
+				rep
+			]
 			element = element.getPrevious();
 		}
 
-		List<String> path2 = Arrays.asList(new String[] { traceId, "future" });
-
-		ArrayList t1 = new ArrayList();
-		t1.add(path1);
-		t1.add(past);
-		ArrayList t2 = new ArrayList();
-		t2.add(path2);
-		t2.add(future);
-
-		List tt = new ArrayList();
-		tt.add(t1);
-		tt.add(t2);
-		tt.add(tc);
-		tt.add(tu);
-
 		UIState.transact(tt);
-
 	}
 
 	@Override
 	public void animatorStatus(boolean busy) {
-
 	}
 }

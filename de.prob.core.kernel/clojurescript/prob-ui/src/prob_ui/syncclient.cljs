@@ -26,32 +26,32 @@ will not be present in the new structure."
 (defn prep-merge [path mergemap]
   (if (seq path) (assoc-in {} path mergemap) mergemap))
 
-(def ^:export state (atom {:current -1 :state {}}))
+(def ^:export state (atom {:current -1 :state {} :localstate {:history-reverse true}}))
 
 (defmulti mk-fn first)
 
 (defmethod mk-fn :set [[_ path val]] (fn [s] 
-  (println :set s path val)
+  (println :set  path val)
                                        (if (seq path)
                                          (update-in s path (constantly val))
                                          (merge s val))))
 
 (defmethod mk-fn :del-keys [[_ path dkys]]
   (fn [s] 
-     (println :delkeys s path dkys)
+     (println :delkeys  path dkys)
     (let [x (map #(into path %) dkys)]
            (reduce (fn [s e] (dissoc-in s e)) s dkys))))
 
 (defmethod mk-fn :merge [[_ path add]]
-  (fn [s] (println :merge s path add)
+  (fn [s] (println :merge  path add)
     (merge s (prep-merge path add))))
 
 (defmethod mk-fn :concat [[_ path elems]]
-  (fn [s] (println :concat s path elems)
+  (fn [s] (println :concat  path elems)
     (update-in s path #(into % elems))))
 
 (defmethod mk-fn :del [[_ path index]]
-  (fn [s] (println :del s path index)(update-in s path
+  (fn [s] (println :del  path index)(update-in s path
                     (fn [v]
                       (into [] (remove nil?
                                        (map-indexed (fn [i v] (if ((into #{} index) i) nil v)) v)))))))
@@ -62,20 +62,21 @@ will not be present in the new structure."
 
 (defn receiver [event]
   (let [response (.getResponseText (.-target event))
-    _ (println response)
+   ; _ (println response)
         [id changes] (r/read-string response)
-        _ (println "id" id)
-        _ (println "content" changes)
+  ;      _ (println "id" id)
+   ;     _ (println "content" changes)
         modpath (doall (map second changes))
         fns (doall (map mk-fn changes))
-        _ (println "fns" fns)
+  ;      _ (println "fns" fns)
         chg-fkt (apply comp fns)
         ]
     (swap! state (fn [cs] (let [os (:state cs)
                                 _ (println "oldstate" os)
                                 ns (chg-fkt os)
-                                _ (println "newstate" ns)]
-                           (assoc os :current id :state ns))))
+                                _ (println "newstate" ns)
+                              ]
+                           (assoc cs :current id :state ns))))
                            (notify-watchers modpath))
   (println "receiver done"))
 
@@ -86,7 +87,8 @@ will not be present in the new structure."
 (defn ^:export pp-state []
   (let [cs @state]
     (println "ID:" (cs :current))
-    (println "State:" (cs :state))))
+    (println "State:" (cs :state))
+    (println "Localstate" (cs :localstate))))
 
 (defn ^:export get-updates []
   (let [url (str  "/data?state=" (:current @state))]
