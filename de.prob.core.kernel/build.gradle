@@ -3,10 +3,19 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'findbugs'
-//apply plugin: 'eclipse-wtp'
-//apply plugin: 'war'
-//apply plugin: 'jetty'
 
+
+apply plugin: 'compass'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'http://dl.bintray.com/robfletcher/gradle-plugins' }
+    }
+    dependencies {
+        classpath 'org.gradle.plugins:gradle-compass:1.0.7'
+    }
+}
 
 project.group = 'de.prob'
 sourceCompatibility = 1.6
@@ -92,28 +101,36 @@ task cleanClojureScript << {
 	}
 
 
+compass {
+    cssDir = file('src/main/resources/gui/style')
+    sassDir = file('src/main/sass')
+}
+
+def compileClojure() {
+	 println "Wiping out lib/localjar"
+     file('lib/localjar/').listFiles().each {delete it}
+
+     file("./clojure/").listFiles().findAll {it.isDirectory() }.each {
+        proj -> 
+        println "Compiling Clojure: "+proj
+	    exec {
+	  	  workingDir = proj
+		  executable = 'chmod'
+		  args = ["-x", "lein"]
+	    }
+	   exec {
+		  workingDir = proj
+		  executable = 'lein'
+		  args = ["jar"]
+	   }
+       println "Cleaning lib/localjar"
+	   file('lib/localjar/').listFiles().findAll { !it.getAbsolutePath().endsWith(".jar")}. each {delete it}
+     }
+}
 
 dependencies {
 
- println "Wiping out lib/localjar"
- file('lib/localjar/').listFiles().each {delete it}
-
- file("./clojure/").listFiles().findAll {it.isDirectory() }.each {
-      proj -> 
-    println "Compiling Clojure: "+proj
-	exec {
-		workingDir = proj
-		executable = 'chmod'
-		args = ["-x", "lein"]
-	}
-	exec {
-		workingDir = proj
-		executable = 'lein'
-		args = ["jar"]
-	}
-    println "Cleaning lib/localjar"
-	file('lib/localjar/').listFiles().findAll { !it.getAbsolutePath().endsWith(".jar")}. each {delete it}
- }
+    compileClojure()
 
 	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
