@@ -30,3 +30,5 @@ de.prob.core.kernel/lib/localjar
 de.prob.core.kernel/src/main/resources/gui/js/syncclient/out
 syncclient.js
 prob_ui.js
+de.prob.core.kernel/clojurescript/prob-ui/src/prob_ui/#core.cljs#
+de.prob.core.kernel/clojurescript/prob-ui/src/prob_ui/.#core.cljs
