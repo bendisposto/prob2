@@ -57,7 +57,7 @@ configurations { // configuration that holds jars to copy into lib
 	releaseJars  }
 
 
-task buildClojureScript  {
+task buildClojureScript << {
 
     file("./clojurescript/").listFiles().findAll {it.isDirectory() }.each {
       proj -> 
@@ -72,14 +72,11 @@ task buildClojureScript  {
 		  executable = 'lein'
 		  args = ["cljsbuild", "once"]
 	    }
-
-	   
 	}    
 }
 
 
 task cleanClojureScript << {
-	
 		file("./clojurescript/").listFiles().findAll {it.isDirectory() }.each {
 		  proj ->
 			println "Compiling ClojureScript: "+proj
@@ -93,8 +90,6 @@ task cleanClojureScript << {
 			  executable = 'lein'
 			  args = ["cljsbuild", "clean"]
 			}
-	
-		   
 		}
 	}
 
