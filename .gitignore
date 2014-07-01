@@ -32,3 +32,6 @@ syncclient.js
 prob_ui.js
 de.prob.core.kernel/clojurescript/prob-ui/src/prob_ui/#core.cljs#
 de.prob.core.kernel/clojurescript/prob-ui/src/prob_ui/.#core.cljs
+de.prob.core.kernel/.jruby
+prob_ui.css
+de.prob.core.kernel/.sass-cache
