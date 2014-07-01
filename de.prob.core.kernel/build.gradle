@@ -29,8 +29,6 @@ repositories {
 		name "cobra"
 		url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
 	}
-
-	flatDir { dirs 'lib/localjar' }
 }
 
 
@@ -106,31 +104,8 @@ compass {
     sassDir = file('src/main/sass')
 }
 
-def compileClojure() {
-	 println "Wiping out lib/localjar"
-     file('lib/localjar/').listFiles().each {delete it}
-
-     file("./clojure/").listFiles().findAll {it.isDirectory() }.each {
-        proj -> 
-        println "Compiling Clojure: "+proj
-	    exec {
-	  	  workingDir = proj
-		  executable = 'chmod'
-		  args = ["-x", "lein"]
-	    }
-	   exec {
-		  workingDir = proj
-		  executable = 'lein'
-		  args = ["jar"]
-	   }
-       println "Cleaning lib/localjar"
-	   file('lib/localjar/').listFiles().findAll { !it.getAbsolutePath().endsWith(".jar")}. each {delete it}
-     }
-}
 
 dependencies {
-
-    compileClojure()
 
 	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
@@ -201,7 +176,8 @@ dependencies {
 	testCompile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.26.0'
 
 	compile 'org.clojure:clojure:1.6.0'
-	compile name: 'syncserver-' + syncserver_version
+	compile 'syncserver:syncserver:0.1.2-SNAPSHOT'
+
 	
 	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
 	
