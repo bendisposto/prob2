@@ -48,9 +48,13 @@ public class EvalResult implements IEvalResult {
 		return value + " (" + UnicodeTranslator.toUnicode(Joiner.on(" & ").join(sols)) + ")";
 	}
 
+	/**
+	 * @param name
+	 * @return This will search for a given solutionSource and translate it to a Groovy object
+	 */
 	def getProperty(String name) {
-		if(solutions.containsKey(name)) {
-			return solutions[name]
+		if(solutionsSource.containsKey(name)) {
+			return new ValueTranslator().toGroovy(solutionsSource[name])
 		}
 		return getMetaClass().getProperty(this, name)
 	}
