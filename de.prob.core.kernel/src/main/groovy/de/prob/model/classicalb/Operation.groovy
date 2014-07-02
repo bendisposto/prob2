@@ -1,14 +1,16 @@
 package de.prob.model.classicalb;
 
+import com.google.common.base.Joiner
+
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Guard
 import de.prob.model.representation.ModelElementList
 
 public class Operation extends BEvent {
 
-	private final List<String> parameters;
-	private final List<String> output;
-	private ModelElementList<Guard> guards = new ModelElementList<Guard>()
+	def final List<String> parameters;
+	def final List<String> output;
+	def ModelElementList<Guard> guards = new ModelElementList<Guard>()
 
 	public Operation(final String name, final List<String> parameters,
 	final List<String> output) {
@@ -22,35 +24,20 @@ public class Operation extends BEvent {
 		this.guards = guards
 	}
 
-	public List<String> getParameters() {
-		return parameters;
-	}
-
-	public List<String> getOutput() {
-		return output;
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Name: " + getName() + "\n");
+
 		if (!output.isEmpty()) {
-			sb.append("Output: \n");
 			for (String string : output) {
-				sb.append(string + "\n");
+				sb.append(string + " <-- ");
 			}
 		}
+		sb.append(getName());
 		if (!parameters.isEmpty()) {
-			sb.append("Params: \n");
-			for (String string : parameters) {
-				sb.append(string + "\n");
-			}
-		}
-		if (!guards.isEmpty()) {
-			sb.append("Guards \n");
-			for (Guard guard : guards) {
-				sb.append(guard.toString() + '\n');
-			}
+			sb.append("(");
+			sb.append(Joiner.on(",").join(parameters.iterator()));
+			sb.append(")");
 		}
 		return sb.toString();
 	}
