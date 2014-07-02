@@ -6,9 +6,9 @@ import de.prob.model.representation.ModelElementList
 
 public class Operation extends BEvent {
 
-	private final List<String> parameters;
-	private final List<String> output;
-	private ModelElementList<Guard> guards = new ModelElementList<Guard>()
+	def final List<String> parameters;
+	def final List<String> output;
+	def ModelElementList<Guard> guards = new ModelElementList<Guard>()
 
 	public Operation(final String name, final List<String> parameters,
 	final List<String> output) {
@@ -20,18 +20,6 @@ public class Operation extends BEvent {
 	public void addGuards(final ModelElementList<ClassicalBGuard> guards) {
 		put(Guard.class, guards);
 		this.guards = guards
-	}
-
-	public List<String> getParameters() {
-		return parameters;
-	}
-
-	public ModelElementList<Guard> getGuards() {
-		return guards;
-	}
-
-	public List<String> getOutput() {
-		return output;
 	}
 
 	@Override
