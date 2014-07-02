@@ -1,6 +1,7 @@
 package de.prob.statespace;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluateRegisteredFormulasCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.command.ExploreStateCommand;
+import de.prob.animator.command.FindValidStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;
@@ -749,6 +751,22 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	public Trace getTrace(final ITraceDescription description) {
 		return description.getTrace(this);
+	}
+
+	/**
+	 * Takes an {@link IEvalElement} containing a predicate and returns a
+	 * {@link Trace} containing only a magic operation that leads to valid state
+	 * where the preciate holds.
+	 * 
+	 * @param predicate
+	 *            predicate that should hold in the valid state
+	 * @return {@link Trace} containing a magic operation leading to the state.
+	 */
+	public Trace getTraceToState(final IEvalElement predicate) {
+		FindValidStateCommand cmd = new FindValidStateCommand(predicate);
+		execute(cmd);
+		return getTrace(new ArrayList<String>(Arrays.asList(cmd.getOperation()
+				.getId())));
 	}
 
 	public void setAnimator(final IAnimator animator) {
