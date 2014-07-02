@@ -337,4 +337,7 @@ magic.dependsOn createBuildConstants
 magic.dependsOn deployKernel
 magic.dependsOn buildClojureScript
 
+processResources.inputs.files compileSass
+clean.dependsOn cleanCompileSass
+
 
