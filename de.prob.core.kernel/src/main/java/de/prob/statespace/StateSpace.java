@@ -1,7 +1,6 @@
 package de.prob.statespace;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -765,8 +764,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public Trace getTraceToState(final IEvalElement predicate) {
 		FindValidStateCommand cmd = new FindValidStateCommand(predicate);
 		execute(cmd);
-		return getTrace(new ArrayList<String>(Arrays.asList(cmd.getOperation()
-				.getId())));
+		return getTrace(cmd);
 	}
 
 	public void setAnimator(final IAnimator animator) {

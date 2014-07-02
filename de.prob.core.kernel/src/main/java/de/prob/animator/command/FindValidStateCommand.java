@@ -1,20 +1,27 @@
 package de.prob.animator.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 
-public class FindValidStateCommand extends AbstractCommand {
+public class FindValidStateCommand extends AbstractCommand implements
+		IStateSpaceModifier, ITraceDescription {
 
 	public static enum ResultType {
 		STATE_FOUND, NO_STATE_FOUND, INTERRUPTED, ERROR
 	};
 
-	private static final String COMMAND_NAME = "find_state_satisfying_predicate";
+	private static final String COMMAND_NAME = "prob2_find_state_satisfying_predicate";
 	private static final String RESULT_VARIABLE = "R";
 
 	private final IEvalElement predicate;
@@ -74,11 +81,34 @@ public class FindValidStateCommand extends AbstractCommand {
 					.createOpInfoFromCompoundPrologTerm((CompoundPrologTerm) term
 							.getArgument(1));
 			stateId = term.getArgument(2).toString();
-		} else
+		} else {
 			throw new ProBError(
 					"unexpected result when trying to find a valid state: "
 							+ resultTerm);
+		}
 
 		this.result = result;
+	}
+
+	@Override
+	public List<OpInfo> getNewTransitions() {
+		ArrayList<OpInfo> ops = new ArrayList<OpInfo>();
+		if (operation != null) {
+			ops.add(operation);
+		}
+		return ops;
+	}
+
+	@Override
+	public Trace getTrace(final StateSpace s) {
+		if (stateId != null && s.getVertex(stateId) != null) {
+			Trace t = s.getTrace(s.getVertex(stateId));
+			if (t != null) {
+				return t;
+			}
+		}
+		throw new RuntimeException(
+				"Was not able to produce a valid trace to the state specified by predicate: "
+						+ predicate.getCode());
 	}
 }
