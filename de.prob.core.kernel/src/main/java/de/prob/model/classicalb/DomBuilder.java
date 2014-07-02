@@ -17,6 +17,7 @@ import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.AInvariantMachineClause;
 import de.be4.classicalb.core.parser.node.AMachineHeader;
 import de.be4.classicalb.core.parser.node.AOperation;
+import de.be4.classicalb.core.parser.node.APreconditionSubstitution;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
 import de.be4.classicalb.core.parser.node.ASelectSubstitution;
@@ -146,6 +147,13 @@ public class DomBuilder extends DepthFirstAdapter {
 		if (body instanceof ASelectSubstitution) {
 			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 			PPredicate condition = ((ASelectSubstitution) body).getCondition();
+			guards.add(new ClassicalBGuard(createPredicateAST(condition)));
+			operation.addGuards(guards);
+		}
+		if (body instanceof APreconditionSubstitution) {
+			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
+			PPredicate condition = ((APreconditionSubstitution) body)
+					.getPredicate();
 			guards.add(new ClassicalBGuard(createPredicateAST(condition)));
 			operation.addGuards(guards);
 		}
