@@ -1,5 +1,7 @@
 package de.prob.model.classicalb;
 
+import com.google.common.base.Joiner
+
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Guard
 import de.prob.model.representation.ModelElementList
@@ -25,24 +27,17 @@ public class Operation extends BEvent {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Name: " + getName() + "\n");
+
 		if (!output.isEmpty()) {
-			sb.append("Output: \n");
 			for (String string : output) {
-				sb.append(string + "\n");
+				sb.append(string + " <-- ");
 			}
 		}
+		sb.append(getName());
 		if (!parameters.isEmpty()) {
-			sb.append("Params: \n");
-			for (String string : parameters) {
-				sb.append(string + "\n");
-			}
-		}
-		if (!guards.isEmpty()) {
-			sb.append("Guards \n");
-			for (Guard guard : guards) {
-				sb.append(guard.toString() + '\n');
-			}
+			sb.append("(");
+			sb.append(Joiner.on(",").join(parameters.iterator()));
+			sb.append(")");
 		}
 		return sb.toString();
 	}

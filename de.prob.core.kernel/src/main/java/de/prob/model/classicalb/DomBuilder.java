@@ -147,14 +147,20 @@ public class DomBuilder extends DepthFirstAdapter {
 		if (body instanceof ASelectSubstitution) {
 			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 			PPredicate condition = ((ASelectSubstitution) body).getCondition();
-			guards.add(new ClassicalBGuard(createPredicateAST(condition)));
+			List<PPredicate> predicates = getPredicates(condition);
+			for (PPredicate pPredicate : predicates) {
+				guards.add(new ClassicalBGuard(createPredicateAST(pPredicate)));
+			}
 			operation.addGuards(guards);
 		}
 		if (body instanceof APreconditionSubstitution) {
 			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
 			PPredicate condition = ((APreconditionSubstitution) body)
 					.getPredicate();
-			guards.add(new ClassicalBGuard(createPredicateAST(condition)));
+			List<PPredicate> predicates = getPredicates(condition);
+			for (PPredicate pPredicate : predicates) {
+				guards.add(new ClassicalBGuard(createPredicateAST(pPredicate)));
+			}
 			operation.addGuards(guards);
 		}
 
