@@ -26,6 +26,10 @@ public class Operation extends BEvent {
 		return parameters;
 	}
 
+	public ModelElementList<Guard> getGuards() {
+		return guards;
+	}
+
 	public List<String> getOutput() {
 		return output;
 	}
