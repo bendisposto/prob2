@@ -3,10 +3,9 @@ package de.prob.animator.domainobjects
 import groovy.transform.TupleConstructor
 
 import com.google.common.base.Joiner
-import java.util.LinkedHashMap;
 
-import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.CompoundPrologTerm
+import de.prob.prolog.term.IntegerPrologTerm
 import de.prob.prolog.term.ListPrologTerm
 import de.prob.prolog.term.PrologTerm
 
@@ -19,17 +18,14 @@ import de.prob.prolog.term.PrologTerm
 	}
 }
 
-class ValueTranslator {
-
-	def makeSet(node, set) {
-		if (node.getFunctor() == "empty") set
-		else {
-			def value = toGroovy(node.getArgument(1))
-			set.add(value)
-			def left = makeSet(node.getArgument(4),set)
-			makeSet(node.getArgument(5),left)
-		}
+class BString {
+	def String value
+	def BString(value) {
+		this.value = value
 	}
+}
+
+class ValueTranslator {
 
 	def makeSetFromList(ListPrologTerm list) {
 		def res = new HashSet()
@@ -62,8 +58,8 @@ class ValueTranslator {
 			return new ListPrologTerm( object.collect { toProlog(it) }.toArray(new PrologTerm[object.size()]));
 		}
 		if (object instanceof LinkedHashMap) {
-			return new CompoundPrologTerm('rec', 
-				new ListPrologTerm(object.collect { new CompoundPrologTerm("field", it.key,toProlog(it.value)) }.toArray(new PrologTerm[object.size()])));
+			return new CompoundPrologTerm('rec',
+			new ListPrologTerm(object.collect { new CompoundPrologTerm("field", it.key,toProlog(it.value)) }.toArray(new PrologTerm[object.size()])));
 		}
 		if (object instanceof ArrayList) {
 			return new CompoundPrologTerm("fd",new CompoundPrologTerm(object[1]),new IntegerPrologTerm(object[0]));
@@ -80,21 +76,21 @@ class ValueTranslator {
 		def termFunctor = term.functor
 		switch (termFunctor) {
 			case "int": term.getArgument(1).getValue()
-			break
+				break
 			case "pred_true": true
-			break
+				break
 			case "pred_false": false
-			break
-			case "avl_set": makeSet(term.getArgument(1),new HashSet())
-			break
+				break
 			case ",": new Tuple(toGroovy(term.getArgument(1)), toGroovy(term.getArgument(2)))
-			break
-			case "fd":  [term.getArgument(2).functor,term.getArgument(1)]
-			break
-			case "string":  term.getArgument(1).functor
-			break
+				break
+			case "constant":  term.getArgument(1).functor
+				break
+			case "string":  new BString(term.getArgument(1).functor)
+				break
 			case "rec": makeRecord(term.getArgument(1))
-			break
+				break
+			case "unknown_type": term
+				break
 			default: throw new IllegalArgumentException("Don't know how to translate "+term)
 		}
 	}
@@ -104,11 +100,11 @@ class ValueTranslator {
 	def String asString(groovy_state) {
 		switch (groovy_state) {
 			case HashSet: "{"+ Joiner.on(",").join(groovy_state.collect {asString(it)}) +"}"
-			break
+				break
 			case LinkedHashMap: "rec("+Joiner.on(",").join(groovy_state.collect {it.key+":"+asString(it.value)})+")"
-			break
+				break
 			case ArrayList:  asString(groovy_state.get(0))+asString(groovy_state.get(1))
-			break
+				break
 			default: groovy_state.toString();
 		}
 	}
