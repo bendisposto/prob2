@@ -15,7 +15,7 @@ ProB 2.0 works with Java 6 on Mac OS, Windows and some Linux distributions. Beca
 after -vmargs in your rodin.ini file. You will need Oracle's Java 7 distribution, OpenJDK 7 will not work. The JavaFX version is not yet tested under Java 8. 
 
 
-We assume, you have a fresh copy of Eclipse (for RCP development) and an empty workspace at hand. We use Kepler but Juno will probably work as well. Furthermore, we assume that you have a recent version of gradle (http://www.gradle.org/) installed on your computer. Gradle 1.1 or newer will be sufficient.
+We assume, you have a fresh copy of Eclipse (for RCP development) and an empty workspace at hand. We use Kepler but Juno will probably work as well. Luna does not have support for Groovy 2.3 yet. Furthermore, we assume that you have a recent version of gradle (http://www.gradle.org/) installed on your computer. Gradle 1.1 or newer will be sufficient.
 
 1. Install the Groovy plug-in. We use a development version from http://dist.springsource.org/snapshot/GRECLIPSE/e4.3/ 
 2. Clone the prob2 repository to some location (e.g. gitrepo/prob2). 
