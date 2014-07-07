@@ -22,7 +22,15 @@ class StateId {
 	 */
 	@Deprecated
 	def invokeMethod(String method,  params) {
-		return perform(method, params)
+		if(method.startsWith("\$") && !(method == "\$setup_constants" || method == "\$initialise_machine")) {
+			method = method.substring(1)
+		}
+
+		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+		OpInfo op = space.opFromPredicate(this, method, predicate , 1)[0];
+		StateId newState = space.getDest(op);
+		space.explore(newState);
+		return newState;
 	}
 
 	/**
@@ -58,6 +66,7 @@ class StateId {
 	 * @param key String representation of the formula
 	 * @return the value property of the result, if one exists
 	 */
+	@Deprecated
 	def value(String key) {
 		IEvalResult res = eval(key)
 		if (res.hasProperty("value")) {
