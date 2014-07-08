@@ -23,8 +23,8 @@ class Shell {
 		sep = executor;
 	}
 
-	private void runScript(final String dir, final File script)
-			throws Throwable {
+	private void runScript(final String dir, final File script,
+			final boolean silent) throws Throwable {
 		if (script.isDirectory()) {
 			File[] files = script.listFiles(new FilenameFilter() {
 				@Override
@@ -33,24 +33,35 @@ class Shell {
 				}
 			});
 			for (File file : files) {
-				runScript(script.getAbsolutePath(), file);
+				runScript(script.getAbsolutePath(), file, silent);
 			}
 		} else {
-			runSingleScript(dir, script);
+			runSingleScript(script.getParent(), script, silent);
 		}
 	}
 
-	private void runSingleScript(final String dir, final File script)
-			throws Throwable {
+	private void runSingleScript(final String dir, final File script,
+			final boolean silent) throws Throwable {
+		long time = System.currentTimeMillis();
 		logger.debug("Runnning script: {}", script.getAbsolutePath());
 		ScriptEngine executor = sep.get();
 		executor.put("dir", dir);
 
 		FileReader fr = new FileReader(script);
-		executor.eval(fr);
+		Object res = executor.eval(fr);
+		if (!silent) {
+			double seconds = (System.currentTimeMillis() - time) / 1000.0;
+			System.out.println(script.getName() + " - " + res.toString() + " ("
+					+ String.format("%.4g", seconds) + " s)");
+		}
 	}
 
 	public void runScript(final File file) throws Throwable {
-		runScript(file.getAbsolutePath(), file);
+		runScript(file, true);
+	}
+
+	public void runScript(final File file, final boolean silent)
+			throws Throwable {
+		runScript(file.getAbsolutePath(), file, silent);
 	}
 }

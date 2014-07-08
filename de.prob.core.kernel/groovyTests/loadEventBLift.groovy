@@ -66,3 +66,4 @@ assert lift0.sees.contains(levels)
 
 s = m as StateSpace
 s.animator.cli.shutdown();
+"When an EventB file is loaded (Lift example), the model elements are accessible."

@@ -12,6 +12,7 @@ assert cmd.getState() == "[bind(active,[]),bind(ready,[]),bind(waiting,avl_set(n
 cmd1 = new DeserializeStateCommand(cmd.getState())
 s.execute(cmd1)
 assert cmd1.getId() == "3"
-assert cmd.getState() == "[bind(active,[]),bind(ready,[]),bind(waiting,avl_set(node(fd(3,'PID'),true,0,empty,empty)))]."
+assert cmd1.getState() == "[bind(active,[]),bind(ready,[]),bind(waiting,avl_set(node(fd(3,'PID'),true,0,empty,empty)))]."
 
 s.animator.cli.shutdown();
+"Serialization of state successful"

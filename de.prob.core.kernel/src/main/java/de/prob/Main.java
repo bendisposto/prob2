@@ -108,7 +108,7 @@ public class Main {
 			if (line.hasOption("test")) {
 				logger.debug("Run Script");
 				String value = line.getOptionValue("test");
-				shell.runScript(new File(value));
+				shell.runScript(new File(value), false);
 			}
 		} catch (ParseException exp) {
 			HelpFormatter formatter = new HelpFormatter();

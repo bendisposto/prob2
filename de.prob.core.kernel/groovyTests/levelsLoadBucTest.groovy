@@ -17,3 +17,4 @@ c = c.anyEvent()
 assert c.getCurrentState() != st
 
 s.animator.cli.shutdown();
+"A .buc file can be loaded"

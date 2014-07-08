@@ -1,30 +1,29 @@
 import de.prob.statespace.*
 
-s = api.b_load(dir+"/machines/scheduler.mch").getStatespace()
+s = api.b_load(dir+"/machines/scheduler.mch") as StateSpace
+
+formula = "waiting \\/ ready" as ClassicalB
+assert !s.formulaRegistry.containsKey(formula)
+s.subscribe(s, formula)
 
 h = new Trace(s)
 h = h.add(0)
 h = h.add(4)
 h = h.add(6)
-a = h.current.getCurrentState()
-assert a == s.states.get("4")
+a = h.getCurrentState()
+assert a == s[4]
 assert a.getClass() == de.prob.statespace.StateId
 
-s.animator.cli.shutdown();
+values = s.getValues()[a]
+assert values.containsKey(formula)
+assert values[formula].getValue() == "{PID1,PID3}"
+h = h.back()
+h = h.back()
+b = h.getCurrentState()
+assert b == s[0]
+values = s.getValues()[b]
+assert values.containsKey(formula)
+assert values[formula].getValue() == "{}"
 
-//assert !s.info.stateHasVariable(a,"waiting\\/ready")
-//s.addUserFormula("waiting\\/ready", "waiting\\/ready")
-//h.current.getCurrentState()."waiting\\/ready"
-//assert s.info.stateHasVariable(h.current.getCurrentState(),"waiting\\/ready")
-//assert s.info.getVariable(h.current.getCurrentState(),"waiting\\/ready")=="{PID1,PID3}"
-//assert s.formulas.size() == 1
-//assert !s.info.stateHasVariable(s.states.get("3"),"waiting\\/ready")
-//s.evaluateFormulas(s.getVertex("3"))
-//assert s.info.stateHasVariable(s.states.get("3"),"waiting\\/ready")
-//assert s.info.getVariable(s.states.get("3"),"waiting\\/ready")=="{PID3}"
-//h = h.back()
-//h = h.back()
-//assert h.current.getCurrentState() == s.states.get("0")
-//s.evaluateFormulas(h.current.getCurrentState())
-//assert s.info.stateHasVariable(h.current.getCurrentState(),"waiting\\/ready")
-//assert s.info.getVariable(s.states.get("0"),"waiting\\/ready")=="{}"
+s.animator.cli.shutdown();
+"A registered formula is automatically evaluated in every state and can be found in the cache later"

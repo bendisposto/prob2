@@ -17,3 +17,4 @@ assert result.getNodes() == ["'deadlocked:0'","'invariant_violated:0'","'live:3'
 assert result.getUncovered() == ["swap"]
 
 s.animator.cli.shutdown();
+"ComputeCoverageCommand returns the expected result"

@@ -17,3 +17,4 @@ s.execute(cmd)
 assert cmd.getResults().isEmpty()
 
 s.animator.cli.shutdown();
+"It is possible to register formulas and asynchronously evaluate them later"
