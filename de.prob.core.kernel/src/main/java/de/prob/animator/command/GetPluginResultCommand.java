@@ -28,12 +28,12 @@ public final class GetPluginResultCommand extends AbstractCommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-			result = BindingGenerator.getCompoundTerm(bindings.get("Bindings"), 1);
+		result = BindingGenerator.getCompoundTerm(bindings.get("Bindings"), 1);
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_plugin_output").printAtomOrNumber(resultID)
+		pto.openTerm("prob2_get_plugin_output").printAtomOrNumber(resultID)
 				.printVariable("Bindings").closeTerm();
 	}
 

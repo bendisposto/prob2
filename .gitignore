@@ -33,3 +33,6 @@ de.prob.core.kernel/clojurescript/prob-ui/target
 de.prob.core.kernel/clojurescript/prob-ui/prob_ui.js
 de.prob.core.kernel/src/main/resources/gui/js/prob_ui.js
 de.prob.core.kernel/src/main/resources/gui/style/prob_ui.css
+/de.prob.core.kernel/groovyTests/machines/Empty/prob2preferences
+/de.prob.core.kernel/ltl_graphdump.pl
+/de.prob.core.kernel/temp/Testing.tla

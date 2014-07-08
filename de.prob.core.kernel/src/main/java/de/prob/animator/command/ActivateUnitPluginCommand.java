@@ -11,14 +11,16 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
 public class ActivateUnitPluginCommand extends AbstractCommand {
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("activate_plugin");
+		pto.openTerm("prob2_activate_plugin");
 		pto.printAtom("units");
 		pto.closeTerm();
 	}
 
 	@Override
-	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		// nothing to do here
-    }
+	}
 }
