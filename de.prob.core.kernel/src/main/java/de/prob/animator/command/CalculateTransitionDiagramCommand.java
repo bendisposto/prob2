@@ -21,7 +21,7 @@ public class CalculateTransitionDiagramCommand extends
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_transition_diagram");
+		pto.openTerm("prob2_get_transition_diagram");
 		pto.printAtom(expression);
 		pto.printVariable(SPACE);
 		pto.closeTerm();

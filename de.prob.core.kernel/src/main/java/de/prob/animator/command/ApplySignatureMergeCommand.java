@@ -27,7 +27,7 @@ public class ApplySignatureMergeCommand extends AbstractReduceStateSpaceCmd {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_signature_merge_state_space");
+		pto.openTerm("prob2_get_signature_merge_state_space");
 		pto.openList();
 		for (String event : ignored) {
 			pto.printAtom(event);
