@@ -2349,3 +2349,7 @@ input[readonly=readonly]:focus {
 	width: 100%;
 	display: block;
 }
+
+.cursor_hand {
+	cursor:pointer;
+}
