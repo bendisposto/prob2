@@ -160,7 +160,7 @@ public class BMotionStudioSession extends AbstractSession implements
 	 */
 	private void initFormalModel() {
 
-		Object machinePath = getParameterMap().get("machine");
+		Object machinePath = getParameterMap().get("model");
 		
 		System.out.println("BMS: Initialise Model " + machinePath);
 		

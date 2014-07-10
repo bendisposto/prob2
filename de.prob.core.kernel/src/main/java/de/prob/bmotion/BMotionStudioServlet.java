@@ -232,18 +232,12 @@ public class BMotionStudioServlet extends HttpServlet {
 		String sessionID = parts.get(2);
 
 		String templatePath = bmsSession.getTemplatePath();
-//		String formalism = bmsSession.getFormalism();
-		
 		String svgString = "";
 		String svgId = UUID.randomUUID().toString();
-
 		String jsonRendered = "{}";
-//		if (formalism.equals("b") || formalism.equals("eventb")) {
-//			jsonRendered = "{\"observers\":[{\"type\":\"ExecuteOperation\"}, {\"type\":\"EvalObserver\"}]}";
-//		} else if (formalism.equals("csp")) {
-//			jsonRendered = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
-//		}
-
+		String modelPath = "";
+		String scriptPath = "";
+		
 		File templateFile = new File(templatePath);
 		if (templateFile.exists()) {
 
@@ -270,24 +264,30 @@ public class BMotionStudioServlet extends HttpServlet {
 			// Get json data from template
 			Elements headTag = templateDocument.getElementsByTag("head");
 			Element headElement = headTag.get(0);
-			Elements elements = headElement.getElementsByAttributeValue("name",
-					"bms.json");
-			Element jsonDomElement = elements.first();
+			Elements jsonDomElements = headElement.getElementsByAttributeValue(
+					"name", "bms.json");
+			Element jsonDomElement = jsonDomElements.first();
 			if (jsonDomElement != null) {
 				String jsonFileName = jsonDomElement.attr("content");
 				String templateFolder = templateFile.getParent();
 				String jsonFilePath = templateFolder + "/" + jsonFileName;
 				jsonRendered = readFile(jsonFilePath);
 			}
+			
+			// Get model path from template
+			modelPath = getMetaAttributeValue(templateDocument, "bms.model") != null ? getMetaAttributeValue(
+					templateDocument, "bms.model") : modelPath;
+			scriptPath = getMetaAttributeValue(templateDocument, "bms.script") != null ? getMetaAttributeValue(
+					templateDocument, "bms.script") : scriptPath;
 
 		}
-
+		
 		// Send svg string and json data to client ...
 		resp.setContentType("application/json");
 		toOutput(resp, WebUtils.toJson(WebUtils.wrap("svg", svgString, "svgid",
 				svgId, "sessionid", sessionID, "json", jsonRendered,
 				"templatefile", templateFile.getName(), "templatepath",
-				templatePath)));
+				templatePath, "modelpath", modelPath, "scriptpath", scriptPath)));
 
 	}
 	
@@ -299,6 +299,41 @@ public class BMotionStudioServlet extends HttpServlet {
 		metaElement.attr("content", jsonFileName);
 		headTag.append(metaElement.toString());
 
+	}
+
+	private void taskConfigSave(HttpServletRequest req, HttpServletResponse resp) {
+
+		String newModelPath = req.getParameter("newModelPath");
+		String newScriptPath = req.getParameter("newScriptPath");
+		String templatePath = req.getParameter("templatePath");
+		File templateFile = new File(templatePath);
+		Document templateDocument = Jsoup.parse(WebUtils.render(templatePath));
+		setMetaAttributeValue(templateDocument, "bms.model", newModelPath);
+		setMetaAttributeValue(templateDocument, "bms.script", newScriptPath);
+		writeStringToFile(templateDocument.toString(), templateFile);
+		toOutput(resp, "ok");
+
+	}
+
+	private void setMetaAttributeValue(Document doc, String name, String value) {
+		Elements metaElements = doc.getElementsByAttributeValue("name", name);
+		Element metaElement = metaElements.first();
+		if (metaElement == null) {
+			Elements headTag = doc.getElementsByTag("head");
+			Element headElement = headTag.get(0);
+			metaElement = doc.createElement("meta");
+			metaElement.attr("name", "bms.model");
+			headElement.appendChild(metaElement);
+		}
+		metaElement.attr("content", value);
+	}
+	
+	private String getMetaAttributeValue(Document doc, String name) {
+		Elements metaElements = doc.getElementsByAttributeValue("name", name);
+		Element metaElement = metaElements.first();
+		if (metaElement != null)
+			return metaElement.attr("content");
+		return null;
 	}
 	
 	private void taskSave(HttpServletRequest req, HttpServletResponse resp) {
@@ -409,6 +444,8 @@ public class BMotionStudioServlet extends HttpServlet {
 				taskInit(req, resp, bmsSession);
 			} else if (task.equals("save")) {
 				taskSave(req, resp);
+			} else if (task.equals("configSave")) {
+				taskConfigSave(req, resp);
 			}
 
 		}

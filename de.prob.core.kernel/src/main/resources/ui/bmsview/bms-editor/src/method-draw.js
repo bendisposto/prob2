@@ -97,6 +97,8 @@
 		var workingLanguage = null;
 		var workingTemplateFile = null;
 		var workingTemplatePath = null;
+		var workingModelPath = null;
+		var workingScriptPath = null;
 				
 		var curPrefs = {}; //$.extend({}, defaultPrefs);
 		var customHandlers = {};
@@ -2400,6 +2402,26 @@
 				});
 			};
 
+			var clickConfigurationSave = function() {
+				$.ajax({
+				    type: 'POST',
+				    data: {
+				    		task: 'configSave',
+				    		templatePath: workingTemplatePath,
+				    		newModelPath: $("#config_model_path").val(),
+				    		newScriptPath: $("#config_script_path").val()
+				    	},
+				    success: function (data) {
+				    	if(data === 'ok') {
+				    		alert("Configuration saved")
+				    	}
+				    },
+				    error:function(data,status,er) {
+				        alert("error: "+data+" status: "+status+" er:"+er);
+				    }
+				});
+			}
+			
 			var clickSavedata = function() {
 				$.ajax({
 				    type: 'POST',
@@ -2426,7 +2448,7 @@
 			var clickStartVisualisation = function() {
 				window.location = workingTemplateFile + "?template=" + workingTemplatePath
 			};
-			
+
 			var clickBold = function(){
 				svgCanvas.setBold( !svgCanvas.getBold() );
 				updateContextPanel();
@@ -2617,6 +2639,12 @@
 				$('#svg_source_textarea').val(str);
 				$('#svg_source_editor').fadeIn();
 				$('#svg_source_textarea').focus().select();
+			};
+			
+			var clickConfiguration = function() {
+				$('#vis_configuration_dialog').fadeIn();
+				$('#config_model_path').val(workingModelPath);
+				$('#config_script_path').val(workingScriptPath);
 			};
 			
 			var clickSave = function(){
@@ -2819,6 +2847,10 @@
 				$('#svg_source_editor').hide();
 				editingsource = false;
 				$('#svg_source_textarea').blur();
+			};
+			
+			var hideConfigurationDialog = function(){
+				$('#vis_configuration_dialog').hide();
 			};
 
 			var win_wh = {width:$(window).width(), height:$(window).height()};
@@ -3313,7 +3345,8 @@
 					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: ['Z', true]},
 					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey + 'N', true]},
 					{sel:'#tool_savedata', fn: clickSavedata, evt: 'click', key: [modKey + 'S', true]},
-					{sel:'#tool_startvis', fn: clickStartVisualisation, evt: 'click', key: [modKey + 'R', true]},
+					{sel:'#tool_startvis', fn: clickStartVisualisation, evt: 'click'},
+					{sel:'#tool_config', fn: clickConfiguration, evt: 'click'},
 					//{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey + 'S', true]},
 					{sel:'#tool_export', fn: clickExport, evt: 'mouseup'},
 					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup'},
@@ -3323,7 +3356,9 @@
 					{sel:'#tool_snap', fn: clickSnapGrid, evt: 'click'},
 					{sel:'#tool_rulers', fn: clickRulers, evt: 'click'},
 					{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel,#tool_prefs_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
+					{sel:'#tool_configuration_cancel', fn: hideConfigurationDialog, evt: 'click'},
 					{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
+					{sel:'#tool_configuration_save', fn: clickConfigurationSave, evt: 'click'},
 					{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 					{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
 					{sel:'#tool_node_link', fn: linkControlPoints, evt: 'change'},
@@ -4208,6 +4243,8 @@
 			workingLanguage = data.lang;
 			workingTemplateFile = data.templatefile;
 			workingTemplatePath = data.templatepath;
+			workingModelPath = data.modelpath;
+			workingScriptPath = data.scriptpath;
 		}
 		
 		Editor.setObserverModel = function(model) {
