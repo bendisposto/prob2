@@ -261,14 +261,9 @@ public class BMotionStudioServlet extends HttpServlet {
 			if (svgElement != null)
 				svgId = svgElement.attr("id");
 
-			// Get json data from template
-			Elements headTag = templateDocument.getElementsByTag("head");
-			Element headElement = headTag.get(0);
-			Elements jsonDomElements = headElement.getElementsByAttributeValue(
-					"name", "bms.json");
-			Element jsonDomElement = jsonDomElements.first();
-			if (jsonDomElement != null) {
-				String jsonFileName = jsonDomElement.attr("content");
+			String jsonFileName = getMetaAttributeValue(templateDocument,
+					"bms.json");
+			if (jsonFileName != null) {
 				String templateFolder = templateFile.getParent();
 				String jsonFilePath = templateFolder + "/" + jsonFileName;
 				jsonRendered = readFile(jsonFilePath);
@@ -288,16 +283,6 @@ public class BMotionStudioServlet extends HttpServlet {
 				svgId, "sessionid", sessionID, "json", jsonRendered,
 				"templatefile", templateFile.getName(), "templatepath",
 				templatePath, "modelpath", modelPath, "scriptpath", scriptPath)));
-
-	}
-	
-	private void addJsonMetaData(Document templateDocument, String jsonFileName) {
-
-		Elements headTag = templateDocument.getElementsByTag("head");
-		Element metaElement = templateDocument.createElement("meta");
-		metaElement.attr("name", "bms.json");
-		metaElement.attr("content", jsonFileName);
-		headTag.append(metaElement.toString());
 
 	}
 
@@ -363,23 +348,23 @@ public class BMotionStudioServlet extends HttpServlet {
 		} else {
 
 			templateDocument = Jsoup.parse(WebUtils.render(templatePath));
-			Elements elements = templateDocument.getElementsByAttributeValue(
-					"name", "bms.json");
-			Element jsonDomElement = elements.first();
-			if (jsonDomElement != null) { // Json file is linked
+
+			String jsonFilePath = getMetaAttributeValue(templateDocument,
+					"bms.json");
+			if (jsonFilePath != null) {
 				jsonFile = new File(templateFile.getParent() + "/"
-						+ jsonDomElement.attr("content"));
+						+ jsonFilePath);
 				jsonSaveString = readFile(jsonFile.getAbsolutePath());
-			} else { // No json file is linked
+			} else {
 				createJson = true;
 			}
 
 		}
-		
+
 		if (createJson) {
 			String jsonFileName = Files.getNameWithoutExtension(templateFile
 					.getName()) + ".json";
-			addJsonMetaData(templateDocument, jsonFileName);
+			setMetaAttributeValue(templateDocument, "bms.json", jsonFileName);
 			// TODO: create correct json string!
 			jsonSaveString = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
 			jsonFile = new File(templateFile.getParent() + "/" + jsonFileName);
