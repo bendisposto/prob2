@@ -2,13 +2,10 @@ package de.prob.webconsole;
 
 import javax.servlet.ServletContextEvent;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
 
 import de.prob.Main;
-import de.prob.MainModule;
 
 /**
  * Developers can access instantiated classes from an active instance of ProB
@@ -20,12 +17,19 @@ import de.prob.MainModule;
  */
 public class ServletContextListener extends GuiceServletContextListener {
 
-	public static final Injector INJECTOR = Guice.createInjector(
-			Stage.PRODUCTION, new MainModule());
+	/**
+	 * * @deprecated Use {@link Main.getInjector()} instead.
+	 */
+	@Deprecated
+	public static final Injector INJECTOR = Main.getInjector();
 
+	/**
+	 * * @deprecated Use {@link Main.getInjector()} instead.
+	 */
+	@Deprecated
 	@Override
 	protected Injector getInjector() {
-		return INJECTOR;
+		return Main.getInjector();
 	}
 
 	@Override
