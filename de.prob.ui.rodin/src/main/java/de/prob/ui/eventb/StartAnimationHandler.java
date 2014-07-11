@@ -49,7 +49,7 @@ public class StartAnimationHandler extends AbstractHandler {
 		EventBModel model = instance.load(fileName,
 				new HashMap<String, String>(), true);
 
-		StateSpace s = model.getStatespace();
+		StateSpace s = model.getStateSpace();
 
 		Trace h = new Trace(s);
 		AnimationSelector selector = injector

@@ -31,7 +31,6 @@ import de.prob.Main;
 import de.prob.annotations.PublicSession;
 import de.prob.annotations.Sessions;
 import de.prob.web.data.SessionResult;
-import de.prob.webconsole.ServletContextListener;
 
 @SuppressWarnings("serial")
 @Singleton
@@ -188,7 +187,7 @@ public class ReflectionServlet extends HttpServlet {
 
 		ISession obj = null;
 		if (!Main.restricted || publicSession)
-			obj = ServletContextListener.INJECTOR.getInstance(clazz);
+			obj = Main.getInjector().getInstance(clazz);
 		return obj;
 	}
 

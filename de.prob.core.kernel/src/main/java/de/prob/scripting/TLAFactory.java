@@ -108,8 +108,8 @@ public class TLAFactory extends ModelFactory {
 		final AbstractCommand loadcmd = new LoadBProjectCommand(rml, f);
 		cmds.add(loadcmd);
 		cmds.add(new StartAnimationCommand());
-		classicalBModel.getStatespace().execute(new ComposedCommand(cmds));
-		classicalBModel.getStatespace().setLoadcmd(loadcmd);
+		classicalBModel.getStateSpace().execute(new ComposedCommand(cmds));
+		classicalBModel.getStateSpace().setLoadcmd(loadcmd);
 	}
 
 	private void subscribeVariables(final ClassicalBModel m) {
@@ -118,7 +118,7 @@ public class TLAFactory extends ModelFactory {
 			List<Variable> childrenOfType = machine
 					.getChildrenOfType(Variable.class);
 			for (Variable variable : childrenOfType) {
-				m.getStatespace().subscribe(this, variable.getExpression());
+				m.getStateSpace().subscribe(this, variable.getExpression());
 			}
 		}
 	}
