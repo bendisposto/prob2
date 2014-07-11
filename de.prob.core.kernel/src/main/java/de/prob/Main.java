@@ -42,11 +42,19 @@ public class Main {
 	private final Options options;
 	private final Shell shell;
 
-	private static final Injector INJECTOR = Guice.createInjector(
-			Stage.PRODUCTION, new MainModule());
+	private static Injector INJECTOR = Guice.createInjector(Stage.PRODUCTION,
+			new MainModule());
 
 	public static Injector getInjector() {
 		return INJECTOR;
+	}
+			
+	/**
+	 * Allows to customize the Injector. Handle with care!
+	 * @param i
+	 */
+	public static void setInjector(Injector i) {
+		INJECTOR = i;
 	}
 
 	/**
