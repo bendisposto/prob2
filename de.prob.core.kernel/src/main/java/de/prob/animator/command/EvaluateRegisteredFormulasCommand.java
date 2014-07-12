@@ -12,6 +12,7 @@ import de.prob.animator.domainobjects.ComputationNotCompletedResult;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.ValueTranslator;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -75,8 +76,10 @@ public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 					for (PrologTerm t : list) {
 						CompoundPrologTerm cpt = BindingGenerator
 								.getCompoundTerm(t, 2);
-						solutions.put(t.getArgument(1).getFunctor(), cpt
-								.getArgument(2).toString());
+						solutions.put(
+								t.getArgument(1).getFunctor(),
+								new ValueTranslator().toGroovy(
+										cpt.getArgument(2)).toString());
 						solutionsSource.put(t.getArgument(1).getFunctor(),
 								t.getArgument(2));
 					}
