@@ -61,7 +61,7 @@ public class CbcSolveCommand extends AbstractCommand {
 		}
 		if ("contradiction_found".equals(functor)) {
 			result = new ComputationNotCompletedResult(evalElement.getCode(),
-					"cannot be solved");
+					"contradiction found");
 		}
 		if ("solution".equals(functor)) {
 			ListPrologTerm solutionBindings = BindingGenerator
