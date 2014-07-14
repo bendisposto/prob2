@@ -38,5 +38,5 @@ assert labels.contains("1")
 assert labels.contains("0")
 assert cmd.getOps().size() == 13
 
-
+s.animator.cli.shutdown();
 "Reduction algorithms (signature merge and transition diagram) successfully applied to state space"
