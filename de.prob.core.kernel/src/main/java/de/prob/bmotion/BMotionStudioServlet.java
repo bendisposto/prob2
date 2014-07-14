@@ -61,7 +61,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			.newFixedThreadPool(3);
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
-	
+
 	@Inject
 	public BMotionStudioServlet(@Sessions Map<String, ISession> sessions) {
 		this.sessions = sessions;
@@ -104,7 +104,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		writer.close();
 		submit(command);
 	}
-	
+
 	private void initParameterFromTemplate(BMotionStudioSession bmsSession) {
 
 		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
@@ -123,7 +123,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 
 	}
-	
+
 	private String buildBMotionStudioRunPage(BMotionStudioSession bmsSession) {
 
 		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
@@ -168,7 +168,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		return baseDocument.html();
 
 	}
-	
+
 	private void fixSvgImageTags(Document template) {
 		for (Element e : template.getElementsByTag("svg")) {
 			// Workaround, since jsoup renames svg image tags to img
@@ -177,10 +177,10 @@ public class BMotionStudioServlet extends HttpServlet {
 			imgTags.tagName("image");
 		}
 	}
-	
+
 	private void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, BMotionStudioSession bmsSession) {
-		
+
 		String sessionId = bmsSession.getSessionUUID().toString();
 		String templatePath = bmsSession.getTemplatePath();
 		File templateFile = new File(templatePath);
@@ -224,7 +224,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		toOutput(resp, stream);
 
 	}
-	
+
 	private void taskInit(HttpServletRequest req, HttpServletResponse resp,
 			BMotionStudioSession bmsSession) {
 
@@ -237,7 +237,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		String jsonRendered = "{}";
 		String modelPath = "";
 		String scriptPath = "";
-		
+
 		File templateFile = new File(templatePath);
 		if (templateFile.exists()) {
 
@@ -268,7 +268,7 @@ public class BMotionStudioServlet extends HttpServlet {
 				String jsonFilePath = templateFolder + "/" + jsonFileName;
 				jsonRendered = readFile(jsonFilePath);
 			}
-			
+
 			// Get model path from template
 			modelPath = getMetaAttributeValue(templateDocument, "bms.model") != null ? getMetaAttributeValue(
 					templateDocument, "bms.model") : modelPath;
@@ -276,13 +276,15 @@ public class BMotionStudioServlet extends HttpServlet {
 					templateDocument, "bms.script") : scriptPath;
 
 		}
-		
+
 		// Send svg string and json data to client ...
 		resp.setContentType("application/json");
-		toOutput(resp, WebUtils.toJson(WebUtils.wrap("svg", svgString, "svgid",
-				svgId, "sessionid", sessionID, "json", jsonRendered,
-				"templatefile", templateFile.getName(), "templatepath",
-				templatePath, "modelpath", modelPath, "scriptpath", scriptPath)));
+		toOutput(resp,
+				WebUtils.toJson(WebUtils.wrap("svg", svgString, "svgid", svgId,
+						"sessionid", sessionID, "json", jsonRendered,
+						"templatefile", templateFile.getName(), "templatepath",
+						templatePath, "modelpath", modelPath, "scriptpath",
+						scriptPath)));
 
 	}
 
@@ -312,7 +314,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 		metaElement.attr("content", value);
 	}
-	
+
 	private String getMetaAttributeValue(Document doc, String name) {
 		Elements metaElements = doc.getElementsByAttributeValue("name", name);
 		Element metaElement = metaElements.first();
@@ -320,7 +322,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			return metaElement.attr("content");
 		return null;
 	}
-	
+
 	private void taskSave(HttpServletRequest req, HttpServletResponse resp) {
 
 		// Get parameter
@@ -369,7 +371,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			jsonSaveString = "{\"observers\":[{\"type\":\"CspEventObserver\"}]}";
 			jsonFile = new File(templateFile.getParent() + "/" + jsonFileName);
 		}
-		
+
 		// If a new svg dom was passed, save in template
 		if (newsvg != null) {
 			templateDocument.outputSettings().prettyPrint(false);
@@ -386,7 +388,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			if (orgSvgElement != null)
 				orgSvgElement.replaceWith(newSvgElement);
 		}
-		
+
 		// If a new json was passed, save in json file
 		if (newjson != null) {
 
@@ -410,7 +412,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		toOutput(resp, "ok");
 
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -451,7 +453,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 		return content;
 	}
-	
+
 	private void createNewSessionAndRedirect(HttpServletRequest req,
 			HttpServletResponse resp) throws ServletException, IOException {
 
@@ -462,8 +464,8 @@ public class BMotionStudioServlet extends HttpServlet {
 			host = "localhost";
 
 		// Create a new BMotionStudioSession
-		BMotionStudioSession bmsSession = ServletContextListener.INJECTOR
-				.getInstance(BMotionStudioSession.class);
+		BMotionStudioSession bmsSession = Main.getInjector().getInstance(
+				BMotionStudioSession.class);
 		String id = bmsSession.getSessionUUID().toString();
 		// Register the new session
 		sessions.put(id, bmsSession);
@@ -495,7 +497,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		resp.sendRedirect(redirect);
 
 	}
-		
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -532,7 +534,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		return;
 
 	}
-	
+
 	private List<String> validateRequest(HttpServletRequest req,
 			HttpServletResponse resp) {
 
@@ -609,7 +611,7 @@ public class BMotionStudioServlet extends HttpServlet {
 				"standalone", standalone);
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
-	
+
 	private String getErrorHtml(List<String> errors) {
 		String standalone = Main.standalone ? "yes" : "";
 		Map<String, Object> scope = new HashMap<String, Object>();
@@ -628,7 +630,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			}
 		}
 	}
-	
+
 	private void writeStringToFile(String str, File file) {
 		try {
 			// if file doesnt exists, then create it
@@ -650,7 +652,7 @@ public class BMotionStudioServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void submit(Callable<SessionResult> command) {
 		taskCompletionService.submit(command);
 	}
@@ -672,7 +674,7 @@ public class BMotionStudioServlet extends HttpServlet {
 		}
 
 	}
-	
+
 	private String getFullTemplatePath(String templatePath) {
 		if (!new File(templatePath).isAbsolute()) {
 			String homedir = System.getProperty("bms.home");

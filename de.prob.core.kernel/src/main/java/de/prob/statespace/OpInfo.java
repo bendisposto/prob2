@@ -104,7 +104,7 @@ public class OpInfo {
 
 	private String generateRep(final AbstractModel m) {
 		if (!evaluated) {
-			ensureEvaluated(m.getStatespace());
+			ensureEvaluated(m.getStateSpace());
 		}
 
 		if (m.getFormalismType().equals(FormalismType.CSP)) {

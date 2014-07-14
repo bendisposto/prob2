@@ -25,7 +25,7 @@ public class Trace {
 		}
 		def f = formula;
 		if (!(formula instanceof IEvalElement)) {
-			f = formula as ClassicalB;
+			f = stateSpace.getModel().parseFormula(f)
 		}
 		stateSpace.eval(getCurrentState(),[f]).get(0);
 	}
@@ -34,7 +34,7 @@ public class Trace {
 	def List<Tuple2<String,IEvalResult>> eval(formula) {
 		def f = formula;
 		if(!(formula instanceof IEvalElement)) {
-			f = formula as ClassicalB;
+			f = stateSpace.getModel().parseFormula(f)
 		}
 
 		def List<EvaluationCommand> cmds = []

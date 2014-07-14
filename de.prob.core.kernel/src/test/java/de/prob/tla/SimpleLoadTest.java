@@ -8,11 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
+import de.prob.Main;
 import de.prob.model.classicalb.ClassicalBModel;
 import de.prob.scripting.Api;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
-import de.prob.webconsole.ServletContextListener;
 
 public class SimpleLoadTest {
 
@@ -20,7 +20,7 @@ public class SimpleLoadTest {
 
 	@Before
 	public void setup() {
-		api = ServletContextListener.INJECTOR.getInstance(Api.class);
+		api = Main.getInjector().getInstance(Api.class);
 	}
 
 	@Test
@@ -34,17 +34,17 @@ public class SimpleLoadTest {
 		ClassicalBModel model = api
 				.tla_load("src/test/resources/tla/Definitions.tla");
 		assertNotNull(model);
-		StateSpace s = model.getStatespace();
+		StateSpace s = model.getStateSpace();
 		Trace t = new Trace(s);
 		assertEquals(1, t.getNextTransitions().size());
 	}
-	
+
 	@Test
 	public void testClub() throws IOException, BException {
 		ClassicalBModel model = api
 				.tla_load("src/test/resources/tla/ForDistribution/Club.tla");
 		assertNotNull(model);
-		StateSpace s = model.getStatespace();
+		StateSpace s = model.getStateSpace();
 		Trace t = new Trace(s);
 		assertEquals(1, t.getNextTransitions().size());
 	}
@@ -54,8 +54,6 @@ public class SimpleLoadTest {
 		ClassicalBModel model = api.b_load("src/test/resources/tla/Foo.mch");
 		assertNotNull(model);
 	}
-	
-
 
 	@Test
 	public void testLoadTLAFileChoose() throws IOException, BException {
@@ -63,5 +61,5 @@ public class SimpleLoadTest {
 				.tla_load("src/test/resources/tla/Choose.tla");
 		assertNotNull(model);
 	}
-	
+
 }

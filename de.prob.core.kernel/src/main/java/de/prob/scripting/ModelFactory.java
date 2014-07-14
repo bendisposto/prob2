@@ -41,7 +41,7 @@ public abstract class ModelFactory {
 	public Map<String, String> getPreferences(final AbstractModel model,
 			final Map<String, String> prefsForInstance) {
 		Map<String, String> preferences = getGlobalPreferences(model
-				.getStatespace());
+				.getStateSpace());
 
 		preferences.putAll(getLocalPreferences(model.getModelDirPath()));
 		preferences.putAll(prefsForInstance);
