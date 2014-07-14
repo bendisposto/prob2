@@ -13,7 +13,7 @@ import de.prob.prolog.term.PrologTerm;
 public class ActivateUnitPluginCommand extends AbstractCommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("prob2_activate_plugin");
+		pto.openTerm("activate_plugin");
 		pto.printAtom("units");
 		pto.closeTerm();
 	}

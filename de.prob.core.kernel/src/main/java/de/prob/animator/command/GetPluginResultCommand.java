@@ -33,7 +33,7 @@ public final class GetPluginResultCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("prob2_get_plugin_output").printAtomOrNumber(resultID)
+		pto.openTerm("get_plugin_output").printAtomOrNumber(resultID)
 				.printVariable("Bindings").closeTerm();
 	}
 
