@@ -704,16 +704,22 @@ table {
 			.observer_content {
 				height:300px;
 			}
-				.observer_items {}
-					.observer_item {
-						background-color: #50504F;
-						width:95%;
-						margin-left:5px;
-					}
-						.observer_item .ra {
-							text-align:right;
-							font-weight:bold;
-						}
+						
+.observer_card {
+	background-color: #50504F;
+	width:260px;
+	margin-left:5px;
+}
+
+.observer_objs table {
+	padding: 0px;
+	border-collapse: separate; border-spacing: 4px;
+}
+
+.observer_objs td:first-child {
+	text-align:right;
+	font-weight:bold;
+}
 
 .truncate {
 	overflow: hidden;

@@ -53,7 +53,7 @@
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout-3.1.0.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout.x-editable.min.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/koExternalTemplateEngine_all.min.js"></script>
-  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/BMotionStudio.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/BMotionStudio.js"></script>
 </head>
 <body>
 
@@ -704,14 +704,14 @@
 <ul id="cmenu_b_observer_obj" class="contextMenu">
 	<li><a href="#delete">Delete Observer</a></li>
 	<li><a href="#duplicate">Duplicate Observer</a></li>
-	<li class="separator"><a href="#addBinding" json='{"type" : "predicate", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ]}'>Add Predicate Binding</a></li>
-	<li><a href="#addBinding" json='{"type" : "expression", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ] }'>Add Expression Binding</a></li>
+	<li class="separator"><a href="#addBinding" data-json='{"type" : "predicate", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ]}'>Add Predicate Binding</a></li>
+	<li><a href="#addBinding" data-json='{"type" : "expression", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ] }'>Add Expression Binding</a></li>
 </ul>
 
 <ul id="cmenu_csp_observer_obj" class="contextMenu">
 	<li><a href="#delete">Delete Observer</a></li>
 	<li><a href="#duplicate">Duplicate Observer</a></li>
-	<li class="separator"><a href="#addBinding" json='{"selector" : "", "attr": "", "value" : ""}'>Add Event Binding</a></li>
+	<li class="separator"><a href="#addBinding" data-json='{"selector" : "", "attr": "", "value" : ""}'>Add Event Binding</a></li>
 </ul>
 
 <ul id="cmenu_csp_observer_binding" class="contextMenu">
@@ -722,7 +722,7 @@
 <ul id="cmenu_b_observer_binding" class="contextMenu">
 	<li><a href="#delete" class="separator">Delete Binding</a></li>
 	<li class="separator"><a href="#duplicate">Duplicate Binding</a></li>
-	<li><a href="#addAction" json='{"attr" : "", "value" : ""}'>Add Action</a></li>
+	<li><a href="#addAction" data-json='{"attr" : "", "value" : ""}'>Add Action</a></li>
 </ul>
 
 <script>
