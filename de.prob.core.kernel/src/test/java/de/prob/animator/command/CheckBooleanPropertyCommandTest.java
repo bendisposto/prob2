@@ -1,4 +1,4 @@
-package de.prob.animator.command.internal;
+package de.prob.animator.command;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 
 import test.TestHelper;
+import de.prob.animator.command.CheckBooleanPropertyCommand;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;

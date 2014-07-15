@@ -15,7 +15,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.animator.domainobjects.StateError;
