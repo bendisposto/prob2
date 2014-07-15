@@ -32,5 +32,13 @@ len = ops.size()
 	assert opList[it].getId() == ops[it]
 }
 
+cmd = new FindValidStateCommand("card(waiting) = 2" as ClassicalB)
+s.execute(cmd)
+t = cmd.getTrace(s)
+t.ensureOpInfosEvaluated()
+opList = t.head.getOpList()
+assert opList.size() == 1
+assert opList[0].getName() == "find_valid_state"
+
 s.animator.cli.shutdown();
 "Finding trace through current state space works"

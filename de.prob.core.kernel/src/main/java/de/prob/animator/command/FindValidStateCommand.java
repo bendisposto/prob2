@@ -21,7 +21,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 		STATE_FOUND, NO_STATE_FOUND, INTERRUPTED, ERROR
 	};
 
-	private static final String COMMAND_NAME = "prob2_find_state_satisfying_predicate";
+	private static final String COMMAND_NAME = "find_state_for_predicate";
 	private static final String RESULT_VARIABLE = "R";
 
 	private final IEvalElement predicate;
