@@ -147,12 +147,8 @@ public class OpInfo {
 		if (evaluated) {
 			return this;
 		}
-		GetOpFromId command = new GetOpFromId(getId());
+		GetOpFromId command = new GetOpFromId(this);
 		s.execute(command);
-		name = command.getName();
-		params = command.getParams();
-		targetState = command.getTargetState();
-		evaluated = true;
 		return this;
 	}
 
