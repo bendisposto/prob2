@@ -48,7 +48,6 @@ import de.prob.annotations.Sessions;
 import de.prob.web.ISession;
 import de.prob.web.WebUtils;
 import de.prob.web.data.SessionResult;
-import de.prob.webconsole.ServletContextListener;
 
 @SuppressWarnings("serial")
 @Singleton

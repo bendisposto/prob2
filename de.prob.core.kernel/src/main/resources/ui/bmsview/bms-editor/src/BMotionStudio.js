@@ -130,10 +130,11 @@
 		updateObserverBindingMenu()
 	}
 	
-	function addAction(el,jsonpattern) {
+	function addItem(el) {
 		var actionListElement = el.find(".observer_actions");
 		var actionList = ko.dataFor(actionListElement.get(0))
-		var list = actionList["actions"]
+		var jsonpattern = $(actionListElement).attr("data-json")
+		var list = actionList[$(actionListElement).attr("data-list")]
 		list.unshift(convertToObservable(jQuery.parseJSON(jsonpattern)))
 	}
 	
@@ -181,8 +182,8 @@
 				case 'delete':
 					deleteItem(el.parent().get(0), el.get(0))
 					break;
-				case 'addAction':
-					addAction(el,menuitem.attr('data-json'))
+				case 'addItem':
+					addItem(el)
 					break;						
 				default:
 					break;

@@ -4,10 +4,11 @@
   <td><a href="#" class="truncate" data-bind="editable: binding.formula, editableOptions: { type: 'textarea' }"></a></td>
  </tr>
 </table>
-<table class="observer_actions" data-bind="foreach: { data: binding.actions, as: 'act' }">
+<table class="observer_actions" data-bind="foreach: { data: binding.actions, as: 'act' }" data-json='{"attr" : "", "value" : ""}' data-list="actions">
  <tr>
   <td>Attribute</td>
-  <td><a href="#" class="truncate" data-bind="text: act.attr, attr: { selector: $parents[2].selector }, editable: act.attr, editableOptions: { type: 'select', source:  
+  <td style="width:20px;">>></td>
+  <td><a href="#" style="width:150px;" class="truncate" data-bind="text: act.attr, attr: { selector: $parents[2].selector }, editable: act.attr, editableOptions: { type: 'select', source:  
 										function() {
 											try {
 	    										var selector = $(this).attr('selector')

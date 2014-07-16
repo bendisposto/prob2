@@ -713,12 +713,15 @@ table {
 
 .observer_objs table {
 	padding: 0px;
-	border-collapse: separate; border-spacing: 4px;
+	border-collapse: separate; border-spacing: 3px;
 }
 
 .observer_objs td:first-child {
-	text-align:right;
 	font-weight:bold;
+}
+
+.observer_bindings td {
+	text-align:center;
 }
 
 .truncate {
@@ -728,17 +731,6 @@ table {
 	display:block;
 	padding:0;
 	margin:0;
-	width:165px;
-}
-
-.truncate_act {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	display:block;
-	padding:0;
-	margin:0;
-	width:80px;
 }
 
 .observer_wrapper {
