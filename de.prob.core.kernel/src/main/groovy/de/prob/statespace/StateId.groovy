@@ -147,7 +147,7 @@ class StateId {
 		return ns;
 	}
 
-	def anyEvent(filter) {
+	def StateId anyEvent(filter) {
 		anyOperation(filter);
 	}
 }
