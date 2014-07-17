@@ -26,6 +26,7 @@ class Shell {
 	private void runScript(final String dir, final File script,
 			final boolean silent) throws Throwable {
 		if (script.isDirectory()) {
+			long time = System.currentTimeMillis();
 			File[] files = script.listFiles(new FilenameFilter() {
 				@Override
 				public boolean accept(final File arg0, final String arg1) {
@@ -34,6 +35,10 @@ class Shell {
 			});
 			for (File file : files) {
 				runScript(script.getAbsolutePath(), file, silent);
+			}
+			if (!silent) {
+				System.out.println("TOTAL TIME: "
+						+ (System.currentTimeMillis() - time));
 			}
 		} else {
 			runSingleScript(script.getParent(), script, silent);
