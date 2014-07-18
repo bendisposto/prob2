@@ -4247,6 +4247,10 @@
 			workingScriptPath = data.scriptpath;
 		}
 		
+		Editor.getWorkingSessionId = function() {
+			return workingSessionId;
+		}
+		
 		Editor.setObserverModel = function(model) {
 			observerModel = model;
 		}
