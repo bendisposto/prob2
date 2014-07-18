@@ -25,6 +25,12 @@ class BString {
 	}
 }
 
+class PossiblyTrue {
+	def String toString() {
+		return "POSSIBLY TRUE"
+	}
+}
+
 class ValueTranslator {
 
 	def makeSetFromList(ListPrologTerm list) {
@@ -88,6 +94,8 @@ class ValueTranslator {
 			case "string":  new BString(term.getArgument(1).functor)
 				break
 			case "rec": makeRecord(term.getArgument(1))
+				break
+			case "possibly_true": new PossiblyTrue()
 				break
 			case "unknown_type": term
 				break

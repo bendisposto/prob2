@@ -22,10 +22,17 @@ assert res.getReason() == "time out"
 res = cbc_solve("x : POW(NAT) & card(x) = 4 & y : x")
 assert res instanceof EvalResult
 assert res.getValue() == "TRUE"
-set = new HashSet()
-(0..3).each { set.add(it) }
-assert res.x == set
-assert res.y == 0
+
+assert res.x == "{0,2,1,3}"
+assert res.y == "0"
+// TODO
+// Test after translation
+// set = new HashSet()
+// (0..3).each { set.add(it) }
+// assert res.x == set
+// assert res.y == 0
+
+
 
 /* It is also possible to create a fourth result type from CbcSolveCommand
  This is a ComputationNotCompletedResult with reason "no solution found (but there might be one)"

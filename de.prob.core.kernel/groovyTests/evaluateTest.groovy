@@ -10,6 +10,8 @@ assert ['1']== s.eval(s[3],["2-1" as ClassicalB]).collect { it.toString() }
 assert ['{}']== s.eval(s[0],["waiting" as ClassicalB]).collect { it.toString() }
 assert ['{PID2}']== s.eval(s[2],["waiting" as ClassicalB]).collect { it.toString() }
 res = s.eval(s[2],["x : waiting & x = PID2" as ClassicalB]).get(0)
+t = res.translate(s)
+assert t != null
 assert res.value == "TRUE"
 assert res.getSolutions().containsKey("x")
 assert res.x == "PID2"

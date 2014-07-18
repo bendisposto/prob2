@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import de.prob.prolog.term.CompoundPrologTerm;
+
 public class EvaluationResultTest {
 
 	@Test
@@ -15,10 +17,11 @@ public class EvaluationResultTest {
 		Map<String, String> solutions = new HashMap<String, String>();
 		solutions.put("x", "5");
 		solutions.put("y", "{1,2,3}");
-		EvalResult a = new EvalResult("c1", "yay",
-				new HashMap<String, String>(), null);
+		EvalResult a = new EvalResult("c1", "yay", new CompoundPrologTerm(
+				"TRUE"), new HashMap<String, String>(), null);
 		assertEquals("yay", a.toString());
-		EvalResult b = new EvalResult("c1", "yay", solutions, null);
+		EvalResult b = new EvalResult("c1", "yay", new CompoundPrologTerm(
+				"TRUE"), solutions, null);
 		assertTrue(b.toString().equals("yay (x = 5 \u2227 y = {1,2,3})")
 				|| b.toString().equals("yay (y = {1,2,3} \u2227 x = 5)"));
 		ComputationNotCompletedResult c = new ComputationNotCompletedResult(
