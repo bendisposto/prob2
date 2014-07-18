@@ -5,7 +5,6 @@ import org.parboiled.common.Tuple2
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.EvaluationCommand
-import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
 import de.prob.model.classicalb.ClassicalBModel
@@ -250,6 +249,25 @@ public class Trace {
 
 		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), event, predicate , 1)[0];
 		return add(op.id)
+	}
+
+	/**
+	 * Tests to see if the event name plus the conjunction of the parameter strings produce a valid
+	 * operation on this state. Currently tests the result of {@link Trace#execute} and returns false
+	 * if an exception is thrown, but this is subject to change.
+	 *
+	 * @param event Name of the event to be executed
+	 * @param params List of String predicates to be conjoined
+	 * @return <code>true</code>, if the operation can be executed. <code>false</code>, otherwise
+	 */
+	def boolean canExecuteEvent(String event, List<String> params) {
+		// TODO: We should have a prolog command that check this so we don't have to execute the op every time
+		try {
+			execute(event, params);
+		} catch(Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 	def Trace anyOperation(filter) {
