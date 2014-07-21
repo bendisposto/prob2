@@ -62,4 +62,4 @@ assert f211.getValue() == toUnicode('{}')
 assert f211.getChildren() == null
 
 s.animator.cli.shutdown();
-"describe the test that you are performing"
+"expanding a B formula works"

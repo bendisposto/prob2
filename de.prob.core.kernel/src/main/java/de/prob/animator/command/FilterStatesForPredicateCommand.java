@@ -21,6 +21,7 @@ public class FilterStatesForPredicateCommand extends AbstractCommand {
 	private final IEvalElement predicate;
 	private final String FILTERED = "Filtered";
 	private final List<String> filtered = new ArrayList<String>();
+	private final List<String> errors = new ArrayList<String>();
 
 	public FilterStatesForPredicateCommand(final IEvalElement predicate,
 			final Collection<StateId> ids) {
@@ -48,13 +49,27 @@ public class FilterStatesForPredicateCommand extends AbstractCommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		ListPrologTerm list = BindingGenerator.getList(bindings.get(FILTERED));
-		for (PrologTerm prologTerm : list) {
-			filtered.add(OpInfo.getIdFromPrologTerm(prologTerm));
+		PrologTerm term = bindings.get(FILTERED);
+		if (term.hasFunctor("errors", 1)) {
+			PrologTerm errorL = BindingGenerator.getCompoundTerm(term, 1)
+					.getArgument(1);
+			ListPrologTerm errList = BindingGenerator.getList(errorL);
+			for (PrologTerm prologTerm : errList) {
+				errors.add(prologTerm.getFunctor());
+			}
+		} else {
+			ListPrologTerm list = BindingGenerator.getList(term);
+			for (PrologTerm prologTerm : list) {
+				filtered.add(OpInfo.getIdFromPrologTerm(prologTerm));
+			}
 		}
 	}
 
 	public List<String> getFiltered() {
 		return filtered;
+	}
+
+	public List<String> getErrors() {
+		return errors;
 	}
 }
