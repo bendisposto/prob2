@@ -83,8 +83,21 @@ public class EvalResult implements IEvalResult {
 		return cmd.getResult()
 	}
 
+	/**
+	 * Translates the results from ProB into an IEvalResult. This is intended
+	 * mainly for internal use, for developers who are writing commands and want
+	 * to translate them into an {@link IEvalResult}.
+	 *
+	 * @param pt PrologTerm
+	 * @return IEvalResult translation of pt
+	 */
 	def static IEvalResult getEvalResult(PrologTerm pt) {
 		if (pt instanceof ListPrologTerm) {
+			/*
+			 * If the evaluation was not successful, the result should be a
+			 * Prolog list with the code on the first index and a list of errors
+			 * This results therefore in a ComputationNotCompleted command
+			 */
 			ListPrologTerm listP = (ListPrologTerm) pt
 			def list = []
 
@@ -96,6 +109,20 @@ public class EvalResult implements IEvalResult {
 
 			return new ComputationNotCompletedResult(code, Joiner.on(",").join(list))
 		} else {
+			/*
+			 * If the formula in question was a predicate, the result term will have the following form:
+			 * result(Value,Solutions,Code) where Value is 'TRUE','POSSIBLY TRUE', or 'FALSE'
+			 * Solutions is then a list of triples bind(Name,Solution,PPSol) where Name is the name
+			 * of the free variable calculated by ProB, Solution is the Prolog representation of the
+			 * solution, and PPSol is the String pretty print of the solution calculated by Prolog.
+			 *
+			 * If the formula in question was an expression, the result term will have the following form:
+			 * result(v(SRes,PRes),[],Code) where SRes is the string representation of the result calculated
+			 * by ProB and PRes is the Prolog representation of the value.
+			 *
+			 * From this information, an EvalResult object is created.
+			 */
+
 			PrologTerm v = pt.getArgument(1);
 			String value = v.getFunctor();
 			def vSource = v;

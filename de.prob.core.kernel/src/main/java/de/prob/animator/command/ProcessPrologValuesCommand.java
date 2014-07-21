@@ -63,7 +63,6 @@ public class ProcessPrologValuesCommand extends AbstractCommand {
 			solutions.put(key, sol);
 		}
 		evalResult = new TranslatedEvalResult(code, v, solutions);
-		System.out.println(bindings);
 	}
 
 	public TranslatedEvalResult getResult() {
