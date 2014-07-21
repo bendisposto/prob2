@@ -77,4 +77,10 @@ public interface ITool {
 	 */
 	public boolean canBacktrack();
 
+	/**
+	 * @return the String representation that specifies this exact instance of
+	 *         the ITool. This should be as unique as possible.
+	 */
+	public String getName();
+
 }
