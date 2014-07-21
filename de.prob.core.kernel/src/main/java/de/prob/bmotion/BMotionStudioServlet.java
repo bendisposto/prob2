@@ -107,7 +107,8 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 	@Override
 	protected String getDefaultPage(AbstractBMotionStudioSession bmsSession) {
 
-		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
+		String templateHtml = BMotionUtil.readFile(BMotionUtil
+				.getFullTemplatePath(bmsSession.getTemplatePath()));
 		String baseHtml = getBaseHtml(bmsSession);
 
 		Document templateDocument = Jsoup.parse(templateHtml);

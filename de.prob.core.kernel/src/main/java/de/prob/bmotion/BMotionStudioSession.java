@@ -9,6 +9,8 @@ import javax.servlet.AsyncContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+
 import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.ui.api.ITool;
@@ -22,12 +24,12 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 
 	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
 
-	private final List<IBMotionScript> scriptListeners = new ArrayList<IBMotionScript>();
+	private final List<IBMotionGroovyObserver> groovyObserverListener = new ArrayList<IBMotionGroovyObserver>();
 
 	private final ITool tool;
 	
 	private final ScriptEngineProvider engineProvider;
-
+	
 	public BMotionStudioSession(final ITool tool, final ToolRegistry registry,
 			final String templatePath, final AbstractModel model,
 			final ScriptEngineProvider engineProvider, final String host,
@@ -44,17 +46,16 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 			final AsyncContext context) {
 		sendInitMessage(context);
 		animationChange(tool);
-
 	}
 
-	public void registerScript(final IBMotionScript script) {
-		scriptListeners.add(script);
+	public void registerGroovyObserver(final IBMotionGroovyObserver script) {
+		groovyObserverListener.add(script);
 		animationChange(tool);
 	}
 
 	@Override
 	public void animationChange(final ITool tool) {
-		for (IBMotionScript s : scriptListeners) {
+		for (IBMotionGroovyObserver s : groovyObserverListener) {
 			s.update(tool);
 		}
 	}
@@ -111,16 +112,16 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 
 	@Override
 	public void initSession() {
-
-		List<IBMotionScript> observers = BMotionUtil.createObservers(
-				getTemplateFolder(), getParameterMap().get("json"), this);
-		for (IBMotionScript observer : observers) {
-			registerScript(observer);
+		String absoluteTemplatePath = BMotionUtil
+				.getFullTemplatePath(getTemplatePath());
+		if (tool instanceof IObserver) {
+			JsonElement jsonObserver = BMotionUtil.getJsonObserver(
+					absoluteTemplatePath, getParameterMap().get("json"));
+			registerGroovyObserver(((IObserver) tool).getBMotionGroovyObserver(
+					this, jsonObserver));
 		}
-
-		BMotionUtil.evaluateGroovy(engineProvider.get(), getTemplatePath(),
+		BMotionUtil.evaluateGroovy(engineProvider.get(), absoluteTemplatePath,
 				getParameterMap(), this);
-
 	}
 
 	// ------------------

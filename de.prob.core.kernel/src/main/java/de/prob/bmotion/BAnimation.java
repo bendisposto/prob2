@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonElement;
+
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -21,7 +23,7 @@ import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 
-public class BAnimation implements ITool, IAnimationChangeListener {
+public class BAnimation implements ITool, IAnimationChangeListener, IObserver {
 
 	private Trace trace;
 	private final String modelPath;
@@ -68,7 +70,7 @@ public class BAnimation implements ITool, IAnimationChangeListener {
 		if (res instanceof EvalResult) {
 			return ((EvalResult) res).getValue();
 		}
-		return res.toString();
+		return res != null ? res.toString() : null;
 	}
 
 	@Override
@@ -120,6 +122,12 @@ public class BAnimation implements ITool, IAnimationChangeListener {
 
 	@Override
 	public void animatorStatus(final boolean busy) {
+	}
+
+	@Override
+	public IBMotionGroovyObserver getBMotionGroovyObserver(
+			BMotionStudioSession bmsSession, JsonElement jsonObserver) {
+		return new BAnimationObserver(bmsSession, jsonObserver);
 	}
 
 }

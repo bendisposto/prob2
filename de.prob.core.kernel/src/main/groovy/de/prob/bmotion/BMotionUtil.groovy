@@ -1,22 +1,15 @@
 package de.prob.bmotion
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-
 import javax.script.Bindings
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 
 import com.google.common.base.Function
 import com.google.gson.JsonElement
-import com.google.gson.JsonNull
 import com.google.gson.JsonParser
 
 import de.prob.model.representation.AbstractModel
@@ -26,39 +19,28 @@ import de.prob.statespace.FormalismType
 import de.prob.statespace.Trace
 import de.prob.ui.api.ITool
 import de.prob.ui.api.ToolRegistry
-import de.prob.web.WebUtils
 
 class BMotionUtil {
 
-	def static List<IBMotionScript> createObservers(String templatePath, String jsonPaths, BMotionStudioSession bms) {
-		List<IBMotionScript> observers = new ArrayList<IBMotionScript>()
-		if (templatePath != null && jsonPaths != null) {
-			def templateFolder = BMotionUtil.getTemplateFolder(templatePath)
-			Map<String, Object> scope = new HashMap<String, Object>();
-			scope.put("eval", new EvalExpression());
-
-			String[] paths = jsonPaths.split(",")
-			for (path in paths) {
-				String jsonPath = templateFolder + File.separator + path
-				File f = new File(jsonPath)
-				if (f.exists()) {
-					WebUtils.render(f.getPath(), scope);
-					String rendered = f.getText()
-					JsonParser parser = new JsonParser()
-					JsonElement element = parser.parse(rendered)
-					if (!(JsonElement instanceof JsonNull)) {
-						observers << new Observer(element, bms)
-					}
-				}
+	def static JsonElement getJsonObserver(String absoluteTemplatePath, String jsonPath) {
+		def JsonElement element;
+		if (absoluteTemplatePath != null && jsonPath != null) {
+			def templateFolder = BMotionUtil.getTemplateFolder(absoluteTemplatePath)
+			String absoluteJsonPath = templateFolder + File.separator + jsonPath
+			File f = new File(absoluteJsonPath)
+			if (f.exists()) {
+				String rendered = f.getText()
+				JsonParser parser = new JsonParser()
+				element = parser.parse(rendered)
 			}
 		}
-		return observers
+		return element;
 	}
 
-	def static void evaluateGroovy(ScriptEngine evaluator, String templatePath, Map<String, String> parameters, BMotionStudioSession bms) {
+	def static void evaluateGroovy(ScriptEngine evaluator, String absoluteTemplatePath, Map<String, String> parameters, BMotionStudioSession bms) {
 		String scriptPaths = parameters.get("script")
-		if (templatePath != null && scriptPaths != null) {
-			def templateFolder = BMotionUtil.getTemplateFolder(templatePath)
+		if (absoluteTemplatePath != null && scriptPaths != null) {
+			def templateFolder = BMotionUtil.getTemplateFolder(absoluteTemplatePath)
 			Bindings bindings = evaluator.getBindings(ScriptContext.GLOBAL_SCOPE)
 			bindings.putAll(parameters)
 			bindings.put("bms", bms)

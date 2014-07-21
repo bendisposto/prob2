@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonElement;
+
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -20,7 +22,7 @@ import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 
-public class CSPAnimation implements ITool, IAnimationChangeListener {
+public class CSPAnimation implements ITool, IAnimationChangeListener, IObserver {
 
 	private Trace trace;
 	private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
@@ -124,4 +126,11 @@ public class CSPAnimation implements ITool, IAnimationChangeListener {
 	@Override
 	public void animatorStatus(final boolean busy) {
 	}
+
+	@Override
+	public IBMotionGroovyObserver getBMotionGroovyObserver(
+			BMotionStudioSession bmsSession, JsonElement jsonObserver) {
+		return new CSPAnimationObserver(bmsSession, jsonObserver);
+	}
+
 }
