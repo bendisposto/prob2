@@ -101,7 +101,8 @@ public class FindValidStateCommand extends AbstractCommand implements
 
 	@Override
 	public Trace getTrace(final StateSpace s) {
-		if (stateId != null && s.getVertex(stateId) != null) {
+		if (stateId != null && s.getVertex(stateId) != null
+				&& result.equals(ResultType.STATE_FOUND)) {
 			Trace t = s.getTrace(s.getVertex(stateId));
 			if (t != null) {
 				return t;
@@ -109,6 +110,6 @@ public class FindValidStateCommand extends AbstractCommand implements
 		}
 		throw new RuntimeException(
 				"Was not able to produce a valid trace to the state specified by predicate: "
-						+ predicate.getCode());
+						+ predicate.getCode() + " Result type was: " + result);
 	}
 }
