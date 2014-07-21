@@ -23,6 +23,9 @@ class BString {
 	def BString(value) {
 		this.value = value
 	}
+	def String toString() {
+		return value
+	}
 }
 
 class ValueTranslator {
