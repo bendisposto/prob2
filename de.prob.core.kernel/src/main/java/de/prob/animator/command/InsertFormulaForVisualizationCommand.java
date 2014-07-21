@@ -18,9 +18,8 @@ public class InsertFormulaForVisualizationCommand extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("evaluation_insert_formula");
+		pto.openTerm("insert_formula_for_expansion");
 		formula.printProlog(pto);
-		pto.printAtom("user");
 		pto.printVariable(ID);
 		pto.closeTerm();
 	}
