@@ -52,11 +52,14 @@ class Shell {
 		ScriptEngine executor = sep.get();
 		executor.put("dir", dir);
 
+		if (!silent) {
+			System.out.print(script.getName());
+		}
 		FileReader fr = new FileReader(script);
 		Object res = executor.eval(fr);
 		if (!silent) {
 			double seconds = (System.currentTimeMillis() - time) / 1000.0;
-			System.out.println(script.getName() + " - " + res.toString() + " ("
+			System.out.println(" - " + res.toString() + " ("
 					+ String.format("%.4g", seconds) + " s)");
 		}
 	}
