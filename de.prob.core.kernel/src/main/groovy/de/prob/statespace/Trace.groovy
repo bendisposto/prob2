@@ -331,4 +331,29 @@ public class Trace {
 			stateSpace.evaluateOps(notEvaluated);
 		}
 	}
+
+	/**
+	 * Takes a {@link StateSpace} and a list of {@link OpInfo} operations through the {@link StateSpace}
+	 * and generates a {@link Trace} object from the information. The list of operations must be a valid
+	 * list of operations starting from the root state, and for which the information has already been
+	 * cached in the {@link StateSpace}. Otherwise, an assertion error will be thrown.
+	 *
+	 * @param s {@link StateSpace} through which the Trace should be generated
+	 * @param ops List of {@link OpInfo} operations that should be executed in the Trace
+	 * @return {@link Trace} specified by list of operations
+	 */
+	def static Trace getTraceFromOpList(StateSpace s, List<OpInfo> ops) {
+		assert !ops.isEmpty();
+		assert ops[0].getSrc() == "root"
+
+		TraceElement head = new TraceElement(s.getVertex("root"))
+		for (op in ops) {
+			def src = s.getVertex(op.getSrc())
+			def dest = s.getVertex(op.getDest())
+			assert src != null
+			assert dest != null
+			head = new TraceElement(src, dest,op, head)
+		}
+		return new Trace(s, head, java.util.UUID.randomUUID())
+	}
 }

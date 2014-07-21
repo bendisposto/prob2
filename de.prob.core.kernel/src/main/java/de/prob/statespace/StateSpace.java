@@ -713,8 +713,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	/**
 	 * This calculated the shortest path from root to the specified state. This
 	 * contacts the ProB kernel via the {@link GetShortestTraceCommand} and then
-	 * uses the generated {@link List} of operation ids to generate a Trace via
-	 * the {@link StateSpace#getTrace(List)} method.
+	 * uses the generated of operations to generate a Trace via the
+	 * {@link StateSpace#getTrace(ITraceDescription)} method.
 	 * 
 	 * @param stateId
 	 *            StateId for which the trace through the state space should be
@@ -724,8 +724,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public Trace getTrace(final StateId stateId) {
 		GetShortestTraceCommand cmd = new GetShortestTraceCommand(stateId);
 		execute(cmd);
-		List<String> opIds = cmd.getOperationIds();
-		return getTrace(opIds);
+		return getTrace(cmd);
 	}
 
 	/**

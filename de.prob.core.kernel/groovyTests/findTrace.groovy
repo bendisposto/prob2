@@ -19,7 +19,7 @@ t = t.randomAnimation(10)
 assert s[4] != null
 cmd = new GetShortestTraceCommand(s[4])
 s.execute(cmd)
-ops = cmd.getOperationIds()
+ops = cmd.getNewTransitions()
 
 assert ops != null
 assert !ops.isEmpty()
@@ -29,7 +29,7 @@ assert !opList.isEmpty()
 assert ops.size() == opList.size()
 len = ops.size()
 (0..(len-1)).each {
-	assert opList[it].getId() == ops[it]
+	assert opList[it] == ops[it]
 }
 
 cmd = new FindValidStateCommand("card(waiting) = 2" as ClassicalB)
