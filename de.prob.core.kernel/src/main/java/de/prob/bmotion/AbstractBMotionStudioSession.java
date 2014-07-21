@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.AsyncContext;
+
 import de.prob.model.representation.AbstractModel;
-import de.prob.scripting.Api;
 import de.prob.web.AbstractSession;
 
 public abstract class AbstractBMotionStudioSession extends AbstractSession {
@@ -21,17 +22,27 @@ public abstract class AbstractBMotionStudioSession extends AbstractSession {
 
 	private String host;
 
-	private final Api api;
+	private Map<String, String> parameterMap = new HashMap<String, String>();
 
-	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
-
-	public AbstractBMotionStudioSession(final Api api) {
+	public AbstractBMotionStudioSession(String templatePath,
+			AbstractModel model, String host, int port) {
 		this.id = UUID.randomUUID();
-		this.api = api;
+		this.model = model;
+		this.templatePath = templatePath;
+		this.host = host;
+		this.port = port;
 	}
 
-	public Map<String, Object> getParameterMap() {
+	public Map<String, String> getParameterMap() {
 		return parameterMap;
+	}
+	
+	public void addParameter(final String key, final String value) {
+		parameterMap.put(key, value);
+	}
+	
+	public void setParameterMap(Map<String, String> params) {
+		this.parameterMap = params;
 	}
 
 	public String getTemplatePath() {
@@ -56,10 +67,6 @@ public abstract class AbstractBMotionStudioSession extends AbstractSession {
 
 	public void setSessionUUID(UUID id) {
 		this.id = id;
-	}
-
-	public void addParameter(final String key, final Object value) {
-		parameterMap.put(key, value);
 	}
 
 	public AbstractModel getModel() {
@@ -87,10 +94,6 @@ public abstract class AbstractBMotionStudioSession extends AbstractSession {
 
 	}
 
-	public Api getApi() {
-		return api;
-	}
-
 	public int getPort() {
 		return port;
 	}
@@ -109,4 +112,14 @@ public abstract class AbstractBMotionStudioSession extends AbstractSession {
 
 	public abstract void initSession();
 
+
+	@Override
+	public String html(String clientid, Map<String, String[]> parameterMap) {
+		return null;
+	}
+
+	@Override
+	public void reload(String client, int lastinfo, AsyncContext context) {
+	}
+	
 }

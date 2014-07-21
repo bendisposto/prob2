@@ -30,6 +30,9 @@ import com.google.common.io.Files;
 import com.google.inject.Singleton;
 
 import de.prob.Main;
+import de.prob.model.representation.AbstractModel;
+import de.prob.scripting.Api;
+import de.prob.statespace.AnimationSelector;
 import de.prob.web.WebUtils;
 
 @SuppressWarnings("serial")
@@ -39,6 +42,16 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 	private final int DEFAULT_BUFFER_SIZE = 10240; // 10KB
 
 	private final Map<String, AbstractBMotionStudioSession> sessions = new HashMap<String, AbstractBMotionStudioSession>();
+
+	protected final Api api;
+
+	protected final AnimationSelector animations;
+
+	public AbstractBMotionStudioServlet(final Api api,
+			final AnimationSelector animations) {
+		this.api = api;
+		this.animations = animations;
+	}
 
 	protected void toOutput(HttpServletResponse resp, InputStream stream) {
 		// Prepare streams.
@@ -88,7 +101,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 			}
 		}
 	}
-	
+
 	private List<String> validateRequest(HttpServletRequest req,
 			HttpServletResponse resp) {
 
@@ -105,7 +118,8 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 			if (!(fileExtension.equals("html") || fileExtension.equals("htm"))) {
 				errors.add("Plese enter a valid template (.html).");
 			} else if (editor == null) {
-				File file = new File(getFullTemplatePath(templatePath));
+				File file = new File(
+						BMotionUtil.getFullTemplatePath(templatePath));
 				if (!file.exists())
 					errors.add("The template " + templatePath
 							+ " does not exist.");
@@ -115,69 +129,68 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		return errors;
 
 	}
-	
-	private void initParameterFromTemplate(AbstractBMotionStudioSession bmsSession) {
 
-		String templateHtml = WebUtils.render(bmsSession.getTemplatePath());
+	private Map<String, String> getParameterFromTemplate(String templatePath) {
+
+		Map<String, String> params = new HashMap<String, String>();
+		String templateHtml = BMotionUtil.readFile(templatePath);
 		Document templateDocument = Jsoup.parse(templateHtml);
 		Elements headTag = templateDocument.getElementsByTag("head");
 		Element headElement = headTag.get(0);
-
 		Elements elements = headElement.getElementsByAttributeValueStarting(
 				"name", "bms.");
-
 		// Add additional parameters from template to BMotionStudioSession
 		for (Element e : elements) {
 			String content = e.attr("content");
 			String name = e.attr("name");
-			bmsSession.addParameter(name.replace("bms.", ""), content);
+			params.put(name.replace("bms.", ""), content);
 		}
+		return params;
 
 	}
-	
+
 	private AbstractBMotionStudioSession createNewSessionAndRedirect(
 			HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		String templatePath = req.getParameter("template");
 		int port = req.getLocalPort();
 		String host = req.getRemoteAddr();
-		if (Main.local)
+		if (Main.local) {
 			host = "localhost";
+		}
 
-		// Create a new BMotionStudioSession
-		AbstractBMotionStudioSession bmsSession = (AbstractBMotionStudioSession) Main
-				.getInjector().getInstance(getSessionClass());
-		String id = bmsSession.getSessionUUID().toString();
-		// Register the new session
-		sessions.put(id, bmsSession);
+		// Extract template path
+		String templatePath = req.getParameter("template");
+		String fullTemplatePath = BMotionUtil.getFullTemplatePath(templatePath);
 
-		// Prepare redirect ...
-		Map<String, String[]> parameterMap = req.getParameterMap();
-
-		// Set template path, port and host
-		bmsSession.setTemplatePath(getFullTemplatePath(templatePath));
-		bmsSession.setPort(port);
-		bmsSession.setHost(host);
-		// Build up parameter string and add parameters to
-		// BMotionStudioSession
+		Map<String, String> params = getParameterFromTemplate(fullTemplatePath);
 		StringBuilder parameterString = new StringBuilder();
-		for (Map.Entry<String, String[]> e : parameterMap.entrySet()) {
-			bmsSession.addParameter(e.getKey(), e.getValue()[0]);
+		for (Map.Entry<String, String[]> e : req.getParameterMap().entrySet()) {
+			params.put(e.getKey(), e.getValue()[0]);
 			parameterString.append("&" + e.getKey());
 			if (!e.getValue()[0].isEmpty())
 				parameterString.append("=" + e.getValue()[0]);
 		}
-		initParameterFromTemplate(bmsSession);
+		String modelPath = params.get("model");
+
+		// Get model reference
+		AbstractModel model = BMotionUtil.loadModel(api, animations, modelPath,
+				fullTemplatePath);
+		AbstractBMotionStudioSession bmsSession = createSession(templatePath,
+				model, host, port);
+		bmsSession.setParameterMap(params);
+		String id = bmsSession.getSessionUUID().toString();
 		bmsSession.initSession();
+		sessions.put(id, bmsSession);
 
 		// Send redirect with new session id, template file and parameters
 		String fpstring = "?"
 				+ parameterString.substring(1, parameterString.length());
 		String fileName = new File(templatePath).getName();
-		String redirect = "/" + getUrlPrefix() + "/" + id + "/" + fileName
+		String redirect = req.getServletPath() + "/" + id + "/" + fileName
 				+ fpstring;
 		resp.sendRedirect(redirect);
+
 		return bmsSession;
 
 	}
@@ -188,6 +201,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		// Get session from URI
 		List<String> parts = new PartList(uri.split("/"));
 		String sessionId = parts.get(2);
+
 		// Try to get session. If no session exists, create one
 		AbstractBMotionStudioSession bmsSession = getSessions().get(sessionId);
 		if (bmsSession == null) {
@@ -202,7 +216,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		}
 		return bmsSession;
 	}
-	
+
 	private String getErrorHtml(List<String> errors) {
 		String standalone = Main.standalone ? "yes" : "";
 		Map<String, Object> scope = new HashMap<String, Object>();
@@ -216,35 +230,6 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		return sessions;
 	}
 
-	protected String getFullTemplatePath(String templatePath) {
-		if (!new File(templatePath).isAbsolute()) {
-			String homedir = System.getProperty("bms.home");
-			if (homedir != null)
-				return templatePath = homedir + templatePath;
-			return templatePath = System.getProperty("user.home")
-					+ templatePath;
-		}
-		return templatePath;
-	}
-
-	protected class PartList extends ArrayList<String> {
-
-		private static final long serialVersionUID = -5668244262489304794L;
-
-		public PartList(String[] split) {
-			super(Arrays.asList(split));
-		}
-
-		@Override
-		public String get(int index) {
-			if (index >= this.size())
-				return "";
-			else
-				return super.get(index);
-		}
-
-	}
-	
 	protected void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, AbstractBMotionStudioSession bmsSession) {
 
@@ -253,7 +238,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		File templateFile = new File(templatePath);
 		String templateFolderPath = templateFile.getParent();
 		String fileRequest = req.getRequestURI().replace(
-				"/" + getUrlPrefix() + "/" + sessionId + "/", "");
+				"/" + req.getServletPath() + sessionId + "/", "");
 		String fullRequestPath = templateFolderPath + "/" + fileRequest;
 
 		InputStream stream = null;
@@ -284,10 +269,28 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 
 	}
 
-	protected abstract String getUrlPrefix();
-	
-	protected abstract Class<?> getSessionClass();
-	
-	protected abstract String getDefaultPage(AbstractBMotionStudioSession bmsSession);
+	protected abstract String getDefaultPage(
+			AbstractBMotionStudioSession bmsSession);
+
+	protected abstract AbstractBMotionStudioSession createSession(
+			String template, AbstractModel model, String host, int port);
+
+	protected class PartList extends ArrayList<String> {
+
+		private static final long serialVersionUID = -5668244262489304794L;
+
+		public PartList(String[] split) {
+			super(Arrays.asList(split));
+		}
+
+		@Override
+		public String get(int index) {
+			if (index >= this.size())
+				return "";
+			else
+				return super.get(index);
+		}
+
+	}
 	
 }

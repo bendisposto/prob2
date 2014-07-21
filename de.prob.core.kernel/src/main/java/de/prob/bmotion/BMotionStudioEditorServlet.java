@@ -3,6 +3,7 @@ package de.prob.bmotion;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,9 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.model.eventb.Event;
@@ -31,18 +30,30 @@ import de.prob.model.eventb.EventBVariable;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.ModelElementList;
+import de.prob.scripting.Api;
+import de.prob.statespace.AnimationSelector;
 import de.prob.web.WebUtils;
 
 @SuppressWarnings("serial")
 @Singleton
 public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 
+	private final Gson gson;
+
+	@Inject
+	public BMotionStudioEditorServlet(Api api, AnimationSelector animations,
+			Gson gson) {
+		super(api, animations);
+		this.gson = gson;
+	}
+
 	private void taskInit(HttpServletRequest req, HttpServletResponse resp) {
 
 		List<String> parts = new PartList(req.getRequestURI().split("/"));
 		String sessionID = parts.get(2);
 
-		String templatePath = getFullTemplatePath(req.getParameter("template"));
+		String templatePath = BMotionUtil.getFullTemplatePath(req
+				.getParameter("template"));
 
 		String svgString = "";
 		String svgId = UUID.randomUUID().toString();
@@ -63,7 +74,7 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 					e.attr("id", UUID.randomUUID().toString());
 			}
 
-			BMotionStudioUtil.fixSvgImageTags(templateDocument);
+			BMotionUtil.fixSvgImageTags(templateDocument);
 
 			Element svgElement = templateDocument.getElementsByTag("svg")
 					.first();
@@ -78,7 +89,7 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 			if (jsonFileName != null) {
 				String templateFolder = templateFile.getParent();
 				String jsonFilePath = templateFolder + "/" + jsonFileName;
-				jsonRendered = BMotionStudioUtil.readFile(jsonFilePath);
+				jsonRendered = BMotionUtil.readFile(jsonFilePath);
 			}
 
 			// Get model and script path from template
@@ -108,7 +119,7 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 		Document templateDocument = Jsoup.parse(WebUtils.render(templatePath));
 		setMetaAttributeValue(templateDocument, "bms.model", newModelPath);
 		setMetaAttributeValue(templateDocument, "bms.script", newScriptPath);
-		BMotionStudioUtil.writeStringToFile(templateDocument.toString(),
+		BMotionUtil.writeStringToFile(templateDocument.toString(),
 				templateFile);
 		toOutput(resp, "ok");
 	}
@@ -142,7 +153,7 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 			if (jsonFilePath != null) {
 				jsonFile = new File(templateFile.getParent() + "/"
 						+ jsonFilePath);
-				jsonSaveString = BMotionStudioUtil.readFile(jsonFile
+				jsonSaveString = BMotionUtil.readFile(jsonFile
 						.getAbsolutePath());
 			} else {
 				createJson = true;
@@ -189,12 +200,12 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 
 		}
 
-		BMotionStudioUtil.fixSvgImageTags(templateDocument);
+		BMotionUtil.fixSvgImageTags(templateDocument);
 		String templateSaveString = templateDocument.toString();
 
 		// Save data
-		BMotionStudioUtil.writeStringToFile(jsonSaveString, jsonFile);
-		BMotionStudioUtil.writeStringToFile(templateSaveString, templateFile);
+		BMotionUtil.writeStringToFile(jsonSaveString, jsonFile);
+		BMotionUtil.writeStringToFile(templateSaveString, templateFile);
 		toOutput(resp, "ok");
 
 	}
@@ -235,49 +246,38 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 	private void delegateDataRequest(String dataParameter,
 			HttpServletRequest req, HttpServletResponse resp,
 			AbstractBMotionStudioSession bmsSession) {
-
+		String json = "{}";
 		if ("operations".equals(dataParameter)) {
-			JSONArray ja = new JSONArray();
+			List<XEditableListObj> l = new ArrayList<XEditableListObj>();
 			AbstractModel model = bmsSession.getModel();
 			AbstractElement mainComponent = model.getMainComponent();
 			if (mainComponent instanceof EventBMachine) {
 				ModelElementList<Event> events = ((EventBMachine) mainComponent)
 						.getEvents();
 				for (Event event : events) {
-					try {
-						JSONObject jo = new JSONObject();
-						jo.put("value", event.getName());
-						jo.put("text", event.getName());
-						ja.put(jo);
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
+					XEditableListObj xEditableListObj = new XEditableListObj(
+							event.getName(), event.getName());
+					l.add(xEditableListObj);
 				}
 			}
-			resp.setContentType("application/json");
-			toOutput(resp, ja);
+			json = gson.toJson(l);
 		} else if ("variables".equals(dataParameter)) {
-			JSONArray ja = new JSONArray();
+			List<XEditableListObj> l = new ArrayList<XEditableListObj>();
 			AbstractModel model = bmsSession.getModel();
 			AbstractElement mainComponent = model.getMainComponent();
 			if (mainComponent instanceof EventBMachine) {
 				ModelElementList<EventBVariable> variables = ((EventBMachine) mainComponent)
 						.getVariables();
 				for (EventBVariable var : variables) {
-					try {
-						JSONObject jo = new JSONObject();
-						jo.put("value", var.getName());
-						jo.put("text", var.getName());
-						ja.put(jo);
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
+					XEditableListObj xEditableListObj = new XEditableListObj(
+							var.getName(), var.getName());
+					l.add(xEditableListObj);
 				}
 			}
-			resp.setContentType("application/json");
-			toOutput(resp, ja);
+			json = gson.toJson(l);
 		}
-
+		resp.setContentType("application/json");
+		toOutput(resp, json);
 	}
 
 	@Override
@@ -302,16 +302,6 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 		if (taskParameter != null)
 			deletageTaskRequest(taskParameter, req, resp);
 		return;
-	}
-
-	@Override
-	protected String getUrlPrefix() {
-		return "bmseditor";
-	}
-
-	@Override
-	protected Class<?> getSessionClass() {
-		return BMotionStudioEditorSession.class;
 	}
 
 	private void setMetaAttributeValue(Document doc, String name, String value) {
@@ -339,6 +329,26 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 	protected String getDefaultPage(AbstractBMotionStudioSession bmsSession) {
 		return WebUtils.render("ui/bmsview/bms-editor/index.html",
 				WebUtils.wrap("templatePath", bmsSession.getTemplatePath()));
+	}
+
+	@Override
+	protected AbstractBMotionStudioSession createSession(String template,
+			AbstractModel model, String host, int port) {
+		return new BMotionStudioEditorSession(template, model, host, port);
+	}
+	
+	private class XEditableListObj {
+
+		@SuppressWarnings("unused")
+		private String text;
+		@SuppressWarnings("unused")
+		private String value;
+
+		public XEditableListObj(String text, String value) {
+			this.text = text;
+			this.value = value;
+		}
+
 	}
 
 }

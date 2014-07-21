@@ -10,7 +10,6 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +24,12 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.Main;
+import de.prob.model.representation.AbstractModel;
+import de.prob.scripting.Api;
+import de.prob.scripting.ScriptEngineProvider;
+import de.prob.statespace.AnimationSelector;
+import de.prob.ui.api.ITool;
+import de.prob.ui.api.ToolRegistry;
 import de.prob.web.WebUtils;
 import de.prob.web.data.SessionResult;
 
@@ -36,29 +41,17 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 			.newFixedThreadPool(3);
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
-
+	private final ScriptEngineProvider engineProvider;
+	private final ToolRegistry toolRegistry;
+	
 	@Inject
-	public BMotionStudioServlet() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						Future<SessionResult> message = taskCompletionService
-								.take();
-						if (message != null) { // will filter null values
-							SessionResult res = message.get();
-							if (res != null && res.result != null
-									&& res.result.length > 0) {
-								res.session.submit(res.result);
-							}
-						}
-					} catch (Throwable e) {
-					}
-				}
-
-			}
-		}).start();
+	public BMotionStudioServlet(final Api api,
+			final AnimationSelector animations,
+			final ToolRegistry toolRegistry,
+			final ScriptEngineProvider engineProvider) {
+		super(api, animations);
+		this.toolRegistry = toolRegistry;
+		this.engineProvider = engineProvider;
 	}
 
 	private void update(HttpServletRequest req,
@@ -80,6 +73,10 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 		submit(command);
 	}
 
+	public void submit(final Callable<SessionResult> command) {
+		taskCompletionService.submit(command);
+	}
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -107,20 +104,6 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 		return WebUtils.render("ui/bmsview/index.html", scope);
 	}
 
-	public void submit(Callable<SessionResult> command) {
-		taskCompletionService.submit(command);
-	}
-
-	@Override
-	protected String getUrlPrefix() {
-		return "bms";
-	}
-
-	@Override
-	protected Class<?> getSessionClass() {
-		return BMotionStudioSession.class;
-	}
-
 	@Override
 	protected String getDefaultPage(AbstractBMotionStudioSession bmsSession) {
 
@@ -132,23 +115,12 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 
 		for (Element e : templateDocument.getElementsByTag("svg")) {
 			// If svg element has no id, set unique ID
-			if (e.attr("id").isEmpty())
+			if (e.attr("id").isEmpty()) {
 				e.attr("id", UUID.randomUUID().toString());
+			}
 		}
 
 		Elements headTag = templateDocument.getElementsByTag("head");
-		Element headElement = headTag.get(0);
-
-		Elements elements = headElement.getElementsByAttributeValueStarting(
-				"name", "bms.");
-
-		// Add additional parameters from template to BMotionStudioSession
-		for (Element e : elements) {
-			String content = e.attr("content");
-			String name = e.attr("name");
-			bmsSession.addParameter(name.replace("bms.", ""), content);
-		}
-
 		String head = headTag.html();
 		Elements bodyTag = templateDocument.getElementsByTag("body");
 		String body = bodyTag.html();
@@ -161,10 +133,19 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 		bodyTag2.append(body);
 		headTag2.append(head);
 
-		BMotionStudioUtil.fixSvgImageTags(baseDocument);
+		BMotionUtil.fixSvgImageTags(baseDocument);
 
 		return baseDocument.html();
 
+	}
+
+	@Override
+	protected AbstractBMotionStudioSession createSession(String template,
+			AbstractModel model, String host, int port) {
+		// Create new ITool in respect to model
+		ITool tool = BMotionUtil.loadTool(model, animations, toolRegistry);
+		return new BMotionStudioSession(tool, toolRegistry, template, model,
+				engineProvider, host, port);
 	}
 
 }

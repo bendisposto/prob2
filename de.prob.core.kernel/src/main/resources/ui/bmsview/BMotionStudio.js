@@ -57,8 +57,10 @@ bms = (function() {
 	extern.observer = null;
 	extern.init = session.init
 	extern.session = session
-	extern.port = null;
-	extern.host = null;
+
+	// The port and host fields are accessed from BMSStandalone.js
+	extern.port = null
+	extern.host = null
 	extern.lang = null;
 
 	extern.setTemplate = function(data) {

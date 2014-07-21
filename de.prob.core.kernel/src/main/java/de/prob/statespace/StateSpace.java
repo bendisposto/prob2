@@ -1,5 +1,6 @@
 package de.prob.statespace;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +75,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private final HashSet<StateId> initializedStates = new HashSet<StateId>();
 	private final HashSet<StateId> cannotBeEvaluated = new HashSet<StateId>();
 
-	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
+	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<IEvalElement, WeakHashMap<Object, Object>>();
 	private final Set<IEvalElement> subscribedFormulas = new HashSet<IEvalElement>();
 
 	private final Set<IStatesCalculatedListener> stateSpaceListeners = new HashSet<IStatesCalculatedListener>();
@@ -441,11 +443,13 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 						formulaOfInterest.getCode());
 			} else {
 				if (formulaRegistry.containsKey(formulaOfInterest)) {
-					formulaRegistry.get(formulaOfInterest).add(subscriber);
+					formulaRegistry.get(formulaOfInterest).put(subscriber,
+							new WeakReference<Object>(formulaOfInterest));
 					subscribedFormulas.add(formulaOfInterest);
 				} else {
-					HashSet<Object> subscribers = new HashSet<Object>();
-					subscribers.add(subscriber);
+					WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
+					subscribers.put(subscriber, new WeakReference<Object>(
+							subscriber));
 					formulaRegistry.put(formulaOfInterest, subscribers);
 					subscribeCmds.add(new RegisterFormulaCommand(
 							formulaOfInterest));
@@ -477,11 +481,12 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 
 		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			formulaRegistry.get(formulaOfInterest).add(subscriber);
+			formulaRegistry.get(formulaOfInterest).put(subscriber,
+					new WeakReference<Object>(subscriber));
 		} else {
 			execute(new RegisterFormulaCommand(formulaOfInterest));
-			HashSet<Object> subscribers = new HashSet<Object>();
-			subscribers.add(subscriber);
+			WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
+			subscribers.put(subscriber, new WeakReference<Object>(subscriber));
 			formulaRegistry.put(formulaOfInterest, subscribers);
 		}
 		if (!subscribedFormulas.contains(formulaOfInterest)) {
@@ -504,7 +509,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public void unsubscribe(final Object subscriber,
 			final IEvalElement formulaOfInterest) {
 		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			final Set<Object> subscribers = formulaRegistry
+			final WeakHashMap<Object, Object> subscribers = formulaRegistry
 					.get(formulaOfInterest);
 			subscribers.remove(subscriber);
 			if (subscribers.isEmpty()) {
