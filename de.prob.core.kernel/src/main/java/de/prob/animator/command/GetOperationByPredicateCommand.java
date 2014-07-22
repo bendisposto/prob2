@@ -6,6 +6,8 @@
 
 package de.prob.animator.command;
 
+import static de.prob.animator.domainobjects.EvalElementType.PREDICATE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +36,12 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	Logger logger = LoggerFactory
 			.getLogger(GetOperationByPredicateCommand.class);
 	private static final String NEW_STATE_ID_VARIABLE = "NewStateID";
+	private static final String ERRORS = "Errors";
 	private final ClassicalB evalElement;
 	private final String stateId;
 	private final String name;
 	private final List<OpInfo> operations = new ArrayList<OpInfo>();
+	private final List<String> errors = new ArrayList<String>();
 	private final int nrOfSolutions;
 
 	public GetOperationByPredicateCommand(final String stateId,
@@ -47,6 +51,10 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 		this.name = name;
 		this.nrOfSolutions = nrOfSolutions;
 		evalElement = predicate;
+		if (!evalElement.getKind().equals(PREDICATE.toString())) {
+			throw new IllegalArgumentException("Formula must be a predicate: "
+					+ predicate);
+		}
 	}
 
 	/**
@@ -66,7 +74,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 		evalElement.getAst().apply(prolog);
 		pto.printNumber(nrOfSolutions);
 		pto.printVariable(NEW_STATE_ID_VARIABLE);
-		pto.printVariable("Errors").closeTerm();
+		pto.printVariable(ERRORS).closeTerm();
 	}
 
 	/**
@@ -84,19 +92,29 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 		ListPrologTerm list = BindingGenerator.getList(bindings
 				.get(NEW_STATE_ID_VARIABLE));
 
-		if (!list.isEmpty()) {
-			for (PrologTerm prologTerm : list) {
-				CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
-						prologTerm, 3);
-				operations.add(OpInfo.createOpInfoFromCompoundPrologTerm(cpt));
-			}
+		for (PrologTerm prologTerm : list) {
+			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
+					prologTerm, 3);
+			operations.add(OpInfo.createOpInfoFromCompoundPrologTerm(cpt));
 		}
 
+		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS));
+		for (PrologTerm prologTerm : errors) {
+			this.errors.add(prologTerm.getFunctor());
+		}
 	}
 
 	@Override
 	public List<OpInfo> getNewTransitions() {
 		return operations;
+	}
+
+	public List<String> getErrors() {
+		return errors;
+	}
+
+	public boolean hasErrors() {
+		return !errors.isEmpty();
 	}
 
 }

@@ -36,5 +36,18 @@ s.subscribe(m, f1)
 assert s.valuesAt(h2.getCurrentState()).containsKey(f1)
 assert s.valuesAt(h2.getCurrentState())[f1].getValue() == "TRUE"
 
+root = s.getRoot()
+assert s.isValidOperation(s[0],"new", "pp = PID1")
+assert !s.isValidOperation(s[0],"blah", "TRUE = TRUE")
+assert s.isValidOperation(root,"\$initialise_machine", "TRUE = TRUE")
+assert !s.isValidOperation(root,"\$setup_constants", "TRUE = TRUE")
+
+t = s as Trace
+assert t.canExecuteEvent("\$initialise_machine", [])
+t = t.$initialise_machine()
+assert t.canExecuteEvent("new",["pp = PID1"])
+t = t.new("pp = PID1")
+assert !t.canExecuteEvent("blah",[])
+
 s.animator.cli.shutdown();
 "Some attributes of the scheduler model were tested"

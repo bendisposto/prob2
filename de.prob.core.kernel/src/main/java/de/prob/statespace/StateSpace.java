@@ -15,6 +15,7 @@ import java.util.WeakHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -248,12 +249,40 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 */
 	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
-			throws BException {
+			throws IllegalArgumentException {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
 		execute(command);
+		if (command.hasErrors()) {
+			throw new IllegalArgumentException("Executing operation " + name
+					+ " with predicate " + predicate + " produced errors: "
+					+ Joiner.on(", ").join(command.getErrors()));
+		}
 		return command.getNewTransitions();
+	}
+
+	/**
+	 * Tests to see if a combination of an operation name and a predicate is
+	 * valid from a given state.
+	 * 
+	 * @param stateId
+	 *            {@link StateId} id for state to test
+	 * @param name
+	 *            {@link String} name of operation
+	 * @param predicate
+	 *            {@link String} predicate to test
+	 * @return true, if the operation is valid from the given state. False
+	 *         otherwise.
+	 */
+	public boolean isValidOperation(final StateId stateId, final String name,
+			final String predicate) {
+		final ClassicalB pred = new ClassicalB(predicate);
+		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
+				stateId.getId(), name, pred, 1);
+		execute(command);
+		return !command.hasErrors()
+				&& (command.getNewTransitions().size() == 1);
 	}
 
 	/**
