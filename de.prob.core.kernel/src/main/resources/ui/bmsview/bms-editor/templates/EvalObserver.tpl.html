@@ -2,18 +2,20 @@
 	<h4 data-bind="text: observer.type"></h4>
 	<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'selector': 'selector', 'bindings' : [] }, true) }">Add Observer</a>
 </div>
-<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }, sortableList: observer.objs" list="objs">
+<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }, sortableList: observer.objs" data-list="objs">
 	<div class="observer_obj" data-bind="attr: { oid: obj.selector }">
-	 	<h3 class="observer_head" menu="cmenu_b_observer_obj" data-bind="text: obj.selector"></h3>
+	 	<h3 class="observer_head" data-bind="text: obj.selector" data-menu="cmenu_b_observer_obj"></h3>
 		<div class="observer_content">
-			<table class="observer_item bordered" cellpadding="5">
-				<tr>
-					<td class="ra">Selector</td>
-					<td><a href="#" class="truncate" data-bind="editable: obj.selector, editableOptions: { type: 'textarea' }"></a></td>
-				</tr>
-			</table>
-			<div class="observer_items" data-bind="foreach: { data: obj.bindings, as: 'binding' }, sortableList: obj.bindings" list="bindings">
-				<div class="binding_template" data-bind="template: { name: binding.type, data : binding }" class="binding_template" menu="cmenu_b_observer_binding">
+		    <div class="observer_card bordered">
+			 <table>
+			  <tr>
+				<td>Selector</td>
+				<td><a href="#" class="truncate" data-bind="editable: obj.selector, editableOptions: { type: 'textarea' }"></a></td>
+			  </tr>
+			 </table>
+			</div>
+			<div class="observer_bindings" data-bind="foreach: { data: obj.bindings, as: 'binding' }, sortableList: obj.bindings" data-list="bindings">
+				<div class="observer_card bordered observer_binding" data-bind="template: { name: binding.type, data: binding }" data-menu="cmenu_b_observer_binding">
 				</div>
 			</div>
 		</div>

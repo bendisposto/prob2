@@ -100,7 +100,7 @@ public class ValueOverTime extends AbstractSession implements
 			final boolean currentAnimationChanged) {
 		if (currentAnimationChanged) {
 			if (trace != null
-					&& trace.getStateSpace().equals(model.getStatespace())) {
+					&& trace.getStateSpace().equals(model.getStateSpace())) {
 				currentTrace = trace;
 				List<Object> result = calculateData();
 				IEvalElement time = formulas.get("time");

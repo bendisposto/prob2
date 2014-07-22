@@ -22,7 +22,7 @@ if(jQuery)( function() {
 		contextMenu: function(o, callback) {
 			// Defaults
 			if( o.menu == undefined )
-				o.menu = $(this).attr("menu")
+				o.menu = $(this).attr("data-menu")
 			if( o.menu == undefined ) return false;
 			if( o.inSpeed == undefined ) o.inSpeed = 150;
 			if( o.outSpeed == undefined ) o.outSpeed = 75;

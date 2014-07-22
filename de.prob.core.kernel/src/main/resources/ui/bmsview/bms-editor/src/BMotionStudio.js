@@ -61,8 +61,8 @@
 
 		ko.applyBindings(observerModel);
 		
-		$( ".observer_items" ).sortable();
-		$( ".observer_items" ).disableSelection();
+		$( ".observer_bindings" ).sortable();
+		$( ".observer_bindings" ).disableSelection();
 		
 		var container = $(".observer_list")
 		container.find('.truncate').textOverflow();
@@ -104,7 +104,7 @@
 		var	obj = ko.dataFor(el.get(0));
 		var clone = ko.toJS(obj)
 		var list = ko.dataFor(listel)
-		var listname = $(listel).attr("list")
+		var listname = $(listel).attr("data-list")
 		var newPosition = ko.utils.arrayIndexOf($(listel).children(), el[0]);
 		var newel = $(listel).children().get(newPosition);		
 		list[listname].splice(newPosition,0,convertToObservable(clone));
@@ -115,25 +115,26 @@
 		if (confirm("Delete?")==true) {
 			var list = ko.dataFor(listel)
 			var obj = ko.dataFor(objel)
-			var listname = $(listel).attr("list")
+			var listname = $(listel).attr("data-list")
 			list[listname].remove(obj)
 		}
 	}
 	
 	function addBinding(el,jsonpattern) {
 		var parentel = el.parent()
-		var observerlistel = parentel.find(".observer_items");
-		var listname= $(observerlistel).attr("list")
+		var observerlistel = parentel.find(".observer_bindings");
+		var listname= $(observerlistel).attr("data-list")
 		var observerlist = ko.dataFor(observerlistel.get(0))
 		var list = observerlist[listname]
 		list.unshift(convertToObservable(jQuery.parseJSON(jsonpattern)))
 		updateObserverBindingMenu()
 	}
 	
-	function addAction(el,jsonpattern) {
-		var actionListElement = el.find(".action_items");
+	function addItem(el) {
+		var actionListElement = el.find(".observer_actions");
 		var actionList = ko.dataFor(actionListElement.get(0))
-		var list = actionList["actions"]
+		var jsonpattern = $(actionListElement).attr("data-json")
+		var list = actionList[$(actionListElement).attr("data-list")]
 		list.unshift(convertToObservable(jQuery.parseJSON(jsonpattern)))
 	}
 	
@@ -158,18 +159,18 @@
 					deleteItem(el.parent().parent().get(0), el.parent().get(0))
 					break;
 				case 'addBinding':
-					addBinding(el,menuitem.attr('json'))
+					addBinding(el,menuitem.attr('data-json'))
 					break;
 				default:
 					break;
 			}
 			
 		});
-		
+	
 	}
 	
 	function updateObserverBindingMenu() {
-		$(".binding_template").contextMenu({
+		$(".observer_binding").contextMenu({
 			inSpeed: 0
 		},
 		function(action, el, menuitem, pos) {
@@ -181,8 +182,8 @@
 				case 'delete':
 					deleteItem(el.parent().get(0), el.get(0))
 					break;
-				case 'addAction':
-					addAction(el,menuitem.attr('json'))
+				case 'addItem':
+					addItem(el)
 					break;						
 				default:
 					break;

@@ -1,11 +1,14 @@
-<div class="observer_item bordered">
-<table cellpadding="5">
-	<tr><td class="ra" data-bind="text:binding.type"></td><td><a href="#" class="truncate" data-bind="editable: binding.formula, editableOptions: { type: 'textarea' }"></a></td></tr>
+<table>
+ <tr>
+  <td>Expression</td>
+  <td><a href="#" class="truncate" data-bind="editable: binding.formula, editableOptions: { type: 'textarea' }"></a></td>
+ </tr>
 </table>
-<table cellpadding="5" data-bind="foreach: { data: binding.actions, as: 'act' }" class="action_items">
-	<tr class="binding_action"><td class="ra">attribute</td>
-	<td>
-	<a href="#" class="truncate" data-bind="text: act.attr, attr: { selector: $parents[2].selector }, editable: act.attr, editableOptions: { type: 'select', source:  
+<table class="observer_actions" data-bind="foreach: { data: binding.actions, as: 'act' }" data-json='{"attr" : "", "value" : ""}' data-list="actions">
+ <tr>
+  <td>Attribute</td>
+  <td style="width:20px;">>></td>
+  <td><a href="#" style="width:150px;" class="truncate" data-bind="text: act.attr, attr: { selector: $parents[2].selector }, editable: act.attr, editableOptions: { type: 'select', source:  
 										function() {
 											try {
 	    										var selector = $(this).attr('selector')
@@ -16,7 +19,8 @@
 											}
 	    								}
 										}"></a>
-	</td>
-	<td data-bind="click: function() { $root.deleteItem(act, binding.actions) }"><img src="/ui/bmsview/bms-editor/images/delete_10_10.gif" /></td></tr>
+  </td>
+  <td data-bind="click: function() { $root.deleteItem(act, binding.actions) }"><img src="/ui/bmsview/bms-editor/images/delete_10_10.gif" class="cursor_hand" />
+  </td>
+ </tr>
 </table>
-</div>

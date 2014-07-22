@@ -53,7 +53,7 @@
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout-3.1.0.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/knockout.x-editable.min.js"></script>
   <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/koExternalTemplateEngine_all.min.js"></script>
-  <script type="text/javascript" src="/ui/bmsview/bms-editor/lib/BMotionStudio.js"></script>
+  <script type="text/javascript" src="/ui/bmsview/bms-editor/src/BMotionStudio.js"></script>
 </head>
 <body>
 
@@ -147,7 +147,11 @@
     		<div class="menu_item" id="tool_source">Source... <span class="shortcut">⌘U</span></div>
     </div>
   </div>
-  
+ 
+  <div class="menu">
+  	<div id="tool_config" class="menu_title">Configuration</div>
+  </div>
+   
   <div class="menu">
   	<div id="tool_startvis" class="menu_title">Visualisation</div>
   </div>
@@ -632,9 +636,9 @@
 
 </div> <!-- svg_editor -->
 
-<div id="svg_source_editor">
-	<div id="svg_source_overlay"></div>
-	<div id="svg_source_container">
+<div id="svg_source_editor" class="svg_dialog">
+	<div id="svg_source_overlay" class="svg_dialog_overlay"></div>
+	<div class="svg_dialog_container svg_dialog_container_source">
 		<div id="save_output_btns">
 			<p id="copy_save_note">Copy the contents of this box into a text editor, then save the file with a .svg extension.</p>
 			<button id="copy_save_done">Done</button>
@@ -642,9 +646,23 @@
 		<form>
 			<textarea id="svg_source_textarea" spellcheck="false"></textarea>
 		</form>
-		<div id="tool_source_back" class="toolbar_button">
-			<button id="tool_source_cancel" class="cancel">Cancel</button>
-			<button id="tool_source_save" class="ok">Apply Changes</button>
+		<div id="tool_source_back" class="tool_dialog_back toolbar_button">
+			<button id="tool_source_cancel" class="tool_dialog_cancel cancel">Cancel</button>
+			<button id="tool_source_save" class="tool_dialog_save ok">Apply Changes</button>
+		</div>
+	</div>
+</div>
+
+<div id="vis_configuration_dialog" class="svg_dialog">
+	<div id="svg_configuration_overlay" class="svg_dialog_overlay"></div>
+	<div class="svg_dialog_container svg_dialog_container_configuration">
+		<form>
+			Model: <input id="config_model_path" /><br/>
+			Script: <input id="config_script_path" />
+		</form>
+		<div class="tool_dialog_back toolbar_button">
+			<button id="tool_configuration_cancel" class="tool_dialog_cancel cancel">Close</button>
+			<button id="tool_configuration_save" class="tool_dialog_save ok">Apply Changes</button>
 		</div>
 	</div>
 </div>
@@ -686,14 +704,16 @@
 <ul id="cmenu_b_observer_obj" class="contextMenu">
 	<li><a href="#delete">Delete Observer</a></li>
 	<li><a href="#duplicate">Duplicate Observer</a></li>
-	<li class="separator"><a href="#addBinding" json='{"type" : "predicate", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ]}'>Add Predicate Binding</a></li>
-	<li><a href="#addBinding" json='{"type" : "expression", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ] }'>Add Expression Binding</a></li>
+	<li class="separator"><a href="#addBinding" data-json='{"type" : "predicate", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ]}'>Add Predicate Binding</a></li>
+	<li><a href="#addBinding" data-json='{"type" : "expression", "formula" : "", "actions": [ { "attr" : "", "value" : "" } ] }'>Add Expression Binding</a></li>
+	<li><a href="#addBinding" data-json='{"type" : "variable", "variable" : "", "actions": [ { "result" : "", "attr" : "", "value" : "" } ], "default" : { "attr" : "", "value" : "" } }'>Add Variable Binding</a></li>
+	<li><a href="#addBinding" data-json='{"type" : "operation", "ops": [ { "operation" : "", "parameter" : "" } ] }'>Add Operation Binding</a></li>
 </ul>
 
 <ul id="cmenu_csp_observer_obj" class="contextMenu">
 	<li><a href="#delete">Delete Observer</a></li>
 	<li><a href="#duplicate">Duplicate Observer</a></li>
-	<li class="separator"><a href="#addBinding" json='{"selector" : "", "attr": "", "value" : ""}'>Add Event Binding</a></li>
+	<li class="separator"><a href="#addBinding" data-json='{"selector" : "", "attr": "", "value" : ""}'>Add Event Binding</a></li>
 </ul>
 
 <ul id="cmenu_csp_observer_binding" class="contextMenu">
@@ -704,7 +724,7 @@
 <ul id="cmenu_b_observer_binding" class="contextMenu">
 	<li><a href="#delete" class="separator">Delete Binding</a></li>
 	<li class="separator"><a href="#duplicate">Duplicate Binding</a></li>
-	<li><a href="#addAction" json='{"attr" : "", "value" : ""}'>Add Action</a></li>
+	<li><a href="#addItem">Add Item</a></li>
 </ul>
 
 <script>

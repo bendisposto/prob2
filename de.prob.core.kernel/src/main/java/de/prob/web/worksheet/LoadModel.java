@@ -60,7 +60,7 @@ public class LoadModel extends AbstractBox {
 		if (!command.equals("")) {
 			try {
 				AbstractModel result = (AbstractModel) groovy.eval(command);
-				StateSpace statespace = result.getStatespace();
+				StateSpace statespace = result.getStateSpace();
 				EvalstoreCreateByStateCommand c = new EvalstoreCreateByStateCommand(
 						"root");
 				statespace.execute(c);

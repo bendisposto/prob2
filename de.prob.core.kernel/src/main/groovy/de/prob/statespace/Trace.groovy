@@ -5,7 +5,6 @@ import org.parboiled.common.Tuple2
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.EvaluationCommand
-import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
 import de.prob.model.classicalb.ClassicalBModel
@@ -17,7 +16,7 @@ public class Trace {
 	def final TraceElement current
 	def final TraceElement head
 	def final StateSpace stateSpace
-	def final UUID uuid
+	def final UUID UUID
 
 	def IEvalResult evalCurrent(formula) {
 		if(!stateSpace.canBeEvaluated(getCurrentState())) {
@@ -25,7 +24,7 @@ public class Trace {
 		}
 		def f = formula;
 		if (!(formula instanceof IEvalElement)) {
-			f = formula as ClassicalB;
+			f = stateSpace.getModel().parseFormula(f)
 		}
 		stateSpace.eval(getCurrentState(),[f]).get(0);
 	}
@@ -34,7 +33,7 @@ public class Trace {
 	def List<Tuple2<String,IEvalResult>> eval(formula) {
 		def f = formula;
 		if(!(formula instanceof IEvalElement)) {
-			f = formula as ClassicalB;
+			f = stateSpace.getModel().parseFormula(f)
 		}
 
 		def List<EvaluationCommand> cmds = []
@@ -65,7 +64,7 @@ public class Trace {
 		this.stateSpace = s
 		head = new TraceElement(s.getState(s.getVertex("root")))
 		current = head
-		uuid = java.util.UUID.randomUUID()
+		UUID = java.util.UUID.randomUUID()
 	}
 
 	def Trace(final StateSpace s, final TraceElement head, UUID uuid) {
@@ -77,7 +76,7 @@ public class Trace {
 		this.stateSpace = s
 		this.head = head
 		this.current = current
-		this.uuid = uuid
+		this.UUID = uuid
 	}
 
 	def Trace add(final String name, final List<String> params) {
@@ -93,7 +92,7 @@ public class Trace {
 		StateId newState = stateSpace.getState(op)
 
 		def newHE = new TraceElement(current.getCurrentState(), newState, op, current)
-		Trace newTrace = new Trace(stateSpace, newHE, this.uuid)
+		Trace newTrace = new Trace(stateSpace, newHE, this.UUID)
 
 		return newTrace
 	}
@@ -108,7 +107,7 @@ public class Trace {
 	 */
 	def Trace back() {
 		if (canGoBack()) {
-			Trace trace = new Trace(stateSpace, head, current.getPrevious(), this.uuid)
+			Trace trace = new Trace(stateSpace, head, current.getPrevious(), this.UUID)
 			return trace
 		}
 		return this
@@ -126,7 +125,7 @@ public class Trace {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious()
 			}
-			Trace trace = new Trace(stateSpace, head, p, this.uuid)
+			Trace trace = new Trace(stateSpace, head, p, this.UUID)
 			return trace
 		}
 		return this
@@ -205,7 +204,7 @@ public class Trace {
 			currentState = newState
 		}
 
-		Trace newTrace = new Trace(stateSpace, current, this.uuid)
+		Trace newTrace = new Trace(stateSpace, current, this.UUID)
 		return newTrace
 	}
 
@@ -252,6 +251,25 @@ public class Trace {
 		return add(op.id)
 	}
 
+	/**
+	 * Tests to see if the event name plus the conjunction of the parameter strings produce a valid
+	 * operation on this state. Currently tests the result of {@link Trace#execute} and returns false
+	 * if an exception is thrown, but this is subject to change.
+	 *
+	 * @param event Name of the event to be executed
+	 * @param params List of String predicates to be conjoined
+	 * @return <code>true</code>, if the operation can be executed. <code>false</code>, otherwise
+	 */
+	def boolean canExecuteEvent(String event, List<String> params) {
+		// TODO: We should have a prolog command that check this so we don't have to execute the op every time
+		try {
+			execute(event, params);
+		} catch(Exception e) {
+			return false;
+		}
+		return true;
+	}
+
 	def Trace anyOperation(filter) {
 		def ops = new ArrayList<OpInfo>()
 		ops.addAll(stateSpace.evaluateOps(stateSpace.getOutEdges(current.getCurrentState())));
@@ -294,10 +312,6 @@ public class Trace {
 
 	def AbstractModel getModel() {
 		return stateSpace.getModel()
-	}
-
-	def UUID getUUID() {
-		return uuid
 	}
 
 	def Object asType(Class className) {

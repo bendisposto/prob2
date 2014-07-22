@@ -704,16 +704,25 @@ table {
 			.observer_content {
 				height:300px;
 			}
-				.observer_items {}
-					.observer_item {
-						background-color: #50504F;
-						width:95%;
-						margin-left:5px;
-					}
-						.observer_item .ra {
-							text-align:right;
-							font-weight:bold;
-						}
+						
+.observer_card {
+	background-color: #50504F;
+	width:260px;
+	margin-left:5px;
+}
+
+.observer_objs table {
+	padding: 0px;
+	border-collapse: separate; border-spacing: 3px;
+}
+
+.observer_objs td:first-child {
+	font-weight:bold;
+}
+
+.observer_bindings td {
+	text-align:center;
+}
 
 .truncate {
 	overflow: hidden;
@@ -722,17 +731,6 @@ table {
 	display:block;
 	padding:0;
 	margin:0;
-	width:165px;
-}
-
-.truncate_act {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	display:block;
-	padding:0;
-	margin:0;
-	width:80px;
 }
 
 .observer_wrapper {
@@ -1400,11 +1398,13 @@ box-shadow: inset 0 3px 10px rgba(255, 255, 255, 0.1),
 	padding-right: .3em;
 }
 
-#svg_source_editor {
+.svg_dialog {
 	display: none;
+	width: 100%;
+	height: 100%;
 }
 
-#svg_source_editor #svg_source_overlay {
+.svg_dialog_overlay {
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -1415,18 +1415,30 @@ box-shadow: inset 0 3px 10px rgba(255, 255, 255, 0.1),
 	z-index: 5;
 }
 
-#svg_source_editor #svg_source_container {
-	position: absolute;
-	top: 30px;
-	left: 100px;
-	right: 100px;
-	bottom: 30px;
+.svg_dialog_container {
+	position: relative;
 	background-color: #fff;
 	border-radius: 3px;
 	opacity: 1.0;
 	text-align: center;
 	z-index: 6;
 	padding: 15px 0;
+	margin: auto;
+}
+
+.svg_dialog_container_source {
+	height: 90%;
+	width: 90%;
+}
+
+.svg_dialog_container_configuration {
+	width: 500px;
+	height: 500px;
+}
+
+#config_model_path {
+  font-family: 'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
+  width: 300px;
 }
 
 #svg_source_editor form {
@@ -1448,21 +1460,25 @@ box-shadow: inset 0 3px 10px rgba(255, 255, 255, 0.1),
   font-size: 12px;
 }
 
-#svg_source_editor #tool_source_back {
+.tool_dialog_back {
   position: absolute;
   bottom: 45px;
   left: 15px;
-	right: 15px;
+  right: 15px;
 }
 
-#svg_source_editor #tool_source_back #tool_source_save {
+.tool_dialog_back .tool_dialog_save {
 	display: block;
 	position: absolute;
 	right: 0;
 }
 
+#vis_configuration_dialog input {
+	width: 300px;
+}
 
-#svg_source_editor #tool_source_back #tool_source_cancel {
+
+.tool_dialog_back .tool_dialog_cancel {
 	display: block;
 	position: absolute;
 	left: 0;
@@ -2330,4 +2346,8 @@ input[readonly=readonly]:focus {
 #tool_align_relative select {
 	width: 100%;
 	display: block;
+}
+
+.cursor_hand {
+	cursor:pointer;
 }

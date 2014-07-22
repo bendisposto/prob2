@@ -28,7 +28,7 @@ public class B extends AbstractBox {
 			Long storeid = (Long) store;
 			EvalstoreEvalCommand c = new EvalstoreEvalCommand(storeid,
 					new ClassicalB(content));
-			model.getStatespace().execute(c);
+			model.getStateSpace().execute(c);
 			EvalstoreResult r = c.getResult();
 			String value = r.getResult() instanceof EvalResult ? ((EvalResult) r
 					.getResult()).getValue() : "error";
