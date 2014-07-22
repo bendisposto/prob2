@@ -27,7 +27,8 @@ import de.prob.statespace.OpInfo;
  * @author joy
  * 
  */
-public final class GetEnabledOperationsCommand extends AbstractCommand {
+public final class GetEnabledOperationsCommand extends AbstractCommand
+		implements IStateSpaceModifier {
 
 	Logger logger = LoggerFactory.getLogger(GetEnabledOperationsCommand.class);
 
@@ -64,6 +65,11 @@ public final class GetEnabledOperationsCommand extends AbstractCommand {
 	}
 
 	public List<OpInfo> getEnabledOperations() {
+		return enabledOperations;
+	}
+
+	@Override
+	public List<OpInfo> getNewTransitions() {
 		return enabledOperations;
 	}
 }

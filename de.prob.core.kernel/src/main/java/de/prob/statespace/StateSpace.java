@@ -838,8 +838,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	/**
 	 * This method is implemented to provide access to the {@link StateId}
-	 * objects specified by either a String or an integer identifier. This maps
-	 * to a groovy operator so that in the console users can type
+	 * objects specified by an integer identifier. This maps to a groovy
+	 * operator so that in the console users can type
 	 * variableOfTypeStateSpace[stateId] and receive the corresponding StateId
 	 * back. An IllegalArgumentException is thrown if the specified id is
 	 * unknown.
@@ -848,19 +848,13 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @param that
 	 * @return {@link StateId} for the specified id
 	 */
-	public Object getAt(final Object that) {
-		StateId id = null;
-		if (that instanceof String) {
-			id = getVertex((String) that);
-		}
-		if (that instanceof Integer) {
-			id = getVertex(String.valueOf(that));
-		}
+	public Object getAt(final int sId) {
+		StateId id = getVertex(String.valueOf(sId));
 		if (id != null) {
 			return id;
 		}
 		throw new IllegalArgumentException(
-				"StateSpace does not contain vertex " + that);
+				"StateSpace does not contain vertex " + sId);
 	}
 
 	@Override

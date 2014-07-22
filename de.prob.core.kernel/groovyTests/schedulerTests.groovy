@@ -36,6 +36,5 @@ s.subscribe(m, f1)
 assert s.valuesAt(h2.getCurrentState()).containsKey(f1)
 assert s.valuesAt(h2.getCurrentState())[f1].getValue() == "TRUE"
 
-
 s.animator.cli.shutdown();
 "Some attributes of the scheduler model were tested"

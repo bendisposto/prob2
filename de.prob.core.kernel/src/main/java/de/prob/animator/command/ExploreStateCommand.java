@@ -126,6 +126,6 @@ public final class ExploreStateCommand extends AbstractCommand implements
 
 	@Override
 	public List<OpInfo> getNewTransitions() {
-		return getOpsCmd.getEnabledOperations();
+		return getOpsCmd.getNewTransitions();
 	}
 }
