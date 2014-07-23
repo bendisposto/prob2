@@ -32,6 +32,8 @@ public class CSPAnimation extends ProBAnimation implements ITool,
 	public CSPAnimation(AbstractModel model, AnimationSelector animations,
 			ToolRegistry toolRegistry) {
 		super(model, animations, toolRegistry);
+		animations.registerAnimationChangeListener(this);
+		animations.addNewAnimation(trace);		
 	}
 
 	@Override

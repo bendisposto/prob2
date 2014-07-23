@@ -15,7 +15,6 @@ import com.google.gson.JsonElement;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.IToolListener;
-import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 import de.prob.web.WebUtils;
@@ -93,14 +92,16 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	 * @throws Exception
 	 */
 	public Object eval(final String formula) throws Exception {
-		if (getTool().getErrors(getTool().getCurrentState(), formula).isEmpty()) {
-			try {
-				return getTool().evaluate(getTool().getCurrentState(), formula);
-			} catch (IllegalFormulaException e) {
-				// TODO: handle exception
-			}
-		}
-		return null;
+		// TODO: Decreases performance!!!
+		// if (getTool().getErrors(getTool().getCurrentState(),
+		// formula).isEmpty()) {
+		// try {
+		return getTool().evaluate(getTool().getCurrentState(), formula);
+		// } catch (IllegalFormulaException e) {
+		// TODO: handle exception
+		// }
+		// }
+		// return null;
 	}
 
 	public Object executeOperation(final Map<String, String[]> params) {
