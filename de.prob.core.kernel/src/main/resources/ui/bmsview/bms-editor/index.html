@@ -158,35 +158,6 @@
     
 </div>
 
-<script type="text/html" id="CspEventObserver">
-				<div class="observer_type">
-  					<h4 data-bind="text: observer.type"></h4>
-					<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'exp': 'exp', 'actions' : [] }, true) }">Add Observer</a>
-   				</div>
-				<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }, sortableList: observer.objs" list="objs">
- 			   		<div class="observer_obj" data-bind="attr: { oid: obj.exp }">
-			   	 		<h3 class="observer_head" menu="cmenu_csp_observer_obj" data-bind="text: obj.exp"></h3>
-						<div class="observer_content">
-							<table class="observer_item bordered" cellpadding="5">
-								<tr>
-									<td class="ra">Events</td>
-									<td><a href="#" class="truncate" data-bind="editable: obj.exp, editableOptions: { type: 'textarea' }"></a></td>
-								</tr>
-							</table>
-							<div class="observer_items" data-bind="foreach: { data: obj.actions, as: 'item' }, sortableList: obj.actions" list="actions">
-								<div class="binding_template" menu="cmenu_csp_observer_binding">
-									<table class="observer_item bordered" cellpadding="5">
-										<tr><td class="ra">Selector</td><td><a href="#" class="truncate" data-bind="editable: item.selector, editableOptions: { type: 'textarea' }"></a></td></tr>
-										<tr><td class="ra">Attribute</td><td><a href="#" class="truncate" data-bind="editable: item.attr, editableOptions: { type: 'textarea' }"></a></td></tr>
-										<tr><td class="ra">Value</td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
-									</table>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>	
-</script>
-
 <div id="observers">
   	   <div class="observer_loop" data-bind="foreach: { data: observers, as: 'observer' }">
   				<div class="observer_template" data-bind="template: { name: observer.type, data : observer, afterRender: $root.postRender }">

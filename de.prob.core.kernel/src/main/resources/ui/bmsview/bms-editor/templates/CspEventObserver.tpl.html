@@ -1,0 +1,28 @@
+<div class="observer_type">
+	<h4 data-bind="text: observer.type"></h4>
+	<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'exp': 'expression', 'actions' : [] }, true) }">Add Observer</a>
+</div>
+<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }, sortableList: observer.objs" data-list="objs">
+	<div class="observer_obj" data-bind="attr: { oid: obj.exp }">
+	 	<h3 class="observer_head" data-bind="text: obj.exp" data-menu="cmenu_csp_observer_obj"></h3>
+		<div class="observer_content">
+		    <div class="observer_card bordered">
+			 <table>
+			  <tr>
+				<td>Events</td>
+				<td><a href="#" class="truncate" style="width:205px;" data-bind="editable: obj.exp, editableOptions: { type: 'textarea' }"></a></td>
+			  </tr>
+			 </table>
+			</div>
+			<div class="observer_bindings" data-bind="foreach: { data: obj.actions, as: 'item' }, sortableList: obj.actions" data-list="actions">
+				<div class="observer_card bordered observer_binding" data-menu="cmenu_csp_observer_binding">
+					<table>
+						<tr><td>Selector</td><td style="width:20px;">>></td><td><a href="#" class="truncate" data-bind="editable: item.selector, editableOptions: { type: 'textarea' }"></a></td></tr>
+						<tr><td>Attribute</td><td style="width:20px;">>></td><td><a href="#" class="truncate" data-bind="editable: item.attr, editableOptions: { type: 'textarea' }"></a></td></tr>
+						<tr><td>Value</td><td style="width:20px;">>></td><td><a href="#" class="truncate" data-bind="editable: item.value, editableOptions: { type: 'textarea' }"></a></td></tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
