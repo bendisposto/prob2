@@ -6,12 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.model.eventb.Event;
+import de.prob.model.eventb.EventBMachine;
+import de.prob.model.eventb.EventBVariable;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
@@ -23,23 +30,18 @@ import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 
-public class BAnimation implements ITool, IAnimationChangeListener, IObserver {
+public class BAnimation extends ProBAnimation implements ITool,
+		IAnimationChangeListener, IObserver {
 
-	private Trace trace;
-	private final String modelPath;
-	Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
-	private final ToolRegistry toolRegistry;
-	private final AnimationSelector animations;
+	private final Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
 
-	public BAnimation(final AbstractModel model,
-			final AnimationSelector animations, final ToolRegistry toolRegistry) {
-		this.animations = animations;
-		this.toolRegistry = toolRegistry;
-		this.modelPath = model.getModelFile().getAbsolutePath();
-		trace = new Trace(model);
+	private final Gson gson = new Gson();
+	
+	public BAnimation(AbstractModel model, AnimationSelector animations,
+			ToolRegistry toolRegistry) {
+		super(model, animations, toolRegistry);
 		animations.registerAnimationChangeListener(this);
 		animations.addNewAnimation(trace);
-		toolRegistry.register(getName(), this);
 	}
 
 	@Override
@@ -128,6 +130,42 @@ public class BAnimation implements ITool, IAnimationChangeListener, IObserver {
 	public IBMotionGroovyObserver getBMotionGroovyObserver(
 			BMotionStudioSession bmsSession, JsonElement jsonObserver) {
 		return new BAnimationObserver(bmsSession, jsonObserver);
+	}
+
+	@Override
+	public String getModelData(String dataParameter, HttpServletRequest req) {
+
+		AbstractModel model = getModel();
+		AbstractElement mainComponent = model.getMainComponent();
+		List<XEditableListObj> l = new ArrayList<XEditableListObj>();
+		if (mainComponent instanceof EventBMachine) {
+			if ("operations".equals(dataParameter)) {
+				for (Event event : ((EventBMachine) mainComponent).getEvents()) {
+					l.add(new XEditableListObj(event.getName(), event.getName()));
+				}
+			} else if ("variables".equals(dataParameter)) {
+				for (EventBVariable var : ((EventBMachine) mainComponent)
+						.getVariables()) {
+					l.add(new XEditableListObj(var.getName(), var.getName()));
+				}
+			}
+		}
+		return gson.toJson(l);
+
+	}
+
+	private class XEditableListObj {
+
+		@SuppressWarnings("unused")
+		private String text;
+		@SuppressWarnings("unused")
+		private String value;
+
+		public XEditableListObj(String text, String value) {
+			this.text = text;
+			this.value = value;
+		}
+
 	}
 
 }

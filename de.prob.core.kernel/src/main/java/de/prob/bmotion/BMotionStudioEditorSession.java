@@ -1,12 +1,15 @@
 package de.prob.bmotion;
 
-import de.prob.model.representation.AbstractModel;
+import java.util.UUID;
+
+import de.prob.ui.api.ITool;
+
 
 public class BMotionStudioEditorSession extends AbstractBMotionStudioSession {
 
-	public BMotionStudioEditorSession(String templatePath, AbstractModel model,
+	public BMotionStudioEditorSession(UUID id, ITool tool, String templatePath,
 			final String host, final int port) {
-		super(templatePath, model, host, port);
+		super(id, tool, templatePath, host, port);
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.google.gson.JsonElement;
 
 import de.prob.animator.domainobjects.EvalResult;
@@ -22,27 +24,14 @@ import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 
-public class CSPAnimation implements ITool, IAnimationChangeListener, IObserver {
+public class CSPAnimation extends ProBAnimation implements ITool,
+		IAnimationChangeListener, IObserver {
 
-	private Trace trace;
 	private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
-	private final ToolRegistry toolRegistry;
-	private final String modelPath;
-	private final AnimationSelector animations;
 
-	public CSPAnimation(final AbstractModel model,
-			final AnimationSelector animations, final ToolRegistry toolRegistry) {
-		this(new Trace(model), animations, toolRegistry);
-	}
-
-	public CSPAnimation(final Trace trace, final AnimationSelector animations,
-			final ToolRegistry toolRegistry) {
-		this.animations = animations;
-		this.toolRegistry = toolRegistry;
-		this.modelPath = trace.getModel().getModelFile().getAbsolutePath();
-		animations.registerAnimationChangeListener(this);
-		animations.addNewAnimation(trace);
-		toolRegistry.register(getName(), this);
+	public CSPAnimation(AbstractModel model, AnimationSelector animations,
+			ToolRegistry toolRegistry) {
+		super(model, animations, toolRegistry);
 	}
 
 	@Override
@@ -106,10 +95,6 @@ public class CSPAnimation implements ITool, IAnimationChangeListener, IObserver 
 		return trace.getUUID().toString();
 	}
 
-	public Trace getTrace() {
-		return trace;
-	}
-
 	@Override
 	public void traceChange(final Trace currentTrace,
 			final boolean currentAnimationChanged) {
@@ -131,6 +116,12 @@ public class CSPAnimation implements ITool, IAnimationChangeListener, IObserver 
 	public IBMotionGroovyObserver getBMotionGroovyObserver(
 			BMotionStudioSession bmsSession, JsonElement jsonObserver) {
 		return new CSPAnimationObserver(bmsSession, jsonObserver);
+	}
+
+	@Override
+	public String getModelData(String dataParameter, HttpServletRequest req) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

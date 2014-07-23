@@ -3,6 +3,7 @@ package de.prob.bmotion;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -11,10 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
-import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.IToolListener;
+import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 import de.prob.web.WebUtils;
@@ -26,16 +27,13 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 
 	private final List<IBMotionGroovyObserver> groovyObserverListener = new ArrayList<IBMotionGroovyObserver>();
 
-	private final ITool tool;
-	
 	private final ScriptEngineProvider engineProvider;
 	
-	public BMotionStudioSession(final ITool tool, final ToolRegistry registry,
-			final String templatePath, final AbstractModel model,
+	public BMotionStudioSession(final UUID id, final ITool tool,
+			final ToolRegistry registry, final String templatePath,
 			final ScriptEngineProvider engineProvider, final String host,
 			final int port) {
-		super(templatePath, model, host, port);
-		this.tool = tool;
+		super(id, tool, templatePath, host, port);
 		this.engineProvider = engineProvider;
 		incrementalUpdate = false;
 		registry.registerListener(this);
@@ -45,12 +43,12 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		animationChange(tool);
+		animationChange(getTool());
 	}
 
 	public void registerGroovyObserver(final IBMotionGroovyObserver script) {
 		groovyObserverListener.add(script);
-		animationChange(tool);
+		animationChange(getTool());
 	}
 
 	@Override
@@ -59,7 +57,7 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 			s.update(tool);
 		}
 	}
-
+	
 	// ---------- BMS API
 	public void toGui(final Object json) {
 		submit(json);
@@ -95,7 +93,14 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	 * @throws Exception
 	 */
 	public Object eval(final String formula) throws Exception {
-		return tool.evaluate(tool.getCurrentState(), formula);
+		if (getTool().getErrors(getTool().getCurrentState(), formula).isEmpty()) {
+			try {
+				return getTool().evaluate(getTool().getCurrentState(), formula);
+			} catch (IllegalFormulaException e) {
+				// TODO: handle exception
+			}
+		}
+		return null;
 	}
 
 	public Object executeOperation(final Map<String, String[]> params) {
@@ -103,7 +108,7 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 		String op = params.get("op")[0];
 		String[] parameters = params.get("predicate");
 		try {
-			tool.doStep(id, op, parameters);
+			getTool().doStep(id, op, parameters);
 		} catch (ImpossibleStepException e) {
 			e.printStackTrace();
 		}
@@ -114,10 +119,10 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	public void initSession() {
 		String absoluteTemplatePath = BMotionUtil
 				.getFullTemplatePath(getTemplatePath());
-		if (tool instanceof IObserver) {
+		if (getTool() instanceof IObserver) {
 			JsonElement jsonObserver = BMotionUtil.getJsonObserver(
 					absoluteTemplatePath, getParameterMap().get("json"));
-			registerGroovyObserver(((IObserver) tool).getBMotionGroovyObserver(
+			registerGroovyObserver(((IObserver) getTool()).getBMotionGroovyObserver(
 					this, jsonObserver));
 		}
 		BMotionUtil.evaluateGroovy(engineProvider.get(), absoluteTemplatePath,

@@ -7,27 +7,25 @@ import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
-import de.prob.model.representation.AbstractModel;
+import de.prob.ui.api.ITool;
 import de.prob.web.AbstractSession;
 
 public abstract class AbstractBMotionStudioSession extends AbstractSession {
 
 	private String templatePath;
 
-	private UUID id;
-
-	private AbstractModel model;
-
 	private int port;
 
 	private String host;
 
 	private Map<String, String> parameterMap = new HashMap<String, String>();
+	
+	private final ITool tool;
 
-	public AbstractBMotionStudioSession(String templatePath,
-			AbstractModel model, String host, int port) {
-		this.id = UUID.randomUUID();
-		this.model = model;
+	public AbstractBMotionStudioSession(UUID id, ITool tool,
+			String templatePath, String host, int port) {
+		super(id);
+		this.tool = tool;
 		this.templatePath = templatePath;
 		this.host = host;
 		this.port = port;
@@ -57,59 +55,18 @@ public abstract class AbstractBMotionStudioSession extends AbstractSession {
 		return null;
 	}
 
-	public void setTemplatePath(String templatePath) {
-		this.templatePath = templatePath;
-	}
-
-	public UUID getSessionUUID() {
-		return id;
-	}
-
-	public void setSessionUUID(UUID id) {
-		this.id = id;
-	}
-
-	public AbstractModel getModel() {
-		return model;
-	}
-
-	public void setModel(AbstractModel model) {
-		this.model = model;
-	}
-
-	protected String getFormalism(String machinePath) {
-
-		String lang = null;
-		if (machinePath.endsWith(".csp")) {
-			return "csp";
-		} else if (machinePath.endsWith(".buc") || machinePath.endsWith(".bcc")
-				|| machinePath.endsWith(".bum") || machinePath.endsWith(".bcm")) {
-			return "eventb";
-		} else if (machinePath.endsWith(".mch")) {
-			return "b";
-		} else if (machinePath.endsWith(".tla")) {
-			return "tla";
-		}
-		return lang;
-
-	}
-
 	public int getPort() {
 		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public String getHost() {
 		return host;
 	}
 
-	public void setHost(String host) {
-		this.host = host;
+	public ITool getTool() {
+		return tool;
 	}
-
+	
 	public abstract void initSession();
 
 
@@ -121,5 +78,5 @@ public abstract class AbstractBMotionStudioSession extends AbstractSession {
 	@Override
 	public void reload(String client, int lastinfo, AsyncContext context) {
 	}
-	
+
 }

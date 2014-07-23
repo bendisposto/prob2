@@ -30,4 +30,8 @@ public class ToolRegistry {
 		}
 	}
 
+	public ITool getTool(String id) {
+		return tools.get(id);
+	}
+	
 }
