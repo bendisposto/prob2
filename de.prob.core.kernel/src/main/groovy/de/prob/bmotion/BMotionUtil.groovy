@@ -82,7 +82,7 @@ class BMotionUtil {
 
 	def static ITool loadTool(String sessionId, String toolId, String modelPath, AnimationSelector animations, ToolRegistry toolRegistry, Api api, String absoluteTemplatePath) {
 		// First check if a tool is already registered with the passed id ...
-		ITool tool = toolRegistry.getTool(sessionId);
+		ITool tool = toolRegistry.getTool(toolId);
 		if(tool == null) {
 			// If no registered tool was found, try to load standard tool (BAnimation or CSPAnimation)
 			// TODO: Refactoring needed. This needs to be replaced!
