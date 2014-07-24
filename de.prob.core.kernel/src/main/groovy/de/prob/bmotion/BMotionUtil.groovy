@@ -80,17 +80,23 @@ class BMotionUtil {
 		return model
 	}
 
-	def static ITool loadTool(String sessionId, String modelPath, AnimationSelector animations, ToolRegistry toolRegistry, Api api, String absoluteTemplatePath) {
+	def static ITool loadTool(String sessionId, String toolId, String modelPath, AnimationSelector animations, ToolRegistry toolRegistry, Api api, String absoluteTemplatePath) {
 		// First check if a tool is already registered with the passed id ...
 		ITool tool = toolRegistry.getTool(sessionId);
 		if(tool == null) {
 			// If no registered tool was found, try to load standard tool (BAnimation or CSPAnimation)
-			// TODO: Refactoring needed
+			// TODO: Refactoring needed. This needs to be replaced!
 			AbstractModel model = BMotionUtil.loadModel(api, animations, modelPath, absoluteTemplatePath);
 			if (model != null) {
 				if(model.getFormalismType() == FormalismType.B) {
 					tool = new BAnimation(model, animations, toolRegistry);
-				} else if (model.getFormalismType() == FormalismType.CSP) {
+				} else if(model.getFormalismType() == FormalismType.CSP) {
+					tool =  new CSPAnimation(model, animations, toolRegistry)
+				}
+			} else if(toolId != null) {
+				if("BAnimation".equals(toolId)) {
+					tool = new BAnimation(model, animations, toolRegistry);
+				} else if("CSPAnimation".equals(toolId)) {
 					tool =  new CSPAnimation(model, animations, toolRegistry)
 				}
 			}

@@ -177,19 +177,19 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 				parameterString.append("=" + e.getValue()[0]);
 		}
 
-		String modelPath = params.get("model");
 		UUID sessionUUID = sessionId != null && !sessionId.isEmpty() ? UUID
 				.fromString(sessionId) : UUID.randomUUID();
 
 		// Try to get ITool implementation
-		ITool tool = BMotionUtil.loadTool(sessionUUID.toString(), modelPath,
-				animations, toolRegistry, api, fullTemplatePath);
-		System.out.println("ITool: " + tool);
+		String toolId = params.get("tool");
+		String modelPath = params.get("model");
+		ITool tool = BMotionUtil.loadTool(sessionUUID.toString(), toolId,
+				modelPath, animations, toolRegistry, api, fullTemplatePath);
 
 		if (tool == null) {
 			// TODO: exit and report error message "no ITool found ......"
 		}
-
+				
 		// Create and initialize session
 		AbstractBMotionStudioSession bmsSession = createSession(sessionUUID,
 				tool, templatePath, host, port);
