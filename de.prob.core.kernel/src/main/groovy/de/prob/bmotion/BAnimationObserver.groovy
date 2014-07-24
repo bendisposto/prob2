@@ -50,26 +50,28 @@ class BAnimationObserver implements IBMotionGroovyObserver {
 	}
 	
 	public void update(ITool tool) {
-		json.observers.each { o ->
-			if(o?.type?.getAsString() == "EvalObserver") {
-				def factions = []
-				o.objs.each { obj ->
-					def fselector = obj?.selector?.getAsString()
-					obj.bindings.each { item ->
-						switch (item?.type?.getAsString()) {
-							case ['expression', 'predicate']:
-								factions = factions + expression(tool,item,fselector)
-								break
-							case 'variable':
-								break
-							case 'operation':
-								break
-							default:
-								println "Type unknown!"
+		if(json != null) {
+			json.observers.each { o ->
+				if(o?.type?.getAsString() == "EvalObserver") {
+					def factions = []
+					o.objs.each { obj ->
+						def fselector = obj?.selector?.getAsString()
+						obj.bindings.each { item ->
+							switch (item?.type?.getAsString()) {
+								case ['expression', 'predicate']:
+									factions = factions + expression(tool,item,fselector)
+									break
+								case 'variable':
+									break
+								case 'operation':
+									break
+								default:
+									println "Type unknown!"
+							}
 						}
 					}
+					session.toGui('bms.triggerObserverActions', [actions : factions.findAll { i -> i != null }])
 				}
-				session.toGui('bms.triggerObserverActions', [actions : factions.findAll { i -> i != null }])
 			}
 		}
 	}

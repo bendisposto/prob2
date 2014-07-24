@@ -21,32 +21,34 @@ import de.prob.model.eventb.EventBVariable;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
-import de.prob.ui.api.ITool;
 import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 
-public class BAnimation extends ProBAnimation implements ITool,
-		IAnimationChangeListener, IObserver {
+public class BAnimation extends ProBAnimation {
 
 	private final Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
 
 	private final Gson gson = new Gson();
 	
-	public BAnimation(AbstractModel model, AnimationSelector animations,
+	public BAnimation(String sessionId, AbstractModel model, AnimationSelector animations,
 			ToolRegistry toolRegistry) {
-		super(model, animations, toolRegistry);
-		animations.registerAnimationChangeListener(this);
-		animations.addNewAnimation(trace);
+		super(sessionId, model, animations, toolRegistry);
+	}
+	
+	public BAnimation(String sessionId, AnimationSelector animations,
+			ToolRegistry toolRegistry) {
+		super(sessionId, animations, toolRegistry);
 	}
 
 	@Override
 	public String doStep(final String stateref, final String event,
 			final String... parameters) throws ImpossibleStepException {
+		if(trace == null)
+			return null;
 		try {
 			Trace new_trace = trace.execute(event, Arrays.asList(parameters));
 			animations.replaceTrace(trace, new_trace);
@@ -61,6 +63,8 @@ public class BAnimation extends ProBAnimation implements ITool,
 	@Override
 	public String evaluate(final String stateref, final String formula)
 			throws IllegalFormulaException {
+		if(trace == null)
+			return null;
 		StateSpace space = trace.getStateSpace();
 		if (!formulas.containsKey(formula)) {
 			IEvalElement e = trace.getModel().parseFormula(formula);
@@ -78,25 +82,27 @@ public class BAnimation extends ProBAnimation implements ITool,
 	@Override
 	public List<String> getErrors(final String state, final String formula) {
 		List<String> errors = new ArrayList<String>();
-		try {
-			IEvalElement e = trace.getModel().parseFormula(formula);
-			StateSpace space = trace.getStateSpace();
-			StateId sId = space.getVertex(state);
-			if (!space.canBeEvaluated(sId)) {
-				errors.add("State not initialized");
+		if (trace != null) {
+			try {
+				IEvalElement e = trace.getModel().parseFormula(formula);
+				StateSpace space = trace.getStateSpace();
+				StateId sId = space.getVertex(state);
+				if (!space.canBeEvaluated(sId)) {
+					errors.add("State not initialized");
+				}
+				space.eval(sId, Arrays.asList(e));
+			} catch (EvaluationException e) {
+				errors.add("Could not parse: " + e.getMessage());
+			} catch (Exception e) {
+				errors.add(e.getClass() + " thrown: " + e.getMessage());
 			}
-			space.eval(sId, Arrays.asList(e));
-		} catch (EvaluationException e) {
-			errors.add("Could not parse: " + e.getMessage());
-		} catch (Exception e) {
-			errors.add(e.getClass() + " thrown: " + e.getMessage());
 		}
 		return errors;
 	}
 
 	@Override
 	public String getCurrentState() {
-		return trace.getCurrentState().getId();
+		return trace != null ? trace.getCurrentState().getId() : null;
 	}
 
 	@Override
@@ -106,20 +112,16 @@ public class BAnimation extends ProBAnimation implements ITool,
 
 	@Override
 	public String getName() {
-		return modelPath;
+		return sessionId;
 	}
 
 	@Override
 	public void traceChange(final Trace currentTrace,
 			final boolean currentAnimationChanged) {
-		if (currentTrace != null
-				&& currentTrace.getModel().getModelFile().getAbsolutePath()
-						.equals(modelPath) && !currentTrace.equals(trace)) {
-			trace = currentTrace;
+		if (currentTrace != null && !currentTrace.equals(trace)) {
 			toolRegistry.notifyToolChange(this);
-		} else if (currentTrace == null) {
-			trace = currentTrace;
 		}
+		trace = currentTrace;
 	}
 
 	@Override
@@ -135,18 +137,23 @@ public class BAnimation extends ProBAnimation implements ITool,
 	@Override
 	public String getModelData(String dataParameter, HttpServletRequest req) {
 
-		AbstractModel model = getModel();
-		AbstractElement mainComponent = model.getMainComponent();
 		List<XEditableListObj> l = new ArrayList<XEditableListObj>();
-		if (mainComponent instanceof EventBMachine) {
-			if ("operations".equals(dataParameter)) {
-				for (Event event : ((EventBMachine) mainComponent).getEvents()) {
-					l.add(new XEditableListObj(event.getName(), event.getName()));
-				}
-			} else if ("variables".equals(dataParameter)) {
-				for (EventBVariable var : ((EventBMachine) mainComponent)
-						.getVariables()) {
-					l.add(new XEditableListObj(var.getName(), var.getName()));
+		AbstractModel model = getModel();
+		if (model != null) {
+			AbstractElement mainComponent = model.getMainComponent();
+
+			if (mainComponent instanceof EventBMachine) {
+				if ("operations".equals(dataParameter)) {
+					for (Event event : ((EventBMachine) mainComponent)
+							.getEvents()) {
+						l.add(new XEditableListObj(event.getName(), event
+								.getName()));
+					}
+				} else if ("variables".equals(dataParameter)) {
+					for (EventBVariable var : ((EventBMachine) mainComponent)
+							.getVariables()) {
+						l.add(new XEditableListObj(var.getName(), var.getName()));
+					}
 				}
 			}
 		}

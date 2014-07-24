@@ -89,15 +89,15 @@ class BMotionUtil {
 			AbstractModel model = BMotionUtil.loadModel(api, animations, modelPath, absoluteTemplatePath);
 			if (model != null) {
 				if(model.getFormalismType() == FormalismType.B) {
-					tool = new BAnimation(model, animations, toolRegistry);
+					tool = new BAnimation(sessionId, model, animations, toolRegistry);
 				} else if(model.getFormalismType() == FormalismType.CSP) {
-					tool =  new CSPAnimation(model, animations, toolRegistry)
+					tool =  new CSPAnimation(sessionId, model, animations, toolRegistry)
 				}
 			} else if(toolId != null) {
 				if("BAnimation".equals(toolId)) {
-					tool = new BAnimation(model, animations, toolRegistry);
+					tool = new BAnimation(sessionId, animations, toolRegistry);
 				} else if("CSPAnimation".equals(toolId)) {
-					tool =  new CSPAnimation(model, animations, toolRegistry)
+					tool =  new CSPAnimation(sessionId, animations, toolRegistry)
 				}
 			}
 			if(tool != null) {
