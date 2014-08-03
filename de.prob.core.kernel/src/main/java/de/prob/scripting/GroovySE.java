@@ -91,6 +91,12 @@ public class GroovySE implements ScriptEngine {
 		Object result = eval(script, context);
 		return new Object[] { result, console.toString() };
 	}
+	public Object eval(final String script, 
+			StringBuffer console) throws ScriptException {
+		groovy.put("__console", console);
+		Object result = eval(script, getContext());
+		return new Object[] { result, console.toString() };
+	}
 
 	@Override
 	public Bindings createBindings() {
