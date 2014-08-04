@@ -35,7 +35,7 @@ import de.prob.unicode.UnicodeTranslator;
  * @author joy
  * 
  */
-public class EventB extends AbstractEvalElement {
+public class EventB extends AbstractEvalElement implements IBEvalElement {
 
 	Logger logger = LoggerFactory.getLogger(EventB.class);
 	private final FormulaUUID uuid = new FormulaUUID();

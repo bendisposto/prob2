@@ -29,7 +29,7 @@ import de.prob.statespace.StateId;
  * 
  * @author joy
  */
-public class ClassicalB extends AbstractEvalElement {
+public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 
 	private final FormulaUUID uuid = new FormulaUUID();
 
