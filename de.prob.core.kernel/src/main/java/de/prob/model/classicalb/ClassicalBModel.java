@@ -13,10 +13,12 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.BStateSchema;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.RefType;
 import de.prob.model.representation.StateSchema;
+import de.prob.model.representation.Variable;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
@@ -29,7 +31,7 @@ public class ClassicalBModel extends AbstractModel {
 
 	@Inject
 	public ClassicalBModel(final StateSpace statespace) {
-		this.statespace = statespace;
+		this.stateSpace = statespace;
 	}
 
 	public DirectedSparseMultigraph<String, RefType> initialize(
@@ -42,6 +44,8 @@ public class ClassicalBModel extends AbstractModel {
 
 		final DomBuilder d = new DomBuilder();
 		mainMachine = d.build(mainast);
+
+		extractModelDir(modelFile, mainMachine.getName());
 
 		graph.addVertex(mainMachine.getName());
 		ModelElementList<ClassicalBMachine> machines = new ModelElementList<ClassicalBMachine>();
@@ -71,7 +75,7 @@ public class ClassicalBModel extends AbstractModel {
 			components.put(classicalBMachine.getName(), classicalBMachine);
 		}
 
-		statespace.setModel(this);
+		stateSpace.setModel(this);
 		return graph;
 	}
 
@@ -97,5 +101,19 @@ public class ClassicalBModel extends AbstractModel {
 	@Override
 	public FormalismType getFormalismType() {
 		return FormalismType.B;
+	}
+
+	@Override
+	public void subscribeFormulasOfInterest() {
+		ModelElementList<Machine> childrenOfType = getChildrenOfType(Machine.class);
+		for (Machine machine : childrenOfType) {
+			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
+				variable.subscribe(stateSpace);
+			}
+			for (Invariant invariant : machine
+					.getChildrenOfType(Invariant.class)) {
+				invariant.subscribe(stateSpace);
+			}
+		}
 	}
 }

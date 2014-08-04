@@ -29,7 +29,6 @@ import de.prob.web.AbstractSession;
 import de.prob.web.ISession;
 import de.prob.web.ReflectionServlet;
 import de.prob.web.WebUtils;
-import de.prob.web.data.Message;
 import de.prob.web.data.SessionResult;
 import de.prob.web.worksheet.BindingsSnapshot;
 import de.prob.web.worksheet.BoxFactory;
@@ -265,32 +264,35 @@ public class Worksheet extends AbstractSession {
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		VariableDetailTransformer.clear();
-		if (responses.isEmpty()) {
-			IBox box = appendFreshBox();
-			Map<String, String> renderCmd = box.createMessage();
-			Map<String, String> focusCmd = WebUtils.wrap("cmd",
-					"Worksheet.focus", "number", box.getId());
-			submit(renderCmd, focusCmd);
-			resend(client, 0, context);
-		} else {
-			Message lm = responses.get(responses.size() - 1);
-			ArrayList<Object> cp = new ArrayList<Object>();
+		sendInitMessage(context);
+		// FIXME Implement this
 
-			for (String id : order) {
-				IBox b = boxes.get(id);
-				cp.add(b.createMessage());
-				cp.addAll(render(b));
-				cp.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number", id));
-			}
-
-			// cp.add(WebUtils.wrap("cmd", "reloaded"));
-
-			Object[] everything = cp.toArray();
-			Message m = new Message(lm.id, everything);
-			String json = WebUtils.toJson(m);
-			send(json, context);
-		}
+		// VariableDetailTransformer.clear();
+		// if (responses.isEmpty()) {
+		// IBox box = appendFreshBox();
+		// Map<String, String> renderCmd = box.createMessage();
+		// Map<String, String> focusCmd = WebUtils.wrap("cmd",
+		// "Worksheet.focus", "number", box.getId());
+		// submit(renderCmd, focusCmd);
+		// resend(client, 0, context);
+		// } else {
+		// Message lm = responses.get(responses.size() - 1);
+		// ArrayList<Object> cp = new ArrayList<Object>();
+		//
+		// for (String id : order) {
+		// IBox b = boxes.get(id);
+		// cp.add(b.createMessage());
+		// cp.addAll(render(b));
+		// cp.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number", id));
+		// }
+		//
+		// // cp.add(WebUtils.wrap("cmd", "reloaded"));
+		//
+		// Object[] everything = cp.toArray();
+		// Message m = new Message(lm.id, everything);
+		// String json = WebUtils.toJson(m);
+		// send(json, context);
+		// }
 	}
 
 	private List<Object> render(final IBox box) {

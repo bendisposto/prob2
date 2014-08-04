@@ -96,6 +96,11 @@ public class Operator extends AbstractElement {
 		return definition;
 	}
 
+	/**
+	 * @param definition
+	 *            of type {@link IOperatorDefinition}. For
+	 *            AxiomaticOperatorDefinitions this will never be set.
+	 */
 	public void setDefinition(final IOperatorDefinition definition) {
 		this.definition = definition;
 	}

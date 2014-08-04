@@ -231,8 +231,9 @@ public class MachineXmlHandler extends DefaultHandler {
 		String name = attributes.getValue("name");
 		boolean concrete = "true".equals(attributes
 				.getValue("org.eventb.core.concrete"));
+		String unit = attributes.getValue("de.prob.units.unitPragmaAttribute");
 		if (concrete) {
-			variables.add(new EventBVariable(name));
+			variables.add(new EventBVariable(name, unit));
 		}
 	}
 
@@ -309,7 +310,8 @@ public class MachineXmlHandler extends DefaultHandler {
 		String name = attributes.getValue("name");
 		boolean symbolic = "true".equals(attributes
 				.getValue("de.prob.symbolic.symbolicAttribute"));
-		constants.add(new EventBConstant(name, symbolic));
+		String unit = attributes.getValue("de.prob.units.unitPragmaAttribute");
+		constants.add(new EventBConstant(name, symbolic, unit));
 	}
 
 	private void addExtendedContext(final Attributes attributes) {

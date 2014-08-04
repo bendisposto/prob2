@@ -29,14 +29,15 @@ public class WebConsole {
 	public static void run(final String local, final String iface, int port)
 			throws Exception {
 
-		if (port > 0)
+		if (port > 0) {
 			PORT = port;
+		}
 
 		WebConsole.run(iface, new Runnable() {
 
 			@Override
 			public void run() {
-				if (!local.isEmpty())
+				if (!local.isEmpty()) {
 					try {
 						Desktop.getDesktop().browse(
 								new URI("http://localhost:" + WebConsole.PORT
@@ -46,6 +47,7 @@ public class WebConsole {
 					} catch (URISyntaxException e) {
 						e.printStackTrace();
 					}
+				}
 			}
 		});
 	}
@@ -65,7 +67,8 @@ public class WebConsole {
 				.toExternalForm();
 		WebConsole.LOGGER.debug("External Form: " + warFile);
 
-		if (!warFile.endsWith(".jar") && (!warFile.endsWith("bin/"))) {
+		if (!warFile.endsWith(".jar") && !warFile.endsWith("bin/")
+				&& (!warFile.endsWith("main/"))) {
 			warFile += "bin/";
 		}
 

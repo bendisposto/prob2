@@ -6,11 +6,10 @@ import org.eventb.core.ast.extension.IFormulaExtension;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.IEval;
+import de.prob.model.representation.AbstractFormulaElement;
 
-public class DirectDefinition extends AbstractElement implements
-		IOperatorDefinition, IEval {
+public class DirectDefinition extends AbstractFormulaElement implements
+		IOperatorDefinition {
 
 	EventB formula;
 
@@ -19,12 +18,8 @@ public class DirectDefinition extends AbstractElement implements
 		this.formula = new EventB(formula, typeEnv);
 	}
 
-	public EventB getFormula() {
-		return formula;
-	}
-
 	@Override
-	public IEvalElement getEvaluate() {
+	public IEvalElement getFormula() {
 		return formula;
 	}
 

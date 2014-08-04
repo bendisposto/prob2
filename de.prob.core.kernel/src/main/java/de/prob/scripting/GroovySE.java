@@ -37,8 +37,8 @@ public class GroovySE implements ScriptEngine {
 			"import de.prob.model.classicalb.*;",
 			"import de.prob.model.eventb.*;",
 			"import de.prob.animator.domainobjects.*;",
-			"import de.prob.animator.commands.*;",
-			"import de.prob.visualization.*;", "\n " };
+			"import de.prob.animator.command.*;",
+			"import de.prob.visualization.*;", "import de.prob.check.*;", "\n " };
 
 	private final String imports = Joiner.on("\n").join(IMPORTS);
 
@@ -83,6 +83,19 @@ public class GroovySE implements ScriptEngine {
 					+ "Output was: {}", buff.toString());
 		}
 		return result;
+	}
+
+	public Object eval(final String script, ScriptContext context,
+			StringBuffer console) throws ScriptException {
+		groovy.put("__console", console);
+		Object result = eval(script, context);
+		return new Object[] { result, console.toString() };
+	}
+	public Object eval(final String script, 
+			StringBuffer console) throws ScriptException {
+		groovy.put("__console", console);
+		Object result = eval(script, getContext());
+		return new Object[] { result, console.toString() };
 	}
 
 	@Override

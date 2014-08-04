@@ -1,0 +1,23 @@
+<div class="observer_type">
+	<h4 data-bind="text: observer.type"></h4>
+	<a href="#" class="bt_observeritem bt_additem" data-bind="click: function() { $root.addItem(observer.objs, {'selector': 'selector', 'bindings' : [] }, true) }">Add Observer</a>
+</div>
+<div class="observer_objs" data-bind="foreach: { data: observer.objs, as: 'obj' }, sortableList: observer.objs" data-list="objs">
+	<div class="observer_obj" data-bind="attr: { oid: obj.selector }">
+	 	<h3 class="observer_head" data-bind="text: obj.selector" data-menu="cmenu_b_observer_obj"></h3>
+		<div class="observer_content">
+		    <div class="observer_card bordered">
+			 <table>
+			  <tr>
+				<td>Selector</td>
+				<td><a href="#" class="truncate" data-bind="editable: obj.selector, editableOptions: { type: 'textarea' }"></a></td>
+			  </tr>
+			 </table>
+			</div>
+			<div class="observer_bindings" data-bind="foreach: { data: obj.bindings, as: 'binding' }, sortableList: obj.bindings" data-list="bindings">
+				<div class="observer_card bordered observer_binding" data-bind="template: { name: binding.type, data: binding }" data-menu="cmenu_b_observer_binding">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

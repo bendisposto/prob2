@@ -103,7 +103,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 			events = new ArrayList<Operation>(ops.size());
 			Set<String> notEnabled = new HashSet<String>(opNames);
 			for (OpInfo opInfo : ops) {
-				String name = opInfo.getName();
+				String name = extractPrettyName(opInfo.getName());
 				notEnabled.remove(name);
 				Operation o = new Operation(opInfo.getId(), name,
 						opInfo.getParams(), true);
@@ -114,13 +114,27 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 					events.add(new Operation(s, s, opToParams.get(s), false));
 				}
 			}
-			Collections.sort(events, sorter);
+			try {
+				Collections.sort(events, sorter);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			String json = WebUtils.toJson(applyFilter(filter));
 			Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
 					"ops", json, "canGoBack", currentTrace.canGoBack(),
 					"canGoForward", currentTrace.canGoForward());
 			submit(wrap);
 		}
+	}
+
+	private String extractPrettyName(final String name) {
+		if ("$setup_constants".equals(name)) {
+			return "SETUP_CONSTANTS";
+		}
+		if ("$initialise_machine".equals(name)) {
+			return "INITIALISATION";
+		}
+		return name;
 	}
 
 	private void updateModel(final Trace trace) {
@@ -181,7 +195,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
+		sendInitMessage(context);
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.setView",
 				"ops", WebUtils.toJson(events), "canGoBack",
 				currentTrace == null ? false : currentTrace.canGoBack(),
@@ -290,7 +304,8 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 
 		@Override
 		public int compare(final Operation o1, final Operation o2) {
-			if (ops.indexOf(o1.name) == ops.indexOf(o2.name)) {
+			if (ops.contains(o1.name) && ops.contains(o2.name)
+					&& ops.indexOf(o1.name) == ops.indexOf(o2.name)) {
 				return compareParams(o1.params, o2.params);
 			}
 			return ops.indexOf(o1.name) - ops.indexOf(o2.name);

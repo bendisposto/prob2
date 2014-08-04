@@ -2,12 +2,13 @@ project.ext {
 
 	targetRepositories = ["http://download.eclipse.org/releases/indigo/",
                           "http://rodin-b-sharp.sourceforge.net/updates",
-                          "http://rodin-b-sharp.sourceforge.net/core-updates"]	
+                          "http://rodin-b-sharp.sourceforge.net/core-updates",
+                          "http://downloads.efxclipse.org/p2-repos/releases/latest"]	
 
 	groupID = "de.prob2"
 
 	excludeFromTychoBuild = ["de.prob.core.kernel"]
-	excludeFromClassPath = [ 'de.prob.ui.rodin', 'de.prob2.feature' ]		// Projects defined here will also be exluded from changes of MF File
+	excludeFromClassPath = [ 'de.prob.ui.rodin', 'de.prob2.feature', 'de.prob.core.feature' ]		// Projects defined here will also be exluded from changes of MF File
 	excludeManifestClassPathDelete = ['de.prob.ui.worksheet']		// Projects defined here will still have classpath changes but no changes in the MF File
 }
 
@@ -40,31 +41,36 @@ project(':de.prob.core.rodin'){
 	
 	
 	task generateMF()<<{
-		String exports = getExportedPackages()
-		//println exports
 		
-		def oldMF = new File( workspacePath+"de.prob.core.rodin/META-INF/MANIFEST.MF" ).getText("UTF-8")
-		def mf = new File( workspacePath+"de.prob.core.rodin/META-INF/MF.MF" )
-		mf.delete()
-		def lib = getLibs()
-		
-		def setExports = { 
-			if( it ==~ /Export-Package:.*/ )  it = it + ",\n" + exports
-
-			if( it ==~ /Bundle-ClassPath: .(\ |\t)*/ ) it = it + ",\n" + lib
-			if( it ==~ /Bundle-ClassPath: .(\ |\t)*,(\ |\t)*/ ) it = it + "\n" + lib + ","
-			//if( !(it ==~ /(\ |\t)*de.prob.core.kernel;bundle-version="1.0.0";resolution:=optional.*/ ) ){				//	 This check is only necessary because the optional identifier cannot be handled anymore 
-			it = it.replaceAll(",( |\t)*,",",")
-			mf << it+"\n"
-			//}																//
-		}
-		oldMF.eachLine(setExports)
-		def oldManiF = new File(workspacePath+"de.prob.core.rodin/META-INF/MANIFEST.MF")
-		oldManiF.delete()
-		mf.renameTo(workspacePath+"de.prob.core.rodin/META-INF/MANIFEST.MF")
-			
+		prepareMF("de.prob.ui")	
+		//prepareMF("de.prob.rodin.core/META-INF/MANIFEST.MF", "de.prob.rodin.core/META-INF/MF.MF")
 	}
 	
+}
+
+
+void prepareMF(def MF){
+	String exports = getExportedPackages()
+	//println exports
+	
+	def oldMF = new File( workspacePath + MF + "/META-INF/MANIFEST.MF").getText("UTF-8")
+	def mf = new File( workspacePath + MF + "/META-INF/MF.MF")
+	mf.delete()
+	def lib = getLibs(MF)
+	
+	def setExports = { 
+		if( it ==~ /Export-Package:.*/ )  it = it + ",\n" + exports
+
+		if( it ==~ /Bundle-ClassPath: .(\ |\t)*/ ) it = it + ",\n" + lib
+		if( it ==~ /Bundle-ClassPath: .(\ |\t)*,(\ |\t)*/ ) it = it + "\n" + lib + ","
+		it = it.replaceAll(",( |\t)*,",",")
+		mf << it+"\n"
+		//}																//
+	}
+	oldMF.eachLine(setExports)
+	def oldManiF = new File(workspacePath+MF)
+	oldManiF.delete()
+	mf.renameTo(workspacePath+MF)
 }
 
 task deleteOldArtifacts(type: Delete) {
@@ -122,11 +128,11 @@ println """\
 }
 
 
-// collects the Libs from de.prob.core.rodin for the build
-def getLibs(){
+// collects the Libs for the build
+def getLibs(String MF){
 	def dependencyList = []
 	//try{
-		def dir = new File(workspacePath+"de.prob.core.rodin"+"/"+dependencyFolder).eachFile() { file->  		
+		def dir = new File(workspacePath+MF+"/"+dependencyFolder).eachFile() { file->  		
 	    	if( !(file.getName() ==~/.*\.txt/) ){
 				dependencyList << file.getName()  
 			}
@@ -134,6 +140,9 @@ def getLibs(){
 	//}catch( FileNotFoundException e ){
 	//	println "No libraries found please run 'gradle collectDependencies' or 'gradle setClassPath'"
 	//}
+	
+	dependencyList = dependencyList.sort()
+	
 	String libs = ""
 	for( int i = 0; i < dependencyList.size; i ++ ){
 
@@ -177,4 +186,25 @@ def String getExportedPackages(){
 	
 
 	return exports
+}
+
+
+
+
+task remove_tycho_data << {
+
+	delete{
+	 delete  'de.prob.core.kernel/pom.xml',
+	       'de.prob.core.rodin/pom.xml',
+	       'de.prob.core.rodin/target/',
+	       'de.prob.ui.rodin/pom.xml',
+	       'de.prob.ui.rodin/target/',
+	       'de.prob.ui/pom.xml',
+	       'de.prob.ui/target/',
+	       'de.prob2.feature/pom.xml',
+	       'de.prob2.feature/target/',
+	       'de.prob2.parent/',
+	       'de.prob2.repository/',
+	       'updatesite'
+	}
 }

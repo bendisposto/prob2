@@ -1,6 +1,9 @@
 package de.prob.statespace
 
 import static org.mockito.Mockito.*
+
+import org.mockito.Mockito
+
 import spock.lang.Specification
 
 class AnimationSelectorTest extends Specification {
@@ -24,12 +27,14 @@ class AnimationSelectorTest extends Specification {
 		}
 	}
 
-	def trace
+	def Trace trace
 	def AnimationSelector selector
 	def listener
 
 	def setup() {
-		trace = mock(Trace.class);
+		def StateSpace ss = mock(StateSpace.class);
+		when(ss.isBusy()).thenReturn(false);
+		trace = new Trace(ss,null,UUID.randomUUID());
 		selector = new AnimationSelector();
 		listener = new MyListener()
 		selector.registerAnimationChangeListener(listener)
@@ -43,7 +48,7 @@ class AnimationSelectorTest extends Specification {
 
 	def "It is possible to notify the listener"() {
 		when:
-		selector.notifyAnimationChange(null, true)
+		selector.notifyAnimationChange(trace, true)
 
 		then:
 		listener.getCount() == 1

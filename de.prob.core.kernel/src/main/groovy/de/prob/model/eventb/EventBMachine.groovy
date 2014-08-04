@@ -1,6 +1,5 @@
 package de.prob.model.eventb;
 
-import de.prob.model.eventb.proof.ProofObligation
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.Machine
@@ -54,22 +53,13 @@ public class EventBMachine extends Machine {
 		this.events = events
 	}
 
-	public void addProofs(final ModelElementList<? extends ProofObligation> proofs) {
+	public void addProofs(final ModelElementList<ProofObligation> proofs) {
 		put(ProofObligation.class, proofs);
 		this.proofs = proofs
 	}
 
 	public ModelElementList<Event> getOperations() {
 		return events
-	}
-
-	def ModelElementList<ProofObligation> getProofs() {
-		//TODO: Implement way to translate from UncalculatedPO to CalculatedPO
-		return proofs
-	}
-
-	def ModelElementList<ProofObligation> getRawProofs() {
-		return proofs
 	}
 
 	def Event getEvent(String name) {

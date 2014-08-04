@@ -49,7 +49,7 @@ public class StateSpaceData extends AbstractData {
 		for (Machine machine : ms) {
 			List<Variable> vs = machine.getChildrenOfType(Variable.class);
 			for (Variable variable : vs) {
-				vars.add(variable.getEvaluate());
+				vars.add(variable.getExpression());
 			}
 		}
 		return vars;

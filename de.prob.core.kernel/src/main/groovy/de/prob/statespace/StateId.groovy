@@ -1,12 +1,8 @@
 package de.prob.statespace
 
-import de.prob.animator.domainobjects.CSP
-import de.prob.animator.domainobjects.ClassicalB
-import de.prob.animator.domainobjects.EventB
+import de.prob.animator.domainobjects.EvaluationException
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.model.classicalb.ClassicalBModel
-import de.prob.model.eventb.EventBModel
-import de.prob.model.representation.CSPModel;
+import de.prob.animator.domainobjects.IEvalResult
 import de.prob.statespace.derived.AbstractDerivedStateSpace
 
 
@@ -15,49 +11,89 @@ class StateId {
 	protected def id;
 	def StateSpace space;
 
-	//FIXME delete
+	/**
+	 * This method is included for groovy magic in a console environment.
+	 * Use the {@link StateId#perform} method instead.
+	 *
+	 * @param method String method name that was called
+	 * @param params List of parameter objects that it was called with
+	 * @return result of {@link StateId#perform}
+	 * @deprecated use {@link StateId#perform}
+	 */
 	@Deprecated
 	def invokeMethod(String method,  params) {
-		return perform(method,params)
+		if(method.startsWith("\$") && !(method == "\$setup_constants" || method == "\$initialise_machine")) {
+			method = method.substring(1)
+		}
+
+		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+		OpInfo op = space.opFromPredicate(this, method, predicate , 1)[0];
+		StateId newState = space.getDest(op);
+		space.explore(newState);
+		return newState;
 	}
 
-	def perform(String method,  params) {
-		String predicate;
-		if (params == []) predicate = "TRUE = TRUE"
-		else predicate = params[0];
-		OpInfo op = space.opFromPredicate(this, method,predicate , 1)[0];
+	/**
+	 * Uses {@link StateSpace#opFromPredicate} to calculate the destination state of the event
+	 * with the specified event name and the conjunction of the parameters.
+	 * An exception will be thrown if the specified event and params are invalid for this StateId.
+	 * @param event String event name to execute
+	 * @param params List of String predicates
+	 * @return {@link StateId} that results from executing the specified event
+	 */
+	def StateId perform(String event, List<String> params) {
+		if(event.startsWith("\$") && !(event == "\$setup_constants" || event == "\$initialise_machine")) {
+			event = event.substring(1)
+		}
+
+		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+		OpInfo op = space.opFromPredicate(this, event, predicate , 1)[0];
 		StateId newState = space.getDest(op);
 		space.explore(newState);
 		return newState;
 	}
 
 
+	/**
+	 * Evaluates the given formula key via the {@link #eval(Object)} method.
+	 * If the result has a "value" property, this is returned.
+	 * Otherwise, an {@link EvaluationException} is thrown if a reason is found, and an
+	 * {@link IllegalArgumentException} is thrown if no identifiable reason can be found.
+	 *
+	 * This method is meant to be used for extracting the value of variables at a given state.
+	 * For more complicated formulas, we suggest using the {@link #eval(Object)} method.
+	 *
+	 * @param key String representation of the formula
+	 * @return the value property of the result, if one exists
+	 */
+	@Deprecated
 	def value(String key) {
-		def v = space.valuesAt(this);
-		for (def entry : v.entrySet()) {
-			if(entry.getKey().code == key) {
-				return entry.getValue().value
-			}
+		IEvalResult res = eval(key)
+		if (res.hasProperty("value")) {
+			return res.getValue()
 		}
-		def m = space.getModel();
-		if(m instanceof ClassicalBModel) {
-			return space.eval(this, [key as ClassicalB]).get(0).value
+		if (res.hasProperty("reason")) {
+			throw new EvaluationException("Could not evaluate formula $key because ${res.getReason()}")
 		}
-		if(m instanceof EventBModel) {
-			return space.eval(this, [key as EventB]).get(0).value
+		if (res.getMetaClass().respondsTo("getMessage")) {
+			throw new EvaluationException("Could not evaluate formula $key because ${res.getMessage()}")
 		}
-		if(m instanceof CSPModel) {
-			return space.eval(this, [key as CSP]).get(0).value
-		}
+		throw new IllegalArgumentException("Evaluation of formula failed with unknown reason. Result type was: $res")
 	}
 
 
-	def eval(formula) {
+	/**
+	 * Takes a formula and evaluates it via the {@link de.prob.statespace.StateSpace#eval(StateId, java.util.List)}
+	 * method. If the input is a String, the formula is parsed via the {@link AbstractModel#parseFormula(String)} method.
+	 * @param formula String or IEvalElement representation of a formula
+	 * @return the {@link IEvalResult} calculated from ProB
+	 */
+	def IEvalResult eval(formula) {
 		def f = formula;
 		if (!(formula instanceof IEvalElement)) {
-			f = formula as ClassicalB;
+			f = space.getModel().parseFormula(f)
 		}
-		space.eval(this, [f])[0]
+		return space.eval(this, [f])[0]
 	}
 
 	def StateId(id, space) {

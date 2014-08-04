@@ -8,6 +8,7 @@ import org.eclipse.ui.PartInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.prob.ui.view.ProB2ViewUtil;
 import de.prob.visualization.AnimationNotLoadedException;
 
 public class OpenTimeValueVizHandler extends AbstractHandler implements
@@ -18,8 +19,8 @@ public class OpenTimeValueVizHandler extends AbstractHandler implements
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		try {
-			VisualizationUtil
-					.createVisualizationViewPart("sessions/ValueOverTime/");
+			ProB2ViewUtil
+					.createProB2ViewPart("sessions/ValueOverTime/");
 		} catch (PartInitException e) {
 			logger.error("Could not create value vs time visualization view: "
 					+ e.getMessage());

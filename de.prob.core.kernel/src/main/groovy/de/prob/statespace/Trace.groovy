@@ -5,7 +5,6 @@ import org.parboiled.common.Tuple2
 import de.be4.classicalb.core.parser.exceptions.BException
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.EvaluationCommand
-import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
 import de.prob.model.classicalb.ClassicalBModel
@@ -17,6 +16,7 @@ public class Trace {
 	def final TraceElement current
 	def final TraceElement head
 	def final StateSpace stateSpace
+	def final UUID UUID
 
 	def IEvalResult evalCurrent(formula) {
 		if(!stateSpace.canBeEvaluated(getCurrentState())) {
@@ -24,7 +24,7 @@ public class Trace {
 		}
 		def f = formula;
 		if (!(formula instanceof IEvalElement)) {
-			f = formula as ClassicalB;
+			f = stateSpace.getModel().parseFormula(f)
 		}
 		stateSpace.eval(getCurrentState(),[f]).get(0);
 	}
@@ -33,7 +33,7 @@ public class Trace {
 	def List<Tuple2<String,IEvalResult>> eval(formula) {
 		def f = formula;
 		if(!(formula instanceof IEvalElement)) {
-			f = formula as ClassicalB;
+			f = stateSpace.getModel().parseFormula(f)
 		}
 
 		def List<EvaluationCommand> cmds = []
@@ -56,30 +56,27 @@ public class Trace {
 		res
 	}
 
+	def Trace(final AbstractModel m) {
+		this(m.getStateSpace())
+	}
 
 	def Trace(final StateSpace s) {
 		this.stateSpace = s
 		head = new TraceElement(s.getState(s.getVertex("root")))
 		current = head
+		UUID = java.util.UUID.randomUUID()
 	}
 
-	def Trace(final AbstractModel m) {
-		this.stateSpace = m.getStatespace()
-		head = new TraceElement(s.getState(s.getVertex("root")))
-		current = head
-	}
-
-	def Trace(final StateSpace s, final TraceElement head) {
-		this.stateSpace = s
-		this.head = head
-		this.current = head
+	def Trace(final StateSpace s, final TraceElement head, UUID uuid) {
+		this(s, head, head, uuid)
 	}
 
 	def Trace(final StateSpace s, final TraceElement head,
-	final TraceElement current) {
+	final TraceElement current, UUID uuid) {
 		this.stateSpace = s
 		this.head = head
 		this.current = current
+		this.UUID = uuid
 	}
 
 	def Trace add(final String name, final List<String> params) {
@@ -95,7 +92,7 @@ public class Trace {
 		StateId newState = stateSpace.getState(op)
 
 		def newHE = new TraceElement(current.getCurrentState(), newState, op, current)
-		Trace newTrace = new Trace(stateSpace, newHE)
+		Trace newTrace = new Trace(stateSpace, newHE, this.UUID)
 
 		return newTrace
 	}
@@ -110,7 +107,7 @@ public class Trace {
 	 */
 	def Trace back() {
 		if (canGoBack()) {
-			Trace trace = new Trace(stateSpace, head, current.getPrevious())
+			Trace trace = new Trace(stateSpace, head, current.getPrevious(), this.UUID)
 			return trace
 		}
 		return this
@@ -128,7 +125,7 @@ public class Trace {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious()
 			}
-			Trace trace = new Trace(stateSpace, head, p)
+			Trace trace = new Trace(stateSpace, head, p, this.UUID)
 			return trace
 		}
 		return this
@@ -207,21 +204,70 @@ public class Trace {
 			currentState = newState
 		}
 
-		Trace newTrace = new Trace(stateSpace, current)
+		Trace newTrace = new Trace(stateSpace, current, this.UUID)
 		return newTrace
 	}
 
-	def Trace invokeMethod(String method,  params) {
-		String predicate;
 
-		if(method.startsWith("\$") && !(method == "\$setup_constants" || "\$initialise_machine")) {
+	/**
+	 * This method is included because it translates to groovy magic in a console environment
+	 * (allows the execution of an event by calling it as a method in the Trace class).
+	 * For executing an event from within Java, use {@link Trace#execute} instead.
+	 *
+	 * @param method String method name called
+	 * @param params List of parameters
+	 * @return {@link Trace#execute(method, params)}
+	 * @deprecated use {@link Trace#execute}
+	 */
+	@Deprecated
+	def invokeMethod(String method, params) {
+		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+
+		if(method.startsWith("\$") && !(method == "\$setup_constants" || method == "\$initialise_machine")) {
 			method = method.substring(1)
 		}
 
-		if (params == []) predicate = "TRUE = TRUE"
-		else predicate = params[0];
-		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), method,predicate , 1)[0];
+		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), method, predicate , 1)[0];
 		return add(op.id)
+	}
+
+	/**
+	 * Takes an event name and a list of String predicates and uses {@link StateSpace#opFromPredicate}
+	 * with the {@link Trace#currentState}, the specified event name, and the conjunction of the parameters.
+	 * If the specified operation is invalid, a runtime exception will be thrown.
+	 *
+	 * @param event String event name
+	 * @param params List of String predicates to be conjoined
+	 * @return {@link Trace} which is a result of executing the specified operation
+	 */
+	def Trace execute(String event, List<String> params) {
+		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+
+		if(event.startsWith("\$") && !(event == "\$setup_constants" || event == "\$initialise_machine")) {
+			event = event.substring(1)
+		}
+
+		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), event, predicate , 1)[0];
+		return add(op.id)
+	}
+
+	/**
+	 * Tests to see if the event name plus the conjunction of the parameter strings produce a valid
+	 * operation on this state. Currently tests the result of {@link Trace#execute} and returns false
+	 * if an exception is thrown, but this is subject to change.
+	 *
+	 * @param event Name of the event to be executed
+	 * @param params List of String predicates to be conjoined
+	 * @return <code>true</code>, if the operation can be executed. <code>false</code>, otherwise
+	 */
+	def boolean canExecuteEvent(String event, List<String> params) {
+		// TODO: We should have a prolog command that check this so we don't have to execute the op every time
+		try {
+			execute(event, params);
+		} catch(Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 	def Trace anyOperation(filter) {

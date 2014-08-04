@@ -28,9 +28,9 @@ import de.prob.check.ModelCheckingOptions;
 import de.prob.check.ModelCheckingOptions.Options;
 import de.prob.check.StateSpaceStats;
 import de.prob.model.representation.BEvent;
-import de.prob.model.representation.CSPModel;
 import de.prob.model.representation.ModelElementList;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.FormalismType;
 import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.StateSpace;
@@ -284,8 +284,8 @@ public class ModelCheckingUI extends AbstractSession implements
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
-		resend(client, lastinfo, context);
+		sendInitMessage(context);
+		// FIXME Requires something differend than resending!
 	}
 
 	@Override
@@ -293,7 +293,9 @@ public class ModelCheckingUI extends AbstractSession implements
 		currentStateSpace = stateSpace;
 		String sId = currentStateSpace == null ? "none" : currentStateSpace
 				.getId();
-		boolean b_model = !(currentStateSpace.getModel() instanceof CSPModel);
+
+		boolean b_model = currentStateSpace == null ? false : currentStateSpace
+				.getModel().getFormalismType().equals(FormalismType.B);
 		List<String> eventNames = b_model ? extractEventNames(currentStateSpace)
 				: new ArrayList<String>();
 		selectedEvents = new ArrayList<String>();

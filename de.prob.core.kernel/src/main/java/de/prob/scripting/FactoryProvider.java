@@ -15,13 +15,15 @@ public class FactoryProvider {
 	private final ClassicalBFactory classical_b_factory;
 	private final CSPFactory csp_factory;
 	private final EventBFactory eventb_factory;
+	private final TLAFactory tla_factory;
 
 	@Inject
 	public FactoryProvider(final ClassicalBFactory bfactory,
-			final CSPFactory csp_factory, final EventBFactory eventb_factory) {
+			final CSPFactory csp_factory, final EventBFactory eventb_factory, final TLAFactory tla_factory) {
 		this.classical_b_factory = bfactory;
 		this.csp_factory = csp_factory;
 		this.eventb_factory = eventb_factory;
+		this.tla_factory = tla_factory;
 	}
 
 	public ClassicalBFactory getClassicalBFactory() {
@@ -34,6 +36,10 @@ public class FactoryProvider {
 
 	public CSPFactory getCspFactory() {
 		return csp_factory;
+	}
+	
+	public TLAFactory getTLAFactory(){
+		return tla_factory;
 	}
 
 }

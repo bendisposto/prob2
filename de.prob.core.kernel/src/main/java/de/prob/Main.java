@@ -14,11 +14,13 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Stage;
 
 import de.prob.exception.ProBAppender;
 import de.prob.web.views.Log;
-import de.prob.webconsole.ServletContextListener;
 import de.prob.webconsole.WebConsole;
 
 /**
@@ -33,10 +35,27 @@ import de.prob.webconsole.WebConsole;
 public class Main {
 
 	public static boolean restricted = true;
+	public static boolean standalone = false;
+	public static boolean local = false;
 	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
 	private final Options options;
 	private final Shell shell;
+
+	private static Injector INJECTOR = Guice.createInjector(Stage.PRODUCTION,
+			new MainModule());
+
+	public static Injector getInjector() {
+		return INJECTOR;
+	}
+			
+	/**
+	 * Allows to customize the Injector. Handle with care!
+	 * @param i
+	 */
+	public static void setInjector(Injector i) {
+		INJECTOR = i;
+	}
 
 	/**
 	 * String representing the ProB home directory. Calls method
@@ -89,8 +108,12 @@ public class Main {
 				port = Integer.parseInt(line.getOptionValue("port"));
 			}
 			if (line.hasOption("local")) {
+				Main.local = true;
 				Main.restricted = false;
 				iface = "127.0.0.1";
+			}
+			if (line.hasOption("standalone")) {
+				Main.standalone = true;
 			}
 
 			runServer(url, iface, port);
@@ -164,7 +187,7 @@ public class Main {
 			});
 			System.setProperty("PROB_LOG_CONFIG", LOG_CONFIG);
 
-			Main main = ServletContextListener.INJECTOR.getInstance(Main.class);
+			Main main = getInjector().getInstance(Main.class);
 
 			main.run(args);
 		} catch (Throwable e) {

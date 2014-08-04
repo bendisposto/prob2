@@ -36,7 +36,8 @@ class TestRunner {
 		doRun(classes as Class<?>[])
 	}
 
-	def Result doRun(final Class<?>... classes) {
+
+	def Result doRun(classes) {
 		JUnitCore jUnitCore = new JUnitCore();
 		jUnitCore.addListener(listener);
 		Result result = jUnitCore.run(classes);

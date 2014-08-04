@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="de.prob2.feature"
-      label="ProB2 for Rodin2"
+      label="ProB 2.0 Rodin Integration"
       version="1.0.0.qualifier">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB/">
@@ -228,27 +228,24 @@ Each party waives its rights to a jury trial in any resulting
 litigation.
    </license>
 
+   <includes
+         id="de.prob.core.feature"
+         version="0.0.0"/>
+
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eventb.core" version="2.5.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="de.prob.core.rodin" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="de.prob.ui" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.rodinp" version="1.6.1" match="compatible"/>
+      <import plugin="org.eventb.core" version="2.5.1" match="greaterOrEqual"/>
+      <import plugin="de.prob.ui" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eventb.core" version="2.5.1"/>
+      <import plugin="de.prob.core.rodin" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.7.101" match="greaterOrEqual"/>
       <import plugin="org.rodinp.core" version="1.6.1" match="compatible"/>
+      <import plugin="org.eclipse.osgi" version="3.6.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
          id="de.prob.core.rodin"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="de.prob.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

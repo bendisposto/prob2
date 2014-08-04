@@ -11,7 +11,7 @@ public class AnimationsView extends BrowserView {
 
 	@Override
 	protected String getUrl() {
-		return "CurrentAnimations";
+		return "sessions/CurrentAnimations";
 	}
 
 }

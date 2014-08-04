@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.AsyncContext;
+
 import com.google.inject.Singleton;
 
 import de.prob.web.AbstractSession;
@@ -61,5 +63,11 @@ public class BUnit extends AbstractSession {
 			final int ignoreCount) {
 		submit(WebUtils.wrap("cmd", "BUnit.setStats", "success", runCount
 				- failCount, "total", runCount, "ignored", ignoreCount));
+	}
+
+	@Override
+	public void reload(String client, int lastinfo, AsyncContext context) {
+		sendInitMessage(context);
+		reset();
 	}
 }

@@ -11,7 +11,7 @@ public class StateView extends BrowserView {
 
 	@Override
 	protected String getUrl() {
-		return "StateInspector";
+		return "sessions/StateInspector";
 	}
 
 }

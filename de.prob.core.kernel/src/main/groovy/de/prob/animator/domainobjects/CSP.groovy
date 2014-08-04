@@ -3,14 +3,18 @@
 package de.prob.animator.domainobjects
 
 import com.google.gson.Gson
+import com.google.inject.Inject;
 
 import de.prob.Main
 import de.prob.animator.command.EvaluateFormulaCommand
 import de.prob.animator.command.EvaluationCommand
+import de.prob.cli.OsInfoProvider
+import de.prob.cli.OsSpecificInfo;
 import de.prob.model.representation.CSPModel
 import de.prob.model.representation.FormulaUUID
 import de.prob.prolog.output.IPrologTermOutput
 import de.prob.statespace.StateId
+import de.prob.webconsole.ServletContextListener;
 
 /**
  * A Formula representation for CSP
@@ -18,12 +22,15 @@ import de.prob.statespace.StateId
  * @author joy
  *
  */
-class CSP implements IEvalElement {
+class CSP extends AbstractEvalElement {
 
 	private FormulaUUID uuid = new FormulaUUID();
 	private String code,home;
 	private String fileName;
-
+	private OsInfoProvider osInfoProvider;
+	private String target = ""
+	private String procname;
+	
 	/**
 	 * When a new formula is entered, the entire model must be reparsed. For this reason,
 	 * a {@link CSPModel} is one of the necessary parameters.
@@ -35,6 +42,11 @@ class CSP implements IEvalElement {
 		this.code = formula;
 		this.home = Main.getProBDirectory();
 		this.fileName = model.getModelFile().getAbsolutePath()
+		def osInfoProvider = ServletContextListener.INJECTOR.getInstance(OsInfoProvider.class);
+		def osInfo = osInfoProvider.get()
+		if(osInfo.dirName == "win32")
+			this.target = ".exe"
+		this.procname = home+"lib"+File.separator+"cspmf" + target
 	}
 
 	public String getCode() {
@@ -42,7 +54,7 @@ class CSP implements IEvalElement {
 	}
 
 	public void printProlog(IPrologTermOutput pout) {
-		def procname = home+"lib"+File.separator+"cspmf"
+		
 		/* Calling the cspmf command:
 		 * cspmf translate [OPTIONS] FILE
 		 * where OPTIONS could be:
@@ -53,22 +65,19 @@ class CSP implements IEvalElement {
 		 *  "cspmf translate --help" on the command line
 		 */
 		def process = [
-			procname,
+			this.procname,
 			"translate",
 			"--expressionToPrologTerm="+code,
 			fileName
 		].execute()
-		process.waitFor()
-		if (process.exitValue() != 0) {
-			throw new EvaluationException("Error parsing CSP "+process.err.text);
-		}
-		pout.printString(process.getText());
+		executeCmd(process, pout)
+		
 	}
 
 	// cspmf translate --declarationToPrologTerm="assert SKIP [T= STOP" "no-file"
 
 	public void printPrologAssertion(IPrologTermOutput pout) {
-		def procname = home+"lib"+File.separator+"cspmf"
+
 		/* Calling the cspmf command:
 		 * cspmf translate [OPTIONS] FILE
 		 * where OPTIONS could be:
@@ -79,11 +88,16 @@ class CSP implements IEvalElement {
 		 *  "cspmf translate --help" on the command line
 		 */
 		def process = [
-			procname,
+			this.procname,
 			"translate",
 			"--declarationToPrologTerm="+code,
 			fileName
 		].execute()
+		executeCmd(process, pout)
+		
+	}
+	
+	private void executeCmd(Process process, IPrologTermOutput pout) {
 		process.waitFor()
 		if (process.exitValue() != 0) {
 			throw new EvaluationException("Error parsing CSP "+process.err.text);
@@ -116,10 +130,9 @@ class CSP implements IEvalElement {
 		return uuid;
 	}
 
+	@Override
 	public EvaluationCommand getCommand(StateId stateId) {
 		/* TODO: we could do a more efficient implementation here */
-		ArrayList<IEvalElement> arrayList = new ArrayList<IEvalElement>();
-		arrayList.add(this);
-		return new EvaluateFormulaCommand(arrayList, stateId.getId());
+		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
 }

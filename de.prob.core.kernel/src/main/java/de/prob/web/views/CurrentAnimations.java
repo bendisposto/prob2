@@ -3,6 +3,8 @@ package de.prob.web.views;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -11,6 +13,7 @@ import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
@@ -59,8 +62,8 @@ public class CurrentAnimations extends AbstractSession implements
 			AbstractElement mainComponent = model.getMainComponent();
 			String modelName = mainComponent != null ? mainComponent.toString()
 					: model.getModelFile().getName();
-			String lastOp = !t.getCurrent().getSrc().getId().equals("root") ? t
-					.getCurrent().getOp().toString() : "";
+			OpInfo op = t.getCurrent().getOp();
+			String lastOp = op != null ? op.getRep(t.getModel()) : "";
 
 			String steps = t.getCurrent().getOpList().size() + "";
 			String isCurrent = t.equals(currentTrace) + "";
@@ -76,5 +79,12 @@ public class CurrentAnimations extends AbstractSession implements
 	@Override
 	public void animatorStatus(final boolean busy) {
 		// This does not need to be considered for this view
+	}
+
+	@Override
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
+		sendInitMessage(context);
+		traceChange(animations.getCurrentTrace(), false);
 	}
 }

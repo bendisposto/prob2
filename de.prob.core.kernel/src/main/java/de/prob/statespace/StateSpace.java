@@ -1,5 +1,6 @@
 package de.prob.statespace;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,7 @@ import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluateRegisteredFormulasCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.command.ExploreStateCommand;
+import de.prob.animator.command.FindValidStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
 import de.prob.animator.command.GetShortestTraceCommand;
@@ -33,7 +36,6 @@ import de.prob.animator.command.IStateSpaceModifier;
 import de.prob.animator.command.RegisterFormulaCommand;
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.ClassicalB;
-import de.prob.animator.domainobjects.EvaluationResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.exception.ProBError;
@@ -73,7 +75,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private final HashSet<StateId> initializedStates = new HashSet<StateId>();
 	private final HashSet<StateId> cannotBeEvaluated = new HashSet<StateId>();
 
-	private final HashMap<IEvalElement, Set<Object>> formulaRegistry = new HashMap<IEvalElement, Set<Object>>();
+	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<IEvalElement, WeakHashMap<Object, Object>>();
 	private final Set<IEvalElement> subscribedFormulas = new HashSet<IEvalElement>();
 
 	private final Set<IStatesCalculatedListener> stateSpaceListeners = new HashSet<IStatesCalculatedListener>();
@@ -120,19 +122,18 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			extractInformation(state, command);
 			explored.add(state);
 		} catch (ProBError e) {
-			if (state == getRoot()) {
+			if (state.equals(__root)) {
 				explored.add(state);
-				OpInfo op = OpInfo
-						.generateArtificialTransition("FAIL",
-								"NO INITIALIZATION FOUND", state.getId(),
-								state.getId());
+				OpInfo op = OpInfo.generateArtificialTransition("FAIL",
+						"NO INITIALIZATION OR VALID CONSTANTS FOUND",
+						state.getId(), state.getId());
 				ops.put(op.getId(), op);
 				addEdge(op, state, state);
 			} else {
 				throw e;
 			}
 		}
-		return toString();
+		return "";
 	}
 
 	private void extractInformation(final StateId state,
@@ -316,8 +317,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * 
 	 * @param stateId
 	 * @param code
-	 * @return list of {@link EvaluationResult} objects for the given stateId
-	 *         and code
+	 * @return list of {@link IEvalResult} objects for the given stateId and
+	 *         code
 	 */
 	public List<IEvalResult> eval(final StateId stateId,
 			final List<IEvalElement> code) {
@@ -399,7 +400,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * cached values
 	 * 
 	 * @param stateId
-	 * @return map from {@link IEvalElement} object to {@link EvaluationResult}
+	 * @return map from {@link IEvalElement} object to {@link IEvalResult}
 	 *         objects
 	 */
 	public Map<IEvalElement, IEvalResult> valuesAt(final StateId stateId) {
@@ -442,11 +443,13 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 						formulaOfInterest.getCode());
 			} else {
 				if (formulaRegistry.containsKey(formulaOfInterest)) {
-					formulaRegistry.get(formulaOfInterest).add(subscriber);
+					formulaRegistry.get(formulaOfInterest).put(subscriber,
+							new WeakReference<Object>(formulaOfInterest));
 					subscribedFormulas.add(formulaOfInterest);
 				} else {
-					HashSet<Object> subscribers = new HashSet<Object>();
-					subscribers.add(subscriber);
+					WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
+					subscribers.put(subscriber, new WeakReference<Object>(
+							subscriber));
 					formulaRegistry.put(formulaOfInterest, subscribers);
 					subscribeCmds.add(new RegisterFormulaCommand(
 							formulaOfInterest));
@@ -478,11 +481,12 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		}
 
 		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			formulaRegistry.get(formulaOfInterest).add(subscriber);
+			formulaRegistry.get(formulaOfInterest).put(subscriber,
+					new WeakReference<Object>(subscriber));
 		} else {
 			execute(new RegisterFormulaCommand(formulaOfInterest));
-			HashSet<Object> subscribers = new HashSet<Object>();
-			subscribers.add(subscriber);
+			WeakHashMap<Object, Object> subscribers = new WeakHashMap<Object, Object>();
+			subscribers.put(subscriber, new WeakReference<Object>(subscriber));
 			formulaRegistry.put(formulaOfInterest, subscribers);
 		}
 		if (!subscribedFormulas.contains(formulaOfInterest)) {
@@ -505,7 +509,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public void unsubscribe(final Object subscriber,
 			final IEvalElement formulaOfInterest) {
 		if (formulaRegistry.containsKey(formulaOfInterest)) {
-			final Set<Object> subscribers = formulaRegistry
+			final WeakHashMap<Object, Object> subscribers = formulaRegistry
 					.get(formulaOfInterest);
 			subscribers.remove(subscriber);
 			if (subscribers.isEmpty()) {
@@ -590,7 +594,9 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	@Override
 	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
 		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
-			listener.newTransitions(newOps);
+			if (!animator.isBusy()) {
+				listener.newTransitions(newOps);
+			}
 		}
 	}
 
@@ -659,7 +665,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public String printOps(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
 		final Collection<OpInfo> opIds = getOutEdges(state);
-		Set<String> withTO = operationsWithTimeout.get(state);
+		Set<String> withTO = operationsWithTimeout.get(state) == null ? new HashSet<String>()
+				: operationsWithTimeout.get(state);
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
@@ -748,6 +755,21 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	public Trace getTrace(final ITraceDescription description) {
 		return description.getTrace(this);
+	}
+
+	/**
+	 * Takes an {@link IEvalElement} containing a predicate and returns a
+	 * {@link Trace} containing only a magic operation that leads to valid state
+	 * where the preciate holds.
+	 * 
+	 * @param predicate
+	 *            predicate that should hold in the valid state
+	 * @return {@link Trace} containing a magic operation leading to the state.
+	 */
+	public Trace getTraceToState(final IEvalElement predicate) {
+		FindValidStateCommand cmd = new FindValidStateCommand(predicate);
+		execute(cmd);
+		return getTrace(cmd);
 	}
 
 	public void setAnimator(final IAnimator animator) {

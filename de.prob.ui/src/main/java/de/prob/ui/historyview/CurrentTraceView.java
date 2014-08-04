@@ -11,6 +11,6 @@ public class CurrentTraceView extends BrowserView {
 
 	@Override
 	protected String getUrl() {
-		return "CurrentTrace";
+		return "sessions/CurrentTrace";
 	}
 }

@@ -24,6 +24,9 @@ public interface ITraceDescription {
 	 * @param s
 	 *            {@link StateSpace} for which this trace should be generated
 	 * @return {@link Trace} through the {@link StateSpace}
+	 * @throws RuntimeException
+	 *             when the class is not able to create the specified
+	 *             {@link Trace}
 	 */
-	Trace getTrace(StateSpace s);
+	Trace getTrace(StateSpace s) throws RuntimeException;
 }

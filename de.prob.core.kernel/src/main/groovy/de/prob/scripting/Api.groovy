@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import com.google.inject.Inject
 
 import de.be4.classicalb.core.parser.exceptions.BException
+import de.prob.Main;
 import de.prob.animator.IAnimator
 import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.animator.command.GetVersionCommand
@@ -28,7 +29,6 @@ public class Api {
 
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;
-	private final ProBInstanceProvider instanceProvider;
 
 
 	/**
@@ -53,11 +53,9 @@ public class Api {
 	 */
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
-	final Downloader downloader,
-	final ProBInstanceProvider instanceProvider) {
+	final Downloader downloader) {
 		this.modelFactoryProvider = modelFactoryProvider;
 		this.downloader = downloader;
-		this.instanceProvider = instanceProvider;
 	}
 
 	/**
@@ -78,9 +76,21 @@ public class Api {
 		return eventb_load(file, new HashMap<String,String>());
 	}
 
-	public EventBModel eventb_load(String file, final Map<String, String> prefs) {
+	public ClassicalBModel tla_load(final String file) throws IOException,
+	BException {
+		return tla_load(file, new HashMap<String, String>());
+	}
+
+	public EventBModel eventb_load(final String file, final Map<String, String> prefs) {
+		def fileName = file;
+		if (fileName.endsWith(".buc")) {
+			fileName = fileName.replaceAll("\\.buc\$", ".bcc");
+		}
+		if (fileName.endsWith(".bum")) {
+			fileName = fileName.replaceAll("\\.bum\$", ".bcm");
+		}
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
-		return factory.load(file, prefs, loadVariablesByDefault);
+		return factory.load(fileName, prefs, loadVariablesByDefault);
 	}
 
 	/**
@@ -97,6 +107,13 @@ public class Api {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 		return bFactory.load(f, prefs, loadVariablesByDefault);
+	}
+
+	public ClassicalBModel tla_load(final String file,
+			final Map<String, String> prefs) throws IOException, BException {
+		File f = new File(file);
+		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
+		return tlaFactory.load(f, prefs, loadVariablesByDefault);
 	}
 
 	public CSPModel csp_load(final String file) throws Exception {
@@ -121,7 +138,7 @@ public class Api {
 			m = cspFactory.load(f, prefs);
 		} catch (ProBError error) {
 			throw new Exception(
-			"Could find CSP Parser. Perform 'upgrade cspm' to install cspm in your ProB lib directory");
+			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory");
 		}
 		return m;
 	}
@@ -160,7 +177,7 @@ public class Api {
 	public void save(final AbstractModel m, final String filename) {
 		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand();
 
-		m.getStatespace().execute(cmd);
+		m.getStateSpace().execute(cmd);
 		Map<String, String> prefs = cmd.getPreferences();
 
 		try {
@@ -221,23 +238,20 @@ public class Api {
 	//		}
 	//	}
 
-	public CliVersionNumber getVersion() {
-		boolean binaryPresent = false;
-		try {
-			instanceProvider.get();
-			binaryPresent = true;
-		} catch (Exception e) {
-			binaryPresent = false;
-		}
 
-		if (!binaryPresent) {
+
+
+
+	public CliVersionNumber getVersion() {
+		try {
+			IAnimator animator = Main.getInjector().getInstance(IAnimator.class);
+			GetVersionCommand versionCommand = new GetVersionCommand();
+			animator.execute(versionCommand);
+			return versionCommand.getVersion();
+		} catch (Exception e) {
 			return null;
 		}
-		GetVersionCommand versionCommand = new GetVersionCommand();
-		IAnimator animator = ServletContextListener.INJECTOR
-				.getInstance(IAnimator.class);
-		animator.execute(versionCommand);
-		return versionCommand.getVersion();
+
 	}
 
 	/**

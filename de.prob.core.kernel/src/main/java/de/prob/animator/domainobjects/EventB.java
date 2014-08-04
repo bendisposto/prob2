@@ -35,7 +35,7 @@ import de.prob.unicode.UnicodeTranslator;
  * @author joy
  * 
  */
-public class EventB extends AbstractEvalElement {
+public class EventB extends AbstractEvalElement implements IBEvalElement {
 
 	Logger logger = LoggerFactory.getLogger(EventB.class);
 	private final FormulaUUID uuid = new FormulaUUID();
@@ -191,5 +191,25 @@ public class EventB extends AbstractEvalElement {
 	@Override
 	public EvaluationCommand getCommand(final StateId stateId) {
 		return new EvaluateFormulaCommand(this, stateId.getId());
+	}
+
+	public String toUnicode() {
+		return UnicodeTranslator.toUnicode(code);
+	}
+
+	public IParseResult getRodinParsedResult() {
+		if (kind.equals(PREDICATE.toString())) {
+			FormulaFactory.getInstance(types).parsePredicate(toUnicode(),
+					LanguageVersion.LATEST, null);
+		}
+		if (kind.equals(EXPRESSION.toString())) {
+			FormulaFactory.getInstance(types).parseExpression(toUnicode(),
+					LanguageVersion.LATEST, null);
+		}
+		if (kind.equals(ASSIGNMENT.toString())) {
+			FormulaFactory.getInstance(types).parseAssignment(toUnicode(),
+					LanguageVersion.LATEST, null);
+		}
+		return null;
 	}
 }

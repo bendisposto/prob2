@@ -23,7 +23,7 @@ import de.prob.model.eventb.Context;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBGuard;
 import de.prob.model.eventb.EventBMachine;
-import de.prob.model.eventb.proof.UncalculatedPO;
+import de.prob.model.eventb.ProofObligation;
 import de.prob.model.representation.ModelElementList;
 
 public class ProofExtractor {
@@ -33,7 +33,7 @@ public class ProofExtractor {
 	Map<String, String> descriptions;
 	Set<String> discharged;
 
-	ModelElementList<UncalculatedPO> proofs = new ModelElementList<UncalculatedPO>();
+	ModelElementList<ProofObligation> proofs = new ModelElementList<ProofObligation>();
 
 	public ProofExtractor(final Context c, final String baseFileName)
 			throws SAXException {
@@ -101,15 +101,15 @@ public class ProofExtractor {
 			List<Tuple2<String, String>> elements = new ArrayList<Tuple2<String, String>>();
 			if ("THM".equals(type)) {
 				elements.add(new Tuple2<String, String>("axiom", split[0]));
-				proofs.add(new UncalculatedPO(source, name, desc, elements,
-						isDischarged));
+				proofs.add(new ProofObligation(source, name, isDischarged,
+						desc, elements));
 			} else if ("WD".equals(type)) {
 				elements.add(new Tuple2<String, String>("axiom", split[0]));
-				proofs.add(new UncalculatedPO(source, name, desc, elements,
-						isDischarged));
+				proofs.add(new ProofObligation(source, name, isDischarged,
+						desc, elements));
 			} else {
-				proofs.add(new UncalculatedPO(source, name, desc, elements,
-						isDischarged));
+				proofs.add(new ProofObligation(source, name, isDischarged,
+						desc, elements));
 			}
 		}
 	}
@@ -140,12 +140,12 @@ public class ProofExtractor {
 				}
 				elements.add(new Tuple2<String, String>("event", concreteEvent
 						.getName()));
-				proofs.add(new UncalculatedPO(source, name, desc, elements,
-						isDischarged));
+				proofs.add(new ProofObligation(source, name, isDischarged,
+						desc, elements));
 			} else if ("INV".equals(type)) {
 				elements.add(new Tuple2<String, String>("event", "invariant"));
-				proofs.add(new UncalculatedPO(source, name, desc, elements,
-						isDischarged));
+				proofs.add(new ProofObligation(source, name, isDischarged,
+						desc, elements));
 			} else if ("THM".equals(type)) {
 				if (split.length == 2) {
 					elements.add(new Tuple2<String, String>("invariant",
@@ -154,8 +154,8 @@ public class ProofExtractor {
 					elements.add(new Tuple2<String, String>("guard", split[1]));
 					elements.add(new Tuple2<String, String>("event", split[0]));
 				}
-				proofs.add(new UncalculatedPO(source, name, desc, elements,
-						isDischarged));
+				proofs.add(new ProofObligation(source, name, isDischarged,
+						desc, elements));
 			} else if ("WD".equals(type)) {
 				if (split.length == 2) {
 					elements.add(new Tuple2<String, String>("invariant",
@@ -173,18 +173,18 @@ public class ProofExtractor {
 						elements.add(new Tuple2<String, String>("guard",
 								split[1]));
 					}
-					proofs.add(new UncalculatedPO(source, name, desc, elements,
-							isDischarged));
+					proofs.add(new ProofObligation(source, name, isDischarged,
+							desc, elements));
 				}
 			} else {
-				proofs.add(new UncalculatedPO(source, name, desc, elements,
-						isDischarged));
+				proofs.add(new ProofObligation(source, name, isDischarged,
+						desc, elements));
 			}
 		}
 
 	}
 
-	public ModelElementList<UncalculatedPO> getProofs() {
+	public ModelElementList<ProofObligation> getProofs() {
 		return proofs;
 	}
 }

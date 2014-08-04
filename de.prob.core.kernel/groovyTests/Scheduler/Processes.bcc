@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eventb.core.scContextFile org.eventb.core.accurate="true" org.eventb.core.configuration="org.eventb.core.fwd">
+<org.eventb.core.scCarrierSet name="ProcID" org.eventb.core.source="/Scheduler/Processes.buc|org.eventb.core.contextFile#Processes|org.eventb.core.carrierSet#internal_set1" org.eventb.core.type="ℙ(ProcID)"/>
+</org.eventb.core.scContextFile>

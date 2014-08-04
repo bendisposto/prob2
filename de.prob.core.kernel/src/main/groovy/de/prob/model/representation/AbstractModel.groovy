@@ -9,14 +9,27 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
 public abstract class AbstractModel extends AbstractElement {
 
-	protected StateSpace statespace;
+	protected StateSpace stateSpace;
 	protected boolean dirty = false;
 	protected File modelFile;
+	protected String modelDirPath;
 	protected DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
 
+	/**
+	 * @return StateSpace object associated with this AbstractModel instance
+	 * @deprecated use {@link #getStateSpace()} instead
+	 */
+	@Deprecated
 	public StateSpace getStatespace() {
-		return statespace;
+		return stateSpace;
+	}
+
+	/**
+	 * @return StateSpace object associated with this AbstractModel instance
+	 */
+	public StateSpace getStateSpace() {
+		return stateSpace;
 	}
 
 	public AbstractElement getComponent(final String name) {
@@ -66,10 +79,10 @@ public abstract class AbstractModel extends AbstractElement {
 
 	public Object asType(final Class<?> className) {
 		if (className.getSimpleName().equals("StateSpace")) {
-			return statespace;
+			return stateSpace;
 		}
 		if (className.getSimpleName().equals("Trace")) {
-			return new Trace(statespace);
+			return new Trace(stateSpace);
 		}
 		throw new ClassCastException("No element of type " + className
 		+ " found.");
@@ -83,8 +96,19 @@ public abstract class AbstractModel extends AbstractElement {
 
 	public abstract FormalismType getFormalismType();
 
+	public abstract void subscribeFormulasOfInterest();
+
+	protected void extractModelDir(File modelFile, String dirName) {
+		modelDirPath = modelFile.absolutePath.substring(0, modelFile.absolutePath.lastIndexOf(File.separator)+1) + dirName + File.separator
+		new File(modelDirPath).mkdir()
+	}
+
 	public File getModelFile() {
 		return modelFile;
+	}
+
+	public String getModelDirPath() {
+		return modelDirPath;
 	}
 
 	def getProperty(final String name) {
@@ -101,5 +125,12 @@ public abstract class AbstractModel extends AbstractElement {
 
 	def isDirty() {
 		return dirty
+	}
+
+	def AbstractElement get(List<String> path) {
+		if(path.isEmpty()) {
+			return null;
+		}
+		return Eval.x(this,"x.${path.join(".")}");
 	}
 }

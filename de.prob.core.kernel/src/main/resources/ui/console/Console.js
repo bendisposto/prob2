@@ -46,6 +46,12 @@ Console = (function() {
         });
     });
 
+    function setPromptHistory(history) {
+        for (var i = 0; i < history.length; i++) {
+            controller.addToHistory(history[i])
+        };
+    }
+
     function groovyResult(output, result) {
         controller.commandResult([ {
             msg : output,
@@ -77,6 +83,7 @@ Console = (function() {
     }
     extern.client = ""
     extern.init = session.init
+    extern.setPromptHistory = setPromptHistory
 
     return extern;
 }())

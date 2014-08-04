@@ -23,8 +23,6 @@ import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
-import de.prob.model.representation.Machine;
-import de.prob.model.representation.Variable;
 
 /**
  * Creates new {@link ClassicalBModel} objects.
@@ -32,13 +30,15 @@ import de.prob.model.representation.Variable;
  * @author joy
  * 
  */
-public class ClassicalBFactory {
+public class ClassicalBFactory extends ModelFactory {
 
 	Logger logger = LoggerFactory.getLogger(ClassicalBFactory.class);
 	private final Provider<ClassicalBModel> modelCreator;
 
 	@Inject
-	public ClassicalBFactory(final Provider<ClassicalBModel> modelCreator) {
+	public ClassicalBFactory(final Provider<ClassicalBModel> modelCreator,
+			final FileHandler fileHandler) {
+		super(fileHandler);
 		this.modelCreator = modelCreator;
 	}
 
@@ -62,9 +62,10 @@ public class ClassicalBFactory {
 		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
 
 		classicalBModel.initialize(ast, rml, f);
-		startAnimation(classicalBModel, rml, prefs, f);
+		startAnimation(classicalBModel, rml,
+				getPreferences(classicalBModel, prefs), f);
 		if (loadVariables) {
-			subscribeVariables(classicalBModel);
+			classicalBModel.subscribeFormulasOfInterest();
 		}
 		return classicalBModel;
 	}
@@ -95,19 +96,8 @@ public class ClassicalBFactory {
 		final AbstractCommand loadcmd = new LoadBProjectCommand(rml, f);
 		cmds.add(loadcmd);
 		cmds.add(new StartAnimationCommand());
-		classicalBModel.getStatespace().execute(new ComposedCommand(cmds));
-		classicalBModel.getStatespace().setLoadcmd(loadcmd);
-	}
-
-	private void subscribeVariables(final ClassicalBModel m) {
-		List<Machine> machines = m.getChildrenOfType(Machine.class);
-		for (Machine machine : machines) {
-			List<Variable> childrenOfType = machine
-					.getChildrenOfType(Variable.class);
-			for (Variable variable : childrenOfType) {
-				m.getStatespace().subscribe(this, variable.getExpression());
-			}
-		}
+		classicalBModel.getStateSpace().execute(new ComposedCommand(cmds));
+		classicalBModel.getStateSpace().setLoadcmd(loadcmd);
 	}
 
 	/**

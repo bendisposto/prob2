@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Singleton;
 
 import de.prob.model.representation.AbstractElement;
@@ -22,6 +25,8 @@ import de.prob.model.representation.AbstractElement;
  */
 @Singleton
 public class AnimationSelector {
+
+	Logger logger = LoggerFactory.getLogger(AnimationSelector.class);
 
 	List<WeakReference<IAnimationChangeListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<IAnimationChangeListener>>();
 	List<WeakReference<IModelChangedListener>> modelListeners = new CopyOnWriteArrayList<WeakReference<IModelChangedListener>>();
@@ -101,11 +106,25 @@ public class AnimationSelector {
 	 */
 	private void notifyAnimationChange(final Trace trace,
 			final boolean currentAnimationChanged) {
-		for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
-			IAnimationChangeListener animationChangeListener = listener.get();
-			if (animationChangeListener != null) {
-				animationChangeListener.traceChange(trace,
-						currentAnimationChanged);
+
+		// Trace may be null, or not busy
+		if (trace == null || (trace != null && !trace.getStateSpace().isBusy())) {
+
+			for (final WeakReference<IAnimationChangeListener> listener : traceListeners) {
+				IAnimationChangeListener animationChangeListener = listener
+						.get();
+				if (animationChangeListener != null) {
+					try {
+						animationChangeListener.traceChange(trace,
+								currentAnimationChanged);
+					} catch (Exception e) {
+						logger.error("An exception of type "
+								+ e.getClass()
+								+ " was thrown while executing IAnimationChangeListener of class "
+								+ animationChangeListener.getClass()
+								+ " with message " + e.getMessage());
+					}
+				}
 			}
 		}
 	}

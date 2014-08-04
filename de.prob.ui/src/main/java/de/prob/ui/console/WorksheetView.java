@@ -22,7 +22,7 @@ public class WorksheetView extends BrowserView {
 
 	@Override
 	protected String getUrl() {
-		return "Worksheet";
+		return "sessions/Worksheet";
 	}
 
 }

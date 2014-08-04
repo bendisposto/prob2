@@ -29,7 +29,7 @@ class StateSpaceTest extends Specification {
 	def setup() {
 
 		def mock = mock(IAnimator.class)
-		doThrow(new ProBError("XXX")).when(mock).execute(any(Object.class));
+//		doThrow(new ProBError("XXX")).when(mock).execute(any(Object.class));
 
 		s = new StateSpace(new MyProvider<IAnimator>(mock), new DirectedMultigraphProvider())
 

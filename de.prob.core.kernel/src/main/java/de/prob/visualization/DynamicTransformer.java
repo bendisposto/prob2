@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import de.prob.Main;
 import de.prob.animator.command.FilterStatesForPredicateCommand;
 import de.prob.animator.domainobjects.EvalElementFactory;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -17,7 +18,6 @@ import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
-import de.prob.webconsole.ServletContextListener;
 
 public class DynamicTransformer extends Transformer implements
 		IStatesCalculatedListener {
@@ -92,7 +92,7 @@ public class DynamicTransformer extends Transformer implements
 		JsonParser parser = new JsonParser();
 		JsonObject object = parser.parse(json).getAsJsonObject();
 
-		EvalElementFactory deserializer = ServletContextListener.INJECTOR
+		EvalElementFactory deserializer = Main.getInjector()
 				.getInstance(EvalElementFactory.class);
 		DynamicTransformer transformer = new DynamicTransformer(
 				deserializer.deserialize(object.get("predicate").getAsString()),

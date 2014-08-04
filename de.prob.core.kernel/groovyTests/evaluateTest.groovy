@@ -12,3 +12,5 @@ assert ['{PID2}']== s.eval(new StateId("2",s),["waiting" as EventB]).collect { i
 x = s.eval(new StateId("2",s),["x : waiting & x = PID2" as EventB]).get(0)
 assert x.value == "TRUE"
 assert x.getSolutions().containsKey("x")
+
+s.animator.cli.shutdown();

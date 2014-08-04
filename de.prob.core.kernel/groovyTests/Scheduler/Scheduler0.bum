@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eventb.core.machineFile version="5" org.eventb.core.configuration="org.eventb.core.fwd">
+<org.eventb.core.event name="internal_evt11" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+<org.eventb.core.action name="internal_act1" org.eventb.core.assignment="active ≔ ∅" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="internal_act2" org.eventb.core.assignment="ready ≔ ∅" org.eventb.core.label="act2"/>
+<org.eventb.core.action name="internal_act3" org.eventb.core.assignment="waiting ≔ ∅" org.eventb.core.label="act3"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="internal_evt12" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="new">
+<org.eventb.core.action name="internal_act1" org.eventb.core.assignment="waiting ≔ waiting ∪ {p}" org.eventb.core.label="act1"/>
+<org.eventb.core.guard name="internal_grd1" org.eventb.core.label="grd1" org.eventb.core.predicate="p ∈ ProcID"/>
+<org.eventb.core.guard name="internal_grd2" org.eventb.core.label="grd2" org.eventb.core.predicate="p∉ (waiting ∪ ready ∪ active)"/>
+<org.eventb.core.parameter name="internal_prm1" org.eventb.core.identifier="p"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="internal_evt13" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="del">
+<org.eventb.core.action name="internal_act1" org.eventb.core.assignment="waiting ≔ waiting ∖ {p}" org.eventb.core.label="act1"/>
+<org.eventb.core.guard name="internal_grd1" org.eventb.core.label="grd1" org.eventb.core.predicate="p ∈ waiting"/>
+<org.eventb.core.parameter name="internal_prm1" org.eventb.core.identifier="p"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="internal_evt14" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="ready_active">
+<org.eventb.core.action name="internal_act1" org.eventb.core.assignment="active ≔ {r}" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="internal_act2" org.eventb.core.assignment="waiting ≔ waiting ∖ {r}" org.eventb.core.label="act2"/>
+<org.eventb.core.guard name="internal_grd1" org.eventb.core.label="grd1" org.eventb.core.predicate="r ∈ waiting"/>
+<org.eventb.core.guard name="internal_grd2" org.eventb.core.label="grd2" org.eventb.core.predicate="active=∅"/>
+<org.eventb.core.parameter name="internal_prm1" org.eventb.core.identifier="r"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="internal_evt15" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="ready_notactive">
+<org.eventb.core.action name="internal_act1" org.eventb.core.assignment="ready ≔ ready ∪ {r}" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="internal_act2" org.eventb.core.assignment="waiting ≔ waiting ∖ {r}" org.eventb.core.label="act2"/>
+<org.eventb.core.guard name="internal_grd1" org.eventb.core.label="grd1" org.eventb.core.predicate="r ∈ waiting"/>
+<org.eventb.core.guard name="internal_grd2" org.eventb.core.label="grd2" org.eventb.core.predicate="active ≠ ∅"/>
+<org.eventb.core.parameter name="internal_prm1" org.eventb.core.identifier="r"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="internal_evt16" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="swap_ready_empty">
+<org.eventb.core.action name="internal_act1" org.eventb.core.assignment="active ≔ ∅" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="internal_act2" org.eventb.core.assignment="waiting ≔ waiting ∪ active" org.eventb.core.label="act2"/>
+<org.eventb.core.guard name="internal_grd1" org.eventb.core.label="grd1" org.eventb.core.predicate="active ≠ ∅"/>
+<org.eventb.core.guard name="internal_grd2" org.eventb.core.label="grd2" org.eventb.core.predicate="ready = ∅"/>
+</org.eventb.core.event>
+<org.eventb.core.event name="internal_evt17" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="swap_ready">
+<org.eventb.core.action name="internal_act1" org.eventb.core.assignment="active ≔ {p}" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="internal_act2" org.eventb.core.assignment="ready ≔ ready ∖ {p}" org.eventb.core.label="act2"/>
+<org.eventb.core.action name="internal_act3" org.eventb.core.assignment="waiting ≔ waiting ∪ active" org.eventb.core.label="act3"/>
+<org.eventb.core.guard name="internal_grd1" org.eventb.core.label="grd1" org.eventb.core.predicate="p ∈ ready"/>
+<org.eventb.core.guard name="internal_grd2" org.eventb.core.label="grd2" org.eventb.core.predicate="ready ≠ ∅"/>
+<org.eventb.core.guard name="internal_grd3" org.eventb.core.label="grd3" org.eventb.core.predicate="active ≠ ∅"/>
+<org.eventb.core.parameter name="internal_prm1" org.eventb.core.identifier="p"/>
+</org.eventb.core.event>
+<org.eventb.core.invariant name="internal_inv1I" org.eventb.core.label="inv1" org.eventb.core.predicate="active ∈ ℙ(ProcID)"/>
+<org.eventb.core.invariant name="internal_inv2I" org.eventb.core.label="inv2" org.eventb.core.predicate="ready ∈ ℙ(ProcID)"/>
+<org.eventb.core.invariant name="internal_inv3I" org.eventb.core.label="inv3" org.eventb.core.predicate="waiting ∈ ℙ(ProcID)"/>
+<org.eventb.core.invariant name="internal_inv4I" org.eventb.core.label="inv4" org.eventb.core.predicate="card(active)≤1"/>
+<org.eventb.core.invariant name="internal_inv5I" org.eventb.core.label="inv5" org.eventb.core.predicate="active ∩ ready = ∅"/>
+<org.eventb.core.invariant name="internal_inv6I" org.eventb.core.label="inv6" org.eventb.core.predicate="ready ∩ waiting = ∅"/>
+<org.eventb.core.invariant name="internal_inv7I" org.eventb.core.label="inv7" org.eventb.core.predicate="active ∩ waiting = ∅"/>
+<org.eventb.core.invariant name="internal_inv8I" org.eventb.core.label="inv8" org.eventb.core.predicate="active=∅ ⇒ ready=∅"/>
+<org.eventb.core.seesContext name="internal_1" org.eventb.core.target="Processes"/>
+<org.eventb.core.variable name="internal_var1" org.eventb.core.identifier="active"/>
+<org.eventb.core.variable name="internal_var2" org.eventb.core.identifier="ready"/>
+<org.eventb.core.variable name="internal_var3" org.eventb.core.identifier="waiting"/>
+</org.eventb.core.machineFile>

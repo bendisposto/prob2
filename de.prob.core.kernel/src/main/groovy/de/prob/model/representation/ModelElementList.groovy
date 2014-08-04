@@ -1,6 +1,12 @@
 package de.prob.model.representation;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import de.prob.animator.domainobjects.IEvalElement
+
+
 
 public class ModelElementList<E> implements List<E> {
 
@@ -24,6 +30,9 @@ public class ModelElementList<E> implements List<E> {
 	def calcAndAdd(E e) {
 		if(e.metaClass.respondsTo(e, "getName")) {
 			keys[e.getName()]=e
+		}
+		if(e.metaClass.respondsTo(e, "getFormula")) {
+			keys["_" + e.getFormula().getFormulaId().uuid]=e
 		}
 	}
 

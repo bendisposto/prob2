@@ -31,8 +31,8 @@ class ClassicalBModelTest extends Specification {
 				bparser.getPragmas());
 
 
-		c.initialize(ast, rml, null)
-		
+		c.initialize(ast, rml, model)
+
 		graph = c.getGraph()
 	}
 

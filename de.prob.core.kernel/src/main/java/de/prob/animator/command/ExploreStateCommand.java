@@ -81,6 +81,8 @@ public final class ExploreStateCommand extends AbstractCommand implements
 
 		if (!initialised && enabledOperations.isEmpty() && !timeoutOccured) {
 			logger.error("ProB could not find valid constants. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms");
+			// TODO: Should an Error be thrown so that the StateSpace knows
+			// about it?
 		}
 	}
 

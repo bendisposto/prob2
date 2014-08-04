@@ -29,8 +29,7 @@ public class Log extends AbstractSession {
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		super.reload(client, lastinfo, context);
-
+		sendInitMessage(context);
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Log.addEntries",
 				"entries", WebUtils.toJson(elements));
 		submit(wrap);

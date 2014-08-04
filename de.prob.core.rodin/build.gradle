@@ -8,8 +8,8 @@ sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
 def parser_version = '2.4.18-SNAPSHOT'
-    project.version = '2.0.0-milestone-13-SNAPSHOT'
-    def core_version = '2.0.0-milestone-13-SNAPSHOT'
+    project.version = '2.0.0-milestone-14'
+    def core_version = '2.0.0-milestone-14'
 
 repositories {
     maven {
@@ -38,7 +38,7 @@ sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as gr
 
 dependencies {
 
-	runtime group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
+	//runtime group: "de.prob", name: "de.prob.core.kernel", version: core_version , changing: true
 	
 }
 

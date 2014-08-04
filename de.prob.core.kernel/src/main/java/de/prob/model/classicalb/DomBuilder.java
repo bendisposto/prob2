@@ -17,13 +17,16 @@ import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.AInvariantMachineClause;
 import de.be4.classicalb.core.parser.node.AMachineHeader;
 import de.be4.classicalb.core.parser.node.AOperation;
+import de.be4.classicalb.core.parser.node.APreconditionSubstitution;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.APropertiesMachineClause;
+import de.be4.classicalb.core.parser.node.ASelectSubstitution;
 import de.be4.classicalb.core.parser.node.AVariablesMachineClause;
 import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
+import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.model.representation.BSet;
@@ -136,9 +139,32 @@ public class DomBuilder extends DepthFirstAdapter {
 	@Override
 	public void inAOperation(final AOperation node) {
 		final String name = extractIdentifierName(node.getOpName());
-		final List<String> params = extractIdentifiers(node.getParameters());
+		LinkedList<PExpression> paramIds = node.getParameters();
+		final List<String> params = extractIdentifiers(paramIds);
 		final List<String> output = extractIdentifiers(node.getReturnValues());
-		operations.add(new Operation(name, params, output));
+		Operation operation = new Operation(name, params, output);
+		PSubstitution body = node.getOperationBody();
+		if (body instanceof ASelectSubstitution) {
+			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
+			PPredicate condition = ((ASelectSubstitution) body).getCondition();
+			List<PPredicate> predicates = getPredicates(condition);
+			for (PPredicate pPredicate : predicates) {
+				guards.add(new ClassicalBGuard(createPredicateAST(pPredicate)));
+			}
+			operation.addGuards(guards);
+		}
+		if (body instanceof APreconditionSubstitution) {
+			ModelElementList<ClassicalBGuard> guards = new ModelElementList<ClassicalBGuard>();
+			PPredicate condition = ((APreconditionSubstitution) body)
+					.getPredicate();
+			List<PPredicate> predicates = getPredicates(condition);
+			for (PPredicate pPredicate : predicates) {
+				guards.add(new ClassicalBGuard(createPredicateAST(pPredicate)));
+			}
+			operation.addGuards(guards);
+		}
+
+		operations.add(operation);
 	}
 
 	// -------------------

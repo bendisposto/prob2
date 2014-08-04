@@ -1,11 +1,10 @@
 package de.prob.web.views;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.script.ScriptEngine;
+import javax.servlet.AsyncContext;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -18,6 +17,7 @@ import de.prob.scripting.ScriptEngineProvider;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
+/* Access to this view is restricted to localhost */
 @Dangerous
 public class GroovyConsoleSession extends AbstractSession {
 
@@ -27,12 +27,12 @@ public class GroovyConsoleSession extends AbstractSession {
 	private final ScriptEngine engine;
 
 	@Inject
-	public GroovyConsoleSession(UUID id, ScriptEngineProvider sep) {
+	public GroovyConsoleSession(final UUID id, final ScriptEngineProvider sep) {
 		super(id);
 		engine = sep.get();
 	}
 
-	public Object exec(Map<String, String[]> params) {
+	public Object exec(final Map<String, String[]> params) {
 
 		logger.trace("Exec");
 		String line = get(params, "line");
@@ -47,18 +47,32 @@ public class GroovyConsoleSession extends AbstractSession {
 					StringEscapeUtils.escapeHtml(resultString), "output",
 					console.toString());
 		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			// def trace = e.getStackTrace().collect {it.toString() };
 			return WebUtils.wrap("cmd", "Console.groovyError", "message",
-					e.getMessage(), "trace", sw.toString());
+					e.getMessage(), "trace", extractTrace(e.getStackTrace()));
 		}
 
 	}
 
+	private String extractTrace(final StackTraceElement[] stackTrace) {
+		if (stackTrace.length == 0) {
+			return "";
+		}
+		if (stackTrace.length == 1) {
+			return "at " + stackTrace[0].toString();
+		}
+		return "at " + stackTrace[0].toString()
+				+ System.getProperty("line.separator") + "...";
+	}
+
 	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
+	public String html(final String clientid,
+			final Map<String, String[]> parameterMap) {
 		return simpleRender(clientid, "ui/console/index.html");
+	}
+
+	@Override
+	public void reload(String client, int lastinfo, AsyncContext context) {
+		sendInitMessage(context);
 	}
 
 }

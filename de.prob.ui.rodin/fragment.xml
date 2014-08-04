@@ -100,6 +100,17 @@
                id="probtoolbar">
          </toolbar>
       </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               id="bms"
+               label="BMotion Studio">
+            <separator
+                  name="bms">
+            </separator>
+         </menu>
+      </menuContribution>
    </extension>
      <extension
            point="org.eclipse.ui.perspectives">

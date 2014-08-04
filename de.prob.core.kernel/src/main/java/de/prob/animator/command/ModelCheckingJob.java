@@ -18,7 +18,6 @@ public class ModelCheckingJob extends AbstractCommand {
 	private ModelCheckingOptions options;
 	private ModelCheckingStepCommand cmd;
 	private boolean completed = false;
-	private final long last;
 	private IModelCheckingResult res;
 	private StateSpaceStats stats;
 	private final ModelCheckingUI ui;
@@ -32,8 +31,7 @@ public class ModelCheckingJob extends AbstractCommand {
 		this.options = options;
 		this.jobId = jobId;
 		this.ui = ui;
-		last = s.getLastCalculatedStateId();
-		cmd = new ModelCheckingStepCommand(TIME, options, last);
+		cmd = new ModelCheckingStepCommand(TIME, options);
 	}
 
 	@Override
@@ -73,7 +71,7 @@ public class ModelCheckingJob extends AbstractCommand {
 		}
 
 		options = options.recheckExisting(false);
-		cmd = new ModelCheckingStepCommand(TIME, options, last);
+		cmd = new ModelCheckingStepCommand(TIME, options);
 	}
 
 	public IModelCheckingResult getResult() {

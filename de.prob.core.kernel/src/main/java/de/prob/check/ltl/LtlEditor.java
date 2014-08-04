@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.AsyncContext;
+
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -53,28 +55,19 @@ public class LtlEditor extends AbstractSession {
 	private Map<String, Expression> expressionMap = new HashMap<String, Expression>();
 	protected final PatternManager patternManager;
 
-	private final String[] KEYWORDS = {
-			"def", "var", "seq", "num",
-			"count", "up", "down", "to", "end",
-			"without",
-	};
+	private final String[] KEYWORDS = { "def", "var", "seq", "num", "count",
+			"up", "down", "to", "end", "without", };
 
-	private final String[] SCOPES = {
-			"before", "after", "between", "after_until"
-	};
+	private final String[] SCOPES = { "before", "after", "between",
+			"after_until" };
 
-	private final String[] BOOLEAN = {
-			"not", "and", "or", "=>"
-	};
+	private final String[] BOOLEAN = { "not", "and", "or", "=>" };
 
-	private final String[] LTL_ATOMS = {
-			"true", "false", "sink", "deadlock", "current"
-	};
+	private final String[] LTL_ATOMS = { "true", "false", "sink", "deadlock",
+			"current" };
 
-	private final String[] LTL_OPERATORS = {
-			"G", "F", "X", "H", "O", "Y",
-			"U", "R", "W", "S", "T"
-	};
+	private final String[] LTL_OPERATORS = { "G", "F", "X", "H", "O", "Y", "U",
+			"R", "W", "S", "T" };
 
 	public LtlEditor() {
 		this(UUID.randomUUID());
@@ -106,19 +99,23 @@ public class LtlEditor extends AbstractSession {
 
 		ParseListener listener = new ParseListener();
 		LtlParser parser = parse(input, listener);
-		List<Marker> markers = getPatternMarkers(parser.getSymbolTableManager().getPatternDefinitions());
+		List<Marker> markers = getPatternMarkers(parser.getSymbolTableManager()
+				.getPatternDefinitions());
 
 		Map<String, String> result = null;
 		if (listener.getErrorMarkers().size() == 0) {
-			logger.trace("Parse ok (errors: 0, warnings: {}). Submitting parse results", listener.getWarningMarkers().size());
-			result = WebUtils.wrap(
-					"cmd", callback + ".parseOk",
-					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
-					"markers", WebUtils.toJson(markers));
+			logger.trace(
+					"Parse ok (errors: 0, warnings: {}). Submitting parse results",
+					listener.getWarningMarkers().size());
+			result = WebUtils.wrap("cmd", callback + ".parseOk", "warnings",
+					WebUtils.toJson(listener.getWarningMarkers()), "markers",
+					WebUtils.toJson(markers));
 		} else {
-			logger.trace("Parse failed (errors: {}, warnings: {}). Submitting parse results", listener.getErrorMarkers().size(), listener.getWarningMarkers().size());
-			result = WebUtils.wrap(
-					"cmd", callback + ".parseFailed",
+			logger.trace(
+					"Parse failed (errors: {}, warnings: {}). Submitting parse results",
+					listener.getErrorMarkers().size(), listener
+							.getWarningMarkers().size());
+			result = WebUtils.wrap("cmd", callback + ".parseFailed",
 					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
 					"errors", WebUtils.toJson(listener.getErrorMarkers()),
 					"markers", WebUtils.toJson(markers));
@@ -140,15 +137,18 @@ public class LtlEditor extends AbstractSession {
 
 		Map<String, String> result = null;
 		if (listener.getErrorMarkers().size() == 0) {
-			logger.trace("Parse ok (errors: 0, warnings: {}). Submitting parse results", listener.getWarningMarkers().size());
-			result = WebUtils.wrap(
-					"cmd", callback + ".parseOk",
-					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
-					"markers", "");
+			logger.trace(
+					"Parse ok (errors: 0, warnings: {}). Submitting parse results",
+					listener.getWarningMarkers().size());
+			result = WebUtils.wrap("cmd", callback + ".parseOk", "warnings",
+					WebUtils.toJson(listener.getWarningMarkers()), "markers",
+					"");
 		} else {
-			logger.trace("Parse failed (errors: {}, warnings: {}). Submitting parse results", listener.getErrorMarkers().size(), listener.getWarningMarkers().size());
-			result = WebUtils.wrap(
-					"cmd", callback + ".parseFailed",
+			logger.trace(
+					"Parse failed (errors: {}, warnings: {}). Submitting parse results",
+					listener.getErrorMarkers().size(), listener
+							.getWarningMarkers().size());
+			result = WebUtils.wrap("cmd", callback + ".parseFailed",
 					"warnings", WebUtils.toJson(listener.getWarningMarkers()),
 					"errors", WebUtils.toJson(listener.getErrorMarkers()),
 					"markers", "");
@@ -166,11 +166,9 @@ public class LtlEditor extends AbstractSession {
 
 		Map<String, String> result = null;
 		if (ex == null) {
-			result = WebUtils.wrap(
-					"cmd", callback + ".noExpressionFound");
-		}else {
-			result = WebUtils.wrap(
-					"cmd", callback + ".expressionFound",
+			result = WebUtils.wrap("cmd", callback + ".noExpressionFound");
+		} else {
+			result = WebUtils.wrap("cmd", callback + ".expressionFound",
 					"expression", WebUtils.toJson(ex));
 		}
 		return result;
@@ -179,22 +177,23 @@ public class LtlEditor extends AbstractSession {
 	public Object getAutoCompleteList(Map<String, String[]> params) {
 		logger.trace("Get auto complete list at the passed position");
 
-		//String line = get(params, "line");
-		//String ch = get(params, "ch");
+		// String line = get(params, "line");
+		// String ch = get(params, "ch");
 		String startsWith = get(params, "startsWith");
 		String input = get(params, "input");
 		String callback = get(params, "callbackObj");
 
-		return WebUtils.wrap(
-				"cmd", callback + ".showHint",
-				"hints", WebUtils.toJson(getCompletionList(input, startsWith)));
+		return WebUtils.wrap("cmd", callback + ".showHint", "hints",
+				WebUtils.toJson(getCompletionList(input, startsWith)));
 	}
 
 	public List<Marker> getPatternMarkers(List<PatternDefinition> patterns) {
 		List<Marker> markers = new LinkedList<Marker>();
 		for (PatternDefinition pattern : patterns) {
-			String msg = String.format("Move pattern '%s' to pattern manager.", pattern.getName());
-			markers.add(new Marker("pattern", pattern.getContext().start, pattern.getContext().stop, pattern.getSimpleName(), msg));
+			String msg = String.format("Move pattern '%s' to pattern manager.",
+					pattern.getName());
+			markers.add(new Marker("pattern", pattern.getContext().start,
+					pattern.getContext().stop, pattern.getSimpleName(), msg));
 		}
 		return markers;
 	}
@@ -215,7 +214,8 @@ public class LtlEditor extends AbstractSession {
 		parser.parse();
 
 		// Add patterns
-		List<PatternDefinition> patterns = parser.getSymbolTableManager().getAllPatternDefinitions();
+		List<PatternDefinition> patterns = parser.getSymbolTableManager()
+				.getAllPatternDefinitions();
 		for (PatternDefinition pattern : patterns) {
 			String name = pattern.getSimpleName();
 			Hint hint = new Hint(name, "pattern");
@@ -260,7 +260,8 @@ public class LtlEditor extends AbstractSession {
 		return parser;
 	}
 
-	protected LtlParser parsePatternDefinition(String input, ParseListener listener) {
+	protected LtlParser parsePatternDefinition(String input,
+			ParseListener listener) {
 		LtlParser parser = new LtlParser(input);
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
@@ -283,82 +284,98 @@ public class LtlEditor extends AbstractSession {
 
 			@Override
 			public void enterAndExpr(AndExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.AND()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.AND()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterFinallyExpr(FinallyExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.FINALLY()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.FINALLY()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterGloballyExpr(GloballyExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.GLOBALLY()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.GLOBALLY()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterHistoricallyExpr(HistoricallyExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.HISTORICALLY()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.HISTORICALLY()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterImpliesExpr(ImpliesExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.IMPLIES()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.IMPLIES()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterNextExpr(NextExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.NEXT()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.NEXT()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterNotExpr(NotExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.NOT()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.NOT()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterOnceExpr(OnceExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.ONCE()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.ONCE()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterOrExpr(OrExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.OR()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.OR()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterReleaseExpr(ReleaseExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.RELEASE()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.RELEASE()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterSinceExpr(SinceExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.SINCE()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.SINCE()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterTriggerExpr(TriggerExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.TRIGGER()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.TRIGGER()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterUntilExpr(UntilExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.UNTIL()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.UNTIL()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterWeakuntilExpr(WeakuntilExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.WEAKUNTIL()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.WEAKUNTIL()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterYesterdayExpr(YesterdayExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.YESTERDAY()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.YESTERDAY()),
+						createMark(ctx.expr())));
 			}
 
 			@Override
 			public void enterUnaryCombinedExpr(UnaryCombinedExprContext ctx) {
-				addExpression(new Expression(createMark(ctx.UNARY_COMBINED()), createMark(ctx.expr())));
+				addExpression(new Expression(createMark(ctx.UNARY_COMBINED()),
+						createMark(ctx.expr())));
 			}
 
 		}, ast);
@@ -391,7 +408,14 @@ public class LtlEditor extends AbstractSession {
 
 	private Mark createMark(ExprContext ctx) {
 		int length = ctx.stop.getStopIndex() - ctx.start.getStartIndex() + 1;
-		return new Mark(ctx.start.getLine(), ctx.start.getCharPositionInLine(), length);
+		return new Mark(ctx.start.getLine(), ctx.start.getCharPositionInLine(),
+				length);
+	}
+
+	@Override
+	public void reload(String client, int lastinfo, AsyncContext context) {
+		sendInitMessage(context);
+		// FIXME Restore state
 	}
 
 }

@@ -6,10 +6,9 @@ import org.eventb.core.ast.extension.IFormulaExtension;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.IEval;
+import de.prob.model.representation.AbstractFormulaElement;
 
-public class Witness extends AbstractElement implements IEval {
+public class Witness extends AbstractFormulaElement {
 
 	private final String name;
 	private final EventB predicate;
@@ -35,7 +34,7 @@ public class Witness extends AbstractElement implements IEval {
 	}
 
 	@Override
-	public IEvalElement getEvaluate() {
+	public IEvalElement getFormula() {
 		return predicate;
 	}
 

@@ -13,6 +13,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 
+import de.prob.ui.modelcheckingview.ModelCheckingView;
+
 public class PerspectiveFactory implements IPerspectiveFactory {
 
 	public static final String PROB_PERSPECTIVE = "de.prob.ui.perspective";
@@ -34,22 +36,13 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		leftb.addView("org.eventb.ui.views.RodinProblemView");
 		// ---------------------------------
 
-		// RIGHT ---------------------------------
-		// Palette View
-		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT,
-				0.80f, editorArea);
-
-		// Library View
-		IFolderLayout rightb = layout.createFolder("rightb",
-				IPageLayout.BOTTOM, 0.65f, "right");
-		// ---------------------------------
-
 		// MAIN ---------------------------------
 		// Properties view + observer view + control panel
 		IFolderLayout bottom1 = layout.createFolder("bottom1",
 				IPageLayout.BOTTOM, 0.65f, editorArea);
 		bottom1.addView("de.prob.ui.StateView");
 		bottom1.addView("de.prob.ui.AnimationsView");
+		bottom1.addView(ModelCheckingView.ID);
 		bottom1.addView(IPageLayout.ID_PROP_SHEET);
 		// bottom1.addView("de.prob.ui.EventErrorView");
 

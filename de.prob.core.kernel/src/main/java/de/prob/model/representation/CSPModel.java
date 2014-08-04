@@ -16,13 +16,14 @@ public class CSPModel extends AbstractModel {
 
 	@Inject
 	public CSPModel(final StateSpace statespace) {
-		this.statespace = statespace;
+		this.stateSpace = statespace;
 	}
 
 	public void init(final String content, final File modelFile) {
 		this.content = content;
 		this.modelFile = modelFile;
-		statespace.setModel(this);
+		stateSpace.setModel(this);
+		extractModelDir(modelFile, "CSP_MODEL");
 	}
 
 	public String getContent() {
@@ -61,5 +62,9 @@ public class CSPModel extends AbstractModel {
 	@Override
 	public FormalismType getFormalismType() {
 		return FormalismType.CSP;
+	}
+
+	@Override
+	public void subscribeFormulasOfInterest() {
 	}
 }

@@ -3,10 +3,9 @@ package de.prob.model.classicalb;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.IEval;
+import de.prob.model.representation.AbstractFormulaElement;
 
-public class Parameter extends AbstractElement implements IEval {
+public class Parameter extends AbstractFormulaElement {
 
 	private final ClassicalB expression;
 
@@ -19,7 +18,7 @@ public class Parameter extends AbstractElement implements IEval {
 	}
 
 	@Override
-	public IEvalElement getEvaluate() {
+	public IEvalElement getFormula() {
 		return expression;
 	}
 

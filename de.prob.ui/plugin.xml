@@ -40,11 +40,6 @@
                  label="Open State Space Visualization"
                  style="push">
            </command>
-           <command
-                 commandId="de.prob.ui.BmsView"
-                 label="Open BMotion Studio Visualization "
-                 style="push">
-           </command>
         </menuContribution>
         <menuContribution
               allPopups="false"
@@ -52,6 +47,20 @@
            <command
                  commandId="de.prob.ui.groovyconsole"
                  label="Open new Groovy console"
+                 style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:bms">
+           <command
+                 commandId="de.prob.ui.command.OpenBMotionStudioTemplate"
+                 label="Open BMotion Studio Template"
+                 style="push">
+           </command>
+           <command
+                 commandId="de.prob.ui.command.EditBMotionStudioTemplate"
+                 label="Edit BMotion Studio Template"
                  style="push">
            </command>
         </menuContribution>
@@ -76,12 +85,16 @@
                   name="Open State Space Visualization">
             </command>
             <command
-                  id="de.prob.ui.BmsView"
-                  name="Open BMotion Studio Visualization">
-            </command>
-            <command
                   id="de.prob.ui.groovyconsole"
                   name="Open Groovy Console">
+            </command>
+            <command
+                  id="de.prob.ui.command.OpenBMotionStudioTemplate"
+                  name="Open BMotion Studio Template">
+            </command>
+            <command
+                  id="de.prob.ui.command.EditBMotionStudioTemplate"
+                  name="Edit BMotion Studio Template">
             </command>
    </extension>
    
@@ -97,20 +110,6 @@
             commandId="de.prob.ui.viz.pred">
          <class
                class="de.prob.ui.visualization.OpenPredicateVizHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="de.prob.ui.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
-         </enabledWhen>
-      </handler>
-      <handler
-            commandId="de.prob.ui.BmsView">
-         <class
-               class="de.prob.ui.visualization.OpenBmsViewHandler">
          </class>
          <enabledWhen>
             <with
@@ -154,6 +153,14 @@
          <class
                class="de.prob.ui.OpenGroovyHandler">
          </class>
+      </handler>
+      <handler
+            class="de.prob.ui.bmsview.OpenBMotionTemplateHandler"
+            commandId="de.prob.ui.command.OpenBMotionStudioTemplate">
+      </handler>
+      <handler
+            class="de.prob.ui.bmsview.EditBMotionTemplateHandler"
+            commandId="de.prob.ui.command.EditBMotionStudioTemplate">
       </handler>
    </extension>
    <extension
@@ -224,9 +231,9 @@
       <view
             allowMultiple="true"
             category="de.hhu.stups.prob"
-            class="de.prob.ui.visualization.VizView"
-            id="de.prob.ui.viz.VizView"
-            name="Visualization"
+            class="de.prob.ui.view.ProB2View"
+            id="de.prob.ui.views.prob2"
+            name="ProB2 View"
             restorable="true">
       </view>
 
@@ -251,10 +258,19 @@
       <view
             allowMultiple="true"
             category="de.hhu.stups.prob"
-            class="de.prob.ui.visualization.VizView"
+            class="de.prob.ui.bmsview.BmsRunView"
             icon="icons/bms.png"
-            id="de.prob.ui.BMotionView"
-            name="BMotion HTML Visualization"
+            id="de.prob.ui.views.bmsrun"
+            name="BMotion Studio View"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.bmsview.BmsEditView"
+            icon="icons/bms.png"
+            id="de.prob.ui.views.bmsedit"
+            name="BMotion Studio Editor"
             restorable="true">
       </view>
 

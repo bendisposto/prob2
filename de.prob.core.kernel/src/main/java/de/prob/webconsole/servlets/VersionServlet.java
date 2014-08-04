@@ -14,12 +14,12 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.Main;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.GetVersionCommand;
 import de.prob.cli.CliVersionNumber;
 import de.prob.cli.ProBInstanceProvider;
 import de.prob.scripting.Downloader;
-import de.prob.webconsole.ServletContextListener;
 
 @SuppressWarnings("serial")
 @Singleton
@@ -52,7 +52,7 @@ public class VersionServlet extends HttpServlet {
 
 		if (binaryPresent && installed == null) {
 			GetVersionCommand versionCommand = new GetVersionCommand();
-			IAnimator animator = ServletContextListener.INJECTOR
+			IAnimator animator = Main.getInjector()
 					.getInstance(IAnimator.class);
 			animator.execute(versionCommand);
 			installed = versionCommand.getVersion();

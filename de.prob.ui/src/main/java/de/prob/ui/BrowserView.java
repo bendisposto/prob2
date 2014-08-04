@@ -1,11 +1,7 @@
 package de.prob.ui;
 
-import javafx.embed.swt.FXCanvas;
-import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
@@ -15,8 +11,8 @@ import de.prob.webconsole.servlets.visualizations.IRefreshListener;
 public abstract class BrowserView extends ViewPart implements IRefreshListener {
 
 	private final int port;
-	private FXCanvas canvas;
-	private WebEngine engine;
+	private Composite canvas;
+	private Object browser;
 
 	public BrowserView() {
 		port = WebConsole.getPort();
@@ -29,18 +25,56 @@ public abstract class BrowserView extends ViewPart implements IRefreshListener {
 	@Override
 	public void createPartControl(final Composite parent) {
 
-		canvas = new FXCanvas(parent, SWT.NONE);
+		String force = System.getProperty("enforceJavaFX");
 
-		WebView browser = new WebView();
-		Scene scene = new Scene(browser);
-		canvas.setScene(scene);
-		engine = browser.getEngine();
+		if (force != null && "true".equals(force.toLowerCase().trim())) {
+			createJavaFXBrowser(parent);
+			return;
+		} else
+			createSWTBrowser(parent);
+	}
+
+	private void createSWTBrowser(Composite parent) {
+		Browser b = new Browser(parent, SWT.NONE);
+		this.browser = b;
+		load(getUrl());
+		canvas = b;
+	}
+
+	private void createJavaFXBrowser(Composite parent) {
+		javafx.embed.swt.FXCanvas c = new javafx.embed.swt.FXCanvas(parent,
+				SWT.NONE);
+		javafx.scene.web.WebView webview = new javafx.scene.web.WebView();
+		javafx.scene.Scene scene = new javafx.scene.Scene(webview);
+		c.setScene(scene);
+		javafx.scene.web.WebEngine engine = webview.getEngine();
 		engine.setJavaScriptEnabled(true);
-		engine.load("http://localhost:" + port + "/sessions/" + getUrl());
+		this.browser = engine;
+		load(getUrl());
+		canvas = c;
 	}
 
 	public void refresh() {
-		engine.reload();
+		if (browser instanceof Browser) {
+			((Browser) browser).refresh();
+			return;
+		}
+		if (browser instanceof javafx.scene.web.WebEngine) {
+			((javafx.scene.web.WebEngine) browser).reload();
+		}
+	}
+
+	public void load(String url) {
+		if (url != null) {
+			if (browser instanceof Browser) {
+				((Browser) browser).setUrl("http://localhost:" + port + "/"
+						+ url);
+				return;
+			} else if (browser instanceof javafx.scene.web.WebEngine) {
+				((javafx.scene.web.WebEngine) browser).load("http://localhost:"
+						+ port + "/" + url);
+			}
+		}
 	}
 
 	protected abstract String getUrl();

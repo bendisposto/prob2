@@ -15,26 +15,31 @@ em {
 
 #shout {
 	width: 80%;
-	float:left;
+	float: left;
 	margin-right: 4px;
 }
+
+#content {
+	float: left;
+}
+
 .future {
-    font-style: italic;
-    color: #888;
+	font-style: italic;
+	color: #888;
 }
 
 .current {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 .start {
-    color: #bbb;
-    letter-spacing: 2px;
-    font-family: "Courier New", Courier, monospace;
+	color: #bbb;
+	letter-spacing: 2px;
+	font-family: "Courier New", Courier, monospace;
 }
 
 .disabled {
-    opacity: 0.1;
+	opacity: 0.1;
 }
 
 li:nth-child(even) {
@@ -42,5 +47,5 @@ li:nth-child(even) {
 }
 
 ul {
-    padding-left: 0px;
+	padding-left: 0px;
 }
