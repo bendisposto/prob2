@@ -12,7 +12,7 @@ project.group = 'de.prob'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
-project.version = '2.0.0-milestone-14-SNAPSHOT'
+project.version = '2.0.0-milestone-15-SNAPSHOT'
 
 repositories {
 	maven {
@@ -79,13 +79,13 @@ dependencies {
 	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
-	// If you consider to update jetty ... just don't
+	// If you consider to update or downgrade jetty ... just don't
 	// it'll make you puke 
-	compile 'org.eclipse.jetty:jetty-io:8.0.0.M3' // EPL
-	compile 'org.eclipse.jetty:jetty-server:8.0.0.M3' // EPL
-	compile 'org.eclipse.jetty:jetty-servlet:8.0.0.M3' // EPL
-	compile 'org.eclipse.jetty:jetty-util:8.0.0.M3' // EPL
-	compile 'org.eclipse.jetty:jetty-webapp:8.0.0.M3' // EPL
+	compile 'org.eclipse.jetty:jetty-io:8.1.8.v20121106' // EPL
+	compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106' // EPL
+	compile 'org.eclipse.jetty:jetty-servlet:8.1.8.v20121106' // EPL
+	compile 'org.eclipse.jetty:jetty-util:8.1.8.v20121106' // EPL
+	compile 'org.eclipse.jetty:jetty-webapp:8.1.8.v20121106' // EPL
 
 	compile 'org.antlr:antlr4-runtime:4.0'
 	compile 'de.prob:ltl-dsl:1.0.0'
