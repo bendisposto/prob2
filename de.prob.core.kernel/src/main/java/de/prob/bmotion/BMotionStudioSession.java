@@ -97,7 +97,6 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 		// formula).isEmpty()) {
 		// try {
 		String evaluate = getTool().evaluate(getTool().getCurrentState(), formula);
-		System.out.println("===> " + evaluate);
 		return evaluate;
 		// } catch (IllegalFormulaException e) {
 		// TODO: handle exception

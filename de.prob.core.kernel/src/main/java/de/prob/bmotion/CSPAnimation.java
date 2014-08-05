@@ -26,14 +26,14 @@ public class CSPAnimation extends ProBAnimation {
 
 	private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
 
-	public CSPAnimation(String sessionId, AbstractModel model, AnimationSelector animations,
+	public CSPAnimation(String toolId, AbstractModel model, AnimationSelector animations,
 			ToolRegistry toolRegistry) {
-		super(sessionId, model, animations, toolRegistry);
+		super(toolId, model, animations, toolRegistry);
 	}
 	
-	public CSPAnimation(String sessionId, AnimationSelector animations,
+	public CSPAnimation(String toolId, AnimationSelector animations,
 			ToolRegistry toolRegistry) {
-		super(sessionId, animations, toolRegistry);
+		super(toolId, animations, toolRegistry);
 	}
 
 	@Override
@@ -85,30 +85,6 @@ public class CSPAnimation extends ProBAnimation {
 			}
 		}
 		return errors;
-	}
-
-	@Override
-	public String getCurrentState() {
-		return trace != null ? trace.getCurrentState().getId() : null;
-	}
-
-	@Override
-	public boolean canBacktrack() {
-		return true;
-	}
-
-	@Override
-	public String getName() {
-		return sessionId;
-	}
-
-	@Override
-	public void traceChange(final Trace currentTrace,
-			final boolean currentAnimationChanged) {
-		if (currentTrace != null && !currentTrace.equals(trace)) {
-			toolRegistry.notifyToolChange(this);
-		}
-		trace = currentTrace;
 	}
 
 	@Override

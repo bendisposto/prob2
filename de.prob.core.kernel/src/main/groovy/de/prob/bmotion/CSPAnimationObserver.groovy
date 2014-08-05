@@ -30,7 +30,7 @@ class CSPAnimationObserver implements IBMotionGroovyObserver {
 					opList.each { op ->
 						def fullOp = getOpString(op)
 						o.objs.each { obj ->
-							def events = session.eval(obj.exp.getAsString())
+							def events = tool.evaluate(tool.getCurrentState(), obj.exp.getAsString())
 							if(events != null) {
 								events = events.replace("{","").replace("}", "")
 								def event_names = events.split(",")

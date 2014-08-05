@@ -91,13 +91,13 @@ class BMotionUtil {
 				if(model.getFormalismType() == FormalismType.B) {
 					tool = new BAnimation(sessionId, model, animations, toolRegistry);
 				} else if(model.getFormalismType() == FormalismType.CSP) {
-					tool =  new CSPAnimation(sessionId, model, animations, toolRegistry)
+					tool =  new CSPAnimation(sessionId, model, animations, toolRegistry);
 				}
 			} else if(toolId != null) {
 				if("BAnimation".equals(toolId)) {
 					tool = new BAnimation(sessionId, animations, toolRegistry);
 				} else if("CSPAnimation".equals(toolId)) {
-					tool =  new CSPAnimation(sessionId, animations, toolRegistry)
+					tool =  new CSPAnimation(sessionId, animations, toolRegistry);
 				}
 			}
 			if(tool != null) {

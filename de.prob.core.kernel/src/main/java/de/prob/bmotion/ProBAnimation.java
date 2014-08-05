@@ -15,7 +15,7 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 	protected Trace trace;
 	protected final ToolRegistry toolRegistry;
 	protected final AnimationSelector animations;
-	protected final String sessionId;
+	protected final String toolId;
 
 	public ProBAnimation(String sessionId, AbstractModel model,
 			AnimationSelector animations, ToolRegistry toolRegistry) {
@@ -25,9 +25,9 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 		animations.addNewAnimation(this.trace);
 	}
 
-	public ProBAnimation(String sessionId, AnimationSelector animations,
+	public ProBAnimation(String toolId, AnimationSelector animations,
 			ToolRegistry toolRegistry) {
-		this.sessionId = sessionId;
+		this.toolId = toolId;
 		this.animations = animations;
 		this.toolRegistry = toolRegistry;
 		animations.registerAnimationChangeListener(this);
@@ -48,6 +48,28 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 
 	public ToolRegistry getToolRegistry() {
 		return toolRegistry;
+	}
+	
+	@Override
+	public void traceChange(final Trace currentTrace,
+			final boolean currentAnimationChanged) {
+		trace = currentTrace;
+		toolRegistry.notifyToolChange(this);
+	}
+	
+	@Override
+	public String getCurrentState() {
+		return trace != null ? trace.getCurrentState().getId() : null;
+	}
+	
+	@Override
+	public String getName() {
+		return toolId;
+	}
+	
+	@Override
+	public boolean canBacktrack() {
+		return true;
 	}
 	
 }
