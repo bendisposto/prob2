@@ -52,7 +52,7 @@ class BAnimationObserver implements IBMotionGroovyObserver {
 	public void update(ITool tool) {
 		if(json != null) {
 			json.observers.each { o ->
-				if(o?.type?.getAsString() == "EvalObserver") {
+				if(o?.type?.getAsString() == "BAnimation") {
 					def factions = []
 					o.objs.each { obj ->
 						def fselector = obj?.selector?.getAsString()
