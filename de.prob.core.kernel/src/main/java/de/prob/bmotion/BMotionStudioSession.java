@@ -62,8 +62,8 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 			for (IBMotionGroovyObserver s : groovyObserverListener) {
 				s.update(tool);
 			}
-		} catch (Exception e) {
-			logger.error("BMotion Studio (Groovy evaluation error): "
+		} catch (GroovyRuntimeException e) {
+			logger.error("BMotion Studio (Groovy runtime exception): "
 					+ e.getMessage());
 		}
 	}
@@ -127,6 +127,8 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 		}
 		return null;
 	}
+	
+	// ------------------
 
 	@Override
 	public void initSession() {
@@ -143,14 +145,12 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 			BMotionUtil.evaluateGroovy(engineProvider.get(),
 					absoluteTemplatePath, getParameterMap(), this);
 		} catch (GroovyRuntimeException e) {
-			logger.error("BMotion Studio (Groovy evaluation error): "
+			logger.error("BMotion Studio (Groovy runtime exception): "
 					+ e.getMessage());
 		} catch (ScriptException e) {
-			logger.error("BMotion Studio (Groovy evaluation error): "
-					+ e.getMessage());
+			logger.error("BMotion Studio (Groovy script exception): "
+					+ e.getMessage() + "(line " + e.getLineNumber() + ")");
 		}
 	}
 	
-	// ------------------
-
 }
