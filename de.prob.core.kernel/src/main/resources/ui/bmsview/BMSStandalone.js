@@ -5,13 +5,19 @@
 		initDialog($("#events_view"),$("#events_iframe"),$("#bt_open_events_view"),"http://"+bms.host+":"+bms.port+"/sessions/Events",true);
 		initDialog($("#animation_view"),$("#animation_iframe"),$("#bt_open_animation_view"),"http://"+bms.host+":"+bms.port+"/sessions/CurrentAnimations",false);
 		initDialog($("#state_view"),$("#state_iframe"),$("#bt_open_state_view"),"http://"+bms.host+":"+bms.port+"/sessions/StateInspector",false);
+		//initDialog($("#log_view"),$("#log_iframe"),$("#bt_open_log_view"),"http://"+bms.host+":"+bms.port+"/sessions/Log",true);
+		
+		$("#error_view").dialog({
+			width: 350,
+			height: 400
+		});
 		
 		$("#bt_open_template").click(function() {
 			$("#modal_open_template").modal('show')
 		});
 		$("#bt_create_template").click(function() {
 			$("#modal_create_template").modal('show')
-		});
+		});	
 		
 	});
 	
@@ -189,4 +195,3 @@
 		//window.location = "/bms/?template=" + templateFile
 		//console.log(templateFile)
 	}
-	
