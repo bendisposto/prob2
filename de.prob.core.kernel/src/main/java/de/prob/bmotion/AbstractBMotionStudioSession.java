@@ -19,7 +19,7 @@ public abstract class AbstractBMotionStudioSession extends AbstractSession {
 	private String host;
 
 	private Map<String, String> parameterMap = new HashMap<String, String>();
-	
+
 	private final ITool tool;
 
 	public AbstractBMotionStudioSession(UUID id, ITool tool,
@@ -66,9 +66,8 @@ public abstract class AbstractBMotionStudioSession extends AbstractSession {
 	public ITool getTool() {
 		return tool;
 	}
-	
-	public abstract void initSession();
 
+	public abstract void initSession();
 
 	@Override
 	public String html(String clientid, Map<String, String[]> parameterMap) {

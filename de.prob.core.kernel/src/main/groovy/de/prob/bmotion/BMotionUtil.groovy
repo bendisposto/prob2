@@ -3,10 +3,13 @@ package de.prob.bmotion
 import javax.script.Bindings
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
+import javax.script.ScriptException
 
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import com.google.common.base.Function
 import com.google.gson.JsonElement
@@ -19,6 +22,7 @@ import de.prob.statespace.FormalismType
 import de.prob.statespace.Trace
 import de.prob.ui.api.ITool
 import de.prob.ui.api.ToolRegistry
+import de.prob.web.views.Events
 
 class BMotionUtil {
 
@@ -37,7 +41,7 @@ class BMotionUtil {
 		return element;
 	}
 
-	def static void evaluateGroovy(ScriptEngine evaluator, String absoluteTemplatePath, Map<String, String> parameters, BMotionStudioSession bms) {
+	def static void evaluateGroovy(ScriptEngine evaluator, String absoluteTemplatePath, Map<String, String> parameters, BMotionStudioSession bms) throws GroovyRuntimeException, ScriptException {
 		String scriptPaths = parameters.get("script")
 		if (absoluteTemplatePath != null && scriptPaths != null) {
 			def templateFolder = BMotionUtil.getTemplateFolder(absoluteTemplatePath)

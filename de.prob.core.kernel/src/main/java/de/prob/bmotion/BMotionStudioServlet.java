@@ -83,6 +83,11 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 			update(req, bmsSession);
 		} else if ("command".equals(modeParameter)) {
 			executeCommand(req, resp, bmsSession);
+		} else if ("checkErrors".equals(modeParameter)) {
+//			toOutput(resp, WebUtils.toJson(WebUtils.wrap(
+//					"errors",
+//					StringUtils.join(bmsSession.getErrors().toArray(
+//							new String[bmsSession.getErrors().size()])))));
 		} else {
 			// Else (should be) file request
 			delegateFileRequest(req, resp, bmsSession);

@@ -1,10 +1,13 @@
 package de.prob.bmotion;
 
+import groovy.lang.GroovyRuntimeException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.script.ScriptException;
 import javax.servlet.AsyncContext;
 
 import org.slf4j.Logger;
@@ -42,18 +45,26 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		animationChange(getTool());
+		if (lastinfo > -1) {
+			initSession();
+			animationChange(getTool());
+		}
 	}
 
 	public void registerGroovyObserver(final IBMotionGroovyObserver script) {
 		groovyObserverListener.add(script);
-		animationChange(getTool());
+		script.update(getTool());
 	}
 
 	@Override
 	public void animationChange(final ITool tool) {
-		for (IBMotionGroovyObserver s : groovyObserverListener) {
-			s.update(tool);
+		try {
+			for (IBMotionGroovyObserver s : groovyObserverListener) {
+				s.update(tool);
+			}
+		} catch (Exception e) {
+			logger.error("BMotion Studio (Groovy evaluation error): "
+					+ e.getMessage());
 		}
 	}
 	
@@ -121,16 +132,25 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	public void initSession() {
 		String absoluteTemplatePath = BMotionUtil
 				.getFullTemplatePath(getTemplatePath());
+		groovyObserverListener.clear();
 		if (getTool() instanceof IObserver) {
 			JsonElement jsonObserver = BMotionUtil.getJsonObserver(
 					absoluteTemplatePath, getParameterMap().get("json"));
-			registerGroovyObserver(((IObserver) getTool()).getBMotionGroovyObserver(
-					this, jsonObserver));
+			registerGroovyObserver(((IObserver) getTool())
+					.getBMotionGroovyObserver(this, jsonObserver));
 		}
-		BMotionUtil.evaluateGroovy(engineProvider.get(), absoluteTemplatePath,
-				getParameterMap(), this);
+		try {
+			BMotionUtil.evaluateGroovy(engineProvider.get(),
+					absoluteTemplatePath, getParameterMap(), this);
+		} catch (GroovyRuntimeException e) {
+			logger.error("BMotion Studio (Groovy evaluation error): "
+					+ e.getMessage());
+		} catch (ScriptException e) {
+			logger.error("BMotion Studio (Groovy evaluation error): "
+					+ e.getMessage());
+		}
 	}
-
+	
 	// ------------------
 
 }
