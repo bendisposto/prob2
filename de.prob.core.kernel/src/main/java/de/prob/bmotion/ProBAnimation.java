@@ -53,8 +53,11 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 	@Override
 	public void traceChange(final Trace currentTrace,
 			final boolean currentAnimationChanged) {
+		Trace oldtrace = trace;
 		trace = currentTrace;
-		toolRegistry.notifyToolChange(this);
+		if (oldtrace != null && !currentTrace.equals(oldtrace)) {
+			toolRegistry.notifyToolChange(this);
+		}
 	}
 	
 	@Override
