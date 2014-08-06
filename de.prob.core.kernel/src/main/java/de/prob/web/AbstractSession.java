@@ -144,8 +144,8 @@ public abstract class AbstractSession implements ISession {
 			reload(client, lastinfo, context);
 			return;
 		}
-
-		if (incrementalUpdate || lastinfo > 0) {
+		
+		if (incrementalUpdate && lastinfo > 0) {
 			ArrayList<Object> cp = new ArrayList<Object>();
 			try {
 				for (int i = Math.max(lastinfo, 0); i < responses.size(); i++) {
