@@ -22,7 +22,6 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 		this(sessionId, animations, toolRegistry);
 		this.model = model;
 		this.trace = new Trace(model);
-		animations.addNewAnimation(this.trace);
 	}
 
 	public ProBAnimation(String toolId, AnimationSelector animations,

@@ -84,7 +84,7 @@ class BMotionUtil {
 		return model
 	}
 
-	def static ITool loadTool(String sessionId, String toolId, String modelPath, AnimationSelector animations, ToolRegistry toolRegistry, Api api, String absoluteTemplatePath) {
+	def static ITool loadTool(String sessionId, String toolId, String modelPath, AnimationSelector animations, ToolRegistry toolRegistry, Api api, String absoluteTemplatePath, Class<? extends AbstractBMotionStudioServlet> claz) {
 		// First check if a tool is already registered with the passed id ...
 		ITool tool = toolRegistry.getTool(toolId);
 		if(tool == null) {
@@ -96,6 +96,9 @@ class BMotionUtil {
 					tool = new BAnimation(sessionId, model, animations, toolRegistry);
 				} else if(model.getFormalismType() == FormalismType.CSP) {
 					tool =  new CSPAnimation(sessionId, model, animations, toolRegistry);
+				}
+				if(claz == BMotionStudioServlet.class) {
+					animations.addNewAnimation(new Trace(model));
 				}
 			} else if(toolId != null) {
 				if("BAnimation".equals(toolId)) {

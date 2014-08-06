@@ -184,7 +184,8 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		String toolId = params.get("tool");
 		String modelPath = params.get("model");
 		ITool tool = BMotionUtil.loadTool(sessionUUID.toString(), toolId,
-				modelPath, animations, toolRegistry, api, fullTemplatePath);
+				modelPath, animations, toolRegistry, api, fullTemplatePath,
+				getClass());
 
 		if (tool == null) {
 			// TODO: exit and report error message "no ITool found ......"
