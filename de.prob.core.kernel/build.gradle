@@ -243,6 +243,25 @@ task downloadCli << {
 		into targetdir
 	}
 	delete file(targetzip)
+	
+	def targetName = "cspmf-"
+	def os = os_extension()
+	if(os == "probcli_linux") {
+		targetName += "linux32"
+	} else if(os == "probcli_linux64") {
+		targetName += "linux64"
+	} else if(os == "probcli_leopard64") {
+		targetName += "leopard64"
+	} else if(os == "probcli_win32") {
+		targetName += "windows"
+	}
+	def target = dir+File.separator+"lib"+File.separator+"cspmf"
+	if(targetName == "probcli_windows") {
+		target += ".exe"
+	}
+
+	download("http://nightly.cobra.cs.uni-duesseldorf.de/cspmf/"+targetName,target)
+	new File(target).setExecutable(true)
 }
 
 
