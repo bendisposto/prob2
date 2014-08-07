@@ -1,8 +1,10 @@
 package de.prob.animator.command;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -21,6 +23,9 @@ public class GetOpFromId extends AbstractCommand {
 	private String name;
 	private String targetState;
 	private final List<String> params = new ArrayList<String>();
+	private final List<String> returnValues = new ArrayList<String>();
+	private final List<EvalResult> paramsSource = new ArrayList<EvalResult>();
+	private final List<EvalResult> returnValueSource = new ArrayList<EvalResult>();
 
 	public GetOpFromId(final OpInfo opInfo) {
 		this.op = opInfo;
@@ -37,19 +42,43 @@ public class GetOpFromId extends AbstractCommand {
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		PrologTerm prologTerm = bindings.get(TERM);
 		CompoundPrologTerm cpt = BindingGenerator
-				.getCompoundTerm(prologTerm, 8);
+				.getCompoundTerm(prologTerm, 7);
 
-		name = PrologTerm.atomicString(cpt.getArgument(2));
-		src = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
-		dest = OpInfo.getIdFromPrologTerm(cpt.getArgument(4));
+		src = OpInfo.getIdFromPrologTerm(cpt.getArgument(2));
+		dest = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
+		name = PrologTerm.atomicString(cpt.getArgument(4));
 
-		ListPrologTerm lpt = BindingGenerator.getList(cpt.getArgument(6));
-		for (PrologTerm pt : lpt) {
-			params.add(pt.getFunctor());
+		CompoundPrologTerm paramTerm = BindingGenerator.getCompoundTerm(
+				cpt.getArgument(5), 2);
+		ListPrologTerm paramS = BindingGenerator.getList(paramTerm
+				.getArgument(1));
+		ListPrologTerm paramP = BindingGenerator.getList(paramTerm
+				.getArgument(2));
+
+		for (int i = 0; i < paramS.size(); i++) {
+			String v = paramP.get(i).getFunctor();
+			params.add(v);
+			paramsSource.add(new EvalResult("", v, paramS.get(i),
+					new HashMap<String, String>(),
+					new HashMap<String, PrologTerm>()));
 		}
 
-		targetState = OpInfo.getIdFromPrologTerm(cpt.getArgument(8));
-		op.setInfo(name, params, targetState);
+		CompoundPrologTerm retTerm = BindingGenerator.getCompoundTerm(
+				cpt.getArgument(6), 2);
+		ListPrologTerm retS = BindingGenerator.getList(retTerm.getArgument(1));
+		ListPrologTerm retP = BindingGenerator.getList(retTerm.getArgument(2));
+
+		for (int i = 0; i < retS.size(); i++) {
+			String v = retP.get(i).getFunctor();
+			returnValues.add(v);
+			returnValueSource.add(new EvalResult("", v, retS.get(i),
+					new HashMap<String, String>(),
+					new HashMap<String, PrologTerm>()));
+		}
+
+		targetState = OpInfo.getIdFromPrologTerm(cpt.getArgument(7));
+		op.setInfo(name, params, returnValues, paramsSource, returnValueSource,
+				targetState);
 	}
 
 	public String getSrc() {
