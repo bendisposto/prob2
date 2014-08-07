@@ -1,6 +1,7 @@
 package de.prob.model.eventb.translate;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +16,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.extension.IFormulaExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -45,6 +48,8 @@ import de.prob.tmparser.TheoryMappingException;
 import de.prob.tmparser.TheoryMappingParser;
 
 public class TheoryXmlHandler extends DefaultHandler {
+
+	Logger logger = LoggerFactory.getLogger(TheoryXmlHandler.class);
 
 	private final String workspacePath;
 	private final Set<IFormulaExtension> typeEnv = new HashSet<IFormulaExtension>();
@@ -153,13 +158,18 @@ public class TheoryXmlHandler extends DefaultHandler {
 					path.lastIndexOf('/'));
 			String name = path.substring(path.lastIndexOf('/') + 1,
 					path.lastIndexOf('.'));
-			Collection<OperatorMapping> mappings = null;
+			Collection<OperatorMapping> mappings = new ArrayList<OperatorMapping>();
 			try {
 				String mappingFileName = workspacePath + File.separator + dir
 						+ File.separator + name + ".ptm";
 				mappings = TheoryMappingParser.parseTheoryMapping(name,
 						mappingFileName);
+			} catch (FileNotFoundException e) {
+				logger.warn("No .ptm file found for Theory "
+						+ name
+						+ ". This means that ProB has no information on how to interpret this theory.");
 			} catch (TheoryMappingException e) {
+
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
