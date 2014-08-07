@@ -28,7 +28,7 @@ public final class GetPluginResultCommand extends AbstractCommand {
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-			result = BindingGenerator.getCompoundTerm(bindings.get("Bindings"), 1);
+		result = BindingGenerator.getCompoundTerm(bindings.get("Bindings"), 1);
 	}
 
 	@Override

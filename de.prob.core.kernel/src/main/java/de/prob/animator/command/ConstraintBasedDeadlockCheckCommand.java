@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.check.CBCDeadlockFound;
 import de.prob.check.CheckError;
@@ -45,12 +46,12 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 	private final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
 	/**
-	 * @param formula
-	 *            is a parsed predicate or <code>null</code>
+	 * @param predicate
+	 *            is a parsed predicate
 	 * 
 	 */
-	public ConstraintBasedDeadlockCheckCommand(final IEvalElement formula) {
-		this.formula = formula;
+	public ConstraintBasedDeadlockCheckCommand(final IEvalElement predicate) {
+		this.formula = predicate;
 	}
 
 	public IModelCheckingResult getResult() {
@@ -70,6 +71,8 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 		pto.openTerm(COMMAND_NAME);
 		if (formula != null) {
 			formula.printProlog(pto);
+		} else {
+			new ClassicalB("1=1").printProlog(pto);
 		}
 		pto.printVariable(RESULT_VARIABLE);
 		pto.closeTerm();

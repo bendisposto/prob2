@@ -167,6 +167,14 @@ public class Trace {
 		+ " not found.")
 	}
 
+	/**
+	 * Deprecated. Use {@link Trace#execute }
+	 * @param opName String name
+	 * @param predicate String predicate
+	 * @return Trace after executing specified operation
+	 * @throws BException
+	 */
+	@Deprecated
 	def Trace add(final String opName, final String predicate)
 	throws BException {
 		OpInfo op = findOneOp(opName, predicate)
@@ -243,31 +251,25 @@ public class Trace {
 	def Trace execute(String event, List<String> params) {
 		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
 
-		if(event.startsWith("\$") && !(event == "\$setup_constants" || event == "\$initialise_machine")) {
-			event = event.substring(1)
+		def ops = stateSpace.opFromPredicate(current.getCurrentState(), event, predicate , 1)
+		if(ops.isEmpty()) {
+			throw new IllegalArgumentException("Could not find an operation for given event and parameter combination");
 		}
-
-		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), event, predicate , 1)[0];
+		OpInfo op = ops[0];
 		return add(op.id)
 	}
 
 	/**
 	 * Tests to see if the event name plus the conjunction of the parameter strings produce a valid
-	 * operation on this state. Currently tests the result of {@link Trace#execute} and returns false
-	 * if an exception is thrown, but this is subject to change.
+	 * operation on this state. Uses implementation in {@link StateSpace#isValidOperation(StateId, String, String)}
 	 *
 	 * @param event Name of the event to be executed
 	 * @param params List of String predicates to be conjoined
 	 * @return <code>true</code>, if the operation can be executed. <code>false</code>, otherwise
 	 */
 	def boolean canExecuteEvent(String event, List<String> params) {
-		// TODO: We should have a prolog command that check this so we don't have to execute the op every time
-		try {
-			execute(event, params);
-		} catch(Exception e) {
-			return false;
-		}
-		return true;
+		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+		return stateSpace.isValidOperation(current.getCurrentState(), event, predicate);
 	}
 
 	def Trace anyOperation(filter) {
@@ -344,5 +346,30 @@ public class Trace {
 		if(!notEvaluated.isEmpty()) {
 			stateSpace.evaluateOps(notEvaluated);
 		}
+	}
+
+	/**
+	 * Takes a {@link StateSpace} and a list of {@link OpInfo} operations through the {@link StateSpace}
+	 * and generates a {@link Trace} object from the information. The list of operations must be a valid
+	 * list of operations starting from the root state, and for which the information has already been
+	 * cached in the {@link StateSpace}. Otherwise, an assertion error will be thrown.
+	 *
+	 * @param s {@link StateSpace} through which the Trace should be generated
+	 * @param ops List of {@link OpInfo} operations that should be executed in the Trace
+	 * @return {@link Trace} specified by list of operations
+	 */
+	def static Trace getTraceFromOpList(StateSpace s, List<OpInfo> ops) {
+		assert !ops.isEmpty();
+		assert ops[0].getSrc() == "root"
+
+		TraceElement head = new TraceElement(s.getVertex("root"))
+		for (op in ops) {
+			def src = s.getVertex(op.getSrc())
+			def dest = s.getVertex(op.getDest())
+			assert src != null
+			assert dest != null
+			head = new TraceElement(src, dest,op, head)
+		}
+		return new Trace(s, head, java.util.UUID.randomUUID())
 	}
 }

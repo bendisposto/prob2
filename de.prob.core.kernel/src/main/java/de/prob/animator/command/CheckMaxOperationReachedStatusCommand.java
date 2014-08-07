@@ -6,7 +6,6 @@
 
 package de.prob.animator.command;
 
-import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 
 //FIXME: Is this actually what the command does?
 /**

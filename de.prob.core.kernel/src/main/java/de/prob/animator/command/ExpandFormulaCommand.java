@@ -7,24 +7,25 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.StateId;
 
 public class ExpandFormulaCommand extends AbstractCommand {
 
-	private final String stateId;
+	private final StateId stateId;
 	private final String TREE = "TREE";
 	private final FormulaId id;
 	private ExpandedFormula result;
 
-	public ExpandFormulaCommand(final FormulaId id, final String stateId) {
+	public ExpandFormulaCommand(final FormulaId id, final StateId stateId) {
 		this.id = id;
 		this.stateId = stateId;
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("prob2_formula_expand");
+		pto.openTerm("expand_formula");
 		pto.printAtomOrNumber(id.getId());
-		pto.printAtomOrNumber(stateId);
+		pto.printAtomOrNumber(stateId.getId());
 		pto.printVariable(TREE);
 		pto.closeTerm();
 	}

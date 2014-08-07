@@ -3,3 +3,4 @@ assert c != null
 s = c.getStatespace()
 
 s.animator.cli.shutdown();
+"Machine Lift.mch was loaded"

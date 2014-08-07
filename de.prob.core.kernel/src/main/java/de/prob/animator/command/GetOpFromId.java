@@ -13,7 +13,7 @@ import de.prob.statespace.OpInfo;
 
 public class GetOpFromId extends AbstractCommand {
 
-	private final String opId;
+	private final OpInfo op;
 	private final String TERM = "JavaOpTerm";
 
 	private String src;
@@ -22,13 +22,13 @@ public class GetOpFromId extends AbstractCommand {
 	private String targetState;
 	private final List<String> params = new ArrayList<String>();
 
-	public GetOpFromId(final String opId) {
-		this.opId = opId;
+	public GetOpFromId(final OpInfo opInfo) {
+		this.op = opInfo;
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_op_from_id").printAtomOrNumber(opId)
+		pto.openTerm("get_op_from_id").printAtomOrNumber(op.getId())
 				.printVariable(TERM).closeTerm();
 	}
 
@@ -49,6 +49,7 @@ public class GetOpFromId extends AbstractCommand {
 		}
 
 		targetState = OpInfo.getIdFromPrologTerm(cpt.getArgument(8));
+		op.setInfo(name, params, targetState);
 	}
 
 	public String getSrc() {

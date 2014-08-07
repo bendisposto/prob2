@@ -82,7 +82,7 @@ public class FormulaView extends AbstractSession implements
 	public Object calculateData() {
 		if (setFormula != null) {
 			ExpandFormulaCommand cmd = new ExpandFormulaCommand(setFormula,
-					currentTrace.getCurrentState().getId());
+					currentTrace.getCurrentState());
 			currentStateSpace.execute(cmd);
 			ExpandedFormula result = cmd.getResult();
 			result.collapseNodes(new HashSet<String>(collapsedNodes));
@@ -185,7 +185,8 @@ public class FormulaView extends AbstractSession implements
 	}
 
 	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
+	public void reload(final String client, final int lastinfo,
+			final AsyncContext context) {
 		sendInitMessage(context);
 		sendRefresh();
 	}

@@ -95,7 +95,7 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			final long storeId = ((IntegerPrologTerm) term.getArgument(4))
 					.getValue().longValue();
 			final EvalResult er = new EvalResult(evalElement.getCode(),
-					valueStr, new HashMap<String, String>(),
+					valueStr, null, new HashMap<String, String>(),
 					new HashMap<String, PrologTerm>());
 			result = new EvalstoreResult(false, false, storeId, er,
 					newIdentifiers);

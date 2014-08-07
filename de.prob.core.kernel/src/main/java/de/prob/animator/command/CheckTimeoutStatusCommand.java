@@ -6,7 +6,6 @@
 
 package de.prob.animator.command;
 
-import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 
 /**
  * Checks to see if a timeout has occured at a given state

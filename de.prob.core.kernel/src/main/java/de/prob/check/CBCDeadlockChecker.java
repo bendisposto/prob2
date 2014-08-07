@@ -1,6 +1,7 @@
 package de.prob.check;
 
 import de.prob.animator.command.ConstraintBasedDeadlockCheckCommand;
+import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.statespace.StateSpace;
 import de.prob.web.views.ModelCheckingUI;
@@ -31,7 +32,7 @@ public class CBCDeadlockChecker implements IModelCheckJob {
 	 *            StateSpace for which the checking should take place
 	 */
 	public CBCDeadlockChecker(final StateSpace s) {
-		this(s, null);
+		this(s, new ClassicalB("1=1"));
 	}
 
 	/**

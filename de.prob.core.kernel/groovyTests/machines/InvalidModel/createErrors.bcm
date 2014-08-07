@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.scMachineFile org.eventb.core.accurate="true" org.eventb.core.configuration="org.eventb.core.fwd">
+<org.eventb.core.scInvariant name="'" org.eventb.core.label="inv1" org.eventb.core.predicate="x∈ℕ" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#)" org.eventb.core.theorem="false"/>
+<org.eventb.core.scInvariant name="(" org.eventb.core.label="will_be_violated" org.eventb.core.predicate="x&lt;10" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#*" org.eventb.core.theorem="false"/>
+<org.eventb.core.scInvariant name=")" org.eventb.core.label="inv2" org.eventb.core.predicate="deadlocked∈BOOL" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#-" org.eventb.core.theorem="false"/>
+<org.eventb.core.scVariable name="deadlocked" org.eventb.core.abstract="false" org.eventb.core.concrete="true" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.variable#," org.eventb.core.type="BOOL"/>
+<org.eventb.core.scVariable name="x" org.eventb.core.abstract="false" org.eventb.core.concrete="true" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.variable#(" org.eventb.core.type="ℤ"/>
+<org.eventb.core.scEvent name="deadlockee" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#'">
+<org.eventb.core.scAction name="'" org.eventb.core.assignment="x ≔ 0" org.eventb.core.label="act1" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#'|org.eventb.core.action#'"/>
+<org.eventb.core.scAction name="(" org.eventb.core.assignment="deadlocked ≔ FALSE" org.eventb.core.label="act2" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#'|org.eventb.core.action#("/>
+</org.eventb.core.scEvent>
+<org.eventb.core.scEvent name="deadlockef" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="violate_invariant" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#+">
+<org.eventb.core.scGuard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="deadlocked=FALSE" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#+|org.eventb.core.guard#(" org.eventb.core.theorem="false"/>
+<org.eventb.core.scAction name="(" org.eventb.core.assignment="x ≔ x+1" org.eventb.core.label="act1" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#+|org.eventb.core.action#'"/>
+</org.eventb.core.scEvent>
+<org.eventb.core.scEvent name="deadlockeg" org.eventb.core.accurate="true" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="deadlock" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#.">
+<org.eventb.core.scGuard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="deadlocked=FALSE" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#.|org.eventb.core.guard#'" org.eventb.core.theorem="false"/>
+<org.eventb.core.scAction name="(" org.eventb.core.assignment="deadlocked ≔ TRUE" org.eventb.core.label="act1" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#.|org.eventb.core.action#("/>
+</org.eventb.core.scEvent>
+</org.eventb.core.scMachineFile>

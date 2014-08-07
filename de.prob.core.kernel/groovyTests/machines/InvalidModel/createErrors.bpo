@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="10">
+<org.eventb.core.poPredicateSet name="CTXHYP" org.eventb.core.poStamp="0"/>
+<org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="6">
+<org.eventb.core.poIdentifier name="deadlocked" org.eventb.core.type="BOOL"/>
+<org.eventb.core.poIdentifier name="x" org.eventb.core.type="ℤ"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poSequent name="INITIALISATION/inv1/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="6">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#EVTALLHYPdeadlockee"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="0∈ℕ" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#)"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#'"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#)"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poSequent#INITIALISATION\/inv1\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD0"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="INITIALISATION/will_be_violated/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  establishment" org.eventb.core.poStamp="6">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#EVTALLHYPdeadlockee"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="0&lt;10" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#*"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#'"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#*"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poSelHintSnd="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poSequent#INITIALISATION\/will_be_violated\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD1"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTdeadlockee" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#CTXHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="x'" org.eventb.core.type="ℤ"/>
+<org.eventb.core.poIdentifier name="deadlocked'" org.eventb.core.type="BOOL"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPdeadlockee" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#EVTIDENTdeadlockee" org.eventb.core.poStamp="0"/>
+<org.eventb.core.poSequent name="violate_invariant/inv1/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="7">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#EVTALLHYPdeadlockef"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="x+1∈ℕ" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#)"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#+"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#)"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poSequent#violate_invariant\/inv1\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD0"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poSequent name="violate_invariant/will_be_violated/INV" org.eventb.core.accurate="true" org.eventb.core.poDesc="Invariant  preservation" org.eventb.core.poStamp="7">
+<org.eventb.core.poPredicateSet name="SEQHYP" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#EVTALLHYPdeadlockef"/>
+<org.eventb.core.poPredicate name="SEQHYQ" org.eventb.core.predicate="x+1&lt;10" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#*"/>
+<org.eventb.core.poSource name="SEQHYR" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#+"/>
+<org.eventb.core.poSource name="SEQHYS" org.eventb.core.poRole="DEFAULT" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#*"/>
+<org.eventb.core.poSelHint name="SEQHYT" org.eventb.core.poSelHintFst="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poSelHintSnd="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poSequent#violate_invariant\/will_be_violated\/INV|org.eventb.core.poPredicateSet#SEQHYP"/>
+<org.eventb.core.poSelHint name="SEQHYU" org.eventb.core.poSelHintFst="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#ALLHYP|org.eventb.core.poPredicate#PRD1"/>
+</org.eventb.core.poSequent>
+<org.eventb.core.poPredicateSet name="EVTIDENTdeadlockef" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="x'" org.eventb.core.type="ℤ"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPdeadlockef" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#EVTIDENTdeadlockef" org.eventb.core.poStamp="7">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="deadlocked=FALSE" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#+|org.eventb.core.guard#("/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTIDENTdeadlockeg" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#ALLHYP" org.eventb.core.poStamp="0">
+<org.eventb.core.poIdentifier name="deadlocked'" org.eventb.core.type="BOOL"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="EVTALLHYPdeadlockeg" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#EVTIDENTdeadlockeg" org.eventb.core.poStamp="10">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="deadlocked=FALSE" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.event#.|org.eventb.core.guard#'"/>
+</org.eventb.core.poPredicateSet>
+<org.eventb.core.poPredicateSet name="ALLHYP" org.eventb.core.parentSet="/Errors/createErrors.bpo|org.eventb.core.poFile#createErrors|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poStamp="6">
+<org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="x∈ℕ" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#)"/>
+<org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="x&lt;10" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#*"/>
+<org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="deadlocked∈BOOL" org.eventb.core.source="/Errors/createErrors.bum|org.eventb.core.machineFile#createErrors|org.eventb.core.invariant#-"/>
+</org.eventb.core.poPredicateSet>
+</org.eventb.core.poFile>

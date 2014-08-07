@@ -2,7 +2,7 @@ import de.prob.statespace.*
 import de.prob.animator.command.*
 
 
-s = api.b_load(dir+"/machines/scheduler.mch").getStatespace()
+s = api.b_load(dir+"/machines/scheduler.mch") as StateSpace
 h = new Trace(s)
 h = h.add(0)
 h = h.add(1)
@@ -17,3 +17,4 @@ assert result.getNodes() == ["'deadlocked:0'","'invariant_violated:0'","'live:3'
 assert result.getUncovered() == ["swap"]
 
 s.animator.cli.shutdown();
+"ComputeCoverageCommand returns the expected result"

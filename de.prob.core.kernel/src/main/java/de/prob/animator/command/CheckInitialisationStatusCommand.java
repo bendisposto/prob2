@@ -6,7 +6,6 @@
 
 package de.prob.animator.command;
 
-import de.prob.animator.command.internal.CheckBooleanPropertyCommand;
 /**
  * Checks to see if the given state is initialized.
  * 

@@ -15,6 +15,7 @@ import java.util.WeakHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -248,12 +249,40 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 */
 	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
-			throws BException {
+			throws IllegalArgumentException {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				stateId.getId(), name, pred, nrOfSolutions);
 		execute(command);
+		if (command.hasErrors()) {
+			throw new IllegalArgumentException("Executing operation " + name
+					+ " with predicate " + predicate + " produced errors: "
+					+ Joiner.on(", ").join(command.getErrors()));
+		}
 		return command.getNewTransitions();
+	}
+
+	/**
+	 * Tests to see if a combination of an operation name and a predicate is
+	 * valid from a given state.
+	 * 
+	 * @param stateId
+	 *            {@link StateId} id for state to test
+	 * @param name
+	 *            {@link String} name of operation
+	 * @param predicate
+	 *            {@link String} predicate to test
+	 * @return true, if the operation is valid from the given state. False
+	 *         otherwise.
+	 */
+	public boolean isValidOperation(final StateId stateId, final String name,
+			final String predicate) {
+		final ClassicalB pred = new ClassicalB(predicate);
+		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
+				stateId.getId(), name, pred, 1);
+		execute(command);
+		return !command.hasErrors()
+				&& (command.getNewTransitions().size() == 1);
 	}
 
 	/**
@@ -718,8 +747,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	/**
 	 * This calculated the shortest path from root to the specified state. This
 	 * contacts the ProB kernel via the {@link GetShortestTraceCommand} and then
-	 * uses the generated {@link List} of operation ids to generate a Trace via
-	 * the {@link StateSpace#getTrace(List)} method.
+	 * uses the generated of operations to generate a Trace via the
+	 * {@link StateSpace#getTrace(ITraceDescription)} method.
 	 * 
 	 * @param stateId
 	 *            StateId for which the trace through the state space should be
@@ -729,8 +758,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public Trace getTrace(final StateId stateId) {
 		GetShortestTraceCommand cmd = new GetShortestTraceCommand(stateId);
 		execute(cmd);
-		List<String> opIds = cmd.getOperationIds();
-		return getTrace(opIds);
+		return getTrace(cmd);
 	}
 
 	/**
@@ -844,8 +872,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	/**
 	 * This method is implemented to provide access to the {@link StateId}
-	 * objects specified by either a String or an integer identifier. This maps
-	 * to a groovy operator so that in the console users can type
+	 * objects specified by an integer identifier. This maps to a groovy
+	 * operator so that in the console users can type
 	 * variableOfTypeStateSpace[stateId] and receive the corresponding StateId
 	 * back. An IllegalArgumentException is thrown if the specified id is
 	 * unknown.
@@ -854,19 +882,13 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @param that
 	 * @return {@link StateId} for the specified id
 	 */
-	public Object getAt(final Object that) {
-		StateId id = null;
-		if (that instanceof String) {
-			id = getVertex((String) that);
-		}
-		if (that instanceof Integer) {
-			id = getVertex(String.valueOf(that));
-		}
+	public Object getAt(final int sId) {
+		StateId id = getVertex(String.valueOf(sId));
 		if (id != null) {
 			return id;
 		}
 		throw new IllegalArgumentException(
-				"StateSpace does not contain vertex " + that);
+				"StateSpace does not contain vertex " + sId);
 	}
 
 	@Override

@@ -17,3 +17,4 @@ c = c.anyEvent()
 assert c.getCurrentState() != st
 
 s.animator.cli.shutdown();
+"A .bum.bum file can be loaded and does not result in an empty machine"

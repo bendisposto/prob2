@@ -16,3 +16,4 @@ h = h.anyEvent("nr_ready")
 assert h.current.edge.name == "nr_ready"
 
 s.animator.cli.shutdown();
+"anyOperation and anyEvent on Trace work correctly"

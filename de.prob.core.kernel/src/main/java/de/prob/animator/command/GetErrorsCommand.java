@@ -28,7 +28,7 @@ public class GetErrorsCommand extends AbstractCommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		errors = Collections.emptyList();
-		pto.openTerm("getErrorMessages").printVariable(ERRORS_VARIABLE)
+		pto.openTerm("get_error_messages").printVariable(ERRORS_VARIABLE)
 				.closeTerm();
 	}
 

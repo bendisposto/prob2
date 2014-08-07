@@ -83,6 +83,9 @@ public class CSPAssertionsCommand extends AbstractCommand {
 		return results;
 	}
 
+	// TODO: We should find a way to translate these traces into ProB Traces.
+	// Maybe we can create a class implementing ITraceDescriptor that does the
+	// translation
 	public List<ListPrologTerm> getResultTraces() {
 		return resultTraces;
 	}

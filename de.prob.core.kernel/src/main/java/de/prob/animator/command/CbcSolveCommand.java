@@ -61,7 +61,7 @@ public class CbcSolveCommand extends AbstractCommand {
 		}
 		if ("contradiction_found".equals(functor)) {
 			result = new ComputationNotCompletedResult(evalElement.getCode(),
-					"cannot be solved");
+					"contradiction found");
 		}
 		if ("solution".equals(functor)) {
 			ListPrologTerm solutionBindings = BindingGenerator
@@ -78,8 +78,8 @@ public class CbcSolveCommand extends AbstractCommand {
 						t.getArgument(PROLOG_REP));
 			}
 
-			result = new EvalResult(evalElement.getCode(), "TRUE", solutions,
-					solutionsSource);
+			result = new EvalResult(evalElement.getCode(), "TRUE",
+					new CompoundPrologTerm("TRUE"), solutions, solutionsSource);
 		}
 		if ("no_solution_found".equals(functor)) {
 			result = new ComputationNotCompletedResult(evalElement.getCode(),
