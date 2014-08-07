@@ -37,17 +37,17 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 			final int port) {
 		super(id, tool, templatePath, host, port);
 		this.engineProvider = engineProvider;
-		incrementalUpdate = false;
 		registry.registerListener(this);
+		this.incrementalUpdate = true;
 	}
 
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		sendInitMessage(context);
-		if (lastinfo > -1) {
-			initSession();
-			animationChange(getTool());
+		if (lastinfo == -1) {
+			responses.reset();
+			sendInitMessage(context);
+			initSession();			
 		}
 	}
 
@@ -89,6 +89,10 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	public void callJs(final Object values) {
 		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
 				values));
+	}
+
+	public void apply(final Object transformers) {
+		submit(WebUtils.wrap("cmd", "bms.apply", "transformers", transformers));
 	}
 
 	/**

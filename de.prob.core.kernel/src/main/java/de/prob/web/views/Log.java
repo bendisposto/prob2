@@ -19,6 +19,10 @@ import de.prob.web.WebUtils;
 public class Log extends AbstractSession {
 
 	private volatile List<LogElement> elements = new ArrayList<LogElement>();
+	
+	public Log() {
+		incrementalUpdate = false;
+	}
 
 	@Override
 	public String html(final String clientid,

@@ -44,5 +44,10 @@ public class Responses {
 	public void add(Message message) {
 		responseCache.put(itemcount++, message);
 	}
+	
+	public void reset() {
+		responseCache.invalidateAll();
+		itemcount = 0;
+	}
 
 }
