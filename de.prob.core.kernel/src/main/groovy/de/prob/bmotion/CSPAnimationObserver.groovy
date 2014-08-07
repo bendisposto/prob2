@@ -20,34 +20,36 @@ class CSPAnimationObserver implements IBMotionGroovyObserver {
 	}
 
 	public void update(ITool tool) {
-		json.observers.each { o ->
-			if(o?.type?.getAsString() == "CspEventObserver") {
-				def factions = []
-				def trace = tool.getTrace()
-				trace.ensureOpInfosEvaluated()
-				def opList = trace.getCurrent().getOpList()
-				opList.each { op ->
-					def fullOp = getOpString(op)
-					o.objs.each { obj ->
-						def events = session.eval(obj.exp.getAsString())
-						if(events != null) {
-							events = events.replace("{","").replace("}", "")
-							def event_names = events.split(",")
-							if(event_names.contains(fullOp)) {
-								def pmap = [:]
-								op.getParams().eachWithIndex() { v, i -> pmap.put("a"+(i+1),v) };
-								pmap.put("Event", op.getName())
-								factions = factions + obj.actions.collect { item ->
-									def fselector = mustacheRender(item.selector.getAsString(),pmap)
-									def fvalue = mustacheRender(item.value.getAsString(),pmap)
-									def fattr = mustacheRender(item.attr.getAsString(),pmap)
-									return [selector: fselector, attr: fattr, value: fvalue	]
+		if(json != null) {
+			json.observers.each { o ->
+				if(o?.type?.getAsString() == "CspEventObserver") {
+					def factions = []
+					def trace = tool.getTrace()
+					trace.ensureOpInfosEvaluated()
+					def opList = trace.getCurrent().getOpList()
+					opList.each { op ->
+						def fullOp = getOpString(op)
+						o.objs.each { obj ->
+							def events = tool.evaluate(tool.getCurrentState(), obj.exp.getAsString())
+							if(events != null) {
+								events = events.replace("{","").replace("}", "")
+								def event_names = events.split(",")
+								if(event_names.contains(fullOp)) {
+									def pmap = [:]
+									op.getParams().eachWithIndex() { v, i -> pmap.put("a"+(i+1),v) };
+									pmap.put("Event", op.getName())
+									factions = factions + obj.actions.collect { item ->
+										def fselector = mustacheRender(item.selector.getAsString(),pmap)
+										def fvalue = mustacheRender(item.value.getAsString(),pmap)
+										def fattr = mustacheRender(item.attr.getAsString(),pmap)
+										return [selector: fselector, attr: fattr, value: fvalue	]
+									}
 								}
 							}
 						}
 					}
+					session.toGui('bms.triggerObserverActions', [actions : factions.findAll { i -> i != null }])
 				}
-				session.toGui('bms.triggerObserverActions', [actions : factions.findAll { i -> i != null }])
 			}
 		}
 	}

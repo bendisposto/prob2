@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.inject.Singleton;
+
+@Singleton
 public class ToolRegistry {
 
 	private final Map<String, ITool> tools = new HashMap<String, ITool>();
@@ -30,4 +33,8 @@ public class ToolRegistry {
 		}
 	}
 
+	public ITool getTool(String id) {
+		return tools.get(id);
+	}
+	
 }

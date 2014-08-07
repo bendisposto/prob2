@@ -24,7 +24,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.Main;
-import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.Api;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.AnimationSelector;
@@ -42,15 +41,13 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 	private final CompletionService<SessionResult> taskCompletionService = new ExecutorCompletionService<SessionResult>(
 			taskExecutor);
 	private final ScriptEngineProvider engineProvider;
-	private final ToolRegistry toolRegistry;
 	
 	@Inject
 	public BMotionStudioServlet(final Api api,
 			final AnimationSelector animations,
 			final ToolRegistry toolRegistry,
 			final ScriptEngineProvider engineProvider) {
-		super(api, animations);
-		this.toolRegistry = toolRegistry;
+		super(api, animations, toolRegistry);
 		this.engineProvider = engineProvider;
 	}
 
@@ -141,11 +138,9 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 	}
 
 	@Override
-	protected AbstractBMotionStudioSession createSession(String template,
-			AbstractModel model, String host, int port) {
-		// Create new ITool in respect to model
-		ITool tool = BMotionUtil.loadTool(model, animations, toolRegistry);
-		return new BMotionStudioSession(tool, toolRegistry, template, model,
+	protected AbstractBMotionStudioSession createSession(UUID id, ITool tool,
+			String template, String host, int port) {
+		return new BMotionStudioSession(id, tool, toolRegistry, template,
 				engineProvider, host, port);
 	}
 

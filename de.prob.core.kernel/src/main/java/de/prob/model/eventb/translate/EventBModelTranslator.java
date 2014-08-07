@@ -87,7 +87,7 @@ public class EventBModelTranslator {
 		pto.closeTerm();
 	}
 
-	private void printPragmas(IPrologTermOutput pto) {
+	private void printPragmas(final IPrologTermOutput pto) {
 		for (Machine machine : model.getChildrenOfType(Machine.class)) {
 			EventBMachine ebM = (EventBMachine) machine;
 			for (EventBVariable var : ebM.getVariables()) {

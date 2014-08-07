@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import com.google.inject.Inject
 
 import de.be4.classicalb.core.parser.exceptions.BException
+import de.prob.Main;
 import de.prob.animator.IAnimator
 import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.animator.command.GetVersionCommand
@@ -28,7 +29,6 @@ public class Api {
 
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;
-	private final ProBInstanceProvider instanceProvider;
 
 
 	/**
@@ -53,11 +53,9 @@ public class Api {
 	 */
 	@Inject
 	public Api(final FactoryProvider modelFactoryProvider,
-	final Downloader downloader,
-	final ProBInstanceProvider instanceProvider) {
+	final Downloader downloader) {
 		this.modelFactoryProvider = modelFactoryProvider;
 		this.downloader = downloader;
-		this.instanceProvider = instanceProvider;
 	}
 
 	/**
@@ -240,23 +238,20 @@ public class Api {
 	//		}
 	//	}
 
-	public CliVersionNumber getVersion() {
-		boolean binaryPresent = false;
-		try {
-			instanceProvider.get();
-			binaryPresent = true;
-		} catch (Exception e) {
-			binaryPresent = false;
-		}
 
-		if (!binaryPresent) {
+
+
+
+	public CliVersionNumber getVersion() {
+		try {
+			IAnimator animator = Main.getInjector().getInstance(IAnimator.class);
+			GetVersionCommand versionCommand = new GetVersionCommand();
+			animator.execute(versionCommand);
+			return versionCommand.getVersion();
+		} catch (Exception e) {
 			return null;
 		}
-		GetVersionCommand versionCommand = new GetVersionCommand();
-		IAnimator animator = ServletContextListener.INJECTOR
-				.getInstance(IAnimator.class);
-		animator.execute(versionCommand);
-		return versionCommand.getVersion();
+
 	}
 
 	/**

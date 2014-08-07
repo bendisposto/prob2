@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.google.gson.JsonElement;
 
 import de.prob.animator.domainobjects.EvalResult;
@@ -14,35 +16,24 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
-import de.prob.ui.api.ITool;
 import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 
-public class CSPAnimation implements ITool, IAnimationChangeListener, IObserver {
+public class CSPAnimation extends ProBAnimation {
 
-	private Trace trace;
 	private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
-	private final ToolRegistry toolRegistry;
-	private final String modelPath;
-	private final AnimationSelector animations;
 
-	public CSPAnimation(final AbstractModel model,
-			final AnimationSelector animations, final ToolRegistry toolRegistry) {
-		this(new Trace(model), animations, toolRegistry);
+	public CSPAnimation(String toolId, AbstractModel model, AnimationSelector animations,
+			ToolRegistry toolRegistry) {
+		super(toolId, model, animations, toolRegistry);
 	}
-
-	public CSPAnimation(final Trace trace, final AnimationSelector animations,
-			final ToolRegistry toolRegistry) {
-		this.animations = animations;
-		this.toolRegistry = toolRegistry;
-		this.modelPath = trace.getModel().getModelFile().getAbsolutePath();
-		animations.registerAnimationChangeListener(this);
-		animations.addNewAnimation(trace);
-		toolRegistry.register(getName(), this);
+	
+	public CSPAnimation(String toolId, AnimationSelector animations,
+			ToolRegistry toolRegistry) {
+		super(toolId, animations, toolRegistry);
 	}
 
 	@Override
@@ -62,6 +53,8 @@ public class CSPAnimation implements ITool, IAnimationChangeListener, IObserver 
 	@Override
 	public String evaluate(final String stateref, final String formula)
 			throws IllegalFormulaException {
+		if(trace == null)
+			return null;
 		if (!formulaCache.containsKey(formula)) {
 			IEvalElement e = trace.getModel().parseFormula(formula);
 			StateSpace space = trace.getStateSpace();
@@ -79,48 +72,19 @@ public class CSPAnimation implements ITool, IAnimationChangeListener, IObserver 
 	@Override
 	public List<String> getErrors(final String state, final String formula) {
 		List<String> errors = new ArrayList<String>();
-		try {
-			IEvalElement e = trace.getModel().parseFormula(formula);
-			StateSpace space = trace.getStateSpace();
-			space.eval(space.getVertex(state), Arrays.asList(e));
-		} catch (EvaluationException e) {
-			errors.add("parse error : " + e.getMessage());
-		} catch (Exception e) {
-			errors.add("thrown " + e.getClass() + " because " + e.getMessage());
+		if (trace != null) {
+			try {
+				IEvalElement e = trace.getModel().parseFormula(formula);
+				StateSpace space = trace.getStateSpace();
+				space.eval(space.getVertex(state), Arrays.asList(e));
+			} catch (EvaluationException e) {
+				errors.add("parse error : " + e.getMessage());
+			} catch (Exception e) {
+				errors.add("thrown " + e.getClass() + " because "
+						+ e.getMessage());
+			}
 		}
 		return errors;
-	}
-
-	@Override
-	public String getCurrentState() {
-		return trace.getCurrentState().getId();
-	}
-
-	@Override
-	public boolean canBacktrack() {
-		return true;
-	}
-
-	@Override
-	public String getName() {
-		return trace.getUUID().toString();
-	}
-
-	public Trace getTrace() {
-		return trace;
-	}
-
-	@Override
-	public void traceChange(final Trace currentTrace,
-			final boolean currentAnimationChanged) {
-		if (currentTrace != null
-				&& currentTrace.getModel().getModelFile().getAbsolutePath()
-						.equals(modelPath) && !currentTrace.equals(trace)) {
-			trace = currentTrace;
-			toolRegistry.notifyToolChange(this);
-		} else if (currentTrace == null) {
-			trace = currentTrace;
-		}
 	}
 
 	@Override
@@ -131,6 +95,12 @@ public class CSPAnimation implements ITool, IAnimationChangeListener, IObserver 
 	public IBMotionGroovyObserver getBMotionGroovyObserver(
 			BMotionStudioSession bmsSession, JsonElement jsonObserver) {
 		return new CSPAnimationObserver(bmsSession, jsonObserver);
+	}
+
+	@Override
+	public String getModelData(String dataParameter, HttpServletRequest req) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

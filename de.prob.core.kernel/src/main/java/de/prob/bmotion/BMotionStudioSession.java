@@ -1,9 +1,13 @@
 package de.prob.bmotion;
 
+import groovy.lang.GroovyRuntimeException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import javax.script.ScriptException;
 import javax.servlet.AsyncContext;
 
 import org.slf4j.Logger;
@@ -11,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
-import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.IToolListener;
@@ -26,40 +29,45 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 
 	private final List<IBMotionGroovyObserver> groovyObserverListener = new ArrayList<IBMotionGroovyObserver>();
 
-	private final ITool tool;
-	
 	private final ScriptEngineProvider engineProvider;
 	
-	public BMotionStudioSession(final ITool tool, final ToolRegistry registry,
-			final String templatePath, final AbstractModel model,
+	public BMotionStudioSession(final UUID id, final ITool tool,
+			final ToolRegistry registry, final String templatePath,
 			final ScriptEngineProvider engineProvider, final String host,
 			final int port) {
-		super(templatePath, model, host, port);
-		this.tool = tool;
+		super(id, tool, templatePath, host, port);
 		this.engineProvider = engineProvider;
-		incrementalUpdate = false;
 		registry.registerListener(this);
+		this.incrementalUpdate = true;
 	}
 
 	@Override
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
-		sendInitMessage(context);
-		animationChange(tool);
+		if (lastinfo == -1) {
+			responses.reset();
+			sendInitMessage(context);
+			initSession();			
+		}
 	}
 
 	public void registerGroovyObserver(final IBMotionGroovyObserver script) {
 		groovyObserverListener.add(script);
-		animationChange(tool);
+		script.update(getTool());
 	}
 
 	@Override
 	public void animationChange(final ITool tool) {
-		for (IBMotionGroovyObserver s : groovyObserverListener) {
-			s.update(tool);
+		try {
+			for (IBMotionGroovyObserver s : groovyObserverListener) {
+				s.update(tool);
+			}
+		} catch (GroovyRuntimeException e) {
+			logger.error("BMotion Studio (Groovy runtime exception): "
+					+ e.getMessage());
 		}
 	}
-
+	
 	// ---------- BMS API
 	public void toGui(final Object json) {
 		submit(json);
@@ -83,6 +91,10 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 				values));
 	}
 
+	public void apply(final Object transformers) {
+		submit(WebUtils.wrap("cmd", "bms.apply", "transformers", transformers));
+	}
+
 	/**
 	 * 
 	 * This method evaluates a given formula and returns the corresponding
@@ -95,7 +107,17 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	 * @throws Exception
 	 */
 	public Object eval(final String formula) throws Exception {
-		return tool.evaluate(tool.getCurrentState(), formula);
+		// TODO: Decreases performance!!!
+		// if (getTool().getErrors(getTool().getCurrentState(),
+		// formula).isEmpty()) {
+		// try {
+		String evaluate = getTool().evaluate(getTool().getCurrentState(), formula);
+		return evaluate;
+		// } catch (IllegalFormulaException e) {
+		// TODO: handle exception
+		// }
+		// }
+		// return null;
 	}
 
 	public Object executeOperation(final Map<String, String[]> params) {
@@ -103,27 +125,36 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 		String op = params.get("op")[0];
 		String[] parameters = params.get("predicate");
 		try {
-			tool.doStep(id, op, parameters);
+			getTool().doStep(id, op, parameters);
 		} catch (ImpossibleStepException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+	
+	// ------------------
 
 	@Override
 	public void initSession() {
 		String absoluteTemplatePath = BMotionUtil
 				.getFullTemplatePath(getTemplatePath());
-		if (tool instanceof IObserver) {
+		groovyObserverListener.clear();
+		if (getTool() instanceof IObserver) {
 			JsonElement jsonObserver = BMotionUtil.getJsonObserver(
 					absoluteTemplatePath, getParameterMap().get("json"));
-			registerGroovyObserver(((IObserver) tool).getBMotionGroovyObserver(
-					this, jsonObserver));
+			registerGroovyObserver(((IObserver) getTool())
+					.getBMotionGroovyObserver(this, jsonObserver));
 		}
-		BMotionUtil.evaluateGroovy(engineProvider.get(), absoluteTemplatePath,
-				getParameterMap(), this);
+		try {
+			BMotionUtil.evaluateGroovy(engineProvider.get(),
+					absoluteTemplatePath, getParameterMap(), this);
+		} catch (GroovyRuntimeException e) {
+			logger.error("BMotion Studio (Groovy runtime exception): "
+					+ e.getMessage());
+		} catch (ScriptException e) {
+			logger.error("BMotion Studio (Groovy script exception): "
+					+ e.getMessage() + "(line " + e.getLineNumber() + ")");
+		}
 	}
-
-	// ------------------
-
+	
 }

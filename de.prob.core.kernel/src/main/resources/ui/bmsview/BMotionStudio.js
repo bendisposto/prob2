@@ -98,6 +98,7 @@ bms = (function() {
 	}
 	
 	extern.triggerObserverActions = function(data) {
+		console.log(data)
 		$.each(data.actions, function(i,action) {
 			var attrObj = svgAttributeList[action.attr]
 			if(attrObj !== undefined) {
@@ -112,6 +113,25 @@ bms = (function() {
 			}
 		});
 	}
+	
+	extern.apply = function(data) {
+		$.each(JSON.parse(data.transformers), function(i,t) {
+			var selector = t.selector
+			$.each(t.attributes.concat(t.styles), function(j,a) {
+				var attrObj = svgAttributeList[a.name]
+				if(attrObj !== undefined) {
+					var changeFunc = attrObj.change
+					if(changeFunc !== undefined) {
+						changeFunc(selector,a.value)
+					} else {
+						$(selector).attr(a.name,a.value)
+					}
+				} else {
+					$(selector).attr(a.name,a.value)
+				}	
+			});
+		});
+	}	
 	
 	return extern;
 

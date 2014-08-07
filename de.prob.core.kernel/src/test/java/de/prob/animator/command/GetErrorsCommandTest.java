@@ -1,8 +1,11 @@
 package de.prob.animator.command;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +31,7 @@ public class GetErrorsCommandTest {
 		assertNotNull(next);
 		assertTrue(next instanceof CompoundPrologTerm);
 		CompoundPrologTerm t = (CompoundPrologTerm) next;
-		assertEquals("getErrorMessages", t.getFunctor());
+		assertEquals("get_error_messages", t.getFunctor());
 		assertEquals(1, t.getArity());
 		PrologTerm argument = t.getArgument(1);
 		assertTrue(argument.isVariable());

@@ -3,10 +3,13 @@ package de.prob.bmotion
 import javax.script.Bindings
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
+import javax.script.ScriptException
 
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import com.google.common.base.Function
 import com.google.gson.JsonElement
@@ -19,6 +22,7 @@ import de.prob.statespace.FormalismType
 import de.prob.statespace.Trace
 import de.prob.ui.api.ITool
 import de.prob.ui.api.ToolRegistry
+import de.prob.web.views.Events
 
 class BMotionUtil {
 
@@ -37,7 +41,7 @@ class BMotionUtil {
 		return element;
 	}
 
-	def static void evaluateGroovy(ScriptEngine evaluator, String absoluteTemplatePath, Map<String, String> parameters, BMotionStudioSession bms) {
+	def static void evaluateGroovy(ScriptEngine evaluator, String absoluteTemplatePath, Map<String, String> parameters, BMotionStudioSession bms) throws GroovyRuntimeException, ScriptException {
 		String scriptPaths = parameters.get("script")
 		if (absoluteTemplatePath != null && scriptPaths != null) {
 			def templateFolder = BMotionUtil.getTemplateFolder(absoluteTemplatePath)
@@ -45,7 +49,6 @@ class BMotionUtil {
 			bindings.putAll(parameters)
 			bindings.put("bms", bms)
 			bindings.put("templateFolder", templateFolder)
-
 			String[] paths = scriptPaths.split(",")
 			for (path in paths) {
 				evaluator.eval(new File(templateFolder + File.separator + path).getText(), bindings)
@@ -66,13 +69,11 @@ class BMotionUtil {
 		}
 	}
 
-	def static AbstractModel loadModel(Api api, AnimationSelector animations, String modelPath, String templatePath) {
-
+	def static AbstractModel loadModel(Api api, AnimationSelector animations, String modelPath, String absoluteTemplatePath) {
 		def AbstractModel model = null
-
 		if(modelPath != null) {
-			String formalism = BMotionUtil.getFormalism(modelPath)
-			def path = BMotionUtil.getTemplateFolder(templatePath) + File.separator +  modelPath
+			def formalism = BMotionUtil.getFormalism(modelPath)
+			def path = BMotionUtil.getTemplateFolder(absoluteTemplatePath) + File.separator +  modelPath
 			model = Eval.x(api, "x.${formalism}_load('$path')")
 		} else {
 			def Trace trace = animations.getCurrentTrace()
@@ -80,17 +81,34 @@ class BMotionUtil {
 				model = trace.getModel();
 			}
 		}
-
 		return model
 	}
-	
-	def static ITool loadTool(AbstractModel model, AnimationSelector animations, ToolRegistry toolRegistry) {
-		ITool tool = null
-		if (model != null) {
-			if(model.getFormalismType() == FormalismType.B) {
-				return new BAnimation(model, animations, toolRegistry);
-			} else if (model.getFormalismType() == FormalismType.CSP) {
-				return new CSPAnimation(model, animations, toolRegistry)
+
+	def static ITool loadTool(String sessionId, String toolId, String modelPath, AnimationSelector animations, ToolRegistry toolRegistry, Api api, String absoluteTemplatePath, Class<? extends AbstractBMotionStudioServlet> claz) {
+		// First check if a tool is already registered with the passed id ...
+		ITool tool = toolRegistry.getTool(toolId);
+		if(tool == null) {
+			// If no registered tool was found, try to load standard tool (BAnimation or CSPAnimation)
+			// TODO: Refactoring needed. This needs to be replaced!
+			AbstractModel model = BMotionUtil.loadModel(api, animations, modelPath, absoluteTemplatePath);
+			if (model != null) {
+				if(model.getFormalismType() == FormalismType.B) {
+					tool = new BAnimation(sessionId, model, animations, toolRegistry);
+				} else if(model.getFormalismType() == FormalismType.CSP) {
+					tool =  new CSPAnimation(sessionId, model, animations, toolRegistry);
+				}
+				if(claz == BMotionStudioServlet.class) {
+					animations.addNewAnimation(new Trace(model));
+				}
+			} else if(toolId != null) {
+				if("BAnimation".equals(toolId)) {
+					tool = new BAnimation(sessionId, animations, toolRegistry);
+				} else if("CSPAnimation".equals(toolId)) {
+					tool =  new CSPAnimation(sessionId, animations, toolRegistry);
+				}
+			}
+			if(tool != null) {
+				toolRegistry.register(sessionId, tool);
 			}
 		}
 		return tool

@@ -169,8 +169,16 @@ public class TheoryTranslator {
 			final IPrologTermOutput pto) {
 		if (definition instanceof DirectDefinition) {
 			printDirectDefinition((DirectDefinition) definition, pto);
+
+			// Empty list for recursive definitions
+			pto.openList();
+			pto.closeList();
 		}
 		if (definition instanceof RecursiveOperatorDefinition) {
+			// Empty list for direct definitions
+			pto.openList();
+			pto.closeList();
+
 			printRecursiveDefinition((RecursiveOperatorDefinition) definition,
 					pto);
 		}

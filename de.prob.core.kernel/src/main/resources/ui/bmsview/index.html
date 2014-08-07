@@ -24,23 +24,6 @@
 	<body>
 	
 		{{#error}}
-			{{#standalone}}
-			<nav class="navbar navbar-default" role="navigation">
-			  <div class="container-fluid">
-			    <!-- Brand and toggle get grouped for better mobile display -->
-			    <div class="navbar-header">
-			      <a class="navbar-brand" href="#">BMotion Studio</a>
-			    </div>
-			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-			      <ul class="nav navbar-nav navbar-right">
-			        <li><a href="#" id="bt_open_template">Open Template</a></li>
-			        <li><a href="#" id="bt_create_template">Create Template</a></li>
-			      </ul>
-			    </div>
-			  </div>
-			</nav>
-			{{/standalone}}
-			
 			<div style="text-align:center">
 				<h3 style="color:red;">Some errors occured</h3>
 				<div style="list-style-type: none; color:red; font-weight:bold;">
@@ -49,22 +32,18 @@
 				{{/errors}}
 				</div>
 			</div>
-			
 		{{/error}}
 		{{^error}}
-
 			{{#standalone}}
 			<nav class="navbar navbar-default" role="navigation">
 			  <div class="container-fluid">
 			    <!-- Brand and toggle get grouped for better mobile display -->
 			    <div class="navbar-header">
-			      <a class="navbar-brand" href="#">BMotion Studio</a>
+			      <a class="navbar-brand" href="#">BMotion Studio 2</a>
 			    </div>
 			
 			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			      <ul class="nav navbar-nav navbar-right">
-			        <li><a href="#" id="bt_open_template">Open Template</a></li>
-			        <li><a href="#" id="bt_create_template">Create Template</a></li>
 			        <li><a href="http://{{host}}:{{port}}/bmseditor/?template={{template}}">Start Editor</a></li>
 			        <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Open View <b class="caret"></b></a>
@@ -73,6 +52,7 @@
 			            <li><a href="#" id="bt_open_history_view">History</a></li>
 			            <li><a href="#" id="bt_open_animation_view">CurrentAnimations</a></li>
 			            <li><a href="#" id="bt_open_state_view">StateInspector</a></li>
+			            <li><a href="#" id="bt_open_log_view">LogView</a></li>
 			          </ul>
 			        </li>
 			      </ul>
@@ -92,8 +72,10 @@
 			<div id="state_view" title="StateInspector">
 		  		<iframe src="" id="state_iframe" frameBorder="0"></iframe>
 			</div>
+			<div id="log_view" title="LogView">
+		  		<iframe src="" id="log_iframe" frameBorder="0"></iframe>
+			</div>
 			{{/standalone}}
-			
 			<div id="vis_container">
 			</div>
 			<script>
@@ -101,70 +83,8 @@
 				bms.init("{{clientid}}");
 				bms.port = "{{port}}"
 				bms.host = "{{host}}" 
-				bms.lang = "{{lang}}"
 			</script>
-		
 		{{/error}}
-		
-		{{#standalone}}
-		<div class="modal fade" id="modal_open_template">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"
-							aria-hidden="true">&times;</button>
-						<h4 class="modal-title">Open BMotion Studio Template</h4>
-					</div>
-					<div class="modal-body">
-						<input type="text" class="form-control loadfile_input"
-							id="openfile" value="" placeholder="Path to visualisation template file"></input>
-						<button onClick="bms.browse('#openfile')" type="button"
-							class="load-btn btn btn-primary">Browse ...</button>
-						<button id="fb_okbtn" onClick="bms.fb_load_file('#openfile')"
-							type="button" class="load-btn btn btn-primary">Ok</button>
-					</div>
-					<div class="modal-footer">
-	      			</div>
-				</div>
-			</div>
-		</div>
-		
-		<div class="modal fade" id="modal_create_template">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"
-							aria-hidden="true">&times;</button>
-						<h4 class="modal-title">Create BMotion Studio Template</h4>
-					</div>
-					<div class="modal-body">
-						<input type="text" class="form-control createfile_input"
-							id="createfile" value="" placeholder="Path to new visualisation template file"></input>
-						<button id="fb_okbtn" onClick="bms.createTemplateFile('#createfile')"
-							type="button" class="load-btn btn btn-primary">Ok</button>
-					</div>
-					<div class="modal-footer">
-	      			</div>
-				</div>
-			</div>
-		</div>
-		
-		<div class="modal fade" id="modal_filedialog">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"
-							aria-hidden="true">&times;</button>
-						<h4 class="modal-title">Select BMotion Studio Template</h4>
-					</div>
-					<div id="filedialog_content" class="modal-body"></div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		{{/standalone}}
-		
+				
 	</body>
 </html>

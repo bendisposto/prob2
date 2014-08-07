@@ -3,7 +3,6 @@ package de.prob.bmotion;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,27 +23,20 @@ import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.prob.model.eventb.Event;
-import de.prob.model.eventb.EventBMachine;
-import de.prob.model.eventb.EventBVariable;
-import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.ModelElementList;
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
+import de.prob.ui.api.ITool;
+import de.prob.ui.api.ToolRegistry;
 import de.prob.web.WebUtils;
 
 @SuppressWarnings("serial")
 @Singleton
 public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 
-	private final Gson gson;
-
 	@Inject
-	public BMotionStudioEditorServlet(Api api, AnimationSelector animations,
-			Gson gson) {
-		super(api, animations);
-		this.gson = gson;
+	public BMotionStudioEditorServlet(final Api api,
+			final AnimationSelector animations, final ToolRegistry toolRegistry) {
+		super(api, animations, toolRegistry);
 	}
 
 	private void taskInit(HttpServletRequest req, HttpServletResponse resp) {
@@ -224,13 +216,12 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 	@Override
 	protected void delegateFileRequest(HttpServletRequest req,
 			HttpServletResponse resp, AbstractBMotionStudioSession bmsSession) {
-
 		String sessionId = bmsSession.getSessionUUID().toString();
 		String templatePath = bmsSession.getTemplatePath();
 		File templateFile = new File(templatePath);
 		String templateFolderPath = templateFile.getParent();
 		String fileRequest = req.getRequestURI().replace(
-				"/bmseditor/" + sessionId + "/", "");
+				req.getServletPath() + "/" + sessionId + "/", "");
 		String fullRequestPath = templateFolderPath + "/" + fileRequest;
 		if (fullRequestPath.endsWith("tpl.html")) {
 			// Template request
@@ -240,44 +231,18 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 		} else {
 			super.delegateFileRequest(req, resp, bmsSession);
 		}
-
 	}
 
 	private void delegateDataRequest(String dataParameter,
 			HttpServletRequest req, HttpServletResponse resp,
 			AbstractBMotionStudioSession bmsSession) {
-		String json = "{}";
-		if ("operations".equals(dataParameter)) {
-			List<XEditableListObj> l = new ArrayList<XEditableListObj>();
-			AbstractModel model = bmsSession.getModel();
-			AbstractElement mainComponent = model.getMainComponent();
-			if (mainComponent instanceof EventBMachine) {
-				ModelElementList<Event> events = ((EventBMachine) mainComponent)
-						.getEvents();
-				for (Event event : events) {
-					XEditableListObj xEditableListObj = new XEditableListObj(
-							event.getName(), event.getName());
-					l.add(xEditableListObj);
-				}
-			}
-			json = gson.toJson(l);
-		} else if ("variables".equals(dataParameter)) {
-			List<XEditableListObj> l = new ArrayList<XEditableListObj>();
-			AbstractModel model = bmsSession.getModel();
-			AbstractElement mainComponent = model.getMainComponent();
-			if (mainComponent instanceof EventBMachine) {
-				ModelElementList<EventBVariable> variables = ((EventBMachine) mainComponent)
-						.getVariables();
-				for (EventBVariable var : variables) {
-					XEditableListObj xEditableListObj = new XEditableListObj(
-							var.getName(), var.getName());
-					l.add(xEditableListObj);
-				}
-			}
-			json = gson.toJson(l);
+		ITool tool = bmsSession.getTool();
+		if (tool instanceof IObserver) {
+			String json = ((IObserver) tool).getModelData(dataParameter, req);
+			System.out.println("Data request: " + json);
+			resp.setContentType("application/json");
+			toOutput(resp, json);
 		}
-		resp.setContentType("application/json");
-		toOutput(resp, json);
 	}
 
 	@Override
@@ -332,23 +297,9 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 	}
 
 	@Override
-	protected AbstractBMotionStudioSession createSession(String template,
-			AbstractModel model, String host, int port) {
-		return new BMotionStudioEditorSession(template, model, host, port);
-	}
-	
-	private class XEditableListObj {
-
-		@SuppressWarnings("unused")
-		private String text;
-		@SuppressWarnings("unused")
-		private String value;
-
-		public XEditableListObj(String text, String value) {
-			this.text = text;
-			this.value = value;
-		}
-
+	protected AbstractBMotionStudioSession createSession(UUID id, ITool tool,
+			String template, String host, int port) {
+		return new BMotionStudioEditorSession(id, tool, template, host, port);
 	}
 
 }

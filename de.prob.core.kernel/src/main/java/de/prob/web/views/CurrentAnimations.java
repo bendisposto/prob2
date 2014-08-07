@@ -29,6 +29,7 @@ public class CurrentAnimations extends AbstractSession implements
 	public CurrentAnimations(final AnimationSelector animations) {
 		this.animations = animations;
 		animations.registerAnimationChangeListener(this);
+		incrementalUpdate = false;
 	}
 
 	@Override

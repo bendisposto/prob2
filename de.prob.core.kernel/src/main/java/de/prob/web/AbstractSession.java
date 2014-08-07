@@ -118,7 +118,6 @@ public abstract class AbstractSession implements ISession {
 		// logger.trace("Register {} Lastinfo {} size {}", new Object[] {
 		// client,
 		// lastinfo, responses.size() });
-
 		if (lastinfo == -1) {
 			reload(client, lastinfo, context);
 		} else if (lastinfo < responses.size()) {
@@ -126,7 +125,6 @@ public abstract class AbstractSession implements ISession {
 		} else {
 			send("", context);
 		}
-
 	}
 
 	protected void resend(final String client, final int lastinfo,
@@ -144,7 +142,7 @@ public abstract class AbstractSession implements ISession {
 			reload(client, lastinfo, context);
 			return;
 		}
-
+		
 		if (incrementalUpdate || lastinfo > 0) {
 			ArrayList<Object> cp = new ArrayList<Object>();
 			try {

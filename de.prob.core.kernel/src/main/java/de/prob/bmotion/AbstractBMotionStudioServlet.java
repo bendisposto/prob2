@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,9 +31,10 @@ import com.google.common.io.Files;
 import com.google.inject.Singleton;
 
 import de.prob.Main;
-import de.prob.model.representation.AbstractModel;
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
+import de.prob.ui.api.ITool;
+import de.prob.ui.api.ToolRegistry;
 import de.prob.web.WebUtils;
 
 @SuppressWarnings("serial")
@@ -47,10 +49,13 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 
 	protected final AnimationSelector animations;
 
+	protected final ToolRegistry toolRegistry;
+
 	public AbstractBMotionStudioServlet(final Api api,
-			final AnimationSelector animations) {
+			final AnimationSelector animations, final ToolRegistry toolRegistry) {
 		this.api = api;
 		this.animations = animations;
+		this.toolRegistry = toolRegistry;
 	}
 
 	protected void toOutput(HttpServletResponse resp, InputStream stream) {
@@ -150,7 +155,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 	}
 
 	private AbstractBMotionStudioSession createNewSessionAndRedirect(
-			HttpServletRequest req, HttpServletResponse resp)
+			HttpServletRequest req, HttpServletResponse resp, String sessionId)
 			throws ServletException, IOException {
 
 		int port = req.getLocalPort();
@@ -171,25 +176,33 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 			if (!e.getValue()[0].isEmpty())
 				parameterString.append("=" + e.getValue()[0]);
 		}
+
+		UUID sessionUUID = sessionId != null && !sessionId.isEmpty() ? UUID
+				.fromString(sessionId) : UUID.randomUUID();
+
+		// Try to get ITool implementation
+		String toolId = params.get("tool");
 		String modelPath = params.get("model");
+		ITool tool = BMotionUtil.loadTool(sessionUUID.toString(), toolId,
+				modelPath, animations, toolRegistry, api, fullTemplatePath,
+				getClass());
 
-		// Get model reference
-		AbstractModel model = BMotionUtil.loadModel(api, animations, modelPath,
-				fullTemplatePath);
-		AbstractBMotionStudioSession bmsSession = createSession(templatePath,
-				model, host, port);
+		if (tool == null) {
+			// TODO: exit and report error message "no ITool found ......"
+		}
+				
+		// Create and initialize session
+		AbstractBMotionStudioSession bmsSession = createSession(sessionUUID,
+				tool, templatePath, host, port);
 		bmsSession.setParameterMap(params);
-		String id = bmsSession.getSessionUUID().toString();
 		bmsSession.initSession();
-		sessions.put(id, bmsSession);
+		// Save session
+		sessions.put(sessionUUID.toString(), bmsSession);
 
-		// Send redirect with new session id, template file and parameters
-		String fpstring = "?"
-				+ parameterString.substring(1, parameterString.length());
-		String fileName = new File(templatePath).getName();
-		String redirect = req.getServletPath() + "/" + id + "/" + fileName
-				+ fpstring;
-		resp.sendRedirect(redirect);
+		// Redirect with new session id, template file and parameters
+		resp.sendRedirect(req.getServletPath() + "/" + sessionUUID.toString()
+				+ "/" + new File(templatePath).getName() + "?"
+				+ parameterString.substring(1, parameterString.length()));
 
 		return bmsSession;
 
@@ -201,7 +214,6 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		// Get session from URI
 		List<String> parts = new PartList(uri.split("/"));
 		String sessionId = parts.get(2);
-
 		// Try to get session. If no session exists, create one
 		AbstractBMotionStudioSession bmsSession = getSessions().get(sessionId);
 		if (bmsSession == null) {
@@ -211,7 +223,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 						getErrorHtml(errors).getBytes());
 				toOutput(resp, errorSiteStream);
 			} else {
-				bmsSession = createNewSessionAndRedirect(req, resp);
+				bmsSession = createNewSessionAndRedirect(req, resp, sessionId);
 			}
 		}
 		return bmsSession;
@@ -238,7 +250,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		File templateFile = new File(templatePath);
 		String templateFolderPath = templateFile.getParent();
 		String fileRequest = req.getRequestURI().replace(
-				"/" + req.getServletPath() + sessionId + "/", "");
+				req.getServletPath() + "/" + sessionId + "/", "");
 		String fullRequestPath = templateFolderPath + "/" + fileRequest;
 
 		InputStream stream = null;
@@ -272,9 +284,9 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 	protected abstract String getDefaultPage(
 			AbstractBMotionStudioSession bmsSession);
 
-	protected abstract AbstractBMotionStudioSession createSession(
-			String template, AbstractModel model, String host, int port);
-
+	protected abstract AbstractBMotionStudioSession createSession(UUID id,
+			ITool tool, String template, String host, int port);
+	
 	protected class PartList extends ArrayList<String> {
 
 		private static final long serialVersionUID = -5668244262489304794L;

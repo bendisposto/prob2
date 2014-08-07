@@ -57,6 +57,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		this.selector = selector;
 		groovy = sep.get();
 		selector.registerAnimationChangeListener(this);
+		incrementalUpdate = false;
 	}
 
 	// used in JS
