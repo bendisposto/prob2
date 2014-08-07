@@ -4,7 +4,7 @@ OPERATIONS
 
   a,b <-- Crazy1(p) =
   	SELECT
-  		p : INT
+  		p : INTEGER
   	THEN
   		a := p ||
   		b := p + 4
@@ -12,8 +12,8 @@ OPERATIONS
 
   a,b,c <-- Crazy2(p1,  p2) =
   	SELECT
-  		p1 : INT &
-  		p2 : POW(INT)
+  		p1 : INTEGER &
+  		p2 : POW(INTEGER)
   	THEN
   		a := card(p2) ||
   		b := {(p1,p2)} ||

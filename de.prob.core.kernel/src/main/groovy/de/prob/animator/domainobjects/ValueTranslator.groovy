@@ -16,6 +16,19 @@ import de.prob.prolog.term.PrologTerm
 	public String toString() {
 		return "(${first},${second})";
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(first, second);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Tuple)) {
+			return false
+		}
+		return this.first == obj.first && this.second == obj.second
+	}
 }
 
 class BString {

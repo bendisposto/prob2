@@ -57,10 +57,10 @@ public class OpInfo {
 		this.name = name;
 		this.src = src;
 		this.dest = dest;
-		this.params = Collections.emptyList();
-		this.targetState = "";
-		this.evaluated = true;
-		this.rep = name;
+		params = Collections.emptyList();
+		targetState = "";
+		evaluated = true;
+		rep = name;
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
@@ -129,7 +129,9 @@ public class OpInfo {
 			}
 			return name + "." + Joiner.on(".").join(getParams());
 		}
-		return name + "(" + Joiner.on(",").join(getParams()) + ")";
+		String retVals = getReturnValues().isEmpty() ? "" : Joiner.on(",")
+				.join(getReturnValues()) + " <-- ";
+		return retVals + name + "(" + Joiner.on(",").join(getParams()) + ")";
 	}
 
 	@Override
