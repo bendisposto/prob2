@@ -205,6 +205,9 @@ public class TheoryXmlHandler extends DefaultHandler {
 					.equals("org.eventb.theory.core.scNewOperatorDefinition")) {
 				beginAddingOperator(attributes);
 			} else if (qName
+					.equals("org.eventb.theory.core.scDirectOperatorDefinition")) {
+				addDirectDefinition(attributes);
+			} else if (qName
 					.equals("org.eventb.theory.core.scRecursiveOperatorDefinition")) {
 				beginRecursiveOpDef(attributes);
 			} else if (qName
