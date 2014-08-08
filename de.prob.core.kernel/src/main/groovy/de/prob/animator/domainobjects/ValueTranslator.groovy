@@ -19,7 +19,10 @@ import de.prob.prolog.term.PrologTerm
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(first, second);
+		def code = 7
+		code = 31 * code + first.hashCode()
+		code = 31 * code + second.hashCode()
+		return code;
 	}
 
 	@Override
