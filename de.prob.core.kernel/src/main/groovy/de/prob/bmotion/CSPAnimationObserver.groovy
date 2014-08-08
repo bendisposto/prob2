@@ -4,6 +4,7 @@ import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
 import com.google.gson.JsonElement
 
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.statespace.OpInfo
 import de.prob.ui.api.ITool
 
@@ -31,8 +32,8 @@ class CSPAnimationObserver implements IBMotionGroovyObserver {
 						def fullOp = getOpString(op)
 						o.objs.each { obj ->
 							def events = tool.evaluate(tool.getCurrentState(), obj.exp.getAsString())
-							if(events != null) {
-								events = events.replace("{","").replace("}", "")
+							if(events instanceof EvalResult) {
+								events = events.value.replace("{","").replace("}", "")
 								def event_names = events.split(",")
 								if(event_names.contains(fullOp)) {
 									def pmap = [:]
