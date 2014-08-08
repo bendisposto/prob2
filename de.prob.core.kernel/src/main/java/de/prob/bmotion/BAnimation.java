@@ -61,9 +61,9 @@ public class BAnimation extends ProBAnimation {
 	}
 
 	@Override
-	public String evaluate(final String stateref, final String formula)
+	public Object evaluate(final String stateref, final String formula)
 			throws IllegalFormulaException {
-		if(trace == null)
+		if (trace == null)
 			return null;
 		StateSpace space = trace.getStateSpace();
 		if (!formulas.containsKey(formula)) {
@@ -74,7 +74,8 @@ public class BAnimation extends ProBAnimation {
 		StateId sId = space.getVertex(stateref);
 		IEvalResult res = space.valuesAt(sId).get(formulas.get(formula));
 		if (res instanceof EvalResult) {
-			return ((EvalResult) res).getValue();
+			EvalResult evalres = (EvalResult) res;
+			return evalres.getValue();
 		}
 		return res != null ? res.toString() : null;
 	}

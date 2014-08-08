@@ -51,7 +51,7 @@ public class CSPAnimation extends ProBAnimation {
 	}
 
 	@Override
-	public String evaluate(final String stateref, final String formula)
+	public Object evaluate(final String stateref, final String formula)
 			throws IllegalFormulaException {
 		if(trace == null)
 			return null;
