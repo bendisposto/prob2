@@ -48,7 +48,7 @@ class CSPAnimationObserver implements IBMotionGroovyObserver {
 							}
 						}
 					}
-					session.toGui('bms.triggerObserverActions', [actions : factions.findAll { i -> i != null }])
+					session.apply('bms.triggerObserverActions', [actions : factions.findAll { i -> i != null }])
 				}
 			}
 		}

@@ -3,6 +3,7 @@ package de.prob.bmotion;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.ToolRegistry;
@@ -43,6 +44,10 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 
 	public Trace getTrace() {
 		return trace;
+	}
+
+	public StateSpace getStateSpace() {
+		return trace != null ? trace.getStateSpace() : null;
 	}
 
 	public ToolRegistry getToolRegistry() {
