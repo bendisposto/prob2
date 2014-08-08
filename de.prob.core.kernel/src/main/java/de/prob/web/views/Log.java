@@ -50,7 +50,8 @@ public class Log extends AbstractSession {
 			}
 		}
 		String level = event.getLevel().toString().toLowerCase();
-		if (!level.equals("trace")) {
+		if (!level.equals("trace") && !level.equals("debug")
+				&& !level.equals("info")) {
 			LogElement entry = new LogElement(from, level,
 					event.getFormattedMessage());
 			elements.add(entry);
