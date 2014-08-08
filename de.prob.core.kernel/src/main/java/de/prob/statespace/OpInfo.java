@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpFromId;
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -34,6 +35,9 @@ public class OpInfo {
 	private final String src;
 	private final String dest;
 	private List<String> params = new ArrayList<String>();
+	private List<String> returnValues = new ArrayList<String>();
+	private List<EvalResult> paramsSource = new ArrayList<EvalResult>();
+	private List<EvalResult> retValSource = new ArrayList<EvalResult>();
 	private String targetState;
 	private String rep = null;
 	private boolean evaluated;
@@ -53,10 +57,10 @@ public class OpInfo {
 		this.name = name;
 		this.src = src;
 		this.dest = dest;
-		this.params = Collections.emptyList();
-		this.targetState = "";
-		this.evaluated = true;
-		this.rep = name;
+		params = Collections.emptyList();
+		targetState = "";
+		evaluated = true;
+		rep = name;
 	}
 
 	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
@@ -86,6 +90,18 @@ public class OpInfo {
 		return params;
 	}
 
+	public List<String> getReturnValues() {
+		return returnValues;
+	}
+
+	public List<EvalResult> getParamsSource() {
+		return paramsSource;
+	}
+
+	public List<EvalResult> getRetValSource() {
+		return retValSource;
+	}
+
 	public String getTargetState() {
 		return targetState;
 	}
@@ -113,7 +129,9 @@ public class OpInfo {
 			}
 			return name + "." + Joiner.on(".").join(getParams());
 		}
-		return name + "(" + Joiner.on(",").join(getParams()) + ")";
+		String retVals = getReturnValues().isEmpty() ? "" : Joiner.on(",")
+				.join(getReturnValues()) + " <-- ";
+		return retVals + name + "(" + Joiner.on(",").join(getParams()) + ")";
 	}
 
 	@Override
@@ -172,10 +190,15 @@ public class OpInfo {
 	}
 
 	public void setInfo(final String name, final List<String> params,
-			final String targetState) {
+			final List<String> returnValues,
+			final List<EvalResult> paramsSource,
+			final List<EvalResult> retValSource, final String targetState) {
 		this.name = name;
 		this.params = params;
 		this.targetState = targetState;
+		this.returnValues = returnValues;
+		this.paramsSource = paramsSource;
+		this.retValSource = retValSource;
 		evaluated = true;
 	}
 
