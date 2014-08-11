@@ -52,6 +52,7 @@ dependencies {
 
 	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
+	compile 'commons-io:commons-io:2.4' // Apache Licence 2.0
 
 	compile 'commons-lang:commons-lang:2.6' // Replace by guava 15 once it is released (used in GroovyShellServlet)
 

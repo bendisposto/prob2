@@ -5,6 +5,7 @@ import javax.script.ScriptContext
 import javax.script.ScriptEngine
 import javax.script.ScriptException
 
+import org.apache.commons.io.FilenameUtils;
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
@@ -73,7 +74,8 @@ class BMotionUtil {
 		def AbstractModel model = null
 		if(modelPath != null) {
 			def formalism = BMotionUtil.getFormalism(modelPath)
-			def path = BMotionUtil.getTemplateFolder(absoluteTemplatePath) + File.separator +  modelPath
+			def path = FilenameUtils.separatorsToSystem(BMotionUtil.getTemplateFolder(absoluteTemplatePath) + File.separator +  modelPath)
+			System.out.println(path);
 			model = Eval.x(api, "x.${formalism}_load('$path')")
 		} else {
 			def Trace trace = animations.getCurrentTrace()
