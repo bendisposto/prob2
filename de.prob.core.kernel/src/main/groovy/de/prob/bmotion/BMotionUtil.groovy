@@ -75,6 +75,9 @@ class BMotionUtil {
 		if(modelPath != null) {
 			def formalism = BMotionUtil.getFormalism(modelPath)
 			def path = FilenameUtils.separatorsToSystem(BMotionUtil.getTemplateFolder(absoluteTemplatePath) + File.separator +  modelPath)
+			if(FilenameUtils.isSystemWindows()) {
+				path = path.replace("\\", "\\\\");
+			}
 			System.out.println(path);
 			model = Eval.x(api, "x.${formalism}_load('$path')")
 		} else {
