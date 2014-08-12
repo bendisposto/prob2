@@ -1,13 +1,9 @@
 package de.prob.bmotion;
 
 import com.github.mustachejava.DefaultMustacheFactory
-import com.github.mustachejava.Mustache
-import com.google.common.base.Function
-import com.google.gson.JsonArray
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 
-import de.prob.statespace.OpInfo
+import de.prob.animator.domainobjects.EvalResult
 import de.prob.ui.api.ITool
 
 class BAnimationObserver implements IBMotionGroovyObserver {
@@ -30,7 +26,8 @@ class BAnimationObserver implements IBMotionGroovyObserver {
 			def fpredicate = true
 			def type = item?.type?.getAsString()
 			if(type == "predicate") {
-				fpredicate = tool.evaluate(tool.getCurrentState(), formula) == "TRUE"
+				def fres = tool.evaluate(tool.getCurrentState(), formula)
+				fpredicate = fres instanceof EvalResult ? (fres.value == "TRUE") : false
 			} else if(type == "expression") {
 				fvalue = tool.evaluate(tool.getCurrentState(), formula)
 			}
@@ -70,7 +67,7 @@ class BAnimationObserver implements IBMotionGroovyObserver {
 							}
 						}
 					}
-					session.toGui('bms.triggerObserverActions', [actions : factions.findAll { i -> i != null }])
+					session.apply('bms.triggerObserverActions', [actions : factions.findAll { i -> i != null }])
 				}
 			}
 		}

@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.JsonElement;
 
-import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
@@ -51,9 +50,9 @@ public class CSPAnimation extends ProBAnimation {
 	}
 
 	@Override
-	public String evaluate(final String stateref, final String formula)
+	public Object evaluate(final String stateref, final String formula)
 			throws IllegalFormulaException {
-		if(trace == null)
+		if (trace == null)
 			return null;
 		if (!formulaCache.containsKey(formula)) {
 			IEvalElement e = trace.getModel().parseFormula(formula);
@@ -62,11 +61,7 @@ public class CSPAnimation extends ProBAnimation {
 					Arrays.asList(e));
 			formulaCache.put(formula, results.get(0));
 		}
-		IEvalResult res = formulaCache.get(formula);
-		if (res instanceof EvalResult) {
-			return ((EvalResult) res).getValue();
-		}
-		return res.toString();
+		return formulaCache.get(formula);
 	}
 
 	@Override

@@ -11,10 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
-import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBVariable;
@@ -61,9 +59,9 @@ public class BAnimation extends ProBAnimation {
 	}
 
 	@Override
-	public String evaluate(final String stateref, final String formula)
+	public Object evaluate(final String stateref, final String formula)
 			throws IllegalFormulaException {
-		if(trace == null)
+		if (trace == null)
 			return null;
 		StateSpace space = trace.getStateSpace();
 		if (!formulas.containsKey(formula)) {
@@ -72,11 +70,7 @@ public class BAnimation extends ProBAnimation {
 			formulas.put(formula, e);
 		}
 		StateId sId = space.getVertex(stateref);
-		IEvalResult res = space.valuesAt(sId).get(formulas.get(formula));
-		if (res instanceof EvalResult) {
-			return ((EvalResult) res).getValue();
-		}
-		return res != null ? res.toString() : null;
+		return space.valuesAt(sId).get(formulas.get(formula));
 	}
 
 	@Override

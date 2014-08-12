@@ -52,7 +52,7 @@ public interface ITool {
 	 * @throws IllegalFormulaException
 	 *             if the formula is illegal
 	 */
-	public String evaluate(String stateref, String formula)
+	public Object evaluate(String stateref, String formula)
 			throws IllegalFormulaException;
 
 	/**

@@ -89,7 +89,7 @@ bms = (function() {
 		return val;
 	}
 	
-	extern.update_visualization = function(data) {
+	extern.applyJavaScript = function(data) {
 		vs = eval(data.values);
 		for (e in vs) {
 			v = vs[e];
@@ -98,7 +98,6 @@ bms = (function() {
 	}
 	
 	extern.triggerObserverActions = function(data) {
-		console.log(data)
 		$.each(data.actions, function(i,action) {
 			var attrObj = svgAttributeList[action.attr]
 			if(attrObj !== undefined) {
@@ -114,7 +113,7 @@ bms = (function() {
 		});
 	}
 	
-	extern.apply = function(data) {
+	extern.applyTransformers = function(data) {
 		$.each(JSON.parse(data.transformers), function(i,t) {
 			var selector = t.selector
 			$.each(t.attributes.concat(t.styles), function(j,a) {

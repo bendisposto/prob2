@@ -20,6 +20,7 @@ import de.prob.ui.api.ITool;
 import de.prob.ui.api.IToolListener;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
+import de.prob.visualization.Transformer;
 import de.prob.web.WebUtils;
 
 public class BMotionStudioSession extends AbstractBMotionStudioSession
@@ -67,32 +68,46 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 					+ e.getMessage());
 		}
 	}
-	
-	// ---------- BMS API
-	public void toGui(final Object json) {
-		submit(json);
-	}
 
-	public void toGui(final String cmd, final Map<Object, Object> json) {
+	// ---------- BMS API
+	public void apply(final String cmd, final Map<Object, Object> json) {
 		json.put("cmd", cmd);
 		submit(json);
 	}
 
 	/**
 	 * 
-	 * This method calls a list of JavaScript calls represented as Strings on
-	 * the GUI.
+	 * This method applies a list of JavaScript snippets represented as Strings
+	 * on the visualisation.
 	 * 
 	 * @param values
-	 *            A list of JavaScript call represented as Strings
+	 *            A list of JavaScript snippets represented as Strings
 	 */
+	public void apply(final String js) {
+		submit(WebUtils.wrap("cmd", "bms.applyJavaScript", "values", js));
+	}
+
+	public void apply(final Object transformer) {
+		if (transformer instanceof Transformer) {
+			ArrayList<Transformer> t = new ArrayList<Transformer>();
+			t.add((Transformer) transformer);
+			submit(WebUtils.wrap("cmd", "bms.applyTransformers",
+					"transformers", t));
+		} else {
+			submit(WebUtils.wrap("cmd", "bms.applyTransformers",
+					"transformers", transformer));
+		}
+	}
+	
+	@Deprecated
+	public void toGui(final Object json) {
+		submit(json);
+	}
+	
+	@Deprecated
 	public void callJs(final Object values) {
 		submit(WebUtils.wrap("cmd", "bms.update_visualization", "values",
 				values));
-	}
-
-	public void apply(final Object transformers) {
-		submit(WebUtils.wrap("cmd", "bms.apply", "transformers", transformers));
 	}
 
 	/**
@@ -111,7 +126,7 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 		// if (getTool().getErrors(getTool().getCurrentState(),
 		// formula).isEmpty()) {
 		// try {
-		String evaluate = getTool().evaluate(getTool().getCurrentState(), formula);
+		Object evaluate = getTool().evaluate(getTool().getCurrentState(), formula);
 		return evaluate;
 		// } catch (IllegalFormulaException e) {
 		// TODO: handle exception
