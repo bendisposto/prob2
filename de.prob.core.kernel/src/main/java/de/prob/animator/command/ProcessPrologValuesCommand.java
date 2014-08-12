@@ -26,9 +26,7 @@ public class ProcessPrologValuesCommand extends AbstractCommand {
 			final PrologTerm value, final Map<String, PrologTerm> solutions) {
 		this.code = code;
 		this.value = value;
-		// TODO Auto-generated constructor stub
 		this.solutions = solutions;
-
 	}
 
 	@Override
