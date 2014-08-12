@@ -1,9 +1,6 @@
 package de.prob.statespace
 
 import static org.mockito.Mockito.*
-
-import org.mockito.Mockito
-
 import spock.lang.Specification
 
 class AnimationSelectorTest extends Specification {
@@ -22,8 +19,6 @@ class AnimationSelectorTest extends Specification {
 
 		@Override
 		public void animatorStatus(boolean busy) {
-			// TODO Auto-generated method stub
-
 		}
 	}
 

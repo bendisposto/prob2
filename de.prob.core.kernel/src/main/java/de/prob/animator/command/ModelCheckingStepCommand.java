@@ -133,8 +133,10 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 		}
 
 		if (type.equals("general_error")) {
-			return new ModelCheckErrorUncovered("A general error occured.", cpt
-					.getArgument(1).getFunctor());
+			return new ModelCheckErrorUncovered(
+					"An unknown result was uncovered: "
+							+ cpt.getArgument(2).toString(), cpt.getArgument(1)
+							.getFunctor());
 		}
 
 		logger.error("Model checking result unknown. " + cpt.toString());

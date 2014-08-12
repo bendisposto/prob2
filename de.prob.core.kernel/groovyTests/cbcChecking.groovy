@@ -2,7 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 import de.prob.check.*
 
-// You can change the model you are testing here.
+
 m = api.eventb_load(dir+"/machines/InvalidModel/createErrors.bcm")
 s = m as StateSpace
 

@@ -20,7 +20,6 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-//FIXME: Is this what this command does?
 /**
  * Gets the eclipse preferences from ProB
  * 

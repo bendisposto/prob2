@@ -2,6 +2,7 @@ package de.prob.check;
 
 import de.prob.animator.command.LTLCheckingJob;
 import de.prob.animator.domainobjects.LTL;
+import de.prob.exception.ProBError;
 import de.prob.statespace.StateSpace;
 import de.prob.web.views.ModelCheckingUI;
 
@@ -33,7 +34,15 @@ public class LTLChecker implements IModelCheckJob {
 	@Override
 	public IModelCheckingResult call() throws Exception {
 		long time = System.currentTimeMillis();
-		s.execute(job);
+		try {
+			s.execute(job);
+		} catch (ProBError e) {
+			// If a type error occured, a ProBError will be thrown. But this is
+			// already taken care of because it is wrapped in an LTLError
+			if (!(job.getResult() instanceof LTLError)) {
+				throw e;
+			}
+		}
 		IModelCheckingResult result = job.getResult();
 		if (ui != null) {
 			ui.isFinished(jobId, System.currentTimeMillis() - time, result,

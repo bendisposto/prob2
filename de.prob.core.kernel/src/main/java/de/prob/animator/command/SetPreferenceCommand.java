@@ -10,7 +10,6 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
-//FIXME: Is this what this does?
 /**
  * Sets a preference for eclipse
  * 

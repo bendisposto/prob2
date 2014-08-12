@@ -6,8 +6,6 @@
 
 package de.prob.animator.command;
 
-
-//FIXME: Is this actually what the command does?
 /**
  * Checks to see if the max number of operations has been reached for a given
  * state

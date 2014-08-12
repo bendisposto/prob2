@@ -86,5 +86,10 @@ assert cmd.isInitialized() == true
 cmd = new CheckInvariantStatusCommand("5")
 s.execute(cmd)
 assert cmd.isInvariantViolated() == false
+
+cmd = new GetStateBasedErrorsCommand("5")
+s.execute(cmd)
+assert cmd.getResult().isEmpty()
+
 s.animator.cli.shutdown();
 "Animation commands work correctly"
