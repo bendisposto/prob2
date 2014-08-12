@@ -21,10 +21,11 @@ assert modelProvider != null
 m = modelProvider.get()
 s = m as StateSpace
 
-cmd = new LoadBProjectFromStringCommand(modelString)
+ast = new BParser().parse(modelString, false)
+
+cmd = new LoadBProjectFromAst(ast)
 s.execute(cmd)
-ast = cmd.parseString(modelString, new BParser())
-rml = cmd.getLoader(modelString)
+rml = cmd.getLoader(ast)
 
 m.initialize(ast, rml, new File(""))
 
@@ -42,4 +43,4 @@ assert m.blah.variables.collect { it.name } == ["x"]
 assert m.blah.operations.collect { it.name } == ["ChangeX"]
 
 s.animator.cli.shutdown();
-"it is possible to load a b model from a string"
+"it is possible to load a b model from an ast"
