@@ -32,6 +32,8 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 
 	private final ScriptEngineProvider engineProvider;
 	
+	private boolean initialised = false;
+	
 	public BMotionStudioSession(final UUID id, final ITool tool,
 			final ToolRegistry registry, final String templatePath,
 			final ScriptEngineProvider engineProvider, final String host,
@@ -170,6 +172,11 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 			logger.error("BMotion Studio (Groovy script exception): "
 					+ e.getMessage() + "(line " + e.getLineNumber() + ")");
 		}
+		initialised = true;
+	}
+
+	public boolean isInitialised() {
+		return initialised;
 	}
 	
 }

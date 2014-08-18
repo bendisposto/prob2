@@ -195,7 +195,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		AbstractBMotionStudioSession bmsSession = createSession(sessionUUID,
 				tool, templatePath, host, port);
 		bmsSession.setParameterMap(params);
-		bmsSession.initSession();
+		//bmsSession.initSession();
 		// Save session
 		sessions.put(sessionUUID.toString(), bmsSession);
 

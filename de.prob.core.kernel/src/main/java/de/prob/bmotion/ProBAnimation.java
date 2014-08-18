@@ -36,7 +36,7 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 	public AbstractModel getModel() {
 		return model;
 	}
-	
+		
 	public void setModel(AbstractModel model) {
 		this.model = model;
 		this.trace = new Trace(model);

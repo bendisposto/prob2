@@ -31,7 +31,9 @@ public class BAnimation extends ProBAnimation {
 	private final Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
 
 	private final Gson gson = new Gson();
-	
+
+	protected StateSpace currentStatespace;
+
 	public BAnimation(String toolId, AbstractModel model, AnimationSelector animations,
 			ToolRegistry toolRegistry) {
 		super(toolId, model, animations, toolRegistry);
@@ -64,11 +66,12 @@ public class BAnimation extends ProBAnimation {
 		if (trace == null)
 			return null;
 		StateSpace space = trace.getStateSpace();
-		if (!formulas.containsKey(formula)) {
-			IEvalElement e = trace.getModel().parseFormula(formula);
-			space.subscribe(this, e);
+		IEvalElement e = formulas.get(formula);
+		if (e == null) {
+			e = trace.getModel().parseFormula(formula);
 			formulas.put(formula, e);
 		}
+		space.subscribe(this, e);
 		StateId sId = space.getVertex(stateref);
 		return space.valuesAt(sId).get(formulas.get(formula));
 	}
