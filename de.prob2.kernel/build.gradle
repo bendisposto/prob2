@@ -118,7 +118,7 @@ version=${project.version}"""
 
 
 
-compileJava { dependsOn= [createBuildConstants]}
+compileGroovy { dependsOn= [createBuildConstants]}
 
 test { ignoreFailures=true }
 
@@ -204,8 +204,7 @@ task integrationtests(dependsOn: ['classes', 'downloadCli'], type:JavaExec){
 eclipse {
 	project {
 		name = 'de.prob2.kernel'
-		natures   'org.eclipse.pde.PluginNature'
-		buildCommand   'org.eclipse.pde.ManifestBuilder'
-		buildCommand 'org.eclipse.pde.SchemaBuilder'
 	}
 }
+
+tasks.eclipse.dependsOn createBuildConstants 
