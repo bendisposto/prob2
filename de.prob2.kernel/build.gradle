@@ -3,7 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 
-project.group = 'de.prob'
+project.group = 'de.prob2'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
