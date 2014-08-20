@@ -13,7 +13,6 @@ import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
-import org.eventb.core.ast.LanguageVersion;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.extension.IFormulaExtension;
 import org.slf4j.Logger;
@@ -64,7 +63,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		final String unicode = UnicodeTranslator.toUnicode(code);
 		kind = PREDICATE.toString();
 		IParseResult parseResult = FormulaFactory.getInstance(types)
-				.parsePredicate(unicode, LanguageVersion.LATEST, null);
+				.parsePredicate(unicode, null);
 		List<String> errors = new ArrayList<String>();
 
 		if (!parseResult.hasProblem()) {
@@ -74,7 +73,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 					+ parseResult.toString());
 			kind = EXPRESSION.toString();
 			parseResult = FormulaFactory.getInstance(types).parseExpression(
-					unicode, LanguageVersion.LATEST, null);
+					unicode, null);
 			if (!parseResult.hasProblem()) {
 				ast = prepareExpressionAst(parseResult);
 			} else {
@@ -82,7 +81,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 						+ parseResult.toString());
 				kind = ASSIGNMENT.toString();
 				parseResult = FormulaFactory.getInstance(types)
-						.parseAssignment(unicode, LanguageVersion.LATEST, null);
+						.parseAssignment(unicode, null);
 				if (!parseResult.hasProblem()) {
 					ast = prepareAssignmentAst(parseResult);
 				} else {
@@ -199,16 +198,15 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 
 	public IParseResult getRodinParsedResult() {
 		if (kind.equals(PREDICATE.toString())) {
-			FormulaFactory.getInstance(types).parsePredicate(toUnicode(),
-					LanguageVersion.LATEST, null);
+			FormulaFactory.getInstance(types).parsePredicate(toUnicode(), null);
 		}
 		if (kind.equals(EXPRESSION.toString())) {
-			FormulaFactory.getInstance(types).parseExpression(toUnicode(),
-					LanguageVersion.LATEST, null);
+			FormulaFactory.getInstance(types)
+					.parseExpression(toUnicode(), null);
 		}
 		if (kind.equals(ASSIGNMENT.toString())) {
-			FormulaFactory.getInstance(types).parseAssignment(toUnicode(),
-					LanguageVersion.LATEST, null);
+			FormulaFactory.getInstance(types)
+					.parseAssignment(toUnicode(), null);
 		}
 		return null;
 	}

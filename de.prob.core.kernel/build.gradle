@@ -75,7 +75,9 @@ dependencies {
 
 	compile 'com.thoughtworks.xstream:xstream:1.4.3' // BSD
 
-	compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' // Rodin
+    compile(group: 'org.eventb', name: 'org.eventb.core.ast', version: '3.0.0')
+
+//	compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' // Rodin
 
 	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
