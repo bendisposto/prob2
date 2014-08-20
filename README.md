@@ -2,6 +2,8 @@
 
 **IMPORTANT:** The layout of the repository has changed! The Eclipse/Rodin plugin was moved to a separate repository: http://github.com/bendisposto/prob2-plugin. This repository only contains the Kernel of ProB 2.0. 
 
+The last version before the restructuring is tagged as preRestructure. 
+
 The project is intended for internal usage, do not rely on any of the features or interfaces in this project. 
 
 The source code of the current ProB release is located at http://github.com/bendisposto/prob
