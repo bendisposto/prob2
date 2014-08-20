@@ -2,7 +2,10 @@ package de.prob.bmotion;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -20,6 +23,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -90,6 +95,15 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 		return;
 	}
 
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		String taskParameter = req.getParameter("task");
+		if (taskParameter != null)
+			deletageTaskRequest(taskParameter, req, resp);
+		return;
+	}
+	
 	private String getBaseHtml(AbstractBMotionStudioSession bmsSession) {
 		String templatePath = bmsSession.getTemplatePath();
 		String fileName = new File(templatePath).getName();
@@ -142,6 +156,64 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 			String template, String host, int port) {
 		return new BMotionStudioSession(id, tool, toolRegistry, template,
 				engineProvider, host, port);
+	}
+	
+	private void deletageTaskRequest(String taskParameter,
+			HttpServletRequest req, HttpServletResponse resp) {
+		if ("init".equals(taskParameter)) {
+			taskInit(req, resp);
+		} else if ("save".equals(taskParameter)) {
+			taskSave(req, resp);
+		}
+	}
+
+	private void taskInit(HttpServletRequest req, HttpServletResponse resp) {
+		List<String> parts = new PartList(req.getRequestURI().split("/"));
+		String sessionID = parts.get(2);
+		AbstractBMotionStudioSession bmsSession = getSessions().get(sessionID);
+		String scriptPath = bmsSession.getParameterMap().get("script");
+		String absoluteScriptPath = bmsSession.getTemplateFolder()
+				+ File.separator + scriptPath;
+		String scriptString = "";
+		if (scriptPath == null) {
+			InputStream resourceAsStream = getClass().getClassLoader()
+					.getResourceAsStream("ui/bmsview/default_script");
+			try {
+				scriptString = CharStreams.toString(new InputStreamReader(
+						resourceAsStream, Charsets.UTF_8));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			scriptPath = "script.groovy";
+		} else {
+			scriptString = BMotionUtil.readFile(absoluteScriptPath);
+		}
+		// Send svg string and json data to client ...
+		resp.setContentType("application/json");
+		toOutput(resp, WebUtils.toJson(WebUtils.wrap("scriptstr", scriptString,
+				"scriptpath", scriptPath, "absolutescriptpath",
+				absoluteScriptPath)));
+	}
+	
+	private void taskSave(HttpServletRequest req, HttpServletResponse resp) {
+		List<String> parts = new PartList(req.getRequestURI().split("/"));
+		String sessionID = parts.get(2);
+		AbstractBMotionStudioSession bmsSession = getSessions().get(sessionID);
+		String scriptPath = bmsSession.getParameterMap().get("script");
+		if (scriptPath == null) {
+			Document templateDocument = Jsoup.parse(WebUtils.render(bmsSession
+					.getTemplatePath()));
+			scriptPath = "script.groovy";
+			setMetaAttributeValue(templateDocument, "bms.script", scriptPath);
+			BMotionUtil.writeStringToFile(templateDocument.toString(),
+					new File(bmsSession.getTemplatePath()));
+		}
+		String absoluteScriptPath = bmsSession.getTemplateFolder()
+				+ File.separator + scriptPath;
+		String content = req.getParameter("content");
+		BMotionUtil.writeStringToFile(content, new File(absoluteScriptPath));
+		toOutput(resp, "ok");
+		getSessions().get(sessionID).initSession();
 	}
 
 }

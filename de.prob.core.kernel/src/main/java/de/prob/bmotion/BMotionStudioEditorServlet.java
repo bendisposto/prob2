@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import com.google.common.io.Files;
 import com.google.gson.Gson;
@@ -267,27 +266,6 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 		if (taskParameter != null)
 			deletageTaskRequest(taskParameter, req, resp);
 		return;
-	}
-
-	private void setMetaAttributeValue(Document doc, String name, String value) {
-		Elements metaElements = doc.getElementsByAttributeValue("name", name);
-		Element metaElement = metaElements.first();
-		if (metaElement == null) {
-			Elements headTag = doc.getElementsByTag("head");
-			Element headElement = headTag.get(0);
-			metaElement = doc.createElement("meta");
-			metaElement.attr("name", "bms.model");
-			headElement.appendChild(metaElement);
-		}
-		metaElement.attr("content", value);
-	}
-
-	private String getMetaAttributeValue(Document doc, String name) {
-		Elements metaElements = doc.getElementsByAttributeValue("name", name);
-		Element metaElement = metaElements.first();
-		if (metaElement != null)
-			return metaElement.attr("content");
-		return null;
 	}
 
 	@Override

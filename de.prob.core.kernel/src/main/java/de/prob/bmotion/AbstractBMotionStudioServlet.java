@@ -305,4 +305,25 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 
 	}
 	
+	protected void setMetaAttributeValue(Document doc, String name, String value) {
+		Elements metaElements = doc.getElementsByAttributeValue("name", name);
+		Element metaElement = metaElements.first();
+		if (metaElement == null) {
+			Elements headTag = doc.getElementsByTag("head");
+			Element headElement = headTag.get(0);
+			metaElement = doc.createElement("meta");
+			metaElement.attr("name", name);
+			headElement.appendChild(metaElement);
+		}
+		metaElement.attr("content", value);
+	}
+
+	protected String getMetaAttributeValue(Document doc, String name) {
+		Elements metaElements = doc.getElementsByAttributeValue("name", name);
+		Element metaElement = metaElements.first();
+		if (metaElement != null)
+			return metaElement.attr("content");
+		return null;
+	}
+	
 }

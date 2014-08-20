@@ -1,13 +1,64 @@
 
-	$(function() {	
+	$(function() {
+		
+		// Initialise dialogs ...
 		initDialog($("#animation_view"),$("#animation_iframe"),$("#bt_open_animation_view"),"http://"+bms.host+":"+bms.port+"/sessions/CurrentAnimations",false);
 		initDialog($("#state_view"),$("#state_iframe"),$("#bt_open_state_view"),"http://"+bms.host+":"+bms.port+"/sessions/StateInspector",false);
-		initDialog($("#log_view"),$("#log_iframe"),$("#bt_open_log_view"),"http://"+bms.host+":"+bms.port+"/sessions/Log",true);
-		initDialog($("#history_view"),$("#history_iframe"),$("#bt_open_history_view"),"http://"+bms.host+":"+bms.port+"/sessions/CurrentTrace",true);
+		initDialog($("#log_view"),$("#log_iframe"),$("#bt_open_log_view"),"http://"+bms.host+":"+bms.port+"/sessions/Log",false);
+		initDialog($("#history_view"),$("#history_iframe"),$("#bt_open_history_view"),"http://"+bms.host+":"+bms.port+"/sessions/CurrentTrace",false);
 		initDialog($("#events_view"),$("#events_iframe"),$("#bt_open_events_view"),"http://"+bms.host+":"+bms.port+"/sessions/Events",true);
-		$("#error_view").dialog({
-			width: 350,
-			height: 400
+		
+		var groovyCodeMirror = CodeMirror(document.getElementById("script_view"), {
+			lineNumbers: true,
+			lineWrapping: true,
+       		matchBrackets: true,
+  			mode: "text/x-groovy"
+		});
+		
+		$("#script_view").dialog({
+			open: function(ev, ui){
+				$.ajax({
+    				type: 'POST',
+    				data: {
+  						task: 'init'
+    				},
+    				success: function (data) {
+    					if(data.scriptstr.length > 0) {
+    						groovyCodeMirror.getDoc().setValue(data.scriptstr)
+    					}	
+    				},
+    				error:function(data,status,er) {
+        				alert("error: "+data+" status: "+status+" er:"+er);
+    				}
+				});
+				fixSizeDialog($("#script_view"),$(".CodeMirror"),0,31);
+			},
+			resize: function() { 
+				fixSizeDialog($("#script_view"),$(".CodeMirror"),0,31);
+			}, 
+			autoOpen: false,
+			width: 500,
+			height: 400,
+		    buttons: {
+        		Save: function() {
+					$.ajax({
+	    				type: 'POST',
+	    				data: {
+	  						task: 'save',
+	  						content: groovyCodeMirror.getDoc().getValue()
+	    				},
+	    				success: function (data) {		
+	    				},
+	    				error:function(data,status,er) {
+	        				alert("error: "+data+" status: "+status+" er:"+er);
+	    				}
+					});
+        		}
+      		}
+		});
+		
+		$("#bt_edit_script").click(function() {
+			$("#script_view").dialog( "open" );
 		});
 		
 		$("#bt_open_template").click(function() {
@@ -16,16 +67,16 @@
 		$("#bt_create_template").click(function() {
 			$("#modal_create_template").modal('show')
 		});	
-		
+			
 	});
 	
 
-	function fixSizeDialog(dialog,iframe) {
-		var newwidth = dialog.parent().width()
-		var newheight = dialog.parent().height()
-		iframe.attr("style","width:"+(newwidth)+"px;height:"+(newheight-50)+"px");  
+	function fixSizeDialog(dialog,obj,ox,oy) {
+		var newwidth = dialog.parent().width() - ox
+		var newheight = dialog.parent().height() - oy
+		obj.attr("style","width:"+(newwidth)+"px;height:"+(newheight-50)+"px");  
 	}
-  
+	  
 	function initDialog(dialog,iframe,bt,url,autoopen) {
 
 		dialog.dialog({
@@ -44,11 +95,11 @@
 			},
 			resizeStop: function(ev, ui){
 				iframe.show();
-				fixSizeDialog(dialog,iframe);
+				fixSizeDialog(dialog,iframe,0,0);
 			},
 			open: function(ev, ui){
 				iframe.attr("src",url);
-				fixSizeDialog(dialog,iframe);
+				fixSizeDialog(dialog,iframe,0,0);
 				dialog.css('overflow', 'hidden'); //this line does the actual hiding
 			},
 			autoOpen: autoopen,
