@@ -138,7 +138,8 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	}
 
 	public Object executeOperation(final Map<String, String[]> params) {
-		String id = params.get("id").length > 0 ? params.get("id")[0] : "";
+		String id = (params.get("id") != null && params.get("id").length > 0) ? params
+				.get("id")[0] : "";
 		String op = params.get("op")[0];
 		String[] parameters = params.get("predicate");
 		try {
