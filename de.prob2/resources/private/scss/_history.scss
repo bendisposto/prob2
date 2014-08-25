@@ -1,0 +1,41 @@
+
+li {
+    list-style-type: none;
+    cursor: pointer;
+}
+
+li:nth-child(odd) {
+    background-color: white;
+}
+
+.future {
+    font-style: italic;
+    color: #888;
+}
+
+.current {
+    font-weight: bold;
+}
+
+.start {
+    color: #bbb;
+    letter-spacing: 2px;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.disabled {
+    opacity: 0.1;
+}
+
+li:nth-child(even) {
+    background-color: #f3f6ff;
+}
+
+ul {
+    padding-left: 0px;
+}
+
+#sort {
+    cursor: pointer;
+}
+
