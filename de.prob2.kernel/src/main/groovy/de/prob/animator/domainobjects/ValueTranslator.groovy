@@ -42,6 +42,19 @@ class BString {
 	def String toString() {
 		return value
 	}
+
+	@Override
+	public int hashCode() {
+		return value.hashCode()
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof BString)) {
+			return false
+		}
+		return this.value == obj.value
+	}
 }
 
 class PossiblyTrue {
