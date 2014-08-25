@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.prob.animator.command.AbstractCommand;
+import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
@@ -98,6 +99,11 @@ public abstract class AbstractDottyGraph implements IStateSpace,
 	@Override
 	public void endTransaction() {
 		space.endTransaction();
+	}
+
+	@Override
+	public AbstractModel getModel() {
+		return space.getModel();
 	}
 
 }

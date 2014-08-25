@@ -1,5 +1,7 @@
 package de.prob.animator.command;
 
+import de.prob.animator.domainobjects.EvalElementType;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -13,16 +15,21 @@ import de.prob.prolog.term.PrologTerm;
 public class CalculateTransitionDiagramCommand extends
 		AbstractReduceStateSpaceCmd {
 
-	private final String expression;
+	private final IEvalElement expression;
 
-	public CalculateTransitionDiagramCommand(final String e) {
-		expression = e;
+	public CalculateTransitionDiagramCommand(final IEvalElement expression) {
+		this.expression = expression;
+		if (!expression.getKind().equals(EvalElementType.EXPRESSION.toString())) {
+			throw new IllegalArgumentException(
+					"Expected formula of type expression. Formula found was: "
+							+ expression.getCode());
+		}
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("get_transition_diagram");
-		pto.printAtom(expression);
+		expression.printProlog(pto);
 		pto.printVariable(SPACE);
 		pto.closeTerm();
 	}
@@ -38,7 +45,7 @@ public class CalculateTransitionDiagramCommand extends
 	}
 
 	public String getExpression() {
-		return expression;
+		return expression.getCode();
 	}
 
 }

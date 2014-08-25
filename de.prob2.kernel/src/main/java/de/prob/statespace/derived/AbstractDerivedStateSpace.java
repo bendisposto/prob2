@@ -9,6 +9,7 @@ import java.util.Set;
 
 import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.AbstractReduceStateSpaceCmd;
+import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.IStateSpace;
 import de.prob.statespace.IStatesCalculatedListener;
 import de.prob.statespace.OpInfo;
@@ -155,5 +156,10 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 	@Override
 	public void endTransaction() {
 		stateSpace.endTransaction();
+	}
+
+	@Override
+	public AbstractModel getModel() {
+		return stateSpace.getModel();
 	}
 }

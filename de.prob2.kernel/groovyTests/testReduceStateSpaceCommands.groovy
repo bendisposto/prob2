@@ -27,7 +27,7 @@ assert labels.contains(["nr_ready", "swap"])
 assert labels.contains(["new", "nr_ready", "swap"])
 assert cmd.getOps().size() == 32
 
-cmd = new CalculateTransitionDiagramCommand("card(waiting)")
+cmd = new CalculateTransitionDiagramCommand("card(waiting)" as ClassicalB)
 s.execute(cmd)
 assert cmd.getStates().size() == 5
 labels = cmd.getStates().collect { it.labels[0] }

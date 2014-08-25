@@ -266,7 +266,7 @@ public class StateSpaceSession implements ISessionServlet,
 
 	private AbstractData createTransitionDiagram(final String parameter) {
 		CalculateTransitionDiagramCommand cmd = new CalculateTransitionDiagramCommand(
-				parameter);
+				space.getModel().parseFormula(parameter));
 		space.execute(cmd);
 		TransitionDiagram s = new TransitionDiagram(space, parameter, cmd);
 		s.addStates(cmd.getStates());
