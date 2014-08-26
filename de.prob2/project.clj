@@ -18,7 +18,7 @@
                    :output-path "src/client"
                    :rules :cljs}]}
 
-  ;:hooks [cljx.hooks]
+  :hooks [cljx.hooks]
 
   :jvm-opts ["-Dapple.awt.UIElement=true" 
              "-XX:+TieredCompilation" 
