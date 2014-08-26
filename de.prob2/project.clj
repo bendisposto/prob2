@@ -20,9 +20,9 @@
 
   :hooks [cljx.hooks]
 
-  :jvm-opts ["-Dapple.awt.UIElement=true" 
-             "-XX:+TieredCompilation" 
-             "-XX:TieredStopAtLevel=1" 
+  :jvm-opts ["-Dapple.awt.UIElement=true"
+             "-XX:+TieredCompilation"
+             "-XX:TieredStopAtLevel=1"
              "-Xverify:none"]
 
   :scss {:src "resources/private/scss"
@@ -35,12 +35,12 @@
 
   :profiles {:dev { :plugins [[lein-expand-resource-paths "0.0.1"]]
 
-                    :dependencies [
+                   :dependencies [
                                   [org.clojure/test.check "0.5.7"]
                                   [midje "1.6.3"]
                                   ]
-                    :resource-paths ["kernel/build/libs/*.jar"]
-                 }
+                   :resource-paths ["kernel/build/libs/*.jar"]
+                   }
              :production {
 
                           :dependencies [
@@ -53,7 +53,6 @@
                    :dependencies [[liberator "0.10.0"]
                                   [compojure "1.1.8"]
                                   [ring/ring-core "1.3.0"]
-                                        ;[ring/ring-jetty-adapter "1.3.0"]
                                   [org.signaut/ring-jetty8-adapter "1.1.6"]
                                   [prismatic/schema "0.2.4"]
                                   [com.cognitect/transit-clj "0.8.247"]
