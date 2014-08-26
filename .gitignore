@@ -40,3 +40,4 @@ de.prob.core.kernel/src/main/resources/gui/style/prob_ui.css
 /de.prob.core.kernel/temp/Testing.tla
 de.prob2/resources/public/gui/css_generated
 de.prob2/resources/public/gui/js_generated
+ProB.log.*.log
