@@ -158,7 +158,7 @@
      (and
       (is (not (some (partial schema/check State) [s s'])))
       (is (not (schema/check Transactions ts)))
-      (some (fn [[p v]] (not= v (get-in s' (concat [:state] p)))) ts)))))
+      (is (every? (fn [[p v]] (= v (get-in s' (concat [:state] p)))) ts))))))
 
 
 ;;   ===============   TESTS    ====================
@@ -200,13 +200,9 @@
   (sync/compute-new-state
    {:current 0 :state {:a 1}} [[[:a] 2] [[:b :c] 22] [[:b :d] 12]]) => {:a 2 :b {:c 22 :d 12}})
 
-;; Midje does not qork with the keyword
-(defn qc? [r] (:result r))
-
-(fact (tc/quick-check 1000 roundtrip) => qc?)
-(fact (tc/quick-check 1000 roundtrip-delta) => qc?)
-(fact (tc/quick-check 3000 all-txs-succeeded) => qc?)
-
+(fact "roundtrip" (tc/quick-check 1000 roundtrip) => #(:result %))
+(fact "roundtrip delta" (tc/quick-check 1000 roundtrip-delta) => #(:result %))
+(fact "txs succeed" (tc/quick-check 3000 all-txs-succeeded) => #(:result %))
 
 (comment
   (defspec qs-roundtrip 1000 roundtrip)
