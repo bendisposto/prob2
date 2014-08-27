@@ -33,56 +33,48 @@
   :min-lein-version "2.0.0"
   :resource-paths ["config", "resources"]
 
-  :profiles {:dev { :plugins [[lein-expand-resource-paths "0.0.1"]]
+  :profiles
+  {:dev
+   {:plugins [[lein-expand-resource-paths "0.0.1"]]
 
-                   :dependencies [
-                                  [org.clojure/test.check "0.5.7"]
-                                  [midje "1.6.3"]
-                                  ]
-                   :resource-paths ["kernel/build/libs/*.jar"]
-                   }
-             :production {
+    :dependencies [[org.clojure/test.check "0.5.7"]
+                   [midje "1.6.3"]]
+    :resource-paths ["kernel/build/libs/*.jar"]}
 
-                          :dependencies [
-                                         [com.google.guava/guava "14.0.1"]
-                                         ]
-                          }
+   :production
+   {:dependencies [[de.prob2/de.prob2.kernel "2.0.0-milestone-16-SNAPSHOT"]]
+    :main de.prob2}
 
-             :clj {:source-paths ["src/server"]
-                   :test-paths ["test/server"]
-                   :dependencies [[liberator "0.10.0"]
-                                  [compojure "1.1.8"]
-                                  [ring/ring-core "1.3.0"]
-                                  [org.signaut/ring-jetty8-adapter "1.1.6"]
-                                  [prismatic/schema "0.2.4"]
-                                  [com.cognitect/transit-clj "0.8.247"]
-                                  ]
+   :clj
+   {:source-paths ["src/server"]
+    :test-paths ["test/server"]
+    :dependencies [[liberator "0.10.0"]
+                   [compojure "1.1.8"]
+                   [ring/ring-core "1.3.0"]
+                   [org.signaut/ring-jetty8-adapter "1.1.6"]
+                   [prismatic/schema "0.2.4"]
+                   [com.cognitect/transit-clj "0.8.247"]]}
 
-                   :main de.prob2
-
-                   }
-
-             :cljs {:source-paths ["src/client"]
-                    :test-paths ["test/client"]
-                    :dependencies [[org.clojure/clojurescript "0.0-2311"]
-                                   [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
-                                   [com.cognitect/transit-cljs "0.8.184"]
-                                   [om "0.6.4"]]
-                    :plugins [[lein-cljsbuild "1.0.3"]]
-                    :cljsbuild {
-                                :builds [{:id "release"
-                                          :source-paths ["src/client"]
-                                          :compiler {
-                                                     :output-to "resources/public/gui/js_generated/prob_ui.js"
-                                                     :optimizations :simple
-                                                     :pretty-print true
-                                                     :preamble ["react/react.min.js"]
-                                                     :externs ["react/externs/react.js"]}}
-                                         ]}}}
+   :cljs
+   {:source-paths ["src/client"]
+    :test-paths ["test/client"]
+    :dependencies [[org.clojure/clojurescript "0.0-2311"]
+                   [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
+                   [com.cognitect/transit-cljs "0.8.184"]
+                   [om "0.6.4"]]
+    :plugins [[lein-cljsbuild "1.0.3"]]
+    :cljsbuild
+    {:builds [{:id "release"
+               :source-paths ["src/client"]
+               :compiler {
+                          :output-to "resources/public/gui/js_generated/prob_ui.js"
+                          :optimizations :simple
+                          :pretty-print true
+                          :preamble ["react/react.min.js"]
+                          :externs ["react/externs/react.js"]}}]}}}
 
 
   :aliases {  "server" ["with-profile","+clj,+dev","repl" ":start" ":port" "6000"]
               "client" ["with-profile","+cljs,-dev", "cljsbuild", "auto"]
               "autotest" ["with-profile","+clj", "midje", ":autotest"]
-              "crosscompile" ["cljx", "auto"]
-              })
+              "crosscompile" ["cljx", "auto"]})
