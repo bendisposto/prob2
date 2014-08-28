@@ -46,7 +46,7 @@
 
 (defn- merge-leafs [old new]
   (if (map? old)
-    (merge old new)
+    (merge-with merge-leafs old new)
     new))
 
 (defn- update-path
