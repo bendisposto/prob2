@@ -204,6 +204,14 @@
   (sync/compute-new-state
    {:current 0 :state {:a 1}} [[[:a] 2] [[:b :c :e] 22] [[:b :c :d] 12]]) => {:a 2 :b {:c {:e 22 :d 12}}})
 
+(fact "multiple transactions 3"
+  (sync/compute-new-state
+   {:current 0 :state {:a 1}}
+   [[[:a :b :c] 22]
+    [[:a :b :d :e] 23]
+    [[:a :b :d] 4]]) =>
+    {:a {:b {:c 22 :d 4}}})
+
 (fact "roundtrip" (tc/quick-check 1000 roundtrip) => #(:result %))
 (fact "roundtrip delta" (tc/quick-check 1000 roundtrip-delta) => #(:result %))
 (fact "txs succeed" (tc/quick-check 3000 all-txs-succeeded) => #(:result %))

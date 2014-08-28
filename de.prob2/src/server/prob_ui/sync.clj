@@ -12,6 +12,7 @@
 (defn- arg-count [f]
   (let [m (first (.getDeclaredMethods (class f)))
         p (.getParameterTypes m)]
+
     (alength p)))
 
 (defn- primitive-array? [o]
@@ -45,7 +46,7 @@
       2 (.call cls [mx s]))))
 
 (defn- merge-leafs [old new]
-  (if (map? old)
+  (if (and (map? old) (map? new))
     (merge-with merge-leafs old new)
     new))
 
@@ -68,7 +69,6 @@
        (and (fn? e) (= 1 (arg-count e))) (update-in s p e)
        (and (fn? e) (= 2 (arg-count e))) (update-in s p (partial e s))
        :else (update-path s p (immutable e))))))
-
 
 (declare ddiff)
 
@@ -105,3 +105,4 @@
   (schema/validate Transactions txs)
   (let [transfunc (->> txs (map transform) reverse (apply comp))]
     (transfunc (:state s))))
+
