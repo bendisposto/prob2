@@ -3,7 +3,8 @@
   :url "https://github.com/bendisposto/prob2"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0-alpha1"]]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha1"]
+                 [com.taoensso/sente "0.15.1"]]
 
   :repositories [["cobra" "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"]]
 
@@ -49,9 +50,10 @@
    {:source-paths ["src/server"]
     :test-paths ["test/server"]
     :dependencies [[liberator "0.10.0"]
+                   [com.stuartsierra/component "0.2.1"]
                    [compojure "1.1.8"]
                    [ring/ring-core "1.3.0"]
-                   [org.signaut/ring-jetty8-adapter "1.1.6"]
+                   [http-kit "2.1.18"]
                    [prismatic/schema "0.2.4"]
                    [com.cognitect/transit-clj "0.8.247"]]}
 
@@ -59,7 +61,7 @@
    {:source-paths ["src/client"]
     :test-paths ["test/client"]
     :dependencies [[org.clojure/clojurescript "0.0-2311"]
-                   [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
+                   [org.clojure/core.async "0.1.278.0-76b25b-alpha"]
                    [com.cognitect/transit-cljs "0.8.184"]
                    [om "0.6.4"]]
     :plugins [[lein-cljsbuild "1.0.3"]]
