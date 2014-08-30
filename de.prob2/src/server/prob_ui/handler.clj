@@ -3,7 +3,7 @@
         [hiccup.middleware :only (wrap-base-url)])
   (:require [compojure.route :as route]
             [compojure.handler :as handler]
-            [ring.adapter.jetty8 :refer [run-jetty]]
+        ;    [ring.adapter.jetty8 :refer [run-jetty]]
             [compojure.response :as response]
             [prob-ui.state-store :as sync])
   (import [de.prob Main] [de.prob.scripting ScriptEngineProvider]))
@@ -40,7 +40,7 @@
   (-> (handler/site main-routes)
       (wrap-base-url)))
 
-(defn start-server [port]
+#_(defn start-server [port]
   (let [s (run-jetty #'app {:port port :join? false})]
     (swap! server assoc :server s)))
  
