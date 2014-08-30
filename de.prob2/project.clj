@@ -40,7 +40,7 @@
 
     :dependencies [[org.clojure/test.check "0.5.7"]
                    [midje "1.6.3"]]
-    :resource-paths ["kernel/build/libs/*.jar"]}
+    :resource-paths ["dev" "kernel/build/libs/*.jar"]}
 
    :production
    {:dependencies [[de.prob2/de.prob2.kernel "2.0.0-milestone-16-SNAPSHOT"]]
