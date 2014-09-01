@@ -13,7 +13,7 @@ assert ps.size() == 23
 
 prefs = [:]
 ps.each { prefs[it.name] = it.defaultValue }
-assert prefs.size() == 21
+assert prefs.size() == 23
 
 assert prefs["MAXINT"] == "3"
 assert prefs["MININT"] == "-1"
