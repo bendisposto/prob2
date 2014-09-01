@@ -5,6 +5,10 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 import de.prob.animator.IAnimator
+import de.prob.animator.domainobjects.IEvalElement
+import de.prob.model.representation.AbstractElement
+import de.prob.model.representation.AbstractModel
+import de.prob.model.representation.StateSchema
 
 class StateSpaceTest extends Specification {
 
@@ -22,6 +26,36 @@ class StateSpaceTest extends Specification {
 		}
 	}
 
+	def class Model extends AbstractModel {
+		def FormalismType getFormalismType() {
+			return FormalismType.B
+		}
+
+		@Override
+		public StateSchema getStateSchema() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public AbstractElement getMainComponent() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IEvalElement parseFormula(String formula) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void subscribeFormulasOfInterest() {
+			// TODO Auto-generated method stub
+
+		}
+	}
+
 
 	def StateSpace s
 
@@ -31,6 +65,7 @@ class StateSpaceTest extends Specification {
 		//		doThrow(new ProBError("XXX")).when(mock).execute(any(Object.class));
 
 		s = new StateSpace(new MyProvider<IAnimator>(mock), new DirectedMultigraphProvider())
+		s.setModel(new Model())
 
 		def states = [
 			new StateId("1",s),
