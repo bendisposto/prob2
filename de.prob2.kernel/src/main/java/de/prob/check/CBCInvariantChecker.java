@@ -66,7 +66,7 @@ public class CBCInvariantChecker implements IModelCheckJob {
 		this.s = s;
 		this.ui = ui;
 		jobId = ModelChecker.generateJobId();
-		command = new ConstraintBasedInvariantCheckCommand(eventNames);
+		command = new ConstraintBasedInvariantCheckCommand(s, eventNames);
 	}
 
 	@Override

@@ -11,7 +11,7 @@ checker.start();
 res = checker.getResult()
 assert res instanceof ModelCheckOk
 
-cmd = new ApplySignatureMergeCommand([])
+cmd = new ApplySignatureMergeCommand(s, [])
 s.execute(cmd)
 assert cmd.getStates().size() == 8
 labels = cmd.getStates().collect { it.labels }
@@ -27,7 +27,7 @@ assert labels.contains(["nr_ready", "swap"])
 assert labels.contains(["new", "nr_ready", "swap"])
 assert cmd.getOps().size() == 32
 
-cmd = new CalculateTransitionDiagramCommand("card(waiting)" as ClassicalB)
+cmd = new CalculateTransitionDiagramCommand(s, "card(waiting)" as ClassicalB)
 s.execute(cmd)
 assert cmd.getStates().size() == 5
 labels = cmd.getStates().collect { it.labels[0] }

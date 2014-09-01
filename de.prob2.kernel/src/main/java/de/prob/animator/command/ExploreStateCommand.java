@@ -22,6 +22,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.StateSpace;
 
 /**
  * Calculates the enabled operations, the state values, the initialization, the
@@ -47,10 +48,10 @@ public final class ExploreStateCommand extends AbstractCommand implements
 	private final ComposedCommand allCommands;
 	private final GetOperationsWithTimeout checkTimeoutOpsCmd;
 
-	public ExploreStateCommand(final String stateID,
+	public ExploreStateCommand(final StateSpace s, final String stateID,
 			final Collection<IEvalElement> formulas) {
 		stateId = stateID;
-		getOpsCmd = new GetEnabledOperationsCommand(stateId);
+		getOpsCmd = new GetEnabledOperationsCommand(s, stateId);
 		evalFormulasCmd = new EvaluateRegisteredFormulasCommand(stateID,
 				formulas);
 		checkInitialisedCmd = new CheckInitialisationStatusCommand(stateId);

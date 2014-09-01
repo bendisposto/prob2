@@ -7,6 +7,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.StateSpace;
 
 /**
  * @author joy
@@ -21,7 +22,9 @@ public class ApplySignatureMergeCommand extends AbstractReduceStateSpaceCmd {
 
 	private final List<String> ignored;
 
-	public ApplySignatureMergeCommand(final List<String> ignored) {
+	public ApplySignatureMergeCommand(final StateSpace s,
+			final List<String> ignored) {
+		super(s);
 		this.ignored = ignored;
 	}
 

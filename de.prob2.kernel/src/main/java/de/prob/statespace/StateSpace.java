@@ -115,7 +115,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
 		}
-		final ExploreStateCommand command = new ExploreStateCommand(
+		final ExploreStateCommand command = new ExploreStateCommand(this,
 				state.getId(), subscribedFormulas);
 
 		try {
@@ -125,7 +125,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		} catch (ProBError e) {
 			if (state.equals(__root)) {
 				explored.add(state);
-				OpInfo op = OpInfo.generateArtificialTransition("FAIL",
+				OpInfo op = OpInfo.generateArtificialTransition(this, "FAIL",
 						"NO INITIALIZATION OR VALID CONSTANTS FOUND",
 						state.getId(), state.getId());
 				ops.put(op.getId(), op);
@@ -252,7 +252,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			throws IllegalArgumentException {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				stateId.getId(), name, pred, nrOfSolutions);
+				this, stateId.getId(), name, pred, nrOfSolutions);
 		execute(command);
 		if (command.hasErrors()) {
 			throw new IllegalArgumentException("Executing operation " + name
@@ -279,7 +279,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			final String predicate) {
 		final ClassicalB pred = new ClassicalB(predicate);
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				stateId.getId(), name, pred, 1);
+				this, stateId.getId(), name, pred, 1);
 		execute(command);
 		return !command.hasErrors()
 				&& (command.getNewTransitions().size() == 1);
@@ -756,7 +756,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return trace in the form of a {@link Trace} object
 	 */
 	public Trace getTrace(final StateId stateId) {
-		GetShortestTraceCommand cmd = new GetShortestTraceCommand(stateId);
+		GetShortestTraceCommand cmd = new GetShortestTraceCommand(this, stateId);
 		execute(cmd);
 		return getTrace(cmd);
 	}
@@ -795,7 +795,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return {@link Trace} containing a magic operation leading to the state.
 	 */
 	public Trace getTraceToState(final IEvalElement predicate) {
-		FindValidStateCommand cmd = new FindValidStateCommand(predicate);
+		FindValidStateCommand cmd = new FindValidStateCommand(this, predicate);
 		execute(cmd);
 		return getTrace(cmd);
 	}
@@ -830,6 +830,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return the {@link AbstractModel} that represents the model for the given
 	 *         StateSpace instance
 	 */
+	@Override
 	public AbstractModel getModel() {
 		return model;
 	}

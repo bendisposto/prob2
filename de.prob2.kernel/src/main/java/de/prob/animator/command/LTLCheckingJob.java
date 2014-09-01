@@ -29,7 +29,7 @@ public class LTLCheckingJob extends AbstractCommand {
 		this.formula = formula;
 		this.jobId = jobId;
 		this.ui = ui;
-		cmd = new LtlCheckingCommand(formula, MAX);
+		cmd = new LtlCheckingCommand(s, formula, MAX);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class LTLCheckingJob extends AbstractCommand {
 			s.endTransaction();
 		}
 
-		cmd = new LtlCheckingCommand(formula, MAX);
+		cmd = new LtlCheckingCommand(s, formula, MAX);
 	}
 
 	public IModelCheckingResult getResult() {

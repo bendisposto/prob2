@@ -18,7 +18,7 @@ public class OpInfoTest {
 
 		CompoundPrologTerm cpt = new CompoundPrologTerm("op", one, two, three);
 
-		OpInfo opInfo = OpInfo.createOpInfoFromCompoundPrologTerm(cpt);
+		OpInfo opInfo = OpInfo.createOpInfoFromCompoundPrologTerm(null, cpt);
 		assertEquals("1", opInfo.getId());
 		assertEquals("2", opInfo.getSrc());
 		assertEquals("3", opInfo.getDest());

@@ -26,7 +26,10 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 	private final StateId id;
 	private final List<OpInfo> transitions = new ArrayList<OpInfo>();
 
-	public GetShortestTraceCommand(final StateId id) {
+	private final StateSpace s;
+
+	public GetShortestTraceCommand(final StateSpace s, final StateId id) {
+		this.s = s;
 		this.id = id;
 	}
 
@@ -44,9 +47,8 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 		PrologTerm trace = bindings.get(TRACE);
 		if (trace instanceof ListPrologTerm) {
 			for (PrologTerm term : (ListPrologTerm) trace) {
-				transitions
-						.add(OpInfo
-								.createOpInfoFromCompoundPrologTerm((CompoundPrologTerm) term));
+				transitions.add(OpInfo.createOpInfoFromCompoundPrologTerm(s,
+						(CompoundPrologTerm) term));
 			}
 		} else {
 			String msg = "Trace was not found. Error was: "

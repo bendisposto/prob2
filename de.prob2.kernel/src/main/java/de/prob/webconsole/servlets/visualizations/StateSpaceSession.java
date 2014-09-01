@@ -253,7 +253,7 @@ public class StateSpaceSession implements ISessionServlet,
 
 	private AbstractData createSigMergeGraph() {
 		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand(
-				disabledEvents);
+				extractStateSpace(), disabledEvents);
 		space.execute(cmd);
 		SignatureMergedStateSpace s = new SignatureMergedStateSpace(space, cmd,
 				disabledEvents);
@@ -266,7 +266,7 @@ public class StateSpaceSession implements ISessionServlet,
 
 	private AbstractData createTransitionDiagram(final String parameter) {
 		CalculateTransitionDiagramCommand cmd = new CalculateTransitionDiagramCommand(
-				space.getModel().parseFormula(parameter));
+				extractStateSpace(), space.getModel().parseFormula(parameter));
 		space.execute(cmd);
 		TransitionDiagram s = new TransitionDiagram(space, parameter, cmd);
 		s.addStates(cmd.getStates());

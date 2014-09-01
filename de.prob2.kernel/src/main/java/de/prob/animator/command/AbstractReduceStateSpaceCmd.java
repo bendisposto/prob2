@@ -12,9 +12,12 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.StateSpace;
 import de.prob.statespace.derived.DerivedStateId;
 
 public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
+
+	private final StateSpace s;
 
 	private static final int STATE_LABELS_INDEX = 4;
 	private static final int STATE_COUNT_INDEX = 2;
@@ -34,6 +37,10 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 	public final Map<String, Set<OpInfo>> transStyle = new HashMap<String, Set<OpInfo>>();
 	public final Map<String, Set<OpInfo>> transColor = new HashMap<String, Set<OpInfo>>();
 
+	public AbstractReduceStateSpaceCmd(final StateSpace space) {
+		this.s = space;
+	}
+
 	// Transitions take the form trans(TransId,Src,Dest,Label,Style,Color)
 	protected void extractTransitions(final ListPrologTerm trans) {
 		for (PrologTerm pt : trans) {
@@ -46,8 +53,8 @@ public abstract class AbstractReduceStateSpaceCmd extends AbstractCommand {
 				String dest = OpInfo.getIdFromPrologTerm(cpt
 						.getArgument(OP_DEST_INDEX));
 				String label = cpt.getArgument(OP_LABEL_INDEX).toString();
-				OpInfo op = OpInfo.generateArtificialTransition(id, label, src,
-						dest);
+				OpInfo op = OpInfo.generateArtificialTransition(s, id, label,
+						src, dest);
 
 				String style = cpt.getArgument(OP_STYLE_INDEX).getFunctor();
 				String color = cpt.getArgument(OP_COLOR_INDEX).getFunctor();

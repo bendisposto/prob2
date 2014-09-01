@@ -24,12 +24,18 @@ import de.prob.prolog.term.PrologTerm;
 /**
  * Stores the information for a given Operation. This includes operation id
  * (id), operation name (name), the source state (src), and the destination
- * state (dest), as well as a list of parameters.
+ * state (dest), as well as a list of parameters. </br></br> Note: This class
+ * retains a reference to the StateSpace object to which it belongs. In order to
+ * ensure that the garbage collector works correctly when cleaning up a
+ * StateSpace object make sure that all OpInfo objects are correctly
+ * dereferenced.
  * 
  * @author joy
  * 
  */
 public class OpInfo {
+	public StateSpace stateSpace;
+
 	private final String id;
 	private String name;
 	private final String src;
@@ -44,15 +50,18 @@ public class OpInfo {
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
-	private OpInfo(final String id, final String src, final String dest) {
+	private OpInfo(final StateSpace stateSpace, final String id,
+			final String src, final String dest) {
+		this.stateSpace = stateSpace;
 		this.id = id;
 		this.src = src;
 		this.dest = dest;
 		evaluated = false;
 	}
 
-	private OpInfo(final String id, final String name, final String src,
-			final String dest) {
+	private OpInfo(final StateSpace stateSpace, final String id,
+			final String name, final String src, final String dest) {
+		this.stateSpace = stateSpace;
 		this.id = id;
 		this.name = name;
 		this.src = src;
@@ -218,14 +227,15 @@ public class OpInfo {
 		evaluated = true;
 	}
 
-	public static OpInfo generateArtificialTransition(final String transId,
-			final String description, final String srcId, final String destId) {
-		return new OpInfo(transId, description, srcId, destId);
+	public static OpInfo generateArtificialTransition(final StateSpace s,
+			final String transId, final String description, final String srcId,
+			final String destId) {
+		return new OpInfo(s, transId, description, srcId, destId);
 	}
 
-	public static OpInfo createOpInfoFromCompoundPrologTerm(
+	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
 			final CompoundPrologTerm cpt) {
-		return new OpInfo(OpInfo.getIdFromPrologTerm(cpt.getArgument(1)),
+		return new OpInfo(s, OpInfo.getIdFromPrologTerm(cpt.getArgument(1)),
 				OpInfo.getIdFromPrologTerm(cpt.getArgument(2)),
 				OpInfo.getIdFromPrologTerm(cpt.getArgument(3)));
 	}
