@@ -9,7 +9,7 @@ s = m as StateSpace
 cmd = new GetDefaultPreferencesCommand()
 s.execute(cmd)
 ps = cmd.getPreferences()
-assert ps.size() == 21
+assert ps.size() == 23
 
 prefs = [:]
 ps.each { prefs[it.name] = it.defaultValue }
