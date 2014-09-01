@@ -58,7 +58,7 @@ public class CurrentTrace extends AbstractSession implements
 			String group = "future";
 			while (element.getPrevious() != null) {
 				OpInfo op = element.getOp();
-				String rep = op.getRep(trace.getModel());
+				String rep = op.getRep();
 				if (element == current) {
 					group = "current";
 					ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,

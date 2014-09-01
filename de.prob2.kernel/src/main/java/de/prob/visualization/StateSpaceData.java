@@ -100,8 +100,8 @@ public class StateSpaceData extends AbstractData {
 			final List<OpInfo> newOps) {
 		HashSet<StateId> ids = new HashSet<StateId>();
 		for (OpInfo newOp : newOps) {
-			ids.add(s.getVertex(newOp.getSrc()));
-			ids.add(s.getVertex(newOp.getDest()));
+			ids.add(newOp.getSrcId());
+			ids.add(newOp.getDestId());
 		}
 		s.evaluateForGivenStates(ids, vars);
 
@@ -109,8 +109,8 @@ public class StateSpaceData extends AbstractData {
 		ops.addAll(newOps);
 		s.evaluateOps(ops);
 		for (OpInfo opInfo : ops) {
-			calculateInvariant(s, s.getVertex(opInfo.getSrc()));
-			calculateInvariant(s, s.getVertex(opInfo.getDest()));
+			calculateInvariant(s, opInfo.getSrcId());
+			calculateInvariant(s, opInfo.getDestId());
 		}
 		updateTransformers();
 		super.addNewLinks(graph, newOps);
@@ -123,10 +123,10 @@ public class StateSpaceData extends AbstractData {
 
 	@Override
 	public Link addLink(final OpInfo op) {
-		Node src = nodes.get(op.getSrc());
-		Node dest = nodes.get(op.getDest());
+		Node src = nodes.get(op.getSrcId().getId());
+		Node dest = nodes.get(op.getDestId().getId());
 		Link link = new Link(op.getId(), data.nodes.indexOf(src),
-				data.nodes.indexOf(dest), op.getRep(s.getModel()), "#666");
+				data.nodes.indexOf(dest), op.getRep(), "#666");
 		links.put(op.getId(), link);
 		data.links.add(link);
 		count++;

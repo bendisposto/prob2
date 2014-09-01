@@ -64,7 +64,7 @@ public class CurrentAnimations extends AbstractSession implements
 			String modelName = mainComponent != null ? mainComponent.toString()
 					: model.getModelFile().getName();
 			OpInfo op = t.getCurrent().getOp();
-			String lastOp = op != null ? op.getRep(t.getModel()) : "";
+			String lastOp = op != null ? op.getRep() : "";
 
 			String steps = t.getCurrent().getOpList().size() + "";
 			String isCurrent = t.equals(currentTrace) + "";

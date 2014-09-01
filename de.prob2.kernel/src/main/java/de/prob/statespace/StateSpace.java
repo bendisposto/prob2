@@ -575,16 +575,15 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 						.getNewTransitions();
 				for (final OpInfo op : newOps) {
 					if (!containsEdge(op)) {
-						StateId src = getVertex(op.getSrc());
-						if (src == null) {
-							src = new StateId(op.getSrc(), this);
+						StateId src = op.getSrcId();
+						if (!containsVertex(src)) {
 							addVertex(src);
 						}
+
 						last = Math.max(last, src.numericalId());
 
-						StateId dest = getVertex(op.getDest());
-						if (dest == null) {
-							dest = new StateId(op.getDest(), this);
+						StateId dest = op.getDestId();
+						if (!containsVertex(dest)) {
 							addVertex(dest);
 						}
 
@@ -682,7 +681,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return {@link OpInfo} specified by the id parameter
 	 */
 	public OpInfo getEvaluatedOpInfo(final String id) {
-		return ops.get(id).ensureEvaluated(this);
+		return ops.get(id).evaluate();
 	}
 
 	/**
@@ -699,7 +698,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.getId() + ": " + opId.getRep(model));
+			sb.append("  " + opId.getId() + ": " + opId.getRep());
 			if (withTO.contains(opId.getId())) {
 				sb.append(" (WITH TIMEOUT)");
 			}
@@ -962,16 +961,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	public Set<OpInfo> evaluateOps(final Collection<OpInfo> ops) {
-		List<OpInfo> notEvaluated = new ArrayList<OpInfo>();
-		for (OpInfo opInfo : ops) {
-			if (!opInfo.isEvaluated()) {
-				notEvaluated.add(opInfo);
-			}
-		}
-		if (notEvaluated.isEmpty()) {
-			return new LinkedHashSet<OpInfo>(ops);
-		}
-		GetOpsFromIds cmd = new GetOpsFromIds(notEvaluated);
+		GetOpsFromIds cmd = new GetOpsFromIds(ops);
 		execute(cmd);
 		return new LinkedHashSet<OpInfo>(ops);
 	}

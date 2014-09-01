@@ -98,7 +98,8 @@ public abstract class AbstractDerivedStateSpace extends StateSpaceGraph
 		for (OpInfo op : ops) {
 			if (!containsEdge(op)) {
 				newOps.add(op);
-				addEdge(op, states.get(op.getSrc()), states.get(op.getDest()));
+				addEdge(op, states.get(op.getSrcId().getId()),
+						states.get(op.getDestId().getId()));
 			}
 		}
 		return newOps;

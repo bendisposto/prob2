@@ -20,8 +20,8 @@ public class OpInfoTest {
 
 		OpInfo opInfo = OpInfo.createOpInfoFromCompoundPrologTerm(null, cpt);
 		assertEquals("1", opInfo.getId());
-		assertEquals("2", opInfo.getSrc());
-		assertEquals("3", opInfo.getDest());
+		assertEquals("2", opInfo.getSrcId().getId());
+		assertEquals("3", opInfo.getDestId().getId());
 
 	}
 

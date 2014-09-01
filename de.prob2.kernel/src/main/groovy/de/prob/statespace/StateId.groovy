@@ -128,7 +128,10 @@ class StateId {
 
 
 	def boolean equals(Object that) {
-		return this.id.equals(that.getId());
+		if (that instanceof StateId) {
+			return this.id.equals(that.getId());
+		}
+		return false
 	}
 
 
