@@ -86,6 +86,22 @@ public class OpInfo {
 		return dest;
 	}
 
+	/**
+	 * @param s
+	 *            - StateSpace for which the StateId should be generated
+	 * @return the StateId object associated with this OpInfo
+	 */
+	public StateId getSrcId(final StateSpace s) {
+		// TODO: If we have a reference to the StateSpace within the OpInfo, we
+		// could just use it.
+		// Maybe that would be a meaningful refactoring.
+		return new StateId(src, s);
+	}
+
+	public StateId getDestId(final StateSpace s) {
+		return new StateId(dest, s);
+	}
+
 	public List<String> getParams() {
 		return params;
 	}
