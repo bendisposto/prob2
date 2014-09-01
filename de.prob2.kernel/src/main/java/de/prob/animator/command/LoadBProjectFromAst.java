@@ -15,11 +15,9 @@ import de.prob.prolog.term.PrologTerm;
 
 public class LoadBProjectFromAst extends AbstractCommand {
 
-	private final Start ast;
 	private final LoadBProjectCommand loadCommand;
 
 	public LoadBProjectFromAst(final Start ast) throws BException {
-		this.ast = ast;
 		RecursiveMachineLoader rml = getLoader(ast);
 		loadCommand = new LoadBProjectCommand(rml, new File("from_string"));
 	}
