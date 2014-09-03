@@ -9,11 +9,11 @@ s = m as StateSpace
 cmd = new GetDefaultPreferencesCommand()
 s.execute(cmd)
 ps = cmd.getPreferences()
-assert ps.size() == 23
+assert ps.size() == 24
 
 prefs = [:]
 ps.each { prefs[it.name] = it.defaultValue }
-assert prefs.size() == 23
+assert prefs.size() == 24
 
 assert prefs["MAXINT"] == "3"
 assert prefs["MININT"] == "-1"
@@ -24,6 +24,9 @@ assert prefs["SYMBOLIC"] == "false"
 assert prefs["CLPFD"] == "true"
 assert prefs["CHR"] == "false"
 assert prefs["SMT"] == "false"
+assert prefs["CSE"] == "false"
+assert prefs["CSE_PRED"] == "true"
+assert prefs["CSE_WD_ONLY"] == "false"
 assert prefs["STATIC_ORDERING"] == "false"
 assert prefs["COMPRESSION"] == "false"
 assert prefs["SYMMETRY_MODE"] == "off"
@@ -40,7 +43,7 @@ assert prefs["MEMO"] == "false"
 cmd = new GetCurrentPreferencesCommand()
 s.execute(cmd)
 prefs = cmd.getPreferences()
-assert prefs.size() == 23
+assert prefs.size() == 24
 assert prefs["MAXINT"] == "10"
 
 cmd = new SetPreferenceCommand("MAXINT","12")
