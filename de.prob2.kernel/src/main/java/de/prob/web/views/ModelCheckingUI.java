@@ -140,7 +140,7 @@ public class ModelCheckingUI extends AbstractSession implements
 
 	private Object startConsistencyChecking() {
 		ModelChecker checker = new ModelChecker(new ConsistencyChecker(
-				currentStateSpace, options, this));
+				currentStateSpace, options, null, this));
 		jobs.put(checker.getJobId(), checker);
 		checker.start();
 		String name = currentStateSpace.getModel().getMainComponent()

@@ -16,7 +16,7 @@ public class ModelCheckingOptions {
 				"recheck existing states"), stop_at_full_coverage(
 				"stop at full coverage"), partial_order_reduction(
 				"partial order reduction"), partial_guard_evaluation(
-				"partial guard evaluation");
+				"partial guard evaluation"), find_goal("search for goal");
 
 		private final String description;
 
@@ -67,6 +67,10 @@ public class ModelCheckingOptions {
 
 	public ModelCheckingOptions partialGuardEvaluation(final boolean value) {
 		return changeOption(value, Options.partial_guard_evaluation);
+	}
+
+	public ModelCheckingOptions checkGoal(final boolean value) {
+		return changeOption(value, Options.find_goal);
 	}
 
 	private ModelCheckingOptions changeOption(final boolean value,

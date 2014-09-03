@@ -1,6 +1,10 @@
 package de.prob.check;
 
 import de.prob.animator.command.ModelCheckingJob;
+import de.prob.animator.command.SetBGoalCommand;
+import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.check.ModelCheckingOptions.Options;
+import de.prob.exception.ProBError;
 import de.prob.statespace.StateSpace;
 import de.prob.web.views.ModelCheckingUI;
 
@@ -21,6 +25,8 @@ public class ConsistencyChecker implements IModelCheckJob {
 	private final String jobId;
 	private final ModelCheckingUI ui;
 	private final ModelCheckingJob job;
+	private final IEvalElement goal;
+	private final ModelCheckingOptions options;
 
 	/**
 	 * calls {@link #ConsistencyChecker(StateSpace, ModelCheckingOptions)} with
@@ -50,6 +56,11 @@ public class ConsistencyChecker implements IModelCheckJob {
 		this(s, options, null);
 	}
 
+	public ConsistencyChecker(final StateSpace s,
+			final ModelCheckingOptions options, final IEvalElement goal) {
+		this(s, options, goal, null);
+	}
+
 	/**
 	 * @param s
 	 *            {@link StateSpace} in which to perform the consistency
@@ -61,8 +72,11 @@ public class ConsistencyChecker implements IModelCheckJob {
 	 *            updates. Otherwise, null.
 	 */
 	public ConsistencyChecker(final StateSpace s,
-			final ModelCheckingOptions options, final ModelCheckingUI ui) {
+			final ModelCheckingOptions options, final IEvalElement goal,
+			final ModelCheckingUI ui) {
 		this.s = s;
+		this.options = options;
+		this.goal = goal;
 		this.ui = ui;
 		jobId = ModelChecker.generateJobId();
 		job = new ModelCheckingJob(s, options, jobId, ui);
@@ -71,6 +85,22 @@ public class ConsistencyChecker implements IModelCheckJob {
 	@Override
 	public IModelCheckingResult call() throws Exception {
 		long time = System.currentTimeMillis();
+
+		if (goal != null) {
+			try {
+				SetBGoalCommand cmd = new SetBGoalCommand(goal);
+				s.execute(cmd);
+			} catch (ProBError e) {
+				return new CheckError("Type error in specified goal.");
+			}
+		} else {
+			// TODO: I don't know if this is the behavior we desire
+			if (options.getPrologOptions().contains(Options.find_goal)) {
+				return new CheckError(
+						"Cannot search for goal because no goal is specified.");
+			}
+		}
+
 		s.execute(job);
 		IModelCheckingResult result = job.getResult();
 		if (ui != null) {
