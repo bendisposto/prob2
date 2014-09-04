@@ -64,7 +64,7 @@ public class OsSpecificInfo {
 
 	/**
 	 * @return dirName Windows: "win32", Mac: "leopard64", Linux 32-Bit:
-	 *         "linux", Linux 64-Bit: "linux64"
+	 *         "linux32", Linux 64-Bit: "linux64"
 	 */
 	public String getDirName() {
 		return dirName;

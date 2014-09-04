@@ -44,7 +44,7 @@ class OsInfoProvider implements Provider<OsSpecificInfo> {
 		if (os.indexOf("linux") >= 0) {
 			if (osArch.equals("i386")) {
 				return new OsSpecificInfo("probcli.sh", "sh",
-						"send_user_interrupt", "Linux", osString, "linux");
+						"send_user_interrupt", "Linux", osString, "linux32");
 			}
 			if (osArch.equals("amd64")) {
 				return new OsSpecificInfo("probcli.sh", "sh",
