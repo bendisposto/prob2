@@ -23,6 +23,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.StateSpace;
 
 /**
  * Command to execute an event that has not been enumerated by ProB.
@@ -43,10 +44,12 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	private final List<OpInfo> operations = new ArrayList<OpInfo>();
 	private final List<String> errors = new ArrayList<String>();
 	private final int nrOfSolutions;
+	private final StateSpace s;
 
-	public GetOperationByPredicateCommand(final String stateId,
-			final String name, final ClassicalB predicate,
-			final int nrOfSolutions) {
+	public GetOperationByPredicateCommand(final StateSpace s,
+			final String stateId, final String name,
+			final ClassicalB predicate, final int nrOfSolutions) {
+		this.s = s;
 		this.stateId = stateId;
 		this.name = name;
 		this.nrOfSolutions = nrOfSolutions;
@@ -95,7 +98,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 		for (PrologTerm prologTerm : list) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
 					prologTerm, 3);
-			operations.add(OpInfo.createOpInfoFromCompoundPrologTerm(cpt));
+			operations.add(OpInfo.createOpInfoFromCompoundPrologTerm(s, cpt));
 		}
 
 		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS));

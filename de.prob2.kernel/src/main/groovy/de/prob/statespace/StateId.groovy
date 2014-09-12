@@ -6,6 +6,15 @@ import de.prob.animator.domainobjects.IEvalResult
 import de.prob.statespace.derived.AbstractDerivedStateSpace
 
 
+/**
+ * @author joy
+ *
+ * A reference to the state object in the ProB core.
+ *
+ * Note: This class contains a reference to the StateSpace object to which this state
+ * reference belongs. In order for the garbage collector to work correctly, dereference
+ * any StateId objects after they are no longer needed.
+ */
 class StateId {
 
 	protected def id;
@@ -119,7 +128,10 @@ class StateId {
 
 
 	def boolean equals(Object that) {
-		return this.id.equals(that.getId());
+		if (that instanceof StateId) {
+			return this.id.equals(that.getId());
+		}
+		return false
 	}
 
 

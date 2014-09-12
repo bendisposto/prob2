@@ -24,16 +24,22 @@ import de.prob.prolog.term.PrologTerm;
 /**
  * Stores the information for a given Operation. This includes operation id
  * (id), operation name (name), the source state (src), and the destination
- * state (dest), as well as a list of parameters.
+ * state (dest), as well as a list of parameters. </br></br> Note: This class
+ * retains a reference to the StateSpace object to which it belongs. In order to
+ * ensure that the garbage collector works correctly when cleaning up a
+ * StateSpace object make sure that all OpInfo objects are correctly
+ * dereferenced.
  * 
  * @author joy
  * 
  */
 public class OpInfo {
+	public StateSpace stateSpace;
+
 	private final String id;
 	private String name;
-	private final String src;
-	private final String dest;
+	private final StateId src;
+	private final StateId dest;
 	private List<String> params = new ArrayList<String>();
 	private List<String> returnValues = new ArrayList<String>();
 	private List<EvalResult> paramsSource = new ArrayList<EvalResult>();
@@ -41,89 +47,187 @@ public class OpInfo {
 	private String targetState;
 	private String rep = null;
 	private boolean evaluated;
+	private final FormalismType formalismType;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
-	private OpInfo(final String id, final String src, final String dest) {
+	private OpInfo(final StateSpace stateSpace, final String id,
+			final String src, final String dest) {
+		this.stateSpace = stateSpace;
 		this.id = id;
-		this.src = src;
-		this.dest = dest;
+		this.src = new StateId(src, stateSpace);
+		this.dest = new StateId(dest, stateSpace);
+		this.formalismType = stateSpace.getModel().getFormalismType();
 		evaluated = false;
 	}
 
-	private OpInfo(final String id, final String name, final String src,
-			final String dest) {
+	private OpInfo(final StateSpace stateSpace, final String id,
+			final String name, final String src, final String dest) {
+		this.stateSpace = stateSpace;
 		this.id = id;
 		this.name = name;
-		this.src = src;
-		this.dest = dest;
+		this.src = new StateId(src, stateSpace);
+		this.dest = new StateId(dest, stateSpace);
+		this.formalismType = stateSpace.getModel().getFormalismType();
 		params = Collections.emptyList();
 		targetState = "";
 		evaluated = true;
 		rep = name;
 	}
 
-	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
-		if (destTerm instanceof IntegerPrologTerm) {
-			return BindingGenerator.getInteger(destTerm).getValue().toString();
-		}
-		return destTerm.getFunctor();
-	}
-
+	/**
+	 * @return String identifier associated with this Operation
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/**
+	 * The name field is not by default filled. To ensure that the name,
+	 * parameter, and return value information have been retrieved from ProB,
+	 * use the {@link #evaluate()} method.
+	 * 
+	 * @return name of this operation
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * {@link Deprecated}. Use {@link #getSrcId()} and access the String id via
+	 * {@link StateId#getId()} instead.
+	 * 
+	 * @return String id of source node
+	 */
+	@Deprecated
 	public String getSrc() {
+		return src.getId();
+	}
+
+	/**
+	 * {@link Deprecated}. Use {@link #getDestId()} and access the String id via
+	 * {@link StateId#getId()}.
+	 * 
+	 * @return String id of destination node.
+	 */
+	@Deprecated
+	public String getDest() {
+		return dest.getId();
+	}
+
+	/**
+	 * @return the {@link StateId} reference to the source node of this
+	 *         operation
+	 */
+	public StateId getSrcId() {
 		return src;
 	}
 
-	public String getDest() {
+	/**
+	 * @return the {@link StateId} reference to the destination node of this
+	 *         operation
+	 */
+	public StateId getDestId() {
 		return dest;
 	}
 
+	/**
+	 * The list of parameters is not filled by default. To ensure that the name,
+	 * parameter, and return value information have been retrieved from ProB,
+	 * use the {@link #evaluate()} method.
+	 * 
+	 * @return list of values for the parameters represented as strings
+	 */
 	public List<String> getParams() {
 		return params;
 	}
 
+	/**
+	 * The list of return values is not filled by default. To ensure that the
+	 * name, parameter, and return value information have been retrieved from
+	 * ProB, use the {@link #evaluate()} method.
+	 * 
+	 * @return list of return values of the operation represented as strings.
+	 */
 	public List<String> getReturnValues() {
 		return returnValues;
 	}
 
+	/**
+	 * The list of parameters is not filled by default. To ensure that the name,
+	 * parameter, and return value information have been retrieved from ProB,
+	 * use the {@link #evaluate()} method.
+	 * 
+	 * @return list of values for the parameters represented as
+	 *         {@link EvalResult}
+	 */
 	public List<EvalResult> getParamsSource() {
 		return paramsSource;
 	}
 
+	/**
+	 * The list of return values is not filled by default. To ensure that the
+	 * name, parameter, and return value information have been retrieved from
+	 * ProB, use the {@link #evaluate()} method.
+	 * 
+	 * @return list of return values of the operation represented as
+	 *         {@link EvalResult}
+	 */
 	public List<EvalResult> getRetValSource() {
 		return retValSource;
 	}
 
+	/**
+	 * @return a String representation of the target state
+	 */
 	public String getTargetState() {
 		return targetState;
 	}
 
 	@Override
 	public String toString() {
-		return getId() + "=[" + getSrc() + "," + getDest() + "]";
+		return getId() + "=[" + getSrcId().getId() + "," + getDestId().getId()
+				+ "]";
 	}
 
+	/**
+	 * This is {@link Deprecated}. Use {@link #getRep()} instead.
+	 * 
+	 * @param m
+	 *            Abstract Model
+	 * @return string representation
+	 */
+	@Deprecated
 	public String getRep(final AbstractModel m) {
 		if (rep == null) {
-			rep = generateRep(m);
+			rep = generateRep();
 		}
 		return rep;
 	}
 
-	private String generateRep(final AbstractModel m) {
-		if (!evaluated) {
-			ensureEvaluated(m.getStateSpace());
+	/**
+	 * @return the String representation of the operation.
+	 */
+	public String getRep() {
+		if (rep == null) {
+			rep = generateRep();
 		}
+		return rep;
+	}
 
-		if (m.getFormalismType().equals(FormalismType.CSP)) {
+	/**
+	 * The string representation of the operation is calculated based on the
+	 * name, parameters, return values, and the formalism type in question
+	 * {@link FormalismType#CSP} or {@link FormalismType#B}. If the operation is
+	 * not yet evaluated (the values for name, parameters, and return values
+	 * have not yet been retrieved), this is done via {@link #evaluate()}.
+	 * 
+	 * @return a String represenation of the operation
+	 */
+	private String generateRep() {
+		evaluate();
+
+		if (formalismType.equals(FormalismType.CSP)) {
 			if (params.isEmpty()) {
 				return name;
 			}
@@ -142,8 +246,8 @@ public class OpInfo {
 		if (obj instanceof OpInfo) {
 			OpInfo that = (OpInfo) obj;
 			return this.getId().equals(that.getId())
-					&& this.getSrc().equals(that.getSrc())
-					&& this.getDest().equals(that.getDest());
+					&& this.getSrcId().equals(that.getSrcId())
+					&& this.getDestId().equals(that.getDestId());
 		}
 		return false;
 	}
@@ -154,6 +258,12 @@ public class OpInfo {
 				.append(getDest()).toHashCode();
 	}
 
+	/**
+	 * @param that
+	 *            {@link OpInfo} with which this {@link OpInfo} should be
+	 *            compared
+	 * @return if the name and parameters of the {@link OpInfo}s are equivalent
+	 */
 	public boolean isSame(final OpInfo that) {
 		if (!that.isEvaluated()) {
 			return false;
@@ -161,34 +271,72 @@ public class OpInfo {
 		return that.getName().equals(name) && that.getParams().equals(params);
 	}
 
+	/**
+	 * {@link Deprecated}. Use {@link #evaluate()} instead.
+	 * 
+	 * @param s
+	 *            - StateSpace
+	 * @return OpInfo that has been evaluated.
+	 */
+	@Deprecated
 	public OpInfo ensureEvaluated(final StateSpace s) {
+		return evaluate();
+	}
+
+	/**
+	 * The {@link OpInfo} is checked to see if the name, parameters, and return
+	 * values have been retrieved from ProB yet. If not, the retrieval takes
+	 * place via the {@link GetOpFromId} command and the missing values are set.
+	 * 
+	 * @return
+	 */
+	public OpInfo evaluate() {
 		if (evaluated) {
 			return this;
 		}
 		GetOpFromId command = new GetOpFromId(this);
-		s.execute(command);
+		stateSpace.execute(command);
 		return this;
 	}
 
+	/**
+	 * @return whether or not the name, parameters, and return values have yet
+	 *         been retrieved from ProB
+	 */
 	public boolean isEvaluated() {
 		return evaluated;
 	}
 
+	/**
+	 * @return A SHA-1 hash of the target state in String format
+	 * @throws NoSuchAlgorithmException
+	 */
 	public String sha() throws NoSuchAlgorithmException {
+		evaluate();
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		md.update(targetState.getBytes());
 		return new BigInteger(1, md.digest()).toString(Character.MAX_RADIX);
 	}
 
 	/**
-	 * @return the saved String representation. Can be null if rep has not yet
-	 *         been generated. To generate the String rep for a given model use
-	 *         {{@link #getRep(AbstractModel)};
+	 * Sets the values for the fields in this class. This should ONLY be called
+	 * by the {@link GetOpFromId} command during retrieval of the values from
+	 * Prolog. For this reason it has been marked as deprecated.
+	 * 
+	 * @param name
+	 *            - Name of the operation
+	 * @param params
+	 *            - {@link List} of {@link String} parameters
+	 * @param returnValues
+	 *            - {@link List} of {@link String} return values
+	 * @param paramsSource
+	 *            - {@link List} of {@link EvalResult} parameters
+	 * @param retValSource
+	 *            - {@link List} of {@link EvalResult} return values
+	 * @param targetState
+	 *            - String representation of target state
 	 */
-	public String getRep() {
-		return rep;
-	}
-
+	@Deprecated
 	public void setInfo(final String name, final List<String> params,
 			final List<String> returnValues,
 			final List<EvalResult> paramsSource,
@@ -202,15 +350,57 @@ public class OpInfo {
 		evaluated = true;
 	}
 
-	public static OpInfo generateArtificialTransition(final String transId,
-			final String description, final String srcId, final String destId) {
-		return new OpInfo(transId, description, srcId, destId);
+	/**
+	 * Creates an artificial transition that is to be added to the
+	 * {@link StateSpace}.
+	 * 
+	 * @param s
+	 *            {@link StateSpace} object to which this operation belongs
+	 * @param transId
+	 *            String operation id
+	 * @param description
+	 *            String description of the operation
+	 * @param srcId
+	 *            String id of source node
+	 * @param destId
+	 *            String id of destination node
+	 * @return OpInfo representation of given information
+	 */
+	public static OpInfo generateArtificialTransition(final StateSpace s,
+			final String transId, final String description, final String srcId,
+			final String destId) {
+		return new OpInfo(s, transId, description, srcId, destId);
 	}
 
-	public static OpInfo createOpInfoFromCompoundPrologTerm(
+	/**
+	 * @param s
+	 *            StateSpace object to which this operation belongs
+	 * @param cpt
+	 *            {@link CompoundPrologTerm} representation of the operation
+	 *            which contains the transition id, source id, and destination
+	 *            id
+	 * @return {@link OpInfo} object representing the information about the
+	 *         operation
+	 */
+	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
 			final CompoundPrologTerm cpt) {
-		return new OpInfo(OpInfo.getIdFromPrologTerm(cpt.getArgument(1)),
+		return new OpInfo(s, OpInfo.getIdFromPrologTerm(cpt.getArgument(1)),
 				OpInfo.getIdFromPrologTerm(cpt.getArgument(2)),
 				OpInfo.getIdFromPrologTerm(cpt.getArgument(3)));
+	}
+
+	/**
+	 * Takes a {@link PrologTerm} representation of a transition id and
+	 * translates it to a string value.
+	 * 
+	 * @param destTerm
+	 *            {@link PrologTerm} representing the Transition Id
+	 * @return String representation of the Transition Id
+	 */
+	public static String getIdFromPrologTerm(final PrologTerm destTerm) {
+		if (destTerm instanceof IntegerPrologTerm) {
+			return BindingGenerator.getInteger(destTerm).getValue().toString();
+		}
+		return destTerm.getFunctor();
 	}
 }

@@ -23,7 +23,7 @@ public class SignatureMergedStateSpace extends AbstractDerivedStateSpace {
 	@Override
 	public void newTransitions(final List<OpInfo> o) {
 		ApplySignatureMergeCommand cmd = new ApplySignatureMergeCommand(
-				disabledEvents);
+				stateSpace, disabledEvents);
 		stateSpace.execute(cmd);
 		addStates(cmd.getStates());
 		List<OpInfo> newOps = addTransitions(cmd.getOps());

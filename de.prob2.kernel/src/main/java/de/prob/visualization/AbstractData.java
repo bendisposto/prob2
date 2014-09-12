@@ -39,14 +39,15 @@ public abstract class AbstractData {
 			final List<OpInfo> newOps) {
 		for (OpInfo opInfo : newOps) {
 			if (!links.containsKey(opInfo.getId())) {
-				if (!nodes.containsKey(opInfo.getSrc())) {
-					Node newSrc = addNode(graph.getVertex(opInfo.getSrc()));
+				if (!nodes.containsKey(opInfo.getSrcId().getId())) {
+					Node newSrc = addNode(opInfo.getSrcId());
 					changes.nodes.add(newSrc);
 				}
 
-				if (!nodes.containsKey(opInfo.getDest())) {
-					Node newDest = addNode(graph.getVertex(opInfo.getDest()),
-							data.nodes.indexOf(nodes.get(opInfo.getSrc())));
+				if (!nodes.containsKey(opInfo.getDestId().getId())) {
+					Node newDest = addNode(opInfo.getDestId(),
+							data.nodes.indexOf(nodes.get(opInfo.getSrcId()
+									.getId())));
 					changes.nodes.add(newDest);
 				}
 

@@ -5,7 +5,10 @@ import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
 import de.prob.animator.IAnimator
-import de.prob.exception.ProBError
+import de.prob.animator.domainobjects.IEvalElement
+import de.prob.model.representation.AbstractElement
+import de.prob.model.representation.AbstractModel
+import de.prob.model.representation.StateSchema
 
 class StateSpaceTest extends Specification {
 
@@ -23,15 +26,46 @@ class StateSpaceTest extends Specification {
 		}
 	}
 
+	def class Model extends AbstractModel {
+		def FormalismType getFormalismType() {
+			return FormalismType.B
+		}
+
+		@Override
+		public StateSchema getStateSchema() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public AbstractElement getMainComponent() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IEvalElement parseFormula(String formula) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void subscribeFormulasOfInterest() {
+			// TODO Auto-generated method stub
+
+		}
+	}
+
 
 	def StateSpace s
 
 	def setup() {
 
 		def mock = mock(IAnimator.class)
-//		doThrow(new ProBError("XXX")).when(mock).execute(any(Object.class));
+		//		doThrow(new ProBError("XXX")).when(mock).execute(any(Object.class));
 
 		s = new StateSpace(new MyProvider<IAnimator>(mock), new DirectedMultigraphProvider())
+		s.setModel(new Model())
 
 		def states = [
 			new StateId("1",s),
@@ -44,11 +78,11 @@ class StateSpaceTest extends Specification {
 		]
 
 		def ops = [
-			new OpInfo("b","root","2"),
-			new OpInfo("c","2","3"),
-			new OpInfo("d","3","4"),
-			new OpInfo("e","3","5"),
-			new OpInfo("f","4","6")
+			new OpInfo(s, "b","root","2"),
+			new OpInfo(s, "c","2","3"),
+			new OpInfo(s, "d","3","4"),
+			new OpInfo(s, "e","3","5"),
+			new OpInfo(s, "f","4","6")
 		]
 
 		states.each { it ->
@@ -112,7 +146,7 @@ class StateSpaceTest extends Specification {
 	}
 
 	def "The node is not a deadlock"() {
-		s.addEdge(new OpInfo("bla","1","2"), s.states.get("1"), s.states.get("2"))
+		s.addEdge(new OpInfo(s,"bla","1","2"), s.states.get("1"), s.states.get("2"))
 
 		expect:
 		s.isDeadlock(s[1]) == false

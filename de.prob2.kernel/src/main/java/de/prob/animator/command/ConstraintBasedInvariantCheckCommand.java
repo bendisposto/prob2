@@ -24,6 +24,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.StateSpace;
 
 /**
  * This command makes ProB search for a invariant violation with an optional
@@ -46,13 +47,17 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 	private final List<InvariantCheckCounterExample> counterexamples = new ArrayList<InvariantCheckCounterExample>();
 	private final List<OpInfo> newTransitions = new ArrayList<OpInfo>();
 
+	private final StateSpace s;
+
 	/**
 	 * @param events
 	 *            is a collection of names of that events that should be
 	 *            checked. May be <code>null</code>. In that case, all events
 	 *            are checked.
 	 */
-	public ConstraintBasedInvariantCheckCommand(final Collection<String> events) {
+	public ConstraintBasedInvariantCheckCommand(final StateSpace s,
+			final Collection<String> events) {
+		this.s = s;
 		this.events = events == null ? null : Collections
 				.unmodifiableCollection(new ArrayList<String>(events));
 	}
@@ -112,12 +117,10 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 			final CompoundPrologTerm term = (CompoundPrologTerm) t;
 			final String eventName = PrologTerm.atomicString(term
 					.getArgument(1));
-			final OpInfo step1 = OpInfo
-					.createOpInfoFromCompoundPrologTerm(BindingGenerator
-							.getCompoundTerm(term.getArgument(2), 3));
-			final OpInfo step2 = OpInfo
-					.createOpInfoFromCompoundPrologTerm(BindingGenerator
-							.getCompoundTerm(term.getArgument(3), 3));
+			final OpInfo step1 = OpInfo.createOpInfoFromCompoundPrologTerm(s,
+					BindingGenerator.getCompoundTerm(term.getArgument(2), 3));
+			final OpInfo step2 = OpInfo.createOpInfoFromCompoundPrologTerm(s,
+					BindingGenerator.getCompoundTerm(term.getArgument(3), 3));
 			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(
 					eventName, step1, step2);
 			newTransitions.add(step1);

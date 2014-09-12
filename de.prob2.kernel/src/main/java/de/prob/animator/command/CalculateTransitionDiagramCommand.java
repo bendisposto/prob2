@@ -7,6 +7,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.StateSpace;
 
 /**
  * @author joy This command corresponds to prolog call
@@ -17,7 +18,9 @@ public class CalculateTransitionDiagramCommand extends
 
 	private final IEvalElement expression;
 
-	public CalculateTransitionDiagramCommand(final IEvalElement expression) {
+	public CalculateTransitionDiagramCommand(final StateSpace s,
+			final IEvalElement expression) {
+		super(s);
 		this.expression = expression;
 		if (!expression.getKind().equals(EvalElementType.EXPRESSION.toString())) {
 			throw new IllegalArgumentException(

@@ -29,6 +29,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 	private ResultType result;
 	private String stateId;
 	private OpInfo operation;
+	private final StateSpace s;
 
 	/**
 	 * @param predicate
@@ -36,7 +37,9 @@ public class FindValidStateCommand extends AbstractCommand implements
 	 * @see LanguageDependendAnimationPart#parsePredicate(IPrologTermOutput,
 	 *      String, boolean)
 	 */
-	public FindValidStateCommand(final IEvalElement predicate) {
+	public FindValidStateCommand(final StateSpace s,
+			final IEvalElement predicate) {
+		this.s = s;
 		this.predicate = predicate;
 	}
 
@@ -77,9 +80,8 @@ public class FindValidStateCommand extends AbstractCommand implements
 		} else if (resultTerm.hasFunctor("state_found", 2)) {
 			CompoundPrologTerm term = (CompoundPrologTerm) resultTerm;
 			result = ResultType.STATE_FOUND;
-			operation = OpInfo
-					.createOpInfoFromCompoundPrologTerm((CompoundPrologTerm) term
-							.getArgument(1));
+			operation = OpInfo.createOpInfoFromCompoundPrologTerm(s,
+					(CompoundPrologTerm) term.getArgument(1));
 			stateId = term.getArgument(2).toString();
 		} else {
 			throw new ProBError(

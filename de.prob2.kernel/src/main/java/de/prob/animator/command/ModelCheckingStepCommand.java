@@ -126,6 +126,11 @@ public class ModelCheckingStepCommand extends AbstractCommand {
 					.getArgument(1).getFunctor());
 		}
 
+		if (type.equals("goal_found")) {
+			return new ModelCheckErrorUncovered("Goal found", cpt
+					.getArgument(1).getFunctor());
+		}
+
 		if (type.equals("well_definedness_error")) {
 			return new ModelCheckErrorUncovered(
 					"A well definedness error occured.", cpt.getArgument(1)

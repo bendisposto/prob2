@@ -61,8 +61,8 @@ public class DerivedStateSpaceData extends AbstractData {
 
 	@Override
 	public Link addLink(final OpInfo op) {
-		Node src = nodes.get(op.getSrc());
-		Node dest = nodes.get(op.getDest());
+		Node src = nodes.get(op.getSrcId().getId());
+		Node dest = nodes.get(op.getDestId().getId());
 		Link link = new Link(op.getId(), data.nodes.indexOf(src),
 				data.nodes.indexOf(dest), op.getRep(), "#666");
 		links.put(op.getId(), link);

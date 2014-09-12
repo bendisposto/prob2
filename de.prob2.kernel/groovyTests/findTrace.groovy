@@ -7,7 +7,7 @@ t = new Trace(s)
 
 boolean thrown = false
 try {
-  cmd = new GetShortestTraceCommand(new StateId("7", s))
+  cmd = new GetShortestTraceCommand(s, new StateId("7", s))
   s.execute(cmd)
   assert cmd.getOperationIds().isEmpty()
 } catch(RuntimeException e) {
@@ -17,7 +17,7 @@ assert thrown == true
 
 t = t.randomAnimation(10)
 assert s[4] != null
-cmd = new GetShortestTraceCommand(s[4])
+cmd = new GetShortestTraceCommand(s, s[4])
 s.execute(cmd)
 ops = cmd.getNewTransitions()
 
@@ -32,7 +32,7 @@ len = ops.size()
 	assert opList[it] == ops[it]
 }
 
-cmd = new FindValidStateCommand("card(waiting) = 2" as ClassicalB)
+cmd = new FindValidStateCommand(s, "card(waiting) = 2" as ClassicalB)
 s.execute(cmd)
 t = cmd.getTrace(s)
 t.ensureOpInfosEvaluated()

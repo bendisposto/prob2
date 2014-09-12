@@ -22,7 +22,7 @@ public class TransitionDiagram extends AbstractDerivedStateSpace {
 	@Override
 	public void newTransitions(final List<OpInfo> newOps) {
 		CalculateTransitionDiagramCommand cmd = new CalculateTransitionDiagramCommand(
-				stateSpace.getModel().parseFormula(expression));
+				stateSpace, stateSpace.getModel().parseFormula(expression));
 		stateSpace.execute(cmd);
 		addStates(cmd.getStates());
 		List<OpInfo> nOps = addTransitions(cmd.getOps());

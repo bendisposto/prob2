@@ -20,6 +20,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.StateSpace;
 
 /**
  * Calculates the enabled operations for a given state id
@@ -36,7 +37,10 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 	private final String id;
 	private List<OpInfo> enabledOperations = Collections.emptyList();
 
-	public GetEnabledOperationsCommand(final String id) {
+	private final StateSpace s;
+
+	public GetEnabledOperationsCommand(final StateSpace s, final String id) {
+		this.s = s;
 		this.id = id;
 	}
 
@@ -51,8 +55,8 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 		for (PrologTerm op : prologTerm) {
 			CompoundPrologTerm cpt;
 			cpt = BindingGenerator.getCompoundTerm(op, 3);
-			enabledOperations.add(OpInfo
-					.createOpInfoFromCompoundPrologTerm(cpt));
+			enabledOperations.add(OpInfo.createOpInfoFromCompoundPrologTerm(s,
+					cpt));
 		}
 	}
 

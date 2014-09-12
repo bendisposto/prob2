@@ -44,8 +44,8 @@ public class DynamicTransformer extends Transformer implements
 	public void newTransitions(final List<OpInfo> newOps) {
 		List<StateId> toFilter = new ArrayList<StateId>();
 		for (OpInfo opInfo : newOps) {
-			StateId src = space.getVertex(opInfo.getSrc());
-			StateId dest = space.getVertex(opInfo.getDest());
+			StateId src = opInfo.getSrcId();
+			StateId dest = opInfo.getDestId();
 			if (!filtered.contains(src)) {
 				toFilter.add(src);
 			}
@@ -92,8 +92,8 @@ public class DynamicTransformer extends Transformer implements
 		JsonParser parser = new JsonParser();
 		JsonObject object = parser.parse(json).getAsJsonObject();
 
-		EvalElementFactory deserializer = Main.getInjector()
-				.getInstance(EvalElementFactory.class);
+		EvalElementFactory deserializer = Main.getInjector().getInstance(
+				EvalElementFactory.class);
 		DynamicTransformer transformer = new DynamicTransformer(
 				deserializer.deserialize(object.get("predicate").getAsString()),
 				s);

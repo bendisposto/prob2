@@ -115,7 +115,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			throw new IllegalArgumentException("state " + state
 					+ " does not exist");
 		}
-		final ExploreStateCommand command = new ExploreStateCommand(
+		final ExploreStateCommand command = new ExploreStateCommand(this,
 				state.getId(), subscribedFormulas);
 
 		try {
@@ -125,7 +125,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		} catch (ProBError e) {
 			if (state.equals(__root)) {
 				explored.add(state);
-				OpInfo op = OpInfo.generateArtificialTransition("FAIL",
+				OpInfo op = OpInfo.generateArtificialTransition(this, "FAIL",
 						"NO INITIALIZATION OR VALID CONSTANTS FOUND",
 						state.getId(), state.getId());
 				ops.put(op.getId(), op);
@@ -252,7 +252,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			throws IllegalArgumentException {
 		final ClassicalB pred = new ClassicalB(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				stateId.getId(), name, pred, nrOfSolutions);
+				this, stateId.getId(), name, pred, nrOfSolutions);
 		execute(command);
 		if (command.hasErrors()) {
 			throw new IllegalArgumentException("Executing operation " + name
@@ -279,7 +279,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			final String predicate) {
 		final ClassicalB pred = new ClassicalB(predicate);
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
-				stateId.getId(), name, pred, 1);
+				this, stateId.getId(), name, pred, 1);
 		execute(command);
 		return !command.hasErrors()
 				&& (command.getNewTransitions().size() == 1);
@@ -575,16 +575,15 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 						.getNewTransitions();
 				for (final OpInfo op : newOps) {
 					if (!containsEdge(op)) {
-						StateId src = getVertex(op.getSrc());
-						if (src == null) {
-							src = new StateId(op.getSrc(), this);
+						StateId src = op.getSrcId();
+						if (!containsVertex(src)) {
 							addVertex(src);
 						}
+
 						last = Math.max(last, src.numericalId());
 
-						StateId dest = getVertex(op.getDest());
-						if (dest == null) {
-							dest = new StateId(op.getDest(), this);
+						StateId dest = op.getDestId();
+						if (!containsVertex(dest)) {
 							addVertex(dest);
 						}
 
@@ -682,7 +681,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return {@link OpInfo} specified by the id parameter
 	 */
 	public OpInfo getEvaluatedOpInfo(final String id) {
-		return ops.get(id).ensureEvaluated(this);
+		return ops.get(id).evaluate();
 	}
 
 	/**
@@ -699,7 +698,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
-			sb.append("  " + opId.getId() + ": " + opId.getRep(model));
+			sb.append("  " + opId.getId() + ": " + opId.getRep());
 			if (withTO.contains(opId.getId())) {
 				sb.append(" (WITH TIMEOUT)");
 			}
@@ -756,7 +755,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return trace in the form of a {@link Trace} object
 	 */
 	public Trace getTrace(final StateId stateId) {
-		GetShortestTraceCommand cmd = new GetShortestTraceCommand(stateId);
+		GetShortestTraceCommand cmd = new GetShortestTraceCommand(this, stateId);
 		execute(cmd);
 		return getTrace(cmd);
 	}
@@ -795,7 +794,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return {@link Trace} containing a magic operation leading to the state.
 	 */
 	public Trace getTraceToState(final IEvalElement predicate) {
-		FindValidStateCommand cmd = new FindValidStateCommand(predicate);
+		FindValidStateCommand cmd = new FindValidStateCommand(this, predicate);
 		execute(cmd);
 		return getTrace(cmd);
 	}
@@ -830,6 +829,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return the {@link AbstractModel} that represents the model for the given
 	 *         StateSpace instance
 	 */
+	@Override
 	public AbstractModel getModel() {
 		return model;
 	}
@@ -961,16 +961,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	public Set<OpInfo> evaluateOps(final Collection<OpInfo> ops) {
-		List<OpInfo> notEvaluated = new ArrayList<OpInfo>();
-		for (OpInfo opInfo : ops) {
-			if (!opInfo.isEvaluated()) {
-				notEvaluated.add(opInfo);
-			}
-		}
-		if (notEvaluated.isEmpty()) {
-			return new LinkedHashSet<OpInfo>(ops);
-		}
-		GetOpsFromIds cmd = new GetOpsFromIds(notEvaluated);
+		GetOpsFromIds cmd = new GetOpsFromIds(ops);
 		execute(cmd);
 		return new LinkedHashSet<OpInfo>(ops);
 	}

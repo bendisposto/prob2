@@ -36,9 +36,12 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 	private final int max;
 	private IModelCheckingResult result;
 	private final LTL ltlFormula;
+	private final StateSpace s;
 
-	public LtlCheckingCommand(final LTL ltlFormula, final int max) {
+	public LtlCheckingCommand(final StateSpace s, final LTL ltlFormula,
+			final int max) {
 		super(ltlFormula, null);
+		this.s = s;
 		this.ltlFormula = ltlFormula;
 		this.max = max;
 	}
@@ -77,10 +80,9 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 
 			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(1))) {
 				if (!pt.hasFunctor("none", 0)) {
-					counterExample
-							.add(OpInfo
-									.createOpInfoFromCompoundPrologTerm(BindingGenerator
-											.getCompoundTerm(pt, 3)));
+					counterExample.add(OpInfo
+							.createOpInfoFromCompoundPrologTerm(s,
+									BindingGenerator.getCompoundTerm(pt, 3)));
 				}
 			}
 
@@ -104,9 +106,8 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			}
 
 			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(3))) {
-				pathToCE.add(OpInfo
-						.createOpInfoFromCompoundPrologTerm(BindingGenerator
-								.getCompoundTerm(pt, 3)));
+				pathToCE.add(OpInfo.createOpInfoFromCompoundPrologTerm(s,
+						BindingGenerator.getCompoundTerm(pt, 3)));
 			}
 
 			LTLCounterExample res = new LTLCounterExample(ltlFormula, pathToCE,
@@ -130,7 +131,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 
 	public static IModelCheckingResult modelCheck(final StateSpace s,
 			final LTL formula, final int max) {
-		LtlCheckingCommand cmd = new LtlCheckingCommand(formula, max);
+		LtlCheckingCommand cmd = new LtlCheckingCommand(s, formula, max);
 		s.execute(cmd);
 		return cmd.getResult();
 	}

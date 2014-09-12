@@ -23,6 +23,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
+import de.prob.statespace.StateSpace;
 
 /**
  * This command makes ProB search for a deadlock with an optional predicate to
@@ -45,12 +46,16 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 	private final IEvalElement formula;
 	private final List<OpInfo> newOps = new ArrayList<OpInfo>();
 
+	private final StateSpace s;
+
 	/**
 	 * @param predicate
 	 *            is a parsed predicate
 	 * 
 	 */
-	public ConstraintBasedDeadlockCheckCommand(final IEvalElement predicate) {
+	public ConstraintBasedDeadlockCheckCommand(final StateSpace s,
+			final IEvalElement predicate) {
+		this.s = s;
 		this.formula = predicate;
 	}
 
@@ -101,8 +106,10 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 					resultTerm, 2);
 
 			OpInfo deadlockOperation = OpInfo
-					.createOpInfoFromCompoundPrologTerm(BindingGenerator
-							.getCompoundTerm(deadlockTerm.getArgument(1), 3));
+					.createOpInfoFromCompoundPrologTerm(
+							s,
+							BindingGenerator.getCompoundTerm(
+									deadlockTerm.getArgument(1), 3));
 			newOps.add(deadlockOperation);
 			String deadlockStateId = deadlockTerm.getArgument(2).toString();
 

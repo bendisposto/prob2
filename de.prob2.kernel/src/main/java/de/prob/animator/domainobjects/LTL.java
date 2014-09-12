@@ -49,7 +49,7 @@ public class LTL extends AbstractEvalElement {
 
 	@Override
 	public EvaluationCommand getCommand(final StateId stateid) {
-		return new LtlCheckingCommand(this, 500);
+		return new LtlCheckingCommand(stateid.getSpace(), this, 500);
 	}
 
 }

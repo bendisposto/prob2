@@ -63,7 +63,7 @@ public class CBCDeadlockChecker implements IModelCheckJob {
 	public CBCDeadlockChecker(final StateSpace s,
 			final IEvalElement constraint, final ModelCheckingUI ui) {
 		this.s = s;
-		job = new ConstraintBasedDeadlockCheckCommand(constraint);
+		job = new ConstraintBasedDeadlockCheckCommand(s, constraint);
 		this.ui = ui;
 		jobId = ModelChecker.generateJobId();
 	}

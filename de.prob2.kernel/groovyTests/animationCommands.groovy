@@ -17,7 +17,7 @@ s.execute(cmd)
 assert cmd.isInitialized() == false
 
 assert s.getVertex("0") == null 
-cmd = new GetEnabledOperationsCommand("root")
+cmd = new GetEnabledOperationsCommand(s, "root")
 s.execute(cmd)
 assert cmd instanceof IStateSpaceModifier
 assert cmd.getEnabledOperations().size() == 1
@@ -44,7 +44,7 @@ s.execute(cmd)
 assert cmd.isTimeout() == false
 
 assert s.ops.get("1") == null
-cmd = new GetOperationByPredicateCommand("0", "new", "pp = PID1" as ClassicalB, 1)
+cmd = new GetOperationByPredicateCommand(s, "0", "new", "pp = PID1" as ClassicalB, 1)
 s.execute(cmd)
 transitions = cmd.getNewTransitions()
 assert transitions.size() == 1
@@ -57,22 +57,22 @@ assert op.getParams() == ["PID1"]
 // GetOperationByPredicateCommand must be called with a predicate
 thrown = false
 try {
-	cmd = new GetOperationByPredicateCommand("0", "new", "PID1" as ClassicalB, 1)
+	cmd = new GetOperationByPredicateCommand(s, "0", "new", "PID1" as ClassicalB, 1)
 	s.execute(cmd)
 } catch(IllegalArgumentException e) {
 	thrown = true
 }
 assert thrown
 
-cmd = new GetOperationByPredicateCommand("0", "blah", "TRUE = TRUE" as ClassicalB, 1)
+cmd = new GetOperationByPredicateCommand(s, "0", "blah", "TRUE = TRUE" as ClassicalB, 1)
 s.execute(cmd)
 assert cmd.getErrors() == ["Unknown operation"]
 
-cmd = new GetOperationByPredicateCommand("0", "blah", "TRUE = TRUE" as ClassicalB, 0)
+cmd = new GetOperationByPredicateCommand(s, "0", "blah", "TRUE = TRUE" as ClassicalB, 0)
 s.execute(cmd)
 assert cmd.getErrors() == ["max nr of solutions too small"]
 
-cmd = new GetOperationByPredicateCommand("0", "blah", "TRUE = FALSE" as ClassicalB, 1)
+cmd = new GetOperationByPredicateCommand(s, "0", "blah", "TRUE = FALSE" as ClassicalB, 1)
 s.execute(cmd)
 assert cmd.getNewTransitions().isEmpty()
 

@@ -1,7 +1,5 @@
 package de.prob.model.eventb.theory;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
 
 import org.eventb.core.ast.FormulaFactory;
@@ -12,13 +10,11 @@ import org.eventb.core.ast.extension.IFormulaExtension;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.ModelElementList;
-import de.prob.unicode.UnicodeTranslator;
 
 public class DataType extends AbstractElement {
 
 	final String identifierString;
 	private final EventB identifier;
-	private DataTypeExtension typeDef = null;
 	private ModelElementList<Type> typeArguments = new ModelElementList<Type>();
 	private ModelElementList<DataTypeConstructor> dataTypeConstructors = new ModelElementList<DataTypeConstructor>();
 
