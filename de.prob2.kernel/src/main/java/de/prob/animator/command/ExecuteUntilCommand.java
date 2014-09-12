@@ -12,6 +12,7 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
+import de.prob.statespace.StateSpace;
 
 public class ExecuteUntilCommand extends AbstractCommand implements
 		IStateSpaceModifier {
@@ -20,8 +21,10 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	private final List<OpInfo> resultTrace = new ArrayList<OpInfo>();
 	private StateId startstate;
 	private LTL condition;
+	private StateSpace statespace;
 
-	public ExecuteUntilCommand(StateId startstate, LTL condition) {
+	public ExecuteUntilCommand(StateSpace statespace, StateId startstate, LTL condition) {
+		this.statespace = statespace;
 		this.startstate = startstate;
 		this.condition = condition;
 	}
@@ -42,7 +45,7 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 
 		for (PrologTerm term : trace) {
 			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 3);
-			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(t);
+			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(statespace, t);
 			resultTrace.add(operation);
 		}
 	}
