@@ -22,8 +22,10 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	private StateId startstate;
 	private LTL condition;
 	private StateSpace statespace;
+	private StateId finalstate;
 
-	public ExecuteUntilCommand(StateSpace statespace, StateId startstate, LTL condition) {
+	public ExecuteUntilCommand(StateSpace statespace, StateId startstate,
+			LTL condition) {
 		this.statespace = statespace;
 		this.startstate = startstate;
 		this.condition = condition;
@@ -45,14 +47,20 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 
 		for (PrologTerm term : trace) {
 			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 3);
-			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(statespace, t);
+			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(
+					statespace, t);
 			resultTrace.add(operation);
+
 		}
 	}
 
 	@Override
 	public List<OpInfo> getNewTransitions() {
 		return resultTrace;
+	}
+
+	public StateId getFinalState() {
+		return resultTrace.get(resultTrace.size() - 1).getDestId();
 	}
 
 }
