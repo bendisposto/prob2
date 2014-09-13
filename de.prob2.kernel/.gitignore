@@ -7,8 +7,9 @@ bin/
 logs/
 *.swp
 *.log
-.jruby
-.sass-cache
+.jruby/
+.externalToolBuilders/
+.sass-cache/
 *~
 ! .gitkeep
 .DS_Store
