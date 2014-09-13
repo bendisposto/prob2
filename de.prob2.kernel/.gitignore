@@ -24,6 +24,7 @@ config.groovy
 **/*.prob
 *.dot
 *.prob
+prob_log.txt
 build.properties
 plugin.properties
 plugin.xml
