@@ -7,6 +7,9 @@ bin/
 logs/
 *.swp
 *.log
+.jruby/
+.externalToolBuilders/
+.sass-cache/
 *~
 ! .gitkeep
 .DS_Store
@@ -21,6 +24,7 @@ config.groovy
 **/*.prob
 *.dot
 *.prob
+prob_log.txt
 build.properties
 plugin.properties
 plugin.xml
