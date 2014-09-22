@@ -377,6 +377,24 @@ public class Trace {
 		return new Trace(s, head, java.util.UUID.randomUUID())
 	}
 
+	/**
+	 * Adds a list of operations to an existing trace.
+	 *
+	 * @param ops List of OpInfo objects that should be added to the current trace
+	 * @return Trace with the ops added
+	 */
+	def Trace addOps(List<OpInfo> ops) {
+		TraceElement head = current
+		for (op in ops) {
+			def src = op.getSrcId()
+			def dest = op.getDestId()
+			assert src != null
+			assert dest != null
+			head = new TraceElement(src, dest, op, head)
+		}
+		return new Trace(stateSpace, head, java.util.UUID.randomUUID())
+	}
+
 
 	/**
 	 * @return an identical Trace object with a different UUID
