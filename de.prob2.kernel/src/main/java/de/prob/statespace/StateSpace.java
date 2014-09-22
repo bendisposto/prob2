@@ -73,7 +73,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private AbstractCommand loadcmd;
 
 	private final HashSet<StateId> explored = new HashSet<StateId>();
-	private final HashSet<StateId> initializedStates = new HashSet<StateId>();
 	private final HashSet<StateId> cannotBeEvaluated = new HashSet<StateId>();
 
 	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<IEvalElement, WeakHashMap<Object, Object>>();
@@ -84,11 +83,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	private long lastCalculatedStateId;
 	private AbstractModel model;
 	private final Map<StateId, Map<IEvalElement, IEvalResult>> values = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
-
-	private final HashSet<StateId> invariantOk = new HashSet<StateId>();
-	private final HashSet<StateId> invariantKo = new HashSet<StateId>();
-	private final HashSet<StateId> timeoutOccured = new HashSet<StateId>();
-	private final HashMap<StateId, Set<String>> operationsWithTimeout = new HashMap<StateId, Set<String>>();
 
 	@Inject
 	public StateSpace(final Provider<IAnimator> panimator,
@@ -139,19 +133,7 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 
 	private void extractInformation(final StateId state,
 			final ExploreStateCommand command) {
-		operationsWithTimeout.put(state, command.getOperationsWithTimeout());
-		if (command.isInvariantOk()) {
-			invariantOk.add(state);
-		} else {
-			invariantKo.add(state);
-		}
-
-		if (command.isTimeoutOccured()) {
-			timeoutOccured.add(state);
-		}
-		if (command.isInitialised()) {
-			initializedStates.add(state);
-		} else {
+		if (!command.isInitialised()) {
 			cannotBeEvaluated.add(state);
 		}
 
@@ -305,17 +287,13 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 * @return true if state has an invariant violation. False otherwise.
 	 */
 	public boolean hasInvariantViolation(final StateId state) {
-		if (invariantKo.contains(state)) {
-			return true;
-		}
-		if (invariantOk.contains(state)) {
-			return false;
-		}
-
 		if (!isExplored(state)) {
 			explore(state);
 		}
-		return !invariantOk.contains(state);
+		CheckInvariantStatusCommand cmd = new CheckInvariantStatusCommand(
+				state.getId());
+		execute(cmd);
+		return cmd.isInvariantViolated();
 	}
 
 	/**
@@ -449,17 +427,17 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		if (cannotBeEvaluated.contains(stateId)) {
 			return false;
 		}
-		if (initializedStates.contains(stateId)) {
+		if (explored.contains(stateId)) {
 			return true;
 		}
 		CheckInitialisationStatusCommand cmd = new CheckInitialisationStatusCommand(
 				stateId.getId());
 		execute(cmd);
-		boolean result = cmd.getResult();
-		if (result) {
-			initializedStates.add(stateId);
+		boolean initialized = cmd.isInitialized();
+		if (!initialized) {
+			cannotBeEvaluated.add(stateId);
 		}
-		return result;
+		return initialized;
 	}
 
 	public void subscribe(final Object subscriber,
@@ -640,21 +618,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	/**
-	 * @return Returns a string representation of the formulas, invariants, and
-	 *         timeouts for the StateSpace. This is mainly useful for console
-	 *         output and debugging.
-	 */
-	public String printInfo() {
-		String result = "";
-		result += "Formulas: \n" + values.toString() + "\n";
-		result += "Invariants Ok: \n  " + invariantOk.toString() + "\n";
-		result += "Timeout Occured: \n  " + timeoutOccured.toString() + "\n";
-		result += "Operations With Timeout: \n  "
-				+ operationsWithTimeout.toString() + "\n";
-		return result;
-	}
-
-	/**
 	 * Get the the map of String ids to their corresponding {@link StateId}
 	 * 
 	 * @return Map from String to {@link StateId}
@@ -693,15 +656,10 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public String printOps(final StateId state) {
 		final StringBuilder sb = new StringBuilder();
 		final Collection<OpInfo> opIds = getOutEdges(state);
-		Set<String> withTO = operationsWithTimeout.get(state) == null ? new HashSet<String>()
-				: operationsWithTimeout.get(state);
 
 		sb.append("Operations: \n");
 		for (final OpInfo opId : opIds) {
 			sb.append("  " + opId.getId() + ": " + opId.getRep());
-			if (withTO.contains(opId.getId())) {
-				sb.append(" (WITH TIMEOUT)");
-			}
 			sb.append("\n");
 		}
 		return sb.toString();
@@ -732,14 +690,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			}
 		}
 		sb.append("\nINVARIANT: ");
-		if (invariantOk.contains(state)) {
-			sb.append(" OK\n");
-		} else {
-			sb.append(" KO\n");
-		}
-		if (timeoutOccured.contains(state)) {
-			sb.append("\nTIMEOUT OCCURED\n");
-		}
 		return sb.toString();
 	}
 
@@ -906,24 +856,14 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 				lastCalculatedId);
 	}
 
-	public Set<StateId> getInvariantOk() {
-		return invariantOk;
-	}
-
-	public HashSet<StateId> getInvariantKo() {
-		return invariantKo;
-	}
-
 	public Set<StateId> checkInvariants() {
 		Collection<StateId> vertices = getVertices();
 		List<CheckInvariantStatusCommand> cmds = new ArrayList<CheckInvariantStatusCommand>();
 		for (StateId stateId : vertices) {
-			if (!invariantOk.contains(stateId)
-					&& !invariantKo.contains(stateId)) {
-				cmds.add(new CheckInvariantStatusCommand(stateId.getId()));
-			}
+			cmds.add(new CheckInvariantStatusCommand(stateId.getId()));
 		}
 		execute(new ComposedCommand(cmds));
+		Set<StateId> invariantOk = new HashSet<StateId>();
 		for (CheckInvariantStatusCommand cmd : cmds) {
 			if (!cmd.isInvariantViolated()) {
 				invariantOk.add(states.get(cmd.getStateId()));
@@ -936,12 +876,12 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 		Collection<StateId> vertices = getVertices();
 		List<CheckInitialisationStatusCommand> cmds = new ArrayList<CheckInitialisationStatusCommand>();
 		for (StateId stateId : vertices) {
-			if (!initializedStates.contains(stateId)
-					&& !cannotBeEvaluated.contains(stateId)) {
+			if (!cannotBeEvaluated.contains(stateId)) {
 				cmds.add(new CheckInitialisationStatusCommand(stateId.getId()));
 			}
 		}
 		execute(new ComposedCommand(cmds));
+		Set<StateId> initializedStates = new HashSet<StateId>();
 		for (CheckInitialisationStatusCommand cmd : cmds) {
 			if (cmd.isInitialized()) {
 				initializedStates.add(states.get(cmd.getStateId()));
@@ -976,8 +916,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 */
 	/**
 	 * Evaluates all of the formulas for every given state in the state space
-	 * (if they can be evaluated). Internally calls {@link #checkInitialized()}
-	 * and {@link #evaluateForGivenStates(Collection, List)} with
+	 * (if they can be evaluated). Internally calls
+	 * {@link #evaluateForGivenStates(Collection, List)} with
 	 * {@link #getVertices()} as the parameter. If the formulas are of interest
 	 * to a class (i.e. the an object has subscribed to the formula) the formula
 	 * is cached.
@@ -988,7 +928,6 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	 */
 	public Map<StateId, Map<IEvalElement, IEvalResult>> evaluateForEveryState(
 			final List<IEvalElement> formulas) {
-		checkInitialized();
 		return evaluateForGivenStates(getVertices(), formulas);
 	}
 
@@ -1007,9 +946,10 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 			final Collection<StateId> states, final List<IEvalElement> formulas) {
 		Map<StateId, Map<IEvalElement, IEvalResult>> result = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
 		List<EvaluationCommand> cmds = new ArrayList<EvaluationCommand>();
+		Set<StateId> initializedStates = checkInitialized();
 
 		for (StateId stateId : states) {
-			if (canBeEvaluated(stateId)) {
+			if (initializedStates.contains(stateId)) {
 				Map<IEvalElement, IEvalResult> res = new HashMap<IEvalElement, IEvalResult>();
 				result.put(stateId, res);
 

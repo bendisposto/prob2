@@ -81,18 +81,14 @@ public class StateSpaceData extends AbstractData {
 	}
 
 	private Object calculateInvariant(final StateSpace s, final StateId id) {
-		Set<StateId> invariantOk = s.getInvariantOk();
-		HashSet<StateId> invariantKo = s.getInvariantKo();
+		Set<StateId> invariantOk = s.checkInvariants();
 		if (invariantOk.contains(id)) {
 			toInvOk.add("#s" + id.getId());
 			return true;
 		}
-		if (invariantKo.contains(id)) {
-			toInvKo.add("#s" + id.getId());
-			return false;
-		}
 
-		return "unknown";
+		toInvKo.add("#s" + id.getId());
+		return false;
 	}
 
 	@Override

@@ -21,28 +21,28 @@ class BAnimationObserver implements IBMotionGroovyObserver {
 	def expression(tool, item, fselector) {
 		def formula = item?.formula?.getAsString()
 		def factions = []
-		if (tool.getErrors(tool.getCurrentState(), formula).isEmpty()) {
-			def fvalue = ""
-			def fpredicate = true
-			def type = item?.type?.getAsString()
-			if(type == "predicate") {
-				def fres = tool.evaluate(tool.getCurrentState(), formula)
-				fpredicate = fres instanceof EvalResult ? (fres.value == "TRUE") : false
-			} else if(type == "expression") {
-				fvalue = tool.evaluate(tool.getCurrentState(), formula)
-			}
-			if(fpredicate) {
-				factions = factions + item.actions.collect { act ->
-					def fattr = act?.attr?.getAsString()
-					if(type == "predicate") {
-						fvalue = act?.value?.getAsString()
-					}
-					return [ selector: fselector, attr: fattr, value: fvalue.toString() ]
-				}
-			}
-		} else {
-			// Somehow inform the user??
+		//if (tool.getErrors(tool.getCurrentState(), formula).isEmpty()) {
+		def fvalue = ""
+		def fpredicate = true
+		def type = item?.type?.getAsString()
+		if(type == "predicate") {
+			def fres = tool.evaluate(tool.getCurrentState(), formula)
+			fpredicate = fres instanceof EvalResult ? (fres.value == "TRUE") : false
+		} else if(type == "expression") {
+			fvalue = tool.evaluate(tool.getCurrentState(), formula)
 		}
+		if(fpredicate) {
+			factions = factions + item.actions.collect { act ->
+				def fattr = act?.attr?.getAsString()
+				if(type == "predicate") {
+					fvalue = act?.value?.getAsString()
+				}
+				return [ selector: fselector, attr: fattr, value: fvalue.toString() ]
+			}
+		}
+		//} else {
+		// Somehow inform the user??
+		//}
 		return factions
 	}
 	
