@@ -41,18 +41,6 @@ bms = (function() {
 		});		
 	}
 	
-	var clones = {};	
-	function resetCSP(selectors) {
-		// Revert objects ...
-		//$.each(clones, function(i, v) {
-		//	$(i).replaceWith(v)
-		//});
-		// Clone objects
-		//$.each(selectors, function(i, v) {
-		//	clones[v] = $(v).clone(true,true)
-		//});
-	}
-	
 	extern.client = ""
 	extern.observer = null;
 	extern.init = session.init
@@ -63,32 +51,6 @@ bms = (function() {
 	extern.host = null
 	extern.lang = null;
 
-	extern.setTemplate = function(data) {
-		window.location = "/bms/?template=" + data.request;
-	}
-	
-	extern.reloadTemplate = function(data) {
-		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
-	}
-
-	extern.renderVisualization = function(data) {
-		renderVisualization(JSON.parse(data.observer).wrapper, JSON.parse(data.data))
-	}
-	
-	extern.stateChange = function(data) {
-	}
-	
-	extern.translateValue = function(val) {
-		if (val === "true") {
-			return true;
-		} else if (val === "false") {
-			return false;
-		} else if(!isNaN(val)) {
-			val = parseInt(val)
-		}
-		return val;
-	}
-	
 	extern.applyJavaScript = function(data) {
 		vs = eval(data.values);
 		for (e in vs) {
@@ -101,36 +63,56 @@ bms = (function() {
 		$.each(data.actions, function(i,action) {
 			var attrObj = svgAttributeList[action.attr]
 			if(attrObj !== undefined) {
+				var selector = $(action.selector)
 				var changeFunc = attrObj.change
 				if(changeFunc !== undefined) {
-					changeFunc(action.selector,action.value)
+					changeFunc(selector,action.value)
 				} else {
-					$(action.selector).attr(action.attr,action.value)
+					selector.attr(action.attr,action.value)
 				}	
 			} else {
-				$(action.selector).attr(action.attr,action.value)
+				selector.attr(action.attr,action.value)
 			}
 		});
 	}
-	
+
 	extern.applyTransformers = function(data) {
-		$.each(JSON.parse(data.transformers), function(i,t) {
-			var selector = t.selector
-			$.each(t.attributes.concat(t.styles), function(j,a) {
-				var attrObj = svgAttributeList[a.name]
-				if(attrObj !== undefined) {
-					var changeFunc = attrObj.change
-					if(changeFunc !== undefined) {
-						changeFunc(selector,a.value)
+		
+		var d1 = JSON.parse(data.transformers)
+		var i1 = 0
+		var l1 = d1.length
+		
+		var process = function() {
+			for (; i1 < l1; i1++) {
+				var t = d1[i1]
+				var selector = $(t.selector)
+				var attrs = {}
+				var d2 = t.attributes.concat(t.styles)
+				var i2 = 0
+				var l2 = d2.length
+				for (; i2 < l2; i2++) {
+					var a = d2[i2]
+					var attrObj = svgAttributeList[a.name]
+					if (attrObj !== undefined) {
+						var changeFunc = attrObj.change
+						if (changeFunc !== undefined) {
+							changeFunc(selector, a.value)
+						} else {
+							attrs[a.name] = a.value;
+						}
 					} else {
-						$(selector).attr(a.name,a.value)
+						attrs[a.name] = a.value;
 					}
-				} else {
-					$(selector).attr(a.name,a.value)
+				}
+				selector.attr(attrs)
+				if (i1 + 1 < length && i1 % 100 == 0) {
+					setTimeout(process, 10);
 				}	
-			});
-		});
-	}	
+			}		
+		};
+		process();
+		
+	}
 	
 	return extern;
 
