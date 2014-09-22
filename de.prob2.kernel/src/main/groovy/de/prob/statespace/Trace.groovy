@@ -11,6 +11,10 @@ import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
 
+/**
+ * @author joy
+ *
+ */
 public class Trace {
 
 	def final TraceElement current
@@ -371,5 +375,13 @@ public class Trace {
 			head = new TraceElement(src, dest,op, head)
 		}
 		return new Trace(s, head, java.util.UUID.randomUUID())
+	}
+
+
+	/**
+	 * @return an identical Trace object with a different UUID
+	 */
+	def Trace copy() {
+		return new Trace(stateSpace, head, current, java.util.UUID.randomUUID())
 	}
 }
