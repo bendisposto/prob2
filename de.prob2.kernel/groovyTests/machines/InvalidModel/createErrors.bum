@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" version="5">
+<org.eventb.core.event name="'" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+<org.eventb.core.action name="'" org.eventb.core.assignment="x ≔ 0" org.eventb.core.label="act1"/>
+<org.eventb.core.action name="(" org.eventb.core.assignment="deadlocked ≔ FALSE" org.eventb.core.label="act2"/>
+</org.eventb.core.event>
+<org.eventb.core.variable name="(" org.eventb.core.identifier="x"/>
+<org.eventb.core.invariant name=")" org.eventb.core.label="inv1" org.eventb.core.predicate="x ∈ ℕ"/>
+<org.eventb.core.invariant name="*" org.eventb.core.label="will_be_violated" org.eventb.core.predicate="x &lt; 10"/>
+<org.eventb.core.event name="+" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="violate_invariant">
+<org.eventb.core.action name="'" org.eventb.core.assignment="x ≔ x + 1" org.eventb.core.label="act1"/>
+<org.eventb.core.guard name="(" org.eventb.core.label="grd1" org.eventb.core.predicate="deadlocked = FALSE"/>
+</org.eventb.core.event>
+<org.eventb.core.variable name="," org.eventb.core.identifier="deadlocked"/>
+<org.eventb.core.invariant name="-" org.eventb.core.label="inv2" org.eventb.core.predicate="deadlocked ∈ BOOL"/>
+<org.eventb.core.event name="." org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="deadlock">
+<org.eventb.core.guard name="'" org.eventb.core.label="grd1" org.eventb.core.predicate="deadlocked = FALSE"/>
+<org.eventb.core.action name="(" org.eventb.core.assignment="deadlocked ≔ TRUE" org.eventb.core.label="act1"/>
+</org.eventb.core.event>
+</org.eventb.core.machineFile>

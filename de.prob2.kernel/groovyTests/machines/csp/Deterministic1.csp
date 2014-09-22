@@ -1,0 +1,23 @@
+-- Deterministic1
+channel a :{1..10}
+NonDeterm2 = a.1 -> a.2 -> ((P [] Q) \{|a|})
+assert not NonDeterm2 :[deterministic [FD]]
+Determ1 = a.1 -> a.2 -> (P [] Q)
+assert not NonDeterm2 :[livelock free]
+NonDeterm3 = (a.1 -> a.2 -> NonDeterm3) [] (a.1 -> P3)
+P3 = a.2 -> P
+assert not NonDeterm3 :[ deterministic [F] ]
+
+NDet = (a.1 -> STOP) [] (a.1 -> NDet)
+NDet1 = a.1 -> a.2 -> a.3 -> NDet
+assert not NDet :[deterministic [FD]]
+assert not NDet1 :[deterministic [F]]
+
+P = a.3 -> (a.4 -> P [] STOP)
+Q = a.6 -> a.7 -> STOP
+
+PDIV = a.1 -> PDIV
+--MAIN = NonDeterm2
+
+assert NonDeterm2 :[deterministic [F]]
+assert not NonDeterm2 :[deterministic [FD]]

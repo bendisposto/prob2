@@ -1,0 +1,14 @@
+/target
+/classes
+/checkouts
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/.lein-*
+/.nrepl-port
+.sass-cache/
+resources/public/gui/css_generated
+resources/public/gui/js_generated
+ProB.log.*.log
+prob_log.txt

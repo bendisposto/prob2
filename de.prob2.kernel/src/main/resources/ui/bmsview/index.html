@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>BMotion Studio 2</title>
+		<meta name="description" content="">
+		<meta name="author" content="Lukas Ladenberger">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		{{#standalone}}
+		<link rel="stylesheet" href="/stylesheets/jquery-ui-1.11.1/themes/black-tie/jquery-ui.css">
+		<link rel="stylesheet" href="/ui/common/codemirror.css">
+		{{/standalone}}
+		<link rel="stylesheet" href="/ui/common/bootstrap.css">
+		<link rel="stylesheet" href="/ui/bmsview/bms.css">	
+		<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+		<script type="text/javascript" src="/ui/libs/bootstrap.js"></script>
+		<script type="text/javascript" src="/ui/libs/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/ui/libs/mustache.js"></script>
+		<script type="text/javascript" src="/ui/common/Session.js"></script>
+		<script type="text/javascript" src="/ui/bmsview/bms-editor/src/svg-attributes.js"></script>
+		<script type="text/javascript" src="/ui/bmsview/BMotionStudio.js"></script>
+		{{#standalone}}
+		<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
+		<script type="text/javascript" src="/ui/libs/codemirror_modes/groovy.js"></script>
+		<script type="text/javascript" src="/ui/bmsview/BMSStandalone.js"></script>
+		{{/standalone}}
+	</head>
+	<body>
+	
+		{{#error}}
+			<div style="text-align:center">
+				<h3 style="color:red;">Some errors occured</h3>
+				<div style="list-style-type: none; color:red; font-weight:bold;">
+				{{#errors}}
+					<p>{{.}}</p>
+				{{/errors}}
+				</div>
+			</div>
+		{{/error}}
+		{{^error}}
+			{{#standalone}}
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <a class="navbar-brand" href="#">BMotion Studio 2</a>
+			    </div>
+			
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav navbar-right">
+			        <li><a href="http://{{host}}:{{port}}/bmseditor/?template={{template}}">Start Editor</a></li>
+			        <li><a href="#" id="bt_edit_script">Edit Script</a></li>
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Open View <b class="caret"></b></a>
+			          <ul class="dropdown-menu">
+			            <li><a href="#" id="bt_open_events_view">Events</a></li>
+			            <li><a href="#" id="bt_open_history_view">History</a></li>
+			            <li><a href="#" id="bt_open_animation_view">CurrentAnimations</a></li>
+			            <li><a href="#" id="bt_open_state_view">StateInspector</a></li>
+			            <li><a href="#" id="bt_open_log_view">LogView</a></li>
+			          </ul>
+			        </li>
+			      </ul>
+			    </div>
+			  </div>
+			</nav>
+			
+			<div id="events_view" title="Events">
+		  		<iframe src="" id="events_iframe" frameBorder="0"></iframe>
+			</div>
+			<div id="history_view" title="History">
+		  		<iframe src="" id="history_iframe" frameBorder="0"></iframe>
+			</div>
+			<div id="animation_view" title="CurrentAnimations">
+		  		<iframe src="" id="animation_iframe" frameBorder="0"></iframe>
+			</div>
+			<div id="state_view" title="StateInspector">
+		  		<iframe src="" id="state_iframe" frameBorder="0"></iframe>
+			</div>
+			<div id="log_view" title="LogView">
+		  		<iframe src="" id="log_iframe" frameBorder="0"></iframe>
+			</div>
+			<div id="script_view" title="Script">
+			</div>
+			{{/standalone}}
+			<div id="vis_container">
+			</div>
+			<script>
+				bms.client = "{{clientid}}";
+				bms.init("{{clientid}}");
+				bms.port = "{{port}}"
+				bms.host = "{{host}}" 
+			</script>
+		{{/error}}
+			
+	</body>
+</html>
