@@ -20,6 +20,7 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 
 import de.prob.exception.ProBAppender;
+import de.prob.scripting.Downloader;
 import de.prob.web.views.Log;
 import de.prob.webconsole.WebConsole;
 
@@ -48,12 +49,13 @@ public class Main {
 	public static Injector getInjector() {
 		return INJECTOR;
 	}
-			
+
 	/**
 	 * Allows to customize the Injector. Handle with care!
+	 * 
 	 * @param i
 	 */
-	public static void setInjector(Injector i) {
+	public static void setInjector(final Injector i) {
 		INJECTOR = i;
 	}
 
@@ -73,6 +75,7 @@ public class Main {
 			.getProperty("PROB_LOG_CONFIG");
 
 	private final static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
+	private final Downloader downloader;
 
 	/**
 	 * Parameters are injected by Guice via {@link MainModule}. This class
@@ -85,10 +88,11 @@ public class Main {
 	 */
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell, final Log log) {
+			final Shell shell, final Log log, final Downloader downloader) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
+		this.downloader = downloader;
 		ProBAppender.initialize(log);
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
@@ -99,6 +103,17 @@ public class Main {
 		String iface = "0.0.0.0";
 		try {
 			CommandLine line = parser.parse(options, args);
+			if (line.hasOption("upgrade")) {
+				String version = line.getOptionValue("upgrade");
+				if (version == null) {
+					version = "latest";
+				}
+				if (version.equals("cspm")) {
+					System.out.println(downloader.installCSPM());
+				} else {
+					System.out.println(downloader.downloadCli(version));
+				}
+			}
 			if (line.hasOption("browser")) {
 				logger.debug("Browser");
 				url = line.getOptionValue("browser");
