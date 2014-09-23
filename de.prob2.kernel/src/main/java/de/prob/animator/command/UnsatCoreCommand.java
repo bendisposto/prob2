@@ -1,5 +1,6 @@
 package de.prob.animator.command;
 
+import java.util.Collections;
 import java.util.List;
 
 import de.prob.animator.domainobjects.ClassicalB;
@@ -17,16 +18,34 @@ public class UnsatCoreCommand extends AbstractCommand {
 	private IBEvalElement pred;
 	private List<IBEvalElement> fixedPreds;
 	private IBEvalElement core;
+	private boolean minimumCore;
+	
+	public UnsatCoreCommand(IBEvalElement pred) {
+		this(pred,Collections.<IBEvalElement> emptyList());
+	}
+	
+	public UnsatCoreCommand(IBEvalElement pred, boolean minimumCore) {
+		this(pred,Collections.<IBEvalElement> emptyList(),minimumCore);
+	}
 
 	public UnsatCoreCommand(IBEvalElement pred, List<IBEvalElement> fixedPreds) {
+		this(pred,fixedPreds,false);
+	}
+
+	public UnsatCoreCommand(IBEvalElement pred, List<IBEvalElement> fixedPreds,
+			boolean minimumCore) {
 		this.pred = pred;
 		this.fixedPreds = fixedPreds;
-
+		this.minimumCore = minimumCore;
 	}
 
 	@Override
 	public void writeCommand(IPrologTermOutput pout) {
-		pout.openTerm("get_unsat_core_with_fixed_conjuncts");
+		if(minimumCore) {
+			pout.openTerm("get_minimum_unsat_core_with_fixed_conjuncts");
+		} else {
+			pout.openTerm("get_unsat_core_with_fixed_conjuncts");
+		}
 		pred.printProlog(pout);
 	
 		pout.openList();
