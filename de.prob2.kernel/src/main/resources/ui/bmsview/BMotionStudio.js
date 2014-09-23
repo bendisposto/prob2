@@ -77,41 +77,39 @@ bms = (function() {
 	}
 
 	extern.applyTransformers = function(data) {
-		
+
 		var d1 = JSON.parse(data.transformers)
 		var i1 = 0
-		var l1 = d1.length
-		
-		var process = function() {
-			for (; i1 < l1; i1++) {
-				var t = d1[i1]
-				var selector = $(t.selector)
-				var attrs = {}
-				var d2 = t.attributes.concat(t.styles)
-				var i2 = 0
-				var l2 = d2.length
-				for (; i2 < l2; i2++) {
-					var a = d2[i2]
-					var attrObj = svgAttributeList[a.name]
-					if (attrObj !== undefined) {
-						var changeFunc = attrObj.change
-						if (changeFunc !== undefined) {
-							changeFunc(selector, a.value)
-						} else {
-							attrs[a.name] = a.value;
-						}
+
+		//var process = function() {
+		for (; i1 < d1.length; i1++) {
+			var t = d1[i1]
+			var selector = $(t.selector)
+			var attrs = {}
+			var d2 = t.attributes.concat(t.styles)
+			var i2 = 0
+			for (; i2 < d2.length; i2++) {
+				var a = d2[i2]
+				var attrObj = svgAttributeList[a.name]
+				if (attrObj !== undefined) {
+					var changeFunc = attrObj.change
+					if (changeFunc !== undefined) {
+						changeFunc(selector, a.value)
 					} else {
 						attrs[a.name] = a.value;
 					}
+				} else {
+					attrs[a.name] = a.value;
 				}
-				selector.attr(attrs)
-				if (i1 + 1 < length && i1 % 100 == 0) {
-					setTimeout(process, 10);
-				}	
-			}		
-		};
-		process();
-		
+			}
+			selector.attr(attrs)
+			//if (i1 + 1 < length && i1 % 100 == 0) {
+			//	setTimeout(process, 5);
+			//}	
+		}
+		//};
+		//process();
+
 	}
 	
 	return extern;

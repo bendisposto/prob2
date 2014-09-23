@@ -41,13 +41,15 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 * @throws EvaluationException
 	 */
 	public ClassicalB(final String code) {
-		this.code = code;
+		//this.code = code;
 		Start ast;
 		try {
 			ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
+			this.code = prettyprint(ast);
 		} catch (BException e) {
 			try {
 				ast = BParser.parse(BParser.SUBSTITUTION_PREFIX + " " + code);
+				this.code = prettyprint(ast);
 			} catch (BException f) {
 				throw new EvaluationException(f.getMessage(), f);
 			}
