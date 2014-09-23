@@ -79,6 +79,24 @@ function Session() {
 		$("body").replaceWith(
 				get_template("/ui/common/server_disconnected.html"))
 	}
+	
+	var fncache = []
+	
+	function getFunctionFromString(string) {
+		var fn = fncache[string]
+		if(fn === undefined) {
+		    var scope = window;
+		    var scopeSplit = string.split('.');
+		    for (i = 0; i < scopeSplit.length - 1; i++)
+		    {
+		        scope = scope[scopeSplit[i]];
+		        if (scope == undefined) return;
+		    }
+		    fn = scope[scopeSplit[scopeSplit.length - 1]];
+		    fncache[string] = fn
+		}
+	    return fn;
+	}
 
 	function poll(client) {
 		if (!polling)
@@ -103,8 +121,10 @@ function Session() {
 							}
 							for (i in dobjs) {
 								var dobj = dobjs[i]
+								var fn = getFunctionFromString(dobj.cmd)
+								if(typeof fn === 'function') fn(dobj);
 //								console.log("Eval:", dobj)
-								eval(dobj.cmd)(dobj)
+//								eval(dobj.cmd)(dobj)
 							}
 						}
 					},
@@ -136,8 +156,10 @@ function Session() {
 							}
 							for (i in dobjs) {
 								var dobj = dobjs[i]
+								var fn = getFunctionFromString(dobj.cmd)
+								if(typeof fn === 'function') fn(dobj);
 //								console.log("Eval:", dobj)
-								eval(dobj.cmd)(dobj)
+//								eval(dobj.cmd)(dobj)
 							}
 						}
 						listen(client);

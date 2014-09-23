@@ -50,7 +50,9 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 		if (lastinfo == -1) {
 			responses.reset();
 			sendInitMessage(context);
-			initSession();			
+			initSession();
+		} else if (lastinfo > 0) {
+			resend(client, lastinfo, context);
 		}
 	}
 

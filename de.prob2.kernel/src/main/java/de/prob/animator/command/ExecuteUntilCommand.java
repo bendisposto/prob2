@@ -10,38 +10,41 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Trace;
 
 public class ExecuteUntilCommand extends AbstractCommand implements
-		IStateSpaceModifier {
+		IStateSpaceModifier, ITraceDescription {
 
 	private static final String RESULT_VARIABLE = "Trace";
 	private final List<OpInfo> resultTrace = new ArrayList<OpInfo>();
-	private StateId startstate;
-	private LTL condition;
-	private StateSpace statespace;
+	private final StateId startstate;
+	private final LTL condition;
+	private final StateSpace statespace;
 	private StateId finalstate;
 
-	public ExecuteUntilCommand(StateSpace statespace, StateId startstate,
-			LTL condition) {
+	public ExecuteUntilCommand(final StateSpace statespace,
+			final StateId startstate, final LTL condition) {
 		this.statespace = statespace;
 		this.startstate = startstate;
 		this.condition = condition;
 	}
 
 	@Override
-	public void writeCommand(IPrologTermOutput pout) {
+	public void writeCommand(final IPrologTermOutput pout) {
 		pout.openTerm("find_trace");
-		pout.printAtom(this.startstate.getId());
+		pout.printAtomOrNumber(this.startstate.getId());
 		condition.printProlog(pout);
 		pout.printVariable(RESULT_VARIABLE);
 		pout.closeTerm();
 	}
 
 	@Override
-	public void processResult(ISimplifiedROMap<String, PrologTerm> bindings) {
+	public void processResult(
+			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm trace = BindingGenerator.getList(bindings
 				.get(RESULT_VARIABLE));
 
@@ -63,4 +66,9 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 		return resultTrace.get(resultTrace.size() - 1).getDestId();
 	}
 
+	@Override
+	public Trace getTrace(final StateSpace s) throws RuntimeException {
+		Trace t = s.getTrace(startstate);
+		return t.addOps(resultTrace);
+	}
 }

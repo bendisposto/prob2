@@ -14,14 +14,14 @@ var svgAttributeList = {
 	"style" : {value: "style", text: 'style'},
 	"class" : {value: "class", text: 'class'},
 	"image" : {value: 'image', text: 'image', change: function(selector, value) {
-		$(selector).attr('xlink:href', value)
+		selector.attr('xlink:href', value)
 	}},
 	"font-size" : {value: 'font-size', text: 'font-size'},
 	"font-family" : {value: 'font-family', text: 'font-family'},
 	"font-weight" : {value: 'font-weight', text: 'font-weight'},
 	"font-family" : {value: 'font-family', text: 'font-family'},	
 	"text" :  {value: 'text', text: 'text', change: function(selector, value) {
-		$(selector).html(value)
+		selector.html(value)
 	}},
 	"clip-path" : {value: 'clip-path', text: 'clip-path'},
 	"fill" : {value: 'fill', text: 'fill'},
