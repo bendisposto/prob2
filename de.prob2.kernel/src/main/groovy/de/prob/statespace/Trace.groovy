@@ -392,7 +392,7 @@ public class Trace {
 			assert dest != null
 			head = new TraceElement(src, dest, op, head)
 		}
-		return new Trace(stateSpace, head, java.util.UUID.randomUUID())
+		return new Trace(stateSpace, head, this.UUID)
 	}
 
 
