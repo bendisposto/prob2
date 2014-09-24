@@ -24,7 +24,6 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	private final StateId startstate;
 	private final LTL condition;
 	private final StateSpace statespace;
-	private StateId finalstate;
 
 	public ExecuteUntilCommand(final StateSpace statespace,
 			final StateId startstate, final LTL condition) {
