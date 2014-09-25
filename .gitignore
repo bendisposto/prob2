@@ -1,1 +1,5 @@
 .gradle
+de.prob2/.idea
+*.iml
+*.ipr
+de.prob2.kernel

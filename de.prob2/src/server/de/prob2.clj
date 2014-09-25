@@ -5,7 +5,8 @@
             [compojure.handler :as handler]
             [compojure.response :as response]
             [org.httpkit.server :as http-kit-server]
-            [com.stuartsierra.component :as component])
+            [com.stuartsierra.component :as component]
+            [prob-ui.state-store :as sync])
   (:import [de.prob Main]
            [de.prob.scripting ScriptEngineProvider]))
 
@@ -20,8 +21,8 @@
   (routes
    (GET "/bar" [request]
         (bar app request))
-   (GET "/updates" [request]
-        (str request))
+   (GET "/updates/:id" [id]
+        (sync/delta id))
    (route/resources "/")
    (route/not-found "<h1>404 Page not found</h1>")))
 
@@ -30,8 +31,6 @@
     (ring-handler
      (assoc request
        ::app (::app @sys)))))
-
-
 
 
 (defrecord WebServer [app port ip]
@@ -62,7 +61,8 @@
 (defn new-system [{:keys [port ip] :or {port 0 ip "localhost"}}]
   (component/system-map
    :webserver (component/using (new-webserver port ip) [:app])
-   :app (new-app)))
+   :app (new-app)
+   :sync-store (sync/new-syncstore)))
 
 
 (def injector (Main/getInjector))
