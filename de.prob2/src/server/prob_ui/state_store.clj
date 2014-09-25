@@ -7,27 +7,13 @@
             [cognitect.transit :as transit])
   (:import java.io.ByteArrayOutputStream))
 
+(def store! (atom {:id 0 :state {} :cache (cache/ttl-cache-factory {} :ttl 10000)}))
 
-(defrecord SyncStore []
-  component/Lifecycle
-  (start [this]
-    (print "Initializing SyncStore")
-    (assoc this :id 0 :state {} :cache (cache/ttl-cache-factory {} :ttl 10000)))
-  (stop [this]
-    (print "Stopping SyncStore")
-    (dissoc this :id :state :cache)))
-
-(defn new-syncstore [] (SyncStore.))
-
-(defn store [syncstore state]
-  (let [{:keys [id cache]} syncstore
-        id' (inc id)]
-    (assoc syncstore :id id' :state state :cache (cache/miss cache id' state))))
-
-(defn fetch [syncstore id]
-  (if (= id (:id syncstore))
-    (:state syncstore)
-    (get (:cache syncstore))))
+(defn fetch [sid]
+  (let [{:keys [id state cache]} @store!]
+  (if (= sid id)
+    [state id state]
+    [(get cache sid) id state])))
 
 (defn- mkStr [delta]
   (let [s (ByteArrayOutputStream. 4096)
@@ -35,10 +21,12 @@
     (transit/write w delta)
     (.toString s)))
 
-#_(defn transact! [txs]
-  (store! (sync/compute-new-state @current-state txs)))
+(defn transact! [txs]
+  (let [{:keys [id state cache]} @store!
+    state' (sync/compute-new-state state txs)
+    id' (inc id)]
+    (swap! store! assoc :id id' :state state' :cache (cache/miss cache id' state'))))
 
-
-#_(defn delta
-  ([os-id] (delta (get-cached-state os-id) @current-state))
-  ([os cs] (mkStr (sync/compute-delta os cs))))
+(defn delta
+  ([os-id] (apply delta (fetch os-id)))
+  ([os id cs] (mkStr (sync/compute-delta os id cs))))

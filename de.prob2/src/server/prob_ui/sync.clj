@@ -96,13 +96,13 @@
 
 ;; ==============  API  ====================
 
-(defn compute-delta [os cs]
+(defn compute-delta [os id cs]
   (let [d (if os [] [(->Delta :clear nil nil)])]
-    [(:current cs) (map-diff [] (:state os) (:state cs) d)]))
+    [id (map-diff [] os cs d)]))
 
-(defn compute-new-state [s txs]
-  (schema/validate State s)
+(defn compute-new-state [state txs]
+  (schema/validate State state)
   (schema/validate Transactions txs)
   (let [transfunc (->> txs (map transform) reverse (apply comp))]
-    (transfunc (:state s))))
+    (transfunc state)))
 

@@ -1,6 +1,6 @@
 (ns user
    (:require [com.stuartsierra.component :as component]
-             [clojure.tools.namespace.repl :refer (refresh)]
+             [clojure.tools.namespace.repl :refer [refresh clear]]
              [de.prob2 :as app]))
 
 (def system nil)
@@ -20,9 +20,15 @@
   (init)
   (start))
 
+
 (defn reset []
   (stop)
   (refresh :after 'user/go))
+
+(defn force-reset []
+  (clear)
+  (reset))
+
 
 (println "Devlopment Mode")
 (println "Use (go) to start the system")
