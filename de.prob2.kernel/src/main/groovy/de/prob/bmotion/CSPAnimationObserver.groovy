@@ -9,6 +9,8 @@ import com.google.gson.JsonElement
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.statespace.OpInfo
 import de.prob.ui.api.ITool
+import de.prob.bmotion.BMotionObserver
+import de.prob.bmotion.Transform
 
 class CSPAnimationObserver extends BMotionObserver {
 

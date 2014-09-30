@@ -18,6 +18,7 @@ import de.prob.statespace.Trace;
 import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
+import de.prob.bmotion.BMotionObserver;
 
 public class CSPAnimation extends ProBAnimation {
 

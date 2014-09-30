@@ -29,6 +29,8 @@ import de.prob.ui.api.IToolListener;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 import de.prob.web.WebUtils;
+import de.prob.bmotion.Transform;
+import de.prob.bmotion.BMotionObserver;
 
 public class BMotionStudioSession extends AbstractBMotionStudioSession
 		implements IToolListener {

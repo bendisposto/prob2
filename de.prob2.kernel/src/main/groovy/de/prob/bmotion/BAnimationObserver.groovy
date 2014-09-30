@@ -2,6 +2,8 @@ package de.prob.bmotion;
 
 import com.github.mustachejava.DefaultMustacheFactory
 import com.google.gson.JsonElement
+import de.prob.bmotion.BMotionObserver
+import de.prob.bmotion.Transform
 
 import de.prob.animator.domainobjects.EvalResult
 
