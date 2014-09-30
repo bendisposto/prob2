@@ -6,17 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.eventb.Event;
-import de.prob.model.eventb.EventBMachine;
-import de.prob.model.eventb.EventBVariable;
-import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateId;
@@ -29,8 +22,6 @@ import de.prob.ui.api.ToolRegistry;
 public class BAnimation extends ProBAnimation {
 
 	private final Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
-
-	private final Gson gson = new Gson();
 
 	protected StateSpace currentStatespace;
 
@@ -51,7 +42,7 @@ public class BAnimation extends ProBAnimation {
 			return null;
 		try {
 			Trace new_trace = trace.execute(event, Arrays.asList(parameters));
-			animations.replaceTrace(trace, new_trace);
+			animations.traceChange(new_trace);
 			trace = new_trace;
 			toolRegistry.notifyToolChange(this);
 		} catch (Exception e) {
@@ -102,50 +93,8 @@ public class BAnimation extends ProBAnimation {
 	}
 
 	@Override
-	public IBMotionGroovyObserver getBMotionGroovyObserver(
-			BMotionStudioSession bmsSession, JsonElement jsonObserver) {
-		return new BAnimationObserver(bmsSession, jsonObserver);
-	}
-
-	@Override
-	public String getModelData(String dataParameter, HttpServletRequest req) {
-
-		List<XEditableListObj> l = new ArrayList<XEditableListObj>();
-		AbstractModel model = getModel();
-		if (model != null) {
-			AbstractElement mainComponent = model.getMainComponent();
-
-			if (mainComponent instanceof EventBMachine) {
-				if ("operations".equals(dataParameter)) {
-					for (Event event : ((EventBMachine) mainComponent)
-							.getEvents()) {
-						l.add(new XEditableListObj(event.getName(), event
-								.getName()));
-					}
-				} else if ("variables".equals(dataParameter)) {
-					for (EventBVariable var : ((EventBMachine) mainComponent)
-							.getVariables()) {
-						l.add(new XEditableListObj(var.getName(), var.getName()));
-					}
-				}
-			}
-		}
-		return gson.toJson(l);
-
-	}
-
-	private class XEditableListObj {
-
-		@SuppressWarnings("unused")
-		private String text;
-		@SuppressWarnings("unused")
-		private String value;
-
-		public XEditableListObj(String text, String value) {
-			this.text = text;
-			this.value = value;
-		}
-
+	public BMotionObserver getBMotionObserver(JsonElement jsonObserver) {
+		return new BAnimationObserver(jsonObserver);
 	}
 
 }

@@ -1,5 +1,7 @@
 package de.prob.bmotion;
 
+import java.util.List;
+
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
 import com.google.gson.JsonElement
@@ -8,53 +10,16 @@ import de.prob.animator.domainobjects.EvalResult;
 import de.prob.statespace.OpInfo
 import de.prob.ui.api.ITool
 
-class CSPAnimationObserver implements IBMotionGroovyObserver {
+class CSPAnimationObserver extends BMotionObserver {
 
-	def BMotionStudioSession session
 	def JsonElement json
 	def mf = new DefaultMustacheFactory()
 	def builder = new groovy.json.JsonBuilder()
 
-	def CSPAnimationObserver(session,json) {
-		this.session = session
+	def CSPAnimationObserver(json) {
 		this.json = json
 	}
 
-	public void update(ITool tool) {
-		if(json != null) {
-			json.observers.each { o ->
-				if(o?.type?.getAsString() == "CspEventObserver") {
-					def factions = []
-					def trace = tool.getTrace()
-					trace.ensureOpInfosEvaluated()
-					def opList = trace.getCurrent().getOpList()
-					opList.each { op ->
-						def fullOp = getOpString(op)
-						o.objs.each { obj ->
-							def events = tool.evaluate(tool.getCurrentState(), obj.exp.getAsString())
-							if(events instanceof EvalResult) {
-								events = events.value.replace("{","").replace("}", "")
-								def event_names = events.split(",")
-								if(event_names.contains(fullOp)) {
-									def pmap = [:]
-									op.getParams().eachWithIndex() { v, i -> pmap.put("a"+(i+1),v) };
-									pmap.put("Event", op.getName())
-									factions = factions + obj.actions.collect { item ->
-										def fselector = mustacheRender(item.selector.getAsString(),pmap)
-										def fvalue = mustacheRender(item.value.getAsString(),pmap)
-										def fattr = mustacheRender(item.attr.getAsString(),pmap)
-										return [selector: fselector, attr: fattr, value: fvalue	]
-									}
-								}
-							}
-						}
-					}
-					session.apply('bms.triggerObserverActions', [actions : factions.findAll { i -> i != null }])
-				}
-			}
-		}
-	}
-	
 	def getOpString(OpInfo op) {
 		String opName = op.getName();
 		String AsImplodedString = "";
@@ -80,5 +45,42 @@ class CSPAnimationObserver implements IBMotionGroovyObserver {
 		mustache.execute(writer, scope);
 		writer.toString()
 	}
-	
+
+	@Override
+	public List<Transform> update(BMotionStudioSession bms) {
+		def transformers = []
+		def tool = bms.getTool()
+		if(json != null) {
+			json.observers.each { o ->
+				if(o?.type?.getAsString() == "CspEventObserver") {
+					def factions = []
+					def trace = tool.getTrace()
+					trace.ensureOpInfosEvaluated()
+					def opList = trace.getCurrent().getOpList()
+					opList.each { op ->
+						def fullOp = getOpString(op)
+						o.objs.each { obj ->
+							def events = tool.evaluate(tool.getCurrentState(), obj.exp.getAsString())
+							if(events instanceof EvalResult) {
+								events = events.value.replace("{","").replace("}", "")
+								def event_names = events.split(",")
+								if(event_names.contains(fullOp)) {
+									def pmap = [:]
+									op.getParams().eachWithIndex() { v, i -> pmap.put("a"+(i+1),v) };
+									pmap.put("Event", op.getName())
+									factions = factions + obj.actions.collect { item ->
+										def fselector = mustacheRender(item.selector.getAsString(),pmap)
+										def fvalue = mustacheRender(item.value.getAsString(),pmap)
+										def fattr = mustacheRender(item.attr.getAsString(),pmap)
+										transformers << new Transform(fselector).set(fattr,fvalue)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		transformers
+	}
 }
