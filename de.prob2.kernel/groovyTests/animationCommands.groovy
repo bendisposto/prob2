@@ -66,7 +66,7 @@ assert thrown
 
 cmd = new GetOperationByPredicateCommand(s, "0", "blah", "TRUE = TRUE" as ClassicalB, 1)
 s.execute(cmd)
-assert cmd.getErrors() == ["Unknown operation blah"]
+assert cmd.getErrors() == ["Unknown Operation blah"]
 
 cmd = new GetOperationByPredicateCommand(s, "0", "blah", "TRUE = TRUE" as ClassicalB, 0)
 s.execute(cmd)

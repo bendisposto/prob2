@@ -235,13 +235,13 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 	private void delegateDataRequest(String dataParameter,
 			HttpServletRequest req, HttpServletResponse resp,
 			AbstractBMotionStudioSession bmsSession) {
-		ITool tool = bmsSession.getTool();
-		if (tool instanceof IObserver) {
-			String json = ((IObserver) tool).getModelData(dataParameter, req);
-			System.out.println("Data request: " + json);
-			resp.setContentType("application/json");
-			toOutput(resp, json);
-		}
+		// ITool tool = bmsSession.getTool();
+		// if (tool instanceof IObserver) {
+		// String json = ((IObserver) tool).getModelData(dataParameter, req);
+		// System.out.println("Data request: " + json);
+		// resp.setContentType("application/json");
+		// toOutput(resp, json);
+		// }
 	}
 
 	@Override
