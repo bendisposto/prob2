@@ -6,24 +6,33 @@ import de.prob.bmotion.BMotionObserver
 class Transform extends BMotionObserver {
 
 	def String selector
-	def List<Attribute> attributes = []
+	def attributes = [:]
+	def String content
+	
+	def Transform() {
 		
+	}
+	
 	def Transform(selector) {
-		this(selector,[])
+		this(selector,[:])
 	}
 	
 	def Transform(selector,attributes) {
 		this.selector = selector
 		this.attributes = attributes
 	}
-		
+
 	def Transform set(String name,  String value) {
-		attributes << new Attribute(name, value);
+		(name == "content" || name == "text") ? content = value : attributes.put(name,value)
 		this
 	}
 
 	def Transform attr(String name,  String value) {
-		attributes << new Attribute(name, value);
+		set(name, value)
+	}
+	
+	def Transform content(String content) {
+		this.content = content
 		this
 	}
 	

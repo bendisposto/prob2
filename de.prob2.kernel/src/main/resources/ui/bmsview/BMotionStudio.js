@@ -76,6 +76,14 @@ bms = (function() {
 		});
 	}
 
+	extern.setObservers = function(data) {
+		bmotion_om.core.setObservers(JSON.parse(data.observers))
+	}
+	
+	extern.setHtml = function(data) {
+		bmotion_om.core.setHtml(data.html)
+	}
+	
 	extern.applyTransformers = function(data) {
 		var d1 = JSON.parse(data.transformers)
 		var i1 = 0

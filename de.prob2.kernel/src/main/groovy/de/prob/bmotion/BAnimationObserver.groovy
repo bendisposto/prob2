@@ -23,7 +23,7 @@ class BAnimationObserver extends BMotionObserver {
 		def fvalue = ""
 		def fpredicate = true
 		def type = item?.type?.getAsString()
-		List<Attribute> attrs = new ArrayList<Attribute>();
+		def attrs = [:]
 		if(type == "predicate") {
 			def fres = tool.evaluate(tool.getCurrentState(), formula)
 			fpredicate = fres instanceof EvalResult ? (fres.value == "TRUE") : false
@@ -36,7 +36,7 @@ class BAnimationObserver extends BMotionObserver {
 				if(type == "predicate") {
 					fvalue = act?.value?.getAsString()
 				}
-				attrs.add(new Attribute(fattr,fvalue.toString()));
+				attrs.put(fattr,fvalue.toString())
 			}
 		}
 		return new Transform(fselector,attrs)

@@ -8,7 +8,7 @@ class BSetObserver extends BMotionObserver {
 
 	def String expression
 	def pattern = { it -> "#" + it }
-	def List<Attribute> attributes = [];
+	def transformer = new Transform()
 
 	def BSetObserver(expression) {
 		this(expression, { it -> "#" + it })
@@ -19,16 +19,21 @@ class BSetObserver extends BMotionObserver {
 		this.pattern = pattern		
 	}
 	
-	def BSetObserver set(String name, String value) {
-		attributes << new Attribute(name, value);
+	def BSetObserver set(String name,  String value) {
+		transformer.attributes.put(name,value)
 		this
+	}
+
+	def BSetObserver attr(String name,  String value) {
+		set(name, value)
 	}
 
 	def List<Transform> update(BMotionStudioSession bms) {
 		def bset = bms.eval(expression)
 		def a = bset != null ? bset.value.replace("{","").replace("}","").replaceAll(" ","").tokenize(",") : [];
 		def b = a.collect{ pattern(it) }
-		[new Transform(b == []? "" : b.join(","), attributes)]
+		transformer.selector = b == []? "" : b.join(",")
+		[transformer]
 	}
 	
 }
