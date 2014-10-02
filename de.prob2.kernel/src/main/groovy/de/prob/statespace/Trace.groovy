@@ -112,6 +112,9 @@ public class Trace {
 	def Trace back() {
 		if (canGoBack()) {
 			Trace trace = new Trace(stateSpace, head, current.getPrevious(), this.UUID)
+			if(!stateSpace.isExplored(trace.getCurrentState())) {
+				stateSpace.explore(trace.getCurrentState())
+			}
 			return trace
 		}
 		return this
@@ -130,6 +133,9 @@ public class Trace {
 				p = p.getPrevious()
 			}
 			Trace trace = new Trace(stateSpace, head, p, this.UUID)
+			if(!stateSpace.isExplored(trace.getCurrentState())) {
+				stateSpace.explore(trace.getCurrentState())
+			}
 			return trace
 		}
 		return this
@@ -154,9 +160,9 @@ public class Trace {
 		}
 		def ops = []
 		head.getOpList().each {
-			ops << it.getRep(stateSpace as AbstractModel)
+			ops << it.getRep()
 		}
-		def curTrans = current?.getOp()?.getRep(stateSpace as AbstractModel) ?: "n/a"
+		def curTrans = current?.getOp()?.getRep() ?: "n/a"
 
 		return "${ops} Current Transition is: ${curTrans}"
 	}
@@ -356,25 +362,18 @@ public class Trace {
 	 * Takes a {@link StateSpace} and a list of {@link OpInfo} operations through the {@link StateSpace}
 	 * and generates a {@link Trace} object from the information. The list of operations must be a valid
 	 * list of operations starting from the root state, and for which the information has already been
-	 * cached in the {@link StateSpace}. Otherwise, an assertion error will be thrown.
+	 * cached in the {@link StateSpace}. Otherwise, an assertion error will be thrown. Calls {@link Trace#addOps}
 	 *
 	 * @param s {@link StateSpace} through which the Trace should be generated
 	 * @param ops List of {@link OpInfo} operations that should be executed in the Trace
 	 * @return {@link Trace} specified by list of operations
 	 */
 	def static Trace getTraceFromOpList(StateSpace s, List<OpInfo> ops) {
-		assert !ops.isEmpty();
-		assert ops[0].getSrc() == "root"
-
-		TraceElement head = new TraceElement(s.getVertex("root"))
-		for (op in ops) {
-			def src = s.getVertex(op.getSrc())
-			def dest = s.getVertex(op.getDest())
-			assert src != null
-			assert dest != null
-			head = new TraceElement(src, dest,op, head)
+		Trace t = new Trace(s)
+		if(!ops.isEmpty()) {
+			t.addOps(ops)
 		}
-		return new Trace(s, head, java.util.UUID.randomUUID())
+		return t
 	}
 
 	/**
@@ -392,6 +391,7 @@ public class Trace {
 			assert dest != null
 			head = new TraceElement(src, dest, op, head)
 		}
+		stateSpace.explore(head.getCurrentState())
 		return new Trace(stateSpace, head, this.UUID)
 	}
 
