@@ -18,6 +18,7 @@ s.execute(c)
 t = c.getTrace(s)
 assert t != null
 opList = t.current.opList
+assert s.isExplored(t.getCurrentState())
 assert opList[opList.size() - 1].getRep() == "swap()"
 
 x = s.root

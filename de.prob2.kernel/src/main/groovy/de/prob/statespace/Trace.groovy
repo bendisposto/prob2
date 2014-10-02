@@ -391,7 +391,7 @@ public class Trace {
 			assert dest != null
 			h = new TraceElement(src, dest, op, h)
 		}
-		stateSpace.explore(head.getCurrentState())
+		stateSpace.explore(h.getCurrentState())
 		return new Trace(stateSpace, h, this.UUID)
 	}
 
