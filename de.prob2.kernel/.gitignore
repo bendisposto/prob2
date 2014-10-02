@@ -29,3 +29,5 @@ build.properties
 plugin.properties
 plugin.xml
 classmap.properties
+**/prob2preferences
+**/stateInspectorRepl
