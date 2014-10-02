@@ -55,6 +55,7 @@
 			            <li><a href="#" id="bt_open_animation_view">CurrentAnimations</a></li>
 			            <li><a href="#" id="bt_open_state_view">StateInspector</a></li>
 			            <li><a href="#" id="bt_open_log_view">LogView</a></li>
+			            <li><a href="#" id="bt_open_console_view">Console</a></li>
 			          </ul>
 			        </li>
 			      </ul>
@@ -77,6 +78,9 @@
 			<div id="log_view" title="LogView">
 		  		<iframe src="" id="log_iframe" frameBorder="0"></iframe>
 			</div>
+			<div id="console_view" title="ConsoleView">
+		  		<iframe src="" id="console_iframe" frameBorder="0"></iframe>
+			</div>
 			<div id="script_view" title="Script">
 			</div>
 			{{/standalone}}
@@ -89,6 +93,6 @@
 				bms.host = "{{host}}" 
 			</script>
 		{{/error}}
-			
+		<script type="text/javascript" src="/ui/bmsview/bmotion-om.js"></script>	
 	</body>
 </html>

@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.google.gson.JsonElement;
 
 import de.prob.animator.domainobjects.EvaluationException;
@@ -20,16 +18,17 @@ import de.prob.statespace.Trace;
 import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
+import de.prob.bmotion.BMotionObserver;
 
 public class CSPAnimation extends ProBAnimation {
 
 	private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
 
-	public CSPAnimation(String toolId, AbstractModel model, AnimationSelector animations,
-			ToolRegistry toolRegistry) {
+	public CSPAnimation(String toolId, AbstractModel model,
+			AnimationSelector animations, ToolRegistry toolRegistry) {
 		super(toolId, model, animations, toolRegistry);
 	}
-	
+
 	public CSPAnimation(String toolId, AnimationSelector animations,
 			ToolRegistry toolRegistry) {
 		super(toolId, animations, toolRegistry);
@@ -40,7 +39,7 @@ public class CSPAnimation extends ProBAnimation {
 			final String... parameters) throws ImpossibleStepException {
 		try {
 			Trace new_trace = trace.execute(event, Arrays.asList(parameters));
-			animations.replaceTrace(trace, new_trace);
+			animations.traceChange(new_trace);
 			trace = new_trace;
 			toolRegistry.notifyToolChange(this);
 		} catch (Exception e) {
@@ -87,15 +86,8 @@ public class CSPAnimation extends ProBAnimation {
 	}
 
 	@Override
-	public IBMotionGroovyObserver getBMotionGroovyObserver(
-			BMotionStudioSession bmsSession, JsonElement jsonObserver) {
-		return new CSPAnimationObserver(bmsSession, jsonObserver);
-	}
-
-	@Override
-	public String getModelData(String dataParameter, HttpServletRequest req) {
-		// TODO Auto-generated method stub
-		return null;
+	public BMotionObserver getBMotionObserver(JsonElement jsonObserver) {
+		return new CSPAnimationObserver(jsonObserver);
 	}
 
 }

@@ -713,7 +713,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public Trace getTrace(final StateId stateId) {
 		GetShortestTraceCommand cmd = new GetShortestTraceCommand(this, stateId);
 		execute(cmd);
-		return getTrace(cmd);
+		Trace t = getTrace(cmd);
+		return t;
 	}
 
 	/**

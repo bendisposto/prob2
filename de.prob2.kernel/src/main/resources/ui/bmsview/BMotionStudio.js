@@ -76,17 +76,23 @@ bms = (function() {
 		});
 	}
 
+	extern.setObservers = function(data) {
+		bmotion_om.core.setObservers(JSON.parse(data.observers))
+	}
+	
+	extern.setHtml = function(data) {
+		bmotion_om.core.setHtml(data.html)
+	}
+	
 	extern.applyTransformers = function(data) {
-
 		var d1 = JSON.parse(data.transformers)
 		var i1 = 0
-
 		//var process = function() {
 		for (; i1 < d1.length; i1++) {
 			var t = d1[i1]
 			var selector = $(t.selector)
 			var attrs = {}
-			var d2 = t.attributes.concat(t.styles)
+			var d2 = t.attributes
 			var i2 = 0
 			for (; i2 < d2.length; i2++) {
 				var a = d2[i2]
@@ -109,7 +115,6 @@ bms = (function() {
 		}
 		//};
 		//process();
-
 	}
 	
 	return extern;

@@ -6,7 +6,8 @@
 		initDialog($("#state_view"),$("#state_iframe"),$("#bt_open_state_view"),"http://"+bms.host+":"+bms.port+"/sessions/StateInspector",false);
 		initDialog($("#log_view"),$("#log_iframe"),$("#bt_open_log_view"),"http://"+bms.host+":"+bms.port+"/sessions/Log",false);
 		initDialog($("#history_view"),$("#history_iframe"),$("#bt_open_history_view"),"http://"+bms.host+":"+bms.port+"/sessions/CurrentTrace",false);
-		initDialog($("#events_view"),$("#events_iframe"),$("#bt_open_events_view"),"http://"+bms.host+":"+bms.port+"/sessions/Events",true);
+		initDialog($("#console_view"),$("#console_iframe"),$("#bt_open_console_view"),"http://"+bms.host+":"+bms.port+"/sessions/GroovyConsoleSession",false);
+		initDialog($("#events_view"),$("#events_iframe"),$("#bt_open_events_view"),"http://"+bms.host+":"+bms.port+"/sessions/Events",true);		
 			
 	});
 	
