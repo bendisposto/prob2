@@ -371,7 +371,7 @@ public class Trace {
 	def static Trace getTraceFromOpList(StateSpace s, List<OpInfo> ops) {
 		Trace t = new Trace(s)
 		if(!ops.isEmpty()) {
-			t.addOps(ops)
+			t = t.addOps(ops)
 		}
 		return t
 	}
@@ -383,16 +383,16 @@ public class Trace {
 	 * @return Trace with the ops added
 	 */
 	def Trace addOps(List<OpInfo> ops) {
-		TraceElement head = current
+		TraceElement h = current
 		for (op in ops) {
 			def src = op.getSrcId()
 			def dest = op.getDestId()
 			assert src != null
 			assert dest != null
-			head = new TraceElement(src, dest, op, head)
+			h = new TraceElement(src, dest, op, h)
 		}
 		stateSpace.explore(head.getCurrentState())
-		return new Trace(stateSpace, head, this.UUID)
+		return new Trace(stateSpace, h, this.UUID)
 	}
 
 
