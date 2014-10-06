@@ -1,42 +1,41 @@
 package de.prob.bmotion;
 
+import java.util.List;
+
 import com.google.gson.Gson
+
 import de.prob.bmotion.BMotionObserver
 
-class Transform extends BMotionObserver {
+class SelectorTransformer extends BMotionObserver {
 
 	def String selector
 	def attributes = [:]
 	def String content
-	
-	def Transform() {
-		
+
+	def SelectorTransformer(selector) {
+		this.selector = selector
 	}
-	
-	def Transform(selector) {
-		this(selector,[:])
-	}
-	
-	def Transform(selector,attributes) {
+
+	def SelectorTransformer(selector,attributes) {
 		this.selector = selector
 		this.attributes = attributes
 	}
 
-	def Transform set(String name,  String value) {
+	def SelectorTransformer set(String name,  String value) {
 		(name == "content" || name == "text") ? content = value : attributes.put(name,value)
 		this
 	}
 
-	def Transform attr(String name,  String value) {
+	def SelectorTransformer attr(String name,  String value) {
 		set(name, value)
 	}
 	
-	def Transform content(String content) {
+	def SelectorTransformer content(String content) {
 		this.content = content
 		this
 	}
 	
-	def List<Transform> update(BMotionStudioSession bms) {
+	def List<SelectorTransformer> update(BMotion bms) {
 		[this]
 	}
 	

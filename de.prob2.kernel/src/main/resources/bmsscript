@@ -9,5 +9,5 @@ Script.getMetaClass().observeBSet = { a1,a2,a3=null ->
 }
 
 Script.getMetaClass().transform = { a1,a2 ->
-	new Transform(a1).with a2
+	new SelectorTransformer(a1).with a2
 }
