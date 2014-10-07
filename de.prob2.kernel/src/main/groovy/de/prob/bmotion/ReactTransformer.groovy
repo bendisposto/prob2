@@ -10,6 +10,7 @@ class ReactTransformer {
 
 	def String bmsid
 	def attributes = [:]
+	def styles = [:]
 	def String content
 
 	def ReactTransformer(bmsid) {

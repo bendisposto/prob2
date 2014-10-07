@@ -10,6 +10,7 @@ class SelectorTransformer extends BMotionObserver {
 
 	def String selector
 	def attributes = [:]
+	def styles = [:]
 	def String content
 
 	def SelectorTransformer(selector) {
@@ -28,6 +29,11 @@ class SelectorTransformer extends BMotionObserver {
 
 	def SelectorTransformer attr(String name,  String value) {
 		set(name, value)
+	}
+	
+	def SelectorTransformer style(String name, String value) {
+		styles.put(name, value)
+		this
 	}
 	
 	def SelectorTransformer content(String content) {

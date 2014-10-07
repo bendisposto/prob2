@@ -84,6 +84,7 @@ implements IToolListener {
 				def reactTransformer = applymap.get(it) ?: new ReactTransformer(it)
 				applymap.put(it, reactTransformer)
 				reactTransformer.attributes.putAll(t.attributes)
+				reactTransformer.styles.putAll(t.styles)
 				reactTransformer.content = t.content
 			}
 		}
@@ -196,6 +197,7 @@ implements IToolListener {
 				.getFullTemplatePath(getTemplatePath());
 		String html = BMotionUtil.getFileContents(absoluteTemplatePath);
 		template = Jsoup.parse(html);
+		BMotionUtil.fixSvgImageTags(template);
 		body = template.getElementsByTag("body");
 		body.traverse(new NodeVisitor() {
 					int counter = 1;
@@ -208,7 +210,6 @@ implements IToolListener {
 					public void tail(Node node, int depth) {
 					}
 				});
-
 		submit(WebUtils.wrap("cmd", "bms.setHtml", "html", body.html()));
 		observers.clear();
 		if (getTool() instanceof IObserver) {
