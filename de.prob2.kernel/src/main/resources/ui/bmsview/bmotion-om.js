@@ -24835,12 +24835,7 @@ clojure.walk.postwalk_replace = function(a, b) {
 bmotion_om.core = {};
 cljs.core.enable_console_print_BANG_.call(null);
 bmotion_om.core.app_state = cljs.core.atom.call(null, new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null, "html", "html", -998796897), "\x3cspan\x3eRendering ...\x3c/span\x3e", new cljs.core.Keyword(null, "prob2", "prob2", -498990995), new cljs.core.PersistentArrayMap(null, 2, ["variables", new cljs.core.PersistentArrayMap(null, 2, ["door_open", "TRUE", "cur_floor", "1"], null), "formulas", new cljs.core.PersistentArrayMap(null, 4, "x\x3e5 TRUE y\x3c4 FALSE card(someset) 5 door_open TRUE".split(" "), 
-null)], null), new cljs.core.Keyword(null, "observers", "observers", 841951845), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "bmsvis1", "bmsvis1", 707254897), new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null, "bms1", "bms1", 359431377), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "attributes", "attributes", -74013604), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "stroke", "stroke", 1741823555), "red", 
-new cljs.core.Keyword(null, "stroke-width", "stroke-width", 716836435), "5"], null), new cljs.core.Keyword(null, "styles", "styles", 1954480375), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "visibility", "visibility", 1338380893), "visible"], null)], null), new cljs.core.Keyword(null, "bms2", "bms2", 1680409012), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "attributes", "attributes", -74013604), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, 
-"stroke", "stroke", 1741823555), "red", new cljs.core.Keyword(null, "stroke-width", "stroke-width", 716836435), "5"], null), new cljs.core.Keyword(null, "content", "content", 15833224), "NEW CONTENT SPAN"], null), new cljs.core.Keyword(null, "bms3", "bms3", -110662556), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "attributes", "attributes", -74013604), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "transform", "transform", 1381301764), "rotate(77.7166 190.5 119.5)"], 
-null), new cljs.core.Keyword(null, "styles", "styles", 1954480375), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "margin-top", "margin-top", 392161226), "10px"], null)], null)], null), new cljs.core.Keyword(null, "bmsvis2", "bmsvis2", 1086979389), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "bms1", "bms1", 359431377), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "attributes", "attributes", -74013604), new cljs.core.PersistentArrayMap(null, 
-2, [new cljs.core.Keyword(null, "stroke", "stroke", 1741823555), "red", new cljs.core.Keyword(null, "stroke-width", "stroke-width", 716836435), "5"], null)], null), new cljs.core.Keyword(null, "bms2", "bms2", 1680409012), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "attributes", "attributes", -74013604), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "stroke", "stroke", 1741823555), "red", new cljs.core.Keyword(null, "stroke-width", "stroke-width", 
-716836435), "5"], null)], null)], null)], null)], null));
+null)], null), new cljs.core.Keyword(null, "observers", "observers", 841951845), cljs.core.PersistentArrayMap.EMPTY], null));
 bmotion_om.core.attr_react_replacer = function(a) {
   return cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, function(a) {
     var c = cljs.core.nth.call(null, a, 0, null);
@@ -25001,23 +24996,23 @@ bmotion_om.core.get_make_dom_fn = function(a) {
 };
 bmotion_om.core.get_make_dom_fn_mem = cljs.core.memoize.call(null, bmotion_om.core.get_make_dom_fn);
 om.core.root.call(null, function(a, b) {
-  "undefined" === typeof bmotion_om.core.t9776 && (bmotion_om.core.t9776 = function(a, b, e) {
+  "undefined" === typeof bmotion_om.core.t9804 && (bmotion_om.core.t9804 = function(a, b, e) {
     this.owner = a;
     this.app = b;
-    this.meta9777 = e;
+    this.meta9805 = e;
     this.cljs$lang$protocol_mask$partition1$ = 0;
     this.cljs$lang$protocol_mask$partition0$ = 393216;
-  }, bmotion_om.core.t9776.cljs$lang$type = !0, bmotion_om.core.t9776.cljs$lang$ctorStr = "bmotion-om.core/t9776", bmotion_om.core.t9776.cljs$lang$ctorPrWriter = function(a, b, e) {
-    return cljs.core._write.call(null, b, "bmotion-om.core/t9776");
-  }, bmotion_om.core.t9776.prototype.om$core$IRender$ = !0, bmotion_om.core.t9776.prototype.om$core$IRender$render$arity$1 = function(a) {
+  }, bmotion_om.core.t9804.cljs$lang$type = !0, bmotion_om.core.t9804.cljs$lang$ctorStr = "bmotion-om.core/t9804", bmotion_om.core.t9804.cljs$lang$ctorPrWriter = function(a, b, e) {
+    return cljs.core._write.call(null, b, "bmotion-om.core/t9804");
+  }, bmotion_om.core.t9804.prototype.om$core$IRender$ = !0, bmotion_om.core.t9804.prototype.om$core$IRender$render$arity$1 = function(a) {
     cljs.core.println.call(null, "Rendering ...");
     return bmotion_om.core.get_make_dom_fn_mem.call(null, (new cljs.core.Keyword(null, "html", "html", -998796897)).cljs$core$IFn$_invoke$arity$1(this.app)).call(null, (new cljs.core.Keyword(null, "observers", "observers", 841951845)).cljs$core$IFn$_invoke$arity$1(this.app));
-  }, bmotion_om.core.t9776.prototype.cljs$core$IMeta$_meta$arity$1 = function(a) {
-    return this.meta9777;
-  }, bmotion_om.core.t9776.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
-    return new bmotion_om.core.t9776(this.owner, this.app, b);
-  }, bmotion_om.core.__GT_t9776 = function(a, b, e) {
-    return new bmotion_om.core.t9776(a, b, e);
+  }, bmotion_om.core.t9804.prototype.cljs$core$IMeta$_meta$arity$1 = function(a) {
+    return this.meta9805;
+  }, bmotion_om.core.t9804.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
+    return new bmotion_om.core.t9804(this.owner, this.app, b);
+  }, bmotion_om.core.__GT_t9804 = function(a, b, e) {
+    return new bmotion_om.core.t9804(a, b, e);
   });
-  return new bmotion_om.core.t9776(b, a, null);
+  return new bmotion_om.core.t9804(b, a, null);
 }, bmotion_om.core.app_state, new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "target", "target", 253001721), document.getElementById("vis_container")], null));
