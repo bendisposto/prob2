@@ -24844,9 +24844,44 @@ bmotion_om.core.attr_react_replacer = function(a) {
   }, a));
 };
 bmotion_om.core.styles_to_clj = function(a) {
-  return cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, function(a) {
-    return clojure.string.split.call(null, a, /:/);
-  }, clojure.string.split.call(null, a, /;/)));
+  return cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, function() {
+    var b = function d(a) {
+      return new cljs.core.LazySeq(null, function() {
+        for (;;) {
+          var b = cljs.core.seq.call(null, a);
+          if (b) {
+            if (cljs.core.chunked_seq_QMARK_.call(null, b)) {
+              var g = cljs.core.chunk_first.call(null, b), h = cljs.core.count.call(null, g), k = cljs.core.chunk_buffer.call(null, h);
+              a: {
+                for (var l = 0;;) {
+                  if (l < h) {
+                    var m = cljs.core._nth.call(null, g, l), n = cljs.core.nth.call(null, m, 0, null), m = cljs.core.nth.call(null, m, 1, null);
+                    cljs.core.chunk_append.call(null, k, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.keyword.call(null, n), m], null));
+                    l += 1;
+                  } else {
+                    g = !0;
+                    break a;
+                  }
+                }
+                g = void 0;
+              }
+              return g ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), d.call(null, cljs.core.chunk_rest.call(null, b))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), null);
+            }
+            g = cljs.core.first.call(null, b);
+            k = cljs.core.nth.call(null, g, 0, null);
+            g = cljs.core.nth.call(null, g, 1, null);
+            return cljs.core.cons.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.keyword.call(null, k), g], null), d.call(null, cljs.core.rest.call(null, b)));
+          }
+          return null;
+        }
+      }, null, null);
+    };
+    return b.call(null, cljs.core.map.call(null, function(a) {
+      return function(a) {
+        return clojure.string.split.call(null, a, /:/);
+      };
+    }(b), clojure.string.split.call(null, a, /;/)));
+  }());
 };
 bmotion_om.core.styles_to_str = function(a) {
   return cljs.core.apply.call(null, cljs.core.str, cljs.core.interpose.call(null, ";", cljs.core.map.call(null, function(a) {
@@ -25013,23 +25048,23 @@ bmotion_om.core.get_make_dom_fn = function(a) {
 };
 bmotion_om.core.get_make_dom_fn_mem = cljs.core.memoize.call(null, bmotion_om.core.get_make_dom_fn);
 om.core.root.call(null, function(a, b) {
-  "undefined" === typeof bmotion_om.core.t12084 && (bmotion_om.core.t12084 = function(a, b, e) {
+  "undefined" === typeof bmotion_om.core.t12601 && (bmotion_om.core.t12601 = function(a, b, e) {
     this.owner = a;
     this.app = b;
-    this.meta12085 = e;
+    this.meta12602 = e;
     this.cljs$lang$protocol_mask$partition1$ = 0;
     this.cljs$lang$protocol_mask$partition0$ = 393216;
-  }, bmotion_om.core.t12084.cljs$lang$type = !0, bmotion_om.core.t12084.cljs$lang$ctorStr = "bmotion-om.core/t12084", bmotion_om.core.t12084.cljs$lang$ctorPrWriter = function(a, b, e) {
-    return cljs.core._write.call(null, b, "bmotion-om.core/t12084");
-  }, bmotion_om.core.t12084.prototype.om$core$IRender$ = !0, bmotion_om.core.t12084.prototype.om$core$IRender$render$arity$1 = function(a) {
+  }, bmotion_om.core.t12601.cljs$lang$type = !0, bmotion_om.core.t12601.cljs$lang$ctorStr = "bmotion-om.core/t12601", bmotion_om.core.t12601.cljs$lang$ctorPrWriter = function(a, b, e) {
+    return cljs.core._write.call(null, b, "bmotion-om.core/t12601");
+  }, bmotion_om.core.t12601.prototype.om$core$IRender$ = !0, bmotion_om.core.t12601.prototype.om$core$IRender$render$arity$1 = function(a) {
     cljs.core.println.call(null, "Rendering ...");
     return bmotion_om.core.get_make_dom_fn_mem.call(null, (new cljs.core.Keyword(null, "html", "html", -998796897)).cljs$core$IFn$_invoke$arity$1(this.app)).call(null, (new cljs.core.Keyword(null, "observers", "observers", 841951845)).cljs$core$IFn$_invoke$arity$1(this.app));
-  }, bmotion_om.core.t12084.prototype.cljs$core$IMeta$_meta$arity$1 = function(a) {
-    return this.meta12085;
-  }, bmotion_om.core.t12084.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
-    return new bmotion_om.core.t12084(this.owner, this.app, b);
-  }, bmotion_om.core.__GT_t12084 = function(a, b, e) {
-    return new bmotion_om.core.t12084(a, b, e);
+  }, bmotion_om.core.t12601.prototype.cljs$core$IMeta$_meta$arity$1 = function(a) {
+    return this.meta12602;
+  }, bmotion_om.core.t12601.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
+    return new bmotion_om.core.t12601(this.owner, this.app, b);
+  }, bmotion_om.core.__GT_t12601 = function(a, b, e) {
+    return new bmotion_om.core.t12601(a, b, e);
   });
-  return new bmotion_om.core.t12084(b, a, null);
+  return new bmotion_om.core.t12601(b, a, null);
 }, bmotion_om.core.app_state, new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "target", "target", 253001721), document.getElementById("vis_container")], null));

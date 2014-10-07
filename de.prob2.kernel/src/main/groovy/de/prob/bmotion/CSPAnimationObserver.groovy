@@ -74,7 +74,17 @@ class CSPAnimationObserver extends BMotionObserver {
 										def fselector = mustacheRender(item.selector.getAsString(),pmap)
 										def fvalue = mustacheRender(item.value.getAsString(),pmap)
 										def fattr = mustacheRender(item.attr.getAsString(),pmap)
-										transformers << new SelectorTransformer(fselector).set(fattr,fvalue)
+										if(fattr == "style") {
+											def t = new SelectorTransformer(fselector)
+											def sattrs = fvalue.split(";")
+											sattrs.collect { it -> 
+												def kv = it.split(":")
+												t.style(kv[0],kv[1])
+											}
+											transformers << t
+										} else {
+											transformers << new SelectorTransformer(fselector).set(fattr,fvalue)
+										}
 									}
 								}
 							}
