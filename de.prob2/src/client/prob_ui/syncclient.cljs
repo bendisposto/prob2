@@ -76,7 +76,7 @@ will not be present in the new structure."
     (update-in s path #(into % value))))
 
 (defmethod mk-fn :clear [_]
-  {})
+  (fn [s] {}))
 
 (defmethod mk-fn :del [{:keys [value path]}]
   (fn [s]
@@ -88,12 +88,11 @@ will not be present in the new structure."
 
 (defn compute-new-state [old-state id changes]
   (let [fns (doall (map mk-fn changes))
-        chg-fkt (apply comp fns)
+        chg-fkt (apply comp (reverse fns))
         state' (chg-fkt (:state old-state))]
     (assoc old-state :current id :state state')))
 
-
-                                      
+                                   
                                                         
                                                   
                             
@@ -103,11 +102,18 @@ will not be present in the new structure."
            (transit/read r msg)))
 
        (defn receiver [event]
+   
          (let [response (.getResponseText (.-target event))
                [id changes] (read-transit response)
-               modpath (doall (map second changes))]
+                modpath (filter identity (doall (map :path changes)))           
+              
+               ]
+    
            (swap! state compute-new-state id changes)
-           (when (seq modpath) (notify-watchers modpath)))
+
+            (when (seq modpath) (notify-watchers modpath))
+
+           )
          (traceln "receiver done")
          :ok)
 

@@ -61,8 +61,7 @@
 (defn new-system [{:keys [port ip] :or {port 0 ip "localhost"}}]
   (component/system-map
    :webserver (component/using (new-webserver port ip) [:app])
-   :app (new-app)
-   :sync-store (sync/new-syncstore)))
+   :app (new-app)))
 
 
 (def injector (Main/getInjector))

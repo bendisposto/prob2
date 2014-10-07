@@ -46,7 +46,7 @@ class BMotionUtil {
 		return new File(filePath).getText()
 	}
 
-	def static void evaluateGroovy(ScriptEngine engine, String absoluteTemplatePath, Map<String, String> parameters, BMotionStudioSession bms) throws GroovyRuntimeException, ScriptException {
+	def static void evaluateGroovy(ScriptEngine engine, String absoluteTemplatePath, Map<String, String> parameters, BMotion bms) throws GroovyRuntimeException, ScriptException {
 		String scriptPaths = parameters.get("script")
 		if (absoluteTemplatePath != null && scriptPaths != null) {
 			def templateFolder = BMotionUtil.getTemplateFolder(absoluteTemplatePath)

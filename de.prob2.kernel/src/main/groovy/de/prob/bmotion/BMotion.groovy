@@ -1,56 +1,59 @@
 package de.prob.bmotion;
 
-import groovy.lang.GroovyRuntimeException;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import javax.script.Bindings
+import javax.script.ScriptContext
+import javax.script.ScriptEngine
+import javax.script.ScriptException
+import javax.servlet.AsyncContext
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-import javax.servlet.AsyncContext;
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
+import org.jsoup.nodes.Node
+import org.jsoup.select.Elements
+import org.jsoup.select.NodeVisitor
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.common.base.Charsets
+import com.google.common.io.Resources
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-import com.google.gson.JsonElement;
+import de.prob.scripting.ScriptEngineProvider
+import de.prob.ui.api.ITool
+import de.prob.ui.api.IToolListener
+import de.prob.ui.api.ImpossibleStepException
+import de.prob.ui.api.ToolRegistry
+import de.prob.web.WebUtils
 
-import de.prob.scripting.ScriptEngineProvider;
-import de.prob.ui.api.ITool;
-import de.prob.ui.api.IToolListener;
-import de.prob.ui.api.ImpossibleStepException;
-import de.prob.ui.api.ToolRegistry;
-import de.prob.web.WebUtils;
-import de.prob.bmotion.Transform;
-import de.prob.bmotion.BMotionObserver;
+public class BMotion extends AbstractBMotionStudioSession
+implements IToolListener {
 
-public class BMotionStudioSession extends AbstractBMotionStudioSession
-		implements IToolListener {
+	Logger logger = LoggerFactory.getLogger(BMotion.class);
 
-	Logger logger = LoggerFactory.getLogger(BMotionStudioSession.class);
-
-	private final List<BMotionObserver> observers = new ArrayList<BMotionObserver>();
+	private final List<BMotionObserver> observers = []
 
 	private final ScriptEngineProvider engineProvider;
 
+	private Document template
+	private Elements body
+
 	private boolean initialised = false;
 
-	public BMotionStudioSession(final UUID id, final ITool tool,
-			final ToolRegistry registry, final String templatePath,
-			final ScriptEngineProvider engineProvider, final String host,
-			final int port) {
+	private final Gson g = new Gson();
+	
+	private def selectorCache = [:]
+
+	public BMotion(final UUID id, final ITool tool,
+	final ToolRegistry registry, final String templatePath,
+	final ScriptEngineProvider engineProvider, final String host,
+	final int port) {
 		super(id, tool, templatePath, host, port);
 		this.engineProvider = engineProvider;
 		registry.registerListener(this);
-		this.incrementalUpdate = true;
+		incrementalUpdate = true;
 	}
 
 	@Override
@@ -65,20 +68,42 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 		}
 	}
 
+	private List<String> getCachedBmsId(String selector) {
+		def t = selector.isEmpty() ? []: selectorCache.get(selector)
+		if(t == null) {
+			t = body.select(selector).collect { it.attr("data-bmsid") }
+			selectorCache.put(selector,t)
+		}
+		t
+	}
+
+	private void applyTransformers(List<SelectorTransformer> transformers) {
+		def applymap = [:]
+		transformers.each { t ->
+			getCachedBmsId(t.getSelector()).each {
+				def reactTransformer = applymap.get(it) ?: new ReactTransformer(it)
+				applymap.put(it, reactTransformer)
+				reactTransformer.attributes.putAll(t.attributes)
+				reactTransformer.styles.putAll(t.styles)
+				reactTransformer.content = t.content
+			}
+		}
+		String json = g.toJson(applymap);
+		submit(WebUtils.wrap("cmd", "bms.setObservers", "observers", json));
+	}
+
 	@Override
 	public void animationChange(final ITool tool) {
-		apply(this.observers);
+		apply(observers);
 	}
 
 	// ---------- BMS API
 	public void registerObserver(BMotionObserver observer) {
-		this.observers.add(observer);
-		apply(observer);
+		observers.add(observer);
 	}
 
-	public void registerObserver(List<BMotionObserver> observers) {
-		this.observers.addAll(observers);
-		apply(observers);
+	public void registerObserver(List<BMotionObserver> observer) {
+		observers.addAll(observer);
 	}
 
 	public void apply(final String cmd, final Map<Object, Object> json) {
@@ -99,19 +124,19 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	}
 
 	public void apply(final BMotionObserver observer) {
-		List<Transform> t = new ArrayList<Transform>();
+		List<SelectorTransformer> t = new ArrayList<SelectorTransformer>();
 		t.addAll(observer.update(this));
-		submit(WebUtils.wrap("cmd", "bms.applyTransformers", "transformers", t));
+		applyTransformers(t);
 	}
 
 	public void apply(final List<BMotionObserver> observers) {
-		ArrayList<Transform> t = new ArrayList<Transform>();
+		ArrayList<SelectorTransformer> t = new ArrayList<SelectorTransformer>();
 		for (BMotionObserver o : observers) {
-			List<Transform> update = o.update(this);
+			List<SelectorTransformer> update = o.update(this);
 			if (update != null)
 				t.addAll(update);
 		}
-		submit(WebUtils.wrap("cmd", "bms.applyTransformers", "transformers", t));
+		applyTransformers(t);
 	}
 
 	@Deprecated
@@ -170,6 +195,22 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 	public void initSession() {
 		String absoluteTemplatePath = BMotionUtil
 				.getFullTemplatePath(getTemplatePath());
+		String html = BMotionUtil.getFileContents(absoluteTemplatePath);
+		template = Jsoup.parse(html);
+		BMotionUtil.fixSvgImageTags(template);
+		body = template.getElementsByTag("body");
+		body.traverse(new NodeVisitor() {
+					int counter = 1;
+
+					public void head(Node node, int depth) {
+						node.attr("data-bmsid", "bms"+String.valueOf(counter));
+						counter++;
+					}
+
+					public void tail(Node node, int depth) {
+					}
+				});
+		submit(WebUtils.wrap("cmd", "bms.setHtml", "html", body.html()));
 		observers.clear();
 		if (getTool() instanceof IObserver) {
 			JsonElement jsonObserver = BMotionUtil.getJsonObserver(
@@ -205,9 +246,9 @@ public class BMotionStudioSession extends AbstractBMotionStudioSession
 				for (String path : paths) {
 					groovyEngine.eval(
 							"import de.prob.bmotion.*;\n"
-									+ BMotionUtil
-											.getFileContents(templateFolder
-													+ File.separator + path),
+							+ BMotionUtil
+							.getFileContents(templateFolder
+							+ File.separator + path),
 							bindings);
 				}
 			}

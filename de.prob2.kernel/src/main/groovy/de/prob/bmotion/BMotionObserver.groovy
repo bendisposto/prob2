@@ -1,11 +1,10 @@
 package de.prob.bmotion;
 
-import de.prob.bmotion.Transform
+import java.util.List;
+import de.prob.bmotion.SelectorTransformer
 
 abstract class BMotionObserver {
 	
-	def final UUID uuid = UUID.randomUUID()
-	
-	def abstract List<Transform> update(BMotionStudioSession bms)
+	def abstract List<SelectorTransformer> update(BMotion bms)
 	
 }

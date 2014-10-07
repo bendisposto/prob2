@@ -1,17 +1,19 @@
 package de.prob.bmotion;
 
+import java.util.List;
+
 import de.prob.bmotion.BMotionObserver
-import de.prob.bmotion.Transform
+import de.prob.bmotion.SelectorTransformer
 
 //TODO: Check if result of expression is an enumerated set
 class BSetObserver extends BMotionObserver {
 
 	def String expression
 	def pattern = { it -> "#" + it }
-	def List<Attribute> attributes = [];
+	def transformer = new SelectorTransformer()
 
 	def BSetObserver(expression) {
-		this(expression, { it -> "#" + it })
+		this.expression = expression
 	}
 
 	def BSetObserver(expression,pattern) {
@@ -19,16 +21,21 @@ class BSetObserver extends BMotionObserver {
 		this.pattern = pattern		
 	}
 	
-	def BSetObserver set(String name, String value) {
-		attributes << new Attribute(name, value);
+	def BSetObserver set(String name,  String value) {
+		transformer.set(name,value)
 		this
 	}
 
-	def List<Transform> update(BMotionStudioSession bms) {
+	def BSetObserver attr(String name,  String value) {
+		set(name, value)
+	}
+
+	def List<SelectorTransformer> update(BMotion bms) {
 		def bset = bms.eval(expression)
 		def a = bset != null ? bset.value.replace("{","").replace("}","").replaceAll(" ","").tokenize(",") : [];
 		def b = a.collect{ pattern(it) }
-		[new Transform(b == []? "" : b.join(","), attributes)]
+		transformer.selector = b == []? "" : b.join(",")
+		[transformer]
 	}
 	
 }
