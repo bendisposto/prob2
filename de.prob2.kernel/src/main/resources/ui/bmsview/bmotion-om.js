@@ -24875,10 +24875,33 @@ bmotion_om.core.mk_dom = function() {
   var a = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), b = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), c = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), d = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), e = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", -1053470341), cljs.core.get_global_hierarchy.call(null));
   return new cljs.core.MultiFn("mk-dom", function(a, b, c, d, e) {
     return function(a) {
-      return cljs.core.first.call(null, a);
+      return(new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(a);
     };
   }(a, b, c, d, e), new cljs.core.Keyword(null, "default", "default", -1987822328), e, a, b, c, d);
 }();
+bmotion_om.core.mk_element = function() {
+  var a = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), b = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), c = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), d = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), e = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", -1053470341), cljs.core.get_global_hierarchy.call(null));
+  return new cljs.core.MultiFn("mk-element", function(a, b, c, d, e) {
+    return function(a) {
+      return(new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(a);
+    };
+  }(a, b, c, d, e), new cljs.core.Keyword(null, "default", "default", -1987822328), e, a, b, c, d);
+}();
+cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(null, "element", "element", 1974019749), function(a) {
+  return bmotion_om.core.mk_element.call(null, a);
+});
+cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(null, "comment", "comment", 532206069), function(a) {
+  return function(a) {
+    return null;
+  };
+});
+cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(null, "default", "default", -1987822328), function(a) {
+  return function(a) {
+    return function(c) {
+      return a;
+    };
+  }(cljs.core.truth_(clojure.string.blank_QMARK_.call(null, a)) ? null : "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a));
+});
 bmotion_om.core.get_react_dom_fn = function(a, b, c) {
   a = a.call(null, bmotion_om.input.html_to_react);
   var d = (new cljs.core.Keyword(null, "data-bmsid", "data-bmsid", 1533988713)).cljs$core$IFn$_invoke$arity$1(b), e = cljs.core.keyword.call(null, d);
@@ -24890,33 +24913,27 @@ bmotion_om.core.get_react_dom_fn = function(a, b, c) {
     };
   }(a, d, e);
 };
-cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460), function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), d = cljs.core.nthnext.call(null, a, 2);
+cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885), function(a) {
+  var b = (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(a), c = (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(a);
+  a = (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(a);
+  var d = cljs.core.mapv.call(null, bmotion_om.core.mk_dom, a);
   return bmotion_om.core.get_react_dom_fn.call(null, b, c, function(a, b, c, d) {
-    return function(a) {
-      return d;
-    };
-  }(a, b, c, d));
-});
-cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword("bmotion-om.core", "container", "bmotion-om.core/container", 866213771), function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), d = cljs.core.nthnext.call(null, a, 2), e = cljs.core.mapv.call(null, bmotion_om.core.mk_dom, d);
-  return bmotion_om.core.get_react_dom_fn.call(null, b, c, function(a, b, c, d, e) {
-    return function(m) {
-      return function(a, b, c, d, e) {
-        return function v(f) {
-          return new cljs.core.LazySeq(null, function(a, b, c, d, e) {
+    return function(k) {
+      return function(a, b, c, d) {
+        return function q(e) {
+          return new cljs.core.LazySeq(null, function(a, b, c, d) {
             return function() {
               for (;;) {
-                var a = cljs.core.seq.call(null, f);
+                var a = cljs.core.seq.call(null, e);
                 if (a) {
                   if (cljs.core.chunked_seq_QMARK_.call(null, a)) {
                     var b = cljs.core.chunk_first.call(null, a), c = cljs.core.count.call(null, b), d = cljs.core.chunk_buffer.call(null, c);
                     a: {
-                      for (var e = 0;;) {
-                        if (e < c) {
-                          var g = cljs.core._nth.call(null, b, e);
-                          cljs.core.chunk_append.call(null, d, g.call(null, m));
-                          e += 1;
+                      for (var f = 0;;) {
+                        if (f < c) {
+                          var g = cljs.core._nth.call(null, b, f);
+                          cljs.core.chunk_append.call(null, d, g.call(null, k));
+                          f += 1;
                         } else {
                           b = !0;
                           break a;
@@ -24924,21 +24941,21 @@ cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword("
                       }
                       b = void 0;
                     }
-                    return b ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, d), v.call(null, cljs.core.chunk_rest.call(null, a))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, d), null);
+                    return b ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, d), q.call(null, cljs.core.chunk_rest.call(null, a))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, d), null);
                   }
                   d = cljs.core.first.call(null, a);
-                  return cljs.core.cons.call(null, d.call(null, m), v.call(null, cljs.core.rest.call(null, a)));
+                  return cljs.core.cons.call(null, d.call(null, k), q.call(null, cljs.core.rest.call(null, a)));
                 }
                 return null;
               }
             };
-          }(a, b, c, d, e), null, null);
+          }(a, b, c, d), null, null);
         };
-      }(a, b, c, d, e).call(null, a);
+      }(a, b, c, d).call(null, d);
     };
-  }(e, a, b, c, d));
+  }(b, c, a, d));
 });
-cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(null, "image", "image", -58725096), function(a) {
+cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword(null, "image", "image", -58725096), function(a) {
   var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), d = cljs.core.nthnext.call(null, a, 2), e = (new cljs.core.Keyword(null, "data-bmsid", "data-bmsid", 1533988713)).cljs$core$IFn$_invoke$arity$1(c), f = cljs.core.keyword.call(null, e);
   return function(a, b, c, d, e, f) {
     return function(a) {
@@ -24949,39 +24966,36 @@ cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(n
     };
   }(a, b, c, d, e, f);
 });
-cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(null, "head", "head", -771383919), function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), d = cljs.core.nthnext.call(null, a, 2);
-  return function(a, b, c, d) {
-    return function(a) {
-      return React.DOM.div(null);
-    };
-  }(a, b, c, d);
-});
-cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(null, "default", "default", -1987822328), function(a) {
-  return function(b) {
-    return cljs.core._EQ_.call(null, cljs.core.type.call(null, a), cljs.core.PersistentVector) ? om.dom.div : cljs.core.truth_(clojure.string.blank_QMARK_.call(null, a)) ? om.dom.div : a;
+cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword(null, "head", "head", -771383919), function(a) {
+  return function(a) {
+    return null;
   };
 });
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "html", "html", -998796897), new cljs.core.Keyword("bmotion-om.core", "container", "bmotion-om.core/container", 866213771));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "body", "body", -2049205669), new cljs.core.Keyword("bmotion-om.core", "container", "bmotion-om.core/container", 866213771));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.Keyword("bmotion-om.core", "container", "bmotion-om.core/container", 866213771));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h1", "h1", -1896887462), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h2", "h2", -372662728), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h3", "h3", 2067611163), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h4", "h4", 2004862993), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h5", "h5", -1829156625), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h6", "h6", 557293780), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "span", "span", 1394872991), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "strong", "strong", 269529E3), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "svg", "svg", 856789142), new cljs.core.Keyword("bmotion-om.core", "container", "bmotion-om.core/container", 866213771));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "g", "g", 1738089905), new cljs.core.Keyword("bmotion-om.core", "container", "bmotion-om.core/container", 866213771));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "circle", "circle", 1903212362), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "ellipse", "ellipse", 1135891702), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "rect", "rect", -108902628), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "line", "line", 212345235), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "path", "path", -188191168), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "polyline", "polyline", -1731551044), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "text", "text", -1790561697), new cljs.core.Keyword("bmotion-om.core", "inline", "bmotion-om.core/inline", 809081460));
+cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword(null, "default", "default", -1987822328), function(a) {
+  return function(a) {
+    return null;
+  };
+});
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "html", "html", -998796897), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "body", "body", -2049205669), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h1", "h1", -1896887462), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h2", "h2", -372662728), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h3", "h3", 2067611163), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h4", "h4", 2004862993), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h5", "h5", -1829156625), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h6", "h6", 557293780), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "span", "span", 1394872991), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "strong", "strong", 269529E3), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "svg", "svg", 856789142), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "g", "g", 1738089905), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "circle", "circle", 1903212362), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "ellipse", "ellipse", 1135891702), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "rect", "rect", -108902628), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "line", "line", 212345235), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "path", "path", -188191168), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "polyline", "polyline", -1731551044), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "text", "text", -1790561697), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
 bmotion_om.core.setHtml = function(a) {
   return cljs.core.swap_BANG_.call(null, bmotion_om.core.app_state, cljs.core.assoc_in, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "html", "html", -998796897)], null), a);
 };
@@ -24992,27 +25006,28 @@ bmotion_om.core.setObservers = function(a) {
 goog.exportSymbol("bmotion_om.core.setObservers", bmotion_om.core.setObservers);
 bmotion_om.core.get_make_dom_fn = function(a) {
   cljs.core.println.call(null, "Going to create new react dom ...");
-  return bmotion_om.core.mk_dom.call(null, cljs.core.first.call(null, hickory.core.as_hiccup.call(null, hickory.core.parse.call(null, a))));
+  a = cljs.core.first.call(null, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(hickory.core.as_hickory.call(null, hickory.core.parse.call(null, a))));
+  return bmotion_om.core.mk_dom.call(null, a);
 };
 bmotion_om.core.get_make_dom_fn_mem = cljs.core.memoize.call(null, bmotion_om.core.get_make_dom_fn);
 om.core.root.call(null, function(a, b) {
-  "undefined" === typeof bmotion_om.core.t9804 && (bmotion_om.core.t9804 = function(a, b, e) {
+  "undefined" === typeof bmotion_om.core.t12015 && (bmotion_om.core.t12015 = function(a, b, e) {
     this.owner = a;
     this.app = b;
-    this.meta9805 = e;
+    this.meta12016 = e;
     this.cljs$lang$protocol_mask$partition1$ = 0;
     this.cljs$lang$protocol_mask$partition0$ = 393216;
-  }, bmotion_om.core.t9804.cljs$lang$type = !0, bmotion_om.core.t9804.cljs$lang$ctorStr = "bmotion-om.core/t9804", bmotion_om.core.t9804.cljs$lang$ctorPrWriter = function(a, b, e) {
-    return cljs.core._write.call(null, b, "bmotion-om.core/t9804");
-  }, bmotion_om.core.t9804.prototype.om$core$IRender$ = !0, bmotion_om.core.t9804.prototype.om$core$IRender$render$arity$1 = function(a) {
+  }, bmotion_om.core.t12015.cljs$lang$type = !0, bmotion_om.core.t12015.cljs$lang$ctorStr = "bmotion-om.core/t12015", bmotion_om.core.t12015.cljs$lang$ctorPrWriter = function(a, b, e) {
+    return cljs.core._write.call(null, b, "bmotion-om.core/t12015");
+  }, bmotion_om.core.t12015.prototype.om$core$IRender$ = !0, bmotion_om.core.t12015.prototype.om$core$IRender$render$arity$1 = function(a) {
     cljs.core.println.call(null, "Rendering ...");
     return bmotion_om.core.get_make_dom_fn_mem.call(null, (new cljs.core.Keyword(null, "html", "html", -998796897)).cljs$core$IFn$_invoke$arity$1(this.app)).call(null, (new cljs.core.Keyword(null, "observers", "observers", 841951845)).cljs$core$IFn$_invoke$arity$1(this.app));
-  }, bmotion_om.core.t9804.prototype.cljs$core$IMeta$_meta$arity$1 = function(a) {
-    return this.meta9805;
-  }, bmotion_om.core.t9804.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
-    return new bmotion_om.core.t9804(this.owner, this.app, b);
-  }, bmotion_om.core.__GT_t9804 = function(a, b, e) {
-    return new bmotion_om.core.t9804(a, b, e);
+  }, bmotion_om.core.t12015.prototype.cljs$core$IMeta$_meta$arity$1 = function(a) {
+    return this.meta12016;
+  }, bmotion_om.core.t12015.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
+    return new bmotion_om.core.t12015(this.owner, this.app, b);
+  }, bmotion_om.core.__GT_t12015 = function(a, b, e) {
+    return new bmotion_om.core.t12015(a, b, e);
   });
-  return new bmotion_om.core.t9804(b, a, null);
+  return new bmotion_om.core.t12015(b, a, null);
 }, bmotion_om.core.app_state, new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "target", "target", 253001721), document.getElementById("vis_container")], null));
