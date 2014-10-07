@@ -12,7 +12,7 @@ t = c.getTrace(s)
 assert t != null
 
 x = s.root.anyEvent().anyEvent()
-f = new LTL("F [swap]")
+f = new LTL("F Y [swap]")
 c = new ExecuteUntilCommand(s,x,f)
 s.execute(c)
 t = c.getTrace(s)
@@ -29,4 +29,5 @@ t = c.getTrace(s)
 assert t != null
 assert t.canExecuteEvent("swap",[])
 
+s.animator.cli.shutdown()
 " The ExecuteUntilCommand was executed successfully."
