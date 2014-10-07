@@ -13,6 +13,9 @@ class SelectorTransformer extends BMotionObserver {
 	def styles = [:]
 	def String content
 
+	def SelectorTransformer() {
+	}
+	
 	def SelectorTransformer(selector) {
 		this.selector = selector
 	}

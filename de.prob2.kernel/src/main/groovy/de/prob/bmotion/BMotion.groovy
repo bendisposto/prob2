@@ -102,8 +102,8 @@ implements IToolListener {
 		observers.add(observer);
 	}
 
-	public void registerObserver(List<BMotionObserver> observers) {
-		observers.addAll(observers);
+	public void registerObserver(List<BMotionObserver> observer) {
+		observers.addAll(observer);
 	}
 
 	public void apply(final String cmd, final Map<Object, Object> json) {
