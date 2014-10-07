@@ -29,4 +29,5 @@ t = c.getTrace(s)
 assert t != null
 assert t.canExecuteEvent("swap",[])
 
+s.animator.cli.shutdown()
 " The ExecuteUntilCommand was executed successfully."
