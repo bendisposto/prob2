@@ -174,8 +174,7 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 
 	public Object execute(final Map<String, String[]> params) {
 		String id = params.get("id")[0];
-		final Trace newTrace = currentTrace.add(id);
-		selector.replaceTrace(currentTrace, newTrace);
+		selector.traceChange(currentTrace.add(id));
 		return null;
 	}
 
@@ -208,20 +207,17 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 
 	public Object random(final Map<String, String[]> params) {
 		int num = Integer.parseInt(params.get("num")[0]);
-		Trace newTrace = currentTrace.randomAnimation(num);
-		selector.replaceTrace(currentTrace, newTrace);
+		selector.traceChange(currentTrace.randomAnimation(num));
 		return null;
 	}
 
 	public Object back(final Map<String, String[]> params) {
-		Trace back = currentTrace.back();
-		selector.replaceTrace(currentTrace, back);
+		selector.traceChange(currentTrace.back());
 		return null;
 	}
 
 	public Object forward(final Map<String, String[]> params) {
-		Trace forward = currentTrace.forward();
-		selector.replaceTrace(currentTrace, forward);
+		selector.traceChange(currentTrace.forward());
 		return null;
 	}
 

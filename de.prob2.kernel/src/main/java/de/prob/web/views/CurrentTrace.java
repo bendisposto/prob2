@@ -100,7 +100,7 @@ public class CurrentTrace extends AbstractSession implements
 				trace = trace.back();
 			}
 		}
-		selector.replaceTrace(selector.getCurrentTrace(), trace);
+		selector.traceChange(trace);
 		return null;
 	}
 

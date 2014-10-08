@@ -154,7 +154,7 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 	@Override
 	protected AbstractBMotionStudioSession createSession(UUID id, ITool tool,
 			String template, String host, int port) {
-		return new BMotionStudioSession(id, tool, toolRegistry, template,
+		return new BMotion(id, tool, toolRegistry, template,
 				engineProvider, host, port);
 	}
 	
