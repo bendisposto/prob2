@@ -96,9 +96,9 @@
 
 ;; ==============  API  ====================
 
-(defn compute-delta [os id cs]
+(defn compute-delta [os new-id cs]
   (let [d (if os [] [(->Delta :clear nil nil)])]
-    [id (map-diff [] os cs d)]))
+    [new-id (map-diff [] os cs d)]))
 
 (defn compute-new-state [state txs]
   (schema/validate State state)

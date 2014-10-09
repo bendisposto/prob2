@@ -16,7 +16,6 @@
 (def skalar (gen/one-of [base (gen/vector base) (gen/return {})]))
 
 
-
 (defn- keys-in
   "Returns all paths leading to leafs"
   [m]
@@ -120,8 +119,8 @@
     (prn ts)
     (sync/compute-new-state s ts)))
 
-(defn roundtrip-check [s s']
-  (let [[id changes] (sync/compute-delta s s')]
+(defn roundtrip-check [s id s']
+  (let [[_ changes] (sync/compute-delta s id s')]
     (sc/compute-new-state s id changes)))
 
 (defn roundtrip-delta [s s']
@@ -168,45 +167,44 @@
     (roundtrip-delta {:current 1 :state {:a [1 2 3]}} s') => s'))
 
 (fact "simple-del"
-  (let [s' {:current 12 :state {:a [1 2]}}]
-    (roundtrip-check {:current 1 :state {:a [1 2 3]}} s') => s'))
+  (let [s' {:a [1 2]}]
+    (roundtrip-check {:a [1 2 3]} 10 s') => s'))
 
-(fact "merge-nil1"
-  (sync/compute-delta {:current 1 :state {:a [1 2 3]}}
-                      {:current 12 :state {:b nil}}) => truthy)
+(fact "it-is-possible-to-merge-a-nil-value"
+  (second (sync/compute-delta {:a [1 2 3]} 12 {:b nil})) => (partial schema/validate DeltasSchema))
 
 (fact "merge-nil2"
   (sc/compute-new-state
    {:current 0 :state {:a [1 2 3]}}
    1 [(sync/->Delta :del-keys [] [:a])
-      (sync/->Delta :merge [] {:b nil})]) => {:current 1 :state {:b nil}})
+      (sync/->Delta :merge [] {:b nil})]) => {:b nil})
 
 
-(fact "merge-nested1"
-  (sync/compute-new-state
-   {:current 0 :state {:blub 0}}  [[[:blub] 0]]) =>
-   {:blub 0})
+(fact "idempotent-transaction"
+  (sync/compute-new-state {:blub 0} [[[:blub] 0]]) =>
+  {:blub 0})
+
 
 (fact "simple adding"
   (sync/compute-new-state
-   {:current 0 :state {}} [[[:foo] 1]]) => {:foo 1})
+   {} [[[:foo] 1]]) => {:foo 1})
 
 (fact "simple delta"
   (sync/compute-delta
-   {:current 1 :state {:foo 12}} {:current 2 :state {:foo 13}}) => [2 [(sync/->Delta :set [:foo] 13)]])
+   {:foo 12} 2 {:foo 13}) => [2 [(sync/->Delta :set [:foo] 13)]])
 
 
 (fact "multiple transactions"
   (sync/compute-new-state
-   {:current 0 :state {:a 1}} [[[:a] 2] [[:b :c] 22] [[:b :d] 12]]) => {:a 2 :b {:c 22 :d 12}})
+   {:a 1} [[[:a] 2] [[:b :c] 22] [[:b :d] 12]]) => {:a 2 :b {:c 22 :d 12}})
 
 (fact "multiple transactions 2"
   (sync/compute-new-state
-   {:current 0 :state {:a 1}} [[[:a] 2] [[:b :c :e] 22] [[:b :c :d] 12]]) => {:a 2 :b {:c {:e 22 :d 12}}})
+   {:a 1} [[[:a] 2] [[:b :c :e] 22] [[:b :c :d] 12]]) => {:a 2 :b {:c {:e 22 :d 12}}})
 
 (fact "multiple transactions 3"
   (sync/compute-new-state
-   {:current 0 :state {:a 1}}
+   {:a 1}
    [[[:a :b :c] 22]
     [[:a :b :d :e] 23]
     [[:a :b :d] 4]]) =>
