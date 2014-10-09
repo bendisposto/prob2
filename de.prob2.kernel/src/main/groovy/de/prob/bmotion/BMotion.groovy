@@ -77,33 +77,43 @@ implements IToolListener {
 		t
 	}
 
-	private void applyTransformers(List<SelectorTransformer> transformers) {
+	private void applyTransformers(List<Transform> transformers) {
 		def applymap = [:]
 		transformers.each { t ->
 			getCachedBmsId(t.selector).each {
 				def reactTransformer = applymap.get(it) ?: new ReactTransformer(it)
 				applymap.put(it, reactTransformer)
-				reactTransformer.attributes.putAll(t.attributes)
-				reactTransformer.styles.putAll(t.styles)
-				reactTransformer.content = t.content
+				def aa = t.attributes.collectEntries { kv -> 
+					(kv.value instanceof Closure)? [kv.key, kv.value()] : [kv.key, kv.value]}
+				def ss = t.styles.collectEntries { kv ->
+					(kv.value instanceof Closure)? [kv.key, kv.value()] : [kv.key, kv.value]}			
+				reactTransformer.attributes.putAll(aa)
+				reactTransformer.styles.putAll(ss)
+				reactTransformer.content = (t.content instanceof Closure)? t.content() : t.content
 			}
 		}
 		String json = g.toJson(applymap);
 		submit(WebUtils.wrap("cmd", "bms.setObservers", "observers", json));
 	}
 
+	private List<Transform> getObserverTransformers(List<BMotionObserver> observers) {
+		observers.collectMany { it.update(this) }
+	}
+	
 	@Override
 	public void animationChange(final ITool tool) {
-		apply(observers);
+		applyTransformers(getObserverTransformers(observers))
 	}
 
 	// ---------- BMS API
-	public void registerObserver(BMotionObserver observer) {
-		observers.add(observer);
+	public void registerObserver(BMotionObserver o) {
+		observers.add(o);
+		applyTransformers(getObserverTransformers(observers))
 	}
 
-	public void registerObserver(List<BMotionObserver> observer) {
-		observers.addAll(observer);
+	public void registerObserver(List<BMotionObserver> o) {
+		observers.addAll(o);
+		applyTransformers(getObserverTransformers(observers))
 	}
 
 	public void apply(final String cmd, final Map<Object, Object> json) {
@@ -122,21 +132,17 @@ implements IToolListener {
 	public void apply(final String js) {
 		submit(WebUtils.wrap("cmd", "bms.applyJavaScript", "values", js));
 	}
-
-	public void apply(final BMotionObserver observer) {
-		List<SelectorTransformer> t = new ArrayList<SelectorTransformer>();
-		t.addAll(observer.update(this));
+	
+	public void apply(final BMotionObserver o) {
+		def t = getObserverTransformers(observers);
+		t += o.update(this)
 		applyTransformers(t);
 	}
 
-	public void apply(final List<BMotionObserver> observers) {
-		ArrayList<SelectorTransformer> t = new ArrayList<SelectorTransformer>();
-		for (BMotionObserver o : observers) {
-			List<SelectorTransformer> update = o.update(this);
-			if (update != null)
-				t.addAll(update);
-		}
-		applyTransformers(t);
+	public void apply(final List<BMotionObserver> o) {
+		def t = getObserverTransformers(observers)
+		t += getObserverTransformers(o)
+		applyTransformers(t)
 	}
 
 	@Deprecated

@@ -10,7 +10,7 @@ import de.prob.animator.domainobjects.EvalResult;
 import de.prob.statespace.OpInfo
 import de.prob.ui.api.ITool
 import de.prob.bmotion.BMotionObserver
-import de.prob.bmotion.SelectorTransformer
+import de.prob.bmotion.Transform
 
 class CSPAnimationObserver extends BMotionObserver {
 
@@ -49,7 +49,7 @@ class CSPAnimationObserver extends BMotionObserver {
 	}
 
 	@Override
-	public List<SelectorTransformer> update(BMotion bms) {
+	public List<Transform> update(BMotion bms) {
 		def transformers = []
 		def tool = bms.getTool()
 		if(json != null) {
@@ -75,7 +75,7 @@ class CSPAnimationObserver extends BMotionObserver {
 										def fvalue = mustacheRender(item.value.getAsString(),pmap)
 										def fattr = mustacheRender(item.attr.getAsString(),pmap)
 										if(fattr == "style") {
-											def t = new SelectorTransformer(fselector)
+											def t = new Transform(fselector)
 											def sattrs = fvalue.split(";")
 											sattrs.collect { it -> 
 												def kv = it.split(":")
@@ -83,7 +83,7 @@ class CSPAnimationObserver extends BMotionObserver {
 											}
 											transformers << t
 										} else {
-											transformers << new SelectorTransformer(fselector).set(fattr,fvalue)
+											transformers << new Transform(fselector).set(fattr,fvalue)
 										}
 									}
 								}

@@ -50,12 +50,17 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 	protected final AnimationSelector animations;
 
 	protected final ToolRegistry toolRegistry;
+	
+	protected final VisualisationRegistry visualisationRegistry;
 
 	public AbstractBMotionStudioServlet(final Api api,
-			final AnimationSelector animations, final ToolRegistry toolRegistry) {
+			final AnimationSelector animations,
+			final ToolRegistry toolRegistry,
+			final VisualisationRegistry visualisationRegistry) {
 		this.api = api;
 		this.animations = animations;
 		this.toolRegistry = toolRegistry;
+		this.visualisationRegistry = visualisationRegistry;
 	}
 
 	protected void toOutput(HttpServletResponse resp, InputStream stream) {
@@ -194,8 +199,9 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 		// Create and initialize session
 		AbstractBMotionStudioSession bmsSession = createSession(sessionUUID,
 				tool, templatePath, host, port);
+		visualisationRegistry.register(sessionUUID.toString(), bmsSession);
 		bmsSession.setParameterMap(params);
-		//bmsSession.initSession();
+		// bmsSession.initSession();
 		// Save session
 		sessions.put(sessionUUID.toString(), bmsSession);
 

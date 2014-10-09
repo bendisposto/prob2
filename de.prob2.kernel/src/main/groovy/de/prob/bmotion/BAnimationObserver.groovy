@@ -3,7 +3,7 @@ package de.prob.bmotion;
 import com.github.mustachejava.DefaultMustacheFactory
 import com.google.gson.JsonElement
 import de.prob.bmotion.BMotionObserver
-import de.prob.bmotion.SelectorTransformer
+import de.prob.bmotion.Transform
 
 import de.prob.animator.domainobjects.EvalResult
 
@@ -39,11 +39,11 @@ class BAnimationObserver extends BMotionObserver {
 				attrs.put(fattr,fvalue.toString())
 			}
 		}
-		return new SelectorTransformer(fselector,attrs)
+		return new Transform(fselector,attrs)
 	}
 
 	@Override
-	public List<SelectorTransformer> update(BMotion bms) {
+	public List<Transform> update(BMotion bms) {
 		def transformers = []
 		if(json != null) {
 			json.observers.each { o ->

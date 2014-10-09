@@ -38,7 +38,8 @@ public class GroovySE implements ScriptEngine {
 			"import de.prob.model.eventb.*;",
 			"import de.prob.animator.domainobjects.*;",
 			"import de.prob.animator.command.*;",
-			"import de.prob.visualization.*;", "import de.prob.check.*;", "\n " };
+			"import de.prob.visualization.*;", "import de.prob.check.*;",
+			"import de.prob.bmotion.*;", "\n " };
 
 	private final String imports = Joiner.on("\n").join(IMPORTS);
 

@@ -51,8 +51,9 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
 	public BMotionStudioServlet(final Api api,
 			final AnimationSelector animations,
 			final ToolRegistry toolRegistry,
-			final ScriptEngineProvider engineProvider) {
-		super(api, animations, toolRegistry);
+			final ScriptEngineProvider engineProvider,
+			final VisualisationRegistry visualisationRegistry) {
+		super(api, animations, toolRegistry, visualisationRegistry);
 		this.engineProvider = engineProvider;
 	}
 
