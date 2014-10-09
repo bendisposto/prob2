@@ -58,6 +58,7 @@
    {:source-paths ["src/server"]
     :test-paths   ["test/server"]
     :dependencies [[liberator "0.10.0"]
+                   [org.clojure/tools.namespace "0.2.7"]
                    [com.stuartsierra/component "0.2.1"]
                    [compojure "1.1.8"]
                    [ring/ring-core "1.3.0"]
