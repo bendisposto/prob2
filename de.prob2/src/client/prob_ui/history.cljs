@@ -22,7 +22,6 @@
     om/IRenderState
     (render-state [a {:keys [reverse?]}]
       (let [s (:state app)
-            
             uuid (get-in s [:current-animation :uuid])
             hist0 (get-in s [uuid])
             hist1 (into [[:0 {:name "--root--" :type "start"}]]
