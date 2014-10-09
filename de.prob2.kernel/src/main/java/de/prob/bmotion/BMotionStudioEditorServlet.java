@@ -34,8 +34,10 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 
 	@Inject
 	public BMotionStudioEditorServlet(final Api api,
-			final AnimationSelector animations, final ToolRegistry toolRegistry) {
-		super(api, animations, toolRegistry);
+			final AnimationSelector animations,
+			final ToolRegistry toolRegistry,
+			final VisualisationRegistry visualisationRegistry) {
+		super(api, animations, toolRegistry, visualisationRegistry);
 	}
 
 	private void taskInit(HttpServletRequest req, HttpServletResponse resp) {

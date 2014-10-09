@@ -48,22 +48,44 @@ public final class ConstructTraceCommand extends AbstractCommand
 	private final StateSpace stateSpace;
 	private final List<OpInfo> resultTrace = new ArrayList<OpInfo>();
 	private final List<String> errors = new ArrayList<String>();
-
-	public ConstructTraceCommand(final StateSpace s,
-			final StateId stateId, final List<String> name,
-			final List<ClassicalB> predicate) {
+	private List<Integer> executionNumber = new ArrayList<Integer>();
+	
+	public ConstructTraceCommand(final StateSpace s, final StateId stateId,
+			final List<String> name, final List<ClassicalB> predicate,
+			Integer executionNumber) {
 		this.stateSpace = s;
 		this.stateId = stateId;
 		this.name = name;
-		evalElement = predicate;
-		if(name.size() != predicate.size()) {
-			throw new IllegalArgumentException("Must provide the same number of names and predicates.");
+		this.evalElement = predicate;
+		if (name.size() != predicate.size()) {
+			throw new IllegalArgumentException(
+					"Must provide the same number of names and predicates.");
 		}
 		for (ClassicalB classicalB : predicate) {
 			if (!classicalB.getKind().equals(PREDICATE.toString())) {
-				throw new IllegalArgumentException("Formula must be a predicate: "
-						+ predicate);
-			}			
+				throw new IllegalArgumentException(
+						"Formula must be a predicate: " + predicate);
+			}
+		}
+		int size = this.name.size();
+		for (int i = 0; i < size; ++i) {
+			this.executionNumber.add(executionNumber);
+		}
+	}
+
+	public ConstructTraceCommand(final StateSpace s, final StateId stateId,
+			final List<String> name, final List<ClassicalB> predicate) {
+		this(s, stateId, name, predicate, 1);
+	}
+
+	public ConstructTraceCommand(final StateSpace s, final StateId stateId,
+			final List<String> name, final List<ClassicalB> predicate,
+			final List<Integer> executionNumber) {
+		this(s, stateId, name, predicate);
+		this.executionNumber = executionNumber;
+		if (name.size() != executionNumber.size()) {
+			throw new IllegalArgumentException(
+					"Must provide the same number of names and execution numbers.");
 		}
 	}
 
@@ -91,6 +113,11 @@ public final class ConstructTraceCommand extends AbstractCommand
 			cb.getAst().apply(prolog);			
 		}
 		pto.closeList();
+		pto.openList();
+		for (Integer n : executionNumber) {
+			pto.printNumber(n);
+		}		
+		pto.closeList();		
 		pto.printVariable(RESULT_VARIABLE);
 		pto.printVariable(ERRORS);
 		pto.closeTerm();
