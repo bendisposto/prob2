@@ -1,11 +1,5 @@
-Script.getMetaClass().observeBSet = { a1,a2,a3=null ->
-	def x
-	if(a3 != null) {
-		x = new BSetObserver(a1,a2).with a3
-	} else {
-		x = new BSetObserver(a1).with a2
-	}
-	x
+Script.getMetaClass().observeBSet = { a1,a2=null ->
+	new BSetObserver(a1).with a2
 }
 
 Script.getMetaClass().transform = { a1,a2 ->

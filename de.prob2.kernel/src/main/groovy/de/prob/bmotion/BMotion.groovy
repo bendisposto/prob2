@@ -80,7 +80,7 @@ implements IToolListener {
 	private void applyTransformers(List<SelectorTransformer> transformers) {
 		def applymap = [:]
 		transformers.each { t ->
-			getCachedBmsId(t.getSelector()).each {
+			getCachedBmsId(t.selector).each {
 				def reactTransformer = applymap.get(it) ?: new ReactTransformer(it)
 				applymap.put(it, reactTransformer)
 				reactTransformer.attributes.putAll(t.attributes)

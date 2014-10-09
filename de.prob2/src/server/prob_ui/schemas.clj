@@ -10,4 +10,7 @@
 (def Transactions
   [(one Transaction "first") Transaction])
 
+(def DeltaSchema
+	{:action Keyword :path [Keyword] :value Any})
 
+(def DeltasSchema [DeltaSchema])

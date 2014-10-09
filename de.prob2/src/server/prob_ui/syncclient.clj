@@ -90,7 +90,7 @@ will not be present in the new structure."
   (let [fns (doall (map mk-fn changes))
         chg-fkt (apply comp fns)
         state' (chg-fkt (:state old-state))]
-    (assoc old-state :current id :state state')))
+    state'))
 
 
       (defn read-transit [^String msg]
