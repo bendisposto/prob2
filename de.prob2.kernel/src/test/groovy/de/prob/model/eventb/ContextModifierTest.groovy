@@ -60,7 +60,7 @@ class ContextModifierTest extends Specification {
 
 	def "it is possible to add a carrier set"() {
 		when:
-		BSet set = modifier.addCarrierSet("blah")
+		BSet set = modifier.addSet("blah")
 
 		then:
 		context.sets.contains(set)
@@ -68,7 +68,7 @@ class ContextModifierTest extends Specification {
 
 	def "it is possible to remove a set once added"() {
 		when:
-		BSet set = modifier.addCarrierSet("blah")
+		BSet set = modifier.addSet("blah")
 		def removed = modifier.removeSet(set)
 
 		then:
@@ -77,7 +77,7 @@ class ContextModifierTest extends Specification {
 
 	def "it is possible to remove a set after a deep copy"() {
 		when:
-		BSet set = modifier.addCarrierSet("blah")
+		BSet set = modifier.addSet("blah")
 		def context2 = ModelModifier.deepCopy(model, context)
 		def contained = context2.sets.contains(set)
 		def mod2 = new ContextModifier(context2)

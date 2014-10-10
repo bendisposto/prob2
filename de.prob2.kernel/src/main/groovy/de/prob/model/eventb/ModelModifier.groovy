@@ -32,10 +32,11 @@ public class ModelModifier {
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
 		EventBModel newModel = factory.modelProvider.get()
 
-		def mainComp = deepCopy(newModel, model.mainComponent)
+		def mainComp = deepCopy(newModel, model.getMainComponent())
 		newModel.addTheories(new ModelElementList<Theory>(model.getChildrenOfType(Theory.class)))
 		newModel.setMainComponent(mainComp)
 		newModel.setModelFile(model.getModelFile())
+		newModel
 	}
 
 	public static Context deepCopy(EventBModel model, Context context) {
@@ -61,7 +62,7 @@ public class ModelModifier {
 			!axioms.contains(it)
 		}
 		newContext.addAxioms(axioms, new ModelElementList<EventBAxiom>(inherited))
-		return newContext
+		newContext
 	}
 
 	public static EventBMachine deepCopy(EventBModel model, EventBMachine machine) {
@@ -97,7 +98,7 @@ public class ModelModifier {
 
 		def events = machine.events.collect { deepCopy(model, newMachine, it) }
 		newMachine.addEvents(new ModelElementList<Event>(events))
-		return newMachine
+		newMachine
 	}
 
 	public static Event deepCopy(EventBModel model, EventBMachine parentMachine, Event event) {
@@ -128,7 +129,7 @@ public class ModelModifier {
 		def parameters = event.parameters.collect { new EventParameter(newEvent, it.name) }
 		newEvent.addParameters(new ModelElementList<EventParameter>(parameters))
 
-		return newEvent
+		newEvent
 	}
 
 	def EventBModel getModifiedModel() {
@@ -145,9 +146,15 @@ public class ModelModifier {
 		loadByDefault = byDefault
 	}
 
-	def MachineModifier MachineModifier(String machineName) {
+	def MachineModifier getMachine(String machineName) {
 		if (temp.getMachines().hasProperty(machineName)) {
 			return new MachineModifier(temp.getMachines().getProperty(machineName))
+		}
+	}
+
+	def ContextModifier getContext(String contextName) {
+		if (temp.getContexts().hasProperty(contextName)) {
+			return new ContextModifier(temp.getContexts().getProperty(contextName))
 		}
 	}
 }

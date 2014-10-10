@@ -1,5 +1,6 @@
 package de.prob.model.eventb
 
+import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
 
 class ContextModifier {
@@ -24,10 +25,11 @@ class ContextModifier {
 			new EventBConstant(it, false, null)
 		}
 		context.constants.addAll(constants)
-		def elementString = elements.collect { "{$it}" }.join(", ")
-		def axiom = "partition($setName, $elementString)"
+		def elementString = elements.collect { "{$it}" }.join(",")
+		def axiom = "partition($setName,$elementString)"
 		def typingAxiom = new EventBAxiom("gen-type-axiom-${uuid.toString()}-${ctr++}", axiom, false, Collections.emptySet())
 		context.axioms << typingAxiom
+		context.getChildrenOfType(Axiom.class) << typingAxiom
 		new EnumeratedSetBlock(set, constants, typingAxiom)
 	}
 
@@ -44,6 +46,7 @@ class ContextModifier {
 		}
 		def b = bs.inject(true, {x,y -> x && y})
 		def c = context.axioms.remove(block.typingAxiom)
+		context.getChildrenOfType(Axiom.class).remove(block.typingAxiom)
 		return a && b && c
 	}
 
@@ -52,7 +55,7 @@ class ContextModifier {
 	 * @param set to be added
 	 * @return {@link BSet} added to the {@link Context}
 	 */
-	def BSet addCarrierSet(String set) {
+	def BSet addSet(String set) {
 		def bset = new BSet(set)
 		context.sets << bset
 		bset
@@ -95,6 +98,7 @@ class ContextModifier {
 	def EventBAxiom addAxiom(String predicate) {
 		def axiom = new EventBAxiom("gen-axiom-${uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
 		context.axioms << axiom
+		context.getChildrenOfType(Axiom.class) << axiom
 		axiom
 	}
 
@@ -104,6 +108,7 @@ class ContextModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeAxiom(EventBAxiom axiom) {
+		context.getChildrenOfType(Axiom.class).remove(axiom)
 		return context.axioms.remove(axiom)
 	}
 }

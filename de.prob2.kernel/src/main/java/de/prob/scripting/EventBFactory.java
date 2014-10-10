@@ -34,7 +34,6 @@ public class EventBFactory extends ModelFactory {
 		EventBModel model = modelProvider.get();
 
 		new EventBDatabaseTranslator(model, file);
-		model.isFinished();
 
 		return loadModel(model, getPreferences(model, prefs), loadVariables);
 	}
