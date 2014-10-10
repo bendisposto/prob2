@@ -11,8 +11,8 @@ import groovy.transform.TupleConstructor
 class BSetObserver extends BMotionObserver {
 
 	def String expression
+	def convert = { it -> "#" + it }
 	def resolve = { it -> it != null ? it.value.replace("{","").replace("}","").replaceAll(" ","").tokenize(",") : [] }
-	def convert = { it -> "#" + it }	
 	private Transform transformer = new Transform()
 		
 	def BSetObserver set(String name, String value) {

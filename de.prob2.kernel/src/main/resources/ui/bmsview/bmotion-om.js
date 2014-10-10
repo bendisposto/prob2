@@ -19184,9 +19184,24 @@ om.core.rendering_QMARK_ = function() {
   return!0 === om.core._STAR_read_enabled_STAR_;
 };
 var bmotion_om = {input:{}};
-bmotion_om.input.html_to_react = cljs.core.PersistentHashMap.fromArrays([new cljs.core.Keyword(null, "path", "path", -188191168), new cljs.core.Keyword(null, "strong", "strong", 269529E3), new cljs.core.Keyword(null, "circle", "circle", 1903212362), new cljs.core.Keyword(null, "h5", "h5", -1829156625), new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.Keyword(null, "h4", "h4", 2004862993), new cljs.core.Keyword(null, "g", "g", 1738089905), new cljs.core.Keyword(null, "line", "line", 
-212345235), new cljs.core.Keyword(null, "h6", "h6", 557293780), new cljs.core.Keyword(null, "svg", "svg", 856789142), new cljs.core.Keyword(null, "ellipse", "ellipse", 1135891702), new cljs.core.Keyword(null, "h2", "h2", -372662728), new cljs.core.Keyword(null, "h1", "h1", -1896887462), new cljs.core.Keyword(null, "h3", "h3", 2067611163), new cljs.core.Keyword(null, "body", "body", -2049205669), new cljs.core.Keyword(null, "polyline", "polyline", -1731551044), new cljs.core.Keyword(null, "rect", 
-"rect", -108902628), new cljs.core.Keyword(null, "html", "html", -998796897), new cljs.core.Keyword(null, "text", "text", -1790561697), new cljs.core.Keyword(null, "span", "span", 1394872991)], [om.dom.path, om.dom.strong, om.dom.circle, om.dom.h5, om.dom.div, om.dom.h4, om.dom.g, om.dom.line, om.dom.h6, om.dom.svg, om.dom.ellipse, om.dom.h2, om.dom.h1, om.dom.h3, om.dom.div, om.dom.polyline, om.dom.rect, om.dom.div, om.dom.text, om.dom.span]);
+bmotion_om.input.html_to_react = cljs.core.PersistentHashMap.fromArrays([new cljs.core.Keyword(null, "thead", "thead", -291875296), new cljs.core.Keyword(null, "path", "path", -188191168), new cljs.core.Keyword(null, "del", "del", 574975584), new cljs.core.Keyword(null, "fieldset", "fieldset", -1949770816), new cljs.core.Keyword(null, "q", "q", 689001697), new cljs.core.Keyword(null, "figure", "figure", -561394079), new cljs.core.Keyword(null, "aside", "aside", 1414397537), new cljs.core.Keyword(null, 
+"figcaption", "figcaption", -1790122047), new cljs.core.Keyword(null, "video", "video", 156888130), new cljs.core.Keyword(null, "address", "address", 559499426), new cljs.core.Keyword(null, "caption", "caption", -855383902), new cljs.core.Keyword(null, "bdi", "bdi", -1323025886), new cljs.core.Keyword(null, "rp", "rp", 2006698083), new cljs.core.Keyword(null, "hr", "hr", 1377740067), new cljs.core.Keyword(null, "dd", "dd", -1340437629), new cljs.core.Keyword(null, "meta", "meta", 1499536964), new cljs.core.Keyword(null, 
+"tbody", "tbody", -80678300), new cljs.core.Keyword(null, "table", "table", -564943036), new cljs.core.Keyword(null, "ul", "ul", -1349521403), new cljs.core.Keyword(null, "pre", "pre", 2118456869), new cljs.core.Keyword(null, "sup", "sup", -2039492346), new cljs.core.Keyword(null, "script", "script", -1304443801), new cljs.core.Keyword(null, "big", "big", 903550151), new cljs.core.Keyword(null, "button", "button", 1456579943), new cljs.core.Keyword(null, "dfn", "dfn", 241908167), new cljs.core.Keyword(null, 
+"sub", "sub", -2093760025), new cljs.core.Keyword(null, "mark", "mark", -373816345), new cljs.core.Keyword(null, "wbr", "wbr", 228661800), new cljs.core.Keyword(null, "strong", "strong", 269529E3), new cljs.core.Keyword(null, "td", "td", 1479933353), new cljs.core.Keyword(null, "li", "li", 723558921), new cljs.core.Keyword(null, "dt", "dt", -368444759), new cljs.core.Keyword(null, "section", "section", -300141526), new cljs.core.Keyword(null, "th", "th", -545608566), new cljs.core.Keyword(null, "time", 
+"time", 1385887882), new cljs.core.Keyword(null, "optgroup", "optgroup", 1738282218), new cljs.core.Keyword(null, "iframe", "iframe", 884422026), new cljs.core.Keyword(null, "tr", "tr", -1424774646), new cljs.core.Keyword(null, "circle", "circle", 1903212362), new cljs.core.Keyword(null, "article", "article", -21685045), new cljs.core.Keyword(null, "legend", "legend", -1027192245), new cljs.core.Keyword(null, "em", "em", 707813035), new cljs.core.Keyword(null, "kbd", "kbd", 316156875), new cljs.core.Keyword(null, 
+"abbr", "abbr", 2088591884), new cljs.core.Keyword(null, "source", "source", -433931539), new cljs.core.Keyword(null, "output", "output", -1105869043), new cljs.core.Keyword(null, "ins", "ins", -1021983570), new cljs.core.Keyword(null, "footer", "footer", 1606445390), new cljs.core.Keyword(null, "header", "header", 119441134), new cljs.core.Keyword(null, "datalist", "datalist", -1235043474), new cljs.core.Keyword(null, "tfoot", "tfoot", -701599890), new cljs.core.Keyword(null, "s", "s", 1705939918), 
+new cljs.core.Keyword(null, "h5", "h5", -1829156625), new cljs.core.Keyword(null, "canvas", "canvas", -1798817489), new cljs.core.Keyword(null, "param", "param", 2013631823), new cljs.core.Keyword(null, "title", "title", 636505583), new cljs.core.Keyword(null, "small", "small", 2133478704), new cljs.core.Keyword(null, "style", "style", -496642736), new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.Keyword(null, "summary", "summary", 380847952), new cljs.core.Keyword(null, "samp", 
+"samp", 1506141136), new cljs.core.Keyword(null, "h4", "h4", 2004862993), new cljs.core.Keyword(null, "head", "head", -771383919), new cljs.core.Keyword(null, "g", "g", 1738089905), new cljs.core.Keyword(null, "stop", "stop", -2140911342), new cljs.core.Keyword(null, "ol", "ol", 932524051), new cljs.core.Keyword(null, "line", "line", 212345235), new cljs.core.Keyword(null, "var", "var", -769682797), new cljs.core.Keyword(null, "tspan", "tspan", -1557853197), new cljs.core.Keyword(null, "h6", "h6", 
+557293780), new cljs.core.Keyword(null, "link", "link", -1769163468), new cljs.core.Keyword(null, "col", "col", -1959363084), new cljs.core.Keyword(null, "label", "label", 1718410804), new cljs.core.Keyword(null, "rt", "rt", 623480692), new cljs.core.Keyword(null, "colgroup", "colgroup", 651118645), new cljs.core.Keyword(null, "meter", "meter", -187641611), new cljs.core.Keyword(null, "defs", "defs", 1398449717), new cljs.core.Keyword(null, "svg", "svg", 856789142), new cljs.core.Keyword(null, "ellipse", 
+"ellipse", 1135891702), new cljs.core.Keyword(null, "code", "code", 1586293142), new cljs.core.Keyword(null, "bdo", "bdo", -2131148202), new cljs.core.Keyword(null, "b", "b", 1482224470), new cljs.core.Keyword(null, "linearGradient", "linearGradient", 1711964727), new cljs.core.Keyword(null, "noscript", "noscript", -704777289), new cljs.core.Keyword(null, "h2", "h2", -372662728), new cljs.core.Keyword(null, "area", "area", 472007256), new cljs.core.Keyword(null, "br", "br", 934104792), new cljs.core.Keyword(null, 
+"radialGradient", "radialGradient", 1402247193), new cljs.core.Keyword(null, "form", "form", -1624062471), new cljs.core.Keyword(null, "audio", "audio", 1819127321), new cljs.core.Keyword(null, "menuitem", "menuitem", 1004047353), new cljs.core.Keyword(null, "base", "base", 185279322), new cljs.core.Keyword(null, "h1", "h1", -1896887462), new cljs.core.Keyword(null, "progress", "progress", 244323547), new cljs.core.Keyword(null, "main", "main", -2117802661), new cljs.core.Keyword(null, "embed", "embed", 
+-1354913349), new cljs.core.Keyword(null, "h3", "h3", 2067611163), new cljs.core.Keyword(null, "body", "body", -2049205669), new cljs.core.Keyword(null, "keygen", "keygen", -571693253), new cljs.core.Keyword(null, "polyline", "polyline", -1731551044), new cljs.core.Keyword(null, "cite", "cite", 1909439996), new cljs.core.Keyword(null, "rect", "rect", -108902628), new cljs.core.Keyword(null, "p", "p", 151049309), new cljs.core.Keyword(null, "nav", "nav", 719540477), new cljs.core.Keyword(null, "ruby", 
+"ruby", 2000737661), new cljs.core.Keyword(null, "marquee", "marquee", -1022245475), new cljs.core.Keyword(null, "map", "map", 1371690461), new cljs.core.Keyword(null, "object", "object", 1474613949), new cljs.core.Keyword(null, "i", "i", -1386841315), new cljs.core.Keyword(null, "menu", "menu", 352255198), new cljs.core.Keyword(null, "blockquote", "blockquote", 372264190), new cljs.core.Keyword(null, "img", "img", 1442687358), new cljs.core.Keyword(null, "a", "a", -2123407586), new cljs.core.Keyword(null, 
+"dl", "dl", -2140151713), new cljs.core.Keyword(null, "select", "select", 1147833503), new cljs.core.Keyword(null, "polygon", "polygon", 837053759), new cljs.core.Keyword(null, "html", "html", -998796897), new cljs.core.Keyword(null, "text", "text", -1790561697), new cljs.core.Keyword(null, "span", "span", 1394872991), new cljs.core.Keyword(null, "track", "track", 195787487), new cljs.core.Keyword(null, "data", "data", -232669377), new cljs.core.Keyword(null, "u", "u", -1156634785)], [om.dom.thead, 
+om.dom.path, om.dom.del, om.dom.fieldset, om.dom.q, om.dom.figure, om.dom.aside, om.dom.figcaption, om.dom.video, om.dom.address, om.dom.caption, om.dom.bdi, om.dom.rp, om.dom.hr, om.dom.dd, om.dom.meta, om.dom.tbody, om.dom.table, om.dom.ul, om.dom.pre, om.dom.sup, om.dom.script, om.dom.big, om.dom.button, om.dom.dfn, om.dom.sub, om.dom.mark, om.dom.wbr, om.dom.strong, om.dom.td, om.dom.li, om.dom.dt, om.dom.section, om.dom.th, om.dom.time, om.dom.optgroup, om.dom.iframe, om.dom.tr, om.dom.circle, 
+om.dom.article, om.dom.legend, om.dom.em, om.dom.kbd, om.dom.abbr, om.dom.source, om.dom.output, om.dom.ins, om.dom.footer, om.dom.header, om.dom.datalist, om.dom.tfoot, om.dom.s, om.dom.h5, om.dom.canvas, om.dom.param, om.dom.title, om.dom.small, om.dom.style, om.dom.div, om.dom.summary, om.dom.samp, om.dom.h4, om.dom.head, om.dom.g, om.dom.stop, om.dom.ol, om.dom.line, om.dom.var$, om.dom.tspan, om.dom.h6, om.dom.link, om.dom.col, om.dom.label, om.dom.rt, om.dom.colgroup, om.dom.meter, om.dom.defs, 
+om.dom.svg, om.dom.ellipse, om.dom.code, om.dom.bdo, om.dom.b, om.dom.linearGradient, om.dom.noscript, om.dom.h2, om.dom.area, om.dom.br, om.dom.radialGradient, om.dom.form, om.dom.audio, om.dom.menuitem, om.dom.base, om.dom.h1, om.dom.progress, om.dom.main, om.dom.embed, om.dom.h3, om.dom.div, om.dom.keygen, om.dom.polyline, om.dom.cite, om.dom.rect, om.dom.p, om.dom.nav, om.dom.ruby, om.dom.marquee, om.dom.map, om.dom.object, om.dom.i, om.dom.menu, om.dom.blockquote, om.dom.img, om.dom.a, om.dom.dl, 
+om.dom.select, om.dom.polygon, om.dom.div, om.dom.text, om.dom.span, om.dom.track, om.dom.data, om.dom.u]);
 bmotion_om.input.attr_to_react = cljs.core.PersistentHashMap.fromArrays([new cljs.core.Keyword(null, "formnovalidate", "formnovalidate", -1562235840), new cljs.core.Keyword(null, "text-anchor", "text-anchor", 585613696), new cljs.core.Keyword(null, "stroke-dasharray", "stroke-dasharray", -942933855), new cljs.core.Keyword(null, "scrolltop", "scrolltop", -865944799), new cljs.core.Keyword(null, "cellpadding", "cellpadding", -1752450238), new cljs.core.Keyword(null, "novalidate", "novalidate", -572717086), 
 new cljs.core.Keyword(null, "stop-color", "stop-color", 316173955), new cljs.core.Keyword(null, "crossorigin", "crossorigin", -418026140), new cljs.core.Keyword(null, "srcset", "srcset", 710050500), new cljs.core.Keyword(null, "tabindex", "tabindex", 338877510), new cljs.core.Keyword(null, "usemap", "usemap", 898470438), new cljs.core.Keyword(null, "font-size", "font-size", -1847940346), new cljs.core.Keyword(null, "rowspan", "rowspan", 1059521478), new cljs.core.Keyword(null, "srcdoc", "srcdoc", 
 1490493414), new cljs.core.Keyword(null, "allowfullscreen", "allowfullscreen", -1595290361), new cljs.core.Keyword(null, "contextmenu", "contextmenu", -15887481), new cljs.core.Keyword(null, "frameborder", "frameborder", -7707960), new cljs.core.Keyword(null, "stroke-opacity", "stroke-opacity", -1191543159), new cljs.core.Keyword(null, "readonly", "readonly", -1101398934), new cljs.core.Keyword(null, "scrollleft", "scrollleft", 630938411), new cljs.core.Keyword(null, "hreflang", "hreflang", 1405893356), 
@@ -24845,7 +24860,7 @@ clojure.walk.postwalk_replace = function(a, b) {
 };
 bmotion_om.core = {};
 cljs.core.enable_console_print_BANG_.call(null);
-bmotion_om.core.app_state = cljs.core.atom.call(null, new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "html", "html", -998796897), "\x3cspan\x3eRendering ...\x3c/span\x3e", new cljs.core.Keyword(null, "observers", "observers", 841951845), cljs.core.PersistentArrayMap.EMPTY], null));
+bmotion_om.core.app_state = cljs.core.atom.call(null, new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "html", "html", -998796897), "\x3cspan\x3eRendering...\x3c/span\x3e", new cljs.core.Keyword(null, "observers", "observers", 841951845), cljs.core.PersistentArrayMap.EMPTY], null));
 bmotion_om.core.attr_react_replacer = function(a) {
   return cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, function(a) {
     var c = cljs.core.nth.call(null, a, 0, null);
@@ -25018,11 +25033,6 @@ cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keywo
     return null;
   };
 });
-cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword(null, "title", "title", 636505583), function(a) {
-  return function(a) {
-    return null;
-  };
-});
 cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword(null, "default", "default", -1987822328), function(a) {
   return function(a) {
     return null;
@@ -25158,23 +25168,23 @@ bmotion_om.core.get_make_dom_fn = function(a) {
 };
 bmotion_om.core.get_make_dom_fn_mem = cljs.core.memoize.call(null, bmotion_om.core.get_make_dom_fn);
 om.core.root.call(null, function(a, b) {
-  "undefined" === typeof bmotion_om.core.t7315 && (bmotion_om.core.t7315 = function(a, b, e) {
+  "undefined" === typeof bmotion_om.core.t8056 && (bmotion_om.core.t8056 = function(a, b, e) {
     this.owner = a;
     this.app = b;
-    this.meta7316 = e;
+    this.meta8057 = e;
     this.cljs$lang$protocol_mask$partition1$ = 0;
     this.cljs$lang$protocol_mask$partition0$ = 393216;
-  }, bmotion_om.core.t7315.cljs$lang$type = !0, bmotion_om.core.t7315.cljs$lang$ctorStr = "bmotion-om.core/t7315", bmotion_om.core.t7315.cljs$lang$ctorPrWriter = function(a, b, e) {
-    return cljs.core._write.call(null, b, "bmotion-om.core/t7315");
-  }, bmotion_om.core.t7315.prototype.om$core$IRender$ = !0, bmotion_om.core.t7315.prototype.om$core$IRender$render$arity$1 = function(a) {
+  }, bmotion_om.core.t8056.cljs$lang$type = !0, bmotion_om.core.t8056.cljs$lang$ctorStr = "bmotion-om.core/t8056", bmotion_om.core.t8056.cljs$lang$ctorPrWriter = function(a, b, e) {
+    return cljs.core._write.call(null, b, "bmotion-om.core/t8056");
+  }, bmotion_om.core.t8056.prototype.om$core$IRender$ = !0, bmotion_om.core.t8056.prototype.om$core$IRender$render$arity$1 = function(a) {
     cljs.core.println.call(null, "Rendering ...");
     return bmotion_om.core.get_make_dom_fn_mem.call(null, (new cljs.core.Keyword(null, "html", "html", -998796897)).cljs$core$IFn$_invoke$arity$1(this.app)).call(null, (new cljs.core.Keyword(null, "observers", "observers", 841951845)).cljs$core$IFn$_invoke$arity$1(this.app));
-  }, bmotion_om.core.t7315.prototype.cljs$core$IMeta$_meta$arity$1 = function(a) {
-    return this.meta7316;
-  }, bmotion_om.core.t7315.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
-    return new bmotion_om.core.t7315(this.owner, this.app, b);
-  }, bmotion_om.core.__GT_t7315 = function(a, b, e) {
-    return new bmotion_om.core.t7315(a, b, e);
+  }, bmotion_om.core.t8056.prototype.cljs$core$IMeta$_meta$arity$1 = function(a) {
+    return this.meta8057;
+  }, bmotion_om.core.t8056.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
+    return new bmotion_om.core.t8056(this.owner, this.app, b);
+  }, bmotion_om.core.__GT_t8056 = function(a, b, e) {
+    return new bmotion_om.core.t8056(a, b, e);
   });
-  return new bmotion_om.core.t7315(b, a, null);
+  return new bmotion_om.core.t8056(b, a, null);
 }, bmotion_om.core.app_state, new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "target", "target", 253001721), document.getElementById("vis_container")], null));

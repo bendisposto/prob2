@@ -17,14 +17,12 @@
 		<script type="text/javascript" src="/ui/libs/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/ui/libs/mustache.js"></script>
 		<script type="text/javascript" src="/ui/common/Session.js"></script>
-		<script type="text/javascript" src="/ui/bmsview/bms-editor/src/svg-attributes.js"></script>
 		<script type="text/javascript" src="/ui/bmsview/BMotionStudio.js"></script>
 		{{#standalone}}
 		<script type="text/javascript" src="/ui/bmsview/BMSStandalone.js"></script>
 		{{/standalone}}
 	</head>
 	<body>
-	
 		{{#error}}
 			<div style="text-align:center">
 				<h3 style="color:red;">Some errors occured</h3>
@@ -62,7 +60,6 @@
 			    </div>
 			  </div>
 			</nav>
-			
 			<div id="events_view" title="Events">
 		  		<iframe src="" id="events_iframe" frameBorder="0"></iframe>
 			</div>
@@ -80,8 +77,6 @@
 			</div>
 			<div id="console_view" title="ConsoleView">
 		  		<iframe src="" id="console_iframe" frameBorder="0"></iframe>
-			</div>
-			<div id="script_view" title="Script">
 			</div>
 			{{/standalone}}
 			<div id="vis_container">
