@@ -63,7 +63,7 @@ implements IToolListener {
 			responses.reset();
 			sendInitMessage(context);
 			initSession();
-		} else if (lastinfo > 0) {
+		} else if (lastinfo >= 0) {
 			resend(client, lastinfo, context);
 		}
 	}
