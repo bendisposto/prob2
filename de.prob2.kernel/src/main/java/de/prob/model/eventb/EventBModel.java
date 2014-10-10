@@ -53,6 +53,7 @@ public class EventBModel extends AbstractModel {
 		addContexts(contexts);
 		stateSpace.setModel(this);
 		extractModelDir(modelFile, getMainComponentName());
+		this.freeze();
 	}
 
 	public void setMainComponent(final AbstractElement mainComponent) {

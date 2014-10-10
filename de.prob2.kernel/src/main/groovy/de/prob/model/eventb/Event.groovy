@@ -1,6 +1,7 @@
 package de.prob.model.eventb;
 
-import de.prob.model.representation.AbstractElement
+import javax.swing.text.AbstractDocument.AbstractElement
+
 import de.prob.model.representation.Action
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Guard
@@ -8,6 +9,7 @@ import de.prob.model.representation.ModelElementList
 
 public class Event extends BEvent {
 
+	def EventBMachine parentMachine
 	def EventType type
 	def ModelElementList<Event> refines
 	def ModelElementList<EventBAction> actions
@@ -19,8 +21,9 @@ public class Event extends BEvent {
 		ORDINARY, CONVERGENT, ANTICIPATED
 	}
 
-	public Event(final String name, final EventType type) {
+	public Event(EventBMachine parentMachine, final String name, final EventType type) {
 		super(name);
+		this.parentMachine = parentMachine
 		this.type = type;
 	}
 
@@ -51,6 +54,20 @@ public class Event extends BEvent {
 
 	public EventType getType() {
 		return type;
+	}
+
+	@Override
+	public boolean equals(Object that) {
+		if (that instanceof Event) {
+			return this.parentMachine.getName() == that.getParentMachine().getName() &&
+			this.getName() == that.getName()
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(parentMachine.getName(), this.name)
 	}
 
 	@Override
