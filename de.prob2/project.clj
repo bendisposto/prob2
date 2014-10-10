@@ -87,6 +87,6 @@
 
 
   :aliases {"server"       ["with-profile", "+clj,+dev", "repl" ":start" ":port" "6000"]
-            "client"       ["with-profile", "+cljs,-dev", "cljsbuild", "auto"]
+            "client"       ["with-profile", "cljs", "cljsbuild", "auto"]
             "autotest"     ["with-profile", "+clj", "midje", ":autotest"]
-            "crosscompile" ["cljx", "auto"]})
+            "crosscompile" ["with-profile", "cljs", "cljx", "auto"]})
