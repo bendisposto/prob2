@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 import de.prob.Main
+import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.model.eventb.theory.Theory
 import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
@@ -9,14 +10,22 @@ import de.prob.model.representation.Invariant
 import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.RefType
 import de.prob.model.representation.RefType.ERefType
+import de.prob.scripting.Api
 import de.prob.scripting.EventBFactory
 
 public class ModelModifier {
 
 	EventBModel temp
+	Map<String, String> prefs
+	boolean loadByDefault
 
 	def ModelModifier(EventBModel model) {
 		temp = deepCopy(model)
+		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
+		model.getStateSpace().execute(cmd)
+		prefs = cmd.getPreferences()
+		Api api = Main.getInjector().getInstance(Api.class)
+		loadByDefault = api.loadVariablesByDefault
 	}
 
 	public static EventBModel deepCopy(EventBModel model) {
@@ -124,8 +133,16 @@ public class ModelModifier {
 
 	def EventBModel getModifiedModel() {
 		temp.isFinished()
-		//TODO Load model in ProB and return it.
+		EventBFactory.loadModel(temp, prefs, loadByDefault)
 		return temp
+	}
+
+	def void changePreference(String prefName, String prefValue) {
+		prefs[prefName] = prefValue
+	}
+
+	def loadVariables(boolean byDefault) {
+		loadByDefault = byDefault
 	}
 
 	def MachineModifier MachineModifier(String machineName) {
