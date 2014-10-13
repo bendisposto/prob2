@@ -19,11 +19,13 @@ import de.prob.statespace.Trace;
 public class ExecuteUntilCommand extends AbstractCommand implements
 		IStateSpaceModifier, ITraceDescription {
 
-	private static final String RESULT_VARIABLE = "Trace";
+	private static final String TRACE_VARIABLE = "Trace";
+	private static final String RESULT_VARIABLE = "Result";
 	private final List<OpInfo> resultTrace = new ArrayList<OpInfo>();
 	private final StateId startstate;
 	private final LTL condition;
 	private final StateSpace statespace;
+	private PrologTerm result;
 
 	public ExecuteUntilCommand(final StateSpace statespace,
 			final StateId startstate, final LTL condition) {
@@ -34,9 +36,10 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
-		pout.openTerm("find_trace");
+		pout.openTerm("generate_trace_until_condition_fulfilled");
 		pout.printAtomOrNumber(this.startstate.getId());
 		condition.printProlog(pout);
+		pout.printVariable(TRACE_VARIABLE);
 		pout.printVariable(RESULT_VARIABLE);
 		pout.closeTerm();
 	}
@@ -45,7 +48,9 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm trace = BindingGenerator.getList(bindings
-				.get(RESULT_VARIABLE));
+				.get(TRACE_VARIABLE));
+
+		result = bindings.get(RESULT_VARIABLE);
 
 		for (PrologTerm term : trace) {
 			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 3);
@@ -69,5 +74,21 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
 		Trace t = s.getTrace(startstate);
 		return t.addOps(resultTrace);
+	}
+
+	public boolean isSuccess() {
+		return result.getFunctor().equals("ltl_found");
+	}
+
+	public boolean conditionNotReached() {
+		return result.getFunctor().equals("maximum_nr_of_steps_reached");
+	}
+
+	public boolean hasTypeError() {
+		return result.getFunctor().equals("typeerror");
+	}
+
+	public boolean isDeadlocked() {
+		return result.getFunctor().equals("deadlock");
 	}
 }
