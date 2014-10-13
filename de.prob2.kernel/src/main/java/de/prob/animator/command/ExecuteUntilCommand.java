@@ -76,18 +76,33 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 		return t.addOps(resultTrace);
 	}
 
+	/**
+	 * @return if the command successfully found a trace to a state in which the
+	 *         condition holds.
+	 */
 	public boolean isSuccess() {
 		return result.getFunctor().equals("ltl_found");
 	}
 
+	/**
+	 * @return if the maximum number of animation steps was reached before a
+	 *         state was found in which the condition holds.
+	 */
 	public boolean conditionNotReached() {
 		return result.getFunctor().equals("maximum_nr_of_steps_reached");
 	}
 
+	/**
+	 * @return if the formula for the condition contains a type error
+	 */
 	public boolean hasTypeError() {
 		return result.getFunctor().equals("typeerror");
 	}
 
+	/**
+	 * @return if a deadlock was uncovered before a state was found in which the
+	 *         condition holds.
+	 */
 	public boolean isDeadlocked() {
 		return result.getFunctor().equals("deadlock");
 	}
