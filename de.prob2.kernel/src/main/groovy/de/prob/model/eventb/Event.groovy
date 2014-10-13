@@ -2,6 +2,8 @@ package de.prob.model.eventb;
 
 import javax.swing.text.AbstractDocument.AbstractElement
 
+import com.google.common.base.Objects
+
 import de.prob.model.representation.Action
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Guard
@@ -67,7 +69,7 @@ public class Event extends BEvent {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(parentMachine.getName(), this.name)
+		return Objects.hashCode(parentMachine.getName(), this.name)
 	}
 
 	@Override
