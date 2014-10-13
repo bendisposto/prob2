@@ -28,6 +28,10 @@ public class ModelModifier {
 		loadByDefault = api.loadVariablesByDefault
 	}
 
+	/**
+	 * @param model that is to be copied
+	 * @return a deep copy of the model and all model elements
+	 */
 	public static EventBModel deepCopy(EventBModel model) {
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
 		EventBModel newModel = factory.modelProvider.get()
@@ -39,6 +43,17 @@ public class ModelModifier {
 		newModel
 	}
 
+	/**
+	 * Performs a deep copy of the specified {@link Context} object, and
+	 * adds the object to the dependency graph in the {@link EventBModel}.
+	 * If the {@link Context} object already exists in the model,
+	 * this is simply retrieved from the model (because that means that
+	 * a deep copy has already been made).
+	 *
+	 * @param model that provides the scope of the context
+	 * @param context that is to be copied
+	 * @return a deep copy of the context
+	 */
 	public static Context deepCopy(EventBModel model, Context context) {
 		if (model.getComponents().containsKey(context.getName())) {
 			return model.getComponents().get(context.getName())
@@ -65,6 +80,17 @@ public class ModelModifier {
 		newContext
 	}
 
+	/**
+	 * Performs a deep copy of the specified {@link EventBMachine} object, and
+	 * adds the object to the dependency graph in the {@link EventBModel}.
+	 * If the {@link EventBMachine} object already exists in the model,
+	 * this is simply retrieved from the model (because that means that
+	 * a deep copy has already been made).
+	 *
+	 * @param model that provides the scope of the machine
+	 * @param machine that is to be copied
+	 * @return a deep copy of the machine
+	 */
 	public static EventBMachine deepCopy(EventBModel model, EventBMachine machine) {
 		if (model.getComponents().containsKey(machine.getName())) {
 			return model.getComponents().get(machine.getName())
@@ -96,17 +122,22 @@ public class ModelModifier {
 
 		newMachine.addProofs(new ModelElementList<ProofObligation>(machine.proofs))
 
-		def events = machine.events.collect { deepCopy(model, newMachine, it) }
+		def events = machine.events.collect { deepCopy(newMachine, it) }
 		newMachine.addEvents(new ModelElementList<Event>(events))
 		newMachine
 	}
 
-	public static Event deepCopy(EventBModel model, EventBMachine parentMachine, Event event) {
+	/**
+	 * Perform a deep copy of an event.
+	 * @param parentMachine of the specified event
+	 * @param event that is to be copied
+	 * @return a deep copy of the event in question
+	 */
+	public static Event deepCopy(EventBMachine parentMachine, Event event) {
 		def newEvent = new Event(parentMachine, event.name, event.type)
 
 		def refines = event.refines.collect {
-			def pMachine = model.getComponents().get(it.parentMachine.name)
-			pMachine.getEvent(it.name)
+			it.parentMachine.getEvent(it.name)
 		}
 
 		newEvent.addRefines(new ModelElementList<Event>(refines))
@@ -138,20 +169,46 @@ public class ModelModifier {
 		return temp
 	}
 
+	/**
+	 * Change a given preference for the model in question
+	 * @param prefName the name of the preference
+	 * @param prefValue the new value
+	 */
 	def void changePreference(String prefName, String prefValue) {
 		prefs[prefName] = prefValue
 	}
 
-	def loadVariables(boolean byDefault) {
+	/**
+	 * Change whether or not basic formulas of interest are loaded by default
+	 * (i.e. variables, invariants, constants). Turning this off may improve performance
+	 * of the animation of the model in question
+	 * @param byDefault whether or not the formulas of interest for the model are registered
+	 * 	by default
+	 */
+	def void loadVariables(boolean byDefault) {
 		loadByDefault = byDefault
 	}
 
+	/**
+	 * Finds the machine with the specified name and returns a {@link MachineModifier} object
+	 * to allow the modification of the machine elements.
+	 * @param machineName of the machine to be modified
+	 * @return a {@link MachineModifier} object to allow the modification of machine with name
+	 * 	machineName or <code>null</code>, if the specified machine does not exist
+	 */
 	def MachineModifier getMachine(String machineName) {
 		if (temp.getMachines().hasProperty(machineName)) {
 			return new MachineModifier(temp.getMachines().getProperty(machineName))
 		}
 	}
 
+	/**
+	 * Finds the context with the specified name and returns a {@link ContextModifier} object
+	 * to allow the modification of the context elements.
+	 * @param contextName of the context to be modified
+	 * @return a {@link ContextModifier} object to allow the modification of context with name
+	 * 	contextName or <code>null</code>, if the specified context does not exist
+	 */
 	def ContextModifier getContext(String contextName) {
 		if (temp.getContexts().hasProperty(contextName)) {
 			return new ContextModifier(temp.getContexts().getProperty(contextName))

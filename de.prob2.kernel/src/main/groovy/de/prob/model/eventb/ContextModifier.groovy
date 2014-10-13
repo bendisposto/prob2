@@ -27,9 +27,7 @@ class ContextModifier {
 		context.constants.addAll(constants)
 		def elementString = elements.collect { "{$it}" }.join(",")
 		def axiom = "partition($setName,$elementString)"
-		def typingAxiom = new EventBAxiom("gen-type-axiom-${uuid.toString()}-${ctr++}", axiom, false, Collections.emptySet())
-		context.axioms << typingAxiom
-		context.getChildrenOfType(Axiom.class) << typingAxiom
+		def typingAxiom = addAxiom(axiom)
 		new EnumeratedSetBlock(set, constants, typingAxiom)
 	}
 
@@ -108,7 +106,8 @@ class ContextModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeAxiom(EventBAxiom axiom) {
-		context.getChildrenOfType(Axiom.class).remove(axiom)
-		return context.axioms.remove(axiom)
+		def a = context.getChildrenOfType(Axiom.class).remove(axiom)
+		def b = context.axioms.remove(axiom)
+		return a && b
 	}
 }

@@ -1,6 +1,7 @@
 package de.prob.model.eventb
 
 import de.prob.model.eventb.Event.EventType
+import de.prob.model.representation.Invariant
 import de.prob.model.representation.ModelElementList
 
 class MachineModifier {
@@ -23,8 +24,7 @@ class MachineModifier {
 		def var = new EventBVariable(variable, null)
 		def c = ctr++
 		machine.variables << var
-		def inv = new EventBInvariant("generated-typing-inv-${uuid.toString()}${c}", typingInvariant, false, Collections.emptySet())
-		machine.invariants << inv
+		def inv = addInvariant(typingInvariant)
 		Event initialisation = machine.events.INITIALISATION
 		def init = new EventBAction(initialisation, "generated-init-${uuid.toString()}-${c}", initialisationAction, Collections.emptySet())
 		initialisation.actions << init
@@ -38,7 +38,7 @@ class MachineModifier {
 	 */
 	def boolean removeVariableBlock(VariableBlock block) {
 		def a = machine.variables.remove(block.getVariable())
-		def b = machine.invariants.remove(block.getTypingInvariant())
+		def b = removeInvariant(block.getTypingInvariant())
 		def c = machine.events.INITIALISATION.actions.remove(block.getInitialisationAction())
 		return a & b & c
 	}
@@ -51,6 +51,7 @@ class MachineModifier {
 	def EventBInvariant addInvariant(String predicate) {
 		def invariant = new EventBInvariant("generated-inv-{uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
 		machine.invariants << invariant
+		machine.getChildrenOfType(Invariant.class) << invariant
 		invariant
 	}
 
@@ -60,7 +61,9 @@ class MachineModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeInvariant(EventBInvariant invariant) {
-		return machine.invariants.remove(invariant)
+		def a = machine.getChildrenOfType(Invariant.class).remove(invariant)
+		def b = machine.invariants.remove(invariant)
+		return a && b
 	}
 
 

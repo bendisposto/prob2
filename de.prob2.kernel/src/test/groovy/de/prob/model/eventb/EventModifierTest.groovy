@@ -39,7 +39,7 @@ class EventModifierTest extends Specification {
 	def "it is possible to remove a guard after performing a deep copy"() {
 		when:
 		def guard = modifier.addGuard("x : NAT")
-		def event2 = ModelModifier.deepCopy(null, null, event)
+		def event2 = ModelModifier.deepCopy(null, event)
 		def contained = event2.guards.contains(guard)
 		def mod2 = new EventModifier(event2)
 		def removed = mod2.removeGuard(guard)
@@ -68,7 +68,7 @@ class EventModifierTest extends Specification {
 	def "it is possible to remove an action after performing a deep copy"() {
 		when:
 		def action = modifier.addAction("x := 3")
-		def event2 = ModelModifier.deepCopy(null, null, event)
+		def event2 = ModelModifier.deepCopy(null, event)
 		def contained = event2.actions.contains(action)
 		def mod2 = new EventModifier(event2)
 		def removed = mod2.removeAction(action)
@@ -97,7 +97,7 @@ class EventModifierTest extends Specification {
 	def "it is possible to remove a parameter after performing a deep copy"() {
 		when:
 		def paramBlock = modifier.addParameter("x", "x : {1,2,3}")
-		def event2 = ModelModifier.deepCopy(null, null, event)
+		def event2 = ModelModifier.deepCopy(null, event)
 		def contained1 = event2.parameters.contains(paramBlock.parameter)
 		def contained2 = event2.guards.contains(paramBlock.typingGuard)
 		def mod2 = new EventModifier(event2)
