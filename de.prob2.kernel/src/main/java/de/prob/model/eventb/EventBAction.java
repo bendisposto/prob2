@@ -1,9 +1,10 @@
 package de.prob.model.eventb;
 
-import java.util.Objects;
 import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
+
+import com.google.common.base.Objects;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.Action;
@@ -49,7 +50,7 @@ public class EventBAction extends Action {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.parentEvent.getName(), this.name,
+		return Objects.hashCode(this.parentEvent.getName(), this.name,
 				this.getCode());
 	}
 }
