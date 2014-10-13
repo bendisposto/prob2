@@ -16,6 +16,13 @@ import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
+/**
+ * Searches the StateSpace to find a trace. Operations are randomly executed
+ * until a provided LTL formula becomes true.
+ * 
+ * @author joy
+ * 
+ */
 public class ExecuteUntilCommand extends AbstractCommand implements
 		IStateSpaceModifier, ITraceDescription {
 
