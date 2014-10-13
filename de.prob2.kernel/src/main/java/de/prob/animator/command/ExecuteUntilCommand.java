@@ -64,7 +64,6 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(
 					statespace, t);
 			resultTrace.add(operation);
-
 		}
 	}
 
