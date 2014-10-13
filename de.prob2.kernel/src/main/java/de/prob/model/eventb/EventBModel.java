@@ -1,7 +1,6 @@
 package de.prob.model.eventb;
 
 import java.io.File;
-import java.util.List;
 
 import com.google.inject.Inject;
 
@@ -15,7 +14,6 @@ import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.RefType;
-import de.prob.model.representation.RefType.ERefType;
 import de.prob.model.representation.StateSchema;
 import de.prob.model.representation.Variable;
 import de.prob.statespace.FormalismType;
@@ -55,6 +53,7 @@ public class EventBModel extends AbstractModel {
 		addContexts(contexts);
 		stateSpace.setModel(this);
 		extractModelDir(modelFile, getMainComponentName());
+		this.freeze();
 	}
 
 	public void setMainComponent(final AbstractElement mainComponent) {
@@ -74,35 +73,6 @@ public class EventBModel extends AbstractModel {
 			return ((Machine) mainComponent).getName();
 		}
 		return "";
-	}
-
-	public void calculateGraph() {
-		for (Machine machine : getChildrenOfType(Machine.class)) {
-			graph.addVertex(machine.getName());
-			components.put(machine.getName(), machine);
-		}
-		for (Context context : getChildrenOfType(Context.class)) {
-			graph.addVertex(context.getName());
-			components.put(context.getName(), context);
-		}
-
-		for (Machine machine : getChildrenOfType(Machine.class)) {
-			for (Machine refinement : machine.getChildrenOfType(Machine.class)) {
-				graph.addEdge(new RefType(ERefType.REFINES), machine.getName(),
-						refinement.getName());
-			}
-			for (Context seen : machine.getChildrenOfType(Context.class)) {
-				graph.addEdge(new RefType(ERefType.SEES), machine.getName(),
-						seen.getName());
-			}
-		}
-		List<Context> contexts = getChildrenOfType(Context.class);
-		for (Context context : contexts) {
-			for (Context seen : context.getChildrenOfType(Context.class)) {
-				graph.addEdge(new RefType(ERefType.EXTENDS), context.getName(),
-						seen.getName());
-			}
-		}
 	}
 
 	@Override
@@ -154,6 +124,14 @@ public class EventBModel extends AbstractModel {
 				con.subscribe(stateSpace);
 			}
 		}
+	}
+
+	public ModelElementList<EventBMachine> getMachines() {
+		return machines;
+	}
+
+	public ModelElementList<Context> getContexts() {
+		return contexts;
 	}
 
 }

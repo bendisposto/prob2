@@ -187,7 +187,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		EventType eventType = "0".equals(convergence) ? EventType.ORDINARY
 				: ("1".equals(convergence) ? EventType.CONVERGENT
 						: EventType.ANTICIPATED);
-		event = new Event(name, eventType);
+		event = new Event(machine, name, eventType);
 		events.add(event);
 		eventCache.get(machine.getName()).put(crazyRodinInternalName, event);
 

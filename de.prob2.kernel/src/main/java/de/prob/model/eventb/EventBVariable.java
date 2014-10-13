@@ -32,7 +32,7 @@ public class EventBVariable extends Variable {
 		if (this == that) {
 			return true;
 		}
-		if (this instanceof EventBVariable
+		if (that instanceof EventBVariable
 				&& this.getExpression().equals(
 						((EventBVariable) that).getExpression())) {
 			return true;

@@ -1,5 +1,6 @@
 package de.prob.model.eventb;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
@@ -30,5 +31,25 @@ public class EventBAction extends Action {
 	@Override
 	public String toString() {
 		return name + ": " + getCode();
+	}
+
+	@Override
+	public boolean equals(final Object that) {
+		if (this == that) {
+			return true;
+		}
+		if (that instanceof EventBAction) {
+			return this.parentEvent.getName().equals(
+					((EventBAction) that).getParentEvent().getName())
+					&& this.name.equals(((EventBAction) that).getName())
+					&& this.getCode().equals(((EventBAction) that).getCode());
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.parentEvent.getName(), this.name,
+				this.getCode());
 	}
 }
