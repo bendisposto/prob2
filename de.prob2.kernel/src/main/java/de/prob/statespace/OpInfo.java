@@ -52,22 +52,22 @@ public class OpInfo {
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
 	private OpInfo(final StateSpace stateSpace, final String id,
-			final String src, final String dest) {
+			final StateId src, final StateId dest) {
 		this.stateSpace = stateSpace;
 		this.id = id;
-		this.src = new StateId(src, stateSpace);
-		this.dest = new StateId(dest, stateSpace);
+		this.src = src;
+		this.dest = dest;
 		this.formalismType = stateSpace.getModel().getFormalismType();
 		evaluated = false;
 	}
 
 	private OpInfo(final StateSpace stateSpace, final String id,
-			final String name, final String src, final String dest) {
+			final String name, final StateId src, final StateId dest) {
 		this.stateSpace = stateSpace;
 		this.id = id;
 		this.name = name;
-		this.src = new StateId(src, stateSpace);
-		this.dest = new StateId(dest, stateSpace);
+		this.src = src;
+		this.dest = dest;
 		this.formalismType = stateSpace.getModel().getFormalismType();
 		params = Collections.emptyList();
 		targetState = "";
@@ -369,7 +369,8 @@ public class OpInfo {
 	public static OpInfo generateArtificialTransition(final StateSpace s,
 			final String transId, final String description, final String srcId,
 			final String destId) {
-		return new OpInfo(s, transId, description, srcId, destId);
+		return new OpInfo(s, transId, description, s.getState(srcId),
+				s.getState(destId));
 	}
 
 	/**
@@ -384,9 +385,10 @@ public class OpInfo {
 	 */
 	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
 			final CompoundPrologTerm cpt) {
-		return new OpInfo(s, OpInfo.getIdFromPrologTerm(cpt.getArgument(1)),
-				OpInfo.getIdFromPrologTerm(cpt.getArgument(2)),
-				OpInfo.getIdFromPrologTerm(cpt.getArgument(3)));
+		String opId = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
+		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(2));
+		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
+		return new OpInfo(s, opId, s.getState(srcId), s.getState(destId));
 	}
 
 	/**

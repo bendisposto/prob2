@@ -17,8 +17,8 @@ import de.prob.model.representation.AbstractModel
  */
 public class Trace {
 
-	def final OpInfo current
-	def final OpInfo head
+	def final int currentPos
+	def final StateId currentState
 	def final StateSpace stateSpace
 	def final UUID UUID
 	def final ArrayList<OpInfo> opList
@@ -28,33 +28,28 @@ public class Trace {
 	}
 
 	def Trace(final StateSpace s) {
-		this.stateSpace = s
-		this.head = null
-		this.current = null
-		UUID = java.util.UUID.randomUUID()
+		this(s.getRoot())
 	}
 
-	def Trace(final StateSpace s, final OpInfo head, UUID uuid) {
-		this(s, head, head, uuid)
+	def Trace(StateId startState) {
+		this(startState, [], UUID.randomUUID())
 	}
 
-	def Trace(final StateSpace s, final OpInfo head,
-	final OpInfo current, UUID uuid) {
-		this.stateSpace = s
-		this.head = head
-		this.current = current
+	def Trace(StateId currentState, List<OpInfo> opList, UUID uuid) {
+		this(currentState, opList, opList.size() - 1, uuid)
+	}
+
+	def Trace(StateId currentState, List<OpInfo> opList, int currentPos, UUID uuid) {
+		this.stateSpace = currentState.getStateSpace()
+		this.currentState = currentState
+		this.opList = opList
+		this.currentPos = currentPos
 		this.UUID = uuid
 	}
 
+
 	def IEvalResult evalCurrent(formula) {
-		if(!stateSpace.canBeEvaluated(getCurrentState())) {
-			return null
-		}
-		def f = formula;
-		if (!(formula instanceof IEvalElement)) {
-			f = stateSpace.getModel().parseFormula(f)
-		}
-		stateSpace.eval(getCurrentState(),[f]).get(0);
+		currentState.eval(formula)
 	}
 
 
@@ -66,8 +61,8 @@ public class Trace {
 
 		def List<EvaluationCommand> cmds = []
 		opList.each {
-			if (stateSpace.canBeEvaluated(stateSpace.getVertex(it.dest))) {
-				cmds << f.getCommand(stateSpace.getVertex(it.dest))
+			if (it.getDestId().isInitialised()) {
+				cmds << f.getCommand(it.getDestId())
 			}
 		}
 
@@ -82,21 +77,17 @@ public class Trace {
 		res
 	}
 
-	def Trace add(final String name, final List<String> params) {
-		return add(getOp(name, params))
-	}
-
 	def Trace add(final String opId) {
-		OpInfo op = stateSpace.getOps().get(opId)
-		if (!stateSpace.getOutEdges(current.getCurrentState()).contains(op))
+		OpInfo op = currentState.getOutTransitions().find { it.getId() == opId }
+		if (op == null)
 			throw new IllegalArgumentException(opId
 			+ " is not a valid operation on this state")
 
-		StateId newState = stateSpace.getState(op)
+		StateId newState = op.getDestId()
+		List<OpInfo> newOps = new ArrayList<OpInfo>(opList)
+		newOps << op
 
-		def newHE = new TraceElement(current.getCurrentState(), newState, op, current)
-		Trace newTrace = new Trace(stateSpace, newHE, this.UUID)
-
+		Trace newTrace = new Trace(newState, newOps, this.UUID)
 		return newTrace
 	}
 
@@ -110,10 +101,8 @@ public class Trace {
 	 */
 	def Trace back() {
 		if (canGoBack()) {
-			Trace trace = new Trace(stateSpace, head, current.getPrevious(), this.UUID)
-			if(!stateSpace.isExplored(trace.getCurrentState())) {
-				stateSpace.explore(trace.getCurrentState())
-			}
+			StateId newState = opList[currentPos].getSrcId().explore()
+			Trace trace = new Trace(newState, new ArrayList<OpInfo>(opList), currentPos - 1, this.UUID)
 			return trace
 		}
 		return this
@@ -127,48 +116,39 @@ public class Trace {
 	 */
 	def Trace forward() {
 		if (canGoForward()) {
-			TraceElement p = head
-			while (p.getPrevious() != current) {
-				p = p.getPrevious()
-			}
-			Trace trace = new Trace(stateSpace, head, p, this.UUID)
-			if(!stateSpace.isExplored(trace.getCurrentState())) {
-				stateSpace.explore(trace.getCurrentState())
-			}
+			StateId newState = opList[currentPos].getDestId().explore()
+			Trace trace = new Trace(newState, new ArrayList<OpInfo>(opList), currentPos + 1, this.UUID)
 			return trace
 		}
 		return this
 	}
 
 	def boolean canGoForward() {
-		return current != head
+		return currentPos < (opList.size() - 1)
 	}
 
 	def boolean canGoBack() {
-		return current.getPrevious() != null
+		return currentPos > -1
 	}
 
 	@Override
 	def String toString() {
-		return stateSpace.printOps(current.getCurrentState()) + getRep()
+		return stateSpace.printOps(currentState) + getRep()
 	}
 
 	def String getRep() {
-		if(current.getOp() == null) {
+		if(opList.isEmpty()) {
 			return "";
 		}
-		def ops = []
-		head.getOpList().each {
-			ops << it.getRep()
-		}
-		def curTrans = current?.getOp()?.getRep() ?: "n/a"
+		def ops = opList.collect { it.getRep() }
+		def curTrans = currentPos > -1 ? opList[currentPos] : "n/a"
 
 		return "${ops} Current Transition is: ${curTrans}"
 	}
 
 	def OpInfo findOneOp(final String opName, final String predicate)
 	throws BException {
-		List<OpInfo> ops = stateSpace.opFromPredicate(current.getCurrentState(), opName,
+		List<OpInfo> ops = stateSpace.opFromPredicate(currentState, opName,
 				predicate, 1)
 		if (!ops.isEmpty())
 			return ops.get(0)
@@ -191,8 +171,7 @@ public class Trace {
 	}
 
 	def String getOp(final String name, final List<String> params) {
-		Set<OpInfo> outgoingEdges = stateSpace.evaluateOps(stateSpace
-				.getOutEdges(current.getCurrentState()));
+		Set<OpInfo> outgoingEdges = stateSpace.evaluateOps(currentState.getOutTransitions())
 		String id = null
 		for (OpInfo op : outgoingEdges) {
 			if (op.getName().equals(name) && op.getParams().equals(params)) {
@@ -204,7 +183,6 @@ public class Trace {
 	}
 
 	def Trace randomAnimation(final int numOfSteps) {
-		StateId currentState = this.current.getCurrentState()
 		Trace oldTrace = this
 		TraceElement previous = this.current
 		TraceElement current = this.current
