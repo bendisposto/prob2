@@ -1859,47 +1859,47 @@ cljs.core._invoke = function() {
       throw cljs.core.missing_protocol.call(null, "IFn.-invoke", a);
     }
     return z.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t);
-  }, y = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z) {
+  }, x = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z) {
     if (a ? a.cljs$core$IFn$_invoke$arity$18 : a) {
       return a.cljs$core$IFn$_invoke$arity$18(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z);
     }
-    var y;
-    y = cljs.core._invoke[goog.typeOf(null == a ? null : a)];
-    if (!y && (y = cljs.core._invoke._, !y)) {
+    var x;
+    x = cljs.core._invoke[goog.typeOf(null == a ? null : a)];
+    if (!x && (x = cljs.core._invoke._, !x)) {
       throw cljs.core.missing_protocol.call(null, "IFn.-invoke", a);
     }
-    return y.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z);
-  }, z = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, y) {
+    return x.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z);
+  }, z = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, x) {
     if (a ? a.cljs$core$IFn$_invoke$arity$19 : a) {
-      return a.cljs$core$IFn$_invoke$arity$19(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, y);
+      return a.cljs$core$IFn$_invoke$arity$19(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, x);
     }
     var v;
     v = cljs.core._invoke[goog.typeOf(null == a ? null : a)];
     if (!v && (v = cljs.core._invoke._, !v)) {
       throw cljs.core.missing_protocol.call(null, "IFn.-invoke", a);
     }
-    return v.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, y);
-  }, A = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, y, v) {
+    return v.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, x);
+  }, A = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, x, v) {
     if (a ? a.cljs$core$IFn$_invoke$arity$20 : a) {
-      return a.cljs$core$IFn$_invoke$arity$20(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, y, v);
+      return a.cljs$core$IFn$_invoke$arity$20(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, x, v);
     }
     var A;
     A = cljs.core._invoke[goog.typeOf(null == a ? null : a)];
     if (!A && (A = cljs.core._invoke._, !A)) {
       throw cljs.core.missing_protocol.call(null, "IFn.-invoke", a);
     }
-    return A.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, y, v);
-  }, B = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, y, v, A) {
+    return A.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, x, v);
+  }, B = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, x, v, A) {
     if (a ? a.cljs$core$IFn$_invoke$arity$21 : a) {
-      return a.cljs$core$IFn$_invoke$arity$21(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, y, v, A);
+      return a.cljs$core$IFn$_invoke$arity$21(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, x, v, A);
     }
     var B;
     B = cljs.core._invoke[goog.typeOf(null == a ? null : a)];
     if (!B && (B = cljs.core._invoke._, !B)) {
       throw cljs.core.missing_protocol.call(null, "IFn.-invoke", a);
     }
-    return B.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, y, v, A);
-  }, a = function(a, u, w, x, C, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U) {
+    return B.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, z, x, v, A);
+  }, a = function(a, u, w, y, D, E, G, H, I, C, K, J, L, M, N, O, P, Q, R, S, U) {
     switch(arguments.length) {
       case 1:
         return b.call(this, a);
@@ -1908,41 +1908,41 @@ cljs.core._invoke = function() {
       case 3:
         return d.call(this, a, u, w);
       case 4:
-        return e.call(this, a, u, w, x);
+        return e.call(this, a, u, w, y);
       case 5:
-        return f.call(this, a, u, w, x, C);
+        return f.call(this, a, u, w, y, D);
       case 6:
-        return g.call(this, a, u, w, x, C, E);
+        return g.call(this, a, u, w, y, D, E);
       case 7:
-        return h.call(this, a, u, w, x, C, E, F);
+        return h.call(this, a, u, w, y, D, E, G);
       case 8:
-        return k.call(this, a, u, w, x, C, E, F, G);
+        return k.call(this, a, u, w, y, D, E, G, H);
       case 9:
-        return l.call(this, a, u, w, x, C, E, F, G, H);
+        return l.call(this, a, u, w, y, D, E, G, H, I);
       case 10:
-        return m.call(this, a, u, w, x, C, E, F, G, H, I);
+        return m.call(this, a, u, w, y, D, E, G, H, I, C);
       case 11:
-        return n.call(this, a, u, w, x, C, E, F, G, H, I, J);
+        return n.call(this, a, u, w, y, D, E, G, H, I, C, K);
       case 12:
-        return p.call(this, a, u, w, x, C, E, F, G, H, I, J, K);
+        return p.call(this, a, u, w, y, D, E, G, H, I, C, K, J);
       case 13:
-        return r.call(this, a, u, w, x, C, E, F, G, H, I, J, K, L);
+        return r.call(this, a, u, w, y, D, E, G, H, I, C, K, J, L);
       case 14:
-        return q.call(this, a, u, w, x, C, E, F, G, H, I, J, K, L, M);
+        return q.call(this, a, u, w, y, D, E, G, H, I, C, K, J, L, M);
       case 15:
-        return s.call(this, a, u, w, x, C, E, F, G, H, I, J, K, L, M, N);
+        return s.call(this, a, u, w, y, D, E, G, H, I, C, K, J, L, M, N);
       case 16:
-        return t.call(this, a, u, w, x, C, E, F, G, H, I, J, K, L, M, N, O);
+        return t.call(this, a, u, w, y, D, E, G, H, I, C, K, J, L, M, N, O);
       case 17:
-        return v.call(this, a, u, w, x, C, E, F, G, H, I, J, K, L, M, N, O, P);
+        return v.call(this, a, u, w, y, D, E, G, H, I, C, K, J, L, M, N, O, P);
       case 18:
-        return y.call(this, a, u, w, x, C, E, F, G, H, I, J, K, L, M, N, O, P, Q);
+        return x.call(this, a, u, w, y, D, E, G, H, I, C, K, J, L, M, N, O, P, Q);
       case 19:
-        return z.call(this, a, u, w, x, C, E, F, G, H, I, J, K, L, M, N, O, P, Q, R);
+        return z.call(this, a, u, w, y, D, E, G, H, I, C, K, J, L, M, N, O, P, Q, R);
       case 20:
-        return A.call(this, a, u, w, x, C, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S);
+        return A.call(this, a, u, w, y, D, E, G, H, I, C, K, J, L, M, N, O, P, Q, R, S);
       case 21:
-        return B.call(this, a, u, w, x, C, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U);
+        return B.call(this, a, u, w, y, D, E, G, H, I, C, K, J, L, M, N, O, P, Q, R, S, U);
     }
     throw Error("Invalid arity: " + arguments.length);
   };
@@ -1963,7 +1963,7 @@ cljs.core._invoke = function() {
   a.cljs$core$IFn$_invoke$arity$15 = s;
   a.cljs$core$IFn$_invoke$arity$16 = t;
   a.cljs$core$IFn$_invoke$arity$17 = v;
-  a.cljs$core$IFn$_invoke$arity$18 = y;
+  a.cljs$core$IFn$_invoke$arity$18 = x;
   a.cljs$core$IFn$_invoke$arity$19 = z;
   a.cljs$core$IFn$_invoke$arity$20 = A;
   a.cljs$core$IFn$_invoke$arity$21 = B;
@@ -3774,7 +3774,7 @@ cljs.core.MetaFn.cljs$lang$ctorPrWriter = function(a, b, c) {
 };
 cljs.core.MetaFn.prototype.call = function() {
   var a = null;
-  return a = function(a, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, B, D) {
+  return a = function(a, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, B, F) {
     switch(arguments.length) {
       case 1:
         return this.afn.call(null);
@@ -3811,15 +3811,15 @@ cljs.core.MetaFn.prototype.call = function() {
       case 17:
         return this.afn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v);
       case 18:
-        return this.afn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y);
+        return this.afn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x);
       case 19:
-        return this.afn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z);
+        return this.afn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z);
       case 20:
-        return this.afn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A);
+        return this.afn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A);
       case 21:
-        return this.afn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, B);
+        return this.afn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, B);
       case 22:
-        return cljs.core.apply.call(null, this.afn, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, B, D);
+        return cljs.core.apply.call(null, this.afn, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, B, F);
     }
     throw Error("Invalid arity: " + arguments.length);
   };
@@ -3884,14 +3884,14 @@ cljs.core.MetaFn.prototype.cljs$core$IFn$_invoke$arity$17 = function(a, b, c, d,
 cljs.core.MetaFn.prototype.cljs$core$IFn$_invoke$arity$18 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v) {
   return this.afn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v);
 };
-cljs.core.MetaFn.prototype.cljs$core$IFn$_invoke$arity$19 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y) {
-  return this.afn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y);
+cljs.core.MetaFn.prototype.cljs$core$IFn$_invoke$arity$19 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x) {
+  return this.afn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x);
 };
-cljs.core.MetaFn.prototype.cljs$core$IFn$_invoke$arity$20 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z) {
-  return this.afn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z);
+cljs.core.MetaFn.prototype.cljs$core$IFn$_invoke$arity$20 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z) {
+  return this.afn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z);
 };
-cljs.core.MetaFn.prototype.cljs$core$IFn$_invoke$arity$21 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A) {
-  return cljs.core.apply.call(null, this.afn, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A);
+cljs.core.MetaFn.prototype.cljs$core$IFn$_invoke$arity$21 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A) {
+  return cljs.core.apply.call(null, this.afn, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A);
 };
 cljs.core.MetaFn.prototype.cljs$core$Fn$ = !0;
 cljs.core.MetaFn.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
@@ -6584,31 +6584,31 @@ cljs.core.apply_to = function(a, b, c) {
   if (14 === b) {
     return a.cljs$core$IFn$_invoke$arity$14 ? a.cljs$core$IFn$_invoke$arity$14(c, d, e, f, g, h, k, l, m, n, p, r, q, s) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s);
   }
-  var t = cljs.core._first.call(null, v), y = cljs.core._rest.call(null, v);
+  var t = cljs.core._first.call(null, v), x = cljs.core._rest.call(null, v);
   if (15 === b) {
     return a.cljs$core$IFn$_invoke$arity$15 ? a.cljs$core$IFn$_invoke$arity$15(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t);
   }
-  var v = cljs.core._first.call(null, y), z = cljs.core._rest.call(null, y);
+  var v = cljs.core._first.call(null, x), z = cljs.core._rest.call(null, x);
   if (16 === b) {
     return a.cljs$core$IFn$_invoke$arity$16 ? a.cljs$core$IFn$_invoke$arity$16(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v);
   }
-  var y = cljs.core._first.call(null, z), A = cljs.core._rest.call(null, z);
+  var x = cljs.core._first.call(null, z), A = cljs.core._rest.call(null, z);
   if (17 === b) {
-    return a.cljs$core$IFn$_invoke$arity$17 ? a.cljs$core$IFn$_invoke$arity$17(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y);
+    return a.cljs$core$IFn$_invoke$arity$17 ? a.cljs$core$IFn$_invoke$arity$17(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x);
   }
   var z = cljs.core._first.call(null, A), B = cljs.core._rest.call(null, A);
   if (18 === b) {
-    return a.cljs$core$IFn$_invoke$arity$18 ? a.cljs$core$IFn$_invoke$arity$18(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z);
+    return a.cljs$core$IFn$_invoke$arity$18 ? a.cljs$core$IFn$_invoke$arity$18(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z);
   }
   A = cljs.core._first.call(null, B);
   B = cljs.core._rest.call(null, B);
   if (19 === b) {
-    return a.cljs$core$IFn$_invoke$arity$19 ? a.cljs$core$IFn$_invoke$arity$19(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A);
+    return a.cljs$core$IFn$_invoke$arity$19 ? a.cljs$core$IFn$_invoke$arity$19(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A);
   }
-  var D = cljs.core._first.call(null, B);
+  var F = cljs.core._first.call(null, B);
   cljs.core._rest.call(null, B);
   if (20 === b) {
-    return a.cljs$core$IFn$_invoke$arity$20 ? a.cljs$core$IFn$_invoke$arity$20(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, D) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, D);
+    return a.cljs$core$IFn$_invoke$arity$20 ? a.cljs$core$IFn$_invoke$arity$20(c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, F) : a.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, F);
   }
   throw Error("Only up to 20 arguments supported on functions");
 };
@@ -13915,7 +13915,7 @@ cljs.core.js__GT_clj = function() {
           return function s(e) {
             return cljs.core.seq_QMARK_.call(null, e) ? cljs.core.doall.call(null, cljs.core.map.call(null, s, e)) : cljs.core.coll_QMARK_.call(null, e) ? cljs.core.into.call(null, cljs.core.empty.call(null, e), cljs.core.map.call(null, s, e)) : e instanceof Array ? cljs.core.vec.call(null, cljs.core.map.call(null, s, e)) : cljs.core.type.call(null, e) === Object ? cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, function() {
               return function(a, b, c, d) {
-                return function D(f) {
+                return function F(f) {
                   return new cljs.core.LazySeq(null, function(a, b, c, d) {
                     return function() {
                       for (;;) {
@@ -13936,10 +13936,10 @@ cljs.core.js__GT_clj = function() {
                               }
                               b = void 0;
                             }
-                            return b ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, g), D.call(null, cljs.core.chunk_rest.call(null, a))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, g), null);
+                            return b ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, g), F.call(null, cljs.core.chunk_rest.call(null, a))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, g), null);
                           }
                           g = cljs.core.first.call(null, a);
-                          return cljs.core.cons.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [d.call(null, g), s.call(null, e[g])], null), D.call(null, cljs.core.rest.call(null, a)));
+                          return cljs.core.cons.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [d.call(null, g), s.call(null, e[g])], null), F.call(null, cljs.core.rest.call(null, a)));
                         }
                         return null;
                       }
@@ -14487,52 +14487,52 @@ cljs.core.MultiFn.prototype.cljs$core$IMultiFn$_prefers$arity$1 = function(a) {
 };
 cljs.core.MultiFn.prototype.call = function() {
   var a = null;
-  return a = function(a, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, B, D) {
+  return a = function(a, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, B, F) {
     switch(arguments.length) {
       case 2:
-        var u = a, u = this, w = u.dispatch_fn.call(null, c), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w);
-        cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w);
-        return x.call(null, c);
+        var u = a, u = this, w = u.dispatch_fn.call(null, c), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w);
+        cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w);
+        return y.call(null, c);
       case 3:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d);
       case 4:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e);
       case 5:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f);
       case 6:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g);
       case 7:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h);
       case 8:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k);
       case 9:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l);
       case 10:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m);
       case 11:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n);
       case 12:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p);
       case 13:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p, r);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p, r);
       case 14:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q);
       case 15:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s);
       case 16:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t);
       case 17:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v);
       case 18:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x);
       case 19:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z);
       case 20:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A);
       case 21:
-        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, B), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), x.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, B);
+        return u = a, u = this, w = u.dispatch_fn.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, B), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), y.call(null, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, B);
       case 22:
-        return u = a, u = this, w = cljs.core.apply.call(null, u.dispatch_fn, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, B, D), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, u.name, w), cljs.core.apply.call(null, x, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A, B, D);
+        return u = a, u = this, w = cljs.core.apply.call(null, u.dispatch_fn, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, B, F), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, w), cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, u.name, w), cljs.core.apply.call(null, y, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A, B, F);
     }
     throw Error("Invalid arity: " + arguments.length);
   };
@@ -14621,29 +14621,29 @@ cljs.core.MultiFn.prototype.cljs$core$IFn$_invoke$arity$16 = function(a, b, c, d
   return v.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s);
 };
 cljs.core.MultiFn.prototype.cljs$core$IFn$_invoke$arity$17 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t) {
-  var v = this.dispatch_fn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t), y = this.cljs$core$IMultiFn$_get_method$arity$2(null, v);
-  cljs.core.truth_(y) || cljs.core.throw_no_method_error.call(null, this.name, v);
-  return y.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t);
+  var v = this.dispatch_fn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t), x = this.cljs$core$IMultiFn$_get_method$arity$2(null, v);
+  cljs.core.truth_(x) || cljs.core.throw_no_method_error.call(null, this.name, v);
+  return x.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t);
 };
 cljs.core.MultiFn.prototype.cljs$core$IFn$_invoke$arity$18 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v) {
-  var y = this.dispatch_fn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v), z = this.cljs$core$IMultiFn$_get_method$arity$2(null, y);
-  cljs.core.truth_(z) || cljs.core.throw_no_method_error.call(null, this.name, y);
+  var x = this.dispatch_fn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v), z = this.cljs$core$IMultiFn$_get_method$arity$2(null, x);
+  cljs.core.truth_(z) || cljs.core.throw_no_method_error.call(null, this.name, x);
   return z.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v);
 };
-cljs.core.MultiFn.prototype.cljs$core$IFn$_invoke$arity$19 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y) {
-  var z = this.dispatch_fn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y), A = this.cljs$core$IMultiFn$_get_method$arity$2(null, z);
+cljs.core.MultiFn.prototype.cljs$core$IFn$_invoke$arity$19 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x) {
+  var z = this.dispatch_fn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x), A = this.cljs$core$IMultiFn$_get_method$arity$2(null, z);
   cljs.core.truth_(A) || cljs.core.throw_no_method_error.call(null, this.name, z);
-  return A.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y);
+  return A.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x);
 };
-cljs.core.MultiFn.prototype.cljs$core$IFn$_invoke$arity$20 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z) {
-  var A = this.dispatch_fn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z), B = this.cljs$core$IMultiFn$_get_method$arity$2(null, A);
+cljs.core.MultiFn.prototype.cljs$core$IFn$_invoke$arity$20 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z) {
+  var A = this.dispatch_fn.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z), B = this.cljs$core$IMultiFn$_get_method$arity$2(null, A);
   cljs.core.truth_(B) || cljs.core.throw_no_method_error.call(null, this.name, A);
-  return B.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z);
+  return B.call(null, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z);
 };
-cljs.core.MultiFn.prototype.cljs$core$IFn$_invoke$arity$21 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A) {
-  var B = cljs.core.apply.call(null, this.dispatch_fn, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A), D = this.cljs$core$IMultiFn$_get_method$arity$2(null, B);
-  cljs.core.truth_(D) || cljs.core.throw_no_method_error.call(null, this.name, B);
-  return cljs.core.apply.call(null, D, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, y, z, A);
+cljs.core.MultiFn.prototype.cljs$core$IFn$_invoke$arity$21 = function(a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A) {
+  var B = cljs.core.apply.call(null, this.dispatch_fn, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A), F = this.cljs$core$IMultiFn$_get_method$arity$2(null, B);
+  cljs.core.truth_(F) || cljs.core.throw_no_method_error.call(null, this.name, B);
+  return cljs.core.apply.call(null, F, a, b, c, d, e, f, g, h, k, l, m, n, p, r, q, s, t, v, x, z, A);
 };
 cljs.core.__GT_MultiFn = function(a, b, c, d, e, f, g, h) {
   return new cljs.core.MultiFn(a, b, c, d, e, f, g, h);
@@ -14742,728 +14742,6 @@ cljs.core.special_symbol_QMARK_ = function(a) {
   return cljs.core.contains_QMARK_.call(null, new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 19, [new cljs.core.Symbol(null, "\x26", "\x26", -2144855648, null), null, new cljs.core.Symbol(null, "defrecord*", "defrecord*", -1936366207, null), null, new cljs.core.Symbol(null, "try", "try", -1273693247, null), null, new cljs.core.Symbol(null, "loop*", "loop*", 615029416, null), null, new cljs.core.Symbol(null, "do", "do", 1686842252, null), null, new cljs.core.Symbol(null, 
   "letfn*", "letfn*", -110097810, null), null, new cljs.core.Symbol(null, "if", "if", 1181717262, null), null, new cljs.core.Symbol(null, "new", "new", -444906321, null), null, new cljs.core.Symbol(null, "ns", "ns", 2082130287, null), null, new cljs.core.Symbol(null, "deftype*", "deftype*", 962659890, null), null, new cljs.core.Symbol(null, "let*", "let*", 1920721458, null), null, new cljs.core.Symbol(null, "js*", "js*", -1134233646, null), null, new cljs.core.Symbol(null, "fn*", "fn*", -752876845, 
   null), null, new cljs.core.Symbol(null, "recur", "recur", 1202958259, null), null, new cljs.core.Symbol(null, "set!", "set!", 250714521, null), null, new cljs.core.Symbol(null, ".", ".", 1975675962, null), null, new cljs.core.Symbol(null, "quote", "quote", 1377916282, null), null, new cljs.core.Symbol(null, "throw", "throw", 595905694, null), null, new cljs.core.Symbol(null, "def", "def", 597100991, null), null], null), null), a);
-};
-var clojure = {string:{}};
-clojure.string.seq_reverse = function(a) {
-  return cljs.core.reduce.call(null, cljs.core.conj, cljs.core.List.EMPTY, a);
-};
-clojure.string.reverse = function(a) {
-  return a.split("").reverse().join("");
-};
-clojure.string.replace = function(a, b, c) {
-  if ("string" === typeof b) {
-    return a.replace(new RegExp(goog.string.regExpEscape(b), "g"), c);
-  }
-  if (cljs.core.truth_(b.hasOwnProperty("source"))) {
-    return a.replace(new RegExp(b.source, "g"), c);
-  }
-  if (new cljs.core.Keyword(null, "else", "else", -1508377146)) {
-    throw "Invalid match arg: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b);
-  }
-  return null;
-};
-clojure.string.replace_first = function(a, b, c) {
-  return a.replace(b, c);
-};
-clojure.string.join = function() {
-  var a = null, b = function(a) {
-    return cljs.core.apply.call(null, cljs.core.str, a);
-  }, c = function(a, b) {
-    return cljs.core.apply.call(null, cljs.core.str, cljs.core.interpose.call(null, a, b));
-  }, a = function(a, e) {
-    switch(arguments.length) {
-      case 1:
-        return b.call(this, a);
-      case 2:
-        return c.call(this, a, e);
-    }
-    throw Error("Invalid arity: " + arguments.length);
-  };
-  a.cljs$core$IFn$_invoke$arity$1 = b;
-  a.cljs$core$IFn$_invoke$arity$2 = c;
-  return a;
-}();
-clojure.string.upper_case = function(a) {
-  return a.toUpperCase();
-};
-clojure.string.lower_case = function(a) {
-  return a.toLowerCase();
-};
-clojure.string.capitalize = function(a) {
-  return 2 > cljs.core.count.call(null, a) ? clojure.string.upper_case.call(null, a) : "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(clojure.string.upper_case.call(null, cljs.core.subs.call(null, a, 0, 1))) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(clojure.string.lower_case.call(null, cljs.core.subs.call(null, a, 1)));
-};
-clojure.string.pop_last_while_empty = function(a) {
-  for (;;) {
-    if (cljs.core._EQ_.call(null, "", cljs.core.peek.call(null, a))) {
-      a = cljs.core.pop.call(null, a);
-    } else {
-      return a;
-    }
-  }
-};
-clojure.string.discard_trailing_if_needed = function(a, b) {
-  return cljs.core._EQ_.call(null, 0, a) ? clojure.string.pop_last_while_empty.call(null, b) : b;
-};
-clojure.string.split_with_empty_regex = function(a, b) {
-  if (0 >= b || b >= 2 + cljs.core.count.call(null, a)) {
-    return cljs.core.conj.call(null, cljs.core.vec.call(null, cljs.core.cons.call(null, "", cljs.core.map.call(null, cljs.core.str, cljs.core.seq.call(null, a)))), "");
-  }
-  var c = cljs.core._EQ_;
-  if (cljs.core.truth_(c.call(null, 1, b))) {
-    return new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [a], null);
-  }
-  if (cljs.core.truth_(c.call(null, 2, b))) {
-    return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, ["", a], null);
-  }
-  c = b - 2;
-  return cljs.core.conj.call(null, cljs.core.vec.call(null, cljs.core.cons.call(null, "", cljs.core.subvec.call(null, cljs.core.vec.call(null, cljs.core.map.call(null, cljs.core.str, cljs.core.seq.call(null, a))), 0, c))), cljs.core.subs.call(null, a, c));
-};
-clojure.string.split = function() {
-  var a = null, b = function(b, c) {
-    return a.call(null, b, c, 0);
-  }, c = function(a, b, c) {
-    return clojure.string.discard_trailing_if_needed.call(null, c, cljs.core._EQ_.call(null, "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b), "/(?:)/") ? clojure.string.split_with_empty_regex.call(null, a, c) : 1 > c ? cljs.core.vec.call(null, ("" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a)).split(b)) : function() {
-      for (var g = a, h = c, k = cljs.core.PersistentVector.EMPTY;;) {
-        if (cljs.core._EQ_.call(null, h, 1)) {
-          return cljs.core.conj.call(null, k, g);
-        }
-        var l = cljs.core.re_find.call(null, b, g);
-        if (cljs.core.truth_(l)) {
-          var m = l, l = g.indexOf(m), m = g.substring(l + cljs.core.count.call(null, m)), h = h - 1, k = cljs.core.conj.call(null, k, g.substring(0, l)), g = m
-        } else {
-          return cljs.core.conj.call(null, k, g);
-        }
-      }
-    }());
-  }, a = function(a, e, f) {
-    switch(arguments.length) {
-      case 2:
-        return b.call(this, a, e);
-      case 3:
-        return c.call(this, a, e, f);
-    }
-    throw Error("Invalid arity: " + arguments.length);
-  };
-  a.cljs$core$IFn$_invoke$arity$2 = b;
-  a.cljs$core$IFn$_invoke$arity$3 = c;
-  return a;
-}();
-clojure.string.split_lines = function(a) {
-  return clojure.string.split.call(null, a, /\n|\r\n/);
-};
-clojure.string.trim = function(a) {
-  return goog.string.trim(a);
-};
-clojure.string.triml = function(a) {
-  return goog.string.trimLeft(a);
-};
-clojure.string.trimr = function(a) {
-  return goog.string.trimRight(a);
-};
-clojure.string.trim_newline = function(a) {
-  for (var b = a.length;;) {
-    if (0 === b) {
-      return "";
-    }
-    var c = cljs.core.get.call(null, a, b - 1);
-    if (cljs.core._EQ_.call(null, c, "\n") || cljs.core._EQ_.call(null, c, "\r")) {
-      b -= 1;
-    } else {
-      return a.substring(0, b);
-    }
-  }
-};
-clojure.string.blank_QMARK_ = function(a) {
-  return goog.string.isEmptySafe(a);
-};
-clojure.string.escape = function(a, b) {
-  for (var c = new goog.string.StringBuffer, d = a.length, e = 0;;) {
-    if (cljs.core._EQ_.call(null, d, e)) {
-      return c.toString();
-    }
-    var f = a.charAt(e), g = cljs.core.get.call(null, b, f);
-    cljs.core.truth_(g) ? c.append("" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(g)) : c.append(f);
-    e += 1;
-  }
-};
-var hickory = {utils:{}};
-hickory.utils.void_element = new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 16, [new cljs.core.Keyword(null, "hr", "hr", 1377740067), null, new cljs.core.Keyword(null, "meta", "meta", 1499536964), null, new cljs.core.Keyword(null, "wbr", "wbr", 228661800), null, new cljs.core.Keyword(null, "command", "command", -894540724), null, new cljs.core.Keyword(null, "source", "source", -433931539), null, new cljs.core.Keyword(null, "param", "param", 2013631823), null, new cljs.core.Keyword(null, 
-"link", "link", -1769163468), null, new cljs.core.Keyword(null, "col", "col", -1959363084), null, new cljs.core.Keyword(null, "area", "area", 472007256), null, new cljs.core.Keyword(null, "br", "br", 934104792), null, new cljs.core.Keyword(null, "input", "input", 556931961), null, new cljs.core.Keyword(null, "base", "base", 185279322), null, new cljs.core.Keyword(null, "embed", "embed", -1354913349), null, new cljs.core.Keyword(null, "keygen", "keygen", -571693253), null, new cljs.core.Keyword(null, 
-"img", "img", 1442687358), null, new cljs.core.Keyword(null, "track", "track", 195787487), null], null), null);
-hickory.utils.unescapable_content = new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "script", "script", -1304443801), null, new cljs.core.Keyword(null, "style", "style", -496642736), null], null), null);
-hickory.utils.html_escape = function(a) {
-  return goog.string.htmlEscape(a);
-};
-hickory.utils.starts_with = function(a, b) {
-  return goog.string.startsWith(a, b);
-};
-hickory.utils.lower_case_keyword = function(a) {
-  return cljs.core.keyword.call(null, clojure.string.lower_case.call(null, a));
-};
-hickory.utils.render_doctype = function(a, b, c) {
-  return "\x3c!DOCTYPE " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.truth_(cljs.core.not_empty.call(null, b)) ? ' PUBLIC "' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b) + '"' : null) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.truth_(cljs.core.not_empty.call(null, c)) ? ' "' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(c) + '"' : null) + "\x3e";
-};
-hickory.hiccup_utils = {};
-hickory.hiccup_utils.first_idx = function(a, b) {
-  return-1 === a ? b : -1 === b ? a : a < b ? a : b;
-};
-hickory.hiccup_utils.index_of = function() {
-  var a = null, a = function(a, c, d) {
-    switch(arguments.length) {
-      case 2:
-        return a.indexOf(c);
-      case 3:
-        return a.indexOf(c, d);
-    }
-    throw Error("Invalid arity: " + arguments.length);
-  };
-  a.cljs$core$IFn$_invoke$arity$2 = function(a, c) {
-    return a.indexOf(c);
-  };
-  a.cljs$core$IFn$_invoke$arity$3 = function(a, c, d) {
-    return a.indexOf(c, d);
-  };
-  return a;
-}();
-hickory.hiccup_utils.split_keep_trailing_empty = function(a, b) {
-  return clojure.string.split.call(null, a, b, -1);
-};
-hickory.hiccup_utils.tag_well_formed_QMARK_ = function(a) {
-  a = cljs.core.name.call(null, a);
-  var b = hickory.hiccup_utils.index_of.call(null, a, "#") | 0, c = hickory.hiccup_utils.index_of.call(null, a, ".") | 0, d = hickory.hiccup_utils.first_idx.call(null, b, c), e = 0 < cljs.core.count.call(null, a);
-  if (e) {
-    var f = -1 === d ? !0 : 0 < d;
-    if (f) {
-      var g = -1 === b ? !0 : -1 === hickory.hiccup_utils.index_of.call(null, a, "#", b + 1) && b + 1 < hickory.hiccup_utils.first_idx.call(null, hickory.hiccup_utils.index_of.call(null, a, ".", b + 1), cljs.core.count.call(null, a));
-      if (g) {
-        var h = cljs.core.not_EQ_.call(null, b, -1) && cljs.core.not_EQ_.call(null, c, -1) ? b < c : !0;
-        if (h) {
-          if (-1 === c) {
-            return!0;
-          }
-          var k = a.substring(c + 1);
-          return cljs.core.every_QMARK_.call(null, function(a, b, c, d, e, f, g, h, k) {
-            return function(a) {
-              return 0 < cljs.core.count.call(null, a);
-            };
-          }(k, h, g, f, e, a, b, c, d), hickory.hiccup_utils.split_keep_trailing_empty.call(null, k, /\./));
-        }
-        return h;
-      }
-      return g;
-    }
-    return f;
-  }
-  return e;
-};
-hickory.hiccup_utils.tag_name = function(a) {
-  a = cljs.core.name.call(null, a);
-  var b = hickory.hiccup_utils.index_of.call(null, a, "#") | 0, c = hickory.hiccup_utils.index_of.call(null, a, ".") | 0, b = hickory.hiccup_utils.first_idx.call(null, b, c);
-  return-1 === b ? a : a.substring(0, b);
-};
-hickory.hiccup_utils.class_names = function(a) {
-  a = cljs.core.name.call(null, a);
-  for (var b = hickory.hiccup_utils.index_of.call(null, a, "."), c = cljs.core.transient$.call(null, cljs.core.PersistentVector.EMPTY);;) {
-    if (-1 === b) {
-      return cljs.core.persistent_BANG_.call(null, c);
-    }
-    var d = hickory.hiccup_utils.index_of.call(null, a, ".", b + 1), e = hickory.hiccup_utils.index_of.call(null, a, "#", b + 1), e = hickory.hiccup_utils.first_idx.call(null, d, e), c = -1 === e ? cljs.core.conj_BANG_.call(null, c, a.substring(b + 1)) : cljs.core.conj_BANG_.call(null, c, a.substring(b + 1, e)), b = d;
-  }
-};
-hickory.hiccup_utils.id = function(a) {
-  a = cljs.core.name.call(null, a);
-  var b = hickory.hiccup_utils.index_of.call(null, a, "#") | 0, c = hickory.hiccup_utils.index_of.call(null, a, ".", b) | 0;
-  return-1 === b ? null : -1 === c ? a.substring(b + 1) : a.substring(b + 1, c);
-};
-hickory.hiccup_utils.expand_content_seqs = function(a) {
-  for (var b = a, c = cljs.core.transient$.call(null, cljs.core.PersistentVector.EMPTY);;) {
-    if (null == b) {
-      return cljs.core.persistent_BANG_.call(null, c);
-    }
-    if (cljs.core.seq_QMARK_.call(null, cljs.core.first.call(null, b))) {
-      a = cljs.core.next.call(null, b);
-      a: {
-        for (var b = cljs.core.first.call(null, b), d = c;;) {
-          if (null == b) {
-            c = d;
-            break a;
-          } else {
-            c = cljs.core.next.call(null, b), d = cljs.core.conj_BANG_.call(null, d, cljs.core.first.call(null, b)), b = c;
-          }
-        }
-        c = void 0;
-      }
-    } else {
-      a = cljs.core.next.call(null, b), c = cljs.core.conj_BANG_.call(null, c, cljs.core.first.call(null, b));
-    }
-    b = a;
-  }
-};
-hickory.hiccup_utils.normalize_element = function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nthnext.call(null, a, 1);
-  if (!hickory.hiccup_utils.tag_well_formed_QMARK_.call(null, b)) {
-    throw cljs.core.ex_info.call(null, "Invalid input: Tag element" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b) + "is not well-formed.", cljs.core.PersistentArrayMap.EMPTY);
-  }
-  a = cljs.core.keyword.call(null, clojure.string.lower_case.call(null, hickory.hiccup_utils.tag_name.call(null, b)));
-  var d = hickory.hiccup_utils.class_names.call(null, b), b = hickory.hiccup_utils.id.call(null, b), b = new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "id", "id", -1388402092), b, new cljs.core.Keyword(null, "class", "class", -2030961996), cljs.core.empty_QMARK_.call(null, d) ? null : clojure.string.join.call(null, " ", d)], null), d = cljs.core.map_QMARK_.call(null, cljs.core.first.call(null, c)) ? new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, 
-  [cljs.core.first.call(null, c), cljs.core.rest.call(null, c)], null) : new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [null, c], null), c = cljs.core.nth.call(null, d, 0, null), d = cljs.core.nth.call(null, d, 1, null), c = cljs.core.merge.call(null, b, c);
-  return cljs.core.apply.call(null, cljs.core.vector, a, c, d);
-};
-hickory.hiccup_utils.normalize_form = function normalize_form(b) {
-  if ("string" === typeof b) {
-    return b;
-  }
-  b = hickory.hiccup_utils.normalize_element.call(null, b);
-  var c = cljs.core.nth.call(null, b, 0, null), d = cljs.core.nth.call(null, b, 1, null), e = cljs.core.nthnext.call(null, b, 2);
-  return cljs.core.apply.call(null, cljs.core.vector, c, d, cljs.core.map.call(null, function(b, c, d, e) {
-    return function(b) {
-      return cljs.core.vector_QMARK_.call(null, b) ? normalize_form.call(null, b) : b;
-    };
-  }(b, c, d, e), hickory.hiccup_utils.expand_content_seqs.call(null, e)));
-};
-hickory.render = {};
-hickory.render.render_hickory_attribute = function(a) {
-  return " " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, cljs.core.key.call(null, a))) + '\x3d"' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.utils.html_escape.call(null, cljs.core.val.call(null, a))) + '"';
-};
-hickory.render.hickory_to_html = function hickory_to_html(b) {
-  if ("string" === typeof b) {
-    return hickory.utils.html_escape.call(null, b);
-  }
-  try {
-    switch((new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b) instanceof cljs.core.Keyword ? (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b).fqn : null) {
-      case "comment":
-        return "\x3c!--" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b))) + "--\x3e";
-      case "element":
-        return cljs.core.truth_(hickory.utils.void_element.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) ? "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, hickory.render.render_hickory_attribute, (new cljs.core.Keyword(null, 
-        "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)))) + "\x3e" : cljs.core.truth_(hickory.utils.unescapable_content.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) ? "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, 
-        cljs.core.map.call(null, hickory.render.render_hickory_attribute, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)))) + "\x3e" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b))) + "\x3c/" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + 
-        "\x3e" : new cljs.core.Keyword(null, "else", "else", -1508377146) ? "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, hickory.render.render_hickory_attribute, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)))) + "\x3e" + 
-        cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, hickory_to_html, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b)))) + "\x3c/" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + "\x3e" : null;
-      case "document-type":
-        return hickory.utils.render_doctype.call(null, cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "name", "name", 1843675177)], null)), cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "publicid", 
-        "publicid", 1557995850)], null)), cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "systemid", "systemid", -2052878192)], null)));
-      case "document":
-        return cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, hickory_to_html, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b)));
-      default:
-        throw Error("No matching clause: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1((new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b)));;
-    }
-  } catch (c) {
-    if (c instanceof Error) {
-      throw cljs.core.truth_(hickory.utils.starts_with.call(null, c.message, "No matching clause: ")) ? cljs.core.ex_info.call(null, "Not a valid node: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.pr_str.call(null, b)), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "dom", "dom", -1236537922), b], null)) : c;
-    }
-    if (new cljs.core.Keyword(null, "else", "else", -1508377146)) {
-      throw c;
-    }
-    return null;
-  }
-};
-hickory.render.render_hiccup_attrs = function(a) {
-  var b = clojure.string.join.call(null, " ", cljs.core.sort.call(null, cljs.core.filter.call(null, function(a) {
-    return!cljs.core.empty_QMARK_.call(null, a);
-  }, function() {
-    return function d(a) {
-      return new cljs.core.LazySeq(null, function() {
-        for (;;) {
-          var b = cljs.core.seq.call(null, a);
-          if (b) {
-            if (cljs.core.chunked_seq_QMARK_.call(null, b)) {
-              var g = cljs.core.chunk_first.call(null, b), h = cljs.core.count.call(null, g), k = cljs.core.chunk_buffer.call(null, h);
-              a: {
-                for (var l = 0;;) {
-                  if (l < h) {
-                    var m = cljs.core._nth.call(null, g, l), n = cljs.core.nth.call(null, m, 0, null), m = cljs.core.nth.call(null, m, 1, null);
-                    cljs.core.chunk_append.call(null, k, !0 === m ? "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, n)) : null == m ? "" : new cljs.core.Keyword(null, "else", "else", -1508377146) ? "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, n)) + '\x3d"' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.utils.html_escape.call(null, m)) + '"' : null);
-                    l += 1;
-                  } else {
-                    g = !0;
-                    break a;
-                  }
-                }
-                g = void 0;
-              }
-              return g ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), d.call(null, cljs.core.chunk_rest.call(null, b))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), null);
-            }
-            g = cljs.core.first.call(null, b);
-            k = cljs.core.nth.call(null, g, 0, null);
-            g = cljs.core.nth.call(null, g, 1, null);
-            return cljs.core.cons.call(null, !0 === g ? "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, k)) : null == g ? "" : new cljs.core.Keyword(null, "else", "else", -1508377146) ? "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, k)) + '\x3d"' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.utils.html_escape.call(null, g)) + '"' : null, d.call(null, cljs.core.rest.call(null, b)));
-          }
-          return null;
-        }
-      }, null, null);
-    }.call(null, a);
-  }())));
-  return cljs.core.empty_QMARK_.call(null, b) ? b : " " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b);
-};
-hickory.render.render_hiccup_element = function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null);
-  a = cljs.core.nthnext.call(null, a, 2);
-  return cljs.core.truth_(hickory.utils.void_element.call(null, b)) ? "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, b)) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.render.render_hiccup_attrs.call(null, c)) + "\x3e" : "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, b)) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.render.render_hiccup_attrs.call(null, c)) + "\x3e" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.render.hiccup_to_html.call(null, 
-  a)) + "\x3c/" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, b)) + "\x3e";
-};
-hickory.render.render_hiccup_form = function(a) {
-  return cljs.core.vector_QMARK_.call(null, a) ? hickory.render.render_hiccup_element.call(null, a) : a;
-};
-hickory.render.hiccup_to_html = function(a) {
-  return cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, function(a) {
-    return hickory.render.render_hiccup_form.call(null, hickory.hiccup_utils.normalize_form.call(null, a));
-  }, a));
-};
-clojure.zip = {};
-clojure.zip.zipper = function(a, b, c, d) {
-  return cljs.core.with_meta(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [d, null], null), new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword("zip", "make-node", "zip/make-node", 1103800591), c, new cljs.core.Keyword("zip", "children", "zip/children", -940194589), b, new cljs.core.Keyword("zip", "branch?", "zip/branch?", -998880862), a], null));
-};
-clojure.zip.seq_zip = function(a) {
-  return clojure.zip.zipper.call(null, cljs.core.seq_QMARK_, cljs.core.identity, function(a, c) {
-    return cljs.core.with_meta.call(null, c, cljs.core.meta.call(null, a));
-  }, a);
-};
-clojure.zip.vector_zip = function(a) {
-  return clojure.zip.zipper.call(null, cljs.core.vector_QMARK_, cljs.core.seq, function(a, c) {
-    return cljs.core.with_meta.call(null, cljs.core.vec.call(null, c), cljs.core.meta.call(null, a));
-  }, a);
-};
-clojure.zip.xml_zip = function(a) {
-  return clojure.zip.zipper.call(null, cljs.core.complement.call(null, cljs.core.string_QMARK_), cljs.core.comp.call(null, cljs.core.seq, new cljs.core.Keyword(null, "content", "content", 15833224)), function(a, c) {
-    return cljs.core.assoc.call(null, a, new cljs.core.Keyword(null, "content", "content", 15833224), cljs.core.truth_(c) ? cljs.core.apply.call(null, cljs.core.vector, c) : c);
-  }, a);
-};
-clojure.zip.node = function(a) {
-  return a.call(null, 0);
-};
-clojure.zip.branch_QMARK_ = function(a) {
-  return(new cljs.core.Keyword("zip", "branch?", "zip/branch?", -998880862)).cljs$core$IFn$_invoke$arity$1(cljs.core.meta.call(null, a)).call(null, clojure.zip.node.call(null, a));
-};
-clojure.zip.children = function(a) {
-  if (cljs.core.truth_(clojure.zip.branch_QMARK_.call(null, a))) {
-    return(new cljs.core.Keyword("zip", "children", "zip/children", -940194589)).cljs$core$IFn$_invoke$arity$1(cljs.core.meta.call(null, a)).call(null, clojure.zip.node.call(null, a));
-  }
-  throw "called children on a leaf node";
-};
-clojure.zip.make_node = function(a, b, c) {
-  return(new cljs.core.Keyword("zip", "make-node", "zip/make-node", 1103800591)).cljs$core$IFn$_invoke$arity$1(cljs.core.meta.call(null, a)).call(null, b, c);
-};
-clojure.zip.path = function(a) {
-  return(new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565)).cljs$core$IFn$_invoke$arity$1(a.call(null, 1));
-};
-clojure.zip.lefts = function(a) {
-  return cljs.core.seq.call(null, (new cljs.core.Keyword(null, "l", "l", 1395893423)).cljs$core$IFn$_invoke$arity$1(a.call(null, 1)));
-};
-clojure.zip.rights = function(a) {
-  return(new cljs.core.Keyword(null, "r", "r", -471384190)).cljs$core$IFn$_invoke$arity$1(a.call(null, 1));
-};
-clojure.zip.down = function(a) {
-  if (cljs.core.truth_(clojure.zip.branch_QMARK_.call(null, a))) {
-    var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), d = clojure.zip.children.call(null, a), e = cljs.core.nth.call(null, d, 0, null), f = cljs.core.nthnext.call(null, d, 1);
-    return cljs.core.truth_(d) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [e, new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.PersistentVector.EMPTY, new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565), cljs.core.truth_(c) ? cljs.core.conj.call(null, (new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565)).cljs$core$IFn$_invoke$arity$1(c), b) : new cljs.core.PersistentVector(null, 
-    1, 5, cljs.core.PersistentVector.EMPTY_NODE, [b], null), new cljs.core.Keyword(null, "ppath", "ppath", -1758182784), c, new cljs.core.Keyword(null, "r", "r", -471384190), f], null)], null), cljs.core.meta.call(null, a)) : null;
-  }
-  return null;
-};
-clojure.zip.up = function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), d = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, c = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "ppath", "ppath", -1758182784)), f = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565)), g = cljs.core.get.call(null, d, new cljs.core.Keyword(null, 
-  "r", "r", -471384190)), d = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "changed?", "changed?", -437828330));
-  return cljs.core.truth_(f) ? (f = cljs.core.peek.call(null, f), cljs.core.with_meta.call(null, cljs.core.truth_(d) ? new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [clojure.zip.make_node.call(null, a, f, cljs.core.concat.call(null, c, cljs.core.cons.call(null, b, g))), cljs.core.truth_(e) ? cljs.core.assoc.call(null, e, new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0) : e], null) : new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, 
-  [f, e], null), cljs.core.meta.call(null, a))) : null;
-};
-clojure.zip.root = function(a) {
-  for (;;) {
-    if (cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "end", "end", -268185958), a.call(null, 1))) {
-      return clojure.zip.node.call(null, a);
-    }
-    var b = clojure.zip.up.call(null, a);
-    if (cljs.core.truth_(b)) {
-      a = b;
-    } else {
-      return clojure.zip.node.call(null, a);
-    }
-  }
-};
-clojure.zip.right = function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), c = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, d = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "r", "r", -471384190)), f = cljs.core.nth.call(null, e, 0, null), g = cljs.core.nthnext.call(null, e, 1);
-  return cljs.core.truth_(cljs.core.truth_(c) ? e : c) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [f, cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.conj.call(null, d, b), new cljs.core.Keyword(null, "r", "r", -471384190), g)], null), cljs.core.meta.call(null, a)) : null;
-};
-clojure.zip.rightmost = function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), c = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, d = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "r", "r", -471384190));
-  return cljs.core.truth_(cljs.core.truth_(c) ? e : c) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.last.call(null, e), cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.apply.call(null, cljs.core.conj, d, b, cljs.core.butlast.call(null, e)), new cljs.core.Keyword(null, "r", "r", -471384190), null)], null), cljs.core.meta.call(null, a)) : a;
-};
-clojure.zip.left = function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), c = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, d = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "r", "r", -471384190));
-  return cljs.core.truth_(cljs.core.truth_(c) ? cljs.core.seq.call(null, d) : c) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.peek.call(null, d), cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.pop.call(null, d), new cljs.core.Keyword(null, "r", "r", -471384190), cljs.core.cons.call(null, b, e))], null), cljs.core.meta.call(null, a)) : null;
-};
-clojure.zip.leftmost = function(a) {
-  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), c = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, d = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "r", "r", -471384190));
-  return cljs.core.truth_(cljs.core.truth_(c) ? cljs.core.seq.call(null, d) : c) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.first.call(null, d), cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.PersistentVector.EMPTY, new cljs.core.Keyword(null, "r", "r", -471384190), cljs.core.concat.call(null, cljs.core.rest.call(null, d), new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, 
-  [b], null), e))], null), cljs.core.meta.call(null, a)) : a;
-};
-clojure.zip.insert_left = function(a, b) {
-  var c = cljs.core.nth.call(null, a, 0, null), d = cljs.core.nth.call(null, a, 1, null), d = cljs.core.seq_QMARK_.call(null, d) ? cljs.core.apply.call(null, cljs.core.hash_map, d) : d, e = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "l", "l", 1395893423));
-  if (null == d) {
-    throw "Insert at top";
-  }
-  return cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c, cljs.core.assoc.call(null, d, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.conj.call(null, e, b), new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0)], null), cljs.core.meta.call(null, a));
-};
-clojure.zip.insert_right = function(a, b) {
-  var c = cljs.core.nth.call(null, a, 0, null), d = cljs.core.nth.call(null, a, 1, null), d = cljs.core.seq_QMARK_.call(null, d) ? cljs.core.apply.call(null, cljs.core.hash_map, d) : d, e = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "r", "r", -471384190));
-  if (null == d) {
-    throw "Insert at top";
-  }
-  return cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c, cljs.core.assoc.call(null, d, new cljs.core.Keyword(null, "r", "r", -471384190), cljs.core.cons.call(null, b, e), new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0)], null), cljs.core.meta.call(null, a));
-};
-clojure.zip.replace = function(a, b) {
-  cljs.core.nth.call(null, a, 0, null);
-  var c = cljs.core.nth.call(null, a, 1, null);
-  return cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [b, cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0)], null), cljs.core.meta.call(null, a));
-};
-clojure.zip.edit = function() {
-  var a = function(a, b, e) {
-    return clojure.zip.replace.call(null, a, cljs.core.apply.call(null, b, clojure.zip.node.call(null, a), e));
-  }, b = function(b, d, e) {
-    var f = null;
-    2 < arguments.length && (f = cljs.core.array_seq(Array.prototype.slice.call(arguments, 2), 0));
-    return a.call(this, b, d, f);
-  };
-  b.cljs$lang$maxFixedArity = 2;
-  b.cljs$lang$applyTo = function(b) {
-    var d = cljs.core.first(b);
-    b = cljs.core.next(b);
-    var e = cljs.core.first(b);
-    b = cljs.core.rest(b);
-    return a(d, e, b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-clojure.zip.insert_child = function(a, b) {
-  return clojure.zip.replace.call(null, a, clojure.zip.make_node.call(null, a, clojure.zip.node.call(null, a), cljs.core.cons.call(null, b, clojure.zip.children.call(null, a))));
-};
-clojure.zip.append_child = function(a, b) {
-  return clojure.zip.replace.call(null, a, clojure.zip.make_node.call(null, a, clojure.zip.node.call(null, a), cljs.core.concat.call(null, clojure.zip.children.call(null, a), new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [b], null))));
-};
-clojure.zip.next = function(a) {
-  if (cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "end", "end", -268185958), a.call(null, 1))) {
-    return a;
-  }
-  var b;
-  b = clojure.zip.branch_QMARK_.call(null, a);
-  b = cljs.core.truth_(b) ? clojure.zip.down.call(null, a) : b;
-  if (cljs.core.truth_(b)) {
-    return b;
-  }
-  b = clojure.zip.right.call(null, a);
-  if (cljs.core.truth_(b)) {
-    return b;
-  }
-  for (;;) {
-    if (cljs.core.truth_(clojure.zip.up.call(null, a))) {
-      b = clojure.zip.right.call(null, clojure.zip.up.call(null, a));
-      if (cljs.core.truth_(b)) {
-        return b;
-      }
-      a = clojure.zip.up.call(null, a);
-    } else {
-      return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [clojure.zip.node.call(null, a), new cljs.core.Keyword(null, "end", "end", -268185958)], null);
-    }
-  }
-};
-clojure.zip.prev = function(a) {
-  var b = clojure.zip.left.call(null, a);
-  if (cljs.core.truth_(b)) {
-    for (a = b;;) {
-      if (b = clojure.zip.branch_QMARK_.call(null, a), b = cljs.core.truth_(b) ? clojure.zip.down.call(null, a) : b, cljs.core.truth_(b)) {
-        a = clojure.zip.rightmost.call(null, b);
-      } else {
-        return a;
-      }
-    }
-  } else {
-    return clojure.zip.up.call(null, a);
-  }
-};
-clojure.zip.end_QMARK_ = function(a) {
-  return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "end", "end", -268185958), a.call(null, 1));
-};
-clojure.zip.remove = function(a) {
-  cljs.core.nth.call(null, a, 0, null);
-  var b = cljs.core.nth.call(null, a, 1, null), b = cljs.core.seq_QMARK_.call(null, b) ? cljs.core.apply.call(null, cljs.core.hash_map, b) : b, c = cljs.core.get.call(null, b, new cljs.core.Keyword(null, "l", "l", 1395893423)), d = cljs.core.get.call(null, b, new cljs.core.Keyword(null, "ppath", "ppath", -1758182784)), e = cljs.core.get.call(null, b, new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565)), f = cljs.core.get.call(null, b, new cljs.core.Keyword(null, "r", "r", -471384190));
-  if (null == b) {
-    throw "Remove at top";
-  }
-  if (0 < cljs.core.count.call(null, c)) {
-    for (a = cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.peek.call(null, c), cljs.core.assoc.call(null, b, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.pop.call(null, c), new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0)], null), cljs.core.meta.call(null, a));;) {
-      if (b = clojure.zip.branch_QMARK_.call(null, a), b = cljs.core.truth_(b) ? clojure.zip.down.call(null, a) : b, cljs.core.truth_(b)) {
-        a = clojure.zip.rightmost.call(null, b);
-      } else {
-        return a;
-      }
-    }
-  } else {
-    return cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [clojure.zip.make_node.call(null, a, cljs.core.peek.call(null, e), f), cljs.core.truth_(d) ? cljs.core.assoc.call(null, d, new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0) : d], null), cljs.core.meta.call(null, a));
-  }
-};
-hickory.core = {};
-hickory.core.HiccupRepresentable = function() {
-  return{};
-}();
-hickory.core.as_hiccup = function(a) {
-  if (a ? a.hickory$core$HiccupRepresentable$as_hiccup$arity$1 : a) {
-    return a.hickory$core$HiccupRepresentable$as_hiccup$arity$1(a);
-  }
-  var b;
-  b = hickory.core.as_hiccup[goog.typeOf(null == a ? null : a)];
-  if (!b && (b = hickory.core.as_hiccup._, !b)) {
-    throw cljs.core.missing_protocol.call(null, "HiccupRepresentable.as-hiccup", a);
-  }
-  return b.call(null, a);
-};
-hickory.core.HickoryRepresentable = function() {
-  return{};
-}();
-hickory.core.as_hickory = function(a) {
-  if (a ? a.hickory$core$HickoryRepresentable$as_hickory$arity$1 : a) {
-    return a.hickory$core$HickoryRepresentable$as_hickory$arity$1(a);
-  }
-  var b;
-  b = hickory.core.as_hickory[goog.typeOf(null == a ? null : a)];
-  if (!b && (b = hickory.core.as_hickory._, !b)) {
-    throw cljs.core.missing_protocol.call(null, "HickoryRepresentable.as-hickory", a);
-  }
-  return b.call(null, a);
-};
-hickory.core.node_type = function(a) {
-  return Node["" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a) + "_NODE"];
-};
-hickory.core.Attribute = hickory.core.node_type.call(null, "ATTRIBUTE");
-hickory.core.Comment = hickory.core.node_type.call(null, "COMMENT");
-hickory.core.Document = hickory.core.node_type.call(null, "DOCUMENT");
-hickory.core.DocumentType = hickory.core.node_type.call(null, "DOCUMENT_TYPE");
-hickory.core.Element = hickory.core.node_type.call(null, "ELEMENT");
-hickory.core.Text = hickory.core.node_type.call(null, "TEXT");
-hickory.core.extend_type_with_seqable = function(a) {
-  a.prototype.cljs$core$ISeqable$ = !0;
-  return a.prototype.cljs$core$ISeqable$_seq$arity$1 = function(a) {
-    return cljs.core.array_seq.call(null, this);
-  };
-};
-hickory.core.extend_type_with_seqable.call(null, NodeList);
-"undefined" !== typeof NamedNodeMap && hickory.core.extend_type_with_seqable.call(null, NamedNodeMap);
-"undefined" !== typeof MozNamedAttrMap && hickory.core.extend_type_with_seqable.call(null, MozNamedAttrMap);
-hickory.core.format_doctype = function(a) {
-  var b = a.name, c = a.publicId;
-  a = a.systemId;
-  return cljs.core.empty_QMARK_.call(null, c) ? "\x3c!DOCTYPE " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b) + "\x3e" : goog.string.format('\x3c!DOCTYPE %s PUBLIC "%s" "%s"\x3e', b, c, a);
-};
-hickory.core.HiccupRepresentable.object = !0;
-hickory.core.as_hiccup.object = function(a) {
-  var b = cljs.core._EQ_, c = a.nodeType;
-  if (cljs.core.truth_(b.call(null, hickory.core.Attribute, c))) {
-    return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [hickory.utils.lower_case_keyword.call(null, a.name), a.value], null);
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.Comment, c))) {
-    return "\x3c!--" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a.data) + "--\x3e";
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.Document, c))) {
-    return cljs.core.map.call(null, hickory.core.as_hiccup, a.childNodes);
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.DocumentType, c))) {
-    return hickory.core.format_doctype.call(null, a);
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.Element, c))) {
-    var d = hickory.utils.lower_case_keyword.call(null, a.tagName);
-    return cljs.core.into.call(null, cljs.core.PersistentVector.EMPTY, cljs.core.concat.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [d, cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, hickory.core.as_hiccup, a.attributes))], null), cljs.core.truth_(hickory.utils.unescapable_content.call(null, d)) ? cljs.core.map.call(null, function(a, b, c) {
-      return function(a) {
-        return a.wholeText;
-      };
-    }(d, b, c), a.childNodes) : cljs.core.map.call(null, hickory.core.as_hiccup, a.childNodes)));
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.Text, c))) {
-    return hickory.utils.html_escape.call(null, a.wholeText);
-  }
-  throw Error("No matching clause: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(c));
-};
-hickory.core.HickoryRepresentable.object = !0;
-hickory.core.as_hickory.object = function(a) {
-  var b = cljs.core._EQ_, c = a.nodeType;
-  if (cljs.core.truth_(b.call(null, hickory.core.Attribute, c))) {
-    return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [hickory.utils.lower_case_keyword.call(null, a.name), a.value], null);
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.Comment, c))) {
-    return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "type", "type", 1174270348), new cljs.core.Keyword(null, "comment", "comment", 532206069), new cljs.core.Keyword(null, "content", "content", 15833224), new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [a.data], null)], null);
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.Document, c))) {
-    return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "type", "type", 1174270348), new cljs.core.Keyword(null, "document", "document", -1329188687), new cljs.core.Keyword(null, "content", "content", 15833224), cljs.core.not_empty.call(null, cljs.core.into.call(null, cljs.core.PersistentVector.EMPTY, cljs.core.map.call(null, hickory.core.as_hickory, a.childNodes)))], null);
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.DocumentType, c))) {
-    return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "type", "type", 1174270348), new cljs.core.Keyword(null, "document-type", "document-type", -1309437776), new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null, "name", "name", 1843675177), a.name, new cljs.core.Keyword(null, "publicid", "publicid", 1557995850), a.publicId, new cljs.core.Keyword(null, "systemid", "systemid", -2052878192), a.systemId], 
-    null)], null);
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.Element, c))) {
-    return new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null, "type", "type", 1174270348), new cljs.core.Keyword(null, "element", "element", 1974019749), new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), cljs.core.not_empty.call(null, cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, hickory.core.as_hickory, a.attributes))), new cljs.core.Keyword(null, "tag", "tag", -1290361223), hickory.utils.lower_case_keyword.call(null, a.tagName), 
-    new cljs.core.Keyword(null, "content", "content", 15833224), cljs.core.not_empty.call(null, cljs.core.into.call(null, cljs.core.PersistentVector.EMPTY, cljs.core.map.call(null, hickory.core.as_hickory, a.childNodes)))], null);
-  }
-  if (cljs.core.truth_(b.call(null, hickory.core.Text, c))) {
-    return a.wholeText;
-  }
-  throw Error("No matching clause: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(c));
-};
-hickory.core.extract_doctype = function(a) {
-  var b = cljs.core.second.call(null, function() {
-    var b = cljs.core.re_find.call(null, /<!DOCTYPE ([^>]*)>/, a);
-    return cljs.core.truth_(b) ? b : cljs.core.re_find.call(null, /<!doctype ([^>]*)>/, a);
-  }());
-  return cljs.core.truth_(b) ? cljs.core.re_find.call(null, /([^\s]*)(\s+PUBLIC\s+[\"]?([^\"]*)[\"]?\s+[\"]?([^\"]*)[\"]?)?/, b) : null;
-};
-hickory.core.remove_el = function(a) {
-  return a.parentNode.removeChild(a);
-};
-hickory.core.parse_dom_with_domparser = function(a) {
-  return "undefined" !== typeof DOMParser ? (new DOMParser).parseFromString(a, "text/html") : null;
-};
-hickory.core.parse_dom_with_write = function(a) {
-  var b = document.implementation.createHTMLDocument(""), c = b.doctype;
-  cljs.core.truth_(hickory.core.extract_doctype.call(null, a)) || hickory.core.remove_el.call(null, c);
-  c = cljs.core.first.call(null, b.head.childNodes);
-  cljs.core.truth_(c) && cljs.core.empty_QMARK_.call(null, c.text) && hickory.core.remove_el.call(null, c);
-  b.write(a);
-  return b;
-};
-hickory.core.parse = function(a) {
-  var b = hickory.core.parse_dom_with_domparser.call(null, a);
-  return cljs.core.truth_(b) ? b : hickory.core.parse_dom_with_write.call(null, a);
-};
-hickory.core.parse_fragment = function(a) {
-  return hickory.core.parse.call(null, a).body.childNodes;
-};
-hickory.convert = {};
-hickory.convert.hiccup_to_hickory = function(a) {
-  return hickory.core.as_hickory.call(null, hickory.core.parse.call(null, hickory.render.hiccup_to_html.call(null, a)));
-};
-hickory.convert.hiccup_fragment_to_hickory = function(a) {
-  return cljs.core.map.call(null, hickory.core.as_hickory, hickory.core.parse_fragment.call(null, hickory.render.hiccup_to_html.call(null, a)));
-};
-hickory.convert.hickory_to_hiccup = function hickory_to_hiccup(b) {
-  if ("string" === typeof b) {
-    return hickory.utils.html_escape.call(null, b);
-  }
-  switch((new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b) instanceof cljs.core.Keyword ? (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b).fqn : null) {
-    case "comment":
-      return "\x3c!--" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b))) + "--\x3e";
-    case "element":
-      if (cljs.core.truth_(hickory.utils.unescapable_content.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b)))) {
-        if (cljs.core.every_QMARK_.call(null, cljs.core.string_QMARK_, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b))) {
-          return cljs.core.apply.call(null, cljs.core.vector, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b), cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)), (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b));
-        }
-        throw cljs.core.ex_info.call(null, "An unescapable content tag had non-string children.", new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "error-location", "error-location", 540097671), b], null));
-      }
-      return cljs.core.apply.call(null, cljs.core.vector, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b), cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)), cljs.core.map.call(null, hickory_to_hiccup, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b)));
-    case "document-type":
-      return hickory.utils.render_doctype.call(null, cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "name", "name", 1843675177)], null)), cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "publicid", 
-      "publicid", 1557995850)], null)), cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "systemid", "systemid", -2052878192)], null)));
-    case "document":
-      return cljs.core.mapv.call(null, hickory_to_hiccup, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b));
-    default:
-      throw Error("No matching clause: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1((new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b)));;
-  }
 };
 var om = {dom:{}};
 om.dom.a = function() {
@@ -17533,6 +16811,35 @@ om.dom.render = function(a, b) {
 om.dom.render_to_str = function(a) {
   return React.renderComponentToString(a);
 };
+goog.dom.dataset = {};
+goog.dom.dataset.PREFIX_ = "data-";
+goog.dom.dataset.set = function(a, b, c) {
+  a.dataset ? a.dataset[b] = c : a.setAttribute(goog.dom.dataset.PREFIX_ + goog.string.toSelectorCase(b), c);
+};
+goog.dom.dataset.get = function(a, b) {
+  return a.dataset ? b in a.dataset ? a.dataset[b] : null : a.getAttribute(goog.dom.dataset.PREFIX_ + goog.string.toSelectorCase(b));
+};
+goog.dom.dataset.remove = function(a, b) {
+  a.dataset ? delete a.dataset[b] : a.removeAttribute(goog.dom.dataset.PREFIX_ + goog.string.toSelectorCase(b));
+};
+goog.dom.dataset.has = function(a, b) {
+  return a.dataset ? b in a.dataset : a.hasAttribute ? a.hasAttribute(goog.dom.dataset.PREFIX_ + goog.string.toSelectorCase(b)) : !!a.getAttribute(goog.dom.dataset.PREFIX_ + goog.string.toSelectorCase(b));
+};
+goog.dom.dataset.getAll = function(a) {
+  if (a.dataset) {
+    return a.dataset;
+  }
+  var b = {};
+  a = a.attributes;
+  for (var c = 0;c < a.length;++c) {
+    var d = a[c];
+    if (goog.string.startsWith(d.name, goog.dom.dataset.PREFIX_)) {
+      var e = goog.string.toCamelCase(d.name.substr(5));
+      b[e] = d.value;
+    }
+  }
+  return b;
+};
 goog.ui = {};
 goog.ui.IdGenerator = function() {
 };
@@ -19182,6 +18489,728 @@ om.core.get_render_state = function() {
 }();
 om.core.rendering_QMARK_ = function() {
   return!0 === om.core._STAR_read_enabled_STAR_;
+};
+var clojure = {string:{}};
+clojure.string.seq_reverse = function(a) {
+  return cljs.core.reduce.call(null, cljs.core.conj, cljs.core.List.EMPTY, a);
+};
+clojure.string.reverse = function(a) {
+  return a.split("").reverse().join("");
+};
+clojure.string.replace = function(a, b, c) {
+  if ("string" === typeof b) {
+    return a.replace(new RegExp(goog.string.regExpEscape(b), "g"), c);
+  }
+  if (cljs.core.truth_(b.hasOwnProperty("source"))) {
+    return a.replace(new RegExp(b.source, "g"), c);
+  }
+  if (new cljs.core.Keyword(null, "else", "else", -1508377146)) {
+    throw "Invalid match arg: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b);
+  }
+  return null;
+};
+clojure.string.replace_first = function(a, b, c) {
+  return a.replace(b, c);
+};
+clojure.string.join = function() {
+  var a = null, b = function(a) {
+    return cljs.core.apply.call(null, cljs.core.str, a);
+  }, c = function(a, b) {
+    return cljs.core.apply.call(null, cljs.core.str, cljs.core.interpose.call(null, a, b));
+  }, a = function(a, e) {
+    switch(arguments.length) {
+      case 1:
+        return b.call(this, a);
+      case 2:
+        return c.call(this, a, e);
+    }
+    throw Error("Invalid arity: " + arguments.length);
+  };
+  a.cljs$core$IFn$_invoke$arity$1 = b;
+  a.cljs$core$IFn$_invoke$arity$2 = c;
+  return a;
+}();
+clojure.string.upper_case = function(a) {
+  return a.toUpperCase();
+};
+clojure.string.lower_case = function(a) {
+  return a.toLowerCase();
+};
+clojure.string.capitalize = function(a) {
+  return 2 > cljs.core.count.call(null, a) ? clojure.string.upper_case.call(null, a) : "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(clojure.string.upper_case.call(null, cljs.core.subs.call(null, a, 0, 1))) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(clojure.string.lower_case.call(null, cljs.core.subs.call(null, a, 1)));
+};
+clojure.string.pop_last_while_empty = function(a) {
+  for (;;) {
+    if (cljs.core._EQ_.call(null, "", cljs.core.peek.call(null, a))) {
+      a = cljs.core.pop.call(null, a);
+    } else {
+      return a;
+    }
+  }
+};
+clojure.string.discard_trailing_if_needed = function(a, b) {
+  return cljs.core._EQ_.call(null, 0, a) ? clojure.string.pop_last_while_empty.call(null, b) : b;
+};
+clojure.string.split_with_empty_regex = function(a, b) {
+  if (0 >= b || b >= 2 + cljs.core.count.call(null, a)) {
+    return cljs.core.conj.call(null, cljs.core.vec.call(null, cljs.core.cons.call(null, "", cljs.core.map.call(null, cljs.core.str, cljs.core.seq.call(null, a)))), "");
+  }
+  var c = cljs.core._EQ_;
+  if (cljs.core.truth_(c.call(null, 1, b))) {
+    return new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [a], null);
+  }
+  if (cljs.core.truth_(c.call(null, 2, b))) {
+    return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, ["", a], null);
+  }
+  c = b - 2;
+  return cljs.core.conj.call(null, cljs.core.vec.call(null, cljs.core.cons.call(null, "", cljs.core.subvec.call(null, cljs.core.vec.call(null, cljs.core.map.call(null, cljs.core.str, cljs.core.seq.call(null, a))), 0, c))), cljs.core.subs.call(null, a, c));
+};
+clojure.string.split = function() {
+  var a = null, b = function(b, c) {
+    return a.call(null, b, c, 0);
+  }, c = function(a, b, c) {
+    return clojure.string.discard_trailing_if_needed.call(null, c, cljs.core._EQ_.call(null, "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b), "/(?:)/") ? clojure.string.split_with_empty_regex.call(null, a, c) : 1 > c ? cljs.core.vec.call(null, ("" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a)).split(b)) : function() {
+      for (var g = a, h = c, k = cljs.core.PersistentVector.EMPTY;;) {
+        if (cljs.core._EQ_.call(null, h, 1)) {
+          return cljs.core.conj.call(null, k, g);
+        }
+        var l = cljs.core.re_find.call(null, b, g);
+        if (cljs.core.truth_(l)) {
+          var m = l, l = g.indexOf(m), m = g.substring(l + cljs.core.count.call(null, m)), h = h - 1, k = cljs.core.conj.call(null, k, g.substring(0, l)), g = m
+        } else {
+          return cljs.core.conj.call(null, k, g);
+        }
+      }
+    }());
+  }, a = function(a, e, f) {
+    switch(arguments.length) {
+      case 2:
+        return b.call(this, a, e);
+      case 3:
+        return c.call(this, a, e, f);
+    }
+    throw Error("Invalid arity: " + arguments.length);
+  };
+  a.cljs$core$IFn$_invoke$arity$2 = b;
+  a.cljs$core$IFn$_invoke$arity$3 = c;
+  return a;
+}();
+clojure.string.split_lines = function(a) {
+  return clojure.string.split.call(null, a, /\n|\r\n/);
+};
+clojure.string.trim = function(a) {
+  return goog.string.trim(a);
+};
+clojure.string.triml = function(a) {
+  return goog.string.trimLeft(a);
+};
+clojure.string.trimr = function(a) {
+  return goog.string.trimRight(a);
+};
+clojure.string.trim_newline = function(a) {
+  for (var b = a.length;;) {
+    if (0 === b) {
+      return "";
+    }
+    var c = cljs.core.get.call(null, a, b - 1);
+    if (cljs.core._EQ_.call(null, c, "\n") || cljs.core._EQ_.call(null, c, "\r")) {
+      b -= 1;
+    } else {
+      return a.substring(0, b);
+    }
+  }
+};
+clojure.string.blank_QMARK_ = function(a) {
+  return goog.string.isEmptySafe(a);
+};
+clojure.string.escape = function(a, b) {
+  for (var c = new goog.string.StringBuffer, d = a.length, e = 0;;) {
+    if (cljs.core._EQ_.call(null, d, e)) {
+      return c.toString();
+    }
+    var f = a.charAt(e), g = cljs.core.get.call(null, b, f);
+    cljs.core.truth_(g) ? c.append("" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(g)) : c.append(f);
+    e += 1;
+  }
+};
+var hickory = {utils:{}};
+hickory.utils.void_element = new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 16, [new cljs.core.Keyword(null, "hr", "hr", 1377740067), null, new cljs.core.Keyword(null, "meta", "meta", 1499536964), null, new cljs.core.Keyword(null, "wbr", "wbr", 228661800), null, new cljs.core.Keyword(null, "command", "command", -894540724), null, new cljs.core.Keyword(null, "source", "source", -433931539), null, new cljs.core.Keyword(null, "param", "param", 2013631823), null, new cljs.core.Keyword(null, 
+"link", "link", -1769163468), null, new cljs.core.Keyword(null, "col", "col", -1959363084), null, new cljs.core.Keyword(null, "area", "area", 472007256), null, new cljs.core.Keyword(null, "br", "br", 934104792), null, new cljs.core.Keyword(null, "input", "input", 556931961), null, new cljs.core.Keyword(null, "base", "base", 185279322), null, new cljs.core.Keyword(null, "embed", "embed", -1354913349), null, new cljs.core.Keyword(null, "keygen", "keygen", -571693253), null, new cljs.core.Keyword(null, 
+"img", "img", 1442687358), null, new cljs.core.Keyword(null, "track", "track", 195787487), null], null), null);
+hickory.utils.unescapable_content = new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "script", "script", -1304443801), null, new cljs.core.Keyword(null, "style", "style", -496642736), null], null), null);
+hickory.utils.html_escape = function(a) {
+  return goog.string.htmlEscape(a);
+};
+hickory.utils.starts_with = function(a, b) {
+  return goog.string.startsWith(a, b);
+};
+hickory.utils.lower_case_keyword = function(a) {
+  return cljs.core.keyword.call(null, clojure.string.lower_case.call(null, a));
+};
+hickory.utils.render_doctype = function(a, b, c) {
+  return "\x3c!DOCTYPE " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.truth_(cljs.core.not_empty.call(null, b)) ? ' PUBLIC "' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b) + '"' : null) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.truth_(cljs.core.not_empty.call(null, c)) ? ' "' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(c) + '"' : null) + "\x3e";
+};
+hickory.hiccup_utils = {};
+hickory.hiccup_utils.first_idx = function(a, b) {
+  return-1 === a ? b : -1 === b ? a : a < b ? a : b;
+};
+hickory.hiccup_utils.index_of = function() {
+  var a = null, a = function(a, c, d) {
+    switch(arguments.length) {
+      case 2:
+        return a.indexOf(c);
+      case 3:
+        return a.indexOf(c, d);
+    }
+    throw Error("Invalid arity: " + arguments.length);
+  };
+  a.cljs$core$IFn$_invoke$arity$2 = function(a, c) {
+    return a.indexOf(c);
+  };
+  a.cljs$core$IFn$_invoke$arity$3 = function(a, c, d) {
+    return a.indexOf(c, d);
+  };
+  return a;
+}();
+hickory.hiccup_utils.split_keep_trailing_empty = function(a, b) {
+  return clojure.string.split.call(null, a, b, -1);
+};
+hickory.hiccup_utils.tag_well_formed_QMARK_ = function(a) {
+  a = cljs.core.name.call(null, a);
+  var b = hickory.hiccup_utils.index_of.call(null, a, "#") | 0, c = hickory.hiccup_utils.index_of.call(null, a, ".") | 0, d = hickory.hiccup_utils.first_idx.call(null, b, c), e = 0 < cljs.core.count.call(null, a);
+  if (e) {
+    var f = -1 === d ? !0 : 0 < d;
+    if (f) {
+      var g = -1 === b ? !0 : -1 === hickory.hiccup_utils.index_of.call(null, a, "#", b + 1) && b + 1 < hickory.hiccup_utils.first_idx.call(null, hickory.hiccup_utils.index_of.call(null, a, ".", b + 1), cljs.core.count.call(null, a));
+      if (g) {
+        var h = cljs.core.not_EQ_.call(null, b, -1) && cljs.core.not_EQ_.call(null, c, -1) ? b < c : !0;
+        if (h) {
+          if (-1 === c) {
+            return!0;
+          }
+          var k = a.substring(c + 1);
+          return cljs.core.every_QMARK_.call(null, function(a, b, c, d, e, f, g, h, k) {
+            return function(a) {
+              return 0 < cljs.core.count.call(null, a);
+            };
+          }(k, h, g, f, e, a, b, c, d), hickory.hiccup_utils.split_keep_trailing_empty.call(null, k, /\./));
+        }
+        return h;
+      }
+      return g;
+    }
+    return f;
+  }
+  return e;
+};
+hickory.hiccup_utils.tag_name = function(a) {
+  a = cljs.core.name.call(null, a);
+  var b = hickory.hiccup_utils.index_of.call(null, a, "#") | 0, c = hickory.hiccup_utils.index_of.call(null, a, ".") | 0, b = hickory.hiccup_utils.first_idx.call(null, b, c);
+  return-1 === b ? a : a.substring(0, b);
+};
+hickory.hiccup_utils.class_names = function(a) {
+  a = cljs.core.name.call(null, a);
+  for (var b = hickory.hiccup_utils.index_of.call(null, a, "."), c = cljs.core.transient$.call(null, cljs.core.PersistentVector.EMPTY);;) {
+    if (-1 === b) {
+      return cljs.core.persistent_BANG_.call(null, c);
+    }
+    var d = hickory.hiccup_utils.index_of.call(null, a, ".", b + 1), e = hickory.hiccup_utils.index_of.call(null, a, "#", b + 1), e = hickory.hiccup_utils.first_idx.call(null, d, e), c = -1 === e ? cljs.core.conj_BANG_.call(null, c, a.substring(b + 1)) : cljs.core.conj_BANG_.call(null, c, a.substring(b + 1, e)), b = d;
+  }
+};
+hickory.hiccup_utils.id = function(a) {
+  a = cljs.core.name.call(null, a);
+  var b = hickory.hiccup_utils.index_of.call(null, a, "#") | 0, c = hickory.hiccup_utils.index_of.call(null, a, ".", b) | 0;
+  return-1 === b ? null : -1 === c ? a.substring(b + 1) : a.substring(b + 1, c);
+};
+hickory.hiccup_utils.expand_content_seqs = function(a) {
+  for (var b = a, c = cljs.core.transient$.call(null, cljs.core.PersistentVector.EMPTY);;) {
+    if (null == b) {
+      return cljs.core.persistent_BANG_.call(null, c);
+    }
+    if (cljs.core.seq_QMARK_.call(null, cljs.core.first.call(null, b))) {
+      a = cljs.core.next.call(null, b);
+      a: {
+        for (var b = cljs.core.first.call(null, b), d = c;;) {
+          if (null == b) {
+            c = d;
+            break a;
+          } else {
+            c = cljs.core.next.call(null, b), d = cljs.core.conj_BANG_.call(null, d, cljs.core.first.call(null, b)), b = c;
+          }
+        }
+        c = void 0;
+      }
+    } else {
+      a = cljs.core.next.call(null, b), c = cljs.core.conj_BANG_.call(null, c, cljs.core.first.call(null, b));
+    }
+    b = a;
+  }
+};
+hickory.hiccup_utils.normalize_element = function(a) {
+  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nthnext.call(null, a, 1);
+  if (!hickory.hiccup_utils.tag_well_formed_QMARK_.call(null, b)) {
+    throw cljs.core.ex_info.call(null, "Invalid input: Tag element" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b) + "is not well-formed.", cljs.core.PersistentArrayMap.EMPTY);
+  }
+  a = cljs.core.keyword.call(null, clojure.string.lower_case.call(null, hickory.hiccup_utils.tag_name.call(null, b)));
+  var d = hickory.hiccup_utils.class_names.call(null, b), b = hickory.hiccup_utils.id.call(null, b), b = new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "id", "id", -1388402092), b, new cljs.core.Keyword(null, "class", "class", -2030961996), cljs.core.empty_QMARK_.call(null, d) ? null : clojure.string.join.call(null, " ", d)], null), d = cljs.core.map_QMARK_.call(null, cljs.core.first.call(null, c)) ? new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, 
+  [cljs.core.first.call(null, c), cljs.core.rest.call(null, c)], null) : new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [null, c], null), c = cljs.core.nth.call(null, d, 0, null), d = cljs.core.nth.call(null, d, 1, null), c = cljs.core.merge.call(null, b, c);
+  return cljs.core.apply.call(null, cljs.core.vector, a, c, d);
+};
+hickory.hiccup_utils.normalize_form = function normalize_form(b) {
+  if ("string" === typeof b) {
+    return b;
+  }
+  b = hickory.hiccup_utils.normalize_element.call(null, b);
+  var c = cljs.core.nth.call(null, b, 0, null), d = cljs.core.nth.call(null, b, 1, null), e = cljs.core.nthnext.call(null, b, 2);
+  return cljs.core.apply.call(null, cljs.core.vector, c, d, cljs.core.map.call(null, function(b, c, d, e) {
+    return function(b) {
+      return cljs.core.vector_QMARK_.call(null, b) ? normalize_form.call(null, b) : b;
+    };
+  }(b, c, d, e), hickory.hiccup_utils.expand_content_seqs.call(null, e)));
+};
+hickory.render = {};
+hickory.render.render_hickory_attribute = function(a) {
+  return " " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, cljs.core.key.call(null, a))) + '\x3d"' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.utils.html_escape.call(null, cljs.core.val.call(null, a))) + '"';
+};
+hickory.render.hickory_to_html = function hickory_to_html(b) {
+  if ("string" === typeof b) {
+    return hickory.utils.html_escape.call(null, b);
+  }
+  try {
+    switch((new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b) instanceof cljs.core.Keyword ? (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b).fqn : null) {
+      case "comment":
+        return "\x3c!--" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b))) + "--\x3e";
+      case "element":
+        return cljs.core.truth_(hickory.utils.void_element.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) ? "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, hickory.render.render_hickory_attribute, (new cljs.core.Keyword(null, 
+        "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)))) + "\x3e" : cljs.core.truth_(hickory.utils.unescapable_content.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) ? "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, 
+        cljs.core.map.call(null, hickory.render.render_hickory_attribute, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)))) + "\x3e" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b))) + "\x3c/" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + 
+        "\x3e" : new cljs.core.Keyword(null, "else", "else", -1508377146) ? "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, hickory.render.render_hickory_attribute, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)))) + "\x3e" + 
+        cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, hickory_to_html, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b)))) + "\x3c/" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b))) + "\x3e" : null;
+      case "document-type":
+        return hickory.utils.render_doctype.call(null, cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "name", "name", 1843675177)], null)), cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "publicid", 
+        "publicid", 1557995850)], null)), cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "systemid", "systemid", -2052878192)], null)));
+      case "document":
+        return cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, hickory_to_html, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b)));
+      default:
+        throw Error("No matching clause: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1((new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b)));;
+    }
+  } catch (c) {
+    if (c instanceof Error) {
+      throw cljs.core.truth_(hickory.utils.starts_with.call(null, c.message, "No matching clause: ")) ? cljs.core.ex_info.call(null, "Not a valid node: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.pr_str.call(null, b)), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "dom", "dom", -1236537922), b], null)) : c;
+    }
+    if (new cljs.core.Keyword(null, "else", "else", -1508377146)) {
+      throw c;
+    }
+    return null;
+  }
+};
+hickory.render.render_hiccup_attrs = function(a) {
+  var b = clojure.string.join.call(null, " ", cljs.core.sort.call(null, cljs.core.filter.call(null, function(a) {
+    return!cljs.core.empty_QMARK_.call(null, a);
+  }, function() {
+    return function d(a) {
+      return new cljs.core.LazySeq(null, function() {
+        for (;;) {
+          var b = cljs.core.seq.call(null, a);
+          if (b) {
+            if (cljs.core.chunked_seq_QMARK_.call(null, b)) {
+              var g = cljs.core.chunk_first.call(null, b), h = cljs.core.count.call(null, g), k = cljs.core.chunk_buffer.call(null, h);
+              a: {
+                for (var l = 0;;) {
+                  if (l < h) {
+                    var m = cljs.core._nth.call(null, g, l), n = cljs.core.nth.call(null, m, 0, null), m = cljs.core.nth.call(null, m, 1, null);
+                    cljs.core.chunk_append.call(null, k, !0 === m ? "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, n)) : null == m ? "" : new cljs.core.Keyword(null, "else", "else", -1508377146) ? "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, n)) + '\x3d"' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.utils.html_escape.call(null, m)) + '"' : null);
+                    l += 1;
+                  } else {
+                    g = !0;
+                    break a;
+                  }
+                }
+                g = void 0;
+              }
+              return g ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), d.call(null, cljs.core.chunk_rest.call(null, b))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), null);
+            }
+            g = cljs.core.first.call(null, b);
+            k = cljs.core.nth.call(null, g, 0, null);
+            g = cljs.core.nth.call(null, g, 1, null);
+            return cljs.core.cons.call(null, !0 === g ? "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, k)) : null == g ? "" : new cljs.core.Keyword(null, "else", "else", -1508377146) ? "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, k)) + '\x3d"' + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.utils.html_escape.call(null, g)) + '"' : null, d.call(null, cljs.core.rest.call(null, b)));
+          }
+          return null;
+        }
+      }, null, null);
+    }.call(null, a);
+  }())));
+  return cljs.core.empty_QMARK_.call(null, b) ? b : " " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b);
+};
+hickory.render.render_hiccup_element = function(a) {
+  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null);
+  a = cljs.core.nthnext.call(null, a, 2);
+  return cljs.core.truth_(hickory.utils.void_element.call(null, b)) ? "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, b)) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.render.render_hiccup_attrs.call(null, c)) + "\x3e" : "\x3c" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, b)) + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.render.render_hiccup_attrs.call(null, c)) + "\x3e" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(hickory.render.hiccup_to_html.call(null, 
+  a)) + "\x3c/" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, b)) + "\x3e";
+};
+hickory.render.render_hiccup_form = function(a) {
+  return cljs.core.vector_QMARK_.call(null, a) ? hickory.render.render_hiccup_element.call(null, a) : a;
+};
+hickory.render.hiccup_to_html = function(a) {
+  return cljs.core.apply.call(null, cljs.core.str, cljs.core.map.call(null, function(a) {
+    return hickory.render.render_hiccup_form.call(null, hickory.hiccup_utils.normalize_form.call(null, a));
+  }, a));
+};
+clojure.zip = {};
+clojure.zip.zipper = function(a, b, c, d) {
+  return cljs.core.with_meta(new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [d, null], null), new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword("zip", "make-node", "zip/make-node", 1103800591), c, new cljs.core.Keyword("zip", "children", "zip/children", -940194589), b, new cljs.core.Keyword("zip", "branch?", "zip/branch?", -998880862), a], null));
+};
+clojure.zip.seq_zip = function(a) {
+  return clojure.zip.zipper.call(null, cljs.core.seq_QMARK_, cljs.core.identity, function(a, c) {
+    return cljs.core.with_meta.call(null, c, cljs.core.meta.call(null, a));
+  }, a);
+};
+clojure.zip.vector_zip = function(a) {
+  return clojure.zip.zipper.call(null, cljs.core.vector_QMARK_, cljs.core.seq, function(a, c) {
+    return cljs.core.with_meta.call(null, cljs.core.vec.call(null, c), cljs.core.meta.call(null, a));
+  }, a);
+};
+clojure.zip.xml_zip = function(a) {
+  return clojure.zip.zipper.call(null, cljs.core.complement.call(null, cljs.core.string_QMARK_), cljs.core.comp.call(null, cljs.core.seq, new cljs.core.Keyword(null, "content", "content", 15833224)), function(a, c) {
+    return cljs.core.assoc.call(null, a, new cljs.core.Keyword(null, "content", "content", 15833224), cljs.core.truth_(c) ? cljs.core.apply.call(null, cljs.core.vector, c) : c);
+  }, a);
+};
+clojure.zip.node = function(a) {
+  return a.call(null, 0);
+};
+clojure.zip.branch_QMARK_ = function(a) {
+  return(new cljs.core.Keyword("zip", "branch?", "zip/branch?", -998880862)).cljs$core$IFn$_invoke$arity$1(cljs.core.meta.call(null, a)).call(null, clojure.zip.node.call(null, a));
+};
+clojure.zip.children = function(a) {
+  if (cljs.core.truth_(clojure.zip.branch_QMARK_.call(null, a))) {
+    return(new cljs.core.Keyword("zip", "children", "zip/children", -940194589)).cljs$core$IFn$_invoke$arity$1(cljs.core.meta.call(null, a)).call(null, clojure.zip.node.call(null, a));
+  }
+  throw "called children on a leaf node";
+};
+clojure.zip.make_node = function(a, b, c) {
+  return(new cljs.core.Keyword("zip", "make-node", "zip/make-node", 1103800591)).cljs$core$IFn$_invoke$arity$1(cljs.core.meta.call(null, a)).call(null, b, c);
+};
+clojure.zip.path = function(a) {
+  return(new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565)).cljs$core$IFn$_invoke$arity$1(a.call(null, 1));
+};
+clojure.zip.lefts = function(a) {
+  return cljs.core.seq.call(null, (new cljs.core.Keyword(null, "l", "l", 1395893423)).cljs$core$IFn$_invoke$arity$1(a.call(null, 1)));
+};
+clojure.zip.rights = function(a) {
+  return(new cljs.core.Keyword(null, "r", "r", -471384190)).cljs$core$IFn$_invoke$arity$1(a.call(null, 1));
+};
+clojure.zip.down = function(a) {
+  if (cljs.core.truth_(clojure.zip.branch_QMARK_.call(null, a))) {
+    var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), d = clojure.zip.children.call(null, a), e = cljs.core.nth.call(null, d, 0, null), f = cljs.core.nthnext.call(null, d, 1);
+    return cljs.core.truth_(d) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [e, new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.PersistentVector.EMPTY, new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565), cljs.core.truth_(c) ? cljs.core.conj.call(null, (new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565)).cljs$core$IFn$_invoke$arity$1(c), b) : new cljs.core.PersistentVector(null, 
+    1, 5, cljs.core.PersistentVector.EMPTY_NODE, [b], null), new cljs.core.Keyword(null, "ppath", "ppath", -1758182784), c, new cljs.core.Keyword(null, "r", "r", -471384190), f], null)], null), cljs.core.meta.call(null, a)) : null;
+  }
+  return null;
+};
+clojure.zip.up = function(a) {
+  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), d = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, c = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "ppath", "ppath", -1758182784)), f = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565)), g = cljs.core.get.call(null, d, new cljs.core.Keyword(null, 
+  "r", "r", -471384190)), d = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "changed?", "changed?", -437828330));
+  return cljs.core.truth_(f) ? (f = cljs.core.peek.call(null, f), cljs.core.with_meta.call(null, cljs.core.truth_(d) ? new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [clojure.zip.make_node.call(null, a, f, cljs.core.concat.call(null, c, cljs.core.cons.call(null, b, g))), cljs.core.truth_(e) ? cljs.core.assoc.call(null, e, new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0) : e], null) : new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, 
+  [f, e], null), cljs.core.meta.call(null, a))) : null;
+};
+clojure.zip.root = function(a) {
+  for (;;) {
+    if (cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "end", "end", -268185958), a.call(null, 1))) {
+      return clojure.zip.node.call(null, a);
+    }
+    var b = clojure.zip.up.call(null, a);
+    if (cljs.core.truth_(b)) {
+      a = b;
+    } else {
+      return clojure.zip.node.call(null, a);
+    }
+  }
+};
+clojure.zip.right = function(a) {
+  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), c = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, d = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "r", "r", -471384190)), f = cljs.core.nth.call(null, e, 0, null), g = cljs.core.nthnext.call(null, e, 1);
+  return cljs.core.truth_(cljs.core.truth_(c) ? e : c) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [f, cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.conj.call(null, d, b), new cljs.core.Keyword(null, "r", "r", -471384190), g)], null), cljs.core.meta.call(null, a)) : null;
+};
+clojure.zip.rightmost = function(a) {
+  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), c = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, d = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "r", "r", -471384190));
+  return cljs.core.truth_(cljs.core.truth_(c) ? e : c) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.last.call(null, e), cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.apply.call(null, cljs.core.conj, d, b, cljs.core.butlast.call(null, e)), new cljs.core.Keyword(null, "r", "r", -471384190), null)], null), cljs.core.meta.call(null, a)) : a;
+};
+clojure.zip.left = function(a) {
+  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), c = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, d = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "r", "r", -471384190));
+  return cljs.core.truth_(cljs.core.truth_(c) ? cljs.core.seq.call(null, d) : c) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.peek.call(null, d), cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.pop.call(null, d), new cljs.core.Keyword(null, "r", "r", -471384190), cljs.core.cons.call(null, b, e))], null), cljs.core.meta.call(null, a)) : null;
+};
+clojure.zip.leftmost = function(a) {
+  var b = cljs.core.nth.call(null, a, 0, null), c = cljs.core.nth.call(null, a, 1, null), c = cljs.core.seq_QMARK_.call(null, c) ? cljs.core.apply.call(null, cljs.core.hash_map, c) : c, d = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423)), e = cljs.core.get.call(null, c, new cljs.core.Keyword(null, "r", "r", -471384190));
+  return cljs.core.truth_(cljs.core.truth_(c) ? cljs.core.seq.call(null, d) : c) ? cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.first.call(null, d), cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.PersistentVector.EMPTY, new cljs.core.Keyword(null, "r", "r", -471384190), cljs.core.concat.call(null, cljs.core.rest.call(null, d), new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, 
+  [b], null), e))], null), cljs.core.meta.call(null, a)) : a;
+};
+clojure.zip.insert_left = function(a, b) {
+  var c = cljs.core.nth.call(null, a, 0, null), d = cljs.core.nth.call(null, a, 1, null), d = cljs.core.seq_QMARK_.call(null, d) ? cljs.core.apply.call(null, cljs.core.hash_map, d) : d, e = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "l", "l", 1395893423));
+  if (null == d) {
+    throw "Insert at top";
+  }
+  return cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c, cljs.core.assoc.call(null, d, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.conj.call(null, e, b), new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0)], null), cljs.core.meta.call(null, a));
+};
+clojure.zip.insert_right = function(a, b) {
+  var c = cljs.core.nth.call(null, a, 0, null), d = cljs.core.nth.call(null, a, 1, null), d = cljs.core.seq_QMARK_.call(null, d) ? cljs.core.apply.call(null, cljs.core.hash_map, d) : d, e = cljs.core.get.call(null, d, new cljs.core.Keyword(null, "r", "r", -471384190));
+  if (null == d) {
+    throw "Insert at top";
+  }
+  return cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c, cljs.core.assoc.call(null, d, new cljs.core.Keyword(null, "r", "r", -471384190), cljs.core.cons.call(null, b, e), new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0)], null), cljs.core.meta.call(null, a));
+};
+clojure.zip.replace = function(a, b) {
+  cljs.core.nth.call(null, a, 0, null);
+  var c = cljs.core.nth.call(null, a, 1, null);
+  return cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [b, cljs.core.assoc.call(null, c, new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0)], null), cljs.core.meta.call(null, a));
+};
+clojure.zip.edit = function() {
+  var a = function(a, b, e) {
+    return clojure.zip.replace.call(null, a, cljs.core.apply.call(null, b, clojure.zip.node.call(null, a), e));
+  }, b = function(b, d, e) {
+    var f = null;
+    2 < arguments.length && (f = cljs.core.array_seq(Array.prototype.slice.call(arguments, 2), 0));
+    return a.call(this, b, d, f);
+  };
+  b.cljs$lang$maxFixedArity = 2;
+  b.cljs$lang$applyTo = function(b) {
+    var d = cljs.core.first(b);
+    b = cljs.core.next(b);
+    var e = cljs.core.first(b);
+    b = cljs.core.rest(b);
+    return a(d, e, b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+clojure.zip.insert_child = function(a, b) {
+  return clojure.zip.replace.call(null, a, clojure.zip.make_node.call(null, a, clojure.zip.node.call(null, a), cljs.core.cons.call(null, b, clojure.zip.children.call(null, a))));
+};
+clojure.zip.append_child = function(a, b) {
+  return clojure.zip.replace.call(null, a, clojure.zip.make_node.call(null, a, clojure.zip.node.call(null, a), cljs.core.concat.call(null, clojure.zip.children.call(null, a), new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [b], null))));
+};
+clojure.zip.next = function(a) {
+  if (cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "end", "end", -268185958), a.call(null, 1))) {
+    return a;
+  }
+  var b;
+  b = clojure.zip.branch_QMARK_.call(null, a);
+  b = cljs.core.truth_(b) ? clojure.zip.down.call(null, a) : b;
+  if (cljs.core.truth_(b)) {
+    return b;
+  }
+  b = clojure.zip.right.call(null, a);
+  if (cljs.core.truth_(b)) {
+    return b;
+  }
+  for (;;) {
+    if (cljs.core.truth_(clojure.zip.up.call(null, a))) {
+      b = clojure.zip.right.call(null, clojure.zip.up.call(null, a));
+      if (cljs.core.truth_(b)) {
+        return b;
+      }
+      a = clojure.zip.up.call(null, a);
+    } else {
+      return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [clojure.zip.node.call(null, a), new cljs.core.Keyword(null, "end", "end", -268185958)], null);
+    }
+  }
+};
+clojure.zip.prev = function(a) {
+  var b = clojure.zip.left.call(null, a);
+  if (cljs.core.truth_(b)) {
+    for (a = b;;) {
+      if (b = clojure.zip.branch_QMARK_.call(null, a), b = cljs.core.truth_(b) ? clojure.zip.down.call(null, a) : b, cljs.core.truth_(b)) {
+        a = clojure.zip.rightmost.call(null, b);
+      } else {
+        return a;
+      }
+    }
+  } else {
+    return clojure.zip.up.call(null, a);
+  }
+};
+clojure.zip.end_QMARK_ = function(a) {
+  return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "end", "end", -268185958), a.call(null, 1));
+};
+clojure.zip.remove = function(a) {
+  cljs.core.nth.call(null, a, 0, null);
+  var b = cljs.core.nth.call(null, a, 1, null), b = cljs.core.seq_QMARK_.call(null, b) ? cljs.core.apply.call(null, cljs.core.hash_map, b) : b, c = cljs.core.get.call(null, b, new cljs.core.Keyword(null, "l", "l", 1395893423)), d = cljs.core.get.call(null, b, new cljs.core.Keyword(null, "ppath", "ppath", -1758182784)), e = cljs.core.get.call(null, b, new cljs.core.Keyword(null, "pnodes", "pnodes", 1739080565)), f = cljs.core.get.call(null, b, new cljs.core.Keyword(null, "r", "r", -471384190));
+  if (null == b) {
+    throw "Remove at top";
+  }
+  if (0 < cljs.core.count.call(null, c)) {
+    for (a = cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.peek.call(null, c), cljs.core.assoc.call(null, b, new cljs.core.Keyword(null, "l", "l", 1395893423), cljs.core.pop.call(null, c), new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0)], null), cljs.core.meta.call(null, a));;) {
+      if (b = clojure.zip.branch_QMARK_.call(null, a), b = cljs.core.truth_(b) ? clojure.zip.down.call(null, a) : b, cljs.core.truth_(b)) {
+        a = clojure.zip.rightmost.call(null, b);
+      } else {
+        return a;
+      }
+    }
+  } else {
+    return cljs.core.with_meta.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [clojure.zip.make_node.call(null, a, cljs.core.peek.call(null, e), f), cljs.core.truth_(d) ? cljs.core.assoc.call(null, d, new cljs.core.Keyword(null, "changed?", "changed?", -437828330), !0) : d], null), cljs.core.meta.call(null, a));
+  }
+};
+hickory.core = {};
+hickory.core.HiccupRepresentable = function() {
+  return{};
+}();
+hickory.core.as_hiccup = function(a) {
+  if (a ? a.hickory$core$HiccupRepresentable$as_hiccup$arity$1 : a) {
+    return a.hickory$core$HiccupRepresentable$as_hiccup$arity$1(a);
+  }
+  var b;
+  b = hickory.core.as_hiccup[goog.typeOf(null == a ? null : a)];
+  if (!b && (b = hickory.core.as_hiccup._, !b)) {
+    throw cljs.core.missing_protocol.call(null, "HiccupRepresentable.as-hiccup", a);
+  }
+  return b.call(null, a);
+};
+hickory.core.HickoryRepresentable = function() {
+  return{};
+}();
+hickory.core.as_hickory = function(a) {
+  if (a ? a.hickory$core$HickoryRepresentable$as_hickory$arity$1 : a) {
+    return a.hickory$core$HickoryRepresentable$as_hickory$arity$1(a);
+  }
+  var b;
+  b = hickory.core.as_hickory[goog.typeOf(null == a ? null : a)];
+  if (!b && (b = hickory.core.as_hickory._, !b)) {
+    throw cljs.core.missing_protocol.call(null, "HickoryRepresentable.as-hickory", a);
+  }
+  return b.call(null, a);
+};
+hickory.core.node_type = function(a) {
+  return Node["" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a) + "_NODE"];
+};
+hickory.core.Attribute = hickory.core.node_type.call(null, "ATTRIBUTE");
+hickory.core.Comment = hickory.core.node_type.call(null, "COMMENT");
+hickory.core.Document = hickory.core.node_type.call(null, "DOCUMENT");
+hickory.core.DocumentType = hickory.core.node_type.call(null, "DOCUMENT_TYPE");
+hickory.core.Element = hickory.core.node_type.call(null, "ELEMENT");
+hickory.core.Text = hickory.core.node_type.call(null, "TEXT");
+hickory.core.extend_type_with_seqable = function(a) {
+  a.prototype.cljs$core$ISeqable$ = !0;
+  return a.prototype.cljs$core$ISeqable$_seq$arity$1 = function(a) {
+    return cljs.core.array_seq.call(null, this);
+  };
+};
+hickory.core.extend_type_with_seqable.call(null, NodeList);
+"undefined" !== typeof NamedNodeMap && hickory.core.extend_type_with_seqable.call(null, NamedNodeMap);
+"undefined" !== typeof MozNamedAttrMap && hickory.core.extend_type_with_seqable.call(null, MozNamedAttrMap);
+hickory.core.format_doctype = function(a) {
+  var b = a.name, c = a.publicId;
+  a = a.systemId;
+  return cljs.core.empty_QMARK_.call(null, c) ? "\x3c!DOCTYPE " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(b) + "\x3e" : goog.string.format('\x3c!DOCTYPE %s PUBLIC "%s" "%s"\x3e', b, c, a);
+};
+hickory.core.HiccupRepresentable.object = !0;
+hickory.core.as_hiccup.object = function(a) {
+  var b = cljs.core._EQ_, c = a.nodeType;
+  if (cljs.core.truth_(b.call(null, hickory.core.Attribute, c))) {
+    return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [hickory.utils.lower_case_keyword.call(null, a.name), a.value], null);
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.Comment, c))) {
+    return "\x3c!--" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a.data) + "--\x3e";
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.Document, c))) {
+    return cljs.core.map.call(null, hickory.core.as_hiccup, a.childNodes);
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.DocumentType, c))) {
+    return hickory.core.format_doctype.call(null, a);
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.Element, c))) {
+    var d = hickory.utils.lower_case_keyword.call(null, a.tagName);
+    return cljs.core.into.call(null, cljs.core.PersistentVector.EMPTY, cljs.core.concat.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [d, cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, hickory.core.as_hiccup, a.attributes))], null), cljs.core.truth_(hickory.utils.unescapable_content.call(null, d)) ? cljs.core.map.call(null, function(a, b, c) {
+      return function(a) {
+        return a.wholeText;
+      };
+    }(d, b, c), a.childNodes) : cljs.core.map.call(null, hickory.core.as_hiccup, a.childNodes)));
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.Text, c))) {
+    return hickory.utils.html_escape.call(null, a.wholeText);
+  }
+  throw Error("No matching clause: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(c));
+};
+hickory.core.HickoryRepresentable.object = !0;
+hickory.core.as_hickory.object = function(a) {
+  var b = cljs.core._EQ_, c = a.nodeType;
+  if (cljs.core.truth_(b.call(null, hickory.core.Attribute, c))) {
+    return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [hickory.utils.lower_case_keyword.call(null, a.name), a.value], null);
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.Comment, c))) {
+    return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "type", "type", 1174270348), new cljs.core.Keyword(null, "comment", "comment", 532206069), new cljs.core.Keyword(null, "content", "content", 15833224), new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [a.data], null)], null);
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.Document, c))) {
+    return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "type", "type", 1174270348), new cljs.core.Keyword(null, "document", "document", -1329188687), new cljs.core.Keyword(null, "content", "content", 15833224), cljs.core.not_empty.call(null, cljs.core.into.call(null, cljs.core.PersistentVector.EMPTY, cljs.core.map.call(null, hickory.core.as_hickory, a.childNodes)))], null);
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.DocumentType, c))) {
+    return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "type", "type", 1174270348), new cljs.core.Keyword(null, "document-type", "document-type", -1309437776), new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null, "name", "name", 1843675177), a.name, new cljs.core.Keyword(null, "publicid", "publicid", 1557995850), a.publicId, new cljs.core.Keyword(null, "systemid", "systemid", -2052878192), a.systemId], 
+    null)], null);
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.Element, c))) {
+    return new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null, "type", "type", 1174270348), new cljs.core.Keyword(null, "element", "element", 1974019749), new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), cljs.core.not_empty.call(null, cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, hickory.core.as_hickory, a.attributes))), new cljs.core.Keyword(null, "tag", "tag", -1290361223), hickory.utils.lower_case_keyword.call(null, a.tagName), 
+    new cljs.core.Keyword(null, "content", "content", 15833224), cljs.core.not_empty.call(null, cljs.core.into.call(null, cljs.core.PersistentVector.EMPTY, cljs.core.map.call(null, hickory.core.as_hickory, a.childNodes)))], null);
+  }
+  if (cljs.core.truth_(b.call(null, hickory.core.Text, c))) {
+    return a.wholeText;
+  }
+  throw Error("No matching clause: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1(c));
+};
+hickory.core.extract_doctype = function(a) {
+  var b = cljs.core.second.call(null, function() {
+    var b = cljs.core.re_find.call(null, /<!DOCTYPE ([^>]*)>/, a);
+    return cljs.core.truth_(b) ? b : cljs.core.re_find.call(null, /<!doctype ([^>]*)>/, a);
+  }());
+  return cljs.core.truth_(b) ? cljs.core.re_find.call(null, /([^\s]*)(\s+PUBLIC\s+[\"]?([^\"]*)[\"]?\s+[\"]?([^\"]*)[\"]?)?/, b) : null;
+};
+hickory.core.remove_el = function(a) {
+  return a.parentNode.removeChild(a);
+};
+hickory.core.parse_dom_with_domparser = function(a) {
+  return "undefined" !== typeof DOMParser ? (new DOMParser).parseFromString(a, "text/html") : null;
+};
+hickory.core.parse_dom_with_write = function(a) {
+  var b = document.implementation.createHTMLDocument(""), c = b.doctype;
+  cljs.core.truth_(hickory.core.extract_doctype.call(null, a)) || hickory.core.remove_el.call(null, c);
+  c = cljs.core.first.call(null, b.head.childNodes);
+  cljs.core.truth_(c) && cljs.core.empty_QMARK_.call(null, c.text) && hickory.core.remove_el.call(null, c);
+  b.write(a);
+  return b;
+};
+hickory.core.parse = function(a) {
+  var b = hickory.core.parse_dom_with_domparser.call(null, a);
+  return cljs.core.truth_(b) ? b : hickory.core.parse_dom_with_write.call(null, a);
+};
+hickory.core.parse_fragment = function(a) {
+  return hickory.core.parse.call(null, a).body.childNodes;
+};
+hickory.convert = {};
+hickory.convert.hiccup_to_hickory = function(a) {
+  return hickory.core.as_hickory.call(null, hickory.core.parse.call(null, hickory.render.hiccup_to_html.call(null, a)));
+};
+hickory.convert.hiccup_fragment_to_hickory = function(a) {
+  return cljs.core.map.call(null, hickory.core.as_hickory, hickory.core.parse_fragment.call(null, hickory.render.hiccup_to_html.call(null, a)));
+};
+hickory.convert.hickory_to_hiccup = function hickory_to_hiccup(b) {
+  if ("string" === typeof b) {
+    return hickory.utils.html_escape.call(null, b);
+  }
+  switch((new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b) instanceof cljs.core.Keyword ? (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b).fqn : null) {
+    case "comment":
+      return "\x3c!--" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.apply.call(null, cljs.core.str, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b))) + "--\x3e";
+    case "element":
+      if (cljs.core.truth_(hickory.utils.unescapable_content.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b)))) {
+        if (cljs.core.every_QMARK_.call(null, cljs.core.string_QMARK_, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b))) {
+          return cljs.core.apply.call(null, cljs.core.vector, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b), cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)), (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b));
+        }
+        throw cljs.core.ex_info.call(null, "An unescapable content tag had non-string children.", new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "error-location", "error-location", 540097671), b], null));
+      }
+      return cljs.core.apply.call(null, cljs.core.vector, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(b), cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(b)), cljs.core.map.call(null, hickory_to_hiccup, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b)));
+    case "document-type":
+      return hickory.utils.render_doctype.call(null, cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "name", "name", 1843675177)], null)), cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "publicid", 
+      "publicid", 1557995850)], null)), cljs.core.get_in.call(null, b, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), new cljs.core.Keyword(null, "systemid", "systemid", -2052878192)], null)));
+    case "document":
+      return cljs.core.mapv.call(null, hickory_to_hiccup, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(b));
+    default:
+      throw Error("No matching clause: " + cljs.core.str.cljs$core$IFn$_invoke$arity$1((new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(b)));;
+  }
 };
 var bmotion_om = {input:{}};
 bmotion_om.input.html_to_react = cljs.core.PersistentHashMap.fromArrays([new cljs.core.Keyword(null, "thead", "thead", -291875296), new cljs.core.Keyword(null, "path", "path", -188191168), new cljs.core.Keyword(null, "del", "del", 574975584), new cljs.core.Keyword(null, "fieldset", "fieldset", -1949770816), new cljs.core.Keyword(null, "q", "q", 689001697), new cljs.core.Keyword(null, "figure", "figure", -561394079), new cljs.core.Keyword(null, "aside", "aside", 1414397537), new cljs.core.Keyword(null, 
@@ -21688,6 +21717,2728 @@ cognitect.transit.link = function(a) {
 cognitect.transit.link_QMARK_ = function(a) {
   return com.cognitect.transit.types.isLink.call(null, a);
 };
+clojure.walk = {};
+clojure.walk.walk = function(a, b, c) {
+  return cljs.core.seq_QMARK_.call(null, c) ? b.call(null, cljs.core.doall.call(null, cljs.core.map.call(null, a, c))) : cljs.core.coll_QMARK_.call(null, c) ? b.call(null, cljs.core.into.call(null, cljs.core.empty.call(null, c), cljs.core.map.call(null, a, c))) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? b.call(null, c) : null;
+};
+clojure.walk.postwalk = function postwalk(b, c) {
+  return clojure.walk.walk.call(null, cljs.core.partial.call(null, postwalk, b), b, c);
+};
+clojure.walk.prewalk = function prewalk(b, c) {
+  return clojure.walk.walk.call(null, cljs.core.partial.call(null, prewalk, b), cljs.core.identity, b.call(null, c));
+};
+clojure.walk.keywordize_keys = function(a) {
+  return clojure.walk.postwalk.call(null, function(a) {
+    return function(c) {
+      return cljs.core.map_QMARK_.call(null, c) ? cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, a, c)) : c;
+    };
+  }(function(a) {
+    var c = cljs.core.nth.call(null, a, 0, null);
+    a = cljs.core.nth.call(null, a, 1, null);
+    return "string" === typeof c ? new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.keyword.call(null, c), a], null) : new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c, a], null);
+  }), a);
+};
+clojure.walk.stringify_keys = function(a) {
+  return clojure.walk.postwalk.call(null, function(a) {
+    return function(c) {
+      return cljs.core.map_QMARK_.call(null, c) ? cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, a, c)) : c;
+    };
+  }(function(a) {
+    var c = cljs.core.nth.call(null, a, 0, null);
+    a = cljs.core.nth.call(null, a, 1, null);
+    return c instanceof cljs.core.Keyword ? new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.name.call(null, c), a], null) : new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c, a], null);
+  }), a);
+};
+clojure.walk.prewalk_replace = function(a, b) {
+  return clojure.walk.prewalk.call(null, function(b) {
+    return cljs.core.contains_QMARK_.call(null, a, b) ? a.call(null, b) : b;
+  }, b);
+};
+clojure.walk.postwalk_replace = function(a, b) {
+  return clojure.walk.postwalk.call(null, function(b) {
+    return cljs.core.contains_QMARK_.call(null, a, b) ? a.call(null, b) : b;
+  }, b);
+};
+bmotion_om.probmotion = {};
+bmotion_om.probmotion.attr_react_replacer = function(a) {
+  return cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, function(a) {
+    var c = cljs.core.nth.call(null, a, 0, null);
+    a = cljs.core.nth.call(null, a, 1, null);
+    return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.get.call(null, bmotion_om.input.attr_to_react, c, c), a], null);
+  }, a));
+};
+bmotion_om.probmotion.styles_to_clj = function(a) {
+  return cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, function() {
+    var b = function d(a) {
+      return new cljs.core.LazySeq(null, function() {
+        for (;;) {
+          var b = cljs.core.seq.call(null, a);
+          if (b) {
+            if (cljs.core.chunked_seq_QMARK_.call(null, b)) {
+              var g = cljs.core.chunk_first.call(null, b), h = cljs.core.count.call(null, g), k = cljs.core.chunk_buffer.call(null, h);
+              a: {
+                for (var l = 0;;) {
+                  if (l < h) {
+                    var m = cljs.core._nth.call(null, g, l), n = cljs.core.nth.call(null, m, 0, null), m = cljs.core.nth.call(null, m, 1, null);
+                    cljs.core.chunk_append.call(null, k, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.keyword.call(null, n), m], null));
+                    l += 1;
+                  } else {
+                    g = !0;
+                    break a;
+                  }
+                }
+                g = void 0;
+              }
+              return g ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), d.call(null, cljs.core.chunk_rest.call(null, b))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), null);
+            }
+            g = cljs.core.first.call(null, b);
+            k = cljs.core.nth.call(null, g, 0, null);
+            g = cljs.core.nth.call(null, g, 1, null);
+            return cljs.core.cons.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.keyword.call(null, k), g], null), d.call(null, cljs.core.rest.call(null, b)));
+          }
+          return null;
+        }
+      }, null, null);
+    };
+    return b.call(null, cljs.core.map.call(null, function(a) {
+      return function(a) {
+        return clojure.string.split.call(null, a, /:/);
+      };
+    }(b), clojure.string.split.call(null, a, /;/)));
+  }());
+};
+bmotion_om.probmotion.styles_to_str = function(a) {
+  return cljs.core.apply.call(null, cljs.core.str, cljs.core.interpose.call(null, ";", cljs.core.map.call(null, function(a) {
+    var c = cljs.core.nth.call(null, a, 0, null);
+    a = cljs.core.nth.call(null, a, 1, null);
+    return "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, c)) + ":" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a);
+  }, a)));
+};
+bmotion_om.probmotion.merge_styles = function(a, b) {
+  var c = bmotion_om.probmotion.styles_to_clj.call(null, a);
+  return cljs.core.merge.call(null, c, b);
+};
+bmotion_om.probmotion.merge_element = function(a, b) {
+  var c = (new cljs.core.Keyword(null, "attributes", "attributes", -74013604)).cljs$core$IFn$_invoke$arity$1(b), d = (new cljs.core.Keyword(null, "styles", "styles", 1954480375)).cljs$core$IFn$_invoke$arity$1(b);
+  return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.merge.call(null, a, c), bmotion_om.probmotion.merge_styles.call(null, (new cljs.core.Keyword(null, "style", "style", -496642736)).cljs$core$IFn$_invoke$arity$1(a), d)], null);
+};
+bmotion_om.probmotion.mk_react_attr = function(a, b) {
+  var c = bmotion_om.probmotion.merge_element.call(null, a, b), d = cljs.core.nth.call(null, c, 0, null), c = cljs.core.nth.call(null, c, 1, null);
+  return cljs.core.clj__GT_js.call(null, cljs.core.assoc.call(null, bmotion_om.probmotion.attr_react_replacer.call(null, d), new cljs.core.Keyword(null, "style", "style", -496642736), bmotion_om.probmotion.attr_react_replacer.call(null, c)));
+};
+bmotion_om.probmotion.mk_innerhtml_attr = function(a, b) {
+  var c = bmotion_om.probmotion.merge_element.call(null, a, b), d = cljs.core.nth.call(null, c, 0, null), c = cljs.core.nth.call(null, c, 1, null);
+  return cljs.core.assoc.call(null, d, new cljs.core.Keyword(null, "style", "style", -496642736), bmotion_om.probmotion.styles_to_str.call(null, c));
+};
+bmotion_om.probmotion.mk_dom = function() {
+  var a = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), b = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), c = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), d = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), e = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", -1053470341), cljs.core.get_global_hierarchy.call(null));
+  return new cljs.core.MultiFn("mk-dom", function(a, b, c, d, e) {
+    return function(a) {
+      return(new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(a);
+    };
+  }(a, b, c, d, e), new cljs.core.Keyword(null, "default", "default", -1987822328), e, a, b, c, d);
+}();
+bmotion_om.probmotion.mk_element = function() {
+  var a = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), b = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), c = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), d = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), e = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", -1053470341), cljs.core.get_global_hierarchy.call(null));
+  return new cljs.core.MultiFn("mk-element", function(a, b, c, d, e) {
+    return function(a) {
+      return(new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(a);
+    };
+  }(a, b, c, d, e), new cljs.core.Keyword(null, "default", "default", -1987822328), e, a, b, c, d);
+}();
+cljs.core._add_method.call(null, bmotion_om.probmotion.mk_dom, new cljs.core.Keyword(null, "element", "element", 1974019749), function(a) {
+  return bmotion_om.probmotion.mk_element.call(null, a);
+});
+cljs.core._add_method.call(null, bmotion_om.probmotion.mk_dom, new cljs.core.Keyword(null, "comment", "comment", 532206069), function(a) {
+  return function(a) {
+    return null;
+  };
+});
+cljs.core._add_method.call(null, bmotion_om.probmotion.mk_dom, new cljs.core.Keyword(null, "default", "default", -1987822328), function(a) {
+  return function(a) {
+    return function(c) {
+      return a;
+    };
+  }(cljs.core.truth_(clojure.string.blank_QMARK_.call(null, a)) ? null : "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a));
+});
+bmotion_om.probmotion.get_react_dom_fn = function(a, b, c) {
+  a = a.call(null, bmotion_om.input.html_to_react);
+  var d = (new cljs.core.Keyword(null, "data-bmsid", "data-bmsid", 1533988713)).cljs$core$IFn$_invoke$arity$1(b), e = cljs.core.keyword.call(null, d);
+  return function(a, d, e) {
+    return function(d) {
+      var g = cljs.core.get_in.call(null, d, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [e], null)), m = cljs.core.get_in.call(null, d, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [e, new cljs.core.Keyword(null, "content", "content", 15833224)], null)), g = bmotion_om.probmotion.mk_react_attr.call(null, b, g);
+      return cljs.core.apply.call(null, a, g, null == m ? c.call(null, d) : cljs.core._conj.call(null, cljs.core.List.EMPTY, m));
+    };
+  }(a, d, e);
+};
+cljs.core._add_method.call(null, bmotion_om.probmotion.mk_element, new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839), function(a) {
+  var b = (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(a), c = (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(a);
+  a = (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(a);
+  var d = cljs.core.mapv.call(null, bmotion_om.probmotion.mk_dom, a);
+  return bmotion_om.probmotion.get_react_dom_fn.call(null, b, c, function(a, b, c, d) {
+    return function(k) {
+      return function(a, b, c, d) {
+        return function q(e) {
+          return new cljs.core.LazySeq(null, function(a, b, c, d) {
+            return function() {
+              for (;;) {
+                var a = cljs.core.seq.call(null, e);
+                if (a) {
+                  if (cljs.core.chunked_seq_QMARK_.call(null, a)) {
+                    var b = cljs.core.chunk_first.call(null, a), c = cljs.core.count.call(null, b), d = cljs.core.chunk_buffer.call(null, c);
+                    a: {
+                      for (var f = 0;;) {
+                        if (f < c) {
+                          var g = cljs.core._nth.call(null, b, f);
+                          cljs.core.chunk_append.call(null, d, g.call(null, k));
+                          f += 1;
+                        } else {
+                          b = !0;
+                          break a;
+                        }
+                      }
+                      b = void 0;
+                    }
+                    return b ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, d), q.call(null, cljs.core.chunk_rest.call(null, a))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, d), null);
+                  }
+                  d = cljs.core.first.call(null, a);
+                  return cljs.core.cons.call(null, d.call(null, k), q.call(null, cljs.core.rest.call(null, a)));
+                }
+                return null;
+              }
+            };
+          }(a, b, c, d), null, null);
+        };
+      }(a, b, c, d).call(null, d);
+    };
+  }(b, c, a, d));
+});
+cljs.core._add_method.call(null, bmotion_om.probmotion.mk_element, new cljs.core.Keyword(null, "image", "image", -58725096), function(a) {
+  var b = (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(a);
+  a = (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(a);
+  var c = (new cljs.core.Keyword(null, "data-bmsid", "data-bmsid", 1533988713)).cljs$core$IFn$_invoke$arity$1(a), d = cljs.core.keyword.call(null, c);
+  return function(a, b, c, d) {
+    return function(c) {
+      c = cljs.core.get_in.call(null, c, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [d], null));
+      c = bmotion_om.probmotion.mk_innerhtml_attr.call(null, b, c);
+      c = hickory.render.hiccup_to_html.call(null, cljs.core._conj.call(null, cljs.core.List.EMPTY, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [a, c], null)));
+      return React.DOM.g({dangerouslySetInnerHTML:{__html:c}}, null);
+    };
+  }(b, a, c, d);
+});
+cljs.core._add_method.call(null, bmotion_om.probmotion.mk_element, new cljs.core.Keyword(null, "head", "head", -771383919), function(a) {
+  return function(a) {
+    return null;
+  };
+});
+cljs.core._add_method.call(null, bmotion_om.probmotion.mk_element, new cljs.core.Keyword(null, "default", "default", -1987822328), function(a) {
+  return function(a) {
+    return null;
+  };
+});
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "html", "html", -998796897), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "body", "body", -2049205669), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "button", "button", 1456579943), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "canvas", "canvas", -1798817489), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "caption", "caption", -855383902), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "cite", "cite", 1909439996), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "code", "code", 1586293142), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "col", "col", -1959363084), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "colgroup", "colgroup", 651118645), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "data", "data", -232669377), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "datalist", "datalist", -1235043474), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "dd", "dd", -1340437629), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "del", "del", 574975584), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "details", "details", 1956795411), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "dfn", "dfn", 241908167), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "dialog", "dialog", 1415150135), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "dl", "dl", -2140151713), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "dt", "dt", -368444759), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "em", "em", 707813035), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "embed", "embed", -1354913349), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "fieldset", "fieldset", -1949770816), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "figcaption", "figcaption", -1790122047), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "figure", "figure", -561394079), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "footer", "footer", 1606445390), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "form", "form", -1624062471), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h1", "h1", -1896887462), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h2", "h2", -372662728), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h3", "h3", 2067611163), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h4", "h4", 2004862993), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h5", "h5", -1829156625), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "h6", "h6", 557293780), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "head", "head", -771383919), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "header", "header", 119441134), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "hr", "hr", 1377740067), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "html", "html", -998796897), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "i", "i", -1386841315), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "iframe", "iframe", 884422026), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "img", "img", 1442687358), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "input", "input", 556931961), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "ins", "ins", -1021983570), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "kbd", "kbd", 316156875), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "keygen", "keygen", -571693253), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "label", "label", 1718410804), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "legend", "legend", -1027192245), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "li", "li", 723558921), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "link", "link", -1769163468), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "main", "main", -2117802661), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "map", "map", 1371690461), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "mark", "mark", -373816345), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "menu", "menu", 352255198), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "menuitem", "menuitem", 1004047353), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "meta", "meta", 1499536964), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "meter", "meter", -187641611), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "nav", "nav", 719540477), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "noscript", "noscript", -704777289), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "object", "object", 1474613949), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "ol", "ol", 932524051), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "optgroup", "optgroup", 1738282218), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "option", "option", 65132272), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "output", "output", -1105869043), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "p", "p", 151049309), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "param", "param", 2013631823), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "pre", "pre", 2118456869), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "progress", "progress", 244323547), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "q", "q", 689001697), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "rp", "rp", 2006698083), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "rt", "rt", 623480692), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "ruby", "ruby", 2000737661), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "s", "s", 1705939918), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "samp", "samp", 1506141136), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "script", "script", -1304443801), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "section", "section", -300141526), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "select", "select", 1147833503), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "small", "small", 2133478704), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "source", "source", -433931539), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "span", "span", 1394872991), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "strong", "strong", 269529E3), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "style", "style", -496642736), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "sub", "sub", -2093760025), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "summary", "summary", 380847952), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "sup", "sup", -2039492346), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "table", "table", -564943036), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "tbody", "tbody", -80678300), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "td", "td", 1479933353), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "textarea", "textarea", -650375824), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "tfoot", "tfoot", -701599890), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "th", "th", -545608566), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "thead", "thead", -291875296), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "time", "time", 1385887882), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "title", "title", 636505583), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "tr", "tr", -1424774646), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "track", "track", 195787487), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "u", "u", -1156634785), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "ul", "ul", -1349521403), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "var", "var", -769682797), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "video", "video", 156888130), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "wbr", "wbr", 228661800), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "circle", "circle", 1903212362), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "defs", "defs", 1398449717), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "ellipse", "ellipse", 1135891702), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "g", "g", 1738089905), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "line", "line", 212345235), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "linearGradient", "linearGradient", 1711964727), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "mask", "mask", -585748447), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "path", "path", -188191168), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "pattern", "pattern", 242135423), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "polygon", "polygon", 837053759), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "polyline", "polyline", -1731551044), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "radialGradient", "radialGradient", 1402247193), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "rect", "rect", -108902628), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "stop", "stop", -2140911342), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "svg", "svg", 856789142), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "text", "text", -1790561697), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+cljs.core.derive.call(null, new cljs.core.Keyword(null, "tspan", "tspan", -1557853197), new cljs.core.Keyword("bmotion-om.probmotion", "supported", "bmotion-om.probmotion/supported", -748338839));
+bmotion_om.probmotion.get_make_dom_fn = function(a) {
+  cljs.core.println.call(null, "Going to create new react dom ...");
+  a = cljs.core.first.call(null, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(hickory.core.as_hickory.call(null, hickory.core.parse.call(null, a))));
+  return bmotion_om.probmotion.mk_dom.call(null, a);
+};
+bmotion_om.probmotion.get_make_dom_fn_mem = cljs.core.memoize.call(null, bmotion_om.probmotion.get_make_dom_fn);
+bmotion_om.probmotion.probmotion_view = function probmotion_view(b, c, d) {
+  var e = cljs.core.seq_QMARK_.call(null, d) ? cljs.core.apply.call(null, cljs.core.hash_map, d) : d, f = cljs.core.get.call(null, e, new cljs.core.Keyword(null, "gui-id", "gui-id", -352775023));
+  "undefined" === typeof bmotion_om.probmotion.t7956 && (bmotion_om.probmotion.t7956 = function(b, c, d, e, f, n, p, r) {
+    this.gui_id = b;
+    this.opts = c;
+    this.map__7955 = d;
+    this.p__7948 = e;
+    this.owner = f;
+    this.app = n;
+    this.probmotion_view = p;
+    this.meta7957 = r;
+    this.cljs$lang$protocol_mask$partition1$ = 0;
+    this.cljs$lang$protocol_mask$partition0$ = 393216;
+  }, bmotion_om.probmotion.t7956.cljs$lang$type = !0, bmotion_om.probmotion.t7956.cljs$lang$ctorStr = "bmotion-om.probmotion/t7956", bmotion_om.probmotion.t7956.cljs$lang$ctorPrWriter = function(b, c, d, e) {
+    return function(b, c, d) {
+      return cljs.core._write.call(null, c, "bmotion-om.probmotion/t7956");
+    };
+  }(d, e, e, f), bmotion_om.probmotion.t7956.prototype.om$core$IRenderState$ = !0, bmotion_om.probmotion.t7956.prototype.om$core$IRenderState$render_state$arity$2 = function(b, c, d, e) {
+    return function(b, c) {
+      cljs.core.seq_QMARK_.call(null, c) && cljs.core.apply.call(null, cljs.core.hash_map, c);
+      cljs.core.println.call(null, "Rendering (", this.gui_id, ") ...");
+      var d = cljs.core.keyword.call(null, this.gui_id), e = cljs.core.get_in.call(null, this.app, new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "probmotion", "probmotion", -2112494948), d, new cljs.core.Keyword(null, "html", "html", -998796897)], null)), d = cljs.core.get_in.call(null, this.app, new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "probmotion", "probmotion", 
+      -2112494948), d, new cljs.core.Keyword(null, "observers", "observers", 841951845)], null));
+      return bmotion_om.probmotion.get_make_dom_fn_mem.call(null, e).call(null, d);
+    };
+  }(d, e, e, f), bmotion_om.probmotion.t7956.prototype.om$core$IWillMount$ = !0, bmotion_om.probmotion.t7956.prototype.om$core$IWillMount$will_mount$arity$1 = function(b, c, d, e) {
+    return function(b) {
+      return cljs.core.PersistentArrayMap.EMPTY;
+    };
+  }(d, e, e, f), bmotion_om.probmotion.t7956.prototype.om$core$IInitState$ = !0, bmotion_om.probmotion.t7956.prototype.om$core$IInitState$init_state$arity$1 = function(b, c, d, e) {
+    return function(b) {
+      return cljs.core.PersistentArrayMap.EMPTY;
+    };
+  }(d, e, e, f), bmotion_om.probmotion.t7956.prototype.cljs$core$IMeta$_meta$arity$1 = function(b, c, d, e) {
+    return function(b) {
+      return this.meta7957;
+    };
+  }(d, e, e, f), bmotion_om.probmotion.t7956.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(b, c, d, e) {
+    return function(b, c) {
+      return new bmotion_om.probmotion.t7956(this.gui_id, this.opts, this.map__7955, this.p__7948, this.owner, this.app, this.probmotion_view, c);
+    };
+  }(d, e, e, f), bmotion_om.probmotion.__GT_t7956 = function(b, c, d, e) {
+    return function(b, c, d, e, f, g, h, k) {
+      return new bmotion_om.probmotion.t7956(b, c, d, e, f, g, h, k);
+    };
+  }(d, e, e, f));
+  return new bmotion_om.probmotion.t7956(f, e, e, d, c, b, probmotion_view, null);
+};
+goog.userAgent = {};
+goog.userAgent.ASSUME_IE = !1;
+goog.userAgent.ASSUME_GECKO = !1;
+goog.userAgent.ASSUME_WEBKIT = !1;
+goog.userAgent.ASSUME_MOBILE_WEBKIT = !1;
+goog.userAgent.ASSUME_OPERA = !1;
+goog.userAgent.ASSUME_ANY_VERSION = !1;
+goog.userAgent.BROWSER_KNOWN_ = goog.userAgent.ASSUME_IE || goog.userAgent.ASSUME_GECKO || goog.userAgent.ASSUME_MOBILE_WEBKIT || goog.userAgent.ASSUME_WEBKIT || goog.userAgent.ASSUME_OPERA;
+goog.userAgent.getUserAgentString = function() {
+  return goog.global.navigator ? goog.global.navigator.userAgent : null;
+};
+goog.userAgent.getNavigator = function() {
+  return goog.global.navigator;
+};
+goog.userAgent.init_ = function() {
+  goog.userAgent.detectedOpera_ = !1;
+  goog.userAgent.detectedIe_ = !1;
+  goog.userAgent.detectedWebkit_ = !1;
+  goog.userAgent.detectedMobile_ = !1;
+  goog.userAgent.detectedGecko_ = !1;
+  var a;
+  if (!goog.userAgent.BROWSER_KNOWN_ && (a = goog.userAgent.getUserAgentString())) {
+    var b = goog.userAgent.getNavigator();
+    goog.userAgent.detectedOpera_ = goog.string.startsWith(a, "Opera");
+    goog.userAgent.detectedIe_ = !goog.userAgent.detectedOpera_ && (goog.string.contains(a, "MSIE") || goog.string.contains(a, "Trident"));
+    goog.userAgent.detectedWebkit_ = !goog.userAgent.detectedOpera_ && goog.string.contains(a, "WebKit");
+    goog.userAgent.detectedMobile_ = goog.userAgent.detectedWebkit_ && goog.string.contains(a, "Mobile");
+    goog.userAgent.detectedGecko_ = !goog.userAgent.detectedOpera_ && !goog.userAgent.detectedWebkit_ && !goog.userAgent.detectedIe_ && "Gecko" == b.product;
+  }
+};
+goog.userAgent.BROWSER_KNOWN_ || goog.userAgent.init_();
+goog.userAgent.OPERA = goog.userAgent.BROWSER_KNOWN_ ? goog.userAgent.ASSUME_OPERA : goog.userAgent.detectedOpera_;
+goog.userAgent.IE = goog.userAgent.BROWSER_KNOWN_ ? goog.userAgent.ASSUME_IE : goog.userAgent.detectedIe_;
+goog.userAgent.GECKO = goog.userAgent.BROWSER_KNOWN_ ? goog.userAgent.ASSUME_GECKO : goog.userAgent.detectedGecko_;
+goog.userAgent.WEBKIT = goog.userAgent.BROWSER_KNOWN_ ? goog.userAgent.ASSUME_WEBKIT || goog.userAgent.ASSUME_MOBILE_WEBKIT : goog.userAgent.detectedWebkit_;
+goog.userAgent.MOBILE = goog.userAgent.ASSUME_MOBILE_WEBKIT || goog.userAgent.detectedMobile_;
+goog.userAgent.SAFARI = goog.userAgent.WEBKIT;
+goog.userAgent.determinePlatform_ = function() {
+  var a = goog.userAgent.getNavigator();
+  return a && a.platform || "";
+};
+goog.userAgent.PLATFORM = goog.userAgent.determinePlatform_();
+goog.userAgent.ASSUME_MAC = !1;
+goog.userAgent.ASSUME_WINDOWS = !1;
+goog.userAgent.ASSUME_LINUX = !1;
+goog.userAgent.ASSUME_X11 = !1;
+goog.userAgent.ASSUME_ANDROID = !1;
+goog.userAgent.ASSUME_IPHONE = !1;
+goog.userAgent.ASSUME_IPAD = !1;
+goog.userAgent.PLATFORM_KNOWN_ = goog.userAgent.ASSUME_MAC || goog.userAgent.ASSUME_WINDOWS || goog.userAgent.ASSUME_LINUX || goog.userAgent.ASSUME_X11 || goog.userAgent.ASSUME_ANDROID || goog.userAgent.ASSUME_IPHONE || goog.userAgent.ASSUME_IPAD;
+goog.userAgent.initPlatform_ = function() {
+  goog.userAgent.detectedMac_ = goog.string.contains(goog.userAgent.PLATFORM, "Mac");
+  goog.userAgent.detectedWindows_ = goog.string.contains(goog.userAgent.PLATFORM, "Win");
+  goog.userAgent.detectedLinux_ = goog.string.contains(goog.userAgent.PLATFORM, "Linux");
+  goog.userAgent.detectedX11_ = !!goog.userAgent.getNavigator() && goog.string.contains(goog.userAgent.getNavigator().appVersion || "", "X11");
+  var a = goog.userAgent.getUserAgentString();
+  goog.userAgent.detectedAndroid_ = !!a && goog.string.contains(a, "Android");
+  goog.userAgent.detectedIPhone_ = !!a && goog.string.contains(a, "iPhone");
+  goog.userAgent.detectedIPad_ = !!a && goog.string.contains(a, "iPad");
+};
+goog.userAgent.PLATFORM_KNOWN_ || goog.userAgent.initPlatform_();
+goog.userAgent.MAC = goog.userAgent.PLATFORM_KNOWN_ ? goog.userAgent.ASSUME_MAC : goog.userAgent.detectedMac_;
+goog.userAgent.WINDOWS = goog.userAgent.PLATFORM_KNOWN_ ? goog.userAgent.ASSUME_WINDOWS : goog.userAgent.detectedWindows_;
+goog.userAgent.LINUX = goog.userAgent.PLATFORM_KNOWN_ ? goog.userAgent.ASSUME_LINUX : goog.userAgent.detectedLinux_;
+goog.userAgent.X11 = goog.userAgent.PLATFORM_KNOWN_ ? goog.userAgent.ASSUME_X11 : goog.userAgent.detectedX11_;
+goog.userAgent.ANDROID = goog.userAgent.PLATFORM_KNOWN_ ? goog.userAgent.ASSUME_ANDROID : goog.userAgent.detectedAndroid_;
+goog.userAgent.IPHONE = goog.userAgent.PLATFORM_KNOWN_ ? goog.userAgent.ASSUME_IPHONE : goog.userAgent.detectedIPhone_;
+goog.userAgent.IPAD = goog.userAgent.PLATFORM_KNOWN_ ? goog.userAgent.ASSUME_IPAD : goog.userAgent.detectedIPad_;
+goog.userAgent.determineVersion_ = function() {
+  var a = "", b;
+  goog.userAgent.OPERA && goog.global.opera ? (a = goog.global.opera.version, a = "function" == typeof a ? a() : a) : (goog.userAgent.GECKO ? b = /rv\:([^\);]+)(\)|;)/ : goog.userAgent.IE ? b = /\b(?:MSIE|rv)[: ]([^\);]+)(\)|;)/ : goog.userAgent.WEBKIT && (b = /WebKit\/(\S+)/), b && (a = (a = b.exec(goog.userAgent.getUserAgentString())) ? a[1] : ""));
+  return goog.userAgent.IE && (b = goog.userAgent.getDocumentMode_(), b > parseFloat(a)) ? String(b) : a;
+};
+goog.userAgent.getDocumentMode_ = function() {
+  var a = goog.global.document;
+  return a ? a.documentMode : void 0;
+};
+goog.userAgent.VERSION = goog.userAgent.determineVersion_();
+goog.userAgent.compare = function(a, b) {
+  return goog.string.compareVersions(a, b);
+};
+goog.userAgent.isVersionOrHigherCache_ = {};
+goog.userAgent.isVersionOrHigher = function(a) {
+  return goog.userAgent.ASSUME_ANY_VERSION || goog.userAgent.isVersionOrHigherCache_[a] || (goog.userAgent.isVersionOrHigherCache_[a] = 0 <= goog.string.compareVersions(goog.userAgent.VERSION, a));
+};
+goog.userAgent.isVersion = goog.userAgent.isVersionOrHigher;
+goog.userAgent.isDocumentModeOrHigher = function(a) {
+  return goog.userAgent.IE && goog.userAgent.DOCUMENT_MODE >= a;
+};
+goog.userAgent.isDocumentMode = goog.userAgent.isDocumentModeOrHigher;
+goog.userAgent.DOCUMENT_MODE = function() {
+  var a = goog.global.document;
+  return a && goog.userAgent.IE ? goog.userAgent.getDocumentMode_() || ("CSS1Compat" == a.compatMode ? parseInt(goog.userAgent.VERSION, 10) : 5) : void 0;
+}();
+goog.dom.BrowserFeature = {CAN_ADD_NAME_OR_TYPE_ATTRIBUTES:!goog.userAgent.IE || goog.userAgent.isDocumentModeOrHigher(9), CAN_USE_CHILDREN_ATTRIBUTE:!goog.userAgent.GECKO && !goog.userAgent.IE || goog.userAgent.IE && goog.userAgent.isDocumentModeOrHigher(9) || goog.userAgent.GECKO && goog.userAgent.isVersionOrHigher("1.9.1"), CAN_USE_INNER_TEXT:goog.userAgent.IE && !goog.userAgent.isVersionOrHigher("9"), CAN_USE_PARENT_ELEMENT_PROPERTY:goog.userAgent.IE || goog.userAgent.OPERA || goog.userAgent.WEBKIT, 
+INNER_HTML_NEEDS_SCOPED_ELEMENT:goog.userAgent.IE};
+goog.dom.TagName = {A:"A", ABBR:"ABBR", ACRONYM:"ACRONYM", ADDRESS:"ADDRESS", APPLET:"APPLET", AREA:"AREA", ARTICLE:"ARTICLE", ASIDE:"ASIDE", AUDIO:"AUDIO", B:"B", BASE:"BASE", BASEFONT:"BASEFONT", BDI:"BDI", BDO:"BDO", BIG:"BIG", BLOCKQUOTE:"BLOCKQUOTE", BODY:"BODY", BR:"BR", BUTTON:"BUTTON", CANVAS:"CANVAS", CAPTION:"CAPTION", CENTER:"CENTER", CITE:"CITE", CODE:"CODE", COL:"COL", COLGROUP:"COLGROUP", COMMAND:"COMMAND", DATA:"DATA", DATALIST:"DATALIST", DD:"DD", DEL:"DEL", DETAILS:"DETAILS", DFN:"DFN", 
+DIALOG:"DIALOG", DIR:"DIR", DIV:"DIV", DL:"DL", DT:"DT", EM:"EM", EMBED:"EMBED", FIELDSET:"FIELDSET", FIGCAPTION:"FIGCAPTION", FIGURE:"FIGURE", FONT:"FONT", FOOTER:"FOOTER", FORM:"FORM", FRAME:"FRAME", FRAMESET:"FRAMESET", H1:"H1", H2:"H2", H3:"H3", H4:"H4", H5:"H5", H6:"H6", HEAD:"HEAD", HEADER:"HEADER", HGROUP:"HGROUP", HR:"HR", HTML:"HTML", I:"I", IFRAME:"IFRAME", IMG:"IMG", INPUT:"INPUT", INS:"INS", ISINDEX:"ISINDEX", KBD:"KBD", KEYGEN:"KEYGEN", LABEL:"LABEL", LEGEND:"LEGEND", LI:"LI", LINK:"LINK", 
+MAP:"MAP", MARK:"MARK", MATH:"MATH", MENU:"MENU", META:"META", METER:"METER", NAV:"NAV", NOFRAMES:"NOFRAMES", NOSCRIPT:"NOSCRIPT", OBJECT:"OBJECT", OL:"OL", OPTGROUP:"OPTGROUP", OPTION:"OPTION", OUTPUT:"OUTPUT", P:"P", PARAM:"PARAM", PRE:"PRE", PROGRESS:"PROGRESS", Q:"Q", RP:"RP", RT:"RT", RUBY:"RUBY", S:"S", SAMP:"SAMP", SCRIPT:"SCRIPT", SECTION:"SECTION", SELECT:"SELECT", SMALL:"SMALL", SOURCE:"SOURCE", SPAN:"SPAN", STRIKE:"STRIKE", STRONG:"STRONG", STYLE:"STYLE", SUB:"SUB", SUMMARY:"SUMMARY", 
+SUP:"SUP", SVG:"SVG", TABLE:"TABLE", TBODY:"TBODY", TD:"TD", TEXTAREA:"TEXTAREA", TFOOT:"TFOOT", TH:"TH", THEAD:"THEAD", TIME:"TIME", TITLE:"TITLE", TR:"TR", TRACK:"TRACK", TT:"TT", U:"U", UL:"UL", VAR:"VAR", VIDEO:"VIDEO", WBR:"WBR"};
+goog.dom.classes = {};
+goog.dom.classes.set = function(a, b) {
+  a.className = b;
+};
+goog.dom.classes.get = function(a) {
+  a = a.className;
+  return goog.isString(a) && a.match(/\S+/g) || [];
+};
+goog.dom.classes.add = function(a, b) {
+  var c = goog.dom.classes.get(a), d = goog.array.slice(arguments, 1), e = c.length + d.length;
+  goog.dom.classes.add_(c, d);
+  goog.dom.classes.set(a, c.join(" "));
+  return c.length == e;
+};
+goog.dom.classes.remove = function(a, b) {
+  var c = goog.dom.classes.get(a), d = goog.array.slice(arguments, 1), e = goog.dom.classes.getDifference_(c, d);
+  goog.dom.classes.set(a, e.join(" "));
+  return e.length == c.length - d.length;
+};
+goog.dom.classes.add_ = function(a, b) {
+  for (var c = 0;c < b.length;c++) {
+    goog.array.contains(a, b[c]) || a.push(b[c]);
+  }
+};
+goog.dom.classes.getDifference_ = function(a, b) {
+  return goog.array.filter(a, function(a) {
+    return!goog.array.contains(b, a);
+  });
+};
+goog.dom.classes.swap = function(a, b, c) {
+  for (var d = goog.dom.classes.get(a), e = !1, f = 0;f < d.length;f++) {
+    d[f] == b && (goog.array.splice(d, f--, 1), e = !0);
+  }
+  e && (d.push(c), goog.dom.classes.set(a, d.join(" ")));
+  return e;
+};
+goog.dom.classes.addRemove = function(a, b, c) {
+  var d = goog.dom.classes.get(a);
+  goog.isString(b) ? goog.array.remove(d, b) : goog.isArray(b) && (d = goog.dom.classes.getDifference_(d, b));
+  goog.isString(c) && !goog.array.contains(d, c) ? d.push(c) : goog.isArray(c) && goog.dom.classes.add_(d, c);
+  goog.dom.classes.set(a, d.join(" "));
+};
+goog.dom.classes.has = function(a, b) {
+  return goog.array.contains(goog.dom.classes.get(a), b);
+};
+goog.dom.classes.enable = function(a, b, c) {
+  c ? goog.dom.classes.add(a, b) : goog.dom.classes.remove(a, b);
+};
+goog.dom.classes.toggle = function(a, b) {
+  var c = !goog.dom.classes.has(a, b);
+  goog.dom.classes.enable(a, b, c);
+  return c;
+};
+goog.functions = {};
+goog.functions.constant = function(a) {
+  return function() {
+    return a;
+  };
+};
+goog.functions.FALSE = goog.functions.constant(!1);
+goog.functions.TRUE = goog.functions.constant(!0);
+goog.functions.NULL = goog.functions.constant(null);
+goog.functions.identity = function(a, b) {
+  return a;
+};
+goog.functions.error = function(a) {
+  return function() {
+    throw Error(a);
+  };
+};
+goog.functions.fail = function(a) {
+  return function() {
+    throw a;
+  };
+};
+goog.functions.lock = function(a, b) {
+  b = b || 0;
+  return function() {
+    return a.apply(this, Array.prototype.slice.call(arguments, 0, b));
+  };
+};
+goog.functions.nth = function(a) {
+  return function() {
+    return arguments[a];
+  };
+};
+goog.functions.withReturnValue = function(a, b) {
+  return goog.functions.sequence(a, goog.functions.constant(b));
+};
+goog.functions.compose = function(a, b) {
+  var c = arguments, d = c.length;
+  return function() {
+    var a;
+    d && (a = c[d - 1].apply(this, arguments));
+    for (var b = d - 2;0 <= b;b--) {
+      a = c[b].call(this, a);
+    }
+    return a;
+  };
+};
+goog.functions.sequence = function(a) {
+  var b = arguments, c = b.length;
+  return function() {
+    for (var a, e = 0;e < c;e++) {
+      a = b[e].apply(this, arguments);
+    }
+    return a;
+  };
+};
+goog.functions.and = function(a) {
+  var b = arguments, c = b.length;
+  return function() {
+    for (var a = 0;a < c;a++) {
+      if (!b[a].apply(this, arguments)) {
+        return!1;
+      }
+    }
+    return!0;
+  };
+};
+goog.functions.or = function(a) {
+  var b = arguments, c = b.length;
+  return function() {
+    for (var a = 0;a < c;a++) {
+      if (b[a].apply(this, arguments)) {
+        return!0;
+      }
+    }
+    return!1;
+  };
+};
+goog.functions.not = function(a) {
+  return function() {
+    return!a.apply(this, arguments);
+  };
+};
+goog.functions.create = function(a, b) {
+  var c = function() {
+  };
+  c.prototype = a.prototype;
+  c = new c;
+  a.apply(c, Array.prototype.slice.call(arguments, 1));
+  return c;
+};
+goog.functions.CACHE_RETURN_VALUE = !0;
+goog.functions.cacheReturnValue = function(a) {
+  var b = !1, c;
+  return function() {
+    if (!goog.functions.CACHE_RETURN_VALUE) {
+      return a();
+    }
+    b || (c = a(), b = !0);
+    return c;
+  };
+};
+goog.math.randomInt = function(a) {
+  return Math.floor(Math.random() * a);
+};
+goog.math.uniformRandom = function(a, b) {
+  return a + Math.random() * (b - a);
+};
+goog.math.clamp = function(a, b, c) {
+  return Math.min(Math.max(a, b), c);
+};
+goog.math.modulo = function(a, b) {
+  var c = a % b;
+  return 0 > c * b ? c + b : c;
+};
+goog.math.lerp = function(a, b, c) {
+  return a + c * (b - a);
+};
+goog.math.nearlyEquals = function(a, b, c) {
+  return Math.abs(a - b) <= (c || 1E-6);
+};
+goog.math.standardAngle = function(a) {
+  return goog.math.modulo(a, 360);
+};
+goog.math.toRadians = function(a) {
+  return a * Math.PI / 180;
+};
+goog.math.toDegrees = function(a) {
+  return 180 * a / Math.PI;
+};
+goog.math.angleDx = function(a, b) {
+  return b * Math.cos(goog.math.toRadians(a));
+};
+goog.math.angleDy = function(a, b) {
+  return b * Math.sin(goog.math.toRadians(a));
+};
+goog.math.angle = function(a, b, c, d) {
+  return goog.math.standardAngle(goog.math.toDegrees(Math.atan2(d - b, c - a)));
+};
+goog.math.angleDifference = function(a, b) {
+  var c = goog.math.standardAngle(b) - goog.math.standardAngle(a);
+  180 < c ? c -= 360 : -180 >= c && (c = 360 + c);
+  return c;
+};
+goog.math.sign = function(a) {
+  return 0 == a ? 0 : 0 > a ? -1 : 1;
+};
+goog.math.longestCommonSubsequence = function(a, b, c, d) {
+  c = c || function(a, b) {
+    return a == b;
+  };
+  d = d || function(b, c) {
+    return a[b];
+  };
+  for (var e = a.length, f = b.length, g = [], h = 0;h < e + 1;h++) {
+    g[h] = [], g[h][0] = 0;
+  }
+  for (var k = 0;k < f + 1;k++) {
+    g[0][k] = 0;
+  }
+  for (h = 1;h <= e;h++) {
+    for (k = 1;k <= f;k++) {
+      c(a[h - 1], b[k - 1]) ? g[h][k] = g[h - 1][k - 1] + 1 : g[h][k] = Math.max(g[h - 1][k], g[h][k - 1]);
+    }
+  }
+  for (var l = [], h = e, k = f;0 < h && 0 < k;) {
+    c(a[h - 1], b[k - 1]) ? (l.unshift(d(h - 1, k - 1)), h--, k--) : g[h - 1][k] > g[h][k - 1] ? h-- : k--;
+  }
+  return l;
+};
+goog.math.sum = function(a) {
+  return goog.array.reduce(arguments, function(a, c) {
+    return a + c;
+  }, 0);
+};
+goog.math.average = function(a) {
+  return goog.math.sum.apply(null, arguments) / arguments.length;
+};
+goog.math.sampleVariance = function(a) {
+  var b = arguments.length;
+  if (2 > b) {
+    return 0;
+  }
+  var c = goog.math.average.apply(null, arguments);
+  return goog.math.sum.apply(null, goog.array.map(arguments, function(a) {
+    return Math.pow(a - c, 2);
+  })) / (b - 1);
+};
+goog.math.standardDeviation = function(a) {
+  return Math.sqrt(goog.math.sampleVariance.apply(null, arguments));
+};
+goog.math.isInt = function(a) {
+  return isFinite(a) && 0 == a % 1;
+};
+goog.math.isFiniteNumber = function(a) {
+  return isFinite(a) && !isNaN(a);
+};
+goog.math.log10Floor = function(a) {
+  if (0 < a) {
+    var b = Math.round(Math.log(a) * Math.LOG10E);
+    return b - (Math.pow(10, b) > a);
+  }
+  return 0 == a ? -Infinity : NaN;
+};
+goog.math.safeFloor = function(a, b) {
+  goog.asserts.assert(!goog.isDef(b) || 0 < b);
+  return Math.floor(a + (b || 2E-15));
+};
+goog.math.safeCeil = function(a, b) {
+  goog.asserts.assert(!goog.isDef(b) || 0 < b);
+  return Math.ceil(a - (b || 2E-15));
+};
+goog.math.Coordinate = function(a, b) {
+  this.x = goog.isDef(a) ? a : 0;
+  this.y = goog.isDef(b) ? b : 0;
+};
+goog.math.Coordinate.prototype.clone = function() {
+  return new goog.math.Coordinate(this.x, this.y);
+};
+goog.DEBUG && (goog.math.Coordinate.prototype.toString = function() {
+  return "(" + this.x + ", " + this.y + ")";
+});
+goog.math.Coordinate.equals = function(a, b) {
+  return a == b ? !0 : a && b ? a.x == b.x && a.y == b.y : !1;
+};
+goog.math.Coordinate.distance = function(a, b) {
+  var c = a.x - b.x, d = a.y - b.y;
+  return Math.sqrt(c * c + d * d);
+};
+goog.math.Coordinate.magnitude = function(a) {
+  return Math.sqrt(a.x * a.x + a.y * a.y);
+};
+goog.math.Coordinate.azimuth = function(a) {
+  return goog.math.angle(0, 0, a.x, a.y);
+};
+goog.math.Coordinate.squaredDistance = function(a, b) {
+  var c = a.x - b.x, d = a.y - b.y;
+  return c * c + d * d;
+};
+goog.math.Coordinate.difference = function(a, b) {
+  return new goog.math.Coordinate(a.x - b.x, a.y - b.y);
+};
+goog.math.Coordinate.sum = function(a, b) {
+  return new goog.math.Coordinate(a.x + b.x, a.y + b.y);
+};
+goog.math.Coordinate.prototype.ceil = function() {
+  this.x = Math.ceil(this.x);
+  this.y = Math.ceil(this.y);
+  return this;
+};
+goog.math.Coordinate.prototype.floor = function() {
+  this.x = Math.floor(this.x);
+  this.y = Math.floor(this.y);
+  return this;
+};
+goog.math.Coordinate.prototype.round = function() {
+  this.x = Math.round(this.x);
+  this.y = Math.round(this.y);
+  return this;
+};
+goog.math.Coordinate.prototype.translate = function(a, b) {
+  a instanceof goog.math.Coordinate ? (this.x += a.x, this.y += a.y) : (this.x += a, goog.isNumber(b) && (this.y += b));
+  return this;
+};
+goog.math.Coordinate.prototype.scale = function(a, b) {
+  var c = goog.isNumber(b) ? b : a;
+  this.x *= a;
+  this.y *= c;
+  return this;
+};
+goog.math.Coordinate.prototype.rotateRadians = function(a, b) {
+  var c = b || new goog.math.Coordinate(0, 0), d = this.x, e = this.y, f = Math.cos(a), g = Math.sin(a);
+  this.x = (d - c.x) * f - (e - c.y) * g + c.x;
+  this.y = (d - c.x) * g + (e - c.y) * f + c.y;
+};
+goog.math.Coordinate.prototype.rotateDegrees = function(a, b) {
+  this.rotateRadians(goog.math.toRadians(a), b);
+};
+goog.math.Size = function(a, b) {
+  this.width = a;
+  this.height = b;
+};
+goog.math.Size.equals = function(a, b) {
+  return a == b ? !0 : a && b ? a.width == b.width && a.height == b.height : !1;
+};
+goog.math.Size.prototype.clone = function() {
+  return new goog.math.Size(this.width, this.height);
+};
+goog.DEBUG && (goog.math.Size.prototype.toString = function() {
+  return "(" + this.width + " x " + this.height + ")";
+});
+goog.math.Size.prototype.getLongest = function() {
+  return Math.max(this.width, this.height);
+};
+goog.math.Size.prototype.getShortest = function() {
+  return Math.min(this.width, this.height);
+};
+goog.math.Size.prototype.area = function() {
+  return this.width * this.height;
+};
+goog.math.Size.prototype.perimeter = function() {
+  return 2 * (this.width + this.height);
+};
+goog.math.Size.prototype.aspectRatio = function() {
+  return this.width / this.height;
+};
+goog.math.Size.prototype.isEmpty = function() {
+  return!this.area();
+};
+goog.math.Size.prototype.ceil = function() {
+  this.width = Math.ceil(this.width);
+  this.height = Math.ceil(this.height);
+  return this;
+};
+goog.math.Size.prototype.fitsInside = function(a) {
+  return this.width <= a.width && this.height <= a.height;
+};
+goog.math.Size.prototype.floor = function() {
+  this.width = Math.floor(this.width);
+  this.height = Math.floor(this.height);
+  return this;
+};
+goog.math.Size.prototype.round = function() {
+  this.width = Math.round(this.width);
+  this.height = Math.round(this.height);
+  return this;
+};
+goog.math.Size.prototype.scale = function(a, b) {
+  var c = goog.isNumber(b) ? b : a;
+  this.width *= a;
+  this.height *= c;
+  return this;
+};
+goog.math.Size.prototype.scaleToFit = function(a) {
+  a = this.aspectRatio() > a.aspectRatio() ? a.width / this.width : a.height / this.height;
+  return this.scale(a);
+};
+goog.dom.ASSUME_QUIRKS_MODE = !1;
+goog.dom.ASSUME_STANDARDS_MODE = !1;
+goog.dom.COMPAT_MODE_KNOWN_ = goog.dom.ASSUME_QUIRKS_MODE || goog.dom.ASSUME_STANDARDS_MODE;
+goog.dom.getDomHelper = function(a) {
+  return a ? new goog.dom.DomHelper(goog.dom.getOwnerDocument(a)) : goog.dom.defaultDomHelper_ || (goog.dom.defaultDomHelper_ = new goog.dom.DomHelper);
+};
+goog.dom.getDocument = function() {
+  return document;
+};
+goog.dom.getElement = function(a) {
+  return goog.dom.getElementHelper_(document, a);
+};
+goog.dom.getElementHelper_ = function(a, b) {
+  return goog.isString(b) ? a.getElementById(b) : b;
+};
+goog.dom.getRequiredElement = function(a) {
+  return goog.dom.getRequiredElementHelper_(document, a);
+};
+goog.dom.getRequiredElementHelper_ = function(a, b) {
+  goog.asserts.assertString(b);
+  var c = goog.dom.getElementHelper_(a, b);
+  return c = goog.asserts.assertElement(c, "No element found with id: " + b);
+};
+goog.dom.$ = goog.dom.getElement;
+goog.dom.getElementsByTagNameAndClass = function(a, b, c) {
+  return goog.dom.getElementsByTagNameAndClass_(document, a, b, c);
+};
+goog.dom.getElementsByClass = function(a, b) {
+  var c = b || document;
+  return goog.dom.canUseQuerySelector_(c) ? c.querySelectorAll("." + a) : goog.dom.getElementsByTagNameAndClass_(document, "*", a, b);
+};
+goog.dom.getElementByClass = function(a, b) {
+  var c = b || document, d = null;
+  return(d = goog.dom.canUseQuerySelector_(c) ? c.querySelector("." + a) : goog.dom.getElementsByTagNameAndClass_(document, "*", a, b)[0]) || null;
+};
+goog.dom.getRequiredElementByClass = function(a, b) {
+  var c = goog.dom.getElementByClass(a, b);
+  return goog.asserts.assert(c, "No element found with className: " + a);
+};
+goog.dom.canUseQuerySelector_ = function(a) {
+  return!(!a.querySelectorAll || !a.querySelector);
+};
+goog.dom.getElementsByTagNameAndClass_ = function(a, b, c, d) {
+  a = d || a;
+  b = b && "*" != b ? b.toUpperCase() : "";
+  if (goog.dom.canUseQuerySelector_(a) && (b || c)) {
+    return a.querySelectorAll(b + (c ? "." + c : ""));
+  }
+  if (c && a.getElementsByClassName) {
+    a = a.getElementsByClassName(c);
+    if (b) {
+      d = {};
+      for (var e = 0, f = 0, g;g = a[f];f++) {
+        b == g.nodeName && (d[e++] = g);
+      }
+      d.length = e;
+      return d;
+    }
+    return a;
+  }
+  a = a.getElementsByTagName(b || "*");
+  if (c) {
+    d = {};
+    for (f = e = 0;g = a[f];f++) {
+      b = g.className, "function" == typeof b.split && goog.array.contains(b.split(/\s+/), c) && (d[e++] = g);
+    }
+    d.length = e;
+    return d;
+  }
+  return a;
+};
+goog.dom.$$ = goog.dom.getElementsByTagNameAndClass;
+goog.dom.setProperties = function(a, b) {
+  goog.object.forEach(b, function(b, d) {
+    "style" == d ? a.style.cssText = b : "class" == d ? a.className = b : "for" == d ? a.htmlFor = b : d in goog.dom.DIRECT_ATTRIBUTE_MAP_ ? a.setAttribute(goog.dom.DIRECT_ATTRIBUTE_MAP_[d], b) : goog.string.startsWith(d, "aria-") || goog.string.startsWith(d, "data-") ? a.setAttribute(d, b) : a[d] = b;
+  });
+};
+goog.dom.DIRECT_ATTRIBUTE_MAP_ = {cellpadding:"cellPadding", cellspacing:"cellSpacing", colspan:"colSpan", frameborder:"frameBorder", height:"height", maxlength:"maxLength", role:"role", rowspan:"rowSpan", type:"type", usemap:"useMap", valign:"vAlign", width:"width"};
+goog.dom.getViewportSize = function(a) {
+  return goog.dom.getViewportSize_(a || window);
+};
+goog.dom.getViewportSize_ = function(a) {
+  a = a.document;
+  a = goog.dom.isCss1CompatMode_(a) ? a.documentElement : a.body;
+  return new goog.math.Size(a.clientWidth, a.clientHeight);
+};
+goog.dom.getDocumentHeight = function() {
+  return goog.dom.getDocumentHeight_(window);
+};
+goog.dom.getDocumentHeight_ = function(a) {
+  var b = a.document, c = 0;
+  if (b) {
+    a = goog.dom.getViewportSize_(a).height;
+    var c = b.body, d = b.documentElement;
+    if (goog.dom.isCss1CompatMode_(b) && d.scrollHeight) {
+      c = d.scrollHeight != a ? d.scrollHeight : d.offsetHeight;
+    } else {
+      var b = d.scrollHeight, e = d.offsetHeight;
+      d.clientHeight != e && (b = c.scrollHeight, e = c.offsetHeight);
+      c = b > a ? b > e ? b : e : b < e ? b : e;
+    }
+  }
+  return c;
+};
+goog.dom.getPageScroll = function(a) {
+  return goog.dom.getDomHelper((a || goog.global || window).document).getDocumentScroll();
+};
+goog.dom.getDocumentScroll = function() {
+  return goog.dom.getDocumentScroll_(document);
+};
+goog.dom.getDocumentScroll_ = function(a) {
+  var b = goog.dom.getDocumentScrollElement_(a);
+  a = goog.dom.getWindow_(a);
+  return goog.userAgent.IE && goog.userAgent.isVersionOrHigher("10") && a.pageYOffset != b.scrollTop ? new goog.math.Coordinate(b.scrollLeft, b.scrollTop) : new goog.math.Coordinate(a.pageXOffset || b.scrollLeft, a.pageYOffset || b.scrollTop);
+};
+goog.dom.getDocumentScrollElement = function() {
+  return goog.dom.getDocumentScrollElement_(document);
+};
+goog.dom.getDocumentScrollElement_ = function(a) {
+  return!goog.userAgent.WEBKIT && goog.dom.isCss1CompatMode_(a) ? a.documentElement : a.body || a.documentElement;
+};
+goog.dom.getWindow = function(a) {
+  return a ? goog.dom.getWindow_(a) : window;
+};
+goog.dom.getWindow_ = function(a) {
+  return a.parentWindow || a.defaultView;
+};
+goog.dom.createDom = function(a, b, c) {
+  return goog.dom.createDom_(document, arguments);
+};
+goog.dom.createDom_ = function(a, b) {
+  var c = b[0], d = b[1];
+  if (!goog.dom.BrowserFeature.CAN_ADD_NAME_OR_TYPE_ATTRIBUTES && d && (d.name || d.type)) {
+    c = ["\x3c", c];
+    d.name && c.push(' name\x3d"', goog.string.htmlEscape(d.name), '"');
+    if (d.type) {
+      c.push(' type\x3d"', goog.string.htmlEscape(d.type), '"');
+      var e = {};
+      goog.object.extend(e, d);
+      delete e.type;
+      d = e;
+    }
+    c.push("\x3e");
+    c = c.join("");
+  }
+  c = a.createElement(c);
+  d && (goog.isString(d) ? c.className = d : goog.isArray(d) ? goog.dom.classes.add.apply(null, [c].concat(d)) : goog.dom.setProperties(c, d));
+  2 < b.length && goog.dom.append_(a, c, b, 2);
+  return c;
+};
+goog.dom.append_ = function(a, b, c, d) {
+  function e(c) {
+    c && b.appendChild(goog.isString(c) ? a.createTextNode(c) : c);
+  }
+  for (;d < c.length;d++) {
+    var f = c[d];
+    goog.isArrayLike(f) && !goog.dom.isNodeLike(f) ? goog.array.forEach(goog.dom.isNodeList(f) ? goog.array.toArray(f) : f, e) : e(f);
+  }
+};
+goog.dom.$dom = goog.dom.createDom;
+goog.dom.createElement = function(a) {
+  return document.createElement(a);
+};
+goog.dom.createTextNode = function(a) {
+  return document.createTextNode(String(a));
+};
+goog.dom.createTable = function(a, b, c) {
+  return goog.dom.createTable_(document, a, b, !!c);
+};
+goog.dom.createTable_ = function(a, b, c, d) {
+  for (var e = ["\x3ctr\x3e"], f = 0;f < c;f++) {
+    e.push(d ? "\x3ctd\x3e\x26nbsp;\x3c/td\x3e" : "\x3ctd\x3e\x3c/td\x3e");
+  }
+  e.push("\x3c/tr\x3e");
+  e = e.join("");
+  c = ["\x3ctable\x3e"];
+  for (f = 0;f < b;f++) {
+    c.push(e);
+  }
+  c.push("\x3c/table\x3e");
+  a = a.createElement(goog.dom.TagName.DIV);
+  a.innerHTML = c.join("");
+  return a.removeChild(a.firstChild);
+};
+goog.dom.htmlToDocumentFragment = function(a) {
+  return goog.dom.htmlToDocumentFragment_(document, a);
+};
+goog.dom.htmlToDocumentFragment_ = function(a, b) {
+  var c = a.createElement("div");
+  goog.dom.BrowserFeature.INNER_HTML_NEEDS_SCOPED_ELEMENT ? (c.innerHTML = "\x3cbr\x3e" + b, c.removeChild(c.firstChild)) : c.innerHTML = b;
+  if (1 == c.childNodes.length) {
+    return c.removeChild(c.firstChild);
+  }
+  for (var d = a.createDocumentFragment();c.firstChild;) {
+    d.appendChild(c.firstChild);
+  }
+  return d;
+};
+goog.dom.isCss1CompatMode = function() {
+  return goog.dom.isCss1CompatMode_(document);
+};
+goog.dom.isCss1CompatMode_ = function(a) {
+  return goog.dom.COMPAT_MODE_KNOWN_ ? goog.dom.ASSUME_STANDARDS_MODE : "CSS1Compat" == a.compatMode;
+};
+goog.dom.canHaveChildren = function(a) {
+  if (a.nodeType != goog.dom.NodeType.ELEMENT) {
+    return!1;
+  }
+  switch(a.tagName) {
+    case goog.dom.TagName.APPLET:
+    ;
+    case goog.dom.TagName.AREA:
+    ;
+    case goog.dom.TagName.BASE:
+    ;
+    case goog.dom.TagName.BR:
+    ;
+    case goog.dom.TagName.COL:
+    ;
+    case goog.dom.TagName.COMMAND:
+    ;
+    case goog.dom.TagName.EMBED:
+    ;
+    case goog.dom.TagName.FRAME:
+    ;
+    case goog.dom.TagName.HR:
+    ;
+    case goog.dom.TagName.IMG:
+    ;
+    case goog.dom.TagName.INPUT:
+    ;
+    case goog.dom.TagName.IFRAME:
+    ;
+    case goog.dom.TagName.ISINDEX:
+    ;
+    case goog.dom.TagName.KEYGEN:
+    ;
+    case goog.dom.TagName.LINK:
+    ;
+    case goog.dom.TagName.NOFRAMES:
+    ;
+    case goog.dom.TagName.NOSCRIPT:
+    ;
+    case goog.dom.TagName.META:
+    ;
+    case goog.dom.TagName.OBJECT:
+    ;
+    case goog.dom.TagName.PARAM:
+    ;
+    case goog.dom.TagName.SCRIPT:
+    ;
+    case goog.dom.TagName.SOURCE:
+    ;
+    case goog.dom.TagName.STYLE:
+    ;
+    case goog.dom.TagName.TRACK:
+    ;
+    case goog.dom.TagName.WBR:
+      return!1;
+  }
+  return!0;
+};
+goog.dom.appendChild = function(a, b) {
+  a.appendChild(b);
+};
+goog.dom.append = function(a, b) {
+  goog.dom.append_(goog.dom.getOwnerDocument(a), a, arguments, 1);
+};
+goog.dom.removeChildren = function(a) {
+  for (var b;b = a.firstChild;) {
+    a.removeChild(b);
+  }
+};
+goog.dom.insertSiblingBefore = function(a, b) {
+  b.parentNode && b.parentNode.insertBefore(a, b);
+};
+goog.dom.insertSiblingAfter = function(a, b) {
+  b.parentNode && b.parentNode.insertBefore(a, b.nextSibling);
+};
+goog.dom.insertChildAt = function(a, b, c) {
+  a.insertBefore(b, a.childNodes[c] || null);
+};
+goog.dom.removeNode = function(a) {
+  return a && a.parentNode ? a.parentNode.removeChild(a) : null;
+};
+goog.dom.replaceNode = function(a, b) {
+  var c = b.parentNode;
+  c && c.replaceChild(a, b);
+};
+goog.dom.flattenElement = function(a) {
+  var b, c = a.parentNode;
+  if (c && c.nodeType != goog.dom.NodeType.DOCUMENT_FRAGMENT) {
+    if (a.removeNode) {
+      return a.removeNode(!1);
+    }
+    for (;b = a.firstChild;) {
+      c.insertBefore(b, a);
+    }
+    return goog.dom.removeNode(a);
+  }
+};
+goog.dom.getChildren = function(a) {
+  return goog.dom.BrowserFeature.CAN_USE_CHILDREN_ATTRIBUTE && void 0 != a.children ? a.children : goog.array.filter(a.childNodes, function(a) {
+    return a.nodeType == goog.dom.NodeType.ELEMENT;
+  });
+};
+goog.dom.getFirstElementChild = function(a) {
+  return void 0 != a.firstElementChild ? a.firstElementChild : goog.dom.getNextElementNode_(a.firstChild, !0);
+};
+goog.dom.getLastElementChild = function(a) {
+  return void 0 != a.lastElementChild ? a.lastElementChild : goog.dom.getNextElementNode_(a.lastChild, !1);
+};
+goog.dom.getNextElementSibling = function(a) {
+  return void 0 != a.nextElementSibling ? a.nextElementSibling : goog.dom.getNextElementNode_(a.nextSibling, !0);
+};
+goog.dom.getPreviousElementSibling = function(a) {
+  return void 0 != a.previousElementSibling ? a.previousElementSibling : goog.dom.getNextElementNode_(a.previousSibling, !1);
+};
+goog.dom.getNextElementNode_ = function(a, b) {
+  for (;a && a.nodeType != goog.dom.NodeType.ELEMENT;) {
+    a = b ? a.nextSibling : a.previousSibling;
+  }
+  return a;
+};
+goog.dom.getNextNode = function(a) {
+  if (!a) {
+    return null;
+  }
+  if (a.firstChild) {
+    return a.firstChild;
+  }
+  for (;a && !a.nextSibling;) {
+    a = a.parentNode;
+  }
+  return a ? a.nextSibling : null;
+};
+goog.dom.getPreviousNode = function(a) {
+  if (!a) {
+    return null;
+  }
+  if (!a.previousSibling) {
+    return a.parentNode;
+  }
+  for (a = a.previousSibling;a && a.lastChild;) {
+    a = a.lastChild;
+  }
+  return a;
+};
+goog.dom.isNodeLike = function(a) {
+  return goog.isObject(a) && 0 < a.nodeType;
+};
+goog.dom.isElement = function(a) {
+  return goog.isObject(a) && a.nodeType == goog.dom.NodeType.ELEMENT;
+};
+goog.dom.isWindow = function(a) {
+  return goog.isObject(a) && a.window == a;
+};
+goog.dom.getParentElement = function(a) {
+  if (goog.dom.BrowserFeature.CAN_USE_PARENT_ELEMENT_PROPERTY && !(goog.userAgent.IE && goog.userAgent.isVersionOrHigher("9") && !goog.userAgent.isVersionOrHigher("10") && goog.global.SVGElement && a instanceof goog.global.SVGElement)) {
+    return a.parentElement;
+  }
+  a = a.parentNode;
+  return goog.dom.isElement(a) ? a : null;
+};
+goog.dom.contains = function(a, b) {
+  if (a.contains && b.nodeType == goog.dom.NodeType.ELEMENT) {
+    return a == b || a.contains(b);
+  }
+  if ("undefined" != typeof a.compareDocumentPosition) {
+    return a == b || Boolean(a.compareDocumentPosition(b) & 16);
+  }
+  for (;b && a != b;) {
+    b = b.parentNode;
+  }
+  return b == a;
+};
+goog.dom.compareNodeOrder = function(a, b) {
+  if (a == b) {
+    return 0;
+  }
+  if (a.compareDocumentPosition) {
+    return a.compareDocumentPosition(b) & 2 ? 1 : -1;
+  }
+  if (goog.userAgent.IE && !goog.userAgent.isDocumentModeOrHigher(9)) {
+    if (a.nodeType == goog.dom.NodeType.DOCUMENT) {
+      return-1;
+    }
+    if (b.nodeType == goog.dom.NodeType.DOCUMENT) {
+      return 1;
+    }
+  }
+  if ("sourceIndex" in a || a.parentNode && "sourceIndex" in a.parentNode) {
+    var c = a.nodeType == goog.dom.NodeType.ELEMENT, d = b.nodeType == goog.dom.NodeType.ELEMENT;
+    if (c && d) {
+      return a.sourceIndex - b.sourceIndex;
+    }
+    var e = a.parentNode, f = b.parentNode;
+    return e == f ? goog.dom.compareSiblingOrder_(a, b) : !c && goog.dom.contains(e, b) ? -1 * goog.dom.compareParentsDescendantNodeIe_(a, b) : !d && goog.dom.contains(f, a) ? goog.dom.compareParentsDescendantNodeIe_(b, a) : (c ? a.sourceIndex : e.sourceIndex) - (d ? b.sourceIndex : f.sourceIndex);
+  }
+  d = goog.dom.getOwnerDocument(a);
+  c = d.createRange();
+  c.selectNode(a);
+  c.collapse(!0);
+  d = d.createRange();
+  d.selectNode(b);
+  d.collapse(!0);
+  return c.compareBoundaryPoints(goog.global.Range.START_TO_END, d);
+};
+goog.dom.compareParentsDescendantNodeIe_ = function(a, b) {
+  var c = a.parentNode;
+  if (c == b) {
+    return-1;
+  }
+  for (var d = b;d.parentNode != c;) {
+    d = d.parentNode;
+  }
+  return goog.dom.compareSiblingOrder_(d, a);
+};
+goog.dom.compareSiblingOrder_ = function(a, b) {
+  for (var c = b;c = c.previousSibling;) {
+    if (c == a) {
+      return-1;
+    }
+  }
+  return 1;
+};
+goog.dom.findCommonAncestor = function(a) {
+  var b, c = arguments.length;
+  if (!c) {
+    return null;
+  }
+  if (1 == c) {
+    return arguments[0];
+  }
+  var d = [], e = Infinity;
+  for (b = 0;b < c;b++) {
+    for (var f = [], g = arguments[b];g;) {
+      f.unshift(g), g = g.parentNode;
+    }
+    d.push(f);
+    e = Math.min(e, f.length);
+  }
+  f = null;
+  for (b = 0;b < e;b++) {
+    for (var g = d[0][b], h = 1;h < c;h++) {
+      if (g != d[h][b]) {
+        return f;
+      }
+    }
+    f = g;
+  }
+  return f;
+};
+goog.dom.getOwnerDocument = function(a) {
+  return a.nodeType == goog.dom.NodeType.DOCUMENT ? a : a.ownerDocument || a.document;
+};
+goog.dom.getFrameContentDocument = function(a) {
+  return a.contentDocument || a.contentWindow.document;
+};
+goog.dom.getFrameContentWindow = function(a) {
+  return a.contentWindow || goog.dom.getWindow(goog.dom.getFrameContentDocument(a));
+};
+goog.dom.setTextContent = function(a, b) {
+  goog.asserts.assert(null != a, "goog.dom.setTextContent expects a non-null value for node");
+  if ("textContent" in a) {
+    a.textContent = b;
+  } else {
+    if (a.nodeType == goog.dom.NodeType.TEXT) {
+      a.data = b;
+    } else {
+      if (a.firstChild && a.firstChild.nodeType == goog.dom.NodeType.TEXT) {
+        for (;a.lastChild != a.firstChild;) {
+          a.removeChild(a.lastChild);
+        }
+        a.firstChild.data = b;
+      } else {
+        goog.dom.removeChildren(a);
+        var c = goog.dom.getOwnerDocument(a);
+        a.appendChild(c.createTextNode(String(b)));
+      }
+    }
+  }
+};
+goog.dom.getOuterHtml = function(a) {
+  if ("outerHTML" in a) {
+    return a.outerHTML;
+  }
+  var b = goog.dom.getOwnerDocument(a).createElement("div");
+  b.appendChild(a.cloneNode(!0));
+  return b.innerHTML;
+};
+goog.dom.findNode = function(a, b) {
+  var c = [];
+  return goog.dom.findNodes_(a, b, c, !0) ? c[0] : void 0;
+};
+goog.dom.findNodes = function(a, b) {
+  var c = [];
+  goog.dom.findNodes_(a, b, c, !1);
+  return c;
+};
+goog.dom.findNodes_ = function(a, b, c, d) {
+  if (null != a) {
+    for (a = a.firstChild;a;) {
+      if (b(a) && (c.push(a), d) || goog.dom.findNodes_(a, b, c, d)) {
+        return!0;
+      }
+      a = a.nextSibling;
+    }
+  }
+  return!1;
+};
+goog.dom.TAGS_TO_IGNORE_ = {SCRIPT:1, STYLE:1, HEAD:1, IFRAME:1, OBJECT:1};
+goog.dom.PREDEFINED_TAG_VALUES_ = {IMG:" ", BR:"\n"};
+goog.dom.isFocusableTabIndex = function(a) {
+  return goog.dom.hasSpecifiedTabIndex_(a) && goog.dom.isTabIndexFocusable_(a);
+};
+goog.dom.setFocusableTabIndex = function(a, b) {
+  b ? a.tabIndex = 0 : (a.tabIndex = -1, a.removeAttribute("tabIndex"));
+};
+goog.dom.isFocusable = function(a) {
+  var b;
+  return(b = goog.dom.nativelySupportsFocus_(a) ? !a.disabled && (!goog.dom.hasSpecifiedTabIndex_(a) || goog.dom.isTabIndexFocusable_(a)) : goog.dom.isFocusableTabIndex(a)) && goog.userAgent.IE ? goog.dom.hasNonZeroBoundingRect_(a) : b;
+};
+goog.dom.hasSpecifiedTabIndex_ = function(a) {
+  a = a.getAttributeNode("tabindex");
+  return goog.isDefAndNotNull(a) && a.specified;
+};
+goog.dom.isTabIndexFocusable_ = function(a) {
+  a = a.tabIndex;
+  return goog.isNumber(a) && 0 <= a && 32768 > a;
+};
+goog.dom.nativelySupportsFocus_ = function(a) {
+  return a.tagName == goog.dom.TagName.A || a.tagName == goog.dom.TagName.INPUT || a.tagName == goog.dom.TagName.TEXTAREA || a.tagName == goog.dom.TagName.SELECT || a.tagName == goog.dom.TagName.BUTTON;
+};
+goog.dom.hasNonZeroBoundingRect_ = function(a) {
+  a = goog.isFunction(a.getBoundingClientRect) ? a.getBoundingClientRect() : {height:a.offsetHeight, width:a.offsetWidth};
+  return goog.isDefAndNotNull(a) && 0 < a.height && 0 < a.width;
+};
+goog.dom.getTextContent = function(a) {
+  if (goog.dom.BrowserFeature.CAN_USE_INNER_TEXT && "innerText" in a) {
+    a = goog.string.canonicalizeNewlines(a.innerText);
+  } else {
+    var b = [];
+    goog.dom.getTextContent_(a, b, !0);
+    a = b.join("");
+  }
+  a = a.replace(/ \xAD /g, " ").replace(/\xAD/g, "");
+  a = a.replace(/\u200B/g, "");
+  goog.dom.BrowserFeature.CAN_USE_INNER_TEXT || (a = a.replace(/ +/g, " "));
+  " " != a && (a = a.replace(/^\s*/, ""));
+  return a;
+};
+goog.dom.getRawTextContent = function(a) {
+  var b = [];
+  goog.dom.getTextContent_(a, b, !1);
+  return b.join("");
+};
+goog.dom.getTextContent_ = function(a, b, c) {
+  if (!(a.nodeName in goog.dom.TAGS_TO_IGNORE_)) {
+    if (a.nodeType == goog.dom.NodeType.TEXT) {
+      c ? b.push(String(a.nodeValue).replace(/(\r\n|\r|\n)/g, "")) : b.push(a.nodeValue);
+    } else {
+      if (a.nodeName in goog.dom.PREDEFINED_TAG_VALUES_) {
+        b.push(goog.dom.PREDEFINED_TAG_VALUES_[a.nodeName]);
+      } else {
+        for (a = a.firstChild;a;) {
+          goog.dom.getTextContent_(a, b, c), a = a.nextSibling;
+        }
+      }
+    }
+  }
+};
+goog.dom.getNodeTextLength = function(a) {
+  return goog.dom.getTextContent(a).length;
+};
+goog.dom.getNodeTextOffset = function(a, b) {
+  for (var c = b || goog.dom.getOwnerDocument(a).body, d = [];a && a != c;) {
+    for (var e = a;e = e.previousSibling;) {
+      d.unshift(goog.dom.getTextContent(e));
+    }
+    a = a.parentNode;
+  }
+  return goog.string.trimLeft(d.join("")).replace(/ +/g, " ").length;
+};
+goog.dom.getNodeAtOffset = function(a, b, c) {
+  a = [a];
+  for (var d = 0, e = null;0 < a.length && d < b;) {
+    if (e = a.pop(), !(e.nodeName in goog.dom.TAGS_TO_IGNORE_)) {
+      if (e.nodeType == goog.dom.NodeType.TEXT) {
+        var f = e.nodeValue.replace(/(\r\n|\r|\n)/g, "").replace(/ +/g, " "), d = d + f.length
+      } else {
+        if (e.nodeName in goog.dom.PREDEFINED_TAG_VALUES_) {
+          d += goog.dom.PREDEFINED_TAG_VALUES_[e.nodeName].length;
+        } else {
+          for (f = e.childNodes.length - 1;0 <= f;f--) {
+            a.push(e.childNodes[f]);
+          }
+        }
+      }
+    }
+  }
+  goog.isObject(c) && (c.remainder = e ? e.nodeValue.length + b - d - 1 : 0, c.node = e);
+  return e;
+};
+goog.dom.isNodeList = function(a) {
+  if (a && "number" == typeof a.length) {
+    if (goog.isObject(a)) {
+      return "function" == typeof a.item || "string" == typeof a.item;
+    }
+    if (goog.isFunction(a)) {
+      return "function" == typeof a.item;
+    }
+  }
+  return!1;
+};
+goog.dom.getAncestorByTagNameAndClass = function(a, b, c) {
+  if (!b && !c) {
+    return null;
+  }
+  var d = b ? b.toUpperCase() : null;
+  return goog.dom.getAncestor(a, function(a) {
+    return(!d || a.nodeName == d) && (!c || goog.dom.classes.has(a, c));
+  }, !0);
+};
+goog.dom.getAncestorByClass = function(a, b) {
+  return goog.dom.getAncestorByTagNameAndClass(a, null, b);
+};
+goog.dom.getAncestor = function(a, b, c, d) {
+  c || (a = a.parentNode);
+  c = null == d;
+  for (var e = 0;a && (c || e <= d);) {
+    if (b(a)) {
+      return a;
+    }
+    a = a.parentNode;
+    e++;
+  }
+  return null;
+};
+goog.dom.getActiveElement = function(a) {
+  try {
+    return a && a.activeElement;
+  } catch (b) {
+  }
+  return null;
+};
+goog.dom.getPixelRatio = goog.functions.cacheReturnValue(function() {
+  var a = goog.dom.getWindow(), b = goog.userAgent.GECKO && goog.userAgent.MOBILE;
+  return goog.isDef(a.devicePixelRatio) && !b ? a.devicePixelRatio : a.matchMedia ? goog.dom.matchesPixelRatio_(.75) || goog.dom.matchesPixelRatio_(1.5) || goog.dom.matchesPixelRatio_(2) || goog.dom.matchesPixelRatio_(3) || 1 : 1;
+});
+goog.dom.matchesPixelRatio_ = function(a) {
+  return goog.dom.getWindow().matchMedia("(-webkit-min-device-pixel-ratio: " + a + "),(min--moz-device-pixel-ratio: " + a + "),(min-resolution: " + a + "dppx)").matches ? a : 0;
+};
+goog.dom.DomHelper = function(a) {
+  this.document_ = a || goog.global.document || document;
+};
+goog.dom.DomHelper.prototype.getDomHelper = goog.dom.getDomHelper;
+goog.dom.DomHelper.prototype.setDocument = function(a) {
+  this.document_ = a;
+};
+goog.dom.DomHelper.prototype.getDocument = function() {
+  return this.document_;
+};
+goog.dom.DomHelper.prototype.getElement = function(a) {
+  return goog.dom.getElementHelper_(this.document_, a);
+};
+goog.dom.DomHelper.prototype.getRequiredElement = function(a) {
+  return goog.dom.getRequiredElementHelper_(this.document_, a);
+};
+goog.dom.DomHelper.prototype.$ = goog.dom.DomHelper.prototype.getElement;
+goog.dom.DomHelper.prototype.getElementsByTagNameAndClass = function(a, b, c) {
+  return goog.dom.getElementsByTagNameAndClass_(this.document_, a, b, c);
+};
+goog.dom.DomHelper.prototype.getElementsByClass = function(a, b) {
+  return goog.dom.getElementsByClass(a, b || this.document_);
+};
+goog.dom.DomHelper.prototype.getElementByClass = function(a, b) {
+  return goog.dom.getElementByClass(a, b || this.document_);
+};
+goog.dom.DomHelper.prototype.getRequiredElementByClass = function(a, b) {
+  return goog.dom.getRequiredElementByClass(a, b || this.document_);
+};
+goog.dom.DomHelper.prototype.$$ = goog.dom.DomHelper.prototype.getElementsByTagNameAndClass;
+goog.dom.DomHelper.prototype.setProperties = goog.dom.setProperties;
+goog.dom.DomHelper.prototype.getViewportSize = function(a) {
+  return goog.dom.getViewportSize(a || this.getWindow());
+};
+goog.dom.DomHelper.prototype.getDocumentHeight = function() {
+  return goog.dom.getDocumentHeight_(this.getWindow());
+};
+goog.dom.DomHelper.prototype.createDom = function(a, b, c) {
+  return goog.dom.createDom_(this.document_, arguments);
+};
+goog.dom.DomHelper.prototype.$dom = goog.dom.DomHelper.prototype.createDom;
+goog.dom.DomHelper.prototype.createElement = function(a) {
+  return this.document_.createElement(a);
+};
+goog.dom.DomHelper.prototype.createTextNode = function(a) {
+  return this.document_.createTextNode(String(a));
+};
+goog.dom.DomHelper.prototype.createTable = function(a, b, c) {
+  return goog.dom.createTable_(this.document_, a, b, !!c);
+};
+goog.dom.DomHelper.prototype.htmlToDocumentFragment = function(a) {
+  return goog.dom.htmlToDocumentFragment_(this.document_, a);
+};
+goog.dom.DomHelper.prototype.isCss1CompatMode = function() {
+  return goog.dom.isCss1CompatMode_(this.document_);
+};
+goog.dom.DomHelper.prototype.getWindow = function() {
+  return goog.dom.getWindow_(this.document_);
+};
+goog.dom.DomHelper.prototype.getDocumentScrollElement = function() {
+  return goog.dom.getDocumentScrollElement_(this.document_);
+};
+goog.dom.DomHelper.prototype.getDocumentScroll = function() {
+  return goog.dom.getDocumentScroll_(this.document_);
+};
+goog.dom.DomHelper.prototype.getActiveElement = function(a) {
+  return goog.dom.getActiveElement(a || this.document_);
+};
+goog.dom.DomHelper.prototype.appendChild = goog.dom.appendChild;
+goog.dom.DomHelper.prototype.append = goog.dom.append;
+goog.dom.DomHelper.prototype.canHaveChildren = goog.dom.canHaveChildren;
+goog.dom.DomHelper.prototype.removeChildren = goog.dom.removeChildren;
+goog.dom.DomHelper.prototype.insertSiblingBefore = goog.dom.insertSiblingBefore;
+goog.dom.DomHelper.prototype.insertSiblingAfter = goog.dom.insertSiblingAfter;
+goog.dom.DomHelper.prototype.insertChildAt = goog.dom.insertChildAt;
+goog.dom.DomHelper.prototype.removeNode = goog.dom.removeNode;
+goog.dom.DomHelper.prototype.replaceNode = goog.dom.replaceNode;
+goog.dom.DomHelper.prototype.flattenElement = goog.dom.flattenElement;
+goog.dom.DomHelper.prototype.getChildren = goog.dom.getChildren;
+goog.dom.DomHelper.prototype.getFirstElementChild = goog.dom.getFirstElementChild;
+goog.dom.DomHelper.prototype.getLastElementChild = goog.dom.getLastElementChild;
+goog.dom.DomHelper.prototype.getNextElementSibling = goog.dom.getNextElementSibling;
+goog.dom.DomHelper.prototype.getPreviousElementSibling = goog.dom.getPreviousElementSibling;
+goog.dom.DomHelper.prototype.getNextNode = goog.dom.getNextNode;
+goog.dom.DomHelper.prototype.getPreviousNode = goog.dom.getPreviousNode;
+goog.dom.DomHelper.prototype.isNodeLike = goog.dom.isNodeLike;
+goog.dom.DomHelper.prototype.isElement = goog.dom.isElement;
+goog.dom.DomHelper.prototype.isWindow = goog.dom.isWindow;
+goog.dom.DomHelper.prototype.getParentElement = goog.dom.getParentElement;
+goog.dom.DomHelper.prototype.contains = goog.dom.contains;
+goog.dom.DomHelper.prototype.compareNodeOrder = goog.dom.compareNodeOrder;
+goog.dom.DomHelper.prototype.findCommonAncestor = goog.dom.findCommonAncestor;
+goog.dom.DomHelper.prototype.getOwnerDocument = goog.dom.getOwnerDocument;
+goog.dom.DomHelper.prototype.getFrameContentDocument = goog.dom.getFrameContentDocument;
+goog.dom.DomHelper.prototype.getFrameContentWindow = goog.dom.getFrameContentWindow;
+goog.dom.DomHelper.prototype.setTextContent = goog.dom.setTextContent;
+goog.dom.DomHelper.prototype.getOuterHtml = goog.dom.getOuterHtml;
+goog.dom.DomHelper.prototype.findNode = goog.dom.findNode;
+goog.dom.DomHelper.prototype.findNodes = goog.dom.findNodes;
+goog.dom.DomHelper.prototype.isFocusableTabIndex = goog.dom.isFocusableTabIndex;
+goog.dom.DomHelper.prototype.setFocusableTabIndex = goog.dom.setFocusableTabIndex;
+goog.dom.DomHelper.prototype.isFocusable = goog.dom.isFocusable;
+goog.dom.DomHelper.prototype.getTextContent = goog.dom.getTextContent;
+goog.dom.DomHelper.prototype.getNodeTextLength = goog.dom.getNodeTextLength;
+goog.dom.DomHelper.prototype.getNodeTextOffset = goog.dom.getNodeTextOffset;
+goog.dom.DomHelper.prototype.getNodeAtOffset = goog.dom.getNodeAtOffset;
+goog.dom.DomHelper.prototype.isNodeList = goog.dom.isNodeList;
+goog.dom.DomHelper.prototype.getAncestorByTagNameAndClass = goog.dom.getAncestorByTagNameAndClass;
+goog.dom.DomHelper.prototype.getAncestorByClass = goog.dom.getAncestorByClass;
+goog.dom.DomHelper.prototype.getAncestor = goog.dom.getAncestor;
+/*
+ Portions of this code are from the Dojo Toolkit, received by
+ The Closure Library Authors under the BSD license. All other code is
+ Copyright 2005-2009 The Closure Library Authors. All Rights Reserved.
+
+The "New" BSD License:
+
+Copyright (c) 2005-2009, The Dojo Foundation
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+ Redistributions of source code must retain the above copyright notice, this
+    list of conditions and the following disclaimer.
+ Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+ Neither the name of the Dojo Foundation nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+goog.dom.query = function() {
+  function a(a, b) {
+    var c = b || [];
+    a && c.push(a);
+    return c;
+  }
+  var b = goog.userAgent.WEBKIT && "BackCompat" == goog.dom.getDocument().compatMode, c = goog.dom.getDocument().firstChild.children ? "children" : "childNodes", d = !1, e = function(a) {
+    a = 0 <= "\x3e~+".indexOf(a.slice(-1)) ? a + " * " : a + " ";
+    for (var b = function(b, c) {
+      return goog.string.trim(a.slice(b, c));
+    }, c = [], e = -1, f = -1, g = -1, h = -1, k = -1, l = -1, m = -1, n = "", p = "", r, q = 0, s = a.length, t = null, u = null, x = function() {
+      0 <= l && (t.id = b(l, q).replace(/\\/g, ""), l = -1);
+      if (0 <= m) {
+        var a = m == q ? null : b(m, q);
+        0 > "\x3e~+".indexOf(a) ? t.tag = a : t.oper = a;
+        m = -1;
+      }
+      0 <= k && (t.classes.push(b(k + 1, q).replace(/\\/g, "")), k = -1);
+    };n = p, p = a.charAt(q), q < s;q++) {
+      "\\" != n && (t || (r = q, t = {query:null, pseudos:[], attrs:[], classes:[], tag:null, oper:null, id:null, getTag:function() {
+        return d ? this.otag : this.tag;
+      }}, m = q), 0 <= e ? "]" == p ? (u.attr ? u.matchFor = b(g || e + 1, q) : u.attr = b(e + 1, q), !(e = u.matchFor) || '"' != e.charAt(0) && "'" != e.charAt(0) || (u.matchFor = e.slice(1, -1)), t.attrs.push(u), u = null, e = g = -1) : "\x3d" == p && (g = 0 <= "|~^$*".indexOf(n) ? n : "", u.type = g + p, u.attr = b(e + 1, q - g.length), g = q + 1) : 0 <= f ? ")" == p && (0 <= h && (u.value = b(f + 1, q)), h = f = -1) : "#" == p ? (x(), l = q + 1) : "." == p ? (x(), k = q) : ":" == p ? (x(), h = 
+      q) : "[" == p ? (x(), e = q, u = {}) : "(" == p ? (0 <= h && (u = {name:b(h + 1, q), value:null}, t.pseudos.push(u)), f = q) : " " == p && n != p && (x(), 0 <= h && t.pseudos.push({name:b(h + 1, q)}), t.loops = t.pseudos.length || t.attrs.length || t.classes.length, t.oquery = t.query = b(r, q), t.otag = t.tag = t.oper ? null : t.tag || "*", t.tag && (t.tag = t.tag.toUpperCase()), c.length && c[c.length - 1].oper && (t.infixOper = c.pop(), t.query = t.infixOper.query + " " + t.query), c.push(t), 
+      t = null));
+    }
+    return c;
+  }, f = function(a, b) {
+    return a ? b ? function() {
+      return a.apply(window, arguments) && b.apply(window, arguments);
+    } : a : b;
+  }, g = function(a) {
+    return 1 == a.nodeType;
+  }, h = function(a, b) {
+    return a ? "class" == b ? a.className || "" : "for" == b ? a.htmlFor || "" : "style" == b ? a.style.cssText || "" : (d ? a.getAttribute(b) : a.getAttribute(b, 2)) || "" : "";
+  }, k = {"*\x3d":function(a, b) {
+    return function(c) {
+      return 0 <= h(c, a).indexOf(b);
+    };
+  }, "^\x3d":function(a, b) {
+    return function(c) {
+      return 0 == h(c, a).indexOf(b);
+    };
+  }, "$\x3d":function(a, b) {
+    return function(c) {
+      c = " " + h(c, a);
+      return c.lastIndexOf(b) == c.length - b.length;
+    };
+  }, "~\x3d":function(a, b) {
+    var c = " " + b + " ";
+    return function(b) {
+      return 0 <= (" " + h(b, a) + " ").indexOf(c);
+    };
+  }, "|\x3d":function(a, b) {
+    b = " " + b;
+    return function(c) {
+      c = " " + h(c, a);
+      return c == b || 0 == c.indexOf(b + "-");
+    };
+  }, "\x3d":function(a, b) {
+    return function(c) {
+      return h(c, a) == b;
+    };
+  }}, l = "undefined" == typeof goog.dom.getDocument().firstChild.nextElementSibling, m = l ? "nextSibling" : "nextElementSibling", n = l ? "previousSibling" : "previousElementSibling", p = l ? g : goog.functions.TRUE, r = function(a) {
+    for (;a = a[n];) {
+      if (p(a)) {
+        return!1;
+      }
+    }
+    return!0;
+  }, q = function(a) {
+    for (;a = a[m];) {
+      if (p(a)) {
+        return!1;
+      }
+    }
+    return!0;
+  }, s = function(a) {
+    var b = a.parentNode, d = 0, e = b[c], f = a._i || -1, g = b._l || -1;
+    if (!e) {
+      return-1;
+    }
+    e = e.length;
+    if (g == e && 0 <= f && 0 <= g) {
+      return f;
+    }
+    b._l = e;
+    f = -1;
+    for (b = b.firstElementChild || b.firstChild;b;b = b[m]) {
+      p(b) && (b._i = ++d, a === b && (f = d));
+    }
+    return f;
+  }, t = function(a) {
+    return!(s(a) % 2);
+  }, v = function(a) {
+    return s(a) % 2;
+  }, x = {checked:function(a, b) {
+    return function(a) {
+      return a.checked || a.attributes.checked;
+    };
+  }, "first-child":function() {
+    return r;
+  }, "last-child":function() {
+    return q;
+  }, "only-child":function(a, b) {
+    return function(a) {
+      return r(a) && q(a) ? !0 : !1;
+    };
+  }, empty:function(a, b) {
+    return function(a) {
+      var b = a.childNodes;
+      for (a = a.childNodes.length - 1;0 <= a;a--) {
+        var c = b[a].nodeType;
+        if (1 === c || 3 == c) {
+          return!1;
+        }
+      }
+      return!0;
+    };
+  }, contains:function(a, b) {
+    var c = b.charAt(0);
+    if ('"' == c || "'" == c) {
+      b = b.slice(1, -1);
+    }
+    return function(a) {
+      return 0 <= a.innerHTML.indexOf(b);
+    };
+  }, not:function(a, b) {
+    var c = e(b)[0], d = {el:1};
+    "*" != c.tag && (d.tag = 1);
+    c.classes.length || (d.classes = 1);
+    var f = A(c, d);
+    return function(a) {
+      return!f(a);
+    };
+  }, "nth-child":function(a, b) {
+    if ("odd" == b) {
+      return v;
+    }
+    if ("even" == b) {
+      return t;
+    }
+    if (-1 != b.indexOf("n")) {
+      var c = b.split("n", 2), d = c[0] ? "-" == c[0] ? -1 : parseInt(c[0], 10) : 1, e = c[1] ? parseInt(c[1], 10) : 0, f = 0, g = -1;
+      0 < d ? 0 > e ? e = e % d && d + e % d : 0 < e && (e >= d && (f = e - e % d), e %= d) : 0 > d && (d *= -1, 0 < e && (g = e, e %= d));
+      if (0 < d) {
+        return function(a) {
+          a = s(a);
+          return a >= f && (0 > g || a <= g) && a % d == e;
+        };
+      }
+      b = e;
+    }
+    var h = parseInt(b, 10);
+    return function(a) {
+      return s(a) == h;
+    };
+  }}, z = goog.userAgent.IE ? function(a) {
+    var b = a.toLowerCase();
+    "class" == b && (a = "className");
+    return function(c) {
+      return d ? c.getAttribute(a) : c[a] || c[b];
+    };
+  } : function(a) {
+    return function(b) {
+      return b && b.getAttribute && b.hasAttribute(a);
+    };
+  }, A = function(a, b) {
+    if (!a) {
+      return goog.functions.TRUE;
+    }
+    b = b || {};
+    var c = null;
+    b.el || (c = f(c, g));
+    b.tag || "*" != a.tag && (c = f(c, function(b) {
+      return b && b.tagName == a.getTag();
+    }));
+    b.classes || goog.array.forEach(a.classes, function(a, b, d) {
+      var e = new RegExp("(?:^|\\s)" + a + "(?:\\s|$)");
+      c = f(c, function(a) {
+        return e.test(a.className);
+      });
+      c.count = b;
+    });
+    b.pseudos || goog.array.forEach(a.pseudos, function(a) {
+      var b = a.name;
+      x[b] && (c = f(c, x[b](b, a.value)));
+    });
+    b.attrs || goog.array.forEach(a.attrs, function(a) {
+      var b, d = a.attr;
+      a.type && k[a.type] ? b = k[a.type](d, a.matchFor) : d.length && (b = z(d));
+      b && (c = f(c, b));
+    });
+    b.id || a.id && (c = f(c, function(b) {
+      return!!b && b.id == a.id;
+    }));
+    c || "default" in b || (c = goog.functions.TRUE);
+    return c;
+  }, B = function(a) {
+    return function(b, c, d) {
+      for (;b = b[m];) {
+        if (!l || g(b)) {
+          d && !J(b, d) || !a(b) || c.push(b);
+          break;
+        }
+      }
+      return c;
+    };
+  }, F = function(a) {
+    return function(b, c, d) {
+      for (b = b[m];b;) {
+        if (p(b)) {
+          if (d && !J(b, d)) {
+            break;
+          }
+          a(b) && c.push(b);
+        }
+        b = b[m];
+      }
+      return c;
+    };
+  }, u = function(a) {
+    a = a || goog.functions.TRUE;
+    return function(b, d, e) {
+      for (var f = 0, g = b[c];b = g[f++];) {
+        p(b) && (!e || J(b, e)) && a(b, f) && d.push(b);
+      }
+      return d;
+    };
+  }, w = {}, y = function(c) {
+    var d = w[c.query];
+    if (d) {
+      return d;
+    }
+    var e = c.infixOper, e = e ? e.oper : "", f = A(c, {el:1}), g = "*" == c.tag, h = goog.dom.getDocument().getElementsByClassName;
+    if (e) {
+      h = {el:1}, g && (h.tag = 1), f = A(c, h), "+" == e ? d = B(f) : "~" == e ? d = F(f) : "\x3e" == e && (d = u(f));
+    } else {
+      if (c.id) {
+        f = !c.loops && g ? goog.functions.TRUE : A(c, {el:1, id:1}), d = function(b, d) {
+          var e = goog.dom.getDomHelper(b).getElement(c.id);
+          if (e && f(e)) {
+            if (9 == b.nodeType) {
+              return a(e, d);
+            }
+            for (var g = e.parentNode;g && g != b;) {
+              g = g.parentNode;
+            }
+            if (g) {
+              return a(e, d);
+            }
+          }
+        };
+      } else {
+        if (h && /\{\s*\[native code\]\s*\}/.test(String(h)) && c.classes.length && !b) {
+          var f = A(c, {el:1, classes:1, id:1}), k = c.classes.join(" "), d = function(b, c) {
+            for (var d = a(0, c), e, g = 0, h = b.getElementsByClassName(k);e = h[g++];) {
+              f(e, b) && d.push(e);
+            }
+            return d;
+          }
+        } else {
+          g || c.loops ? (f = A(c, {el:1, tag:1, id:1}), d = function(b, d) {
+            for (var e = a(0, d), g, h = 0, k = b.getElementsByTagName(c.getTag());g = k[h++];) {
+              f(g, b) && e.push(g);
+            }
+            return e;
+          }) : d = function(b, d) {
+            for (var e = a(0, d), f, g = 0, h = b.getElementsByTagName(c.getTag());f = h[g++];) {
+              e.push(f);
+            }
+            return e;
+          };
+        }
+      }
+    }
+    return w[c.query] = d;
+  }, D = {}, E = {}, G = function(b) {
+    var c = e(goog.string.trim(b));
+    if (1 == c.length) {
+      var d = y(c[0]);
+      return function(a) {
+        if (a = d(a, [])) {
+          a.nozip = !0;
+        }
+        return a;
+      };
+    }
+    return function(b) {
+      b = a(b);
+      for (var d, e, f = c.length, g, h, k = 0;k < f;k++) {
+        h = [];
+        d = c[k];
+        e = b.length - 1;
+        0 < e && (g = {}, h.nozip = !0);
+        e = y(d);
+        for (var l = 0;d = b[l];l++) {
+          e(d, h, g);
+        }
+        if (!h.length) {
+          break;
+        }
+        b = h;
+      }
+      return h;
+    };
+  }, H = !!goog.dom.getDocument().querySelectorAll && (!goog.userAgent.WEBKIT || goog.userAgent.isVersionOrHigher("526")), I = function(a, c) {
+    if (H) {
+      var d = E[a];
+      if (d && !c) {
+        return d;
+      }
+    }
+    if (d = D[a]) {
+      return d;
+    }
+    var d = a.charAt(0), e = -1 == a.indexOf(" ");
+    0 <= a.indexOf("#") && e && (c = !0);
+    if (!H || c || -1 != "\x3e~+".indexOf(d) || goog.userAgent.IE && -1 != a.indexOf(":") || b && 0 <= a.indexOf(".") || -1 != a.indexOf(":contains") || -1 != a.indexOf("|\x3d")) {
+      var f = a.split(/\s*,\s*/);
+      return D[a] = 2 > f.length ? G(a) : function(a) {
+        for (var b = 0, c = [], d;d = f[b++];) {
+          c = c.concat(G(d)(a));
+        }
+        return c;
+      };
+    }
+    var g = 0 <= "\x3e~+".indexOf(a.charAt(a.length - 1)) ? a + " *" : a;
+    return E[a] = function(b) {
+      try {
+        if (9 != b.nodeType && !e) {
+          throw "";
+        }
+        var c = b.querySelectorAll(g);
+        goog.userAgent.IE ? c.commentStrip = !0 : c.nozip = !0;
+        return c;
+      } catch (d) {
+        return I(a, !0)(b);
+      }
+    };
+  }, C = 0, K = goog.userAgent.IE ? function(a) {
+    return d ? a.getAttribute("_uid") || a.setAttribute("_uid", ++C) || C : a.uniqueID;
+  } : function(a) {
+    return a._uid || (a._uid = ++C);
+  }, J = function(a, b) {
+    if (!b) {
+      return 1;
+    }
+    var c = K(a);
+    return b[c] ? 0 : b[c] = 1;
+  }, L = function(a) {
+    if (a && a.nozip) {
+      return a;
+    }
+    var b = [];
+    if (!a || !a.length) {
+      return b;
+    }
+    a[0] && b.push(a[0]);
+    if (2 > a.length) {
+      return b;
+    }
+    C++;
+    if (goog.userAgent.IE && d) {
+      var c = C + "";
+      a[0].setAttribute("_zipIdx", c);
+      for (var e = 1, f;f = a[e];e++) {
+        a[e].getAttribute("_zipIdx") != c && b.push(f), f.setAttribute("_zipIdx", c);
+      }
+    } else {
+      if (goog.userAgent.IE && a.commentStrip) {
+        try {
+          for (e = 1;f = a[e];e++) {
+            g(f) && b.push(f);
+          }
+        } catch (h) {
+        }
+      } else {
+        for (a[0] && (a[0]._zipIdx = C), e = 1;f = a[e];e++) {
+          a[e]._zipIdx != C && b.push(f), f._zipIdx = C;
+        }
+      }
+    }
+    return b;
+  }, M = function(a, b) {
+    if (!a) {
+      return[];
+    }
+    if (a.constructor == Array) {
+      return a;
+    }
+    if (!goog.isString(a)) {
+      return[a];
+    }
+    if (goog.isString(b) && (b = goog.dom.getElement(b), !b)) {
+      return[];
+    }
+    b = b || goog.dom.getDocument();
+    var c = b.ownerDocument || b.documentElement;
+    d = b.contentType && "application/xml" == b.contentType || goog.userAgent.OPERA && (b.doctype || "[object XMLDocument]" == c.toString()) || !!c && (goog.userAgent.IE ? c.xml : b.xmlVersion || c.xmlVersion);
+    return(c = I(a)(b)) && c.nozip ? c : L(c);
+  };
+  M.pseudos = x;
+  return M;
+}();
+goog.exportSymbol("goog.dom.query", goog.dom.query);
+goog.exportSymbol("goog.dom.query.pseudos", goog.dom.query.pseudos);
+bmotion_om.core = {};
+cljs.core.enable_console_print_BANG_.call(null);
+bmotion_om.core.app_state = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
+bmotion_om.core.mk_component = function() {
+  var a = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), b = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), c = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), d = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), e = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", -1053470341), cljs.core.get_global_hierarchy.call(null));
+  return new cljs.core.MultiFn("mk-component", function(a, b, c, d, e) {
+    return function(a) {
+      return(new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(a);
+    };
+  }(a, b, c, d, e), new cljs.core.Keyword(null, "default", "default", -1987822328), e, a, b, c, d);
+}();
+bmotion_om.core.set_component = function() {
+  var a = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), b = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), c = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), d = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), e = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", -1053470341), cljs.core.get_global_hierarchy.call(null));
+  return new cljs.core.MultiFn("set-component", function(a, b, c, d, e) {
+    return function(a) {
+      return(new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(a);
+    };
+  }(a, b, c, d, e), new cljs.core.Keyword(null, "default", "default", -1987822328), e, a, b, c, d);
+}();
+cljs.core._add_method.call(null, bmotion_om.core.mk_component, "probmotion-html", function(a) {
+  var b = (new cljs.core.Keyword(null, "id", "id", -1388402092)).cljs$core$IFn$_invoke$arity$1(a);
+  a = (new cljs.core.Keyword(null, "html", "html", -998796897)).cljs$core$IFn$_invoke$arity$1(a);
+  return cljs.core.swap_BANG_.call(null, bmotion_om.core.app_state, cljs.core.assoc_in, new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "probmotion", "probmotion", -2112494948), cljs.core.keyword.call(null, b), new cljs.core.Keyword(null, "html", "html", -998796897)], null), a);
+});
+cljs.core._add_method.call(null, bmotion_om.core.set_component, "probmotion-html", function(a) {
+  var b = (new cljs.core.Keyword(null, "id", "id", -1388402092)).cljs$core$IFn$_invoke$arity$1(a);
+  a = (new cljs.core.Keyword(null, "observers", "observers", 841951845)).cljs$core$IFn$_invoke$arity$1(a);
+  return cljs.core.swap_BANG_.call(null, bmotion_om.core.app_state, cljs.core.assoc_in, new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "probmotion", "probmotion", -2112494948), cljs.core.keyword.call(null, b), new cljs.core.Keyword(null, "observers", "observers", 841951845)], null), a);
+});
+bmotion_om.core.initComponent = function(a) {
+  a = cljs.core.js__GT_clj.call(null, a, new cljs.core.Keyword(null, "keywordize-keys", "keywordize-keys", 1310784252), !0);
+  return bmotion_om.core.mk_component.call(null, a);
+};
+goog.exportSymbol("bmotion_om.core.initComponent", bmotion_om.core.initComponent);
+bmotion_om.core.setComponent = function(a) {
+  a = cljs.core.js__GT_clj.call(null, a, new cljs.core.Keyword(null, "keywordize-keys", "keywordize-keys", 1310784252), !0);
+  return bmotion_om.core.set_component.call(null, a);
+};
+goog.exportSymbol("bmotion_om.core.setComponent", bmotion_om.core.setComponent);
+bmotion_om.core.components = new cljs.core.PersistentArrayMap(null, 1, ["probmotion-html", bmotion_om.probmotion.probmotion_view], null);
+bmotion_om.core.register = function(a, b, c) {
+  c = document.getElementById(b);
+  return cljs.core.truth_(c) ? om.core.root.call(null, cljs.core.get.call(null, bmotion_om.core.components, a), bmotion_om.core.app_state, new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "target", "target", 253001721), c, new cljs.core.Keyword(null, "opts", "opts", 155075701), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "gui-id", "gui-id", -352775023), b], null)], null)) : null;
+};
+goog.exportSymbol("bmotion_om.core.register", bmotion_om.core.register);
+bmotion_om.core.setup_components = function() {
+  for (var a = goog.dom.query("div[data-type]"), a = cljs.core.seq.call(null, cljs.core.array_seq.call(null, a, 0)), b = null, c = 0, d = 0;;) {
+    if (d < c) {
+      var e = cljs.core._nth.call(null, b, d);
+      bmotion_om.core.register.call(null, goog.dom.dataset.get(e, "type"), e.id, cljs.core.js__GT_clj.call(null, goog.dom.dataset.getAll(e)));
+      d += 1;
+    } else {
+      if (a = cljs.core.seq.call(null, a)) {
+        b = a, cljs.core.chunked_seq_QMARK_.call(null, b) ? (a = cljs.core.chunk_first.call(null, b), c = cljs.core.chunk_rest.call(null, b), b = a, e = cljs.core.count.call(null, a), a = c, c = e) : (e = cljs.core.first.call(null, b), bmotion_om.core.register.call(null, goog.dom.dataset.get(e, "type"), e.id, cljs.core.js__GT_clj.call(null, goog.dom.dataset.getAll(e))), a = cljs.core.next.call(null, b), b = null, c = 0), d = 0;
+      } else {
+        return null;
+      }
+    }
+  }
+};
+bmotion_om.core.onload = function() {
+  var a = function(a) {
+    return bmotion_om.core.setup_components.call(null);
+  }, b = function(b) {
+    var d = null;
+    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
+    return a.call(this, d);
+  };
+  b.cljs$lang$maxFixedArity = 0;
+  b.cljs$lang$applyTo = function(b) {
+    b = cljs.core.seq(b);
+    return a(b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+window.onload = bmotion_om.core.onload;
+hickory.zip = {};
+hickory.zip.hickory_zip = function(a) {
+  return clojure.zip.zipper.call(null, cljs.core.complement.call(null, cljs.core.string_QMARK_), cljs.core.comp.call(null, cljs.core.seq, new cljs.core.Keyword(null, "content", "content", 15833224)), function(a, c) {
+    return cljs.core.assoc.call(null, a, new cljs.core.Keyword(null, "content", "content", 15833224), cljs.core.truth_(c) ? cljs.core.apply.call(null, cljs.core.vector, c) : c);
+  }, a);
+};
+hickory.zip.children = function(a) {
+  return cljs.core.vector_QMARK_.call(null, a) ? cljs.core.map_QMARK_.call(null, cljs.core.second.call(null, a)) ? cljs.core.seq.call(null, cljs.core.subvec.call(null, a, 2)) : cljs.core.seq.call(null, cljs.core.subvec.call(null, a, 1)) : a;
+};
+hickory.zip.make = function(a, b) {
+  return cljs.core.vector_QMARK_.call(null, a) ? cljs.core.map_QMARK_.call(null, cljs.core.second.call(null, a)) ? cljs.core.into.call(null, cljs.core.subvec.call(null, a, 0, 2), b) : cljs.core.apply.call(null, cljs.core.vector, cljs.core.first.call(null, a), b) : b;
+};
+hickory.zip.hiccup_zip = function(a) {
+  return clojure.zip.zipper.call(null, cljs.core.sequential_QMARK_, hickory.zip.children, hickory.zip.make, a);
+};
+hickory.select = {};
+hickory.select.until = function(a, b, c) {
+  for (;;) {
+    if (b = a.call(null, b), cljs.core.truth_(c.call(null, b))) {
+      return b;
+    }
+  }
+};
+hickory.select.count_until = function(a, b, c) {
+  for (var d = 0;;) {
+    if (cljs.core.truth_(c.call(null, b))) {
+      return d;
+    }
+    b = a.call(null, b);
+    d += 1;
+  }
+};
+hickory.select.next_pred = function(a, b) {
+  return hickory.select.until.call(null, clojure.zip.next, a, function(a) {
+    var d = clojure.zip.end_QMARK_.call(null, a);
+    return d ? d : b.call(null, a);
+  });
+};
+hickory.select.prev_pred = function(a, b) {
+  return hickory.select.until.call(null, clojure.zip.prev, a, function(a) {
+    var d = null == a;
+    return d ? d : b.call(null, a);
+  });
+};
+hickory.select.left_pred = function(a, b) {
+  return hickory.select.until.call(null, clojure.zip.left, a, function(a) {
+    var d = null == a;
+    return d ? d : b.call(null, a);
+  });
+};
+hickory.select.right_pred = function(a, b) {
+  return hickory.select.until.call(null, clojure.zip.right, a, function(a) {
+    var d = null == a;
+    return d ? d : b.call(null, a);
+  });
+};
+hickory.select.next_of_node_type = function(a, b) {
+  return hickory.select.next_pred.call(null, a, function(a) {
+    return cljs.core._EQ_.call(null, b, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)));
+  });
+};
+hickory.select.prev_of_node_type = function(a, b) {
+  return hickory.select.prev_pred.call(null, a, function(a) {
+    return cljs.core._EQ_.call(null, b, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)));
+  });
+};
+hickory.select.left_of_node_type = function(a, b) {
+  return hickory.select.left_pred.call(null, a, function(a) {
+    return cljs.core._EQ_.call(null, b, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)));
+  });
+};
+hickory.select.right_of_node_type = function(a, b) {
+  return hickory.select.right_pred.call(null, a, function(a) {
+    return cljs.core._EQ_.call(null, b, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)));
+  });
+};
+hickory.select.after_subtree = function(a) {
+  if (clojure.zip.end_QMARK_.call(null, a)) {
+    return a;
+  }
+  var b = clojure.zip.right.call(null, a);
+  if (cljs.core.truth_(b)) {
+    return b;
+  }
+  for (;;) {
+    if (cljs.core.truth_(clojure.zip.up.call(null, a))) {
+      b = clojure.zip.right.call(null, clojure.zip.up.call(null, a));
+      if (cljs.core.truth_(b)) {
+        return b;
+      }
+      a = clojure.zip.up.call(null, a);
+    } else {
+      return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [clojure.zip.node.call(null, a), new cljs.core.Keyword(null, "end", "end", -268185958)], null);
+    }
+  }
+};
+hickory.select.select_next_loc = function() {
+  var a = null, b = function(b, c) {
+    return a.call(null, b, c, clojure.zip.next);
+  }, c = function(b, c, d) {
+    return a.call(null, b, c, d, clojure.zip.end_QMARK_);
+  }, d = function(a, b, c, d) {
+    for (;;) {
+      if (cljs.core.truth_(d.call(null, b))) {
+        return null;
+      }
+      if (cljs.core.truth_(a.call(null, b))) {
+        return b;
+      }
+      b = c.call(null, b);
+    }
+  }, a = function(a, f, g, h) {
+    switch(arguments.length) {
+      case 2:
+        return b.call(this, a, f);
+      case 3:
+        return c.call(this, a, f, g);
+      case 4:
+        return d.call(this, a, f, g, h);
+    }
+    throw Error("Invalid arity: " + arguments.length);
+  };
+  a.cljs$core$IFn$_invoke$arity$2 = b;
+  a.cljs$core$IFn$_invoke$arity$3 = c;
+  a.cljs$core$IFn$_invoke$arity$4 = d;
+  return a;
+}();
+hickory.select.select_locs = function(a, b) {
+  for (var c = hickory.select.select_next_loc.call(null, a, hickory.zip.hickory_zip.call(null, b)), d = cljs.core.transient$.call(null, cljs.core.PersistentVector.EMPTY);;) {
+    if (null == c) {
+      return cljs.core.persistent_BANG_.call(null, d);
+    }
+    var e = hickory.select.select_next_loc.call(null, a, clojure.zip.next.call(null, c)), d = cljs.core.conj_BANG_.call(null, d, c), c = e;
+  }
+};
+hickory.select.select = function(a, b) {
+  return cljs.core.mapv.call(null, clojure.zip.node, hickory.select.select_locs.call(null, a, b));
+};
+hickory.select.node_type = function(a) {
+  return function(b) {
+    var c = clojure.zip.node.call(null, b), c = (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(c);
+    return cljs.core.truth_(cljs.core.truth_(c) ? cljs.core._EQ_.call(null, clojure.string.lower_case.call(null, cljs.core.name.call(null, c)), clojure.string.lower_case.call(null, cljs.core.name.call(null, a))) : c) ? b : null;
+  };
+};
+hickory.select.tag = function(a) {
+  return function(b) {
+    var c = clojure.zip.node.call(null, b), c = (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(c);
+    return cljs.core.truth_(cljs.core.truth_(c) ? cljs.core._EQ_.call(null, clojure.string.lower_case.call(null, cljs.core.name.call(null, c)), clojure.string.lower_case.call(null, cljs.core.name.call(null, a))) : c) ? b : null;
+  };
+};
+hickory.select.attr = function() {
+  var a = null, b = function(b) {
+    return a.call(null, b, function(a) {
+      return!0;
+    });
+  }, c = function(a, b) {
+    return function(c) {
+      var g = clojure.zip.node.call(null, c), h = cljs.core.keyword.call(null, clojure.string.lower_case.call(null, cljs.core.name.call(null, a)));
+      return cljs.core.truth_(function() {
+        var a = cljs.core.contains_QMARK_.call(null, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(g), h);
+        return a ? b.call(null, cljs.core.get_in.call(null, g, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), h], null))) : a;
+      }()) ? c : null;
+    };
+  }, a = function(a, e) {
+    switch(arguments.length) {
+      case 1:
+        return b.call(this, a);
+      case 2:
+        return c.call(this, a, e);
+    }
+    throw Error("Invalid arity: " + arguments.length);
+  };
+  a.cljs$core$IFn$_invoke$arity$1 = b;
+  a.cljs$core$IFn$_invoke$arity$2 = c;
+  return a;
+}();
+hickory.select.id = function(a) {
+  return hickory.select.attr.call(null, new cljs.core.Keyword(null, "id", "id", -1388402092), function(b) {
+    return cljs.core._EQ_.call(null, clojure.string.lower_case.call(null, b), clojure.string.lower_case.call(null, cljs.core.name.call(null, a)));
+  });
+};
+hickory.select.class$ = function(a) {
+  var b = function(a) {
+    return cljs.core.into.call(null, cljs.core.PersistentHashSet.EMPTY, cljs.core.mapv.call(null, clojure.string.lower_case, clojure.string.split.call(null, a, / /)));
+  };
+  return hickory.select.attr.call(null, new cljs.core.Keyword(null, "class", "class", -2030961996), function(c) {
+    return cljs.core.contains_QMARK_.call(null, b.call(null, c), clojure.string.lower_case.call(null, cljs.core.name.call(null, a)));
+  });
+};
+hickory.select.any = function(a) {
+  return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "element", "element", 1974019749), (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a))) ? a : null;
+};
+hickory.select.element = hickory.select.any;
+hickory.select.element_child = function(a) {
+  var b = clojure.zip.up.call(null, a);
+  a = hickory.select.element.call(null, a);
+  return cljs.core.truth_(a) ? cljs.core.truth_(b) ? hickory.select.element.call(null, b) : b : a;
+};
+hickory.select.root = function(a) {
+  return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "html", "html", -998796897), (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a))) ? a : null;
+};
+hickory.select.find_in_text = function(a) {
+  return function(b) {
+    return cljs.core.some.call(null, function(b) {
+      return cljs.core.re_find.call(null, a, b);
+    }, cljs.core.filter.call(null, cljs.core.string_QMARK_, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, b))));
+  };
+};
+hickory.select.n_moves_until = function(a, b, c, d) {
+  return function(e) {
+    var f = hickory.select.count_until.call(null, c, e, d);
+    return 0 === a ? f === b ? e : null : 0 === cljs.core.rem.call(null, f - b, a) ? e : null;
+  };
+};
+hickory.select.nth_of_type = function() {
+  var a = null, b = function(b, c) {
+    return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "odd", "odd", -1213409872), b) ? a.call(null, 2, 1, c) : cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "even", "even", -275845692), b) ? a.call(null, 2, 0, c) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? a.call(null, 0, b, c) : null;
+  }, c = function(a, b, c) {
+    return function(g) {
+      return cljs.core.truth_(function() {
+        var a = hickory.select.element_child.call(null, g);
+        return cljs.core.truth_(a) ? cljs.core._EQ_.call(null, c, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, g))) : a;
+      }()) ? hickory.select.n_moves_until.call(null, a, b, function(a) {
+        return hickory.select.left_pred.call(null, a, function(a) {
+          return cljs.core._EQ_.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)), c);
+        });
+      }, cljs.core.nil_QMARK_).call(null, g) : null;
+    };
+  }, a = function(a, e, f) {
+    switch(arguments.length) {
+      case 2:
+        return b.call(this, a, e);
+      case 3:
+        return c.call(this, a, e, f);
+    }
+    throw Error("Invalid arity: " + arguments.length);
+  };
+  a.cljs$core$IFn$_invoke$arity$2 = b;
+  a.cljs$core$IFn$_invoke$arity$3 = c;
+  return a;
+}();
+hickory.select.nth_last_of_type = function() {
+  var a = null, b = function(b, c) {
+    return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "odd", "odd", -1213409872), b) ? a.call(null, 2, 1, c) : cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "even", "even", -275845692), b) ? a.call(null, 2, 0, c) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? a.call(null, 0, b, c) : null;
+  }, c = function(a, b, c) {
+    return function(g) {
+      return cljs.core.truth_(function() {
+        var a = hickory.select.element_child.call(null, g);
+        return cljs.core.truth_(a) ? cljs.core._EQ_.call(null, c, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, g))) : a;
+      }()) ? hickory.select.n_moves_until.call(null, a, b, function(a) {
+        return hickory.select.right_pred.call(null, a, function(a) {
+          return cljs.core._EQ_.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)), c);
+        });
+      }, cljs.core.nil_QMARK_).call(null, g) : null;
+    };
+  }, a = function(a, e, f) {
+    switch(arguments.length) {
+      case 2:
+        return b.call(this, a, e);
+      case 3:
+        return c.call(this, a, e, f);
+    }
+    throw Error("Invalid arity: " + arguments.length);
+  };
+  a.cljs$core$IFn$_invoke$arity$2 = b;
+  a.cljs$core$IFn$_invoke$arity$3 = c;
+  return a;
+}();
+hickory.select.nth_child = function() {
+  var a = null, b = function(b) {
+    return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "odd", "odd", -1213409872), b) ? a.call(null, 2, 1) : cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "even", "even", -275845692), b) ? a.call(null, 2, 0) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? a.call(null, 0, b) : null;
+  }, c = function(a, b) {
+    return function(c) {
+      return cljs.core.truth_(hickory.select.element_child.call(null, c)) ? hickory.select.n_moves_until.call(null, a, b, function(a) {
+        return hickory.select.left_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
+      }, cljs.core.nil_QMARK_).call(null, c) : null;
+    };
+  }, a = function(a, e) {
+    switch(arguments.length) {
+      case 1:
+        return b.call(this, a);
+      case 2:
+        return c.call(this, a, e);
+    }
+    throw Error("Invalid arity: " + arguments.length);
+  };
+  a.cljs$core$IFn$_invoke$arity$1 = b;
+  a.cljs$core$IFn$_invoke$arity$2 = c;
+  return a;
+}();
+hickory.select.nth_last_child = function() {
+  var a = null, b = function(b) {
+    return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "odd", "odd", -1213409872), b) ? a.call(null, 2, 1) : cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "even", "even", -275845692), b) ? a.call(null, 2, 0) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? a.call(null, 0, b) : null;
+  }, c = function(a, b) {
+    return function(c) {
+      return cljs.core.truth_(hickory.select.element_child.call(null, c)) ? hickory.select.n_moves_until.call(null, a, b, function(a) {
+        return hickory.select.right_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
+      }, cljs.core.nil_QMARK_).call(null, c) : null;
+    };
+  }, a = function(a, e) {
+    switch(arguments.length) {
+      case 1:
+        return b.call(this, a);
+      case 2:
+        return c.call(this, a, e);
+    }
+    throw Error("Invalid arity: " + arguments.length);
+  };
+  a.cljs$core$IFn$_invoke$arity$1 = b;
+  a.cljs$core$IFn$_invoke$arity$2 = c;
+  return a;
+}();
+hickory.select.first_child = function(a) {
+  var b = hickory.select.element_child.call(null, a);
+  return cljs.core.truth_(b) ? hickory.select.nth_child.call(null, 1).call(null, a) : b;
+};
+hickory.select.last_child = function(a) {
+  var b = hickory.select.element_child.call(null, a);
+  return cljs.core.truth_(b) ? hickory.select.nth_last_child.call(null, 1).call(null, a) : b;
+};
+hickory.select.and = function() {
+  var a = function(a) {
+    return function(b) {
+      return cljs.core.every_QMARK_.call(null, function(a) {
+        return a.call(null, b);
+      }, a) ? b : null;
+    };
+  }, b = function(b) {
+    var d = null;
+    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
+    return a.call(this, d);
+  };
+  b.cljs$lang$maxFixedArity = 0;
+  b.cljs$lang$applyTo = function(b) {
+    b = cljs.core.seq(b);
+    return a(b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.or = function() {
+  var a = function(a) {
+    return function(b) {
+      return cljs.core.truth_(cljs.core.some.call(null, function(a) {
+        return a.call(null, b);
+      }, a)) ? b : null;
+    };
+  }, b = function(b) {
+    var d = null;
+    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
+    return a.call(this, d);
+  };
+  b.cljs$lang$maxFixedArity = 0;
+  b.cljs$lang$applyTo = function(b) {
+    b = cljs.core.seq(b);
+    return a(b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.not = function(a) {
+  return function(b) {
+    return cljs.core.not.call(null, a.call(null, b)) ? b : null;
+  };
+};
+hickory.select.el_not = function(a) {
+  return hickory.select.and.call(null, hickory.select.node_type.call(null, new cljs.core.Keyword(null, "element", "element", 1974019749)), hickory.select.not.call(null, a));
+};
+hickory.select.ordered_adjacent = function() {
+  var a = function(a, b) {
+    return function(b) {
+      return function(d) {
+        for (var g = d, h = 0;;) {
+          if (h >= cljs.core.count.call(null, b)) {
+            return d;
+          }
+          if (null != g && new cljs.core.Keyword(null, "else", "else", -1508377146)) {
+            if (g = cljs.core.nth.call(null, b, h).call(null, g), cljs.core.truth_(g)) {
+              g = a.call(null, g), h += 1;
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        }
+      };
+    }(cljs.core.into_array.call(null, cljs.core.IFn, b));
+  }, b = function(b, d) {
+    var e = null;
+    1 < arguments.length && (e = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0));
+    return a.call(this, b, e);
+  };
+  b.cljs$lang$maxFixedArity = 1;
+  b.cljs$lang$applyTo = function(b) {
+    var d = cljs.core.first(b);
+    b = cljs.core.rest(b);
+    return a(d, b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.child = function() {
+  var a = function(a) {
+    return cljs.core.apply.call(null, hickory.select.ordered_adjacent, clojure.zip.up, cljs.core.reverse.call(null, a));
+  }, b = function(b) {
+    var d = null;
+    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
+    return a.call(this, d);
+  };
+  b.cljs$lang$maxFixedArity = 0;
+  b.cljs$lang$applyTo = function(b) {
+    b = cljs.core.seq(b);
+    return a(b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.follow_adjacent = function() {
+  var a = function(a) {
+    return cljs.core.apply.call(null, hickory.select.ordered_adjacent, function(a) {
+      return hickory.select.left_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
+    }, cljs.core.reverse.call(null, a));
+  }, b = function(b) {
+    var d = null;
+    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
+    return a.call(this, d);
+  };
+  b.cljs$lang$maxFixedArity = 0;
+  b.cljs$lang$applyTo = function(b) {
+    b = cljs.core.seq(b);
+    return a(b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.precede_adjacent = function() {
+  var a = function(a) {
+    return cljs.core.apply.call(null, hickory.select.ordered_adjacent, function(a) {
+      return hickory.select.right_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
+    }, a);
+  }, b = function(b) {
+    var d = null;
+    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
+    return a.call(this, d);
+  };
+  b.cljs$lang$maxFixedArity = 0;
+  b.cljs$lang$applyTo = function(b) {
+    b = cljs.core.seq(b);
+    return a(b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.ordered = function() {
+  var a = function(a, b) {
+    return function(b) {
+      return function(d) {
+        var g = cljs.core.nth.call(null, b, 0);
+        if (cljs.core.truth_(g.call(null, d))) {
+          for (var g = a.call(null, d), h = 1;;) {
+            if (h >= cljs.core.count.call(null, b)) {
+              return d;
+            }
+            if (null != g && new cljs.core.Keyword(null, "else", "else", -1508377146)) {
+              cljs.core.truth_(cljs.core.nth.call(null, b, h).call(null, g)) ? (g = a.call(null, g), h += 1) : g = a.call(null, g);
+            } else {
+              return null;
+            }
+          }
+        } else {
+          return null;
+        }
+      };
+    }(cljs.core.into_array.call(null, cljs.core.IFn, b));
+  }, b = function(b, d) {
+    var e = null;
+    1 < arguments.length && (e = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0));
+    return a.call(this, b, e);
+  };
+  b.cljs$lang$maxFixedArity = 1;
+  b.cljs$lang$applyTo = function(b) {
+    var d = cljs.core.first(b);
+    b = cljs.core.rest(b);
+    return a(d, b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.descendant = function() {
+  var a = function(a) {
+    return cljs.core.apply.call(null, hickory.select.ordered, clojure.zip.up, cljs.core.reverse.call(null, a));
+  }, b = function(b) {
+    var d = null;
+    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
+    return a.call(this, d);
+  };
+  b.cljs$lang$maxFixedArity = 0;
+  b.cljs$lang$applyTo = function(b) {
+    b = cljs.core.seq(b);
+    return a(b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.follow = function() {
+  var a = function(a) {
+    return cljs.core.apply.call(null, hickory.select.ordered, function(a) {
+      return hickory.select.left_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
+    }, cljs.core.reverse.call(null, a));
+  }, b = function(b) {
+    var d = null;
+    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
+    return a.call(this, d);
+  };
+  b.cljs$lang$maxFixedArity = 0;
+  b.cljs$lang$applyTo = function(b) {
+    b = cljs.core.seq(b);
+    return a(b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.precede = function() {
+  var a = function(a) {
+    return cljs.core.apply.call(null, hickory.select.ordered, function(a) {
+      return hickory.select.right_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
+    }, a);
+  }, b = function(b) {
+    var d = null;
+    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
+    return a.call(this, d);
+  };
+  b.cljs$lang$maxFixedArity = 0;
+  b.cljs$lang$applyTo = function(b) {
+    b = cljs.core.seq(b);
+    return a(b);
+  };
+  b.cljs$core$IFn$_invoke$arity$variadic = a;
+  return b;
+}();
+hickory.select.has_descendant = function(a) {
+  return function(b) {
+    var c = clojure.zip.down.call(null, b), d = cljs.core.not_EQ_.call(null, null, c);
+    if (d) {
+      var e = hickory.select.after_subtree.call(null, b);
+      return cljs.core.truth_(hickory.select.select_next_loc.call(null, a, c, clojure.zip.next, function(a, b, c) {
+        return function(b) {
+          return cljs.core._EQ_.call(null, b, a);
+        };
+      }(e, c, d))) ? b : null;
+    }
+    return null;
+  };
+};
+hickory.select.has_child = function(a) {
+  return function(b) {
+    var c = clojure.zip.down.call(null, b), d = cljs.core.not_EQ_.call(null, null, c);
+    return d ? cljs.core.truth_(hickory.select.select_next_loc.call(null, a, c, clojure.zip.right, function(a, b) {
+      return function(a) {
+        return null == a;
+      };
+    }(c, d))) ? b : null : null;
+  };
+};
 goog.string.format = function(a, b) {
   var c = Array.prototype.slice.call(arguments), d = c.shift();
   if ("undefined" == typeof d) {
@@ -23769,12 +26520,12 @@ cljs.core.PersistentVector.prototype.schema$core$Schema$walker$arity$1 = functio
       if (cljs.core.truth_(s)) {
         return s;
       }
-      for (var t = d, v = q, y = cljs.core.PersistentVector.EMPTY;;) {
+      for (var t = d, v = q, x = cljs.core.PersistentVector.EMPTY;;) {
         var z = cljs.core.first.call(null, t);
         if (cljs.core.truth_(z)) {
-          var A = z, B = cljs.core.nth.call(null, A, 0, null), D = cljs.core.nth.call(null, A, 1, null);
+          var A = z, B = cljs.core.nth.call(null, A, 0, null), F = cljs.core.nth.call(null, A, 1, null);
           if (cljs.core.empty_QMARK_.call(null, v)) {
-            return cljs.core.truth_(B.optional_QMARK_) ? y : f.call(null, y, schema.utils.error.call(null, schema.utils.__GT_ValidationError.call(null, cljs.core.vec.call(null, cljs.core.map.call(null, cljs.core.first, t)), null, new cljs.core.Delay(function(a, b, c, d, e, f, g, h, k, l, m, n, p, q, r) {
+            return cljs.core.truth_(B.optional_QMARK_) ? x : f.call(null, x, schema.utils.error.call(null, schema.utils.__GT_ValidationError.call(null, cljs.core.vec.call(null, cljs.core.map.call(null, cljs.core.first, t)), null, new cljs.core.Delay(function(a, b, c, d, e, f, g, h, k, l, m, n, p, q, r) {
               return function() {
                 return cljs.core.list_STAR_.call(null, new cljs.core.Symbol(null, "present?", "present?", -1810613791, null), function() {
                   return function(a, b, c, d, e, f, g, h, k, l, m, n, p, q, r) {
@@ -23817,18 +26568,18 @@ cljs.core.PersistentVector.prototype.schema$core$Schema$walker$arity$1 = functio
                   }(a, b, c, d, e, f, g, h, k, l, m, n, p, q, r).call(null, a);
                 }());
               };
-            }(t, v, y, A, B, D, z, s, a, b, c, d, e, f, g), null), null)));
+            }(t, v, x, A, B, F, z, s, a, b, c, d, e, f, g), null), null)));
           }
           t = cljs.core.next.call(null, t);
           z = cljs.core.rest.call(null, v);
-          y = f.call(null, y, schema.utils.wrap_error_name.call(null, B.name, D.call(null, cljs.core.first.call(null, v))));
+          x = f.call(null, x, schema.utils.wrap_error_name.call(null, B.name, F.call(null, cljs.core.first.call(null, v))));
           v = z;
         } else {
-          return cljs.core.truth_(c) ? cljs.core.reduce.call(null, f, y, cljs.core.map.call(null, e, v)) : cljs.core.seq.call(null, v) ? f.call(null, y, schema.utils.error.call(null, schema.utils.__GT_ValidationError.call(null, null, v, new cljs.core.Delay(function(a, b, c, d, e, f, g, h, k, l, m, n) {
+          return cljs.core.truth_(c) ? cljs.core.reduce.call(null, f, x, cljs.core.map.call(null, e, v)) : cljs.core.seq.call(null, v) ? f.call(null, x, schema.utils.error.call(null, schema.utils.__GT_ValidationError.call(null, null, v, new cljs.core.Delay(function(a, b, c, d, e, f, g, h, k, l, m, n) {
             return function() {
               return cljs.core._conj.call(null, cljs.core._conj.call(null, cljs.core.List.EMPTY, cljs.core.count.call(null, b)), new cljs.core.Symbol(null, "has-extra-elts?", "has-extra-elts?", -1376562869, null));
             };
-          }(t, v, y, z, s, a, b, c, d, e, f, g), null), null))) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? y : null;
+          }(t, v, x, z, s, a, b, c, d, e, f, g), null), null))) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? x : null;
         }
       }
     };
@@ -24141,571 +26892,6 @@ schema.core.schema_with_name = function(a, b) {
 schema.core.schema_name = function(a) {
   return(new cljs.core.Keyword(null, "name", "name", 1843675177)).cljs$core$IFn$_invoke$arity$1(cljs.core.meta.call(null, a));
 };
-hickory.zip = {};
-hickory.zip.hickory_zip = function(a) {
-  return clojure.zip.zipper.call(null, cljs.core.complement.call(null, cljs.core.string_QMARK_), cljs.core.comp.call(null, cljs.core.seq, new cljs.core.Keyword(null, "content", "content", 15833224)), function(a, c) {
-    return cljs.core.assoc.call(null, a, new cljs.core.Keyword(null, "content", "content", 15833224), cljs.core.truth_(c) ? cljs.core.apply.call(null, cljs.core.vector, c) : c);
-  }, a);
-};
-hickory.zip.children = function(a) {
-  return cljs.core.vector_QMARK_.call(null, a) ? cljs.core.map_QMARK_.call(null, cljs.core.second.call(null, a)) ? cljs.core.seq.call(null, cljs.core.subvec.call(null, a, 2)) : cljs.core.seq.call(null, cljs.core.subvec.call(null, a, 1)) : a;
-};
-hickory.zip.make = function(a, b) {
-  return cljs.core.vector_QMARK_.call(null, a) ? cljs.core.map_QMARK_.call(null, cljs.core.second.call(null, a)) ? cljs.core.into.call(null, cljs.core.subvec.call(null, a, 0, 2), b) : cljs.core.apply.call(null, cljs.core.vector, cljs.core.first.call(null, a), b) : b;
-};
-hickory.zip.hiccup_zip = function(a) {
-  return clojure.zip.zipper.call(null, cljs.core.sequential_QMARK_, hickory.zip.children, hickory.zip.make, a);
-};
-hickory.select = {};
-hickory.select.until = function(a, b, c) {
-  for (;;) {
-    if (b = a.call(null, b), cljs.core.truth_(c.call(null, b))) {
-      return b;
-    }
-  }
-};
-hickory.select.count_until = function(a, b, c) {
-  for (var d = 0;;) {
-    if (cljs.core.truth_(c.call(null, b))) {
-      return d;
-    }
-    b = a.call(null, b);
-    d += 1;
-  }
-};
-hickory.select.next_pred = function(a, b) {
-  return hickory.select.until.call(null, clojure.zip.next, a, function(a) {
-    var d = clojure.zip.end_QMARK_.call(null, a);
-    return d ? d : b.call(null, a);
-  });
-};
-hickory.select.prev_pred = function(a, b) {
-  return hickory.select.until.call(null, clojure.zip.prev, a, function(a) {
-    var d = null == a;
-    return d ? d : b.call(null, a);
-  });
-};
-hickory.select.left_pred = function(a, b) {
-  return hickory.select.until.call(null, clojure.zip.left, a, function(a) {
-    var d = null == a;
-    return d ? d : b.call(null, a);
-  });
-};
-hickory.select.right_pred = function(a, b) {
-  return hickory.select.until.call(null, clojure.zip.right, a, function(a) {
-    var d = null == a;
-    return d ? d : b.call(null, a);
-  });
-};
-hickory.select.next_of_node_type = function(a, b) {
-  return hickory.select.next_pred.call(null, a, function(a) {
-    return cljs.core._EQ_.call(null, b, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)));
-  });
-};
-hickory.select.prev_of_node_type = function(a, b) {
-  return hickory.select.prev_pred.call(null, a, function(a) {
-    return cljs.core._EQ_.call(null, b, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)));
-  });
-};
-hickory.select.left_of_node_type = function(a, b) {
-  return hickory.select.left_pred.call(null, a, function(a) {
-    return cljs.core._EQ_.call(null, b, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)));
-  });
-};
-hickory.select.right_of_node_type = function(a, b) {
-  return hickory.select.right_pred.call(null, a, function(a) {
-    return cljs.core._EQ_.call(null, b, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)));
-  });
-};
-hickory.select.after_subtree = function(a) {
-  if (clojure.zip.end_QMARK_.call(null, a)) {
-    return a;
-  }
-  var b = clojure.zip.right.call(null, a);
-  if (cljs.core.truth_(b)) {
-    return b;
-  }
-  for (;;) {
-    if (cljs.core.truth_(clojure.zip.up.call(null, a))) {
-      b = clojure.zip.right.call(null, clojure.zip.up.call(null, a));
-      if (cljs.core.truth_(b)) {
-        return b;
-      }
-      a = clojure.zip.up.call(null, a);
-    } else {
-      return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [clojure.zip.node.call(null, a), new cljs.core.Keyword(null, "end", "end", -268185958)], null);
-    }
-  }
-};
-hickory.select.select_next_loc = function() {
-  var a = null, b = function(b, c) {
-    return a.call(null, b, c, clojure.zip.next);
-  }, c = function(b, c, d) {
-    return a.call(null, b, c, d, clojure.zip.end_QMARK_);
-  }, d = function(a, b, c, d) {
-    for (;;) {
-      if (cljs.core.truth_(d.call(null, b))) {
-        return null;
-      }
-      if (cljs.core.truth_(a.call(null, b))) {
-        return b;
-      }
-      b = c.call(null, b);
-    }
-  }, a = function(a, f, g, h) {
-    switch(arguments.length) {
-      case 2:
-        return b.call(this, a, f);
-      case 3:
-        return c.call(this, a, f, g);
-      case 4:
-        return d.call(this, a, f, g, h);
-    }
-    throw Error("Invalid arity: " + arguments.length);
-  };
-  a.cljs$core$IFn$_invoke$arity$2 = b;
-  a.cljs$core$IFn$_invoke$arity$3 = c;
-  a.cljs$core$IFn$_invoke$arity$4 = d;
-  return a;
-}();
-hickory.select.select_locs = function(a, b) {
-  for (var c = hickory.select.select_next_loc.call(null, a, hickory.zip.hickory_zip.call(null, b)), d = cljs.core.transient$.call(null, cljs.core.PersistentVector.EMPTY);;) {
-    if (null == c) {
-      return cljs.core.persistent_BANG_.call(null, d);
-    }
-    var e = hickory.select.select_next_loc.call(null, a, clojure.zip.next.call(null, c)), d = cljs.core.conj_BANG_.call(null, d, c), c = e;
-  }
-};
-hickory.select.select = function(a, b) {
-  return cljs.core.mapv.call(null, clojure.zip.node, hickory.select.select_locs.call(null, a, b));
-};
-hickory.select.node_type = function(a) {
-  return function(b) {
-    var c = clojure.zip.node.call(null, b), c = (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(c);
-    return cljs.core.truth_(cljs.core.truth_(c) ? cljs.core._EQ_.call(null, clojure.string.lower_case.call(null, cljs.core.name.call(null, c)), clojure.string.lower_case.call(null, cljs.core.name.call(null, a))) : c) ? b : null;
-  };
-};
-hickory.select.tag = function(a) {
-  return function(b) {
-    var c = clojure.zip.node.call(null, b), c = (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(c);
-    return cljs.core.truth_(cljs.core.truth_(c) ? cljs.core._EQ_.call(null, clojure.string.lower_case.call(null, cljs.core.name.call(null, c)), clojure.string.lower_case.call(null, cljs.core.name.call(null, a))) : c) ? b : null;
-  };
-};
-hickory.select.attr = function() {
-  var a = null, b = function(b) {
-    return a.call(null, b, function(a) {
-      return!0;
-    });
-  }, c = function(a, b) {
-    return function(c) {
-      var g = clojure.zip.node.call(null, c), h = cljs.core.keyword.call(null, clojure.string.lower_case.call(null, cljs.core.name.call(null, a)));
-      return cljs.core.truth_(function() {
-        var a = cljs.core.contains_QMARK_.call(null, (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(g), h);
-        return a ? b.call(null, cljs.core.get_in.call(null, g, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "attrs", "attrs", -2090668713), h], null))) : a;
-      }()) ? c : null;
-    };
-  }, a = function(a, e) {
-    switch(arguments.length) {
-      case 1:
-        return b.call(this, a);
-      case 2:
-        return c.call(this, a, e);
-    }
-    throw Error("Invalid arity: " + arguments.length);
-  };
-  a.cljs$core$IFn$_invoke$arity$1 = b;
-  a.cljs$core$IFn$_invoke$arity$2 = c;
-  return a;
-}();
-hickory.select.id = function(a) {
-  return hickory.select.attr.call(null, new cljs.core.Keyword(null, "id", "id", -1388402092), function(b) {
-    return cljs.core._EQ_.call(null, clojure.string.lower_case.call(null, b), clojure.string.lower_case.call(null, cljs.core.name.call(null, a)));
-  });
-};
-hickory.select.class$ = function(a) {
-  var b = function(a) {
-    return cljs.core.into.call(null, cljs.core.PersistentHashSet.EMPTY, cljs.core.mapv.call(null, clojure.string.lower_case, clojure.string.split.call(null, a, / /)));
-  };
-  return hickory.select.attr.call(null, new cljs.core.Keyword(null, "class", "class", -2030961996), function(c) {
-    return cljs.core.contains_QMARK_.call(null, b.call(null, c), clojure.string.lower_case.call(null, cljs.core.name.call(null, a)));
-  });
-};
-hickory.select.any = function(a) {
-  return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "element", "element", 1974019749), (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a))) ? a : null;
-};
-hickory.select.element = hickory.select.any;
-hickory.select.element_child = function(a) {
-  var b = clojure.zip.up.call(null, a);
-  a = hickory.select.element.call(null, a);
-  return cljs.core.truth_(a) ? cljs.core.truth_(b) ? hickory.select.element.call(null, b) : b : a;
-};
-hickory.select.root = function(a) {
-  return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "html", "html", -998796897), (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a))) ? a : null;
-};
-hickory.select.find_in_text = function(a) {
-  return function(b) {
-    return cljs.core.some.call(null, function(b) {
-      return cljs.core.re_find.call(null, a, b);
-    }, cljs.core.filter.call(null, cljs.core.string_QMARK_, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, b))));
-  };
-};
-hickory.select.n_moves_until = function(a, b, c, d) {
-  return function(e) {
-    var f = hickory.select.count_until.call(null, c, e, d);
-    return 0 === a ? f === b ? e : null : 0 === cljs.core.rem.call(null, f - b, a) ? e : null;
-  };
-};
-hickory.select.nth_of_type = function() {
-  var a = null, b = function(b, c) {
-    return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "odd", "odd", -1213409872), b) ? a.call(null, 2, 1, c) : cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "even", "even", -275845692), b) ? a.call(null, 2, 0, c) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? a.call(null, 0, b, c) : null;
-  }, c = function(a, b, c) {
-    return function(g) {
-      return cljs.core.truth_(function() {
-        var a = hickory.select.element_child.call(null, g);
-        return cljs.core.truth_(a) ? cljs.core._EQ_.call(null, c, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, g))) : a;
-      }()) ? hickory.select.n_moves_until.call(null, a, b, function(a) {
-        return hickory.select.left_pred.call(null, a, function(a) {
-          return cljs.core._EQ_.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)), c);
-        });
-      }, cljs.core.nil_QMARK_).call(null, g) : null;
-    };
-  }, a = function(a, e, f) {
-    switch(arguments.length) {
-      case 2:
-        return b.call(this, a, e);
-      case 3:
-        return c.call(this, a, e, f);
-    }
-    throw Error("Invalid arity: " + arguments.length);
-  };
-  a.cljs$core$IFn$_invoke$arity$2 = b;
-  a.cljs$core$IFn$_invoke$arity$3 = c;
-  return a;
-}();
-hickory.select.nth_last_of_type = function() {
-  var a = null, b = function(b, c) {
-    return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "odd", "odd", -1213409872), b) ? a.call(null, 2, 1, c) : cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "even", "even", -275845692), b) ? a.call(null, 2, 0, c) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? a.call(null, 0, b, c) : null;
-  }, c = function(a, b, c) {
-    return function(g) {
-      return cljs.core.truth_(function() {
-        var a = hickory.select.element_child.call(null, g);
-        return cljs.core.truth_(a) ? cljs.core._EQ_.call(null, c, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, g))) : a;
-      }()) ? hickory.select.n_moves_until.call(null, a, b, function(a) {
-        return hickory.select.right_pred.call(null, a, function(a) {
-          return cljs.core._EQ_.call(null, (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(clojure.zip.node.call(null, a)), c);
-        });
-      }, cljs.core.nil_QMARK_).call(null, g) : null;
-    };
-  }, a = function(a, e, f) {
-    switch(arguments.length) {
-      case 2:
-        return b.call(this, a, e);
-      case 3:
-        return c.call(this, a, e, f);
-    }
-    throw Error("Invalid arity: " + arguments.length);
-  };
-  a.cljs$core$IFn$_invoke$arity$2 = b;
-  a.cljs$core$IFn$_invoke$arity$3 = c;
-  return a;
-}();
-hickory.select.nth_child = function() {
-  var a = null, b = function(b) {
-    return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "odd", "odd", -1213409872), b) ? a.call(null, 2, 1) : cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "even", "even", -275845692), b) ? a.call(null, 2, 0) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? a.call(null, 0, b) : null;
-  }, c = function(a, b) {
-    return function(c) {
-      return cljs.core.truth_(hickory.select.element_child.call(null, c)) ? hickory.select.n_moves_until.call(null, a, b, function(a) {
-        return hickory.select.left_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
-      }, cljs.core.nil_QMARK_).call(null, c) : null;
-    };
-  }, a = function(a, e) {
-    switch(arguments.length) {
-      case 1:
-        return b.call(this, a);
-      case 2:
-        return c.call(this, a, e);
-    }
-    throw Error("Invalid arity: " + arguments.length);
-  };
-  a.cljs$core$IFn$_invoke$arity$1 = b;
-  a.cljs$core$IFn$_invoke$arity$2 = c;
-  return a;
-}();
-hickory.select.nth_last_child = function() {
-  var a = null, b = function(b) {
-    return cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "odd", "odd", -1213409872), b) ? a.call(null, 2, 1) : cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "even", "even", -275845692), b) ? a.call(null, 2, 0) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? a.call(null, 0, b) : null;
-  }, c = function(a, b) {
-    return function(c) {
-      return cljs.core.truth_(hickory.select.element_child.call(null, c)) ? hickory.select.n_moves_until.call(null, a, b, function(a) {
-        return hickory.select.right_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
-      }, cljs.core.nil_QMARK_).call(null, c) : null;
-    };
-  }, a = function(a, e) {
-    switch(arguments.length) {
-      case 1:
-        return b.call(this, a);
-      case 2:
-        return c.call(this, a, e);
-    }
-    throw Error("Invalid arity: " + arguments.length);
-  };
-  a.cljs$core$IFn$_invoke$arity$1 = b;
-  a.cljs$core$IFn$_invoke$arity$2 = c;
-  return a;
-}();
-hickory.select.first_child = function(a) {
-  var b = hickory.select.element_child.call(null, a);
-  return cljs.core.truth_(b) ? hickory.select.nth_child.call(null, 1).call(null, a) : b;
-};
-hickory.select.last_child = function(a) {
-  var b = hickory.select.element_child.call(null, a);
-  return cljs.core.truth_(b) ? hickory.select.nth_last_child.call(null, 1).call(null, a) : b;
-};
-hickory.select.and = function() {
-  var a = function(a) {
-    return function(b) {
-      return cljs.core.every_QMARK_.call(null, function(a) {
-        return a.call(null, b);
-      }, a) ? b : null;
-    };
-  }, b = function(b) {
-    var d = null;
-    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
-    return a.call(this, d);
-  };
-  b.cljs$lang$maxFixedArity = 0;
-  b.cljs$lang$applyTo = function(b) {
-    b = cljs.core.seq(b);
-    return a(b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.or = function() {
-  var a = function(a) {
-    return function(b) {
-      return cljs.core.truth_(cljs.core.some.call(null, function(a) {
-        return a.call(null, b);
-      }, a)) ? b : null;
-    };
-  }, b = function(b) {
-    var d = null;
-    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
-    return a.call(this, d);
-  };
-  b.cljs$lang$maxFixedArity = 0;
-  b.cljs$lang$applyTo = function(b) {
-    b = cljs.core.seq(b);
-    return a(b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.not = function(a) {
-  return function(b) {
-    return cljs.core.not.call(null, a.call(null, b)) ? b : null;
-  };
-};
-hickory.select.el_not = function(a) {
-  return hickory.select.and.call(null, hickory.select.node_type.call(null, new cljs.core.Keyword(null, "element", "element", 1974019749)), hickory.select.not.call(null, a));
-};
-hickory.select.ordered_adjacent = function() {
-  var a = function(a, b) {
-    return function(b) {
-      return function(d) {
-        for (var g = d, h = 0;;) {
-          if (h >= cljs.core.count.call(null, b)) {
-            return d;
-          }
-          if (null != g && new cljs.core.Keyword(null, "else", "else", -1508377146)) {
-            if (g = cljs.core.nth.call(null, b, h).call(null, g), cljs.core.truth_(g)) {
-              g = a.call(null, g), h += 1;
-            } else {
-              return null;
-            }
-          } else {
-            return null;
-          }
-        }
-      };
-    }(cljs.core.into_array.call(null, cljs.core.IFn, b));
-  }, b = function(b, d) {
-    var e = null;
-    1 < arguments.length && (e = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0));
-    return a.call(this, b, e);
-  };
-  b.cljs$lang$maxFixedArity = 1;
-  b.cljs$lang$applyTo = function(b) {
-    var d = cljs.core.first(b);
-    b = cljs.core.rest(b);
-    return a(d, b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.child = function() {
-  var a = function(a) {
-    return cljs.core.apply.call(null, hickory.select.ordered_adjacent, clojure.zip.up, cljs.core.reverse.call(null, a));
-  }, b = function(b) {
-    var d = null;
-    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
-    return a.call(this, d);
-  };
-  b.cljs$lang$maxFixedArity = 0;
-  b.cljs$lang$applyTo = function(b) {
-    b = cljs.core.seq(b);
-    return a(b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.follow_adjacent = function() {
-  var a = function(a) {
-    return cljs.core.apply.call(null, hickory.select.ordered_adjacent, function(a) {
-      return hickory.select.left_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
-    }, cljs.core.reverse.call(null, a));
-  }, b = function(b) {
-    var d = null;
-    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
-    return a.call(this, d);
-  };
-  b.cljs$lang$maxFixedArity = 0;
-  b.cljs$lang$applyTo = function(b) {
-    b = cljs.core.seq(b);
-    return a(b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.precede_adjacent = function() {
-  var a = function(a) {
-    return cljs.core.apply.call(null, hickory.select.ordered_adjacent, function(a) {
-      return hickory.select.right_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
-    }, a);
-  }, b = function(b) {
-    var d = null;
-    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
-    return a.call(this, d);
-  };
-  b.cljs$lang$maxFixedArity = 0;
-  b.cljs$lang$applyTo = function(b) {
-    b = cljs.core.seq(b);
-    return a(b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.ordered = function() {
-  var a = function(a, b) {
-    return function(b) {
-      return function(d) {
-        var g = cljs.core.nth.call(null, b, 0);
-        if (cljs.core.truth_(g.call(null, d))) {
-          for (var g = a.call(null, d), h = 1;;) {
-            if (h >= cljs.core.count.call(null, b)) {
-              return d;
-            }
-            if (null != g && new cljs.core.Keyword(null, "else", "else", -1508377146)) {
-              cljs.core.truth_(cljs.core.nth.call(null, b, h).call(null, g)) ? (g = a.call(null, g), h += 1) : g = a.call(null, g);
-            } else {
-              return null;
-            }
-          }
-        } else {
-          return null;
-        }
-      };
-    }(cljs.core.into_array.call(null, cljs.core.IFn, b));
-  }, b = function(b, d) {
-    var e = null;
-    1 < arguments.length && (e = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0));
-    return a.call(this, b, e);
-  };
-  b.cljs$lang$maxFixedArity = 1;
-  b.cljs$lang$applyTo = function(b) {
-    var d = cljs.core.first(b);
-    b = cljs.core.rest(b);
-    return a(d, b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.descendant = function() {
-  var a = function(a) {
-    return cljs.core.apply.call(null, hickory.select.ordered, clojure.zip.up, cljs.core.reverse.call(null, a));
-  }, b = function(b) {
-    var d = null;
-    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
-    return a.call(this, d);
-  };
-  b.cljs$lang$maxFixedArity = 0;
-  b.cljs$lang$applyTo = function(b) {
-    b = cljs.core.seq(b);
-    return a(b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.follow = function() {
-  var a = function(a) {
-    return cljs.core.apply.call(null, hickory.select.ordered, function(a) {
-      return hickory.select.left_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
-    }, cljs.core.reverse.call(null, a));
-  }, b = function(b) {
-    var d = null;
-    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
-    return a.call(this, d);
-  };
-  b.cljs$lang$maxFixedArity = 0;
-  b.cljs$lang$applyTo = function(b) {
-    b = cljs.core.seq(b);
-    return a(b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.precede = function() {
-  var a = function(a) {
-    return cljs.core.apply.call(null, hickory.select.ordered, function(a) {
-      return hickory.select.right_of_node_type.call(null, a, new cljs.core.Keyword(null, "element", "element", 1974019749));
-    }, a);
-  }, b = function(b) {
-    var d = null;
-    0 < arguments.length && (d = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0));
-    return a.call(this, d);
-  };
-  b.cljs$lang$maxFixedArity = 0;
-  b.cljs$lang$applyTo = function(b) {
-    b = cljs.core.seq(b);
-    return a(b);
-  };
-  b.cljs$core$IFn$_invoke$arity$variadic = a;
-  return b;
-}();
-hickory.select.has_descendant = function(a) {
-  return function(b) {
-    var c = clojure.zip.down.call(null, b), d = cljs.core.not_EQ_.call(null, null, c);
-    if (d) {
-      var e = hickory.select.after_subtree.call(null, b);
-      return cljs.core.truth_(hickory.select.select_next_loc.call(null, a, c, clojure.zip.next, function(a, b, c) {
-        return function(b) {
-          return cljs.core._EQ_.call(null, b, a);
-        };
-      }(e, c, d))) ? b : null;
-    }
-    return null;
-  };
-};
-hickory.select.has_child = function(a) {
-  return function(b) {
-    var c = clojure.zip.down.call(null, b), d = cljs.core.not_EQ_.call(null, null, c);
-    return d ? cljs.core.truth_(hickory.select.select_next_loc.call(null, a, c, clojure.zip.right, function(a, b) {
-      return function(a) {
-        return null == a;
-      };
-    }(c, d))) ? b : null : null;
-  };
-};
 bmotion_om.observers = {};
 cljs.core.enable_console_print_BANG_.call(null);
 bmotion_om.observers.Hiccup = new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [schema.core.one.call(null, schema.core.Keyword, "tag"), schema.core.one.call(null, schema.core.either.call(null, schema.core.pred.call(null, cljs.core.map_QMARK_), schema.core.pred.call(null, cljs.core.nil_QMARK_)), "opts"), hickory.select.Any], null);
@@ -24816,375 +27002,3 @@ bmotion_om.observers.init_observers = function(a, b) {
     return bmotion_om.observers.mk_observer.call(null, cljs.core.keyword.call(null, a).call(null, b));
   }, a);
 };
-clojure.walk = {};
-clojure.walk.walk = function(a, b, c) {
-  return cljs.core.seq_QMARK_.call(null, c) ? b.call(null, cljs.core.doall.call(null, cljs.core.map.call(null, a, c))) : cljs.core.coll_QMARK_.call(null, c) ? b.call(null, cljs.core.into.call(null, cljs.core.empty.call(null, c), cljs.core.map.call(null, a, c))) : new cljs.core.Keyword(null, "else", "else", -1508377146) ? b.call(null, c) : null;
-};
-clojure.walk.postwalk = function postwalk(b, c) {
-  return clojure.walk.walk.call(null, cljs.core.partial.call(null, postwalk, b), b, c);
-};
-clojure.walk.prewalk = function prewalk(b, c) {
-  return clojure.walk.walk.call(null, cljs.core.partial.call(null, prewalk, b), cljs.core.identity, b.call(null, c));
-};
-clojure.walk.keywordize_keys = function(a) {
-  return clojure.walk.postwalk.call(null, function(a) {
-    return function(c) {
-      return cljs.core.map_QMARK_.call(null, c) ? cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, a, c)) : c;
-    };
-  }(function(a) {
-    var c = cljs.core.nth.call(null, a, 0, null);
-    a = cljs.core.nth.call(null, a, 1, null);
-    return "string" === typeof c ? new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.keyword.call(null, c), a], null) : new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c, a], null);
-  }), a);
-};
-clojure.walk.stringify_keys = function(a) {
-  return clojure.walk.postwalk.call(null, function(a) {
-    return function(c) {
-      return cljs.core.map_QMARK_.call(null, c) ? cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, a, c)) : c;
-    };
-  }(function(a) {
-    var c = cljs.core.nth.call(null, a, 0, null);
-    a = cljs.core.nth.call(null, a, 1, null);
-    return c instanceof cljs.core.Keyword ? new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.name.call(null, c), a], null) : new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c, a], null);
-  }), a);
-};
-clojure.walk.prewalk_replace = function(a, b) {
-  return clojure.walk.prewalk.call(null, function(b) {
-    return cljs.core.contains_QMARK_.call(null, a, b) ? a.call(null, b) : b;
-  }, b);
-};
-clojure.walk.postwalk_replace = function(a, b) {
-  return clojure.walk.postwalk.call(null, function(b) {
-    return cljs.core.contains_QMARK_.call(null, a, b) ? a.call(null, b) : b;
-  }, b);
-};
-bmotion_om.core = {};
-cljs.core.enable_console_print_BANG_.call(null);
-bmotion_om.core.app_state = cljs.core.atom.call(null, new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "html", "html", -998796897), "\x3cspan\x3eRendering...\x3c/span\x3e", new cljs.core.Keyword(null, "observers", "observers", 841951845), cljs.core.PersistentArrayMap.EMPTY], null));
-bmotion_om.core.attr_react_replacer = function(a) {
-  return cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, cljs.core.map.call(null, function(a) {
-    var c = cljs.core.nth.call(null, a, 0, null);
-    a = cljs.core.nth.call(null, a, 1, null);
-    return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.get.call(null, bmotion_om.input.attr_to_react, c, c), a], null);
-  }, a));
-};
-bmotion_om.core.styles_to_clj = function(a) {
-  return cljs.core.into.call(null, cljs.core.PersistentArrayMap.EMPTY, function() {
-    var b = function d(a) {
-      return new cljs.core.LazySeq(null, function() {
-        for (;;) {
-          var b = cljs.core.seq.call(null, a);
-          if (b) {
-            if (cljs.core.chunked_seq_QMARK_.call(null, b)) {
-              var g = cljs.core.chunk_first.call(null, b), h = cljs.core.count.call(null, g), k = cljs.core.chunk_buffer.call(null, h);
-              a: {
-                for (var l = 0;;) {
-                  if (l < h) {
-                    var m = cljs.core._nth.call(null, g, l), n = cljs.core.nth.call(null, m, 0, null), m = cljs.core.nth.call(null, m, 1, null);
-                    cljs.core.chunk_append.call(null, k, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.keyword.call(null, n), m], null));
-                    l += 1;
-                  } else {
-                    g = !0;
-                    break a;
-                  }
-                }
-                g = void 0;
-              }
-              return g ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), d.call(null, cljs.core.chunk_rest.call(null, b))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, k), null);
-            }
-            g = cljs.core.first.call(null, b);
-            k = cljs.core.nth.call(null, g, 0, null);
-            g = cljs.core.nth.call(null, g, 1, null);
-            return cljs.core.cons.call(null, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.keyword.call(null, k), g], null), d.call(null, cljs.core.rest.call(null, b)));
-          }
-          return null;
-        }
-      }, null, null);
-    };
-    return b.call(null, cljs.core.map.call(null, function(a) {
-      return function(a) {
-        return clojure.string.split.call(null, a, /:/);
-      };
-    }(b), clojure.string.split.call(null, a, /;/)));
-  }());
-};
-bmotion_om.core.styles_to_str = function(a) {
-  return cljs.core.apply.call(null, cljs.core.str, cljs.core.interpose.call(null, ";", cljs.core.map.call(null, function(a) {
-    var c = cljs.core.nth.call(null, a, 0, null);
-    a = cljs.core.nth.call(null, a, 1, null);
-    return "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(cljs.core.name.call(null, c)) + ":" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a);
-  }, a)));
-};
-bmotion_om.core.merge_styles = function(a, b) {
-  var c = bmotion_om.core.styles_to_clj.call(null, a);
-  return cljs.core.merge.call(null, c, b);
-};
-bmotion_om.core.merge_element = function(a, b) {
-  var c = (new cljs.core.Keyword(null, "attributes", "attributes", -74013604)).cljs$core$IFn$_invoke$arity$1(b), d = (new cljs.core.Keyword(null, "styles", "styles", 1954480375)).cljs$core$IFn$_invoke$arity$1(b);
-  return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.merge.call(null, a, c), bmotion_om.core.merge_styles.call(null, (new cljs.core.Keyword(null, "style", "style", -496642736)).cljs$core$IFn$_invoke$arity$1(a), d)], null);
-};
-bmotion_om.core.mk_react_attr = function(a, b) {
-  var c = bmotion_om.core.merge_element.call(null, a, b), d = cljs.core.nth.call(null, c, 0, null), c = cljs.core.nth.call(null, c, 1, null);
-  return cljs.core.clj__GT_js.call(null, cljs.core.assoc.call(null, bmotion_om.core.attr_react_replacer.call(null, d), new cljs.core.Keyword(null, "style", "style", -496642736), bmotion_om.core.attr_react_replacer.call(null, c)));
-};
-bmotion_om.core.mk_innerhtml_attr = function(a, b) {
-  var c = bmotion_om.core.merge_element.call(null, a, b), d = cljs.core.nth.call(null, c, 0, null), c = cljs.core.nth.call(null, c, 1, null);
-  return cljs.core.assoc.call(null, d, new cljs.core.Keyword(null, "style", "style", -496642736), bmotion_om.core.styles_to_str.call(null, c));
-};
-bmotion_om.core.mk_dom = function() {
-  var a = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), b = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), c = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), d = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), e = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", -1053470341), cljs.core.get_global_hierarchy.call(null));
-  return new cljs.core.MultiFn("mk-dom", function(a, b, c, d, e) {
-    return function(a) {
-      return(new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(a);
-    };
-  }(a, b, c, d, e), new cljs.core.Keyword(null, "default", "default", -1987822328), e, a, b, c, d);
-}();
-bmotion_om.core.mk_element = function() {
-  var a = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), b = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), c = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), d = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY), e = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", -1053470341), cljs.core.get_global_hierarchy.call(null));
-  return new cljs.core.MultiFn("mk-element", function(a, b, c, d, e) {
-    return function(a) {
-      return(new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(a);
-    };
-  }(a, b, c, d, e), new cljs.core.Keyword(null, "default", "default", -1987822328), e, a, b, c, d);
-}();
-cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(null, "element", "element", 1974019749), function(a) {
-  return bmotion_om.core.mk_element.call(null, a);
-});
-cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(null, "comment", "comment", 532206069), function(a) {
-  return function(a) {
-    return null;
-  };
-});
-cljs.core._add_method.call(null, bmotion_om.core.mk_dom, new cljs.core.Keyword(null, "default", "default", -1987822328), function(a) {
-  return function(a) {
-    return function(c) {
-      return a;
-    };
-  }(cljs.core.truth_(clojure.string.blank_QMARK_.call(null, a)) ? null : "" + cljs.core.str.cljs$core$IFn$_invoke$arity$1(a));
-});
-bmotion_om.core.get_react_dom_fn = function(a, b, c) {
-  a = a.call(null, bmotion_om.input.html_to_react);
-  var d = (new cljs.core.Keyword(null, "data-bmsid", "data-bmsid", 1533988713)).cljs$core$IFn$_invoke$arity$1(b), e = cljs.core.keyword.call(null, d);
-  return function(a, d, e) {
-    return function(d) {
-      var g = cljs.core.get_in.call(null, d, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "bmsvis1", "bmsvis1", 707254897), e], null)), m = cljs.core.get_in.call(null, d, new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "bmsvis1", "bmsvis1", 707254897), e, new cljs.core.Keyword(null, "content", "content", 15833224)], null)), g = bmotion_om.core.mk_react_attr.call(null, b, 
-      g);
-      return cljs.core.apply.call(null, a, g, null == m ? c.call(null, d) : cljs.core._conj.call(null, cljs.core.List.EMPTY, m));
-    };
-  }(a, d, e);
-};
-cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885), function(a) {
-  var b = (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(a), c = (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(a);
-  a = (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(a);
-  var d = cljs.core.mapv.call(null, bmotion_om.core.mk_dom, a);
-  return bmotion_om.core.get_react_dom_fn.call(null, b, c, function(a, b, c, d) {
-    return function(k) {
-      return function(a, b, c, d) {
-        return function q(e) {
-          return new cljs.core.LazySeq(null, function(a, b, c, d) {
-            return function() {
-              for (;;) {
-                var a = cljs.core.seq.call(null, e);
-                if (a) {
-                  if (cljs.core.chunked_seq_QMARK_.call(null, a)) {
-                    var b = cljs.core.chunk_first.call(null, a), c = cljs.core.count.call(null, b), d = cljs.core.chunk_buffer.call(null, c);
-                    a: {
-                      for (var f = 0;;) {
-                        if (f < c) {
-                          var g = cljs.core._nth.call(null, b, f);
-                          cljs.core.chunk_append.call(null, d, g.call(null, k));
-                          f += 1;
-                        } else {
-                          b = !0;
-                          break a;
-                        }
-                      }
-                      b = void 0;
-                    }
-                    return b ? cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, d), q.call(null, cljs.core.chunk_rest.call(null, a))) : cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, d), null);
-                  }
-                  d = cljs.core.first.call(null, a);
-                  return cljs.core.cons.call(null, d.call(null, k), q.call(null, cljs.core.rest.call(null, a)));
-                }
-                return null;
-              }
-            };
-          }(a, b, c, d), null, null);
-        };
-      }(a, b, c, d).call(null, d);
-    };
-  }(b, c, a, d));
-});
-cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword(null, "image", "image", -58725096), function(a) {
-  var b = (new cljs.core.Keyword(null, "tag", "tag", -1290361223)).cljs$core$IFn$_invoke$arity$1(a);
-  a = (new cljs.core.Keyword(null, "attrs", "attrs", -2090668713)).cljs$core$IFn$_invoke$arity$1(a);
-  var c = (new cljs.core.Keyword(null, "data-bmsid", "data-bmsid", 1533988713)).cljs$core$IFn$_invoke$arity$1(a), d = cljs.core.keyword.call(null, c);
-  return function(a, b, c, d) {
-    return function(c) {
-      c = cljs.core.get_in.call(null, c, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "bmsvis1", "bmsvis1", 707254897), d], null));
-      c = bmotion_om.core.mk_innerhtml_attr.call(null, b, c);
-      c = hickory.render.hiccup_to_html.call(null, cljs.core._conj.call(null, cljs.core.List.EMPTY, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [a, c], null)));
-      return React.DOM.g({dangerouslySetInnerHTML:{__html:c}}, null);
-    };
-  }(b, a, c, d);
-});
-cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword(null, "head", "head", -771383919), function(a) {
-  return function(a) {
-    return null;
-  };
-});
-cljs.core._add_method.call(null, bmotion_om.core.mk_element, new cljs.core.Keyword(null, "default", "default", -1987822328), function(a) {
-  return function(a) {
-    return null;
-  };
-});
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "html", "html", -998796897), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "body", "body", -2049205669), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "button", "button", 1456579943), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "canvas", "canvas", -1798817489), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "caption", "caption", -855383902), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "cite", "cite", 1909439996), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "code", "code", 1586293142), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "col", "col", -1959363084), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "colgroup", "colgroup", 651118645), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "data", "data", -232669377), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "datalist", "datalist", -1235043474), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "dd", "dd", -1340437629), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "del", "del", 574975584), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "details", "details", 1956795411), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "dfn", "dfn", 241908167), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "dialog", "dialog", 1415150135), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "dl", "dl", -2140151713), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "dt", "dt", -368444759), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "em", "em", 707813035), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "embed", "embed", -1354913349), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "fieldset", "fieldset", -1949770816), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "figcaption", "figcaption", -1790122047), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "figure", "figure", -561394079), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "footer", "footer", 1606445390), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "form", "form", -1624062471), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h1", "h1", -1896887462), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h2", "h2", -372662728), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h3", "h3", 2067611163), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h4", "h4", 2004862993), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h5", "h5", -1829156625), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "h6", "h6", 557293780), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "head", "head", -771383919), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "header", "header", 119441134), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "hr", "hr", 1377740067), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "html", "html", -998796897), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "i", "i", -1386841315), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "iframe", "iframe", 884422026), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "img", "img", 1442687358), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "input", "input", 556931961), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "ins", "ins", -1021983570), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "kbd", "kbd", 316156875), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "keygen", "keygen", -571693253), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "label", "label", 1718410804), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "legend", "legend", -1027192245), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "li", "li", 723558921), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "link", "link", -1769163468), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "main", "main", -2117802661), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "map", "map", 1371690461), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "mark", "mark", -373816345), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "menu", "menu", 352255198), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "menuitem", "menuitem", 1004047353), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "meta", "meta", 1499536964), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "meter", "meter", -187641611), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "nav", "nav", 719540477), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "noscript", "noscript", -704777289), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "object", "object", 1474613949), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "ol", "ol", 932524051), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "optgroup", "optgroup", 1738282218), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "option", "option", 65132272), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "output", "output", -1105869043), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "p", "p", 151049309), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "param", "param", 2013631823), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "pre", "pre", 2118456869), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "progress", "progress", 244323547), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "q", "q", 689001697), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "rp", "rp", 2006698083), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "rt", "rt", 623480692), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "ruby", "ruby", 2000737661), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "s", "s", 1705939918), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "samp", "samp", 1506141136), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "script", "script", -1304443801), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "section", "section", -300141526), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "select", "select", 1147833503), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "small", "small", 2133478704), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "source", "source", -433931539), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "span", "span", 1394872991), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "strong", "strong", 269529E3), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "style", "style", -496642736), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "sub", "sub", -2093760025), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "summary", "summary", 380847952), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "sup", "sup", -2039492346), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "table", "table", -564943036), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "tbody", "tbody", -80678300), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "td", "td", 1479933353), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "textarea", "textarea", -650375824), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "tfoot", "tfoot", -701599890), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "th", "th", -545608566), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "thead", "thead", -291875296), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "time", "time", 1385887882), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "title", "title", 636505583), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "tr", "tr", -1424774646), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "track", "track", 195787487), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "u", "u", -1156634785), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "ul", "ul", -1349521403), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "var", "var", -769682797), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "video", "video", 156888130), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "wbr", "wbr", 228661800), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "circle", "circle", 1903212362), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "defs", "defs", 1398449717), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "ellipse", "ellipse", 1135891702), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "g", "g", 1738089905), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "line", "line", 212345235), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "linearGradient", "linearGradient", 1711964727), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "mask", "mask", -585748447), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "path", "path", -188191168), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "pattern", "pattern", 242135423), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "polygon", "polygon", 837053759), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "polyline", "polyline", -1731551044), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "radialGradient", "radialGradient", 1402247193), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "rect", "rect", -108902628), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "stop", "stop", -2140911342), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "svg", "svg", 856789142), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "text", "text", -1790561697), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-cljs.core.derive.call(null, new cljs.core.Keyword(null, "tspan", "tspan", -1557853197), new cljs.core.Keyword("bmotion-om.core", "supported", "bmotion-om.core/supported", 39505885));
-bmotion_om.core.setHtml = function(a) {
-  return cljs.core.swap_BANG_.call(null, bmotion_om.core.app_state, cljs.core.assoc_in, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "html", "html", -998796897)], null), a);
-};
-goog.exportSymbol("bmotion_om.core.setHtml", bmotion_om.core.setHtml);
-bmotion_om.core.setObservers = function(a) {
-  return cljs.core.swap_BANG_.call(null, bmotion_om.core.app_state, cljs.core.assoc_in, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "observers", "observers", 841951845), new cljs.core.Keyword(null, "bmsvis1", "bmsvis1", 707254897)], null), cljs.core.js__GT_clj.call(null, a, new cljs.core.Keyword(null, "keywordize-keys", "keywordize-keys", 1310784252), !0));
-};
-goog.exportSymbol("bmotion_om.core.setObservers", bmotion_om.core.setObservers);
-bmotion_om.core.get_make_dom_fn = function(a) {
-  cljs.core.println.call(null, "Going to create new react dom ...");
-  a = cljs.core.first.call(null, (new cljs.core.Keyword(null, "content", "content", 15833224)).cljs$core$IFn$_invoke$arity$1(hickory.core.as_hickory.call(null, hickory.core.parse.call(null, a))));
-  return bmotion_om.core.mk_dom.call(null, a);
-};
-bmotion_om.core.get_make_dom_fn_mem = cljs.core.memoize.call(null, bmotion_om.core.get_make_dom_fn);
-om.core.root.call(null, function(a, b) {
-  "undefined" === typeof bmotion_om.core.t8056 && (bmotion_om.core.t8056 = function(a, b, e) {
-    this.owner = a;
-    this.app = b;
-    this.meta8057 = e;
-    this.cljs$lang$protocol_mask$partition1$ = 0;
-    this.cljs$lang$protocol_mask$partition0$ = 393216;
-  }, bmotion_om.core.t8056.cljs$lang$type = !0, bmotion_om.core.t8056.cljs$lang$ctorStr = "bmotion-om.core/t8056", bmotion_om.core.t8056.cljs$lang$ctorPrWriter = function(a, b, e) {
-    return cljs.core._write.call(null, b, "bmotion-om.core/t8056");
-  }, bmotion_om.core.t8056.prototype.om$core$IRender$ = !0, bmotion_om.core.t8056.prototype.om$core$IRender$render$arity$1 = function(a) {
-    cljs.core.println.call(null, "Rendering ...");
-    return bmotion_om.core.get_make_dom_fn_mem.call(null, (new cljs.core.Keyword(null, "html", "html", -998796897)).cljs$core$IFn$_invoke$arity$1(this.app)).call(null, (new cljs.core.Keyword(null, "observers", "observers", 841951845)).cljs$core$IFn$_invoke$arity$1(this.app));
-  }, bmotion_om.core.t8056.prototype.cljs$core$IMeta$_meta$arity$1 = function(a) {
-    return this.meta8057;
-  }, bmotion_om.core.t8056.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
-    return new bmotion_om.core.t8056(this.owner, this.app, b);
-  }, bmotion_om.core.__GT_t8056 = function(a, b, e) {
-    return new bmotion_om.core.t8056(a, b, e);
-  });
-  return new bmotion_om.core.t8056(b, a, null);
-}, bmotion_om.core.app_state, new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "target", "target", 253001721), document.getElementById("vis_container")], null));

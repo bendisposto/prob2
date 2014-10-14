@@ -1,46 +1,34 @@
-package de.prob.bmotion;
-
-import java.util.List;
+package de.prob.bmotion
 
 import com.google.gson.Gson
+import groovy.transform.TupleConstructor
 
-import de.prob.bmotion.BMotionObserver
+@TupleConstructor
+class Transform {
 
-class Transform extends BMotionObserver {
+    def String selector
+    def attributes = [:]
+    def styles = [:]
+    def String content
 
-	def String selector
-	def attributes = [:]
-	def styles = [:]
-	def content
+    def Transform set(String name, Object value) {
+        (name == "content" || name == "text") ? content = value : attributes.put(name,value)
+        this
+    }
 
-	def Transform() {
-	}
-	
-	def Transform(selector) {
-		this.selector = selector
-	}
+    def Transform attr(String name, Object value) {
+        set(name, value)
+    }
 
-	def Transform(selector, attributes) {
-		this.selector = selector
-		this.attributes = attributes
-	}
+    def Transform style(String name, Object value) {
+        styles.put(name, value)
+        this
+    }
 
-	def Transform set(String name, Object value) {
-		(name == "content" || name == "text") ? content = value : attributes.put(name,value)
-		this
-	}
-
-	def Transform attr(String name, Object value) {
-		set(name, value)
-	}
-	
-	def Transform style(String name, Object value) {
-		styles.put(name, value)
-		this
-	}
-	
-	def List<Transform> update(BMotion bms) {
-		[this]
-	}
+    @Override
+    public String toString() {
+        Gson g = new Gson();
+        return g.toJson(this);
+    }
 
 }

@@ -12,70 +12,70 @@ import de.prob.web.AbstractSession;
 
 public abstract class AbstractBMotionStudioSession extends AbstractSession {
 
-	private String templatePath;
+    private String templatePath;
 
-	private int port;
+    private int port;
 
-	private String host;
+    private String host;
 
-	private Map<String, String> parameterMap = new HashMap<String, String>();
+    private Map<String, String> parameterMap = new HashMap<String, String>();
 
-	private final ITool tool;
+    private final ITool tool;
 
-	public AbstractBMotionStudioSession(UUID id, ITool tool,
-			String templatePath, String host, int port) {
-		super(id);
-		this.tool = tool;
-		this.templatePath = templatePath;
-		this.host = host;
-		this.port = port;
-	}
+    public AbstractBMotionStudioSession(UUID id, ITool tool,
+                                        String templatePath, String host, int port) {
+        super(id);
+        this.tool = tool;
+        this.templatePath = templatePath;
+        this.host = host;
+        this.port = port;
+    }
 
-	public Map<String, String> getParameterMap() {
-		return parameterMap;
-	}
-	
-	public void addParameter(final String key, final String value) {
-		parameterMap.put(key, value);
-	}
-	
-	public void setParameterMap(Map<String, String> params) {
-		this.parameterMap = params;
-	}
+    public Map<String, String> getParameterMap() {
+        return parameterMap;
+    }
 
-	public String getTemplatePath() {
-		return templatePath;
-	}
+    public void addParameter(final String key, final String value) {
+        parameterMap.put(key, value);
+    }
 
-	public String getTemplateFolder() {
-		String template = getTemplatePath();
-		if (template != null) {
-			return new File(template).getParent();
-		}
-		return null;
-	}
+    public void setParameterMap(Map<String, String> params) {
+        this.parameterMap = params;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public String getTemplatePath() {
+        return templatePath;
+    }
 
-	public String getHost() {
-		return host;
-	}
+    public String getTemplateFolder() {
+        String template = getTemplatePath();
+        if (template != null) {
+            return new File(template).getParent();
+        }
+        return null;
+    }
 
-	public ITool getTool() {
-		return tool;
-	}
+    public int getPort() {
+        return port;
+    }
 
-	public abstract void initSession();
+    public String getHost() {
+        return host;
+    }
 
-	@Override
-	public String html(String clientid, Map<String, String[]> parameterMap) {
-		return null;
-	}
+    public ITool getTool() {
+        return tool;
+    }
 
-	@Override
-	public void reload(String client, int lastinfo, AsyncContext context) {
-	}
+    public abstract void initSession();
+
+    @Override
+    public String html(String clientid, Map<String, String[]> parameterMap) {
+        return null;
+    }
+
+    @Override
+    public void reload(String client, int lastinfo, AsyncContext context) {
+    }
 
 }

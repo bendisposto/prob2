@@ -7,7 +7,7 @@ import de.prob.bmotion.Transform
 
 import de.prob.animator.domainobjects.EvalResult
 
-class BAnimationObserver extends BMotionObserver {
+class BAnimationObserver implements BMotionObserver {
 
 	def JsonElement json
 	def mf = new DefaultMustacheFactory()

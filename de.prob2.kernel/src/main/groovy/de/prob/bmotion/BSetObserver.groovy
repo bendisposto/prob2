@@ -1,40 +1,21 @@
 package de.prob.bmotion;
 
-import java.util.List;
-
-import de.prob.bmotion.BMotionObserver
-import de.prob.bmotion.Transform
 import groovy.transform.TupleConstructor
 
 //TODO: Check if result of expression is an enumerated set
-@TupleConstructor(force=true)
-class BSetObserver extends BMotionObserver {
+@TupleConstructor
+class BSetObserver extends TransformObserver {
 
 	def String expression
 	def convert = { it -> "#" + it }
 	def resolve = { it -> it != null ? it.value.replace("{","").replace("}","").replaceAll(" ","").tokenize(",") : [] }
-	private Transform transformer = new Transform()
-		
-	def BSetObserver set(String name, String value) {
-		transformer.set(name,value)
-		this
-	}
 
-	def BSetObserver attr(String name,  String value) {
-		set(name, value)
-	}
-	
-	def BSetObserver style(String name, String value) {
-		transformer.style(name,value)
-		this
-	}
-	
 	def List<Transform> update(BMotion bms) {
-		def bset = bms.eval(expression)
+        def bset = bms.eval(expression)
 		def a = resolve(bset)
 		def b = a.collect{ convert(it) }
-		transformer.selector = b == []? "" : b.join(",")
-		[transformer]
+        selector = b == []? "" : b.join(",")
+        super.update(bms)
 	}
 	
 }

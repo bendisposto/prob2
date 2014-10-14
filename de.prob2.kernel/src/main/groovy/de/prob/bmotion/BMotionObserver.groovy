@@ -1,10 +1,7 @@
 package de.prob.bmotion;
 
-import java.util.List;
-import de.prob.bmotion.Transform
+interface BMotionObserver {
 
-abstract class BMotionObserver {
-	
-	def abstract List<Transform> update(BMotion bms)
-	
+	def List<Transform> update(BMotion bms)
+
 }

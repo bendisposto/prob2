@@ -180,15 +180,6 @@ class BMotionUtil {
 		return content;
 	}
 
-	def static void fixSvgImageTags(Document template) {
-		for (Element e : template.getElementsByTag("svg")) {
-			// Workaround, since jsoup renames svg image tags to img
-			// tags ...
-			Elements imgTags = e.getElementsByTag("img");
-			imgTags.tagName("image");
-		}
-	}
-	
 	def static String getFullTemplatePath(String templatePath) {
 		if (!new File(templatePath).isAbsolute()) {
 			String homedir = System.getProperty("bms.home");

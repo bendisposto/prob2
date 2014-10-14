@@ -12,7 +12,7 @@ import de.prob.ui.api.ITool
 import de.prob.bmotion.BMotionObserver
 import de.prob.bmotion.Transform
 
-class CSPAnimationObserver extends BMotionObserver {
+class CSPAnimationObserver implements BMotionObserver {
 
 	def JsonElement json
 	def mf = new DefaultMustacheFactory()

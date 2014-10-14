@@ -21,12 +21,25 @@ bms = (function() {
 		}
 	}
 	
-	extern.setObservers = function(data) {
-		bmotion_om.core.setObservers(JSON.parse(data.observers))
+	extern.setComponent = function(data) {
+		bmotion_om.core.setComponent(data)
 	}
 	
-	extern.setHtml = function(data) {
-		bmotion_om.core.setHtml(data.html)
+	extern.initComponent = function(data) {
+		bmotion_om.core.initComponent(data)
+	}
+	
+	extern.applyTransformers = function(data) {
+		var d1 = JSON.parse(data.transformers)
+		var i1 = 0
+		for (; i1 < d1.length; i1++) {
+			var t = d1[i1]
+			var selector = $(t.selector)
+			var content = t.content
+			if(content != undefined) selector.html(content)
+			selector.attr(t.attributes)
+			selector.css(t.styles)
+		}
 	}
 	
 	return extern;
