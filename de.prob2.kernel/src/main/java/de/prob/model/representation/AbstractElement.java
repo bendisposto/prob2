@@ -13,6 +13,8 @@ import java.util.Set;
  * 
  */
 public abstract class AbstractElement {
+
+	boolean frozen = false;
 	/**
 	 * Maps from a subclass of {@link AbstractElement} to a set containing all
 	 * elements for that subclass
@@ -49,6 +51,9 @@ public abstract class AbstractElement {
 	 */
 	public <T extends AbstractElement> void put(final Class<T> c,
 			final ModelElementList<? extends T> elements) {
+		if (frozen) {
+			throw new IllegalModificationException();
+		}
 		children.put(c, elements);
 	}
 
@@ -57,5 +62,18 @@ public abstract class AbstractElement {
 	 */
 	public Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> getChildren() {
 		return children;
+	}
+
+	/**
+	 * Once an {@link AbstractElement} is frozen, it can no longer be modified.
+	 * In essence, this changes a mutable type into an immutable one. It also
+	 * recursively freezes all children {@link ModelElementList}s.
+	 */
+	public void freeze() {
+		frozen = true;
+		for (ModelElementList<? extends AbstractElement> list : children
+				.values()) {
+			list.freeze();
+		}
 	}
 }

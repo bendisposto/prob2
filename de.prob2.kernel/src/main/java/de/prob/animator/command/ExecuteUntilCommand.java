@@ -16,14 +16,23 @@ import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
+/**
+ * Searches the StateSpace to find a trace. Operations are randomly executed
+ * until a provided LTL formula becomes true.
+ * 
+ * @author joy
+ * 
+ */
 public class ExecuteUntilCommand extends AbstractCommand implements
 		IStateSpaceModifier, ITraceDescription {
 
-	private static final String RESULT_VARIABLE = "Trace";
+	private static final String TRACE_VARIABLE = "Trace";
+	private static final String RESULT_VARIABLE = "Result";
 	private final List<OpInfo> resultTrace = new ArrayList<OpInfo>();
 	private final StateId startstate;
 	private final LTL condition;
 	private final StateSpace statespace;
+	private PrologTerm result;
 
 	public ExecuteUntilCommand(final StateSpace statespace,
 			final StateId startstate, final LTL condition) {
@@ -34,9 +43,10 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
-		pout.openTerm("find_trace");
+		pout.openTerm("generate_trace_until_condition_fulfilled");
 		pout.printAtomOrNumber(this.startstate.getId());
 		condition.printProlog(pout);
+		pout.printVariable(TRACE_VARIABLE);
 		pout.printVariable(RESULT_VARIABLE);
 		pout.closeTerm();
 	}
@@ -45,14 +55,15 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		ListPrologTerm trace = BindingGenerator.getList(bindings
-				.get(RESULT_VARIABLE));
+				.get(TRACE_VARIABLE));
+
+		result = bindings.get(RESULT_VARIABLE);
 
 		for (PrologTerm term : trace) {
 			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 3);
 			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(
 					statespace, t);
 			resultTrace.add(operation);
-
 		}
 	}
 
@@ -69,5 +80,36 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
 		Trace t = s.getTrace(startstate);
 		return t.addOps(resultTrace);
+	}
+
+	/**
+	 * @return if the command successfully found a trace to a state in which the
+	 *         condition holds.
+	 */
+	public boolean isSuccess() {
+		return result.getFunctor().equals("ltl_found");
+	}
+
+	/**
+	 * @return if the maximum number of animation steps was reached before a
+	 *         state was found in which the condition holds.
+	 */
+	public boolean conditionNotReached() {
+		return result.getFunctor().equals("maximum_nr_of_steps_reached");
+	}
+
+	/**
+	 * @return if the formula for the condition contains a type error
+	 */
+	public boolean hasTypeError() {
+		return result.getFunctor().equals("typeerror");
+	}
+
+	/**
+	 * @return if a deadlock was uncovered before a state was found in which the
+	 *         condition holds.
+	 */
+	public boolean isDeadlocked() {
+		return result.getFunctor().equals("deadlock");
 	}
 }

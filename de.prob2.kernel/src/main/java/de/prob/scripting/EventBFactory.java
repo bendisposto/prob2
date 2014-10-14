@@ -34,12 +34,15 @@ public class EventBFactory extends ModelFactory {
 		EventBModel model = modelProvider.get();
 
 		new EventBDatabaseTranslator(model, file);
-		model.isFinished();
 
+		return loadModel(model, getPreferences(model, prefs), loadVariables);
+	}
+
+	public static EventBModel loadModel(final EventBModel model,
+			final Map<String, String> prefs, final boolean loadVariables) {
 		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
 
-		for (Entry<String, String> pref : getPreferences(model, prefs)
-				.entrySet()) {
+		for (Entry<String, String> pref : prefs.entrySet()) {
 			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
 		}
 
