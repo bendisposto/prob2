@@ -17,10 +17,34 @@ import de.prob.model.representation.AbstractModel
  */
 public class Trace {
 
-	def final TraceElement current
-	def final TraceElement head
+	def final OpInfo current
+	def final OpInfo head
 	def final StateSpace stateSpace
 	def final UUID UUID
+	def final ArrayList<OpInfo> opList
+
+	def Trace(final AbstractModel m) {
+		this(m.getStateSpace())
+	}
+
+	def Trace(final StateSpace s) {
+		this.stateSpace = s
+		this.head = null
+		this.current = null
+		UUID = java.util.UUID.randomUUID()
+	}
+
+	def Trace(final StateSpace s, final OpInfo head, UUID uuid) {
+		this(s, head, head, uuid)
+	}
+
+	def Trace(final StateSpace s, final OpInfo head,
+	final OpInfo current, UUID uuid) {
+		this.stateSpace = s
+		this.head = head
+		this.current = current
+		this.UUID = uuid
+	}
 
 	def IEvalResult evalCurrent(formula) {
 		if(!stateSpace.canBeEvaluated(getCurrentState())) {
@@ -41,9 +65,7 @@ public class Trace {
 		}
 
 		def List<EvaluationCommand> cmds = []
-
-		def ops = head.getOpList()
-		ops.each {
+		opList.each {
 			if (stateSpace.canBeEvaluated(stateSpace.getVertex(it.dest))) {
 				cmds << f.getCommand(stateSpace.getVertex(it.dest))
 			}
@@ -58,29 +80,6 @@ public class Trace {
 			res << new Tuple2<String,IEvalResult>(it.getStateId(),it.getValue())
 		}
 		res
-	}
-
-	def Trace(final AbstractModel m) {
-		this(m.getStateSpace())
-	}
-
-	def Trace(final StateSpace s) {
-		this.stateSpace = s
-		head = new TraceElement(s.getState(s.getVertex("root")))
-		current = head
-		UUID = java.util.UUID.randomUUID()
-	}
-
-	def Trace(final StateSpace s, final TraceElement head, UUID uuid) {
-		this(s, head, head, uuid)
-	}
-
-	def Trace(final StateSpace s, final TraceElement head,
-	final TraceElement current, UUID uuid) {
-		this.stateSpace = s
-		this.head = head
-		this.current = current
-		this.UUID = uuid
 	}
 
 	def Trace add(final String name, final List<String> params) {
