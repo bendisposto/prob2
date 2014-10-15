@@ -60,7 +60,7 @@ import de.prob.model.representation.CSPModel;
  * @author joy
  * 
  */
-public class StateSpace implements IStateSpace {
+public class StateSpace implements IAnimator {
 
 	Logger logger = LoggerFactory.getLogger(StateSpace.class);
 	private transient IAnimator animator;
@@ -70,12 +70,9 @@ public class StateSpace implements IStateSpace {
 	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<IEvalElement, WeakHashMap<Object, Object>>();
 	private final Set<IEvalElement> subscribedFormulas = new HashSet<IEvalElement>();
 
-	private final Set<IStatesCalculatedListener> stateSpaceListeners = new HashSet<IStatesCalculatedListener>();
-
 	LRUMap states = new LRUMap(100);
 
 	private AbstractModel model;
-	private final Map<StateId, Map<IEvalElement, IEvalResult>> values = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
 
 	@Inject
 	public StateSpace(final Provider<IAnimator> panimator) {
@@ -304,34 +301,6 @@ public class StateSpace implements IStateSpace {
 		animator.execute(commands);
 	}
 
-	// NOTIFICATION SYSTEM
-
-	/**
-	 * Adds an IStateSpaceChangeListener to the list of StateSpaceListeners.
-	 * This listener will be notified whenever a new operation or a new state is
-	 * added to the graph.
-	 * 
-	 * @param l
-	 */
-	@Override
-	public void registerStateSpaceListener(final IStatesCalculatedListener l) {
-		stateSpaceListeners.add(l);
-	}
-
-	@Override
-	public void deregisterStateSpaceListener(final IStatesCalculatedListener l) {
-		stateSpaceListeners.remove(l);
-	}
-
-	@Override
-	public void notifyStateSpaceChange(final List<OpInfo> newOps) {
-		for (final IStatesCalculatedListener listener : stateSpaceListeners) {
-			if (!animator.isBusy()) {
-				listener.newTransitions(newOps);
-			}
-		}
-	}
-
 	// METHODS TO MAKE THE INTERACTION WITH THE GROOVY SHELL EASIER
 	/*
 	 * (non-Javadoc)
@@ -376,7 +345,7 @@ public class StateSpace implements IStateSpace {
 
 		sb.append("STATE: " + state + "\n\n");
 		sb.append("VALUES:\n");
-		Map<IEvalElement, IEvalResult> currentState = values.get(state);
+		Map<IEvalElement, IEvalResult> currentState = state.getValues();
 		if (currentState != null) {
 			final Set<Entry<IEvalElement, IEvalResult>> entrySet = currentState
 					.entrySet();
@@ -476,7 +445,6 @@ public class StateSpace implements IStateSpace {
 	 * @return the {@link AbstractModel} that represents the model for the given
 	 *         StateSpace instance
 	 */
-	@Override
 	public AbstractModel getModel() {
 		return model;
 	}
@@ -566,7 +534,7 @@ public class StateSpace implements IStateSpace {
 				result.put(stateId, res);
 
 				// Check for cached values
-				Map<IEvalElement, IEvalResult> map = values.get(stateId);
+				Map<IEvalElement, IEvalResult> map = stateId.getValues();
 				if (map == null) {
 					for (IEvalElement f : formulas) {
 						cmds.add(f.getCommand(stateId));
@@ -589,22 +557,16 @@ public class StateSpace implements IStateSpace {
 			IEvalElement formula = efCmd.getEvalElement();
 			IEvalResult value = efCmd.getValue();
 			StateId id = getState(efCmd.getStateId());
+			Map<IEvalElement, IEvalResult> values = id.getValues();
 
 			if (formulaRegistry.containsKey(formula)
 					&& !formulaRegistry.get(formula).isEmpty()) {
-				if (!values.containsKey(id)) {
-					values.put(id, new HashMap<IEvalElement, IEvalResult>());
-				}
-				values.get(id).put(formula, value);
+				values.put(formula, value);
 			}
 			result.get(id).put(formula, value);
 		}
 
 		return result;
-	}
-
-	public Map<StateId, Map<IEvalElement, IEvalResult>> getValues() {
-		return values;
 	}
 
 	@Override
