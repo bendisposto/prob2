@@ -204,15 +204,16 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 			ensureParsed();
 		}
 		if (kind.equals(PREDICATE.toString())) {
-			FormulaFactory.getInstance(types).parsePredicate(toUnicode(), null);
+			return FormulaFactory.getInstance(types).parsePredicate(
+					toUnicode(), null);
 		}
 		if (kind.equals(EXPRESSION.toString())) {
-			FormulaFactory.getInstance(types)
-					.parseExpression(toUnicode(), null);
+			return FormulaFactory.getInstance(types).parseExpression(
+					toUnicode(), null);
 		}
 		if (kind.equals(ASSIGNMENT.toString())) {
-			FormulaFactory.getInstance(types)
-					.parseAssignment(toUnicode(), null);
+			return FormulaFactory.getInstance(types).parseAssignment(
+					toUnicode(), null);
 		}
 		return null;
 	}
