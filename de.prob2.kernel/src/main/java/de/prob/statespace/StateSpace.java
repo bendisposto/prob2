@@ -147,7 +147,7 @@ public class StateSpace implements IStateSpace {
 	public List<OpInfo> opFromPredicate(final StateId stateId,
 			final String name, final String predicate, final int nrOfSolutions)
 			throws IllegalArgumentException {
-		final ClassicalB pred = new ClassicalB(predicate);
+		final IEvalElement pred = model.parseFormula(predicate);
 		final GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				this, stateId.getId(), name, pred, nrOfSolutions);
 		execute(command);
@@ -533,6 +533,11 @@ public class StateSpace implements IStateSpace {
 		return getState(sId);
 	}
 
+	/**
+	 * @param ops
+	 *            to be evaluated
+	 * @return a set containing all of the evaluated ops
+	 */
 	public Set<OpInfo> evaluateOps(final Collection<OpInfo> ops) {
 		GetOpsFromIds cmd = new GetOpsFromIds(ops);
 		execute(cmd);

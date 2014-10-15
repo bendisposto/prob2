@@ -15,6 +15,12 @@ import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpFromId;
 import de.prob.animator.domainobjects.EvalResult;
+import de.prob.model.classicalb.ClassicalBMachine;
+import de.prob.model.classicalb.Operation;
+import de.prob.model.eventb.Event;
+import de.prob.model.eventb.EventBMachine;
+import de.prob.model.eventb.EventParameter;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -48,6 +54,7 @@ public class OpInfo {
 	private String rep = null;
 	private boolean evaluated;
 	private final FormalismType formalismType;
+	private String predicateString;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
@@ -213,6 +220,39 @@ public class OpInfo {
 			rep = generateRep();
 		}
 		return rep;
+	}
+
+	public String getParameterPredicate() {
+		if (predicateString != null) {
+			return predicateString;
+		}
+		predicateString = Joiner.on(" & ").join(getParameterPredicates());
+		return predicateString;
+	}
+
+	public List<String> getParameterPredicates() {
+		evaluate();
+		List<String> predicates = new ArrayList<String>();
+		AbstractElement mainComponent = stateSpace.getModel()
+				.getMainComponent();
+		List<String> params = new ArrayList<String>();
+		if (mainComponent instanceof ClassicalBMachine) {
+			Operation op = ((ClassicalBMachine) mainComponent)
+					.getOperation(getName());
+			params = op.getParameters();
+		} else if (mainComponent instanceof EventBMachine) {
+			Event event = ((EventBMachine) mainComponent).getEvent(getName());
+			for (EventParameter eventParameter : event.getParameters()) {
+				params.add(eventParameter.getName());
+			}
+		}
+		if (params.size() == this.params.size()) {
+			for (int i = 0; i < params.size(); i++) {
+				predicates.add(params.get(i) + " = " + this.params.get(i));
+			}
+		}
+
+		return predicates;
 	}
 
 	/**

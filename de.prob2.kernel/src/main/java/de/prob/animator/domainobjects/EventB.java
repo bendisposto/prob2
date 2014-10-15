@@ -167,6 +167,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		return getCode();
 	}
 
+	@Override
 	public Node getAst() {
 		if (ast == null) {
 			ensureParsed();

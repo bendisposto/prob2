@@ -72,4 +72,8 @@ public class ClassicalBMachine extends Machine {
 	public ModelElementList<Operation> getEvents() {
 		return operations
 	}
+
+	public Operation getOperation(String name) {
+		return operations[name]
+	}
 }

@@ -77,18 +77,21 @@ public class Trace {
 		res
 	}
 
+	def Trace add(final OpInfo transition) {
+		StateId newState = transition.getDestId()
+		List<OpInfo> newOps = new ArrayList<OpInfo>(opList)
+		newOps << transition
+
+		Trace newTrace = new Trace(newState, newOps, this.UUID)
+	}
+
 	def Trace add(final String opId) {
 		OpInfo op = currentState.getOutTransitions().find { it.getId() == opId }
 		if (op == null)
 			throw new IllegalArgumentException(opId
 			+ " is not a valid operation on this state")
 
-		StateId newState = op.getDestId()
-		List<OpInfo> newOps = new ArrayList<OpInfo>(opList)
-		newOps << op
-
-		Trace newTrace = new Trace(newState, newOps, this.UUID)
-		return newTrace
+		return add(op)
 	}
 
 	def Trace add(final int i) {
@@ -184,22 +187,17 @@ public class Trace {
 
 	def Trace randomAnimation(final int numOfSteps) {
 		Trace oldTrace = this
-		TraceElement previous = this.current
-		TraceElement current = this.current
+		List<OpInfo> newOps = new ArrayList<OpInfo>(opList)
+		StateId state = currentState
 		for(int i = 0; i < numOfSteps; i++) {
-			previous = current
-			List<OpInfo> ops = new ArrayList<OpInfo>()
-			ops.addAll(stateSpace.getOutEdges(currentState))
+			List<OpInfo> ops = currentState.getOutTransitions()
 			Collections.shuffle(ops)
 			OpInfo op = ops.get(0)
-
-			StateId newState = stateSpace.getState(op)
-
-			current = new TraceElement(currentState,newState,op,previous)
-			currentState = newState
+			state = op.getDestId()
+			newOps << op
 		}
 
-		Trace newTrace = new Trace(stateSpace, current, this.UUID)
+		Trace newTrace = new Trace(state, newOps, this.UUID)
 		return newTrace
 	}
 
@@ -216,14 +214,7 @@ public class Trace {
 	 */
 	@Deprecated
 	def invokeMethod(String method, params) {
-		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
-
-		if(method.startsWith("\$") && !(method == "\$setup_constants" || method == "\$initialise_machine")) {
-			method = method.substring(1)
-		}
-
-		OpInfo op = stateSpace.opFromPredicate(current.getCurrentState(), method, predicate , 1)[0];
-		return add(op.id)
+		return add(currentState.findTransition(method, params))
 	}
 
 	/**
@@ -232,18 +223,15 @@ public class Trace {
 	 * If the specified operation is invalid, a runtime exception will be thrown.
 	 *
 	 * @param event String event name
-	 * @param params List of String predicates to be conjoined
+	 * @param predicates List of String predicates to be conjoined
 	 * @return {@link Trace} which is a result of executing the specified operation
 	 */
-	def Trace execute(String event, List<String> params) {
-		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+	def Trace execute(String event, List<String> predicates) {
+		return add(currentState.findTransition(event, predicates))
+	}
 
-		def ops = stateSpace.opFromPredicate(current.getCurrentState(), event, predicate , 1)
-		if(ops.isEmpty()) {
-			throw new IllegalArgumentException("Could not find an operation for given event and parameter combination");
-		}
-		OpInfo op = ops[0];
-		return add(op.id)
+	def Trace execute(String event, String... predicates) {
+		return execute(event, predicates as List)
 	}
 
 	/**
@@ -256,12 +244,11 @@ public class Trace {
 	 */
 	def boolean canExecuteEvent(String event, List<String> params) {
 		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
-		return stateSpace.isValidOperation(current.getCurrentState(), event, predicate);
+		return stateSpace.isValidOperation(currentState, event, predicate);
 	}
 
 	def Trace anyOperation(filter) {
-		def ops = new ArrayList<OpInfo>()
-		ops.addAll(stateSpace.evaluateOps(stateSpace.getOutEdges(current.getCurrentState())));
+		def ops = currentState.getOutTransitions(true)
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.name.matches(filter);
@@ -289,14 +276,11 @@ public class Trace {
 	}
 
 	def Set<OpInfo> getNextTransitions() {
-		return stateSpace.getOutEdges(current.getCurrentState())
+		return currentState.getOutTransitions()
 	}
 
-	def StateId getCurrentState() {
-		return current.getCurrentState()
-	}
-	def StateId getPreviousState() {
-		return current.getPrevious().getCurrentState()
+	def OpInfo getCurrentTransition() {
+		return currentPos > -1 ? opList[currentPos] : null
 	}
 
 	def AbstractModel getModel() {
@@ -316,41 +300,41 @@ public class Trace {
 		if(className == EventBModel) {
 			return (EventBModel) stateSpace.model
 		}
-		if(className == ArrayList) {
-			def list = []
-			def p = head
-			while(p != null) {
-				list << p
-				p = p.getPrevious()
-			}
-			return list.reverse()
-		}
 		throw new ClassCastException("Not able to convert Trace object to ${className}")
 	}
 
-	def ensureOpInfosEvaluated() {
-		def notEvaluated = head.getOpList().findAll { !it.isEvaluated() }
-		if(!notEvaluated.isEmpty()) {
-			stateSpace.evaluateOps(notEvaluated);
+	/**
+	 * Access the list of operations that have been executed. By default, the list of
+	 * {@link OpInfo} objects will not be evaluated (i.e. certain information about the
+	 * transition will be lazily retrieved from ProB at a later time). However, if an
+	 * optional parameter is supplied and set to true, the evaluation of all of the
+	 * {@link OpInfo} objects will occur before the list is returned via the
+	 * {@link StateSpace#evaluateOps(Collection)} method.
+	 * @param evaluate a boolean flag to determine if the ops should be evaluated or not
+	 * @return the list of {@link OpInfo}s that have been evaluated over the course of the {@link Trace}
+	 */
+	def List<OpInfo> getOpList(boolean evaluate=false) {
+		if (evaluate) {
+			stateSpace.evaluateOps(opList)
 		}
+		return opList
 	}
 
 	/**
 	 * Takes a {@link StateSpace} and a list of {@link OpInfo} operations through the {@link StateSpace}
 	 * and generates a {@link Trace} object from the information. The list of operations must be a valid
-	 * list of operations starting from the root state, and for which the information has already been
-	 * cached in the {@link StateSpace}. Otherwise, an assertion error will be thrown. Calls {@link Trace#addOps}
+	 * list of operations. The {@link Trace} object produced will start from the first state in the list
+	 * of transitions. Calls {@link Trace#addOps}
 	 *
 	 * @param s {@link StateSpace} through which the Trace should be generated
 	 * @param ops List of {@link OpInfo} operations that should be executed in the Trace
 	 * @return {@link Trace} specified by list of operations
 	 */
 	def static Trace getTraceFromOpList(StateSpace s, List<OpInfo> ops) {
-		Trace t = new Trace(s)
-		if(!ops.isEmpty()) {
-			t = t.addOps(ops)
+		if (ops.isEmpty()) {
+			return new Trace(s)
 		}
-		return t
+		return new Trace(ops.first().getSrcId()).addOps(ops)
 	}
 
 	/**
@@ -360,16 +344,10 @@ public class Trace {
 	 * @return Trace with the ops added
 	 */
 	def Trace addOps(List<OpInfo> ops) {
-		TraceElement h = current
-		for (op in ops) {
-			def src = op.getSrcId()
-			def dest = op.getDestId()
-			assert src != null
-			assert dest != null
-			h = new TraceElement(src, dest, op, h)
-		}
-		stateSpace.explore(h.getCurrentState())
-		return new Trace(stateSpace, h, this.UUID)
+		List<OpInfo> newOps = new ArrayList<OpInfo>(opList)
+		newOps.addAll(ops)
+		StateId stateId = newOps.last().getDestId().explore()
+		return new Trace(stateId, newOps, this.UUID)
 	}
 
 
@@ -377,6 +355,6 @@ public class Trace {
 	 * @return an identical Trace object with a different UUID
 	 */
 	def Trace copy() {
-		return new Trace(stateSpace, head, current, java.util.UUID.randomUUID())
+		return new Trace(currentState, new ArrayList<OpInfo>(opList), currentPos,  java.util.UUID.randomUUID())
 	}
 }
