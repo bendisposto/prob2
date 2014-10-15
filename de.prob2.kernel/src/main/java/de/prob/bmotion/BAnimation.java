@@ -14,11 +14,9 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
-import de.prob.statespace.Trace;
 import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
-import de.prob.bmotion.BMotionObserver;
 
 public class BAnimation extends ProBAnimation {
 
@@ -26,56 +24,56 @@ public class BAnimation extends ProBAnimation {
 
 	protected StateSpace currentStatespace;
 
-	public BAnimation(String toolId, AbstractModel model, AnimationSelector animations,
-			ToolRegistry toolRegistry) {
+	public BAnimation(final String toolId, final AbstractModel model,
+			final AnimationSelector animations, final ToolRegistry toolRegistry) {
 		super(toolId, model, animations, toolRegistry);
 	}
-	
-	public BAnimation(String toolId, AnimationSelector animations,
-			ToolRegistry toolRegistry) {
+
+	public BAnimation(final String toolId, final AnimationSelector animations,
+			final ToolRegistry toolRegistry) {
 		super(toolId, animations, toolRegistry);
 	}
 
 	@Override
 	public String doStep(final String stateref, final String event,
 			final String... parameters) throws ImpossibleStepException {
-		if(trace == null)
+		if (currentState == null) {
 			return null;
+		}
 		try {
-			Trace new_trace = trace.execute(event, Arrays.asList(parameters));
-			animations.traceChange(new_trace);
-			trace = new_trace;
+			currentState = currentState.perform(event, parameters);
 			toolRegistry.notifyToolChange(this);
 		} catch (Exception e) {
 			throw new ImpossibleStepException();
 		}
-		return trace.getCurrentState().getId();
+		return currentState.getId();
 	}
 
 	@Override
 	public Object evaluate(final String stateref, final String formula)
 			throws IllegalFormulaException {
-		if (trace == null)
+		if (currentState == null) {
 			return null;
-		StateSpace space = trace.getStateSpace();
+		}
+		StateSpace space = currentState.getStateSpace();
 		IEvalElement e = formulas.get(formula);
 		if (e == null) {
-			e = trace.getModel().parseFormula(formula);
+			e = space.getModel().parseFormula(formula);
 			formulas.put(formula, e);
 		}
 		space.subscribe(this, e);
-		StateId sId = space.getVertex(stateref);
-		return space.valuesAt(sId).get(formulas.get(formula));
+		StateId state = space.getState(stateref);
+		state.explore();
+		return space.valuesAt(state).get(formulas.get(formula));
 	}
 
 	@Override
 	public List<String> getErrors(final String state, final String formula) {
 		List<String> errors = new ArrayList<String>();
-		if (trace != null) {
+		if (currentState != null) {
 			try {
-				IEvalElement e = trace.getModel().parseFormula(formula);
-				StateSpace space = trace.getStateSpace();
-				StateId sId = space.getVertex(state);
+				StateSpace space = currentState.getStateSpace();
+				StateId sId = space.getState(state);
 				if (!space.canBeEvaluated(sId)) {
 					errors.add("State not initialized");
 				}
@@ -94,7 +92,7 @@ public class BAnimation extends ProBAnimation {
 	}
 
 	@Override
-	public BMotionObserver getBMotionObserver(JsonElement jsonObserver) {
+	public BMotionObserver getBMotionObserver(final JsonElement jsonObserver) {
 		return new BAnimationObserver(jsonObserver);
 	}
 

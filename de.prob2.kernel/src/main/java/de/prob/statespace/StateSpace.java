@@ -23,6 +23,7 @@ import com.google.inject.Provider;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.AbstractCommand;
+import de.prob.animator.command.CheckIfStateIdValidCommand;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.command.FindValidStateCommand;
@@ -80,10 +81,27 @@ public class StateSpace implements IAnimator {
 	}
 
 	public StateId getRoot() {
-		return getState("root");
+		return addState("root");
 	}
 
 	public StateId getState(final String id) {
+		if (states.containsKey(id)) {
+			return (StateId) states.get(id);
+		}
+		CheckIfStateIdValidCommand cmd = new CheckIfStateIdValidCommand(id);
+		execute(cmd);
+		if (cmd.isValidState()) {
+			StateId sId = new StateId(id, this);
+			states.put(id, sId);
+			return sId;
+		}
+		throw new IllegalArgumentException(
+				"There is currently no state with id " + id
+						+ " in the state space");
+	}
+
+	@Deprecated
+	public StateId addState(final String id) {
 		if (states.containsKey(id)) {
 			return (StateId) states.get(id);
 		}
@@ -94,7 +112,7 @@ public class StateSpace implements IAnimator {
 
 	public StateId getState(final int id) {
 		if (id == -1) {
-			return getState("root");
+			return getRoot();
 		}
 		return getState(String.valueOf(id));
 	}
@@ -118,7 +136,7 @@ public class StateSpace implements IAnimator {
 		List<String> ids = cmd.getIds();
 		List<StateId> sIds = new ArrayList<StateId>();
 		for (String s : ids) {
-			sIds.add(getState(s));
+			sIds.add(addState(s));
 		}
 		return sIds;
 	}

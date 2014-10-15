@@ -18,19 +18,18 @@ import de.prob.statespace.Trace;
 import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
-import de.prob.bmotion.BMotionObserver;
 
 public class CSPAnimation extends ProBAnimation {
 
 	private final Map<String, IEvalResult> formulaCache = new HashMap<String, IEvalResult>();
 
-	public CSPAnimation(String toolId, AbstractModel model,
-			AnimationSelector animations, ToolRegistry toolRegistry) {
+	public CSPAnimation(final String toolId, final AbstractModel model,
+			final AnimationSelector animations, final ToolRegistry toolRegistry) {
 		super(toolId, model, animations, toolRegistry);
 	}
 
-	public CSPAnimation(String toolId, AnimationSelector animations,
-			ToolRegistry toolRegistry) {
+	public CSPAnimation(final String toolId,
+			final AnimationSelector animations, final ToolRegistry toolRegistry) {
 		super(toolId, animations, toolRegistry);
 	}
 
@@ -51,8 +50,9 @@ public class CSPAnimation extends ProBAnimation {
 	@Override
 	public Object evaluate(final String stateref, final String formula)
 			throws IllegalFormulaException {
-		if (trace == null)
+		if (trace == null) {
 			return null;
+		}
 		if (!formulaCache.containsKey(formula)) {
 			IEvalElement e = trace.getModel().parseFormula(formula);
 			StateSpace space = trace.getStateSpace();
@@ -66,11 +66,9 @@ public class CSPAnimation extends ProBAnimation {
 	@Override
 	public List<String> getErrors(final String state, final String formula) {
 		List<String> errors = new ArrayList<String>();
-		if (trace != null) {
+		if (currentState != null) {
 			try {
-				IEvalElement e = trace.getModel().parseFormula(formula);
-				StateSpace space = trace.getStateSpace();
-				space.eval(space.getVertex(state), Arrays.asList(e));
+				currentState.eval(formula);
 			} catch (EvaluationException e) {
 				errors.add("parse error : " + e.getMessage());
 			} catch (Exception e) {
@@ -86,7 +84,7 @@ public class CSPAnimation extends ProBAnimation {
 	}
 
 	@Override
-	public BMotionObserver getBMotionObserver(JsonElement jsonObserver) {
+	public BMotionObserver getBMotionObserver(final JsonElement jsonObserver) {
 		return new CSPAnimationObserver(jsonObserver);
 	}
 

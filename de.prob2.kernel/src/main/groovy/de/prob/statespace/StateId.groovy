@@ -5,7 +5,6 @@ import com.google.common.base.Objects
 import de.prob.animator.command.ExploreStateCommand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
-import de.prob.statespace.derived.AbstractDerivedStateSpace
 
 
 /**A reference to the state object in the ProB core.
@@ -29,11 +28,7 @@ class StateId {
 	def StateId(String id, StateSpace space) {
 		this.id = id;
 		this.explored = false
-		if(space instanceof StateSpace) {
-			this.stateSpace = space;
-		} else if(space instanceof AbstractDerivedStateSpace) {
-			this.stateSpace = ((AbstractDerivedStateSpace) space).getStateSpace()
-		}
+		this.stateSpace = space
 	}
 
 	/**
@@ -68,6 +63,10 @@ class StateId {
 	def StateId perform(String event, List<String> params) {
 		def op = findTransition(event, params)
 		return op.getDestId().explore();
+	}
+
+	def StateId perform(String event, String... params) {
+		return perform(event, params as List);
 	}
 
 	def OpInfo findTransition(String name, List<String> predicates) {
@@ -224,15 +223,13 @@ class StateId {
 	}
 
 	def StateId explore() {
-		if (!explored) {
-			ExploreStateCommand cmd = new ExploreStateCommand(stateSpace, id, stateSpace.getSubscribedFormulas());
-			stateSpace.execute(cmd);
-			ops = cmd.getNewTransitions()
-			values.putAll(cmd.getFormulaResults())
-			initialised = cmd.isInitialised()
-			invariantOk = cmd.isInvariantOk()
-			explored = true
-		}
+		ExploreStateCommand cmd = new ExploreStateCommand(stateSpace, id, stateSpace.getSubscribedFormulas());
+		stateSpace.execute(cmd);
+		ops = cmd.getNewTransitions()
+		values.putAll(cmd.getFormulaResults())
+		initialised = cmd.isInitialised()
+		invariantOk = cmd.isInvariantOk()
+		explored = true
 		this
 	}
 }

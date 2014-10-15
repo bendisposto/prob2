@@ -409,8 +409,8 @@ public class OpInfo {
 	public static OpInfo generateArtificialTransition(final StateSpace s,
 			final String transId, final String description, final String srcId,
 			final String destId) {
-		return new OpInfo(s, transId, description, s.getState(srcId),
-				s.getState(destId));
+		return new OpInfo(s, transId, description, s.addState(srcId),
+				s.addState(destId));
 	}
 
 	/**
@@ -428,7 +428,7 @@ public class OpInfo {
 		String opId = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
 		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(2));
 		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
-		return new OpInfo(s, opId, s.getState(srcId), s.getState(destId));
+		return new OpInfo(s, opId, s.addState(srcId), s.addState(destId));
 	}
 
 	/**
