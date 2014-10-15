@@ -3,6 +3,7 @@ package de.prob.web.views;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -175,8 +176,9 @@ public class StateInspector extends AbstractSession implements
 		StateSpace s = t.getStateSpace();
 		Map<IEvalElement, IEvalResult> current = s
 				.valuesAt(t.getCurrentState());
-		Map<IEvalElement, IEvalResult> previous = s.valuesAt(t.getCurrent()
-				.getSrc());
+		Map<IEvalElement, IEvalResult> previous = t.getCurrentPos() > -1 ? s
+				.valuesAt(t.getCurrentTransition().getSrcId())
+				: new HashMap<IEvalElement, IEvalResult>();
 
 		for (IEvalElement e : formulasForEvaluating) {
 			String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current
