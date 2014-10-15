@@ -1,9 +1,8 @@
 package de.prob.model.eventb;
 
-import javax.swing.text.AbstractDocument.AbstractElement
-
 import com.google.common.base.Objects
 
+import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Action
 import de.prob.model.representation.BEvent
 import de.prob.model.representation.Guard
@@ -90,7 +89,7 @@ public class Event extends BEvent {
 	}
 
 	private void printChildren(final String name,
-			final Set<? extends AbstractElement> childrenOfType,
+			final ModelElementList<? extends AbstractElement> childrenOfType,
 			final StringBuilder sb) {
 		if (!childrenOfType.isEmpty()) {
 			sb.append(name + ": \n");
