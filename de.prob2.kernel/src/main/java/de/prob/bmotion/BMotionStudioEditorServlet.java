@@ -271,7 +271,7 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
     }
 
     @Override
-    protected AbstractBMotionStudioSession createSession(UUID id, ITool tool, Map<String, ProBMotionComponent> proBMotionElementMap,
+    protected AbstractBMotionStudioSession createSession(UUID id, ITool tool, Map<String, BMotionComponent> proBMotionElementMap,
                                                          String template, String host, int port) {
         return new BMotionStudioEditorSession(id, tool, template, host, port);
     }

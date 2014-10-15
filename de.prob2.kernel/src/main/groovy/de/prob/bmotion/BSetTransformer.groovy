@@ -4,13 +4,13 @@ import groovy.transform.TupleConstructor
 
 //TODO: Check if result of expression is an enumerated set
 @TupleConstructor
-class BSetObserver extends TransformObserver {
+class BSetTransformer extends GeneralTransformer {
 
 	def String expression
 	def convert = { it -> "#" + it }
 	def resolve = { it -> it != null ? it.value.replace("{","").replace("}","").replaceAll(" ","").tokenize(",") : [] }
 
-	def List<Transform> update(BMotion bms) {
+	def List<TransformerObject> update(BMotion bms) {
         def bset = bms.eval(expression)
 		def a = resolve(bset)
 		def b = a.collect{ convert(it) }

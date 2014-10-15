@@ -197,7 +197,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         }
 
         // Initialise ProBMotion elements
-        Map<String, ProBMotionComponent> proBMotionElementMap = initProBMotionElements(templatePath);
+        Map<String, BMotionComponent> proBMotionElementMap = initProBMotionElements(templatePath);
         // Create and initialize session
         AbstractBMotionStudioSession bmsSession = createSession(sessionUUID,
                 tool, proBMotionElementMap, templatePath, host, port);
@@ -216,9 +216,9 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 
     }
 
-    private Map<String, ProBMotionComponent> initProBMotionElements(String templatePath) {
+    private Map<String, BMotionComponent> initProBMotionElements(String templatePath) {
 
-        Map<String, ProBMotionComponent> probmotionElementMap = new HashMap<String, ProBMotionComponent>();
+        Map<String, BMotionComponent> probmotionElementMap = new HashMap<String, BMotionComponent>();
 
         String templateHtml = BMotionUtil.readFile(BMotionUtil
                 .getFullTemplatePath(templatePath));
@@ -230,10 +230,10 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         for (Element el : probmotionElements) {
 
             String dataType = el.attr("data-type");
-            ProBMotionComponent probel = null;
+            BMotionComponent probel = null;
             String id = el.attr("id");
             if (dataType.equals("probmotion-html")) {
-                probel = new ProBMotionHTMLComponent(id, el);
+                probel = new BMotionHTMLComponent(id, el);
             }
 
             if (probel != null) {
@@ -325,7 +325,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
             AbstractBMotionStudioSession bmsSession);
 
     protected abstract AbstractBMotionStudioSession createSession(UUID id,
-                                                                  ITool tool, Map<String, ProBMotionComponent> proBMotionElementMap, String template, String host, int port);
+                                                                  ITool tool, Map<String, BMotionComponent> proBMotionElementMap, String template, String host, int port);
 
     protected class PartList extends ArrayList<String> {
 

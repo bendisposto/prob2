@@ -1,13 +1,10 @@
-package de.prob.bmotion;
+package de.prob.bmotion
 
 import com.github.mustachejava.DefaultMustacheFactory
 import com.google.gson.JsonElement
-import de.prob.bmotion.BMotionObserver
-import de.prob.bmotion.Transform
-
 import de.prob.animator.domainobjects.EvalResult
 
-class BAnimationObserver implements BMotionObserver {
+class BAnimationObserver implements IBMotionObserver {
 
 	def JsonElement json
 	def mf = new DefaultMustacheFactory()
@@ -39,11 +36,10 @@ class BAnimationObserver implements BMotionObserver {
 				attrs.put(fattr,fvalue.toString())
 			}
 		}
-		return new Transform(fselector,attrs)
+		return new TransformerObject(fselector,attrs)
 	}
 
-	@Override
-	public List<Transform> update(BMotion bms) {
+	public List<TransformerObject> update(BMotion bms) {
 		def transformers = []
 		if(json != null) {
 			json.observers.each { o ->
@@ -70,4 +66,8 @@ class BAnimationObserver implements BMotionObserver {
 		transformers
 	}
 
+    @Override
+    def apply(BMotion bms) {
+        return null
+    }
 }

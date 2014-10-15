@@ -21,26 +21,26 @@ import javax.servlet.AsyncContext
 public class BMotion extends AbstractBMotionStudioSession
         implements IToolListener {
 
-    Logger logger = LoggerFactory.getLogger(BMotion.class);
+    Logger logger = LoggerFactory.getLogger(BMotion.class)
 
-    private final Map<String, ProBMotionComponent> components = [:]
+    private final Map<String, BMotionComponent> components = [:]
 
-    private final ScriptEngineProvider engineProvider;
+    private final ScriptEngineProvider engineProvider
 
     private final static String DEFAULT_COMPONENT = "DEFAULT_COMPONENT"
 
-    private boolean initialised = false;
+    private boolean initialised = false
 
     public BMotion(
             final UUID id,
             final ITool tool,
-            final Map<String, ProBMotionComponent> components,
+            final Map<String, BMotionComponent> components,
             final ToolRegistry registry, final String templatePath,
             final ScriptEngineProvider engineProvider, final String host, final int port) {
         super(id, tool, templatePath, host, port);
         this.engineProvider = engineProvider
         this.components = components
-        this.components.put(DEFAULT_COMPONENT, new ProBMotionDefaultComponent())
+        this.components.put(DEFAULT_COMPONENT, new BMotionDefaultComponent())
         registry.registerListener(this)
         incrementalUpdate = true
     }
@@ -59,24 +59,16 @@ public class BMotion extends AbstractBMotionStudioSession
 
     @Override
     public void animationChange(final ITool tool) {
-        components.each { it -> it.value.apply(this,it.value.observers) }
+        components.each { it.value.apply(this) }
     }
 
     // ---------- BMS API
-    public void registerObserver(BMotionObserver o, component=[DEFAULT_COMPONENT]) {
-        component.each {
-            def c = components.get(it)
-            if (c != null) c.observers.add(o)
-            c.apply(this,[o])
-        }
+    public void registerObserver(final IBMotionObserver o) {
+        components.get(DEFAULT_COMPONENT).registerObserver(o)
     }
 
-    public void registerObserver(List<BMotionObserver> o, component=[DEFAULT_COMPONENT]) {
-        component.each {
-            def c = components.get(it)
-            if (c != null) c.observers.addAll(o)
-            c.apply(this,o)
-        }
+    public void registerObserver(final List<IBMotionObserver> o) {
+        components.get(DEFAULT_COMPONENT).registerObserver(o)
     }
 
     /**
@@ -102,18 +94,12 @@ public class BMotion extends AbstractBMotionStudioSession
         submit(json);
     }
 
-    public void apply(final BMotionObserver o, component=[DEFAULT_COMPONENT]) {
-        component.each {
-            def c = components.get(it)
-            if (c != null) c.apply(this, [o])
-        }
+    public void apply(final IBMotionObserver o) {
+        o.apply(this)
     }
 
-    public void apply(final List<BMotionObserver> o, component=[DEFAULT_COMPONENT]) {
-        component.each {
-            def c = components.get(it)
-            if (c != null) c.apply(this, o)
-        }
+    public void apply(final List<IBMotionObserver> o) {
+        o.each { it.apply(this) }
     }
 
     /**
