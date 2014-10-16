@@ -20,15 +20,7 @@ bms = (function() {
 			eval(v)
 		}
 	}
-	
-	extern.setComponent = function(data) {
-		bmotion_om.core.setComponent(data)
-	}
-	
-	extern.initComponent = function(data) {
-		bmotion_om.core.initComponent(data)
-	}
-	
+
 	extern.applyTransformers = function(data) {
 		var d1 = JSON.parse(data.transformers)
 		var i1 = 0

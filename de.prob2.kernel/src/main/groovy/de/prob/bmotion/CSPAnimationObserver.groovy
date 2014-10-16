@@ -1,18 +1,12 @@
-package de.prob.bmotion;
-
-import java.util.List;
+package de.prob.bmotion
 
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
 import com.google.gson.JsonElement
-
-import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.EvalResult
 import de.prob.statespace.OpInfo
-import de.prob.ui.api.ITool
-import de.prob.bmotion.BMotionObserver
-import de.prob.bmotion.Transform
 
-class CSPAnimationObserver implements BMotionObserver {
+class CSPAnimationObserver implements IBMotionObserver {
 
 	def JsonElement json
 	def mf = new DefaultMustacheFactory()
@@ -48,8 +42,7 @@ class CSPAnimationObserver implements BMotionObserver {
 		writer.toString()
 	}
 
-	@Override
-	public List<Transform> update(BMotion bms) {
+	public List<TransformerObject> update(BMotion bms) {
 		def transformers = []
 		def tool = bms.getTool()
 		if(json != null) {
@@ -75,7 +68,7 @@ class CSPAnimationObserver implements BMotionObserver {
 										def fvalue = mustacheRender(item.value.getAsString(),pmap)
 										def fattr = mustacheRender(item.attr.getAsString(),pmap)
 										if(fattr == "style") {
-											def t = new Transform(fselector)
+											def t = new TransformerObject(fselector)
 											def sattrs = fvalue.split(";")
 											sattrs.collect { it -> 
 												def kv = it.split(":")
@@ -83,7 +76,7 @@ class CSPAnimationObserver implements BMotionObserver {
 											}
 											transformers << t
 										} else {
-											transformers << new Transform(fselector).set(fattr,fvalue)
+											transformers << new TransformerObject(fselector).set(fattr,fvalue)
 										}
 									}
 								}
@@ -95,4 +88,9 @@ class CSPAnimationObserver implements BMotionObserver {
 		}
 		transformers
 	}
+
+    @Override
+    def apply(BMotion bms) {
+        return null
+    }
 }

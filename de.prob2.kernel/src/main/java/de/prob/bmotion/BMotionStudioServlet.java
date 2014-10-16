@@ -119,16 +119,12 @@ public class BMotionStudioServlet extends AbstractBMotionStudioServlet {
             Elements imgTags = e.getElementsByTag("img");
             imgTags.tagName("image");
         }
-        /*Elements probmotionElements = baseDocument.select("div[data-type]");
-        for (Element e : probmotionElements) {
-            if(e.attr("id").isEmpty()) e.attr("id", UUID.randomUUID().toString());
-        }*/
         return baseDocument.html();
 
     }
 
     @Override
-    protected AbstractBMotionStudioSession createSession(UUID id, ITool tool, Map<String, ProBMotionComponent> proBMotionElementMap,
+    protected AbstractBMotionStudioSession createSession(UUID id, ITool tool, Map<String, BMotionComponent> proBMotionElementMap,
                                                          String template, String host, int port) {
         return new BMotion(id, tool, proBMotionElementMap, toolRegistry, template, engineProvider,
                 host, port);
