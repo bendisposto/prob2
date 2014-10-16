@@ -126,4 +126,8 @@ class MachineModifier {
 	def boolean removeEvent(Event event) {
 		return machine.events.remove(event)
 	}
+
+	def List<EventModifier> getEvents() {
+		return machine.events.collect { new EventModifier(it) }
+	}
 }
