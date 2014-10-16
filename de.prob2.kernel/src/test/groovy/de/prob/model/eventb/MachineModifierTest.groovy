@@ -133,4 +133,12 @@ class MachineModifierTest extends Specification {
 		then:
 		contained & removed
 	}
+
+	def "it is possible to duplicate an event and add its duplicate to the machine"() {
+		when:
+		def newEventM = modifier.duplicateEvent(machine.events.INITIALISATION, "init2")
+
+		then:
+		machine.events.contains(newEventM.getEvent())
+	}
 }
