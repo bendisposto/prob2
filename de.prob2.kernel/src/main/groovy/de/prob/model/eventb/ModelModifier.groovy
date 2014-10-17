@@ -128,13 +128,27 @@ public class ModelModifier {
 	}
 
 	/**
-	 * Perform a deep copy of an event.
+	 * Perform a deep copy of an event. Performed via {@link ModelModifier#cloneEvent(EventBMachine, Event, String)}
 	 * @param parentMachine of the specified event
 	 * @param event that is to be copied
 	 * @return a deep copy of the event in question
 	 */
 	public static Event deepCopy(EventBMachine parentMachine, Event event) {
-		def newEvent = new Event(parentMachine, event.name, event.type)
+		cloneEvent(parentMachine, event, event.getName())
+	}
+
+	/**
+	 * This method performs a deep copy of an event, but the cloned event has a new
+	 * name that is specified by the user (useful when creating mutant events that
+	 * differ from the original event in small ways without actually deleting the
+	 * original event).
+	 * @param parentMachine of the specified event
+	 * @param event that is to be copied
+	 * @param newName of the cloned event
+	 * @return Event object created when cloning the given event
+	 */
+	public static Event cloneEvent(EventBMachine parentMachine, Event event, String newName) {
+		def newEvent = new Event(parentMachine, newName, event.type)
 
 		def refines = event.refines.collect {
 			it.parentMachine.getEvent(it.name)

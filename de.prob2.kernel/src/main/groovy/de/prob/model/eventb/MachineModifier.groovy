@@ -103,11 +103,31 @@ class MachineModifier {
 	}
 
 	/**
+	 * Generates a new {@link Event} in the machine that is identical to
+	 * the specified event for copying. The new {@link Event} object will
+	 * have the specified name. If an existing {@link Event} in the machine
+	 * has the same name, this will be overwritten.
+	 * @param event to be duplicated
+	 * @param newName of the cloned event
+	 * @return {@link EventModifier} object of the duplicated event to allow
+	 * for further modification
+	 */
+	def EventModifier duplicateEvent(Event event, String newName) {
+		Event event2 = ModelModifier.cloneEvent(machine, event, newName)
+		machine.events << event2
+		return new EventModifier(event2)
+	}
+
+	/**
 	 * Removes an event from the machine.
 	 * @param event to be removed
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeEvent(Event event) {
 		return machine.events.remove(event)
+	}
+
+	def List<EventModifier> getEvents() {
+		return machine.events.collect { new EventModifier(it) }
 	}
 }

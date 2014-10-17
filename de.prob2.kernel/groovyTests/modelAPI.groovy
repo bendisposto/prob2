@@ -125,5 +125,21 @@ t = t.$initialise_machine()
 x = t.evalCurrent("x")
 assert x instanceof ComputationNotCompletedResult
 
+modelModifier = new ModelModifier(m9)
 m9.getStateSpace().animator.cli.shutdown()
+machineModifier = modelModifier.getMachine("EmptyMachine")
+
+xBlock = machineModifier.addVariable("x", "x : NAT", "x := 1")
+init = machineModifier.getMachine().events.INITIALISATION
+clonedInit = machineModifier.duplicateEvent(init, "hehe")
+act = xBlock.initialisationAction
+assert clonedInit.removeAction(act)
+clonedInit.addAction("x := x + 2")
+m10 = modelModifier.getModifiedModel()
+t = m10 as Trace
+t = t.$initialise_machine()
+t = t.hehe().hehe()
+x = t.evalCurrent("x")
+assert x.value == "5"
+
 "the model API works correctly"
