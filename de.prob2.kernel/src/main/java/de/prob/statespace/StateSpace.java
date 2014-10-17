@@ -88,6 +88,7 @@ public class StateSpace implements IAnimator {
 		if (states.containsKey(id)) {
 			return (StateId) states.get(id);
 		}
+		// TODO: Need to implement prolog side.
 		CheckIfStateIdValidCommand cmd = new CheckIfStateIdValidCommand(id);
 		execute(cmd);
 		if (cmd.isValidState()) {
@@ -192,6 +193,11 @@ public class StateSpace implements IAnimator {
 		execute(command);
 		return !command.hasErrors()
 				&& (command.getNewTransitions().size() == 1);
+	}
+
+	public List<IEvalResult> eval(final StateId state,
+			final List<IEvalElement> formulas) {
+		return state.eval(formulas);
 	}
 
 	/**

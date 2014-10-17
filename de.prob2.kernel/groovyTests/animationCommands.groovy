@@ -16,7 +16,7 @@ cmd = new CheckInitialisationStatusCommand("root")
 s.execute(cmd)
 assert cmd.isInitialized() == false
 
-assert s.getVertex("0") == null 
+assert s.getState("0") == null 
 cmd = new GetEnabledOperationsCommand(s, "root")
 s.execute(cmd)
 assert cmd instanceof IStateSpaceModifier
@@ -43,14 +43,12 @@ cmd = new CheckTimeoutStatusCommand("0")
 s.execute(cmd)
 assert cmd.isTimeout() == false
 
-assert s.ops.get("1") == null
 cmd = new GetOperationByPredicateCommand(s, "0", "new", "pp = PID1" as ClassicalB, 1)
 s.execute(cmd)
 transitions = cmd.getNewTransitions()
 assert transitions.size() == 1
 assert transitions[0].getId() == "1"
-op = s.getEvaluatedOpInfo("1")
-assert s.ops.get("1") == op
+op = transitions[0]
 assert op.getName() == "new"
 assert op.getParams() == ["PID1"]
 

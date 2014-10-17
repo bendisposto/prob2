@@ -97,6 +97,9 @@ public class OpInfo {
 	 * @return name of this operation
 	 */
 	public String getName() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return name;
 	}
 
@@ -146,6 +149,9 @@ public class OpInfo {
 	 * @return list of values for the parameters represented as strings
 	 */
 	public List<String> getParams() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return params;
 	}
 
@@ -157,6 +163,9 @@ public class OpInfo {
 	 * @return list of return values of the operation represented as strings.
 	 */
 	public List<String> getReturnValues() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return returnValues;
 	}
 
@@ -169,6 +178,9 @@ public class OpInfo {
 	 *         {@link EvalResult}
 	 */
 	public List<EvalResult> getParamsSource() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return paramsSource;
 	}
 
@@ -181,6 +193,9 @@ public class OpInfo {
 	 *         {@link EvalResult}
 	 */
 	public List<EvalResult> getRetValSource() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return retValSource;
 	}
 
@@ -188,6 +203,9 @@ public class OpInfo {
 	 * @return a String representation of the target state
 	 */
 	public String getTargetState() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return targetState;
 	}
 

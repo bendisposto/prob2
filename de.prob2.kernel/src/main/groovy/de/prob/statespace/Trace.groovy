@@ -30,7 +30,7 @@ public class Trace {
 	}
 
 	def Trace(final StateId startState) {
-		this.stateSpace = s
+		this.stateSpace = startState.getStateSpace()
 		head = new TraceElement(startState)
 		current = head
 		UUID = java.util.UUID.randomUUID()

@@ -115,9 +115,9 @@ class StateId {
 	 */
 	def List<IEvalResult> eval(List<IEvalElement> formulas) {
 		def cmds = formulas.findAll {
-			!values.containsKey(formula)
+			!values.containsKey(it)
 		}.collect { it.getCommand(this) }
-		stateSpace.execute(cmd)
+		stateSpace.execute(cmds)
 		def results = cmds.collectEntries {
 			[
 				it.getEvalElement(),
@@ -126,10 +126,10 @@ class StateId {
 		}
 
 		formulas.collect {
-			if (values.containsKey(formula)) {
-				return values.get(formula)
+			if (values.containsKey(it)) {
+				return values.get(it)
 			} else {
-				return results.get(formula)
+				return results.get(it)
 			}
 		}
 	}
