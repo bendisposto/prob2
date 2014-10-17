@@ -6,13 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.JsonElement;
-
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
+import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.ui.api.IllegalFormulaException;
@@ -56,9 +55,10 @@ public class CSPAnimation extends ProBAnimation {
 		if (!formulaCache.containsKey(formula)) {
 			IEvalElement e = trace.getModel().parseFormula(formula);
 			StateSpace space = trace.getStateSpace();
-			List<IEvalResult> results = space.eval(space.getVertex(stateref),
-					Arrays.asList(e));
-			formulaCache.put(formula, results.get(0));
+			StateId state = space.getState(stateref);
+			if (state != null) {
+				formulaCache.put(formula, state.eval(e));
+			}
 		}
 		return formulaCache.get(formula);
 	}
@@ -66,9 +66,12 @@ public class CSPAnimation extends ProBAnimation {
 	@Override
 	public List<String> getErrors(final String state, final String formula) {
 		List<String> errors = new ArrayList<String>();
-		if (currentState != null) {
+		if (trace != null) {
 			try {
-				currentState.eval(formula);
+				IEvalElement e = trace.getModel().parseFormula(formula);
+				StateSpace space = trace.getStateSpace();
+				StateId state2 = space.getState(state);
+				state2.eval(e);
 			} catch (EvaluationException e) {
 				errors.add("parse error : " + e.getMessage());
 			} catch (Exception e) {
@@ -83,9 +86,9 @@ public class CSPAnimation extends ProBAnimation {
 	public void animatorStatus(final boolean busy) {
 	}
 
-	@Override
-	public BMotionObserver getBMotionObserver(final JsonElement jsonObserver) {
-		return new CSPAnimationObserver(jsonObserver);
-	}
+	/*
+	 * @Override public IBMotionTransformer getBMotionObserver(JsonElement
+	 * jsonObserver) { return new CSPAnimationObserver(jsonObserver); }
+	 */
 
 }

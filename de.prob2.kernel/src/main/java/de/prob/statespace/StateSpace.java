@@ -95,13 +95,10 @@ public class StateSpace implements IAnimator {
 			states.put(id, sId);
 			return sId;
 		}
-		throw new IllegalArgumentException(
-				"There is currently no state with id " + id
-						+ " in the state space");
+		return null;
 	}
 
-	@Deprecated
-	public StateId addState(final String id) {
+	StateId addState(final String id) {
 		if (states.containsKey(id)) {
 			return (StateId) states.get(id);
 		}
@@ -383,11 +380,11 @@ public class StateSpace implements IAnimator {
 	 * {@link StateSpace#getTrace(ITraceDescription)} method.
 	 * 
 	 * @param stateId
-	 *            StateId for which the trace through the state space should be
+	 *            state id for which the trace through the state space should be
 	 *            found.
 	 * @return trace in the form of a {@link Trace} object
 	 */
-	public Trace getTrace(final StateId stateId) {
+	public Trace getTrace(final String stateId) {
 		GetShortestTraceCommand cmd = new GetShortestTraceCommand(this, stateId);
 		execute(cmd);
 		Trace t = getTrace(cmd);

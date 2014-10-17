@@ -53,7 +53,7 @@ public class CurrentTrace extends AbstractSession implements
 
 			ops.add(WebUtils.wrap("id", -1, "rep", "-- root --", "group",
 					"start"));
-			int currentPos = trace.getCurrentPos();
+			int currentPos = trace.getCurrent().getIndex();
 			List<OpInfo> opList = trace.getOpList(true);
 			String group = "past";
 			for (int i = 0; i < opList.size(); i++) {
@@ -83,15 +83,15 @@ public class CurrentTrace extends AbstractSession implements
 		logger.trace("Goto Position in Trace");
 		Trace trace = selector.getCurrentTrace();
 		int id = Integer.parseInt(params.get("id")[0]);
-		int currentIndex = trace.getCurrentPos();
+		int currentIndex = trace.getCurrent().getIndex();
 		if (id == currentIndex) {
 			return null;
 		} else if (id > currentIndex) {
-			while (!(id == trace.getCurrentPos())) {
+			while (!(id == trace.getCurrent().getIndex())) {
 				trace = trace.forward();
 			}
 		} else if (id < currentIndex) {
-			while (!(id == trace.getCurrentPos())) {
+			while (!(id == trace.getCurrent().getIndex())) {
 				trace = trace.back();
 			}
 		}

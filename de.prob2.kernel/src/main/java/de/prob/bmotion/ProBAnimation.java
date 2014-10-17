@@ -3,18 +3,16 @@ package de.prob.bmotion;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.ToolRegistry;
 
-public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
-		IObserver {
+public abstract class ProBAnimation implements ITool, IAnimationChangeListener {
 
 	private AbstractModel model;
 
-	protected StateId currentState;
+	protected Trace trace;
 	protected final ToolRegistry toolRegistry;
 	protected final AnimationSelector animations;
 	protected final String toolId;
@@ -23,7 +21,7 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 			final AnimationSelector animations, final ToolRegistry toolRegistry) {
 		this(sessionId, animations, toolRegistry);
 		this.model = model;
-		this.currentState = model.getStateSpace().getRoot();
+		this.trace = new Trace(model);
 	}
 
 	public ProBAnimation(final String toolId,
@@ -40,11 +38,15 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 
 	public void setModel(final AbstractModel model) {
 		this.model = model;
-		this.currentState = model.getStateSpace().getRoot();
+		this.trace = new Trace(model);
+	}
+
+	public Trace getTrace() {
+		return trace;
 	}
 
 	public StateSpace getStateSpace() {
-		return currentState != null ? currentState.getStateSpace() : null;
+		return trace != null ? trace.getStateSpace() : null;
 	}
 
 	public ToolRegistry getToolRegistry() {
@@ -54,18 +56,16 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener,
 	@Override
 	public void traceChange(final Trace currentTrace,
 			final boolean currentAnimationChanged) {
-		StateId oldState = currentState;
-		if (currentTrace == null) {
-			currentState = null;
-		}
-		if (oldState != null && !currentState.equals(oldState)) {
+		Trace oldtrace = trace;
+		trace = currentTrace;
+		if (oldtrace != null && !currentTrace.equals(oldtrace)) {
 			toolRegistry.notifyToolChange(this);
 		}
 	}
 
 	@Override
 	public String getCurrentState() {
-		return currentState != null ? currentState.getId() : null;
+		return trace != null ? trace.getCurrentState().getId() : null;
 	}
 
 	@Override
