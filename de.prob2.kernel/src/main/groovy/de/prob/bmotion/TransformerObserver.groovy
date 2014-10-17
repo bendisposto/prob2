@@ -8,6 +8,11 @@ class TransformerObserver implements IBMotionObserver {
 
     def List<IBMotionTransformer> transformers = []
 
+    def TransformerObserver add(IBMotionTransformer transformer) {
+        transformers.add(transformer)
+        this
+    }
+
     @Override
     def apply(BMotion bms) {
         String json = g.toJson(transformers.collectMany { it.update(bms) })

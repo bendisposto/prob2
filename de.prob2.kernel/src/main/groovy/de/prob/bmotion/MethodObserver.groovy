@@ -6,12 +6,11 @@ import groovy.transform.TupleConstructor
 class MethodObserver implements IBMotionObserver {
 
     def String method
-    def json
+    def data
 
     @Override
     def apply(BMotion bms) {
-        System.out.println("APPLY")
-        bms.submit([cmd:method, data:json])
+        bms.submit([cmd:method, data:data])
     }
 
 }

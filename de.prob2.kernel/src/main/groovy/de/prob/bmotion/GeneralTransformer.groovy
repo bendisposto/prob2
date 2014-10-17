@@ -6,7 +6,7 @@ import groovy.transform.TupleConstructor
 @TupleConstructor
 class GeneralTransformer implements IBMotionTransformer, IBMotionObserver {
 
-    def String selector
+    def selector
 
     def attributes = [:]
 

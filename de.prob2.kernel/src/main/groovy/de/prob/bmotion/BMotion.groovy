@@ -23,7 +23,11 @@ public class BMotion extends AbstractBMotionStudioSession
 
     Logger logger = LoggerFactory.getLogger(BMotion.class)
 
-    private final Map<String, BMotionComponent> components = [:]
+    public final Map<String, BMotionComponent> components = [:]
+
+    private final List<IBMotionObserver> observers = []
+
+    private final TransformerObserver transformerObserver
 
     private final ScriptEngineProvider engineProvider
 
@@ -39,6 +43,8 @@ public class BMotion extends AbstractBMotionStudioSession
             final ScriptEngineProvider engineProvider, final String host, final int port) {
         super(id, tool, templatePath, host, port);
         this.engineProvider = engineProvider
+        this.transformerObserver = new TransformerObserver()
+        this.observers.add(this.transformerObserver)
         this.components = components
         this.components.put(DEFAULT_COMPONENT, new BMotionDefaultComponent())
         registry.registerListener(this)
@@ -59,16 +65,16 @@ public class BMotion extends AbstractBMotionStudioSession
 
     @Override
     public void animationChange(final ITool tool) {
-        components.each { it.value.apply(this) }
+        observers.each { it.apply(this) }
     }
 
     // ---------- BMS API
     public void registerObserver(final IBMotionObserver o) {
-        components.get(DEFAULT_COMPONENT).registerObserver(o)
+        registerObserver([o])
     }
 
     public void registerObserver(final List<IBMotionObserver> o) {
-        components.get(DEFAULT_COMPONENT).registerObserver(o)
+        o.each { (it instanceof IBMotionTransformer) ? transformerObserver.add(it) : observers.add(it) }
     }
 
     /**

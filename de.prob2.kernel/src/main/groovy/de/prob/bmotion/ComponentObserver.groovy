@@ -1,13 +1,8 @@
 package de.prob.bmotion
 
-import com.google.gson.Gson
 import org.jsoup.nodes.Element
 
-class ReactTransformerObserver implements IBMotionObserver {
-
-    def Gson g = new Gson()
-
-    def List<IBMotionTransformer> transformers = []
+class ComponentObserver extends TransformerObserver {
 
     def String id
 
@@ -15,16 +10,14 @@ class ReactTransformerObserver implements IBMotionObserver {
 
     private def selectorCache = [:]
 
-    def ReactTransformerObserver(String id, Element element) {
+    def ComponentObserver(String id) {
         this.id = id
-        this.element = element
     }
 
-
-    def List<String> getCachedBmsId(String selector) {
+    def List<String> getCachedBmsId(BMotion bms, String selector) {
         def t = selector.isEmpty() ? [] : selectorCache.get(selector)
         if (t == null) {
-            t = element.select(selector).collect { it.attr("data-bmsid") }
+            t = bms.components.get(id).element.select(selector).collect { it.attr("data-bmsid") }
             selectorCache.put(selector, t)
         }
         t
@@ -33,8 +26,9 @@ class ReactTransformerObserver implements IBMotionObserver {
     @Override
     def apply(BMotion bms) {
         def map = [:]
-        transformers.each { TransformerObject t ->
-            getCachedBmsId(t.selector).each {
+        transformers.each { IBMotionTransformer o ->
+            TransformerObject t = o.update(bms)
+            getCachedBmsId(bms,t.selector).each {
                 def ReactTransform rt = map.get(it)
                 if(rt == null) {
                     rt = new ReactTransform(it)
