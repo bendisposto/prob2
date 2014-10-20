@@ -20,7 +20,7 @@ class BSetObserver extends TransformerObserver {
     }
 
     def BSetObserver convert(Closure cls) {
-        this.convertfn = clss
+        this.convertfn = cls
         this
     }
 
