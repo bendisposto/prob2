@@ -1,22 +1,22 @@
 Script.getMetaClass().observeBSet = { a1,a2 ->
-	new BSetTransformer(a1).with a2
+	new BSetObserver(a1).with a2
 }
 
 Script.getMetaClass().observeBPredicate = { a1,a2,a3 ->
-	new BPredicateTransformer(a1,a2).with a3
-}
-
-Script.getMetaClass().transform = { a1,a2 ->
-	new GeneralTransformer(a1).with a2
+	new BPredicateObserver(a1,a2).with a3
 }
 
 Script.getMetaClass().observeMethod = { a1,a2 ->
 	new MethodObserver(a1,a2)
 }
 
+Script.getMetaClass().transform = { a1,a2 ->
+	new TransformerObserver(a1).with a2
+}
+
 Script.getMetaClass().transformerObserver = { a1,a2 ->
     if(a2 == null) {
-        new TransformerObserver().with a1
+        new TransformersObserver().with a1
     } else {
         new ComponentObserver(a1).with a2
     }

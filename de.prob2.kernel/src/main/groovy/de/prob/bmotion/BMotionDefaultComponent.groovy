@@ -6,12 +6,12 @@ class BMotionDefaultComponent extends BMotionComponent {
     }
 
     @Override
-    def registerObserver(IBMotionObserver o) {
+    def registerObserver(BMotionObserver o) {
         registerObserver([o])
     }
 
     @Override
-    def registerObserver(List<IBMotionObserver> o) {
+    def registerObserver(List<BMotionObserver> o) {
         observers += o
     }
 

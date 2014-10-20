@@ -6,7 +6,7 @@ abstract class BMotionComponent {
 
     def Element element
     def String id
-    def List<IBMotionObserver> observers = []
+    def List<BMotionObserver> observers = []
 
     def BMotionComponent() {
     }
@@ -22,11 +22,11 @@ abstract class BMotionComponent {
         observers.each { it.apply(bms) }
     }
 
-    def registerObserver(IBMotionObserver o) {
+    def registerObserver(BMotionObserver o) {
         observers.add(o)
     }
 
-    def registerObserver(List<IBMotionObserver> o) {
+    def registerObserver(List<BMotionObserver> o) {
         o.each { observers.add(it) }
     }
 

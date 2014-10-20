@@ -4,16 +4,25 @@ import de.prob.animator.domainobjects.EvalResult
 import de.prob.statespace.OpInfo
 import de.prob.statespace.Trace
 
-class CspEventObserver implements IBMotionObserver {
+class CspEventObserver extends BMotionObserver {
 
     def List<EventsObserver> objs = []
 
-    def String id
+    def String component
 
     private def selectorCache = [:]
 
-    def CspEventObserver(String id) {
-        this.id = id
+    def CspEventObserver(String component) {
+        this.component = component
+    }
+
+    def static CspEventObserver make(Closure cls) {
+        new CspEventObserver().with cls
+    }
+
+    def CspEventObserver component(component) {
+        this.component = component
+        this
     }
 
     def CspEventObserver observe(String exp, Closure cls) {
@@ -44,7 +53,7 @@ class CspEventObserver implements IBMotionObserver {
     def List<String> getCachedBmsId(BMotion bms, String selector) {
         def t = selector.isEmpty() ? [] : selectorCache.get(selector)
         if (t == null) {
-            t = bms.components.get(id).element.select(selector).collect { it.attr("data-bmsid") }
+            t = bms.components.get(component).element.select(selector).collect { it.attr("data-bmsid") }
             selectorCache.put(selector, t)
         }
         t
@@ -68,7 +77,7 @@ class CspEventObserver implements IBMotionObserver {
                     def eventNames = events.value.replace("{", "").replace("}", "").split(",")
                     if (eventNames.contains(fullOp)) {
 
-                        evt.transformers.each { GeneralTransformer gt ->
+                        evt.transformers.each { TransformerObserver gt ->
 
                             def fselector = (gt.selector instanceof Closure) ? gt.selector(op) : gt.selector
                             def fattributes = gt.attributes.collectEntries { kv ->
@@ -101,20 +110,20 @@ class CspEventObserver implements IBMotionObserver {
 
         }
 
-        bms.submit([cmd: "bmotion_om.core.setComponent", type: "probmotion-html", id: id, observers: map])
+        bms.submit([cmd: "bmotion_om.core.setComponent", type: "probmotion-html", id: component, observers: map])
 
     }
 
     def class EventsObserver {
 
         def String exp
-        def List<GeneralTransformer> transformers = []
+        def List<TransformerObserver> transformers = []
 
         def EventsObserver(String exp) {
             this.exp = exp
         }
 
-        def EventsObserver add(GeneralTransformer transformer) {
+        def EventsObserver add(TransformerObserver transformer) {
             transformers.add(transformer)
             this
         }

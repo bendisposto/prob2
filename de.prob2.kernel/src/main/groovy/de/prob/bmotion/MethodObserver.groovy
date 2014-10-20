@@ -3,14 +3,28 @@ package de.prob.bmotion
 import groovy.transform.TupleConstructor
 
 @TupleConstructor
-class MethodObserver implements IBMotionObserver {
+class MethodObserver extends BMotionObserver {
 
-    def String method
+    def String name
     def data
+
+    def static MethodObserver make(Closure cls) {
+        new MethodObserver().with cls
+    }
+
+    def MethodObserver name(name) {
+        this.name = name
+        this
+    }
+
+    def MethodObserver data(data) {
+        this.data = data
+        this
+    }
 
     @Override
     def apply(BMotion bms) {
-        bms.submit([cmd:method, data:data])
+        bms.submit([cmd:name, data:data])
     }
 
 }

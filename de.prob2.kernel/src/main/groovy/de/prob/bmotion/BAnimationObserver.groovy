@@ -4,7 +4,7 @@ import com.github.mustachejava.DefaultMustacheFactory
 import com.google.gson.JsonElement
 import de.prob.animator.domainobjects.EvalResult
 
-class BAnimationObserver implements IBMotionObserver {
+class BAnimationObserver extends BMotionObserver {
 
 	def JsonElement json
 	def mf = new DefaultMustacheFactory()

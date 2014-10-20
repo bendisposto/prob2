@@ -25,9 +25,9 @@ public class BMotion extends AbstractBMotionStudioSession
 
     public final Map<String, BMotionComponent> components = [:]
 
-    private final List<IBMotionObserver> observers = []
+    private final List<BMotionObserver> observers = []
 
-    private final TransformerObserver transformerObserver
+    private final TransformersObserver transformerObserver
 
     private final ScriptEngineProvider engineProvider
 
@@ -43,7 +43,7 @@ public class BMotion extends AbstractBMotionStudioSession
             final ScriptEngineProvider engineProvider, final String host, final int port) {
         super(id, tool, templatePath, host, port);
         this.engineProvider = engineProvider
-        this.transformerObserver = new TransformerObserver()
+        this.transformerObserver = new TransformersObserver()
         this.observers.add(this.transformerObserver)
         this.components = components
         this.components.put(DEFAULT_COMPONENT, new BMotionDefaultComponent())
@@ -69,12 +69,12 @@ public class BMotion extends AbstractBMotionStudioSession
     }
 
     // ---------- BMS API
-    public void registerObserver(final IBMotionObserver o) {
+    public void registerObserver(final BMotionObserver o) {
         registerObserver([o])
     }
 
-    public void registerObserver(final List<IBMotionObserver> o) {
-        o.each { (it instanceof IBMotionTransformer) ? transformerObserver.add(it) : observers.add(it) }
+    public void registerObserver(final List<BMotionObserver> o) {
+        o.each { (it instanceof BMotionTransformer) ? transformerObserver.add(it) : observers.add(it) }
     }
 
     /**
@@ -100,11 +100,11 @@ public class BMotion extends AbstractBMotionStudioSession
         submit(json);
     }
 
-    public void apply(final IBMotionObserver o) {
+    public void apply(final BMotionObserver o) {
         o.apply(this)
     }
 
-    public void apply(final List<IBMotionObserver> o) {
+    public void apply(final List<BMotionObserver> o) {
         o.each { it.apply(this) }
     }
 

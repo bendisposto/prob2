@@ -1,23 +1,31 @@
 package de.prob.bmotion
 
-import org.jsoup.nodes.Element
+class ComponentObserver extends TransformersObserver {
 
-class ComponentObserver extends TransformerObserver {
-
-    def String id
-
-    def Element element
+    def String component
 
     private def selectorCache = [:]
 
-    def ComponentObserver(String id) {
-        this.id = id
+    def ComponentObserver() {
     }
 
-    def List<String> getCachedBmsId(BMotion bms, String selector) {
+    def ComponentObserver(String component) {
+        this.component = component
+    }
+
+    def static ComponentObserver make(Closure cls) {
+        new ComponentObserver().with cls
+    }
+
+    def ComponentObserver component(String component) {
+        this.component = component
+        this
+    }
+
+    def private List<String> getCachedBmsId(BMotion bms, String selector) {
         def t = selector.isEmpty() ? [] : selectorCache.get(selector)
         if (t == null) {
-            t = bms.components.get(id).element.select(selector).collect { it.attr("data-bmsid") }
+            t = bms.components.get(component).element.select(selector).collect { it.attr("data-bmsid") }
             selectorCache.put(selector, t)
         }
         t
@@ -26,20 +34,20 @@ class ComponentObserver extends TransformerObserver {
     @Override
     def apply(BMotion bms) {
         def map = [:]
-        transformers.each { IBMotionTransformer o ->
+        transformers.each { BMotionTransformer o ->
             TransformerObject t = o.update(bms)
-            getCachedBmsId(bms,t.selector).each {
+            getCachedBmsId(bms, t.selector).each {
                 def ReactTransform rt = map.get(it)
-                if(rt == null) {
+                if (rt == null) {
                     rt = new ReactTransform(it)
-                    map.put(it,rt)
+                    map.put(it, rt)
                 }
                 rt.attributes.putAll(t.attributes)
                 rt.styles.putAll(t.styles)
                 rt.content = t.content
             }
         }
-        bms.submit([cmd:"bmotion_om.core.setComponent",type:"probmotion-html",id:id,observers:map])
+        bms.submit([cmd: "bmotion_om.core.setComponent", type: "probmotion-html", id: component, observers: map])
     }
 
 }
