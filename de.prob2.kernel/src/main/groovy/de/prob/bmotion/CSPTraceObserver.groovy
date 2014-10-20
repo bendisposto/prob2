@@ -4,7 +4,7 @@ import de.prob.animator.domainobjects.EvalResult
 import de.prob.statespace.OpInfo
 import de.prob.statespace.Trace
 
-class CspEventObserver extends BMotionObserver {
+class CSPTraceObserver extends BMotionObserver {
 
     def List<EventsObserver> objs = []
 
@@ -12,20 +12,23 @@ class CspEventObserver extends BMotionObserver {
 
     private def selectorCache = [:]
 
-    def CspEventObserver(String component) {
+    def CSPTraceObserver(String component) {
         this.component = component
     }
 
-    def static CspEventObserver make(Closure cls) {
-        new CspEventObserver().with cls
+    def CSPTraceObserver() {
     }
 
-    def CspEventObserver component(component) {
+    def static CSPTraceObserver make(Closure cls) {
+        new CSPTraceObserver().with cls
+    }
+
+    def CSPTraceObserver component(component) {
         this.component = component
         this
     }
 
-    def CspEventObserver observe(String exp, Closure cls) {
+    def CSPTraceObserver observe(String exp, Closure cls) {
         EventsObserver evt = new EventsObserver(exp).with cls
         objs.add(evt)
         this

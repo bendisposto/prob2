@@ -14,14 +14,6 @@ Script.getMetaClass().transform = { a1,a2 ->
 	new TransformerObserver(a1).with a2
 }
 
-Script.getMetaClass().transformerObserver = { a1,a2 ->
-    if(a2 == null) {
-        new TransformersObserver().with a1
-    } else {
-        new ComponentObserver(a1).with a2
-    }
-}
-
-Script.getMetaClass().cspEventObserver = { a1,a2 ->
-	new CspEventObserver(a1).with a2
+Script.getMetaClass().observeCSPTrace = { a1,a2 ->
+	new CSPTraceObserver(a1).with a2
 }

@@ -7,8 +7,8 @@ import groovy.transform.TupleConstructor
 class BSetObserver extends TransformerObserver {
 
 	def String expression
-	def convert = { it -> "#" + it }
-	def resolve = { it -> it != null ? it.value.replace("{","").replace("}","").replaceAll(" ","").tokenize(",") : [] }
+	def convertfn = { "#" + it }
+	def resolvefn = { it != null ? it.value.replace("{","").replace("}","").replaceAll(" ","").tokenize(",") : [] }
 
     def static BSetObserver make(Closure cls) {
         new BSetObserver().with cls
@@ -20,18 +20,18 @@ class BSetObserver extends TransformerObserver {
     }
 
     def BSetObserver convert(Closure cls) {
-        this.convert = cls
+        this.convertfn = clss
         this
     }
 
     def BSetObserver resolve(Closure cls) {
-        this.resolve = cls
+        this.resolvefn = cls
         this
     }
 
     def List<TransformerObject> update(BMotion bms) {
-        def a = resolve(bms.eval(expression))
-        def b = a.collect{ convert(it) }
+        def a = resolvefn(bms.eval(expression))
+        def b = a.collect{ convertfn(it) }
         selector = b == []? "" : b.join(",")
         super.update(bms)
     }
