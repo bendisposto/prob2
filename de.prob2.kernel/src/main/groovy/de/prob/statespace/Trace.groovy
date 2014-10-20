@@ -190,6 +190,7 @@ public class Trace {
 			} else {
 				current = new TraceElement(op, current)
 			}
+			currentState = op.getDestId()
 		}
 
 		Trace newTrace = new Trace(stateSpace, current, this.UUID)
@@ -209,7 +210,7 @@ public class Trace {
 	 */
 	@Deprecated
 	def invokeMethod(String method, params) {
-		return add(getCurrentState().findTransition(method, params))
+		return add(getCurrentState().findTransition(method, params as List))
 	}
 
 	/**
@@ -244,8 +245,7 @@ public class Trace {
 	}
 
 	def Trace anyOperation(filter) {
-		def ops = new ArrayList<OpInfo>()
-		ops.addAll(stateSpace.evaluateOps(stateSpace.getOutEdges(current.getCurrentState())));
+		def ops = current.getCurrentState().getOutTransitions(true)
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.name.matches(filter);

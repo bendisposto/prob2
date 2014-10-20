@@ -2,6 +2,7 @@ package de.prob.statespace
 
 import com.google.common.base.Objects
 
+import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.ExploreStateCommand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
@@ -20,7 +21,7 @@ class StateId {
 	protected def String id;
 	def StateSpace stateSpace;
 	def boolean explored
-	def List<OpInfo> ops
+	def List<OpInfo> ops = []
 	def boolean initialised
 	def boolean invariantOk
 	def Map<IEvalElement, IEvalResult> values = new HashMap<IEvalElement, IEvalResult>()
@@ -52,6 +53,10 @@ class StateId {
 		return op.getDestId().explore();
 	}
 
+	def StateId perform(String event, String... params) {
+		return perform(event, params as List)
+	}
+
 	/**
 	 * Uses {@link StateSpace#opFromPredicate} to calculate the destination state of the event
 	 * with the specified event name and the conjunction of the parameters.
@@ -65,8 +70,8 @@ class StateId {
 		return op.getDestId().explore();
 	}
 
-	def StateId perform(String event, String... params) {
-		return perform(event, params as List);
+	def OpInfo findTransition(String name, String... predicates) {
+		return findTransition(name, predicates as List)
 	}
 
 	def OpInfo findTransition(String name, List<String> predicates) {
@@ -106,7 +111,11 @@ class StateId {
 		if (!isInitialised()) {
 			return null
 		}
-		return eval(this, [formula])[0]
+		return eval([formula])[0]
+	}
+
+	def List<IEvalResult> eval(IEvalElement... formulas) {
+		return eval(formulas as List)
 	}
 
 	/**
@@ -117,7 +126,9 @@ class StateId {
 		def cmds = formulas.findAll {
 			!values.containsKey(it)
 		}.collect { it.getCommand(this) }
-		stateSpace.execute(cmds)
+		if (!cmds.isEmpty()) {
+			stateSpace.execute(new ComposedCommand(cmds))
+		}
 		def results = cmds.collectEntries {
 			[
 				it.getEvalElement(),
@@ -162,7 +173,7 @@ class StateId {
 	};
 
 	def StateId anyOperation(filter) {
-		List<OpInfo> ops = this.ops
+		List<OpInfo> ops = getOutTransitions(true)
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.getName().matches(filter);
