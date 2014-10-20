@@ -158,7 +158,9 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 
 	@Override
 	public String getKind() {
-		ensureParsed();
+		if (kind == null) {
+			ensureParsed();
+		}
 		return kind;
 	}
 
@@ -167,6 +169,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 		return getCode();
 	}
 
+	@Override
 	public Node getAst() {
 		if (ast == null) {
 			ensureParsed();
@@ -197,16 +200,20 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	public IParseResult getRodinParsedResult() {
+		if (kind == null) {
+			ensureParsed();
+		}
 		if (kind.equals(PREDICATE.toString())) {
-			FormulaFactory.getInstance(types).parsePredicate(toUnicode(), null);
+			return FormulaFactory.getInstance(types).parsePredicate(
+					toUnicode(), null);
 		}
 		if (kind.equals(EXPRESSION.toString())) {
-			FormulaFactory.getInstance(types)
-					.parseExpression(toUnicode(), null);
+			return FormulaFactory.getInstance(types).parseExpression(
+					toUnicode(), null);
 		}
 		if (kind.equals(ASSIGNMENT.toString())) {
-			FormulaFactory.getInstance(types)
-					.parseAssignment(toUnicode(), null);
+			return FormulaFactory.getInstance(types).parseAssignment(
+					toUnicode(), null);
 		}
 		return null;
 	}

@@ -41,18 +41,22 @@ class BMotionUtil {
 		}
 		return element;
 	}
+	
+	def static String getFileContents(String filePath) {
+		return new File(filePath).getText()
+	}
 
-	def static void evaluateGroovy(ScriptEngine evaluator, String absoluteTemplatePath, Map<String, String> parameters, BMotionStudioSession bms) throws GroovyRuntimeException, ScriptException {
+	def static void evaluateGroovy(ScriptEngine engine, String absoluteTemplatePath, Map<String, String> parameters, BMotion bms) throws GroovyRuntimeException, ScriptException {
 		String scriptPaths = parameters.get("script")
 		if (absoluteTemplatePath != null && scriptPaths != null) {
 			def templateFolder = BMotionUtil.getTemplateFolder(absoluteTemplatePath)
-			Bindings bindings = evaluator.getBindings(ScriptContext.GLOBAL_SCOPE)
+			Bindings bindings = engine.getBindings(ScriptContext.GLOBAL_SCOPE)
 			bindings.putAll(parameters)
 			bindings.put("bms", bms)
 			bindings.put("templateFolder", templateFolder)
 			String[] paths = scriptPaths.split(",")
 			for (path in paths) {
-				evaluator.eval(new File(templateFolder + File.separator + path).getText(), bindings)
+				engine.eval(new File(templateFolder + File.separator + path).getText(), bindings)
 			}
 		}
 	}
@@ -176,15 +180,6 @@ class BMotionUtil {
 		return content;
 	}
 
-	def static void fixSvgImageTags(Document template) {
-		for (Element e : template.getElementsByTag("svg")) {
-			// Workaround, since jsoup renames svg image tags to img
-			// tags ...
-			Elements imgTags = e.getElementsByTag("img");
-			imgTags.tagName("image");
-		}
-	}
-	
 	def static String getFullTemplatePath(String templatePath) {
 		if (!new File(templatePath).isAbsolute()) {
 			String homedir = System.getProperty("bms.home");

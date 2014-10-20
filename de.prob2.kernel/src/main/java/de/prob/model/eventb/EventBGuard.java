@@ -4,6 +4,8 @@ import java.util.Set;
 
 import org.eventb.core.ast.extension.IFormulaExtension;
 
+import com.google.common.base.Objects;
+
 import de.prob.animator.domainobjects.EventB;
 import de.prob.model.representation.Guard;
 
@@ -32,5 +34,23 @@ public class EventBGuard extends Guard {
 
 	public Event getParentEvent() {
 		return parentEvent;
+	}
+
+	@Override
+	public boolean equals(final Object that) {
+		if (that == this) {
+			return true;
+		}
+		if (that instanceof EventBGuard) {
+			return this.theorem == (((EventBGuard) that).isTheorem())
+					&& this.getPredicate().equals(
+							((EventBGuard) that).getPredicate());
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(this.theorem, this.getPredicate());
 	}
 }

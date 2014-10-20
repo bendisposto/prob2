@@ -1,5 +1,7 @@
 package de.prob.model.eventb;
 
+import com.google.common.base.Objects
+
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.Action
 import de.prob.model.representation.BEvent
@@ -8,6 +10,7 @@ import de.prob.model.representation.ModelElementList
 
 public class Event extends BEvent {
 
+	def EventBMachine parentMachine
 	def EventType type
 	def ModelElementList<Event> refines
 	def ModelElementList<EventBAction> actions
@@ -19,8 +22,9 @@ public class Event extends BEvent {
 		ORDINARY, CONVERGENT, ANTICIPATED
 	}
 
-	public Event(final String name, final EventType type) {
+	public Event(EventBMachine parentMachine, final String name, final EventType type) {
 		super(name);
+		this.parentMachine = parentMachine
 		this.type = type;
 	}
 
@@ -54,6 +58,20 @@ public class Event extends BEvent {
 	}
 
 	@Override
+	public boolean equals(Object that) {
+		if (that instanceof Event) {
+			return this.parentMachine.getName() == that.getParentMachine().getName() &&
+			this.getName() == that.getName()
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(parentMachine.getName(), this.name)
+	}
+
+	@Override
 	public String toString() {
 		return getName();
 	}
@@ -71,7 +89,7 @@ public class Event extends BEvent {
 	}
 
 	private void printChildren(final String name,
-			final Set<? extends AbstractElement> childrenOfType,
+			final ModelElementList<? extends AbstractElement> childrenOfType,
 			final StringBuilder sb) {
 		if (!childrenOfType.isEmpty()) {
 			sb.append(name + ": \n");

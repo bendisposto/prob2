@@ -24,7 +24,7 @@
     om/IRenderState
     (render-state [a {:keys [active]}]
       (let [g (get (:state app) "groovy")]
-        (println "G" (pr-str g))
+        ;(println "G" (pr-str g))
         (dom/div nil
                  (apply dom/ul #js {:id "groovy-list"}
                         (om/build-all groovy-item g)))))))

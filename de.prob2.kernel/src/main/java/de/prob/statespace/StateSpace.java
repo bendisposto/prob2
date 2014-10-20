@@ -544,11 +544,17 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	}
 
 	private void addTransitions(final AbstractCommand[] commands) {
-		List<OpInfo> toNotify = new ArrayList<OpInfo>();
 
+		List<OpInfo> toNotify = new ArrayList<OpInfo>();
 		long last = lastCalculatedStateId;
+
 		for (AbstractCommand cmd : commands) {
-			if (cmd instanceof IStateSpaceModifier) {
+			if (cmd instanceof ComposedCommand) {
+				List<AbstractCommand> subcommands = ((ComposedCommand) cmd)
+						.getSubcommands();
+				addTransitions(subcommands
+						.toArray(new AbstractCommand[subcommands.size()]));
+			} else if (cmd instanceof IStateSpaceModifier) {
 				List<OpInfo> newOps = ((IStateSpaceModifier) cmd)
 						.getNewTransitions();
 				for (final OpInfo op : newOps) {
@@ -707,7 +713,8 @@ public class StateSpace extends StateSpaceGraph implements IStateSpace {
 	public Trace getTrace(final StateId stateId) {
 		GetShortestTraceCommand cmd = new GetShortestTraceCommand(this, stateId);
 		execute(cmd);
-		return getTrace(cmd);
+		Trace t = getTrace(cmd);
+		return t;
 	}
 
 	/**

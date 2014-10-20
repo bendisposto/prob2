@@ -1,9 +1,5 @@
 package de.prob.model.representation;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 import de.prob.animator.domainobjects.IEvalElement
 
 
@@ -12,6 +8,7 @@ public class ModelElementList<E> implements List<E> {
 
 	def List<E> list
 	def Map<String,E> keys
+	def frozen = false
 
 	def ModelElementList() {
 		list = new ArrayList<E>()
@@ -27,7 +24,15 @@ public class ModelElementList<E> implements List<E> {
 		return keys[prop];
 	}
 
-	def calcAndAdd(E e) {
+	def hasProperty(String prop) {
+		return keys.containsKey(prop)
+	}
+
+	private calcAndAdd(E e) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
 		if(e.metaClass.respondsTo(e, "getName")) {
 			keys[e.getName()]=e
 		}
@@ -38,24 +43,40 @@ public class ModelElementList<E> implements List<E> {
 
 	@Override
 	public boolean add(E e) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
 		calcAndAdd(e)
 		return list.add(e)
 	}
 
 	@Override
 	public void add(int index, E element) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
 		calcAndAdd(e)
 		list.add(index,element)
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
 		c.each { calcAndAdd(it) }
 		return list.addAll(c)
 	}
 
 	@Override
 	public boolean addAll(int index, Collection<? extends E> c) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
 		c.each { calcAndAdd(it) }
 		return c.addAll(index,c)
 	}
@@ -116,18 +137,30 @@ public class ModelElementList<E> implements List<E> {
 
 	@Override
 	public boolean remove(Object o) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
 		keys.remove(o)
 		return list.remove(o)
 	}
 
 	@Override
 	public E remove(int index) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
 		keys.remove(list.get(index))
 		return list.remove(index)
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
 		c.each { keys.remove(it) }
 		return list.removeAll(c)
 	}
@@ -146,6 +179,10 @@ public class ModelElementList<E> implements List<E> {
 
 	@Override
 	public E set(int index, E element) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
 		keys.remove(list.get(index))
 		calcAndAdd(element)
 		return list.set(index,element)
@@ -200,5 +237,21 @@ public class ModelElementList<E> implements List<E> {
 
 	def getAt(String property) {
 		return keys[property]
+	}
+
+	/**
+	 *  Freezes all subelements of the list (if they are of type {@link AbstractElement}) and
+	 *  disallows further modification of the list. This essentially transforms a mutable list into
+	 *  an immutable instance of a list. Accessing elements of the list is allowed, but no further
+	 *  modification of the list is allowed.
+	 *
+	 */
+	def void freeze() {
+		frozen = true
+		list.each {
+			if(it instanceof AbstractElement) {
+				it.freeze()
+			}
+		}
 	}
 }

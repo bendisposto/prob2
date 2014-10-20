@@ -2,7 +2,10 @@ package de.prob.statespace;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
@@ -31,7 +34,7 @@ public class AnimationSelector {
 	List<WeakReference<IAnimationChangeListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<IAnimationChangeListener>>();
 	List<WeakReference<IModelChangedListener>> modelListeners = new CopyOnWriteArrayList<WeakReference<IModelChangedListener>>();
 
-	List<Trace> traces = new ArrayList<Trace>();
+	Map<UUID, Trace> traces = new HashMap<UUID, Trace>();
 
 	Trace currentTrace = null;
 	StateSpace currentStateSpace = null;
@@ -81,16 +84,22 @@ public class AnimationSelector {
 	/**
 	 * Adds the specified {@link Trace} trace to the registry, sets the current
 	 * trace to trace, and notifies an animation change (
-	 * {@link AnimationSelector#notifyAnimationChange(Trace)})
+	 * {@link AnimationSelector#notifyAnimationChange(Trace)}). If a trace with
+	 * the same UUID is already being tracked, a {@link Trace#copy()} is made
+	 * and this is animated.
 	 * 
 	 * @param trace
 	 */
 	public void addNewAnimation(final Trace trace) {
-		traces.add(trace);
-		currentTrace = trace;
-		notifyAnimationChange(trace, true);
+		Trace t = trace;
+		if (traces.containsKey(trace.getUUID())) {
+			t = trace.copy();
+		}
+		traces.put(t.getUUID(), t);
+		currentTrace = t;
+		notifyAnimationChange(t, true);
 
-		StateSpace s = trace.getStateSpace();
+		StateSpace s = t.getStateSpace();
 		if (s != null && !s.equals(currentStateSpace)) {
 			currentStateSpace = s;
 			notifyModelChanged(s);
@@ -167,7 +176,7 @@ public class AnimationSelector {
 	 * @return the list of {@link Trace} objects in the registry.
 	 */
 	public List<Trace> getTraces() {
-		return traces;
+		return new ArrayList<Trace>(traces.values());
 	}
 
 	/**
@@ -195,27 +204,29 @@ public class AnimationSelector {
 	}
 
 	/**
-	 * Lets the AnimationSelector know that the {@link Trace} object with
-	 * reference oldTrace has been changed to newTrace so that the
-	 * AnimationSelector can update its registry.
+	 * If the {@link Trace} object is already being tracked, the {@link Trace}
+	 * in the registry will be updated. If not, the {@link Trace} is tracked.
+	 * Listeners are fired according to the changes that have been made.
 	 * 
-	 * @param oldTrace
-	 * @param newTrace
+	 * @param trace
+	 *            Trace object containing the changes.
 	 */
-	public void replaceTrace(final Trace oldTrace, final Trace newTrace) {
-		if (oldTrace.getStateSpace().isBusy() != newTrace.getStateSpace()
-				.isBusy()) {
-			notifyStatusChange(newTrace.getStateSpace().isBusy());
-		}
-		int indexOf = traces.indexOf(oldTrace);
-		if (indexOf == -1) {
-			traces.add(newTrace);
+	public void traceChange(final Trace trace) {
+		UUID uuid = trace.getUUID();
+		if (!traces.containsKey(uuid)) {
+			traces.put(uuid, trace);
 			notifyAnimationChange(currentTrace, false);
 		} else {
-			traces.set(indexOf, newTrace);
-			if (oldTrace.equals(currentTrace)) {
-				notifyAnimationChange(newTrace, true);
-				currentTrace = newTrace;
+			Trace oldT = traces.get(uuid);
+			traces.put(uuid, trace);
+			if (oldT.equals(currentTrace)) {
+				notifyAnimationChange(trace, true);
+				currentTrace = trace;
+
+				if (oldT.getStateSpace().isBusy() != trace.getStateSpace()
+						.isBusy()) {
+					notifyStatusChange(trace.getStateSpace().isBusy());
+				}
 			} else {
 				notifyAnimationChange(currentTrace, false);
 			}
@@ -226,6 +237,25 @@ public class AnimationSelector {
 			currentStateSpace = currentTrace.getStateSpace();
 			notifyModelChanged(currentStateSpace);
 		}
+	}
+
+	/**
+	 * Lets the AnimationSelector know that the {@link Trace} object with
+	 * reference oldTrace has been changed to newTrace so that the
+	 * AnimationSelector can update its registry.
+	 * 
+	 * This is deprecated. The Traces are now identified via UUID. Use
+	 * {@link AnimationSelector#traceChange(Trace)} with the new trace as a
+	 * parameter.
+	 * 
+	 * @param oldTrace
+	 *            reference to old {@link Trace} object
+	 * @param newTrace
+	 *            reference to new {@link Trace} object
+	 */
+	@Deprecated
+	public void replaceTrace(final Trace oldTrace, final Trace newTrace) {
+		traceChange(newTrace);
 	}
 
 	/**
@@ -241,27 +271,21 @@ public class AnimationSelector {
 	}
 
 	private void remove(final Trace trace) {
-		if (!traces.contains(trace)) {
+		if (!traces.containsKey(trace.getUUID())) {
 			return;
 		}
 		if (currentTrace == trace) {
-			int indexOf = traces.indexOf(trace);
-			traces.remove(trace);
+			traces.remove(trace.getUUID());
 			if (traces.isEmpty()) {
 				currentTrace = null;
 				currentStateSpace = null;
 				return;
 			}
-			if (indexOf == traces.size()) {
-				currentTrace = traces.get(indexOf - 1);
-				currentStateSpace = currentTrace.getStateSpace();
-				return;
-			}
-			currentTrace = traces.get(indexOf);
+			currentTrace = traces.values().iterator().next();
 			currentStateSpace = currentTrace.getStateSpace();
 			return;
 		}
-		traces.remove(trace);
+		traces.remove(trace.getUUID());
 	}
 
 	public void notifyAnimatorStatus(final String animatorId, final boolean busy) {

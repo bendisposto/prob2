@@ -31,4 +31,20 @@ public class EventBAction extends Action {
 	public String toString() {
 		return name + ": " + getCode();
 	}
+
+	@Override
+	public boolean equals(final Object that) {
+		if (this == that) {
+			return true;
+		}
+		if (that instanceof EventBAction) {
+			return this.getCode().equals(((EventBAction) that).getCode());
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.getCode().hashCode();
+	}
 }

@@ -15,12 +15,13 @@ class Downloader {
 
 	def OsSpecificInfo osInfo
 	def String probhome
-	def config = downloadConfig()
+	def config
 
 	@Inject
 	public Downloader(final OsSpecificInfo osInfo, @Home final String probhome) {
 		this.osInfo = osInfo
 		this.probhome = probhome
+		this.config = downloadConfig()
 	}
 
 	def download(address,target) {
@@ -145,7 +146,7 @@ class Downloader {
 		return "--Upgrade to version: ${targetVersion} (${url})  successful.--"
 	}
 
-	def installCSPM() {
+	def String installCSPM() {
 		def target = probhome+"lib"+File.separator+"cspmf"
 		def dirName = osInfo.dirName
 		if(dirName == "win32") {

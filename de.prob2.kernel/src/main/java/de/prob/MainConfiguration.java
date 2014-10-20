@@ -105,6 +105,14 @@ public class MainConfiguration extends AbstractModule {
 						"run a Groovy test script or all .groovy files from a directory")
 				.create("test");
 
+		@SuppressWarnings("static-access")
+		Option upgrade = OptionBuilder
+				.hasOptionalArg()
+				.withArgName("version")
+				.withDescription(
+						"upgrade the ProB binaries. Optionally specify the desired version.")
+				.create("upgrade");
+
 		// TODO: add modelchecking option
 		// Option modelcheck = new Option("mc", "modelcheck", false,
 		// "start ProB model checking");
@@ -118,6 +126,7 @@ public class MainConfiguration extends AbstractModule {
 		options.addOption(port);
 		options.addOption(restricted);
 		options.addOption(standalone);
+		options.addOption(upgrade);
 		return options;
 	}
 

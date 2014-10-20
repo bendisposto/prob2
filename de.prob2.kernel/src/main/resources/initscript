@@ -30,7 +30,7 @@ ArrayList.metaClass.asType = { Class type ->
         oldArrayListAsType.invoke(delegate, c)
 }
 
-Script.getMetaClass().transform = { a1,a2,a3=null ->
+/*Script.getMetaClass().transform = { a1,a2,a3=null ->
 	def x
 	if( a3 != null ) {
 		x = new DynamicTransformer(a1,a2).with a3
@@ -47,7 +47,7 @@ Script.getMetaClass().transform = { a1,a2,a3=null ->
 		}
 	}
 	x
-}
+}*/
 
 Script.getMetaClass().appendToTrace= { t,c ->
   def proxy = new TraceDecorator(t)

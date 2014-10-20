@@ -76,6 +76,7 @@ public class ClassicalBModel extends AbstractModel {
 		}
 
 		stateSpace.setModel(this);
+		freeze();
 		return graph;
 	}
 

@@ -9,7 +9,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		{{#standalone}}
 		<link rel="stylesheet" href="/stylesheets/jquery-ui-1.11.1/themes/black-tie/jquery-ui.css">
-		<link rel="stylesheet" href="/ui/common/codemirror.css">
 		{{/standalone}}
 		<link rel="stylesheet" href="/ui/common/bootstrap.css">
 		<link rel="stylesheet" href="/ui/bmsview/bms.css">	
@@ -18,16 +17,12 @@
 		<script type="text/javascript" src="/ui/libs/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/ui/libs/mustache.js"></script>
 		<script type="text/javascript" src="/ui/common/Session.js"></script>
-		<script type="text/javascript" src="/ui/bmsview/bms-editor/src/svg-attributes.js"></script>
 		<script type="text/javascript" src="/ui/bmsview/BMotionStudio.js"></script>
 		{{#standalone}}
-		<script type="text/javascript" src="/ui/libs/codemirror.js"></script>
-		<script type="text/javascript" src="/ui/libs/codemirror_modes/groovy.js"></script>
 		<script type="text/javascript" src="/ui/bmsview/BMSStandalone.js"></script>
 		{{/standalone}}
 	</head>
 	<body>
-	
 		{{#error}}
 			<div style="text-align:center">
 				<h3 style="color:red;">Some errors occured</h3>
@@ -50,7 +45,6 @@
 			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			      <ul class="nav navbar-nav navbar-right">
 			        <li><a href="http://{{host}}:{{port}}/bmseditor/?template={{template}}">Start Editor</a></li>
-			        <li><a href="#" id="bt_edit_script">Edit Script</a></li>
 			        <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Open View <b class="caret"></b></a>
 			          <ul class="dropdown-menu">
@@ -59,13 +53,13 @@
 			            <li><a href="#" id="bt_open_animation_view">CurrentAnimations</a></li>
 			            <li><a href="#" id="bt_open_state_view">StateInspector</a></li>
 			            <li><a href="#" id="bt_open_log_view">LogView</a></li>
+			            <li><a href="#" id="bt_open_console_view">Console</a></li>
 			          </ul>
 			        </li>
 			      </ul>
 			    </div>
 			  </div>
 			</nav>
-			
 			<div id="events_view" title="Events">
 		  		<iframe src="" id="events_iframe" frameBorder="0"></iframe>
 			</div>
@@ -81,10 +75,11 @@
 			<div id="log_view" title="LogView">
 		  		<iframe src="" id="log_iframe" frameBorder="0"></iframe>
 			</div>
-			<div id="script_view" title="Script">
+			<div id="console_view" title="ConsoleView">
+		  		<iframe src="" id="console_iframe" frameBorder="0"></iframe>
 			</div>
 			{{/standalone}}
-			<div id="vis_container">
+			<div id="bmsVisualisation">
 			</div>
 			<script>
 				bms.client = "{{clientid}}";
@@ -93,6 +88,6 @@
 				bms.host = "{{host}}" 
 			</script>
 		{{/error}}
-			
+		<script type="text/javascript" src="/ui/bmsview/bmotion-om.js"></script>
 	</body>
 </html>

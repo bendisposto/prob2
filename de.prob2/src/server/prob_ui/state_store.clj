@@ -2,29 +2,18 @@
   (:use [prob-ui.schemas])
   (:require [prob-ui.sync :as sync]
             [schema.core :as schema]
+            [com.stuartsierra.component :as component]
+            [clojure.core.cache :as cache]
             [cognitect.transit :as transit])
-  (:import com.google.common.cache.CacheBuilder
-           java.util.concurrent.TimeUnit
-           java.io.ByteArrayOutputStream
-           ))
+  (:import java.io.ByteArrayOutputStream))
 
-(def cache! (.. (CacheBuilder/newBuilder)
-                (expireAfterAccess 500 TimeUnit/SECONDS)
-                (build)))
+(def store! (atom {:id 0 :state {} :cache (cache/ttl-cache-factory {} :ttl 10000)}))
 
-(def current-state
-  (atom {:state {}
-         :current 0}))
-
-(defn- get-from-cache [old-state]
-  (when old-state (.getIfPresent cache! old-state)))
-
-(defn- store! [state]
-  (swap! current-state
-         (fn [cs]
-           (let [nk (inc (:current cs))]
-             (.put cache! (str nk) {:state state :current nk})
-             (assoc cs :state state :current nk)))))
+(defn fetch [sid]
+  (let [{:keys [id state cache]} @store!]
+  (if (= sid id)
+    [state id state]
+    [(get cache sid) id state])))
 
 (defn- mkStr [delta]
   (let [s (ByteArrayOutputStream. 4096)
@@ -33,15 +22,11 @@
     (.toString s)))
 
 (defn transact! [txs]
-  (store! (sync/compute-new-state @current-state txs)))
-
-(defn get-cached-state [state-id]
-  (let [cs @current-state]
-    (if (= (:current cs) state-id)
-      cs
-      (get-from-cache state-id))))
-
+  (let [{:keys [id state cache]} @store!
+    state' (sync/compute-new-state state txs)
+    id' (inc id)]
+    (swap! store! assoc :id id' :state state' :cache (cache/miss cache id' state'))))
 
 (defn delta
-  ([os-id] (delta (get-cached-state os-id) @current-state))
-  ([os cs] (mkStr (sync/compute-delta os cs))))
+  ([os-id] (apply delta (fetch os-id)))
+  ([os id cs] (mkStr (sync/compute-delta os id cs))))

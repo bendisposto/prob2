@@ -5,8 +5,8 @@
 (defn history-item [[id data] owner]
   (reify om/IRenderState
     (render-state [a b]
-      (let [t (get data "type")
-            n (get data "name")]
+      (let [t (get data :type)
+            n (get data :name)]
         (dom/li #js {:className t
                      :onClick (fn [e] (println "switch" id @data))}
                 n))))) 
@@ -22,9 +22,10 @@
     om/IRenderState
     (render-state [a {:keys [reverse?]}]
       (let [s (:state app)
-            uuid (get-in s ["current-animation" "uuid"])
-            hist1 (into [["0" {"name" "--root--" "type" "start"}]]
-                        (sort-by first (get-in s [uuid])))
+            uuid (get-in s [:current-animation :uuid])
+            hist0 (get-in s [uuid])
+            hist1 (into [[:0 {:name "--root--" :type "start"}]]
+                        (sort-by first hist0))
             hist2 (if reverse? (reverse hist1) hist1)
             ]
 
