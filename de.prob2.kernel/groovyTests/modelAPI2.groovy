@@ -13,10 +13,10 @@ m.getStateSpace().animator.cli.shutdown()
 machineModifier = modelModifier.getMachine("EmptyMachine")
 
 machineModifier.addVariable("x", "x : NAT", "x := 0")
-eventM = machine.addEvent("event1")
+eventM = machineModifier.addEvent("event1")
 guard = eventM.addGuard("x > 0")
 act = eventM.addAction("x := x + 2")
-eventM2 = machine.addEvent("event2")
+eventM2 = machineModifier.addEvent("event2")
 guard2 = eventM2.addGuard("x > 0")
 assert guard == guard2
 act2 = eventM.addAction("x := x + 1")
