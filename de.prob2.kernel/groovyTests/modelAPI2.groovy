@@ -19,7 +19,7 @@ act = eventM.addAction("x := x + 2")
 eventM2 = machineModifier.addEvent("event2")
 guard2 = eventM2.addGuard("x > 0")
 assert guard == guard2
-act2 = eventM.addAction("x := x + 1")
+act2 = eventM2.addAction("x := x + 1")
 m = modelModifier.getModifiedModel()
 t = m as Trace
 t = t.$initialise_machine()
@@ -31,7 +31,8 @@ m.getStateSpace().animator.cli.shutdown()
 machineModifier = modelModifier.getMachine("EmptyMachine")
 
 events = machineModifier.getMachine().events.findAll { it.getName() != "INITIALISATION" }
-events.each { assert machineModifier.getEvent(it.name).removeGuard(guard) }
+assert events.size() == 2
+events.each { assert machineModifier.getEvent(it.getName()).removeGuard(guard) }
 m = modelModifier.getModifiedModel()
 t = m as Trace
 t = t.$initialise_machine()
