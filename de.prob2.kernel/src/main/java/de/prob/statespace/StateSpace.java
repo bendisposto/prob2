@@ -71,7 +71,7 @@ public class StateSpace implements IAnimator {
 	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<IEvalElement, WeakHashMap<Object, Object>>();
 	private final Set<IEvalElement> subscribedFormulas = new HashSet<IEvalElement>();
 
-	LRUMap states = new LRUMap(100);
+	LRUMap states = new LRUMap(50);
 
 	private AbstractModel model;
 

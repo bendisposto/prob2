@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.SimpleEvalResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -48,7 +48,7 @@ public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 			ListPrologTerm lpt = BindingGenerator.getList(terms);
 			for (PrologTerm term : lpt) {
 				results.put(formulas.get(lpt.indexOf(term)),
-						EvalResult.getEvalResult(term));
+						SimpleEvalResult.getEvalResult(term));
 			}
 		}
 	}

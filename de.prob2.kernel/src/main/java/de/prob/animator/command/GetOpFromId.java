@@ -1,10 +1,10 @@
 package de.prob.animator.command;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.SimpleEvalResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -44,9 +44,12 @@ public class GetOpFromId extends AbstractCommand {
 		CompoundPrologTerm cpt = BindingGenerator
 				.getCompoundTerm(prologTerm, 7);
 
-		src = OpInfo.getIdFromPrologTerm(cpt.getArgument(2));
-		dest = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
-		name = PrologTerm.atomicString(cpt.getArgument(4));
+		src = SimpleEvalResult.generateString(OpInfo.getIdFromPrologTerm(cpt
+				.getArgument(2)));
+		dest = SimpleEvalResult.generateString(OpInfo.getIdFromPrologTerm(cpt
+				.getArgument(3)));
+		name = SimpleEvalResult.generateString(PrologTerm.atomicString(cpt
+				.getArgument(4)));
 
 		CompoundPrologTerm paramTerm = BindingGenerator.getCompoundTerm(
 				cpt.getArgument(5), 2);
@@ -56,11 +59,13 @@ public class GetOpFromId extends AbstractCommand {
 				.getArgument(2));
 
 		for (int i = 0; i < paramS.size(); i++) {
-			String v = paramP.get(i).getFunctor();
+			String v = SimpleEvalResult.generateString(paramP.get(i)
+					.getFunctor());
 			params.add(v);
-			paramsSource.add(new EvalResult("", v, paramS.get(i),
-					new HashMap<String, String>(),
-					new HashMap<String, PrologTerm>()));
+			/*
+			 * paramsSource.add(new EvalResult("", v, paramS.get(i), new
+			 * HashMap<String, String>(), new HashMap<String, PrologTerm>()));
+			 */
 		}
 
 		CompoundPrologTerm retTerm = BindingGenerator.getCompoundTerm(
@@ -69,14 +74,17 @@ public class GetOpFromId extends AbstractCommand {
 		ListPrologTerm retP = BindingGenerator.getList(retTerm.getArgument(2));
 
 		for (int i = 0; i < retS.size(); i++) {
-			String v = retP.get(i).getFunctor();
+			String v = SimpleEvalResult
+					.generateString(retP.get(i).getFunctor());
 			returnValues.add(v);
-			returnValueSource.add(new EvalResult("", v, retS.get(i),
-					new HashMap<String, String>(),
-					new HashMap<String, PrologTerm>()));
+			/*
+			 * returnValueSource.add(new EvalResult("", v, retS.get(i), new
+			 * HashMap<String, String>(), new HashMap<String, PrologTerm>()));
+			 */
 		}
 
-		targetState = OpInfo.getIdFromPrologTerm(cpt.getArgument(7));
+		targetState = SimpleEvalResult.generateString(OpInfo
+				.getIdFromPrologTerm(cpt.getArgument(7)));
 		op.setInfo(name, params, returnValues, paramsSource, returnValueSource,
 				targetState);
 	}
