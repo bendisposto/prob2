@@ -52,7 +52,7 @@ class StateId {
 		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
 		OpInfo op = stateSpace.opFromPredicate(this, method, predicate , 1)[0];
 		ops << op
-		return op.getDestId().explore();
+		return op.getDestId();
 	}
 
 	def StateId perform(String event, String... params) {
@@ -69,7 +69,7 @@ class StateId {
 	 */
 	def StateId perform(String event, List<String> params) {
 		def op = findTransition(event, params)
-		return op.getDestId().explore();
+		return op.getDestId();
 	}
 
 	def OpInfo findTransition(String name, String... predicates) {
