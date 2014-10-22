@@ -18,6 +18,7 @@ assert res.getSolutions().containsKey("y")
 assert res.x == "PID2"
 assert res.y == "1"
 
+/* TODO: Reimplement this
 t = res.translate(s)
 assert t != null && t instanceof TranslatedEvalResult
 assert t.value == true
@@ -25,6 +26,7 @@ assert t.getSolutions().containsKey("x")
 assert res.getSolutions().containsKey("y")
 assert t.x == "PID2"
 assert t.y == 1
+*/
 
 s.animator.cli.shutdown();
 "Evaluation of formulas works (scheduler.mch)"

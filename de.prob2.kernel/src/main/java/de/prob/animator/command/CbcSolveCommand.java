@@ -68,18 +68,18 @@ public class CbcSolveCommand extends AbstractCommand {
 					.getList(prologTerm.getArgument(BINDINGS));
 
 			Map<String, String> solutions = new HashMap<String, String>();
-			Map<String, PrologTerm> solutionsSource = new HashMap<String, PrologTerm>();
+			// Map<String, PrologTerm> solutionsSource = new HashMap<String,
+			// PrologTerm>();
 
 			for (PrologTerm b : solutionBindings) {
 				CompoundPrologTerm t = (CompoundPrologTerm) b;
 				solutions.put(t.getArgument(VAR_NAME).getFunctor(), t
 						.getArgument(PRETTY_PRINT).getFunctor());
-				solutionsSource.put(t.getArgument(VAR_NAME).getFunctor(),
-						t.getArgument(PROLOG_REP));
+				// solutionsSource.put(t.getArgument(VAR_NAME).getFunctor(),
+				// t.getArgument(PROLOG_REP));
 			}
 
-			result = new EvalResult(evalElement.getCode(), "TRUE",
-					new CompoundPrologTerm("TRUE"), solutions, solutionsSource);
+			result = new EvalResult(evalElement.getCode(), "TRUE", solutions);
 		}
 		if ("no_solution_found".equals(functor)) {
 			result = new ComputationNotCompletedResult(evalElement.getCode(),

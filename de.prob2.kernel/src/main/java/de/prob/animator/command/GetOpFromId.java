@@ -3,7 +3,6 @@ package de.prob.animator.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.SimpleEvalResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
@@ -24,11 +23,9 @@ public class GetOpFromId extends AbstractCommand {
 	private String targetState;
 	private final List<String> params = new ArrayList<String>();
 	private final List<String> returnValues = new ArrayList<String>();
-	private final List<EvalResult> paramsSource = new ArrayList<EvalResult>();
-	private final List<EvalResult> returnValueSource = new ArrayList<EvalResult>();
 
 	public GetOpFromId(final OpInfo opInfo) {
-		this.op = opInfo;
+		op = opInfo;
 	}
 
 	@Override
@@ -53,14 +50,14 @@ public class GetOpFromId extends AbstractCommand {
 
 		CompoundPrologTerm paramTerm = BindingGenerator.getCompoundTerm(
 				cpt.getArgument(5), 2);
-		ListPrologTerm paramS = BindingGenerator.getList(paramTerm
-				.getArgument(1));
+		// TODO:
+		// ListPrologTerm paramS = BindingGenerator.getList(paramTerm
+		// .getArgument(1));
 		ListPrologTerm paramP = BindingGenerator.getList(paramTerm
 				.getArgument(2));
 
-		for (int i = 0; i < paramS.size(); i++) {
-			String v = SimpleEvalResult.generateString(paramP.get(i)
-					.getFunctor());
+		for (PrologTerm pt : paramP) {
+			String v = SimpleEvalResult.generateString(pt.getFunctor());
 			params.add(v);
 			/*
 			 * paramsSource.add(new EvalResult("", v, paramS.get(i), new
@@ -70,12 +67,12 @@ public class GetOpFromId extends AbstractCommand {
 
 		CompoundPrologTerm retTerm = BindingGenerator.getCompoundTerm(
 				cpt.getArgument(6), 2);
-		ListPrologTerm retS = BindingGenerator.getList(retTerm.getArgument(1));
+		// ListPrologTerm retS =
+		// BindingGenerator.getList(retTerm.getArgument(1));
 		ListPrologTerm retP = BindingGenerator.getList(retTerm.getArgument(2));
 
-		for (int i = 0; i < retS.size(); i++) {
-			String v = SimpleEvalResult
-					.generateString(retP.get(i).getFunctor());
+		for (PrologTerm pt : retP) {
+			String v = SimpleEvalResult.generateString(pt.getFunctor());
 			returnValues.add(v);
 			/*
 			 * returnValueSource.add(new EvalResult("", v, retS.get(i), new
@@ -85,8 +82,7 @@ public class GetOpFromId extends AbstractCommand {
 
 		targetState = SimpleEvalResult.generateString(OpInfo
 				.getIdFromPrologTerm(cpt.getArgument(7)));
-		op.setInfo(name, params, returnValues, paramsSource, returnValueSource,
-				targetState);
+		op.setInfo(name, params, returnValues, targetState);
 	}
 
 	public String getSrc() {

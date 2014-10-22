@@ -4,8 +4,10 @@ import com.google.common.base.Objects
 
 import de.prob.animator.command.ComposedCommand
 import de.prob.animator.command.ExploreStateCommand
+import de.prob.animator.command.GetBStateCommand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
+import de.prob.animator.domainobjects.SimpleEvalResult
 
 
 /**A reference to the state object in the ProB core.
@@ -153,7 +155,16 @@ class StateId {
 
 	def String getId() {
 		return id;
-	};
+	}
+
+	def String getState() {
+		if (stateSpace.getModel().getFormalismType() == FormalismType.B) {
+			GetBStateCommand cmd = new GetBStateCommand(this)
+			stateSpace.execute(cmd)
+			return cmd.getState()
+		}
+		return SimpleEvalResult.generateString("unknown")
+	}
 
 	def long numericalId() {
 		return id == "root" ? -1 : id as long;

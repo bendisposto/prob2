@@ -3,8 +3,8 @@ package de.prob.animator.command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.animator.domainobjects.SimpleEvalResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -32,7 +32,7 @@ public class EvaluateFormulaCommand extends EvaluationCommand {
 
 		PrologTerm term = bindings.get(EVALUATE_RESULT_VARIABLE);
 
-		value = SimpleEvalResult.getEvalResult(term);
+		value = EvalResult.getEvalResult(term);
 	}
 
 	@Override

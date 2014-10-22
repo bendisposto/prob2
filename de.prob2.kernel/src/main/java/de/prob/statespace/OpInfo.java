@@ -48,8 +48,6 @@ public class OpInfo {
 	private final StateId dest;
 	private List<String> params = new ArrayList<String>();
 	private List<String> returnValues = new ArrayList<String>();
-	private List<EvalResult> paramsSource = new ArrayList<EvalResult>();
-	private List<EvalResult> retValSource = new ArrayList<EvalResult>();
 	private String targetState;
 	private String rep = null;
 	private boolean evaluated;
@@ -64,7 +62,7 @@ public class OpInfo {
 		this.id = id;
 		this.src = src;
 		this.dest = dest;
-		this.formalismType = stateSpace.getModel().getFormalismType();
+		formalismType = stateSpace.getModel().getFormalismType();
 		evaluated = false;
 	}
 
@@ -75,7 +73,7 @@ public class OpInfo {
 		this.name = name;
 		this.src = src;
 		this.dest = dest;
-		this.formalismType = stateSpace.getModel().getFormalismType();
+		formalismType = stateSpace.getModel().getFormalismType();
 		params = Collections.emptyList();
 		targetState = "";
 		evaluated = true;
@@ -167,36 +165,6 @@ public class OpInfo {
 			evaluate();
 		}
 		return returnValues;
-	}
-
-	/**
-	 * The list of parameters is not filled by default. To ensure that the name,
-	 * parameter, and return value information have been retrieved from ProB,
-	 * use the {@link #evaluate()} method.
-	 * 
-	 * @return list of values for the parameters represented as
-	 *         {@link EvalResult}
-	 */
-	public List<EvalResult> getParamsSource() {
-		if (!evaluated) {
-			evaluate();
-		}
-		return paramsSource;
-	}
-
-	/**
-	 * The list of return values is not filled by default. To ensure that the
-	 * name, parameter, and return value information have been retrieved from
-	 * ProB, use the {@link #evaluate()} method.
-	 * 
-	 * @return list of return values of the operation represented as
-	 *         {@link EvalResult}
-	 */
-	public List<EvalResult> getRetValSource() {
-		if (!evaluated) {
-			evaluate();
-		}
-		return retValSource;
 	}
 
 	/**
@@ -396,15 +364,11 @@ public class OpInfo {
 	 */
 	@Deprecated
 	public void setInfo(final String name, final List<String> params,
-			final List<String> returnValues,
-			final List<EvalResult> paramsSource,
-			final List<EvalResult> retValSource, final String targetState) {
+			final List<String> returnValues, final String targetState) {
 		this.name = name;
 		this.params = params;
 		this.targetState = targetState;
 		this.returnValues = returnValues;
-		this.paramsSource = paramsSource;
-		this.retValSource = retValSource;
 		evaluated = true;
 	}
 

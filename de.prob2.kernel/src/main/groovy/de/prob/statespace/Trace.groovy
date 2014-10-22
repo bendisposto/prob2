@@ -62,7 +62,6 @@ public class Trace {
 
 		def List<EvaluationCommand> cmds = []
 
-		//TODO
 		def ops = head.getOpList()
 		ops.each {
 			if (stateSpace.canBeEvaluated(stateSpace.getVertex(it.dest))) {
@@ -82,6 +81,9 @@ public class Trace {
 	}
 
 	def Trace add(final OpInfo op) {
+		if (op == null) {
+			throw new IllegalArgumentException("Transition must not be null.")
+		}
 		// TODO: Should we check to ensure that current.getCurrentState() == op.getSrcId()
 		def newHE = branch(op)
 
@@ -102,6 +104,21 @@ public class Trace {
 	def Trace add(final int i) {
 		String opId = String.valueOf(i)
 		return add(opId)
+	}
+
+	/**
+	 * Tries to find an operation with the specified name and parameters in the
+	 * list of transitions calculated by ProB.
+	 * @param name of the event to be executed
+	 * @param parameters values of the parameters for the event
+	 * @return a new trace with the operation added.
+	 */
+	def Trace addTransitionWith(String name, List<String> parameters) {
+		def op = getCurrentState().getOutTransitions(true).find { it.getName() == name && it.getParams() == parameters }
+		if (op == null) {
+			throw new IllegalArgumentException("Could find operation "+name+" with parameters "+parameters.toString());
+		}
+		return add(op);
 	}
 
 	/**
@@ -235,12 +252,12 @@ public class Trace {
 	 * operation on this state. Uses implementation in {@link StateSpace#isValidOperation(StateId, String, String)}
 	 *
 	 * @param event Name of the event to be executed
-	 * @param params List of String predicates to be conjoined
+	 * @param predicates List of String predicates to be conjoined
 	 * @return <code>true</code>, if the operation can be executed. <code>false</code>, otherwise
 	 */
-	def boolean canExecuteEvent(String event, List<String> params) {
+	def boolean canExecuteEvent(String event, List<String> predicates) {
 		// TODO: pull this into StateId
-		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
+		String predicate = predicates == []? "TRUE = TRUE" : predicates.join(" & ")
 		return stateSpace.isValidOperation(current.getCurrentState(), event, predicate);
 	}
 
@@ -330,11 +347,12 @@ public class Trace {
 	 * @return {@link Trace} specified by list of operations
 	 */
 	def static Trace getTraceFromOpList(StateSpace s, List<OpInfo> ops) {
-		Trace t = new Trace(s)
 		if(!ops.isEmpty()) {
+			Trace t = new Trace(ops.first().getSrcId())
 			t = t.addOps(ops)
+			return t
 		}
-		return t
+		return new Trace(s)
 	}
 
 	/**

@@ -27,7 +27,7 @@ public class CBCDeadlockFound implements IModelCheckingResult,
 	@Override
 	public Trace getTrace(final StateSpace s) {
 		Trace t = new Trace(s);
-		t = t.add(transition.getId());
+		t = t.add(transition);
 		return t;
 	}
 

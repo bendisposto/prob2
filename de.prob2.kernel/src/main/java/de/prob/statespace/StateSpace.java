@@ -26,6 +26,7 @@ import de.prob.animator.command.AbstractCommand;
 import de.prob.animator.command.CheckIfStateIdValidCommand;
 import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.EvaluationCommand;
+import de.prob.animator.command.FindTraceBetweenNodesCommand;
 import de.prob.animator.command.FindValidStateCommand;
 import de.prob.animator.command.GetOperationByPredicateCommand;
 import de.prob.animator.command.GetOpsFromIds;
@@ -392,6 +393,22 @@ public class StateSpace implements IAnimator {
 	 */
 	public Trace getTrace(final String stateId) {
 		GetShortestTraceCommand cmd = new GetShortestTraceCommand(this, stateId);
+		execute(cmd);
+		Trace t = getTrace(cmd);
+		return t;
+	}
+
+	/**
+	 * @param sourceId
+	 *            of source node
+	 * @param destId
+	 *            of destination node
+	 * @return shortest Trace between the two specified ids (in form of
+	 *         {@link Trace} object)
+	 */
+	public Trace getTrace(final String sourceId, final String destId) {
+		FindTraceBetweenNodesCommand cmd = new FindTraceBetweenNodesCommand(
+				this, sourceId, destId);
 		execute(cmd);
 		Trace t = getTrace(cmd);
 		return t;
