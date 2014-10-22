@@ -12,11 +12,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.apache.commons.collections.map.LRUMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -72,7 +74,17 @@ public class StateSpace implements IAnimator {
 	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<IEvalElement, WeakHashMap<Object, Object>>();
 	private final Set<IEvalElement> subscribedFormulas = new HashSet<IEvalElement>();
 
-	LRUMap states = new LRUMap(50);
+	LoadingCache<String, StateId> states = CacheBuilder.newBuilder()
+			.maximumSize(100)
+			// .expireAfterWrite(10, TimeUnit.MINUTES)
+			// .removalListener(MY_LISTENER) this might be useful for triggering
+			// removal of formulas?
+			.build(new CacheLoader<String, StateId>() {
+				@Override
+				public StateId load(final String key) throws Exception {
+					return load(key);
+				}
+			});
 
 	private AbstractModel model;
 
@@ -86,14 +98,15 @@ public class StateSpace implements IAnimator {
 	}
 
 	public StateId getState(final String id) {
-		if (states.containsKey(id)) {
-			return (StateId) states.get(id);
+		StateId sId = states.getIfPresent(id);
+		if (sId != null) {
+			return sId;
 		}
 		// TODO: Need to implement prolog side.
 		CheckIfStateIdValidCommand cmd = new CheckIfStateIdValidCommand(id);
 		execute(cmd);
 		if (cmd.isValidState()) {
-			StateId sId = new StateId(id, this);
+			sId = new StateId(id, this);
 			states.put(id, sId);
 			return sId;
 		}
@@ -101,10 +114,11 @@ public class StateSpace implements IAnimator {
 	}
 
 	StateId addState(final String id) {
-		if (states.containsKey(id)) {
-			return (StateId) states.get(id);
+		StateId sId = states.getIfPresent(id);
+		if (sId != null) {
+			return sId;
 		}
-		StateId sId = new StateId(id, this);
+		sId = new StateId(id, this);
 		states.put(id, sId);
 		return sId;
 	}
