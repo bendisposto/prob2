@@ -10,8 +10,9 @@ t = t.anyEvent()
 
 t = t.new()
 t = t.ready()
-allStates = s.getVertices()
-assert allStates.size() == 10
+t.getCurrentState().getOutTransitions().each { it.getDestId().explore() }
+allStates = s.getStatesFromPredicate("TRUE = TRUE" as ClassicalB)
+assert allStates.size() == 11
 
 def validateResults = { stateL, formula ->
 	allStates.each {
@@ -27,7 +28,7 @@ def validateResults = { stateL, formula ->
 
 f = "card(waiting) = 1" as ClassicalB
 states = s.getStatesFromPredicate(f)
-assert states.size() == 6
+assert states.size() == 4
 validateResults(states, f)
 
 f = "card(active) = 2" as ClassicalB
@@ -37,7 +38,7 @@ validateResults(states, f)
 
 f = "ready = {}" as ClassicalB
 states = s.getStatesFromPredicate(f)
-assert states.size() == 10
+assert states.size() == 14
 validateResults(states, f)
 
 s.animator.cli.shutdown();

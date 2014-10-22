@@ -9,7 +9,7 @@ t = t.anyEvent()
 
 assert t.canExecuteEvent("Set",[])
 t = t.Set()
-op = t.current.edge
+op = t.getCurrentTransition()
 assert !op.isEvaluated()
 op.ensureEvaluated(s)
 assert op.isEvaluated()
@@ -19,47 +19,37 @@ assert op.returnValues != null
 assert op.returnValues.size() == 3
 assert op.returnValues == ["1", "2", "3"]
 assert op.targetState == "/* empty state */"
-assert op.getRep(m) == "1,2,3 <-- Set()"
+assert op.getRep() == "1,2,3 <-- Set()"
 
 assert t.canExecuteEvent("Crazy1",["p=10"])
 t = t.Crazy1("p=10")
-op = t.current.edge
+op = t.getCurrentTransition()
 assert !op.isEvaluated()
 op.ensureEvaluated(s)
 assert op.isEvaluated()
 assert op.params != null
 assert op.params.size() == 1
 assert op.params == ["10"]
-assert op.paramsSource.collect { it.translate(s).value } == [10]
 assert op.returnValues != null
 assert op.returnValues.size() == 2
 assert op.returnValues == ["10","14"]
-assert op.retValSource.collect { it.translate(s).value } == [10,14]
 assert op.targetState == "/* empty state */"
-assert op.getRep(m) == "10,14 <-- Crazy1(10)"
+assert op.getRep() == "10,14 <-- Crazy1(10)"
 
 assert t.canExecuteEvent("Crazy2", ["p1=7", "p2={4,7,9}"])
 t = t.Crazy2("p1=7", "p2={4,7,9}")
-op = t.current.edge
+op = t.getCurrentTransition()
 assert !op.isEvaluated()
 op.ensureEvaluated(s)
 assert op.isEvaluated()
 assert op.params != null
 assert op.params.size() == 2
 assert op.params == ["7", "{4,7,9}"]
-v = new HashSet()
-v << 4
-v << 7
-v << 9
-assert op.paramsSource.collect { it.translate(s).value } == [7,v]
 assert op.returnValues != null
 assert op.returnValues.size() == 3
 assert op.returnValues == ["3","{(7|->{4,7,9})}","8"]
-v2 = new HashSet()
-v2 << new Tuple(7,v)
-assert op.retValSource.collect { it.translate(s).value } == [3,v2,8]
 assert op.targetState == "/* empty state */"
-assert op.getRep(m) == "3,{(7|->{4,7,9})},8 <-- Crazy2(7,{4,7,9})" 
+assert op.getRep() == "3,{(7|->{4,7,9})},8 <-- Crazy2(7,{4,7,9})" 
 
 s.animator.cli.shutdown();
 
@@ -69,19 +59,18 @@ t = m as Trace
 s = t as StateSpace
 
 t = t.anyEvent("NonDeterm3")
-op = t.current.edge
+op = t.getCurrentTransition()
 assert op != null
-assert op.getRep(m) == "NonDeterm3"
+assert op.getRep() == "NonDeterm3"
 assert op.getParams() == []
 assert op.getReturnValues() == []
 assert op.getTargetState() == "."
 
-t = t.add("a",["1"])
-op = t.current.edge
+t = t.addTransitionWith("a",["1"])
+op = t.getCurrentTransition()
 assert op != null
-assert op.getRep(m) == "a.1"
+assert op.getRep() == "a.1"
 assert op.getParams() == ["1"]
-assert op.getParamsSource().collect { it.translate(s).value } == [1]
 assert op.getReturnValues() == []
 assert op.getTargetState() == "."
 

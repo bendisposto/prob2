@@ -34,11 +34,10 @@ import de.prob.statespace.Trace;
  * @author Jens Bendisposto
  * 
  */
-public final class ConstructTraceCommand extends AbstractCommand
-		implements IStateSpaceModifier, ITraceDescription {
+public final class ConstructTraceCommand extends AbstractCommand implements
+		IStateSpaceModifier, ITraceDescription {
 
-	Logger logger = LoggerFactory
-			.getLogger(ConstructTraceCommand.class);
+	Logger logger = LoggerFactory.getLogger(ConstructTraceCommand.class);
 	private static final String RESULT_VARIABLE = "Res";
 	private static final String ERRORS = "Errors";
 
@@ -49,10 +48,10 @@ public final class ConstructTraceCommand extends AbstractCommand
 	private final List<OpInfo> resultTrace = new ArrayList<OpInfo>();
 	private final List<String> errors = new ArrayList<String>();
 	private List<Integer> executionNumber = new ArrayList<Integer>();
-	
+
 	public ConstructTraceCommand(final StateSpace s, final StateId stateId,
 			final List<String> name, final List<ClassicalB> predicate,
-			Integer executionNumber) {
+			final Integer executionNumber) {
 		this.stateSpace = s;
 		this.stateId = stateId;
 		this.name = name;
@@ -110,14 +109,14 @@ public final class ConstructTraceCommand extends AbstractCommand
 		final ASTProlog prolog = new ASTProlog(pto, null);
 		pto.openList();
 		for (ClassicalB cb : evalElement) {
-			cb.getAst().apply(prolog);			
+			cb.getAst().apply(prolog);
 		}
 		pto.closeList();
 		pto.openList();
 		for (Integer n : executionNumber) {
 			pto.printNumber(n);
-		}		
-		pto.closeList();		
+		}
+		pto.closeList();
 		pto.printVariable(RESULT_VARIABLE);
 		pto.printVariable(ERRORS);
 		pto.closeTerm();
@@ -135,7 +134,7 @@ public final class ConstructTraceCommand extends AbstractCommand
 					stateSpace, t);
 			resultTrace.add(operation);
 		}
-		
+
 		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS));
 		for (PrologTerm prologTerm : errors) {
 			this.errors.add(prologTerm.getFunctor());
@@ -153,10 +152,10 @@ public final class ConstructTraceCommand extends AbstractCommand
 
 	@Override
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
-		Trace t = s.getTrace(stateId);
+		Trace t = s.getTrace(stateId.getId());
 		return t.addOps(resultTrace);
 	}
-	
+
 	public List<String> getErrors() {
 		return errors;
 	}

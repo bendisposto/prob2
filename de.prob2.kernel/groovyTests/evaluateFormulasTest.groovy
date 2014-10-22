@@ -14,14 +14,14 @@ a = h.getCurrentState()
 assert a == s[4]
 assert a.getClass() == de.prob.statespace.StateId
 
-values = s.getValues()[a]
+values = s.valuesAt(a)
 assert values.containsKey(formula)
 assert values[formula].getValue() == "{PID1,PID3}"
 h = h.back()
 h = h.back()
 b = h.getCurrentState()
 assert b == s[0]
-values = s.getValues()[b]
+values = s.valuesAt(b)
 assert values.containsKey(formula)
 assert values[formula].getValue() == "{}"
 

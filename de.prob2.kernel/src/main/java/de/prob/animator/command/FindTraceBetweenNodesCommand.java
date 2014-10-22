@@ -16,26 +16,30 @@ import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
-public class GetShortestTraceCommand extends AbstractCommand implements
+public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 		ITraceDescription, IStateSpaceModifier {
 
-	Logger logger = LoggerFactory.getLogger(GetShortestTraceCommand.class);
+	Logger logger = LoggerFactory.getLogger(FindTraceBetweenNodesCommand.class);
 
 	private static final String TRACE = "Trace";
-	private final String stateId;
-	private final List<OpInfo> transitions = new ArrayList<OpInfo>();
 
-	private final StateSpace s;
+	List<OpInfo> newTransitions = new ArrayList<OpInfo>();
+	private final StateSpace stateSpace;
+	private final String sourceId;
+	private final String destId;
 
-	public GetShortestTraceCommand(final StateSpace s, final String stateId) {
-		this.s = s;
-		this.stateId = stateId;
+	public FindTraceBetweenNodesCommand(final StateSpace stateSpace,
+			final String sourceId, final String destId) {
+		this.stateSpace = stateSpace;
+		this.sourceId = sourceId;
+		this.destId = destId;
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("find_trace_to_node");
-		pto.printAtomOrNumber(stateId);
+		pto.openTerm("find_trace_from_node_to_node");
+		pto.printAtomOrNumber(sourceId);
+		pto.printAtomOrNumber(destId);
 		pto.printVariable(TRACE);
 		pto.closeTerm();
 	}
@@ -46,8 +50,8 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 		PrologTerm trace = bindings.get(TRACE);
 		if (trace instanceof ListPrologTerm) {
 			for (PrologTerm term : (ListPrologTerm) trace) {
-				transitions.add(OpInfo.createOpInfoFromCompoundPrologTerm(s,
-						(CompoundPrologTerm) term));
+				newTransitions.add(OpInfo.createOpInfoFromCompoundPrologTerm(
+						stateSpace, (CompoundPrologTerm) term));
 			}
 		} else {
 			String msg = "Trace was not found. Error was: "
@@ -59,11 +63,12 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 
 	@Override
 	public List<OpInfo> getNewTransitions() {
-		return transitions;
+		return newTransitions;
 	}
 
 	@Override
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
-		return Trace.getTraceFromOpList(s, transitions);
+		return Trace.getTraceFromOpList(s, newTransitions);
 	}
+
 }

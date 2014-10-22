@@ -9,11 +9,11 @@ h2 = h1.anyOperation(".*z.*")
 assert h2 == h1
 h = h2
 h = h.anyOperation("new")
-assert h.current.edge.name == "new"
+assert h.current.getOp().getName() == "new"
 h = h.anyOperation(["new","del"])
-assert h.current.edge.name == "new" || h.current.edge.name == "del"
+assert h.current.getOp().getName() == "new" || h.current.getOp().getName() == "del"
 h = h.anyEvent("nr_ready")
-assert h.current.edge.name == "nr_ready"
+assert h.current.getOp().getName() == "nr_ready"
 
 s.animator.cli.shutdown();
 "anyOperation and anyEvent on Trace work correctly"

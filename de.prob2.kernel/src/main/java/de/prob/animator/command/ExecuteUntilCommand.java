@@ -78,7 +78,7 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 
 	@Override
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
-		Trace t = s.getTrace(startstate);
+		Trace t = s.getTrace(startstate.getId());
 		return t.addOps(resultTrace);
 	}
 

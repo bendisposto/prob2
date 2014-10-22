@@ -15,6 +15,12 @@ import com.google.common.base.Joiner;
 
 import de.prob.animator.command.GetOpFromId;
 import de.prob.animator.domainobjects.EvalResult;
+import de.prob.model.classicalb.ClassicalBMachine;
+import de.prob.model.classicalb.Operation;
+import de.prob.model.eventb.Event;
+import de.prob.model.eventb.EventBMachine;
+import de.prob.model.eventb.EventParameter;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -42,33 +48,32 @@ public class OpInfo {
 	private final StateId dest;
 	private List<String> params = new ArrayList<String>();
 	private List<String> returnValues = new ArrayList<String>();
-	private List<EvalResult> paramsSource = new ArrayList<EvalResult>();
-	private List<EvalResult> retValSource = new ArrayList<EvalResult>();
 	private String targetState;
 	private String rep = null;
 	private boolean evaluated;
 	private final FormalismType formalismType;
+	private String predicateString;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
 	private OpInfo(final StateSpace stateSpace, final String id,
-			final String src, final String dest) {
+			final StateId src, final StateId dest) {
 		this.stateSpace = stateSpace;
 		this.id = id;
-		this.src = new StateId(src, stateSpace);
-		this.dest = new StateId(dest, stateSpace);
-		this.formalismType = stateSpace.getModel().getFormalismType();
+		this.src = src;
+		this.dest = dest;
+		formalismType = stateSpace.getModel().getFormalismType();
 		evaluated = false;
 	}
 
 	private OpInfo(final StateSpace stateSpace, final String id,
-			final String name, final String src, final String dest) {
+			final String name, final StateId src, final StateId dest) {
 		this.stateSpace = stateSpace;
 		this.id = id;
 		this.name = name;
-		this.src = new StateId(src, stateSpace);
-		this.dest = new StateId(dest, stateSpace);
-		this.formalismType = stateSpace.getModel().getFormalismType();
+		this.src = src;
+		this.dest = dest;
+		formalismType = stateSpace.getModel().getFormalismType();
 		params = Collections.emptyList();
 		targetState = "";
 		evaluated = true;
@@ -90,6 +95,9 @@ public class OpInfo {
 	 * @return name of this operation
 	 */
 	public String getName() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return name;
 	}
 
@@ -139,6 +147,9 @@ public class OpInfo {
 	 * @return list of values for the parameters represented as strings
 	 */
 	public List<String> getParams() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return params;
 	}
 
@@ -150,37 +161,19 @@ public class OpInfo {
 	 * @return list of return values of the operation represented as strings.
 	 */
 	public List<String> getReturnValues() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return returnValues;
-	}
-
-	/**
-	 * The list of parameters is not filled by default. To ensure that the name,
-	 * parameter, and return value information have been retrieved from ProB,
-	 * use the {@link #evaluate()} method.
-	 * 
-	 * @return list of values for the parameters represented as
-	 *         {@link EvalResult}
-	 */
-	public List<EvalResult> getParamsSource() {
-		return paramsSource;
-	}
-
-	/**
-	 * The list of return values is not filled by default. To ensure that the
-	 * name, parameter, and return value information have been retrieved from
-	 * ProB, use the {@link #evaluate()} method.
-	 * 
-	 * @return list of return values of the operation represented as
-	 *         {@link EvalResult}
-	 */
-	public List<EvalResult> getRetValSource() {
-		return retValSource;
 	}
 
 	/**
 	 * @return a String representation of the target state
 	 */
 	public String getTargetState() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return targetState;
 	}
 
@@ -213,6 +206,39 @@ public class OpInfo {
 			rep = generateRep();
 		}
 		return rep;
+	}
+
+	public String getParameterPredicate() {
+		if (predicateString != null) {
+			return predicateString;
+		}
+		predicateString = Joiner.on(" & ").join(getParameterPredicates());
+		return predicateString;
+	}
+
+	public List<String> getParameterPredicates() {
+		evaluate();
+		List<String> predicates = new ArrayList<String>();
+		AbstractElement mainComponent = stateSpace.getModel()
+				.getMainComponent();
+		List<String> params = new ArrayList<String>();
+		if (mainComponent instanceof ClassicalBMachine) {
+			Operation op = ((ClassicalBMachine) mainComponent)
+					.getOperation(getName());
+			params = op.getParameters();
+		} else if (mainComponent instanceof EventBMachine) {
+			Event event = ((EventBMachine) mainComponent).getEvent(getName());
+			for (EventParameter eventParameter : event.getParameters()) {
+				params.add(eventParameter.getName());
+			}
+		}
+		if (params.size() == this.params.size()) {
+			for (int i = 0; i < params.size(); i++) {
+				predicates.add(params.get(i) + " = " + this.params.get(i));
+			}
+		}
+
+		return predicates;
 	}
 
 	/**
@@ -338,15 +364,11 @@ public class OpInfo {
 	 */
 	@Deprecated
 	public void setInfo(final String name, final List<String> params,
-			final List<String> returnValues,
-			final List<EvalResult> paramsSource,
-			final List<EvalResult> retValSource, final String targetState) {
+			final List<String> returnValues, final String targetState) {
 		this.name = name;
 		this.params = params;
 		this.targetState = targetState;
 		this.returnValues = returnValues;
-		this.paramsSource = paramsSource;
-		this.retValSource = retValSource;
 		evaluated = true;
 	}
 
@@ -369,7 +391,8 @@ public class OpInfo {
 	public static OpInfo generateArtificialTransition(final StateSpace s,
 			final String transId, final String description, final String srcId,
 			final String destId) {
-		return new OpInfo(s, transId, description, srcId, destId);
+		return new OpInfo(s, transId, description, s.addState(srcId),
+				s.addState(destId));
 	}
 
 	/**
@@ -384,9 +407,10 @@ public class OpInfo {
 	 */
 	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
 			final CompoundPrologTerm cpt) {
-		return new OpInfo(s, OpInfo.getIdFromPrologTerm(cpt.getArgument(1)),
-				OpInfo.getIdFromPrologTerm(cpt.getArgument(2)),
-				OpInfo.getIdFromPrologTerm(cpt.getArgument(3)));
+		String opId = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
+		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(2));
+		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
+		return new OpInfo(s, opId, s.addState(srcId), s.addState(destId));
 	}
 
 	/**

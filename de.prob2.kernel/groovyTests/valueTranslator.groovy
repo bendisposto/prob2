@@ -9,11 +9,18 @@ s = m as StateSpace
 t = new Trace(s)
 t = t.anyEvent()
 
-res = t.evalCurrent("1")
-assert res.value == "1"
-tres = res.translate(s)
-assert tres.value == 1
+thrown = false
+try {
+	res = t.evalCurrent("1")
+	assert res.value == "1"
+	tres = res.translate(s)
+	assert tres.value == 1
+} catch(IllegalArgumentException e) {
+	thrown = true
+}
+assert thrown
 
+/* TODO: Implement	
 res = t.evalCurrent("TRUE = TRUE")
 assert res.value == "TRUE"
 tres = res.translate(s)
@@ -59,6 +66,6 @@ tres = res.translate(s)
 assert tres.value instanceof PrologTerm // Symbolic Sets are translated as the Prolog Representation
 
 // TODO: Need test case for PossiblyTrue
-
+*/
 s.animator.cli.shutdown();
 "values are translated correctly"
