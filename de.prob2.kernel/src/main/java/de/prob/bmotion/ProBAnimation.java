@@ -77,4 +77,5 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener {
 	public boolean canBacktrack() {
 		return true;
 	}
+
 }
