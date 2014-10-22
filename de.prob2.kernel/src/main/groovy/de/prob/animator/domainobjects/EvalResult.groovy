@@ -1,8 +1,10 @@
 package de.prob.animator.domainobjects;
 
+
+import org.apache.commons.collections.map.LRUMap
+
 import com.google.common.base.Joiner
 
-import de.prob.animator.command.ProcessPrologValuesCommand
 import de.prob.parser.BindingGenerator
 import de.prob.prolog.term.CompoundPrologTerm
 import de.prob.prolog.term.ListPrologTerm
@@ -12,6 +14,10 @@ import de.prob.unicode.UnicodeTranslator
 
 public class EvalResult implements IEvalResult {
 
+	final static EvalResult TRUE = new EvalResult("TRUE", "TRUE", [:])
+	final static EvalResult FALSE = new EvalResult("FALSE", "FALSE", [:])
+	final static LRUMap formulaCache = new LRUMap(50)
+
 	final String code;
 	final String value;
 	final Map<String, String> solutions;
@@ -19,18 +25,12 @@ public class EvalResult implements IEvalResult {
 	// These fields are saved in this class to be able to later produce
 	// a TranslatedEvalResult from this class. However, they are otherwise
 	// not of use to the user.
-	private final PrologTerm valueSource;
-	private final Map<String, PrologTerm> solutionsSource;
 
-
-	public EvalResult(final String code, final String value, final PrologTerm valueSource,
-	final Map<String, String> solutions,
-	final Map<String, PrologTerm> solutionsSource) {
+	public EvalResult(final String code, final String value,
+	final Map<String, String> solutions) {
 		this.code = code
 		this.value = value
-		this.valueSource = valueSource
 		this.solutions = solutions
-		this.solutionsSource = solutionsSource
 	}
 
 	@Override
@@ -74,14 +74,20 @@ public class EvalResult implements IEvalResult {
 		return solutions[name]
 	}
 
+
 	def TranslatedEvalResult translate(StateSpace s) {
-		if(valueSource == null) {
-			throw new RuntimeException("Translation is not supported for this result");
-		}
-		def cmd = new ProcessPrologValuesCommand(code, valueSource, solutionsSource);
-		s.execute(cmd)
-		return cmd.getResult()
+		// TODO: Reimplement this.
+		throw new IllegalArgumentException("cannot translate EvalResults right now.")
+
+		/*	if(valueSource == null) {
+		 throw new RuntimeException("Translation is not supported for this result");
+		 }
+		 def cmd = new ProcessPrologValuesCommand(code, valueSource, solutionsSource);
+		 s.execute(cmd)
+		 return cmd.getResult()*/
 	}
+
+
 
 	/**
 	 * Translates the results from ProB into an IEvalResult. This is intended
@@ -125,29 +131,40 @@ public class EvalResult implements IEvalResult {
 
 			PrologTerm v = pt.getArgument(1);
 			String value = v.getFunctor();
-			def vSource = v;
+			ListPrologTerm solutionList = BindingGenerator.getList(pt
+					.getArgument(2));
+			if (value == "TRUE" && solutionList.isEmpty()) {
+				return TRUE
+			}
+			if (value == "FALSE" && solutionList.isEmpty()) {
+				return FALSE
+			}
+			if (value != "TRUE" && value != "FALSE" && formulaCache.containsKey(value)) {
+				return formulaCache.get(value)
+			}
+
+			String code = pt.getArgument(3).getFunctor();
 			if (v instanceof CompoundPrologTerm && v.getArity() == 2) {
 				CompoundPrologTerm cpt = BindingGenerator
 						.getCompoundTerm(v, 2);
 				value = cpt.getArgument(1).getFunctor();
-				vSource = cpt.getArgument(2)
 			}
 			Map<String, String> solutions = new HashMap<String, String>();
-			Map<String, PrologTerm> solutionsSource = new HashMap<String, PrologTerm>();
 
-			ListPrologTerm list = BindingGenerator.getList(pt
-					.getArgument(2));
-			for (PrologTerm t : list) {
+
+			for (PrologTerm t : solutionList) {
 				CompoundPrologTerm cpt = BindingGenerator
 						.getCompoundTerm(t, 3);
 				solutions.put(
 						cpt.getArgument(1).getFunctor(),
 						cpt.getArgument(3).getFunctor());
-				solutionsSource.put(cpt.getArgument(1).getFunctor(),
-						cpt.getArgument(2));
 			}
-			String code = pt.getArgument(3).getFunctor();
-			return new EvalResult(code, value, vSource, solutions, solutionsSource);
+
+			def res = new EvalResult(code, value, solutions);
+			if (value != "TRUE" && value != "FALSE") {
+				formulaCache.put(value, res)
+			}
+			return res
 		}
 	}
 }
