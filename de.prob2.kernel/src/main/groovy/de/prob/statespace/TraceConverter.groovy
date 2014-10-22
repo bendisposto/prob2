@@ -17,7 +17,7 @@ class TraceConverter {
 			if(op != null) {
 				sb.append("<Operation name=\"")
 				sb.append(op.getName())
-				sb.append("\"")
+				sb.append("\">")
 				op.getParams().each { param ->
 					sb.append("<Parameter name=\"")
 					sb.append(param.toString())
