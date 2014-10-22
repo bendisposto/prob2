@@ -1,8 +1,6 @@
 package de.prob.animator.domainobjects;
 
 
-import org.apache.commons.collections.map.LRUMap
-
 import com.google.common.base.Joiner
 
 import de.prob.parser.BindingGenerator
@@ -16,7 +14,7 @@ public class EvalResult implements IEvalResult {
 
 	final static EvalResult TRUE = new EvalResult("TRUE", "TRUE", [:])
 	final static EvalResult FALSE = new EvalResult("FALSE", "FALSE", [:])
-	final static LRUMap formulaCache = new LRUMap(50)
+	final static HashMap<String, EvalResult> formulaCache = [:]
 
 	final String code;
 	final String value;
