@@ -6,13 +6,13 @@ import groovy.transform.TupleConstructor
 @TupleConstructor
 class TransformerObserver extends BMotionObserver implements BMotionTransformer {
 
-    def selector
+    def _selector
 
-    def attributes = [:]
+    def _attributes = [:]
 
-    def styles = [:]
+    def _styles = [:]
 
-    def content
+    def _content
 
     private final Gson g = new Gson()
 
@@ -21,12 +21,12 @@ class TransformerObserver extends BMotionObserver implements BMotionTransformer 
     }
 
     def TransformerObserver selector(selector) {
-        this.selector = selector
+        this._selector = selector
         this
     }
 
     def TransformerObserver set(String name, Object value) {
-        (name == "content" || name == "text") ? content = value : attributes.put(name, value)
+        (name == "content" || name == "text") ? _content = value : _attributes.put(name, value)
         this
     }
 
@@ -35,21 +35,21 @@ class TransformerObserver extends BMotionObserver implements BMotionTransformer 
     }
 
     def TransformerObserver style(String name, Object value) {
-        styles.put(name, value)
+        _styles.put(name, value)
         this
     }
 
     def List<TransformerObject> update(BMotion bms) {
-        def t = new TransformerObject((selector instanceof Closure) ? selector() : selector)
-        t.attributes = attributes.collectEntries { kv ->
+        def t = new TransformerObject((_selector instanceof Closure) ? _selector() : _selector)
+        t.attributes = _attributes.collectEntries { kv ->
             (kv.value instanceof Closure) ? [kv.key, kv.value()] : [kv.key, kv.value
             ]
         }
-        t.styles = styles.collectEntries { kv ->
+        t.styles = _styles.collectEntries { kv ->
             (kv.value instanceof Closure) ? [kv.key, kv.value()] : [kv.key, kv.value
             ]
         }
-        t.content = (content instanceof Closure) ? content() : content
+        t.content = (_content instanceof Closure) ? _content() : _content
         [t]
     }
 

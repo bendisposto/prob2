@@ -6,33 +6,33 @@ import groovy.transform.TupleConstructor
 @TupleConstructor
 class BSetObserver extends TransformerObserver {
 
-	def String expression
-	def convertfn = { "#" + it }
-	def resolvefn = { it != null ? it.value.replace("{","").replace("}","").replaceAll(" ","").tokenize(",") : [] }
+	def _expression
+	def _convert = { "#" + it }
+	def _resolve = { it != null ? it.value.replace("{","").replace("}","").replaceAll(" ","").tokenize(",") : [] }
 
     def static BSetObserver make(Closure cls) {
         new BSetObserver().with cls
     }
 
-    def BSetObserver expression(exp) {
-        this.expression = exp
+    def BSetObserver expression(expression) {
+        this._expression = expression
         this
     }
 
     def BSetObserver convert(Closure cls) {
-        this.convertfn = cls
+        this._convert = cls
         this
     }
 
     def BSetObserver resolve(Closure cls) {
-        this.resolvefn = cls
+        this._resolve = cls
         this
     }
 
     def List<TransformerObject> update(BMotion bms) {
-        def a = resolvefn(bms.eval(expression))
-        def b = a.collect{ convertfn(it) }
-        selector = b == []? "" : b.join(",")
+        def a = _resolve(bms.eval((_expression instanceof Closure) ? _expression() : _expression))
+        def b = a.collect{ _convert(it) }
+        _selector = b == []? "" : b.join(",")
         super.update(bms)
     }
 
