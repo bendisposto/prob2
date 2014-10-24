@@ -11,7 +11,7 @@ public enum EvalElementType {
 
 	@Override
 	public String toString() {
-		return "#" + super.toString();
+		return SimpleEvalResult.generateString("#" + super.toString());
 	}
 
 }

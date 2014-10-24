@@ -227,7 +227,11 @@ public class Trace {
 	 */
 	@Deprecated
 	def invokeMethod(String method, params) {
-		return add(getCurrentState().findTransition(method, params as List))
+		def transition = getCurrentState().findTransition(method, params as List)
+		if (transition == null) {
+			throw new IllegalArgumentException("Could not execute event with name "+method+" and parameters "+parameters.toString());
+		}
+		return add(transition)
 	}
 
 	/**
@@ -240,7 +244,11 @@ public class Trace {
 	 * @return {@link Trace} which is a result of executing the specified operation
 	 */
 	def Trace execute(String event, List<String> predicates) {
-		return add(getCurrentState().findTransition(event, predicates))
+		def transition = getCurrentState().findTransition(event, predicates as List)
+		if (transition == null) {
+			throw new IllegalArgumentException("Could not execute event with name "+method+" and parameters "+parameters.toString());
+		}
+		return add(transition)
 	}
 
 	def Trace execute(String event, String... predicates) {
@@ -255,10 +263,8 @@ public class Trace {
 	 * @param predicates List of String predicates to be conjoined
 	 * @return <code>true</code>, if the operation can be executed. <code>false</code>, otherwise
 	 */
-	def boolean canExecuteEvent(String event, List<String> predicates) {
-		// TODO: pull this into StateId
-		String predicate = predicates == []? "TRUE = TRUE" : predicates.join(" & ")
-		return stateSpace.isValidOperation(current.getCurrentState(), event, predicate);
+	def boolean canExecuteEvent(String event, List<String> params) {
+		return getCurrentState().findTransition(event, params) != null
 	}
 
 	def Trace anyOperation(filter) {

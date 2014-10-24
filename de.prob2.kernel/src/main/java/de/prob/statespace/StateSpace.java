@@ -180,6 +180,11 @@ public class StateSpace implements IAnimator {
 				this, stateId.getId(), name, pred, nrOfSolutions);
 		execute(command);
 		if (command.hasErrors()) {
+			stateId.explore();
+			for (OpInfo op : stateId.getOps()) {
+				String rep = op.getRep();
+				System.out.println(rep);
+			}
 			throw new IllegalArgumentException("Executing operation " + name
 					+ " with predicate " + predicate + " produced errors: "
 					+ Joiner.on(", ").join(command.getErrors()));

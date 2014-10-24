@@ -55,40 +55,79 @@ class StateId {
 		return op.getDestId();
 	}
 
-	def StateId perform(String event, String... params) {
-		return perform(event, params as List)
-	}
-
 	/**
-	 * Uses {@link StateSpace#opFromPredicate} to calculate the destination state of the event
+	 * Uses {@link StateId#perform(String,List)} to calculate the destination state of the event
 	 * with the specified event name and the conjunction of the parameters.
 	 * An exception will be thrown if the specified event and params are invalid for this StateId.
 	 * @param event String event name to execute
 	 * @param params List of String predicates
 	 * @return {@link StateId} that results from executing the specified event
 	 */
-	def StateId perform(String event, List<String> params) {
-		def op = findTransition(event, params)
+	def StateId perform(String event, String... predicates) {
+		return perform(event, predicates as List)
+	}
+
+	/**
+	 * Uses {@link StateId#findTransition(String,List)} to calculate the destination state of the event
+	 * with the specified event name and the conjunction of the parameters.
+	 * An exception will be thrown if the specified event and predicates are invalid for this StateId.
+	 * @param event String event name to execute
+	 * @param params List of String predicates
+	 * @return {@link StateId} that results from executing the specified event
+	 */
+	def StateId perform(String event, List<String> predicates) {
+		def op = findTransition(event, predicates)
+		if (op == null) {
+			throw new IllegalArgumentException("Could not execute "+event+" with predicates "+predicates.toString() + " on state "+this.getId())
+		}
 		return op.getDestId();
 	}
 
+	/**
+	 * Calls {@link StateId#findTransition(String, List)}
+	 * @param name of the operation
+	 * @param predicates list of predicates specifying the parameters
+	 * @return the calculated transition, or null if no transition was found.
+	 */
 	def OpInfo findTransition(String name, String... predicates) {
 		return findTransition(name, predicates as List)
 	}
 
+	/**
+	 * Calls {@link StateId#findTransitions(String, List, Integer)}
+	 * @param name of the operation
+	 * @param predicates list of predicates specifying the parameters
+	 * @return the calculated transition, or null if no transition was found.
+	 */
 	def OpInfo findTransition(String name, List<String> predicates) {
-		return findTransitions(name, predicates, 1)[0]
+		def transitions = findTransitions(name, predicates, 1)
+		if (!transitions.isEmpty()) {
+			return transitions[0]
+		}
+		return null
 	}
 
+	/**
+	 * Calls {@link StateSpace#opFromPredicate(StateId, String, String, Integer)}
+	 * @param name of the operation
+	 * @param predicates list of predicates specifying the parameters
+	 * @param nrOfSolutions to be found
+	 * @return a list of solutions found, or an empty list if no solutions were found
+	 */
 	def List<OpInfo> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
 		if (name.startsWith("\$") && !(name == "\$setup_constants" || name == "\$initialise_machine")) {
 			name = name.substring(1)
 		}
 
 		String predicate = predicates == []? "TRUE = TRUE" : predicates.join(" & ")
-		def newOps = stateSpace.opFromPredicate(this, name, predicate, nrOfSolutions)
-		ops.addAll(newOps)
-		return newOps
+		try {
+			def newOps = stateSpace.opFromPredicate(this, name, predicate, nrOfSolutions)
+			ops.addAll(newOps)
+			return newOps
+		} catch(IllegalArgumentException e) {
+			// Skip
+		}
+		return Collections.EMPTY_LIST
 	}
 
 	/**
