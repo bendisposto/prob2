@@ -1,5 +1,4 @@
-package de.prob.animator.domainobjects;
-
+package de.prob.animator.domainobjects
 
 import com.google.common.base.Joiner
 
@@ -7,33 +6,25 @@ import de.prob.parser.BindingGenerator
 import de.prob.prolog.term.CompoundPrologTerm
 import de.prob.prolog.term.ListPrologTerm
 import de.prob.prolog.term.PrologTerm
-import de.prob.statespace.StateSpace
 import de.prob.unicode.UnicodeTranslator
 
-public class EvalResult implements IEvalResult {
+class SimpleEvalResult implements IEvalResult {
 
-	final static EvalResult TRUE = new EvalResult("TRUE", "TRUE", [:])
-	final static EvalResult FALSE = new EvalResult("FALSE", "FALSE", [:])
-	final static HashMap<String, EvalResult> formulaCache = [:]
+	public static final Map<String, String> stringCache	= new HashMap<String, String>();
+	String code;
+	String value;
+	Map<String, String> solutions;
 
-	final String code;
-	final String value;
-	final Map<String, String> solutions;
-
-	// These fields are saved in this class to be able to later produce
-	// a TranslatedEvalResult from this class. However, they are otherwise
-	// not of use to the user.
-
-	public EvalResult(final String code, final String value,
-	final Map<String, String> solutions) {
-		this.code = code
-		this.value = value
-		this.solutions = solutions
+	def SimpleEvalResult(String code, String value, Map<String, String> solutions) {
+		this.code = code;
+		this.value = value;
+		this.solutions = solutions;
 	}
 
 	@Override
 	public String getCode() {
-		return code;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -71,21 +62,6 @@ public class EvalResult implements IEvalResult {
 	def String getSolution(String name) {
 		return solutions[name]
 	}
-
-
-	def TranslatedEvalResult translate(StateSpace s) {
-		// TODO: Reimplement this.
-		throw new IllegalArgumentException("cannot translate EvalResults right now.")
-
-		/*	if(valueSource == null) {
-		 throw new RuntimeException("Translation is not supported for this result");
-		 }
-		 def cmd = new ProcessPrologValuesCommand(code, valueSource, solutionsSource);
-		 s.execute(cmd)
-		 return cmd.getResult()*/
-	}
-
-
 
 	/**
 	 * Translates the results from ProB into an IEvalResult. This is intended
@@ -128,41 +104,30 @@ public class EvalResult implements IEvalResult {
 			 */
 
 			PrologTerm v = pt.getArgument(1);
-			String value = v.getFunctor();
+			String value = generateString(v.getFunctor());
 			ListPrologTerm solutionList = BindingGenerator.getList(pt
 					.getArgument(2));
-			if (value == "TRUE" && solutionList.isEmpty()) {
-				return TRUE
-			}
-			if (value == "FALSE" && solutionList.isEmpty()) {
-				return FALSE
-			}
-			if (value != "TRUE" && value != "FALSE" && formulaCache.containsKey(value)) {
-				return formulaCache.get(value)
-			}
 
-			String code = pt.getArgument(3).getFunctor();
-			if (v instanceof CompoundPrologTerm && v.getArity() == 2) {
-				CompoundPrologTerm cpt = BindingGenerator
-						.getCompoundTerm(v, 2);
-				value = cpt.getArgument(1).getFunctor();
-			}
+			String code = generateString(pt.getArgument(3).getFunctor());
+
 			Map<String, String> solutions = new HashMap<String, String>();
-
-
 			for (PrologTerm t : solutionList) {
 				CompoundPrologTerm cpt = BindingGenerator
 						.getCompoundTerm(t, 3);
 				solutions.put(
-						cpt.getArgument(1).getFunctor(),
-						cpt.getArgument(3).getFunctor());
+						generateString(cpt.getArgument(1).getFunctor()),
+						generateString(cpt.getArgument(3).getFunctor()));
 			}
 
-			def res = new EvalResult(code, value, solutions);
-			if (value != "TRUE" && value != "FALSE") {
-				formulaCache.put(value, res)
-			}
+			def res = new SimpleEvalResult(code, value, solutions);
 			return res
 		}
+	}
+
+	public static String generateString(String string) {
+		if (!stringCache.containsKey(string)) {
+			stringCache.put(string, string);
+		}
+		return stringCache.get(string);
 	}
 }

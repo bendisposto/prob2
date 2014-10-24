@@ -3,18 +3,15 @@
 package de.prob.animator.domainobjects
 
 import com.google.gson.Gson
-import com.google.inject.Inject;
 
 import de.prob.Main
 import de.prob.animator.command.EvaluateFormulaCommand
 import de.prob.animator.command.EvaluationCommand
 import de.prob.cli.OsInfoProvider
-import de.prob.cli.OsSpecificInfo;
 import de.prob.model.representation.CSPModel
 import de.prob.model.representation.FormulaUUID
 import de.prob.prolog.output.IPrologTermOutput
 import de.prob.statespace.StateId
-import de.prob.webconsole.ServletContextListener;
 
 /**
  * A Formula representation for CSP
@@ -30,7 +27,7 @@ class CSP extends AbstractEvalElement {
 	private OsInfoProvider osInfoProvider;
 	private String target = ""
 	private String procname;
-	
+
 	/**
 	 * When a new formula is entered, the entire model must be reparsed. For this reason,
 	 * a {@link CSPModel} is one of the necessary parameters.
@@ -42,7 +39,7 @@ class CSP extends AbstractEvalElement {
 		this.code = formula;
 		this.home = Main.getProBDirectory();
 		this.fileName = model.getModelFile().getAbsolutePath()
-		def osInfoProvider = ServletContextListener.INJECTOR.getInstance(OsInfoProvider.class);
+		def osInfoProvider = Main.getInjector().getInstance(OsInfoProvider.class);
 		def osInfo = osInfoProvider.get()
 		if(osInfo.dirName == "win32")
 			this.target = ".exe"
@@ -54,7 +51,7 @@ class CSP extends AbstractEvalElement {
 	}
 
 	public void printProlog(IPrologTermOutput pout) {
-		
+
 		/* Calling the cspmf command:
 		 * cspmf translate [OPTIONS] FILE
 		 * where OPTIONS could be:
@@ -71,7 +68,6 @@ class CSP extends AbstractEvalElement {
 			fileName
 		].execute()
 		executeCmd(process, pout)
-		
 	}
 
 	// cspmf translate --declarationToPrologTerm="assert SKIP [T= STOP" "no-file"
@@ -94,9 +90,9 @@ class CSP extends AbstractEvalElement {
 			fileName
 		].execute()
 		executeCmd(process, pout)
-		
+
 	}
-	
+
 	private void executeCmd(Process process, IPrologTermOutput pout) {
 		process.waitFor()
 		if (process.exitValue() != 0) {

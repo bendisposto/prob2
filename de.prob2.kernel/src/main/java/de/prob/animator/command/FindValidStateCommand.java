@@ -103,9 +103,8 @@ public class FindValidStateCommand extends AbstractCommand implements
 
 	@Override
 	public Trace getTrace(final StateSpace s) {
-		if (stateId != null && s.getVertex(stateId) != null
-				&& result.equals(ResultType.STATE_FOUND)) {
-			Trace t = s.getTrace(s.getVertex(stateId));
+		if (stateId != null && result.equals(ResultType.STATE_FOUND)) {
+			Trace t = s.getTrace(stateId);
 			if (t != null) {
 				return t;
 			}

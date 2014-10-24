@@ -5,7 +5,6 @@ package de.prob.animator.command;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import de.prob.animator.domainobjects.ComputationNotCompletedResult;
@@ -95,8 +94,7 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			final long storeId = ((IntegerPrologTerm) term.getArgument(4))
 					.getValue().longValue();
 			final EvalResult er = new EvalResult(evalElement.getCode(),
-					valueStr, null, new HashMap<String, String>(),
-					new HashMap<String, PrologTerm>());
+					valueStr, Collections.<String, String> emptyMap());
 			result = new EvalstoreResult(false, false, storeId, er,
 					newIdentifiers);
 		} else {

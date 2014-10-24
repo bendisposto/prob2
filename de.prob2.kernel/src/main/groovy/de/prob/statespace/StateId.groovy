@@ -1,24 +1,38 @@
 package de.prob.statespace
 
-import de.prob.animator.domainobjects.EvaluationException
+import com.google.common.base.Objects
+
+import de.prob.animator.command.ComposedCommand
+import de.prob.animator.command.ExploreStateCommand
+import de.prob.animator.command.GetBStateCommand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
-import de.prob.statespace.derived.AbstractDerivedStateSpace
+import de.prob.animator.domainobjects.SimpleEvalResult
 
 
-/**
- * @author joy
- *
- * A reference to the state object in the ProB core.
+/**A reference to the state object in the ProB core.
  *
  * Note: This class contains a reference to the StateSpace object to which this state
  * reference belongs. In order for the garbage collector to work correctly, dereference
  * any StateId objects after they are no longer needed.
+ *
+ * @author joy
  */
 class StateId {
 
-	protected def id;
-	def StateSpace space;
+	protected def String id;
+	def StateSpace stateSpace;
+	def boolean explored
+	def List<OpInfo> ops = []
+	def boolean initialised
+	def boolean invariantOk
+	def Map<IEvalElement, IEvalResult> values = new HashMap<IEvalElement, IEvalResult>()
+
+	def StateId(String id, StateSpace space) {
+		this.id = id;
+		this.explored = false
+		this.stateSpace = space
+	}
 
 	/**
 	 * This method is included for groovy magic in a console environment.
@@ -36,83 +50,143 @@ class StateId {
 		}
 
 		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
-		OpInfo op = space.opFromPredicate(this, method, predicate , 1)[0];
-		StateId newState = space.getDest(op);
-		space.explore(newState);
-		return newState;
+		OpInfo op = stateSpace.opFromPredicate(this, method, predicate , 1)[0];
+		ops << op
+		return op.getDestId();
 	}
 
 	/**
-	 * Uses {@link StateSpace#opFromPredicate} to calculate the destination state of the event
+	 * Uses {@link StateId#perform(String,List)} to calculate the destination state of the event
 	 * with the specified event name and the conjunction of the parameters.
 	 * An exception will be thrown if the specified event and params are invalid for this StateId.
 	 * @param event String event name to execute
 	 * @param params List of String predicates
 	 * @return {@link StateId} that results from executing the specified event
 	 */
-	def StateId perform(String event, List<String> params) {
-		if(event.startsWith("\$") && !(event == "\$setup_constants" || event == "\$initialise_machine")) {
-			event = event.substring(1)
-		}
-
-		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
-		OpInfo op = space.opFromPredicate(this, event, predicate , 1)[0];
-		StateId newState = space.getDest(op);
-		space.explore(newState);
-		return newState;
+	def StateId perform(String event, String... predicates) {
+		return perform(event, predicates as List)
 	}
 
-
 	/**
-	 * Evaluates the given formula key via the {@link #eval(Object)} method.
-	 * If the result has a "value" property, this is returned.
-	 * Otherwise, an {@link EvaluationException} is thrown if a reason is found, and an
-	 * {@link IllegalArgumentException} is thrown if no identifiable reason can be found.
-	 *
-	 * This method is meant to be used for extracting the value of variables at a given state.
-	 * For more complicated formulas, we suggest using the {@link #eval(Object)} method.
-	 *
-	 * @param key String representation of the formula
-	 * @return the value property of the result, if one exists
+	 * Uses {@link StateId#findTransition(String,List)} to calculate the destination state of the event
+	 * with the specified event name and the conjunction of the parameters.
+	 * An exception will be thrown if the specified event and predicates are invalid for this StateId.
+	 * @param event String event name to execute
+	 * @param params List of String predicates
+	 * @return {@link StateId} that results from executing the specified event
 	 */
-	@Deprecated
-	def value(String key) {
-		IEvalResult res = eval(key)
-		if (res.hasProperty("value")) {
-			return res.getValue()
+	def StateId perform(String event, List<String> predicates) {
+		def op = findTransition(event, predicates)
+		if (op == null) {
+			throw new IllegalArgumentException("Could not execute "+event+" with predicates "+predicates.toString() + " on state "+this.getId())
 		}
-		if (res.hasProperty("reason")) {
-			throw new EvaluationException("Could not evaluate formula $key because ${res.getReason()}")
-		}
-		if (res.getMetaClass().respondsTo("getMessage")) {
-			throw new EvaluationException("Could not evaluate formula $key because ${res.getMessage()}")
-		}
-		throw new IllegalArgumentException("Evaluation of formula failed with unknown reason. Result type was: $res")
+		return op.getDestId();
 	}
 
+	/**
+	 * Calls {@link StateId#findTransition(String, List)}
+	 * @param name of the operation
+	 * @param predicates list of predicates specifying the parameters
+	 * @return the calculated transition, or null if no transition was found.
+	 */
+	def OpInfo findTransition(String name, String... predicates) {
+		return findTransition(name, predicates as List)
+	}
 
 	/**
-	 * Takes a formula and evaluates it via the {@link de.prob.statespace.StateSpace#eval(StateId, java.util.List)}
-	 * method. If the input is a String, the formula is parsed via the {@link AbstractModel#parseFormula(String)} method.
-	 * @param formula String or IEvalElement representation of a formula
+	 * Calls {@link StateId#findTransitions(String, List, Integer)}
+	 * @param name of the operation
+	 * @param predicates list of predicates specifying the parameters
+	 * @return the calculated transition, or null if no transition was found.
+	 */
+	def OpInfo findTransition(String name, List<String> predicates) {
+		def transitions = findTransitions(name, predicates, 1)
+		if (!transitions.isEmpty()) {
+			return transitions[0]
+		}
+		return null
+	}
+
+	/**
+	 * Calls {@link StateSpace#opFromPredicate(StateId, String, String, Integer)}
+	 * @param name of the operation
+	 * @param predicates list of predicates specifying the parameters
+	 * @param nrOfSolutions to be found
+	 * @return a list of solutions found, or an empty list if no solutions were found
+	 */
+	def List<OpInfo> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
+		if (name.startsWith("\$") && !(name == "\$setup_constants" || name == "\$initialise_machine")) {
+			name = name.substring(1)
+		}
+
+		String predicate = predicates == []? "TRUE = TRUE" : predicates.join(" & ")
+		try {
+			def newOps = stateSpace.opFromPredicate(this, name, predicate, nrOfSolutions)
+			ops.addAll(newOps)
+			return newOps
+		} catch(IllegalArgumentException e) {
+			// Skip
+		}
+		return Collections.EMPTY_LIST
+	}
+
+	/**
+	 * Takes a formula and evaluates it via the {@link StateId#eval(IEvalElement)}
+	 * method. The formula is parsed via the {@link AbstractModel#parseFormula(String)} method.
+	 * @param String representation of a formula
 	 * @return the {@link IEvalResult} calculated from ProB
 	 */
-	def IEvalResult eval(formula) {
-		def f = formula;
-		if (!(formula instanceof IEvalElement)) {
-			f = space.getModel().parseFormula(f)
+	def IEvalResult eval(String formula) {
+		if (!isInitialised()) {
+			return null
 		}
-		return space.eval(this, [f])[0]
+		return eval(stateSpace.getModel().parseFormula(formula))
 	}
 
-	def StateId(id, space) {
-		this.id = id;
-		if(space instanceof StateSpace) {
-			this.space = space;
-		} else if(space instanceof AbstractDerivedStateSpace) {
-			this.space = ((AbstractDerivedStateSpace) space).getStateSpace()
+	/**
+	 * Takes a formula and evaluateds it via the {@link StateId#eval(List)} method.
+	 * @param formula as IEvalElement
+	 * @return the {@link IEvalResult} calculated by ProB
+	 */
+	def IEvalResult eval(IEvalElement formula) {
+		if (!isInitialised()) {
+			return null
+		}
+		return eval([formula])[0]
+	}
+
+	def List<IEvalResult> eval(IEvalElement... formulas) {
+		return eval(formulas as List)
+	}
+
+	/**
+	 * @param formulas to be evaluated
+	 * @return list of results calculated by ProB for a given formula
+	 */
+	def List<IEvalResult> eval(List<IEvalElement> formulas) {
+		def cmds = formulas.findAll {
+			!values.containsKey(it)
+		}.collect { it.getCommand(this) }
+		if (!cmds.isEmpty()) {
+			stateSpace.execute(new ComposedCommand(cmds))
+		}
+		def results = cmds.collectEntries {
+			[
+				it.getEvalElement(),
+				it.getValue()
+			]
+		}
+
+		formulas.collect {
+			if (values.containsKey(it)) {
+				return values.get(it)
+			} else {
+				return results.get(it)
+			}
 		}
 	}
+
+
 
 	def String toString() {
 		return id;
@@ -120,7 +194,16 @@ class StateId {
 
 	def String getId() {
 		return id;
-	};
+	}
+
+	def String getState() {
+		if (stateSpace.getModel().getFormalismType() == FormalismType.B) {
+			GetBStateCommand cmd = new GetBStateCommand(this)
+			stateSpace.execute(cmd)
+			return cmd.getState()
+		}
+		return SimpleEvalResult.generateString("unknown")
+	}
 
 	def long numericalId() {
 		return id == "root" ? -1 : id as long;
@@ -129,37 +212,85 @@ class StateId {
 
 	def boolean equals(Object that) {
 		if (that instanceof StateId) {
-			return this.id.equals(that.getId());
+			return this.id.equals(that.getId()) && this.getStateSpace().equals(that.getStateSpace());
 		}
 		return false
 	}
 
 
 	def int hashCode() {
-		return id.hashCode()
+		return Objects.hashCode(id, stateSpace)
 	};
 
 	def StateId anyOperation(filter) {
-		def ops = new ArrayList<OpInfo>()
-		ops.addAll(space.getOutEdges(this));
+		List<OpInfo> ops = getOutTransitions(true)
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
-				it.name.matches(filter);
+				it.getName().matches(filter);
 			}
 		}
 		if (filter != null && filter instanceof ArrayList) {
 			ops=ops.findAll {
-				filter.contains(it.name)
+				filter.contains(it.getName())
 			}
 		}
 		Collections.shuffle(ops)
-		def op = ops.get(0)
-		def ns = space.getDest(op)
-		space.explore(ns)
-		return ns;
+		def op = ops[0]
+		def newState = op.getDestId()
+		newState.explore()
+		return newState;
 	}
 
 	def StateId anyEvent(filter) {
 		anyOperation(filter);
+	}
+
+	def boolean isInitialised() {
+		if (!explored) {
+			explore()
+		}
+		return initialised
+	}
+
+	def boolean isInvariantOk() {
+		if (!explored) {
+			explore()
+		}
+		return isInvariantOk()
+	}
+
+	/**
+	 * If the state has not yet been explored (i.e. the default number
+	 * of outgoing transitions has not yet been calculated by ProB), this
+	 * is done via the {@link StateId#explore()} method. By default, the list of
+	 * {@link OpInfo} objects created will not be evaluated (i.e. certain
+	 * information about the transition will be lazily retrieved from ProB
+	 * at a later time). However, if an optional parameter is supplied and
+	 * set to true, the evaluation of all of the {@link OpInfo} objects will
+	 * occur before the list is returned via the {@link StateSpace#evaluateOps(Collection)}
+	 * method.
+	 * @param evaluate whether or not the list of transitions should
+	 * 		be evaluated. By default this is set to false.
+	 * @return the outgoing transitions from this state
+	 */
+	def List<OpInfo> getOutTransitions(boolean evaluate=false) {
+		if (!explored) {
+			explore()
+		}
+		if(evaluate) {
+			stateSpace.evaluateOps(ops)
+		}
+		ops
+	}
+
+	def StateId explore() {
+		ExploreStateCommand cmd = new ExploreStateCommand(stateSpace, id, stateSpace.getSubscribedFormulas());
+		stateSpace.execute(cmd);
+		ops = cmd.getNewTransitions()
+		values.putAll(cmd.getFormulaResults())
+		initialised = cmd.isInitialised()
+		invariantOk = cmd.isInvariantOk()
+		explored = true
+		this
 	}
 }

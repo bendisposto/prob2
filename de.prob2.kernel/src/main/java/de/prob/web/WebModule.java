@@ -15,7 +15,6 @@ import de.prob.webconsole.OutputBuffer;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
 import de.prob.webconsole.servlets.VersionServlet;
-import de.prob.webconsole.servlets.visualizations.StateSpaceServlet;
 
 public class WebModule extends ServletModule {
 
@@ -34,7 +33,6 @@ public class WebModule extends ServletModule {
 		bind(mapType).annotatedWith(Sessions.class).toInstance(
 				new HashMap<String, ISession>());
 
-		serve("/statespace_servlet*").with(StateSpaceServlet.class);
 		// filter("/sessions/*").through(ReflectorFilter.class);
 
 		serve(ReflectionServlet.URL_PATTERN + "*")

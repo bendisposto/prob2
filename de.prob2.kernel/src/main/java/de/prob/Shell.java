@@ -15,6 +15,7 @@ import de.prob.scripting.ScriptEngineProvider;
 
 class Shell {
 
+	private final static String printString = "{a -> System.out.println(a)}";
 	private final ScriptEngineProvider sep;
 	private final Logger logger = LoggerFactory.getLogger(Shell.class);
 
@@ -51,6 +52,7 @@ class Shell {
 		logger.debug("Runnning script: {}", script.getAbsolutePath());
 		ScriptEngine executor = sep.get();
 		executor.put("dir", dir);
+		executor.put("inConsole", false);
 
 		if (!silent) {
 			System.out.print(script.getName());

@@ -63,10 +63,10 @@ public class CurrentAnimations extends AbstractSession implements
 			AbstractElement mainComponent = model.getMainComponent();
 			String modelName = mainComponent != null ? mainComponent.toString()
 					: model.getModelFile().getName();
-			OpInfo op = t.getCurrent().getOp();
+			OpInfo op = t.getCurrentTransition();
 			String lastOp = op != null ? op.getRep() : "";
 
-			String steps = t.getCurrent().getOpList().size() + "";
+			String steps = t.getOpList().size() + "";
 			String isCurrent = t.equals(currentTrace) + "";
 			Map<String, String> wrapped = WebUtils.wrap("model", modelName,
 					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent);

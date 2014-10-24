@@ -35,13 +35,13 @@ class SyncedTraces {
 		this.syncedOps = syncedOps
 	}
 
-	def SyncedTraces add(String syncedOp, List<String> params) {
+	def SyncedTraces add(String syncedOp, List<String> predicates) {
 		if(!syncedOps.contains(syncedOp)) {
 			throw new IllegalArgumentException("The given operation has not been specified as a syncronized operation")
 		}
 		def map = new HashMap<Trace, String>()
 		traces.each { trace ->
-			def op = trace.getOp(syncedOp,params)
+			def op = trace.execute(syncedOp, predicates)
 			if(op==null) {
 				throw new IllegalArgumentException("Operation cannot be synced across the given traces")
 			}
@@ -54,28 +54,29 @@ class SyncedTraces {
 		return new SyncedTraces(newTraces,this,syncedOps)
 	}
 
-	def SyncedTraces add(String op, List<String> params, int index) {
+	def SyncedTraces add(String op, List<String> predicates, int index) {
 		if(syncedOps.contains(op)) {
 			return add(op,params)
 		}
 		def trace = traces.get(index)
-		def operation = trace.getOp(op,params)
-		trace = trace.add(operation)
-		def newTraces = []
-		traces.each { newTraces << it }
+		trace = trace.execute(op, predicates)
+		def newTraces = new ArrayList<String>(traces)
 		newTraces.set(index, trace)
 		return new SyncedTraces(newTraces,this,syncedOps)
 	}
 
 	def SyncedTraces add(String opId, int index) {
 		def trace = traces.get(index)
-		def op = trace.stateSpace.getEvaluatedOpInfo(opId)
-		if(syncedOps.contains(op.getName())) {
-			return add(op.getName(),op.getParams())
+		def ops = trace.getCurrentState().getOutTransitions(true)
+		OpInfo op = ops.find { it.getId() == opId }
+		if (op == null) {
+			return this
 		}
-		trace = trace.add(opId)
-		def newTraces = []
-		traces.each { newTraces << it }
+		if(syncedOps.contains(op.getName())) {
+			return add(op.getName(),op.getParameterPredicates())
+		}
+		trace = trace.add(op)
+		def newTraces = new ArrayList<String>(traces)
 		newTraces.set(index, trace)
 		return new SyncedTraces(newTraces,this,syncedOps)
 	}
@@ -116,14 +117,14 @@ class SyncedTraces {
 		}
 
 		def h = traces.get(0)
-		def currentOpsOnH = h.stateSpace.getOutEdges(h.current.getCurrentState())
+		def currentOpsOnH = h.getCurrentState().getOutTransitions(true)
 		def copy = new HashSet<OpInfo>(currentOpsOnH)
 
 		currentOpsOnH.each { op ->
 			if(syncedOps.contains(op.getName())) {
 				traces.each { trace ->
-					trace.ensureOpInfosEvaluated()
-					def op2 = trace.getOp(op.getName(),op.getParams())
+					def ops = trace.getCurrentState().getOutTransitions(true)
+					def op2 = ops.find { it.getName() == op.getName() }
 					if(op2==null) {
 						copy.remove(op)
 					}
@@ -136,13 +137,12 @@ class SyncedTraces {
 		sb.append("Operations:\n")
 		sb.append("synced: ${copy}\n")
 		traces.each { trace ->
-			trace.ensureOpInfosEvaluated()
 			sb.append("${traces.indexOf(trace)}: ")
-			def o = trace.stateSpace.getOutEdges(trace.current.getCurrentState())
+			def o = trace.getCurrentState().getOutTransitions(true)
 			def list = []
 			o.each {
 				if(!syncedOps.contains(it.getName())) {
-					list << "${it.getId()}: ${it.getRep(trace.getModel())}"
+					list << "${it.getId()}: ${it.getRep()}"
 				}
 			}
 			sb.append(list)
