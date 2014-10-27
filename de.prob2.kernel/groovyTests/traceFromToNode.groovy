@@ -6,18 +6,23 @@ import de.prob.statespace.*
 m = api.b_load(dir+"/machines/scheduler.mch")
 s = m as StateSpace
 t = new Trace(s)
-t1 = t.anyEvent().anyEvent()
+t1 = t.$initialise_machine().new("pp = PID1")
 
-t2 = t1.randomAnimation(10)
+t2 = t1.new("pp = PID2").ready("rr = PID1")
 
 cmd = new FindTraceBetweenNodesCommand(s, t1.getCurrentState().getId(), t2.getCurrentState().getId())
 s.execute(cmd)
 t3 = s.getTrace(cmd)
-assert t3 != null && !t3.getOpList().isEmpty()
+assert t3 != null && !t3.getOpList().isEmpty() && t3.getOpList().size() == 2
 
 t4 = s.getTrace(t1.getCurrentState().getId(), t2.getCurrentState().getId())
 assert t4 != null && t3.getOpList().size() == t4.getOpList().size()
 
+t5 = t1
+cmd = new FindTraceBetweenNodesCommand(s, t1.getCurrentState().getId(), t5.getCurrentState().getId())
+s.execute(cmd)
+t6 = s.getTrace(cmd)
+assert t6 != null && t6.getOpList().isEmpty() && t6.getCurrentState() == t1.getCurrentState()
 
 s.animator.cli.shutdown();
 "can create a trace between two given nodes"

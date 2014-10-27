@@ -229,7 +229,7 @@ public class Trace {
 	def invokeMethod(String method, params) {
 		def transition = getCurrentState().findTransition(method, params as List)
 		if (transition == null) {
-			throw new IllegalArgumentException("Could not execute event with name "+method+" and parameters "+parameters.toString());
+			throw new IllegalArgumentException("Could not execute event with name "+method+" and parameters "+params.toString());
 		}
 		return add(transition)
 	}
@@ -246,7 +246,7 @@ public class Trace {
 	def Trace execute(String event, List<String> predicates) {
 		def transition = getCurrentState().findTransition(event, predicates as List)
 		if (transition == null) {
-			throw new IllegalArgumentException("Could not execute event with name "+method+" and parameters "+parameters.toString());
+			throw new IllegalArgumentException("Could not execute event with name "+event+" and parameters "+predicates.toString());
 		}
 		return add(transition)
 	}

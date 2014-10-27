@@ -68,6 +68,9 @@ public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 
 	@Override
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
+		if (newTransitions.isEmpty()) {
+			return new Trace(s.getState(sourceId));
+		}
 		return Trace.getTraceFromOpList(s, newTransitions);
 	}
 

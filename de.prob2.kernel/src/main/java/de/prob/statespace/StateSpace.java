@@ -337,15 +337,9 @@ public class StateSpace implements IAnimator {
 		animator.execute(commands);
 	}
 
-	// METHODS TO MAKE THE INTERACTION WITH THE GROOVY SHELL EASIER
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.prob.statespace.StateSpaceGraph#toString()
-	 */
 	@Override
 	public String toString() {
-		return super.toString();
+		return animator.getId();
 	}
 
 	/**
