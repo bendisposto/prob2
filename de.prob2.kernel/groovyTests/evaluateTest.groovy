@@ -25,7 +25,7 @@ t = s[2].eval(translateFormula)
 assert t != null && t instanceof TranslatedEvalResult
 assert t.value == true
 assert t.getSolutions().containsKey("x")
-assert res.getSolutions().containsKey("y")
+assert t.getSolutions().containsKey("y")
 assert t.x == "PID2"
 assert t.y == 1
 
