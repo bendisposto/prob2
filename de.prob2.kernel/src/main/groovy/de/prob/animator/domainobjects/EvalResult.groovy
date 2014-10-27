@@ -123,7 +123,7 @@ public class EvalResult implements IEvalResult {
 			if (v instanceof CompoundPrologTerm && v.getArity() == 2) {
 				CompoundPrologTerm cpt = BindingGenerator
 						.getCompoundTerm(v, 2);
-				value = StringUtil.generateString(cpt.getArgument(1).getFunctor());
+				value = cpt.getArgument(1).getFunctor();
 			}
 
 			Map<String, String> solutions = solutionList.isEmpty() ? Collections.emptyMap() : new HashMap<String, String>();
