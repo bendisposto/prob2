@@ -15,10 +15,9 @@ public class EvaluationResultTest {
 		Map<String, String> solutions = new HashMap<String, String>();
 		solutions.put("x", "5");
 		solutions.put("y", "{1,2,3}");
-		EvalResult a = new EvalResult("c1", "yay",
-				new HashMap<String, String>());
+		EvalResult a = new EvalResult("yay", new HashMap<String, String>());
 		assertEquals("yay", a.toString());
-		EvalResult b = new EvalResult("c1", "yay", solutions);
+		EvalResult b = new EvalResult("yay", solutions);
 		assertTrue(b.toString().equals("yay (x = 5 \u2227 y = {1,2,3})")
 				|| b.toString().equals("yay (y = {1,2,3} \u2227 x = 5)"));
 		ComputationNotCompletedResult c = new ComputationNotCompletedResult(

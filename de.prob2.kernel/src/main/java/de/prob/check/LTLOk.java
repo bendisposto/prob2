@@ -16,7 +16,6 @@ public class LTLOk implements IEvalResult, IModelCheckingResult {
 		return "LTL status for " + ltl.getCode() + " : ok";
 	}
 
-	@Override
 	public String getCode() {
 		return ltl.getCode();
 	}

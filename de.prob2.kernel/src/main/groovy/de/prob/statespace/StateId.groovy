@@ -152,7 +152,7 @@ class StateId {
 		if (!isInitialised()) {
 			return null
 		}
-		return eval([formula])[0]
+		eval([formula])[0]
 	}
 
 	def List<IEvalResult> eval(IEvalElement... formulas) {

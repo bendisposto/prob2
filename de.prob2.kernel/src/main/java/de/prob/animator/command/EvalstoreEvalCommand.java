@@ -93,8 +93,8 @@ public class EvalstoreEvalCommand extends AbstractCommand {
 			final List<String> newIdentifiers = PrologTerm.atomicStrings(ids);
 			final long storeId = ((IntegerPrologTerm) term.getArgument(4))
 					.getValue().longValue();
-			final EvalResult er = new EvalResult(evalElement.getCode(),
-					valueStr, Collections.<String, String> emptyMap());
+			final EvalResult er = new EvalResult(valueStr,
+					Collections.<String, String> emptyMap());
 			result = new EvalstoreResult(false, false, storeId, er,
 					newIdentifiers);
 		} else {

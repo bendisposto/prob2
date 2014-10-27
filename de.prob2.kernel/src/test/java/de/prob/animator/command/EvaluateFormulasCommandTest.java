@@ -65,7 +65,6 @@ public class EvaluateFormulasCommandTest {
 
 		IEvalResult value = command.getValue();
 		assertEquals(((EvalResult) value).getValue(), "true");
-		assertEquals(((EvalResult) value).getCode(), "foo");
 		assertEquals(((EvalResult) value).getSolutions().get("a"), "3");
 	}
 

@@ -18,7 +18,6 @@ public class LTLError implements IEvalResult, IModelCheckingResult {
 		return reason;
 	}
 
-	@Override
 	public String getCode() {
 		return formula.getCode();
 	}

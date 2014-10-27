@@ -14,7 +14,6 @@ public class ComputationNotCompletedResult implements IEvalResult {
 		return reason;
 	}
 
-	@Override
 	public String getCode() {
 		return code;
 	}
