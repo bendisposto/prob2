@@ -257,14 +257,26 @@ public class Trace {
 
 	/**
 	 * Tests to see if the event name plus the conjunction of the parameter strings produce a valid
+	 * operation on this state. Uses implementation in {@link Trace#canExecuteEvent(String, List)}
+	 *
+	 * @param event Name of the event to be executed
+	 * @param predicates to be conjoined
+	 * @return <code>true</code>, if the operation can be executed. <code>false</code>, otherwise
+	 */
+	def boolean canExecuteEvent(String event, String... predicates) {
+		return canExecuteEvent(event, predicates as List)
+	}
+
+	/**
+	 * Tests to see if the event name plus the conjunction of the parameter strings produce a valid
 	 * operation on this state. Uses implementation in {@link StateSpace#isValidOperation(StateId, String, String)}
 	 *
 	 * @param event Name of the event to be executed
 	 * @param predicates List of String predicates to be conjoined
 	 * @return <code>true</code>, if the operation can be executed. <code>false</code>, otherwise
 	 */
-	def boolean canExecuteEvent(String event, List<String> params) {
-		return getCurrentState().findTransition(event, params) != null
+	def boolean canExecuteEvent(String event, List<String> predicates) {
+		return getCurrentState().findTransition(event, predicates) != null
 	}
 
 	def Trace anyOperation(filter) {
