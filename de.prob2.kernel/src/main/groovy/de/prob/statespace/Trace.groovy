@@ -20,6 +20,7 @@ public class Trace {
 	def final TraceElement head
 	def final StateSpace stateSpace
 	def final UUID UUID
+	def final List<OpInfo> opList
 
 	def Trace(final AbstractModel m) {
 		this(m.getStateSpace())
@@ -30,21 +31,19 @@ public class Trace {
 	}
 
 	def Trace(final StateId startState) {
-		this.stateSpace = startState.getStateSpace()
-		head = new TraceElement(startState)
-		current = head
-		UUID = java.util.UUID.randomUUID()
+		this(startState.getStateSpace(), new TraceElement(startState), [], java.util.UUID.randomUUID())
 	}
 
-	def Trace(final StateSpace s, final TraceElement head, UUID uuid) {
-		this(s, head, head, uuid)
+	def Trace(final StateSpace s, final TraceElement head, List<OpInfo> opList, UUID uuid) {
+		this(s, head, head, opList, uuid)
 	}
 
 	def Trace(final StateSpace s, final TraceElement head,
-	final TraceElement current, UUID uuid) {
+	final TraceElement current, List<OpInfo> opList, UUID uuid) {
 		this.stateSpace = s
 		this.head = head
 		this.current = current
+		this.opList = opList
 		this.UUID = uuid
 	}
 
@@ -61,9 +60,7 @@ public class Trace {
 		}
 
 		def List<EvaluationCommand> cmds = []
-
-		def ops = head.getOpList()
-		ops.each {
+		opList.each {
 			if (stateSpace.canBeEvaluated(stateSpace.getVertex(it.dest))) {
 				cmds << f.getCommand(stateSpace.getVertex(it.dest))
 			}
@@ -85,9 +82,9 @@ public class Trace {
 			throw new IllegalArgumentException("Transition must not be null.")
 		}
 		// TODO: Should we check to ensure that current.getCurrentState() == op.getSrcId()
-		def newHE = branch(op)
-
-		Trace newTrace = new Trace(stateSpace, newHE, this.UUID)
+		def newHE = new TraceElement(op, current)
+		def opList = branchOpListIfNecessary(op)
+		Trace newTrace = new Trace(stateSpace, newHE, opList, this.UUID)
 
 		return newTrace
 	}
@@ -126,7 +123,7 @@ public class Trace {
 	 */
 	def Trace back() {
 		if (canGoBack()) {
-			return new Trace(stateSpace, head, current.getPrevious(), this.UUID)
+			return new Trace(stateSpace, head, current.getPrevious(), opList, this.UUID)
 		}
 		return this
 	}
@@ -143,7 +140,7 @@ public class Trace {
 			while (p.getPrevious() != current) {
 				p = p.getPrevious()
 			}
-			return new Trace(stateSpace, head, p, this.UUID)
+			return new Trace(stateSpace, head, p, opList, this.UUID)
 		}
 		return this
 	}
@@ -158,15 +155,16 @@ public class Trace {
 	 * @param op to be added to the {@link TraceElement} list
 	 * @return the new {@link TraceElement}
 	 */
-	private TraceElement branch(OpInfo op) {
+	private List<OpInfo> branchOpListIfNecessary(OpInfo newOp) {
 		if (head == current) {
-			return new TraceElement(op, current)
+			opList << newOp
+			return opList
 		} else {
 			// a new OpList is created when a branch takes place.
 			// TODO: test off by one error
-			def opList = new ArrayList<OpInfo>(head.getOpList().subList(0, current.getIndex()))
-			opList << op
-			return new TraceElement(op, current, head.getOpList().subList(0, current.getIndex()))
+			def opList = new ArrayList<OpInfo>(opList.subList(0, current.getIndex()))
+			opList << newOp
+			return opList
 		}
 	}
 
@@ -198,19 +196,21 @@ public class Trace {
 		StateId currentState = this.current.getCurrentState()
 		Trace oldTrace = this
 		TraceElement current = this.current
+		List<OpInfo> opList = this.opList
 		for (int i = 0; i < numOfSteps; i++) {
 			List<OpInfo> ops = currentState.getOutTransitions()
 			Collections.shuffle(ops)
 			OpInfo op = ops.get(0)
+			current = new TraceElement(op, current)
 			if (i == 0) {
-				current = branch(op) // Branch TraceElement list if necessary
+				opList = branchOpListIfNecessary(op) // Branch list if necessary
 			} else {
-				current = new TraceElement(op, current)
+				opList << op
 			}
 			currentState = op.getDestId()
 		}
 
-		Trace newTrace = new Trace(stateSpace, current, this.UUID)
+		Trace newTrace = new Trace(stateSpace, current, opList, this.UUID)
 		return newTrace
 	}
 
@@ -347,7 +347,7 @@ public class Trace {
 	}
 
 	def List<OpInfo> getOpList(boolean evaluate=false) {
-		List<OpInfo> ops = head.getOpList()
+		List<OpInfo> ops = opList
 		if (evaluate) {
 			stateSpace.evaluateOps(ops)
 		}
@@ -385,11 +385,13 @@ public class Trace {
 		}
 
 		def first = ops.first()
-		TraceElement h = branch(first) // Branch if necessary
+		TraceElement h = new TraceElement(first, current)
+		def opList = branchOpListIfNecessary(first)
 		for (op in ops.tail()) {
 			h = new TraceElement(op, h)
+			opList << op
 		}
-		return new Trace(stateSpace, h, this.UUID)
+		return new Trace(stateSpace, h, opList, this.UUID)
 	}
 
 
@@ -397,7 +399,6 @@ public class Trace {
 	 * @return an identical Trace object with a different UUID
 	 */
 	def Trace copy() {
-		// TODO: change op list
-		return new Trace(stateSpace, head, current, java.util.UUID.randomUUID())
+		return new Trace(stateSpace, head, current, new ArrayList<OpInfo>(opList), java.util.UUID.randomUUID())
 	}
 }

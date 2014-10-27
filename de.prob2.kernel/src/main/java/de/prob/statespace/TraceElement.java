@@ -1,7 +1,5 @@
 package de.prob.statespace;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class is used within the {@link Trace} object to create the linked list
@@ -15,7 +13,6 @@ public class TraceElement {
 	private final int index;
 	private final StateId currentState;
 	private final OpInfo transition;
-	private final List<OpInfo> opList;
 
 	private final TraceElement previous;
 
@@ -26,7 +23,6 @@ public class TraceElement {
 		transition = null;
 		previous = null;
 		index = 0;
-		opList = new ArrayList<OpInfo>();
 	}
 
 	public TraceElement(final OpInfo edge, final TraceElement previous) {
@@ -35,17 +31,6 @@ public class TraceElement {
 
 		this.previous = previous;
 		index = previous.getIndex() + 1;
-		this.opList = previous.opList;
-		this.opList.add(transition);
-	}
-
-	public TraceElement(final OpInfo edge, final TraceElement previous,
-			final List<OpInfo> opList) {
-		this.currentState = edge.getDestId();
-		this.transition = edge;
-		this.previous = previous;
-		index = previous.getIndex() + 1;
-		this.opList = opList;
 	}
 
 	/**
@@ -89,13 +74,6 @@ public class TraceElement {
 	 */
 	public StateId getCurrentState() {
 		return currentState;
-	}
-
-	/**
-	 * @return List of all executed operations ({@link OpInfo})
-	 */
-	public List<OpInfo> getOpList() {
-		return opList;
 	}
 
 	/**
