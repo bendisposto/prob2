@@ -7,7 +7,7 @@ import de.prob.animator.command.ExploreStateCommand
 import de.prob.animator.command.GetBStateCommand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
-import de.prob.animator.domainobjects.SimpleEvalResult
+import de.prob.util.StringUtil
 
 
 /**A reference to the state object in the ProB core.
@@ -202,7 +202,7 @@ class StateId {
 			stateSpace.execute(cmd)
 			return cmd.getState()
 		}
-		return SimpleEvalResult.generateString("unknown")
+		return StringUtil.generateString("unknown")
 	}
 
 	def long numericalId() {
