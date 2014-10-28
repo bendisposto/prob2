@@ -7,6 +7,7 @@ import java.util.List;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.statespace.GetOpFromId;
 import de.prob.statespace.OpInfo;
 
 public class GetOpsFromIds extends AbstractCommand {

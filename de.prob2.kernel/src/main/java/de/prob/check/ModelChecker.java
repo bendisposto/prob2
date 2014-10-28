@@ -117,7 +117,7 @@ public class ModelChecker {
 
 	public static RuntimeException launderThrowable(final Throwable t) {
 		if (t instanceof RuntimeException) {
-			return (RuntimeException) t;
+			throw (RuntimeException) t;
 		} else if (t instanceof Error) {
 			throw (Error) t;
 		} else {

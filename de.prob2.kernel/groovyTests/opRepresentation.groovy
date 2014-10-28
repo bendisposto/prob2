@@ -18,7 +18,6 @@ assert op.params.size() == 0
 assert op.returnValues != null
 assert op.returnValues.size() == 3
 assert op.returnValues == ["1", "2", "3"]
-assert op.targetState == "/* empty state */"
 assert op.getRep() == "1,2,3 <-- Set()"
 
 assert t.canExecuteEvent("Crazy1",["p=10"])
@@ -33,7 +32,6 @@ assert op.params == ["10"]
 assert op.returnValues != null
 assert op.returnValues.size() == 2
 assert op.returnValues == ["10","14"]
-assert op.targetState == "/* empty state */"
 assert op.getRep() == "10,14 <-- Crazy1(10)"
 
 assert t.canExecuteEvent("Crazy2", ["p1=7", "p2={4,7,9}"])
@@ -48,7 +46,6 @@ assert op.params == ["7", "{4,7,9}"]
 assert op.returnValues != null
 assert op.returnValues.size() == 3
 assert op.returnValues == ["3","{(7|->{4,7,9})}","8"]
-assert op.targetState == "/* empty state */"
 assert op.getRep() == "3,{(7|->{4,7,9})},8 <-- Crazy2(7,{4,7,9})" 
 
 s.animator.cli.shutdown();
@@ -64,7 +61,6 @@ assert op != null
 assert op.getRep() == "NonDeterm3"
 assert op.getParams() == []
 assert op.getReturnValues() == []
-assert op.getTargetState() == "."
 
 t = t.addTransitionWith("a",["1"])
 op = t.getCurrentTransition()
@@ -72,7 +68,6 @@ assert op != null
 assert op.getRep() == "a.1"
 assert op.getParams() == ["1"]
 assert op.getReturnValues() == []
-assert op.getTargetState() == "."
 
 s.animator.cli.shutdown();
 "the ops are expanded as expected"
