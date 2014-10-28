@@ -76,7 +76,10 @@ public class BAnimation extends ProBAnimation {
 			try {
 				IEvalElement e = trace.getModel().parseFormula(formula);
 				StateSpace space = trace.getStateSpace();
-				StateId sId = space.getState(state).explore();
+				StateId sId = space.getState(state);
+				if (!sId.isExplored()) {
+					sId.explore();
+				}
 				if (!sId.isInitialised()) {
 					errors.add("State not initialized");
 				}
