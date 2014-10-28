@@ -85,7 +85,9 @@ public class Trace {
 		def newHE = new TraceElement(op, current)
 		def opList = branchOpListIfNecessary(op)
 		Trace newTrace = new Trace(stateSpace, newHE, opList, this.UUID)
-
+		if (!op.getDestId().isExplored()) {
+			op.getDestId().explore()
+		}
 		return newTrace
 	}
 

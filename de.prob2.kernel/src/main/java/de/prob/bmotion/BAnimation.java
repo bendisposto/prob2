@@ -60,10 +60,13 @@ public class BAnimation extends ProBAnimation {
 		if (e == null) {
 			e = trace.getModel().parseFormula(formula);
 			formulas.put(formula, e);
+			space.subscribe(this, e);
 		}
-		space.subscribe(this, e);
-		StateId sId = space.getState(stateref).explore();
-		return space.valuesAt(sId).get(formulas.get(formula));
+		StateId sId = space.getState(stateref);
+		if (!sId.isExplored()) {
+			sId.explore();
+		}
+		return sId.getValues().get(formulas.get(formula));
 	}
 
 	@Override
