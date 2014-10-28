@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-import de.prob.animator.command.GetOpFromId;
-import de.prob.animator.domainobjects.EvalResult;
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.Operation;
 import de.prob.model.eventb.Event;
@@ -321,24 +319,14 @@ public class OpInfo {
 	/**
 	 * Sets the values for the fields in this class. This should ONLY be called
 	 * by the {@link GetOpFromId} command during retrieval of the values from
-	 * Prolog. For this reason it has been marked as deprecated.
+	 * Prolog. For this reason, it is package private
 	 * 
-	 * @param name
-	 *            - Name of the operation
 	 * @param params
 	 *            - {@link List} of {@link String} parameters
 	 * @param returnValues
 	 *            - {@link List} of {@link String} return values
-	 * @param paramsSource
-	 *            - {@link List} of {@link EvalResult} parameters
-	 * @param retValSource
-	 *            - {@link List} of {@link EvalResult} return values
-	 * @param targetState
-	 *            - String representation of target state
 	 */
-	@Deprecated
-	public void setInfo(final List<String> params,
-			final List<String> returnValues) {
+	void setInfo(final List<String> params, final List<String> returnValues) {
 		this.params = params;
 		this.returnValues = returnValues;
 		evaluated = true;
