@@ -129,7 +129,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 				.get(RESULT_VARIABLE));
 
 		for (PrologTerm term : trace) {
-			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 3);
+			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 4);
 			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(
 					stateSpace, t);
 			resultTrace.add(operation);

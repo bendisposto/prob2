@@ -95,7 +95,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 
 		for (PrologTerm prologTerm : list) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
-					prologTerm, 3);
+					prologTerm, 4);
 			operations.add(OpInfo.createOpInfoFromCompoundPrologTerm(s, cpt));
 		}
 

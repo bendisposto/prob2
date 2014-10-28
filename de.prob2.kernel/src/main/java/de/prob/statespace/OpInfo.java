@@ -380,7 +380,8 @@ public class OpInfo {
 	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
 			final CompoundPrologTerm cpt) {
 		String opId = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
-		String name = cpt.getArgument(2).getFunctor();
+		String name = BindingGenerator.getCompoundTerm(cpt.getArgument(2), 0)
+				.getFunctor();
 		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
 		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(4));
 		return new OpInfo(s, opId, name, s.addState(srcId), s.addState(destId),
