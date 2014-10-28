@@ -82,7 +82,9 @@ public class GetOpFromId extends AbstractCommand {
 
 		targetState = StringUtil.generateString(OpInfo.getIdFromPrologTerm(cpt
 				.getArgument(7)));
-		op.setInfo(name, params, returnValues, targetState);
+		// TODO: Move this command into de.prob.statespace.* so that it can be
+		// package private
+		op.setInfo(params, returnValues);
 	}
 
 	public String getSrc() {

@@ -43,12 +43,11 @@ public class OpInfo {
 	public StateSpace stateSpace;
 
 	private final String id;
-	private String name;
+	private final String name;
 	private final StateId src;
 	private final StateId dest;
-	private List<String> params = new ArrayList<String>();
-	private List<String> returnValues = new ArrayList<String>();
-	private String targetState;
+	private List<String> params;
+	private List<String> returnValues;
 	private String rep = null;
 	private boolean evaluated;
 	private final FormalismType formalismType;
@@ -57,27 +56,20 @@ public class OpInfo {
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
 	private OpInfo(final StateSpace stateSpace, final String id,
-			final StateId src, final StateId dest) {
-		this.stateSpace = stateSpace;
-		this.id = id;
-		this.src = src;
-		this.dest = dest;
-		formalismType = stateSpace.getModel().getFormalismType();
-		evaluated = false;
-	}
-
-	private OpInfo(final StateSpace stateSpace, final String id,
-			final String name, final StateId src, final StateId dest) {
+			final String name, final StateId src, final StateId dest,
+			final boolean evaluated) {
 		this.stateSpace = stateSpace;
 		this.id = id;
 		this.name = name;
 		this.src = src;
 		this.dest = dest;
+		this.evaluated = evaluated;
 		formalismType = stateSpace.getModel().getFormalismType();
-		params = Collections.emptyList();
-		targetState = "";
-		evaluated = true;
-		rep = name;
+		if (evaluated) {
+			params = Collections.emptyList();
+			returnValues = Collections.emptyList();
+			rep = name;
+		}
 	}
 
 	/**
@@ -88,16 +80,9 @@ public class OpInfo {
 	}
 
 	/**
-	 * The name field is not by default filled. To ensure that the name,
-	 * parameter, and return value information have been retrieved from ProB,
-	 * use the {@link #evaluate()} method.
-	 * 
 	 * @return name of this operation
 	 */
 	public String getName() {
-		if (!evaluated) {
-			evaluate();
-		}
 		return name;
 	}
 
@@ -140,9 +125,9 @@ public class OpInfo {
 	}
 
 	/**
-	 * The list of parameters is not filled by default. To ensure that the name,
-	 * parameter, and return value information have been retrieved from ProB,
-	 * use the {@link #evaluate()} method.
+	 * The list of parameters is not filled by default. If the parameter list
+	 * has not yet been filled, ProB will be contacted to lazily fill the
+	 * parameter list via the {@link #evaluate()} method.
 	 * 
 	 * @return list of values for the parameters represented as strings
 	 */
@@ -154,9 +139,9 @@ public class OpInfo {
 	}
 
 	/**
-	 * The list of return values is not filled by default. To ensure that the
-	 * name, parameter, and return value information have been retrieved from
-	 * ProB, use the {@link #evaluate()} method.
+	 * The list of return values is not filled by default. If the return value
+	 * list has not yet been filled, ProB will be contacted to lazily fill the
+	 * list via the {@link #evaluate()} method.
 	 * 
 	 * @return list of return values of the operation represented as strings.
 	 */
@@ -167,20 +152,9 @@ public class OpInfo {
 		return returnValues;
 	}
 
-	/**
-	 * @return a String representation of the target state
-	 */
-	public String getTargetState() {
-		if (!evaluated) {
-			evaluate();
-		}
-		return targetState;
-	}
-
 	@Override
 	public String toString() {
-		return getId() + "=[" + getSrcId().getId() + "," + getDestId().getId()
-				+ "]";
+		return name;
 	}
 
 	/**
@@ -340,7 +314,7 @@ public class OpInfo {
 	public String sha() throws NoSuchAlgorithmException {
 		evaluate();
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
-		md.update(targetState.getBytes());
+		md.update(getDestId().getState().getBytes());
 		return new BigInteger(1, md.digest()).toString(Character.MAX_RADIX);
 	}
 
@@ -363,11 +337,9 @@ public class OpInfo {
 	 *            - String representation of target state
 	 */
 	@Deprecated
-	public void setInfo(final String name, final List<String> params,
-			final List<String> returnValues, final String targetState) {
-		this.name = name;
+	public void setInfo(final List<String> params,
+			final List<String> returnValues) {
 		this.params = params;
-		this.targetState = targetState;
 		this.returnValues = returnValues;
 		evaluated = true;
 	}
@@ -392,7 +364,7 @@ public class OpInfo {
 			final String transId, final String description, final String srcId,
 			final String destId) {
 		return new OpInfo(s, transId, description, s.addState(srcId),
-				s.addState(destId));
+				s.addState(destId), true);
 	}
 
 	/**
@@ -408,9 +380,11 @@ public class OpInfo {
 	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
 			final CompoundPrologTerm cpt) {
 		String opId = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
-		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(2));
-		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
-		return new OpInfo(s, opId, s.addState(srcId), s.addState(destId));
+		String name = cpt.getArgument(2).getFunctor();
+		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
+		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(4));
+		return new OpInfo(s, opId, name, s.addState(srcId), s.addState(destId),
+				false);
 	}
 
 	/**
