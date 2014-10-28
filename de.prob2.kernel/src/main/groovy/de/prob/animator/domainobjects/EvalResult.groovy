@@ -142,4 +142,17 @@ public class EvalResult implements IEvalResult {
 			return res
 		}
 	}
+
+	def Object asType(Class className) {
+		if (className == Integer) {
+			return Integer.valueOf(value)
+		}
+		if (className == Double) {
+			return Double.valueOf(value)
+		}
+		if (className == String) {
+			return value
+		}
+		throw new ClassCastException("Not able to convert EvalResult object to ${className}")
+	}
 }
