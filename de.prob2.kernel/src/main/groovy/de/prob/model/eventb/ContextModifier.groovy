@@ -106,6 +106,7 @@ class ContextModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeAxiom(EventBAxiom axiom) {
+		// TODO: remove all proof obligations in which this axiom might have been used
 		def a = context.getChildrenOfType(Axiom.class).remove(axiom)
 		def b = context.axioms.remove(axiom)
 		return a && b

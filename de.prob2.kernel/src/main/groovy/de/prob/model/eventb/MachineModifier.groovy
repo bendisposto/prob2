@@ -21,6 +21,8 @@ class MachineModifier {
 	 * @return the new {@link VariableBlock} that has been created containing the new elements
 	 */
 	def VariableBlock addVariable(String variable, String typingInvariant, String initialisationAction) {
+		// TODO: either we need to verify that typingInvariant does only talk about the new variable
+		// or we need to invalidate all invariant preservation proof obligations
 		def var = new EventBVariable(variable, null)
 		def c = ctr++
 		machine.variables << var
@@ -37,6 +39,8 @@ class MachineModifier {
 	 * @return if the removal of all elements from the machine was successful.
 	 */
 	def boolean removeVariableBlock(VariableBlock block) {
+		// TODO: either we need to verify that typingInvariant does only talk about the new variable
+		// or we need to invalidate all invariant preservation proof obligations
 		def a = machine.variables.remove(block.getVariable())
 		def b = removeInvariant(block.getTypingInvariant())
 		def c = machine.events.INITIALISATION.actions.remove(block.getInitialisationAction())
@@ -49,6 +53,7 @@ class MachineModifier {
 	 * @return the {@link EventBInvariant} object that has been added to the machine
 	 */
 	def EventBInvariant addInvariant(String predicate) {
+		// TODO: all proof information regarding invariant preservation might now be wrong - remove
 		def invariant = new EventBInvariant("generated-inv-{uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
 		machine.invariants << invariant
 		machine.getChildrenOfType(Invariant.class) << invariant
@@ -61,6 +66,7 @@ class MachineModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeInvariant(EventBInvariant invariant) {
+		// TODO: all proof information regarding invariant preservation might now be wrong - remove
 		def a = machine.getChildrenOfType(Invariant.class).remove(invariant)
 		def b = machine.invariants.remove(invariant)
 		return a && b
@@ -92,6 +98,7 @@ class MachineModifier {
 	 * @return an {@link EventModifier} to modify the specified {@link Event}
 	 */
 	def EventModifier addEvent(String name) {
+		// TODO: remove all proof obligations for the event "name"
 		Event event = new Event(machine, name, EventType.ORDINARY)
 		event.addActions(new ModelElementList<EventBAction>())
 		event.addGuards(new ModelElementList<EventBGuard>())
@@ -113,6 +120,7 @@ class MachineModifier {
 	 * for further modification
 	 */
 	def EventModifier duplicateEvent(Event event, String newName) {
+		// TODO: remove all proof obligations for the event "newName"
 		Event event2 = ModelModifier.cloneEvent(machine, event, newName)
 		machine.events << event2
 		return new EventModifier(event2)
@@ -124,6 +132,7 @@ class MachineModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeEvent(Event event) {
+		// TODO remove its proof obligations as well
 		return machine.events.remove(event)
 	}
 
