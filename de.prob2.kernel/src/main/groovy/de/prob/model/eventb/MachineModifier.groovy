@@ -24,6 +24,7 @@ class MachineModifier {
 		// proof obligations are invalidated by addInvariant
 		// if we could check whether typingInvariant is in fact only typing,
 		// we could remove just selected proof information
+		def var = new EventBVariable(variable, null)
 		def c = ctr++
 		machine.variables << var
 		def inv = addInvariant(typingInvariant)
