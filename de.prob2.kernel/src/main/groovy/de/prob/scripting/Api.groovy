@@ -18,8 +18,10 @@ import de.prob.cli.ProBInstanceProvider
 import de.prob.exception.ProBError
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
+import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractModel
 import de.prob.model.representation.CSPModel
+import de.prob.prolog.output.PrologTermOutput
 import de.prob.webconsole.ServletContextListener
 
 
@@ -91,6 +93,22 @@ public class Api {
 		}
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		return factory.load(fileName, prefs, loadVariablesByDefault);
+	}
+	
+	public void eventb_save(final EventBModel model, final String path) {
+		EventBModelTranslator translator = new EventBModelTranslator(model);
+		
+		def fos = new FileOutputStream(path);
+		PrologTermOutput pto = new PrologTermOutput(fos,false);
+		
+		pto.openTerm("package");
+		translator.printProlog(pto);
+		pto.closeTerm();
+		pto.fullstop();
+		
+		pto.flush();
+		fos.flush();
+		fos.close();
 	}
 
 	/**
