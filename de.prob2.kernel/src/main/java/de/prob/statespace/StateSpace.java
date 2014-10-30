@@ -57,7 +57,7 @@ import de.prob.model.representation.CSPModel;
  * 
  * 4) Register listeners that are notified of new states and operations
  * 
- * The implementation of the StateSpace is as a {@link StateSpaceGraph} with
+ * The implementation of the StateSpace is as a {@link StateSpace} with
  * {@link StateId}s as vertices and {@link OpInfo}s as edges. Therefore, some
  * basic graph functionalities are provided.
  * 

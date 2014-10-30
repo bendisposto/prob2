@@ -27,6 +27,8 @@ public class BMotion extends AbstractBMotionStudioSession
 
     private final List<BMotionObserver> observers = []
 
+    private final Map<String,Closure> methods = [:]
+
     private final TransformersObserver transformerObserver
 
     private final ScriptEngineProvider engineProvider
@@ -46,7 +48,6 @@ public class BMotion extends AbstractBMotionStudioSession
         this.transformerObserver = new TransformersObserver()
         this.observers.add(this.transformerObserver)
         this.components = components
-        this.components.put(DEFAULT_COMPONENT, new BMotionDefaultComponent())
         registry.registerListener(this)
         incrementalUpdate = true
     }
@@ -147,12 +148,23 @@ public class BMotion extends AbstractBMotionStudioSession
         return null;
     }
 
+    public void registerMethod(String name, Closure cls) {
+        methods.put(name,cls)
+    }
+
+    public Object callGroovyMethod(final Map<String, String[]> params) {
+        Closure cls = methods.get(params.get("gcmd")[0])
+        if(cls != null) cls(params)
+    }
+
     // ------------------
 
     @Override
     public void initSession() {
         String absoluteTemplatePath = BMotionUtil
                 .getFullTemplatePath(getTemplatePath())
+        this.observers.clear()
+        this.methods.clear()
         // Initialise ProBMotion components
         initProBMotionComponents()
         // Register observer from json
@@ -169,7 +181,6 @@ public class BMotion extends AbstractBMotionStudioSession
 
     private void initProBMotionComponents() {
         components.each {
-            it.value.observers.clear()
             it.value.init(this)
         }
     }
