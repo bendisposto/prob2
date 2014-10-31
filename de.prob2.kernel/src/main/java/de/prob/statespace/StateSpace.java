@@ -102,7 +102,6 @@ public class StateSpace implements IAnimator {
 		if (sId != null) {
 			return sId;
 		}
-		// TODO: Need to implement prolog side.
 		CheckIfStateIdValidCommand cmd = new CheckIfStateIdValidCommand(id);
 		execute(cmd);
 		if (cmd.isValidState()) {
