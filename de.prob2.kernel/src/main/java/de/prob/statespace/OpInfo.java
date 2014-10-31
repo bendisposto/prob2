@@ -24,6 +24,7 @@ import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.util.StringUtil;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -368,8 +369,8 @@ public class OpInfo {
 	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
 			final CompoundPrologTerm cpt) {
 		String opId = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
-		String name = BindingGenerator.getCompoundTerm(cpt.getArgument(2), 0)
-				.getFunctor();
+		String name = StringUtil.generateString(BindingGenerator
+				.getCompoundTerm(cpt.getArgument(2), 0).getFunctor());
 		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
 		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(4));
 		return new OpInfo(s, opId, name, s.addState(srcId), s.addState(destId),

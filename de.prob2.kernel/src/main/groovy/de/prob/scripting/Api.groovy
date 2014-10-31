@@ -8,19 +8,17 @@ import org.slf4j.LoggerFactory
 import com.google.inject.Inject
 
 import de.be4.classicalb.core.parser.exceptions.BException
-import de.prob.Main;
+import de.prob.Main
 import de.prob.animator.IAnimator
 import de.prob.animator.command.GetCurrentPreferencesCommand
 import de.prob.animator.command.GetVersionCommand
 import de.prob.cli.CliVersionNumber
 import de.prob.cli.ProBInstance
-import de.prob.cli.ProBInstanceProvider
 import de.prob.exception.ProBError
 import de.prob.model.classicalb.ClassicalBModel
 import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
 import de.prob.model.representation.CSPModel
-import de.prob.webconsole.ServletContextListener
 
 
 public class Api {
