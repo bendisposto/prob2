@@ -101,4 +101,8 @@ def execTrace(t,c) {
   c.resolveStrategy = Closure.DELEGATE_FIRST
   c.delegate = proxy
   c()
-}	 
+}
+
+def eval(script) {
+	engine.eval(script)
+}

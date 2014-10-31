@@ -100,6 +100,12 @@ class StateId {
 	 * @return the calculated transition, or null if no transition was found.
 	 */
 	def OpInfo findTransition(String name, List<String> predicates) {
+		if (predicates.isEmpty() && !ops.isEmpty()) {
+			def op = ops.find { it.getName() == name }
+			if (op != null) {
+				return op
+			}
+		}
 		def transitions = findTransitions(name, predicates, 1)
 		if (!transitions.isEmpty()) {
 			return transitions[0]
@@ -115,6 +121,7 @@ class StateId {
 	 * @return a list of solutions found, or an empty list if no solutions were found
 	 */
 	def List<OpInfo> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
+
 		if (name.startsWith("\$") && !(name == "\$setup_constants" || name == "\$initialise_machine")) {
 			name = name.substring(1)
 		}

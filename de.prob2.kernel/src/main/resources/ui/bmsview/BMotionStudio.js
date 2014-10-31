@@ -35,6 +35,17 @@ bms = (function() {
 			}
 		}
 	}
+
+    extern.callMethod = function(gcmd, data) {
+        data.mode = 'command'
+        data.cmd = 'callGroovyMethod'
+        data.gcmd = gcmd
+        $.ajax({
+            async : false,
+            cache: false,
+            data : data
+        });
+   	}
 	
 	return extern;
 

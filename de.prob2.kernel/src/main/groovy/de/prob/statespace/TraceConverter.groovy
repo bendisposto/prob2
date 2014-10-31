@@ -107,4 +107,43 @@ class TraceConverter {
 	def static xmlToSpock(def xmlFile) {
 		def trace = new XmlSlurper().parse(xmlFile)
 	}
+
+	def static generateSpockTests(def directory) {
+		def traceFiles = []
+		new File(directory).eachFile(groovy.io.FileType.FILES) {
+			if(it.name.endsWith(".trace")) {
+				traceFiles << it
+			}
+		}
+		StringBuilder sb = new StringBuilder()
+		sb.append("""import de.prob.statespace.ReplayTraceTest
+
+class TestRunner extends ReplayTraceTest {
+
+""");
+		traceFiles.each {
+			sb.append("""    def "trace from ${it.name} can be replayed"(){
+		when:
+        def state = interpretLine(line)
+
+        then:
+        state != null
+
+        where:
+        line << extractLines("${it.getAbsolutePath()}")
+    }
+
+""")
+		}
+
+		sb.append("""}
+
+new TestRunner()""")
+
+		def testFile = new File(directory + "testRunner.groovy")
+		if (!testFile.exists()) {
+			testFile.createNewFile()
+		}
+		testFile.setText(sb.toString())
+	}
 }

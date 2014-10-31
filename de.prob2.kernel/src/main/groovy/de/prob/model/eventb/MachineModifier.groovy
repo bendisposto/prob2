@@ -21,6 +21,9 @@ class MachineModifier {
 	 * @return the new {@link VariableBlock} that has been created containing the new elements
 	 */
 	def VariableBlock addVariable(String variable, String typingInvariant, String initialisationAction) {
+		// proof obligations are invalidated by addInvariant
+		// if we could check whether typingInvariant is in fact only typing,
+		// we could remove just selected proof information
 		def var = new EventBVariable(variable, null)
 		def c = ctr++
 		machine.variables << var
@@ -37,6 +40,9 @@ class MachineModifier {
 	 * @return if the removal of all elements from the machine was successful.
 	 */
 	def boolean removeVariableBlock(VariableBlock block) {
+		// proof obligations are invalidated by removeInvariant
+		// if we could check whether typingInvariant is in fact only typing,
+		// we could remove just selected proof information
 		def a = machine.variables.remove(block.getVariable())
 		def b = removeInvariant(block.getTypingInvariant())
 		def c = machine.events.INITIALISATION.actions.remove(block.getInitialisationAction())
@@ -49,6 +55,14 @@ class MachineModifier {
 	 * @return the {@link EventBInvariant} object that has been added to the machine
 	 */
 	def EventBInvariant addInvariant(String predicate) {
+		// all proof information regarding invariant preservation might now be wrong - remove
+		def iterator = machine.proofs.iterator()
+		while(iterator.hasNext()) {
+			if(iterator.next().name.endsWith("/INV")) {
+				iterator.remove()
+			}
+		}
+		
 		def invariant = new EventBInvariant("generated-inv-{uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
 		machine.invariants << invariant
 		machine.getChildrenOfType(Invariant.class) << invariant
@@ -61,6 +75,15 @@ class MachineModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeInvariant(EventBInvariant invariant) {
+		// only variant well-definedness may not use existing invariants in a prove
+		// thus, these seem to be the only proof obligations we can keep
+		def iterator = machine.proofs.iterator()
+		while(iterator.hasNext()) {
+			if(!iterator.next().name.endsWith("/VWD")) {
+				iterator.remove()
+			}
+		}
+		
 		def a = machine.getChildrenOfType(Invariant.class).remove(invariant)
 		def b = machine.invariants.remove(invariant)
 		return a && b
@@ -92,6 +115,7 @@ class MachineModifier {
 	 * @return an {@link EventModifier} to modify the specified {@link Event}
 	 */
 	def EventModifier addEvent(String name) {
+		removePOsForEvent(name)
 		Event event = new Event(machine, name, EventType.ORDINARY)
 		event.addActions(new ModelElementList<EventBAction>())
 		event.addGuards(new ModelElementList<EventBGuard>())
@@ -113,6 +137,7 @@ class MachineModifier {
 	 * for further modification
 	 */
 	def EventModifier duplicateEvent(Event event, String newName) {
+		removePOsForEvent(newName)
 		Event event2 = ModelModifier.cloneEvent(machine, event, newName)
 		machine.events << event2
 		return new EventModifier(event2)
@@ -124,7 +149,17 @@ class MachineModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeEvent(Event event) {
+		removePOsForEvent(event.name)
 		return machine.events.remove(event)
+	}
+	
+	def removePOsForEvent(String name) {
+		def iterator = machine.proofs.iterator()
+		while(iterator.hasNext()) {
+			if(iterator.next().name.startWith(name)) {
+				iterator.remove()
+			}
+		}
 	}
 
 	def List<EventModifier> getEvents() {
