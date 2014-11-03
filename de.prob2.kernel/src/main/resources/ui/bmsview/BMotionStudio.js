@@ -26,13 +26,26 @@ bms = (function() {
 		var i1 = 0
 		for (; i1 < d1.length; i1++) {
 			var t = d1[i1]
-			var selector = $(t.selector)
-			var content = t.content
-			if(content != undefined) selector.html(content)
-			selector.attr(t.attributes)
-			selector.css(t.styles)
+			if(t.selector) {
+                var selector = $(t.selector)
+                var content = t.content
+                if(content != undefined) selector.html(content)
+                selector.attr(t.attributes)
+                selector.css(t.styles)
+			}
 		}
 	}
+
+    extern.callMethod = function(gcmd, data) {
+        data.mode = 'command'
+        data.cmd = 'callGroovyMethod'
+        data.gcmd = gcmd
+        $.ajax({
+            async : false,
+            cache: false,
+            data : data
+        });
+   	}
 	
 	return extern;
 

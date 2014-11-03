@@ -3,6 +3,7 @@ package de.prob.web.views;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import de.prob.scripting.FileHandler;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.OpInfo;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.unicode.UnicodeTranslator;
@@ -173,10 +175,12 @@ public class StateInspector extends AbstractSession implements
 	public Object calculateFormulas(final Trace t) {
 		List<Object> extracted = new ArrayList<Object>();
 		StateSpace s = t.getStateSpace();
-		Map<IEvalElement, IEvalResult> current = s
-				.valuesAt(t.getCurrentState());
-		Map<IEvalElement, IEvalResult> previous = s.valuesAt(t.getCurrent()
-				.getSrc());
+		OpInfo currentTransition = t.getCurrentTransition();
+		Map<IEvalElement, IEvalResult> current = currentTransition == null ? s
+				.valuesAt(t.getCurrentState()) : s.valuesAt(currentTransition
+				.getDestId());
+		Map<IEvalElement, IEvalResult> previous = currentTransition == null ? new HashMap<IEvalElement, IEvalResult>()
+				: s.valuesAt(currentTransition.getSrcId());
 
 		for (IEvalElement e : formulasForEvaluating) {
 			String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current

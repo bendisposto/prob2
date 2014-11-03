@@ -13,7 +13,6 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -23,20 +22,20 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 	Logger logger = LoggerFactory.getLogger(GetShortestTraceCommand.class);
 
 	private static final String TRACE = "Trace";
-	private final StateId id;
+	private final String stateId;
 	private final List<OpInfo> transitions = new ArrayList<OpInfo>();
 
 	private final StateSpace s;
 
-	public GetShortestTraceCommand(final StateSpace s, final StateId id) {
+	public GetShortestTraceCommand(final StateSpace s, final String stateId) {
 		this.s = s;
-		this.id = id;
+		this.stateId = stateId;
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("find_trace_to_node");
-		pto.printAtomOrNumber(id.getId());
+		pto.printAtomOrNumber(stateId);
 		pto.printVariable(TRACE);
 		pto.closeTerm();
 	}

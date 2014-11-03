@@ -108,6 +108,9 @@ class ContextModifier {
 	def boolean removeAxiom(EventBAxiom axiom) {
 		def a = context.getChildrenOfType(Axiom.class).remove(axiom)
 		def b = context.axioms.remove(axiom)
+		if(a && b) {
+			context.proofs.clear()
+		}
 		return a && b
 	}
 }

@@ -16,7 +16,6 @@ public class LTLNotYetFinished implements IEvalResult, IModelCheckingResult {
 		return "LTL checking not complete.";
 	}
 
-	@Override
 	public String getCode() {
 		return formula.getCode();
 	}

@@ -60,7 +60,7 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 		result = bindings.get(RESULT_VARIABLE);
 
 		for (PrologTerm term : trace) {
-			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 3);
+			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 4);
 			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(
 					statespace, t);
 			resultTrace.add(operation);
@@ -78,7 +78,7 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 
 	@Override
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
-		Trace t = s.getTrace(startstate);
+		Trace t = s.getTrace(startstate.getId());
 		return t.addOps(resultTrace);
 	}
 

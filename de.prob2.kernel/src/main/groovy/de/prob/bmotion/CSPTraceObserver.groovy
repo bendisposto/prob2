@@ -3,38 +3,33 @@ package de.prob.bmotion
 import de.prob.animator.domainobjects.EvalResult
 import de.prob.statespace.OpInfo
 import de.prob.statespace.Trace
+import groovy.transform.TupleConstructor
 
+@TupleConstructor
 class CSPTraceObserver extends BMotionObserver {
 
-    def List<EventsObserver> objs = []
+    def String _component
 
-    def String component
+    private objs = []
 
-    private def selectorCache = [:]
-
-    def CSPTraceObserver(String component) {
-        this.component = component
-    }
-
-    def CSPTraceObserver() {
-    }
+    private selectorCache = [:]
 
     def static CSPTraceObserver make(Closure cls) {
         new CSPTraceObserver().with cls
     }
 
     def CSPTraceObserver component(component) {
-        this.component = component
+        this._component = component
         this
     }
 
     def CSPTraceObserver observe(String exp, Closure cls) {
-        EventsObserver evt = new EventsObserver(exp).with cls
+        def evt = new EventsObserver(exp).with cls
         objs.add(evt)
         this
     }
 
-    def getOpString(OpInfo op) {
+    def static getOpString(OpInfo op) {
         def String opName = op.getName()
         def String AsImplodedString = ""
         def List<String> opParameter = op.getParams()
@@ -56,7 +51,7 @@ class CSPTraceObserver extends BMotionObserver {
     def List<String> getCachedBmsId(BMotion bms, String selector) {
         def t = selector.isEmpty() ? [] : selectorCache.get(selector)
         if (t == null) {
-            t = bms.components.get(component).element.select(selector).collect { it.attr("data-bmsid") }
+            t = bms.components.get(_component).element.select(selector).collect { it.attr("data-bmsid") }
             selectorCache.put(selector, t)
         }
         t
@@ -69,7 +64,7 @@ class CSPTraceObserver extends BMotionObserver {
         def Trace trace = bms.getTool().getTrace()
         trace.ensureOpInfosEvaluated()
 
-        trace.getCurrent().getOpList().each { op ->
+        trace.getCurrent().getOpList().each { OpInfo op ->
 
             def fullOp = getOpString(op)
             objs.each { EventsObserver evt ->
@@ -82,16 +77,16 @@ class CSPTraceObserver extends BMotionObserver {
 
                         evt.transformers.each { TransformerObserver gt ->
 
-                            def fselector = (gt.selector instanceof Closure) ? gt.selector(op) : gt.selector
-                            def fattributes = gt.attributes.collectEntries { kv ->
+                            def fselector = (gt._selector instanceof Closure) ? gt._selector(op) : gt._selector
+                            def fattributes = gt._attributes.collectEntries { kv ->
                                 (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value
                                 ]
                             }
-                            def fstyles = gt.styles.collectEntries { kv ->
+                            def fstyles = gt._styles.collectEntries { kv ->
                                 (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value
                                 ]
                             }
-                            def fcontent = (gt.content instanceof Closure) ? gt.content(op) : gt.content
+                            def fcontent = (gt._content instanceof Closure) ? gt._content(op) : gt._content
 
                             getCachedBmsId(bms, fselector).each {
                                 def ReactTransform rt = map.get(it)
@@ -113,7 +108,7 @@ class CSPTraceObserver extends BMotionObserver {
 
         }
 
-        bms.submit([cmd: "bmotion_om.core.setComponent", type: "probmotion-html", id: component, observers: map])
+        bms.submit([cmd: "bmotion_om.core.setComponent", type: "probmotion-html", id: _component, observers: map])
 
     }
 

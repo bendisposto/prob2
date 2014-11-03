@@ -19,7 +19,7 @@ assert res instanceof LTLOk
 res = ltl_check(new LTL("G({ card(active) = 0 })"))
 assert res instanceof LTLCounterExample
 t = res.getTrace(s)
-assert t.current.opList.size() == 8
+assert t.opList.size() == 8
 
 res = ltl_check(new LTL("G({ active < 7 })"))
 assert res instanceof LTLError

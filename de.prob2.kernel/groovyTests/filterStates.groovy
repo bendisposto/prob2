@@ -13,7 +13,7 @@ t = t.new("pp = PID3")
 t = t.del("pp = PID3")
 t = t.ready("rr = PID2")
 
-sIds = s.getVertices()
+sIds = t.getOpList().collect { it.getDestId().explore() }
 formula = "card(waiting) = 1" as ClassicalB
 cmd = new FilterStatesForPredicateCommand(formula, sIds )
 s.execute(cmd)
@@ -24,7 +24,8 @@ sIds.each {
 	if (filtered.contains(it.getId())) {
 		assert !s.canBeEvaluated(it) || s.eval(it,[formula])[0].value == "TRUE"
 	} else {
-		assert s.eval(it,[formula])[0].value == "FALSE"
+		x = it.eval("waiting")
+		assert it.eval(formula).value == "FALSE"
 	}
 }
 

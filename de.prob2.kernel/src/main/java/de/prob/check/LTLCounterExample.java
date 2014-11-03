@@ -49,7 +49,6 @@ public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 		return ops;
 	}
 
-	@Override
 	public String getCode() {
 		return formula.getCode();
 	}

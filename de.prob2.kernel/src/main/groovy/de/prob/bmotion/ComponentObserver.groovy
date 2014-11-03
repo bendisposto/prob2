@@ -34,19 +34,22 @@ class ComponentObserver extends TransformersObserver {
     @Override
     def apply(BMotion bms) {
         def map = [:]
-        transformers.each { BMotionTransformer o ->
-            TransformerObject t = o.update(bms)
-            getCachedBmsId(bms, t.selector).each {
-                def ReactTransform rt = map.get(it)
-                if (rt == null) {
-                    rt = new ReactTransform(it)
-                    map.put(it, rt)
+        transformers.each { TransformerObserver gt ->
+            def list = gt.update(bms)
+            list.each { TransformerObject to ->
+                getCachedBmsId(bms, to.selector).each {
+                    def ReactTransform rt = map.get(it)
+                    if (rt == null) {
+                        rt = new ReactTransform(it)
+                        map.put(it, rt)
+                    }
+                    rt.attributes.putAll(to.attributes)
+                    rt.styles.putAll(to.styles)
+                    rt.content = to.content
                 }
-                rt.attributes.putAll(t.attributes)
-                rt.styles.putAll(t.styles)
-                rt.content = t.content
             }
         }
+        System.out.println(map)
         bms.submit([cmd: "bmotion_om.core.setComponent", type: "probmotion-html", id: component, observers: map])
     }
 

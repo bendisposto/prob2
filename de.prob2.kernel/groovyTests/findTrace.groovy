@@ -7,7 +7,7 @@ t = new Trace(s)
 
 boolean thrown = false
 try {
-  cmd = new GetShortestTraceCommand(s, new StateId("7", s))
+  cmd = new GetShortestTraceCommand(s, "7")
   s.execute(cmd)
   assert cmd.getOperationIds().isEmpty()
 } catch(RuntimeException e) {
@@ -17,14 +17,14 @@ assert thrown == true
 
 t = t.randomAnimation(10)
 assert s[4] != null
-cmd = new GetShortestTraceCommand(s, s[4])
+cmd = new GetShortestTraceCommand(s, "4")
 s.execute(cmd)
 ops = cmd.getNewTransitions()
 
 assert ops != null
 assert !ops.isEmpty()
-t = s.getTrace(s[4])
-opList = t.head.getOpList()
+t = s.getTrace("4")
+opList = t.getOpList()
 assert !opList.isEmpty()
 assert ops.size() == opList.size()
 len = ops.size()
@@ -35,15 +35,13 @@ len = ops.size()
 cmd = new FindValidStateCommand(s, "card(waiting) = 2" as ClassicalB)
 s.execute(cmd)
 t = cmd.getTrace(s)
-t.ensureOpInfosEvaluated()
-opList = t.head.getOpList()
+opList = t.getOpList(true)
 assert opList.size() == 1
 assert opList[0].getName() == "find_valid_state"
 
 t = s.getTraceToState("pp : waiting" as ClassicalB)
 assert t != null
-t.ensureOpInfosEvaluated()
-ops = t.head.getOpList()
+ops = t.getOpList(true)
 assert opList.size() == 1
 assert opList[0].getName() == "find_valid_state"
 

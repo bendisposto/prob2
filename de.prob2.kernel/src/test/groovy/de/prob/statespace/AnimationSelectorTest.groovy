@@ -29,7 +29,7 @@ class AnimationSelectorTest extends Specification {
 	def setup() {
 		def StateSpace ss = mock(StateSpace.class);
 		when(ss.isBusy()).thenReturn(false);
-		trace = new Trace(ss,null,UUID.randomUUID());
+		trace = new Trace(ss,null,[],UUID.randomUUID());
 		selector = new AnimationSelector();
 		listener = new MyListener()
 		selector.registerAnimationChangeListener(listener)

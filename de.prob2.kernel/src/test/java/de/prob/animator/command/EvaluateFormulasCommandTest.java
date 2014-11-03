@@ -15,7 +15,6 @@ import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -65,15 +64,13 @@ public class EvaluateFormulasCommandTest {
 
 		IEvalResult value = command.getValue();
 		assertEquals(((EvalResult) value).getValue(), "true");
-		assertEquals(((EvalResult) value).getCode(), "foo");
 		assertEquals(((EvalResult) value).getSolutions().get("a"), "3");
 	}
 
 	private CompoundPrologTerm mk_result(final String r) {
 		return new CompoundPrologTerm("result", new CompoundPrologTerm(r),
 				new ListPrologTerm(new CompoundPrologTerm("bind",
-						new CompoundPrologTerm("a"), new CompoundPrologTerm(
-								"int", new IntegerPrologTerm(3)),
+						new CompoundPrologTerm("a"),
 						new CompoundPrologTerm("3"))), new CompoundPrologTerm(
 						"foo"));
 	}

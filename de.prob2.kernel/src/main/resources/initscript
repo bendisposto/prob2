@@ -61,8 +61,9 @@ Script.getMetaClass().upgrade = { downloader.downloadCli(it) }
 Script.getMetaClass().installCSPM = { downloader.installCSPM() }
 
 /* Redirect print and println to our own buffered console*/
-Script.getMetaClass().print = { s -> __console.append(s.toString()) }
-Script.getMetaClass().println = { s -> __console.append(s.toString()+"\n") }
+inConsole = true
+Script.getMetaClass().print = { s -> __console.append(s.toString()); if (!inConsole) System.out.print(s) }
+Script.getMetaClass().println = { s -> __console.append(s.toString()+"\n"); if (!inConsole) System.out.println(s)}
 	
 class TraceDecorator {
     private delegate
@@ -100,4 +101,8 @@ def execTrace(t,c) {
   c.resolveStrategy = Closure.DELEGATE_FIRST
   c.delegate = proxy
   c()
-}	 
+}
+
+def eval(script) {
+	engine.eval(script)
+}

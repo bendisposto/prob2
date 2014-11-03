@@ -5,29 +5,29 @@ import de.prob.model.representation.AbstractModel
 
 class TraceConverter {
 	def static File save(Trace trace, String fileName) {
+		final StringBuilder sb = new StringBuilder();
 		def file = new File(fileName);
 		file.newWriter()
 
-		file << "<!-- Model for this trace has the following graph:"
-		def model = trace as AbstractModel;
-		file << "${model.toString()} -->"
-
-		file << "<trace>"
-		file << "<model>"
-		file << model.getModelFile().getAbsolutePath()
-		file << "</model>"
+		sb.append("<trace>\n")
+		trace.ensureOpInfosEvaluated()
 		def t = trace as ArrayList
 		t.each {
 			def op = it.edge
 			if(op != null) {
-				file << "<Operation name=\"${op.getName()}\">"
-				op.getParams().each { param -> file << "<Parameter name=\"$param\"/>" }
-				file << "<sha value=\"${op.sha()}\"/>"
-				file << "</Operation>"
+				sb.append("<Operation name=\"")
+				sb.append(op.getName())
+				sb.append("\">")
+				op.getParams().each { param ->
+					sb.append("<Parameter name=\"")
+					sb.append(param.toString())
+					sb.append("\"/>")
+				}
+				sb.append("</Operation>\n")
 			}
 		}
-		file << "</trace>"
-
+		sb.append("</trace>")
+		file.setText(sb.toString())
 		file
 	}
 
@@ -106,5 +106,44 @@ class TraceConverter {
 
 	def static xmlToSpock(def xmlFile) {
 		def trace = new XmlSlurper().parse(xmlFile)
+	}
+
+	def static generateSpockTests(def directory) {
+		def traceFiles = []
+		new File(directory).eachFile(groovy.io.FileType.FILES) {
+			if(it.name.endsWith(".trace")) {
+				traceFiles << it
+			}
+		}
+		StringBuilder sb = new StringBuilder()
+		sb.append("""import de.prob.statespace.ReplayTraceTest
+
+class TestRunner extends ReplayTraceTest {
+
+""");
+		traceFiles.each {
+			sb.append("""    def "trace from ${it.name} can be replayed"(){
+		when:
+        def state = interpretLine(line)
+
+        then:
+        state != null
+
+        where:
+        line << extractLines("${it.getAbsolutePath()}")
+    }
+
+""")
+		}
+
+		sb.append("""}
+
+new TestRunner()""")
+
+		def testFile = new File(directory + "testRunner.groovy")
+		if (!testFile.exists()) {
+			testFile.createNewFile()
+		}
+		testFile.setText(sb.toString())
 	}
 }

@@ -14,16 +14,25 @@ a = h.getCurrentState()
 assert a == s[4]
 assert a.getClass() == de.prob.statespace.StateId
 
-values = s.getValues()[a]
+values = s.valuesAt(a)
 assert values.containsKey(formula)
 assert values[formula].getValue() == "{PID1,PID3}"
 h = h.back()
 h = h.back()
 b = h.getCurrentState()
 assert b == s[0]
-values = s.getValues()[b]
+values = s.valuesAt(b)
 assert values.containsKey(formula)
 assert values[formula].getValue() == "{}"
+
+f2 = "card(waiting)" as ClassicalB
+before = b.getValues()
+assert !before.containsKey(f2)
+s.subscribe(s, f2)
+after = b.getValues()
+assert after.containsKey(f2)
+assert after.get(f2).getValue() == "0"
+
 
 s.animator.cli.shutdown();
 "A registered formula is automatically evaluated in every state and can be found in the cache later"

@@ -1,41 +1,32 @@
 package de.prob.animator.domainobjects;
 
+
 import com.google.common.base.Joiner
 
-import de.prob.animator.command.ProcessPrologValuesCommand
 import de.prob.parser.BindingGenerator
 import de.prob.prolog.term.CompoundPrologTerm
 import de.prob.prolog.term.ListPrologTerm
 import de.prob.prolog.term.PrologTerm
-import de.prob.statespace.StateSpace
 import de.prob.unicode.UnicodeTranslator
+import de.prob.util.StringUtil
 
 public class EvalResult implements IEvalResult {
 
-	final String code;
+	public final static EvalResult TRUE = new EvalResult("TRUE", Collections.emptyMap())
+	public final static EvalResult FALSE = new EvalResult("FALSE", Collections.emptyMap())
+	final static HashMap<String, EvalResult> formulaCache = [:]
+
 	final String value;
 	final Map<String, String> solutions;
 
 	// These fields are saved in this class to be able to later produce
 	// a TranslatedEvalResult from this class. However, they are otherwise
 	// not of use to the user.
-	private final PrologTerm valueSource;
-	private final Map<String, PrologTerm> solutionsSource;
 
-
-	public EvalResult(final String code, final String value, final PrologTerm valueSource,
-	final Map<String, String> solutions,
-	final Map<String, PrologTerm> solutionsSource) {
-		this.code = code
+	public EvalResult(final String value,
+	final Map<String, String> solutions) {
 		this.value = value
-		this.valueSource = valueSource
 		this.solutions = solutions
-		this.solutionsSource = solutionsSource
-	}
-
-	@Override
-	public String getCode() {
-		return code;
 	}
 
 	@Override
@@ -72,15 +63,6 @@ public class EvalResult implements IEvalResult {
 	 */
 	def String getSolution(String name) {
 		return solutions[name]
-	}
-
-	def TranslatedEvalResult translate(StateSpace s) {
-		if(valueSource == null) {
-			throw new RuntimeException("Translation is not supported for this result");
-		}
-		def cmd = new ProcessPrologValuesCommand(code, valueSource, solutionsSource);
-		s.execute(cmd)
-		return cmd.getResult()
 	}
 
 	/**
@@ -125,29 +107,52 @@ public class EvalResult implements IEvalResult {
 
 			PrologTerm v = pt.getArgument(1);
 			String value = v.getFunctor();
-			def vSource = v;
+			ListPrologTerm solutionList = BindingGenerator.getList(pt
+					.getArgument(2));
+			if (value == "TRUE" && solutionList.isEmpty()) {
+				return TRUE
+			}
+			if (value == "FALSE" && solutionList.isEmpty()) {
+				return FALSE
+			}
+			if (value != "TRUE" && value != "FALSE" && formulaCache.containsKey(value)) {
+				return formulaCache.get(value)
+			}
+
+			String code = pt.getArgument(3).getFunctor();
 			if (v instanceof CompoundPrologTerm && v.getArity() == 2) {
 				CompoundPrologTerm cpt = BindingGenerator
 						.getCompoundTerm(v, 2);
 				value = cpt.getArgument(1).getFunctor();
-				vSource = cpt.getArgument(2)
 			}
-			Map<String, String> solutions = new HashMap<String, String>();
-			Map<String, PrologTerm> solutionsSource = new HashMap<String, PrologTerm>();
 
-			ListPrologTerm list = BindingGenerator.getList(pt
-					.getArgument(2));
-			for (PrologTerm t : list) {
+			Map<String, String> solutions = solutionList.isEmpty() ? Collections.emptyMap() : new HashMap<String, String>();
+			for (PrologTerm t : solutionList) {
 				CompoundPrologTerm cpt = BindingGenerator
-						.getCompoundTerm(t, 3);
+						.getCompoundTerm(t, 2);
 				solutions.put(
-						cpt.getArgument(1).getFunctor(),
-						cpt.getArgument(3).getFunctor());
-				solutionsSource.put(cpt.getArgument(1).getFunctor(),
-						cpt.getArgument(2));
+						StringUtil.generateString(cpt.getArgument(1).getFunctor()),
+						StringUtil.generateString(cpt.getArgument(2).getFunctor()));
 			}
-			String code = pt.getArgument(3).getFunctor();
-			return new EvalResult(code, value, vSource, solutions, solutionsSource);
+
+			def res = new EvalResult(value, solutions);
+			if (value != "TRUE" && value != "FALSE") {
+				formulaCache.put(value, res)
+			}
+			return res
 		}
+	}
+
+	def Object asType(Class className) {
+		if (className == Integer) {
+			return Integer.valueOf(value)
+		}
+		if (className == Double) {
+			return Double.valueOf(value)
+		}
+		if (className == String) {
+			return value
+		}
+		throw new ClassCastException("Not able to convert EvalResult object to ${className}")
 	}
 }

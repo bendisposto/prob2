@@ -15,8 +15,7 @@ model_check = { job ->
 res = model_check(new CBCDeadlockChecker(s))
 assert res instanceof CBCDeadlockFound
 t_deadlock = res.getTrace(s)
-t_deadlock.ensureOpInfosEvaluated()
-ops = t_deadlock.head.opList
+ops = t_deadlock.getOpList(true)
 assert ops.size() == 1
 assert ops[0].getName() == "deadlock_check"
 
@@ -27,8 +26,7 @@ assert res.message == "No deadlock was found"
 res = model_check(new CBCInvariantChecker(s))
 assert res instanceof CBCInvariantViolationFound
 t_invV = res.getTrace(s)
-t_invV.ensureOpInfosEvaluated()
-ops = t_invV.head.opList
+ops = t_invV.getOpList(true)
 assert ops.size() == 2
 assert ops[0].getName() == "invariant_check_violate_invariant"
 assert ops[1].getName() == "violate_invariant"

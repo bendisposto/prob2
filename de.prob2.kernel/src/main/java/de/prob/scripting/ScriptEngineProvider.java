@@ -36,8 +36,7 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 			"import de.prob.model.eventb.*;",
 			"import de.prob.animator.domainobjects.*;",
 			"import de.prob.animator.command.*;",
-			"import de.prob.visualization.*",
-			"import de.prob.bmotion.*"};
+			"import de.prob.visualization.*", "import de.prob.bmotion.*" };
 	private final TestRunner tests;
 
 	@Inject
@@ -63,6 +62,7 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 		bindings.put("downloader", downloader);
 		bindings.put("tests", tests);
 		bindings.put("vis", visualisationRegistry);
+		bindings.put("engine", engine);
 		URL url = Resources.getResource("initscript");
 		String script;
 		try {

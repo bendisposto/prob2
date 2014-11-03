@@ -13,13 +13,18 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-import de.prob.animator.command.GetOpFromId;
-import de.prob.animator.domainobjects.EvalResult;
+import de.prob.model.classicalb.ClassicalBMachine;
+import de.prob.model.classicalb.Operation;
+import de.prob.model.eventb.Event;
+import de.prob.model.eventb.EventBMachine;
+import de.prob.model.eventb.EventParameter;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.util.StringUtil;
 
 /**
  * Stores the information for a given Operation. This includes operation id
@@ -37,42 +42,33 @@ public class OpInfo {
 	public StateSpace stateSpace;
 
 	private final String id;
-	private String name;
+	private final String name;
 	private final StateId src;
 	private final StateId dest;
-	private List<String> params = new ArrayList<String>();
-	private List<String> returnValues = new ArrayList<String>();
-	private List<EvalResult> paramsSource = new ArrayList<EvalResult>();
-	private List<EvalResult> retValSource = new ArrayList<EvalResult>();
-	private String targetState;
+	private List<String> params;
+	private List<String> returnValues;
 	private String rep = null;
 	private boolean evaluated;
 	private final FormalismType formalismType;
+	private String predicateString;
 
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
 	private OpInfo(final StateSpace stateSpace, final String id,
-			final String src, final String dest) {
-		this.stateSpace = stateSpace;
-		this.id = id;
-		this.src = new StateId(src, stateSpace);
-		this.dest = new StateId(dest, stateSpace);
-		this.formalismType = stateSpace.getModel().getFormalismType();
-		evaluated = false;
-	}
-
-	private OpInfo(final StateSpace stateSpace, final String id,
-			final String name, final String src, final String dest) {
+			final String name, final StateId src, final StateId dest,
+			final boolean evaluated) {
 		this.stateSpace = stateSpace;
 		this.id = id;
 		this.name = name;
-		this.src = new StateId(src, stateSpace);
-		this.dest = new StateId(dest, stateSpace);
-		this.formalismType = stateSpace.getModel().getFormalismType();
-		params = Collections.emptyList();
-		targetState = "";
-		evaluated = true;
-		rep = name;
+		this.src = src;
+		this.dest = dest;
+		this.evaluated = evaluated;
+		formalismType = stateSpace.getModel().getFormalismType();
+		if (evaluated) {
+			params = Collections.emptyList();
+			returnValues = Collections.emptyList();
+			rep = name;
+		}
 	}
 
 	/**
@@ -83,10 +79,6 @@ public class OpInfo {
 	}
 
 	/**
-	 * The name field is not by default filled. To ensure that the name,
-	 * parameter, and return value information have been retrieved from ProB,
-	 * use the {@link #evaluate()} method.
-	 * 
 	 * @return name of this operation
 	 */
 	public String getName() {
@@ -132,62 +124,36 @@ public class OpInfo {
 	}
 
 	/**
-	 * The list of parameters is not filled by default. To ensure that the name,
-	 * parameter, and return value information have been retrieved from ProB,
-	 * use the {@link #evaluate()} method.
+	 * The list of parameters is not filled by default. If the parameter list
+	 * has not yet been filled, ProB will be contacted to lazily fill the
+	 * parameter list via the {@link #evaluate()} method.
 	 * 
 	 * @return list of values for the parameters represented as strings
 	 */
 	public List<String> getParams() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return params;
 	}
 
 	/**
-	 * The list of return values is not filled by default. To ensure that the
-	 * name, parameter, and return value information have been retrieved from
-	 * ProB, use the {@link #evaluate()} method.
+	 * The list of return values is not filled by default. If the return value
+	 * list has not yet been filled, ProB will be contacted to lazily fill the
+	 * list via the {@link #evaluate()} method.
 	 * 
 	 * @return list of return values of the operation represented as strings.
 	 */
 	public List<String> getReturnValues() {
+		if (!evaluated) {
+			evaluate();
+		}
 		return returnValues;
-	}
-
-	/**
-	 * The list of parameters is not filled by default. To ensure that the name,
-	 * parameter, and return value information have been retrieved from ProB,
-	 * use the {@link #evaluate()} method.
-	 * 
-	 * @return list of values for the parameters represented as
-	 *         {@link EvalResult}
-	 */
-	public List<EvalResult> getParamsSource() {
-		return paramsSource;
-	}
-
-	/**
-	 * The list of return values is not filled by default. To ensure that the
-	 * name, parameter, and return value information have been retrieved from
-	 * ProB, use the {@link #evaluate()} method.
-	 * 
-	 * @return list of return values of the operation represented as
-	 *         {@link EvalResult}
-	 */
-	public List<EvalResult> getRetValSource() {
-		return retValSource;
-	}
-
-	/**
-	 * @return a String representation of the target state
-	 */
-	public String getTargetState() {
-		return targetState;
 	}
 
 	@Override
 	public String toString() {
-		return getId() + "=[" + getSrcId().getId() + "," + getDestId().getId()
-				+ "]";
+		return name;
 	}
 
 	/**
@@ -213,6 +179,39 @@ public class OpInfo {
 			rep = generateRep();
 		}
 		return rep;
+	}
+
+	public String getParameterPredicate() {
+		if (predicateString != null) {
+			return predicateString;
+		}
+		predicateString = Joiner.on(" & ").join(getParameterPredicates());
+		return predicateString;
+	}
+
+	public List<String> getParameterPredicates() {
+		evaluate();
+		List<String> predicates = new ArrayList<String>();
+		AbstractElement mainComponent = stateSpace.getModel()
+				.getMainComponent();
+		List<String> params = new ArrayList<String>();
+		if (mainComponent instanceof ClassicalBMachine) {
+			Operation op = ((ClassicalBMachine) mainComponent)
+					.getOperation(getName());
+			params = op.getParameters();
+		} else if (mainComponent instanceof EventBMachine) {
+			Event event = ((EventBMachine) mainComponent).getEvent(getName());
+			for (EventParameter eventParameter : event.getParameters()) {
+				params.add(eventParameter.getName());
+			}
+		}
+		if (params.size() == this.params.size()) {
+			for (int i = 0; i < params.size(); i++) {
+				predicates.add(params.get(i) + " = " + this.params.get(i));
+			}
+		}
+
+		return predicates;
 	}
 
 	/**
@@ -314,39 +313,23 @@ public class OpInfo {
 	public String sha() throws NoSuchAlgorithmException {
 		evaluate();
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
-		md.update(targetState.getBytes());
+		md.update(getDestId().getState().getBytes());
 		return new BigInteger(1, md.digest()).toString(Character.MAX_RADIX);
 	}
 
 	/**
 	 * Sets the values for the fields in this class. This should ONLY be called
 	 * by the {@link GetOpFromId} command during retrieval of the values from
-	 * Prolog. For this reason it has been marked as deprecated.
+	 * Prolog. For this reason, it is package private
 	 * 
-	 * @param name
-	 *            - Name of the operation
 	 * @param params
 	 *            - {@link List} of {@link String} parameters
 	 * @param returnValues
 	 *            - {@link List} of {@link String} return values
-	 * @param paramsSource
-	 *            - {@link List} of {@link EvalResult} parameters
-	 * @param retValSource
-	 *            - {@link List} of {@link EvalResult} return values
-	 * @param targetState
-	 *            - String representation of target state
 	 */
-	@Deprecated
-	public void setInfo(final String name, final List<String> params,
-			final List<String> returnValues,
-			final List<EvalResult> paramsSource,
-			final List<EvalResult> retValSource, final String targetState) {
-		this.name = name;
+	void setInfo(final List<String> params, final List<String> returnValues) {
 		this.params = params;
-		this.targetState = targetState;
 		this.returnValues = returnValues;
-		this.paramsSource = paramsSource;
-		this.retValSource = retValSource;
 		evaluated = true;
 	}
 
@@ -369,7 +352,8 @@ public class OpInfo {
 	public static OpInfo generateArtificialTransition(final StateSpace s,
 			final String transId, final String description, final String srcId,
 			final String destId) {
-		return new OpInfo(s, transId, description, srcId, destId);
+		return new OpInfo(s, transId, description, s.addState(srcId),
+				s.addState(destId), true);
 	}
 
 	/**
@@ -384,9 +368,13 @@ public class OpInfo {
 	 */
 	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
 			final CompoundPrologTerm cpt) {
-		return new OpInfo(s, OpInfo.getIdFromPrologTerm(cpt.getArgument(1)),
-				OpInfo.getIdFromPrologTerm(cpt.getArgument(2)),
-				OpInfo.getIdFromPrologTerm(cpt.getArgument(3)));
+		String opId = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
+		String name = StringUtil.generateString(BindingGenerator
+				.getCompoundTerm(cpt.getArgument(2), 0).getFunctor());
+		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
+		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(4));
+		return new OpInfo(s, opId, name, s.addState(srcId), s.addState(destId),
+				false);
 	}
 
 	/**

@@ -41,7 +41,7 @@ public class GroovySE implements ScriptEngine {
 			"import de.prob.visualization.*;", "import de.prob.check.*;",
 			"import de.prob.bmotion.*;", "\n " };
 
-	private final String imports = Joiner.on("\n").join(IMPORTS);
+	private static final String imports = Joiner.on("\n").join(IMPORTS);
 
 	public GroovySE(final ScriptEngine engine) {
 		groovy = engine;
@@ -86,14 +86,15 @@ public class GroovySE implements ScriptEngine {
 		return result;
 	}
 
-	public Object eval(final String script, ScriptContext context,
-			StringBuffer console) throws ScriptException {
+	public Object eval(final String script, final ScriptContext context,
+			final StringBuffer console) throws ScriptException {
 		groovy.put("__console", console);
 		Object result = eval(script, context);
 		return new Object[] { result, console.toString() };
 	}
-	public Object eval(final String script, 
-			StringBuffer console) throws ScriptException {
+
+	public Object eval(final String script, final StringBuffer console)
+			throws ScriptException {
 		groovy.put("__console", console);
 		Object result = eval(script, getContext());
 		return new Object[] { result, console.toString() };

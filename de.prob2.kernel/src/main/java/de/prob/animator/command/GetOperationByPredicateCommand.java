@@ -14,8 +14,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.prob.animator.domainobjects.ClassicalB;
+import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -38,7 +37,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 			.getLogger(GetOperationByPredicateCommand.class);
 	private static final String NEW_STATE_ID_VARIABLE = "NewStateID";
 	private static final String ERRORS = "Errors";
-	private final ClassicalB evalElement;
+	private final IEvalElement evalElement;
 	private final String stateId;
 	private final String name;
 	private final List<OpInfo> operations = new ArrayList<OpInfo>();
@@ -48,7 +47,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 
 	public GetOperationByPredicateCommand(final StateSpace s,
 			final String stateId, final String name,
-			final ClassicalB predicate, final int nrOfSolutions) {
+			final IEvalElement predicate, final int nrOfSolutions) {
 		this.s = s;
 		this.stateId = stateId;
 		this.name = name;
@@ -73,8 +72,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("prob2_execute_custom_operations")
 				.printAtomOrNumber(stateId).printAtom(name);
-		final ASTProlog prolog = new ASTProlog(pto, null);
-		evalElement.getAst().apply(prolog);
+		evalElement.printProlog(pto);
 		pto.printNumber(nrOfSolutions);
 		pto.printVariable(NEW_STATE_ID_VARIABLE);
 		pto.printVariable(ERRORS).closeTerm();
@@ -97,7 +95,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 
 		for (PrologTerm prologTerm : list) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
-					prologTerm, 3);
+					prologTerm, 4);
 			operations.add(OpInfo.createOpInfoFromCompoundPrologTerm(s, cpt));
 		}
 

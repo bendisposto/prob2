@@ -18,7 +18,6 @@ import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
-import de.prob.statespace.TraceElement;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -52,29 +51,25 @@ public class CurrentTrace extends AbstractSession implements
 				return;
 			}
 
-			trace.ensureOpInfosEvaluated();
-			TraceElement element = trace.getHead();
-			TraceElement current = trace.getCurrent();
-			String group = "future";
-			while (element.getPrevious() != null) {
-				OpInfo op = element.getOp();
-				String rep = op.getRep();
-				if (element == current) {
-					group = "current";
-					ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
-							"group", group));
-
-					// After this point, all elements are in the past
-					group = "past";
-				} else {
-					ops.add(WebUtils.wrap("id", element.getIndex(), "rep", rep,
-							"group", group));
-				}
-				element = element.getPrevious();
-			}
-			ops.add(WebUtils.wrap("id", 0, "rep", "-- root --", "group",
+			ops.add(WebUtils.wrap("id", -1, "rep", "-- root --", "group",
 					"start"));
-			if (!sortDown) {
+			int currentPos = trace.getCurrent().getIndex();
+			List<OpInfo> opList = trace.getOpList(true);
+			String group = "past";
+			for (int i = 0; i < opList.size(); i++) {
+				String rep = opList.get(i).getRep();
+				if (currentPos == i) {
+					group = "current";
+					ops.add(WebUtils.wrap("id", i, "rep", rep, "group", group));
+
+					// After this point, all elements are in the future
+					group = "future";
+				} else {
+					ops.add(WebUtils.wrap("id", i, "rep", rep, "group", group));
+				}
+			}
+
+			if (sortDown) {
 				Collections.reverse(ops);
 			}
 
@@ -118,7 +113,7 @@ public class CurrentTrace extends AbstractSession implements
 	}
 
 	public List<OpInfo> getElements(final Trace trace) {
-		return trace.getHead().getOpList();
+		return trace.getOpList();
 	}
 
 	@Override

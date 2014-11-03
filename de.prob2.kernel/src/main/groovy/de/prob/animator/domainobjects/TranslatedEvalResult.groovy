@@ -1,20 +1,13 @@
 package de.prob.animator.domainobjects
 
-class TranslatedEvalResult implements IEvalResult {
+public class TranslatedEvalResult implements IEvalResult {
 
-	def String code
 	def value
 	def Map<String,Object> solutions
 
-	def TranslatedEvalResult(String code, value, Map<String,Object> solutions) {
-		this.code = code
+	def TranslatedEvalResult(value, Map<String,Object> solutions) {
 		this.value = value
 		this.solutions = solutions
-	}
-
-	@Override
-	public String getCode() {
-		return code
 	}
 
 	/**
@@ -42,5 +35,9 @@ class TranslatedEvalResult implements IEvalResult {
 	 */
 	def getSolution(String name) {
 		return solutions[name]
+	}
+
+	def String toString() {
+		return value.toString();
 	}
 }

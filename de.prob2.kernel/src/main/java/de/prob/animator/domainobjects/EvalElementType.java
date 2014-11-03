@@ -1,5 +1,7 @@
 package de.prob.animator.domainobjects;
 
+import de.prob.util.StringUtil;
+
 /**
  * B formulas have either the type PREDICATE or EXPRESSION.
  * 
@@ -11,7 +13,7 @@ public enum EvalElementType {
 
 	@Override
 	public String toString() {
-		return "#" + super.toString();
+		return StringUtil.generateString("#" + super.toString());
 	}
 
 }

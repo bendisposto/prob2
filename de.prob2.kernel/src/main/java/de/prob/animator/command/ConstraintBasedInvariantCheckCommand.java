@@ -118,9 +118,9 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 			final String eventName = PrologTerm.atomicString(term
 					.getArgument(1));
 			final OpInfo step1 = OpInfo.createOpInfoFromCompoundPrologTerm(s,
-					BindingGenerator.getCompoundTerm(term.getArgument(2), 3));
+					BindingGenerator.getCompoundTerm(term.getArgument(2), 4));
 			final OpInfo step2 = OpInfo.createOpInfoFromCompoundPrologTerm(s,
-					BindingGenerator.getCompoundTerm(term.getArgument(3), 3));
+					BindingGenerator.getCompoundTerm(term.getArgument(3), 4));
 			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(
 					eventName, step1, step2);
 			newTransitions.add(step1);

@@ -60,7 +60,7 @@ public class ProcessPrologValuesCommand extends AbstractCommand {
 			Object sol = translator.toGroovy(cpt.getArgument(2));
 			solutions.put(key, sol);
 		}
-		evalResult = new TranslatedEvalResult(code, v, solutions);
+		evalResult = new TranslatedEvalResult(v, solutions);
 	}
 
 	public TranslatedEvalResult getResult() {
