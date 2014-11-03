@@ -11,6 +11,10 @@ class TransformerObject {
     def styles = [:]
     def String content
 
+    def TransformerObject(String selector) {
+        this.selector = selector
+    }
+
     def TransformerObject set(String name, Object value) {
         (name == "content" || name == "text") ? content = value : attributes.put(name,value)
         this

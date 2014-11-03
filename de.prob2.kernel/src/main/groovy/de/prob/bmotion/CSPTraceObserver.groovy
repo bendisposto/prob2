@@ -10,7 +10,7 @@ class CSPTraceObserver extends BMotionObserver {
 
     def String _component
 
-    private List<EventsObserver> objs = []
+    private objs = []
 
     private selectorCache = [:]
 
@@ -24,12 +24,12 @@ class CSPTraceObserver extends BMotionObserver {
     }
 
     def CSPTraceObserver observe(String exp, Closure cls) {
-        EventsObserver evt = new EventsObserver(exp).with cls
+        def evt = new EventsObserver(exp).with cls
         objs.add(evt)
         this
     }
 
-    def getOpString(OpInfo op) {
+    def static getOpString(OpInfo op) {
         def String opName = op.getName()
         def String AsImplodedString = ""
         def List<String> opParameter = op.getParams()
@@ -64,7 +64,7 @@ class CSPTraceObserver extends BMotionObserver {
         def Trace trace = bms.getTool().getTrace()
         trace.ensureOpInfosEvaluated()
 
-        trace.getCurrent().getOpList().each { op ->
+        trace.getCurrent().getOpList().each { OpInfo op ->
 
             def fullOp = getOpString(op)
             objs.each { EventsObserver evt ->

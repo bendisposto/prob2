@@ -40,7 +40,8 @@ class TransformerObserver extends BMotionObserver implements BMotionTransformer 
     }
 
     def List<TransformerObject> update(BMotion bms) {
-        def t = new TransformerObject((_selector instanceof Closure) ? _selector() : _selector)
+        def String selector = (_selector instanceof Closure) ? _selector() : _selector
+        def t = new TransformerObject(selector)
         t.attributes = _attributes.collectEntries { kv ->
             (kv.value instanceof Closure) ? [kv.key, kv.value()] : [kv.key, kv.value
             ]

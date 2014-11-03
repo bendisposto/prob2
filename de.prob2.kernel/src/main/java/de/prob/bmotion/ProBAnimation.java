@@ -1,14 +1,11 @@
 package de.prob.bmotion;
 
 import de.prob.model.representation.AbstractModel;
-import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.StateSpace;
-import de.prob.statespace.Trace;
+import de.prob.statespace.*;
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.ToolRegistry;
 
-public abstract class ProBAnimation implements ITool, IAnimationChangeListener {
+public abstract class ProBAnimation implements ITool, IAnimationChangeListener, IModelChangedListener {
 
 	private AbstractModel model;
 
@@ -16,6 +13,7 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener {
 	protected final ToolRegistry toolRegistry;
 	protected final AnimationSelector animations;
 	protected final String toolId;
+    public static final String TRIGGER_MODEL_CHANGED = "ModelChanged";
 
 	public ProBAnimation(final String sessionId, final AbstractModel model,
 			final AnimationSelector animations, final ToolRegistry toolRegistry) {
@@ -59,9 +57,14 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener {
 		Trace oldtrace = trace;
 		trace = currentTrace;
 		if (oldtrace != null && !currentTrace.equals(oldtrace)) {
-			toolRegistry.notifyToolChange(this);
+			toolRegistry.notifyToolChange(BMotion.TRIGGER_ANIMATION_CHANGED,this);
 		}
 	}
+
+    @Override
+    public void modelChanged(StateSpace s) {
+        toolRegistry.notifyToolChange(ProBAnimation.TRIGGER_MODEL_CHANGED,this);
+    }
 
 	@Override
 	public String getCurrentState() {
