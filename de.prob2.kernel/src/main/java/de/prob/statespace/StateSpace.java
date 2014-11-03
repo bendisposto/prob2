@@ -317,6 +317,14 @@ public class StateSpace implements IAnimator {
 	}
 
 	public Set<IEvalElement> getSubscribedFormulas() {
+		List<IEvalElement> toRemove = new ArrayList<IEvalElement>();
+		for (IEvalElement e : subscribedFormulas) {
+			WeakHashMap<Object, Object> subscribers = formulaRegistry.get(e);
+			if (subscribers == null || subscribers.isEmpty()) {
+				toRemove.add(e);
+			}
+		}
+		subscribedFormulas.removeAll(toRemove);
 		return subscribedFormulas;
 	}
 

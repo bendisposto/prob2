@@ -3,6 +3,7 @@ package de.prob.statespace
 import com.google.common.base.Objects
 
 import de.prob.animator.command.ComposedCommand
+import de.prob.animator.command.EvaluateRegisteredFormulasCommand
 import de.prob.animator.command.ExploreStateCommand
 import de.prob.animator.command.GetBStateCommand
 import de.prob.animator.domainobjects.IEvalElement
@@ -299,5 +300,21 @@ class StateId {
 		invariantOk = cmd.isInvariantOk()
 		explored = true
 		this
+	}
+
+	def Map<IEvalElement, IEvalResult> getValues() {
+		Set<IEvalElement> formulas = stateSpace.getSubscribedFormulas();
+		def toEvaluate = []
+		for (f in formulas) {
+			if (!values.containsKey(f)) {
+				toEvaluate << f
+			}
+		}
+		if (!toEvaluate.isEmpty()) {
+			def cmd = new EvaluateRegisteredFormulasCommand(this.getId(), toEvaluate)
+			stateSpace.execute(cmd)
+			values.putAll(cmd.getResults())
+		}
+		values
 	}
 }

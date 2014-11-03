@@ -25,5 +25,14 @@ values = s.valuesAt(b)
 assert values.containsKey(formula)
 assert values[formula].getValue() == "{}"
 
+f2 = "card(waiting)" as ClassicalB
+before = b.getValues()
+assert !before.containsKey(f2)
+s.subscribe(s, f2)
+after = b.getValues()
+assert after.containsKey(f2)
+assert after.get(f2).getValue() == "0"
+
+
 s.animator.cli.shutdown();
 "A registered formula is automatically evaluated in every state and can be found in the cache later"
