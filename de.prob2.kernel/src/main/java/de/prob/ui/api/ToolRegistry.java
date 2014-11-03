@@ -20,16 +20,16 @@ public class ToolRegistry {
 
 	public void register(final String name, final ITool stateprovider) {
 		tools.put(name, stateprovider);
-		notifyToolChange(stateprovider);
+		//notifyToolChange(stateprovider);
 	}
 
 	public void unregister(final String name) {
 		tools.remove(name);
 	}
 
-	public void notifyToolChange(final ITool tool) {
+	public void notifyToolChange(String trigger, final ITool tool) {
 		for (WeakReference<IToolListener> listener : listeners) {
-			listener.get().animationChange(tool);
+			listener.get().animationChange(trigger, tool);
 		}
 	}
 

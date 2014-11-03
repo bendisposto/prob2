@@ -49,6 +49,7 @@ class ComponentObserver extends TransformersObserver {
                 }
             }
         }
+        System.out.println(map)
         bms.submit([cmd: "bmotion_om.core.setComponent", type: "probmotion-html", id: component, observers: map])
     }
 

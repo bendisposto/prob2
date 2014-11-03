@@ -39,7 +39,7 @@ public class CSPAnimation extends ProBAnimation {
 			Trace new_trace = trace.execute(event, Arrays.asList(parameters));
 			animations.traceChange(new_trace);
 			trace = new_trace;
-			toolRegistry.notifyToolChange(this);
+			toolRegistry.notifyToolChange(BMotion.TRIGGER_ANIMATION_CHANGED,this);
 		} catch (Exception e) {
 			throw new ImpossibleStepException();
 		}
