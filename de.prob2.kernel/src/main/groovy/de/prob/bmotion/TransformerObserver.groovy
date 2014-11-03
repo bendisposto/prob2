@@ -1,9 +1,7 @@
 package de.prob.bmotion
 
 import com.google.gson.Gson
-import groovy.transform.TupleConstructor
 
-@TupleConstructor
 class TransformerObserver extends BMotionObserver implements BMotionTransformer {
 
     def _selector
@@ -15,6 +13,13 @@ class TransformerObserver extends BMotionObserver implements BMotionTransformer 
     def _content
 
     private final Gson g = new Gson()
+
+    def TransformerObserver() {
+    }
+
+    def TransformerObserver(selector) {
+        this._selector = selector
+    }
 
     def static TransformerObserver make(Closure cls) {
         new TransformerObserver().with cls
