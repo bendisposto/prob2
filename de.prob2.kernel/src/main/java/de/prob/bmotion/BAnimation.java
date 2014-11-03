@@ -1,12 +1,8 @@
 package de.prob.bmotion;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import de.prob.animator.domainobjects.EvaluationException;
 import de.prob.animator.domainobjects.IEvalElement;
+import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateId;
@@ -16,11 +12,14 @@ import de.prob.ui.api.IllegalFormulaException;
 import de.prob.ui.api.ImpossibleStepException;
 import de.prob.ui.api.ToolRegistry;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class BAnimation extends ProBAnimation {
 
 	private final Map<String, IEvalElement> formulas = new HashMap<String, IEvalElement>();
-
-	protected StateSpace currentStatespace;
 
 	public BAnimation(final String toolId, final AbstractModel model,
 			final AnimationSelector animations, final ToolRegistry toolRegistry) {
@@ -49,25 +48,35 @@ public class BAnimation extends ProBAnimation {
 		return trace.getCurrentState().getId();
 	}
 
-	@Override
-	public Object evaluate(final String stateref, final String formula)
-			throws IllegalFormulaException {
-		if (trace == null) {
-			return null;
-		}
-		StateSpace space = trace.getStateSpace();
-		IEvalElement e = formulas.get(formula);
-		if (e == null) {
-			e = trace.getModel().parseFormula(formula);
-			formulas.put(formula, e);
-			space.subscribe(this, e);
-		}
-		StateId sId = space.getState(stateref);
-		if (!sId.isExplored()) {
-			sId.explore();
-		}
-		return sId.getValues().get(formulas.get(formula));
-	}
+    @Override
+    public AbstractModel getModel() {
+        return super.getModel();
+    }
+
+    @Override
+    public Object evaluate(final String stateref, final String formula)
+            throws IllegalFormulaException {
+        if (trace != null) {
+            try {
+                StateSpace space = trace.getStateSpace();
+                IEvalElement e = formulas.get(formula);
+                if (e == null) {
+                    e = trace.getModel().parseFormula(formula);
+                    formulas.put(formula, e);
+                    space.subscribe(this, e);
+                }
+                StateId sId = space.getState(stateref);
+                IEvalResult result = sId.getValues().get(formulas.get(formula));
+                return result;
+            } catch (EvaluationException e) {
+                throw new IllegalFormulaException("BMotion Studio: Formula " + formula + " could not be parsed: " + e.getMessage());
+            } catch (Exception e) {
+                throw new IllegalFormulaException("BMotion Studio: " + e.getClass() + " thrown: " + e.getMessage());
+            }
+        } else {
+            throw new IllegalFormulaException("BMotion Studio: No trace exists.");
+        }
+    }
 
 	@Override
 	public List<String> getErrors(final String state, final String formula) {

@@ -3,10 +3,7 @@ package de.prob.bmotion
 import com.google.common.base.Charsets
 import com.google.common.io.Resources
 import de.prob.scripting.ScriptEngineProvider
-import de.prob.ui.api.ITool
-import de.prob.ui.api.IToolListener
-import de.prob.ui.api.ImpossibleStepException
-import de.prob.ui.api.ToolRegistry
+import de.prob.ui.api.*
 import de.prob.web.WebUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -110,28 +107,23 @@ public class BMotion extends AbstractBMotionStudioSession
 
     /**
      *
-     * This method evaluates a given formula and returns the corresponding
-     * result.
+     * This method evaluates a given formula and returns the result.
      *
      * @param formula
      *            The formula to evaluate
      * @return the result of the formula or null if no result was found or no
-     *         reference model and no trace exists
+     *         an exception was thrown
      * @throws Exception
      */
     public Object eval(final String formula) throws Exception {
-        // TODO: Decreases performance!!!/
-        // if (getTool().getErrors(getTool().getCurrentState(),
-        // formula).isEmpty()) {
-        // try {
-        Object evaluate = getTool().evaluate(getTool().getCurrentState(),
-                formula);
-        return evaluate;
-        // } catch (IllegalFormulaException e) {
-        // TODO: handle exception
-        // }
-        // }
-        // return null;
+        try {
+            Object evaluate = getTool().evaluate(getTool().getCurrentState(),
+                    formula);
+            return evaluate;
+        } catch (IllegalFormulaException e) {
+            logger.error("BMotion Studio (Formula evaluation exception): "
+                    + e.getMessage());
+        }
     }
 
     public Object executeOperation(final Map<String, String[]> params) {
