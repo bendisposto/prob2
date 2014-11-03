@@ -16,6 +16,7 @@ import de.prob.model.representation.AbstractModel
  */
 public class Trace {
 
+	def static boolean exploreStateByDefault = true
 	def final TraceElement current
 	def final TraceElement head
 	def final StateSpace stateSpace
@@ -85,7 +86,7 @@ public class Trace {
 		def newHE = new TraceElement(op, current)
 		def opList = branchOpListIfNecessary(op)
 		Trace newTrace = new Trace(stateSpace, newHE, opList, this.UUID)
-		if (!op.getDestId().isExplored()) {
+		if (exploreStateByDefault && !op.getDestId().isExplored()) {
 			op.getDestId().explore()
 		}
 		return newTrace
