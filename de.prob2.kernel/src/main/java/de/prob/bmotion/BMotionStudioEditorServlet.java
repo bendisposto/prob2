@@ -1,34 +1,30 @@
 package de.prob.bmotion;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import de.prob.scripting.Api;
+import de.prob.statespace.AnimationSelector;
+import de.prob.ui.api.ITool;
+import de.prob.ui.api.ToolRegistry;
+import de.prob.web.WebUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import de.prob.scripting.Api;
-import de.prob.statespace.AnimationSelector;
-import de.prob.ui.api.ITool;
-import de.prob.ui.api.ToolRegistry;
-import de.prob.web.WebUtils;
-
 @SuppressWarnings("serial")
 @Singleton
 public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 
     @Inject
-    public BMotionStudioEditorServlet(final Api api,
-                                      final AnimationSelector animations,
+    public BMotionStudioEditorServlet(final Api api, final AnimationSelector animations,
                                       final ToolRegistry toolRegistry,
                                       final VisualisationRegistry visualisationRegistry) {
         super(api, animations, toolRegistry, visualisationRegistry);
@@ -106,8 +102,7 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
         Document templateDocument = Jsoup.parse(WebUtils.render(templatePath));
         setMetaAttributeValue(templateDocument, "bms.model", newModelPath);
         setMetaAttributeValue(templateDocument, "bms.script", newScriptPath);
-        BMotionUtil.writeStringToFile(templateDocument.toString(),
-                templateFile);
+        BMotionUtil.writeStringToFile(templateDocument.toString(), templateFile);
         toOutput(resp, "ok");
     }
 
@@ -197,8 +192,7 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
 
     }
 
-    private void deletageTaskRequest(String taskParameter,
-                                     HttpServletRequest req, HttpServletResponse resp) {
+    private void deletageTaskRequest(String taskParameter, HttpServletRequest req, HttpServletResponse resp) {
         if ("init".equals(taskParameter)) {
             taskInit(req, resp);
         } else if ("save".equals(taskParameter)) {
@@ -209,27 +203,24 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
     }
 
     @Override
-    protected void delegateFileRequest(HttpServletRequest req,
-                                       HttpServletResponse resp, AbstractBMotionStudioSession bms) {
+    protected void delegateFileRequest(HttpServletRequest req, HttpServletResponse resp,
+                                       AbstractBMotionStudioSession bms) {
         String sessionId = bms.getSessionUUID().toString();
         String templatePath = bms.getTemplatePath();
         File templateFile = new File(templatePath);
         String templateFolderPath = templateFile.getParent();
-        String fileRequest = req.getRequestURI().replace(
-                req.getServletPath() + "/" + sessionId + "/", "");
+        String fileRequest = req.getRequestURI().replace(req.getServletPath() + "/" + sessionId + "/", "");
         String fullRequestPath = templateFolderPath + "/" + fileRequest;
         if (fullRequestPath.endsWith("tpl.html")) {
             // Template request
-            String content = WebUtils.render("ui/bmsview/bms-editor/templates/"
-                    + fileRequest);
+            String content = WebUtils.render("ui/bmsview/bms-editor/templates/" + fileRequest);
             toOutput(resp, new ByteArrayInputStream(content.getBytes()));
         } else {
             super.delegateFileRequest(req, resp, bms);
         }
     }
 
-    private void delegateDataRequest(String dataParameter,
-                                     HttpServletRequest req, HttpServletResponse resp,
+    private void delegateDataRequest(String dataParameter, HttpServletRequest req, HttpServletResponse resp,
                                      AbstractBMotionStudioSession bmsSession) {
         // ITool tool = bmsSession.getTool();
         // if (tool instanceof IObserver) {
@@ -241,8 +232,7 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         AbstractBMotionStudioSession bmsSession = initSession(req, resp);
         String dataParameter = req.getParameter("data");
         // Data request
@@ -256,11 +246,11 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String taskParameter = req.getParameter("task");
-        if (taskParameter != null)
+        if (taskParameter != null) {
             deletageTaskRequest(taskParameter, req, resp);
+        }
         return;
     }
 
@@ -271,7 +261,8 @@ public class BMotionStudioEditorServlet extends AbstractBMotionStudioServlet {
     }
 
     @Override
-    protected AbstractBMotionStudioSession createSession(UUID id, ITool tool, Map<String, BMotionComponent> proBMotionElementMap,
+    protected AbstractBMotionStudioSession createSession(UUID id, ITool tool,
+                                                         Map<String, BMotionComponent> proBMotionElementMap,
                                                          String template, String host, int port) {
         return new BMotionStudioEditorSession(id, tool, template, host, port);
     }

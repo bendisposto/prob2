@@ -20,7 +20,7 @@ class TransformersObserver extends BMotionObserver {
     @Override
     def apply(BMotion bms) {
         String json = g.toJson(transformers.collectMany { it.update(bms) })
-        bms.submit([cmd:"bms.applyTransformers", transformers:json])
+        bms.submit([cmd: "bms.applyTransformers", transformers: json])
     }
 
 }

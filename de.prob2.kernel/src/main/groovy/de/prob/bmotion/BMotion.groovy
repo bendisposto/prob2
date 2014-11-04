@@ -33,12 +33,11 @@ public class BMotion extends AbstractBMotionStudioSession
 
     private boolean initialised = false
 
-    public BMotion(
-            final UUID id,
-            final ITool tool,
-            final Map<String, BMotionComponent> components,
-            final ToolRegistry registry, final String templatePath,
-            final ScriptEngineProvider engineProvider, final String host, final int port) {
+    public BMotion(final UUID id,
+                   final ITool tool,
+                   final Map<String, BMotionComponent> components,
+                   final ToolRegistry registry, final String templatePath,
+                   final ScriptEngineProvider engineProvider, final String host, final int port) {
         super(id, tool, templatePath, host, port);
         this.engineProvider = engineProvider
         this.components = components
@@ -70,7 +69,8 @@ public class BMotion extends AbstractBMotionStudioSession
 
     public void registerObserver(final List<BMotionObserver> o, String trigger = TRIGGER_ANIMATION_CHANGED) {
         o.each {
-            (it instanceof BMotionTransformer) ? transformerObserver.add(it) : observers.get(trigger)?.observers?.add(it)
+            (it instanceof BMotionTransformer) ? transformerObserver.add(it) :
+                    observers.get(trigger)?.observers?.add(it)
         }
     }
 
@@ -117,18 +117,15 @@ public class BMotion extends AbstractBMotionStudioSession
      */
     public Object eval(final String formula) throws Exception {
         try {
-            Object evaluate = getTool().evaluate(getTool().getCurrentState(),
-                    formula);
+            Object evaluate = getTool().evaluate(getTool().getCurrentState(), formula);
             return evaluate;
         } catch (IllegalFormulaException e) {
-            logger.error("BMotion Studio (Formula evaluation exception): "
-                    + e.getMessage());
+            logger.error("BMotion Studio (Formula evaluation exception): " + e.getMessage());
         }
     }
 
     public Object executeOperation(final Map<String, String[]> params) {
-        String id = (params.get("id") != null && params.get("id").length > 0) ? params
-                .get("id")[0] : "";
+        String id = (params.get("id") != null && params.get("id").length > 0) ? params.get("id")[0] : "";
         String op = params.get("op")[0];
         String[] parameters = params.get("predicate");
         try {
@@ -144,17 +141,16 @@ public class BMotion extends AbstractBMotionStudioSession
     }
 
     public Object callGroovyMethod(final Map<String, String[]> params) {
-        Closure cls = methods.get(params.get("gcmd")[0])
-        if (cls != null) cls(params)
-        null
+        Closure cls = methods.get(params.get("name")[0])
+        if (cls != null)
+            return cls(params)
+        return null
     }
 
     // ------------------
 
     @Override
     public void initSession() {
-//        String absoluteTemplatePath = BMotionUtil
-//                .getFullTemplatePath(getTemplatePath())
         this.observers.clear()
         this.methods.clear()
         this.transformerObserver = new TransformersObserver()
@@ -163,13 +159,6 @@ public class BMotion extends AbstractBMotionStudioSession
         this.observers.put(TRIGGER_ANIMATION_CHANGED, trigger)
         // Initialise ProBMotion components
         initProBMotionComponents()
-//        // Register observer from json
-//        if (getTool() instanceof IObserver) {
-//            JsonElement jsonObserver = BMotionUtil.getJsonObserver(
-//                    absoluteTemplatePath, getParameterMap().get("json"));
-//            registerObserver(((IObserver) getTool())
-//                    .getBMotionObserver(jsonObserver));
-//        }
         // Initialise groovy scripting engine
         initGroovyScriptEngine();
         initialised = true;
@@ -203,23 +192,18 @@ public class BMotion extends AbstractBMotionStudioSession
                 bindings.put("templateFolder", templateFolder);
                 String[] paths = scriptPaths.split(",");
                 for (String path : paths) {
-                    groovyEngine.eval(
-                            "import de.prob.bmotion.*;\n"
-                                    + BMotionUtil
-                                    .getFileContents(templateFolder
-                                    + File.separator + path),
+                    groovyEngine.eval("import de.prob.bmotion.*;\n" + BMotionUtil
+                            .getFileContents(templateFolder + File.separator + path),
                             bindings);
                 }
             }
         } catch (GroovyRuntimeException e) {
-            logger.error("BMotion Studio (Groovy runtime exception): "
-                    + e.getMessage());
+            logger.error("BMotion Studio (Groovy runtime exception): " + e.getMessage());
         } catch (ScriptException e) {
-            logger.error("BMotion Studio (Groovy script exception): "
-                    + e.getMessage() + " (line " + e.getLineNumber() + ")");
+            logger.error("BMotion Studio (Groovy script exception): " + e.getMessage() + " (line " + e.
+                    getLineNumber() + ")");
         } catch (IOException e) {
-            logger.error("BMotion Studio (Error reading script): "
-                    + e.getMessage());
+            logger.error("BMotion Studio (Error reading script): " + e.getMessage());
         }
 
     }

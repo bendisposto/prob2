@@ -1,4 +1,5 @@
 package de.prob.bmotion
+
 //TODO: Check if result of expression is an enumerated set
 class BSetObserver extends TransformerObserver {
 

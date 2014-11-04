@@ -78,13 +78,11 @@ class CSPTraceObserver extends BMotionObserver {
                         evt.transformers.each { TransformerObserver gt ->
 
                             def fselector = (gt._selector instanceof Closure) ? gt._selector(op) : gt._selector
-                            def fattributes = gt._attributes.collectEntries { kv ->
-                                (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value
-                                ]
+                            def fattributes = gt._attributes.collectEntries {
+                                kv -> (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value]
                             }
-                            def fstyles = gt._styles.collectEntries { kv ->
-                                (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value
-                                ]
+                            def fstyles = gt._styles.collectEntries {
+                                kv -> (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value]
                             }
                             def fcontent = (gt._content instanceof Closure) ? gt._content(op) : gt._content
 

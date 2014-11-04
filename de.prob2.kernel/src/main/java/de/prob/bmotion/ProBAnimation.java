@@ -7,23 +7,21 @@ import de.prob.ui.api.ToolRegistry;
 
 public abstract class ProBAnimation implements ITool, IAnimationChangeListener, IModelChangedListener {
 
-    private AbstractModel model;
-
-    protected Trace trace;
+    public static final String TRIGGER_MODEL_CHANGED = "ModelChanged";
     protected final ToolRegistry toolRegistry;
     protected final AnimationSelector animations;
     protected final String toolId;
-    public static final String TRIGGER_MODEL_CHANGED = "ModelChanged";
+    protected Trace trace;
+    private AbstractModel model;
 
-    public ProBAnimation(final String sessionId, final AbstractModel model,
-                         final AnimationSelector animations, final ToolRegistry toolRegistry) {
+    public ProBAnimation(final String sessionId, final AbstractModel model, final AnimationSelector animations,
+                         final ToolRegistry toolRegistry) {
         this(sessionId, animations, toolRegistry);
         this.model = model;
         trace = new Trace(model);
     }
 
-    public ProBAnimation(final String toolId,
-                         final AnimationSelector animations, final ToolRegistry toolRegistry) {
+    public ProBAnimation(final String toolId, final AnimationSelector animations, final ToolRegistry toolRegistry) {
         this.toolId = toolId;
         this.animations = animations;
         this.toolRegistry = toolRegistry;
@@ -52,8 +50,7 @@ public abstract class ProBAnimation implements ITool, IAnimationChangeListener, 
     }
 
     @Override
-    public void traceChange(final Trace currentTrace,
-                            final boolean currentAnimationChanged) {
+    public void traceChange(final Trace currentTrace, final boolean currentAnimationChanged) {
         Trace oldtrace = trace;
         trace = currentTrace;
         if (oldtrace != null && !currentTrace.equals(oldtrace) && currentTrace.getCurrentState().isInitialised()) {

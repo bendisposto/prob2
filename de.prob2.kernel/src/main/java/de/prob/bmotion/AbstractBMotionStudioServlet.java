@@ -1,60 +1,37 @@
 package de.prob.bmotion;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import com.google.common.io.Files;
 import com.google.inject.Singleton;
-
 import de.prob.Main;
 import de.prob.scripting.Api;
 import de.prob.statespace.AnimationSelector;
 import de.prob.ui.api.ITool;
 import de.prob.ui.api.ToolRegistry;
 import de.prob.web.WebUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
 
 @SuppressWarnings("serial")
 @Singleton
 public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 
+    protected final Api api;
+    protected final AnimationSelector animations;
+    protected final ToolRegistry toolRegistry;
+    protected final VisualisationRegistry visualisationRegistry;
     private final int DEFAULT_BUFFER_SIZE = 10240; // 10KB
-
     private final Map<String, AbstractBMotionStudioSession> sessions = new HashMap<String, AbstractBMotionStudioSession>();
 
-    protected final Api api;
-
-    protected final AnimationSelector animations;
-
-    protected final ToolRegistry toolRegistry;
-
-    protected final VisualisationRegistry visualisationRegistry;
-
-    public AbstractBMotionStudioServlet(final Api api,
-                                        final AnimationSelector animations,
+    public AbstractBMotionStudioServlet(final Api api, final AnimationSelector animations,
                                         final ToolRegistry toolRegistry,
                                         final VisualisationRegistry visualisationRegistry) {
         this.api = api;
@@ -70,8 +47,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         try {
             // Open streams.
             input = new BufferedInputStream(stream, DEFAULT_BUFFER_SIZE);
-            output = new BufferedOutputStream(resp.getOutputStream(),
-                    DEFAULT_BUFFER_SIZE);
+            output = new BufferedOutputStream(resp.getOutputStream(), DEFAULT_BUFFER_SIZE);
             // Write file contents to response.
             byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
             int length;
@@ -112,27 +88,26 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         }
     }
 
-    private List<String> validateRequest(HttpServletRequest req,
-                                         HttpServletResponse resp) {
+    private List<String> validateRequest(HttpServletRequest req, HttpServletResponse resp) {
 
         String templatePath = req.getParameter("template");
         String editor = req.getParameter("editor");
 
         List<String> errors = new ArrayList<String>();
 
-        if (templatePath == null)
+        if (templatePath == null) {
             errors.add("Please enter a template.");
+        }
 
         if (templatePath != null) {
             String fileExtension = Files.getFileExtension(templatePath);
             if (!(fileExtension.equals("html") || fileExtension.equals("htm"))) {
                 errors.add("Plese enter a valid template (.html).");
             } else if (editor == null) {
-                File file = new File(
-                        BMotionUtil.getFullTemplatePath(templatePath));
-                if (!file.exists())
-                    errors.add("The template " + templatePath
-                            + " does not exist.");
+                File file = new File(BMotionUtil.getFullTemplatePath(templatePath));
+                if (!file.exists()) {
+                    errors.add("The template " + templatePath + " does not exist.");
+                }
             }
         }
 
@@ -147,8 +122,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         Document templateDocument = Jsoup.parse(templateHtml);
         Elements headTag = templateDocument.getElementsByTag("head");
         Element headElement = headTag.get(0);
-        Elements elements = headElement.getElementsByAttributeValueStarting(
-                "name", "bms.");
+        Elements elements = headElement.getElementsByAttributeValueStarting("name", "bms.");
         // Add additional parameters from template to BMotionStudioSession
         for (Element e : elements) {
             String content = e.attr("content");
@@ -159,8 +133,8 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 
     }
 
-    private AbstractBMotionStudioSession createNewSessionAndRedirect(
-            HttpServletRequest req, HttpServletResponse resp, String sessionId)
+    private AbstractBMotionStudioSession createNewSessionAndRedirect(HttpServletRequest req, HttpServletResponse resp,
+                                                                     String sessionId)
             throws ServletException, IOException {
 
         int port = req.getLocalPort();
@@ -178,19 +152,19 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         for (Map.Entry<String, String[]> e : req.getParameterMap().entrySet()) {
             params.put(e.getKey(), e.getValue()[0]);
             parameterString.append("&" + e.getKey());
-            if (!e.getValue()[0].isEmpty())
+            if (!e.getValue()[0].isEmpty()) {
                 parameterString.append("=" + e.getValue()[0]);
+            }
         }
 
-        UUID sessionUUID = sessionId != null && !sessionId.isEmpty() ? UUID
-                .fromString(sessionId) : UUID.randomUUID();
+        UUID sessionUUID = sessionId != null && !sessionId.isEmpty() ? UUID.fromString(sessionId) : UUID.randomUUID();
 
         // Try to get ITool implementation
         String toolId = params.get("tool");
         String modelPath = params.get("model");
-        ITool tool = BMotionUtil.loadTool(sessionUUID.toString(), toolId,
-                modelPath, animations, toolRegistry, api, fullTemplatePath,
-                getClass());
+        ITool tool = BMotionUtil
+                .loadTool(sessionUUID.toString(), toolId, modelPath, animations, toolRegistry, api, fullTemplatePath,
+                        getClass());
 
         if (tool == null) {
             // TODO: exit and report error message "no ITool found ......"
@@ -199,8 +173,8 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         // Initialise ProBMotion elements
         Map<String, BMotionComponent> proBMotionElementMap = initProBMotionElements(templatePath);
         // Create and initialize session
-        AbstractBMotionStudioSession bmsSession = createSession(sessionUUID,
-                tool, proBMotionElementMap, templatePath, host, port);
+        AbstractBMotionStudioSession bmsSession = createSession(sessionUUID, tool, proBMotionElementMap, templatePath,
+                host, port);
         visualisationRegistry.register(sessionUUID.toString(), bmsSession);
         bmsSession.setParameterMap(params);
         // bmsSession.initSession();
@@ -208,9 +182,8 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         sessions.put(sessionUUID.toString(), bmsSession);
 
         // Redirect with new session id, template file and parameters
-        resp.sendRedirect(req.getServletPath() + "/" + sessionUUID.toString()
-                + "/" + new File(templatePath).getName() + "?"
-                + parameterString.substring(1, parameterString.length()));
+        resp.sendRedirect(req.getServletPath() + "/" + sessionUUID.toString() + "/" + new File(templatePath)
+                .getName() + "?" + parameterString.substring(1, parameterString.length()));
 
         return bmsSession;
 
@@ -220,8 +193,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 
         Map<String, BMotionComponent> probmotionElementMap = new HashMap<String, BMotionComponent>();
 
-        String templateHtml = BMotionUtil.readFile(BMotionUtil
-                .getFullTemplatePath(templatePath));
+        String templateHtml = BMotionUtil.readFile(BMotionUtil.getFullTemplatePath(templatePath));
         Document templateDocument = Jsoup.parse(templateHtml);
 
         // Get probmotion tags ...
@@ -248,8 +220,8 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 
     }
 
-    protected AbstractBMotionStudioSession initSession(HttpServletRequest req,
-                                                       HttpServletResponse resp) throws ServletException, IOException {
+    protected AbstractBMotionStudioSession initSession(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         String uri = req.getRequestURI();
         // Get session from URI
         List<String> parts = new PartList(uri.split("/"));
@@ -259,8 +231,7 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         if (bmsSession == null) {
             List<String> errors = validateRequest(req, resp);
             if (!errors.isEmpty()) {
-                ByteArrayInputStream errorSiteStream = new ByteArrayInputStream(
-                        getErrorHtml(errors).getBytes());
+                ByteArrayInputStream errorSiteStream = new ByteArrayInputStream(getErrorHtml(errors).getBytes());
                 toOutput(resp, errorSiteStream);
             } else {
                 bmsSession = createNewSessionAndRedirect(req, resp, sessionId);
@@ -282,15 +253,14 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         return sessions;
     }
 
-    protected void delegateFileRequest(HttpServletRequest req,
-                                       HttpServletResponse resp, AbstractBMotionStudioSession bms) {
+    protected void delegateFileRequest(HttpServletRequest req, HttpServletResponse resp,
+                                       AbstractBMotionStudioSession bms) {
 
         String sessionId = bms.getSessionUUID().toString();
         String templatePath = bms.getTemplatePath();
         File templateFile = new File(templatePath);
         String templateFolderPath = templateFile.getParent();
-        String fileRequest = req.getRequestURI().replace(
-                req.getServletPath() + "/" + sessionId + "/", "");
+        String fileRequest = req.getRequestURI().replace(req.getServletPath() + "/" + sessionId + "/", "");
         String fullRequestPath = templateFolderPath + "/" + fileRequest;
 
         InputStream stream = null;
@@ -307,8 +277,9 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
         } else {
             // All other files related to template folder
             File file = new File(fullRequestPath);
-            if (!file.exists() || file.isDirectory())
+            if (!file.exists() || file.isDirectory()) {
                 return;
+            }
             try {
                 stream = new FileInputStream(fullRequestPath);
             } catch (FileNotFoundException e1) {
@@ -321,29 +292,11 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
 
     }
 
-    protected abstract String getDefaultPage(
-            AbstractBMotionStudioSession bmsSession);
+    protected abstract String getDefaultPage(AbstractBMotionStudioSession bmsSession);
 
-    protected abstract AbstractBMotionStudioSession createSession(UUID id,
-                                                                  ITool tool, Map<String, BMotionComponent> proBMotionElementMap, String template, String host, int port);
-
-    protected class PartList extends ArrayList<String> {
-
-        private static final long serialVersionUID = -5668244262489304794L;
-
-        public PartList(String[] split) {
-            super(Arrays.asList(split));
-        }
-
-        @Override
-        public String get(int index) {
-            if (index >= this.size())
-                return "";
-            else
-                return super.get(index);
-        }
-
-    }
+    protected abstract AbstractBMotionStudioSession createSession(UUID id, ITool tool,
+                                                                  Map<String, BMotionComponent> proBMotionElementMap,
+                                                                  String template, String host, int port);
 
     protected void setMetaAttributeValue(Document doc, String name, String value) {
         Elements metaElements = doc.getElementsByAttributeValue("name", name);
@@ -361,9 +314,29 @@ public abstract class AbstractBMotionStudioServlet extends HttpServlet {
     protected String getMetaAttributeValue(Document doc, String name) {
         Elements metaElements = doc.getElementsByAttributeValue("name", name);
         Element metaElement = metaElements.first();
-        if (metaElement != null)
+        if (metaElement != null) {
             return metaElement.attr("content");
+        }
         return null;
+    }
+
+    protected class PartList extends ArrayList<String> {
+
+        private static final long serialVersionUID = -5668244262489304794L;
+
+        public PartList(String[] split) {
+            super(Arrays.asList(split));
+        }
+
+        @Override
+        public String get(int index) {
+            if (index >= this.size()) {
+                return "";
+            } else {
+                return super.get(index);
+            }
+        }
+
     }
 
 }

@@ -19,8 +19,7 @@ class BMotionHTMLComponent extends BMotionComponent {
                 counter++;
             }
 
-            public void tail(Node node, int depth) {
-            }
+            public void tail(Node node, int depth) {}
         });
         bms.submit([cmd: "bmotion_om.core.initComponent", type: "probmotion-html", id: id, html: element.html()])
     }
