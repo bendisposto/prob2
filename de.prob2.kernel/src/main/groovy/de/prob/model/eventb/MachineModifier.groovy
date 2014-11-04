@@ -156,7 +156,7 @@ class MachineModifier {
 	def removePOsForEvent(String name) {
 		def iterator = machine.proofs.iterator()
 		while(iterator.hasNext()) {
-			if(iterator.next().name.startWith(name)) {
+			if(iterator.next().name.startsWith(name)) {
 				iterator.remove()
 			}
 		}
