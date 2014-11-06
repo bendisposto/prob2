@@ -5,6 +5,6 @@ import groovy.transform.TupleConstructor;
 @TupleConstructor
 class ReactTransform extends TransformerObject {
 
-	def String bmsid
+    def String bmsid
 
 }

@@ -16,7 +16,7 @@ class TransformerObject {
     }
 
     def TransformerObject set(String name, Object value) {
-        (name == "content" || name == "text") ? content = value : attributes.put(name,value)
+        (name == "content" || name == "text") ? content = value : attributes.put(name, value)
         this
     }
 

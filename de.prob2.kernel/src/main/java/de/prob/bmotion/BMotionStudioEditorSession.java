@@ -1,8 +1,8 @@
 package de.prob.bmotion;
 
-import java.util.UUID;
-
 import de.prob.ui.api.ITool;
+
+import java.util.UUID;
 
 
 public class BMotionStudioEditorSession extends AbstractBMotionStudioSession {

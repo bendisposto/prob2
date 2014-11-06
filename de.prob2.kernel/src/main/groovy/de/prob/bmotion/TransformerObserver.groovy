@@ -14,8 +14,7 @@ class TransformerObserver extends BMotionObserver implements BMotionTransformer 
 
     private final Gson g = new Gson()
 
-    def TransformerObserver() {
-    }
+    def TransformerObserver() {}
 
     def TransformerObserver(selector) {
         this._selector = selector
@@ -47,14 +46,12 @@ class TransformerObserver extends BMotionObserver implements BMotionTransformer 
     def List<TransformerObject> update(BMotion bms) {
         def String selector = (_selector instanceof Closure) ? _selector() : _selector
         def t = new TransformerObject(selector)
-        t.attributes = _attributes.collectEntries { kv ->
-            (kv.value instanceof Closure) ? [kv.key, kv.value()] : [kv.key, kv.value
-            ]
-        }
-        t.styles = _styles.collectEntries { kv ->
-            (kv.value instanceof Closure) ? [kv.key, kv.value()] : [kv.key, kv.value
-            ]
-        }
+        t.attributes = _attributes.
+                collectEntries { kv -> (kv.value instanceof Closure) ? [kv.key, kv.value()] : [kv.key, kv.value]
+                }
+        t.styles = _styles.
+                collectEntries { kv -> (kv.value instanceof Closure) ? [kv.key, kv.value()] : [kv.key, kv.value]
+                }
         t.content = (_content instanceof Closure) ? _content() : _content
         [t]
     }

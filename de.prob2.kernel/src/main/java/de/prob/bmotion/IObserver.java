@@ -4,6 +4,6 @@ import com.google.gson.JsonElement;
 
 public interface IObserver {
 
-	public BMotionTransformer getBMotionObserver(JsonElement jsonObserver);
+    public BMotionTransformer getBMotionObserver(JsonElement jsonObserver);
 
 }
