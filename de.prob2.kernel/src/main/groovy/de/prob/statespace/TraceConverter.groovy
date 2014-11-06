@@ -3,17 +3,15 @@ package de.prob.statespace
 import de.prob.model.representation.AbstractModel
 
 
+
 class TraceConverter {
 	def static File save(Trace trace, String fileName) {
 		final StringBuilder sb = new StringBuilder();
 		def file = new File(fileName);
 		file.newWriter()
 
-		sb.append("<trace>\n")
-		trace.ensureOpInfosEvaluated()
-		def t = trace as ArrayList
-		t.each {
-			def op = it.edge
+		sb.append("<trace>")
+		trace.getOpList(true).each { op ->
 			if(op != null) {
 				sb.append("<Operation name=\"")
 				sb.append(op.getName())
@@ -26,7 +24,7 @@ class TraceConverter {
 				sb.append("</Operation>\n")
 			}
 		}
-		sb.append("</trace>")
+		sb.append("</trace>\n")
 		file.setText(sb.toString())
 		file
 	}
