@@ -41,6 +41,20 @@ public class ModelElementList<E> implements List<E> {
 		}
 	}
 
+	private removeElement(E e) {
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
+		if(e.metaClass.respondsTo(e, "getName")) {
+			keys.remove(e.getName())
+		}
+		if(e.metaClass.respondsTo(e, "getFormula")) {
+			def key = "_" + e.getFormula().getFormulaId().uuid
+			keys.remove(key)
+		}
+	}
+
 	@Override
 	public boolean add(E e) {
 		if (frozen) {
@@ -141,7 +155,7 @@ public class ModelElementList<E> implements List<E> {
 			throw new IllegalModificationException()
 		}
 
-		keys.remove(o)
+		removeElement(o)
 		return list.remove(o)
 	}
 
@@ -151,7 +165,7 @@ public class ModelElementList<E> implements List<E> {
 			throw new IllegalModificationException()
 		}
 
-		keys.remove(list.get(index))
+		removeElement(list.get(index))
 		return list.remove(index)
 	}
 
@@ -161,16 +175,20 @@ public class ModelElementList<E> implements List<E> {
 			throw new IllegalModificationException()
 		}
 
-		c.each { keys.remove(it) }
+		c.each { removeElement(it) }
 		return list.removeAll(c)
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		def toRemove = []
-		keys.each {
-			if(!c.contains(it)) {
-				toRemove << it
+		if (frozen) {
+			throw new IllegalModificationException()
+		}
+
+		def toRemove = new HashSet<String>()
+		keys.each { k,v ->
+			if(!c.contains(v)) {
+				toRemove << k
 			}
 		}
 		toRemove.each { keys.remove(it) }
@@ -183,7 +201,7 @@ public class ModelElementList<E> implements List<E> {
 			throw new IllegalModificationException()
 		}
 
-		keys.remove(list.get(index))
+		removeElement(list.get(index))
 		calcAndAdd(element)
 		return list.set(index,element)
 	}
