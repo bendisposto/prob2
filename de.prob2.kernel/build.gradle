@@ -155,7 +155,16 @@ task downloadCli << {
 		from zip
 		into targetdir
 	}
+
 	delete file(targetzip)
+
+	//	For OS X and Linux when download the CLI isn't executable => chmod +x
+	if (System.getProperty("os.name").toLowerCase().indexOf("win") < 0) {
+		FileTree tree = fileTree(targetdir).include('probcli', 'probcli.sh', 'send_user_interrupt');
+		tree.each { File file ->
+			file.setExecutable(true);
+		}
+	}
 	
 	def targetName = "cspmf-"
 	def os = os_extension()
