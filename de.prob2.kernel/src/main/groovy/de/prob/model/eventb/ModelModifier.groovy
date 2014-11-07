@@ -76,7 +76,7 @@ public class ModelModifier {
 		def inherited = context.getChildrenOfType(Axiom.class).findAll {
 			!axioms.contains(it)
 		}
-		newContext.addAxioms(axioms, new ModelElementList<EventBAxiom>(inherited))
+		newContext.addAxioms(new ModelElementList<EventBAxiom>(axioms), new ModelElementList<EventBAxiom>(inherited))
 		newContext
 	}
 
@@ -116,7 +116,7 @@ public class ModelModifier {
 		def inherited = machine.getChildrenOfType(Invariant.class).findAll {
 			!invariants.contains(it)
 		}
-		newMachine.addInvariants(invariants, new ModelElementList<EventBInvariant>(inherited))
+		newMachine.addInvariants(new ModelElementList<EventBInvariant>(invariants), new ModelElementList<EventBInvariant>(inherited))
 
 		newMachine.addVariant(new ModelElementList<Variant>(machine.getChildrenOfType(Variant.class)))
 
