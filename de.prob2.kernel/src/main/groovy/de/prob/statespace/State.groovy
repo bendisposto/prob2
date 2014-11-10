@@ -53,7 +53,7 @@ class State {
 		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
 		Transition op = stateSpace.opFromPredicate(this, method, predicate , 1)[0];
 		ops << op
-		return op.getDestId();
+		return op.getDestination();
 	}
 
 	/**
@@ -81,7 +81,7 @@ class State {
 		if (op == null) {
 			throw new IllegalArgumentException("Could not execute "+event+" with predicates "+predicates.toString() + " on state "+this.getId())
 		}
-		return op.getDestId();
+		return op.getDestination();
 	}
 
 	/**
@@ -204,7 +204,7 @@ class State {
 		return id;
 	}
 
-	def String getState() {
+	def String getStateRep() {
 		if (stateSpace.getModel().getFormalismType() == FormalismType.B) {
 			GetBStateCommand cmd = new GetBStateCommand(this)
 			stateSpace.execute(cmd)
@@ -244,7 +244,7 @@ class State {
 		}
 		Collections.shuffle(ops)
 		def op = ops[0]
-		def newState = op.getDestId()
+		def newState = op.getDestination()
 		newState.explore()
 		return newState;
 	}

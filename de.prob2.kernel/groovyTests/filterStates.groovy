@@ -13,7 +13,7 @@ t = t.new("pp = PID3")
 t = t.del("pp = PID3")
 t = t.ready("rr = PID2")
 
-sIds = t.getTransitionList().collect { it.getDestId().explore() }
+sIds = t.getTransitionList().collect { it.getDestination().explore() }
 formula = "card(waiting) = 1" as ClassicalB
 cmd = new FilterStatesForPredicateCommand(formula, sIds )
 s.execute(cmd)

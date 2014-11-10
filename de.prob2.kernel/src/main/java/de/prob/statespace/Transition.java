@@ -19,7 +19,6 @@ import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventParameter;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
@@ -86,32 +85,9 @@ public class Transition {
 	}
 
 	/**
-	 * {@link Deprecated}. Use {@link #getSrcId()} and access the String id via
-	 * {@link State#getId()} instead.
-	 * 
-	 * @return String id of source node
+	 * @return the {@link State} reference to the source node of this transition
 	 */
-	@Deprecated
-	public String getSrc() {
-		return src.getId();
-	}
-
-	/**
-	 * {@link Deprecated}. Use {@link #getDestId()} and access the String id via
-	 * {@link State#getId()}.
-	 * 
-	 * @return String id of destination node.
-	 */
-	@Deprecated
-	public String getDest() {
-		return dest.getId();
-	}
-
-	/**
-	 * @return the {@link State} reference to the source node of this
-	 *         operation
-	 */
-	public State getSrcId() {
+	public State getSource() {
 		return src;
 	}
 
@@ -119,7 +95,7 @@ public class Transition {
 	 * @return the {@link State} reference to the destination node of this
 	 *         operation
 	 */
-	public State getDestId() {
+	public State getDestination() {
 		return dest;
 	}
 
@@ -157,21 +133,6 @@ public class Transition {
 	}
 
 	/**
-	 * This is {@link Deprecated}. Use {@link #getRep()} instead.
-	 * 
-	 * @param m
-	 *            Abstract Model
-	 * @return string representation
-	 */
-	@Deprecated
-	public String getRep(final AbstractModel m) {
-		if (rep == null) {
-			rep = generateRep();
-		}
-		return rep;
-	}
-
-	/**
 	 * @return the String representation of the operation.
 	 */
 	public String getRep() {
@@ -181,6 +142,13 @@ public class Transition {
 		return rep;
 	}
 
+	/**
+	 * Uses {@link #getParameterPredicates()} to calculate a string predicate
+	 * representing the value of the parameters for this transition.
+	 * 
+	 * @return the {@link String} predicate that represents the value of the
+	 *         parameters for this transition.
+	 */
 	public String getParameterPredicate() {
 		if (predicateString != null) {
 			return predicateString;
@@ -189,6 +157,10 @@ public class Transition {
 		return predicateString;
 	}
 
+	/**
+	 * @return a list of string predicates representing the value of the
+	 *         parameters for this transition
+	 */
 	public List<String> getParameterPredicates() {
 		evaluate();
 		List<String> predicates = new ArrayList<String>();
@@ -245,47 +217,37 @@ public class Transition {
 		if (obj instanceof Transition) {
 			Transition that = (Transition) obj;
 			return this.getId().equals(that.getId())
-					&& this.getSrcId().equals(that.getSrcId())
-					&& this.getDestId().equals(that.getDestId());
+					&& this.getSource().equals(that.getSource())
+					&& this.getDestination().equals(that.getDestination());
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(13, 7).append(getId()).append(getSrc())
-				.append(getDest()).toHashCode();
+		return new HashCodeBuilder(13, 7).append(getId())
+				.append(getSource().getId()).append(getDestination().getId())
+				.toHashCode();
 	}
 
 	/**
 	 * @param that
-	 *            {@link Transition} with which this {@link Transition} should be
-	 *            compared
-	 * @return if the name and parameters of the {@link Transition}s are equivalent
+	 *            {@link Transition} with which this {@link Transition} should
+	 *            be compared
+	 * @return if the name and parameters of the {@link Transition}s are
+	 *         equivalent
 	 */
 	public boolean isSame(final Transition that) {
-		if (!that.isEvaluated()) {
-			return false;
-		}
+		this.evaluate();
+		that.evaluate();
 		return that.getName().equals(name) && that.getParams().equals(params);
 	}
 
 	/**
-	 * {@link Deprecated}. Use {@link #evaluate()} instead.
-	 * 
-	 * @param s
-	 *            - StateSpace
-	 * @return OpInfo that has been evaluated.
-	 */
-	@Deprecated
-	public Transition ensureEvaluated(final StateSpace s) {
-		return evaluate();
-	}
-
-	/**
-	 * The {@link Transition} is checked to see if the name, parameters, and return
-	 * values have been retrieved from ProB yet. If not, the retrieval takes
-	 * place via the {@link GetOpFromId} command and the missing values are set.
+	 * The {@link Transition} is checked to see if the name, parameters, and
+	 * return values have been retrieved from ProB yet. If not, the retrieval
+	 * takes place via the {@link GetOpFromId} command and the missing values
+	 * are set.
 	 * 
 	 * @return
 	 */
@@ -307,13 +269,16 @@ public class Transition {
 	}
 
 	/**
-	 * @return A SHA-1 hash of the target state in String format
+	 * Calls {@link State#getStateRep} to calculate the SHA-1 of the destination
+	 * state.
+	 * 
+	 * @return A SHA-1 hash of the target state in String format.
 	 * @throws NoSuchAlgorithmException
 	 */
 	public String sha() throws NoSuchAlgorithmException {
 		evaluate();
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
-		md.update(getDestId().getState().getBytes());
+		md.update(getDestination().getStateRep().getBytes());
 		return new BigInteger(1, md.digest()).toString(Character.MAX_RADIX);
 	}
 
@@ -366,15 +331,15 @@ public class Transition {
 	 * @return {@link Transition} object representing the information about the
 	 *         operation
 	 */
-	public static Transition createOpInfoFromCompoundPrologTerm(final StateSpace s,
-			final CompoundPrologTerm cpt) {
+	public static Transition createTransitionFromCompoundPrologTerm(
+			final StateSpace s, final CompoundPrologTerm cpt) {
 		String opId = Transition.getIdFromPrologTerm(cpt.getArgument(1));
 		String name = StringUtil.generateString(BindingGenerator
 				.getCompoundTerm(cpt.getArgument(2), 0).getFunctor());
 		String srcId = Transition.getIdFromPrologTerm(cpt.getArgument(3));
 		String destId = Transition.getIdFromPrologTerm(cpt.getArgument(4));
-		return new Transition(s, opId, name, s.addState(srcId), s.addState(destId),
-				false);
+		return new Transition(s, opId, name, s.addState(srcId),
+				s.addState(destId), false);
 	}
 
 	/**

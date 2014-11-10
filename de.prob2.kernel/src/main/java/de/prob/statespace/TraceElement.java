@@ -26,7 +26,7 @@ public class TraceElement {
 	}
 
 	public TraceElement(final Transition edge, final TraceElement previous) {
-		this.currentState = edge.getDestId();
+		this.currentState = edge.getDestination();
 		this.transition = edge;
 
 		this.previous = previous;
@@ -38,7 +38,7 @@ public class TraceElement {
 	 */
 	public State getSrc() {
 		if (transition != null) {
-			return transition.getSrcId();
+			return transition.getSource();
 		}
 		return currentState;
 	}
@@ -48,7 +48,7 @@ public class TraceElement {
 	 */
 	public State getDest() {
 		if (transition != null) {
-			return transition.getDestId();
+			return transition.getDestination();
 		}
 		return null;
 	}

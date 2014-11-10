@@ -81,7 +81,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(1))) {
 				if (!pt.hasFunctor("none", 0)) {
 					counterExample.add(Transition
-							.createOpInfoFromCompoundPrologTerm(s,
+							.createTransitionFromCompoundPrologTerm(s,
 									BindingGenerator.getCompoundTerm(pt, 4)));
 				}
 			}
@@ -106,7 +106,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			}
 
 			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(3))) {
-				pathToCE.add(Transition.createOpInfoFromCompoundPrologTerm(s,
+				pathToCE.add(Transition.createTransitionFromCompoundPrologTerm(s,
 						BindingGenerator.getCompoundTerm(pt, 4)));
 			}
 

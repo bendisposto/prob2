@@ -178,9 +178,9 @@ public class StateInspector extends AbstractSession implements
 		Transition currentTransition = t.getCurrentTransition();
 		Map<IEvalElement, IEvalResult> current = currentTransition == null ? s
 				.valuesAt(t.getCurrentState()) : s.valuesAt(currentTransition
-				.getDestId());
+				.getDestination());
 		Map<IEvalElement, IEvalResult> previous = currentTransition == null ? new HashMap<IEvalElement, IEvalResult>()
-				: s.valuesAt(currentTransition.getSrcId());
+				: s.valuesAt(currentTransition.getSource());
 
 		for (IEvalElement e : formulasForEvaluating) {
 			String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current

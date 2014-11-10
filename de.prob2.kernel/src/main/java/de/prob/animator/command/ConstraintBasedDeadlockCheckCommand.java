@@ -106,7 +106,7 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 					resultTerm, 2);
 
 			Transition deadlockOperation = Transition
-					.createOpInfoFromCompoundPrologTerm(
+					.createTransitionFromCompoundPrologTerm(
 							s,
 							BindingGenerator.getCompoundTerm(
 									deadlockTerm.getArgument(1), 4));

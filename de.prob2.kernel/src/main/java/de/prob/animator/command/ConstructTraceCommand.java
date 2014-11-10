@@ -130,7 +130,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 
 		for (PrologTerm term : trace) {
 			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 4);
-			Transition operation = Transition.createOpInfoFromCompoundPrologTerm(
+			Transition operation = Transition.createTransitionFromCompoundPrologTerm(
 					stateSpace, t);
 			resultTrace.add(operation);
 		}
@@ -147,7 +147,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 	}
 
 	public State getFinalState() {
-		return resultTrace.get(resultTrace.size() - 1).getDestId();
+		return resultTrace.get(resultTrace.size() - 1).getDestination();
 	}
 
 	@Override

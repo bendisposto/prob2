@@ -11,7 +11,7 @@ assert t.canExecuteEvent("Set",[])
 t = t.Set()
 op = t.getCurrentTransition()
 assert !op.isEvaluated()
-op.ensureEvaluated(s)
+op.evaluate()
 assert op.isEvaluated()
 assert op.params != null
 assert op.params.size() == 0
@@ -24,7 +24,7 @@ assert t.canExecuteEvent("Crazy1",["p=10"])
 t = t.Crazy1("p=10")
 op = t.getCurrentTransition()
 assert !op.isEvaluated()
-op.ensureEvaluated(s)
+op.evaluate()
 assert op.isEvaluated()
 assert op.params != null
 assert op.params.size() == 1
@@ -38,7 +38,7 @@ assert t.canExecuteEvent("Crazy2", ["p1=7", "p2={4,7,9}"])
 t = t.Crazy2("p1=7", "p2={4,7,9}")
 op = t.getCurrentTransition()
 assert !op.isEvaluated()
-op.ensureEvaluated(s)
+op.evaluate()
 assert op.isEvaluated()
 assert op.params != null
 assert op.params.size() == 2

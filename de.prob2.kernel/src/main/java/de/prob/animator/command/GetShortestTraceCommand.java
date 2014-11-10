@@ -46,7 +46,7 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 		PrologTerm trace = bindings.get(TRACE);
 		if (trace instanceof ListPrologTerm) {
 			for (PrologTerm term : (ListPrologTerm) trace) {
-				transitions.add(Transition.createOpInfoFromCompoundPrologTerm(s,
+				transitions.add(Transition.createTransitionFromCompoundPrologTerm(s,
 						(CompoundPrologTerm) term));
 			}
 		} else {

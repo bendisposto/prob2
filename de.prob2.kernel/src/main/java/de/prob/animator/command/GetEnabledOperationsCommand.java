@@ -55,7 +55,7 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 		for (PrologTerm op : prologTerm) {
 			CompoundPrologTerm cpt;
 			cpt = BindingGenerator.getCompoundTerm(op, 4);
-			enabledOperations.add(Transition.createOpInfoFromCompoundPrologTerm(s,
+			enabledOperations.add(Transition.createTransitionFromCompoundPrologTerm(s,
 					cpt));
 		}
 	}

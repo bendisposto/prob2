@@ -11,7 +11,7 @@ t = t.new("pp = PID1")
 t = t.new("pp = PID2")
 t = t.ready("rr = PID1")
 
-assert t.getCurrentState().getState() == "( active={PID1} &\n       ready={} &\n       waiting={PID2} )"
+assert t.getCurrentState().getStateRep() == "( active={PID1} &\n       ready={} &\n       waiting={PID2} )"
 
 
 

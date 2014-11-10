@@ -80,7 +80,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 		} else if (resultTerm.hasFunctor("state_found", 2)) {
 			CompoundPrologTerm term = (CompoundPrologTerm) resultTerm;
 			result = ResultType.STATE_FOUND;
-			operation = Transition.createOpInfoFromCompoundPrologTerm(s,
+			operation = Transition.createTransitionFromCompoundPrologTerm(s,
 					(CompoundPrologTerm) term.getArgument(1));
 			stateId = term.getArgument(2).toString();
 		} else {

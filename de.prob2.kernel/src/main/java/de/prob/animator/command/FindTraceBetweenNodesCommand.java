@@ -50,7 +50,7 @@ public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 		PrologTerm trace = bindings.get(TRACE);
 		if (trace instanceof ListPrologTerm) {
 			for (PrologTerm term : (ListPrologTerm) trace) {
-				newTransitions.add(Transition.createOpInfoFromCompoundPrologTerm(
+				newTransitions.add(Transition.createTransitionFromCompoundPrologTerm(
 						stateSpace, (CompoundPrologTerm) term));
 			}
 		} else {

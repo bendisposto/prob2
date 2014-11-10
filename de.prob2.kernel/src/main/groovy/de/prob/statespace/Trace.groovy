@@ -62,8 +62,8 @@ public class Trace {
 
 		def List<EvaluationCommand> cmds = []
 		transitionList.each {
-			if (stateSpace.canBeEvaluated(it.getDestId()) {
-				cmds << f.getCommand(it.getDestId())
+			if (stateSpace.canBeEvaluated(it.getDestination()) {
+				cmds << f.getCommand(it.getDestination())
 			}
 		}
 
@@ -86,14 +86,14 @@ public class Trace {
 		def newHE = new TraceElement(op, current)
 		def transitionList = branchTransitionListIfNecessary(op)
 		Trace newTrace = new Trace(stateSpace, newHE, transitionList, this.UUID)
-		if (exploreStateByDefault && !op.getDestId().isExplored()) {
-			op.getDestId().explore()
+		if (exploreStateByDefault && !op.getDestination().isExplored()) {
+			op.getDestination().explore()
 		}
 		return newTrace
 	}
 
-	def Trace add(final String opId) {
-		Transition op = getCurrentState().getOutTransitions().find { it.getId() == opId }
+	def Trace add(final String transitionId) {
+		Transition op = getCurrentState().getOutTransitions().find { it.getId() == transitionId }
 		if (op == null) {
 			throw new IllegalArgumentException(opId
 			+ " is not a valid operation on this state")
@@ -210,7 +210,7 @@ public class Trace {
 			} else {
 				transitionList << op
 			}
-			currentState = op.getDestId()
+			currentState = op.getDestination()
 		}
 
 		Trace newTrace = new Trace(stateSpace, current, transitionList, this.UUID)
@@ -369,7 +369,7 @@ public class Trace {
 	 */
 	def static Trace getTraceFromTransitions(StateSpace s, List<Transition> ops) {
 		if(!ops.isEmpty()) {
-			Trace t = new Trace(ops.first().getSrcId())
+			Trace t = new Trace(ops.first().getSource())
 			t = t.addTransitions(ops)
 			return t
 		}
