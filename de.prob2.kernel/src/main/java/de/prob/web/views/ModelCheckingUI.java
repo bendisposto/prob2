@@ -27,6 +27,7 @@ import de.prob.check.ModelChecker;
 import de.prob.check.ModelCheckingOptions;
 import de.prob.check.ModelCheckingOptions.Options;
 import de.prob.check.StateSpaceStats;
+import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.BEvent;
 import de.prob.model.representation.ModelElementList;
 import de.prob.statespace.AnimationSelector;
@@ -143,8 +144,8 @@ public class ModelCheckingUI extends AbstractSession implements
 				currentStateSpace, options, null, this));
 		jobs.put(checker.getJobId(), checker);
 		checker.start();
-		String name = currentStateSpace.getModel().getMainComponent()
-				.toString();
+		AbstractElement main = currentStateSpace.getModel().getMainComponent();
+		String name = main == null ? "Model Check" : main.toString();
 		List<String> ss = new ArrayList<String>();
 		for (Options opts : options.getPrologOptions()) {
 			ss.add(opts.getDescription());
@@ -311,7 +312,7 @@ public class ModelCheckingUI extends AbstractSession implements
 	 */
 	private List<String> extractEventNames(final StateSpace s) {
 		List<String> sts = new ArrayList<String>();
-		if (s == null) {
+		if (s == null || s.getModel().getMainComponent() == null) {
 			return sts;
 		}
 		ModelElementList<BEvent> events = s.getModel().getMainComponent()
