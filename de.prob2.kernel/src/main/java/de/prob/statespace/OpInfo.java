@@ -43,8 +43,8 @@ public class OpInfo {
 
 	private final String id;
 	private final String name;
-	private final StateId src;
-	private final StateId dest;
+	private final State src;
+	private final State dest;
 	private List<String> params;
 	private List<String> returnValues;
 	private String rep = null;
@@ -55,7 +55,7 @@ public class OpInfo {
 	Logger logger = LoggerFactory.getLogger(OpInfo.class);
 
 	private OpInfo(final StateSpace stateSpace, final String id,
-			final String name, final StateId src, final StateId dest,
+			final String name, final State src, final State dest,
 			final boolean evaluated) {
 		this.stateSpace = stateSpace;
 		this.id = id;
@@ -87,7 +87,7 @@ public class OpInfo {
 
 	/**
 	 * {@link Deprecated}. Use {@link #getSrcId()} and access the String id via
-	 * {@link StateId#getId()} instead.
+	 * {@link State#getId()} instead.
 	 * 
 	 * @return String id of source node
 	 */
@@ -98,7 +98,7 @@ public class OpInfo {
 
 	/**
 	 * {@link Deprecated}. Use {@link #getDestId()} and access the String id via
-	 * {@link StateId#getId()}.
+	 * {@link State#getId()}.
 	 * 
 	 * @return String id of destination node.
 	 */
@@ -108,18 +108,18 @@ public class OpInfo {
 	}
 
 	/**
-	 * @return the {@link StateId} reference to the source node of this
+	 * @return the {@link State} reference to the source node of this
 	 *         operation
 	 */
-	public StateId getSrcId() {
+	public State getSrcId() {
 		return src;
 	}
 
 	/**
-	 * @return the {@link StateId} reference to the destination node of this
+	 * @return the {@link State} reference to the destination node of this
 	 *         operation
 	 */
-	public StateId getDestId() {
+	public State getDestId() {
 		return dest;
 	}
 

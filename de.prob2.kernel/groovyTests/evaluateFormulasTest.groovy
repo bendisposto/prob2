@@ -12,7 +12,7 @@ h = h.add(4)
 h = h.add(6)
 a = h.getCurrentState()
 assert a == s[4]
-assert a.getClass() == de.prob.statespace.StateId
+assert a.getClass() == State
 
 values = s.valuesAt(a)
 assert values.containsKey(formula)

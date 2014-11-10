@@ -5,7 +5,7 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.ui.api.IllegalFormulaException;
@@ -65,7 +65,7 @@ public class BAnimation extends ProBAnimation {
                 formulas.put(formula, e);
                 space.subscribe(this, e);
             }
-            StateId sId = space.getState(stateref);
+            State sId = space.getState(stateref);
             IEvalResult result = sId.getValues().get(formulas.get(formula));
             return result;
         } catch (EvaluationException e) {
@@ -84,7 +84,7 @@ public class BAnimation extends ProBAnimation {
             try {
                 IEvalElement e = trace.getModel().parseFormula(formula);
                 StateSpace space = trace.getStateSpace();
-                StateId sId = space.getState(state);
+                State sId = space.getState(state);
                 if (!sId.isExplored()) {
                     sId.explore();
                 }

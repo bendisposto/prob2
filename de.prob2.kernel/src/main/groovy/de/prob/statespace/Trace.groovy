@@ -31,7 +31,7 @@ public class Trace {
 		this(s.getRoot())
 	}
 
-	def Trace(final StateId startState) {
+	def Trace(final State startState) {
 		this(startState.getStateSpace(), new TraceElement(startState), [], java.util.UUID.randomUUID())
 	}
 
@@ -196,7 +196,7 @@ public class Trace {
 			return this
 		}
 
-		StateId currentState = this.current.getCurrentState()
+		State currentState = this.current.getCurrentState()
 		Trace oldTrace = this
 		TraceElement current = this.current
 		List<OpInfo> opList = this.opList
@@ -314,11 +314,11 @@ public class Trace {
 		return getCurrentState().getOutTransitions(evaluate)
 	}
 
-	def StateId getCurrentState() {
+	def State getCurrentState() {
 		return current.getCurrentState()
 	}
 
-	def StateId getPreviousState() {
+	def State getPreviousState() {
 		return current.getPrevious().getCurrentState()
 	}
 

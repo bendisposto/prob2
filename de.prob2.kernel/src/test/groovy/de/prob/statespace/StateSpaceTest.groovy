@@ -72,13 +72,13 @@ class StateSpaceTest extends Specification {
 		s.setModel(new Model())
 
 		def states = [
-			new StateId("1",s),
-			new StateId("root", s),
-			new StateId("2", s),
-			new StateId("3", s),
-			new StateId("4", s),
-			new StateId("5", s),
-			new StateId("6", s)
+			new State("1",s),
+			new State("root", s),
+			new State("2", s),
+			new State("3", s),
+			new State("4", s),
+			new State("5", s),
+			new State("6", s)
 		]
 
 		def ops = [
@@ -115,7 +115,7 @@ class StateSpaceTest extends Specification {
 
 	def addVertices(List<String> ids, StateSpace s) {
 		for (String id : ids) {
-			s.addVertex(new StateId(id))
+			s.addVertex(new State(id))
 		}
 	}
 
@@ -141,7 +141,7 @@ class StateSpaceTest extends Specification {
 
 	def "The state is not explored"() {
 		when:
-		def a = new StateId("7", s)
+		def a = new State("7", s)
 		s.addVertex(a)
 		s.states.put(a.getId(),a)
 

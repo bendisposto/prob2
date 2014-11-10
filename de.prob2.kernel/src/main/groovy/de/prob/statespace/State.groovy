@@ -19,7 +19,7 @@ import de.prob.util.StringUtil
  *
  * @author joy
  */
-class StateId {
+class State {
 
 	protected def String id;
 	def StateSpace stateSpace;
@@ -29,7 +29,7 @@ class StateId {
 	def boolean invariantOk
 	def Map<IEvalElement, IEvalResult> values = new HashMap<IEvalElement, IEvalResult>()
 
-	def StateId(String id, StateSpace space) {
+	def State(String id, StateSpace space) {
 		this.id = id;
 		this.explored = false
 		this.stateSpace = space
@@ -64,7 +64,7 @@ class StateId {
 	 * @param params List of String predicates
 	 * @return {@link StateId} that results from executing the specified event
 	 */
-	def StateId perform(String event, String... predicates) {
+	def State perform(String event, String... predicates) {
 		return perform(event, predicates as List)
 	}
 
@@ -76,7 +76,7 @@ class StateId {
 	 * @param params List of String predicates
 	 * @return {@link StateId} that results from executing the specified event
 	 */
-	def StateId perform(String event, List<String> predicates) {
+	def State perform(String event, List<String> predicates) {
 		def op = findTransition(event, predicates)
 		if (op == null) {
 			throw new IllegalArgumentException("Could not execute "+event+" with predicates "+predicates.toString() + " on state "+this.getId())
@@ -219,7 +219,7 @@ class StateId {
 
 
 	def boolean equals(Object that) {
-		if (that instanceof StateId) {
+		if (that instanceof State) {
 			return this.id.equals(that.getId()) && this.getStateSpace().equals(that.getStateSpace());
 		}
 		return false
@@ -230,7 +230,7 @@ class StateId {
 		return Objects.hashCode(id, stateSpace)
 	};
 
-	def StateId anyOperation(filter) {
+	def State anyOperation(filter) {
 		List<OpInfo> ops = getOutTransitions(true)
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
@@ -249,7 +249,7 @@ class StateId {
 		return newState;
 	}
 
-	def StateId anyEvent(filter) {
+	def State anyEvent(filter) {
 		anyOperation(filter);
 	}
 
@@ -291,7 +291,7 @@ class StateId {
 		ops
 	}
 
-	def StateId explore() {
+	def State explore() {
 		ExploreStateCommand cmd = new ExploreStateCommand(stateSpace, id, stateSpace.getSubscribedFormulas());
 		stateSpace.execute(cmd);
 		ops = cmd.getNewTransitions()

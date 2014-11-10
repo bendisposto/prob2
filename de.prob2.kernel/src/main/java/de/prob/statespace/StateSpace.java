@@ -58,7 +58,7 @@ import de.prob.model.representation.CSPModel;
  * 4) Register listeners that are notified of new states and operations
  * 
  * The implementation of the StateSpace is as a {@link StateSpace} with
- * {@link StateId}s as vertices and {@link OpInfo}s as edges. Therefore, some
+ * {@link State}s as vertices and {@link OpInfo}s as edges. Therefore, some
  * basic graph functionalities are provided.
  * 
  * @author joy
@@ -74,14 +74,14 @@ public class StateSpace implements IAnimator {
 	private final HashMap<IEvalElement, WeakHashMap<Object, Object>> formulaRegistry = new HashMap<IEvalElement, WeakHashMap<Object, Object>>();
 	private final Set<IEvalElement> subscribedFormulas = new HashSet<IEvalElement>();
 
-	LoadingCache<String, StateId> states = CacheBuilder.newBuilder()
+	LoadingCache<String, State> states = CacheBuilder.newBuilder()
 			.maximumSize(100)
 			// .expireAfterWrite(10, TimeUnit.MINUTES)
 			// .removalListener(MY_LISTENER) this might be useful for triggering
 			// removal of formulas?
-			.build(new CacheLoader<String, StateId>() {
+			.build(new CacheLoader<String, State>() {
 				@Override
-				public StateId load(final String key) throws Exception {
+				public State load(final String key) throws Exception {
 					return load(key);
 				}
 			});
@@ -93,36 +93,36 @@ public class StateSpace implements IAnimator {
 		animator = panimator.get();
 	}
 
-	public StateId getRoot() {
+	public State getRoot() {
 		return addState("root");
 	}
 
-	public StateId getState(final String id) {
-		StateId sId = states.getIfPresent(id);
+	public State getState(final String id) {
+		State sId = states.getIfPresent(id);
 		if (sId != null) {
 			return sId;
 		}
 		CheckIfStateIdValidCommand cmd = new CheckIfStateIdValidCommand(id);
 		execute(cmd);
 		if (cmd.isValidState()) {
-			sId = new StateId(id, this);
+			sId = new State(id, this);
 			states.put(id, sId);
 			return sId;
 		}
 		return null;
 	}
 
-	StateId addState(final String id) {
-		StateId sId = states.getIfPresent(id);
+	State addState(final String id) {
+		State sId = states.getIfPresent(id);
 		if (sId != null) {
 			return sId;
 		}
-		sId = new StateId(id, this);
+		sId = new State(id, this);
 		states.put(id, sId);
 		return sId;
 	}
 
-	public StateId getState(final int id) {
+	public State getState(final int id) {
 		if (id == -1) {
 			return getRoot();
 		}
@@ -142,11 +142,11 @@ public class StateSpace implements IAnimator {
 		return animator.getId();
 	}
 
-	public List<StateId> getStatesFromPredicate(final IEvalElement predicate) {
+	public List<State> getStatesFromPredicate(final IEvalElement predicate) {
 		GetStatesFromPredicate cmd = new GetStatesFromPredicate(predicate);
 		execute(cmd);
 		List<String> ids = cmd.getIds();
-		List<StateId> sIds = new ArrayList<StateId>();
+		List<State> sIds = new ArrayList<State>();
 		for (String s : ids) {
 			sIds.add(addState(s));
 		}
@@ -159,7 +159,7 @@ public class StateSpace implements IAnimator {
 	 * added to the graph. This is only valid for ClassicalB predicates.
 	 * 
 	 * @param stateId
-	 *            {@link StateId} from which the operation should be found
+	 *            {@link State} from which the operation should be found
 	 * @param name
 	 *            name of the operation that should be executed
 	 * @param predicate
@@ -171,7 +171,7 @@ public class StateSpace implements IAnimator {
 	 * @return list of operations calculated by ProB
 	 * @throws BException
 	 */
-	public List<OpInfo> opFromPredicate(final StateId stateId,
+	public List<OpInfo> opFromPredicate(final State stateId,
 			final String name, final String predicate, final int nrOfSolutions)
 			throws IllegalArgumentException {
 		final IEvalElement pred = model.parseFormula(predicate);
@@ -191,7 +191,7 @@ public class StateSpace implements IAnimator {
 	 * valid from a given state.
 	 * 
 	 * @param stateId
-	 *            {@link StateId} id for state to test
+	 *            {@link State} id for state to test
 	 * @param name
 	 *            {@link String} name of operation
 	 * @param predicate
@@ -199,7 +199,7 @@ public class StateSpace implements IAnimator {
 	 * @return true, if the operation is valid from the given state. False
 	 *         otherwise.
 	 */
-	public boolean isValidOperation(final StateId stateId, final String name,
+	public boolean isValidOperation(final State stateId, final String name,
 			final String predicate) {
 		final ClassicalB pred = new ClassicalB(predicate);
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
@@ -209,7 +209,7 @@ public class StateSpace implements IAnimator {
 				&& (command.getNewTransitions().size() == 1);
 	}
 
-	public List<IEvalResult> eval(final StateId state,
+	public List<IEvalResult> eval(final State state,
 			final List<IEvalElement> formulas) {
 		return state.eval(formulas);
 	}
@@ -222,12 +222,12 @@ public class StateSpace implements IAnimator {
 	 * @return map from {@link IEvalElement} object to {@link IEvalResult}
 	 *         objects
 	 */
-	public Map<IEvalElement, IEvalResult> valuesAt(final StateId stateId) {
+	public Map<IEvalElement, IEvalResult> valuesAt(final State stateId) {
 		stateId.explore();
 		return stateId.getValues();
 	}
 
-	public boolean canBeEvaluated(final StateId stateId) {
+	public boolean canBeEvaluated(final State stateId) {
 		return stateId.isInitialised();
 	}
 
@@ -352,10 +352,10 @@ public class StateSpace implements IAnimator {
 	/**
 	 * @param state
 	 * @return Returns a String representation of the operations available from
-	 *         the specified {@link StateId}. This is mainly useful for console
+	 *         the specified {@link State}. This is mainly useful for console
 	 *         output.
 	 */
-	public String printOps(final StateId state) {
+	public String printOps(final State state) {
 		final StringBuilder sb = new StringBuilder();
 		final Collection<OpInfo> opIds = state.getOutTransitions();
 
@@ -370,12 +370,12 @@ public class StateSpace implements IAnimator {
 	/**
 	 * @param state
 	 * @return Returns a String representation of the information about the
-	 *         state with the specified {@link StateId}. This includes the id
+	 *         state with the specified {@link State}. This includes the id
 	 *         for the state, the cached calculated values, and if an invariant
 	 *         violation or a timeout has occured for the given state. This is
 	 *         mainly useful for console output.
 	 */
-	public String printState(final StateId state) {
+	public String printState(final State state) {
 		final StringBuilder sb = new StringBuilder();
 
 		state.explore();
@@ -539,7 +539,7 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
-	 * This method is implemented to provide access to the {@link StateId}
+	 * This method is implemented to provide access to the {@link State}
 	 * objects specified by an integer identifier. This maps to a groovy
 	 * operator so that in the console users can type
 	 * variableOfTypeStateSpace[stateId] and receive the corresponding StateId
@@ -548,7 +548,7 @@ public class StateSpace implements IAnimator {
 	 * 
 	 * @throws IllegalArgumentException
 	 * @param that
-	 * @return {@link StateId} for the specified id
+	 * @return {@link State} for the specified id
 	 */
 	public Object getAt(final int sId) {
 		return getState(sId);
@@ -567,7 +567,7 @@ public class StateSpace implements IAnimator {
 
 	/**
 	 * Evaluates all of the formulas for every specified state (if they can be
-	 * evaluated). Internally calls {@link #canBeEvaluated(StateId)}. If the
+	 * evaluated). Internally calls {@link #canBeEvaluated(State)}. If the
 	 * formulas are of interest to a class (i.e. the an object has subscribed to
 	 * the formula) the formula is cached.
 	 * 
@@ -576,12 +576,12 @@ public class StateSpace implements IAnimator {
 	 * @return a map of the formulas and their results for all of the specified
 	 *         states
 	 */
-	public Map<StateId, Map<IEvalElement, IEvalResult>> evaluateForGivenStates(
-			final Collection<StateId> states, final List<IEvalElement> formulas) {
-		Map<StateId, Map<IEvalElement, IEvalResult>> result = new HashMap<StateId, Map<IEvalElement, IEvalResult>>();
+	public Map<State, Map<IEvalElement, IEvalResult>> evaluateForGivenStates(
+			final Collection<State> states, final List<IEvalElement> formulas) {
+		Map<State, Map<IEvalElement, IEvalResult>> result = new HashMap<State, Map<IEvalElement, IEvalResult>>();
 		List<EvaluationCommand> cmds = new ArrayList<EvaluationCommand>();
 
-		for (StateId stateId : states) {
+		for (State stateId : states) {
 			if (stateId.isInitialised()) {
 				Map<IEvalElement, IEvalResult> res = new HashMap<IEvalElement, IEvalResult>();
 				result.put(stateId, res);
@@ -609,7 +609,7 @@ public class StateSpace implements IAnimator {
 		for (EvaluationCommand efCmd : cmds) {
 			IEvalElement formula = efCmd.getEvalElement();
 			IEvalResult value = efCmd.getValue();
-			StateId id = getState(efCmd.getStateId());
+			State id = getState(efCmd.getStateId());
 			Map<IEvalElement, IEvalResult> values = id.getValues();
 
 			if (formulaRegistry.containsKey(formula)

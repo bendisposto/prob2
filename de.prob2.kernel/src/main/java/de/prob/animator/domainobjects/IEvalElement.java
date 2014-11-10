@@ -3,7 +3,7 @@ package de.prob.animator.domainobjects;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 
 /**
  * Objects that implement this interface correctly are automatically recognized
@@ -39,5 +39,5 @@ public interface IEvalElement {
 
 	public FormulaUUID getFormulaId();
 
-	public EvaluationCommand getCommand(StateId stateid);
+	public EvaluationCommand getCommand(State stateid);
 }

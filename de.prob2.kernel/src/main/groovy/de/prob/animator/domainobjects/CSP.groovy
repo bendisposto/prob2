@@ -11,7 +11,7 @@ import de.prob.cli.OsInfoProvider
 import de.prob.model.representation.CSPModel
 import de.prob.model.representation.FormulaUUID
 import de.prob.prolog.output.IPrologTermOutput
-import de.prob.statespace.StateId
+import de.prob.statespace.State
 
 /**
  * A Formula representation for CSP
@@ -127,7 +127,7 @@ class CSP extends AbstractEvalElement {
 	}
 
 	@Override
-	public EvaluationCommand getCommand(StateId stateId) {
+	public EvaluationCommand getCommand(State stateId) {
 		/* TODO: we could do a more efficient implementation here */
 		return new EvaluateFormulaCommand(this, stateId.getId());
 	}

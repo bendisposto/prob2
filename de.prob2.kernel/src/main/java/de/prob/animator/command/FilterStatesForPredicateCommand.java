@@ -13,18 +13,18 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 
 public class FilterStatesForPredicateCommand extends AbstractCommand {
 
-	private final Collection<StateId> ids;
+	private final Collection<State> ids;
 	private final IEvalElement predicate;
 	private final String FILTERED = "Filtered";
 	private final List<String> filtered = new ArrayList<String>();
 	private final List<String> errors = new ArrayList<String>();
 
 	public FilterStatesForPredicateCommand(final IEvalElement predicate,
-			final Collection<StateId> ids) {
+			final Collection<State> ids) {
 		if (!predicate.getKind().equals(PREDICATE.toString())) {
 			throw new IllegalArgumentException(
 					"Formula in GetStatesFromPredicate must be a predicate");
@@ -38,7 +38,7 @@ public class FilterStatesForPredicateCommand extends AbstractCommand {
 		pto.openTerm("filter_states_for_predicate");
 		predicate.printProlog(pto);
 		pto.openList();
-		for (StateId id : ids) {
+		for (State id : ids) {
 			pto.printAtomOrNumber(id.getId());
 		}
 		pto.closeList();

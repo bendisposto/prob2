@@ -4,7 +4,7 @@ import de.prob.animator.command.EvaluateAndTranslateCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 
 public class TranslateFormula implements IEvalElement {
 
@@ -44,7 +44,7 @@ public class TranslateFormula implements IEvalElement {
 	}
 
 	@Override
-	public EvaluationCommand getCommand(final StateId stateid) {
+	public EvaluationCommand getCommand(final State stateid) {
 		return new EvaluateAndTranslateCommand(this, stateid.getId());
 	}
 

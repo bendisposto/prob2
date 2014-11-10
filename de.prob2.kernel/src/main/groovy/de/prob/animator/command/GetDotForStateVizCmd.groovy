@@ -3,15 +3,15 @@ package de.prob.animator.command
 import de.prob.parser.ISimplifiedROMap
 import de.prob.prolog.output.IPrologTermOutput
 import de.prob.prolog.term.PrologTerm
-import de.prob.statespace.StateId
+import de.prob.statespace.State
 
 public class GetDotForStateVizCmd extends AbstractCommand {
 
-	StateId id
+	State id
 	File tempFile
 	String content
 
-	def GetDotForStateVizCmd(StateId id) {
+	def GetDotForStateVizCmd(State id) {
 		this.id = id
 		tempFile = File.createTempFile("dotSM", ".dot")
 	}

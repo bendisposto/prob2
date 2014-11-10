@@ -12,7 +12,7 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.ITraceDescription;
 import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -29,13 +29,13 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 	private static final String TRACE_VARIABLE = "Trace";
 	private static final String RESULT_VARIABLE = "Result";
 	private final List<OpInfo> resultTrace = new ArrayList<OpInfo>();
-	private final StateId startstate;
+	private final State startstate;
 	private final LTL condition;
 	private final StateSpace statespace;
 	private PrologTerm result;
 
 	public ExecuteUntilCommand(final StateSpace statespace,
-			final StateId startstate, final LTL condition) {
+			final State startstate, final LTL condition) {
 		this.statespace = statespace;
 		this.startstate = startstate;
 		this.condition = condition;
@@ -72,7 +72,7 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 		return resultTrace;
 	}
 
-	public StateId getFinalState() {
+	public State getFinalState() {
 		return resultTrace.get(resultTrace.size() - 1).getDestId();
 	}
 

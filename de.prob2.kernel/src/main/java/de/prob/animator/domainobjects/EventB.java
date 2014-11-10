@@ -25,7 +25,7 @@ import de.prob.animator.command.EvaluationCommand;
 import de.prob.formula.TranslationVisitor;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 import de.prob.unicode.UnicodeTranslator;
 
 /**
@@ -191,7 +191,7 @@ public class EventB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	@Override
-	public EvaluationCommand getCommand(final StateId stateId) {
+	public EvaluationCommand getCommand(final State stateId) {
 		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
 

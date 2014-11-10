@@ -22,7 +22,7 @@ import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 
 /**
  * Representation of a ClassicalB formula.
@@ -124,7 +124,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	@Override
-	public EvaluationCommand getCommand(final StateId stateId) {
+	public EvaluationCommand getCommand(final State stateId) {
 		return new EvaluateFormulaCommand(this, stateId.getId());
 	}
 }

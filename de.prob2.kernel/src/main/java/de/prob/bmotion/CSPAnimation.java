@@ -5,7 +5,7 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.ui.api.IllegalFormulaException;
@@ -49,7 +49,7 @@ public class CSPAnimation extends ProBAnimation {
         if (!formulaCache.containsKey(formula)) {
             IEvalElement e = trace.getModel().parseFormula(formula);
             StateSpace space = trace.getStateSpace();
-            StateId state = space.getState(stateref);
+            State state = space.getState(stateref);
             if (state != null) {
                 formulaCache.put(formula, state.eval(e));
             }
@@ -64,7 +64,7 @@ public class CSPAnimation extends ProBAnimation {
             try {
                 IEvalElement e = trace.getModel().parseFormula(formula);
                 StateSpace space = trace.getStateSpace();
-                StateId state2 = space.getState(state);
+                State state2 = space.getState(state);
                 state2.eval(e);
             } catch (EvaluationException e) {
                 errors.add("parse error : " + e.getMessage());
