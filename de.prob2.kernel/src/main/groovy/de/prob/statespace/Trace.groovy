@@ -62,7 +62,7 @@ public class Trace {
 
 		def List<EvaluationCommand> cmds = []
 		transitionList.each {
-			if (stateSpace.canBeEvaluated(it.getDestination()) {
+			if (stateSpace.canBeEvaluated(it.getDestination())) {
 				cmds << f.getCommand(it.getDestination())
 			}
 		}
