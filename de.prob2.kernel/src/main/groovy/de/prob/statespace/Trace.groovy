@@ -352,7 +352,7 @@ public class Trace {
 	def List<Transition> getTransitionList(boolean evaluate=false) {
 		List<Transition> ops = transitionList
 		if (evaluate) {
-			stateSpace.evaluateTransition(ops)
+			stateSpace.evaluateTransitions(ops)
 		}
 		return ops
 	}

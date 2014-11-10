@@ -370,8 +370,8 @@ public class StateSpace implements IAnimator {
 	/**
 	 * @param state
 	 * @return Returns a String representation of the information about the
-	 *         state with the specified {@link State}. This includes the id
-	 *         for the state, the cached calculated values, and if an invariant
+	 *         state with the specified {@link State}. This includes the id for
+	 *         the state, the cached calculated values, and if an invariant
 	 *         violation or a timeout has occured for the given state. This is
 	 *         mainly useful for console output.
 	 */
@@ -539,12 +539,11 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
-	 * This method is implemented to provide access to the {@link State}
-	 * objects specified by an integer identifier. This maps to a groovy
-	 * operator so that in the console users can type
-	 * variableOfTypeStateSpace[stateId] and receive the corresponding StateId
-	 * back. An IllegalArgumentException is thrown if the specified id is
-	 * unknown.
+	 * This method is implemented to provide access to the {@link State} objects
+	 * specified by an integer identifier. This maps to a groovy operator so
+	 * that in the console users can type variableOfTypeStateSpace[stateId] and
+	 * receive the corresponding StateId back. An IllegalArgumentException is
+	 * thrown if the specified id is unknown.
 	 * 
 	 * @throws IllegalArgumentException
 	 * @param that
@@ -559,7 +558,8 @@ public class StateSpace implements IAnimator {
 	 *            to be evaluated
 	 * @return a set containing all of the evaluated ops
 	 */
-	public Set<Transition> evaluateTransition(final Collection<Transition> transitions) {
+	public Set<Transition> evaluateTransitions(
+			final Collection<Transition> transitions) {
 		GetOpsFromIds cmd = new GetOpsFromIds(transitions);
 		execute(cmd);
 		return new LinkedHashSet<Transition>(transitions);

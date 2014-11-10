@@ -286,7 +286,7 @@ class State {
 			explore()
 		}
 		if(evaluate) {
-			stateSpace.evaluateTransition(ops)
+			stateSpace.evaluateTransitions(ops)
 		}
 		ops
 	}
