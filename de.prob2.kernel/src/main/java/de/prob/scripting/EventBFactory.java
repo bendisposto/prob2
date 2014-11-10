@@ -39,6 +39,11 @@ public class EventBFactory extends ModelFactory {
 
 	public EventBModel load(final String file, final Map<String, String> prefs,
 			final boolean loadVariables) {
+		if (!(file.endsWith(".bcm") || file.endsWith(".bcc"))) {
+			throw new IllegalArgumentException("File " + file
+					+ " is not a valid EventB model.");
+		}
+
 		EventBModel model = modelProvider.get();
 
 		new EventBDatabaseTranslator(model, file);
