@@ -23,7 +23,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 
 /**
@@ -45,7 +45,7 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 
 	private IModelCheckingResult result;
 	private final List<InvariantCheckCounterExample> counterexamples = new ArrayList<InvariantCheckCounterExample>();
-	private final List<OpInfo> newTransitions = new ArrayList<OpInfo>();
+	private final List<Transition> newTransitions = new ArrayList<Transition>();
 
 	private final StateSpace s;
 
@@ -117,9 +117,9 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 			final CompoundPrologTerm term = (CompoundPrologTerm) t;
 			final String eventName = PrologTerm.atomicString(term
 					.getArgument(1));
-			final OpInfo step1 = OpInfo.createOpInfoFromCompoundPrologTerm(s,
+			final Transition step1 = Transition.createOpInfoFromCompoundPrologTerm(s,
 					BindingGenerator.getCompoundTerm(term.getArgument(2), 4));
-			final OpInfo step2 = OpInfo.createOpInfoFromCompoundPrologTerm(s,
+			final Transition step2 = Transition.createOpInfoFromCompoundPrologTerm(s,
 					BindingGenerator.getCompoundTerm(term.getArgument(3), 4));
 			final InvariantCheckCounterExample ce = new InvariantCheckCounterExample(
 					eventName, step1, step2);
@@ -135,7 +135,7 @@ public class ConstraintBasedInvariantCheckCommand extends AbstractCommand
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
+	public List<Transition> getNewTransitions() {
 		return newTransitions;
 	}
 }

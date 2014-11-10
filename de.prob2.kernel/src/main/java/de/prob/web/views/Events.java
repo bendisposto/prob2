@@ -30,7 +30,7 @@ import de.prob.model.representation.ModelElementList;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
@@ -99,11 +99,11 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 				updateModel(trace);
 			}
 			currentTrace = trace;
-			Set<OpInfo> ops = currentTrace.getStateSpace().evaluateOps(
+			Set<Transition> ops = currentTrace.getStateSpace().evaluateTransition(
 					trace.getNextTransitions());
 			events = new ArrayList<Operation>(ops.size());
 			Set<String> notEnabled = new HashSet<String>(opNames);
-			for (OpInfo opInfo : ops) {
+			for (Transition opInfo : ops) {
 				String name = extractPrettyName(opInfo.getName());
 				notEnabled.remove(name);
 				Operation o = new Operation(opInfo.getId(), name,

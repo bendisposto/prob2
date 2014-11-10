@@ -24,7 +24,7 @@ class State {
 	protected def String id;
 	def StateSpace stateSpace;
 	def boolean explored
-	def List<OpInfo> ops = []
+	def List<Transition> ops = []
 	def boolean initialised
 	def boolean invariantOk
 	def Map<IEvalElement, IEvalResult> values = new HashMap<IEvalElement, IEvalResult>()
@@ -51,7 +51,7 @@ class State {
 		}
 
 		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
-		OpInfo op = stateSpace.opFromPredicate(this, method, predicate , 1)[0];
+		Transition op = stateSpace.opFromPredicate(this, method, predicate , 1)[0];
 		ops << op
 		return op.getDestId();
 	}
@@ -90,7 +90,7 @@ class State {
 	 * @param predicates list of predicates specifying the parameters
 	 * @return the calculated transition, or null if no transition was found.
 	 */
-	def OpInfo findTransition(String name, String... predicates) {
+	def Transition findTransition(String name, String... predicates) {
 		return findTransition(name, predicates as List)
 	}
 
@@ -100,7 +100,7 @@ class State {
 	 * @param predicates list of predicates specifying the parameters
 	 * @return the calculated transition, or null if no transition was found.
 	 */
-	def OpInfo findTransition(String name, List<String> predicates) {
+	def Transition findTransition(String name, List<String> predicates) {
 		if (predicates.isEmpty() && !ops.isEmpty()) {
 			def op = ops.find { it.getName() == name }
 			if (op != null) {
@@ -121,7 +121,7 @@ class State {
 	 * @param nrOfSolutions to be found
 	 * @return a list of solutions found, or an empty list if no solutions were found
 	 */
-	def List<OpInfo> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
+	def List<Transition> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
 
 		if (name.startsWith("\$") && !(name == "\$setup_constants" || name == "\$initialise_machine")) {
 			name = name.substring(1)
@@ -231,7 +231,7 @@ class State {
 	};
 
 	def State anyOperation(filter) {
-		List<OpInfo> ops = getOutTransitions(true)
+		List<Transition> ops = getOutTransitions(true)
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.getName().matches(filter);
@@ -281,12 +281,12 @@ class State {
 	 * 		be evaluated. By default this is set to false.
 	 * @return the outgoing transitions from this state
 	 */
-	def List<OpInfo> getOutTransitions(boolean evaluate=false) {
+	def List<Transition> getOutTransitions(boolean evaluate=false) {
 		if (!explored) {
 			explore()
 		}
 		if(evaluate) {
-			stateSpace.evaluateOps(ops)
+			stateSpace.evaluateTransition(ops)
 		}
 		ops
 	}

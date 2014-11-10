@@ -21,7 +21,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 
 /**
@@ -40,7 +40,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	private final IEvalElement evalElement;
 	private final String stateId;
 	private final String name;
-	private final List<OpInfo> operations = new ArrayList<OpInfo>();
+	private final List<Transition> operations = new ArrayList<Transition>();
 	private final List<String> errors = new ArrayList<String>();
 	private final int nrOfSolutions;
 	private final StateSpace s;
@@ -96,7 +96,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 		for (PrologTerm prologTerm : list) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(
 					prologTerm, 4);
-			operations.add(OpInfo.createOpInfoFromCompoundPrologTerm(s, cpt));
+			operations.add(Transition.createOpInfoFromCompoundPrologTerm(s, cpt));
 		}
 
 		ListPrologTerm errors = BindingGenerator.getList(bindings.get(ERRORS));
@@ -106,7 +106,7 @@ public final class GetOperationByPredicateCommand extends AbstractCommand
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
+	public List<Transition> getNewTransitions() {
 		return operations;
 	}
 

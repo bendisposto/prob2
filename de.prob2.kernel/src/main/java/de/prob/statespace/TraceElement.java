@@ -12,7 +12,7 @@ package de.prob.statespace;
 public class TraceElement {
 	private final int index;
 	private final State currentState;
-	private final OpInfo transition;
+	private final Transition transition;
 
 	private final TraceElement previous;
 
@@ -25,7 +25,7 @@ public class TraceElement {
 		index = 0;
 	}
 
-	public TraceElement(final OpInfo edge, final TraceElement previous) {
+	public TraceElement(final Transition edge, final TraceElement previous) {
 		this.currentState = edge.getDestId();
 		this.transition = edge;
 
@@ -54,9 +54,9 @@ public class TraceElement {
 	}
 
 	/**
-	 * @return the {@link OpInfo} operation corresponding to this element
+	 * @return the {@link Transition} operation corresponding to this element
 	 */
-	public OpInfo getOp() {
+	public Transition getTransition() {
 		return transition;
 	}
 

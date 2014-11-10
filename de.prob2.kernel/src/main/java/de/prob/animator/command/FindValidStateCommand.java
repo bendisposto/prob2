@@ -10,7 +10,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -28,7 +28,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 
 	private ResultType result;
 	private String stateId;
-	private OpInfo operation;
+	private Transition operation;
 	private final StateSpace s;
 
 	/**
@@ -51,7 +51,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 		return stateId;
 	}
 
-	public OpInfo getOperation() {
+	public Transition getOperation() {
 		return operation;
 	}
 
@@ -80,7 +80,7 @@ public class FindValidStateCommand extends AbstractCommand implements
 		} else if (resultTerm.hasFunctor("state_found", 2)) {
 			CompoundPrologTerm term = (CompoundPrologTerm) resultTerm;
 			result = ResultType.STATE_FOUND;
-			operation = OpInfo.createOpInfoFromCompoundPrologTerm(s,
+			operation = Transition.createOpInfoFromCompoundPrologTerm(s,
 					(CompoundPrologTerm) term.getArgument(1));
 			stateId = term.getArgument(2).toString();
 		} else {
@@ -93,8 +93,8 @@ public class FindValidStateCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
-		ArrayList<OpInfo> ops = new ArrayList<OpInfo>();
+	public List<Transition> getNewTransitions() {
+		ArrayList<Transition> ops = new ArrayList<Transition>();
 		if (operation != null) {
 			ops.add(operation);
 		}

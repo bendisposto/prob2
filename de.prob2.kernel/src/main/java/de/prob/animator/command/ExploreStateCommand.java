@@ -21,7 +21,7 @@ import de.prob.animator.domainobjects.StateError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 
 /**
@@ -77,7 +77,7 @@ public final class ExploreStateCommand extends AbstractCommand implements
 
 		boolean initialised = checkInitialisedCmd.getResult();
 		boolean timeoutOccured = checkTimeoutCmd.getResult();
-		List<OpInfo> enabledOperations = getOpsCmd.getEnabledOperations();
+		List<Transition> enabledOperations = getOpsCmd.getEnabledOperations();
 
 		if (!initialised && enabledOperations.isEmpty() && !timeoutOccured) {
 			logger.error("ProB could not find valid constants. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms");
@@ -128,7 +128,7 @@ public final class ExploreStateCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
+	public List<Transition> getNewTransitions() {
 		return getOpsCmd.getNewTransitions();
 	}
 }

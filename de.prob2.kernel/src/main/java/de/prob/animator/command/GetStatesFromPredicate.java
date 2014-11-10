@@ -11,7 +11,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 
 public class GetStatesFromPredicate extends AbstractCommand {
 
@@ -43,7 +43,7 @@ public class GetStatesFromPredicate extends AbstractCommand {
 		ListPrologTerm list = BindingGenerator.getList(bindings.get(STATES));
 
 		for (PrologTerm prologTerm : list) {
-			ids.add(OpInfo.getIdFromPrologTerm(prologTerm));
+			ids.add(Transition.getIdFromPrologTerm(prologTerm));
 		}
 
 	}

@@ -58,7 +58,7 @@ import de.prob.model.representation.CSPModel;
  * 4) Register listeners that are notified of new states and operations
  * 
  * The implementation of the StateSpace is as a {@link StateSpace} with
- * {@link State}s as vertices and {@link OpInfo}s as edges. Therefore, some
+ * {@link State}s as vertices and {@link Transition}s as edges. Therefore, some
  * basic graph functionalities are provided.
  * 
  * @author joy
@@ -171,7 +171,7 @@ public class StateSpace implements IAnimator {
 	 * @return list of operations calculated by ProB
 	 * @throws BException
 	 */
-	public List<OpInfo> opFromPredicate(final State stateId,
+	public List<Transition> opFromPredicate(final State stateId,
 			final String name, final String predicate, final int nrOfSolutions)
 			throws IllegalArgumentException {
 		final IEvalElement pred = model.parseFormula(predicate);
@@ -357,10 +357,10 @@ public class StateSpace implements IAnimator {
 	 */
 	public String printOps(final State state) {
 		final StringBuilder sb = new StringBuilder();
-		final Collection<OpInfo> opIds = state.getOutTransitions();
+		final Collection<Transition> opIds = state.getOutTransitions();
 
 		sb.append("Operations: \n");
-		for (final OpInfo opId : opIds) {
+		for (final Transition opId : opIds) {
 			sb.append("  " + opId.getId() + ": " + opId.getRep());
 			sb.append("\n");
 		}
@@ -555,14 +555,14 @@ public class StateSpace implements IAnimator {
 	}
 
 	/**
-	 * @param ops
+	 * @param transitions
 	 *            to be evaluated
 	 * @return a set containing all of the evaluated ops
 	 */
-	public Set<OpInfo> evaluateOps(final Collection<OpInfo> ops) {
-		GetOpsFromIds cmd = new GetOpsFromIds(ops);
+	public Set<Transition> evaluateTransition(final Collection<Transition> transitions) {
+		GetOpsFromIds cmd = new GetOpsFromIds(transitions);
 		execute(cmd);
-		return new LinkedHashSet<OpInfo>(ops);
+		return new LinkedHashSet<Transition>(transitions);
 	}
 
 	/**

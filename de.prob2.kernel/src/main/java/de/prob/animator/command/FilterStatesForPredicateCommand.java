@@ -12,7 +12,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.State;
 
 public class FilterStatesForPredicateCommand extends AbstractCommand {
@@ -60,7 +60,7 @@ public class FilterStatesForPredicateCommand extends AbstractCommand {
 		} else {
 			ListPrologTerm list = BindingGenerator.getList(term);
 			for (PrologTerm prologTerm : list) {
-				filtered.add(OpInfo.getIdFromPrologTerm(prologTerm));
+				filtered.add(Transition.getIdFromPrologTerm(prologTerm));
 			}
 		}
 	}

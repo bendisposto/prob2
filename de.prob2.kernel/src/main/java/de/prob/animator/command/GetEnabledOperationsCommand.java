@@ -19,7 +19,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 
 /**
@@ -35,7 +35,7 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 
 	private static final String OPERATIONS_VARIABLE = "PLOps";
 	private final String id;
-	private List<OpInfo> enabledOperations = Collections.emptyList();
+	private List<Transition> enabledOperations = Collections.emptyList();
 
 	private final StateSpace s;
 
@@ -48,14 +48,14 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
-		enabledOperations = new ArrayList<OpInfo>();
+		enabledOperations = new ArrayList<Transition>();
 
 		final ListPrologTerm prologTerm = (ListPrologTerm) bindings
 				.get(OPERATIONS_VARIABLE);
 		for (PrologTerm op : prologTerm) {
 			CompoundPrologTerm cpt;
 			cpt = BindingGenerator.getCompoundTerm(op, 4);
-			enabledOperations.add(OpInfo.createOpInfoFromCompoundPrologTerm(s,
+			enabledOperations.add(Transition.createOpInfoFromCompoundPrologTerm(s,
 					cpt));
 		}
 	}
@@ -68,12 +68,12 @@ public final class GetEnabledOperationsCommand extends AbstractCommand
 		pto.closeTerm();
 	}
 
-	public List<OpInfo> getEnabledOperations() {
+	public List<Transition> getEnabledOperations() {
 		return enabledOperations;
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
+	public List<Transition> getNewTransitions() {
 		return enabledOperations;
 	}
 }

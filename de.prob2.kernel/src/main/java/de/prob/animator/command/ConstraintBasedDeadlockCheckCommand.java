@@ -22,7 +22,7 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 
 /**
@@ -42,9 +42,9 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 
 	private IModelCheckingResult result;
 	private String deadlockStateId;
-	private OpInfo deadlockOperation;
+	private Transition deadlockOperation;
 	private final IEvalElement formula;
-	private final List<OpInfo> newOps = new ArrayList<OpInfo>();
+	private final List<Transition> newOps = new ArrayList<Transition>();
 
 	private final StateSpace s;
 
@@ -67,7 +67,7 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 		return deadlockStateId;
 	}
 
-	public OpInfo getDeadlockOperation() {
+	public Transition getDeadlockOperation() {
 		return deadlockOperation;
 	}
 
@@ -105,7 +105,7 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 			CompoundPrologTerm deadlockTerm = BindingGenerator.getCompoundTerm(
 					resultTerm, 2);
 
-			OpInfo deadlockOperation = OpInfo
+			Transition deadlockOperation = Transition
 					.createOpInfoFromCompoundPrologTerm(
 							s,
 							BindingGenerator.getCompoundTerm(
@@ -123,7 +123,7 @@ public class ConstraintBasedDeadlockCheckCommand extends AbstractCommand
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
+	public List<Transition> getNewTransitions() {
 		return newOps;
 	}
 }

@@ -38,7 +38,7 @@ import de.prob.util.StringUtil;
  * @author joy
  * 
  */
-public class OpInfo {
+public class Transition {
 	public StateSpace stateSpace;
 
 	private final String id;
@@ -52,9 +52,9 @@ public class OpInfo {
 	private final FormalismType formalismType;
 	private String predicateString;
 
-	Logger logger = LoggerFactory.getLogger(OpInfo.class);
+	Logger logger = LoggerFactory.getLogger(Transition.class);
 
-	private OpInfo(final StateSpace stateSpace, final String id,
+	private Transition(final StateSpace stateSpace, final String id,
 			final String name, final State src, final State dest,
 			final boolean evaluated) {
 		this.stateSpace = stateSpace;
@@ -242,8 +242,8 @@ public class OpInfo {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof OpInfo) {
-			OpInfo that = (OpInfo) obj;
+		if (obj instanceof Transition) {
+			Transition that = (Transition) obj;
 			return this.getId().equals(that.getId())
 					&& this.getSrcId().equals(that.getSrcId())
 					&& this.getDestId().equals(that.getDestId());
@@ -259,11 +259,11 @@ public class OpInfo {
 
 	/**
 	 * @param that
-	 *            {@link OpInfo} with which this {@link OpInfo} should be
+	 *            {@link Transition} with which this {@link Transition} should be
 	 *            compared
-	 * @return if the name and parameters of the {@link OpInfo}s are equivalent
+	 * @return if the name and parameters of the {@link Transition}s are equivalent
 	 */
-	public boolean isSame(final OpInfo that) {
+	public boolean isSame(final Transition that) {
 		if (!that.isEvaluated()) {
 			return false;
 		}
@@ -278,18 +278,18 @@ public class OpInfo {
 	 * @return OpInfo that has been evaluated.
 	 */
 	@Deprecated
-	public OpInfo ensureEvaluated(final StateSpace s) {
+	public Transition ensureEvaluated(final StateSpace s) {
 		return evaluate();
 	}
 
 	/**
-	 * The {@link OpInfo} is checked to see if the name, parameters, and return
+	 * The {@link Transition} is checked to see if the name, parameters, and return
 	 * values have been retrieved from ProB yet. If not, the retrieval takes
 	 * place via the {@link GetOpFromId} command and the missing values are set.
 	 * 
 	 * @return
 	 */
-	public OpInfo evaluate() {
+	public Transition evaluate() {
 		if (evaluated) {
 			return this;
 		}
@@ -349,10 +349,10 @@ public class OpInfo {
 	 *            String id of destination node
 	 * @return OpInfo representation of given information
 	 */
-	public static OpInfo generateArtificialTransition(final StateSpace s,
+	public static Transition generateArtificialTransition(final StateSpace s,
 			final String transId, final String description, final String srcId,
 			final String destId) {
-		return new OpInfo(s, transId, description, s.addState(srcId),
+		return new Transition(s, transId, description, s.addState(srcId),
 				s.addState(destId), true);
 	}
 
@@ -363,17 +363,17 @@ public class OpInfo {
 	 *            {@link CompoundPrologTerm} representation of the operation
 	 *            which contains the transition id, source id, and destination
 	 *            id
-	 * @return {@link OpInfo} object representing the information about the
+	 * @return {@link Transition} object representing the information about the
 	 *         operation
 	 */
-	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
+	public static Transition createOpInfoFromCompoundPrologTerm(final StateSpace s,
 			final CompoundPrologTerm cpt) {
-		String opId = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
+		String opId = Transition.getIdFromPrologTerm(cpt.getArgument(1));
 		String name = StringUtil.generateString(BindingGenerator
 				.getCompoundTerm(cpt.getArgument(2), 0).getFunctor());
-		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
-		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(4));
-		return new OpInfo(s, opId, name, s.addState(srcId), s.addState(destId),
+		String srcId = Transition.getIdFromPrologTerm(cpt.getArgument(3));
+		String destId = Transition.getIdFromPrologTerm(cpt.getArgument(4));
+		return new Transition(s, opId, name, s.addState(srcId), s.addState(destId),
 				false);
 	}
 

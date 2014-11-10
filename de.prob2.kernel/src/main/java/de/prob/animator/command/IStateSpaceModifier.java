@@ -2,7 +2,7 @@ package de.prob.animator.command;
 
 import java.util.List;
 
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 
 /**
  * This interface is intended to be implemented by {@link AbstractCommand}s in
@@ -26,5 +26,5 @@ public interface IStateSpaceModifier {
 	 * @return List of the (possibly) new transitions that have been added to
 	 *         the state space.
 	 */
-	List<OpInfo> getNewTransitions();
+	List<Transition> getNewTransitions();
 }

@@ -82,11 +82,11 @@ class StateSpaceTest extends Specification {
 		]
 
 		def ops = [
-			new OpInfo(s, "b","root","2"),
-			new OpInfo(s, "c","2","3"),
-			new OpInfo(s, "d","3","4"),
-			new OpInfo(s, "e","3","5"),
-			new OpInfo(s, "f","4","6")
+			new Transition(s, "b","root","2"),
+			new Transition(s, "c","2","3"),
+			new Transition(s, "d","3","4"),
+			new Transition(s, "e","3","5"),
+			new Transition(s, "f","4","6")
 		]
 
 		states.each { it ->
@@ -150,7 +150,7 @@ class StateSpaceTest extends Specification {
 	}
 
 	def "The node is not a deadlock"() {
-		s.addEdge(new OpInfo(s,"bla","1","2"), s.states.get("1"), s.states.get("2"))
+		s.addEdge(new Transition(s,"bla","1","2"), s.states.get("1"), s.states.get("2"))
 
 		expect:
 		s.isDeadlock(s[1]) == false

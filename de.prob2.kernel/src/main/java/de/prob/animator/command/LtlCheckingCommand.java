@@ -21,7 +21,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 
 public final class LtlCheckingCommand extends EvaluationCommand implements
@@ -75,12 +75,12 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			value = res;
 		} else if (term.hasFunctor("counterexample", 3)) {
 			CompoundPrologTerm cpt = BindingGenerator.getCompoundTerm(term, 3);
-			List<OpInfo> counterExample = new ArrayList<OpInfo>();
-			List<OpInfo> pathToCE = new ArrayList<OpInfo>();
+			List<Transition> counterExample = new ArrayList<Transition>();
+			List<Transition> pathToCE = new ArrayList<Transition>();
 
 			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(1))) {
 				if (!pt.hasFunctor("none", 0)) {
-					counterExample.add(OpInfo
+					counterExample.add(Transition
 							.createOpInfoFromCompoundPrologTerm(s,
 									BindingGenerator.getCompoundTerm(pt, 4)));
 				}
@@ -106,7 +106,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			}
 
 			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(3))) {
-				pathToCE.add(OpInfo.createOpInfoFromCompoundPrologTerm(s,
+				pathToCE.add(Transition.createOpInfoFromCompoundPrologTerm(s,
 						BindingGenerator.getCompoundTerm(pt, 4)));
 			}
 
@@ -137,8 +137,8 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
-		List<OpInfo> newOps = new ArrayList<OpInfo>();
+	public List<Transition> getNewTransitions() {
+		List<Transition> newOps = new ArrayList<Transition>();
 		if (result instanceof LTLCounterExample) {
 			newOps.addAll(((LTLCounterExample) result).getOpList());
 		}

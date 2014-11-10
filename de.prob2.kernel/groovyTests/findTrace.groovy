@@ -24,7 +24,7 @@ ops = cmd.getNewTransitions()
 assert ops != null
 assert !ops.isEmpty()
 t = s.getTrace("4")
-opList = t.getOpList()
+opList = t.getTransitionList()
 assert !opList.isEmpty()
 assert ops.size() == opList.size()
 len = ops.size()
@@ -35,13 +35,13 @@ len = ops.size()
 cmd = new FindValidStateCommand(s, "card(waiting) = 2" as ClassicalB)
 s.execute(cmd)
 t = cmd.getTrace(s)
-opList = t.getOpList(true)
+opList = t.getTransitionList(true)
 assert opList.size() == 1
 assert opList[0].getName() == "find_valid_state"
 
 t = s.getTraceToState("pp : waiting" as ClassicalB)
 assert t != null
-ops = t.getOpList(true)
+ops = t.getTransitionList(true)
 assert opList.size() == 1
 assert opList[0].getName() == "find_valid_state"
 

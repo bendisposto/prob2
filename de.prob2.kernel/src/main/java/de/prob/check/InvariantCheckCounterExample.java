@@ -1,7 +1,7 @@
 package de.prob.check;
 
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -18,10 +18,10 @@ import de.prob.statespace.Trace;
  */
 public class InvariantCheckCounterExample implements ITraceDescription {
 	private final String eventName;
-	private final OpInfo step1, step2;
+	private final Transition step1, step2;
 
 	public InvariantCheckCounterExample(final String eventName,
-			final OpInfo step1, final OpInfo step2) {
+			final Transition step1, final Transition step2) {
 		this.eventName = eventName;
 		this.step1 = step1;
 		this.step2 = step2;
@@ -36,18 +36,18 @@ public class InvariantCheckCounterExample implements ITraceDescription {
 	}
 
 	/**
-	 * @return the first {@link OpInfo} transition into a state for which the
+	 * @return the first {@link Transition} transition into a state for which the
 	 *         invariant holds.
 	 */
-	public OpInfo getStep1() {
+	public Transition getStep1() {
 		return step1;
 	}
 
 	/**
-	 * @return the second {@link OpInfo} transition into a state for which the
+	 * @return the second {@link Transition} transition into a state for which the
 	 *         invariant does not hold.
 	 */
-	public OpInfo getStep2() {
+	public Transition getStep2() {
 		return step2;
 	}
 
