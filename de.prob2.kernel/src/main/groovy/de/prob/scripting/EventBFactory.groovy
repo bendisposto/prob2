@@ -17,6 +17,7 @@ import de.prob.animator.command.StartAnimationCommand
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.translate.EventBDatabaseTranslator
 import de.prob.model.eventb.translate.EventBModelTranslator
+import de.prob.model.representation.AbstractElement
 import de.prob.statespace.StateSpace
 
 public class EventBFactory extends ModelFactory {
@@ -88,6 +89,13 @@ public class EventBFactory extends ModelFactory {
 				loadcmd = m1.group(1);
 			}
 		}
+		if (loadcmd == null) {
+			throw new IllegalArgumentException("$fileName contained no valid Event-B Load command")
+		}
+
+		String componentName = file.getName().replaceAll("\\.eventb\$", "")
+
+		model.setMainComponent(new DummyElement(componentName))
 		model.setModelFile(file);
 		model.isFinished();
 
@@ -109,21 +117,9 @@ public class EventBFactory extends ModelFactory {
 	}
 
 	public final List<String> readFile(final File machine) throws IOException {
-		ArrayList<String> res = new ArrayList<String>();
-		FileInputStream fstream = new FileInputStream(machine);
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					fstream));
-			String line;
-			while ((line = br.readLine()) != null) {
-				if (!line.trim().isEmpty()) {
-					res.add(line);
-				}
-			}
-			return res;
-		} finally {
-			fstream.close();
-		}
+		def lines = []
+		machine.eachLine { lines << it }
+		lines
 	}
 
 	public EventBModel loadModelFromZip(final String zipfile, String componentName,
@@ -184,5 +180,17 @@ public class EventBFactory extends ModelFactory {
 		}
 
 		return load(modelFiles[0].getAbsolutePath(), prefs, loadVarsByDefault);
+	}
+
+	private class DummyElement extends AbstractElement {
+		def String name;
+
+		def DummyElement(String name) {
+			this.name = name
+		}
+
+		def String toString() {
+			name
+		}
 	}
 }
