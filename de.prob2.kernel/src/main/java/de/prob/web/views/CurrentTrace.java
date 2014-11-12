@@ -51,12 +51,19 @@ public class CurrentTrace extends AbstractSession implements
 				return;
 			}
 
-			ops.add(WebUtils.wrap("id", -1, "rep", "-- root --", "group",
-					"start"));
 			int currentPos = trace.getCurrent().getIndex();
-			List<Transition> opList = trace.getTransitionList(true);
+			List<Transition> opList = trace.getTransitionList();
+			int startpos = currentPos > 50 ? currentPos - 50 : 0;
+			int endpos = opList.size() > currentPos + 20 ? currentPos + 20
+					: opList.size();
+			if (startpos == 0) {
+				ops.add(WebUtils.wrap("id", -1, "rep", "-- root --", "group",
+						"start"));
+			}
+			trace.getStateSpace().evaluateTransitions(
+					opList.subList(startpos, endpos));
 			String group = "past";
-			for (int i = 0; i < opList.size(); i++) {
+			for (int i = startpos; i < endpos; i++) {
 				String rep = opList.get(i).getRep();
 				if (currentPos == i) {
 					group = "current";
