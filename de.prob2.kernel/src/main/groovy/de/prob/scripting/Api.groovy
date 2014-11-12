@@ -67,33 +67,21 @@ public class Api {
 		x.shutdown();
 	}
 
-	public ClassicalBModel b_load(final String file) throws IOException,
-	BException {
-		return b_load(file, new HashMap<String, String>());
-	}
-
-	public EventBModel eventb_load(String file) {
-		return eventb_load(file, new HashMap<String,String>());
-	}
-
-	public ClassicalBModel tla_load(final String file) throws IOException,
-	BException {
-		return tla_load(file, new HashMap<String, String>());
-	}
-
-	public EventBModel eventb_load(final String file, final Map<String, String> prefs) {
+	public EventBModel eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap()) {
 		def fileName = file;
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (fileName.endsWith(".eventb")) {
 			return factory.loadModelFromEventBFile(file, prefs)
 		}
-		if (fileName.endsWith(".buc")) {
-			fileName = fileName.replaceAll("\\.buc\$", ".bcc");
-		}
-		if (fileName.endsWith(".bum")) {
-			fileName = fileName.replaceAll("\\.bum\$", ".bcm");
-		}
 		return factory.load(fileName, prefs, loadVariablesByDefault);
+	}
+
+	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap()) {
+		if (!zipFile.endsWith(".zip")) {
+			throw new IllegalArgumentException("$zipFile is not a zip file")
+		}
+		EventBFactory factory = modelFactoryProvider.getEventBFactory();
+		return factory.loadModelFromZip(zipFile, componentName, prefs, loadVariablesByDefault)
 	}
 
 	public void eventb_save(final EventBModel model, final String path) {
@@ -121,7 +109,7 @@ public class Api {
 	 * @throws IOException
 	 */
 	public ClassicalBModel b_load(final String file,
-			final Map<String, String> prefs) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
 		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
@@ -129,14 +117,10 @@ public class Api {
 	}
 
 	public ClassicalBModel tla_load(final String file,
-			final Map<String, String> prefs) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
 		File f = new File(file);
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
 		return tlaFactory.load(f, prefs, loadVariablesByDefault);
-	}
-
-	public CSPModel csp_load(final String file) throws Exception {
-		return csp_load(file, new HashMap<String, String>());
 	}
 
 	/**
@@ -148,7 +132,7 @@ public class Api {
 	 * @return {@link CSPModel} that has been loaded from file
 	 * @throws Exception
 	 */
-	public CSPModel csp_load(final String file, final Map<String, String> prefs)
+	public CSPModel csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap())
 	throws Exception {
 		File f = new File(file);
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();

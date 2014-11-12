@@ -1,0 +1,188 @@
+package de.prob.scripting;
+
+import java.util.Map.Entry
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+import java.util.zip.ZipInputStream
+
+import com.google.inject.Inject
+import com.google.inject.Provider
+
+import de.prob.animator.command.AbstractCommand
+import de.prob.animator.command.ComposedCommand
+import de.prob.animator.command.LoadEventBFileCommand
+import de.prob.animator.command.LoadEventBProjectCommand
+import de.prob.animator.command.SetPreferenceCommand
+import de.prob.animator.command.StartAnimationCommand
+import de.prob.model.eventb.EventBModel
+import de.prob.model.eventb.translate.EventBDatabaseTranslator
+import de.prob.model.eventb.translate.EventBModelTranslator
+import de.prob.statespace.StateSpace
+
+public class EventBFactory extends ModelFactory {
+
+	private final Provider<EventBModel> modelProvider;
+
+	@Inject
+	public EventBFactory(final Provider<EventBModel> modelProvider,
+	final FileHandler fileHandler) {
+		super(fileHandler);
+		this.modelProvider = modelProvider;
+	}
+
+	public EventBModel load(final String file, final Map<String, String> prefs,
+			final boolean loadVariables) {
+		EventBModel model = modelProvider.get();
+
+		new EventBDatabaseTranslator(model, getValidFileName(file));
+
+		return loadModel(model, getPreferences(model, prefs), loadVariables);
+	}
+
+	private String getValidFileName(String fileName) {
+		if (fileName.endsWith(".buc")) {
+			fileName = fileName.replaceAll("\\.buc\$", ".bcc");
+		}
+		if (fileName.endsWith(".bum")) {
+			fileName = fileName.replaceAll("\\.bum\$", ".bcm");
+		}
+		if (!(fileName.endsWith(".bcc") || fileName.endsWith(".bcm"))) {
+			throw new IllegalArgumentException("$fileName is not a valid Event-B file")
+		}
+		fileName
+	}
+
+	public static EventBModel loadModel(final EventBModel model,
+			final Map<String, String> prefs, final boolean loadVariables) {
+		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
+
+		for (Entry<String, String> pref : prefs.entrySet()) {
+			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
+		}
+
+		AbstractCommand loadcmd = new LoadEventBProjectCommand(
+				new EventBModelTranslator(model));
+
+		cmds.add(loadcmd);
+		cmds.add(new StartAnimationCommand());
+		StateSpace s = model.getStateSpace();
+		s.execute(new ComposedCommand(cmds));
+		s.setLoadcmd(loadcmd);
+
+		if (loadVariables) {
+			model.subscribeFormulasOfInterest();
+		}
+		return model;
+	}
+
+	public EventBModel loadModelFromEventBFile(final String fileName,
+			final Map<String, String> prefs) throws IOException {
+		EventBModel model = modelProvider.get();
+		Pattern pattern = Pattern.compile("^package\\((.*?)\\)\\.");
+		File file = new File(fileName);
+		List<String> lines = readFile(file);
+		String loadcmd = null;
+		for (String string : lines) {
+			Matcher m1 = pattern.matcher(string);
+			if (m1.find()) {
+				loadcmd = m1.group(1);
+			}
+		}
+		model.setModelFile(file);
+		model.isFinished();
+
+		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
+
+		for (Entry<String, String> pref : prefs.entrySet()) {
+			cmds.add(new SetPreferenceCommand(pref.getKey(), pref.getValue()));
+		}
+
+		StateSpace s = model.getStateSpace();
+		s.execute(new ComposedCommand(cmds));
+
+		LoadEventBFileCommand load = new LoadEventBFileCommand(loadcmd);
+		s.execute(load);
+		s.execute(new StartAnimationCommand());
+
+		s.setLoadcmd(load);
+		return model;
+	}
+
+	public final List<String> readFile(final File machine) throws IOException {
+		ArrayList<String> res = new ArrayList<String>();
+		FileInputStream fstream = new FileInputStream(machine);
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					fstream));
+			String line;
+			while ((line = br.readLine()) != null) {
+				if (!line.trim().isEmpty()) {
+					res.add(line);
+				}
+			}
+			return res;
+		} finally {
+			fstream.close();
+		}
+	}
+
+	public EventBModel loadModelFromZip(final String zipfile, String componentName,
+			final Map<String, String> prefs, boolean loadVarsByDefault) throws IOException {
+		File.metaClass.unzip = { String dest ->
+			//in metaclass added methods, 'delegate' is the object on which
+			//the method is called. Here it's the file to unzip
+			def result = new ZipInputStream(new FileInputStream(delegate))
+			def destFile = new File(dest)
+			if(!destFile.exists()){
+				destFile.mkdir();
+			}
+			result.withStream{
+				def entry
+				while(entry = result.nextEntry){
+					if (!entry.isDirectory()){
+						new File(dest + File.separator + entry.name).parentFile?.mkdirs()
+						def output = new FileOutputStream(dest + File.separator
+								+ entry.name)
+						output.withStream{
+							int len = 0;
+							byte[] buffer = new byte[4096]
+							while ((len = result.read(buffer)) > 0){
+								output.write(buffer, 0, len);
+							}
+						}
+					}
+					else {
+						new File(dest + File.separator + entry.name).mkdir()
+					}
+				}
+			}
+
+		}
+
+		def pattern = Pattern.compile(".*${componentName}.bcc|.*${componentName}.bcm")
+
+		File zip = new File(zipfile)
+		final File tempdir = File.createTempDir("eventb-model","")
+
+		zip.unzip(tempdir.getAbsolutePath())
+
+		// the temporary directory will be deleted on shutdown of the JVM
+		Runtime.getRuntime().addShutdownHook(new Thread()
+				{
+					public void run()
+					{
+						tempdir.deleteDir()
+					}
+				});
+
+
+		def modelFiles = []
+		tempdir.traverse(nameFilter: pattern) { f -> modelFiles << f }
+		if (modelFiles.size() != 1) {
+			tempdir.deleteDir()
+			throw new IllegalArgumentException("The component name should reference exactly one component in the model.")
+		}
+
+		return load(modelFiles[0].getAbsolutePath(), prefs, loadVarsByDefault);
+	}
+}
