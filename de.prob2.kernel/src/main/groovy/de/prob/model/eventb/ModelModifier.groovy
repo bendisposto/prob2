@@ -233,7 +233,7 @@ public class ModelModifier {
 	 */
 	def MachineModifier getMachine(String machineName) {
 		if (temp.getMachines().hasProperty(machineName)) {
-			return new MachineModifier(temp.getMachines().getProperty(machineName))
+			return new MachineModifier(temp.getMachines().getElement(machineName))
 		}
 	}
 
@@ -246,7 +246,7 @@ public class ModelModifier {
 	 */
 	def ContextModifier getContext(String contextName) {
 		if (temp.getContexts().hasProperty(contextName)) {
-			return new ContextModifier(temp.getContexts().getProperty(contextName))
+			return new ContextModifier(temp.getContexts().getElement(contextName))
 		}
 	}
 }
