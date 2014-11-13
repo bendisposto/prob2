@@ -23,18 +23,14 @@ public class ModelModifier {
 	/**
 	 * Creates an interface to allow the user to mutate the model object.
 	 * The user can also specify an additional parameter 'startProB' which will
-	 * determine if a ProB instance (i.e. StateSpace) will be bound to the new
-	 * model class. If not (and the user only is interested in the model structure itself),
-	 * no StateSpace instance (and therefore no ProB instance) will be created. However,
-	 * it will then not be possible to do any animation, even in the future, and the
-	 * EventBModel in question will then be subject to NullPointerExceptions (because the
-	 * StateSpace field will be null). This will result in programming work for anyone
-	 * who willingly sets the value to false.
+	 * determine if a ProB instance will be bound to the new
+	 * model class. If not, a ProB instance can be lazily created later by calling
+	 * the getStateSpace() method on the model object.
 	 * @param model to be copied
 	 * @param startProB default = true
 	 */
 	def ModelModifier(EventBModel model, boolean startProB=true) {
-		temp = deepCopy(model, startProB)
+		temp = deepCopy(model)
 		this.startProB = startProB
 		if (startProB) {
 			GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
@@ -50,9 +46,9 @@ public class ModelModifier {
 	 * @param startProB true, if the user wants to begin an instance of ProB when creating a model, false otherwise.
 	 * @return a deep copy of the model and all model elements
 	 */
-	public static EventBModel deepCopy(EventBModel model, boolean startProB) {
+	public static EventBModel deepCopy(EventBModel model) {
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
-		EventBModel newModel = startProB ? factory.modelProvider.get() : new EventBModel(null)
+		EventBModel newModel = factory.modelProvider.get()
 
 		def mainComp = deepCopy(newModel, model.getMainComponent())
 		newModel.addTheories(new ModelElementList<Theory>(model.getChildrenOfType(Theory.class)))

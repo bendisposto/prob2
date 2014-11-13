@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import de.prob.animator.domainobjects.CSP;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -15,14 +16,13 @@ public class CSPModel extends AbstractModel {
 	private String content;
 
 	@Inject
-	public CSPModel(final StateSpace statespace) {
-		this.stateSpace = statespace;
+	public CSPModel(final Provider<StateSpace> ssProvider) {
+		super(ssProvider);
 	}
 
 	public void init(final String content, final File modelFile) {
 		this.content = content;
 		this.modelFile = modelFile;
-		stateSpace.setModel(this);
 		extractModelDir(modelFile, "CSP_MODEL");
 	}
 

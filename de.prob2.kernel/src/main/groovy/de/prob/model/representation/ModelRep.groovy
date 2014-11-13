@@ -7,7 +7,7 @@ import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.EventB
 import de.prob.model.classicalb.Property
 import de.prob.model.eventb.Context
-import de.prob.model.eventb.ProofObligation;
+import de.prob.model.eventb.ProofObligation
 import de.prob.model.eventb.Variant
 import de.prob.statespace.StateSpace
 import de.prob.unicode.UnicodeTranslator
@@ -27,10 +27,10 @@ class ModelRep {
 	def static List<ModelRep> translate(AbstractModel m) {
 		def reps = []
 		m.getChildrenOfType(Machine.class).each {
-			reps << translate(it, [], m.getStatespace())
+			reps << translate(it, [], m.getStateSpace())
 		}
 		m.getChildrenOfType(Context.class).each {
-			reps << translate(it, [], m.getStatespace())
+			reps << translate(it, [], m.getStateSpace())
 		}
 		reps
 	}

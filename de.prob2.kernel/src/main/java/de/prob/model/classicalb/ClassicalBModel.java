@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
@@ -30,8 +31,8 @@ public class ClassicalBModel extends AbstractModel {
 	private final StateSchema schema = new BStateSchema();
 
 	@Inject
-	public ClassicalBModel(final StateSpace statespace) {
-		this.stateSpace = statespace;
+	public ClassicalBModel(final Provider<StateSpace> ssProvider) {
+		super(ssProvider);
 	}
 
 	public DirectedSparseMultigraph<String, RefType> initialize(
@@ -75,7 +76,6 @@ public class ClassicalBModel extends AbstractModel {
 			components.put(classicalBMachine.getName(), classicalBMachine);
 		}
 
-		stateSpace.setModel(this);
 		freeze();
 		return graph;
 	}
@@ -109,11 +109,11 @@ public class ClassicalBModel extends AbstractModel {
 		ModelElementList<Machine> childrenOfType = getChildrenOfType(Machine.class);
 		for (Machine machine : childrenOfType) {
 			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
-				variable.subscribe(stateSpace);
+				variable.subscribe(getStateSpace());
 			}
 			for (Invariant invariant : machine
 					.getChildrenOfType(Invariant.class)) {
-				invariant.subscribe(stateSpace);
+				invariant.subscribe(getStateSpace());
 			}
 		}
 	}

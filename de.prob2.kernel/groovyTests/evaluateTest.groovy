@@ -3,7 +3,7 @@ import de.prob.animator.domainobjects.TranslatedEvalResult;
 import de.prob.statespace.*
 
 c = api.b_load(dir+"/machines/scheduler.mch")
-StateSpace s = c.getStatespace()
+StateSpace s = c.getStateSpace()
 h = new Trace(s)
 h = h.add(0)
 h = h.add(3)

@@ -42,7 +42,7 @@ class CSPFactory extends ModelFactory {
 		cmds << loadcmd
 		cmds << new StartAnimationCommand()
 
-		cspModel.getStatespace().execute(new ComposedCommand(cmds));
-		cspModel.getStatespace().setLoadcmd(loadcmd);
+		cspModel.getStateSpace().execute(new ComposedCommand(cmds));
+		cspModel.getStateSpace().setLoadcmd(loadcmd);
 	}
 }

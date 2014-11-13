@@ -1,5 +1,8 @@
 package de.prob.model.representation;
 
+import com.google.inject.Inject
+import com.google.inject.Provider
+
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.RefType.ERefType
 import de.prob.statespace.FormalismType
@@ -9,26 +12,27 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
 public abstract class AbstractModel extends AbstractElement {
 
-	protected StateSpace stateSpace;
+	private StateSpace stateSpace = null;
+	private final Provider<StateSpace> stateSpaceProvider;
 	protected boolean dirty = false;
 	protected File modelFile;
 	protected String modelDirPath;
 	protected DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
 
-	/**
-	 * @return StateSpace object associated with this AbstractModel instance
-	 * @deprecated use {@link #getStateSpace()} instead
-	 */
-	@Deprecated
-	public StateSpace getStatespace() {
-		return stateSpace;
+	@Inject
+	def AbstractModel(Provider<StateSpace> stateSpaceProvider) {
+		this.stateSpaceProvider = stateSpaceProvider
 	}
 
 	/**
 	 * @return StateSpace object associated with this AbstractModel instance
 	 */
 	public StateSpace getStateSpace() {
+		if (stateSpace == null) {
+			stateSpace = stateSpaceProvider.get();
+			stateSpace.setModel(this);
+		}
 		return stateSpace;
 	}
 
@@ -79,10 +83,10 @@ public abstract class AbstractModel extends AbstractElement {
 
 	public Object asType(final Class<?> className) {
 		if (className.getSimpleName().equals("StateSpace")) {
-			return stateSpace;
+			return getStateSpace();
 		}
 		if (className.getSimpleName().equals("Trace")) {
-			return new Trace(stateSpace);
+			return new Trace(getStateSpace());
 		}
 		throw new ClassCastException("No element of type " + className
 		+ " found.");
