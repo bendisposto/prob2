@@ -177,9 +177,21 @@ public class ModelModifier {
 		newEvent
 	}
 
-	def EventBModel getModifiedModel() {
+	/**
+	 * This method makes the model object currently being modified into an
+	 * immutable form. By default, this model is also loaded into a ProB instance
+	 * via the {@link EventBFactory#load(String, java.util.Map, boolean)} method,
+	 * but if the developer is only interested in the model object itself, and not
+	 * in starting animation for the model, this feature can be turned off by
+	 * setting the parameter load=false.
+	 * @param load (default value true)
+	 * @return EventBModel object created
+	 */
+	def EventBModel getModifiedModel(boolean load=true) {
 		temp.isFinished()
-		EventBFactory.loadModel(temp, prefs, loadByDefault)
+		if (load) {
+			EventBFactory.loadModel(temp, prefs, loadByDefault)
+		}
 		return temp
 	}
 
