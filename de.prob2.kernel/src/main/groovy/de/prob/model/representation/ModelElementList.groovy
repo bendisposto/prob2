@@ -4,6 +4,16 @@ import de.prob.animator.domainobjects.IEvalElement
 
 
 
+/**
+ * @author joy
+ *
+ * @param <E>
+ */
+/**
+ * @author joy
+ *
+ * @param <E>
+ */
 public class ModelElementList<E> implements List<E> {
 
 	def List<E> list
@@ -53,6 +63,15 @@ public class ModelElementList<E> implements List<E> {
 			def key = "_" + e.getFormula().getFormulaId().uuid
 			keys.remove(key)
 		}
+	}
+
+
+	/**
+	 * @param name of the element to be retrieved
+	 * @return the specified element, or null if no element with that name exists.
+	 */
+	def E getElement(String name) {
+		return keys[name]
 	}
 
 	@Override
