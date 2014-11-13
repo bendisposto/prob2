@@ -19,17 +19,17 @@ import de.prob.util.StringUtil
  *
  * @author joy
  */
-class StateId {
+class State {
 
 	protected def String id;
 	def StateSpace stateSpace;
 	def boolean explored
-	def List<OpInfo> ops = []
+	def List<Transition> ops = []
 	def boolean initialised
 	def boolean invariantOk
 	def Map<IEvalElement, IEvalResult> values = new HashMap<IEvalElement, IEvalResult>()
 
-	def StateId(String id, StateSpace space) {
+	def State(String id, StateSpace space) {
 		this.id = id;
 		this.explored = false
 		this.stateSpace = space
@@ -51,9 +51,9 @@ class StateId {
 		}
 
 		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
-		OpInfo op = stateSpace.opFromPredicate(this, method, predicate , 1)[0];
+		Transition op = stateSpace.opFromPredicate(this, method, predicate , 1)[0];
 		ops << op
-		return op.getDestId();
+		return op.getDestination();
 	}
 
 	/**
@@ -64,7 +64,7 @@ class StateId {
 	 * @param params List of String predicates
 	 * @return {@link StateId} that results from executing the specified event
 	 */
-	def StateId perform(String event, String... predicates) {
+	def State perform(String event, String... predicates) {
 		return perform(event, predicates as List)
 	}
 
@@ -76,12 +76,12 @@ class StateId {
 	 * @param params List of String predicates
 	 * @return {@link StateId} that results from executing the specified event
 	 */
-	def StateId perform(String event, List<String> predicates) {
+	def State perform(String event, List<String> predicates) {
 		def op = findTransition(event, predicates)
 		if (op == null) {
 			throw new IllegalArgumentException("Could not execute "+event+" with predicates "+predicates.toString() + " on state "+this.getId())
 		}
-		return op.getDestId();
+		return op.getDestination();
 	}
 
 	/**
@@ -90,7 +90,7 @@ class StateId {
 	 * @param predicates list of predicates specifying the parameters
 	 * @return the calculated transition, or null if no transition was found.
 	 */
-	def OpInfo findTransition(String name, String... predicates) {
+	def Transition findTransition(String name, String... predicates) {
 		return findTransition(name, predicates as List)
 	}
 
@@ -100,7 +100,7 @@ class StateId {
 	 * @param predicates list of predicates specifying the parameters
 	 * @return the calculated transition, or null if no transition was found.
 	 */
-	def OpInfo findTransition(String name, List<String> predicates) {
+	def Transition findTransition(String name, List<String> predicates) {
 		if (predicates.isEmpty() && !ops.isEmpty()) {
 			def op = ops.find { it.getName() == name }
 			if (op != null) {
@@ -121,7 +121,7 @@ class StateId {
 	 * @param nrOfSolutions to be found
 	 * @return a list of solutions found, or an empty list if no solutions were found
 	 */
-	def List<OpInfo> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
+	def List<Transition> findTransitions(String name, List<String> predicates, int nrOfSolutions) {
 
 		if (name.startsWith("\$") && !(name == "\$setup_constants" || name == "\$initialise_machine")) {
 			name = name.substring(1)
@@ -204,7 +204,7 @@ class StateId {
 		return id;
 	}
 
-	def String getState() {
+	def String getStateRep() {
 		if (stateSpace.getModel().getFormalismType() == FormalismType.B) {
 			GetBStateCommand cmd = new GetBStateCommand(this)
 			stateSpace.execute(cmd)
@@ -219,7 +219,7 @@ class StateId {
 
 
 	def boolean equals(Object that) {
-		if (that instanceof StateId) {
+		if (that instanceof State) {
 			return this.id.equals(that.getId()) && this.getStateSpace().equals(that.getStateSpace());
 		}
 		return false
@@ -230,8 +230,8 @@ class StateId {
 		return Objects.hashCode(id, stateSpace)
 	};
 
-	def StateId anyOperation(filter) {
-		List<OpInfo> ops = getOutTransitions(true)
+	def State anyOperation(filter) {
+		List<Transition> ops = getOutTransitions(true)
 		if (filter != null && filter instanceof String) {
 			ops=ops.findAll {
 				it.getName().matches(filter);
@@ -244,12 +244,12 @@ class StateId {
 		}
 		Collections.shuffle(ops)
 		def op = ops[0]
-		def newState = op.getDestId()
+		def newState = op.getDestination()
 		newState.explore()
 		return newState;
 	}
 
-	def StateId anyEvent(filter) {
+	def State anyEvent(filter) {
 		anyOperation(filter);
 	}
 
@@ -281,17 +281,17 @@ class StateId {
 	 * 		be evaluated. By default this is set to false.
 	 * @return the outgoing transitions from this state
 	 */
-	def List<OpInfo> getOutTransitions(boolean evaluate=false) {
+	def List<Transition> getOutTransitions(boolean evaluate=false) {
 		if (!explored) {
 			explore()
 		}
 		if(evaluate) {
-			stateSpace.evaluateOps(ops)
+			stateSpace.evaluateTransitions(ops)
 		}
 		ops
 	}
 
-	def StateId explore() {
+	def State explore() {
 		ExploreStateCommand cmd = new ExploreStateCommand(stateSpace, id, stateSpace.getSubscribedFormulas());
 		stateSpace.execute(cmd);
 		ops = cmd.getNewTransitions()

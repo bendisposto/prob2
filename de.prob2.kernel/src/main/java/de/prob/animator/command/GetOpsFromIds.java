@@ -8,14 +8,14 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.GetOpFromId;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 
 public class GetOpsFromIds extends AbstractCommand {
 	List<GetOpFromId> cmds = new ArrayList<GetOpFromId>();
 	ComposedCommand allCommands;
 
-	public GetOpsFromIds(final Collection<OpInfo> edges) {
-		for (OpInfo opInfo : edges) {
+	public GetOpsFromIds(final Collection<Transition> edges) {
+		for (Transition opInfo : edges) {
 			if (!opInfo.isEvaluated()) {
 				cmds.add(new GetOpFromId(opInfo));
 			}

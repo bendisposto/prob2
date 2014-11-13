@@ -7,7 +7,7 @@ import de.prob.animator.command.LtlCheckingCommand.PathType;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.animator.domainobjects.LTL;
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -15,13 +15,13 @@ public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 		ITraceDescription {
 
 	private final LTL formula;
-	private final List<OpInfo> pathToCE;
-	private final List<OpInfo> counterExample;
+	private final List<Transition> pathToCE;
+	private final List<Transition> counterExample;
 	private final int loopEntry;
 	private final PathType pathType;
 
-	public LTLCounterExample(final LTL formula, final List<OpInfo> pathToCE,
-			final List<OpInfo> counterExample, final int loopEntry,
+	public LTLCounterExample(final LTL formula, final List<Transition> pathToCE,
+			final List<Transition> counterExample, final int loopEntry,
 			final PathType pathType) {
 		this.formula = formula;
 		this.pathToCE = pathToCE;
@@ -31,7 +31,7 @@ public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 
 	}
 
-	public OpInfo getLoopEntry() {
+	public Transition getLoopEntry() {
 		if (loopEntry == -1) {
 			return null;
 		}
@@ -42,8 +42,8 @@ public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 		return pathType;
 	}
 
-	public List<OpInfo> getOpList() {
-		List<OpInfo> ops = new ArrayList<OpInfo>();
+	public List<Transition> getOpList() {
+		List<Transition> ops = new ArrayList<Transition>();
 		ops.addAll(pathToCE);
 		ops.addAll(counterExample);
 		return ops;
@@ -61,10 +61,10 @@ public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 	@Override
 	public Trace getTrace(final StateSpace s) {
 		Trace t = new Trace(s);
-		for (OpInfo op : pathToCE) {
+		for (Transition op : pathToCE) {
 			t = t.add(op.getId());
 		}
-		for (OpInfo op : counterExample) {
+		for (Transition op : counterExample) {
 			t = t.add(op.getId());
 		}
 		return t;

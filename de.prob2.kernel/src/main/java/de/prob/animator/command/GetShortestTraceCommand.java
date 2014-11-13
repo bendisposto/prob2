@@ -12,7 +12,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -23,7 +23,7 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 
 	private static final String TRACE = "Trace";
 	private final String stateId;
-	private final List<OpInfo> transitions = new ArrayList<OpInfo>();
+	private final List<Transition> transitions = new ArrayList<Transition>();
 
 	private final StateSpace s;
 
@@ -46,7 +46,7 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 		PrologTerm trace = bindings.get(TRACE);
 		if (trace instanceof ListPrologTerm) {
 			for (PrologTerm term : (ListPrologTerm) trace) {
-				transitions.add(OpInfo.createOpInfoFromCompoundPrologTerm(s,
+				transitions.add(Transition.createTransitionFromCompoundPrologTerm(s,
 						(CompoundPrologTerm) term));
 			}
 		} else {
@@ -58,12 +58,12 @@ public class GetShortestTraceCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
+	public List<Transition> getNewTransitions() {
 		return transitions;
 	}
 
 	@Override
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
-		return Trace.getTraceFromOpList(s, transitions);
+		return Trace.getTraceFromTransitions(s, transitions);
 	}
 }

@@ -16,8 +16,8 @@ import com.google.inject.Singleton;
 import de.prob.annotations.PublicSession;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
+import de.prob.statespace.Transition;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -51,12 +51,19 @@ public class CurrentTrace extends AbstractSession implements
 				return;
 			}
 
-			ops.add(WebUtils.wrap("id", -1, "rep", "-- root --", "group",
-					"start"));
 			int currentPos = trace.getCurrent().getIndex();
-			List<OpInfo> opList = trace.getOpList(true);
+			List<Transition> opList = trace.getTransitionList();
+			int startpos = currentPos > 50 ? currentPos - 50 : 0;
+			int endpos = opList.size() > currentPos + 20 ? currentPos + 20
+					: opList.size();
+			if (startpos == 0) {
+				ops.add(WebUtils.wrap("id", -1, "rep", "-- root --", "group",
+						"start"));
+			}
+			trace.getStateSpace().evaluateTransitions(
+					opList.subList(startpos, endpos));
 			String group = "past";
-			for (int i = 0; i < opList.size(); i++) {
+			for (int i = startpos; i < endpos; i++) {
 				String rep = opList.get(i).getRep();
 				if (currentPos == i) {
 					group = "current";
@@ -112,8 +119,8 @@ public class CurrentTrace extends AbstractSession implements
 		return simpleRender(clientid, "ui/currenttrace/index.html");
 	}
 
-	public List<OpInfo> getElements(final Trace trace) {
-		return trace.getOpList();
+	public List<Transition> getElements(final Trace trace) {
+		return trace.getTransitionList();
 	}
 
 	@Override

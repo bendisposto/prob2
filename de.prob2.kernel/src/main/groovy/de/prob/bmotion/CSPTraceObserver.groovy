@@ -1,7 +1,7 @@
 package de.prob.bmotion
 
 import de.prob.animator.domainobjects.EvalResult
-import de.prob.statespace.OpInfo
+import de.prob.statespace.Transition
 import de.prob.statespace.Trace
 import groovy.transform.TupleConstructor
 
@@ -29,7 +29,7 @@ class CSPTraceObserver extends BMotionObserver {
         this
     }
 
-    def static getOpString(OpInfo op) {
+    def static getOpString(Transition op) {
         def String opName = op.getName()
         def String AsImplodedString = ""
         def List<String> opParameter = op.getParams()
@@ -64,7 +64,7 @@ class CSPTraceObserver extends BMotionObserver {
         def Trace trace = bms.getTool().getTrace()
         trace.ensureOpInfosEvaluated()
 
-        trace.getCurrent().getOpList().each { OpInfo op ->
+        trace.getCurrent().getOpList().each { Transition op ->
 
             def fullOp = getOpString(op)
             objs.each { EventsObserver evt ->
@@ -78,13 +78,11 @@ class CSPTraceObserver extends BMotionObserver {
                         evt.transformers.each { TransformerObserver gt ->
 
                             def fselector = (gt._selector instanceof Closure) ? gt._selector(op) : gt._selector
-                            def fattributes = gt._attributes.collectEntries { kv ->
-                                (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value
-                                ]
+                            def fattributes = gt._attributes.collectEntries {
+                                kv -> (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value]
                             }
-                            def fstyles = gt._styles.collectEntries { kv ->
-                                (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value
-                                ]
+                            def fstyles = gt._styles.collectEntries {
+                                kv -> (kv.value instanceof Closure) ? [kv.key, kv.value(op)] : [kv.key, kv.value]
                             }
                             def fcontent = (gt._content instanceof Closure) ? gt._content(op) : gt._content
 

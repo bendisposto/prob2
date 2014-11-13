@@ -72,21 +72,21 @@ class StateSpaceTest extends Specification {
 		s.setModel(new Model())
 
 		def states = [
-			new StateId("1",s),
-			new StateId("root", s),
-			new StateId("2", s),
-			new StateId("3", s),
-			new StateId("4", s),
-			new StateId("5", s),
-			new StateId("6", s)
+			new State("1",s),
+			new State("root", s),
+			new State("2", s),
+			new State("3", s),
+			new State("4", s),
+			new State("5", s),
+			new State("6", s)
 		]
 
 		def ops = [
-			new OpInfo(s, "b","root","2"),
-			new OpInfo(s, "c","2","3"),
-			new OpInfo(s, "d","3","4"),
-			new OpInfo(s, "e","3","5"),
-			new OpInfo(s, "f","4","6")
+			new Transition(s, "b","root","2"),
+			new Transition(s, "c","2","3"),
+			new Transition(s, "d","3","4"),
+			new Transition(s, "e","3","5"),
+			new Transition(s, "f","4","6")
 		]
 
 		states.each { it ->
@@ -115,7 +115,7 @@ class StateSpaceTest extends Specification {
 
 	def addVertices(List<String> ids, StateSpace s) {
 		for (String id : ids) {
-			s.addVertex(new StateId(id))
+			s.addVertex(new State(id))
 		}
 	}
 
@@ -141,7 +141,7 @@ class StateSpaceTest extends Specification {
 
 	def "The state is not explored"() {
 		when:
-		def a = new StateId("7", s)
+		def a = new State("7", s)
 		s.addVertex(a)
 		s.states.put(a.getId(),a)
 
@@ -150,7 +150,7 @@ class StateSpaceTest extends Specification {
 	}
 
 	def "The node is not a deadlock"() {
-		s.addEdge(new OpInfo(s,"bla","1","2"), s.states.get("1"), s.states.get("2"))
+		s.addEdge(new Transition(s,"bla","1","2"), s.states.get("1"), s.states.get("2"))
 
 		expect:
 		s.isDeadlock(s[1]) == false

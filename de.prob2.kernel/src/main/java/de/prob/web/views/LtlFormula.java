@@ -17,7 +17,7 @@ import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.domainobjects.LTL;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
@@ -31,7 +31,7 @@ public class LtlFormula extends AbstractSession implements
 
 	private final AnimationSelector animations;
 
-	private final Map<LTL, Map<StateId, String>> cache = new HashMap<LTL, Map<StateId, String>>();
+	private final Map<LTL, Map<State, String>> cache = new HashMap<LTL, Map<State, String>>();
 
 	@Inject
 	public LtlFormula(final AnimationSelector animations)
@@ -46,9 +46,9 @@ public class LtlFormula extends AbstractSession implements
 		formulas.add(new LTLFormulaTuple(ltl1));
 		formulas.add(new LTLFormulaTuple(ltl2));
 		formulas.add(new LTLFormulaTuple(ltl3));
-		cache.put(ltl1, new HashMap<StateId, String>());
-		cache.put(ltl2, new HashMap<StateId, String>());
-		cache.put(ltl3, new HashMap<StateId, String>());
+		cache.put(ltl1, new HashMap<State, String>());
+		cache.put(ltl2, new HashMap<State, String>());
+		cache.put(ltl3, new HashMap<State, String>());
 	}
 
 	public void submitFormulas() {
@@ -72,7 +72,7 @@ public class LtlFormula extends AbstractSession implements
 
 		LTL formula = tuple.getFormula();
 
-		StateId stateid = animations.getCurrentTrace().getCurrentState();
+		State stateid = animations.getCurrentTrace().getCurrentState();
 		EvaluationCommand lcc = formula.getCommand(stateid);
 		animations.getCurrentTrace().getStateSpace().execute(lcc);
 
@@ -101,7 +101,7 @@ public class LtlFormula extends AbstractSession implements
 		LTL ltl = new LTL(formula);
 
 		formulas.add(new LTLFormulaTuple(ltl));
-		cache.put(ltl, new HashMap<StateId, String>());
+		cache.put(ltl, new HashMap<State, String>());
 		logger.trace(params.toString());
 		submitFormulas();
 		return null;
@@ -124,7 +124,7 @@ public class LtlFormula extends AbstractSession implements
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
 		if (currentAnimationChanged) {
-			StateId current = trace.getCurrentState();
+			State current = trace.getCurrentState();
 			for (LTLFormulaTuple tuple : formulas) {
 				String cached = cache.get(tuple.formula).get(current);
 				if (cached != null) {

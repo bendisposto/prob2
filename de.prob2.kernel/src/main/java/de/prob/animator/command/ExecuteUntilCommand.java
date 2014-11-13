@@ -11,8 +11,8 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
+import de.prob.statespace.Transition;
+import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -28,14 +28,14 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 
 	private static final String TRACE_VARIABLE = "Trace";
 	private static final String RESULT_VARIABLE = "Result";
-	private final List<OpInfo> resultTrace = new ArrayList<OpInfo>();
-	private final StateId startstate;
+	private final List<Transition> resultTrace = new ArrayList<Transition>();
+	private final State startstate;
 	private final LTL condition;
 	private final StateSpace statespace;
 	private PrologTerm result;
 
 	public ExecuteUntilCommand(final StateSpace statespace,
-			final StateId startstate, final LTL condition) {
+			final State startstate, final LTL condition) {
 		this.statespace = statespace;
 		this.startstate = startstate;
 		this.condition = condition;
@@ -61,25 +61,25 @@ public class ExecuteUntilCommand extends AbstractCommand implements
 
 		for (PrologTerm term : trace) {
 			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 4);
-			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(
+			Transition operation = Transition.createTransitionFromCompoundPrologTerm(
 					statespace, t);
 			resultTrace.add(operation);
 		}
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
+	public List<Transition> getNewTransitions() {
 		return resultTrace;
 	}
 
-	public StateId getFinalState() {
-		return resultTrace.get(resultTrace.size() - 1).getDestId();
+	public State getFinalState() {
+		return resultTrace.get(resultTrace.size() - 1).getDestination();
 	}
 
 	@Override
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
 		Trace t = s.getTrace(startstate.getId());
-		return t.addOps(resultTrace);
+		return t.addTransitions(resultTrace);
 	}
 
 	/**

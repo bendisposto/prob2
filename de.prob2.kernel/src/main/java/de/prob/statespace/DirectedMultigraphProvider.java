@@ -7,10 +7,10 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 @Singleton
 public class DirectedMultigraphProvider implements
-		Provider<DirectedSparseMultigraph<StateId, OpInfo>> {
+		Provider<DirectedSparseMultigraph<State, Transition>> {
 
 	@Override
-	public DirectedSparseMultigraph<StateId, OpInfo> get() {
-		return new DirectedSparseMultigraph<StateId, OpInfo>();
+	public DirectedSparseMultigraph<State, Transition> get() {
+		return new DirectedSparseMultigraph<State, Transition>();
 	}
 }

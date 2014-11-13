@@ -11,8 +11,8 @@ cond = new LTL("F Y [end]")
 cmd = new ExecuteUntilCommand(s, t.getCurrentState(), cond)
 s.execute(cmd)
 assert cmd.isSuccess()
-t = t.addOps(cmd.getNewTransitions())
-assert t.getOpList().collect { it.getRep() } == ["\$initialise_machine(FALSE,FALSE)", "1 <-- read(1)", "nothing()", "end()"]
+t = t.addTransitions(cmd.getNewTransitions())
+assert t.getTransitionList().collect { it.getRep() } == ["\$initialise_machine(FALSE,FALSE)", "1 <-- read(1)", "nothing()", "end()"]
 
 cond = new LTL("{loop = FALSE & loop2 = TRUE}")
 cmd = new ExecuteUntilCommand(s, t.getCurrentState(), cond)

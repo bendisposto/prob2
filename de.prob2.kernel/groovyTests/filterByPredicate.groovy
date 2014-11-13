@@ -10,7 +10,7 @@ t = t.anyEvent()
 
 t = t.new()
 t = t.ready()
-t.getCurrentState().getOutTransitions().each { it.getDestId().explore() }
+t.getCurrentState().getOutTransitions().each { it.getDestination().explore() }
 allStates = s.getStatesFromPredicate("TRUE = TRUE" as ClassicalB)
 
 def validateResults = { stateL, formula ->

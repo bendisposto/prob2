@@ -1,6 +1,7 @@
 package de.prob.model.representation;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +62,9 @@ public abstract class AbstractElement {
 	 * @return the {@link Map} of {@link Class} to {@link Set} of children
 	 */
 	public Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> getChildren() {
+		if (frozen) {
+			Collections.unmodifiableMap(children);
+		}
 		return children;
 	}
 

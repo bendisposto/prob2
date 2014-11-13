@@ -36,14 +36,25 @@ bms = (function() {
 		}
 	}
 
-    extern.callMethod = function(gcmd, data) {
+    extern.callMethod = function(data) {
+        var fErrorFn = function(data,status,er) { console.error("BMotion Studio: "+data+" status: "+status+" msg: "+er); }
+        if(data.error === "undefined") {
+            fErrorFn = data.error
+        }
+        var fSuccessFn = function(result) {}
+        if(data.success !== "undefined") {
+           fSuccessFn = data.success
+        }
+        delete data.success
+        delete data.error
         data.mode = 'command'
         data.cmd = 'callGroovyMethod'
-        data.gcmd = gcmd
         $.ajax({
-            async : false,
+            async : true,
             cache: false,
-            data : data
+            data : data,
+            success : fSuccessFn,
+            error : fErrorFn
         });
    	}
 	

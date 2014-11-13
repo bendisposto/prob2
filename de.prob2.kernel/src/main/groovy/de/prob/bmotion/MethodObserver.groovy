@@ -24,7 +24,7 @@ class MethodObserver extends BMotionObserver {
 
     @Override
     def apply(BMotion bms) {
-        bms.submit([cmd:_name, data:_data])
+        bms.submit([cmd: _name, data: _data])
     }
 
 }

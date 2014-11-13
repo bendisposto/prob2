@@ -23,8 +23,8 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.OpInfo;
-import de.prob.statespace.StateId;
+import de.prob.statespace.Transition;
+import de.prob.statespace.State;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -42,14 +42,14 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 	private static final String ERRORS = "Errors";
 
 	private final List<ClassicalB> evalElement;
-	private final StateId stateId;
+	private final State stateId;
 	private final List<String> name;
 	private final StateSpace stateSpace;
-	private final List<OpInfo> resultTrace = new ArrayList<OpInfo>();
+	private final List<Transition> resultTrace = new ArrayList<Transition>();
 	private final List<String> errors = new ArrayList<String>();
 	private List<Integer> executionNumber = new ArrayList<Integer>();
 
-	public ConstructTraceCommand(final StateSpace s, final StateId stateId,
+	public ConstructTraceCommand(final StateSpace s, final State stateId,
 			final List<String> name, final List<ClassicalB> predicate,
 			final Integer executionNumber) {
 		this.stateSpace = s;
@@ -72,12 +72,12 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 		}
 	}
 
-	public ConstructTraceCommand(final StateSpace s, final StateId stateId,
+	public ConstructTraceCommand(final StateSpace s, final State stateId,
 			final List<String> name, final List<ClassicalB> predicate) {
 		this(s, stateId, name, predicate, 1);
 	}
 
-	public ConstructTraceCommand(final StateSpace s, final StateId stateId,
+	public ConstructTraceCommand(final StateSpace s, final State stateId,
 			final List<String> name, final List<ClassicalB> predicate,
 			final List<Integer> executionNumber) {
 		this(s, stateId, name, predicate);
@@ -130,7 +130,7 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 
 		for (PrologTerm term : trace) {
 			CompoundPrologTerm t = BindingGenerator.getCompoundTerm(term, 4);
-			OpInfo operation = OpInfo.createOpInfoFromCompoundPrologTerm(
+			Transition operation = Transition.createTransitionFromCompoundPrologTerm(
 					stateSpace, t);
 			resultTrace.add(operation);
 		}
@@ -142,18 +142,18 @@ public final class ConstructTraceCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
+	public List<Transition> getNewTransitions() {
 		return resultTrace;
 	}
 
-	public StateId getFinalState() {
-		return resultTrace.get(resultTrace.size() - 1).getDestId();
+	public State getFinalState() {
+		return resultTrace.get(resultTrace.size() - 1).getDestination();
 	}
 
 	@Override
 	public Trace getTrace(final StateSpace s) throws RuntimeException {
 		Trace t = s.getTrace(stateId.getId());
-		return t.addOps(resultTrace);
+		return t.addTransitions(resultTrace);
 	}
 
 	public List<String> getErrors() {

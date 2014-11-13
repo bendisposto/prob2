@@ -11,12 +11,12 @@ package de.prob.statespace;
  */
 public class TraceElement {
 	private final int index;
-	private final StateId currentState;
-	private final OpInfo transition;
+	private final State currentState;
+	private final Transition transition;
 
 	private final TraceElement previous;
 
-	public TraceElement(final StateId stateId) {
+	public TraceElement(final State stateId) {
 		this.currentState = stateId;
 
 		// FOR THE FIRST STATE ID, EVERYTHING IS
@@ -25,8 +25,8 @@ public class TraceElement {
 		index = 0;
 	}
 
-	public TraceElement(final OpInfo edge, final TraceElement previous) {
-		this.currentState = edge.getDestId();
+	public TraceElement(final Transition edge, final TraceElement previous) {
+		this.currentState = edge.getDestination();
 		this.transition = edge;
 
 		this.previous = previous;
@@ -34,29 +34,29 @@ public class TraceElement {
 	}
 
 	/**
-	 * @return the {@link StateId} source corresponding to this element
+	 * @return the {@link State} source corresponding to this element
 	 */
-	public StateId getSrc() {
+	public State getSrc() {
 		if (transition != null) {
-			return transition.getSrcId();
+			return transition.getSource();
 		}
 		return currentState;
 	}
 
 	/**
-	 * @return the {@link StateId} destination corresponding to this element
+	 * @return the {@link State} destination corresponding to this element
 	 */
-	public StateId getDest() {
+	public State getDest() {
 		if (transition != null) {
-			return transition.getDestId();
+			return transition.getDestination();
 		}
 		return null;
 	}
 
 	/**
-	 * @return the {@link OpInfo} operation corresponding to this element
+	 * @return the {@link Transition} operation corresponding to this element
 	 */
-	public OpInfo getOp() {
+	public Transition getTransition() {
 		return transition;
 	}
 
@@ -68,11 +68,11 @@ public class TraceElement {
 	}
 
 	/**
-	 * @return the current {@link StateId} that is associated with the
+	 * @return the current {@link State} that is associated with the
 	 *         TraceElement. If the destination is null, this is source.
 	 *         Otherwise, this is destination.
 	 */
-	public StateId getCurrentState() {
+	public State getCurrentState() {
 		return currentState;
 	}
 

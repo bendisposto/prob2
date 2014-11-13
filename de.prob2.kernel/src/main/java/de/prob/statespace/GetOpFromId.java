@@ -14,13 +14,13 @@ import de.prob.util.StringUtil;
 
 public class GetOpFromId extends AbstractCommand {
 
-	private final OpInfo op;
+	private final Transition op;
 	private final String PARAMS = "Params";
 	private final String RETVALS = "RetVals";
 	private List<String> params;
 	private List<String> returnValues;
 
-	public GetOpFromId(final OpInfo opInfo) {
+	public GetOpFromId(final Transition opInfo) {
 		op = opInfo;
 	}
 

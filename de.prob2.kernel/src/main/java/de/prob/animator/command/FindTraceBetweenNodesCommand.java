@@ -12,7 +12,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -23,7 +23,7 @@ public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 
 	private static final String TRACE = "Trace";
 
-	List<OpInfo> newTransitions = new ArrayList<OpInfo>();
+	List<Transition> newTransitions = new ArrayList<Transition>();
 	private final StateSpace stateSpace;
 	private final String sourceId;
 	private final String destId;
@@ -50,7 +50,7 @@ public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 		PrologTerm trace = bindings.get(TRACE);
 		if (trace instanceof ListPrologTerm) {
 			for (PrologTerm term : (ListPrologTerm) trace) {
-				newTransitions.add(OpInfo.createOpInfoFromCompoundPrologTerm(
+				newTransitions.add(Transition.createTransitionFromCompoundPrologTerm(
 						stateSpace, (CompoundPrologTerm) term));
 			}
 		} else {
@@ -62,7 +62,7 @@ public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 	}
 
 	@Override
-	public List<OpInfo> getNewTransitions() {
+	public List<Transition> getNewTransitions() {
 		return newTransitions;
 	}
 
@@ -71,7 +71,7 @@ public class FindTraceBetweenNodesCommand extends AbstractCommand implements
 		if (newTransitions.isEmpty()) {
 			return new Trace(s.getState(sourceId));
 		}
-		return Trace.getTraceFromOpList(s, newTransitions);
+		return Trace.getTraceFromTransitions(s, newTransitions);
 	}
 
 }

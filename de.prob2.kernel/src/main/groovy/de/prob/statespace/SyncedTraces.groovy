@@ -68,7 +68,7 @@ class SyncedTraces {
 	def SyncedTraces add(String opId, int index) {
 		def trace = traces.get(index)
 		def ops = trace.getCurrentState().getOutTransitions(true)
-		OpInfo op = ops.find { it.getId() == opId }
+		Transition op = ops.find { it.getId() == opId }
 		if (op == null) {
 			return this
 		}
@@ -118,7 +118,7 @@ class SyncedTraces {
 
 		def h = traces.get(0)
 		def currentOpsOnH = h.getCurrentState().getOutTransitions(true)
-		def copy = new HashSet<OpInfo>(currentOpsOnH)
+		def copy = new HashSet<Transition>(currentOpsOnH)
 
 		currentOpsOnH.each { op ->
 			if(syncedOps.contains(op.getName())) {

@@ -1,7 +1,7 @@
 package de.prob.check;
 
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 
@@ -17,9 +17,9 @@ public class CBCDeadlockFound implements IModelCheckingResult,
 		ITraceDescription {
 
 	private final String errorId;
-	private final OpInfo transition;
+	private final Transition transition;
 
-	public CBCDeadlockFound(final String errorId, final OpInfo transition) {
+	public CBCDeadlockFound(final String errorId, final Transition transition) {
 		this.errorId = errorId;
 		this.transition = transition;
 	}

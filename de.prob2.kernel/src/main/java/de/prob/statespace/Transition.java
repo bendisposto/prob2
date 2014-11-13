@@ -19,7 +19,6 @@ import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventParameter;
 import de.prob.model.representation.AbstractElement;
-import de.prob.model.representation.AbstractModel;
 import de.prob.parser.BindingGenerator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
@@ -38,13 +37,13 @@ import de.prob.util.StringUtil;
  * @author joy
  * 
  */
-public class OpInfo {
+public class Transition {
 	public StateSpace stateSpace;
 
 	private final String id;
 	private final String name;
-	private final StateId src;
-	private final StateId dest;
+	private final State src;
+	private final State dest;
 	private List<String> params;
 	private List<String> returnValues;
 	private String rep = null;
@@ -52,10 +51,10 @@ public class OpInfo {
 	private final FormalismType formalismType;
 	private String predicateString;
 
-	Logger logger = LoggerFactory.getLogger(OpInfo.class);
+	Logger logger = LoggerFactory.getLogger(Transition.class);
 
-	private OpInfo(final StateSpace stateSpace, final String id,
-			final String name, final StateId src, final StateId dest,
+	private Transition(final StateSpace stateSpace, final String id,
+			final String name, final State src, final State dest,
 			final boolean evaluated) {
 		this.stateSpace = stateSpace;
 		this.id = id;
@@ -86,40 +85,17 @@ public class OpInfo {
 	}
 
 	/**
-	 * {@link Deprecated}. Use {@link #getSrcId()} and access the String id via
-	 * {@link StateId#getId()} instead.
-	 * 
-	 * @return String id of source node
+	 * @return the {@link State} reference to the source node of this transition
 	 */
-	@Deprecated
-	public String getSrc() {
-		return src.getId();
-	}
-
-	/**
-	 * {@link Deprecated}. Use {@link #getDestId()} and access the String id via
-	 * {@link StateId#getId()}.
-	 * 
-	 * @return String id of destination node.
-	 */
-	@Deprecated
-	public String getDest() {
-		return dest.getId();
-	}
-
-	/**
-	 * @return the {@link StateId} reference to the source node of this
-	 *         operation
-	 */
-	public StateId getSrcId() {
+	public State getSource() {
 		return src;
 	}
 
 	/**
-	 * @return the {@link StateId} reference to the destination node of this
+	 * @return the {@link State} reference to the destination node of this
 	 *         operation
 	 */
-	public StateId getDestId() {
+	public State getDestination() {
 		return dest;
 	}
 
@@ -157,21 +133,6 @@ public class OpInfo {
 	}
 
 	/**
-	 * This is {@link Deprecated}. Use {@link #getRep()} instead.
-	 * 
-	 * @param m
-	 *            Abstract Model
-	 * @return string representation
-	 */
-	@Deprecated
-	public String getRep(final AbstractModel m) {
-		if (rep == null) {
-			rep = generateRep();
-		}
-		return rep;
-	}
-
-	/**
 	 * @return the String representation of the operation.
 	 */
 	public String getRep() {
@@ -181,6 +142,13 @@ public class OpInfo {
 		return rep;
 	}
 
+	/**
+	 * Uses {@link #getParameterPredicates()} to calculate a string predicate
+	 * representing the value of the parameters for this transition.
+	 * 
+	 * @return the {@link String} predicate that represents the value of the
+	 *         parameters for this transition.
+	 */
 	public String getParameterPredicate() {
 		if (predicateString != null) {
 			return predicateString;
@@ -189,6 +157,10 @@ public class OpInfo {
 		return predicateString;
 	}
 
+	/**
+	 * @return a list of string predicates representing the value of the
+	 *         parameters for this transition
+	 */
 	public List<String> getParameterPredicates() {
 		evaluate();
 		List<String> predicates = new ArrayList<String>();
@@ -242,54 +214,44 @@ public class OpInfo {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof OpInfo) {
-			OpInfo that = (OpInfo) obj;
+		if (obj instanceof Transition) {
+			Transition that = (Transition) obj;
 			return this.getId().equals(that.getId())
-					&& this.getSrcId().equals(that.getSrcId())
-					&& this.getDestId().equals(that.getDestId());
+					&& this.getSource().equals(that.getSource())
+					&& this.getDestination().equals(that.getDestination());
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(13, 7).append(getId()).append(getSrc())
-				.append(getDest()).toHashCode();
+		return new HashCodeBuilder(13, 7).append(getId())
+				.append(getSource().getId()).append(getDestination().getId())
+				.toHashCode();
 	}
 
 	/**
 	 * @param that
-	 *            {@link OpInfo} with which this {@link OpInfo} should be
-	 *            compared
-	 * @return if the name and parameters of the {@link OpInfo}s are equivalent
+	 *            {@link Transition} with which this {@link Transition} should
+	 *            be compared
+	 * @return if the name and parameters of the {@link Transition}s are
+	 *         equivalent
 	 */
-	public boolean isSame(final OpInfo that) {
-		if (!that.isEvaluated()) {
-			return false;
-		}
+	public boolean isSame(final Transition that) {
+		this.evaluate();
+		that.evaluate();
 		return that.getName().equals(name) && that.getParams().equals(params);
 	}
 
 	/**
-	 * {@link Deprecated}. Use {@link #evaluate()} instead.
-	 * 
-	 * @param s
-	 *            - StateSpace
-	 * @return OpInfo that has been evaluated.
-	 */
-	@Deprecated
-	public OpInfo ensureEvaluated(final StateSpace s) {
-		return evaluate();
-	}
-
-	/**
-	 * The {@link OpInfo} is checked to see if the name, parameters, and return
-	 * values have been retrieved from ProB yet. If not, the retrieval takes
-	 * place via the {@link GetOpFromId} command and the missing values are set.
+	 * The {@link Transition} is checked to see if the name, parameters, and
+	 * return values have been retrieved from ProB yet. If not, the retrieval
+	 * takes place via the {@link GetOpFromId} command and the missing values
+	 * are set.
 	 * 
 	 * @return
 	 */
-	public OpInfo evaluate() {
+	public Transition evaluate() {
 		if (evaluated) {
 			return this;
 		}
@@ -307,13 +269,16 @@ public class OpInfo {
 	}
 
 	/**
-	 * @return A SHA-1 hash of the target state in String format
+	 * Calls {@link State#getStateRep} to calculate the SHA-1 of the destination
+	 * state.
+	 * 
+	 * @return A SHA-1 hash of the target state in String format.
 	 * @throws NoSuchAlgorithmException
 	 */
 	public String sha() throws NoSuchAlgorithmException {
 		evaluate();
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
-		md.update(getDestId().getState().getBytes());
+		md.update(getDestination().getStateRep().getBytes());
 		return new BigInteger(1, md.digest()).toString(Character.MAX_RADIX);
 	}
 
@@ -349,10 +314,10 @@ public class OpInfo {
 	 *            String id of destination node
 	 * @return OpInfo representation of given information
 	 */
-	public static OpInfo generateArtificialTransition(final StateSpace s,
+	public static Transition generateArtificialTransition(final StateSpace s,
 			final String transId, final String description, final String srcId,
 			final String destId) {
-		return new OpInfo(s, transId, description, s.addState(srcId),
+		return new Transition(s, transId, description, s.addState(srcId),
 				s.addState(destId), true);
 	}
 
@@ -363,18 +328,18 @@ public class OpInfo {
 	 *            {@link CompoundPrologTerm} representation of the operation
 	 *            which contains the transition id, source id, and destination
 	 *            id
-	 * @return {@link OpInfo} object representing the information about the
+	 * @return {@link Transition} object representing the information about the
 	 *         operation
 	 */
-	public static OpInfo createOpInfoFromCompoundPrologTerm(final StateSpace s,
-			final CompoundPrologTerm cpt) {
-		String opId = OpInfo.getIdFromPrologTerm(cpt.getArgument(1));
+	public static Transition createTransitionFromCompoundPrologTerm(
+			final StateSpace s, final CompoundPrologTerm cpt) {
+		String opId = Transition.getIdFromPrologTerm(cpt.getArgument(1));
 		String name = StringUtil.generateString(BindingGenerator
 				.getCompoundTerm(cpt.getArgument(2), 0).getFunctor());
-		String srcId = OpInfo.getIdFromPrologTerm(cpt.getArgument(3));
-		String destId = OpInfo.getIdFromPrologTerm(cpt.getArgument(4));
-		return new OpInfo(s, opId, name, s.addState(srcId), s.addState(destId),
-				false);
+		String srcId = Transition.getIdFromPrologTerm(cpt.getArgument(3));
+		String destId = Transition.getIdFromPrologTerm(cpt.getArgument(4));
+		return new Transition(s, opId, name, s.addState(srcId),
+				s.addState(destId), false);
 	}
 
 	/**

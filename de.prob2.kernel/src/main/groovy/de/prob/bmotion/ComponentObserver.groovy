@@ -6,8 +6,7 @@ class ComponentObserver extends TransformersObserver {
 
     private def selectorCache = [:]
 
-    def ComponentObserver() {
-    }
+    def ComponentObserver() {}
 
     def ComponentObserver(String component) {
         this.component = component

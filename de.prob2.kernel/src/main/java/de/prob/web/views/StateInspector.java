@@ -26,7 +26,7 @@ import de.prob.scripting.FileHandler;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.OpInfo;
+import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.unicode.UnicodeTranslator;
@@ -175,12 +175,12 @@ public class StateInspector extends AbstractSession implements
 	public Object calculateFormulas(final Trace t) {
 		List<Object> extracted = new ArrayList<Object>();
 		StateSpace s = t.getStateSpace();
-		OpInfo currentTransition = t.getCurrentTransition();
+		Transition currentTransition = t.getCurrentTransition();
 		Map<IEvalElement, IEvalResult> current = currentTransition == null ? s
 				.valuesAt(t.getCurrentState()) : s.valuesAt(currentTransition
-				.getDestId());
+				.getDestination());
 		Map<IEvalElement, IEvalResult> previous = currentTransition == null ? new HashMap<IEvalElement, IEvalResult>()
-				: s.valuesAt(currentTransition.getSrcId());
+				: s.valuesAt(currentTransition.getSource());
 
 		for (IEvalElement e : formulasForEvaluating) {
 			String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current

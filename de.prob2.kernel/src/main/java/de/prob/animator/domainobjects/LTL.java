@@ -10,7 +10,7 @@ import de.prob.animator.command.LtlCheckingCommand;
 import de.prob.model.representation.FormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 
 public class LTL extends AbstractEvalElement {
 	/* TODO: worry about the language specific parser */
@@ -48,7 +48,7 @@ public class LTL extends AbstractEvalElement {
 	}
 
 	@Override
-	public EvaluationCommand getCommand(final StateId stateid) {
+	public EvaluationCommand getCommand(final State stateid) {
 		return new LtlCheckingCommand(stateid.getStateSpace(), this, 500);
 	}
 

@@ -13,8 +13,8 @@ import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.OpInfo;
 import de.prob.statespace.Trace;
+import de.prob.statespace.Transition;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
@@ -63,10 +63,10 @@ public class CurrentAnimations extends AbstractSession implements
 			AbstractElement mainComponent = model.getMainComponent();
 			String modelName = mainComponent != null ? mainComponent.toString()
 					: model.getModelFile().getName();
-			OpInfo op = t.getCurrentTransition();
+			Transition op = t.getCurrentTransition();
 			String lastOp = op != null ? op.getRep() : "";
 
-			String steps = t.getOpList().size() + "";
+			String steps = t.getTransitionList().size() + "";
 			String isCurrent = t.equals(currentTrace) + "";
 			Map<String, String> wrapped = WebUtils.wrap("model", modelName,
 					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent);

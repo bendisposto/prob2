@@ -7,16 +7,16 @@ import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 
 public class ExpandFormulaCommand extends AbstractCommand {
 
-	private final StateId stateId;
+	private final State stateId;
 	private final String TREE = "TREE";
 	private final FormulaId id;
 	private ExpandedFormula result;
 
-	public ExpandFormulaCommand(final FormulaId id, final StateId stateId) {
+	public ExpandFormulaCommand(final FormulaId id, final State stateId) {
 		this.id = id;
 		this.stateId = stateId;
 	}

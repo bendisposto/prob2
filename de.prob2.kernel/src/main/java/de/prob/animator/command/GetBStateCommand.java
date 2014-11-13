@@ -3,15 +3,15 @@ package de.prob.animator.command;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.StateId;
+import de.prob.statespace.State;
 
 public class GetBStateCommand extends AbstractCommand {
 
 	private static final String STATE = "State";
-	private final StateId id;
+	private final State id;
 	private String stateRep;
 
-	public GetBStateCommand(final StateId id) {
+	public GetBStateCommand(final State id) {
 		this.id = id;
 	}
 
