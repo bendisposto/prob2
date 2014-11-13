@@ -18,23 +18,41 @@ public class ModelModifier {
 	EventBModel temp
 	Map<String, String> prefs
 	boolean loadByDefault
+	boolean startProB
 
-	def ModelModifier(EventBModel model) {
-		temp = deepCopy(model)
-		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
-		model.getStateSpace().execute(cmd)
-		prefs = cmd.getPreferences()
-		Api api = Main.getInjector().getInstance(Api.class)
-		loadByDefault = api.loadVariablesByDefault
+	/**
+	 * Creates an interface to allow the user to mutate the model object.
+	 * The user can also specify an additional parameter 'startProB' which will
+	 * determine if a ProB instance (i.e. StateSpace) will be bound to the new
+	 * model class. If not (and the user only is interested in the model structure itself),
+	 * no StateSpace instance (and therefore no ProB instance) will be created. However,
+	 * it will then not be possible to do any animation, even in the future, and the
+	 * EventBModel in question will then be subject to NullPointerExceptions (because the
+	 * StateSpace field will be null). This will result in programming work for anyone
+	 * who willingly sets the value to false.
+	 * @param model to be copied
+	 * @param startProB default = true
+	 */
+	def ModelModifier(EventBModel model, boolean startProB=true) {
+		temp = deepCopy(model, startProB)
+		this.startProB = startProB
+		if (startProB) {
+			GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
+			model.getStateSpace().execute(cmd)
+			prefs = cmd.getPreferences()
+			Api api = Main.getInjector().getInstance(Api.class)
+			loadByDefault = api.loadVariablesByDefault
+		}
 	}
 
 	/**
 	 * @param model that is to be copied
+	 * @param startProB true, if the user wants to begin an instance of ProB when creating a model, false otherwise.
 	 * @return a deep copy of the model and all model elements
 	 */
-	public static EventBModel deepCopy(EventBModel model) {
+	public static EventBModel deepCopy(EventBModel model, boolean startProB) {
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
-		EventBModel newModel = factory.modelProvider.get()
+		EventBModel newModel = startProB ? factory.modelProvider.get() : new EventBModel(null)
 
 		def mainComp = deepCopy(newModel, model.getMainComponent())
 		newModel.addTheories(new ModelElementList<Theory>(model.getChildrenOfType(Theory.class)))
@@ -179,17 +197,12 @@ public class ModelModifier {
 
 	/**
 	 * This method makes the model object currently being modified into an
-	 * immutable form. By default, this model is also loaded into a ProB instance
-	 * via the {@link EventBFactory#load(String, java.util.Map, boolean)} method,
-	 * but if the developer is only interested in the model object itself, and not
-	 * in starting animation for the model, this feature can be turned off by
-	 * setting the parameter load=false.
-	 * @param load (default value true)
+	 * immutable form.
 	 * @return EventBModel object created
 	 */
-	def EventBModel getModifiedModel(boolean load=true) {
+	def EventBModel getModifiedModel() {
 		temp.isFinished()
-		if (load) {
+		if (startProB) {
 			EventBFactory.loadModel(temp, prefs, loadByDefault)
 		}
 		return temp
