@@ -7,7 +7,6 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.node.Start
 import de.prob.model.representation.RefType
 import de.prob.model.representation.RefType.ERefType
-import de.prob.statespace.StateSpace
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
 class ClassicalBModelTest extends Specification {
@@ -21,7 +20,7 @@ class ClassicalBModelTest extends Specification {
 
 	def setup() {
 		model = new File(System.getProperties().get("user.dir")+"/groovyTests/machines/references/Foo.mch")
-		c = new ClassicalBModel(mock(StateSpace.class));
+		c = new ClassicalBModel(null);
 		bparser = new BParser();
 
 		ast = bparser.parseFile(model,false)
