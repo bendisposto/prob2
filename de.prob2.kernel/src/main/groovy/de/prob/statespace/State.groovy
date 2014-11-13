@@ -24,7 +24,7 @@ class State {
 	protected def String id;
 	def StateSpace stateSpace;
 	def boolean explored
-	def List<Transition> ops = []
+	def List<Transition> transitions = []
 	def boolean initialised
 	def boolean invariantOk
 	def Map<IEvalElement, IEvalResult> values = new HashMap<IEvalElement, IEvalResult>()
@@ -51,8 +51,8 @@ class State {
 		}
 
 		String predicate = params == []? "TRUE = TRUE" : params.join(" & ")
-		Transition op = stateSpace.opFromPredicate(this, method, predicate , 1)[0];
-		ops << op
+		Transition op = stateSpace.transitionFromPredicate(this, method, predicate , 1)[0];
+		transitions << op
 		return op.getDestination();
 	}
 
@@ -101,8 +101,8 @@ class State {
 	 * @return the calculated transition, or null if no transition was found.
 	 */
 	def Transition findTransition(String name, List<String> predicates) {
-		if (predicates.isEmpty() && !ops.isEmpty()) {
-			def op = ops.find { it.getName() == name }
+		if (predicates.isEmpty() && !transitions.isEmpty()) {
+			def op = transitions.find { it.getName() == name }
 			if (op != null) {
 				return op
 			}
@@ -129,8 +129,8 @@ class State {
 
 		String predicate = predicates == []? "TRUE = TRUE" : predicates.join(" & ")
 		try {
-			def newOps = stateSpace.opFromPredicate(this, name, predicate, nrOfSolutions)
-			ops.addAll(newOps)
+			def newOps = stateSpace.transitionFromPredicate(this, name, predicate, nrOfSolutions)
+			transitions.addAll(newOps)
 			return newOps
 		} catch(IllegalArgumentException e) {
 			// Skip
@@ -286,15 +286,15 @@ class State {
 			explore()
 		}
 		if(evaluate) {
-			stateSpace.evaluateTransitions(ops)
+			stateSpace.evaluateTransitions(transitions)
 		}
-		ops
+		transitions
 	}
 
 	def State explore() {
 		ExploreStateCommand cmd = new ExploreStateCommand(stateSpace, id, stateSpace.getSubscribedFormulas());
 		stateSpace.execute(cmd);
-		ops = cmd.getNewTransitions()
+		transitions = cmd.getNewTransitions()
 		values.putAll(cmd.getFormulaResults())
 		initialised = cmd.isInitialised()
 		invariantOk = cmd.isInvariantOk()

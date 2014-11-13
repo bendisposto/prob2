@@ -16,7 +16,13 @@ cmd = new CheckInitialisationStatusCommand("root")
 s.execute(cmd)
 assert cmd.isInitialized() == false
 
-assert s.getState("0") == null 
+thrown = false
+try { 
+	s[0]	
+} catch(IllegalArgumentException e) {
+	thrown = true
+}
+assert thrown
 cmd = new GetEnabledOperationsCommand(s, "root")
 s.execute(cmd)
 assert cmd instanceof IStateSpaceModifier
