@@ -17,7 +17,7 @@ public class ModelModifier {
 
 	EventBModel temp
 	Map<String, String> prefs
-	boolean loadByDefault
+	Closure loader
 	boolean startProB
 
 	/**
@@ -37,7 +37,7 @@ public class ModelModifier {
 			model.getStateSpace().execute(cmd)
 			prefs = cmd.getPreferences()
 			Api api = Main.getInjector().getInstance(Api.class)
-			loadByDefault = api.loadVariablesByDefault
+			loader = api.getSubscribeClosure()
 		}
 	}
 
@@ -199,7 +199,7 @@ public class ModelModifier {
 	def EventBModel getModifiedModel() {
 		temp.isFinished()
 		if (startProB) {
-			EventBFactory.loadModel(temp, prefs, loadByDefault)
+			EventBFactory.loadModel(temp, prefs, loader)
 		}
 		return temp
 	}
@@ -214,14 +214,12 @@ public class ModelModifier {
 	}
 
 	/**
-	 * Change whether or not basic formulas of interest are loaded by default
-	 * (i.e. variables, invariants, constants). Turning this off may improve performance
-	 * of the animation of the model in question
-	 * @param byDefault whether or not the formulas of interest for the model are registered
-	 * 	by default
+	 * Specify which formulas are of interest by setting the closure that is to subscribe
+	 * them
+	 * @param loader that will load the variables of interest.
 	 */
-	def void loadVariables(boolean byDefault) {
-		loadByDefault = byDefault
+	def void setLoader(Closure loader) {
+		this.loader = loader
 	}
 
 	/**

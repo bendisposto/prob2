@@ -16,20 +16,41 @@ import de.prob.cli.CliVersionNumber
 import de.prob.cli.ProBInstance
 import de.prob.exception.ProBError
 import de.prob.model.classicalb.ClassicalBModel
+import de.prob.model.eventb.Context
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractModel
 import de.prob.model.representation.CSPModel
+import de.prob.model.representation.Constant
+import de.prob.model.representation.Invariant
+import de.prob.model.representation.Machine
+import de.prob.model.representation.Variable
 import de.prob.prolog.output.PrologTermOutput
 
 
 public class Api {
+	def static Closure EMPTY = {AbstractModel model -> }
+	def static Closure DEFAULT = {AbstractModel model ->
+		model.getChildrenOfType(Machine.class).each { Machine machine ->
+			machine.getChildrenOfType(Variable.class).each { Variable var ->
+				var.subscribe(model.getStateSpace())
+			}
+			machine.getChildrenOfType(Invariant.class).each { Invariant inv ->
+				inv.subscribe(model.getStateSpace())
+			}
+		}
+		model.getChildrenOfType(Context.class).each { Context context ->
+			context.getChildrenOfType(Constant.class).each { Constant constant ->
+				constant.subscribe(model.getStateSpace())
+			}
+		}
+	}
+
 
 	Logger logger = LoggerFactory.getLogger(Api.class);
 
 	private final FactoryProvider modelFactoryProvider;
 	private final Downloader downloader;
-
 
 	/**
 	 * This variable specifies whether the variables in the model are
@@ -58,6 +79,13 @@ public class Api {
 		this.downloader = downloader;
 	}
 
+	public Closure getSubscribeClosure() {
+		if (loadVariablesByDefault) {
+			return DEFAULT
+		}
+		EMPTY
+	}
+
 	/**
 	 * Shutdown the specified {@link ProBInstance} object.
 	 *
@@ -67,21 +95,21 @@ public class Api {
 		x.shutdown();
 	}
 
-	public EventBModel eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap()) {
+	public EventBModel eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) {
 		def fileName = file;
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (fileName.endsWith(".eventb")) {
-			return factory.loadModelFromEventBFile(file, prefs)
+			return factory.loadModelFromEventBFile(file, prefs, EMPTY)
 		}
-		return factory.load(fileName, prefs, loadVariablesByDefault);
+		return factory.load(fileName, prefs, loadClosure);
 	}
 
-	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap()) {
+	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) {
 		if (!zipFile.endsWith(".zip")) {
 			throw new IllegalArgumentException("$zipFile is not a zip file")
 		}
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
-		return factory.loadModelFromZip(zipFile, componentName, prefs, loadVariablesByDefault)
+		return factory.loadModelFromZip(zipFile, componentName, prefs, loadClosure)
 	}
 
 	public void eventb_save(final EventBModel model, final String path) {
@@ -109,18 +137,18 @@ public class Api {
 	 * @throws IOException
 	 */
 	public ClassicalBModel b_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) throws IOException, BException {
 		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
-		return bFactory.load(f, prefs, loadVariablesByDefault);
+		return bFactory.load(f, prefs, loadClosure);
 	}
 
 	public ClassicalBModel tla_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap()) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) throws IOException, BException {
 		File f = new File(file);
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
-		return tlaFactory.load(f, prefs, loadVariablesByDefault);
+		return tlaFactory.load(f, prefs, loadClosure);
 	}
 
 	/**
@@ -132,7 +160,7 @@ public class Api {
 	 * @return {@link CSPModel} that has been loaded from file
 	 * @throws Exception
 	 */
-	public CSPModel csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap())
+	public CSPModel csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=EMPTY)
 	throws Exception {
 		File f = new File(file);
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();

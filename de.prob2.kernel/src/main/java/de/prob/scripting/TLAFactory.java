@@ -1,5 +1,7 @@
 package de.prob.scripting;
 
+import groovy.lang.Closure;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,8 +25,6 @@ import de.prob.animator.command.LoadBProjectCommand;
 import de.prob.animator.command.SetPreferenceCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.model.classicalb.ClassicalBModel;
-import de.prob.model.representation.Machine;
-import de.prob.model.representation.Variable;
 import de.tla2b.exceptions.FrontEndException;
 import de.tla2b.exceptions.TLA2BException;
 import de.tla2bAst.Translator;
@@ -55,7 +55,7 @@ public class TLAFactory extends ModelFactory {
 	 * @throws FrontEndException
 	 */
 	public ClassicalBModel load(final File f, final Map<String, String> prefs,
-			final boolean loadVariables) throws IOException, BException {
+			final Closure<?> loader) throws IOException, BException {
 		ClassicalBModel classicalBModel = modelCreator.get();
 
 		Translator translator;
@@ -75,9 +75,7 @@ public class TLAFactory extends ModelFactory {
 		classicalBModel.initialize(ast, rml, f);
 		startAnimation(classicalBModel, rml,
 				getPreferences(classicalBModel, prefs), f);
-		if (loadVariables) {
-			subscribeVariables(classicalBModel);
-		}
+		loader.call(classicalBModel);
 		return classicalBModel;
 
 	}
@@ -110,17 +108,6 @@ public class TLAFactory extends ModelFactory {
 		cmds.add(new StartAnimationCommand());
 		classicalBModel.getStateSpace().execute(new ComposedCommand(cmds));
 		classicalBModel.getStateSpace().setLoadcmd(loadcmd);
-	}
-
-	private void subscribeVariables(final ClassicalBModel m) {
-		List<Machine> machines = m.getChildrenOfType(Machine.class);
-		for (Machine machine : machines) {
-			List<Variable> childrenOfType = machine
-					.getChildrenOfType(Variable.class);
-			for (Variable variable : childrenOfType) {
-				m.getStateSpace().subscribe(this, variable.getExpression());
-			}
-		}
 	}
 
 	/**
