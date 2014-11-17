@@ -166,7 +166,7 @@ public class Api {
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
 		CSPModel m = null;
 		try {
-			m = cspFactory.load(f, prefs);
+			m = cspFactory.load(f, prefs, loadClosure);
 		} catch (ProBError error) {
 			throw new Exception(
 			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory");
