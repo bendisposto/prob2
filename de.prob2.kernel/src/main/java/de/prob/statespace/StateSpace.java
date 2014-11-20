@@ -457,7 +457,7 @@ public class StateSpace implements IAnimator {
 	/**
 	 * Takes an {@link IEvalElement} containing a predicate and returns a
 	 * {@link Trace} containing only a magic operation that leads to valid state
-	 * where the preciate holds.
+	 * where the predicate holds.
 	 * 
 	 * @param predicate
 	 *            predicate that should hold in the valid state
