@@ -152,7 +152,13 @@ public class MachineXmlHandler extends DefaultHandler {
 		String target = attributes.getValue("org.eventb.core.scTarget");
 		String internalName = target.substring(target.lastIndexOf('#') + 1,
 				target.length());
-		internalName = internalName.replace("\\", "");
+
+		if (internalName.endsWith("\\\\")) {
+			internalName = internalName.substring(0, internalName.length() - 1);
+		} else {
+			internalName = internalName.replace("\\", "");
+		}
+
 		String fileSource = target.substring(0, target.indexOf('|'));
 
 		String refinedMachineName = fileSource.substring(
