@@ -17,60 +17,62 @@ repositories {
 	}
 }
 
-
 configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
 
+sourceSets.main.java.srcDirs = ['src/main/generated'] 	// ie there's no stand-alone java source
+sourceSets.main.groovy.srcDir 'src/main/java' 					// ie include the 'java' dir as groovy source
 
-sourceSets.main.java.srcDirs = [
-	'src/main/generated'] // ie there's no stand-alone java source
-sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
+eclipse {
+	project {
+		name = 'de.prob2.kernel'
+	}
+}
 
 def parser_version = '2.4.32'
 
-
 dependencies {
 
- 	//groovy 'org.codehaus.groovy:groovy-all:2.0.5'
+	//groovy 'org.codehaus.groovy:groovy-all:2.0.5'
 
-	compile 'com.google.guava:guava:14.0.1'// Apache Licence 2.0
-	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
-	compile 'commons-io:commons-io:2.4' // Apache Licence 2.0
+	compile 'com.google.guava:guava:14.0.1'					// Apache Licence 2.0
+	compile 'commons-cli:commons-cli:1.2' 					// Apache Licence 2.0
+	compile 'commons-io:commons-io:2.4' 						// Apache Licence 2.0
 
-	compile 'commons-lang:commons-lang:2.6' // Replace by guava 15 once it is released (used in GroovyShellServlet)
+	compile 'commons-lang:commons-lang:2.6' 				// Replace by guava 15 once it is released (used in GroovyShellServlet)
 
-	compile 'org.codehaus.groovy:groovy-all:2.3.0' // Apache Licence 2.0
-	//	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
-	//	compile 'jline:jline:0.9.94' // BSD
+	compile 'org.codehaus.groovy:groovy-all:2.3.0' 	// Apache Licence 2.0
+	//	compile 'org.fusesource.jansi:jansi:1.5' 		// Apache Licence 2.0
+	//	compile 'jline:jline:0.9.94' 								// BSD
 
-	compile 'org.pegdown:pegdown:1.1.0' // Apache Licence 2.0
+	compile 'org.pegdown:pegdown:1.1.0' 						// Apache Licence 2.0
 
-	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
-	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
-	compile 'org.slf4j:slf4j-api:1.6.1' // MIT
-	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
-	compile 'ch.qos.logback:logback-classic:0.9.29' // EPL
+	compile 'com.google.inject:guice:3.0' 										// Apache Licence 2.0
+	compile 'com.google.inject.extensions:guice-servlet:3.0'  // Apache Licence 2.0
+	compile 'org.slf4j:slf4j-api:1.6.1' 											// MIT
+	compile 'ch.qos.logback:logback-core:0.9.29' 							// EPL
+	compile 'ch.qos.logback:logback-classic:0.9.29' 					// EPL
 
 	compile 'net.sf.jung:jung-jai:2.0.1'
 	compile 'net.sf.jung:jung-graph-impl:2.0.1'
 	compile 'net.sf.jung:jung-api:2.0.1'
 	compile 'net.sf.jung:jung-algorithms:2.0.1'
 
-	compile 'com.thoughtworks.xstream:xstream:1.4.3' // BSD
+	compile 'com.thoughtworks.xstream:xstream:1.4.3' 					// BSD
 
-    compile(group: 'org.eventb', name: 'org.eventb.core.ast', version: '3.0.0')
+	compile(group: 'org.eventb', name: 'org.eventb.core.ast', version: '3.0.0')
 
-//	compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' // Rodin
+	// compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' 	// Rodin
 
-	compile 'commons-codec:commons-codec:1.6' // Apache Licence 2.0
-	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
+	compile 'commons-codec:commons-codec:1.6' 								// Apache Licence 2.0
+	compile 'com.google.code.gson:gson:1.7.1' 								// Apache Licence 2.0
 
 	// If you consider to update or downgrade jetty ... just don't
 	// it'll make you puke 
-	compile 'org.eclipse.jetty:jetty-io:8.1.8.v20121106' // EPL
-	compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106' // EPL
+	compile 'org.eclipse.jetty:jetty-io:8.1.8.v20121106' 			// EPL
+	compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106' 	// EPL
 	compile 'org.eclipse.jetty:jetty-servlet:8.1.8.v20121106' // EPL
-	compile 'org.eclipse.jetty:jetty-util:8.1.8.v20121106' // EPL
-	compile 'org.eclipse.jetty:jetty-webapp:8.1.8.v20121106' // EPL
+	compile 'org.eclipse.jetty:jetty-util:8.1.8.v20121106' 		// EPL
+	compile 'org.eclipse.jetty:jetty-webapp:8.1.8.v20121106' 	// EPL
 
 	compile 'org.antlr:antlr4-runtime:4.0'
 	compile 'de.prob:ltl-dsl:1.0.0'
@@ -85,20 +87,16 @@ dependencies {
 	compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
 	compile group: "de.prob", name: "unicode", version: parser_version , changing: true
 	compile group: "de.prob", name: "theorymapping", version: parser_version, changing: true
-	
+	compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT'
 	compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT', changing: true
 
 	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
 
 	compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
-	
-	
-    compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT'
 
 	compile 'junit:junit:4.8.2'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
 	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
-	
 	compile 'org.jsoup:jsoup:1.7.2'
 
 	testCompile 'org.mockito:mockito-core:1.8.5'
@@ -116,8 +114,6 @@ version=${project.version}"""
 		f <<  buildconstants_class
 	}
 }
-
-
 
 compileGroovy { dependsOn= [createBuildConstants]}
 
@@ -146,7 +142,6 @@ public  String getProBDirectory() {
 	+ java.io.File.separator;
 }
 
-
 task downloadCli << {
 	def dir = getProBDirectory();
 	delete file(dir)
@@ -160,7 +155,16 @@ task downloadCli << {
 		from zip
 		into targetdir
 	}
+
 	delete file(targetzip)
+
+	//	For OS X and Linux when download the CLI isn't executable => chmod +x
+	if (System.getProperty("os.name").toLowerCase().indexOf("win") < 0) {
+		FileTree tree = fileTree(targetdir).include('probcli', 'probcli.sh', 'send_user_interrupt');
+		tree.each { File file ->
+			file.setExecutable(true);
+		}
+	}
 	
 	def targetName = "cspmf-"
 	def os = os_extension()
@@ -182,7 +186,6 @@ task downloadCli << {
 	new File(target).setExecutable(true)
 }
 
-
 def os_extension() {
 	def bits = System.getProperty("sun.arch.data.model");
 	def os = System.getProperty("os.name").toLowerCase()
@@ -195,23 +198,15 @@ def os_extension() {
 	else return "probcli_linux" + (bits.equals("64") ? "64": "")
 }
 
-
 task integrationtests(dependsOn: ['classes', 'downloadCli'], type:JavaExec){
 	main = 'de.prob.Main'
 	classpath = sourceSets.main.runtimeClasspath
 	args = ['-test', 'groovyTests']
 }
 
-eclipse {
-	project {
-		name = 'de.prob2.kernel'
-	}
-}
-
 task deploy(type: Copy, dependsOn: build) {
-    into "$buildDir/libs"
-    from configurations.runtime
+		into "$buildDir/libs"
+		from configurations.runtime
 }
-
 
 tasks.eclipse.dependsOn createBuildConstants 
