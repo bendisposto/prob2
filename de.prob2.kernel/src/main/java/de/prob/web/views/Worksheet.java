@@ -30,6 +30,7 @@ import de.prob.web.AbstractSession;
 import de.prob.web.ISession;
 import de.prob.web.ReflectionServlet;
 import de.prob.web.WebUtils;
+import de.prob.web.data.Message;
 import de.prob.web.data.SessionResult;
 import de.prob.web.worksheet.BindingsSnapshot;
 import de.prob.web.worksheet.BoxFactory;
@@ -176,7 +177,8 @@ public class Worksheet extends AbstractSession {
 				boxId, direction, text });
 
 		List<Object> messages = new ArrayList<Object>();
-		//needs to be evaluated prior creation of new box in order to get the correct snapshot while creation time
+		// needs to be evaluated prior creation of new box in order to get the
+		// correct snapshot while creation time
 		IBox box = boxes.get(boxId);
 		box.setContent(params);
 		List<Object> renderBox = render(box);
@@ -197,7 +199,8 @@ public class Worksheet extends AbstractSession {
 					focused, "direction", "up"));
 		}
 		messages.addAll(renderBox);
-		//FIXME Why render the same box twice in case of EVERYTHING_BELOW and DONT_CARE?
+		// FIXME Why render the same box twice in case of EVERYTHING_BELOW and
+		// DONT_CARE?
 		messages.addAll(reEvaluate(boxId, order.indexOf(boxId)));
 		return messages;
 	}
@@ -307,9 +310,9 @@ public class Worksheet extends AbstractSession {
 			submit(renderCmd, focusCmd);
 			resend(client, 0, context);
 		} else {
-			Message lm = responses.get(responses.size() - 1);
-			ArrayList<Object> cp = new ArrayList<Object>();
+			Message lm;
 
+			ArrayList<Object> cp = new ArrayList<Object>();
 			for (String id : order) {
 				IBox b = boxes.get(id);
 				restorePreviousBoxBindings(b.getId());
@@ -317,11 +320,8 @@ public class Worksheet extends AbstractSession {
 				cp.addAll(render(b));
 				cp.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number", id));
 			}
-
-			// cp.add(WebUtils.wrap("cmd", "reloaded"));
-
 			Object[] everything = cp.toArray();
-			Message m = new Message(lm.id, everything);
+			Message m = new Message(responses.size(), everything);
 			String json = WebUtils.toJson(m);
 			send(json, context);
 		}
