@@ -107,7 +107,7 @@ public class B extends AbstractBox {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<? extends Object> additionalMessages() {
+	public Collection<? extends Object> getMenuMessages() {
 		String traceList = WebUtils.toJson(getTraceList());
 		Map<String, String> traceDropdownMap = WebUtils.wrap("cmd",
 				"Worksheet.setDropdown", "id", id, "dropdownName",

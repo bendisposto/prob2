@@ -29,6 +29,9 @@ public interface IBox {
 	/*
 	 * Returns additional commands following create Message for a box
 	 */
-	Collection<? extends Object> additionalMessages();
+	Collection<? extends Object> getMenuMessages();
+
+	Object getAside(BindingsSnapshot previous_snapshot,
+			BindingsSnapshot current_snapshot);
 
 }

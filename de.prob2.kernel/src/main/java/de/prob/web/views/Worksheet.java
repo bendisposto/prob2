@@ -3,25 +3,18 @@ package de.prob.web.views;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
-import javax.annotation.Nullable;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.servlet.AsyncContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.inject.Inject;
 
 import de.prob.annotations.Dangerous;
@@ -101,7 +94,7 @@ public class Worksheet extends AbstractSession {
 			initialSnapshot.restoreBindings(groovy);
 			Map<String, String> renderCmd = freshBox.createMessage();
 			messages.add(renderCmd);
-			messages.addAll(freshBox.additionalMessages());
+			messages.addAll(freshBox.getMenuMessages());
 		} else if (index != order.size()) {
 			messages.addAll(reEvaluate(deleted.changeEffect(), index));
 		}
@@ -176,7 +169,17 @@ public class Worksheet extends AbstractSession {
 		logger.trace("Leaving {} direction {}. Content {}", new Object[] {
 				boxId, direction, text });
 
+		if ("up".equals(direction) && boxId.equals(firstBox())) {
+			return null; // ignore
+		}
 		List<Object> messages = new ArrayList<Object>();
+		if ("up".equals(direction) && !boxId.equals(firstBox())) {
+			messages.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number",
+					boxId));
+			String focused = getPredecessor(boxId);
+			messages.add(WebUtils.wrap("cmd", "Worksheet.focus", "number",
+					focused, "direction", "up"));
+		}
 		// needs to be evaluated prior creation of new box in order to get the
 		// correct snapshot while creation time
 		IBox box = boxes.get(boxId);
@@ -187,17 +190,6 @@ public class Worksheet extends AbstractSession {
 			messages.addAll(leaveEditorDown(boxId, text));
 		}
 
-		if ("up".equals(direction) && boxId.equals(firstBox())) {
-			return null; // ignore
-		}
-
-		if ("up".equals(direction) && !boxId.equals(firstBox())) {
-			messages.add(WebUtils.wrap("cmd", "Worksheet.unfocus", "number",
-					boxId));
-			String focused = getPredecessor(boxId);
-			messages.add(WebUtils.wrap("cmd", "Worksheet.focus", "number",
-					focused, "direction", "up"));
-		}
 		messages.addAll(renderBox);
 		// FIXME Why render the same box twice in case of EVERYTHING_BELOW and
 		// DONT_CARE?
@@ -212,14 +204,13 @@ public class Worksheet extends AbstractSession {
 			IBox freshBox = appendFreshBox();
 			restorePreviousBoxBindings(freshBox.getId());
 			res.add(freshBox.createMessage());
-			res.addAll(freshBox.additionalMessages());
+			res.addAll(freshBox.getMenuMessages());
 		} else {
 			String focused = getSuccessor(boxId);
 			res.add(WebUtils.wrap("cmd", "Worksheet.focus", "number", focused,
 					"direction", "down"));
 		}
 		return res;
-
 	}
 
 	public IBox makeBox(final String type) {
@@ -328,58 +319,13 @@ public class Worksheet extends AbstractSession {
 	}
 
 	private List<Object> render(final IBox box) {
-
-		Predicate<Entry<String, Object>> p = new Predicate<Entry<String, Object>>() {
-			@Override
-			public boolean apply(@Nullable final Entry<String, Object> input) {
-				return !input.getKey().startsWith("__");
-			}
-		};
-		Comparator<Entry<String, Object>> comperator = new Comparator<Entry<String, Object>>() {
-			@Override
-			public int compare(final Entry<String, Object> o1,
-					final Entry<String, Object> o2) {
-				return o1.getKey().compareTo(o2.getKey());
-			}
-		};
-
 		BindingsSnapshot previous_snapshot = getPreviousBoxBindings(box.getId());
-
 		List<Object> box_rendering = box.render(previous_snapshot);
-
 		final BindingsSnapshot current_snapshot = new BindingsSnapshot(groovy);
 		snapshots.put(box.getId(), current_snapshot);
-
-		Collection<Entry<String, Object>> bindings_global = Collections2
-				.filter(groovy.getBindings(ScriptContext.GLOBAL_SCOPE)
-						.entrySet(), p);
-		Collection<Entry<String, Object>> bindings_local = Collections2.filter(
-				groovy.getBindings(ScriptContext.ENGINE_SCOPE).entrySet(), p);
-
-		List<Entry<String, Object>> vars = new ArrayList<Entry<String, Object>>();
-		vars.addAll(bindings_local);
-		vars.addAll(bindings_global);
-		Collections.sort(vars, comperator);
-
-		Function<Entry<String, Object>, Map<String, String>> toJson = new VariableDetailTransformer(
-				previous_snapshot, current_snapshot);
-
-		Collection<Map<String, String>> vars2 = Collections2.transform(vars,
-				toJson);
-
-		Collection<Map<String, String>> vars3 = Collections2.filter(vars2,
-				new Predicate<Map<String, String>>() {
-
-					@Override
-					public boolean apply(
-							@Nullable final Map<String, String> input) {
-						return input != null;
-					}
-				});
-
-		box_rendering.add(WebUtils.wrap("cmd", "Worksheet.aside", "number",
-				box.getId(), "aside", WebUtils.toJson(vars3)));
-
+		Object aside = box.getAside(previous_snapshot, current_snapshot);
+		if (aside != null)
+			box_rendering.add(aside);
 		return box_rendering;
 	}
 
@@ -420,11 +366,18 @@ public class Worksheet extends AbstractSession {
 		IBox box = boxfactory.create(this, id, type);
 		box.setContent(params);
 		boxes.put(id, box);
-		restorePreviousBoxBindings(box.getId());
+		BindingsSnapshot previous_snapshot = restorePreviousBoxBindings(box
+				.getId());
 		Collection<? extends Object> additionalMessages = box
-				.additionalMessages();
-		Object[] res = new Object[additionalMessages.size() + 1];
+				.getMenuMessages();
+		int size = additionalMessages.size();
+		Object aside = box.getAside(previous_snapshot, previous_snapshot);
+		if (aside != null)
+			size += 1;
+		Object[] res = new Object[size + 1];
 		res[0] = box.replaceMessage();
+		if (aside != null)
+			res[1] = aside;
 		Iterator<? extends Object> it = additionalMessages.iterator();
 		int pos = 1;
 		while (it.hasNext()) {

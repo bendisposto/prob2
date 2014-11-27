@@ -101,8 +101,14 @@ public abstract class AbstractBox implements IBox {
 	}
 
 	@Override
-	public Collection<? extends Object> additionalMessages() {
+	public Collection<? extends Object> getMenuMessages() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public Object getAside(BindingsSnapshot previous_snapshot,
+			BindingsSnapshot current_snapshot) {
+		return null;
 	}
 
 }
