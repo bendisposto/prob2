@@ -15,7 +15,6 @@ import javax.script.ScriptEngine;
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
-import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.StateId;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
@@ -41,13 +40,13 @@ public class B extends AbstractBox {
 				snapshot.restoreBindings(groovy);
 			if (this.content != null) {
 				Trace trace;
-				if (this.trace.equals("rodin_current"))
-
-					trace = ((AnimationSelector) groovy.getBindings(
-							ScriptContext.GLOBAL_SCOPE).get("animations"))
-							.getCurrentTrace();
-				else
-					trace = (Trace) groovy.get(this.trace);
+				// TODO find a way to decide if loaded as Plugin
+				// if (this.trace.equals("rodin_current"))
+				// trace = ((AnimationSelector) groovy.getBindings(
+				// ScriptContext.GLOBAL_SCOPE).get("animations"))
+				// .getCurrentTrace();
+				// else
+				trace = (Trace) groovy.get(this.trace);
 				StateSpace space = trace.getStateSpace();
 				StateId curStateId = trace.getCurrentState();
 				//
@@ -97,7 +96,6 @@ public class B extends AbstractBox {
 				traceKeys.add(next.getKey());
 		}
 		Collections.sort(traceKeys);
-		traceKeys.add(0, "rodin_current");
 		if (this.trace != null) {
 			traceKeys.remove(this.trace);
 			traceKeys.add(0, this.trace);
