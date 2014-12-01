@@ -16,7 +16,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
-import de.prob.bmotion.VisualisationRegistry;
 import de.prob.statespace.AnimationSelector;
 import de.prob.testing.TestRunner;
 
@@ -27,7 +26,6 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 	private final AnimationSelector animations;
 	private final ScriptEngineManager manager;
 	private final Downloader downloader;
-	private final VisualisationRegistry visualisationRegistry;
 
 	private static final String[] IMPORTS = new String[] {
 			"import de.prob.statespace.*;",
@@ -42,13 +40,11 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 	@Inject
 	public ScriptEngineProvider(final Api api,
 			final AnimationSelector animations, final Downloader downloader,
-			final TestRunner tests,
-			final VisualisationRegistry visualisationRegistry) {
+			final TestRunner tests) {
 		this.api = api;
 		this.animations = animations;
 		this.downloader = downloader;
 		this.tests = tests;
-		this.visualisationRegistry = visualisationRegistry;
 		manager = new ScriptEngineManager(this.getClass().getClassLoader());
 		tests.setExecutor(get());
 	}
@@ -61,7 +57,6 @@ public class ScriptEngineProvider implements Provider<ScriptEngine> {
 		bindings.put("animations", animations);
 		bindings.put("downloader", downloader);
 		bindings.put("tests", tests);
-		bindings.put("vis", visualisationRegistry);
 		bindings.put("engine", engine);
 		URL url = Resources.getResource("initscript");
 		String script;
