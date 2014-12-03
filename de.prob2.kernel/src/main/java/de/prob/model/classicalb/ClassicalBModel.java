@@ -23,6 +23,7 @@ import de.prob.model.representation.Variable;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import groovy.lang.Closure;
 
 public class ClassicalBModel extends AbstractModel {
 
@@ -106,6 +107,12 @@ public class ClassicalBModel extends AbstractModel {
 
 	@Override
 	public void subscribeFormulasOfInterest() {
+		Closure subscribe = getClosure();
+		if (subscribe != null) {
+			subscribe.call(this);
+			return;
+		}
+
 		ModelElementList<Machine> childrenOfType = getChildrenOfType(Machine.class);
 		for (Machine machine : childrenOfType) {
 			for (Variable variable : machine.getChildrenOfType(Variable.class)) {

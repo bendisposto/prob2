@@ -1,5 +1,7 @@
 package de.prob.scripting;
 
+import groovy.lang.Closure;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ public class ClassicalBFactory extends ModelFactory {
 	 * @throws BException
 	 */
 	public ClassicalBModel load(final File f, final Map<String, String> prefs,
-			final boolean loadVariables) throws IOException, BException {
+			final Closure<?> subscriber) throws IOException, BException {
 		ClassicalBModel classicalBModel = modelCreator.get();
 
 		BParser bparser = new BParser();
@@ -64,9 +66,7 @@ public class ClassicalBFactory extends ModelFactory {
 		classicalBModel.initialize(ast, rml, f);
 		startAnimation(classicalBModel, rml,
 				getPreferences(classicalBModel, prefs), f);
-		if (loadVariables) {
-			classicalBModel.subscribeFormulasOfInterest();
-		}
+		subscriber.call(classicalBModel);
 		return classicalBModel;
 	}
 

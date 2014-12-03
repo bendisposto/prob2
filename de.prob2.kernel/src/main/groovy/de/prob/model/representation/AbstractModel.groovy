@@ -19,6 +19,7 @@ public abstract class AbstractModel extends AbstractElement {
 	protected String modelDirPath;
 	protected DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
 	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
+	def static Closure subscribe = null
 
 	@Inject
 	def AbstractModel(Provider<StateSpace> stateSpaceProvider) {
@@ -136,5 +137,9 @@ public abstract class AbstractModel extends AbstractElement {
 			return null;
 		}
 		return Eval.x(this,"x.${path.join(".")}");
+	}
+
+	def Closure getClosure() {
+		return AbstractModel.subscribe
 	}
 }

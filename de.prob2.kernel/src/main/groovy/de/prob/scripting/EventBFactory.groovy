@@ -32,12 +32,12 @@ public class EventBFactory extends ModelFactory {
 	}
 
 	public EventBModel load(final String file, final Map<String, String> prefs,
-			final boolean loadVariables) {
+			final Closure loader) {
 		EventBModel model = modelProvider.get();
 
 		new EventBDatabaseTranslator(model, getValidFileName(file));
 
-		return loadModel(model, getPreferences(model, prefs), loadVariables);
+		return loadModel(model, getPreferences(model, prefs), loader);
 	}
 
 	private String getValidFileName(String fileName) {
@@ -54,7 +54,7 @@ public class EventBFactory extends ModelFactory {
 	}
 
 	public static EventBModel loadModel(final EventBModel model,
-			final Map<String, String> prefs, final boolean loadVariables) {
+			final Map<String, String> prefs, final Closure loader) {
 		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
 
 		for (Entry<String, String> pref : prefs.entrySet()) {
@@ -70,14 +70,12 @@ public class EventBFactory extends ModelFactory {
 		s.execute(new ComposedCommand(cmds));
 		s.setLoadcmd(loadcmd);
 
-		if (loadVariables) {
-			model.subscribeFormulasOfInterest();
-		}
+		loader(model)
 		return model;
 	}
 
 	public EventBModel loadModelFromEventBFile(final String fileName,
-			final Map<String, String> prefs) throws IOException {
+			final Map<String, String> prefs, final Closure loadClosure) throws IOException {
 		EventBModel model = modelProvider.get();
 		Pattern pattern = Pattern.compile("^package\\((.*?)\\)\\.");
 		File file = new File(fileName);
@@ -113,6 +111,8 @@ public class EventBFactory extends ModelFactory {
 		s.execute(new StartAnimationCommand());
 
 		s.setLoadcmd(load);
+
+		loadClosure(model)
 		return model;
 	}
 
@@ -123,7 +123,7 @@ public class EventBFactory extends ModelFactory {
 	}
 
 	public EventBModel loadModelFromZip(final String zipfile, String componentName,
-			final Map<String, String> prefs, boolean loadVarsByDefault) throws IOException {
+			final Map<String, String> prefs, Closure loader) throws IOException {
 		File.metaClass.unzip = { String dest ->
 			//in metaclass added methods, 'delegate' is the object on which
 			//the method is called. Here it's the file to unzip
@@ -179,7 +179,7 @@ public class EventBFactory extends ModelFactory {
 			throw new IllegalArgumentException("The component name should reference exactly one component in the model.")
 		}
 
-		return load(modelFiles[0].getAbsolutePath(), prefs, loadVarsByDefault);
+		return load(modelFiles[0].getAbsolutePath(), prefs, loader);
 	}
 
 	private class DummyElement extends AbstractElement {
