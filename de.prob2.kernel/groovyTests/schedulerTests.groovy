@@ -1,10 +1,17 @@
 import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
+x = 1
+f = "1 + 2" as ClassicalB
 m = api.b_load(dir+"/machines/scheduler.mch")
 s = m as StateSpace
-h = new Trace(s)
-h = h.add 0
+s.subscribe(m, f)
+t = new Trace(s)
+t.getCurrentState().explore()
+
+h = t.add 0
+
+
 idAt0 = h.getCurrentState()
 h = h.add 3
 assert h.getCurrentState() == s.getState("2")

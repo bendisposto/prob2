@@ -8,6 +8,7 @@ import de.be4.ltl.core.parser.LtlParser;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.command.LtlCheckingCommand;
 import de.prob.model.representation.FormulaUUID;
+import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.State;
@@ -43,7 +44,7 @@ public class LTL extends AbstractEvalElement {
 	}
 
 	@Override
-	public FormulaUUID getFormulaId() {
+	public IFormulaUUID getFormulaId() {
 		return uuid;
 	}
 

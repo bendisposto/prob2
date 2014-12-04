@@ -10,6 +10,7 @@ import de.prob.animator.command.EvaluationCommand
 import de.prob.cli.OsInfoProvider
 import de.prob.model.representation.CSPModel
 import de.prob.model.representation.FormulaUUID
+import de.prob.model.representation.IFormulaUUID
 import de.prob.prolog.output.IPrologTermOutput
 import de.prob.statespace.State
 
@@ -122,7 +123,7 @@ class CSP extends AbstractEvalElement {
 	}
 
 	@Override
-	public FormulaUUID getFormulaId() {
+	public IFormulaUUID getFormulaId() {
 		return uuid;
 	}
 

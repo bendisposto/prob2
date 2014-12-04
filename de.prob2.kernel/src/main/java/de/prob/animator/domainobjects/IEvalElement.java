@@ -1,7 +1,7 @@
 package de.prob.animator.domainobjects;
 
 import de.prob.animator.command.EvaluationCommand;
-import de.prob.model.representation.FormulaUUID;
+import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
 
@@ -37,7 +37,7 @@ public interface IEvalElement {
 
 	public String serialized();
 
-	public FormulaUUID getFormulaId();
+	public IFormulaUUID getFormulaId();
 
 	public EvaluationCommand getCommand(State stateid);
 }

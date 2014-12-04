@@ -1,5 +1,12 @@
 package de.prob.animator.domainobjects
 
+import com.google.common.base.Joiner
+
+import de.prob.parser.BindingGenerator
+import de.prob.prolog.term.CompoundPrologTerm
+import de.prob.prolog.term.ListPrologTerm
+import de.prob.prolog.term.PrologTerm
+
 public class TranslatedEvalResult implements IEvalResult {
 
 	def value
@@ -39,5 +46,42 @@ public class TranslatedEvalResult implements IEvalResult {
 
 	def String toString() {
 		return value.toString();
+	}
+
+	def static IEvalResult getResult(PrologTerm pt) {
+		if (pt instanceof ListPrologTerm) {
+			/*
+			 * If the evaluation was not successful, the result should be a
+			 * Prolog list with the code on the first index and a list of errors
+			 * This results therefore in a ComputationNotCompleted command
+			 */
+			ListPrologTerm listP = (ListPrologTerm) pt
+			def list = []
+
+			String code = listP.get(0).getFunctor();
+
+			for (int i = 1; i < listP.size(); i++) {
+				list.add(listP.get(i).getArgument(1).getFunctor());
+			}
+
+			return new ComputationNotCompletedResult(code, Joiner.on(",").join(list))
+		} else {
+			PrologTerm v = pt.getArgument(1);
+			ValueTranslator translator = new ValueTranslator();
+			Object vobj = translator.toGroovy(v);
+
+			ListPrologTerm list = BindingGenerator.getList(pt
+					.getArgument(2));
+			Map<String, Object> solutions = Collections.emptyMap();
+			if (!list.isEmpty()) {
+				solutions = new HashMap<String, Object>();
+			}
+			for (PrologTerm pt2 : list) {
+				CompoundPrologTerm sol = BindingGenerator.getCompoundTerm(pt2, 2);
+				solutions.put(sol.getArgument(1).getFunctor(),
+						translator.toGroovy(sol.getArgument(2)));
+			}
+			return new TranslatedEvalResult(vobj, solutions);
+		}
 	}
 }

@@ -26,9 +26,9 @@ import de.prob.scripting.FileHandler;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.statespace.Transition;
 import de.prob.unicode.UnicodeTranslator;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
@@ -187,8 +187,8 @@ public class StateInspector extends AbstractSession implements
 					.get(e)).getValue()) : "";
 			String previousVal = previous.get(e) instanceof EvalResult ? unicode(((EvalResult) previous
 					.get(e)).getValue()) : "";
-			extracted.add(WebUtils.wrap("id", e.getFormulaId().uuid, "code",
-					unicode(e.getCode()), "current",
+			extracted.add(WebUtils.wrap("id", e.getFormulaId().getUUID(),
+					"code", unicode(e.getCode()), "current",
 					current.get(e) == null ? "" : currentVal, "previous",
 					previous.get(e) == null ? "" : previousVal));
 		}
