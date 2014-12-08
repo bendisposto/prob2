@@ -138,7 +138,13 @@ class Downloader {
 
 		if(os == "win32" || os == "win64") {
 			def target = probhome+"lib.zip";
-			def zipFile = os == "win32" ? "windowslib32.zip" : "windowslib64.zip"
+			/*
+			 * TODO: Once the windowslib64.zip works for Windows 64-bit machines, 
+			 * we should use this line of code instead:
+			 * def zipFile = os == "win32" ? "windowslib32.zip" : "windowslib64.zip"
+			 * Until then, we use the windowslib32.zip
+			 */
+			def zipFile = "windowslib32.zip"
 			download(versionurl+zipFile,target)
 			File r = new File(target)
 			r.unzip(probhome)
