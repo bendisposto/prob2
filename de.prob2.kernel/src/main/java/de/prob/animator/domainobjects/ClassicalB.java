@@ -21,6 +21,7 @@ import de.prob.animator.command.EvaluateFormulaCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.classicalb.PrettyPrinter;
 import de.prob.model.representation.FormulaUUID;
+import de.prob.model.representation.IFormulaUUID;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.statespace.State;
 
@@ -41,7 +42,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	 * @throws EvaluationException
 	 */
 	public ClassicalB(final String code) {
-		//this.code = code;
+		// this.code = code;
 		Start ast;
 		try {
 			ast = BParser.parse(BParser.FORMULA_PREFIX + " " + code);
@@ -84,6 +85,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	/**
 	 * @return {@link Start} ast corresponding to the formula
 	 */
+	@Override
 	public Start getAst() {
 		return ast;
 	}
@@ -119,7 +121,7 @@ public class ClassicalB extends AbstractEvalElement implements IBEvalElement {
 	}
 
 	@Override
-	public FormulaUUID getFormulaId() {
+	public IFormulaUUID getFormulaId() {
 		return uuid;
 	}
 

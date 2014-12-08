@@ -76,4 +76,8 @@ public class ClassicalBMachine extends Machine {
 	public Operation getOperation(String name) {
 		return operations[name]
 	}
+
+	public Operation getEvent(String name) {
+		return operations[name]
+	}
 }

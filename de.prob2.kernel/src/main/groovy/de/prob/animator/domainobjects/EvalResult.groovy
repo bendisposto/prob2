@@ -93,7 +93,7 @@ public class EvalResult implements IEvalResult {
 		} else {
 			/*
 			 * If the formula in question was a predicate, the result term will have the following form:
-			 * result(Value,Solutions,Code) where Value is 'TRUE','POSSIBLY TRUE', or 'FALSE'
+			 * result(Value,Solutions) where Value is 'TRUE','POSSIBLY TRUE', or 'FALSE'
 			 * Solutions is then a list of triples bind(Name,Solution,PPSol) where Name is the name
 			 * of the free variable calculated by ProB, Solution is the Prolog representation of the
 			 * solution, and PPSol is the String pretty print of the solution calculated by Prolog.
@@ -119,7 +119,7 @@ public class EvalResult implements IEvalResult {
 				return formulaCache.get(value)
 			}
 
-			String code = pt.getArgument(3).getFunctor();
+			//String code = pt.getArgument(3).getFunctor();
 			if (v instanceof CompoundPrologTerm && v.getArity() == 2) {
 				CompoundPrologTerm cpt = BindingGenerator
 						.getCompoundTerm(v, 2);

@@ -9,8 +9,6 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.servlet.ServletModule;
 
 import de.prob.annotations.Sessions;
-import de.prob.bmotion.BMotionStudioEditorServlet;
-import de.prob.bmotion.BMotionStudioServlet;
 import de.prob.webconsole.OutputBuffer;
 import de.prob.webconsole.servlets.GroovyOutputServlet;
 import de.prob.webconsole.servlets.ScrollbackServlet;
@@ -40,8 +38,6 @@ public class WebModule extends ServletModule {
 
 		serve("/files*").with(FileBrowserServlet.class);
 		serve("/ws/*").with(WorkspaceServlet.class);
-		serve("/bms/*").with(BMotionStudioServlet.class);
-		serve("/bmseditor/*").with(BMotionStudioEditorServlet.class);
 
 	}
 

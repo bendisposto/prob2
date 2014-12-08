@@ -31,7 +31,7 @@ public class EventBDatabaseTranslator {
 			String workspacePath = directory.substring(0,
 					directory.lastIndexOf(File.separatorChar));
 
-			File theoryFile = new File(directory + "/TheoryPath.tcl");
+			File theoryFile = new File(directory + File.separator + "TheoryPath.tcl");
 			Set<IFormulaExtension> typeEnv;
 			if (!theoryFile.exists()) {
 				typeEnv = new HashSet<IFormulaExtension>();

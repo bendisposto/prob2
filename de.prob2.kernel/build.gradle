@@ -8,7 +8,7 @@ project.group = 'de.prob2'
 sourceCompatibility = 1.6
 def gradle_version = '1.0-rc-3'
 
-project.version = '2.0.0-milestone-19'
+project.version = '2.0.0-milestone-20'
 
 repositories {
 	maven {
@@ -55,8 +55,6 @@ dependencies {
 	compile 'net.sf.jung:jung-api:2.0.1'
 	compile 'net.sf.jung:jung-algorithms:2.0.1'
 
-	compile 'com.thoughtworks.xstream:xstream:1.4.3' // BSD
-
     compile(group: 'org.eventb', name: 'org.eventb.core.ast', version: '3.0.0')
 
 //	compile 'org.eventb:org.eventb.core.ast:2.6.0.r15029' // Rodin
@@ -75,8 +73,6 @@ dependencies {
 	compile 'org.antlr:antlr4-runtime:4.0'
 	compile 'de.prob:ltl-dsl:1.0.0'
 	
-	compile 'org.jsoup:jsoup:1.7.2' // MIT
-
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "bparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
@@ -98,8 +94,6 @@ dependencies {
 	compile 'junit:junit:4.8.2'
 	compile 'org.spockframework:spock-core:0.7-groovy-2.0'
 	compile 'com.github.spullara.mustache.java:compiler:0.8.12' // Apache Licence 2.0
-	
-	compile 'org.jsoup:jsoup:1.7.2'
 
 	testCompile 'org.mockito:mockito-core:1.8.5'
 	testCompile "org.gebish:geb-spock:0.9.1"
@@ -174,7 +168,7 @@ task downloadCli << {
 		targetName += "windows"
 	}
 	def target = dir+File.separator+"lib"+File.separator+"cspmf"
-	if(targetName == "probcli_windows") {
+	if(targetName == "cspmf-windows") {
 		target += ".exe"
 	}
 

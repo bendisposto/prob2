@@ -9,14 +9,20 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.b_load(dir+"/machines/scheduler.mch")
+m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 s = m as StateSpace
 
 cmd = new CheckInitialisationStatusCommand("root")
 s.execute(cmd)
 assert cmd.isInitialized() == false
 
-assert s.getState("0") == null 
+thrown = false
+try { 
+	s[0]	
+} catch(IllegalArgumentException e) {
+	thrown = true
+}
+assert thrown
 cmd = new GetEnabledOperationsCommand(s, "root")
 s.execute(cmd)
 assert cmd instanceof IStateSpaceModifier

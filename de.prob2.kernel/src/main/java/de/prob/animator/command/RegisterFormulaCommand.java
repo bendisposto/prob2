@@ -16,12 +16,10 @@ public class RegisterFormulaCommand extends AbstractCommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("register_prob2_formula");
-		pto.printAtom(formula.getFormulaId().uuid);
-
+		formula.getFormulaId().printUUID(pto);
 		pto.openTerm("eval");
 		formula.printProlog(pto);
 		pto.printAtom(formula.getKind().toString());
-		pto.printAtom(formula.getCode());
 		pto.closeTerm();
 
 		pto.closeTerm();

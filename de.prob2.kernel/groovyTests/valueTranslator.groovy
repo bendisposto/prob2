@@ -9,7 +9,7 @@ def wrap(String formula) {
 	return new TranslateFormula(new ClassicalB(formula))
 }
 
-m = api.b_load(dir+"/machines/scheduler.mch")
+m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 s = m as StateSpace
 t = new Trace(s)
 t = t.anyEvent()
@@ -46,6 +46,8 @@ assert res.value == expected
 res = t.evalCurrent(wrap("{x|x : NATURAL & x mod 2 = 1}"))
 assert res.value instanceof PrologTerm // Symbolic Sets are translated as the Prolog Representation
 
+
+assert t.evalCurrent(wrap("1 + b")) instanceof ComputationNotCompletedResult
 // TODO: Need test case for PossiblyTrue
 
 s.animator.cli.shutdown();

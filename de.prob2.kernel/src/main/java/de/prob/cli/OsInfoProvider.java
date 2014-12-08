@@ -34,6 +34,10 @@ class OsInfoProvider implements Provider<OsSpecificInfo> {
 	private OsSpecificInfo whichOs(final String osString, final String osArch) {
 		String os = osString.toLowerCase();
 		if (os.indexOf("win") >= 0) {
+			if (osArch.equals("amd64")) {
+				new OsSpecificInfo("probcli.exe", null,
+						"send_user_interrupt.exe", "Windows", osString, "win64");
+			}
 			return new OsSpecificInfo("probcli.exe", null,
 					"send_user_interrupt.exe", "Windows", osString, "win32");
 		}

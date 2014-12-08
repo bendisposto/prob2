@@ -5,7 +5,7 @@ import de.prob.statespace.*
 
 
 // You can change the model you are testing here.
-m = api.b_load(dir+"/machines/scheduler.mch")
+m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 s = m as StateSpace
 
 ltl_check = { formula ->

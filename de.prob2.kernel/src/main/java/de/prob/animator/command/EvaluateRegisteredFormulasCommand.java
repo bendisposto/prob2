@@ -9,6 +9,8 @@ import java.util.Map;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
+import de.prob.animator.domainobjects.TranslateFormula;
+import de.prob.animator.domainobjects.TranslatedEvalResult;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -33,7 +35,7 @@ public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 		pto.printAtomOrNumber(stateId);
 		pto.openList();
 		for (IEvalElement formula : formulas) {
-			pto.printAtom(formula.getFormulaId().uuid);
+			formula.getFormulaId().printUUID(pto);
 		}
 		pto.closeList();
 		pto.printVariable(RESULTS);
@@ -46,9 +48,14 @@ public class EvaluateRegisteredFormulasCommand extends AbstractCommand {
 		PrologTerm terms = bindings.get(RESULTS);
 		if (terms instanceof ListPrologTerm) {
 			ListPrologTerm lpt = BindingGenerator.getList(terms);
-			for (PrologTerm term : lpt) {
-				results.put(formulas.get(lpt.indexOf(term)),
-						EvalResult.getEvalResult(term));
+			for (int i = 0; i < lpt.size(); i++) {
+				PrologTerm pt = lpt.get(i);
+				IEvalElement key = formulas.get(i);
+				if (key instanceof TranslateFormula) {
+					results.put(key, TranslatedEvalResult.getResult(pt));
+				} else {
+					results.put(key, EvalResult.getEvalResult(pt));
+				}
 			}
 		}
 	}

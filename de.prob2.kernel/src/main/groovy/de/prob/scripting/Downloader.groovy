@@ -95,8 +95,9 @@ class Downloader {
 
 		// Use operating system to download the correct zip file
 		def os = osInfo.dirName
-		def targetzip = probhome+"probcli_${os}.zip"
-		def url = versionurl + "probcli_${os}.zip"
+		def zipName = os == "win64" ? "win32" : os
+		def targetzip = probhome+"probcli_${zipName}.zip"
+		def url = versionurl + "probcli_${zipName}.zip"
 		download(url,targetzip)
 
 		// Unzip file to correct directory (probhome)
@@ -135,9 +136,16 @@ class Downloader {
 		f.unzip(probhome)
 		f.delete()
 
-		if(os == "win32") {
+		if(os == "win32" || os == "win64") {
 			def target = probhome+"lib.zip";
-			download(versionurl+"windowslib.zip",target)
+			/*
+			 * TODO: Once the windowslib64.zip works for Windows 64-bit machines, 
+			 * we should use this line of code instead:
+			 * def zipFile = os == "win32" ? "windowslib32.zip" : "windowslib64.zip"
+			 * Until then, we use the windowslib32.zip
+			 */
+			def zipFile = "windowslib32.zip"
+			download(versionurl+zipFile,target)
 			File r = new File(target)
 			r.unzip(probhome)
 			r.delete()
@@ -149,7 +157,7 @@ class Downloader {
 	def String installCSPM() {
 		def target = probhome+"lib"+File.separator+"cspmf"
 		def dirName = osInfo.dirName
-		if(dirName == "win32") {
+		if(dirName == "win32" || dirName == "win64") {
 			target += ".exe"
 		}
 		def File f = new File(target);
@@ -161,7 +169,7 @@ class Downloader {
 		if(dirName == "linux64" || dirName == "leopard64") {
 			targetName += dirName
 		}
-		if(dirName == "win32") {
+		if(dirName == "win32" || dirName == "win64") {
 			targetName += "windows"
 		}
 		download("http://nightly.cobra.cs.uni-duesseldorf.de/cspmf/"+targetName,target)

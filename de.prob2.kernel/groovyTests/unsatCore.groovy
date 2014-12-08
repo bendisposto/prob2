@@ -3,7 +3,7 @@ import de.prob.animator.command.*
 import de.prob.statespace.*
 import de.prob.animator.*
 
-m = api.b_load(dir+"/machines/scheduler.mch") // machine is not needed...
+m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch") // machine is not needed...
 s = m as StateSpace
 
 pred = new ClassicalB("x > 7 & 1=4")

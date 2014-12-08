@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
@@ -22,6 +23,7 @@ import de.prob.model.representation.Variable;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import groovy.lang.Closure;
 
 public class ClassicalBModel extends AbstractModel {
 
@@ -30,8 +32,8 @@ public class ClassicalBModel extends AbstractModel {
 	private final StateSchema schema = new BStateSchema();
 
 	@Inject
-	public ClassicalBModel(final StateSpace statespace) {
-		this.stateSpace = statespace;
+	public ClassicalBModel(final Provider<StateSpace> ssProvider) {
+		super(ssProvider);
 	}
 
 	public DirectedSparseMultigraph<String, RefType> initialize(
@@ -75,7 +77,6 @@ public class ClassicalBModel extends AbstractModel {
 			components.put(classicalBMachine.getName(), classicalBMachine);
 		}
 
-		stateSpace.setModel(this);
 		freeze();
 		return graph;
 	}
@@ -106,14 +107,20 @@ public class ClassicalBModel extends AbstractModel {
 
 	@Override
 	public void subscribeFormulasOfInterest() {
+		Closure subscribe = getClosure();
+		if (subscribe != null) {
+			subscribe.call(this);
+			return;
+		}
+
 		ModelElementList<Machine> childrenOfType = getChildrenOfType(Machine.class);
 		for (Machine machine : childrenOfType) {
 			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
-				variable.subscribe(stateSpace);
+				variable.subscribe(getStateSpace());
 			}
 			for (Invariant invariant : machine
 					.getChildrenOfType(Invariant.class)) {
-				invariant.subscribe(stateSpace);
+				invariant.subscribe(getStateSpace());
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 import de.prob.statespace.*
 import de.prob.animator.command.*
 
-m = api.b_load(dir+"/machines/scheduler.mch")
+m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 s = m as StateSpace
 t = s as Trace
 t = t.add(0)

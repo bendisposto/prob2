@@ -3,6 +3,7 @@ package de.prob.model.eventb;
 import java.io.File;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -27,8 +28,8 @@ public class EventBModel extends AbstractModel {
 	private final ModelElementList<Context> contexts = new ModelElementList<Context>();
 
 	@Inject
-	public EventBModel(final StateSpace statespace) {
-		this.stateSpace = statespace;
+	public EventBModel(final Provider<StateSpace> stateSpaceProvider) {
+		super(stateSpaceProvider);
 	}
 
 	@Override
@@ -51,7 +52,6 @@ public class EventBModel extends AbstractModel {
 	public void isFinished() {
 		addMachines(machines);
 		addContexts(contexts);
-		stateSpace.setModel(this);
 		extractModelDir(modelFile, getMainComponentName());
 		this.freeze();
 	}
@@ -112,16 +112,16 @@ public class EventBModel extends AbstractModel {
 	public void subscribeFormulasOfInterest() {
 		for (Machine machine : getChildrenOfType(Machine.class)) {
 			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
-				variable.subscribe(stateSpace);
+				variable.subscribe(getStateSpace());
 			}
 			for (Invariant invariant : machine
 					.getChildrenOfType(Invariant.class)) {
-				invariant.subscribe(stateSpace);
+				invariant.subscribe(getStateSpace());
 			}
 		}
 		for (Context c : getChildrenOfType(Context.class)) {
 			for (Constant con : c.getChildrenOfType(Constant.class)) {
-				con.subscribe(stateSpace);
+				con.subscribe(getStateSpace());
 			}
 		}
 	}

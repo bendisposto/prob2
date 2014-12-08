@@ -17,19 +17,33 @@ public class ModelModifier {
 
 	EventBModel temp
 	Map<String, String> prefs
-	boolean loadByDefault
+	Closure loader
+	boolean startProB
 
-	def ModelModifier(EventBModel model) {
+	/**
+	 * Creates an interface to allow the user to mutate the model object.
+	 * The user can also specify an additional parameter 'startProB' which will
+	 * determine if a ProB instance will be bound to the new
+	 * model class. If not, a ProB instance can be lazily created later by calling
+	 * the getStateSpace() method on the model object.
+	 * @param model to be copied
+	 * @param startProB default = true
+	 */
+	def ModelModifier(EventBModel model, boolean startProB=true) {
 		temp = deepCopy(model)
-		GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
-		model.getStateSpace().execute(cmd)
-		prefs = cmd.getPreferences()
-		Api api = Main.getInjector().getInstance(Api.class)
-		loadByDefault = api.loadVariablesByDefault
+		this.startProB = startProB
+		if (startProB) {
+			GetCurrentPreferencesCommand cmd = new GetCurrentPreferencesCommand()
+			model.getStateSpace().execute(cmd)
+			prefs = cmd.getPreferences()
+			Api api = Main.getInjector().getInstance(Api.class)
+			loader = api.getSubscribeClosure()
+		}
 	}
 
 	/**
 	 * @param model that is to be copied
+	 * @param startProB true, if the user wants to begin an instance of ProB when creating a model, false otherwise.
 	 * @return a deep copy of the model and all model elements
 	 */
 	public static EventBModel deepCopy(EventBModel model) {
@@ -177,9 +191,16 @@ public class ModelModifier {
 		newEvent
 	}
 
+	/**
+	 * This method makes the model object currently being modified into an
+	 * immutable form.
+	 * @return EventBModel object created
+	 */
 	def EventBModel getModifiedModel() {
 		temp.isFinished()
-		EventBFactory.loadModel(temp, prefs, loadByDefault)
+		if (startProB) {
+			EventBFactory.loadModel(temp, prefs, loader)
+		}
 		return temp
 	}
 
@@ -193,14 +214,12 @@ public class ModelModifier {
 	}
 
 	/**
-	 * Change whether or not basic formulas of interest are loaded by default
-	 * (i.e. variables, invariants, constants). Turning this off may improve performance
-	 * of the animation of the model in question
-	 * @param byDefault whether or not the formulas of interest for the model are registered
-	 * 	by default
+	 * Specify which formulas are of interest by setting the closure that is to subscribe
+	 * them
+	 * @param loader that will load the variables of interest.
 	 */
-	def void loadVariables(boolean byDefault) {
-		loadByDefault = byDefault
+	def void setLoader(Closure loader) {
+		this.loader = loader
 	}
 
 	/**
@@ -212,7 +231,7 @@ public class ModelModifier {
 	 */
 	def MachineModifier getMachine(String machineName) {
 		if (temp.getMachines().hasProperty(machineName)) {
-			return new MachineModifier(temp.getMachines().getProperty(machineName))
+			return new MachineModifier(temp.getMachines().getElement(machineName))
 		}
 	}
 
@@ -225,7 +244,7 @@ public class ModelModifier {
 	 */
 	def ContextModifier getContext(String contextName) {
 		if (temp.getContexts().hasProperty(contextName)) {
-			return new ContextModifier(temp.getContexts().getProperty(contextName))
+			return new ContextModifier(temp.getContexts().getElement(contextName))
 		}
 	}
 }

@@ -2,7 +2,7 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 
 // You can change the model you are testing here.
-m = api.b_load(dir+"/machines/scheduler.mch")
+m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 s = m as StateSpace
 
 cbc_solve = { String str ->
@@ -24,8 +24,15 @@ res = cbc_solve("x : POW(NAT) & card(x) = 4 & y : x")
 assert res instanceof EvalResult
 assert res.getValue() == "TRUE"
 
-assert res.x == "{0,2,1,3}"
-assert res.y == "0"
+// x is the set {0,1,2,3}. However, we can not rely on the order of elements
+set = res.x.replaceAll("\\{","[")
+set = set.replaceAll("\\}","]")
+set = Eval.me(set)
+
+assert set.size() == 4
+assert set.containsAll([0,1,2,3])
+
+assert ["0","1","2","3"].contains(res.y)
 // TODO
 // Test after translation
 // set = new HashSet()
