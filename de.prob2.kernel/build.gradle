@@ -168,7 +168,7 @@ task downloadCli << {
 		targetName += "windows"
 	}
 	def target = dir+File.separator+"lib"+File.separator+"cspmf"
-	if(targetName == "probcli_windows") {
+	if(targetName == "cspmf-windows") {
 		target += ".exe"
 	}
 
