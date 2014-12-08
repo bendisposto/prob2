@@ -18,7 +18,7 @@ assert res instanceof ModelCheckOk
 
 s.animator.cli.shutdown();
 
-m = api.eventb_load(dir+"/machines/InvalidModel/createErrors.bcm")
+m = api.eventb_load(dir+File.separator+"machines"+File.separator+"InvalidModel"+File.separator+"createErrors.bcm")
 s = m as StateSpace
 
 res = model_check(new ConsistencyChecker(s, new ModelCheckingOptions().checkInvariantViolations(true)))
