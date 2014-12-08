@@ -1,4 +1,4 @@
-c = api.b_load(dir+"/machines/Lift.mch")
+c = api.b_load(dir+File.separator+"machines"+File.separator+"Lift.mch")
 assert c != null
 s = c.getStateSpace()
 

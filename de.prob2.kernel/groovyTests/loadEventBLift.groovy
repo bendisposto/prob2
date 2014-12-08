@@ -7,7 +7,7 @@ import de.prob.model.representation.RefType.ERefType;
  * Tests loading of EventB to make sure that all components are there. 
  */
 
-m = api.eventb_load(dir+"/Lift/lift0.bcm")
+m = api.eventb_load(dir+File.separator+"Lift"+File.separator+"lift0.bcm")
 assert m != null
 
 assert ERefType.SEES == m.getRelationship("lift0", "levels")

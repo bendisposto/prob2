@@ -2,7 +2,7 @@ import de.prob.animator.domainobjects.ClassicalB
 import de.prob.animator.domainobjects.TranslatedEvalResult;
 import de.prob.statespace.*
 
-c = api.b_load(dir+"/machines/scheduler.mch")
+c = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 StateSpace s = c.getStateSpace()
 h = new Trace(s)
 h = h.add(0)

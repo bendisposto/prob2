@@ -3,7 +3,7 @@ import de.prob.statespace.*
 
 x = 1
 f = "1 + 2" as ClassicalB
-m = api.b_load(dir+"/machines/scheduler.mch")
+m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 s = m as StateSpace
 s.subscribe(m, f)
 t = new Trace(s)

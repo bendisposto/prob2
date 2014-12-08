@@ -6,7 +6,7 @@ import de.prob.animator.domainobjects.*;
   and it does not result in an empty machine
 */
 
-c = api.eventb_load(dir+"/Scheduler/Scheduler0.bum") as Trace
+c = api.eventb_load(dir+File.separator+"Scheduler"+File.separator+"Scheduler0.bum") as Trace
 s = c as StateSpace
 assert c.getCurrentState() == s.root
 assert c.getCurrentState().toString() == "root"

@@ -4,7 +4,7 @@ import de.prob.model.eventb.ModelModifier
 import de.prob.statespace.*
 
 
-m = api.eventb_load(dir+"/Empty/EmptyMachine.bcm")
+m = api.eventb_load(dir+File.separator+"Empty"+File.separator+"EmptyMachine.bcm")
 assert m.getMainComponent() != null
 s = m as StateSpace
 

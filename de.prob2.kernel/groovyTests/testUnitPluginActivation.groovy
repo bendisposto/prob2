@@ -4,7 +4,7 @@ import de.prob.parser.*
 import de.prob.prolog.term.*
 
 
-s = api.b_load(dir+"/machines/Empty.mch") as StateSpace
+s = api.b_load(dir+File.separator+"machines"+File.separator+"Empty.mch") as StateSpace
 thrown = false
 try {
 	cmd = new GetPluginResultCommand("Grounded Result State")

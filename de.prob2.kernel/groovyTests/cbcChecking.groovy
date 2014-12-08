@@ -2,7 +2,6 @@ import de.prob.animator.domainobjects.*
 import de.prob.statespace.*
 import de.prob.check.*
 
-
 m = api.eventb_load(dir + File.separator + "machines" + File.separator + "InvalidModel" + File.separator +"createErrors.bcm")
 s = m as StateSpace
 

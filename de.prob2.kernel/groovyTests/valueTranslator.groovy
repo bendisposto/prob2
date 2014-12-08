@@ -9,7 +9,7 @@ def wrap(String formula) {
 	return new TranslateFormula(new ClassicalB(formula))
 }
 
-m = api.b_load(dir+"/machines/scheduler.mch")
+m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 s = m as StateSpace
 t = new Trace(s)
 t = t.anyEvent()

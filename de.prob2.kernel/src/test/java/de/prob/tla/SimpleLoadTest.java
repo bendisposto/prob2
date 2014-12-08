@@ -3,6 +3,7 @@ package de.prob.tla;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Before;
@@ -26,14 +27,14 @@ public class SimpleLoadTest {
 
 	@Test
 	public void testLoadTLAFile() throws IOException, BException {
-		ClassicalBModel model = api.tla_load("src/test/resources/tla/Foo.tla");
+		ClassicalBModel model = api.tla_load("src"+File.separator+"test"+File.separator+"resources"+File.separator+"tla"+File.separator+"Foo.tla");
 		assertNotNull(model);
 	}
 
 	@Test
 	public void testLoadTLAFile2() throws IOException, BException {
 		ClassicalBModel model = api
-				.tla_load("src/test/resources/tla/Definitions.tla");
+				.tla_load("src"+File.separator+"test"+File.separator+"resources"+File.separator+"tla"+File.separator+"Definitions.tla");
 		assertNotNull(model);
 		StateSpace s = model.getStateSpace();
 		Trace t = new Trace(s);
@@ -43,7 +44,7 @@ public class SimpleLoadTest {
 	@Test
 	public void testClub() throws IOException, BException {
 		ClassicalBModel model = api
-				.tla_load("src/test/resources/tla/ForDistribution/Club.tla");
+				.tla_load("src"+File.separator+"test"+File.separator+"resources"+File.separator+"tla"+File.separator+"ForDistribution"+File.separator+"Club.tla");
 		assertNotNull(model);
 		StateSpace s = model.getStateSpace();
 		Trace t = new Trace(s);
@@ -52,14 +53,14 @@ public class SimpleLoadTest {
 
 	@Test
 	public void testLoadBFile() throws IOException, BException {
-		ClassicalBModel model = api.b_load("src/test/resources/tla/Foo.mch");
+		ClassicalBModel model = api.b_load("src"+File.separator+"test"+File.separator+"resources"+File.separator+"tla"+File.separator+"Foo.mch");
 		assertNotNull(model);
 	}
 
 	@Test
 	public void testLoadTLAFileChoose() throws IOException, BException {
 		ClassicalBModel model = api
-				.tla_load("src/test/resources/tla/Choose.tla");
+				.tla_load("src"+File.separator+"test"+File.separator+"resources"+File.separator+"tla"+File.separator+"Choose.tla");
 		assertNotNull(model);
 	}
 
