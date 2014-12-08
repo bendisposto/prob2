@@ -3,7 +3,7 @@ import de.prob.statespace.*
 import de.prob.check.*
 
 
-m = api.eventb_load(dir+"/machines/InvalidModel/createErrors.bcm")
+m = api.eventb_load(dir + File.separator + "machines" + File.separator + "InvalidModel" + File.separator +"createErrors.bcm")
 s = m as StateSpace
 
 model_check = { job ->
