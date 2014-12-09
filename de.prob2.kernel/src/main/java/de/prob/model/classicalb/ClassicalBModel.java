@@ -1,5 +1,7 @@
 package de.prob.model.classicalb;
 
+import groovy.lang.Closure;
+
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,16 +16,14 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.BStateSchema;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
+import de.prob.model.representation.DependencyGraph;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
-import de.prob.model.representation.RefType;
 import de.prob.model.representation.StateSchema;
 import de.prob.model.representation.Variable;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-import groovy.lang.Closure;
 
 public class ClassicalBModel extends AbstractModel {
 
@@ -36,13 +36,13 @@ public class ClassicalBModel extends AbstractModel {
 		super(ssProvider);
 	}
 
-	public DirectedSparseMultigraph<String, RefType> initialize(
+	public DependencyGraph initialize(
 			final Start mainast, final RecursiveMachineLoader rml,
 			final File modelFile) {
 
 		this.modelFile = modelFile;
 
-		final DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
+		final DependencyGraph graph = new DependencyGraph();
 
 		final DomBuilder d = new DomBuilder();
 		mainMachine = d.build(mainast);
@@ -57,8 +57,7 @@ public class ClassicalBModel extends AbstractModel {
 
 		do {
 			fpReached = true;
-			final Set<String> vertices = new HashSet<String>(
-					graph.getVertices());
+			final Set<String> vertices = graph.getVertices();
 			for (final String machineName : vertices) {
 				final Start ast = rml.getParsedMachines().get(machineName);
 				if (!done.contains(machineName)) {
@@ -107,6 +106,7 @@ public class ClassicalBModel extends AbstractModel {
 
 	@Override
 	public void subscribeFormulasOfInterest() {
+		// TODO: Remove this method!
 		Closure subscribe = getClosure();
 		if (subscribe != null) {
 			subscribe.call(this);

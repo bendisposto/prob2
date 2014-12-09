@@ -50,10 +50,10 @@ dependencies {
 	compile 'ch.qos.logback:logback-core:0.9.29' // EPL
 	compile 'ch.qos.logback:logback-classic:0.9.29' // EPL
 
-	compile 'net.sf.jung:jung-jai:2.0.1'
-	compile 'net.sf.jung:jung-graph-impl:2.0.1'
-	compile 'net.sf.jung:jung-api:2.0.1'
-	compile 'net.sf.jung:jung-algorithms:2.0.1'
+//	compile 'net.sf.jung:jung-jai:2.0.1'
+//	compile 'net.sf.jung:jung-graph-impl:2.0.1'
+//	compile 'net.sf.jung:jung-api:2.0.1'
+//	compile 'net.sf.jung:jung-algorithms:2.0.1'
 
     compile(group: 'org.eventb', name: 'org.eventb.core.ast', version: '3.0.0')
 

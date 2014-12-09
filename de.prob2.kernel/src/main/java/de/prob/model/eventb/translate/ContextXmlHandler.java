@@ -18,9 +18,8 @@ import de.prob.model.eventb.EventBConstant;
 import de.prob.model.eventb.EventBModel;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.BSet;
+import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.ModelElementList;
-import de.prob.model.representation.RefType;
-import de.prob.model.representation.RefType.ERefType;
 
 public class ContextXmlHandler extends DefaultHandler {
 
@@ -157,8 +156,7 @@ public class ContextXmlHandler extends DefaultHandler {
 		String contextName = source.substring(source.lastIndexOf('#') + 1,
 				source.length());
 
-		model.addRelationship(context.getName(), contextName, new RefType(
-				ERefType.EXTENDS));
+		model.addRelationship(context.getName(), contextName, ERefType.EXTENDS);
 
 		if (!inInternalContext) {
 			extendsNames.add(contextName);

@@ -4,11 +4,10 @@ import com.google.inject.Inject
 import com.google.inject.Provider
 
 import de.prob.animator.domainobjects.IEvalElement
-import de.prob.model.representation.RefType.ERefType
+import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.statespace.FormalismType
 import de.prob.statespace.StateSpace
 import de.prob.statespace.Trace
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph
 
 public abstract class AbstractModel extends AbstractElement {
 
@@ -17,7 +16,7 @@ public abstract class AbstractModel extends AbstractElement {
 	protected boolean dirty = false;
 	protected File modelFile;
 	protected String modelDirPath;
-	protected DirectedSparseMultigraph<String, RefType> graph = new DirectedSparseMultigraph<String, RefType>();
+	protected DependencyGraph graph = new DependencyGraph();
 	protected Map<String, AbstractElement> components = new HashMap<String, AbstractElement>();
 	def static Closure subscribe = null
 
@@ -45,7 +44,7 @@ public abstract class AbstractModel extends AbstractElement {
 		return components;
 	}
 
-	public DirectedSparseMultigraph<String, RefType> getGraph() {
+	public DependencyGraph getGraph() {
 		return graph;
 	}
 
@@ -54,32 +53,17 @@ public abstract class AbstractModel extends AbstractElement {
 	}
 
 	public ERefType getEdge(final String comp1, final String comp2) {
-		final RefType edge = graph.findEdge(comp1, comp2);
-		if (edge == null) {
+		final List<ERefType> edges = graph.getRelationships(comp1, comp2);
+		if (edges.isEmpty()) {
 			return null;
 		}
 
-		return edge.getRelationship();
+		return edges.first();
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("(");
-		sb.append(graph.getVertices().toString());
-		sb.append(", ");
-
-		Collection<RefType> edges = graph.getEdges();
-		List<String> s = new ArrayList<String>();
-		for (RefType refType : edges) {
-			String src = graph.getSource(refType);
-			String dest = graph.getDest(refType);
-			s.add(refType.toString() + "=(" + src + "," + dest + ")");
-		}
-		sb.append(s.toString());
-		sb.append(")");
-
-		return sb.toString();
+		return graph.toString();
 	}
 
 	public Object asType(final Class<?> className) {

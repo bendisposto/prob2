@@ -11,10 +11,10 @@ import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.Constant;
+import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
-import de.prob.model.representation.RefType;
 import de.prob.model.representation.StateSchema;
 import de.prob.model.representation.Variable;
 import de.prob.statespace.FormalismType;
@@ -93,10 +93,10 @@ public class EventBModel extends AbstractModel {
 	}
 
 	public void addRelationship(final String element1, final String element2,
-			final RefType relationship) {
+			final ERefType relationship) {
 		graph.addVertex(element1);
 		graph.addVertex(element2);
-		graph.addEdge(relationship, element1, element2);
+		graph.addEdge(element1, element2, relationship);
 	}
 
 	public void addTheories(final ModelElementList<Theory> theories) {
