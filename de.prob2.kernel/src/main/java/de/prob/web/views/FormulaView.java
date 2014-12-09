@@ -43,6 +43,7 @@ public class FormulaView extends AbstractSession implements
 
 	@Inject
 	public FormulaView(final AnimationSelector animations) {
+		this.incrementalUpdate = false;
 		currentTrace = animations.getCurrentTrace();
 		if (currentTrace == null) {
 			throw new AnimationNotLoadedException(
@@ -188,7 +189,13 @@ public class FormulaView extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		sendRefresh();
+		Object data = calculateData();
+		if(data != null) {
+			submit(WebUtils.wrap("cmd", "FormulaView.formulaSet", "formula",
+					formula.getCode(), "unicode", StringEscapeUtils
+					.escapeHtml(UnicodeTranslator.toUnicode(formula
+							.getCode())), "data", data));			
+		}
 	}
 
 }
