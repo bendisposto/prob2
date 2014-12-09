@@ -3,11 +3,12 @@ ValueOverTime = (function() {
     var extern = {}
     var session = Session();
     var vizUtils = VizUtils();
-    var svg = vizUtils.createCanvas("#visualization",
-            $("#left-col")[0].clientWidth, vizUtils.calculateHeight());
+    var w = 600
+    var h = 450
+    var svg = vizUtils.createCanvas("#visualization", w + 100, h);
     var mode;
-    var w = 600;
-    var h = 400;
+    var lastData;
+    var lastLabel;
 
     $(document).ready(function() {
         $(window).keydown(function(event){
@@ -16,6 +17,19 @@ ValueOverTime = (function() {
                 return false;
             }
         });
+
+       /* $(window).resize(function() {
+            width = vizUtils.calculateWidth();
+            h = vizUtils.calculateHeight() - $("#header")[0].clientHeight - 20;
+            if(h != height) {
+                height = h;
+                $("#visualization").empty();
+                vis = vizUtils.createCanvas("#visualization", $("#left-col")[0].clientWidth, height);
+                if(lastData != undefined && lastLabel != undefined) {
+                    draw(lastData, lastLabel)
+                }                
+            }
+        })*/
     });
 
     $(".form-control").keyup(function(e) {
@@ -177,6 +191,9 @@ ValueOverTime = (function() {
     }
 
     function draw(dataset,xLabel) {
+        lastData = dataset
+        lastLabel = xLabel
+
         clearCanvas();
         var color = d3.scale.category20();
 
