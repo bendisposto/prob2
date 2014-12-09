@@ -37,3 +37,18 @@
 .disabled {
     opacity: 0.1;
 }
+
+.click {
+    cursor: pointer;
+}
+
+.box {
+  height: 12px;
+  width: 12px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+}

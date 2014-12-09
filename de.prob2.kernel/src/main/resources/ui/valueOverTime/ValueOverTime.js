@@ -195,7 +195,7 @@ ValueOverTime = (function() {
 
         var button = svg.append("g")
             .attr("transform","translate(" + (w + 10) + "," + (h - 20) +")")
-            .attr("class","button")
+            .attr("class","button click")
             .on("click",function() { clearCanvas(); changeMode(); draw(dataset, xLabel); });
 
         var rect =button.append("rect")
@@ -213,25 +213,10 @@ ValueOverTime = (function() {
 
         rect.attr("width",text[0][0].getBBox().width+10);
 
-        var keys = svg.selectAll("key")
-                .data(elementNames)
-                .enter()
-               .append("g")
-                .attr("class","key")
-                .attr("transform",function(d) {
-                    var height = elementNames.indexOf(d) * 20;
-                    return "translate(" + w + "," + height + ")";
-                });
-
-        keys.append("rect")
-            .attr("width","10px")
-            .attr("height","10px")
-            .attr("fill",function(d) { return color(d); });
-
-        keys.append("text")
-            .text(function(d) { return d; })
-            .attr("dx","20px")
-            .attr("dy","10px");
+        for( i = 0 ; i < dataset.length ; i = i + 1 ) {
+            var id = "#box-" + dataset[i].id
+            $(id).attr("style","background-color: "+color(dataset[i].name))
+        }
     }
 
     function changeMode() {

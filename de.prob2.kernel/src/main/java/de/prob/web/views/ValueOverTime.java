@@ -53,6 +53,7 @@ public class ValueOverTime extends AbstractSession implements
 
 	@Inject
 	public ValueOverTime(final AnimationSelector animations) {
+		this.incrementalUpdate = false;
 		currentTrace = animations.getCurrentTrace();
 		if (currentTrace == null) {
 			throw new AnimationNotLoadedException(
@@ -165,6 +166,7 @@ public class ValueOverTime extends AbstractSession implements
 				Map<String, Object> datum = new HashMap<String, Object>();
 				datum.put("name", formula.getCode());
 				datum.put("dataset", points);
+				datum.put("id", pair.id);
 				result.add(datum);
 			}
 		}
