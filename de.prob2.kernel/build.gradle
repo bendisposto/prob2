@@ -36,13 +36,15 @@ dependencies {
 	compile 'commons-cli:commons-cli:1.2' // Apache Licence 2.0
 	compile 'commons-io:commons-io:2.4' // Apache Licence 2.0
 
-	compile 'commons-lang:commons-lang:2.6' // Replace by guava 15 once it is released (used in GroovyShellServlet)
+	// Used for escaping HTML and Unicode symbols within Java strings
+	compile 'commons-lang:commons-lang:2.6' 
 
 	compile 'org.codehaus.groovy:groovy-all:2.3.0' // Apache Licence 2.0
 	//	compile 'org.fusesource.jansi:jansi:1.5' // Apache Licence 2.0
 	//	compile 'jline:jline:0.9.94' // BSD
 
-	compile 'org.pegdown:pegdown:1.1.0' // Apache Licence 2.0
+	// dependency for Worksheets
+	compile 'org.pegdown:pegdown:1.1.0' // Apache Licence 2.0    Used for Worksheet
 
 	compile 'com.google.inject:guice:3.0' // Apache Licence 2.0
 	compile 'com.google.inject.extensions:guice-servlet:3.0' // Apache Licence 2.0
@@ -65,7 +67,8 @@ dependencies {
 	compile 'org.eclipse.jetty:jetty-util:8.1.8.v20121106' // EPL
 	compile 'org.eclipse.jetty:jetty-webapp:8.1.8.v20121106' // EPL
 
-	compile 'org.antlr:antlr4-runtime:4.0'
+	// Dependencies for LtlPatterns
+	compile 'org.antlr:antlr4-runtime:4.0' 
 	compile 'de.prob:ltl-dsl:1.0.0'
 	
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
