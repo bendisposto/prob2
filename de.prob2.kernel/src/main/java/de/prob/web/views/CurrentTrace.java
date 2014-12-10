@@ -23,8 +23,7 @@ import de.prob.web.WebUtils;
 
 @Singleton
 @PublicSession
-public class CurrentTrace extends AbstractSession implements
-		IAnimationChangeListener {
+public class CurrentTrace extends AbstractSession implements IAnimationChangeListener {
 
 	private final AnimationSelector selector;
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);

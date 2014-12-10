@@ -22,7 +22,7 @@ public class TraceElement {
 		// FOR THE FIRST STATE ID, EVERYTHING IS
 		transition = null;
 		previous = null;
-		index = 0;
+		index = -1;
 	}
 
 	public TraceElement(final Transition edge, final TraceElement previous) {
