@@ -25,7 +25,7 @@ sourceSets.main.java.srcDirs = [
 	'src/main/generated'] // ie there's no stand-alone java source
 sourceSets.main.groovy.srcDir 'src/main/java' // ie include the 'java' dir as groovy source
 
-def parser_version = '2.4.32'
+def parser_version = '2.4.34'
 
 
 dependencies {
@@ -60,7 +60,7 @@ dependencies {
 	compile 'com.google.code.gson:gson:1.7.1' // Apache Licence 2.0
 
 	// If you consider to update or downgrade jetty ... just don't
-	// it'll make you puke 
+	// it'll make you puke
 	compile 'org.eclipse.jetty:jetty-io:8.1.8.v20121106' // EPL
 	compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106' // EPL
 	compile 'org.eclipse.jetty:jetty-servlet:8.1.8.v20121106' // EPL
@@ -70,7 +70,7 @@ dependencies {
 	// Dependencies for LtlPatterns
 	compile 'org.antlr:antlr4-runtime:4.0' 
 	compile 'de.prob:ltl-dsl:1.0.0'
-	
+
 	compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "bparser", version: parser_version , changing: true
 	compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
@@ -79,14 +79,14 @@ dependencies {
 	compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
 	compile group: "de.prob", name: "unicode", version: parser_version , changing: true
 	compile group: "de.prob", name: "theorymapping", version: parser_version, changing: true
-	
+
 	compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT', changing: true
 
 	compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
 
 	compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
-	
-	
+
+
     compile group: 'de.prob', name: 'tla2bAST', version: '1.0.5-SNAPSHOT'
 
 	compile 'junit:junit:4.8.2'
@@ -153,7 +153,7 @@ task downloadCli << {
 		into targetdir
 	}
 	delete file(targetzip)
-	
+
 	def targetName = "cspmf-"
 	def os = os_extension()
 	if(os == "probcli_linux") {
@@ -206,4 +206,4 @@ task deploy(type: Copy, dependsOn: build) {
 }
 
 
-tasks.eclipse.dependsOn createBuildConstants 
+tasks.eclipse.dependsOn createBuildConstants
