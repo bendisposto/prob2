@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 
 import de.prob.model.classicalb.ClassicalBMachine;
 import de.prob.model.classicalb.Operation;
@@ -216,18 +216,16 @@ public class Transition {
 		}
 		if (obj instanceof Transition) {
 			Transition that = (Transition) obj;
-			return this.getId().equals(that.getId())
-					&& this.getSource().equals(that.getSource())
-					&& this.getDestination().equals(that.getDestination());
+			return getId().equals(that.getId())
+					&& getSource().equals(that.getSource())
+					&& getDestination().equals(that.getDestination());
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(13, 7).append(getId())
-				.append(getSource().getId()).append(getDestination().getId())
-				.toHashCode();
+		return Objects.hashCode(getId(), getSource().getId(), getDestination().getId());
 	}
 
 	/**
@@ -238,7 +236,7 @@ public class Transition {
 	 *         equivalent
 	 */
 	public boolean isSame(final Transition that) {
-		this.evaluate();
+		evaluate();
 		that.evaluate();
 		return that.getName().equals(name) && that.getParams().equals(params);
 	}
