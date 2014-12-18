@@ -1,7 +1,8 @@
 import de.prob.model.eventb.*
 import de.prob.model.eventb.proof.*
 import de.prob.model.eventb.translate.*
-import de.prob.model.representation.RefType.ERefType;
+import de.prob.model.representation.DependencyGraph.ERefType;
+
 
 /*
  * Tests loading of EventB to make sure that all components are there. 

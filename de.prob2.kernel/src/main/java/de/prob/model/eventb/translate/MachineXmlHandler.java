@@ -33,9 +33,8 @@ import de.prob.model.eventb.Variant;
 import de.prob.model.eventb.Witness;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.BSet;
+import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.ModelElementList;
-import de.prob.model.representation.RefType;
-import de.prob.model.representation.RefType.ERefType;
 
 public class MachineXmlHandler extends DefaultHandler {
 
@@ -248,8 +247,7 @@ public class MachineXmlHandler extends DefaultHandler {
 		String machineName = target.substring(target.lastIndexOf("/") + 1,
 				target.lastIndexOf("."));
 
-		model.addRelationship(machine.getName(), machineName, new RefType(
-				ERefType.REFINES));
+		model.addRelationship(machine.getName(), machineName, ERefType.REFINES);
 
 		AbstractElement component = model.getComponent(machineName);
 		if (component != null) {
@@ -326,7 +324,7 @@ public class MachineXmlHandler extends DefaultHandler {
 				source.length());
 
 		model.addRelationship(internalContext.getName(), contextName,
-				new RefType(ERefType.EXTENDS));
+				ERefType.EXTENDS);
 
 		Context extended = (Context) model.getComponent(contextName);
 		Extends.add(extended);
@@ -360,8 +358,8 @@ public class MachineXmlHandler extends DefaultHandler {
 		String contextName = target.substring(target.lastIndexOf("/") + 1,
 				target.lastIndexOf("."));
 
-		model.addRelationship(machine.getName(), contextName, new RefType(
-				ERefType.SEES));
+		model.addRelationship(machine.getName(), contextName, 
+				ERefType.SEES);
 
 		seesNames.add(contextName);
 

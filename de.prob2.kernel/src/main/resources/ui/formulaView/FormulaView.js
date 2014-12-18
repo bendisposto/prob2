@@ -21,7 +21,7 @@ FormulaView = (function() {
 
         $(window).resize(function() {
             width = vizUtils.calculateWidth();
-            h = vizUtils.calculateHeight() - $("#header")[0].clientHeight;
+            h = vizUtils.calculateHeight() - $("#header")[0].clientHeight - 20;
             if(h != height) {
                 height = h;
                 $("#visualization").empty();

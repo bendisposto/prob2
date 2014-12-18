@@ -16,20 +16,19 @@ import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PMachineReference;
 import de.be4.classicalb.core.parser.node.Start;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
-import de.prob.model.representation.RefType;
-import de.prob.model.representation.RefType.ERefType;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import de.prob.model.representation.DependencyGraph;
+import de.prob.model.representation.DependencyGraph.ERefType;
 
 public class DependencyWalker extends DepthFirstAdapter {
 
-	private final DirectedSparseMultigraph<String, RefType> graph;
+	private final DependencyGraph graph;
 	private final String src;
 	private final Map<String, Start> map;
 	private final List<ClassicalBMachine> machines;
 
 	public DependencyWalker(final String machine,
 			final List<ClassicalBMachine> machines,
-			final DirectedSparseMultigraph<String, RefType> graph2,
+			final DependencyGraph graph2,
 			final Map<String, Start> map) {
 		src = machine;
 		this.machines = machines;
@@ -54,14 +53,14 @@ public class DependencyWalker extends DepthFirstAdapter {
 		for (final PMachineReference r : machineReferences) {
 			final String dest = extractMachineName(((AMachineReference) r)
 					.getMachineName());
-			addMachine(dest, new RefType(ERefType.IMPORTS));
+			addMachine(dest, ERefType.IMPORTS);
 		}
 	}
 
 	@Override
 	public void caseAMachineReference(final AMachineReference node) {
 		final String dest = extractMachineName(node.getMachineName());
-		addMachine(dest, new RefType(ERefType.INCLUDES));
+		addMachine(dest, ERefType.INCLUDES);
 	}
 
 	@Override
@@ -78,7 +77,7 @@ public class DependencyWalker extends DepthFirstAdapter {
 
 	private void registerRefinementMachine(final TIdentifierLiteral refMachine) {
 		final String dest = refMachine.getText();
-		addMachine(dest, new RefType(ERefType.REFINES));
+		addMachine(dest, ERefType.REFINES);
 	}
 
 	private void registerMachineNames(final List<PExpression> machineNames,
@@ -88,7 +87,7 @@ public class DependencyWalker extends DepthFirstAdapter {
 				final AIdentifierExpression identifier = (AIdentifierExpression) machineName;
 				final String dest = extractMachineName(identifier
 						.getIdentifier());
-				addMachine(dest, new RefType(depType));
+				addMachine(dest, depType);
 			}
 		}
 	}
@@ -106,12 +105,11 @@ public class DependencyWalker extends DepthFirstAdapter {
 
 	// Takes the name of the destination machine, makes it, and puts it in the
 	// graph
-	private void addMachine(final String dest, final RefType refType) {
+	private void addMachine(final String dest, final ERefType refType) {
 		final ClassicalBMachine newMachine = makeMachine(dest);
 		final String name = newMachine.getName();
 		machines.add(newMachine);
-		graph.addVertex(name);
-		graph.addEdge(refType, src, name);
+		graph.addEdge(src, name, refType);
 	}
 
 	public List<ClassicalBMachine> getMachines() {

@@ -11,7 +11,6 @@ public class ModelModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(StateSpace.class);
-		bind(DirectedMultigraphProvider.class);
 		bind(ClassicalBModel.class);
 		bind(EventBModel.class);
 		bind(CSPModel.class);

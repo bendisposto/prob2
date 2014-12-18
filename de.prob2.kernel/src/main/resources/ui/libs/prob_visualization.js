@@ -64,7 +64,8 @@ function VizUtils(){
           .append("svg:g")
             .call(zoom)
           .append("svg:g")
-            .attr("class","zoomed");
+            .attr("class","zoomed")
+            .attr("transform", "translate(0,0)");
 
         svg.append("svg:rect")
             .attr("class","canvas")

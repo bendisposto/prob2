@@ -8,8 +8,7 @@ import de.prob.model.representation.BSet
 import de.prob.model.representation.Constant
 import de.prob.model.representation.Invariant
 import de.prob.model.representation.ModelElementList
-import de.prob.model.representation.RefType
-import de.prob.model.representation.RefType.ERefType
+import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.scripting.Api
 import de.prob.scripting.EventBFactory
 
@@ -77,7 +76,7 @@ public class ModelModifier {
 
 		def Extends = context.Extends.collect { deepCopy(model, it) }
 		Extends.each {
-			model.addRelationship(newContext.getName(), it.getName(), new RefType(ERefType.EXTENDS))
+			model.addRelationship(newContext.getName(), it.getName(), ERefType.EXTENDS)
 		}
 		newContext.addExtends(new ModelElementList<Context>(Extends))
 
@@ -114,13 +113,13 @@ public class ModelModifier {
 
 		def refines = machine.refines.collect { deepCopy(model, it) }
 		refines.each {
-			model.addRelationship(newMachine.getName(), it.getName(), new RefType(ERefType.REFINES))
+			model.addRelationship(newMachine.getName(), it.getName(), ERefType.REFINES)
 		}
 		newMachine.addRefines(new ModelElementList<EventBMachine>(refines))
 
 		def sees = machine.sees.collect { deepCopy(model, it) }
 		sees.each {
-			model.addRelationship(newMachine.getName(), it.getName(), new RefType(ERefType.SEES))
+			model.addRelationship(newMachine.getName(), it.getName(), ERefType.SEES)
 		}
 		newMachine.addSees(new ModelElementList<Context>(sees))
 

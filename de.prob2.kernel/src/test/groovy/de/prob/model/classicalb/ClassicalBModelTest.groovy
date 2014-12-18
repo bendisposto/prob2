@@ -5,9 +5,8 @@ import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader
 import de.be4.classicalb.core.parser.node.Start
-import de.prob.model.representation.RefType
-import de.prob.model.representation.RefType.ERefType
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph
+import de.prob.model.representation.DependencyGraph
+import de.prob.model.representation.DependencyGraph.ERefType
 
 class ClassicalBModelTest extends Specification {
 
@@ -16,7 +15,7 @@ class ClassicalBModelTest extends Specification {
 	def BParser bparser
 	def Start ast
 	def DependencyWalker dw
-	def DirectedSparseMultigraph<ClassicalBMachine,RefType> graph
+	def DependencyGraph graph
 
 	def setup() {
 		model = new File(System.getProperties().get("user.dir")+"/groovyTests/machines/references/Foo.mch")
@@ -74,8 +73,20 @@ class ClassicalBModelTest extends Specification {
 		a	|	b
 		"A"	|	"B"
 		"B"	|	"C"
-		"Blah"| "A"
-		"A"	| 	"Blah"
+	}
+
+	def "If a vertex is not in the graph, an IllegalArgumentException is thrown"() {
+		when:
+		c.getEdge(a, b)
+
+		then:
+		IllegalArgumentException e = thrown()
+		e.getMessage().contains("is not in graph")
+
+		where:
+		a 		|	b
+		"Blah"	|	"A"
+		"A"		| 	"Blah"
 	}
 
 	def "getRelationship and getEdge are the same"() {
@@ -92,7 +103,5 @@ class ClassicalBModelTest extends Specification {
 		"Foo"| "E"
 		"A"	|	"B"
 		"B"	| 	"C"
-		"Blah"|	"A"
-		"A"	|	"Blah"
 	}
 }
