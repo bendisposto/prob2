@@ -275,6 +275,7 @@ public class Api {
 			IAnimator animator = Main.getInjector().getInstance(IAnimator.class);
 			GetVersionCommand versionCommand = new GetVersionCommand();
 			animator.execute(versionCommand);
+			animator.cli.shutdown()
 			return versionCommand.getVersion();
 		} catch (Exception e) {
 			return null;
