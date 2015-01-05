@@ -46,17 +46,19 @@ public class TLAFactory extends ModelFactory {
 	 * the TLA AST to a B AST, starts the animation, and returns the created
 	 * {@link ClassicalBModel}
 	 * 
-	 * @param f
-	 *            {@link File} containing the TLA module to be loaded.
-	 * @param prefs
+	 * @param modelPath
+	 *            String path to the the TLA module to be loaded.
+	 * @param prefs map of ProB preferences
+	 * @param loader actions to take place after the loading process
 	 * @return {@link ClassicalBModel} translated from the specified TLA file.
 	 * @throws IOException
 	 * @throws BException
 	 * @throws FrontEndException
 	 */
-	public ClassicalBModel load(final File f, final Map<String, String> prefs,
+	public ClassicalBModel load(final String modelPath, final Map<String, String> prefs,
 			final Closure<?> loader) throws IOException, BException {
 		ClassicalBModel classicalBModel = modelCreator.get();
+		File f = new File(modelPath);
 
 		Translator translator;
 		Start ast;
@@ -77,6 +79,22 @@ public class TLAFactory extends ModelFactory {
 				getPreferences(classicalBModel, prefs), f);
 		loader.call(classicalBModel);
 		return classicalBModel;
+
+	}
+
+	/**
+	 * This method is deprecated. Use {@link TLAFactory#load(String, Map, Closure)} instead.
+	 * @param f {@link File} to be loaded
+	 * @param prefs preferences for the loading process
+	 * @param loader actions to take place after the loading process
+	 * @return {@link ClassicalBModel} translated from the specified TLA file.
+	 * @throws IOException
+	 * @throws BException
+	 */
+	@Deprecated
+	public ClassicalBModel load(final File f, final Map<String, String> prefs,
+			final Closure<?> loader) throws IOException, BException {
+		return load(f.getAbsolutePath(),prefs,loader);
 
 	}
 

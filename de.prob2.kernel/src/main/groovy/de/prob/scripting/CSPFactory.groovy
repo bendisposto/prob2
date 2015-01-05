@@ -21,13 +21,19 @@ class CSPFactory extends ModelFactory {
 		this.modelCreator = modelProvider
 	}
 
-	public CSPModel load(final File f, Map<String, String> prefs, Closure loadClosure) throws IOException, BException {
+	public CSPModel load(final String modelPath, Map<String, String> prefs, Closure loadClosure) {
 		CSPModel cspModel = modelCreator.get()
 
+		File f = new File(modelPath)
 		cspModel.init(readFile(f),f)
 		startAnimation(cspModel, f, getPreferences(cspModel, prefs))
 		loadClosure(cspModel)
 		return cspModel;
+	}
+
+	@Deprecated
+	public CSPModel load(final File f, Map<String, String> prefs, Closure loadClosure) throws IOException, BException {
+		return load(f.getAbsolutePath(), prefs, loadClosure)
 	}
 
 	private String readFile(File f) {

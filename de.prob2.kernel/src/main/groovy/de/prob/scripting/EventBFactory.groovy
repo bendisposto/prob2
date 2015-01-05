@@ -31,11 +31,21 @@ public class EventBFactory extends ModelFactory {
 		this.modelProvider = modelProvider;
 	}
 
-	public EventBModel load(final String file, final Map<String, String> prefs,
+	/**
+	 * This method loads the Event-B model specified by the modelPath (after ensuring
+	 * that the modelPath is valid) and returns the loaded Event-B model.
+	 *
+	 * @param modelPath
+	 *           String path to the machine to be loaded.
+	 * @param prefs map of ProB preferences
+	 * @param loader actions to take place after the loading process
+	 * @return {@link EventBModel} from the specified file.
+	 */
+	public EventBModel load(final String modelPath, final Map<String, String> prefs,
 			final Closure loader) {
 		EventBModel model = modelProvider.get();
 
-		new EventBDatabaseTranslator(model, getValidFileName(file));
+		new EventBDatabaseTranslator(model, getValidFileName(modelPath));
 
 		return loadModel(model, getPreferences(model, prefs), loader);
 	}
@@ -53,6 +63,15 @@ public class EventBFactory extends ModelFactory {
 		fileName
 	}
 
+
+	/**
+	 * Loads the specified EventBModel, sets the specified ProB Preferences, and then
+	 * executes the user specified loader to
+	 * @param model to load
+	 * @param prefs ProB preferences
+	 * @param loader actions to take place after loading
+	 * @return the same model after the loading process
+	 */
 	public static EventBModel loadModel(final EventBModel model,
 			final Map<String, String> prefs, final Closure loader) {
 		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();

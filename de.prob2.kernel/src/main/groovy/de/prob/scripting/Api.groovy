@@ -138,17 +138,15 @@ public class Api {
 	 */
 	public ClassicalBModel b_load(final String file,
 			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) throws IOException, BException {
-		File f = new File(file);
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
-		return bFactory.load(f, prefs, loadClosure);
+		return bFactory.load(file, prefs, loadClosure);
 	}
 
 	public ClassicalBModel tla_load(final String file,
 			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) throws IOException, BException {
-		File f = new File(file);
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
-		return tlaFactory.load(f, prefs, loadClosure);
+		return tlaFactory.load(file, prefs, loadClosure);
 	}
 
 	/**
@@ -162,11 +160,10 @@ public class Api {
 	 */
 	public CSPModel csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=EMPTY)
 	throws Exception {
-		File f = new File(file);
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
 		CSPModel m = null;
 		try {
-			m = cspFactory.load(f, prefs, loadClosure);
+			m = cspFactory.load(file, prefs, loadClosure);
 		} catch (ProBError error) {
 			throw new Exception(
 			"Could not find CSP Parser. Perform 'installCSPM' to install cspm in your ProB lib directory");
