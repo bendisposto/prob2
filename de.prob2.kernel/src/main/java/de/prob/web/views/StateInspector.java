@@ -42,13 +42,13 @@ IAnimationChangeListener {
 	List<String> history = new ArrayList<String>();
 	Trace currentTrace;
 	AbstractModel currentModel;
-	private final FileHandler fileWriter;
+	//private final FileHandler fileWriter;
 
 	@Inject
 	public StateInspector(final FileHandler fileWriter,
 			final AnimationSelector animations) {
 		this.incrementalUpdate = false;
-		this.fileWriter = fileWriter;
+		//this.fileWriter = fileWriter;
 		animations.registerAnimationChangeListener(this);
 	}
 
@@ -75,8 +75,8 @@ IAnimationChangeListener {
 		}
 		history.add(code);
 		if (currentModel != null) {
-			fileWriter.setContent(currentModel.getModelDirPath()
-					+ HISTORY_FILE_NAME, history);
+			//fileWriter.setContent(currentModel.getModelDirPath()
+			//		+ HISTORY_FILE_NAME, history);
 
 			Object eval = currentTrace.evalCurrent(currentModel
 					.parseFormula(code));
@@ -166,13 +166,14 @@ IAnimationChangeListener {
 	}
 
 	private List<String> getCurrentHistory(final String modelDirPath) {
-		String fileName = modelDirPath + HISTORY_FILE_NAME;
+		/*String fileName = modelDirPath + HISTORY_FILE_NAME;
 		List<String> history = fileWriter.getListOfStrings(fileName);
 		if (history == null) {
 			history = new ArrayList<String>();
 			fileWriter.setContent(fileName, history);
 		}
-		return history;
+		return history; */
+		return new ArrayList<String>();
 	}
 
 	public Object calculateFormulas(final Trace t) {
