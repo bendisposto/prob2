@@ -37,7 +37,7 @@ import de.prob.web.WebUtils;
 public class StateInspector extends AbstractSession implements
 IAnimationChangeListener {
 
-	private static final String HISTORY_FILE_NAME = "stateInspectorRepl";
+	//private static final String HISTORY_FILE_NAME = "stateInspectorRepl";
 	List<IEvalElement> formulasForEvaluating = new ArrayList<IEvalElement>();
 	List<String> history = new ArrayList<String>();
 	Trace currentTrace;
