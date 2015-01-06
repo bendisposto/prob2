@@ -35,7 +35,7 @@ import de.prob.web.WebUtils;
 
 @Singleton
 public class StateInspector extends AbstractSession implements
-		IAnimationChangeListener {
+IAnimationChangeListener {
 
 	private static final String HISTORY_FILE_NAME = "stateInspectorRepl";
 	List<IEvalElement> formulasForEvaluating = new ArrayList<IEvalElement>();
@@ -80,6 +80,9 @@ public class StateInspector extends AbstractSession implements
 
 			Object eval = currentTrace.evalCurrent(currentModel
 					.parseFormula(code));
+			if (eval == null) {
+				eval = "Initialize machine!";
+			}
 			return WebUtils.wrap("cmd", "StateInspector.result", "code",
 					unicode(code), "result", eval.toString());
 		}
@@ -178,22 +181,22 @@ public class StateInspector extends AbstractSession implements
 		Transition currentTransition = t.getCurrentTransition();
 		Map<IEvalElement, IEvalResult> current = currentTransition == null ? s
 				.valuesAt(t.getCurrentState()) : s.valuesAt(currentTransition
-				.getDestination());
-		Map<IEvalElement, IEvalResult> previous = currentTransition == null ? new HashMap<IEvalElement, IEvalResult>()
-				: s.valuesAt(currentTransition.getSource());
+						.getDestination());
+				Map<IEvalElement, IEvalResult> previous = currentTransition == null ? new HashMap<IEvalElement, IEvalResult>()
+						: s.valuesAt(currentTransition.getSource());
 
-		for (IEvalElement e : formulasForEvaluating) {
-			String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current
-					.get(e)).getValue()) : "";
-			String previousVal = previous.get(e) instanceof EvalResult ? unicode(((EvalResult) previous
-					.get(e)).getValue()) : "";
-			extracted.add(WebUtils.wrap("id", e.getFormulaId().getUUID(),
-					"code", unicode(e.getCode()), "current",
-					current.get(e) == null ? "" : currentVal, "previous",
-					previous.get(e) == null ? "" : previousVal));
-		}
+				for (IEvalElement e : formulasForEvaluating) {
+					String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current
+							.get(e)).getValue()) : "";
+					String previousVal = previous.get(e) instanceof EvalResult ? unicode(((EvalResult) previous
+							.get(e)).getValue()) : "";
+					extracted.add(WebUtils.wrap("id", e.getFormulaId().getUUID(),
+							"code", unicode(e.getCode()), "current",
+							current.get(e) == null ? "" : currentVal, "previous",
+									previous.get(e) == null ? "" : previousVal));
+				}
 
-		return extracted;
+				return extracted;
 	}
 
 	private String unicode(final String code) {
