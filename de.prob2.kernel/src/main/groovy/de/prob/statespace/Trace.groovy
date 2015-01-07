@@ -164,8 +164,7 @@ public class Trace {
 			return transitionList
 		} else {
 			// a new list of transitions is created when a branch takes place.
-			// TODO: test off by one error
-			def transitionList = new ArrayList<Transition>(transitionList.subList(0, current.getIndex()))
+			def transitionList = new ArrayList<Transition>(transitionList.subList(0, current.getIndex() + 1))
 			transitionList << newOp
 			return transitionList
 		}
