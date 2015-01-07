@@ -40,8 +40,7 @@ import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 @Singleton
-public class ModelCheckingUI extends AbstractSession implements
-		IModelChangedListener {
+public class ModelCheckingUI extends AbstractSession implements IModelChangedListener {
 
 	private ModelCheckingOptions options;
 
@@ -95,8 +94,8 @@ public class ModelCheckingUI extends AbstractSession implements
 			final IModelCheckingResult result, final StateSpaceStats stats) {
 		results.put(id, result);
 
-		String res = ((result instanceof ModelCheckOk) || (result instanceof LTLOk)) ? "success"
-				: ((result instanceof ITraceDescription) ? "danger" : "warning");
+		String res = result instanceof ModelCheckOk || result instanceof LTLOk ? "success"
+				: result instanceof ITraceDescription ? "danger" : "warning";
 		boolean hasTrace = result instanceof ITraceDescription;
 
 		jobs.remove(id);
@@ -200,7 +199,10 @@ public class ModelCheckingUI extends AbstractSession implements
 		String jobId = params.get("jobId")[0];
 		ModelChecker modelChecker = jobs.get(jobId);
 		if (modelChecker != null) {
-			modelChecker.cancel();
+			// TODO: maybe the animator should not be freed up here (i.e if there is another job blocking the animator)
+			if (modelChecker.getStateSpace().isBusy()) {
+				modelChecker.getStateSpace().endTransaction();
+			}
 			return WebUtils.wrap("cmd", "ModelChecking.cancelJob", "id", jobId);
 		} else {
 			// FIXME handle error
