@@ -21,11 +21,11 @@
 		</encoder>
 	</appender>
 	
-	<appender name="PROB" class="de.prob.exception.ProBAppender">
-	</appender>
+<!--	<appender name="PROB" class="de.prob.exception.ProBAppender">
+	</appender>-->
 
 	<root level="debug">
 		<appender-ref ref="FILE" />
-		<appender-ref ref="PROB" />
+	<!--	<appender-ref ref="PROB" />-->
 	</root>
 </included>

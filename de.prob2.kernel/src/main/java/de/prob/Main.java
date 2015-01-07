@@ -19,9 +19,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 
-import de.prob.exception.ProBAppender;
 import de.prob.scripting.Downloader;
-import de.prob.web.views.Log;
 import de.prob.webconsole.WebConsole;
 
 /**
@@ -72,7 +70,7 @@ public class Main {
 	 */
 	public final static String LOG_CONFIG = System
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
-			.getProperty("PROB_LOG_CONFIG");
+					.getProperty("PROB_LOG_CONFIG");
 
 	private final static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
 	private final Downloader downloader;
@@ -88,12 +86,11 @@ public class Main {
 	 */
 	@Inject
 	public Main(final CommandLineParser parser, final Options options,
-			final Shell shell, final Log log, final Downloader downloader) {
+			final Shell shell, final Downloader downloader) {
 		this.parser = parser;
 		this.options = options;
 		this.shell = shell;
 		this.downloader = downloader;
-		ProBAppender.initialize(log);
 		logger.debug("Java version: {}", System.getProperty("java.version"));
 	}
 
@@ -179,7 +176,7 @@ public class Main {
 			return homedir + separator;
 		}
 		return System.getProperty("user.home") + separator + ".prob"
-				+ separator;
+		+ separator;
 	}
 
 	/**
