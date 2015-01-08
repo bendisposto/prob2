@@ -24,12 +24,11 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
-import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 public class ValueOverTime extends AbstractSession implements
-		IAnimationChangeListener {
+IAnimationChangeListener {
 
 	private class FormulaElement {
 		public final String id;
@@ -56,16 +55,19 @@ public class ValueOverTime extends AbstractSession implements
 		this.incrementalUpdate = false;
 		currentTrace = animations.getCurrentTrace();
 		if (currentTrace == null) {
-			throw new AnimationNotLoadedException(
-					"Please load model before opening Value over Time visualization");
+			model = null;
+		} else {
+			model = currentTrace.getModel();
+			animations.registerAnimationChangeListener(this);
 		}
-		model = currentTrace.getModel();
-		animations.registerAnimationChangeListener(this);
 	}
 
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
+		if(model == null) {
+			return "<html><head><title>Value Over Time</title></head></html>";
+		}
 		Object scope = WebUtils.wrap("clientid", clientid, "id", UUID
 				.randomUUID().toString());
 		return WebUtils.render("ui/valueOverTime/index.html", scope);
@@ -75,24 +77,26 @@ public class ValueOverTime extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		List<Object> result = new ArrayList<Object>();
-		for (FormulaElement formula : testedFormulas) {
-			result.add(WebUtils.wrap("id", formula.id, "formula",
-					formula.formula.getCode()));
+		if (model != null) {
+			List<Object> result = new ArrayList<Object>();
+			for (FormulaElement formula : testedFormulas) {
+				result.add(WebUtils.wrap("id", formula.id, "formula",
+						formula.formula.getCode()));
+			}
+
+			List<Object> data = calculateData();
+			IEvalElement time = formulas.get("time");
+
+			Map<String, String> wrap = WebUtils.wrap("cmd",
+					"ValueOverTime.restorePage", "formulas", WebUtils
+					.toJson(result), "time",
+					time == null ? "" : time.getCode(), "data", WebUtils
+							.toJson(data), "xLabel",
+							time == null ? "Number of Animation Steps" : time.getCode(),
+									"drawMode", mode);
+
+			submit(wrap);
 		}
-
-		List<Object> data = calculateData();
-		IEvalElement time = formulas.get("time");
-
-		Map<String, String> wrap = WebUtils.wrap("cmd",
-				"ValueOverTime.restorePage", "formulas", WebUtils
-						.toJson(result), "time",
-				time == null ? "" : time.getCode(), "data", WebUtils
-						.toJson(data), "xLabel",
-				time == null ? "Number of Animation Steps" : time.getCode(),
-				"drawMode", mode);
-
-		submit(wrap);
 
 	}
 
@@ -100,7 +104,7 @@ public class ValueOverTime extends AbstractSession implements
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
 		if (currentAnimationChanged) {
-			if (trace != null
+			if (model != null && trace != null
 					&& trace.getStateSpace().equals(model.getStateSpace())) {
 				currentTrace = trace;
 				List<Object> result = calculateData();
@@ -358,7 +362,7 @@ public class ValueOverTime extends AbstractSession implements
 		return WebUtils.wrap("cmd", "ValueOverTime.formulaRemoved", "id", id,
 				"data", WebUtils.toJson(data), "xLabel",
 				time == null ? "Number of Animation Steps" : time.getCode(),
-				"drawMode", mode);
+						"drawMode", mode);
 	}
 
 	@Override
