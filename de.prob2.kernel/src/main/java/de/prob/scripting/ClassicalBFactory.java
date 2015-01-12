@@ -48,17 +48,19 @@ public class ClassicalBFactory extends ModelFactory {
 	 * This method loads a machine from file, parses all machines, starts the
 	 * animation, and returns the created {@link ClassicalBModel}
 	 * 
-	 * @param f
-	 *            {@link File} containing machine to be loaded.
-	 * @param prefs
+	 * @param modelPath
+	 *           String path to the machine to be loaded.
+	 * @param prefs map of ProB preferences
+	 * @param loader actions to take place after the loading process
 	 * @return {@link ClassicalBModel} from the specified file.
 	 * @throws IOException
 	 * @throws BException
 	 */
-	public ClassicalBModel load(final File f, final Map<String, String> prefs,
-			final Closure<?> subscriber) throws IOException, BException {
+	public ClassicalBModel load(final String modelPath, final Map<String, String> prefs,
+			final Closure<?> subscriber) throws IOException, BException{
 		ClassicalBModel classicalBModel = modelCreator.get();
 
+		File f = new File(modelPath);
 		BParser bparser = new BParser();
 		Start ast = parseFile(f, bparser);
 		final RecursiveMachineLoader rml = parseAllMachines(ast, f, bparser);
@@ -68,6 +70,22 @@ public class ClassicalBFactory extends ModelFactory {
 				getPreferences(classicalBModel, prefs), f);
 		subscriber.call(classicalBModel);
 		return classicalBModel;
+	}
+
+	/**
+	 * This method is deprecated. Use {@link ClassicalBFactory#load(String, Map, Closure)} instead.
+	 * @param f
+	 *            {@link File} containing machine to be loaded.
+	 * @param prefs map of ProB preferences
+	 * @param loader actions to take place after the loading process
+	 * @return {@link ClassicalBModel} from the specified file.
+	 * @throws IOException
+	 * @throws BException
+	 */
+	@Deprecated
+	public ClassicalBModel load(final File f, final Map<String, String> prefs,
+			final Closure<?> subscriber) throws IOException, BException {
+		return load(f.getAbsolutePath(), prefs, subscriber);
 	}
 
 	/**
@@ -86,7 +104,6 @@ public class ClassicalBFactory extends ModelFactory {
 	private void startAnimation(final ClassicalBModel classicalBModel,
 			final RecursiveMachineLoader rml, final Map<String, String> prefs,
 			final File f) {
-
 		List<AbstractCommand> cmds = new ArrayList<AbstractCommand>();
 
 		for (Entry<String, String> pref : prefs.entrySet()) {

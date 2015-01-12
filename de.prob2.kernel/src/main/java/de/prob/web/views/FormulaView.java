@@ -27,12 +27,11 @@ import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.unicode.UnicodeTranslator;
-import de.prob.visualization.AnimationNotLoadedException;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 public class FormulaView extends AbstractSession implements
-		IAnimationChangeListener {
+IAnimationChangeListener {
 
 	Logger logger = LoggerFactory.getLogger(FormulaView.class);
 	private Trace currentTrace;
@@ -46,16 +45,19 @@ public class FormulaView extends AbstractSession implements
 		this.incrementalUpdate = false;
 		currentTrace = animations.getCurrentTrace();
 		if (currentTrace == null) {
-			throw new AnimationNotLoadedException(
-					"Please load model before opening Value over Time visualization");
+			currentStateSpace = null;
+		} else {
+			currentStateSpace = currentTrace.getStateSpace();
+			animations.registerAnimationChangeListener(this);
 		}
-		currentStateSpace = currentTrace.getStateSpace();
-		animations.registerAnimationChangeListener(this);
 	}
 
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
+		if(currentStateSpace == null) {
+			return "<html><head><title>Formula Visualization</title></head></html>";
+		}
 		return simpleRender(clientid, "ui/formulaView/index.html");
 	}
 
@@ -127,8 +129,8 @@ public class FormulaView extends AbstractSession implements
 			Object data = calculateData();
 			return WebUtils.wrap("cmd", "FormulaView.formulaSet", "formula",
 					formula.getCode(), "unicode", StringEscapeUtils
-							.escapeHtml(UnicodeTranslator.toUnicode(formula
-									.getCode())), "data", data);
+					.escapeHtml(UnicodeTranslator.toUnicode(formula
+							.getCode())), "data", data);
 		} catch (Exception e) {
 			return sendError(
 					"Whoops!",
@@ -189,12 +191,14 @@ public class FormulaView extends AbstractSession implements
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		Object data = calculateData();
-		if(data != null) {
-			submit(WebUtils.wrap("cmd", "FormulaView.formulaSet", "formula",
-					formula.getCode(), "unicode", StringEscapeUtils
-					.escapeHtml(UnicodeTranslator.toUnicode(formula
-							.getCode())), "data", data));			
+		if(currentStateSpace != null) {
+			Object data = calculateData();
+			if(data != null) {
+				submit(WebUtils.wrap("cmd", "FormulaView.formulaSet", "formula",
+						formula.getCode(), "unicode", StringEscapeUtils
+						.escapeHtml(UnicodeTranslator.toUnicode(formula
+								.getCode())), "data", data));
+			}
 		}
 	}
 

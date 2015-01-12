@@ -35,20 +35,20 @@ import de.prob.web.WebUtils;
 
 @Singleton
 public class StateInspector extends AbstractSession implements
-		IAnimationChangeListener {
+IAnimationChangeListener {
 
-	private static final String HISTORY_FILE_NAME = "stateInspectorRepl";
+	//private static final String HISTORY_FILE_NAME = "stateInspectorRepl";
 	List<IEvalElement> formulasForEvaluating = new ArrayList<IEvalElement>();
 	List<String> history = new ArrayList<String>();
 	Trace currentTrace;
 	AbstractModel currentModel;
-	private final FileHandler fileWriter;
+	//private final FileHandler fileWriter;
 
 	@Inject
 	public StateInspector(final FileHandler fileWriter,
 			final AnimationSelector animations) {
 		this.incrementalUpdate = false;
-		this.fileWriter = fileWriter;
+		//this.fileWriter = fileWriter;
 		animations.registerAnimationChangeListener(this);
 	}
 
@@ -75,11 +75,14 @@ public class StateInspector extends AbstractSession implements
 		}
 		history.add(code);
 		if (currentModel != null) {
-			fileWriter.setContent(currentModel.getModelDirPath()
-					+ HISTORY_FILE_NAME, history);
+			//fileWriter.setContent(currentModel.getModelDirPath()
+			//		+ HISTORY_FILE_NAME, history);
 
 			Object eval = currentTrace.evalCurrent(currentModel
 					.parseFormula(code));
+			if (eval == null) {
+				eval = "Initialize machine!";
+			}
 			return WebUtils.wrap("cmd", "StateInspector.result", "code",
 					unicode(code), "result", eval.toString());
 		}
@@ -163,13 +166,14 @@ public class StateInspector extends AbstractSession implements
 	}
 
 	private List<String> getCurrentHistory(final String modelDirPath) {
-		String fileName = modelDirPath + HISTORY_FILE_NAME;
+		/*String fileName = modelDirPath + HISTORY_FILE_NAME;
 		List<String> history = fileWriter.getListOfStrings(fileName);
 		if (history == null) {
 			history = new ArrayList<String>();
 			fileWriter.setContent(fileName, history);
 		}
-		return history;
+		return history; */
+		return new ArrayList<String>();
 	}
 
 	public Object calculateFormulas(final Trace t) {
@@ -178,22 +182,22 @@ public class StateInspector extends AbstractSession implements
 		Transition currentTransition = t.getCurrentTransition();
 		Map<IEvalElement, IEvalResult> current = currentTransition == null ? s
 				.valuesAt(t.getCurrentState()) : s.valuesAt(currentTransition
-				.getDestination());
-		Map<IEvalElement, IEvalResult> previous = currentTransition == null ? new HashMap<IEvalElement, IEvalResult>()
-				: s.valuesAt(currentTransition.getSource());
+						.getDestination());
+				Map<IEvalElement, IEvalResult> previous = currentTransition == null ? new HashMap<IEvalElement, IEvalResult>()
+						: s.valuesAt(currentTransition.getSource());
 
-		for (IEvalElement e : formulasForEvaluating) {
-			String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current
-					.get(e)).getValue()) : "";
-			String previousVal = previous.get(e) instanceof EvalResult ? unicode(((EvalResult) previous
-					.get(e)).getValue()) : "";
-			extracted.add(WebUtils.wrap("id", e.getFormulaId().getUUID(),
-					"code", unicode(e.getCode()), "current",
-					current.get(e) == null ? "" : currentVal, "previous",
-					previous.get(e) == null ? "" : previousVal));
-		}
+				for (IEvalElement e : formulasForEvaluating) {
+					String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current
+							.get(e)).getValue()) : "";
+					String previousVal = previous.get(e) instanceof EvalResult ? unicode(((EvalResult) previous
+							.get(e)).getValue()) : "";
+					extracted.add(WebUtils.wrap("id", e.getFormulaId().getUUID(),
+							"code", unicode(e.getCode()), "current",
+							current.get(e) == null ? "" : currentVal, "previous",
+									previous.get(e) == null ? "" : previousVal));
+				}
 
-		return extracted;
+				return extracted;
 	}
 
 	private String unicode(final String code) {

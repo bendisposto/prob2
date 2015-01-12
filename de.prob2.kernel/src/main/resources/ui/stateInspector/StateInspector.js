@@ -3,8 +3,8 @@ StateInspector = (function() {
     var session = Session();
     var cm = null;
     ;
-    history = [];
-    hp = null;
+    var hist = [];
+    var hp = null;
     var ctr = 0;
 
     var nrOfInterest = {}
@@ -17,13 +17,13 @@ StateInspector = (function() {
                 return true;
             },
             'Enter' : function(cm) {
-                this.hp = null;
                 var code = cm.getValue();
 //                console.log("submit: '" + code + "'")
                 session.sendCmd("evaluate", {
                     "code" : code
                 })
-                this.history.push(code)
+                this.hist.push(code)
+                this.hp = this.hist.length - 1;
                 cm.setValue("")
                 return false;
             },
@@ -31,11 +31,11 @@ StateInspector = (function() {
                 if (cm.getCursor().line == 0) {
 //                    console.log("History up")
                     if (this.hp == null) {
-                        this.hp = this.history.length;
+                        this.hp = this.hist.length;
                     }
                     if (this.hp > 0) {
                         this.hp--
-                        cm.setValue(this.history[this.hp])
+                        cm.setValue(this.hist[this.hp])  
                     }
                 } else
                     this.hp = null;
@@ -47,11 +47,12 @@ StateInspector = (function() {
                 if (cm.getCursor().line == cnt - 1) {
 //                    console.log("History down")
                     if (this.hp != null) {
-                        if (this.hp < this.history.length - 1) {
+                        if (this.hp < this.hist.length - 1) {
                             this.hp++
-                            cm.setValue(this.history[this.hp])
+                            cm.setValue(this.hist[this.hp])
                         } else {
                             cm.setValue("")
+                            this.hp = null
                         }
 
                     }
@@ -160,8 +161,8 @@ StateInspector = (function() {
     }
 
     function updateHistory(history) {
-        this.history = history
-        this.hp = this.history.length
+        this.hist = history
+        this.hp = this.hist.length
     }
 
     function showresult(data) {
