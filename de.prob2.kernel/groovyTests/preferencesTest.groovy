@@ -43,7 +43,7 @@ assert prefs["MEMO"] == "false"
 cmd = new GetCurrentPreferencesCommand()
 s.execute(cmd)
 prefs = cmd.getPreferences()
-assert prefs.size() == 24
+assert prefs.size() == 25
 assert prefs["MAXINT"] == "10"
 
 cmd = new SetPreferenceCommand("MAXINT","12")
