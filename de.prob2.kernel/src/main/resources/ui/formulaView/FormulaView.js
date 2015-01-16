@@ -131,7 +131,9 @@ FormulaView = (function() {
             if(hasChildren(d)) {
                 return colorMain(d);
             } else {
-                if(d.value === true) {
+                if (d.hasError === true) {
+                    return "#FFA07A";
+                } else if(d.value === true) {
                     return "#A6F1A6";
                 } else if(d.value === false) {
                     return "#F39999";
@@ -142,7 +144,9 @@ FormulaView = (function() {
         };
 
         var colorMain = function(d) {
-            if(d.value === true) {
+            if (d.hasError === true) {
+                return "#FF8C00";
+            } else if(d.value === true) {
                 return "#73BE73";
             } else if(d.value === false) {
                 return "#C06666";
