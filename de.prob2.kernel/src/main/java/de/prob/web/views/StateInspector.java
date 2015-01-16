@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.prob.animator.domainobjects.EvalResult;
+import de.prob.animator.domainobjects.EvaluationErrorResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.representation.AbstractElement;
@@ -187,17 +188,26 @@ IAnimationChangeListener {
 						: s.valuesAt(currentTransition.getSource());
 
 				for (IEvalElement e : formulasForEvaluating) {
-					String currentVal = current.get(e) instanceof EvalResult ? unicode(((EvalResult) current
-							.get(e)).getValue()) : "";
-					String previousVal = previous.get(e) instanceof EvalResult ? unicode(((EvalResult) previous
-							.get(e)).getValue()) : "";
+					IEvalResult c = current.get(e);
+					String currentVal = stringRep(current.get(e));
+					String previousVal = stringRep(previous.get(e));
 					extracted.add(WebUtils.wrap("id", e.getFormulaId().getUUID(),
 							"code", unicode(e.getCode()), "current",
-							current.get(e) == null ? "" : currentVal, "previous",
+							c == null ? "" : currentVal, "previous",
 									previous.get(e) == null ? "" : previousVal));
 				}
 
 				return extracted;
+	}
+
+	private String stringRep(final IEvalResult res) {
+		if (res instanceof EvalResult) {
+			return unicode(((EvalResult) res).getValue());
+		}
+		if (res instanceof EvaluationErrorResult) {
+			return ((EvaluationErrorResult) res).getResult();
+		}
+		return "";
 	}
 
 	private String unicode(final String code) {

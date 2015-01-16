@@ -5,7 +5,7 @@ import de.prob.statespace.*
 m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch")
 s = m as StateSpace
 t = new Trace(s)
-t = t.anyEvent()
+t = t.$initialise_machine()
 
 
 s.animator.cli.shutdown();

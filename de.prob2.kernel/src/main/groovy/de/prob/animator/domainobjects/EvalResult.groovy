@@ -90,7 +90,7 @@ public class EvalResult implements IEvalResult {
 			}
 
 			return new ComputationNotCompletedResult(code, Joiner.on(",").join(list))
-		} else {
+		} else if (pt.getFunctor() == "result"){
 			/*
 			 * If the formula in question was a predicate, the result term will have the following form:
 			 * result(Value,Solutions) where Value is 'TRUE','POSSIBLY TRUE', or 'FALSE'
@@ -132,7 +132,7 @@ public class EvalResult implements IEvalResult {
 						.getCompoundTerm(t, 2);
 				solutions.put(
 						StringUtil.generateString(cpt.getArgument(1).getFunctor()),
-						StringUtil.generateString(cpt.getArgument(2).getFunctor()));
+						StringUtil.generateString(cpt.getArgument(2).getFunctor()))
 			}
 
 			def res = new EvalResult(value, solutions);
@@ -140,7 +140,12 @@ public class EvalResult implements IEvalResult {
 				formulaCache.put(value, res)
 			}
 			return res
+		} else if (pt.getFunctor() == "errors") {
+			def arg1 = pt.getArgument(1)
+			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
+			return new EvaluationErrorResult(arg1.getFunctor(), arg2.collect { it.getFunctor() })
 		}
+		throw new IllegalArgumentException("Unknown result type "+pt.toString())
 	}
 
 	def Object asType(Class className) {
