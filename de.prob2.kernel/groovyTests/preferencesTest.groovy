@@ -6,14 +6,16 @@ import de.prob.statespace.*
 m = api.b_load(dir+File.separator+"machines"+File.separator+"scheduler.mch", ["MAXINT":"10"])
 s = m as StateSpace
 
+expected_size = 25
+
 cmd = new GetDefaultPreferencesCommand()
 s.execute(cmd)
 ps = cmd.getPreferences()
-assert ps.size() == 24
+assert ps.size() == expected_size
 
 prefs = [:]
 ps.each { prefs[it.name] = it.defaultValue }
-assert prefs.size() == 24
+assert prefs.size() == expected_size
 
 assert prefs["MAXINT"] == "3"
 assert prefs["MININT"] == "-1"
@@ -43,7 +45,7 @@ assert prefs["MEMO"] == "false"
 cmd = new GetCurrentPreferencesCommand()
 s.execute(cmd)
 prefs = cmd.getPreferences()
-assert prefs.size() == 25
+assert prefs.size() == expected_size
 assert prefs["MAXINT"] == "10"
 
 cmd = new SetPreferenceCommand("MAXINT","12")
