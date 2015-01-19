@@ -144,6 +144,8 @@ public class EvalResult implements IEvalResult {
 			def arg1 = pt.getArgument(1)
 			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
 			return new EvaluationErrorResult(arg1.getFunctor(), arg2.collect { it.getFunctor() })
+		} else if (pt.getFunctor() == "enum_warning") {
+			return new EnumerationWarning()
 		}
 		throw new IllegalArgumentException("Unknown result type "+pt.toString())
 	}

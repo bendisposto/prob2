@@ -144,11 +144,17 @@ StateInspector = (function() {
         }
     }
 
-    function updateClasses(id, classValue) {
+    function updateClasses(id, value) {
         $(id).removeClass("false")
         $(id).removeClass("true")
         $(id).removeClass("not-well-defined")
-        $(id).addClass(classValue)
+        $(id).removeClass("enum-warning")
+
+        value = value === "?(&infin;)" ? "enum-warning" : value
+        if (value === "false" || value === "true" || 
+            value === "not-well-defined" || value === "enum-warning") {
+            $(id).addClass(value)            
+        }
     }
 
     function updateHistory(history) {

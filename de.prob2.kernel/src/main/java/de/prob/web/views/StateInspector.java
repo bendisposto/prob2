@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.animator.domainobjects.EnumerationWarning;
 import de.prob.animator.domainobjects.EvalResult;
 import de.prob.animator.domainobjects.EvaluationErrorResult;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -206,6 +207,9 @@ IAnimationChangeListener {
 		}
 		if (res instanceof EvaluationErrorResult) {
 			return ((EvaluationErrorResult) res).getResult();
+		}
+		if (res instanceof EnumerationWarning) {
+			return unicode("?(\u221E)");
 		}
 		return "";
 	}
