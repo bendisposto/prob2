@@ -2,8 +2,8 @@ package de.prob.statespace;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class AnimationSelector {
 	List<WeakReference<IAnimationChangeListener>> traceListeners = new CopyOnWriteArrayList<WeakReference<IAnimationChangeListener>>();
 	List<WeakReference<IModelChangedListener>> modelListeners = new CopyOnWriteArrayList<WeakReference<IModelChangedListener>>();
 
-	Map<UUID, Trace> traces = new HashMap<UUID, Trace>();
+	Map<UUID, Trace> traces = new LinkedHashMap<UUID, Trace>();
 	Set<UUID> protectedTraces = new HashSet<UUID>();
 
 	Trace currentTrace = null;
@@ -118,6 +118,14 @@ public class AnimationSelector {
 		}
 	}
 
+	public void setProtected(final Trace trace, final boolean isProtected) {
+		if (isProtected) {
+			protectedTraces.add(trace.getUUID());
+		} else {
+			protectedTraces.remove(trace.getUUID());
+		}
+	}
+
 	public void clearUnprotected() {
 		ArrayList<Trace> list = new ArrayList<Trace>(traces.values());
 		boolean currentChanged = false;
@@ -132,7 +140,7 @@ public class AnimationSelector {
 			}
 		}
 		if (currentChanged && !traces.isEmpty()) {
-			currentTrace = traces.get(0);
+			currentTrace = traces.values().iterator().next();
 			currentStateSpace = currentTrace.getStateSpace();
 		}
 		refresh();
@@ -209,6 +217,10 @@ public class AnimationSelector {
 	 */
 	public List<Trace> getTraces() {
 		return new ArrayList<Trace>(traces.values());
+	}
+
+	public Set<UUID> getProtectedTraces() {
+		return protectedTraces;
 	}
 
 	/**

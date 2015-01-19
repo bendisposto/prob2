@@ -52,6 +52,14 @@ IAnimationChangeListener {
 		return null;
 	}
 
+	public Object protectTrace(final Map<String, String[]> params) {
+		int pos = Integer.parseInt(params.get("pos")[0]);
+		boolean protect = Boolean.valueOf(params.get("protect")[0]);
+		Trace trace = animations.getTraces().get(pos);
+		animations.setProtected(trace, protect);
+		return null;
+	}
+
 	@Override
 	public void traceChange(final Trace currentTrace,
 			final boolean currentAnimationChanged) {
@@ -68,8 +76,9 @@ IAnimationChangeListener {
 
 			String steps = t.getTransitionList().size() + "";
 			String isCurrent = t.equals(currentTrace) + "";
+			boolean isProtected = animations.getProtectedTraces().contains(t.getUUID());
 			Map<String, String> wrapped = WebUtils.wrap("model", modelName,
-					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent);
+					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent, "protected", isProtected);
 			result[ctr++] = wrapped;
 		}
 		Map<String, String> wrap = WebUtils.wrap("cmd",
