@@ -63,7 +63,7 @@ public class CurrentTrace extends AbstractSession implements IAnimationChangeLis
 					opList.subList(startpos, endpos));
 			String group = "past";
 			for (int i = startpos; i < endpos; i++) {
-				String rep = opList.get(i).getRep();
+				String rep = opList.get(i).getPrettyRep();
 				if (currentPos == i) {
 					group = "current";
 					ops.add(WebUtils.wrap("id", i, "rep", rep, "group", group));

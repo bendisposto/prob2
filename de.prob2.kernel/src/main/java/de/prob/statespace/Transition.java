@@ -209,6 +209,17 @@ public class Transition {
 		return retVals + name + "(" + Joiner.on(",").join(getParams()) + ")";
 	}
 
+	public String getPrettyRep() {
+		String rep = getRep();
+		if (name.equals("$initialise_machine")) {
+			rep = rep.replaceAll("\\$initialise_machine", "INITIALISATION");
+		}
+		if (name.equals("$setup_constants")) {
+			rep = rep.replaceAll("\\$setup_constants", "SETUP_CONSTANTS");
+		}
+		return rep;
+	}
+
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj == this) {

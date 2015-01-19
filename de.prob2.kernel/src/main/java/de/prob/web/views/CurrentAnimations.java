@@ -21,7 +21,7 @@ import de.prob.web.WebUtils;
 @Singleton
 @PublicSession
 public class CurrentAnimations extends AbstractSession implements
-		IAnimationChangeListener {
+IAnimationChangeListener {
 
 	private final AnimationSelector animations;
 
@@ -64,7 +64,7 @@ public class CurrentAnimations extends AbstractSession implements
 			String modelName = mainComponent != null ? mainComponent.toString()
 					: model.getModelFile().getName();
 			Transition op = t.getCurrentTransition();
-			String lastOp = op != null ? op.getRep() : "";
+			String lastOp = op != null ? op.getPrettyRep() : "";
 
 			String steps = t.getTransitionList().size() + "";
 			String isCurrent = t.equals(currentTrace) + "";
