@@ -136,8 +136,9 @@ StateInspector = (function() {
             id = "#" + values[i].id;
             $(id + "_current").html(values[i].current);
             $(id + "_previous").html(values[i].previous);
+            $(id).removeClass("changed")
             if (values[i].current !== values[i].previous) {
-                $(id).addClass("changed");
+                $(id).addClass("changed")
             }
             updateClasses(id + "_current", values[i].current.toLowerCase())
             updateClasses(id + "_previous", values[i].previous.toLowerCase())
