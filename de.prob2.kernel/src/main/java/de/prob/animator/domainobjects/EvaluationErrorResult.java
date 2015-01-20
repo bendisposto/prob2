@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.common.base.Joiner;
 
-public class EvaluationErrorResult implements IEvalResult {
+public abstract class EvaluationErrorResult implements IEvalResult {
 
 	private final String result;
 	private final List<String> errors;

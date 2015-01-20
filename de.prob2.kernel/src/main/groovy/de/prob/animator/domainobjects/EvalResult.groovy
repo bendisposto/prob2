@@ -140,10 +140,12 @@ public class EvalResult implements IEvalResult {
 				formulaCache.put(value, res)
 			}
 			return res
-		} else if (pt.getFunctor() == "errors") {
-			def arg1 = pt.getArgument(1)
+		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "NOT-WELL-DEFINED") {
 			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
-			return new EvaluationErrorResult(arg1.getFunctor(), arg2.collect { it.getFunctor() })
+			return new WDError(arg2.collect { it.getFunctor()})
+		} else if (pt.getFunctor() == "errors" && pt.getArgument(1).getFunctor() == "IDENTIFIER(S) NOT YET INITIALISED") {
+			ListPrologTerm arg2 = BindingGenerator.getList(pt.getArgument(2))
+			return new IdentifierNotInitialised(arg2.collect { it.getFunctor()})
 		} else if (pt.getFunctor() == "enum_warning") {
 			return new EnumerationWarning()
 		}

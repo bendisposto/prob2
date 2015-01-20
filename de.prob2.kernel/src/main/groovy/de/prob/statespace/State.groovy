@@ -145,9 +145,6 @@ class State {
 	 * @return the {@link IEvalResult} calculated from ProB
 	 */
 	def IEvalResult eval(String formula) {
-		if (!isInitialised()) {
-			return null
-		}
 		return eval(stateSpace.getModel().parseFormula(formula))
 	}
 
@@ -157,9 +154,6 @@ class State {
 	 * @return the {@link IEvalResult} calculated by ProB
 	 */
 	def IEvalResult eval(IEvalElement formula) {
-		if (!isInitialised()) {
-			return null
-		}
 		eval([formula])[0]
 	}
 
