@@ -1,5 +1,4 @@
 import static org.junit.Assert.*
-
 import spock.lang.Specification
 import de.be4.classicalb.core.parser.BParser
 import de.be4.classicalb.core.parser.exceptions.BException
@@ -31,7 +30,7 @@ class SpockDomWalkerTest extends Specification {
           END
 		"""
 		def ast = parse(testmachine)
-		machine = new DomBuilder().build(ast)
+		machine = new DomBuilder(false).build(ast)
 	}
 
 	def "testing that variables are handled correctly"() {
@@ -52,7 +51,7 @@ class SpockDomWalkerTest extends Specification {
 		then:
 		r == ['dd', 'e', 'Ff']
 	}
-	
+
 	def "test if there are any invariants"() {
 		when:
 		def r = machine.invariants.collect { it.getPredicate().getCode() }
