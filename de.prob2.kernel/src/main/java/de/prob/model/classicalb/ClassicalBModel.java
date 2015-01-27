@@ -36,15 +36,14 @@ public class ClassicalBModel extends AbstractModel {
 		super(ssProvider);
 	}
 
-	public DependencyGraph initialize(
-			final Start mainast, final RecursiveMachineLoader rml,
-			final File modelFile) {
+	public DependencyGraph initialize(final Start mainast,
+			final RecursiveMachineLoader rml, final File modelFile) {
 
 		this.modelFile = modelFile;
 
 		final DependencyGraph graph = new DependencyGraph();
 
-		final DomBuilder d = new DomBuilder();
+		final DomBuilder d = new DomBuilder(false);
 		mainMachine = d.build(mainast);
 
 		extractModelDir(modelFile, mainMachine.getName());
