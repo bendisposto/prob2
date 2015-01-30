@@ -117,7 +117,6 @@ public class DomBuilder extends DepthFirstAdapter {
 				usedIds.add(((AIdentifierExpression) pExpression)
 						.getIdentifier().get(0).getText());
 			}
-
 			variables.add(new ClassicalBVariable(
 					createExpressionAST(pExpression)));
 		}
@@ -236,11 +235,11 @@ public class DomBuilder extends DepthFirstAdapter {
 	}
 
 	private class RenameIdentifiers extends DepthFirstAdapter {
-
 		@Override
 		public void inAIdentifierExpression(final AIdentifierExpression node) {
 			if (used) {
 				String id = node.getIdentifier().get(0).getText();
+
 				if (usedIds.contains(id)) {
 					node.getIdentifier().set(0,
 							new TIdentifierLiteral(name + "." + id));
