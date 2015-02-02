@@ -3,13 +3,14 @@
   :url "https://github.com/bendisposto/prob2"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0-alpha1"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
                  [com.taoensso/sente "0.15.1" :exclusions [org.clojure/clojure]]]
 
   :repositories [["cobra" "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"]]
 
   :plugins [[lein-haml-sass "0.2.7-SNAPSHOT"]
-            [com.keminglabs/cljx "0.4.0" :exclusions [org.clojure/clojure]]]
+            [com.keminglabs/cljx "0.5.0"]
+            [lein-midje "3.1.3"]]
 
   :cljx {:builds [{:source-paths ["src/both"]
                    :output-path  "src/server"
@@ -19,7 +20,7 @@
                    :output-path  "src/client"
                    :rules        :cljs}]}
 
-  :hooks [cljx.hooks]
+  :prep-tasks [["cljx" "once"] "javac" "compile"]
 
   :jvm-opts ["-Dapple.awt.UIElement=true"
              "-XX:+TieredCompilation"
