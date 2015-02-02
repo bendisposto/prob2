@@ -52,7 +52,7 @@
     :resource-paths ["dev" "kernel/build/libs/*.jar"]}
 
    :production
-   {:dependencies [[de.prob2/de.prob2.kernel "2.0.0-milestone-16-SNAPSHOT"]]
+   {:dependencies [[de.prob2/de.prob2.kernel "2.0.0-milestone-23-SNAPSHOT"]]
     :main         de.prob2}
 
    :clj
@@ -64,6 +64,7 @@
                    [compojure "1.1.8"]
                    [ring/ring-core "1.3.0"]
                    [http-kit "2.1.18"]
+                   [javax.servlet/servlet-api "2.5"]
                    [org.clojure/core.cache "0.6.4"]
                    [prismatic/schema "0.2.4"]
                    [com.cognitect/transit-clj "0.8.247"]]}
