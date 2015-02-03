@@ -76,7 +76,7 @@ public class LTLCheckingJob extends AbstractCommand {
 
 	@Override
 	public boolean isCompleted() {
-		return true;
+		return completed;
 	}
 
 }
