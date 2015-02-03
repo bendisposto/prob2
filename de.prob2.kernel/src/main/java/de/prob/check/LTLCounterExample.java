@@ -7,9 +7,9 @@ import de.prob.animator.command.LtlCheckingCommand.PathType;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.animator.domainobjects.LTL;
 import de.prob.statespace.ITraceDescription;
-import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
+import de.prob.statespace.Transition;
 
 public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 		ITraceDescription {
@@ -20,7 +20,8 @@ public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 	private final int loopEntry;
 	private final PathType pathType;
 
-	public LTLCounterExample(final LTL formula, final List<Transition> pathToCE,
+	public LTLCounterExample(final LTL formula,
+			final List<Transition> pathToCE,
 			final List<Transition> counterExample, final int loopEntry,
 			final PathType pathType) {
 		this.formula = formula;
@@ -61,12 +62,8 @@ public class LTLCounterExample implements IModelCheckingResult, IEvalResult,
 	@Override
 	public Trace getTrace(final StateSpace s) {
 		Trace t = new Trace(s);
-		for (Transition op : pathToCE) {
-			t = t.add(op.getId());
-		}
-		for (Transition op : counterExample) {
-			t = t.add(op.getId());
-		}
+		t = t.addTransitions(pathToCE);
+		t = t.addTransitions(counterExample);
 		return t;
 	}
 
