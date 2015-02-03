@@ -7,6 +7,8 @@ The sourcecode of the current ProB release is located at https://github.com/bend
 
 ## Development:
 
+It is important to either run `gradle deploy` in the kernel project or to use production mode.
+
 The REPL for the server side part can be started using 
 `lein server`
 
