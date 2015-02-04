@@ -21,13 +21,14 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.statespace.Transition;
 import de.prob.statespace.StateSpace;
+import de.prob.statespace.Transition;
 
 public final class LtlCheckingCommand extends EvaluationCommand implements
 		IStateSpaceModifier {
 
 	private static final String VARIABLE_NAME_RESULT = "R";
+	private static final String VARIABLE_NAME_ERRORS = "Errors";
 
 	public static enum PathType {
 		INFINITE, FINITE, REDUCED
@@ -106,8 +107,8 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 			}
 
 			for (PrologTerm pt : BindingGenerator.getList(cpt.getArgument(3))) {
-				pathToCE.add(Transition.createTransitionFromCompoundPrologTerm(s,
-						BindingGenerator.getCompoundTerm(pt, 4)));
+				pathToCE.add(Transition.createTransitionFromCompoundPrologTerm(
+						s, BindingGenerator.getCompoundTerm(pt, 4)));
 			}
 
 			LTLCounterExample res = new LTLCounterExample(ltlFormula, pathToCE,
@@ -126,6 +127,7 @@ public final class LtlCheckingCommand extends EvaluationCommand implements
 		evalElement.printProlog(pto);
 		pto.printNumber(max);
 		pto.printVariable(VARIABLE_NAME_RESULT);
+		pto.printVariable(VARIABLE_NAME_ERRORS);
 		pto.closeTerm();
 	}
 

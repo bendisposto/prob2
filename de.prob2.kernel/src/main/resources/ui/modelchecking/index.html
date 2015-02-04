@@ -20,10 +20,10 @@
                 <div id="sidebar" class="panel panel-default">
                     <div id="stats" class="panel-heading">
                         <!--<div class="pull-right">  -->
-                            <img class="op-btn" id="cc-check" src="/ui/common/img/Consistency.png" alt="mc" title="Start new consistency checking job" width="16" height="16">
-                            <img class="op-btn b-type" id="cbc-inv" src="/ui/common/img/CBCInvariantCheck.png" alt="inv" title="Check for invariant violations" width="16" height="16">
-                            <img class="op-btn b-type" id="cbc-deadlock" src="/ui/common/img/DeadlockCheck.png" alt="dead" title="Check for deadlocks" width="16" height="16">
-                            <img class="op-btn b-type" id="ltl-check" src="/ui/common/img/LTL_Modelcheck.png" alt="ltl" title="Check an LTL Formula" width="16" height="16" style="margin-right: 5px">  Add Job
+                            <img class="op-btn" id="cc-check" src="/ui/common/img/Consistency.png" alt="MC" title="Model Check for Consistency" width="16" height="16">
+                            <img class="op-btn b-type" id="cbc-inv" src="/ui/common/img/CBCInvariantCheck.png" alt="INV" title="Constraint-Based Check of Invariant" width="16" height="16">
+                            <img class="op-btn b-type" id="cbc-deadlock" src="/ui/common/img/DeadlockCheck.png" alt="DLK" title="Constraint-Based Deadlock Check" width="16" height="16">
+                            <img class="op-btn b-type" id="ltl-check" src="/ui/common/img/LTL_Modelcheck.png" alt="LTL" title="Model Check an LTL Formula" width="16" height="16" style="margin-right: 5px">  Add Job
                         <!--</div>-->
                     </div>
                     <div class="panel-body">
@@ -73,7 +73,7 @@
                                     </label>
                                 </div>
                                 <div id="cbc-inv-mode" class="mc-mode">
-                                    <h4>Select events from the list for invariant checking. By default, all events will be selected.</h4>
+                                    <h4>Select events from the list for (inductive) invariant checking. By default, all events will be selected.</h4>
                                     <ul id="cbc-inv-event-list" class="list"></ul>
                                 </div>
                                 <div id="cbc-deadlock-mode" class="mc-mode">
