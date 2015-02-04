@@ -6,17 +6,17 @@ import de.prob.util.StringUtil;
 public class DotEdge {
 
 	public final String id;
-	public final String src;
-	public final String dest;
+	public final String source;
+	public final String target;
 	public final String label;
 	public final String style;
 	public final String color;
 	
-	public DotEdge(final String id, final String src, final String dest,
+	public DotEdge(final String id, final String source, final String target,
 			final String label, String style, String color) {
 		this.id = id;
-		this.src = src;
-		this.dest = dest;
+		this.source = source;
+		this.target = target;
 		this.label = label;
 		this.style = style;
 		this.color = color;
@@ -26,12 +26,12 @@ public class DotEdge {
 		return id;
 	}
 
-	public String getSrc() {
-		return src;
+	public String getSource() {
+		return source;
 	}
 
-	public String getDest() {
-		return dest;
+	public String getTarget() {
+		return target;
 	}
 
 	public String getLabel() {
