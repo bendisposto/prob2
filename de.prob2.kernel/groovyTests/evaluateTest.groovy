@@ -9,7 +9,7 @@ h = h.add(0)
 h = h.add(3)
 assert "2" == h.getCurrentState().getId()
 assert ['1']== s.eval(s[3],["2-1" as ClassicalB]).collect { it.toString() }
-assert ['{}']== s.eval(s[0],["waiting" as ClassicalB]).collect { it.toString() }
+assert ['{}']== s.eval(s[0],["waiting" as ClassicalB]).collect { it.getValue().toString() }
 assert ['{PID2}']== s.eval(s[2],["waiting" as ClassicalB]).collect { it.toString() }
 
 formula = "x : waiting & x = PID2 & y : NAT & y = 1" as ClassicalB
