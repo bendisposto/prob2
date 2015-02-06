@@ -31,12 +31,13 @@ public class EvalResult implements IEvalResult {
 
 	@Override
 	public String toString() {
+		def v = UnicodeTranslator.toUnicode(value)
 		if (solutions.isEmpty()) {
-			return value;
+			return v;
 		}
 		def sols = solutions.collect { "${it.getKey()} = ${it.getValue()}" }
 
-		return value + " (" + UnicodeTranslator.toUnicode(Joiner.on(" & ").join(sols)) + ")";
+		return v + " (" + UnicodeTranslator.toUnicode(Joiner.on(" & ").join(sols)) + ")";
 	}
 
 	/**

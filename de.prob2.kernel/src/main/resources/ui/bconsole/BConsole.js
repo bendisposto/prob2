@@ -1,4 +1,4 @@
-Console = (function() {
+BConsole = (function() {
     var extern = {}
     var controller
     var session = Session()
@@ -18,7 +18,7 @@ Console = (function() {
     }
 
     function onHandle(line) {
-        session.sendCmd("exec", {
+        session.sendCmd("eval", {
             "line" : line,
             "client" : extern.client
         })
@@ -33,8 +33,8 @@ Console = (function() {
 
     $(document).ready(function() {
         controller = $("#console").console({
-            welcomeMessage : 'ProB 2.0 Groovy console',
-            promptLabel : 'ProB> ',
+            welcomeMessage : 'ProB 2.0 B console',
+            promptLabel : 'Eval> ',
             continuedPromptLabel : '----| ',
             commandValidate : onValidate,
             commandHandle : onHandle,
@@ -52,38 +52,51 @@ Console = (function() {
         };
     }
 
-    function groovyResult(output, result) {
+    function result(result) {
         controller.commandResult([ {
-            msg : output,
-            className : "groovy_output"
-        }, {
             msg : result,
-            className : "groovy_result"
-        } ]);
+            className : "result"
+        }]);
     }
 
-    function groovyError(message, trace) {
+    function error(error) {
         controller.commandResult([ {
-            msg : message,
-            className : "groovy_error"
-        }, {
-            msg : trace,
-            className : "groovy_trace"
-        } ]);
-
+            msg : error,
+            className : "error"
+        }]);
     }
 
-    extern.groovyResult = function(data) {
-        groovyResult(data.output, data.result)
+    function disable() {
+        $("body").append("<div class='modal-backdrop disabled'></div>")
+    }
+
+    function enable() {
+        $(".disabled").remove()
+    }
+
+    function modelChange(loaded, name) {
+        $(".model").remove()
+        if (loaded) {
+            $(".jquery-console-welcome").after("<div class='model'><span class='bold'>Model Loaded: </span>"+name+"</div>")
+        } 
+    }
+
+    extern.result = function(data) {
+        result(data.result)
         scrollDown()
     }
-    extern.groovyError = function(data) {
-        groovyError(data.message, data.trace)
+    extern.error = function(data) {
+        error(data.error)
         scrollDown()
     }
     extern.client = ""
     extern.init = session.init
     extern.setPromptHistory = setPromptHistory
+    extern.disable = disable;
+    extern.enable = enable;
+    extern.modelChange = function(data) {
+        modelChange(data.modelloaded === "true", data.name)
+    }
 
     return extern;
 }())

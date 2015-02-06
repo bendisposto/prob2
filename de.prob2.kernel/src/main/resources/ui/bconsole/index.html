@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>ProB B Console</title>
+<meta name="description" content="">
+<meta name="author" content="Joy Clark">
+
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="/ui/common/bootstrap.css">
+<link rel="stylesheet" href="/ui/bconsole/console_base.css">
+<link rel="stylesheet" href="/ui/bconsole/console.css">
+
+</head>
+<body>
+	<div id="console" class="console"></div>
+</body>
+<script type="text/javascript" src="/ui/libs/jquery.js"></script>
+<script type="text/javascript" src="/ui/common/Session.js"></script>
+<script type="text/javascript" src="/ui/bconsole/jquery.console.prob.js"></script>
+<script type="text/javascript" src="/ui/bconsole/BConsole.js"></script>
+
+<script>
+BConsole.client = "{{clientid}}";
+BConsole.init("{{clientid}}")
+</script>
+</html>
