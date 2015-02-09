@@ -16,33 +16,40 @@ import de.prob.cli.CliVersionNumber
 import de.prob.cli.ProBInstance
 import de.prob.exception.ProBError
 import de.prob.model.classicalb.ClassicalBModel
-import de.prob.model.eventb.Context
 import de.prob.model.eventb.EventBModel
 import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractModel
 import de.prob.model.representation.CSPModel
-import de.prob.model.representation.Constant
-import de.prob.model.representation.Invariant
-import de.prob.model.representation.Machine
-import de.prob.model.representation.Variable
 import de.prob.prolog.output.PrologTermOutput
+import de.prob.statespace.StateSpace
 
 
 public class Api {
 	def static Closure EMPTY = {AbstractModel model -> }
-	def static Closure DEFAULT = {AbstractModel model ->
-		model.getChildrenOfType(Machine.class).each { Machine machine ->
-			machine.getChildrenOfType(Variable.class).each { Variable var ->
-				var.subscribe(model.getStateSpace())
-			}
-			machine.getChildrenOfType(Invariant.class).each { Invariant inv ->
-				inv.subscribe(model.getStateSpace())
+	def static Closure EVENTB =  {EventBModel model ->
+		def vars = new HashSet<String>()
+		def s = model as StateSpace
+		model.getMachines().reverse().each {
+			it.getVariables().each {
+				if (!vars.contains(it.getName())) {
+					it.subscribe(s)
+				}
+				vars << it.getName()
 			}
 		}
-		model.getChildrenOfType(Context.class).each { Context context ->
-			context.getChildrenOfType(Constant.class).each { Constant constant ->
-				constant.subscribe(model.getStateSpace())
+		def cs = new HashSet<String>()
+		model.getContexts().reverse().each {
+			it.getConstants().each {
+				if (!cs.contains(it.getName())) {
+					it.subscribe(s)
+				}
+				cs << it.getName()
 			}
+		}
+	}
+	def static Closure B = {ClassicalBModel model ->
+		model.getMainMachine().getVariables().each {
+			it.subscribe(model as StateSpace)
 		}
 	}
 
@@ -79,9 +86,9 @@ public class Api {
 		this.downloader = downloader;
 	}
 
-	public Closure getSubscribeClosure() {
+	public Closure getSubscribeClosure(closure) {
 		if (loadVariablesByDefault) {
-			return DEFAULT
+			return closure
 		}
 		EMPTY
 	}
@@ -95,7 +102,7 @@ public class Api {
 		x.shutdown();
 	}
 
-	public EventBModel eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) {
+	public EventBModel eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(EVENTB)) {
 		def fileName = file;
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (fileName.endsWith(".eventb")) {
@@ -104,7 +111,7 @@ public class Api {
 		return factory.load(fileName, prefs, loadClosure);
 	}
 
-	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) {
+	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(EVENTB)) {
 		if (!zipFile.endsWith(".zip")) {
 			throw new IllegalArgumentException("$zipFile is not a zip file")
 		}
@@ -137,14 +144,14 @@ public class Api {
 	 * @throws IOException
 	 */
 	public ClassicalBModel b_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(B)) throws IOException, BException {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 		return bFactory.load(file, prefs, loadClosure);
 	}
 
 	public ClassicalBModel tla_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure()) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(B)) throws IOException, BException {
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
 		return tlaFactory.load(file, prefs, loadClosure);
 	}
