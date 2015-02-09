@@ -39,7 +39,6 @@ import de.prob.model.eventb.EventBMachine;
 import de.prob.model.eventb.EventBVariable;
 import de.prob.model.eventb.EventParameter;
 import de.prob.model.eventb.Witness;
-import de.prob.model.representation.Invariant;
 
 public class EventBMachineTranslator {
 
@@ -113,9 +112,8 @@ public class EventBMachineTranslator {
 		List<PPredicate> invs = new ArrayList<PPredicate>();
 		List<PPredicate> thms = new ArrayList<PPredicate>();
 
-		List<Invariant> allInvs = machine.getChildrenOfType(Invariant.class);
-		for (Invariant invariant : allInvs) {
-			EventBInvariant ebInv = (EventBInvariant) invariant;
+		List<EventBInvariant> allInvs = machine.getAllInvariants();
+		for (EventBInvariant ebInv : allInvs) {
 			PPredicate ppred = (PPredicate) ((EventB) ebInv.getPredicate())
 					.getAst();
 			nodeInfos.put(ppred, new Tuple2<String, String>(machine.getName(),
@@ -185,8 +183,7 @@ public class EventBMachineTranslator {
 
 			List<PWitness> witnesses = new ArrayList<PWitness>();
 			for (Witness witness : e.getWitnesses()) {
-				PPredicate ppred = (PPredicate) (witness.getPredicate()
-						.getAst());
+				PPredicate ppred = (PPredicate) witness.getPredicate().getAst();
 				nodeInfos.put(
 						ppred,
 						new Tuple2<String, String>(machine.getName(), witness

@@ -88,7 +88,7 @@ public class ContextTranslator {
 		List<PPredicate> axioms = new ArrayList<PPredicate>();
 		List<PPredicate> thms = new ArrayList<PPredicate>();
 
-		for (Axiom axiom : context.getChildrenOfType(Axiom.class)) {
+		for (Axiom axiom : context.getAllAxioms()) {
 			EventBAxiom ebAx = (EventBAxiom) axiom;
 			PPredicate ppred = (PPredicate) ((EventB) ebAx.getPredicate())
 					.getAst();

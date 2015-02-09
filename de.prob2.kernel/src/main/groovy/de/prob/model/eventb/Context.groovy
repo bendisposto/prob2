@@ -13,6 +13,7 @@ public class Context extends AbstractElement {
 	def ModelElementList<Context> Extends
 	def ModelElementList<BSet> sets
 	def ModelElementList<EventBAxiom> axioms
+	def ModelElementList<EventBAxiom> allAxioms // includes inherited
 	def ModelElementList<EventBConstant> constants
 	private final String directoryPath;
 
@@ -41,9 +42,10 @@ public class Context extends AbstractElement {
 	}
 
 	public void addAxioms(final ModelElementList<EventBAxiom> axioms, ModelElementList<EventBAxiom> inherited) {
+		put(Axiom.class, axioms);
 		inherited.addAll(axioms)
-		put(Axiom.class, inherited);
 		this.axioms = axioms
+		this.allAxioms = inherited
 	}
 
 	public void addProofs(final ModelElementList<ProofObligation> proofs) {

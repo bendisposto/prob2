@@ -1,6 +1,5 @@
 package de.prob.model.eventb
 
-import de.prob.model.representation.Axiom
 import de.prob.model.representation.BSet
 
 class ContextModifier {
@@ -43,8 +42,7 @@ class ContextModifier {
 			context.constants.remove(it)
 		}
 		def b = bs.inject(true, {x,y -> x && y})
-		def c = context.axioms.remove(block.typingAxiom)
-		context.getChildrenOfType(Axiom.class).remove(block.typingAxiom)
+		def c = removeAxiom(block.typingAxiom)
 		return a && b && c
 	}
 
@@ -96,7 +94,7 @@ class ContextModifier {
 	def EventBAxiom addAxiom(String predicate) {
 		def axiom = new EventBAxiom("gen-axiom-${uuid.toString()}-${ctr++}", predicate, false, Collections.emptySet())
 		context.axioms << axiom
-		context.getChildrenOfType(Axiom.class) << axiom
+		context.allAxioms << axiom
 		axiom
 	}
 
@@ -106,7 +104,7 @@ class ContextModifier {
 	 * @return whether or not the removal was successful
 	 */
 	def boolean removeAxiom(EventBAxiom axiom) {
-		def a = context.getChildrenOfType(Axiom.class).remove(axiom)
+		def a = context.allAxioms.remove(axiom)
 		def b = context.axioms.remove(axiom)
 		if(a && b) {
 			context.proofs.clear()

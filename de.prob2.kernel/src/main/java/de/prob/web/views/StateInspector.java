@@ -20,6 +20,7 @@ import de.prob.animator.domainobjects.EvaluationErrorResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.animator.domainobjects.IdentifierNotInitialised;
+import de.prob.model.eventb.EventBMachine;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractFormulaElement;
 import de.prob.model.representation.AbstractModel;
@@ -232,6 +233,8 @@ public class StateInspector extends AbstractSession implements
 				formulasForEvaluating.add(formulaElement.getFormula());
 			}
 			return;
+		} else if (e instanceof EventBMachine) {
+
 		}
 		Map<Class<? extends AbstractElement>, ModelElementList<? extends AbstractElement>> children = e
 				.getChildren();
