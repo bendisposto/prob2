@@ -52,12 +52,6 @@ class StateSpaceTest extends Specification {
 			// TODO Auto-generated method stub
 			return null;
 		}
-
-		@Override
-		public void subscribeFormulasOfInterest() {
-			// TODO Auto-generated method stub
-
-		}
 	}
 
 
