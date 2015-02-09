@@ -1,7 +1,5 @@
 package de.prob.model.classicalb;
 
-import groovy.lang.Closure;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,11 +15,9 @@ import de.prob.model.eventb.BStateSchema;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph;
-import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.StateSchema;
-import de.prob.model.representation.Variable;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -101,26 +97,5 @@ public class ClassicalBModel extends AbstractModel {
 	@Override
 	public FormalismType getFormalismType() {
 		return FormalismType.B;
-	}
-
-	@Override
-	public void subscribeFormulasOfInterest() {
-		// TODO: Remove this method!
-		Closure subscribe = getClosure();
-		if (subscribe != null) {
-			subscribe.call(this);
-			return;
-		}
-
-		ModelElementList<Machine> childrenOfType = getChildrenOfType(Machine.class);
-		for (Machine machine : childrenOfType) {
-			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
-				variable.subscribe(getStateSpace());
-			}
-			for (Invariant invariant : machine
-					.getChildrenOfType(Invariant.class)) {
-				invariant.subscribe(getStateSpace());
-			}
-		}
 	}
 }

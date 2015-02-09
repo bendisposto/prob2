@@ -10,13 +10,10 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.model.eventb.theory.Theory;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
-import de.prob.model.representation.Constant;
 import de.prob.model.representation.DependencyGraph.ERefType;
-import de.prob.model.representation.Invariant;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.model.representation.StateSchema;
-import de.prob.model.representation.Variable;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -53,7 +50,7 @@ public class EventBModel extends AbstractModel {
 		addMachines(machines);
 		addContexts(contexts);
 		extractModelDir(modelFile, getMainComponentName());
-		this.freeze();
+		freeze();
 	}
 
 	public void setMainComponent(final AbstractElement mainComponent) {
@@ -106,24 +103,6 @@ public class EventBModel extends AbstractModel {
 	@Override
 	public FormalismType getFormalismType() {
 		return FormalismType.B;
-	}
-
-	@Override
-	public void subscribeFormulasOfInterest() {
-		for (Machine machine : getChildrenOfType(Machine.class)) {
-			for (Variable variable : machine.getChildrenOfType(Variable.class)) {
-				variable.subscribe(getStateSpace());
-			}
-			for (Invariant invariant : machine
-					.getChildrenOfType(Invariant.class)) {
-				invariant.subscribe(getStateSpace());
-			}
-		}
-		for (Context c : getChildrenOfType(Context.class)) {
-			for (Constant con : c.getChildrenOfType(Constant.class)) {
-				con.subscribe(getStateSpace());
-			}
-		}
 	}
 
 	public ModelElementList<EventBMachine> getMachines() {

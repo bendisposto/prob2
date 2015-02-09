@@ -64,7 +64,4 @@ public class CSPModel extends AbstractModel {
 		return FormalismType.CSP;
 	}
 
-	@Override
-	public void subscribeFormulasOfInterest() {
-	}
 }
