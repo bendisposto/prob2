@@ -34,7 +34,7 @@ public class ModelModifier {
 			model.getStateSpace().execute(cmd)
 			prefs = cmd.getPreferences()
 			Api api = Main.getInjector().getInstance(Api.class)
-			loader = api.getSubscribeClosure()
+			loader = api.getSubscribeClosure(Api.EVENTB)
 		}
 	}
 
