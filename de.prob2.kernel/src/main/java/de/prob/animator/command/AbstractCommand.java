@@ -3,6 +3,7 @@ package de.prob.animator.command;
 import java.util.Collections;
 import java.util.List;
 
+import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -70,5 +71,16 @@ public abstract class AbstractCommand {
 
 	public boolean isCompleted() {
 		return true;
+	}
+
+	public void processErrorResult(
+			ISimplifiedROMap<String, PrologTerm> bindings, String errormessages) {
+		if (bindings == null) {
+			throw new ProBError("Prolog said no. Errormessages: "
+					+ errormessages);
+		} else {
+			processResult(bindings);
+			throw new ProBError("ProB reported Errors: " + errormessages);
+		}
 	}
 }

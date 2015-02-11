@@ -47,12 +47,14 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public synchronized void execute(final AbstractCommand command) {
+
 		do {
 			if (cli == null) {
 				logger.error("Probcli is missing. Try \"upgrade\".");
 				throw new CliError("no cli found");
 			}
 			ISimplifiedROMap<String, PrologTerm> bindings = null;
+			String errormessages = null;
 			try {
 				if (DEBUG && !command.getSubcommands().isEmpty()) {
 					List<AbstractCommand> cmds = command.getSubcommands();
@@ -61,19 +63,19 @@ class AnimatorImpl implements IAnimator {
 					}
 				} else {
 					bindings = processor.sendCommand(command);
-					if (bindings == null) {
-						logger.error("Prolog answered with 'no.'");
-					}
-					command.processResult(bindings);
 				}
-			} 
-			finally {
-				getErrors();
+			} finally {
+				errormessages = getErrors();
 			}
+			if (errormessages == null && bindings != null)
+				command.processResult(bindings);
+			else
+				command.processErrorResult(bindings, errormessages);
+			
 		} while (!command.isCompleted());
 	}
 
-	private synchronized void getErrors() {
+	private synchronized String getErrors() {
 		ISimplifiedROMap<String, PrologTerm> errorbindings;
 		List<String> errors;
 		errorbindings = processor.sendCommand(getErrors);
@@ -82,8 +84,9 @@ class AnimatorImpl implements IAnimator {
 		if (errors != null && !errors.isEmpty()) {
 			String msg = Joiner.on('\n').join(errors);
 			logger.error("ProB raised exception(s):\n", msg);
-			throw new ProBError(msg);
+			return msg;
 		}
+		return null;
 	}
 
 	@Override
