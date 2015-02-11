@@ -21,38 +21,9 @@ import de.prob.model.eventb.translate.EventBModelTranslator
 import de.prob.model.representation.AbstractModel
 import de.prob.model.representation.CSPModel
 import de.prob.prolog.output.PrologTermOutput
-import de.prob.statespace.StateSpace
 
 
 public class Api {
-	def static Closure EMPTY = {AbstractModel model -> }
-	def static Closure EVENTB =  {EventBModel model ->
-		def vars = new HashSet<String>()
-		def s = model as StateSpace
-		model.getMachines().reverse().each {
-			it.getVariables().each {
-				if (!vars.contains(it.getName())) {
-					it.subscribe(s)
-				}
-				vars << it.getName()
-			}
-		}
-		def cs = new HashSet<String>()
-		model.getContexts().reverse().each {
-			it.getConstants().each {
-				if (!cs.contains(it.getName())) {
-					it.subscribe(s)
-				}
-				cs << it.getName()
-			}
-		}
-	}
-	def static Closure B = {ClassicalBModel model ->
-		model.getMainMachine().getVariables().each {
-			it.subscribe(model as StateSpace)
-		}
-	}
-
 
 	Logger logger = LoggerFactory.getLogger(Api.class);
 
@@ -90,7 +61,7 @@ public class Api {
 		if (loadVariablesByDefault) {
 			return closure
 		}
-		EMPTY
+		LoadClosures.EMPTY
 	}
 
 	/**
@@ -102,16 +73,16 @@ public class Api {
 		x.shutdown();
 	}
 
-	public EventBModel eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(EVENTB)) {
+	public EventBModel eventb_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.EVENTB)) {
 		def fileName = file;
 		EventBFactory factory = modelFactoryProvider.getEventBFactory();
 		if (fileName.endsWith(".eventb")) {
-			return factory.loadModelFromEventBFile(file, prefs, EMPTY)
+			return factory.loadModelFromEventBFile(file, prefs, loadClosure)
 		}
 		return factory.load(fileName, prefs, loadClosure);
 	}
 
-	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(EVENTB)) {
+	public EventBModel eventb_load(final String zipFile, final String componentName, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.EVENTB)) {
 		if (!zipFile.endsWith(".zip")) {
 			throw new IllegalArgumentException("$zipFile is not a zip file")
 		}
@@ -144,14 +115,14 @@ public class Api {
 	 * @throws IOException
 	 */
 	public ClassicalBModel b_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(B)) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.B)) throws IOException, BException {
 		ClassicalBFactory bFactory = modelFactoryProvider
 				.getClassicalBFactory();
 		return bFactory.load(file, prefs, loadClosure);
 	}
 
 	public ClassicalBModel tla_load(final String file,
-			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(B)) throws IOException, BException {
+			final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=getSubscribeClosure(LoadClosures.B)) throws IOException, BException {
 		TLAFactory tlaFactory = modelFactoryProvider.getTLAFactory();
 		return tlaFactory.load(file, prefs, loadClosure);
 	}
@@ -165,7 +136,7 @@ public class Api {
 	 * @return {@link CSPModel} that has been loaded from file
 	 * @throws Exception
 	 */
-	public CSPModel csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=EMPTY)
+	public CSPModel csp_load(final String file, final Map<String, String> prefs=Collections.emptyMap(), Closure loadClosure=LoadClosures.EMPTY)
 	throws Exception {
 		CSPFactory cspFactory = modelFactoryProvider.getCspFactory();
 		CSPModel m = null;

@@ -1,16 +1,21 @@
 package de.prob.scripting;
 
+import groovy.lang.Closure;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
+import de.be4.classicalb.core.parser.exceptions.BException;
 import de.prob.Main;
 import de.prob.animator.IAnimator;
 import de.prob.animator.command.GetCurrentPreferencesCommand;
 import de.prob.model.representation.AbstractModel;
 
-public abstract class ModelFactory {
+public abstract class ModelFactory<T extends AbstractModel> {
 
 	/**
 	 * Name of file in which the preferences are saved. Currently
@@ -18,11 +23,44 @@ public abstract class ModelFactory {
 	 */
 	public final String PREFERENCE_FILE_NAME = "prob2preferences";
 	private final FileHandler handler;
+	protected final Closure<Object> defaultClosure;
+	protected final Provider<T> modelCreator;
 
 	@Inject
-	public ModelFactory(final FileHandler handler) {
+	public ModelFactory(final Provider<T> modelCreator,
+			final FileHandler handler, final Closure<Object> defaultClosure) {
+		this.modelCreator = modelCreator;
 		this.handler = handler;
+		this.defaultClosure = defaultClosure;
 	}
+
+	public T load(final String fileName) throws IOException,
+			ModelTranslationError {
+		return load(fileName, new HashMap<String, String>());
+	}
+
+	public T load(final String fileName, final Map<String, String> preferences)
+			throws IOException, ModelTranslationError {
+		return load(fileName, preferences, defaultClosure);
+	}
+
+	/**
+	 * This method loads a machine from file, parses all machines, starts the
+	 * animation, and returns the created model
+	 * 
+	 * @param fileName
+	 *            String path to the machine to be loaded.
+	 * @param preferences
+	 *            map of ProB preferences
+	 * @param loader
+	 *            actions to take place after the loading process
+	 * @return model generated from the specified file.
+	 * @throws IOException
+	 * @throws BException
+	 * @throws ModelTranslationError
+	 */
+	public abstract T load(String fileName, Map<String, String> preferences,
+			Closure<Object> loader) throws IOException, ModelTranslationError;
 
 	/**
 	 * Finds preferences that are specified globally, locally, and for this

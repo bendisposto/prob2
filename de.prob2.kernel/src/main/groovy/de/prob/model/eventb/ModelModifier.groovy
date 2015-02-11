@@ -9,6 +9,7 @@ import de.prob.model.representation.ModelElementList
 import de.prob.model.representation.DependencyGraph.ERefType
 import de.prob.scripting.Api
 import de.prob.scripting.EventBFactory
+import de.prob.scripting.LoadClosures
 
 public class ModelModifier {
 
@@ -34,7 +35,7 @@ public class ModelModifier {
 			model.getStateSpace().execute(cmd)
 			prefs = cmd.getPreferences()
 			Api api = Main.getInjector().getInstance(Api.class)
-			loader = api.getSubscribeClosure(Api.EVENTB)
+			loader = api.getSubscribeClosure(LoadClosures.EVENTB)
 		}
 	}
 
@@ -45,7 +46,7 @@ public class ModelModifier {
 	 */
 	public static EventBModel deepCopy(EventBModel model) {
 		EventBFactory factory = Main.getInjector().getInstance(EventBFactory.class)
-		EventBModel newModel = factory.modelProvider.get()
+		EventBModel newModel = factory.modelCreator.get()
 
 		def mainComp = deepCopy(newModel, model.getMainComponent())
 		newModel.addTheories(new ModelElementList<Theory>(model.getChildrenOfType(Theory.class)))
