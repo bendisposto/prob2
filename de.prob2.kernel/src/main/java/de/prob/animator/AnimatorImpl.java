@@ -61,9 +61,13 @@ class AnimatorImpl implements IAnimator {
 					}
 				} else {
 					bindings = processor.sendCommand(command);
+					if (bindings == null) {
+						logger.error("Prolog answered with 'no.'");
+					}
 					command.processResult(bindings);
 				}
-			} finally {
+			} 
+			finally {
 				getErrors();
 			}
 		} while (!command.isCompleted());
