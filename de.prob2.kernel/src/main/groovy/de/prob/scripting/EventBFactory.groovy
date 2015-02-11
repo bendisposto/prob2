@@ -28,9 +28,9 @@ public class EventBFactory extends ModelFactory<EventBModel> {
 		super(modelCreator, fileHandler, LoadClosures.getEVENTB());
 	}
 
-
+	@Override
 	public EventBModel load(final String modelPath, final Map<String, String> prefs,
-			final Closure loader) throws IOException, ModelTranslationError {
+			final Closure<Object> loader) throws IOException, ModelTranslationError {
 		EventBModel model = modelCreator.get();
 
 		new EventBDatabaseTranslator(model, getValidFileName(modelPath));
