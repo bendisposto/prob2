@@ -15,7 +15,7 @@ import de.prob.statespace.Transition;
 
 public abstract class AbstractDotDiagramCmd extends AbstractCommand {
 
-	public final String SPACE = "StateSpace";
+	protected final String SPACE = "StateSpace";
 	private final Map<String, DotNode> nodes = new HashMap<String, DotNode>();
 	private final Map<String, DotEdge> edges = new HashMap<String, DotEdge>();
 

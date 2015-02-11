@@ -9,7 +9,6 @@ import de.prob.animator.IAnimator
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.model.representation.AbstractElement
 import de.prob.model.representation.AbstractModel
-import de.prob.model.representation.StateSchema
 
 
 //TODO: Retest??
@@ -33,12 +32,6 @@ class StateSpaceTest extends Specification {
 	def class Model extends AbstractModel {
 		def FormalismType getFormalismType() {
 			return FormalismType.B
-		}
-
-		@Override
-		public StateSchema getStateSchema() {
-			// TODO Auto-generated method stub
-			return null;
 		}
 
 		@Override

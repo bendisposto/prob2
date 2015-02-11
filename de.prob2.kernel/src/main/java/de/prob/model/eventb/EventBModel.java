@@ -13,25 +13,18 @@ import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph.ERefType;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
-import de.prob.model.representation.StateSchema;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
 public class EventBModel extends AbstractModel {
 
 	private AbstractElement mainComponent;
-	private final BStateSchema schema = new BStateSchema();
 	private final ModelElementList<EventBMachine> machines = new ModelElementList<EventBMachine>();
 	private final ModelElementList<Context> contexts = new ModelElementList<Context>();
 
 	@Inject
 	public EventBModel(final Provider<StateSpace> stateSpaceProvider) {
 		super(stateSpaceProvider);
-	}
-
-	@Override
-	public StateSchema getStateSchema() {
-		return schema;
 	}
 
 	public void addMachines(final ModelElementList<EventBMachine> collection) {
