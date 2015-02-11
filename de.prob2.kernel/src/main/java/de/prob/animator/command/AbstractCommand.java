@@ -43,6 +43,14 @@ public abstract class AbstractCommand {
 	 * </p>
 	 * 
 	 * <p>
+	 * This will be called if the Prolog query was successful and no error
+	 * messages were logged during the execution of the query. If the query was
+	 * not successful, or if there were errors
+	 * {@link AbstractCommand#processErrorResult(ISimplifiedROMap, String)} will
+	 * be called.
+	 * </p>
+	 * 
+	 * <p>
 	 * Note: This method is allowed to throw {@link ResultParserException} if
 	 * the answer from Prolog does not match the expectation. The exception is a
 	 * subclass of RuntimeException and it should always indicate a bug (or
@@ -73,11 +81,39 @@ public abstract class AbstractCommand {
 		return true;
 	}
 
+	/**
+	 * This code is called in three cases:
+	 * <ol>
+	 * <li>The Prolog query was unsuccessful (answered no) and there were no
+	 * errors logged.</li>
+	 * <li>The Prolog query was unsuccessful (answered no) and errors were found
+	 * </li>
+	 * <li>The Prolog query was successful (and bindings have been generated),
+	 * but errors were also found</li>
+	 * </ol>
+	 * 
+	 * Default behavior for error handling is implemented in
+	 * {@link AbstractCommand}, but if a developer wants to implement special
+	 * behavior, he/she needs to overwrite this method.
+	 * 
+	 * @param bindings
+	 *            is <code>null</code> if Prolog answered no or a list of
+	 *            bindings if the execution of the Prolog query was successful.
+	 * @param errormessages
+	 *            contains a {@link String} listing the error messages or
+	 *            <code>null</code> if no error messages were logged.
+	 */
 	public void processErrorResult(
-			ISimplifiedROMap<String, PrologTerm> bindings, String errormessages) {
+			final ISimplifiedROMap<String, PrologTerm> bindings,
+			final String errormessages) {
 		if (bindings == null) {
-			throw new ProBError("Prolog said no. Errormessages: "
-					+ errormessages);
+			String message = "Prolog said no.";
+			if (errormessages != null) {
+				message += " Error messages were: " + errormessages;
+			} else {
+				message += " No error messages were produced.";
+			}
+			throw new ProBError(message);
 		} else {
 			processResult(bindings);
 			throw new ProBError("ProB reported Errors: " + errormessages);
