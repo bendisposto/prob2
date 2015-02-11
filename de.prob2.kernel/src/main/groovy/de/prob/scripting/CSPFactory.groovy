@@ -11,19 +11,17 @@ import de.prob.animator.command.SetPreferenceCommand
 import de.prob.animator.command.StartAnimationCommand
 import de.prob.model.representation.CSPModel
 
-class CSPFactory extends ModelFactory {
+class CSPFactory extends ModelFactory<CSPModel> {
 
-	private final Provider<CSPModel> modelCreator;
 
 	@Inject
-	public CSPFactory(final Provider<CSPModel> modelProvider, FileHandler fileHandler) {
-		super(fileHandler)
-		this.modelCreator = modelProvider
+	public CSPFactory(final Provider<CSPModel> modelCreator, FileHandler fileHandler) {
+		super(modelCreator, fileHandler, LoadClosures.EMPTY)
 	}
 
-	public CSPModel load(final String modelPath, Map<String, String> prefs, Closure loadClosure) {
+	@Override
+	public CSPModel load(final String modelPath, Map<String, String> prefs, Closure<Object> loadClosure) throws IOException, ModelTranslationError {
 		CSPModel cspModel = modelCreator.get()
-
 		File f = new File(modelPath)
 		cspModel.init(readFile(f),f)
 		startAnimation(cspModel, f, getPreferences(cspModel, prefs))

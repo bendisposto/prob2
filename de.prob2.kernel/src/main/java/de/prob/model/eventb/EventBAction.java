@@ -38,13 +38,14 @@ public class EventBAction extends Action {
 			return true;
 		}
 		if (that instanceof EventBAction) {
-			return this.getCode().equals(((EventBAction) that).getCode());
+			return getCode().getCode().equals(
+					((EventBAction) that).getCode().getCode());
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return this.getCode().hashCode();
+		return getCode().hashCode();
 	}
 }

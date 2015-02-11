@@ -10,14 +10,13 @@ import com.google.inject.Inject;
 import de.prob.animator.command.GetDottyForSigMergeCmd;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
-import de.prob.statespace.IModelChangedListener;
 import de.prob.statespace.StateSpace;
 import de.prob.statespace.Trace;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
 public class SignatureMerge extends AbstractSession implements
-		IModelChangedListener, IAnimationChangeListener {
+		IAnimationChangeListener {
 
 	StateSpace stateSpace;
 
@@ -31,17 +30,10 @@ public class SignatureMerge extends AbstractSession implements
 		GetDottyForSigMergeCmd cmd = new GetDottyForSigMergeCmd(
 				new ArrayList<String>());
 		stateSpace.execute(cmd);
+		String content = cmd.getContent();
 		Map<String, String> wrap = WebUtils.wrap("cmd", "Dotty.draw",
 				"content", cmd.getContent());
 		submit(wrap);
-	}
-
-	@Override
-	public void modelChanged(final StateSpace s) {
-		this.stateSpace = s;
-		if (!(stateSpace == null)) {
-			draw();
-		}
 	}
 
 	@Override
@@ -62,6 +54,7 @@ public class SignatureMerge extends AbstractSession implements
 	@Override
 	public void traceChange(final Trace currentTrace,
 			final boolean currentAnimationChanged) {
+		stateSpace = currentTrace == null ? null : currentTrace.getStateSpace();
 		if (!(stateSpace == null)) {
 			draw();
 		}

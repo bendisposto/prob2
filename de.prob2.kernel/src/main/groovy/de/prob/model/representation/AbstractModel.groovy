@@ -77,8 +77,6 @@ public abstract class AbstractModel extends AbstractElement {
 		+ " found.");
 	}
 
-	public abstract StateSchema getStateSchema();
-
 	public abstract AbstractElement getMainComponent();
 
 	public abstract IEvalElement parseFormula(String formula);

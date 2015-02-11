@@ -44,8 +44,8 @@ public class EventParameter extends AbstractFormulaElement {
 			return true;
 		}
 		if (that instanceof EventParameter
-				&& this.getExpression().equals(
-						((EventParameter) that).getExpression())) {
+				&& getExpression().getCode().equals(
+						((EventParameter) that).getExpression().getCode())) {
 			return true;
 		}
 		return false;
@@ -53,7 +53,7 @@ public class EventParameter extends AbstractFormulaElement {
 
 	@Override
 	public int hashCode() {
-		return getExpression().hashCode();
+		return getExpression().getCode().hashCode();
 	}
 
 }

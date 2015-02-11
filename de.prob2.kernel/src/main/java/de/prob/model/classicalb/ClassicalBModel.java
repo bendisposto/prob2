@@ -11,13 +11,11 @@ import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.animator.domainobjects.ClassicalB;
 import de.prob.animator.domainobjects.IEvalElement;
-import de.prob.model.eventb.BStateSchema;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractModel;
 import de.prob.model.representation.DependencyGraph;
 import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
-import de.prob.model.representation.StateSchema;
 import de.prob.statespace.FormalismType;
 import de.prob.statespace.StateSpace;
 
@@ -25,7 +23,6 @@ public class ClassicalBModel extends AbstractModel {
 
 	private ClassicalBMachine mainMachine = null;
 	private final HashSet<String> done = new HashSet<String>();
-	private final StateSchema schema = new BStateSchema();
 
 	@Inject
 	public ClassicalBModel(final Provider<StateSpace> ssProvider) {
@@ -77,11 +74,6 @@ public class ClassicalBModel extends AbstractModel {
 
 	public ClassicalBMachine getMainMachine() {
 		return mainMachine;
-	}
-
-	@Override
-	public StateSchema getStateSchema() {
-		return schema;
 	}
 
 	@Override

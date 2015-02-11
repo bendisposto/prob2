@@ -1,7 +1,5 @@
 package de.prob.animator.domainobjects;
 
-import com.google.common.base.Objects;
-
 import de.prob.animator.command.EvaluateAndTranslateCommand;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.model.representation.IFormulaUUID;
@@ -51,23 +49,6 @@ public class TranslateFormula implements IEvalElement {
 	@Override
 	public EvaluationCommand getCommand(final State stateid) {
 		return new EvaluateAndTranslateCommand(this, stateid.getId());
-	}
-
-	@Override
-	public boolean equals(final Object that) {
-		if (this == that) {
-			return true;
-		}
-		if (that instanceof TranslateFormula) {
-			return this.getFormula().equals(
-					((TranslateFormula) that).getFormula());
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(this.getFormula(), this.uuid);
 	}
 
 	@Override

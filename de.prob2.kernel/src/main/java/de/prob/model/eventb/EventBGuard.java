@@ -42,15 +42,15 @@ public class EventBGuard extends Guard {
 			return true;
 		}
 		if (that instanceof EventBGuard) {
-			return this.theorem == (((EventBGuard) that).isTheorem())
-					&& this.getPredicate().equals(
-							((EventBGuard) that).getPredicate());
+			return this.theorem == ((EventBGuard) that).isTheorem()
+					&& getPredicate().getCode().equals(
+							((EventBGuard) that).getPredicate().getCode());
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.theorem, this.getPredicate());
+		return Objects.hashCode(this.theorem, getPredicate().getCode());
 	}
 }
