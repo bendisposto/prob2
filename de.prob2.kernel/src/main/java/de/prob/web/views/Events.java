@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import de.prob.animator.domainobjects.StateError;
 import de.prob.annotations.PublicSession;
@@ -30,16 +29,14 @@ import de.prob.model.representation.Machine;
 import de.prob.model.representation.ModelElementList;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.State;
 import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
-import de.prob.web.AbstractSession;
+import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
 @PublicSession
-@Singleton
-public class Events extends AbstractSession implements IAnimationChangeListener {
+public class Events extends AbstractAnimationBasedView {
 
 	Logger logger = LoggerFactory.getLogger(Events.class);
 	Trace currentTrace;
@@ -56,10 +53,12 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	@Inject
 	public Events(final AnimationSelector selector,
 			final ScriptEngineProvider sep) {
+		super(selector);
 		this.selector = selector;
 		groovy = sep.get();
-		selector.registerAnimationChangeListener(this);
 		incrementalUpdate = false;
+
+		animationsRegistry.registerAnimationChangeListener(this);
 	}
 
 	// used in JS
@@ -92,60 +91,57 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	}
 
 	@Override
-	public void traceChange(final Trace trace,
-			final boolean currentAnimationChanged) {
-		if (currentAnimationChanged) {
-			if (trace == null) {
-				currentTrace = null;
-				currentModel = null;
-				opNames = new ArrayList<String>();
-				if (sorter instanceof ModelOrder) {
-					sorter = new ModelOrder(opNames);
-				}
-				Map<String, String> wrap = WebUtils.wrap("cmd",
-						"Events.newTrace", "ops", WebUtils.toJson(opNames),
-						"canGoBack", false, "canGoForward", false);
-				submit(wrap);
-				return;
+	public void performTraceChange(final Trace trace) {
+		if (trace == null) {
+			currentTrace = null;
+			currentModel = null;
+			opNames = new ArrayList<String>();
+			if (sorter instanceof ModelOrder) {
+				sorter = new ModelOrder(opNames);
 			}
-
-			if (trace.getModel() != currentModel) {
-				updateModel(trace);
-			}
-			currentTrace = trace;
-			Set<Transition> ops = currentTrace.getStateSpace()
-					.evaluateTransitions(trace.getNextTransitions());
-			events = new ArrayList<Operation>(ops.size());
-			Set<String> notEnabled = new HashSet<String>(opNames);
-			Set<String> tWT = currentTrace.getCurrentState()
-					.getTransitionsWithTimeout();
-			for (Transition opInfo : ops) {
-				String name = extractPrettyName(opInfo.getName());
-				notEnabled.remove(name);
-				Operation o = new Operation(opInfo.getId(), name,
-						opInfo.getParams(), true, tWT.contains(name));
-				events.add(o);
-			}
-			for (String s : notEnabled) {
-				if (!s.equals("INITIALISATION")) {
-					events.add(new Operation(s, s, opToParams.get(s), false,
-							tWT.contains(s)));
-				}
-			}
-			try {
-				Collections.sort(events, sorter);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			List<Error> errors = extractErrors(currentTrace.getCurrentState());
-			String json = WebUtils.toJson(applyFilter(filter));
-			String stringErrors = WebUtils.toJson(errors);
 			Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
-					"ops", json, "canGoBack", currentTrace.canGoBack(),
-					"canGoForward", currentTrace.canGoForward(), "errors",
-					stringErrors);
+					"ops", WebUtils.toJson(opNames), "canGoBack", false,
+					"canGoForward", false);
 			submit(wrap);
+			return;
 		}
+
+		if (trace.getModel() != currentModel) {
+			updateModel(trace);
+		}
+		currentTrace = trace;
+		Set<Transition> ops = currentTrace.getStateSpace().evaluateTransitions(
+				trace.getNextTransitions());
+		events = new ArrayList<Operation>(ops.size());
+		Set<String> notEnabled = new HashSet<String>(opNames);
+		Set<String> tWT = currentTrace.getCurrentState()
+				.getTransitionsWithTimeout();
+		for (Transition opInfo : ops) {
+			String name = extractPrettyName(opInfo.getName());
+			notEnabled.remove(name);
+			Operation o = new Operation(opInfo.getId(), name,
+					opInfo.getParams(), true, tWT.contains(name));
+			events.add(o);
+		}
+		for (String s : notEnabled) {
+			if (!s.equals("INITIALISATION")) {
+				events.add(new Operation(s, s, opToParams.get(s), false, tWT
+						.contains(s)));
+			}
+		}
+		try {
+			Collections.sort(events, sorter);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		List<Error> errors = extractErrors(currentTrace.getCurrentState());
+		String json = WebUtils.toJson(applyFilter(filter));
+		String stringErrors = WebUtils.toJson(errors);
+		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
+				"ops", json, "canGoBack", currentTrace.canGoBack(),
+				"canGoForward", currentTrace.canGoForward(), "errors",
+				stringErrors);
+		submit(wrap);
 	}
 
 	private List<Error> extractErrors(final State state) {

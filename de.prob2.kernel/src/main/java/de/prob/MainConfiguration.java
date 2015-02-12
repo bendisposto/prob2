@@ -89,6 +89,12 @@ public class MainConfiguration extends AbstractModule {
 
 		Option standalone = new Option("standalone", "Run in standalone mode");
 
+		Option animation = new Option(
+				"multianimation",
+				"UI components will have the capability to show multiple animations"
+						+ " at once (NOTE: the development of this option is in the"
+						+ " experimental phase)");
+
 		@SuppressWarnings("static-access")
 		Option browser = OptionBuilder.withArgName("url").hasArg()
 				.withDescription("Open URL in browser").create("browser");
@@ -127,6 +133,7 @@ public class MainConfiguration extends AbstractModule {
 		options.addOption(restricted);
 		options.addOption(standalone);
 		options.addOption(upgrade);
+		options.addOption(animation);
 		return options;
 	}
 

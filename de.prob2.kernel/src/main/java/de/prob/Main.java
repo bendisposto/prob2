@@ -36,6 +36,7 @@ public class Main {
 	public static boolean restricted = true;
 	public static boolean standalone = false;
 	public static boolean local = false;
+	public static boolean multianimation = false;
 	private final Logger logger = LoggerFactory.getLogger(Main.class);
 	private final CommandLineParser parser;
 	private final Options options;
@@ -70,7 +71,7 @@ public class Main {
 	 */
 	public final static String LOG_CONFIG = System
 			.getProperty("PROB_LOG_CONFIG") == null ? "production.xml" : System
-					.getProperty("PROB_LOG_CONFIG");
+			.getProperty("PROB_LOG_CONFIG");
 
 	private final static WeakHashMap<Process, Boolean> processes = new WeakHashMap<Process, Boolean>();
 	private final Downloader downloader;
@@ -127,6 +128,9 @@ public class Main {
 			if (line.hasOption("standalone")) {
 				Main.standalone = true;
 			}
+			if (line.hasOption("multianimation")) {
+				Main.multianimation = true;
+			}
 
 			runServer(url, iface, port);
 			if (line.hasOption("shell")) {
@@ -176,7 +180,7 @@ public class Main {
 			return homedir + separator;
 		}
 		return System.getProperty("user.home") + separator + ".prob"
-		+ separator;
+				+ separator;
 	}
 
 	/**
