@@ -27,6 +27,7 @@ class State {
 	def List<Transition> transitions = []
 	def boolean initialised
 	def boolean invariantOk
+	def Set<String> transitionsWithTimeout
 	def Map<IEvalElement, IEvalResult> values = new HashMap<IEvalElement, IEvalResult>()
 
 	def State(String id, StateSpace space) {
@@ -258,7 +259,14 @@ class State {
 		if (!explored) {
 			explore()
 		}
-		return isInvariantOk()
+		return invariantOk
+	}
+
+	def Set<String> getTransitionsWithTimeout() {
+		if (!explored) {
+			explore()
+		}
+		return transitionsWithTimeout
 	}
 
 	/**
@@ -292,6 +300,7 @@ class State {
 		values.putAll(cmd.getFormulaResults())
 		initialised = cmd.isInitialised()
 		invariantOk = cmd.isInvariantOk()
+		transitionsWithTimeout = cmd.getOperationsWithTimeout()
 		explored = true
 		this
 	}

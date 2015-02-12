@@ -47,6 +47,13 @@
 	font-style: italic;
 }
 
+#events li.timeout {
+	list-style-image: url(/images/timeout.png);
+	color: #888;
+	cursor: not-allowed;
+	font-style: italic;
+}
+
 .CodeMirror {
 	border: 1px solid #000;
 	background: #eee;

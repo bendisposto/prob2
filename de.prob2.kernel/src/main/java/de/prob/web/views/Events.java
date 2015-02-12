@@ -69,11 +69,13 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		public final String enablement;
 
 		public Operation(final String id, final String name,
-				final List<String> params, final boolean isEnabled) {
+				final List<String> params, final boolean isEnabled,
+				final boolean hasTimeout) {
 			this.id = id;
 			this.name = name;
 			this.params = params;
-			enablement = isEnabled ? "enabled" : "notEnabled";
+			enablement = isEnabled ? "enabled" : hasTimeout ? "timeout"
+					: "notEnabled";
 		}
 	}
 
@@ -103,16 +105,19 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 					.evaluateTransitions(trace.getNextTransitions());
 			events = new ArrayList<Operation>(ops.size());
 			Set<String> notEnabled = new HashSet<String>(opNames);
+			Set<String> tWT = currentTrace.getCurrentState()
+					.getTransitionsWithTimeout();
 			for (Transition opInfo : ops) {
 				String name = extractPrettyName(opInfo.getName());
 				notEnabled.remove(name);
 				Operation o = new Operation(opInfo.getId(), name,
-						opInfo.getParams(), true);
+						opInfo.getParams(), true, tWT.contains(name));
 				events.add(o);
 			}
 			for (String s : notEnabled) {
 				if (!s.equals("INITIALISATION")) {
-					events.add(new Operation(s, s, opToParams.get(s), false));
+					events.add(new Operation(s, s, opToParams.get(s), false,
+							tWT.contains(s)));
 				}
 			}
 			try {
