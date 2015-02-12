@@ -87,3 +87,15 @@
 .disabled {
 	opacity: 0.1;
 }
+
+.my-alert {
+	border-color: #F3DBAE;
+	cursor: default;
+}
+
+.my-alert-btn {
+	color: #c09853;
+	background-color: #FAF5D9;
+	border-color: #F3DBAE;
+	margin-left: 10px;
+}

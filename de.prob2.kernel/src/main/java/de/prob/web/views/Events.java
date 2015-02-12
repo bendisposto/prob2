@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import de.prob.animator.domainobjects.StateError;
 import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.Event;
 import de.prob.model.eventb.EventParameter;
@@ -30,6 +31,7 @@ import de.prob.model.representation.ModelElementList;
 import de.prob.scripting.ScriptEngineProvider;
 import de.prob.statespace.AnimationSelector;
 import de.prob.statespace.IAnimationChangeListener;
+import de.prob.statespace.State;
 import de.prob.statespace.Trace;
 import de.prob.statespace.Transition;
 import de.prob.web.AbstractSession;
@@ -79,6 +81,16 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 		}
 	}
 
+	private static class Error {
+		public final String shortMsg;
+		public final String longMsg;
+
+		public Error(final String shortMsg, final String longMsg) {
+			this.shortMsg = shortMsg;
+			this.longMsg = longMsg;
+		}
+	}
+
 	@Override
 	public void traceChange(final Trace trace,
 			final boolean currentAnimationChanged) {
@@ -125,12 +137,46 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			List<Error> errors = extractErrors(currentTrace.getCurrentState());
 			String json = WebUtils.toJson(applyFilter(filter));
+			String stringErrors = WebUtils.toJson(errors);
 			Map<String, String> wrap = WebUtils.wrap("cmd", "Events.newTrace",
 					"ops", json, "canGoBack", currentTrace.canGoBack(),
-					"canGoForward", currentTrace.canGoForward());
+					"canGoForward", currentTrace.canGoForward(), "errors",
+					stringErrors);
 			submit(wrap);
 		}
+	}
+
+	private List<Error> extractErrors(final State state) {
+		List<Error> errors = new ArrayList<Error>();
+
+		if (!state.isInvariantOk()) {
+			errors.add(new Error("Invariant Violation",
+					"One of the invariants was violated. "
+							+ "See the State Inspector for more details."));
+		}
+
+		if (state.isTimeoutOccurred()) {
+			errors.add(new Error("Timeout Occurred",
+					"A time out occurred for the current state."));
+		}
+
+		if (state.isMaxTransitionsCalculated()) {
+			errors.add(new Error(
+					"Max Transitions Reached",
+					"It is possible that not all possible transitions "
+							+ "were calculated for the given state. If you would like to calculate "
+							+ "more transitions, increase the MAX_OPERATIONS preference."));
+		}
+
+		for (StateError e : state.getStateErrors()) {
+			errors.add(new Error(e.getShortDescription(), "For event "
+					+ e.getEvent() + " the following error occurred: "
+					+ e.getLongDescription()));
+		}
+
+		return errors;
 	}
 
 	private String extractPrettyName(final String name) {
@@ -201,12 +247,22 @@ public class Events extends AbstractSession implements IAnimationChangeListener 
 	public void reload(final String client, final int lastinfo,
 			final AsyncContext context) {
 		sendInitMessage(context);
-		Map<String, String> wrap = WebUtils.wrap("cmd", "Events.setView",
-				"ops", WebUtils.toJson(events), "canGoBack",
+		Map<String, String> wrap = WebUtils.wrap(
+				"cmd",
+				"Events.setView",
+				"ops",
+				WebUtils.toJson(events),
+				"canGoBack",
 				currentTrace == null ? false : currentTrace.canGoBack(),
 				"canGoForward",
 				currentTrace == null ? false : currentTrace.canGoForward(),
-				"sortMode", getSortMode(), "hide", hide);
+				"sortMode",
+				getSortMode(),
+				"hide",
+				hide,
+				"errors",
+				currentTrace == null ? "[]" : WebUtils
+						.toJson(extractErrors(currentTrace.getCurrentState())));
 		submit(wrap);
 	}
 

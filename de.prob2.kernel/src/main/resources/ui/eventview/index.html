@@ -48,11 +48,25 @@
             <button type="button" id="hide" class="btn btn-default" title="Hide events that are not enabled"><span class="glyphicon glyphicon-eye-close"></span></button>
         </div>
     </div>
+    <div id="alert-bar"></div>
     <ul id="events"></ul>
     <div class="input-wrap hide-input">
         <hr>
         <textarea id="input"></textarea>
     <div>
+    <div id="notification-screen" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">ProB Notification</h4>
+                </div>
+                <div id="notification" class="modal-body">
+                    <p id="long-message">My message!</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </body>
