@@ -18,7 +18,7 @@ public abstract class AbstractAnimationBasedView extends AbstractSession
 	Logger logger = LoggerFactory.getLogger(AbstractAnimationBasedView.class);
 	protected final AnimationSelector animationsRegistry;
 	boolean multianimation;
-	private final UUID animationOfInterest;
+	protected final UUID animationOfInterest;
 
 	@Inject
 	public AbstractAnimationBasedView(final AnimationSelector animations,
