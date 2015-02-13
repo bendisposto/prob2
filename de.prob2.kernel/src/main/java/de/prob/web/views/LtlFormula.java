@@ -82,15 +82,18 @@ public class LtlFormula extends AbstractAnimationBasedView {
 
 		LTL formula = tuple.getFormula();
 
-		State stateid = animationsRegistry.getCurrentTrace().getCurrentState();
-		EvaluationCommand lcc = formula.getCommand(stateid);
-		animationsRegistry.getCurrentTrace().getStateSpace().execute(lcc);
+		Trace currentTrace = getCurrentTrace();
+		if (currentTrace != null) {
+			State stateid = currentTrace.getCurrentState();
+			EvaluationCommand lcc = formula.getCommand(stateid);
+			currentTrace.getStateSpace().execute(lcc);
 
-		String result = lcc.getValue().toString();
-		tuple.setStatus(result);
-		cache.get(formula).put(stateid, result);
+			String result = lcc.getValue().toString();
+			tuple.setStatus(result);
+			cache.get(formula).put(stateid, result);
 
-		submitFormulas();
+			submitFormulas();
+		}
 		return null;
 	}
 

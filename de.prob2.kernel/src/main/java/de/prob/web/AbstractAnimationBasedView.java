@@ -42,4 +42,10 @@ public abstract class AbstractAnimationBasedView extends AbstractSession
 	}
 
 	public abstract void performTraceChange(Trace trace);
+
+	public Trace getCurrentTrace() {
+		return animationOfInterest == null ? animationsRegistry
+				.getCurrentTrace() : animationsRegistry
+				.getTrace(animationOfInterest);
+	}
 }

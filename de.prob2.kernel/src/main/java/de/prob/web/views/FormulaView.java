@@ -43,7 +43,7 @@ public class FormulaView extends AbstractAnimationBasedView {
 	public FormulaView(final AnimationSelector animations) {
 		super(animations, null);
 		this.incrementalUpdate = false;
-		currentTrace = animations.getCurrentTrace();
+		currentTrace = getCurrentTrace();
 		if (currentTrace == null) {
 			currentStateSpace = null;
 		} else {
@@ -57,7 +57,7 @@ public class FormulaView extends AbstractAnimationBasedView {
 			final UUID animationOfInterest) {
 		super(animations, animationOfInterest);
 		this.incrementalUpdate = false;
-		currentTrace = animations.getCurrentTrace();
+		currentTrace = getCurrentTrace();
 		if (currentTrace == null) {
 			currentStateSpace = null;
 		} else {

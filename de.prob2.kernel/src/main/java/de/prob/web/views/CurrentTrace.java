@@ -89,7 +89,7 @@ public class CurrentTrace extends AbstractAnimationBasedView {
 
 	public Object gotoPos(final Map<String, String[]> params) {
 		logger.trace("Goto Position in Trace");
-		Trace trace = animationsRegistry.getCurrentTrace();
+		Trace trace = getCurrentTrace();
 		int id = Integer.parseInt(params.get("id")[0]);
 		int currentIndex = trace.getCurrent().getIndex();
 		if (id == currentIndex) {
