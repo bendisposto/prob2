@@ -20,6 +20,7 @@ import de.prob.animator.domainobjects.EvaluationErrorResult;
 import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.animator.domainobjects.IdentifierNotInitialised;
+import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.EventBMachine;
 import de.prob.model.representation.AbstractElement;
 import de.prob.model.representation.AbstractFormulaElement;
@@ -38,6 +39,7 @@ import de.prob.unicode.UnicodeTranslator;
 import de.prob.web.AbstractSession;
 import de.prob.web.WebUtils;
 
+@PublicSession
 @Singleton
 public class StateInspector extends AbstractSession implements
 		IAnimationChangeListener {
