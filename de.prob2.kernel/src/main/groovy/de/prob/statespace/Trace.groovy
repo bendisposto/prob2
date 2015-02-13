@@ -95,7 +95,7 @@ public class Trace {
 	def Trace add(final String transitionId) {
 		Transition op = getCurrentState().getOutTransitions().find { it.getId() == transitionId }
 		if (op == null) {
-			throw new IllegalArgumentException(opId
+			throw new IllegalArgumentException(transitionId
 			+ " is not a valid operation on this state")
 		}
 		return add(op)

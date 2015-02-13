@@ -119,8 +119,7 @@ public class Events extends AbstractAnimationBasedView {
 			updateModel(trace);
 		}
 		currentTrace = trace;
-		Set<Transition> ops = currentTrace.getStateSpace().evaluateTransitions(
-				trace.getNextTransitions());
+		Set<Transition> ops = currentTrace.getNextTransitions(true);
 		events = new ArrayList<Operation>(ops.size());
 		Set<String> notEnabled = new HashSet<String>(opNames);
 		Set<String> tWT = currentTrace.getCurrentState()
