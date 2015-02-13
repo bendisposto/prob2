@@ -22,13 +22,11 @@ import de.prob.animator.domainobjects.IEvalElement;
 import de.prob.animator.domainobjects.IEvalResult;
 import de.prob.model.representation.AbstractModel;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.Trace;
-import de.prob.web.AbstractSession;
+import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
-public class ValueOverTime extends AbstractSession implements
-IAnimationChangeListener {
+public class ValueOverTime extends AbstractAnimationBasedView {
 
 	private class FormulaElement {
 		public final String id;
@@ -52,8 +50,23 @@ IAnimationChangeListener {
 
 	@Inject
 	public ValueOverTime(final AnimationSelector animations) {
+		super(animations, null);
 		this.incrementalUpdate = false;
 		currentTrace = animations.getCurrentTrace();
+		if (currentTrace == null) {
+			model = null;
+		} else {
+			model = currentTrace.getModel();
+			animations.registerAnimationChangeListener(this);
+		}
+	}
+
+	// Constructor instantiated via reflection in multianimation mode.
+	public ValueOverTime(final AnimationSelector animations,
+			final UUID animationOfInterest) {
+		super(animations, animationOfInterest);
+		this.incrementalUpdate = false;
+		currentTrace = animations.getTrace(animationOfInterest);
 		if (currentTrace == null) {
 			model = null;
 		} else {
@@ -65,7 +78,7 @@ IAnimationChangeListener {
 	@Override
 	public String html(final String clientid,
 			final Map<String, String[]> parameterMap) {
-		if(model == null) {
+		if (model == null) {
 			return "<html><head><title>Value Over Time</title></head></html>";
 		}
 		Object scope = WebUtils.wrap("clientid", clientid, "id", UUID
@@ -87,13 +100,18 @@ IAnimationChangeListener {
 			List<Object> data = calculateData();
 			IEvalElement time = formulas.get("time");
 
-			Map<String, String> wrap = WebUtils.wrap("cmd",
-					"ValueOverTime.restorePage", "formulas", WebUtils
-					.toJson(result), "time",
-					time == null ? "" : time.getCode(), "data", WebUtils
-							.toJson(data), "xLabel",
-							time == null ? "Number of Animation Steps" : time.getCode(),
-									"drawMode", mode);
+			Map<String, String> wrap = WebUtils
+					.wrap("cmd",
+							"ValueOverTime.restorePage",
+							"formulas",
+							WebUtils.toJson(result),
+							"time",
+							time == null ? "" : time.getCode(),
+							"data",
+							WebUtils.toJson(data),
+							"xLabel",
+							time == null ? "Number of Animation Steps" : time
+									.getCode(), "drawMode", mode);
 
 			submit(wrap);
 		}
@@ -101,21 +119,22 @@ IAnimationChangeListener {
 	}
 
 	@Override
-	public void traceChange(final Trace trace,
-			final boolean currentAnimationChanged) {
-		if (currentAnimationChanged) {
-			if (model != null && trace != null
-					&& trace.getStateSpace().equals(model.getStateSpace())) {
-				currentTrace = trace;
-				List<Object> result = calculateData();
-				IEvalElement time = formulas.get("time");
+	public void performTraceChange(final Trace trace) {
+		if (model != null && trace != null
+				&& trace.getStateSpace().equals(model.getStateSpace())) {
+			currentTrace = trace;
+			List<Object> result = calculateData();
+			IEvalElement time = formulas.get("time");
 
-				Map<String, String> wrap = WebUtils.wrap("cmd",
-						"ValueOverTime.draw", "data", WebUtils.toJson(result),
-						"xLabel", time == null ? "Number of Animation Steps"
-								: time.getCode(), "drawMode", mode);
-				submit(wrap);
-			}
+			Map<String, String> wrap = WebUtils
+					.wrap("cmd",
+							"ValueOverTime.draw",
+							"data",
+							WebUtils.toJson(result),
+							"xLabel",
+							time == null ? "Number of Animation Steps" : time
+									.getCode(), "drawMode", mode);
+			submit(wrap);
 		}
 	}
 
@@ -362,7 +381,7 @@ IAnimationChangeListener {
 		return WebUtils.wrap("cmd", "ValueOverTime.formulaRemoved", "id", id,
 				"data", WebUtils.toJson(data), "xLabel",
 				time == null ? "Number of Animation Steps" : time.getCode(),
-						"drawMode", mode);
+				"drawMode", mode);
 	}
 
 	@Override

@@ -222,6 +222,10 @@ public class AnimationSelector {
 		return new ArrayList<Trace>(traces.values());
 	}
 
+	public Trace getTrace(final UUID uuid) {
+		return traces.get(uuid);
+	}
+
 	public Set<UUID> getProtectedTraces() {
 		return protectedTraces;
 	}

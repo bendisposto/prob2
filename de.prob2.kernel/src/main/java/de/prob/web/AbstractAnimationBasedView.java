@@ -35,10 +35,7 @@ public abstract class AbstractAnimationBasedView extends AbstractSession
 	public void traceChange(final Trace currentTrace,
 			final boolean currentAnimationChanged) {
 		if (animationOfInterest != null) {
-			if (currentTrace != null
-					&& currentTrace.getUUID().equals(animationOfInterest)) {
-				performTraceChange(currentTrace);
-			}
+			performTraceChange(animationsRegistry.getTrace(animationOfInterest));
 		} else if (animationOfInterest == null && currentAnimationChanged) {
 			performTraceChange(currentTrace);
 		}

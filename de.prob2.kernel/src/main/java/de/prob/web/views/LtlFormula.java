@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.AsyncContext;
 
@@ -16,29 +17,38 @@ import de.be4.ltl.core.parser.LtlParseException;
 import de.prob.animator.command.EvaluationCommand;
 import de.prob.animator.domainobjects.LTL;
 import de.prob.statespace.AnimationSelector;
-import de.prob.statespace.IAnimationChangeListener;
 import de.prob.statespace.State;
 import de.prob.statespace.Trace;
-import de.prob.web.AbstractSession;
+import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
-public class LtlFormula extends AbstractSession implements
-		IAnimationChangeListener {
+public class LtlFormula extends AbstractAnimationBasedView {
 
 	private final Logger logger = LoggerFactory.getLogger(CurrentTrace.class);
 
 	private final List<LTLFormulaTuple> formulas = new ArrayList<LTLFormulaTuple>();
-
-	private final AnimationSelector animations;
 
 	private final Map<LTL, Map<State, String>> cache = new HashMap<LTL, Map<State, String>>();
 
 	@Inject
 	public LtlFormula(final AnimationSelector animations)
 			throws LtlParseException {
-		this.animations = animations;
+		super(animations, null);
+		incrementalUpdate = false;
 		animations.registerAnimationChangeListener(this);
+		addFormulas();
+	}
 
+	// Constructor instantiated via reflection in multianimation mode.
+	public LtlFormula(final AnimationSelector animations,
+			final UUID animationOfInterest) throws LtlParseException {
+		super(animations, animationOfInterest);
+		incrementalUpdate = false;
+		animations.registerAnimationChangeListener(this);
+		addFormulas();
+	}
+
+	private void addFormulas() throws LtlParseException {
 		LTL ltl1 = new LTL("GF[new]");
 		LTL ltl2 = new LTL("F[new]");
 		LTL ltl3 = new LTL("true");
@@ -72,9 +82,9 @@ public class LtlFormula extends AbstractSession implements
 
 		LTL formula = tuple.getFormula();
 
-		State stateid = animations.getCurrentTrace().getCurrentState();
+		State stateid = animationsRegistry.getCurrentTrace().getCurrentState();
 		EvaluationCommand lcc = formula.getCommand(stateid);
-		animations.getCurrentTrace().getStateSpace().execute(lcc);
+		animationsRegistry.getCurrentTrace().getStateSpace().execute(lcc);
 
 		String result = lcc.getValue().toString();
 		tuple.setStatus(result);
@@ -121,9 +131,8 @@ public class LtlFormula extends AbstractSession implements
 	}
 
 	@Override
-	public void traceChange(final Trace trace,
-			final boolean currentAnimationChanged) {
-		if (currentAnimationChanged) {
+	public void performTraceChange(final Trace trace) {
+		if (trace != null) {
 			State current = trace.getCurrentState();
 			for (LTLFormulaTuple tuple : formulas) {
 				String cached = cache.get(tuple.formula).get(current);
@@ -145,7 +154,7 @@ public class LtlFormula extends AbstractSession implements
 
 		public LTLFormulaTuple(final LTL f) {
 			formula = f;
-			this.setStatus("unchecked");
+			setStatus("unchecked");
 		}
 
 		public LTL getFormula() {
