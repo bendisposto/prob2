@@ -17,31 +17,29 @@ public abstract class AbstractAnimationBasedView extends AbstractSession
 
 	Logger logger = LoggerFactory.getLogger(AbstractAnimationBasedView.class);
 	protected final AnimationSelector animationsRegistry;
-	private UUID animation;
+	boolean multianimation;
+	private final UUID animationOfInterest;
 
 	@Inject
-	public AbstractAnimationBasedView(final AnimationSelector animations) {
+	public AbstractAnimationBasedView(final AnimationSelector animations,
+			final UUID animationOfInterest) {
 		this.animationsRegistry = animations;
 		if (Main.multianimation) {
-			Trace current = animationsRegistry.getCurrentTrace();
-			if (current == null) {
-				animation = null;
-				logger.error("Binding a UI component to an animation failed because"
-						+ " no animation is loaded");
-			} else {
-				animation = current.getUUID();
-			}
+			this.animationOfInterest = animationOfInterest;
 		} else {
-			animation = null;
+			this.animationOfInterest = null;
 		}
 	}
 
 	@Override
 	public void traceChange(final Trace currentTrace,
 			final boolean currentAnimationChanged) {
-		if ((animation == null && currentAnimationChanged)
-				|| (currentTrace != null && currentTrace.getUUID().equals(
-						animation))) {
+		if (animationOfInterest != null) {
+			if (currentTrace != null
+					&& currentTrace.getUUID().equals(animationOfInterest)) {
+				performTraceChange(currentTrace);
+			}
+		} else if (animationOfInterest == null && currentAnimationChanged) {
 			performTraceChange(currentTrace);
 		}
 	}

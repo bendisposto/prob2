@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import de.prob.Main;
 import de.prob.animator.domainobjects.StateError;
 import de.prob.annotations.PublicSession;
 import de.prob.model.eventb.Event;
@@ -40,7 +42,6 @@ public class Events extends AbstractAnimationBasedView {
 
 	Logger logger = LoggerFactory.getLogger(Events.class);
 	Trace currentTrace;
-	private final AnimationSelector selector;
 	AbstractModel currentModel;
 	List<String> opNames = new ArrayList<String>();
 	Map<String, List<String>> opToParams = new HashMap<String, List<String>>();
@@ -53,11 +54,19 @@ public class Events extends AbstractAnimationBasedView {
 	@Inject
 	public Events(final AnimationSelector selector,
 			final ScriptEngineProvider sep) {
-		super(selector);
-		this.selector = selector;
+		super(selector, null);
 		groovy = sep.get();
 		incrementalUpdate = false;
+		animationsRegistry.registerAnimationChangeListener(this);
+	}
 
+	// Constructor instantiated via reflection in multianimation mode.
+	public Events(final AnimationSelector animations,
+			final UUID animationOfInterest) {
+		super(animations, animationOfInterest);
+		groovy = Main.getInjector().getInstance(ScriptEngineProvider.class)
+				.get();
+		incrementalUpdate = false;
 		animationsRegistry.registerAnimationChangeListener(this);
 	}
 
@@ -221,7 +230,7 @@ public class Events extends AbstractAnimationBasedView {
 
 	public Object execute(final Map<String, String[]> params) {
 		String id = params.get("id")[0];
-		selector.traceChange(currentTrace.add(id));
+		animationsRegistry.traceChange(currentTrace.add(id));
 		return null;
 	}
 
@@ -264,17 +273,17 @@ public class Events extends AbstractAnimationBasedView {
 
 	public Object random(final Map<String, String[]> params) {
 		int num = Integer.parseInt(params.get("num")[0]);
-		selector.traceChange(currentTrace.randomAnimation(num));
+		animationsRegistry.traceChange(currentTrace.randomAnimation(num));
 		return null;
 	}
 
 	public Object back(final Map<String, String[]> params) {
-		selector.traceChange(currentTrace.back());
+		animationsRegistry.traceChange(currentTrace.back());
 		return null;
 	}
 
 	public Object forward(final Map<String, String[]> params) {
-		selector.traceChange(currentTrace.forward());
+		animationsRegistry.traceChange(currentTrace.forward());
 		return null;
 	}
 
