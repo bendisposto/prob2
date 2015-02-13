@@ -21,7 +21,7 @@ import de.prob.web.WebUtils;
 @Singleton
 @PublicSession
 public class CurrentAnimations extends AbstractSession implements
-IAnimationChangeListener {
+		IAnimationChangeListener {
 
 	private final AnimationSelector animations;
 
@@ -76,9 +76,11 @@ IAnimationChangeListener {
 
 			String steps = t.getTransitionList().size() + "";
 			String isCurrent = t.equals(currentTrace) + "";
-			boolean isProtected = animations.getProtectedTraces().contains(t.getUUID());
+			boolean isProtected = animations.getProtectedTraces().contains(
+					t.getUUID());
 			Map<String, String> wrapped = WebUtils.wrap("model", modelName,
-					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent, "protected", isProtected);
+					"lastOp", lastOp, "steps", steps, "isCurrent", isCurrent,
+					"protected", isProtected);
 			result[ctr++] = wrapped;
 		}
 		Map<String, String> wrap = WebUtils.wrap("cmd",

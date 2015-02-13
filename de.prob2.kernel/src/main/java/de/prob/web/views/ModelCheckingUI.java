@@ -12,7 +12,6 @@ import org.eclipse.jetty.util.ajax.JSON;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import de.prob.animator.domainobjects.EventB;
 import de.prob.animator.domainobjects.IEvalElement;
@@ -40,7 +39,6 @@ import de.prob.statespace.Trace;
 import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
-@Singleton
 public class ModelCheckingUI extends AbstractAnimationBasedView implements
 		IModelChangedListener {
 

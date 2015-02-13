@@ -13,7 +13,6 @@ import javax.servlet.AsyncContext;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import de.prob.animator.domainobjects.EnumerationWarning;
 import de.prob.animator.domainobjects.EvalResult;
@@ -39,7 +38,6 @@ import de.prob.web.AbstractAnimationBasedView;
 import de.prob.web.WebUtils;
 
 @PublicSession
-@Singleton
 public class StateInspector extends AbstractAnimationBasedView {
 
 	List<IEvalElement> formulasForEvaluating = new ArrayList<IEvalElement>();
