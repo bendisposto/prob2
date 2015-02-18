@@ -4,6 +4,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
+  :repositories [["cobra" "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"]]
+  
   :source-paths ["src/clj" "src/cljs"]
 
   :dependencies [[org.clojure/clojure "1.6.0"]
@@ -63,9 +65,10 @@
                                   [weasel "0.6.0-SNAPSHOT"]
                                   [com.cemerick/piggieback "0.1.6-SNAPSHOT"]
                                   [pjstadig/humane-test-output "0.6.0"]]
-
+                   :resource-paths ["kernel/build/libs/*.jar"]
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]]
+                   :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]
+                             [lein-expand-resource-paths "0.0.1"]]
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
