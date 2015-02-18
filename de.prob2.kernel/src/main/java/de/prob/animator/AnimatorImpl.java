@@ -73,7 +73,6 @@ class AnimatorImpl implements IAnimator {
 			} else {
 				command.processErrorResult(bindings, errormessages);
 			}
-
 		} while (!command.isCompleted());
 		if (command.blockAnimator()) {
 			endTransaction();
@@ -107,6 +106,7 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public void sendInterrupt() {
+		Thread.currentThread().interrupt();
 		cli.sendInterrupt();
 	}
 

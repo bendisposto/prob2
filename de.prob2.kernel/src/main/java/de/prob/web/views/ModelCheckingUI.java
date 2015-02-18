@@ -210,9 +210,6 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 		ModelChecker modelChecker = jobs.get(jobId);
 		if (modelChecker != null) {
 			modelChecker.cancel();
-			if (modelChecker.getStateSpace().isBusy()) {
-				modelChecker.getStateSpace().endTransaction();
-			}
 			return WebUtils.wrap("cmd", "ModelChecking.cancelJob", "id", jobId);
 		} else {
 			// FIXME handle error

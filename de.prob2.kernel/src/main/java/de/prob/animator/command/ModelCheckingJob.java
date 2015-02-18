@@ -20,7 +20,7 @@ public class ModelCheckingJob extends AbstractCommand {
 	private StateSpaceStats stats;
 	private final ModelCheckingUI ui;
 
-	private long time = -1;
+	private final long time = -1;
 
 	public ModelCheckingJob(final ModelCheckingOptions options,
 			final String jobId, final ModelCheckingUI ui) {
@@ -32,19 +32,6 @@ public class ModelCheckingJob extends AbstractCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		if (time == -1) {
-			time = System.currentTimeMillis();
-		}
-		if (Thread.interrupted()) {
-			completed = true;
-			Thread.currentThread().interrupt();
-			if (ui != null) {
-				ui.isFinished(jobId, System.currentTimeMillis() - time, res,
-						stats);
-			}
-			return;
-		}
-
 		cmd.writeCommand(pto);
 	}
 
@@ -54,10 +41,10 @@ public class ModelCheckingJob extends AbstractCommand {
 		cmd.processResult(bindings);
 		res = cmd.getResult();
 		stats = cmd.getStats();
-		if (ui != null) {
+		if (ui != null && res != null && stats != null) {
 			ui.updateStats(jobId, System.currentTimeMillis() - time, res, stats);
 		}
-		completed = !(res instanceof NotYetFinished);
+		completed = !(res instanceof NotYetFinished) || res == null;
 
 		options = options.recheckExisting(false);
 		cmd = new ModelCheckingStepCommand(TIME, options);
@@ -79,6 +66,14 @@ public class ModelCheckingJob extends AbstractCommand {
 
 	public StateSpaceStats getStats() {
 		return stats;
+	}
+
+	@Override
+	public void processErrorResult(
+			final ISimplifiedROMap<String, PrologTerm> bindings,
+			final String errormessages) {
+		// TODO Auto-generated method stub
+		super.processErrorResult(bindings, errormessages);
 	}
 
 }
