@@ -209,8 +209,7 @@ public class ModelCheckingUI extends AbstractAnimationBasedView implements
 		String jobId = params.get("jobId")[0];
 		ModelChecker modelChecker = jobs.get(jobId);
 		if (modelChecker != null) {
-			// TODO: maybe the animator should not be freed up here (i.e if
-			// there is another job blocking the animator)
+			modelChecker.cancel();
 			if (modelChecker.getStateSpace().isBusy()) {
 				modelChecker.getStateSpace().endTransaction();
 			}
