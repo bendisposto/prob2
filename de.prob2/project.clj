@@ -1,94 +1,104 @@
 (defproject de.prob2 "0.1.0-SNAPSHOT"
-  :description "ProB 2.0"
-  :url "https://github.com/bendisposto/prob2"
+  :description "FIXME: write description"
+  :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
-            :url  "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
-                 [com.taoensso/sente "0.15.1" :exclusions [org.clojure/clojure]]]
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :repositories [["cobra" "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"]]
+  
+  :source-paths ["src/clj" "src/cljs"]
 
-  :plugins [[lein-haml-sass "0.2.7-SNAPSHOT"]
-            [com.keminglabs/cljx "0.5.0"]
-            [lein-midje "3.1.3"]]
+  :dependencies [[org.clojure/clojure "1.6.0"]
+                 [cljsjs/react "0.12.2-5"]
+                 [reagent "0.5.0-alpha3"]
+                 [reagent-forms "0.4.3"]
+                 [reagent-utils "0.1.2"]
+                 [secretary "1.2.1"]
+                 [org.clojure/clojurescript "0.0-2814" :scope "provided"]
+                 [com.stuartsierra/component "0.2.2"]
+                 [ring/ring-core "1.3.2"]
+                 [ring/ring-servlet "1.3.2"]
+                 [ring/ring-defaults "0.1.3"]
+                 [com.taoensso/sente "1.3.0"]  
+                 [http-kit "2.1.19"]
+                 [prone "0.8.0"]
+                 [compojure "1.3.1"]
+                 [selmer "0.8.0"]
+                 [environ "1.0.0"]]
 
-  :cljx {:builds [{:source-paths ["src/both"]
-                   :output-path  "src/server"
-                   :rules        :clj}
+  :plugins [
+            [lein-cljsbuild "1.0.4"]
+            [lein-environ "1.0.0"]
+          ;  [lein-ring "0.9.1"]
+            [lein-asset-minifier "0.2.2"]]
 
-                  {:source-paths ["src/both"]
-                   :output-path  "src/client"
-                   :rules        :cljs}]}
+;;  :ring {:handler de.prob2.handler/app
+;;         :uberwar-name "de.prob2.war"}
 
-  :prep-tasks [["cljx" "once"] "javac" "compile"]
+  :min-lein-version "2.5.0"
 
-  :jvm-opts ["-Dapple.awt.UIElement=true"
-             "-XX:+TieredCompilation"
-             "-XX:TieredStopAtLevel=1"
-             "-Xverify:none"]
+  :uberjar-name "de.prob2.jar"
 
-  :scss {:src              "resources/private/scss"
-         :output-directory "resources/public/gui/css_generated"
-         :output-extension "css"
-         }
+  :main de.prob2.server
 
-  :min-lein-version "2.0.0"
-  :resource-paths ["config", "resources"]
+  :clean-targets ^{:protect false} ["resources/public/js"]
 
-  :repl-options {
-                 ;; If nREPL takes too long to load it may timeout,
-                 ;; increase this to wait longer before timing out.
-                 ;; Defaults to 30000 (30 seconds)
-                 :timeout 120000
-                 }
+  :minify-assets
+  {:assets
+    {"resources/public/css/site.min.css" "resources/public/css/site.css"}}
 
+  :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
+                             :compiler {:output-to     "resources/public/js/app.js"
+                                        :output-dir    "resources/public/js/out"
+                                        ;;:externs       ["react/externs/react.js"]
+                                        :asset-path   "js/out"
+                                        :optimizations :none
+                                        :pretty-print  true}}}}
 
-  :profiles
-  {:dev
-   {:plugins        [[lein-expand-resource-paths "0.0.1"]]
+  :profiles {:dev {:repl-options {:init-ns user
+                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
-    :dependencies   [[org.clojure/test.check "0.5.7"]
-                     [midje "1.6.3"]]
-    :resource-paths ["dev" "kernel/build/libs/*.jar"]}
+                   :dependencies [[ring-mock "0.1.5"]
+                                  [ring/ring-devel "1.3.2"]
+                                  [leiningen "2.5.1"]
+                                  [figwheel "0.2.3-SNAPSHOT"]
+                                  [weasel "0.6.0-SNAPSHOT"]
+                                  [com.cemerick/piggieback "0.1.6-SNAPSHOT"]
+                                  [pjstadig/humane-test-output "0.6.0"]]
+                   :resource-paths ["kernel/build/libs/*.jar"]
+                   :source-paths ["env/dev/clj"]
+                   :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]
+                             [lein-expand-resource-paths "0.0.1"]]
 
-   :production
-   {:dependencies [[de.prob2/de.prob2.kernel "2.0.0-milestone-23-SNAPSHOT"]]
-    :main         de.prob2}
+                   :injections [(require 'pjstadig.humane-test-output)
+                                (pjstadig.humane-test-output/activate!)]
 
-   :clj
-   {:source-paths ["src/server"]
-    :test-paths   ["test/server"]
-    :dependencies [[liberator "0.10.0"]
-                   [org.clojure/tools.namespace "0.2.7"]
-                   [com.stuartsierra/component "0.2.1"]
-                   [compojure "1.1.8"]
-                   [ring/ring-core "1.3.0"]
-                   [http-kit "2.1.18"]
-                   [javax.servlet/servlet-api "2.5"]
-                   [org.clojure/core.cache "0.6.4"]
-                   [prismatic/schema "0.2.4"]
-                   [com.cognitect/transit-clj "0.8.247"]]}
+                   :figwheel {:http-server-root "public"
+                              :server-port 3449
+                              :css-dirs ["resources/public/css"]
+                              :ring-handler de.prob2.handler/app}
 
-   :cljs
-   {:source-paths ["src/client"]
-    :test-paths   ["test/client"]
-    :dependencies [[org.clojure/clojurescript "0.0-2311"]
-                   [org.clojure/core.async "0.1.278.0-76b25b-alpha"]
-                   [com.cognitect/transit-cljs "0.8.184"]
-                   [om "0.6.4"]]
-    :plugins      [[lein-cljsbuild "1.0.3"]]
-    :cljsbuild
-    {:builds [{:id           "release"
-               :source-paths ["src/client"]
-               :compiler     {
-                              :output-to     "resources/public/gui/js_generated/prob_ui.js"
-                              :optimizations :simple
-                              :pretty-print  true
-                              :preamble      ["react/react.min.js"]
-                              :externs       ["react/externs/react.js"]}}]}}}
+                   :env {:dev? true}
 
+                   :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]
+                                              :compiler {   :main "de.prob2.dev"
+                                                         :source-map true}}
+}
+}}
 
-  :aliases {"server"       ["with-profile", "+clj,+dev", "repl" ":start" ":port" "6000"]
-            "client"       ["with-profile", "cljs", "cljsbuild", "auto"]
-            "autotest"     ["with-profile", "+clj", "midje", ":autotest"]
-            "crosscompile" ["with-profile", "cljs", "cljx", "auto"]})
+             :uberjar {:hooks [leiningen.cljsbuild minify-assets.plugin/hooks]
+                       :env {:production true}
+                       :aot :all
+                       :omit-source true
+                       :cljsbuild {:jar true
+                                   :builds {:app
+                                             {:source-paths ["env/prod/cljs"]
+                                              :compiler
+                                              {:optimizations :advanced
+                                               :pretty-print false}}}}}
+
+             :production {:ring {:open-browser? false
+                                 :stacktraces?  false
+                                 :auto-reload?  false}
+                          :cljsbuild {:builds {:app {:compiler {:main "de.prob2.prod"}}}}
+                          }})
