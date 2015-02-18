@@ -1,17 +1,31 @@
 (ns de.prob2.server
   (:require [de.prob2.handler :refer [app]]
+            [com.stuartsierra.component :as component]
             [org.httpkit.server :as http-kit])
   (:gen-class))
 
 
-(defn start-web-server! [ring-handler port]
-  (println "Starting http-kit...")
-  (let [http-kit-stop-fn (http-kit/run-server ring-handler {:port port})]
-    {:server  nil ; http-kit doesn't expose this
-     :port    (:local-port (meta http-kit-stop-fn))
-     :stop-fn (fn [] (http-kit-stop-fn :timeout 100))}))
+(defrecord WebServer [app port stop-fn]
+  component/Lifecycle
+  (start [this]
+    (if stop-fn this
+    (let [stop-fn (http-kit/run-server app {:port port})
+          port' (-> stop-fn meta :local-port)
+          this' (assoc this
+                  :port port'
+                  :stop-fn (fn [] (stop-fn :timeout 100)))]
+      (println "Started server on port " port')
+      this')))
+  (stop [this]
+    (if stop-fn 
+      (do 
+        (stop-fn)
+        (println "Stopped server.")
+        (dissoc this :stop-fn))
+      this)))
+
+(defn server [port]
+  (component/using (map->WebServer {:port port}) [:app]))
 
 
- (defn -main [& args]
-   (let [port (Integer/parseInt (or (System/getenv "PORT") "3000"))]
-     (start-web-server! app port)))
+

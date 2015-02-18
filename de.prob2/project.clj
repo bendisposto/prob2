@@ -13,6 +13,7 @@
                  [reagent-utils "0.1.2"]
                  [secretary "1.2.1"]
                  [org.clojure/clojurescript "0.0-2814" :scope "provided"]
+                 [com.stuartsierra/component "0.2.2"]
                  [ring/ring-core "1.3.2"]
                  [ring/ring-servlet "1.3.2"]
                  [ring/ring-defaults "0.1.3"]
@@ -52,7 +53,7 @@
                                         :optimizations :none
                                         :pretty-print  true}}}}
 
-  :profiles {:dev {:repl-options {:init-ns de.prob2.handler
+  :profiles {:dev {:repl-options {:init-ns user
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
                    :dependencies [[ring-mock "0.1.5"]

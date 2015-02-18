@@ -15,7 +15,7 @@
 ;; Views
 
 (let [{:keys [chsk ch-recv send-fn state]}
-      (sente/make-channel-socket! "/chsk" ; Note the same path as before
+      (sente/make-channel-socket! "/updates" ; Note the same path as before
        {:type :auto ; e/o #{:auto :ajax :ws}
        })]
   (def chsk       chsk)
@@ -26,7 +26,7 @@
 
 
 (defn home-page []
-  [:div [:h2 "Welcome to ProB 2.0!!"]
+  [:div [:h2 "Welcome to ProB 2.0"]
    [:div [:a {:href "#/about"} "go to about page"]]])
 
 (defn about-page []
