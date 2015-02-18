@@ -13,7 +13,7 @@
 (defmulti handle-updates (fn [{:keys [event]} _] (first event)))
 (defmethod handle-updates :chsk/ws-ping [_ _] (println :ping))
 (defmethod handle-updates :de.prob2/hello [_ _] (println :hello))
-(defmethod handle-updates nil [e c] (println e))
+(defmethod handle-updates :default [e c] (println e))
 
 (defrecord Sente [post ws-handshake receive-channel send-fn! clients stop-routing-fn!]
   component/Lifecycle
@@ -75,7 +75,7 @@
            this
            (assoc this
              :handler
-             (let [handler (wrap-defaults routes site-defaults)]
+             (let [handler (wrap-defaults (:route-fn routes) site-defaults)]
                (if (env :dev?) (wrap-exceptions handler) handler)))))
   (stop [this]
     (if handler (dissoc this :routes :hadler) this)))
