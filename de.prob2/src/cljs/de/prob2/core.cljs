@@ -8,11 +8,14 @@
               [goog.history.EventType :as EventType]
               [cljs.core.async :as async :refer (<! >! put! chan)]
               [taoensso.sente  :as sente :refer (cb-success?)]
+              [taoensso.encore :as enc    :refer (logf log logp)]
               [cljsjs.react :as react])
     (:import goog.History))
 
 ;; -------------------------
 ;; Views
+;(sente/set-logging-level! :trace)
+
 
 (let [{:keys [chsk ch-recv send-fn state]}
       (sente/make-channel-socket! "/updates" ; Note the same path as before
@@ -23,6 +26,14 @@
   (def chsk-send! send-fn) ; ChannelSocket's send API fn
   (def chsk-state state)   ; Watchable, read-only atom
   )
+
+(defn event-msg-handler [event]
+  (let [msg (:?data event)]
+    (logf "Message-Type: %s" (first msg))
+    (log (:id event))
+    (logp msg)))
+
+(sente/start-chsk-router! ch-chsk event-msg-handler)
 
 
 (defn home-page []
