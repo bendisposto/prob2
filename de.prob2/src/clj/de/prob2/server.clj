@@ -8,7 +8,7 @@
   component/Lifecycle
   (start [this]
     (if stop-fn this
-        (let [stop-fn (http-kit/run-server handler {:port port})
+        (let [stop-fn (http-kit/run-server (:handler handler) {:port port})
               port' (-> stop-fn meta :local-port)
               this' (assoc this
                       :port port'

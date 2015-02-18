@@ -4,8 +4,9 @@
 		      [com.stuartsierra.component :as component]))
 
 (defn mk-system [config-options]
-  (let [{:keys [port routes]} config-options]
+  (let [{:keys [port]} config-options]
     (component/system-map
      :server (server/server port)
      :sente (handler/mk-sente)
-     :handler (handler/mk-handler routes))))
+     :handler (handler/mk-handler)
+     :routes (handler/mk-routes))))

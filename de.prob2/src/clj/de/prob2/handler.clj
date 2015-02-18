@@ -4,12 +4,16 @@
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
             [selmer.parser :refer [render-file]]
             [com.stuartsierra.component :as component]
+            [clojure.core.async :as async :refer (<! <!! >! >!! put! chan go go-loop)]
             [prone.middleware :refer [wrap-exceptions]]
             [environ.core :refer [env]]
             [taoensso.sente :as sente]))
 
-(declare handle-updates)
 
+(defmulti handle-updates (fn [{:keys [event]} _] (first event)))
+(defmethod handle-updates :chsk/ws-ping [_ _] (println :ping))
+(defmethod handle-updates :de.prob2/hello [_ _] (println :hello))
+(defmethod handle-updates nil [e c] (println e))
 
 (defrecord Sente [post ws-handshake receive-channel send-fn! clients stop-routing-fn!]
   component/Lifecycle
@@ -19,7 +23,7 @@
                       connected-uids]}
               (sente/make-channel-socket! {})
               this' (assoc this
-                      :stop-routing-fn! (sente/start-chsk-router-loop! handle-updates receive-channel)
+                      :stop-routing-fn! (sente/start-chsk-router-loop! handle-updates ch-recv)
                       :post ajax-post-fn
                       :ws-handshake ajax-get-or-ws-handshake-fn
                       :receive-channel ch-recv
@@ -47,7 +51,7 @@
 
 (defn mk-sente [] (map->Sente {}))
 
-(defn mk-routes [{:keys [ws-handshake post] :as handler}]
+(defn create-routes [{:keys [ws-handshake post] :as sente}]
   (compojure.core/routes
    (GET "/" [] (render-file "templates/index.html" {:dev (env :dev?)}))
    (GET  "/updates" req (ws-handshake req))
@@ -55,21 +59,29 @@
    (resources "/")
    (not-found "Not Found")))
 
-(defrecord Handler [sente routes handler]
+
+(defrecord Routes [route-fn sente]
+  component/Lifecycle
+  (start [this] (if route-fn this (assoc this :route-fn (create-routes sente))))
+  (stop [this] (if route-fn (dissoc this :route-fn) this)))
+
+(defn mk-routes []
+  (component/using (map->Routes {}) [:sente]))
+
+(defrecord Handler [routes handler]
   component/Lifecycle
   (start [this]
          (if handler
            this
            (assoc this
              :handler
-             (let [handler (wrap-defaults (mk-routes this) site-defaults)]
-               (if (env :dev?) (wrap-exceptions handler) handler))))))
+             (let [handler (wrap-defaults routes site-defaults)]
+               (if (env :dev?) (wrap-exceptions handler) handler)))))
+  (stop [this]
+    (if handler (dissoc this :routes :hadler) this)))
 
 (defn mk-handler []
-  (component/using (map->Handler {}) [:sente]))
+  (component/using (map->Handler {}) [:routes]))
 
 
-(defmulti handle-updates (fn [{:keys [event]} _] (first event)))
-(defmethod handle-updates :chsk/ws-ping [_ _] (println :ping))
-(defmethod handle-updates :de.prob2/hello [_ _] (println :hello))
-(defmethod handle-updates nil [e c] (println e))
+
