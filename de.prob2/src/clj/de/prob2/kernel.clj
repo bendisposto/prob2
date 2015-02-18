@@ -8,9 +8,7 @@
   (.getInstance inj cls))
 
 (defn- install-handlers [injector]
-  (println :enet)
   (let [animations (.getInstance injector AnimationSelector)
-        _ (println :animations animations)
         listener
         (reify
           IModelChangedListener
@@ -22,18 +20,16 @@
     (.registerModelChangedListener animations listener)
     listener))
 
-
-
-(defrecord ProB [injector listener]
+(defrecord ProB [injector listener sente]
   component/Lifecycle
   (start [this]
     (if injector
       this
       (do (println "Preparing ProB 2.0 Kernel")
           (let [injector (Main/getInjector)
-                _ (println "Got the injector")
+                _ (println " -> Got the injector")
                 listener (install-handlers injector)
-                _ (println "Installed Listeners")]
+                _ (println " -> Installed Listeners")]
             (assoc this :injector injector :listener listener)))))
   (stop [this]
     (if injector (do (println "Shutting down ProB 2.0")
@@ -41,6 +37,6 @@
         this)))
 
 (defn prob []
-  (map->ProB {}))
+  (component/using (map->ProB {}) [:sente]))
 
 
