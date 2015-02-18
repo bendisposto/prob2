@@ -32,35 +32,44 @@
       (do (println "Stopping Message Handling")
           (stop-routing-fn!)
           (println "Stopping Websockets")
-          (sente))
+          (assoc this
+            :stop-routing-fn! nil
+            :post nil
+            :ws-handshake nil
+            :receive-channel nil
+            :send-fn! nil
+            :clients nil))
       this)))
 
 (defn send! [sente user-id event]
   (let [sf (:send-fn! sente)]
     (sf user-id event)))
 
-(defn sente [] (map->Sente {}))
+(defn mk-sente [] (map->Sente {}))
 
-
-#_(defn Handler)
-
-
-(defn mk-routes []
+(defn mk-routes [{:keys [ws-handshake post] :as handler}]
   (compojure.core/routes
    (GET "/" [] (render-file "templates/index.html" {:dev (env :dev?)}))
-   (GET  "/updates" req (ring-ajax-get-or-ws-handshake req))
-   (POST "/updates" req (ring-ajax-post                req))
+   (GET  "/updates" req (ws-handshake req))
+   (POST "/updates" req (post req))
    (resources "/")
    (not-found "Not Found")))
 
+(defrecord Handler [sente routes handler]
+  component/Lifecycle
+  (start [this]
+         (if handler
+           this
+           (assoc this
+             :handler
+             (let [handler (wrap-defaults (mk-routes this) site-defaults)]
+               (if (env :dev?) (wrap-exceptions handler) handler))))))
+
 (defn mk-handler []
-  (let [handler (wrap-defaults (mk-routes) site-defaults)]
-    (if (env :dev?) (wrap-exceptions handler) handler)))
+  (component/using (map->Handler {}) [:sente]))
 
 
 (defmulti handle-updates (fn [{:keys [event]} _] (first event)))
 (defmethod handle-updates :chsk/ws-ping [_ _] (println :ping))
 (defmethod handle-updates :de.prob2/hello [_ _] (println :hello))
 (defmethod handle-updates nil [e c] (println e))
-
-(def routing )
