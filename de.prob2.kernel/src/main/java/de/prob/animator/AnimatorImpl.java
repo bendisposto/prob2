@@ -16,7 +16,6 @@ import de.prob.animator.command.ComposedCommand;
 import de.prob.animator.command.GetErrorsCommand;
 import de.prob.cli.ProBInstance;
 import de.prob.exception.CliError;
-import de.prob.exception.ProBError;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.statespace.AnimationSelector;
@@ -47,7 +46,9 @@ class AnimatorImpl implements IAnimator {
 
 	@Override
 	public synchronized void execute(final AbstractCommand command) {
-
+		if (command.blockAnimator()) {
+			startTransaction();
+		}
 		do {
 			if (cli == null) {
 				logger.error("Probcli is missing. Try \"upgrade\".");
@@ -67,12 +68,16 @@ class AnimatorImpl implements IAnimator {
 			} finally {
 				errormessages = getErrors();
 			}
-			if (errormessages == null && bindings != null)
+			if (errormessages == null && bindings != null) {
 				command.processResult(bindings);
-			else
+			} else {
 				command.processErrorResult(bindings, errormessages);
-			
+			}
+
 		} while (!command.isCompleted());
+		if (command.blockAnimator()) {
+			endTransaction();
+		}
 	}
 
 	private synchronized String getErrors() {

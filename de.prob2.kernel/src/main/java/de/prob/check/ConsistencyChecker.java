@@ -79,7 +79,7 @@ public class ConsistencyChecker implements IModelCheckJob {
 		this.goal = goal;
 		this.ui = ui;
 		jobId = ModelChecker.generateJobId();
-		job = new ModelCheckingJob(s, options, jobId, ui);
+		job = new ModelCheckingJob(options, jobId, ui);
 	}
 
 	@Override

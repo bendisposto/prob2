@@ -82,6 +82,18 @@ public abstract class AbstractCommand {
 	}
 
 	/**
+	 * This method determines if the animator should be blocked during the
+	 * execution of the command. This is the case when dealing with a command
+	 * that executes multiple times (i.e a model checking command).
+	 * 
+	 * @return true, if an the animator status should be broadcast as blocked.
+	 *         false, otherwise.
+	 */
+	public boolean blockAnimator() {
+		return false;
+	}
+
+	/**
 	 * This code is called in three cases:
 	 * <ol>
 	 * <li>The Prolog query was unsuccessful (answered no) and there were no
