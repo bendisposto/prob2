@@ -60,7 +60,7 @@
    (not-found "Not Found")))
 
 
-(defrecord Routes [route-fn sente]
+(defrecord Routes [route-fn sente prob]
   component/Lifecycle
   (start [this]
     (if route-fn
@@ -74,7 +74,7 @@
       this)))
 
 (defn mk-routes []
-  (component/using (map->Routes {}) [:sente]))
+  (component/using (map->Routes {}) [:sente :prob]))
 
 (defrecord Handler [routes handler]
   component/Lifecycle
