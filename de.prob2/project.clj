@@ -76,7 +76,8 @@
                    :figwheel {:http-server-root "public"
                               :server-port 3449
                               :css-dirs ["resources/public/css"]
-                              :ring-handler de.prob2.handler/app}
+                              ;:ring-handler de.prob2.handler/app
+                            }
 
                    :env {:dev? true}
 

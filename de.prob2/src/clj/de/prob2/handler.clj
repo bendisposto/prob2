@@ -11,7 +11,7 @@
 
 
 (defmulti handle-updates (fn [{:keys [event]} _] (first event)))
-(defmethod handle-updates :chsk/ws-ping [_ _] (println :ping))
+(defmethod handle-updates :chsk/ws-ping [_ _]) ;; do nothing
 (defmethod handle-updates :de.prob2/hello [_ _] (println :hello))
 (defmethod handle-updates :default [e c] (println e))
 
@@ -51,30 +51,31 @@
 
 (defn mk-sente [] (map->Sente {}))
 
-(defn create-routes [{:keys [ws-handshake post] :as sente}]
-  (compojure.core/routes
-   (GET "/" [] (render-file "templates/index.html" {:dev (env :dev?)}))
-   (GET  "/updates" req (ws-handshake req))
-   (POST "/updates" req (post req))
-   (resources "/")
-   (not-found "Not Found")))
+
+(defn default-routes []
+  (fn [{:keys [ws-handshake post]}]
+    [(GET "/" [] (render-file "templates/index.html" {:dev (env :dev?)}))
+     (GET  "/updates" req (ws-handshake req))
+     (POST "/updates" req (post req))
+     (resources "/")
+     (not-found "Not Found")]))
 
 
-(defrecord Routes [route-fn sente prob]
+(defrecord Routes [route-fn sente prob route-creator-fn]
   component/Lifecycle
   (start [this]
     (if route-fn
       this
       (do (println "Preparing Routes")
-          (assoc this :route-fn (create-routes sente)))))
+          (assoc this :route-fn (apply compojure.core/routes (route-creator-fn sente))))))
   (stop [this]
     (if route-fn
       (do (println "Destroying Routes")
           (dissoc this :route-fn))
       this)))
 
-(defn mk-routes []
-  (component/using (map->Routes {}) [:sente :prob]))
+(defn mk-routes [route-creator-fn]
+  (component/using (map->Routes {:route-creator-fn route-creator-fn}) [:sente :prob]))
 
 (defrecord Handler [routes handler]
   component/Lifecycle
