@@ -358,12 +358,16 @@ public class StateSpace implements IAnimator {
 	 */
 	public String printOps(final State state) {
 		final StringBuilder sb = new StringBuilder();
-		final Collection<Transition> opIds = state.getOutTransitions();
+		final Collection<Transition> opIds = state.getTransitions();
 
 		sb.append("Operations: \n");
 		for (final Transition opId : opIds) {
 			sb.append("  " + opId.getId() + ": " + opId.getRep());
 			sb.append("\n");
+		}
+
+		if (!Trace.getExploreStateByDefault()) {
+			sb.append("\n Possibly not all transitions shown. ProB does not explore states by default");
 		}
 		return sb.toString();
 	}

@@ -7,7 +7,6 @@ import de.prob.animator.command.EvaluationCommand
 import de.prob.animator.domainobjects.IEvalElement
 import de.prob.animator.domainobjects.IEvalResult
 import de.prob.model.classicalb.ClassicalBModel
-import de.prob.model.eventb.EventBModel
 import de.prob.model.representation.AbstractModel
 
 /**
@@ -39,7 +38,7 @@ public class Trace {
 		this(s, head, head, transitionList, uuid)
 	}
 
-	def Trace(final StateSpace s, final TraceElement head,
+	private Trace(final StateSpace s, final TraceElement head,
 	final TraceElement current, List<Transition> transitionList, UUID uuid) {
 		this.stateSpace = s
 		this.head = head
@@ -50,7 +49,7 @@ public class Trace {
 
 
 	def IEvalResult evalCurrent(formula) {
-		getCurrentState().eval(formula)
+		return getCurrentState().eval(formula)
 	}
 
 
@@ -79,9 +78,6 @@ public class Trace {
 	}
 
 	def Trace add(final Transition op) {
-		if (op == null) {
-			throw new IllegalArgumentException("Transition must not be null.")
-		}
 		// TODO: Should we check to ensure that current.getCurrentState() == op.getSrcId()
 		def newHE = new TraceElement(op, current)
 		def transitionList = branchTransitionListIfNecessary(op)
@@ -336,11 +332,8 @@ public class Trace {
 		if(className == AbstractModel) {
 			return stateSpace.model
 		}
-		if(className == ClassicalBModel) {
+		if(className == stateSpace.model.getClass()) {
 			return (ClassicalBModel) stateSpace.model
-		}
-		if(className == EventBModel) {
-			return (EventBModel) stateSpace.model
 		}
 		if(className == ArrayList) {
 			return transitionList
