@@ -514,32 +514,20 @@ public class StateSpace implements IAnimator {
 	 * {@link ClassicalBModel}, or {@link CSPModel}. If they specify the class
 	 * {@link Trace}, a new Trace object will be created and returned.
 	 * 
-	 * @param className
+	 * @param clazz
 	 * @return the Model or Trace corresponding to the StateSpace instance
 	 */
-	public Object asType(final Class<?> className) {
-		if (className.getSimpleName().equals("AbstractModel")) {
+	public Object asType(final Class<?> clazz) {
+		if (clazz.getSimpleName().equals("AbstractModel")) {
 			return model;
 		}
-		if (className.getSimpleName().equals("EventBModel")) {
-			if (model instanceof EventBModel) {
-				return model;
-			}
+		if (clazz.equals(model.getClass())) {
+			return model;
 		}
-		if (className.getSimpleName().equals("ClassicalBModel")) {
-			if (model instanceof ClassicalBModel) {
-				return model;
-			}
-		}
-		if (className.getSimpleName().equals("CSPModel")) {
-			if (model instanceof CSPModel) {
-				return model;
-			}
-		}
-		if (className.getSimpleName().equals("Trace")) {
+		if (clazz.getSimpleName().equals("Trace")) {
 			return new Trace(this);
 		}
-		throw new ClassCastException("An element of class " + className
+		throw new ClassCastException("An element of class " + clazz
 				+ " was not found");
 	}
 
