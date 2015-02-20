@@ -25,6 +25,11 @@ class StateSpaceEvaluationTest extends Specification {
 		firstState = root.$initialise_machine()
 	}
 
+	def setup() {
+		s.formulaRegistry.clear()
+		s.subscribedFormulas.clear()
+	}
+
 	def "it is possible to evaluate formulas in a state"() {
 		expect:
 		s.eval(firstState, [
@@ -232,5 +237,33 @@ class StateSpaceEvaluationTest extends Specification {
 	def "it is not possible to unsubscribe a formula that is not subscribed (nothing will happen)"() {
 		expect:
 		!s.unsubscribe("I'm not a subscriber", "1+24" as ClassicalB)
+	}
+
+	def "getting subscribed formulas also removes formulas that aren't there any more"() {
+		when:
+		def subscriber = "hi!"
+		def formula = "card(active) + 9" as ClassicalB
+		def success = s.subscribe(subscriber, formula)
+		def before = s.getSubscribedFormulas() == [formula] as Set
+		s.formulaRegistry.remove(formula)
+
+		then:
+		success
+		before
+		!s.getSubscribedFormulas().contains(formula)
+	}
+
+	def "getting subscribed formulas also removes formulas that aren't there any more 2"() {
+		when:
+		def subscriber = "hi!"
+		def formula = "card(active) + 10" as ClassicalB
+		def success = s.subscribe(subscriber, formula)
+		def before = s.getSubscribedFormulas() == [formula] as Set
+		s.formulaRegistry[formula].remove(subscriber)
+
+		then:
+		success
+		before
+		!s.getSubscribedFormulas().contains(formula)
 	}
 }

@@ -534,14 +534,13 @@ public class StateSpace implements IAnimator {
 		sb.append("STATE: " + state + "\n\n");
 		sb.append("VALUES:\n");
 		Map<IEvalElement, IEvalResult> currentState = state.getValues();
-		if (currentState != null) {
-			final Set<Entry<IEvalElement, IEvalResult>> entrySet = currentState
-					.entrySet();
-			for (final Entry<IEvalElement, IEvalResult> entry : entrySet) {
-				sb.append("  " + entry.getKey().getCode() + " -> "
-						+ entry.getValue().toString() + "\n");
-			}
+		final Set<Entry<IEvalElement, IEvalResult>> entrySet = currentState
+				.entrySet();
+		for (final Entry<IEvalElement, IEvalResult> entry : entrySet) {
+			sb.append("  " + entry.getKey().getCode() + " -> "
+					+ entry.getValue().toString() + "\n");
 		}
+
 		return sb.toString();
 	}
 
