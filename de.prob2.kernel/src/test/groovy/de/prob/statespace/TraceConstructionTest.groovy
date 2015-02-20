@@ -102,14 +102,8 @@ class TraceConstructionTest extends Specification {
 
 		then:
 		outtrans.size() == outtrans2.size()
-		def allnotevaluated = true
-		outtrans.each {
-			allnotevaluated = allnotevaluated && !it.isEvaluated()
-		}
-		allnotevaluated
-		outtrans2.each {
-			allnotevaluated = allnotevaluated && !it.isEvaluated()
-		}
+		outtrans.inject(true) { result, i -> !i.isEvaluated() } // all not evaluated
+		outtrans2.inject(true) { result, i -> !i.isEvaluated() } // all not evaluated
 	}
 
 	def "you can view the transitions from the trace (which can be evaluated)"() {
@@ -119,11 +113,7 @@ class TraceConstructionTest extends Specification {
 
 		then:
 		outtrans.size() == 4
-		def allevaluated = true
-		outtrans.each {
-			allevaluated = allevaluated && it.isEvaluated()
-		}
-		allevaluated
+		outtrans.inject(true) { result, i -> result && i.isEvaluated() } // they are all evaluated
 	}
 
 	def "the list of transitions can be accessed from the trace"() {
@@ -141,15 +131,10 @@ class TraceConstructionTest extends Specification {
 			"\$initialise_machine",
 			"new"
 		]
-		def allnotevaluated = true
-		transitions.each {
-			allnotevaluated = allnotevaluated && !it.isEvaluated()
-		}
-		allnotevaluated
-		transitions2.each {
-			allnotevaluated = allnotevaluated && !it.isEvaluated()
-		}
-		allnotevaluated
+
+		transitions.inject(true) { result, i -> !i.isEvaluated() } // all not evaluated
+		transitions2.inject(true) { result, i -> !i.isEvaluated() } // all not evaluated
+
 	}
 
 	def "the list of transitions can be accessed from the trace (and evaluated at the same time)"() {
@@ -162,11 +147,7 @@ class TraceConstructionTest extends Specification {
 			"\$initialise_machine",
 			"new"
 		]
-		def allevaluated = true
-		transitions.each {
-			allevaluated = allevaluated && it.isEvaluated()
-		}
-		allevaluated
+		transitions.inject(true) { result, i -> result && i.isEvaluated() } // they are all evaluated
 	}
 
 	def "A trace can be copied (everything identical except UUID)"() {

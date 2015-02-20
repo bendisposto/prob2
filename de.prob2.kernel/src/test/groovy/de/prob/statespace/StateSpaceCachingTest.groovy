@@ -4,6 +4,10 @@ package de.prob.statespace
 import static org.junit.Assert.*
 import static org.mockito.Mockito.*
 import spock.lang.Specification
+
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
+
 import de.prob.Main
 import de.prob.scripting.ClassicalBFactory
 
@@ -87,5 +91,24 @@ class StateSpaceCachingTest extends Specification {
 
 		then:
 		thrown(IllegalArgumentException)
+	}
+
+	def "the cache is emptied when it gets too full"() {
+		when:
+		s.states = CacheBuilder.newBuilder().maximumSize(5).build(new CacheLoader<String, State>() {
+					@Override
+					public State load(final String key) throws Exception {
+						return load(key);
+					}
+				})
+		Trace t = new Trace(s)
+		def sizes = []
+		for (i in 1..10) {
+			t = t.anyEvent()
+			sizes << s.states.size()
+		}
+
+		then:
+		sizes.inject(true) { result, i -> result && (i <= 5) }
 	}
 }

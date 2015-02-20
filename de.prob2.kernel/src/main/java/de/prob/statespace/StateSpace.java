@@ -206,8 +206,7 @@ public class StateSpace implements IAnimator {
 		GetOperationByPredicateCommand command = new GetOperationByPredicateCommand(
 				this, stateId.getId(), name, pred, 1);
 		execute(command);
-		return !command.hasErrors()
-				&& (command.getNewTransitions().size() == 1);
+		return !command.hasErrors();
 	}
 
 	public List<IEvalResult> eval(final State state,
@@ -396,7 +395,6 @@ public class StateSpace implements IAnimator {
 						+ entry.getValue().toString() + "\n");
 			}
 		}
-		sb.append("\nINVARIANT: ");
 		return sb.toString();
 	}
 
@@ -439,7 +437,8 @@ public class StateSpace implements IAnimator {
 	 * {@link Trace} by executing each one in order. This calls the
 	 * {@link Trace#add(String)} method which can throw an
 	 * {@link IllegalArgumentException} if executing the operations in the
-	 * specified order is not possible.
+	 * specified order is not possible. It assumes that the Trace begins from
+	 * the root state.
 	 * 
 	 * @param transitionIds
 	 *            List of transition ids in the order that they should be
@@ -454,6 +453,15 @@ public class StateSpace implements IAnimator {
 		return t;
 	}
 
+	/**
+	 * This allows developers to programmatically descripe a Trace that should
+	 * be created. {@link ITraceDescription#getTrace(StateSpace)} will then be
+	 * called in order to generate the correct Trace.
+	 * 
+	 * @param description
+	 *            of the trace to be created
+	 * @return Trace that is generated from the Trace Description
+	 */
 	public Trace getTrace(final ITraceDescription description) {
 		return description.getTrace(this);
 	}
@@ -471,10 +479,6 @@ public class StateSpace implements IAnimator {
 		FindValidStateCommand cmd = new FindValidStateCommand(this, predicate);
 		execute(cmd);
 		return getTrace(cmd);
-	}
-
-	public void setAnimator(final IAnimator animator) {
-		this.animator = animator;
 	}
 
 	public AbstractCommand getLoadcmd() {
